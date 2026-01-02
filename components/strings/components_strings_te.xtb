@@ -3251,7 +3251,7 @@
 <translation id="6341434961864773665">{0,plural, =1{ఈ ఫైల్‌ను <ph name="DESTINATION_NAME" />‌కు అప్‌లోడ్ చేయవద్దని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేస్తోంది}other{ఈ ఫైల్స్‌ను <ph name="DESTINATION_NAME" />‌కు అప్‌లోడ్ చేయవద్దని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేస్తోంది}}</translation>
 <translation id="6342069812937806050">ఇప్పుడే</translation>
 <translation id="6342171901363060580">ఈ సైట్ HTTPSను సపోర్ట్ చేయదు, అంతే కాకుండా మీరు అజ్ఞాత మోడ్‌లో ఉన్నారు, కాబట్టి మీకు ఈ హెచ్చరిక కనిపిస్తోంది. <ph name="LEARN_MORE" /></translation>
-<translation id="634500758737709758">దిశలు</translation>
+<translation id="634500758737709758">దిశలు (డైరెక్షన్స్)</translation>
 <translation id="6348220984832452017">యాక్టివ్‌గా ఉన్న వేరియేషన్‌లు</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" />‌ను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="6351658970066645919">బ్రౌజింగ్ డేటాను తొలగించండి</translation>

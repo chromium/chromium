@@ -4742,7 +4742,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4249248555939881673">S'està esperant la connexió de xarxa...</translation>
 <translation id="4249373718504745892">S'ha bloquejat l'accés d'aquesta pàgina a la càmera i al micròfon</translation>
 <translation id="424963718355121712">Les aplicacions s'han de distribuir des de l'amfitrió que afecten</translation>
-<translation id="4249785854468467847">Reinventa Chrome, potenciat amb IA</translation>
+<translation id="4249785854468467847">Reimagina Chrome, potenciat amb IA</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4250680216510889253">No</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" /> podrà visualitzar els fitxers de <ph name="FOLDERNAME" /> i fer-ne còpies</translation>
@@ -5383,7 +5383,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4689235506267737042">Tria les teves preferències de demostració</translation>
 <translation id="4689421377817139245">Sincronitza aquesta adreça d'interès amb el teu iPhone</translation>
 <translation id="4690091457710545971">&lt;Quatre fitxers generats pel microprogramari per a Wi-Fi d'Intel: csr.lst, fh_regs.lst, radio_reg.lst i monitor.lst.sysmon. Els tres primers són fitxers binaris que contenen abocaments de registres i que Intel ha confirmat que no contenen informació personal ni dades que permetin identificar el dispositiu. L'últim fitxer és una traça d'execució del microprogramari d'Intel. Se n'ha suprimit tota la informació personal i les dades que permeten identificar el dispositiu, però és massa gran per mostrar-lo aquí. Aquests fitxers s'han generat per respondre a problemes recents relacionats amb la connexió Wi-Fi del dispositiu i es compartiran amb Intel per ajudar a resoldre'ls.&gt;</translation>
-<translation id="4691995778017338841">Reinventa una foto</translation>
+<translation id="4691995778017338841">Reimagina una foto</translation>
 <translation id="4692342362587775867">Les notificacions d'aquest lloc web poden ser molestes</translation>
 <translation id="4692530924160500770">{MEMBER_COUNT,plural, =1{# membre al grup}other{# membres al grup}}</translation>
 <translation id="4692623383562244444">Motors de cerca</translation>
@@ -6795,7 +6795,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5695184138696833495">ADB d'aplicacions d'Android a Linux</translation>
 <translation id="5696143504434933566">Informa d'un ús abusiu de l'extensió "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="5696679855467848181">Fitxer PPD en ús: <ph name="PPD_NAME" /></translation>
-<translation id="5697664819730124632">Afegeix una imatge i reinventa-la</translation>
+<translation id="5697664819730124632">Afegeix una imatge i reimagina-la</translation>
 <translation id="5697832193891326782">Selector d'emojis</translation>
 <translation id="5698136107297470317">Estàs a punt de suprimir les teves dades del <ph name="BRAND" /></translation>
 <translation id="5698878456427040674">Comprova si s'admet el compte seleccionat.</translation>

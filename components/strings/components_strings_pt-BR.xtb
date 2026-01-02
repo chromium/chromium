@@ -3614,7 +3614,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="692638818576287323">Veículos comerciais</translation>
 <translation id="6927057753277044239">Depois de analisar o pedido, faça login ou crie uma conta do <ph name="BNPL_ISSUER_NAME" />. Ela será vinculada automaticamente à sua Conta do Google.</translation>
 <translation id="6930607614725241390">Pesquise no painel lateral</translation>
-<translation id="6934236486840930310"><ph name="BEGIN_BOLD" />O mecanismo de pesquisa padrão é o que vai ser usado para pesquisas na Internet, além de usar recursos do Chrome<ph name="END_BOLD" />, como a pesquisa na barra de endereço e em imagens de páginas da Web. Alguns recursos podem ficar indisponíveis se o mecanismo de pesquisa escolhido não tiver suporte para ele.</translation>
+<translation id="6934236486840930310"><ph name="BEGIN_BOLD" />O mecanismo de pesquisa padrão é o que vai ser usado para pesquisas na Internet, além de servir de base para recursos do Chrome<ph name="END_BOLD" />, como a pesquisa na barra de endereço e em imagens de páginas da Web. Alguns recursos podem ficar indisponíveis se o mecanismo de pesquisa escolhido não tiver suporte para ele.</translation>
 <translation id="6934672428414710184">Este nome é da sua Conta do Google</translation>
 <translation id="6935077351544118151">Agora é possível preencher automaticamente cartões de fidelidade da Carteira do Google</translation>
 <translation id="6935082727755903526">Vagas de emprego nas áreas contábil e financeira</translation>

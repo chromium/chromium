@@ -455,7 +455,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1291421198328146277">Reset tombol</translation>
 <translation id="1292849930724124745">Pasang kartu smart agar tetap login</translation>
 <translation id="1293264513303784526">Perangkat USB-C (port sebelah kiri)</translation>
-<translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" mungkin tumpang-tindih dengan "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />", dan "<ph name="CONFLICTING_GESTURE_THREE" />". Jika memungkinkan, coba pilih gestur yang berbeda.</translation>
+<translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" mungkin tumpang tindih dengan "<ph name="CONFLICTING_GESTURE_ONE" />", "<ph name="CONFLICTING_GESTURE_TWO" />", dan "<ph name="CONFLICTING_GESTURE_THREE" />". Jika memungkinkan, coba pilih gestur yang berbeda.</translation>
 <translation id="1293556467332435079">File</translation>
 <translation id="1294807885394205587">Proses ini mungkin memerlukan waktu beberapa menit. Memulai pengelola penampung.</translation>
 <translation id="12951065153783848">Organisasi mengelola akun Anda</translation>
@@ -2690,7 +2690,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2806372837663997957">Perangkat yang Anda coba ajak berbagi tidak menerima</translation>
 <translation id="2806891468525657116">Pintasan sudah ada</translation>
 <translation id="2807517655263062534">File yang Anda download muncul di sini</translation>
-<translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" mungkin tumpang-tindih dengan "<ph name="CONFLICTING_GESTURE_ONE" />" dan "<ph name="CONFLICTING_GESTURE_TWO" />". Jika memungkinkan, coba pilih gestur yang berbeda.</translation>
+<translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" mungkin tumpang tindih dengan "<ph name="CONFLICTING_GESTURE_ONE" />" dan "<ph name="CONFLICTING_GESTURE_TWO" />". Jika memungkinkan, coba pilih gestur yang berbeda.</translation>
 <translation id="2809346626032021864">Membaca</translation>
 <translation id="2811205483104563968">Akun</translation>
 <translation id="2812049959647166806">Thunderbolt tidak didukung</translation>
@@ -4505,7 +4505,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="404894744863342743">Setelah selesai menggunakan file yang didownload, hapus agar orang lain yang menggunakan perangkat ini tidak dapat melihat sandi Anda.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontak tidak tersedia. Untuk menggunakan fitur Berbagi Langsung dengan kontak tersebut, tambahkan alamat email yang terkait dengan Akun Google mereka ke kontak Anda.}other{# kontak tidak tersedia. Untuk menggunakan fitur Berbagi Langsung dengan kontak tersebut, tambahkan alamat email yang terkait dengan Akun Google mereka ke kontak Anda.}}</translation>
 <translation id="4050225813016893843">Metode autentikasi</translation>
-<translation id="4050379682069019014">"<ph name="MAIN_GESTURE" />" mungkin tumpang-tindih dengan "<ph name="CONFLICTING_GESTURE" />". Jika memungkinkan, coba pilih gestur yang berbeda.</translation>
+<translation id="4050379682069019014">"<ph name="MAIN_GESTURE" />" mungkin tumpang tindih dengan "<ph name="CONFLICTING_GESTURE" />". Jika memungkinkan, coba pilih gestur yang berbeda.</translation>
 <translation id="4050534976465737778">Pastikan kedua perangkat tidak terkunci, berdekatan, serta mengaktifkan Bluetooth. Jika Anda berbagi dengan Chromebook yang tidak ada dalam kontak Anda, pastikan Chromebook sudah mengaktifkan visibilitas Berbagi Langsung (buka area status, lalu aktifkan visibilitas Berbagi Langsung). <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Untuk beralih ke metode input yang terakhir digunakan, tekan <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">penelusuran + panah kanan</translation>
