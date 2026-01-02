@@ -6484,11 +6484,6 @@
     "expiry_milestone": 148
   },
   {
-      "name": "iph-price-notifications-while-browsing",
-      "owners": [ "danieltwhite@chromium.org", "ajuma@chromium.org" ],
-      "expiry_milestone": 118
-  },
-  {
       "name": "ipp-first-setup-for-usb-printers",
       "owners": [ "pawliczek@chromium.org", "project-bolton@google.com" ],
       "expiry_milestone": 140

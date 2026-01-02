@@ -543,9 +543,6 @@ extern const char kIOSTrustedVaultNotificationDescription[];
 extern const char kIOSWebContextMenuNewTitleName[];
 extern const char kIOSWebContextMenuNewTitleDescription[];
 
-extern const char kIPHPriceNotificationsWhileBrowsingName[];
-extern const char kIPHPriceNotificationsWhileBrowsingDescription[];
-
 extern const char kIdentityConfirmationSnackbarName[];
 extern const char kIdentityConfirmationSnackbarDescription[];
 
