@@ -938,4 +938,30 @@ size_t ContextualTasksSidePanelCoordinator::GetNumberOfActiveTasks() const {
   return task_id_to_web_contents_cache_.size();
 }
 
+std::optional<tabs::TabHandle>
+ContextualTasksSidePanelCoordinator::GetAutoSuggestedTabHandle() {
+  if (!ui_service_->auto_tab_context_suggestion_enabled()) {
+    return std::nullopt;
+  }
+
+  auto* web_contents = web_view_->GetWebContents();
+  auto* web_ui = web_contents->GetWebUI();
+  if (!web_ui) {
+    return std::nullopt;
+  }
+
+  auto* contextual_tasks_ui =
+      web_ui->GetController()->GetAs<ContextualTasksUI>();
+  if (!contextual_tasks_ui ||
+      !contextual_tasks_ui->IsActiveTabContextSuggestionShowing()) {
+    return std::nullopt;
+  }
+
+  tabs::TabInterface* active_tab_interface =
+      browser_window_->GetActiveTabInterface();
+  return active_tab_interface
+             ? std::make_optional(active_tab_interface->GetHandle())
+             : std::nullopt;
+}
+
 }  // namespace contextual_tasks

@@ -322,6 +322,7 @@ void ComposeboxHandler::SubmitQuery(
 
 void ComposeboxHandler::UpdateSuggestedTabContext(
     searchbox::mojom::TabInfoPtr tab_info) {
+  has_suggested_tab_context_ = !tab_info.is_null();
   SearchboxHandler::page_->UpdateAutoSuggestedTabContext(std::move(tab_info));
 }
 

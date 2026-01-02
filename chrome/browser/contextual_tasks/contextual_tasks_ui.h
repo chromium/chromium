@@ -209,6 +209,9 @@ class ContextualTasksUI : public TaskInfoDelegate,
   // API will only accept navigations to the AI or search results pages.
   void TransferNavigationToEmbeddedPage(content::OpenURLParams params);
 
+  // Returns whether the active tab context suggestion is showing.
+  bool IsActiveTabContextSuggestionShowing() const;
+
  private:
   void RequestOAuthToken();
   void OnOAuthTokenReceived(GoogleServiceAuthError error,
