@@ -157,6 +157,8 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
       contextual_search::ContextualSearchMetricsRecorder::
           ContextualSearchSourceToString(
               contextual_search::ContextualSearchSource::kOmnibox));
+  source->AddBoolean("autoSubmitVoiceSearchQuery",
+                     omnibox::kAutoSubmitVoiceSearchQuery.Get());
 
   webui::SetupWebUIDataSource(
       source, kOmniboxPopupResources,

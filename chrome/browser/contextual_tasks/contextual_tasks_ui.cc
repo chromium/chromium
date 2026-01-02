@@ -302,6 +302,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       "darkMode", ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui))
                       ->BrowserUsesDarkColors());
   source->AddBoolean("clearAllInputsWhenSubmittingQuery", true);
+  source->AddBoolean("autoSubmitVoiceSearchQuery",
+                     contextual_tasks::GetAutoSubmitVoiceSearchQuery());
 
   source->AddString(
       "composeboxSource",

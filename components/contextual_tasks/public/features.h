@@ -105,6 +105,9 @@ extern bool GetIsExpandedComposeboxVoiceSearchEnabled();
 // Returns if voice search is allowed in base steady composebox.
 extern bool GetIsSteadyComposeboxVoiceSearchEnabled();
 
+// Returns if voice search queries should be auto submitted.
+extern bool GetAutoSubmitVoiceSearchQuery();
+
 // Returns the base URL for the AI page.
 extern std::string GetContextualTasksAiPageUrl();
 

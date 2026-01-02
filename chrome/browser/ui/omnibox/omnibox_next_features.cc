@@ -323,6 +323,10 @@ const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox(
     &internal::kWebUIOmniboxAimPopup,
     "ShowVoiceSearchInExpandedComposebox",
     true);
+const base::FeatureParam<bool> kAutoSubmitVoiceSearchQuery(
+    &internal::kWebUIOmniboxAimPopup,
+    "AutoSubmitVoiceSearchQuery",
+    false);
 const base::FeatureParam<bool> kEnableContextDragAndDrop(&internal::kWebUIOmniboxAimPopup,
                                                   "EnableContextDragAndDrop",
                                                   false);

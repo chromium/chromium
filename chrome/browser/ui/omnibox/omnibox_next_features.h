@@ -94,6 +94,8 @@ extern const base::FeatureParam<bool> kShowToolsAndModels;
 extern const base::FeatureParam<bool> kShowVoiceSearchInSteadyComposebox;
 // Whether to show the voice search button in expanded composebox.
 extern const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox;
+// Whether to auto submit voice queries in the composebox.
+extern const base::FeatureParam<bool> kAutoSubmitVoiceSearchQuery;
 // Whether or not to use separate request ids for viewport images if the
 // multi-context input flow is enabled.
 extern const base::FeatureParam<bool>

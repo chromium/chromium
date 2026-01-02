@@ -268,6 +268,10 @@ export class ComposeboxElement extends I18nMixinLit
       loadTimeData.valueExists('clearAllInputsWhenSubmittingQuery') ?
       loadTimeData.getBoolean('clearAllInputsWhenSubmittingQuery') :
       false;
+  private autoSubmitVoiceSearch: boolean =
+      loadTimeData.valueExists('autoSubmitVoiceSearchQuery') ?
+      loadTimeData.getBoolean('autoSubmitVoiceSearchQuery') :
+      true;
   protected accessor inVoiceSearchMode_: boolean = false;
   private selectedMatch_: AutocompleteMatch|null = null;
   // Whether the composebox is actively waiting for an autocomplete response. If
@@ -744,14 +748,25 @@ export class ComposeboxElement extends I18nMixinLit
     this.animationState = GlowAnimationState.NONE;
   }
 
-  protected onVoiceSearchFinalResult_(e: CustomEvent<string>) {
+  protected async onVoiceSearchFinalResult_(e: CustomEvent<string>) {
     e.stopPropagation();
     this.voiceSearchEndCleanup_();
-    this.fire(
-        'voice-search-action', {value: VoiceSearchAction.QUERY_SUBMITTED});
-    this.searchboxHandler_.submitQuery(
-        e.detail, /*mouse_button=*/ 0, /*alt_key=*/ false,
-        /*ctrl_key=*/ false, /*meta_key=*/ false, /*shift_key=*/ false);
+    if (this.autoSubmitVoiceSearch) {
+      this.fire(
+          'voice-search-action', {value: VoiceSearchAction.QUERY_SUBMITTED});
+      this.searchboxHandler_.submitQuery(
+          e.detail, /*mouse_button=*/ 0, /*alt_key=*/ false,
+          /*ctrl_key=*/ false, /*meta_key=*/ false, /*shift_key=*/ false);
+    } else {
+      // If auto-submit is not enabled, update the input to the voice search
+      // query, query autocomplete, and recompute whether submission should be
+      // enabled.
+      this.input_ = e.detail;
+      this.queryAutocomplete(/* clearMatches= */ true);
+      this.submitEnabled_ = this.computeSubmitEnabled_();
+      await this.updateComplete;
+      this.focusInput();
+    }
   }
 
   protected openAimVoiceSearch_() {
