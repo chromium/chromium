@@ -111,6 +111,11 @@ void OpenTabForSyncKeyRetrieval(
 void OpenTabForSyncKeyRecoverabilityDegraded(
     Browser* browser,
     trusted_vault::TrustedVaultUserActionTriggerForUMA trigger);
+
+// Opens a new tab with the help page for bookmarks count limit exceeded error
+// and acknowledges the error.
+void ShowBookmarksLimitExceededHelp(Browser* browser,
+                                    syncer::SyncService* sync_service);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #endif  // CHROME_BROWSER_SYNC_SYNC_UI_UTIL_H_

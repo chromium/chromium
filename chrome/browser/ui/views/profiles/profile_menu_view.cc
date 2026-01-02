@@ -388,8 +388,8 @@ void ProfileMenuView::OnSyncErrorButtonClicked(
       chrome::ShowSettingsSubPage(&browser(), chrome::kSyncSetupSubPage);
       break;
     case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
-      // TODO(crbug.com/452968646): Adjust this with providing the concrete
-      // help center article link.
+      ShowBookmarksLimitExceededHelp(
+          &browser(), SyncServiceFactory::GetForProfile(&profile()));
       break;
     case syncer::SyncService::UserActionableError::kNone:
       NOTREACHED();

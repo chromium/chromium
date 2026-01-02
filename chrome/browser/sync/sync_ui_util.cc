@@ -44,6 +44,11 @@ namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
 
+// TODO(crbug.com/452968646): Update this link with a `p=...` param once it's
+// known.
+constexpr char kBookmarksLimitExceededHelpCenter[] =
+    "https://support.google.com/chrome/answer/165139";
+
 void OpenTabForSyncTrustedVaultUserAction(
     Browser* browser,
     const GURL& url,
@@ -347,5 +352,16 @@ void OpenTabForSyncKeyRecoverabilityDegraded(
     url = net::AppendQueryParameter(url, "continue", continue_url.spec());
   }
   OpenTabForSyncTrustedVaultUserAction(browser, url, std::nullopt);
+}
+
+void ShowBookmarksLimitExceededHelp(Browser* browser,
+                                    syncer::SyncService* sync_service) {
+  CHECK(browser);
+  CHECK(sync_service);
+  sync_service->AcknowledgeBookmarksLimitExceededError();
+  NavigateParams params(browser, GURL(kBookmarksLimitExceededHelpCenter),
+                        ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
