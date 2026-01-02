@@ -511,12 +511,9 @@ void SandboxedUnpacker::ReadManifestDone(
     return;
   }
 
-  std::string error_msg;
   std::vector<InstallWarning> warnings;
-  // TODO(crbug.com/41317803): Continue removing std::string errors and
-  // replacing with std::u16string.
-  if (!file_util::ValidateExtension(extension.get(), &error_msg, &warnings)) {
-    ReportUnpackExtensionFailed(base::UTF8ToUTF16(error_msg));
+  if (!file_util::ValidateExtension(extension.get(), &error, &warnings)) {
+    ReportUnpackExtensionFailed(error);
     return;
   }
   extension->AddInstallWarnings(std::move(warnings));

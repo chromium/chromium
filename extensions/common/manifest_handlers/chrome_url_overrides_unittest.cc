@@ -64,19 +64,18 @@ TEST(ChromeURLOverridesHandlerTest, TestFileMissing) {
                       .Set("manifest_version", 3)
                       .Set("chrome_url_overrides",
                            base::Value::Dict().Set("newtab", "newtab.html"));
-  std::string error;
-  std::u16string utf16_error;
+  std::u16string error;
   std::vector<InstallWarning> warnings;
   base::ScopedTempDir dir;
   ASSERT_TRUE(dir.CreateUniqueTempDir());
-  scoped_refptr<Extension> extension = Extension::Create(
-      dir.GetPath(), mojom::ManifestLocation::kInternal, manifest,
-      Extension::NO_FLAGS, std::string(), &utf16_error);
+  scoped_refptr<Extension> extension =
+      Extension::Create(dir.GetPath(), mojom::ManifestLocation::kInternal,
+                        manifest, Extension::NO_FLAGS, std::string(), &error);
   ASSERT_TRUE(extension);
   EXPECT_FALSE(
       file_util::ValidateExtension(extension.get(), &error, &warnings));
-  EXPECT_EQ(ErrorUtils::FormatErrorMessage(manifest_errors::kFileNotFound,
-                                           "newtab.html"),
+  EXPECT_EQ(ErrorUtils::FormatErrorMessageUTF16(manifest_errors::kFileNotFound,
+                                                "newtab.html"),
             error);
 }
 

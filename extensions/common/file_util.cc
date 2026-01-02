@@ -282,8 +282,7 @@ scoped_refptr<Extension> LoadExtension(
   }
 
   std::vector<InstallWarning> warnings;
-  if (!ValidateExtension(extension.get(), &utf8_error, &warnings)) {
-    *error = base::UTF8ToUTF16(utf8_error);
+  if (!ValidateExtension(extension.get(), error, &warnings)) {
     return nullptr;
   }
   extension->AddInstallWarnings(std::move(warnings));
@@ -333,13 +332,15 @@ std::optional<base::Value::Dict> LoadManifest(
   return std::move(*root).TakeDict();
 }
 
-// TODO(crbug.com/41317803): Continue removing std::string errors and replacing
-// with std::u16string.
 bool ValidateExtension(const Extension* extension,
-                       std::string* error,
+                       std::u16string* error,
                        std::vector<InstallWarning>* warnings) {
   // Ask registered manifest handlers to validate their paths.
-  if (!ManifestHandler::ValidateExtension(extension, error, warnings)) {
+  std::string utf8_error;
+  // TODO(crbug.com/41317803): Continue removing std::string errors and
+  // replacing with std::u16string.
+  if (!ManifestHandler::ValidateExtension(extension, &utf8_error, warnings)) {
+    *error = base::UTF8ToUTF16(utf8_error);
     return false;
   }
 
@@ -366,8 +367,8 @@ bool ValidateExtension(const Extension* extension,
       // Only print one of the private keys because l10n_util doesn't have a way
       // to translate a list of strings.
       *error =
-          l10n_util::GetStringFUTF8(IDS_EXTENSION_CONTAINS_PRIVATE_KEY,
-                                    private_keys.front().LossyDisplayName());
+          l10n_util::GetStringFUTF16(IDS_EXTENSION_CONTAINS_PRIVATE_KEY,
+                                     private_keys.front().LossyDisplayName());
       return false;
     }
   } else {

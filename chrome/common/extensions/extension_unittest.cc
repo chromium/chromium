@@ -273,7 +273,7 @@ TEST(ExtensionTest, GetAbsolutePathNoError) {
   scoped_refptr<Extension> extension = LoadManifestStrict("absolute_path",
       "absolute.json");
   EXPECT_TRUE(extension.get());
-  std::string err;
+  std::u16string err;
   std::vector<InstallWarning> warnings;
   EXPECT_TRUE(file_util::ValidateExtension(extension.get(), &err, &warnings));
   EXPECT_EQ(0U, warnings.size());

@@ -41,7 +41,7 @@ TEST_F(ThemeManifestTest, MissingThemeImageVariantValidationWarning) {
       LoadAndExpectSuccess("theme_missing_image_variant.json");
   EXPECT_EQ(1u, ThemeInfo::GetImages(extension.get())->size());
 
-  std::string error;
+  std::u16string error;
   std::vector<InstallWarning> warnings;
   EXPECT_TRUE(file_util::ValidateExtension(extension.get(), &error, &warnings));
   EXPECT_TRUE(error.empty());
