@@ -755,16 +755,25 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     is_url_changed = true;
   }
 
-  // If this navigation is inside the same document, do nothing.
-  if (navigation_handle->IsSameDocument()) {
-    return;
-  }
-
   if (!is_url_changed) {
     return;
   }
 
-  if (url == ui_service_->GetDefaultAiPageUrl()) {
+  if (!ui_service_->IsAiUrl(url)) {
+    return;
+  }
+
+  if (is_zero_state) {
+    // Create a new task for zero state, since there's no thread to associate
+    // this with yet.
+    contextual_tasks::ContextualTask task =
+        contextual_tasks_service_->CreateTask();
+    base::Uuid new_task_id = task.GetTaskId();
+    task_info_delegate_->SetTaskId(new_task_id);
+    task_info_delegate_->SetThreadId(std::nullopt);
+    task_info_delegate_->SetThreadTurnId(std::nullopt);
+    task_info_delegate_->SetThreadTitle(std::nullopt);
+
     ui_service_->OnTaskChanged(task_info_delegate_->GetBrowser(),
                                task_info_delegate_->GetWebUIWebContents(),
                                base::Uuid(),
@@ -772,8 +781,12 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     return;
   }
 
-  if (!ui_service_->IsAiUrl(url)) {
-    return;
+  // If we don't yet have a title, try to pull one from the query.
+  if (!task_info_delegate_->GetThreadTitle()) {
+    std::string query_value;
+    if (net::GetValueForKeyInQuery(url, "q", &query_value)) {
+      task_info_delegate_->SetThreadTitle(query_value);
+    }
   }
 
   std::string url_thread_id;
@@ -811,14 +824,6 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     }
   }
   task_info_delegate_->SetThreadId(url_thread_id);
-
-  // If we don't yet have a title, try to pull one from the query.
-  if (!task_info_delegate_->GetThreadTitle()) {
-    std::string query_value;
-    if (net::GetValueForKeyInQuery(url, "q", &query_value)) {
-      task_info_delegate_->SetThreadTitle(query_value);
-    }
-  }
 
   std::optional<std::string> mstk;
   mstk.emplace();

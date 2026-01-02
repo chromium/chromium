@@ -177,6 +177,7 @@ TEST_F(ContextualTasksUiTest, ContextualTasksServiceUpdatedOnUrlChange) {
       contextual_tasks_service_.get(), &delegate);
 
   GURL updated_url(kAiPageUrl);
+  updated_url = net::AppendQueryParameter(updated_url, "q", "test");
   updated_url = net::AppendQueryParameter(updated_url, "mstk", turn_id.value());
   updated_url =
       net::AppendQueryParameter(updated_url, "mtid", thread_id.value());
@@ -212,6 +213,7 @@ TEST_F(ContextualTasksUiTest,
       contextual_tasks_service_.get(), &delegate);
 
   GURL updated_url(kAiPageUrl);
+  updated_url = net::AppendQueryParameter(updated_url, "q", "test");
   updated_url = net::AppendQueryParameter(updated_url, "mstk", "abcd");
   updated_url = net::AppendQueryParameter(updated_url, "mtid", thread_id2);
 
@@ -246,6 +248,7 @@ TEST_F(ContextualTasksUiTest,
       contextual_tasks_service_.get(), &delegate);
 
   GURL updated_url(kAiPageUrl);
+  updated_url = net::AppendQueryParameter(updated_url, "q", "test");
   updated_url = net::AppendQueryParameter(updated_url, "mstk", turn_id.value());
 
   // UpdateThreadForTask() is not called due to missing thread id.
@@ -277,6 +280,7 @@ TEST_F(ContextualTasksUiTest,
       contextual_tasks_service_.get(), &delegate);
 
   GURL updated_url(kAiPageUrl);
+  updated_url = net::AppendQueryParameter(updated_url, "q", "test");
   updated_url =
       net::AppendQueryParameter(updated_url, "mtid", thread_id.value());
 
@@ -424,14 +428,11 @@ TEST_F(ContextualTasksUiTest, TaskChanged_ThreadIdChanged_HasExistingTask) {
   observer.reset();
 }
 
-// The task ID should not change until there's a new thread ID available in the
-// URL.
-TEST_F(ContextualTasksUiTest, TaskUnchangedWithNoThreadId) {
+// A new task should be created when navigating to the zero state.
+TEST_F(ContextualTasksUiTest, TaskCreated_ZeroState) {
   MockTaskInfoDelegate delegate;
 
-  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
-  std::string thread_id = "5678";
-  SetupMockDelegate(&delegate, task_id, thread_id, std::nullopt);
+  SetupMockDelegate(&delegate, std::nullopt, std::nullopt, std::nullopt);
 
   auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
       embedded_web_contents_.get(), service_for_nav_.get(),
@@ -439,16 +440,52 @@ TEST_F(ContextualTasksUiTest, TaskUnchangedWithNoThreadId) {
 
   GURL url(kAiPageUrl);
 
-  // There is no query value and no other information, the task and thread being
-  // tracked should remain unchanged.
-  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(_)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, _, _)).Times(0);
+  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  ContextualTask task(task_id);
+  EXPECT_CALL(*contextual_tasks_service_, CreateTask()).WillOnce(Return(task));
+  // OnTaskChanged should be called with an empty UUID for zero state.
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, base::Uuid(), _)).Times(1);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(url);
 
   observer->DidFinishNavigation(nav_handle.get());
 
+  EXPECT_EQ(delegate.GetTaskId(), task_id);
+
+  observer.reset();
+}
+
+TEST_F(ContextualTasksUiTest, ThreadUpdatedOnSameDocumentNav) {
+  MockTaskInfoDelegate delegate;
+  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  std::optional<std::string> thread_id = "5678";
+  std::string query = "koalas";
+
+  SetupMockDelegate(&delegate, task_id, "1234", std::nullopt);
+
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  GURL url(kAiPageUrl);
+  url = net::AppendQueryParameter(url, "q", query);
+  url = net::AppendQueryParameter(url, "mtid", thread_id.value());
+
+  EXPECT_CALL(
+      *contextual_tasks_service_,
+      UpdateThreadForTask(task_id, _, thread_id.value(), _, Optional(query)))
+      .Times(1);
+
+  ContextualTask task(task_id);
+  ON_CALL(*contextual_tasks_service_, CreateTaskFromUrl(url))
+      .WillByDefault(Return(task));
+
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(url);
+  nav_handle->set_is_same_document(true);
+
+  observer->DidFinishNavigation(nav_handle.get());
   observer.reset();
 }
 
@@ -465,6 +502,7 @@ TEST_F(ContextualTasksUiTest, PendingTaskNoNewTaskCreatedOnNav) {
       contextual_tasks_service_.get(), &delegate);
 
   GURL url(kAiPageUrl);
+  url = net::AppendQueryParameter(url, "q", "test");
   url = net::AppendQueryParameter(url, "mtid", "5678");
   url = net::AppendQueryParameter(url, "mstk", "1234");
 
@@ -494,6 +532,7 @@ TEST_F(ContextualTasksUiTest, TaskDetailsUpdated) {
 
   GURL url(kAiPageUrl);
   const std::string thread_id = "5678";
+  url = net::AppendQueryParameter(url, "q", "test");
   url = net::AppendQueryParameter(url, "mtid", thread_id);
   const std::string turn_id = "1234";
   url = net::AppendQueryParameter(url, "mstk", turn_id);
@@ -517,6 +556,7 @@ TEST_F(ContextualTasksUiTest, TaskDetailsUpdated) {
 
   // Fake an updated turn
   GURL url2(kAiPageUrl);
+  url2 = net::AppendQueryParameter(url2, "q", "test");
   url2 = net::AppendQueryParameter(url2, "mtid", thread_id);
   const std::string turn_id2 = "2222";
   url2 = net::AppendQueryParameter(url2, "mstk", turn_id2);
@@ -558,6 +598,13 @@ TEST_F(ContextualTasksUiTest, DidStartNavigation_ZeroState) {
         test_case.expected_is_zero_state);
     EXPECT_CALL(delegate, OnZeroStateChange(test_case.expected_is_zero_state))
         .Times(1);
+
+    if (test_case.expected_is_zero_state) {
+      base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+      ContextualTask task(task_id);
+      EXPECT_CALL(*contextual_tasks_service_, CreateTask())
+          .WillOnce(Return(task));
+    }
 
     std::unique_ptr<content::MockNavigationHandle> nav_handle =
         CreateMockNavigationHandle(test_case.url);
