@@ -745,23 +745,22 @@ TEST_F(ComposeboxQueryControllerTest,
                 .compression_type(),
             kExpectedPdfCompressionType);
   // Check that the vsrid matches that for a pdf upload using the context_id
-  // migration flow - i.e. no sequence_id, image_sequence_id, or
-  // long_context_id.
+  // migration flow.
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 .sequence_id(),
-            0);
+            1);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 .image_sequence_id(),
-            0);
+            1);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 .long_context_id(),
-            0);
+            1);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
@@ -773,21 +772,21 @@ TEST_F(ComposeboxQueryControllerTest,
                 .request_context()
                 .request_id()
                 .sequence_id(),
-            0);
+            1);
   EXPECT_EQ(controller()
                 .last_sent_file_upload_request()
                 ->objects_request()
                 .request_context()
                 .request_id()
                 .image_sequence_id(),
-            0);
+            1);
   EXPECT_EQ(controller()
                 .last_sent_file_upload_request()
                 ->objects_request()
                 .request_context()
                 .request_id()
                 .long_context_id(),
-            0);
+            1);
   EXPECT_EQ(controller()
                 .last_sent_file_upload_request()
                 ->objects_request()
@@ -3306,23 +3305,22 @@ TEST_F(ComposeboxQueryControllerTest, ContextualTasksOverrides) {
   WaitForFileUpload(file_token, lens::MimeType::kPdf);
 
   // Check that the vsrid matches that for a pdf upload using the context_id
-  // migration flow - i.e. no sequence_id, image_sequence_id, or
-  // long_context_id.
+  // migration flow
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 .sequence_id(),
-            0);
+            1);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 .image_sequence_id(),
-            0);
+            1);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 .long_context_id(),
-            0);
+            1);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
@@ -3382,5 +3380,115 @@ TEST_F(ComposeboxQueryControllerTest, HandleInteractionResponse) {
   lens::LensOverlayInteractionResponse actual_response = response_future.Take();
   EXPECT_EQ(actual_response.text().content_language(), "en");
 }
+
+// This test hangs on iOS because ProcessDecodedImageAndContinue drops the
+// callback on iOS, preventing the file upload flow from completing.
+#if !BUILDFLAG(IS_IOS)
+TEST_F(ComposeboxQueryControllerTest,
+       InteractionQuerySubmittedWithContextIdMigrationEnabled) {
+  // Act: Create controller with context id migration enabled.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      contextual_tasks::kContextualTasks,
+      {{"ForceContextIdMigration", "true"}});
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_multi_context_input_flow=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_multi_context_viewport_images=*/true,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false,
+      /*enable_context_id_migration=*/true);
+
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow with viewport and pdf context inputs.
+  GURL page_url = GURL("https://www.test.com");
+  std::string page_title = "Test Page";
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kPdf;
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->page_url = page_url;
+  input_data->page_title = page_title;
+  input_data->pdf_current_page = 1;
+  int64_t context_id = 12345;
+  input_data->context_id = context_id;
+  input_data->context_input->push_back(
+      lens::ContextualInput(std::vector<uint8_t>(), lens::MimeType::kPdf));
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(100, 100);
+  bitmap.eraseColor(SK_ColorRED);  // Fill with a solid color
+  input_data->viewport_screenshot = bitmap;
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   image_options);
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Act: Create the destination URL for the query.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->search_url_type =
+      ComposeboxQueryController::SearchUrlType::kStandard;
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  search_url_request_info->lens_overlay_selection_type =
+      lens::LensOverlaySelectionType::REGION_SEARCH;
+  search_url_request_info->image_crop = lens::ImageCrop();
+  search_url_request_info->image_crop->mutable_zoomed_crop()
+      ->mutable_crop()
+      ->set_coordinate_type(lens::CoordinateType::NORMALIZED);
+  search_url_request_info->image_crop->mutable_zoomed_crop()->set_zoom(1);
+  search_url_request_info->image_crop->mutable_zoomed_crop()->set_parent_height(
+      25);
+  search_url_request_info->file_tokens.push_back(file_token);
+
+  search_url_request_info->client_logs = lens::LensOverlayClientLogs();
+
+  // Runloop for when the interaction request is sent.
+  base::RunLoop run_loop;
+  controller().AddEndpointFetcherCreatedCallback(
+      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL search_url = url_future.Take();
+
+  // Check that an interaction request was created.
+  run_loop.Run();
+  auto interaction_request = controller().last_sent_interaction_request();
+  ASSERT_TRUE(interaction_request.has_value());
+  EXPECT_TRUE(interaction_request->has_interaction_request());
+
+  // Check the request ID in the interaction request.
+  auto request_id =
+      interaction_request->interaction_request().request_context().request_id();
+  EXPECT_EQ(request_id.context_id(), context_id);
+  // With context id migration, sequence_id should be incremented from the
+  // previous request (1).
+  EXPECT_EQ(request_id.sequence_id(), 2);
+  EXPECT_EQ(request_id.media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE);
+
+  // Assert: Lens request id in the URL should match the interaction request id.
+  std::string vsrid_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(search_url, kRequestIdParameterKey,
+                                         &vsrid_value));
+  EXPECT_FALSE(vsrid_value.empty());
+  EXPECT_THAT(DecodeRequestIdFromVsrid(vsrid_value), EqualsProto(request_id));
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace contextual_search

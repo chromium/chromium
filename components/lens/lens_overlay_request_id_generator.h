@@ -71,7 +71,8 @@ class LensOverlayRequestIdGenerator {
   // request id proto.
   std::unique_ptr<lens::LensOverlayRequestId> GetNextRequestId(
       RequestIdUpdateMode update_mode,
-      lens::LensOverlayRequestId::MediaType media_type);
+      lens::LensOverlayRequestId::MediaType media_type,
+      std::optional<int64_t> context_id = std::nullopt);
 
   // Gets a request id using the migrated server flow using context_id.
   // The resulting request ID will not have an analytics ID, image sequence ID,
