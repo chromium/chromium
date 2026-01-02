@@ -58,6 +58,24 @@ public class ObservableAndThenTest {
     }
 
     @Test
+    public void testAndThenNotActivatedIfSecondThenFirst() {
+        Controller<String> aState = new Controller<>();
+        Controller<String> bState = new Controller<>();
+        List<String> result = new ArrayList<>();
+        var unused =
+                aState.andThen(bState)
+                        .subscribe(
+                                Observer.onOpen(
+                                        Both.adapt(
+                                                (String a, String b) -> {
+                                                    result.add("a=" + a + ", b=" + b);
+                                                })));
+        bState.set("b");
+        aState.set("a");
+        assertThat(result, emptyIterable());
+    }
+
+    @Test
     public void testAndThenActivated_plusBplusAminusBplusB() {
         Controller<String> aState = new Controller<>();
         Controller<String> bState = new Controller<>();
@@ -118,5 +136,25 @@ public class ObservableAndThenTest {
         dState.set(Unit.unit());
         aState.reset();
         assertThat(result, contains("A", "B", "C", "D"));
+    }
+
+    @Test
+    public void testAndThenIgnore() {
+        Controller<String> a = new Controller<>();
+        Controller<String> b = new Controller<>();
+        ReactiveRecorder recorder = ReactiveRecorder.record(a.andThenIgnore(b));
+        a.set("A");
+        b.set("B");
+        recorder.verify().opened("A").end();
+    }
+
+    @Test
+    public void testIgnoreAndThen() {
+        Controller<String> a = new Controller<>();
+        Controller<String> b = new Controller<>();
+        ReactiveRecorder recorder = ReactiveRecorder.record(a.ignoreAndThen(b));
+        a.set("A");
+        b.set("B");
+        recorder.verify().opened("B").end();
     }
 }

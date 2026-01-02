@@ -39,7 +39,29 @@ public interface Observable<T> {
      * have occurred, but those events may occur in any order.
      */
     default <U> Observable<Both<T, U>> and(Observable<U> other) {
-        return flatMap(t -> other.flatMap(u -> just(Both.of(t, u))));
+        return flatMap(t -> other.map(u -> Both.of(t, u)));
+    }
+
+    /**
+     * Like and(), but doesn't pass the data from `other` to the observer.
+     *
+     * <p>This is useful for pipelines where you want to know when `other` is activated, but don't
+     * care about its data. This is common when using {@code Observable<Unit>} or {@code
+     * Observable<?>} to represent toggles.
+     */
+    default <U> Observable<T> andIgnore(Observable<U> other) {
+        return and(other).map(Both::getFirst);
+    }
+
+    /**
+     * Like and(), but only the data from `other` is passed to the observer.
+     *
+     * <p>This is useful for pipelines where you want to know when `this` is activated, but don't
+     * care about its data. This is common when using {@code Observable<Unit>} or {@code
+     * Observable<?>} to represent toggles.
+     */
+    default <U> Observable<U> ignoreAnd(Observable<U> other) {
+        return and(other).map(Both::getSecond);
     }
 
     /**
@@ -81,6 +103,28 @@ public interface Observable<T> {
      */
     default <U> Observable<Both<T, U>> andThen(Observable<U> other) {
         return and(other.after());
+    }
+
+    /**
+     * Like andThen(), but doesn't pass the data from `other` to the observer.
+     *
+     * <p>This is useful for pipelines where you want to know when `other` is activated after an
+     * activation of `this`, but don't care about the data from `other`. This is common when using
+     * {@code Observable<Unit>} or {@code Observable<?>} to represent toggles.
+     */
+    default <U> Observable<T> andThenIgnore(Observable<U> other) {
+        return andThen(other).map(Both::getFirst);
+    }
+
+    /**
+     * Like andThen(), but only the data from `other` is passed to the observer.
+     *
+     * <p>This is useful for pipelines where you want to know when `this` is activated after an
+     * activation of `other`, but don't care about the data from `this`. This is common when using
+     * {@code Observable<Unit>} or {@code Observable<?>} to represent toggles.
+     */
+    default <U> Observable<U> ignoreAndThen(Observable<U> other) {
+        return andThen(other).map(Both::getSecond);
     }
 
     /**
@@ -315,7 +359,7 @@ public interface Observable<T> {
      * this Observable are thread-safe.
      */
     default Observable<T> delay(Scheduler scheduler, long ms) {
-        return flatMap(t -> alarm(scheduler, ms).map(x -> t));
+        return andThenIgnore(alarm(scheduler, ms));
     }
 
     /**
