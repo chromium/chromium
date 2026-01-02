@@ -284,8 +284,7 @@ constexpr CGFloat kSpringDamping = 0.85;
 
 #pragma mark - AssistantSheetConsumer
 
-- (void)setNavigationBarConfiguration:
-    (AssistantBarConfiguration*)configuration {
+- (void)setBarConfiguration:(AssistantBarConfiguration*)configuration {
   _barConfiguration = configuration;
   if (self.isViewLoaded) {
     _assistantSheetView.configuration = configuration;

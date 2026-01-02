@@ -13,7 +13,7 @@
 @protocol AssistantSheetConsumer <NSObject>
 
 // Updates the navigation configuration.
-- (void)setNavigationBarConfiguration:(AssistantBarConfiguration*)configuration;
+- (void)setBarConfiguration:(AssistantBarConfiguration*)configuration;
 
 // Sets the child view controller to be displayed in the sheet content area.
 - (void)setChildViewController:(UIViewController*)viewController;

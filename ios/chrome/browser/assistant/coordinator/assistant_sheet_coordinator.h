@@ -7,15 +7,15 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-// Modes for the Assistant Sheet.
+// Modes for the assistant sheet.
 typedef NS_ENUM(NSUInteger, AssistantSheetMode) {
-  // Mode for the AI Assistant.
+  // Mode for the AI assistant.
   AssistantSheetModeAI,
   // Mode for Gemini.
   AssistantSheetModeGemini,
 };
 
-// Coordinator for the Assistant Sheet.
+// Coordinator for the assistant sheet.
 @interface AssistantSheetCoordinator : ChromeCoordinator
 
 // The mode of the assistant sheet.

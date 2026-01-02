@@ -83,7 +83,7 @@ UIColor* SheetBackgroundColor() {
   _titleLabel.text = _title;
 }
 
-// Sets the navigation configuration and updates the UI.
+// Sets the bar configuration and updates the UI.
 - (void)setConfiguration:(AssistantBarConfiguration*)configuration {
   _configuration = configuration;
   [self setTitle:configuration.title];

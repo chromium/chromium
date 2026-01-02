@@ -24,6 +24,7 @@ source_set("coordinator") {
 
 source_set("child_coordinator") {
   sources = [
+    "assistant_commands.h",
     "assistant_sheet_child_coordinator.h",
     "assistant_sheet_child_coordinator.mm",
   ]

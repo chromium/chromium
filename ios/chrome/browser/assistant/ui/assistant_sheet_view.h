@@ -12,7 +12,7 @@
 // View that contains the visual elements of the Assistant Sheet.
 @interface AssistantSheetView : UIView
 
-// The navigation configuration.
+// The bar configuration.
 @property(nonatomic, strong) AssistantBarConfiguration* configuration;
 
 // The close button.

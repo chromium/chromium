@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/assistant/coordinator/assistant_sheet_coordinator.h"
 
 #import "ios/chrome/browser/assistant/aim/coordinator/assistant_aim_coordinator.h"
+#import "ios/chrome/browser/assistant/coordinator/assistant_commands.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_sheet_child_coordinator.h"
 #import "ios/chrome/browser/assistant/gemini/coordinator/assistant_gemini_coordinator.h"
 #import "ios/chrome/browser/assistant/ui/assistant_bar_configuration.h"
@@ -17,7 +18,8 @@
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 
-@interface AssistantSheetCoordinator () <AssistantSheetViewControllerDelegate>
+@interface AssistantSheetCoordinator () <AssistantCommands,
+                                         AssistantSheetViewControllerDelegate>
 @end
 
 @implementation AssistantSheetCoordinator {
@@ -34,12 +36,12 @@
   _viewController = [[AssistantSheetViewController alloc] init];
   _viewController.delegate = self;
 
-  // Resolve Layout Guide.
+  // Resolve layout guide.
   GuideName* guideName = kAppBarGuide;
   LayoutGuideCenter* center = LayoutGuideCenterForBrowser(nil);
   _viewController.anchorView = [center referencedViewUnderName:guideName];
 
-  // Initialize Child Coordinator based on Mode.
+  // Initialize child coordinator based on mode.
   switch (self.mode) {
     case AssistantSheetModeAI:
       _childCoordinator = [[AssistantAIMCoordinator alloc]
@@ -53,11 +55,12 @@
       break;
   }
 
+  _childCoordinator.handler = self;
   [_childCoordinator start];
+
   [_viewController setChildViewController:_childCoordinator.viewController];
   // Configure the assistant bar using the child's configuration.
-  [_viewController
-      setNavigationBarConfiguration:_childCoordinator.barConfiguration];
+  [_viewController setBarConfiguration:_childCoordinator.barConfiguration];
 
   // Add the view controller as a child view controller.
   [self.baseViewController addChildViewController:_viewController];
@@ -68,7 +71,7 @@
   // Force layout to determine optimal size before animating.
   [self.baseViewController.view layoutIfNeeded];
 
-  // Animation: Expand and Fade In.
+  // Animation: Expand and fade in.
   _animator = [[AssistantSheetAnimator alloc] init];
   [_animator animatePresentation:_viewController completion:nil];
 }
@@ -85,6 +88,12 @@
 
   _viewController = nil;
   _animator = nil;
+}
+
+#pragma mark - AssistantCommands
+
+- (void)updateBarConfiguration:(AssistantBarConfiguration*)configuration {
+  [_viewController setBarConfiguration:configuration];
 }
 
 #pragma mark - AssistantSheetViewControllerDelegate

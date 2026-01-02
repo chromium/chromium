@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/assistant/aim/coordinator/assistant_aim_coordinator.h"
 
 #import "ios/chrome/browser/assistant/aim/ui/assistant_aim_view_controller.h"
+#import "ios/chrome/browser/assistant/coordinator/assistant_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_sheet_consumer.h"
 
 @implementation AssistantAIMCoordinator
