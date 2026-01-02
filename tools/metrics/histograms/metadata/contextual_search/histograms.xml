@@ -171,7 +171,7 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
-<histogram name="ContextualSearch.Query.Modality.{ContextualSearchSource}"
+<histogram name="ContextualSearch.Query.Modality.V2.{ContextualSearchSource}"
     enum="ContextualSearchMultimodalState" expires_after="2026-04-05">
   <owner>hujaosonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
