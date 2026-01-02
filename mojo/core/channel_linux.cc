@@ -568,31 +568,37 @@ ChannelLinux::ChannelLinux(
 ChannelLinux::~ChannelLinux() = default;
 
 void ChannelLinux::Write(MessagePtr message) {
-  if (shared_mem_writer_ && !message->has_handles() && !reject_writes_) {
+  bool needs_fallback = true;
+  {
     base::AutoLock lock(memfd_write_lock_);
-    SharedBuffer::Error write_result =
-        write_buffer_->TryWrite(message->data(), message->data_num_bytes());
-    if (write_result != SharedBuffer::Error::kGeneralError) {
-      if (write_result != SharedBuffer::Error::kControlCorruption) {
-        // Notify about successful write.
-        write_notifier_->Notify();
-      } else {
-        // On control corruption stop using shared memory for writes in the
-        // future.
-        reject_writes_ = true;
+    if (shared_mem_writer_ && !message->has_handles() && !reject_writes_) {
+      SharedBuffer::Error write_result =
+          write_buffer_->TryWrite(message->data(), message->data_num_bytes());
+      if (write_result != SharedBuffer::Error::kGeneralError) {
+        needs_fallback = false;
+        if (write_result != SharedBuffer::Error::kControlCorruption) {
+          // Notify about successful write.
+          write_notifier_->Notify();
+        } else {
+          // On control corruption stop using shared memory for writes in the
+          // future.
+          reject_writes_ = true;
 
-        // Theoretically we could fall back to only using PosixChannel::Write
-        // but if this situation happens it's likely something else is going
-        // horribly wrong.
-        io_task_runner_->PostTask(
-            FROM_HERE, base::BindOnce(&ChannelLinux::OnWriteError, this,
-                                      Channel::Error::kReceivedMalformedData));
+          // Theoretically we could fall back to only using PosixChannel::Write
+          // but if this situation happens it's likely something else is going
+          // horribly wrong.
+          io_task_runner_->PostTask(
+              FROM_HERE,
+              base::BindOnce(&ChannelLinux::OnWriteError, this,
+                             Channel::Error::kReceivedMalformedData));
+        }
       }
-      return;
     }
   }
-  // Fall back to ChannelPosix outside of the memfd_write_lock_.
-  ChannelPosix::Write(std::move(message));
+  if (needs_fallback) {
+    // Fall back to ChannelPosix outside of the memfd_write_lock_.
+    ChannelPosix::Write(std::move(message));
+  }
 }
 
 void ChannelLinux::OfferSharedMemUpgrade() {
@@ -782,7 +788,10 @@ void ChannelLinux::SharedMemReadReady() {
 }
 
 void ChannelLinux::OnWriteError(Error error) {
-  reject_writes_ = true;
+  {
+    base::AutoLock lock(memfd_write_lock_);
+    reject_writes_ = true;
+  }
   ChannelPosix::OnWriteError(error);
 }
 
@@ -808,6 +817,7 @@ void ChannelLinux::ShutDownOnIOThread() {
     base::AutoLock lock(memfd_write_lock_);
     reject_writes_ = true;
     read_notifier_.reset();
+    write_buffer_.reset();
     write_notifier_.reset();
   }
 
@@ -819,11 +829,11 @@ void ChannelLinux::StartOnIOThread() {
 }
 
 std::optional<std::vector<PlatformHandle>> ChannelLinux::SetupMemFdForWrite() {
+  base::AutoLock lock(memfd_write_lock_);
   if (reject_writes_) {
     return std::nullopt;
   }
 
-  base::AutoLock lock(memfd_write_lock_);
   if (write_buffer_ || write_notifier_) {
     LOG(ERROR) << "Upgrade attempted on an already upgraded channel";
     return std::nullopt;
