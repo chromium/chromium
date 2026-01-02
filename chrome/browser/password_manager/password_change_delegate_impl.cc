@@ -314,10 +314,10 @@ PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() {
   }
   switch (current_state_) {
     case State::kNoState:
-    case State::kOfferingPasswordChange:
-    case State::kWaitingForAgreement:
     case State::kPasswordSuccessfullyChanged:
       break;
+    case State::kOfferingPasswordChange:
+    case State::kWaitingForAgreement:
     case State::kWaitingForChangePasswordForm:
     case State::kChangePasswordFormNotFound:
     case State::kChangingPassword:
