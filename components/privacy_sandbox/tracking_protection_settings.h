@@ -9,15 +9,10 @@
 
 class PrefService;
 
-namespace syncer {
-class SyncService;
-}  // namespace syncer
-
 namespace privacy_sandbox {
 
 // Attempts to set prefs in order to roll back Mode B.
-void MaybeSetRollbackPrefsModeB(syncer::SyncService* sync_service,
-                                PrefService* prefs);
+void MaybeSetRollbackPrefsModeB(PrefService* prefs);
 
 }  // namespace privacy_sandbox
 

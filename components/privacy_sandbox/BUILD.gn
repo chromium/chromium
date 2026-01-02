@@ -50,8 +50,6 @@ source_set("tracking_protection_settings") {
     "//components/content_settings/core/common",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/sync/base",
-    "//components/sync/service",
   ]
 
   public_deps = [ "//base" ]
@@ -162,7 +160,6 @@ source_set("unit_tests") {
     "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/common",
     "//components/prefs:test_support",
-    "//components/sync:test_support",
     "//components/sync_preferences:test_support",
     "//testing/gtest",
   ]

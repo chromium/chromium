@@ -10,11 +10,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -36,9 +34,6 @@ class RollBackModeBInfoBarControllerBrowserTest : public InProcessBrowserTest {
            infobar_manager->infobars()[0]->GetIdentifier() ==
                infobars::InfoBarDelegate::ROLL_BACK_MODE_B_INFOBAR_DELEGATE;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_{privacy_sandbox::kRollBackModeB};
 };
 
 IN_PROC_BROWSER_TEST_F(RollBackModeBInfoBarControllerBrowserTest,

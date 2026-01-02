@@ -11,26 +11,12 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
-#include "components/sync/base/user_selectable_type.h"
-#include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_user_settings.h"
 
 namespace privacy_sandbox {
 
-void MaybeSetRollbackPrefsModeB(syncer::SyncService* sync_service,
-                                PrefService* prefs) {
-  // Only set prefs if:
-  // 1. User is in Mode B and rollback feature is enabled.
-  if (!prefs->GetBoolean(prefs::kTrackingProtection3pcdEnabled) ||
-      !base::FeatureList::IsEnabled(kRollBackModeB)) {
-    return;
-  }
-  // 2. We are not waiting for pref sync updates.
-  if (sync_service && sync_service->IsSyncFeatureEnabled() &&
-      sync_service->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kPreferences) &&
-      sync_service->GetDownloadStatusFor(syncer::DataType::PREFERENCES) ==
-          syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates) {
+void MaybeSetRollbackPrefsModeB(PrefService* prefs) {
+  // Only set prefs if user is still in Mode B.
+  if (!prefs->GetBoolean(prefs::kTrackingProtection3pcdEnabled)) {
     return;
   }
   const int kBlockThirdParty =
@@ -38,11 +24,12 @@ void MaybeSetRollbackPrefsModeB(syncer::SyncService* sync_service,
   bool allowed_3pcs =
       !prefs->GetBoolean(prefs::kBlockAll3pcToggleEnabled) &&
       prefs->GetInteger(prefs::kCookieControlsMode) != kBlockThirdParty;
-  if (!allowed_3pcs) {
+  if (allowed_3pcs) {
+    // If 3PCs are allowed then we should show the notice.
+    prefs->SetBoolean(prefs::kShowRollbackUiModeB, allowed_3pcs);
+  } else {
     prefs->SetInteger(prefs::kCookieControlsMode, kBlockThirdParty);
   }
-  // If 3PCs are allowed then we should show the notice.
-  prefs->SetBoolean(prefs::kShowRollbackUiModeB, allowed_3pcs);
   base::UmaHistogramBoolean("Privacy.3PCD.RollbackNotice.ShouldShow",
                             allowed_3pcs);
   prefs->SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);

@@ -14,7 +14,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
-#include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,50 +49,31 @@ class MaybeSetRollbackPrefsModeBTest : public testing::Test {
         "Privacy.3PCD.RollbackNotice.ShouldShow", show_rollback_ui, 1);
   }
 
-  void SetSyncStatus(syncer::SyncService::DataTypeDownloadStatus status) {
-    test_sync_service_.SetDownloadStatusFor({syncer::DataType::PREFERENCES},
-                                            status);
-  }
-
-  syncer::TestSyncService* test_sync_service() { return &test_sync_service_; }
-
   sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
 
  private:
   sync_preferences::TestingPrefServiceSyncable prefs_;
-  syncer::TestSyncService test_sync_service_;
   base::HistogramTester histogram_tester_;
 };
 
 TEST_F(MaybeSetRollbackPrefsModeBTest, ShowsNoticeWhen3pcsAllowed) {
-  SetSyncStatus(syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
   Initialize3pcdState(content_settings::CookieControlsMode::kOff, false);
-  MaybeSetRollbackPrefsModeB(test_sync_service(), prefs());
+  MaybeSetRollbackPrefsModeB(prefs());
   VerifyRollbackState(content_settings::CookieControlsMode::kOff, true);
-}
-
-TEST_F(MaybeSetRollbackPrefsModeBTest, DoesNotOffboardWhenWaitingForPrefSync) {
-  SetSyncStatus(
-      syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates);
-  Initialize3pcdState(content_settings::CookieControlsMode::kOff, false);
-  MaybeSetRollbackPrefsModeB(test_sync_service(), prefs());
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kTrackingProtection3pcdEnabled));
 }
 
 TEST_F(MaybeSetRollbackPrefsModeBTest,
        Blocks3pcsAndDoesNotShowNoticeWhen3pcsBlockedIn3pcd) {
-  SetSyncStatus(syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
   Initialize3pcdState(content_settings::CookieControlsMode::kOff, true);
-  MaybeSetRollbackPrefsModeB(test_sync_service(), prefs());
+  MaybeSetRollbackPrefsModeB(prefs());
   VerifyRollbackState(content_settings::CookieControlsMode::kBlockThirdParty,
                       false);
 }
 
 TEST_F(MaybeSetRollbackPrefsModeBTest, DoesNotShowNoticeWhen3pcsBlocked) {
-  SetSyncStatus(syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
   Initialize3pcdState(content_settings::CookieControlsMode::kBlockThirdParty,
                       false);
-  MaybeSetRollbackPrefsModeB(test_sync_service(), prefs());
+  MaybeSetRollbackPrefsModeB(prefs());
   VerifyRollbackState(content_settings::CookieControlsMode::kBlockThirdParty,
                       false);
 }

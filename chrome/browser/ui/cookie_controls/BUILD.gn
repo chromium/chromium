@@ -17,7 +17,6 @@ source_set("cookie_controls") {
       "//base",
       "//chrome/browser/infobars",
       "//chrome/browser/privacy_sandbox:roll_back_3pcd_notice_action",
-      "//chrome/browser/sync",
       "//components/privacy_sandbox:tracking_protection_settings",
       "//content/public/browser",
     ]
@@ -36,6 +35,7 @@ source_set("impl") {
     deps += [
       ":cookie_controls",
       "//base",
+      "//chrome/browser/profiles:profile",
       "//chrome/common",
       "//components/infobars/content",
       "//components/privacy_sandbox:privacy_sandbox_prefs",

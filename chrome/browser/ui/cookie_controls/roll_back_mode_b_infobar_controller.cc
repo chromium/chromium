@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/cookie_controls/roll_back_mode_b_infobar_controller.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/cookie_controls/roll_back_mode_b_infobar_delegate.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -31,8 +30,7 @@ void RollBackModeBInfoBarController::DidStartNavigation(
   // state here creates a startup race condition with local pref resolution).
   if (profile && navigation_handle->IsInPrimaryMainFrame() &&
       !profile->GetPrefs()->GetBoolean(prefs::kBlockAll3pcToggleEnabled)) {
-    privacy_sandbox::MaybeSetRollbackPrefsModeB(
-        SyncServiceFactory::GetForProfile(profile), profile->GetPrefs());
+    privacy_sandbox::MaybeSetRollbackPrefsModeB(profile->GetPrefs());
   }
 }
 
@@ -47,8 +45,7 @@ void RollBackModeBInfoBarController::DidFinishNavigation(
   // material difference between doing this here and on DidStartNavigation, as
   // the user will continue having 3PCs blocked, and this avoids the race.
   if (profile->GetPrefs()->GetBoolean(prefs::kBlockAll3pcToggleEnabled)) {
-    privacy_sandbox::MaybeSetRollbackPrefsModeB(
-        SyncServiceFactory::GetForProfile(profile), profile->GetPrefs());
+    privacy_sandbox::MaybeSetRollbackPrefsModeB(profile->GetPrefs());
     return;
   }
   if (!navigation_handle->HasCommitted() ||
