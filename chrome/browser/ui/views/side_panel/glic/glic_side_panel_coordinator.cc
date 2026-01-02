@@ -67,6 +67,14 @@ GlicSidePanelCoordinator* GlicSidePanelCoordinator::GetForTab(
   return tab->GetTabFeatures()->glic_side_panel_coordinator();
 }
 
+// static
+bool GlicSidePanelCoordinator::IsGlicSidePanelActive(tabs::TabInterface* tab) {
+  if (auto* coordinator = GetForTab(tab)) {
+    return coordinator->IsGlicSidePanelActive();
+  }
+  return false;
+}
+
 void GlicSidePanelCoordinator::CreateAndRegisterEntry() {
   if (side_panel_registry_->GetEntryForKey(
           SidePanelEntry::Key(SidePanelEntry::Id::kGlic))) {
@@ -159,6 +167,24 @@ void GlicSidePanelCoordinator::OnGlicEnabledChanged() {
           tab_->GetBrowserWindowInterface()->GetProfile())) {
     CreateAndRegisterEntry();
   }
+}
+
+bool GlicSidePanelCoordinator::IsGlicSidePanelActive() {
+  if (!side_panel_registry_) {
+    return false;
+  }
+  auto* glic_side_panel_entry = side_panel_registry_->GetEntryForKey(
+      SidePanelEntryKey(SidePanelEntry::Id::kGlic));
+  if (!glic_side_panel_entry) {
+    return false;
+  }
+  const auto& active_entry =
+      side_panel_registry_->GetActiveEntryFor(glic_side_panel_entry->type());
+  if (!active_entry.has_value() ||
+      active_entry.value() != glic_side_panel_entry) {
+    return false;
+  }
+  return true;
 }
 
 std::unique_ptr<views::View> GlicSidePanelCoordinator::CreateView(

@@ -1114,7 +1114,7 @@ void GlicInstanceImpl::OnWebClientCleared() {
   NotifyPanelWillOpen(mojom::InvocationSource::kDefaultValue);
 }
 
-void GlicInstanceImpl::CloseAllEmbeddersForTesting() {
+void GlicInstanceImpl::CloseAllEmbedders() {
   // Copy the keys before iterating because Close() might modify `embedders_`.
   std::vector<EmbedderKey> keys;
   for (auto& [key, entry] : embedders_) {
@@ -1123,6 +1123,10 @@ void GlicInstanceImpl::CloseAllEmbeddersForTesting() {
   for (const auto& key : keys) {
     Close(key);
   }
+}
+
+void GlicInstanceImpl::CloseAllEmbeddersForTesting() {
+  CloseAllEmbedders();
 }
 
 views::View* GlicInstanceImpl::GetActiveEmbedderGlicViewForTesting() {

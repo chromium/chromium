@@ -141,6 +141,7 @@ class GlicInstanceImpl : public GlicInstance,
   void UnbindEmbedder(EmbedderKey key);
   GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);
   bool ContextAccessIndicatorEnabled();
+  void CloseAllEmbedders();
 
   // GlicInstance:
   Host& host() override;

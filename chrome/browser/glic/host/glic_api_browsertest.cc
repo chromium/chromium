@@ -71,6 +71,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -168,6 +169,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestWithWebActuationSettingEnabled",
       "GlicApiTestWithGeminiActOnWebPolicy",
       "GlicApiTestHibernateAllOnMemoryPressure",
+      "GlicApiTestHibernateAllAggressiveOnMemoryPressure",
       "GlicApiTestHibernateOnMemoryUsage",
   };
 }
@@ -596,7 +598,19 @@ class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTestWithOneTab {
 class GlicApiTestHibernateAllOnMemoryPressure : public GlicApiTest {
  public:
   GlicApiTestHibernateAllOnMemoryPressure() {
-    feature_list_.InitAndEnableFeature(kGlicHibernateAllOnMemoryPressure);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        kGlicHibernateAllOnMemoryPressure, {{"aggressive", "false"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class GlicApiTestHibernateAllAggressiveOnMemoryPressure : public GlicApiTest {
+ public:
+  GlicApiTestHibernateAllAggressiveOnMemoryPressure() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        kGlicHibernateAllOnMemoryPressure, {{"aggressive", "true"}});
   }
 
  private:
@@ -3116,6 +3130,42 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestHibernateAllOnMemoryPressure,
   ASSERT_FALSE(instance1->IsHibernated());
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTestHibernateAllAggressiveOnMemoryPressure,
+                       testHibernateAllAggressiveOnMemoryPressure) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Only supported in multi-instance mode.";
+  }
+
+  GetInstanceCoordinator().SetWarmingEnabledForTesting(true);
+
+  // Open instance 1, making it active and showing.
+  GlicInstanceImpl* instance1 = OpenGlicInNewTabAndGetInstance(0, kFirstTab);
+  ASSERT_TRUE(instance1->IsShowing());
+
+  // There is a warmed instance initially.
+  ASSERT_TRUE(GetInstanceCoordinator().HasWarmedInstanceForTesting());
+
+  WebUIStateListener listener(&instance1->host());
+
+  // Simulate memory pressure.
+  base::MemoryPressureListener::NotifyMemoryPressure(
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+
+  // Verify the warmed instance is reset.
+  ASSERT_FALSE(GetInstanceCoordinator().HasWarmedInstanceForTesting());
+
+  // In aggressive mode, even the showing instance should be hibernated and
+  // closed.
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetTabAtIndex(0);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return instance1->IsHibernated() &&
+           !GlicSidePanelCoordinator::IsGlicSidePanelActive(tab);
+  }));
+
+  // The instance should also be closed (not showing).
+  ASSERT_FALSE(instance1->IsShowing());
+}
+
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelWillOpenBeforeClientReady) {
   if (!GetParam().multi_instance) {
     GTEST_SKIP() << "Only supported in multi-instance mode.";
@@ -3502,6 +3552,10 @@ INSTANTIATE_TEST_SUITE_P(,
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestHibernateAllOnMemoryPressure,
+                         DefaultTestParamSet(),
+                         WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiTestHibernateAllAggressiveOnMemoryPressure,
                          DefaultTestParamSet(),
                          WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,

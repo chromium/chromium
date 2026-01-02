@@ -38,6 +38,11 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
                            SidePanelRegistry* side_panel_registry);
   ~GlicSidePanelCoordinator() override;
 
+  // Returns true if the Glic side panel is the currently active side panel
+  // entry for `tab`. This means it will be shown if `tab` is foregrounded, or
+  // is currently visible if `tab` is already foregrounded.
+  static bool IsGlicSidePanelActive(tabs::TabInterface* tab);
+
   static GlicSidePanelCoordinator* GetForTab(tabs::TabInterface* tab);
 
   // Create and register the Glic side panel entry.
@@ -80,6 +85,10 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
 
   // Called when the Glic enabled status changes for `profile_`.
   void OnGlicEnabledChanged();
+
+  // Returns true if the Glic side panel is the currently active side panel
+  // entry.
+  bool IsGlicSidePanelActive();
 
  protected:
   // SidePanelEntryObserver:
