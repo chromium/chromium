@@ -11,15 +11,12 @@
 #include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
-#include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
-#include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -32,16 +29,12 @@ namespace webauthn {
 static constexpr const char kPasskeyReadinessHistogram[] =
     "WebAuthentication.PasskeyReadiness";
 
-// TODO(crbug.com/456454164): Don't pass the profile directly to the
-// constructor.
-PasskeyUnlockManager::PasskeyUnlockManager(Profile* profile) {
-  EnclaveManagerInterface* enclave_manager =
-      EnclaveManagerFactory::GetForProfile(profile);
+PasskeyUnlockManager::PasskeyUnlockManager(
+    EnclaveManagerInterface* enclave_manager,
+    PasskeyModel* passkey_model,
+    syncer::SyncService* sync_service) {
   enclave_manager_observation_.Observe(enclave_manager);
-  passkey_model_observation_.Observe(
-      PasskeyModelFactory::GetForProfile(profile));
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile);
+  passkey_model_observation_.Observe(passkey_model);
   if (sync_service) {
     sync_service_observation_.Observe(sync_service);
   }

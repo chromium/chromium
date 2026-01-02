@@ -10,16 +10,11 @@
 #include "base/rand_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
-#include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
 #include "chrome/browser/webauthn/mock_enclave_manager.h"
-#include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/testing_profile.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/webauthn/core/browser/passkey_model.h"
@@ -68,29 +63,16 @@ class PasskeyUnlockManagerTest : public testing::Test {
       EnclaveManagerStatus enclave_manager_status,
       PasskeyModelStatus passkey_model_status,
       GpmPinStatus gpm_pin_status) {
-    TestingProfile::Builder builder;
-    builder.AddTestingFactory(
-        PasskeyModelFactory::GetInstance(),
-        base::BindRepeating(&PasskeyUnlockManagerTest::CreateMockPasskeyModel,
-                            // `base::Unretained` should be safe because the
-                            // test fixture outlives the profile.
-                            base::Unretained(this),
-                            passkey_model_status == kPasskeyModelReady));
-    builder.AddTestingFactory(
-        SyncServiceFactory::GetInstance(),
-        base::BindRepeating(&PasskeyUnlockManagerTest::CreateTestSyncService,
-                            // `base::Unretained` should be safe because the
-                            // test fixture outlives the profile.
-                            base::Unretained(this)));
-    builder.AddTestingFactory(
-        EnclaveManagerFactory::GetInstance(),
-        base::BindRepeating(&PasskeyUnlockManagerTest::CreateMockEnclaveManager,
-                            // `base::Unretained` should be safe because the
-                            // test fixture outlives the profile.
-                            base::Unretained(this), true,
-                            enclave_manager_status == kEnclaveReady,
-                            gpm_pin_status));
-    profile_ = builder.Build();
+    test_enclave_manager_ = CreateMockEnclaveManager(
+        /*is_enclave_manager_loaded=*/true,
+        /*is_enclave_manager_ready=*/enclave_manager_status == kEnclaveReady,
+        gpm_pin_status);
+    test_passkey_model_ =
+        CreateMockPasskeyModel(passkey_model_status == kPasskeyModelReady);
+    test_sync_service_ = CreateTestSyncService();
+    passkey_unlock_manager_ = std::make_unique<PasskeyUnlockManager>(
+        test_enclave_manager_.get(), test_passkey_model_.get(),
+        test_sync_service_.get());
 
     CoreAccountInfo account_info;
     account_info.email = kTestAccount;
@@ -103,11 +85,10 @@ class PasskeyUnlockManagerTest : public testing::Test {
         /*types=*/{});
   }
 
-  std::unique_ptr<KeyedService> CreateMockEnclaveManager(
+  std::unique_ptr<EnclaveManagerInterface> CreateMockEnclaveManager(
       bool is_enclave_manager_loaded,
       bool is_enclave_manager_ready,
-      GpmPinStatus gpm_pin_status,
-      content::BrowserContext* ctx) {
+      GpmPinStatus gpm_pin_status) {
     std::unique_ptr<MockEnclaveManager> enclave_manager_mock =
         std::make_unique<MockEnclaveManager>();
     ON_CALL(*enclave_manager_mock, IsLoaded())
@@ -124,38 +105,30 @@ class PasskeyUnlockManagerTest : public testing::Test {
     return enclave_manager_mock;
   }
 
-  std::unique_ptr<KeyedService> CreateMockPasskeyModel(
-      bool is_passkey_model_ready,
-      content::BrowserContext* ctx) {
+  std::unique_ptr<PasskeyModel> CreateMockPasskeyModel(
+      bool is_passkey_model_ready) {
     std::unique_ptr<webauthn::TestPasskeyModel> test_passkey_model =
         std::make_unique<webauthn::TestPasskeyModel>();
     test_passkey_model->SetReady(is_passkey_model_ready);
     return test_passkey_model;
   }
 
-  std::unique_ptr<KeyedService> CreateTestSyncService(
-      content::BrowserContext* ctx) {
+  std::unique_ptr<syncer::SyncService> CreateTestSyncService() {
     return std::make_unique<syncer::TestSyncService>();
   }
 
-  void TearDown() override {
-    profile_.reset();
-  }
+  void TearDown() override { passkey_unlock_manager_.reset(); }
 
   PasskeyUnlockManager* passkey_unlock_manager() {
-    return PasskeyUnlockManagerFactory::GetForProfile(profile());
+    return passkey_unlock_manager_.get();
   }
 
-  TestingProfile* profile() { return profile_.get(); }
-
   TestPasskeyModel* passkey_model() {
-    return static_cast<TestPasskeyModel*>(
-        PasskeyModelFactory::GetForProfile(profile()));
+    return static_cast<TestPasskeyModel*>(test_passkey_model_.get());
   }
 
   syncer::TestSyncService* test_sync_service() {
-    return static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetForProfile(profile()));
+    return static_cast<syncer::TestSyncService*>(test_sync_service_.get());
   }
 
   void DisableUVKeySupport() {
@@ -178,7 +151,10 @@ class PasskeyUnlockManagerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_{device::kPasskeyUnlockManager};
   std::map<std::string, std::string> feature_params_;
-  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<EnclaveManagerInterface> test_enclave_manager_;
+  std::unique_ptr<PasskeyModel> test_passkey_model_;
+  std::unique_ptr<syncer::SyncService> test_sync_service_;
+  std::unique_ptr<PasskeyUnlockManager> passkey_unlock_manager_;
   std::variant<crypto::ScopedFakeUserVerifyingKeyProvider,
                crypto::ScopedNullUserVerifyingKeyProvider,
                crypto::ScopedFailingUserVerifyingKeyProvider>
