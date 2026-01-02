@@ -93,6 +93,8 @@ chromium-metrics-reviews@google.com.
   <int value="32" label="FRE promo next button"/>
   <int value="33" label="Reader mode activated"/>
   <int value="34" label="Tab backgrounded while initializing"/>
+  <int value="35" label="Contextual Tasks composebox query submitted"/>
+  <int value="36" label="Contextual Tasks composebox context cleared"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_dismissal_source.h:LensOverlayDismissalSource) -->
@@ -132,6 +134,7 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Content area video context menu"/>
   <int value="16" label="NTP Contextual Compose Flow"/>
   <int value="17" label="Omnibox Contextual Compose Flow"/>
+  <int value="18" label="Contextual Tasks composebox"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_invocation_source.h:LensOverlayInvocationSource) -->

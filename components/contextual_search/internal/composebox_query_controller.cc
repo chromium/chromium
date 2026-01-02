@@ -584,6 +584,12 @@ void ComposeboxQueryController::StartFileUploadFlow(
   DCHECK(inserted);
   FileInfo& current_file_info = *it->second;
 
+  if (contextual_input_data->context_input.has_value() &&
+      !contextual_input_data->context_input->empty()) {
+    current_file_info.file_content =
+        (*contextual_input_data->context_input)[0].bytes_;
+  }
+
   bool has_viewport_bytes =
       enable_viewport_images_ &&
       contextual_input_data->viewport_screenshot_bytes.has_value();

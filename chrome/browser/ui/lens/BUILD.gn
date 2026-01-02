@@ -260,6 +260,7 @@ source_set("browser_tests") {
     "lens_composebox_controller_browsertest.cc",
     "lens_overlay_controller_browsertest.cc",
     "lens_overlay_live_test.cc",
+    "lens_search_controller_contextual_tasks_browsertest.cc",
     "lens_search_feature_flag_utils_browsertest.cc",
   ]
   deps = [
@@ -292,6 +293,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support_ui",
     "//components/base32",
     "//components/constrained_window",
+    "//components/contextual_tasks/public:feature_list",
     "//components/feature_engagement/public",
     "//components/lens:enterprise_policy",
     "//components/lens:features",

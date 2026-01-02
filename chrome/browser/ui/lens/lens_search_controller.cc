@@ -192,7 +192,7 @@ void LensSearchController::OpenLensOverlay(
   // The overlay can only be reinvoked if the feature is enabled.
   const bool allow_reinvoking_overlay =
       lens::features::GetEnableLensButtonInSearchbox() || IsOff();
-  // If the eligibility checks fail, do not procced with opening any UI.
+  // If the eligibility checks fail, do not proceed with opening any UI.
   if (!allow_reinvoking_overlay ||
       !RunLensEligibilityChecks(
           invocation_source,
@@ -512,6 +512,7 @@ bool LensSearchController::IsHandshakeComplete() {
   return suggest_inputs.has_value() &&
          AreLensSuggestInputsReady(*suggest_inputs);
 }
+
 bool LensSearchController::should_route_to_contextual_tasks() const {
   return should_route_to_contextual_tasks_;
 }
@@ -538,7 +539,12 @@ std::optional<std::string> LensSearchController::GetPageTitle() {
 }
 
 void LensSearchController::ClearVisualSelectionThumbnail() {
-  lens_searchbox_controller_->SetSearchboxThumbnail("");
+  lens_searchbox_controller_->SetSearchboxThumbnail(std::string());
+}
+
+void LensSearchController::SetThumbnailCreatedCallback(
+    base::RepeatingCallback<void(const std::string&)> callback) {
+  thumbnail_created_callback_ = std::move(callback);
 }
 
 base::WeakPtr<LensSearchController> LensSearchController::GetWeakPtr() {
@@ -796,6 +802,9 @@ void LensSearchController::OnThumbnailProcessed(
       lens_overlay_controller_->use_aim_for_visual_search()) {
     lens_composebox_controller_->AddVisualSelectionContext(thumbnail_uri);
   }
+  if (thumbnail_created_callback_) {
+    thumbnail_created_callback_.Run(thumbnail_uri);
+  }
 }
 
 void LensSearchController::CloseLensPart2(
@@ -840,6 +849,13 @@ void LensSearchController::OnOverlayHidden(
       DCHECK(dismissal_source.has_value());
       return;
     }
+    CloseLensPart2(dismissal_source.value());
+    return;
+  }
+
+  if (should_route_to_contextual_tasks() &&
+      dismissal_source ==
+          lens::LensOverlayDismissalSource::kOverlayCloseButton) {
     CloseLensPart2(dismissal_source.value());
     return;
   }

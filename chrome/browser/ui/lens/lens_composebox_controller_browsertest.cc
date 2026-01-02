@@ -712,7 +712,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
             lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
 
   // Clear the region selection.
-  overlay_controller->ClearRegionSelectionForTesting();
+  overlay_controller->ClearRegionSelection();
   ASSERT_FALSE(overlay_controller->HasRegionSelection());
 
   // Send another query.
@@ -1016,7 +1016,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   EXPECT_NEAR(zoomed_crop.crop().height(), 0.8f, tolerance);
 
   // Clear the region selection.
-  overlay_controller->ClearRegionSelectionForTesting();
+  overlay_controller->ClearRegionSelection();
 
   // Send another query.
   GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(

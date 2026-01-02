@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
@@ -20,6 +21,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
@@ -32,6 +35,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/utils.h"
 #include "components/lens/contextual_input.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/url_deduplication/url_deduplication_helper.h"
@@ -207,6 +211,10 @@ void ContextualTasksComposeboxHandler::SubmitQuery(
     bool meta_key,
     bool shift_key) {
   CreateAndSendQueryMessage(query_text);
+  // TODO(crbug.com/469535685): This should reflect the response from the
+  // webview when PostMessageToWebview provides one.
+  CloseLensOverlay(
+      lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted);
 }
 
 void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
@@ -447,8 +455,8 @@ void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
     std::string query) {
   // Create a client to aim message and send it to the page.
   if (auto* session_handle = GetContextualSessionHandle()) {
-    // If there is an auto-added tab, the user sending the query means we should
-    // upload it.
+    // If there is an auto-added tab, the user sending the query means the
+    // system should upload it.
     UploadSnapshotTabContextIfPresent();
 
     // Create a client to aim message and send it to the page.
@@ -468,6 +476,7 @@ void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
         tool_mode ==
             omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN_UPLOAD;
 
+    create_client_to_aim_request_info->file_tokens = GetUploadedContextTokens();
     lens::ClientToAimMessage client_to_page_message =
         session_handle->CreateClientToAimRequest(
             std::move(create_client_to_aim_request_info));
@@ -592,6 +601,63 @@ void ContextualTasksComposeboxHandler::AddTabContext(
                                             std::move(callback));
 }
 
+void ContextualTasksComposeboxHandler::HandleLensButtonClick() {
+  if (!contextual_tasks::GetEnableLensInContextualTasks()) {
+    return;
+  }
+  if (auto* controller = GetLensSearchController()) {
+    controller->SetThumbnailCreatedCallback(base::BindRepeating(
+        &ContextualTasksComposeboxHandler::OnLensThumbnailCreated,
+        base::Unretained(this)));
+    controller->OpenLensOverlay(
+        lens::LensOverlayInvocationSource::kContextualTasksComposebox);
+  }
+}
+
+void ContextualTasksComposeboxHandler::OnLensThumbnailCreated(
+    const std::string& thumbnail_data) {
+  searchbox::mojom::SelectedFileInfoPtr file_info =
+      searchbox::mojom::SelectedFileInfo::New();
+  file_info->file_name = "Visual Selection";
+  file_info->mime_type = "image/png";
+  file_info->image_data_url = thumbnail_data;
+  file_info->is_deletable = true;
+
+  // Clear any existing visual selection context.
+  if (visual_selection_token_) {
+    OnFileUploadStatusChanged(
+        *visual_selection_token_, lens::MimeType::kUnknown,
+        contextual_search::FileUploadStatus::kUploadExpired, std::nullopt);
+  }
+
+  // Also add the file context to the backend controller to ensure it is
+  // uploaded.
+  std::string_view data_view(thumbnail_data);
+  size_t comma_pos = data_view.find(',');
+  if (comma_pos != std::string_view::npos) {
+    std::string_view base64_data = data_view.substr(comma_pos + 1);
+    std::string decoded_data;
+    if (base::Base64Decode(base64_data, &decoded_data)) {
+      std::vector<uint8_t> data_vector(decoded_data.begin(),
+                                       decoded_data.end());
+      AddFileContext(
+          std::move(file_info), mojo_base::BigBuffer(data_vector),
+          base::BindOnce(
+              &ContextualTasksComposeboxHandler::OnVisualSelectionAdded,
+              weak_factory_.GetWeakPtr()));
+    }
+  }
+}
+
+void ContextualTasksComposeboxHandler::OnVisualSelectionAdded(
+    const base::UnguessableToken& token) {
+  if (visual_selection_token_.has_value()) {
+    ComposeboxHandler::DeleteContext(visual_selection_token_.value(),
+                                     /*from_automatic_chip=*/false);
+  }
+  visual_selection_token_ = token;
+}
+
 void ContextualTasksComposeboxHandler::DeleteContext(
     const base::UnguessableToken& file_token,
     bool from_automatic_chip) {
@@ -606,7 +672,26 @@ void ContextualTasksComposeboxHandler::DeleteContext(
     }
   }
 
-  if (!delayed_tabs_.erase(file_token)) {
+  bool was_delayed = delayed_tabs_.erase(file_token);
+
+  if (from_automatic_chip) {
+    web_ui_controller_->DisableActiveTabContextSuggestion();
+  }
+
+  // Clear the visual selection token if it matches the deleted token.
+  if (visual_selection_token_ && *visual_selection_token_ == file_token) {
+    visual_selection_token_ = std::nullopt;
+    // If the user explicitly deleted the context (not from automatic chip),
+    // close the Lens Overlay.
+    if (!from_automatic_chip) {
+      if (auto* controller = GetLensSearchController()) {
+        controller->CloseLensAsync(
+            lens::LensOverlayDismissalSource::kContextualTasksContextCleared);
+      }
+    }
+  }
+
+  if (!was_delayed) {
     ComposeboxHandler::DeleteContext(file_token, from_automatic_chip);
 
     // Disassociate the tab from the task.
@@ -617,11 +702,33 @@ void ContextualTasksComposeboxHandler::DeleteContext(
             task_id.value(), associated_tab_id.value());
       }
     }
+  } else {
+    OnFileUploadStatusChanged(
+        file_token, lens::MimeType::kUnknown,
+        contextual_search::FileUploadStatus::kUploadExpired, std::nullopt);
+  }
+}
+
+void ContextualTasksComposeboxHandler::CloseLensOverlay(
+    lens::LensOverlayDismissalSource dismissal_source) {
+  if (auto* controller = GetLensSearchController()) {
+    controller->CloseLensSync(dismissal_source);
+  }
+}
+
+LensSearchController*
+ContextualTasksComposeboxHandler::GetLensSearchController() const {
+  auto* browser = web_ui_controller_->GetBrowser();
+  if (!browser) {
+    return nullptr;
   }
 
-  if (from_automatic_chip) {
-    web_ui_controller_->DisableActiveTabContextSuggestion();
+  if (auto* controller = LensSearchController::FromTabWebContents(
+          browser->GetTabStripModel()->GetActiveWebContents());
+      controller) {
+    return controller;
   }
+  return nullptr;
 }
 
 void ContextualTasksComposeboxHandler::ClearFiles() {

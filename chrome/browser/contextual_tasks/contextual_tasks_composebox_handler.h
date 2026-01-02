@@ -10,7 +10,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
+#include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/lens/contextual_input.h"
+#include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -23,6 +25,7 @@
 
 class Profile;
 class ContextualTasksUI;
+class LensSearchController;
 
 namespace tabs {
 class TabInterface;
@@ -84,7 +87,12 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
 
   void CreateAndSendQueryMessage(const std::string& query);
 
-  OmniboxController* GetOmniboxControllerForTesting() {
+  void HandleLensButtonClick() override;
+  void OnLensThumbnailCreated(const std::string& thumbnail_data);
+  virtual void CloseLensOverlay(
+      lens::LensOverlayDismissalSource dismissal_source);
+
+  OmniboxController* GetOmniboxControllerForTesting() const {
     return omnibox_controller();
   }
   // ui::SelectFileDialog::Listener:
@@ -139,17 +147,21 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
       int32_t tab_id,
       std::unique_ptr<lens::ContextualInputData> page_content_data);
 
+  void OnVisualSelectionAdded(const base::UnguessableToken& token);
+
+  LensSearchController* GetLensSearchController() const;
+
   raw_ptr<ContextualTasksUI> web_ui_controller_;
   // The context controller for the current profile. The profile will outlive
   // this class.
   raw_ptr<contextual_tasks::ContextualTasksService> contextual_tasks_service_;
   scoped_refptr<ui::SelectFileDialog> file_dialog_;
-
   // Map of context tokens to tab IDs for tabs that are delayed for upload.
   // These tabs will be contextualized and added to the context after user
   // submits the query in the composebox.
   std::map<base::UnguessableToken, int32_t> delayed_tabs_;
 
+  std::optional<base::UnguessableToken> visual_selection_token_;
   base::WeakPtrFactory<ContextualTasksComposeboxHandler> weak_factory_{this};
 };
 

@@ -58,6 +58,8 @@ class LensSearchController {
   explicit LensSearchController(tabs::TabInterface* tab);
   virtual ~LensSearchController();
 
+  friend class LensSearchControllerTest;
+
   DECLARE_USER_DATA(LensSearchController);
   static LensSearchController* From(tabs::TabInterface* tab);
 
@@ -211,6 +213,10 @@ class LensSearchController {
 
   // Clears the visual selection thumbnail on the searchbox.
   void ClearVisualSelectionThumbnail();
+
+  // Sets a callback to be invoked when a thumbnail is created.
+  void SetThumbnailCreatedCallback(
+      base::RepeatingCallback<void(const std::string&)> callback);
 
   // Returns the weak pointer to this class.
   base::WeakPtr<LensSearchController> GetWeakPtr();
@@ -517,6 +523,9 @@ class LensSearchController {
 
   // Owned by Profile, and thus guaranteed to outlive this instance.
   raw_ptr<variations::VariationsClient> variations_client_;
+
+  // Callback to be invoked when a thumbnail is created.
+  base::RepeatingCallback<void(const std::string&)> thumbnail_created_callback_;
 
   // Unowned IdentityManager for fetching access tokens. Could be null for
   // incognito profiles.

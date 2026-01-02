@@ -170,7 +170,7 @@ class LensSearchContextualizationController {
 
   // Starts the screenshot flow. This will take a screenshot,
   // fetch image bounds, and then run the callback provided with this data.
-  void StartScreenshotFlow(OnScreenshotTakenCallback callback);
+  virtual void StartScreenshotFlow(OnScreenshotTakenCallback callback);
 
   // Returns whether the page is context eligible based on the URL and frame
   // metadata provided. Calls the provided callback with the result. This
