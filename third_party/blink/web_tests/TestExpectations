@@ -2882,7 +2882,7 @@ crbug.com/334063352 [ Webview ] external/wpt/picture-in-picture/idlharness.windo
 crbug.com/421921 [ Webview ] external/wpt/push-api/idlharness.https.any.serviceworker.html [ Failure ]
 
 # Other failing/timeout tests
-[ Android ] external/wpt/visual-viewport/resize-event-order.html [ Timeout ]
+[ Android ] external/wpt/visual-viewport/resize-event-order.html [ Failure ]
 [ Android ] external/wpt/visual-viewport/viewport-resize-event-on-load-overflowing-page.html [ Failure ]
 [ Webview ] external/wpt/compat/idlharness.window.html [ Failure ]
 [ Webview ] external/wpt/html-media-capture/idlharness.window.html [ Failure ]
