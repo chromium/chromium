@@ -104,7 +104,7 @@ class DownloadsSettingsTableViewControllerTest
 // and the presentation delegate when the controller is removed.
 // TODO(crbug.com/460692416): Test is flaky.
 TEST_F(DownloadsSettingsTableViewControllerTest,
-       FLAKY_CanToggleAskEveryTimeAndSelectSaveToPhotosAccount) {
+       DISABLED_CanToggleAskEveryTimeAndSelectSaveToPhotosAccount) {
   // Push an items configuration through consumer interface.
   DownloadsSettingsTableViewController* downloadsController =
       base::apple::ObjCCast<DownloadsSettingsTableViewController>(controller());
