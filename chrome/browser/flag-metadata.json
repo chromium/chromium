@@ -793,12 +793,17 @@
   {
     "name": "autofill-android-desktop-keyboard-accessory-revamp",
     "owners": [ "piotrkotynia@google.com", "luchenpeng@google.com" ],
-    "expiry_milestone": 143
+    "expiry_milestone": 150
   },
   {
     "name": "autofill-android-desktop-suppress-accessory-on-empty",
     "owners": [ "luchenpeng@google.com", "piotrkotynia@google.com" ],
-    "expiry_milestone": 142
+    "expiry_milestone": 150
+  },
+  {
+    "name": "autofill-android-keyboard-accessory-dynamic-positioning",
+    "owners": [ "piotrkotynia@google.com" ],
+    "expiry_milestone": 150
   },
   {
     "name": "autofill-bottom-sheet-new-blur",

@@ -16472,6 +16472,8 @@ from previous Chrome versions.
   <int value="725579946"
       label="OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRefOnInteraction:disabled"/>
   <int value="725870294" label="RequestUnbufferedDispatch:disabled"/>
+  <int value="726330167"
+      label="AutofillAndroidKeyboardAccessoryDynamicPositioning:disabled"/>
   <int value="726654750" label="OmniboxGroupingFrameworkForZPS:disabled"/>
   <int value="726764779" label="WebXRGamepadSupport:enabled"/>
   <int value="726958205" label="ToolbarMicIphAndroid:enabled"/>
@@ -19424,6 +19426,8 @@ from previous Chrome versions.
   <int value="1744034696" label="UseGpuSchedulerDfs:enabled"/>
   <int value="1745053254" label="ClickToCallOpenDialerDirectly:enabled"/>
   <int value="1746253146" label="AdvancedDocumentScanAPI:enabled"/>
+  <int value="1746272497"
+      label="AutofillAndroidKeyboardAccessoryDynamicPositioning:enabled"/>
   <int value="1746757451"
       label="WebAuthnUsePasskeyFromAnotherDeviceInContextMenu:disabled"/>
   <int value="1747279677" label="disable-delegated-renderer"/>
