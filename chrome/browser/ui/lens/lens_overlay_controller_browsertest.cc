@@ -64,6 +64,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_overlay_untrusted_ui.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
+#include "chrome/browser/ui/lens/lens_overlay_wait_for_paint_utils.h"
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
@@ -268,11 +269,6 @@ constexpr char kHistoryStateScript[] =
     "(function() {history.replaceState({'test':1}, 'test'); "
     "history.pushState({'test':1}, 'test'); history.back();})();";
 
-// `content::ExecJs` can handle promises, so queue a promise that only succeeds
-// after the contents have been rendered.
-constexpr char kPaintWorkaroundFunction[] =
-    "() => new Promise(resolve => requestAnimationFrame(() => resolve(true)))";
-
 constexpr char kTestSuggestSignals[] = "encoded_image_signals";
 
 constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
@@ -296,45 +292,6 @@ std::string EncodeRequestId(const lens::LensOverlayRequestId& request_id) {
                         base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &encoded_request_id);
   return encoded_request_id;
-}
-
-// Opens the given URL in the given browser and waits for the first paint to
-// complete.
-void WaitForPaintImpl(
-    Browser* browser,
-    const GURL& url,
-    WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB,
-    int browser_test_flags = ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser, url, disposition, browser_test_flags));
-  const bool first_paint_completed =
-      browser->tab_strip_model()
-          ->GetActiveTab()
-          ->GetContents()
-          ->CompletedFirstVisuallyNonEmptyPaint();
-
-  // Return early if first paint is already completed.
-  if (first_paint_completed) {
-    return;
-  }
-  // Wait for the first paint to complete. The below code works for a majority
-  // of cases, but loading non-html files can lead to the workaround failing, so
-  // this check is still needed.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return browser->tab_strip_model()
-        ->GetActiveTab()
-        ->GetContents()
-        ->CompletedFirstVisuallyNonEmptyPaint();
-  }));
-  // If the first paint was not mark as completed by the WebContents, use a
-  // workaround to request a frame on the WebContents. This function will only
-  // return when the promise is resolved and thus there is content painted on
-  // the WebContents to allow screenshotting. See crbug.com/334747109 for
-  // details on this possible race condition and the workaround used in
-  // interactive tests.
-  ASSERT_TRUE(
-      content::ExecJs(browser->tab_strip_model()->GetActiveTab()->GetContents(),
-                      kPaintWorkaroundFunction));
 }
 
 void ClickBubbleDialogButton(
@@ -890,7 +847,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
       WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB,
       int browser_test_flags = ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP) {
     const GURL url = embedded_test_server()->GetURL(relative_url);
-    WaitForPaintImpl(browser(), url, disposition, browser_test_flags);
+    lens::WaitForPaint(browser(), url, disposition, browser_test_flags);
   }
 
   // Helper to remove the start time, client upload duration, and viewport size
@@ -6049,7 +6006,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
 
   // Load a non PDF.
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
-  WaitForPaintImpl(browser(), url);
+  lens::WaitForPaint(browser(), url);
 
   // State should start in off.
   auto* controller = GetLensOverlayController();

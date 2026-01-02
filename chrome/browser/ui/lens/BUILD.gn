@@ -260,6 +260,8 @@ source_set("browser_tests") {
     "lens_composebox_controller_browsertest.cc",
     "lens_overlay_controller_browsertest.cc",
     "lens_overlay_live_test.cc",
+    "lens_overlay_wait_for_paint_utils.cc",
+    "lens_overlay_wait_for_paint_utils.h",
     "lens_search_controller_contextual_tasks_browsertest.cc",
     "lens_search_feature_flag_utils_browsertest.cc",
   ]
