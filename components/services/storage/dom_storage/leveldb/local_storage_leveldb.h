@@ -171,6 +171,7 @@ class LocalStorageLevelDB : public DomStorageDatabase {
   DbStatus RewriteDB() override;
 
   // Test-only functions.
+  DbStatus PutVersionForTesting(int64_t version) override;
   void MakeAllCommitsFailForTesting() override;
   void SetDestructionCallbackForTesting(base::OnceClosure callback) override;
 

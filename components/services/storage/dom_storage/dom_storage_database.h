@@ -301,6 +301,7 @@ class DomStorageDatabase {
   virtual DbStatus RewriteDB() = 0;
 
   // Test-only functions.
+  virtual DbStatus PutVersionForTesting(int64_t version) = 0;
   virtual void MakeAllCommitsFailForTesting() = 0;
   virtual void SetDestructionCallbackForTesting(base::OnceClosure callback) = 0;
 };

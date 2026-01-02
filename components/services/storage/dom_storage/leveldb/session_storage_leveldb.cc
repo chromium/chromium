@@ -245,6 +245,11 @@ DbStatus SessionStorageLevelDB::RewriteDB() {
   return leveldb_->RewriteDB();
 }
 
+DbStatus SessionStorageLevelDB::PutVersionForTesting(int64_t version) {
+  return leveldb_->Put(kSessionStorageLevelDBVersionKey,
+                       base::as_byte_span(base::NumberToString(version)));
+}
+
 void SessionStorageLevelDB::MakeAllCommitsFailForTesting() {
   leveldb_->MakeAllCommitsFailForTesting();
 }

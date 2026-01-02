@@ -87,10 +87,6 @@ class AsyncDomStorageDatabase {
 
   base::SequenceBound<DomStorageDatabase>& database() { return database_; }
 
-  const base::SequenceBound<DomStorageDatabase>& database() const {
-    return database_;
-  }
-
   // The functions below use `RunDatabaseTask()` to read and write `database_`
   // through the `DomStorageDatabase` interface. See function comments in
   // `dom_storage_database.h` for more details.

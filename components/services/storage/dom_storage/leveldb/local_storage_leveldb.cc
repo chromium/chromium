@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/types/expected_macros.h"
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
@@ -383,6 +384,11 @@ DbStatus LocalStorageLevelDB::PurgeOrigins(std::set<url::Origin> origins) {
 
 DbStatus LocalStorageLevelDB::RewriteDB() {
   return leveldb_->RewriteDB();
+}
+
+DbStatus LocalStorageLevelDB::PutVersionForTesting(int64_t version) {
+  return leveldb_->Put(kLocalStorageLevelDBVersionKey,
+                       base::as_byte_span(base::NumberToString(version)));
 }
 
 void LocalStorageLevelDB::MakeAllCommitsFailForTesting() {

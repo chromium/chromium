@@ -86,14 +86,9 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   base::FilePath GetStoragePath() const;
 
-  // Access the underlying DomStorageDatabase. May be null if the database is
-  // not yet open.
-  base::SequenceBound<DomStorageDatabase>* GetDatabaseForTesting() {
-    if (database_) {
-      return &database_->database();
-    }
-    return nullptr;
-  }
+  // Access the underlying AsyncDomStorageDatabase. May be null if the database
+  // is not yet open.
+  AsyncDomStorageDatabase* GetDatabaseForTesting() { return database_.get(); }
 
   // Wait for the database to be opened, or for opening to fail. If the database
   // is already opened, |callback| is invoked immediately.
