@@ -7033,6 +7033,23 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Media.TrackChangePipelineStatus.{DemuxerName}"
+    enum="PipelineStatus" expires_after="2026-12-28">
+  <owner>tmathmeyer@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Reports the final pipeline status for playbacks that had at least one audio
+    or video track change. This is logged at the end of playback, either on
+    destruction or when an error occurs.
+  </summary>
+  <token key="DemuxerName">
+    <variant name="ChunkDemuxer" summary="ChunkDemuxer (MSE)"/>
+    <variant name="FFmpegDemuxer" summary="FFmpegDemuxer"/>
+    <variant name="ManifestDemuxer" summary="ManifestDemuxer (HLS)"/>
+    <variant name="UnknownDemuxer" summary="All other demuxer types."/>
+  </token>
+</histogram>
+
 <histogram
     name="Media.Ui.GetDisplayMedia.AudioCapturePermissionChecker.Interactions"
     enum="AudioCapturePermissionCheckerInteractions" expires_after="2026-11-11">

@@ -1291,6 +1291,7 @@ bool WebMediaPlayerImpl::HasAudio() const {
 void WebMediaPlayerImpl::EnabledAudioTracksChanged(
     std::optional<WebMediaPlayer::TrackId> enabled_track_id) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+  media_metrics_provider_->SetHasTrackChange();
   auto media_track_id = ConvertTrackType(std::move(enabled_track_id));
   media_log_->AddEvent<MediaLogEvent::kAudioTrackChange>(media_track_id);
   pipeline_controller_->OnEnabledAudioTracksChanged(media_track_id);
@@ -1299,6 +1300,7 @@ void WebMediaPlayerImpl::EnabledAudioTracksChanged(
 void WebMediaPlayerImpl::SelectedVideoTrackChanged(
     std::optional<WebMediaPlayer::TrackId> selected_track_id) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+  media_metrics_provider_->SetHasTrackChange();
   auto media_track_id = ConvertTrackType(std::move(selected_track_id));
   media_log_->AddEvent<MediaLogEvent::kVideoTrackChange>(media_track_id);
   pipeline_controller_->OnSelectedVideoTrackChanged(media_track_id);

@@ -39,6 +39,19 @@ namespace {
 // unique IDs for the purpose of tracking UKMs.
 static base::AtomicSequenceNumber g_next_player_id;
 
+std::string GetDemuxerNameStringForTrackChangeMetrics(DemuxerType type) {
+  switch (type) {
+    case DemuxerType::kFFmpegDemuxer:
+      return "FFmpegDemuxer";
+    case DemuxerType::kChunkDemuxer:
+      return "ChunkDemuxer";
+    case DemuxerType::kManifestDemuxer:
+      return "ManifestDemuxer";
+    default:
+      return "UnknownDemuxer";
+  }
+}
+
 }  // namespace
 
 MediaPlayerUkmId GetNextMediaPlayerUkmId() {
@@ -203,13 +216,22 @@ void MediaMetricsProvider::ReportPipelineUMA() {
 
   // Report whether this player ever saw a playback event. Used to measure the
   // effectiveness of efforts to reduce loaded-but-never-used players.
-  if (uma_info_.has_reached_have_enough)
+  if (uma_info_.has_reached_have_enough) {
     base::UmaHistogramBoolean("Media.HasEverPlayed", uma_info_.has_ever_played);
+  }
 
   // Report whether an encrypted playback is in incognito window, excluding
   // never-used players.
-  if (uma_info_.is_eme && uma_info_.has_ever_played)
+  if (uma_info_.is_eme && uma_info_.has_ever_played) {
     base::UmaHistogramBoolean("Media.EME.IsIncognito", uma_info_.is_incognito);
+  }
+
+  if (uma_info_.has_track_change_) {
+    base::UmaHistogramSparse(
+        "Media.TrackChangePipelineStatus." +
+            GetDemuxerNameStringForTrackChangeMetrics(demuxer_type_),
+        media::PIPELINE_OK);
+  }
 }
 
 // static
@@ -310,6 +332,10 @@ void MediaMetricsProvider::OnFallback(const PipelineStatus& status) {
 void MediaMetricsProvider::SetIsEME() {
   // This may be called before Initialize().
   uma_info_.is_eme = true;
+}
+
+void MediaMetricsProvider::SetHasTrackChange() {
+  uma_info_.has_track_change_ = true;
 }
 
 void MediaMetricsProvider::SetTimeToMetadata(base::TimeDelta elapsed) {

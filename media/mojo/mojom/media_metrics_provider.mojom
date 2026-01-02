@@ -82,6 +82,9 @@ interface MediaMetricsProvider {
   // Called when the EME playback uses a hardware secure pipeline.
   SetIsHardwareSecure();
 
+  // Indicates that the playback had a video track change.
+  SetHasTrackChange();
+
   // For src= playbacks, this is the container (".mp4", ".webm", etc).
   SetContainerName(MediaContainerName container_name);
 
