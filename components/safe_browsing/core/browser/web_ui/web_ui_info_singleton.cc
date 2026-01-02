@@ -143,19 +143,6 @@ void WebUIInfoSingleton::SetOnCSBRRLoggedCallbackForTesting(
   on_csbrr_logged_for_testing_ = std::move(on_done);
 }
 
-void WebUIInfoSingleton::AddToHitReportsSent(
-    std::unique_ptr<HitReport> hit_report) {
-  if (!HasListener()) {
-    return;
-  }
-
-  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
-       webui_instances_) {
-    webui_listener->NotifyHitReportJsListener(hit_report.get());
-  }
-  hit_reports_sent_.emplace_back(std::move(hit_report));
-}
-
 void WebUIInfoSingleton::ClearHitReportsSent() {
   std::vector<std::unique_ptr<HitReport>>().swap(hit_reports_sent_);
 }

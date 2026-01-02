@@ -21,7 +21,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_config.h"
 #include "components/safe_browsing/core/browser/safe_browsing_hats_delegate.h"
@@ -75,9 +74,6 @@ class PingManager : public KeyedService {
     // Track a client safe browsing report being sent.
     virtual void AddToCSBRRsSent(
         std::unique_ptr<ClientSafeBrowsingReportRequest> csbrr) = 0;
-
-    // Track a hit report being sent.
-    virtual void AddToHitReportsSent(std::unique_ptr<HitReport> hit_report) = 0;
   };
 
   // Helper class to read/write a report on disk.
@@ -146,13 +142,6 @@ class PingManager : public KeyedService {
       const base::FilePath& persister_root_path,
       base::RepeatingCallback<bool()> get_should_send_persisted_report);
 
-  // Report to Google when a SafeBrowsing warning is shown to the user.
-  // |hit_report.threat_type| should be one of the types known by
-  // SafeBrowsingtHitUrl. This method will also sanitize the URLs in the report
-  // before sending it.
-  void ReportSafeBrowsingHit(
-      std::unique_ptr<safe_browsing::HitReport> hit_report);
-
   // Sends a detailed threat report after performing validation, sanitizing
   // contained URLs, and adding extra details to the report. The returned object
   // provides details on whether the report was successful.
@@ -182,11 +171,8 @@ class PingManager : public KeyedService {
   friend class PingManagerTest;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(PingManagerTest, TestSafeBrowsingHitUrl);
   FRIEND_TEST_ALL_PREFIXES(PingManagerTest, TestThreatDetailsUrl);
   FRIEND_TEST_ALL_PREFIXES(PingManagerTest, TestReportThreatDetails);
-  FRIEND_TEST_ALL_PREFIXES(PingManagerTest, TestReportSafeBrowsingHit);
-  FRIEND_TEST_ALL_PREFIXES(PingManagerTest, TestSanitizeHitReport);
   FRIEND_TEST_ALL_PREFIXES(PingManagerTest, TestSanitizeThreatDetailsReport);
 
   const V4ProtocolConfig config_;
@@ -194,18 +180,12 @@ class PingManager : public KeyedService {
   using Reports = std::set<std::unique_ptr<network::SimpleURLLoader>,
                            base::UniquePtrComparator>;
 
-  // Generates URL for reporting safe browsing hits.
-  GURL SafeBrowsingHitUrl(safe_browsing::HitReport* hit_report) const;
-
   // Generates URL for reporting threat details for users who opt-in.
   GURL ThreatDetailsUrl() const;
 
   // Sanitizes the URLs in the client safe browsing report.
   void SanitizeThreatDetailsReport(
       safe_browsing::ClientSafeBrowsingReportRequest* report);
-
-  // Sanitizes the URLs in the hit report.
-  void SanitizeHitReport(HitReport* hit_report);
 
   // Finalizes the report with additional data, and then serializes it to
   // |out_serialized_report|. On success, this returns SUCCESS. On failure, it
@@ -231,10 +211,6 @@ class PingManager : public KeyedService {
   void OnURLLoaderComplete(network::SimpleURLLoader* source,
                            scoped_refptr<net::HttpResponseHeaders> headers);
 
-  void OnSafeBrowsingHitURLLoaderComplete(
-      network::SimpleURLLoader* source,
-      scoped_refptr<net::HttpResponseHeaders> headers);
-
   void OnThreatDetailsReportURLLoaderComplete(
       network::SimpleURLLoader* source,
       bool has_access_token,
@@ -242,7 +218,7 @@ class PingManager : public KeyedService {
       scoped_refptr<net::HttpResponseHeaders> headers);
 
   // Track outstanding SafeBrowsing report fetchers for clean up.
-  // We add both "hit" and "detail" fetchers in this set.
+  // We add "detail" fetchers in this set.
   Reports safebrowsing_reports_;
 
   // Used to issue network requests.

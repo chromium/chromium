@@ -79,9 +79,6 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   // chrome://safe-browsing tabs.
   void AddToCSBRRsSent(
       std::unique_ptr<ClientSafeBrowsingReportRequest> csbrr) override;
-  // Add the new message in |hit_reports_sent_| and send it to all the open
-  // chrome://safe-browsing tabs.
-  void AddToHitReportsSent(std::unique_ptr<HitReport> hit_report) override;
 
   // Clear the list of the sent ClientSafeBrowsingReportRequest messages.
   void ClearCSBRRsSent();

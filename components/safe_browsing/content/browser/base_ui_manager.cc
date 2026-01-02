@@ -33,7 +33,6 @@ using content::BrowserThread;
 using content::NavigationEntry;
 using content::WebContents;
 using safe_browsing::ClientSafeBrowsingReportRequest;
-using safe_browsing::HitReport;
 using safe_browsing::SBThreatType;
 
 namespace {

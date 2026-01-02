@@ -1679,28 +1679,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.HitReport.NetworkResult"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-05-24">
-<!-- Note to owner: This histogram can be renewed 1 full year if it is still
-useful for Chirp alerts (go/crca-alerts). -->
-
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the network result for a Safe Browsing hit report request.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.HitReport.ThreatType" enum="SBThreatType"
-    expires_after="2026-08-11">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the threat type that triggered the hit report. Logged when a hit
-    report is sent.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.HPRT.AllowlistSizeTooSmall"
     enum="BooleanUnavailable" expires_after="2026-05-17">
   <owner>thefrog@chromium.org</owner>
