@@ -1731,6 +1731,11 @@ const FeatureEntry::FeatureParam
         {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeTallBottomContext},
         {"CyclingPlaceholders", "true"},
 };
+const FeatureEntry::FeatureParam kShowNextRealboxTallBottomContextMultiLine[] =
+    {
+        {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeTallBottomContext},
+        {"MultiLine", "true"},
+};
 const FeatureEntry::FeatureParam kShowNextRealboxTallTopContext[] = {
     {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeTallTopContext},
 };
@@ -1739,6 +1744,10 @@ const FeatureEntry::FeatureParam
         {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeTallTopContext},
         {"CyclingPlaceholders", "true"},
 };
+const FeatureEntry::FeatureParam kShowNextRealboxTallTopContextMultiLine[] = {
+    {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeTallTopContext},
+    {"MultiLine", "true"},
+};
 const FeatureEntry::FeatureParam kShowNextRealboxCompact[] = {
     {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeCompact},
 };
@@ -1746,6 +1755,10 @@ const FeatureEntry::FeatureParam kShowNextRealboxCompactCyclingPlaceholders[] =
     {
         {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeCompact},
         {"CyclingPlaceholders", "true"},
+};
+const FeatureEntry::FeatureParam kShowNextRealboxCompactMultiLine[] = {
+    {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeCompact},
+    {"MultiLine", "true"},
 };
 
 const FeatureEntry::FeatureVariation kNtpRealboxNextVariations[] = {
@@ -1766,6 +1779,15 @@ const FeatureEntry::FeatureVariation kNtpRealboxNextVariations[] = {
     {"- Show Next Realbox: Compact, Cycling placeholders",
      kShowNextRealboxCompactCyclingPlaceholders,
      std::size(kShowNextRealboxCompactCyclingPlaceholders), nullptr},
+    {"- Show Next Realbox: Bottom Context, Multiline",
+     kShowNextRealboxTallBottomContextMultiLine,
+     std::size(kShowNextRealboxTallBottomContextMultiLine), nullptr},
+    {"- Show Next Realbox: Top Context, Multiline",
+     kShowNextRealboxTallTopContextMultiLine,
+     std::size(kShowNextRealboxTallTopContextMultiLine), nullptr},
+    {"- Show Next Realbox: Compact, Multiline",
+     kShowNextRealboxCompactMultiLine,
+     std::size(kShowNextRealboxCompactMultiLine), nullptr},
 };
 
 const FeatureEntry::FeatureParam kNtpNextShowStaticText[] = {
