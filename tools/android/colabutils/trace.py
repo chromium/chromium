@@ -35,8 +35,8 @@ class TraceFile:
         result = await command_line.run(
             "third_party/perfetto/tools/trace_processor", self.trace_file,
             "-Q", query)
-        # Use io.StringIO to treat the string as a file and read it with pandas
-        return pd.read_csv(io.StringIO(result.stdout))
+        # Use io.StringIO to treat the string as a file and read it with pandas.
+        return pd.read_csv(io.StringIO(result.stdout), na_values=['[NULL]'])
 
     @contextlib.asynccontextmanager
     async def record(self, config_file):
