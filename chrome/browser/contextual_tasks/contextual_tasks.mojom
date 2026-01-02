@@ -147,6 +147,14 @@ interface Page {
 
   // Called by the browser process (C++) when the Lens overlay is shown/hidden.
   OnLensOverlayStateChanged(bool is_showing);
+
+  // Called by the browser process (C++) to notify the UI to show the error
+  // page.
+  ShowErrorPage();
+
+  // Called by the browser process (C++) to notify the UI to hide the error
+  // page.
+  HideErrorPage();
 };
 
 // Used to bootstrip bi-directional communication between the browser and webui.

@@ -107,6 +107,9 @@ extern bool GetIsSteadyComposeboxVoiceSearchEnabled();
 // Returns if voice search queries should be auto submitted.
 extern bool GetAutoSubmitVoiceSearchQuery();
 
+// Returns if the protected page error is enabled.
+extern bool GetIsProtectedPageErrorEnabled();
+
 // Returns the base URL for the AI page.
 extern std::string GetContextualTasksAiPageUrl();
 

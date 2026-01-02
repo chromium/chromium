@@ -92,6 +92,14 @@ class MockPage extends TestBrowserProxy implements PageInterface {
   setTaskDetails(taskId: Uuid, threadId: string, turnId: string) {
     this.methodCalled('setTaskDetails', taskId, threadId, turnId);
   }
+
+  showErrorPage() {
+    this.methodCalled('showErrorPage');
+  }
+
+  hideErrorPage() {
+    this.methodCalled('hideErrorPage');
+  }
 }
 
 /**

@@ -22,7 +22,6 @@ export function getHtml(this: ContextualTasksAppElement) {
       </top-toolbar>
     </div>
   `}
-  <error-page id="errorPage"></error-page>
   <webview id="threadFrame"></webview>
   <div class="flex-center">
     <div id="relativeThreadHolder">
@@ -40,6 +39,7 @@ export function getHtml(this: ContextualTasksAppElement) {
           .isLensOverlayShowing="${this.isLensOverlayShowing_}">
     </contextual-tasks-composebox>
   </div>
+  <error-page id="errorPage"></error-page>
   <!--_html_template_end_-->`;
 }
 // clang-format on

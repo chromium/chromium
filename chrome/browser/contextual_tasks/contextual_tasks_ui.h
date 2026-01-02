@@ -197,6 +197,9 @@ class ContextualTasksUI : public TaskInfoDelegate,
     composebox_handler_ = std::move(handler);
   }
 
+  // Notify the UI of the page context eligibility of the page.
+  void OnPageContextEligibilityChecked(bool is_page_context_eligible);
+
   // Called by the browser process to send a message to the <webview>
   // guest. The WebUI is responsible for taking the 'message' (a serialized
   // lens.ClientToAimMessage protobuf) and using the <webview> postMessage API

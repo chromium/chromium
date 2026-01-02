@@ -379,6 +379,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
         data->page_url = GURL("about:blank");
         data->page_title = "about:blank";
         data->context_id = 12345;
+        data->is_page_context_eligible = true;
         std::move(callback).Run(std::move(data));
       });
 
@@ -471,6 +472,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
         data->page_url = GURL("about:blank");
         data->page_title = "about:blank";
         data->context_id = 12345;
+        data->is_page_context_eligible = true;
         std::move(callback).Run(std::move(data));
       });
 
@@ -767,6 +769,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
         data->page_url = GURL("about:blank");
         data->page_title = "about:blank";
         data->context_id = 12345;
+        data->is_page_context_eligible = true;
         std::move(callback).Run(std::move(data));
       });
 
@@ -1054,6 +1057,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AddTabContext_Delayed) {
       .WillOnce([](MockTabContextualizationController::GetPageContextCallback
                        callback) {
         auto data = std::make_unique<lens::ContextualInputData>();
+        data->is_page_context_eligible = true;
         std::move(callback).Run(std::move(data));
       });
 
