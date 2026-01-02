@@ -89,19 +89,25 @@ public class CastWebContentsActivity extends Activity {
         }
 
         public static Observable<MediaPlaying> observeFromWebContents(WebContents webContents) {
-            Dict<Integer, MediaPlaying> dict = new Dict<>();
-            new WebContentsObserver(webContents) {
-                @Override
-                public void mediaStartedPlaying(int id, boolean hasAudio, boolean hasVideo) {
-                    dict.put(id, new MediaPlaying(hasAudio, hasVideo));
-                }
+            return observer -> {
+                Dict<Integer, MediaPlaying> dict = new Dict<>();
+                var webContentsObserver =
+                        new WebContentsObserver(webContents) {
+                            @Override
+                            public void mediaStartedPlaying(
+                                    int id, boolean hasAudio, boolean hasVideo) {
+                                dict.put(id, new MediaPlaying(hasAudio, hasVideo));
+                            }
 
-                @Override
-                public void mediaStoppedPlaying(int id) {
-                    dict.remove(id);
-                }
+                            @Override
+                            public void mediaStoppedPlaying(int id) {
+                                dict.remove(id);
+                            }
+                        };
+                return dict.values()
+                        .subscribe(observer)
+                        .and(() -> webContentsObserver.observe(null));
             };
-            return dict.values();
         }
     }
 
@@ -134,7 +140,7 @@ public class CastWebContentsActivity extends Activity {
 
     {
         Observable<Intent> gotIntentAfterFinishingState =
-                mIsFinishingState.andThen(mGotIntentState).map(Both::getSecond);
+                mIsFinishingState.ignoreAndThen(mGotIntentState);
         Observable<?> createdAndNotTestingState = mCreatedState.and(not(mIsTestingState));
         createdAndNotTestingState.subscribe(
                 Observer.onOpen(
@@ -252,8 +258,7 @@ public class CastWebContentsActivity extends Activity {
 
         // Set a flag to exit sleep mode when this activity starts.
         mCreatedState
-                .and(mGotIntentState)
-                .map(Both::getSecond)
+                .ignoreAnd(mGotIntentState)
                 // Turn the screen on only if the launching Intent asks to.
                 .filter(CastWebContentsIntentUtils::shouldTurnOnScreen)
                 .subscribe(Observer.onOpen(x -> turnScreenOn()));
@@ -261,8 +266,7 @@ public class CastWebContentsActivity extends Activity {
         // Handle each new Intent.
         Controller<CastWebContentsSurfaceHelper.StartParams> startParamsState = new Controller<>();
         mGotIntentState
-                .and(not(mIsFinishingState))
-                .map(Both::getFirst)
+                .andIgnore(not(mIsFinishingState))
                 .map(Intent::getExtras)
                 .map(CastWebContentsSurfaceHelper.StartParams::fromBundle)
                 // Use the duplicate-filtering functionality of Controller to drop duplicate params.
@@ -274,7 +278,7 @@ public class CastWebContentsActivity extends Activity {
                                 Both.adapt(CastWebContentsSurfaceHelper::onNewStartParams)));
 
         final Observable<MediaPlaying> mediaPlaying =
-                startParamsState
+                mCreatedState.ignoreAnd(startParamsState)
                         .map(params -> params.webContents)
                         .flatMap(MediaPlaying::observeFromWebContents)
                         .share();
@@ -314,8 +318,7 @@ public class CastWebContentsActivity extends Activity {
                         });
 
         mGotIntentState
-                .and(not(mIsFinishingState))
-                .map(Both::getFirst)
+                .andIgnore(not(mIsFinishingState))
                 .map(CastWebContentsIntentUtils::getSessionId)
                 .subscribe(
                         sessionId -> {
