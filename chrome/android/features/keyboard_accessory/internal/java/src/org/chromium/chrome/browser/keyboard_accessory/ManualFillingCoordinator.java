@@ -8,12 +8,12 @@ import android.content.Context;
 import android.graphics.RectF;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;

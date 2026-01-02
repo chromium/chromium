@@ -6,8 +6,7 @@ package org.chromium.chrome.browser.keyboard_accessory;
 
 import android.util.SparseArray;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.data.CachedProviderAdapter;
 import org.chromium.chrome.browser.keyboard_accessory.data.ConditionalProviderAdapter;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -31,8 +30,8 @@ class ManualFillingState {
     private final SparseArray<Provider<AccessorySheetData>> mSheetDataProviders =
             new SparseArray<>();
     private final SparseArray<KeyboardAccessoryData.Tab> mAvailableTabs = new SparseArray<>();
-    private @Nullable ManualFillingComponent.UpdateAccessorySheetDelegate mUpdater;
-    private @Nullable CachedProviderAdapter<KeyboardAccessoryData.Action[]> mActionsProvider;
+    private ManualFillingComponent.@Nullable UpdateAccessorySheetDelegate mUpdater;
+    @Nullable private CachedProviderAdapter<KeyboardAccessoryData.Action[]> mActionsProvider;
     private boolean mWebContentsShowing;
 
     private class Observer extends WebContentsObserver {

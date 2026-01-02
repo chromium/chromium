@@ -25,7 +25,6 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.WindowInsetsCompat;
@@ -37,6 +36,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;

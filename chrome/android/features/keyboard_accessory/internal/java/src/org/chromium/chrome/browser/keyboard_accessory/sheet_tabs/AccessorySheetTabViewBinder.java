@@ -14,11 +14,11 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece;
@@ -129,7 +129,7 @@ class AccessorySheetTabViewBinder {
     }
 
     static void initializeView(
-            RecyclerView view, @Nullable RecyclerView.OnScrollListener scrollListener) {
+            RecyclerView view, RecyclerView.@Nullable OnScrollListener scrollListener) {
         view.setLayoutManager(
                 new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false));
         view.setItemAnimator(null);

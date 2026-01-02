@@ -8,9 +8,9 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.Accessor
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabProperties.ITEMS;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryToggleType;

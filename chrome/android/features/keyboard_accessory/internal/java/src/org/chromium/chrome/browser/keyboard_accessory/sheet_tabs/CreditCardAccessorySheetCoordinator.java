@@ -11,10 +11,10 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.Accessor
 import android.content.Context;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
@@ -42,7 +42,7 @@ public class CreditCardAccessorySheetCoordinator extends AccessorySheetTabCoordi
     public CreditCardAccessorySheetCoordinator(
             Context context,
             Profile profile,
-            @Nullable RecyclerView.OnScrollListener scrollListener) {
+            RecyclerView.@Nullable OnScrollListener scrollListener) {
         super(
                 context.getString(R.string.autofill_payment_methods),
                 IconProvider.getIcon(context, R.drawable.infobar_autofill_cc),

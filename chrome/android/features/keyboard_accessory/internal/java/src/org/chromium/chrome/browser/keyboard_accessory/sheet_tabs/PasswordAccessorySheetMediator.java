@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.ui.modelutil.PropertyModel;
 

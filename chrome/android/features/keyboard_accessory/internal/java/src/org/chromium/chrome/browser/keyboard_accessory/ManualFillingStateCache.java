@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 

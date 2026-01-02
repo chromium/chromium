@@ -53,7 +53,6 @@ import android.graphics.drawable.Drawable;
 import android.view.Surface;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 
 import org.junit.Before;
@@ -75,6 +74,7 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.app.ChromeActivity;

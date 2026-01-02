@@ -9,9 +9,9 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.Accessor
 import android.content.Context;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
@@ -42,7 +42,7 @@ public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordina
     public PasswordAccessorySheetCoordinator(
             Context context,
             Profile profile,
-            @Nullable RecyclerView.OnScrollListener scrollListener) {
+            RecyclerView.@Nullable OnScrollListener scrollListener) {
         super(
                 context.getString(R.string.password_list_title),
                 IconProvider.getIcon(context, R.drawable.ic_password_manager_key),

@@ -15,11 +15,11 @@ import android.view.ViewGroup;
 import androidx.annotation.CallSuper;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
@@ -60,6 +60,7 @@ public abstract class AccessorySheetTabCoordinator implements KeyboardAccessoryD
 
     /**
      * Creates a keyboard accessory sheet tab coordinator.
+     *
      * @param title A {@link String} permanently displayed in the bar above the keyboard.
      * @param icon The icon that represents this sheet in the keyboard accessory tab switcher.
      * @param contentDescription A description for this sheet used in the tab switcher.
@@ -73,7 +74,7 @@ public abstract class AccessorySheetTabCoordinator implements KeyboardAccessoryD
             String contentDescription,
             @LayoutRes int layout,
             @AccessoryTabType int tabType,
-            @Nullable RecyclerView.OnScrollListener scrollListener) {
+            RecyclerView.@Nullable OnScrollListener scrollListener) {
         mTab =
                 new KeyboardAccessoryData.Tab(
                         title, icon, contentDescription, layout, tabType, this);
