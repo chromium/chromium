@@ -57,6 +57,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_class_properties.h"
 
@@ -148,7 +149,19 @@ class ContextualTasksWebView : public views::WebView {
         web_contents, request, std::move(callback), /*extension=*/nullptr);
   }
 
+  // content::WebContentsDelegate:
+  bool HandleKeyboardEvent(
+      content::WebContents* source,
+      const input::NativeWebKeyboardEvent& event) override {
+    return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+        event, GetFocusManager());
+  }
+
  private:
+  // A handler to handle unhandled keyboard messages coming back from the
+  // renderer process.
+  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
+
   base::WeakPtrFactory<ContextualTasksWebView> weak_ptr_factory_{this};
 };
 
