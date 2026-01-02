@@ -28,7 +28,6 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/browsing_history_service.h"
-#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/data_type.h"
@@ -382,17 +381,33 @@ TEST_F(BrowsingHistoryHandlerTest, IncludeActorVisits) {
   RunQueryHistory("test");
 }
 
-TEST_F(BrowsingHistoryHandlerTest,
-       ShouldShowHistoryPageHistorySyncPromoShownLessThanThreshold) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile());
-  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
-      identity_manager, "test@example.com", signin::ConsentLevel::kSignin);
+class BrowsingHistoryHandlerHistorySyncPromoTest
+    : public BrowsingHistoryHandlerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    BrowsingHistoryHandlerTest::SetUp();
+    SetUpIdentityState();
+  }
 
-  SigninPrefs signin_prefs(*profile()->GetPrefs());
+ private:
+  // Sets up the identity state based on the test parameter.
+  // If the parameter is `true`, a primary account is set up. Otherwise, the
+  // profile is left signed out.
+  void SetUpIdentityState() {
+    if (GetParam()) {
+      signin::IdentityManager* identity_manager =
+          IdentityManagerFactory::GetForProfile(profile());
+      signin::MakePrimaryAccountAvailable(identity_manager, "test@example.com",
+                                          signin::ConsentLevel::kSignin);
+    }
+  }
+};
+
+TEST_P(BrowsingHistoryHandlerHistorySyncPromoTest,
+       ShouldShowHistoryPageHistorySyncPromoShownLessThanThreshold) {
   for (int i = 0; i < 4; ++i) {
-    signin_prefs.IncrementHistoryPageHistorySyncPromoShownCount(
-        account_info.gaia);
+    handler()->IncrementHistoryPageHistorySyncPromoShownCount();
   }
   base::MockCallback<
       BrowsingHistoryHandler::ShouldShowHistoryPageHistorySyncPromoCallback>
@@ -401,16 +416,10 @@ TEST_F(BrowsingHistoryHandlerTest,
   handler()->ShouldShowHistoryPageHistorySyncPromo(callback.Get());
 }
 
-TEST_F(BrowsingHistoryHandlerTest,
+TEST_P(BrowsingHistoryHandlerHistorySyncPromoTest,
        ShouldShowHistoryPageHistorySyncPromoShownEqualToThreshold) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile());
-  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
-      identity_manager, "test@example.com", signin::ConsentLevel::kSignin);
-  SigninPrefs signin_prefs(*profile()->GetPrefs());
   for (int i = 0; i < 5; ++i) {
-    signin_prefs.IncrementHistoryPageHistorySyncPromoShownCount(
-        account_info.gaia);
+    handler()->IncrementHistoryPageHistorySyncPromoShownCount();
   }
   base::MockCallback<
       BrowsingHistoryHandler::ShouldShowHistoryPageHistorySyncPromoCallback>
@@ -419,13 +428,8 @@ TEST_F(BrowsingHistoryHandlerTest,
   handler()->ShouldShowHistoryPageHistorySyncPromo(callback.Get());
 }
 
-TEST_F(BrowsingHistoryHandlerTest,
+TEST_P(BrowsingHistoryHandlerHistorySyncPromoTest,
        ShouldShowHistoryPageHistorySyncPromoDismissedOnceCooldownPassed) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile());
-  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
-      identity_manager, "test@example.com", signin::ConsentLevel::kSignin);
-  SigninPrefs signin_prefs(*profile()->GetPrefs());
   handler()->RecordHistoryPageHistorySyncPromoDismissed();
   handler()->test_clock()->Advance(base::Days(8));
   base::MockCallback<
@@ -435,13 +439,8 @@ TEST_F(BrowsingHistoryHandlerTest,
   handler()->ShouldShowHistoryPageHistorySyncPromo(callback.Get());
 }
 
-TEST_F(BrowsingHistoryHandlerTest,
+TEST_P(BrowsingHistoryHandlerHistorySyncPromoTest,
        ShouldShowHistoryPageHistorySyncPromoDismissedOnceCooldownNotPassed) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile());
-  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
-      identity_manager, "test@example.com", signin::ConsentLevel::kSignin);
-  SigninPrefs signin_prefs(*profile()->GetPrefs());
   handler()->RecordHistoryPageHistorySyncPromoDismissed();
   handler()->test_clock()->Advance(base::Days(6));
   base::MockCallback<
@@ -451,13 +450,8 @@ TEST_F(BrowsingHistoryHandlerTest,
   handler()->ShouldShowHistoryPageHistorySyncPromo(callback.Get());
 }
 
-TEST_F(BrowsingHistoryHandlerTest,
+TEST_P(BrowsingHistoryHandlerHistorySyncPromoTest,
        ShouldShowHistoryPageHistorySyncPromoShownAfterDismissal) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile());
-  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
-      identity_manager, "test@example.com", signin::ConsentLevel::kSignin);
-  SigninPrefs signin_prefs(*profile()->GetPrefs());
   handler()->RecordHistoryPageHistorySyncPromoDismissed();
   handler()->test_clock()->Advance(base::Days(8));
   base::MockCallback<
@@ -476,6 +470,14 @@ TEST_F(BrowsingHistoryHandlerTest,
   handler()->ShouldShowHistoryPageHistorySyncPromo(
       callback_shown_after_dismissal.Get());
 }
-#endif
+
+INSTANTIATE_TEST_SUITE_P(,
+                         BrowsingHistoryHandlerHistorySyncPromoTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "SignedIn" : "SignedOut";
+                         });
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace history

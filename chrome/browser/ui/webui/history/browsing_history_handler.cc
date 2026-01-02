@@ -603,10 +603,11 @@ void BrowsingHistoryHandler::
     profile_->GetPrefs()->SetTime(
         prefs::kHistoryPageHistorySyncPromoLastDismissedTimestampPerProfile,
         time);
+  } else {
+    SigninPrefs(*profile_->GetPrefs())
+        .SetHistoryPageHistorySyncPromoLastDismissedTimestamp(account.gaia,
+                                                              time);
   }
-
-  return SigninPrefs(*profile_->GetPrefs())
-      .SetHistoryPageHistorySyncPromoLastDismissedTimestamp(account.gaia, time);
 }
 
 void BrowsingHistoryHandler::
