@@ -344,7 +344,7 @@ void ContentAnalysisDialogDelegate::SetupButtons() {
         static_cast<int>(ui::mojom::DialogButton::kCancel) |
         static_cast<int>(ui::mojom::DialogButton::kOk));
     DialogDelegate::SetDefaultButton(
-        static_cast<int>(ui::mojom::DialogButton::kCancel));
+        static_cast<int>(ui::mojom::DialogButton::kOk));
 
     // Do not allow overrides, since this option only applies to downloads.
     SetButtonLabel(ui::mojom::DialogButton::kCancel,
