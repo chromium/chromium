@@ -530,7 +530,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1342886103232377846">Jei norite patikrinti, ar nėra pažeistų slaptažodžių, eikite į „Google“ slaptažodžių tvarkyklę</translation>
 <translation id="1343920184519992513">Tęskite ten, kur baigėte, ir atidarykite konkrečius puslapius</translation>
 <translation id="1344141078024003905">Perduodate ekrano vaizdą. Galite bet kada pristabdyti ar sustabdyti ekrano vaizdo perdavimą.</translation>
-<translation id="13449088910457661">„Gemini“ veikia jūsų skirtukuose, kad atliktų jūsų pateiktas užduotis. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="1346403631707626730">Siųskite naudojimo ir diagnostikos duomenis. Padėkite tobulinti vaiko „Android“ funkcijas automatiškai siųsdami „Google“ diagnostikos, įrenginio ir programų naudojimo duomenis. Tai nebus naudojama siekiant nustatyti jūsų vaiko tapatybę ir padės pagerinti sistemos bei programos stabilumą ir teikti kitus patobulinimus. Kai kurie suminiai duomenys taip pat bus naudingi „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams. Jei papildomos žiniatinklio ir programų veiklos nustatymas įjungtas vaiko įrenginyje, šie duomenys gali būti išsaugoti vaiko „Google“ paskyroje. <ph name="BEGIN_LINK1" />Sužinokite daugiau apie metriką<ph name="BEGIN_LINK1_END" />Sužinokite daugiau<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">Patvirtinti ir paleisti iš naujo</translation>
 <translation id="1346748346194534595">Dešinė</translation>
@@ -1988,6 +1987,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2319072477089403627">Jungiamasi prie „Android“ telefono...</translation>
 <translation id="2319459402137712349">Pasirinkite teksto lauką, kad atidarytumėte klaviatūrą. Taip pat galite pasirinkti klaviatūros piktogramą ekrano apačioje.</translation>
 <translation id="2319993584768066746">Nuotraukos prisijungimo ekrane</translation>
+<translation id="2321487076181785382">Padalyti skirtukus</translation>
 <translation id="2322193970951063277">Antraštės ir poraštės</translation>
 <translation id="2322318151094136999">Paklausti, kai svetainė nori pasiekti nuosekliuosius prievadus (rekomenduojama)</translation>
 <translation id="2322622365472107569">Pabaigos laikas <ph name="TIME" /></translation>
@@ -6179,7 +6179,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5204967432542742771">Įveskite slaptažodį</translation>
 <translation id="5205484256512407285">Niekada nenaudoti mobiliojo ryšio duomenų perkeliant</translation>
 <translation id="520568280985468584">Tinklas pridėtas sėkmingai. Gali užtrukti kelias minutes, kol mobiliojo ryšio tinklas taps aktyvus.</translation>
-<translation id="520576054436518354">Leiskite „Gemini“ naršyti už jus</translation>
 <translation id="5207949376430453814">Paryškinti teksto žymeklį</translation>
 <translation id="520840839826327499">„<ph name="SERVICE_NAME" />“ nori patikrinti, ar naudojate tinkamą „Chrome“ OS įrenginį.</translation>
 <translation id="5208722776934437424">Keisti leidimus</translation>
@@ -10232,6 +10231,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8011372169388649948">Žymė „<ph name="BOOKMARK_TITLE" />“ perkelta.</translation>
 <translation id="8012188750847319132">didžiųjų raidžių klavišas</translation>
 <translation id="8012463809859447963">Išsami sparčiojo viešosios interneto prieigos taško informacija</translation>
+<translation id="8013181884974864006">Kontekstinės užduotys</translation>
 <translation id="8013534738634318212">Šios svetainės priklauso <ph name="RWS_OWNER" /> nustatytai grupei. Grupėje esančios svetainės gali matyti jūsų veiklą grupėje.</translation>
 <translation id="8013993649590906847">Jei nebus naudingo vaizdo aprašo, „Chrome“ bandys jums jį pateikti. Kad būtų galima kurti aprašus, vaizdai siunčiami į sistemą „Google“.</translation>
 <translation id="8014154204619229810">Atnaujinimo programa šiuo metu paleista. Netrukus atnaujinkite ir vėl patikrinkite.</translation>

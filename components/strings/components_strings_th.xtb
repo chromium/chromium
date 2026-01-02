@@ -1445,6 +1445,7 @@
 <translation id="3342018947887487892">เว็บไซต์ที่คุณเข้าชมอาจขอข้อมูลนี้ในภายหลัง ไม่ว่าจะเป็นข้อมูลเกี่ยวกับหัวข้อโฆษณาหรือโฆษณาที่แนะนำโดยเว็บไซต์ที่คุณเคยเข้าชม</translation>
 <translation id="334438173029876234">อุปกรณ์สเก็ตบอร์ด</translation>
 <translation id="3347146863028219517">เล่นสกีและสโนว์บอร์ด</translation>
+<translation id="3349610303043713601">ท่องเว็บด้วย AI</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">เล่นซ้ำ 10 วินาที</translation>
 <translation id="3352881017886802007">เกมกีฬา</translation>
@@ -4059,7 +4060,6 @@
 <translation id="753556296624075801">ขับเคลื่อนโดย Google</translation>
 <translation id="753713322968419914">นำที่อยู่บ้านออกจากฟีเจอร์ป้อนข้อความอัตโนมัติของ Chrome ใช่ไหม</translation>
 <translation id="7537536606612762813">จำเป็น</translation>
-<translation id="7541043894191476250">งานตามบริบท</translation>
 <translation id="7543525346216957623">ถามผู้ปกครอง</translation>
 <translation id="7546409722674205727">เริ่มใช้งาน <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">แก้ไขข้อผิดพลาดในการเชื่อมต่อ</translation>
@@ -4960,7 +4960,7 @@
 <translation id="9046578823518542618"><ph name="URL" /> ต้องการค้นหาและเชื่อมต่อกับอุปกรณ์ในเครือข่ายภายในของคุณ</translation>
 <translation id="9046864189129893978">ไมโครโฟน (<ph name="MICS_COUNT" /> ตัว)</translation>
 <translation id="9046865906192819796">หน้าจอข้อกำหนดในการให้บริการของ "ซื้อก่อน จ่ายทีหลัง" เปิดอยู่ครึ่งหน้าจอ</translation>
-<translation id="9047528041803621289">ค่าเริ่มต้นช่วยให้คุณค้นหาในเว็บได้ คุณเปลี่ยนได้ในการตั้งค่า</translation>
+<translation id="9047528041803621289">ค่าเริ่มต้นช่วยให้คุณค้นหาในเว็บได้ โดยคุณเปลี่ยนได้ในการตั้งค่า</translation>
 <translation id="9048035366624198823">การดำเนินการเหล่านี้กำหนดให้ตั้งค่านโยบาย <ph name="POLICY_NAME" /> เป็น <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" /></translation>
 <translation id="9048662076076074925">24 x 36 นิ้ว</translation>
 <translation id="9049981332609050619">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่เซิร์ฟเวอร์แสดงใบรับรองที่ไม่ถูกต้อง</translation>

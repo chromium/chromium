@@ -1442,6 +1442,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3342018947887487892">Geroago, baliteke bisitatzen duzun webguneek informazio hori eskatzea (iragarkien gaiak zein bisitatutako webguneek iradokitako iragarkiak).</translation>
 <translation id="334438173029876234">Skate-ekipamendua</translation>
 <translation id="3347146863028219517">Eskia eta snowboarda</translation>
+<translation id="3349610303043713601">Arakatu AA erabilita</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Erreproduzitu 10 segundo berriro</translation>
 <translation id="3352881017886802007">Kirol-jokoak</translation>
@@ -3045,7 +3046,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5937560539988385583">Itzuli da orria</translation>
 <translation id="5938153366081463283">Gehitu txartel birtual bat</translation>
 <translation id="5938793338444039872">Troy</translation>
-<translation id="5938866385061293322">Iritzi independenteen webguneetatik (adibidez, Trustpilot, ScamAdviser eta Google) dator informazio hau. AAk sortzen ditu laburpenak.</translation>
+<translation id="5938866385061293322">Iritzi independenteen webguneetatik (adibidez, Trustpilot, ScamAdviser eta Google) dator informazio hau. AA bidez sortzen dira laburpenak.</translation>
 <translation id="5943775258256265106">{NUM_MINS,plural, =1{Duela minutu bat sortua}other{Duela {NUM_MINS} minutu sortua}}</translation>
 <translation id="5944297261866530437">Ehuna (oso distiratsua)</translation>
 <translation id="5950901984834744590">Bizar-labanak eta bizarra kentzeko makinak</translation>
@@ -4054,7 +4055,6 @@ Xehetasun gehiago:
 <translation id="753556296624075801">Google-ren teknologiarekin</translation>
 <translation id="753713322968419914">Chrome-ren betetze automatikotik etxeko helbidea kendu nahi duzu?</translation>
 <translation id="7537536606612762813">Derrigorrezkoa</translation>
-<translation id="7541043894191476250">Testuinguruaren araberako zereginak</translation>
 <translation id="7543525346216957623">Galdetu gurasoei</translation>
 <translation id="7546409722674205727">Hasiera-ordua: <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Konpondu konexio-erroreak</translation>

@@ -79,7 +79,7 @@
 <translation id="1285320974508926690">عدم ترجمة هذا الموقع مطلقًا</translation>
 <translation id="1287229685519872919">‏بيانات Google Workspace</translation>
 <translation id="1291506870746876680">بعد مغادرة الموقع الإلكتروني <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" />، ستتم إعادة ضبط أذوناته على وضع الإيقاف.</translation>
-<translation id="1293556467332435079">ملفات</translation>
+<translation id="1293556467332435079">الملفات</translation>
 <translation id="129553762522093515">المغلقة حديثًا</translation>
 <translation id="1296581780163690620">هل تريد تنزيل الملف؟ (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">‏عليك إثبات هويتك للتأكُّد من أنّه يمكنك استخدام كلمات المرور في حسابك على Google في أي وقت.</translation>
@@ -884,7 +884,7 @@
 <translation id="4430505936695785931">أصبح بإمكانك الآن ملء كلمات المرور المحفوظة في تطبيقات أخرى</translation>
 <translation id="4431224949908513835">اختَر طريقة دفع لاستخدامها.</translation>
 <translation id="4432122368769493392">الإعدادات…</translation>
-<translation id="443975520858086928">‏يمكنك سؤال Google عن أي موضوع</translation>
+<translation id="443975520858086928">‏اسأل Google عن أي موضوع</translation>
 <translation id="4442550905108052454">‏فتح <ph name="BEGIN_BOLD" />الإعدادات (Settings)<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">خيارات إضافية حول "<ph name="CELL_ACCESSIBILITY_LABEL" />"</translation>
 <translation id="4455710003856931944">يمكنك التمرير سريعًا من الحافة للرجوع للخلف أو التقدّم للأمام.</translation>
@@ -1397,7 +1397,7 @@
 <translation id="6259928806013786178">تعذَّر تفعيل "وضع القراءة"</translation>
 <translation id="6268773951964630964">البحث عن الصورة التي نسختها</translation>
 <translation id="6271462272606946663">إخفاء خيار "طلب موقع جهاز جوّال"</translation>
-<translation id="6271556257184622612">‏طرح سؤال على Google عن علامات التبويب وغيرها</translation>
+<translation id="6271556257184622612">‏اسأل Google عن علامات التبويب وغيرها</translation>
 <translation id="6271824294945464304">مشاركة كلمة المرور</translation>
 <translation id="628251768213143684">‏يمكنك في أي وقت إدارة البيانات التي يتم حفظها في حسابك على Google.</translation>
 <translation id="6284652193729350524">اقتراح ترجمة <ph name="LANGUAGE" /></translation>
@@ -1517,7 +1517,7 @@
 <translation id="6659660757330712663">يمكنك تمرير شريط الأدوات سريعًا للتبديل بين علامات التبويب.</translation>
 <translation id="6663529247339810546">يتعذر حفظ الصورة</translation>
 <translation id="6668619169535738264">تعديل الإشارة المرجعية</translation>
-<translation id="6670729408462528018">المعرض</translation>
+<translation id="6670729408462528018">معرض الصور</translation>
 <translation id="6671294218820966278">وضع علامة "مقروء"</translation>
 <translation id="6672697278890207089">يُرجى إدخال عبارة المرور</translation>
 <translation id="6674917187596384849">يمكنك التبديل بسهولة بين الحسابات</translation>

@@ -527,7 +527,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1342886103232377846">Oshkor etilgan parollarni tekshirish uchun Google Parollar Menejerini oching</translation>
 <translation id="1343920184519992513">Qolgan joyingizdan davom eting va maxsus sahifalar jamlanmasini oching</translation>
 <translation id="1344141078024003905">Ekran translatsiya qilinmoqda. Ekran translatsiyasini instalgan vaqt pauza qilish yoki tugatish mumkin.</translation>
-<translation id="13449088910457661">Gemini siz bergan vazifalarni bajarishda varaqlar ichida ishlaydi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="1346403631707626730">Foydalanish statistikasi va diagnostika axborotini yuborish. Diagnostika hamda qurilma va ilovadan foydalanish statistikasini Google kompaniyasiga avtomatik yuborish orqali Androidni yaxshilashga yordam bering. Ushbu axborotdan farzandingiz shaxsini aniqlash uchun foydalanilmaydi. Ular tizim va ilovalar barqarorligi kabilarni yaxshilash uchun ishlatiladi. Ayrim jamlangan axborotlar Google ilovalari va Android dasturchilar kabi hamkorlarga ham yordam beradi. Agar farzandingiz uchun Kengaytirilgan veb-qidiruv va ilovalar tarixi yoqilgan boʻlsa, bu maʼlumotlar uning Google hisobiga saqlanadi. <ph name="BEGIN_LINK1" />Koʻrsatkichlar haqida <ph name="BEGIN_LINK1_END" />batafsil<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">Tasdiqlang va oʻchirib yoqing</translation>
 <translation id="1346748346194534595">O‘ngga</translation>
@@ -1974,6 +1973,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2319072477089403627">Android telefoniga ulanmoqda...</translation>
 <translation id="2319459402137712349">Klaviaturani ochish uchun matn maydonchasini tanlang. Shuningdek, ekranning quyi qismidagi klaviatura belgisini tanlash mumkin.</translation>
 <translation id="2319993584768066746">Kirish ekranidagi suratlar</translation>
+<translation id="2321487076181785382">Varaqlarni ajratish</translation>
 <translation id="2322193970951063277">Sarlavha va taglavhalar</translation>
 <translation id="2322318151094136999">Sayt ketma-ket portlardan foydalanish oldidan ruxsat olinsin (tavsiya etiladi)</translation>
 <translation id="2322622365472107569">Tugash vaqti: <ph name="TIME" /></translation>
@@ -6162,7 +6162,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5204967432542742771">Parolni kiriting</translation>
 <translation id="5205484256512407285">Hech qachon mobil internetdan yuborilmasin</translation>
 <translation id="520568280985468584">Tarmoq kiritildi. Mobil tarmoq faollashtirilishi bir necha daqiqa vaqt oladi.</translation>
-<translation id="520576054436518354">Gemini siz uchun kezishiga ruxsat bering</translation>
 <translation id="5207949376430453814">Matn kiritish joyi ajratib ko‘rsatilsin</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> mos ChromeOS qurilmadan foydalanayotganingizni tekshirmoqchi.</translation>
 <translation id="5208722776934437424">Ruxsatlarni oʻzgartirish</translation>
@@ -10207,6 +10206,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8011372169388649948">“<ph name="BOOKMARK_TITLE" />” boshqa joyga olindi.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Tezkor modem tafsilotlari</translation>
+<translation id="8013181884974864006">Kontekstli vazifalar</translation>
 <translation id="8013534738634318212">Bu saytlar <ph name="RWS_OWNER" /> guruhiga kiradi. Guruhdagi saytlar guruhdagi faoliyatni koʻra oladi.</translation>
 <translation id="8013993649590906847">Agar rasmga foydali tavsif berilmagan boʻlsa, Google Chrome uni sizga tavsiflaydi. Tavsif yaratish uchun rasmlar Googlega yuboriladi.</translation>
 <translation id="8014154204619229810">Yangilash vositasi ishlamoqda. Bir necha daqiqadan so‘ng qayta urinib ko‘ring.</translation>

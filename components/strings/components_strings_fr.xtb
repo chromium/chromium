@@ -666,7 +666,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2090451897496479509">Pour en savoir plus, contactez le fournisseur</translation>
 <translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">Son</translation>
-<translation id="2093184051799735948">Effectuez une recherche sur <ph name="ENGINE_NAME" /> ou saisissez une URL</translation>
+<translation id="2093184051799735948">Rechercher sur <ph name="ENGINE_NAME" /> ou saisir une URL</translation>
 <translation id="2093982008204312032">Google Chrome tente de désactiver Windows Hello pour saisir les mots de passe.</translation>
 <translation id="2094505752054353250">Le domaine ne correspond pas</translation>
 <translation id="2094704029599359040">Informations sur la version</translation>
@@ -1445,6 +1445,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3342018947887487892">Par la suite, un site auquel vous accédez pourra demander ces informations : soit vos thèmes d'annonces, soit les annonces suggérées par les sites que vous avez consultés.</translation>
 <translation id="334438173029876234">Équipement de skateboard</translation>
 <translation id="3347146863028219517">Ski et snowboard</translation>
+<translation id="3349610303043713601">Naviguer avec l'IA</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Reculer de 10 secondes</translation>
 <translation id="3352881017886802007">Jeux de sport</translation>
@@ -4061,7 +4062,6 @@ Informations supplémentaires :
 <translation id="753556296624075801">Fourni par Google</translation>
 <translation id="753713322968419914">Supprimer l'adresse de votre domicile de la saisie automatique Chrome ?</translation>
 <translation id="7537536606612762813">Obligatoire</translation>
-<translation id="7541043894191476250">Tâches contextuelles</translation>
 <translation id="7543525346216957623">Demande à l'un de tes parents</translation>
 <translation id="7546409722674205727">Lancement de <ph name="APP_NAME" />…</translation>
 <translation id="7548892272833184391">Corriger les erreurs de connexion</translation>

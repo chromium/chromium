@@ -83,7 +83,7 @@
 <translation id="1256734167083229794">میان‌بر صفحه‌کلید مربوط به «ذره‌بین تمام‌صفحه» را فشار دادید. از کلیدهای <ph name="ZOOM_IN_ACCELERATOR" /> برای زوم‌پیش کردن و از کلیدهای <ph name="ZOOM_OUT_ACCELERATOR" /> برای زوم‌پس کردن استفاده کنید. از کلیدهای مهار + دگرساز + جهت‌نما برای حرکت در نمای زوم‌پیش‌شده استفاده کنید.</translation>
 <translation id="1269405891096105529">دستگاه جانبی در «حالت مهمان» پشتیبانی نمی‌شود</translation>
 <translation id="1270290102613614947">صفحه‌کلید مجازی غیرفعال شد</translation>
-<translation id="1272079795634619415">توقف</translation>
+<translation id="1272079795634619415">ایست</translation>
 <translation id="12741168609094094">برای جستجو کردن، کپی کردن نوشتار، و کارهای دیگر هر چیزی را که می‌خواهید در صفحه‌نمایش انتخاب کنید</translation>
 <translation id="1275285675049378717">درحال تأمین برق <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">انتخاب شد</translation>
@@ -409,7 +409,7 @@
 <translation id="2426051945783024481">قاب دوربین به‌طور خودکار در مرکز قرار گرفت</translation>
 <translation id="2427507373259914951">کلیک چپ</translation>
 <translation id="2429753432712299108">دستگاه بلوتوث «<ph name="DEVICE_NAME" />» برای مرتبط‌سازی به مجوز نیاز دارد. قبل از پذیرش، لطفاً تأیید کنید که این گذرکلید در آن دستگاه نشان داده می‌شود: <ph name="PASSKEY" /></translation>
-<translation id="2435457462613246316">نمایش گذرواژه</translation>
+<translation id="2435457462613246316">نشان دادن گذرواژه</translation>
 <translation id="2437771564543046790">باتری ضعیف است. «بهینه‌سازی باتری» روشن است</translation>
 <translation id="243878895369688216">دیروز باز شده است</translation>
 <translation id="2440978926514840421">‏ضبط GIF انجام شد</translation>
@@ -1959,7 +1959,7 @@
 برای خاموش کردن دستگاه، دکمه روشن/خاموش روی دستگاه را دوباره فشار دهید و نگه دارید.</translation>
 <translation id="7523420897035067483">وقتی در حالت «تمرکز» هستید، «مزاحم نشوید» فعال می‌شود</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
-<translation id="7525067979554623046">ایجاد</translation>
+<translation id="7525067979554623046">ایجاد کردن</translation>
 <translation id="7526573455193969409">ممکن است شبکه پایش شود</translation>
 <translation id="7534543072325030705">«رأی موافق» بازخوردی با این معنا ارسال می‌کند که شما این گروه پیشنهادی را می‌پسندید</translation>
 <translation id="7536035074519304529">‏نشانی IP: <ph name="ADDRESS" /></translation>

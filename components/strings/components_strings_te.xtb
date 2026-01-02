@@ -1440,6 +1440,7 @@
 <translation id="3342018947887487892">తర్వాత, మీరు చూసే సైట్, ఈ సమాచారాన్ని అడగవచ్చు — మీ యాడ్ టాపిక్‌లు లేదా మీరు చూసిన సైట్‌లు సూచించిన యాడ్‌లు.</translation>
 <translation id="334438173029876234">స్కేట్‌బోర్డింగ్ ఎక్విప్‌మెంట్</translation>
 <translation id="3347146863028219517">స్కీయింగ్ &amp; స్నోబోర్డింగ్</translation>
+<translation id="3349610303043713601">AIతో బ్రౌజ్ చేయండి</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">10 సెకన్లు రీప్లే చేయండి</translation>
 <translation id="3352881017886802007">క్రీడా గేమ్‌లు</translation>
@@ -3298,7 +3299,7 @@
 <translation id="6341434961864773665">{0,plural, =1{ఈ ఫైల్‌ను <ph name="DESTINATION_NAME" />‌కు అప్‌లోడ్ చేయవద్దని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేస్తోంది}other{ఈ ఫైల్స్‌ను <ph name="DESTINATION_NAME" />‌కు అప్‌లోడ్ చేయవద్దని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేస్తోంది}}</translation>
 <translation id="6342069812937806050">ఇప్పుడే</translation>
 <translation id="6342171901363060580">ఈ సైట్ HTTPSను సపోర్ట్ చేయదు, అంతే కాకుండా మీరు అజ్ఞాత మోడ్‌లో ఉన్నారు, కాబట్టి మీకు ఈ హెచ్చరిక కనిపిస్తోంది. <ph name="LEARN_MORE" /></translation>
-<translation id="634500758737709758">దిశలు</translation>
+<translation id="634500758737709758">దిశలు (డైరెక్షన్స్)</translation>
 <translation id="6348220984832452017">యాక్టివ్‌గా ఉన్న వేరియేషన్‌లు</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" />‌ను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="6351658970066645919">బ్రౌజింగ్ డేటాను తొలగించండి</translation>
@@ -4055,7 +4056,6 @@
 <translation id="753556296624075801">Google అందిస్తోంది</translation>
 <translation id="753713322968419914">Chrome ఆటోఫిల్ నుండి ఇంటి అడ్రస్‌ను తీసివేయాలా?</translation>
 <translation id="7537536606612762813">తప్పనిసరి</translation>
-<translation id="7541043894191476250">సందర్భోచితమైన టాస్క్‌లు</translation>
 <translation id="7543525346216957623">మీ తల్లి/తండ్రిని అడగండి</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> ప్రారంభమవుతోంది</translation>
 <translation id="7548892272833184391">కనెక్షన్ ఎర్రర్‌లను పరిష్కరించండి</translation>

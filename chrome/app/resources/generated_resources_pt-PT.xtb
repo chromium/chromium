@@ -527,7 +527,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1342886103232377846">Para verificar se existem palavras-passe comprometidas, aceda ao Gestor de Palavras-passe da Google</translation>
 <translation id="1343920184519992513">Continue onde parou e abra um conjunto específico de páginas</translation>
 <translation id="1344141078024003905">Está a transmitir o ecrã. Pode pausar ou parar a transmissão do ecrã em qualquer altura.</translation>
-<translation id="13449088910457661">O Gemini funciona nos seus separadores para concluir as tarefas que lhe atribuir. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="1346403631707626730">Envie dados de utilização e diagnósticos. Ajude a melhorar a experiência Android da criança enviando automaticamente dados de diagnósticos, de utilização de apps e do dispositivo para a Google. Estes dados não vão ser usados para identificar a criança e vão ajudar a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudam as apps e os parceiros Google, como os programadores Android. Se a Atividade da Web e de apps adicional estiver ativada para a criança, estes dados podem ser guardados na respetiva Conta Google. <ph name="BEGIN_LINK1" />Saiba mais sobre as métricas<ph name="BEGIN_LINK1_END" />Saiba mais<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">Confirmar e reiniciar</translation>
 <translation id="1346748346194534595">Direita</translation>
@@ -1972,6 +1971,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2319072477089403627">A ligar ao seu telemóvel Android…</translation>
 <translation id="2319459402137712349">Selecione um campo de texto para abrir o teclado. Também pode selecionar o ícone de teclado na parte inferior do ecrã.</translation>
 <translation id="2319993584768066746">Fotos do ecrã de início de sessão</translation>
+<translation id="2321487076181785382">Separadores divididos</translation>
 <translation id="2322193970951063277">Cabeçalhos e rodapés</translation>
 <translation id="2322318151094136999">Quando um site pretender aceder a portas de série, perguntar se tem autorização (recomendado)</translation>
 <translation id="2322622365472107569">Hora de fim: <ph name="TIME" /></translation>
@@ -6164,7 +6164,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5204967432542742771">Introduzir palavra-passe</translation>
 <translation id="5205484256512407285">Nunca utilizar dados móveis para transferir</translation>
 <translation id="520568280985468584">A rede foi adicionada com êxito. Pode demorar vários minutos para que a rede móvel fique ativa.</translation>
-<translation id="520576054436518354">Permita que o Gemini navegue por si</translation>
 <translation id="5207949376430453814">Realçar cursor do texto</translation>
 <translation id="520840839826327499">O <ph name="SERVICE_NAME" /> quer verificar se está a usar um dispositivo com ChromeOS elegível.</translation>
 <translation id="5208722776934437424">Alterar autorizações</translation>
@@ -10211,6 +10210,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8011372169388649948">"<ph name="BOOKMARK_TITLE" />" movido.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Detalhes da zona Wi-Fi instantânea</translation>
+<translation id="8013181884974864006">Tarefas contextuais</translation>
 <translation id="8013534738634318212">Estes sites estão num grupo definido por <ph name="RWS_OWNER" />. Os sites num grupo podem ver a sua atividade no grupo.</translation>
 <translation id="8013993649590906847">Se uma imagem não tiver uma descrição útil, o Chrome tenta fornecer uma. Para criar as descrições, são enviadas imagens para a Google.</translation>
 <translation id="8014154204619229810">O atualizador está em execução atualmente. Atualize dentro de um minuto para verificar novamente.</translation>

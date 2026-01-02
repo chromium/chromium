@@ -1446,6 +1446,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3342018947887487892">Luego, un sitio que visites puede solicitar esta información, ya sea sobre los temas de anuncios o sobre los anuncios sugeridos por los sitios que visitaste.</translation>
 <translation id="334438173029876234">Equipo para skateboarding</translation>
 <translation id="3347146863028219517">Esquí y snowboard</translation>
+<translation id="3349610303043713601">Navegar con IA</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Volver a reproducir 10 segundos</translation>
 <translation id="3352881017886802007">Juegos deportivos</translation>
@@ -2052,7 +2053,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4277529130885813215">Usar otro dispositivo</translation>
 <translation id="4277937682389409325">Dirección local</translation>
 <translation id="4278090321534187713">Se inhabilitan las tarjetas que no acepta este comercio</translation>
-<translation id="4278390842282768270">Permitidas</translation>
+<translation id="4278390842282768270">Permitido</translation>
 <translation id="4281245629646759298">Amarillo claro</translation>
 <translation id="4281998142035485137">{0,plural, =1{¿Quieres abrir un archivo confidencial?}other{¿Quieres abrir archivos confidenciales?}}</translation>
 <translation id="4282280603030594840">Compra de vehículos</translation>
@@ -4061,7 +4062,6 @@ Detalles adicionales:
 <translation id="753556296624075801">Con la tecnología de Google</translation>
 <translation id="753713322968419914">¿Quieres quitar la dirección de casa de la función Autocompletar de Chrome?</translation>
 <translation id="7537536606612762813">Obligatoria</translation>
-<translation id="7541043894191476250">Tareas contextuales</translation>
 <translation id="7543525346216957623">Solicita permiso a tu madre o padre</translation>
 <translation id="7546409722674205727">Iniciando <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Cómo corregir errores de conexión</translation>
@@ -4962,7 +4962,7 @@ Detalles adicionales:
 <translation id="9046578823518542618"><ph name="URL" /> quiere buscar y conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="9046864189129893978">Micrófonos (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">La pantalla de las condiciones del servicio de Compra ahora y paga después está abierta a media altura.</translation>
-<translation id="9047528041803621289">La opción predeterminada te permite buscar en la Web. Puedes cambiarlo en la configuración.</translation>
+<translation id="9047528041803621289">La opción predeterminada te permite buscar en la Web. Puedes cambiarla en la configuración.</translation>
 <translation id="9048035366624198823">Estas acciones requieren que se establezca la política <ph name="POLICY_NAME" /> como <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">60.96 × 91.44 cm</translation>
 <translation id="9049981332609050619">Has intentado acceder a <ph name="DOMAIN" />, pero el servidor presentó un certificado no válido.</translation>

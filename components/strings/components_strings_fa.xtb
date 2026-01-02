@@ -1445,6 +1445,7 @@
 <translation id="3342018947887487892">بعداً، سایتی که از آن بازدید می‌کنید می‌تواند این اطلاعات را درخواست کند: یا موضوع‌های آگهی یا آگهی‌هایی که براساس سایت‌های بازدید شده شما پیشنهاد شده است.</translation>
 <translation id="334438173029876234">تجهیزات اسکیت بورد</translation>
 <translation id="3347146863028219517">اسکی و اسنوبردسواری</translation>
+<translation id="3349610303043713601">مرور با هوش مصنوعی</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">‫۱۰ ثانیه پخش مجدد</translation>
 <translation id="3352881017886802007">بازی‌های ورزشی</translation>
@@ -3427,7 +3428,7 @@
 <translation id="6513005815064132016">می‌تواند ردیابی موقعیت دوربین را درخواست دهد</translation>
 <translation id="6516242269547757923">‏بدون استفاده از برنامه بانک، در Chrome پرداخت کنید</translation>
 <translation id="6517596291481585650">این خط‌مشی به‌عنوان فهرستی که خط‌مشی مشخص کرده است ادغام نشد، زیرا فهرست نیست.</translation>
-<translation id="6518133107902771759">تأیید</translation>
+<translation id="6518133107902771759">درستی‌سنجی</translation>
 <translation id="6519885440226079262">می‌تواند برای ردیابی دست‌هایتان درخواست دهد</translation>
 <translation id="6520026037299163656">برنامه وب و ابزار آنلاین</translation>
 <translation id="65203098586853226">ترجمه <ph name="SOURCE" /> به <ph name="TARGET" /></translation>
@@ -4048,7 +4049,7 @@
 <translation id="752189128961566325">‏می‌توانید از آن در محصولات Google استفاده کنید</translation>
 <translation id="7523408071729642236">تولید</translation>
 <translation id="7524958309155133228">از <ph name="ENGINE" /> بخواهید</translation>
-<translation id="7525067979554623046">ایجاد</translation>
+<translation id="7525067979554623046">ایجاد کردن</translation>
 <translation id="7525804896095537619">نام نمی‌تواند خالی باشد</translation>
 <translation id="7526934274050461096">اتصال شما به این سایت خصوصی نیست</translation>
 <translation id="7529884293139707752">آموزش در خانه</translation>
@@ -4060,7 +4061,6 @@
 <translation id="753556296624075801">‏قدرت‌گرفته از Google</translation>
 <translation id="753713322968419914">‏نشانی خانه از تکمیل خودکار Chrome برداشته شود؟</translation>
 <translation id="7537536606612762813">اجباری</translation>
-<translation id="7541043894191476250">تکالیف بافتاری</translation>
 <translation id="7543525346216957623">از والدینتان بخواهید این کار را انجام دهد</translation>
 <translation id="7546409722674205727">درحال راه‌اندازی <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">رفع خطاهای اتصال</translation>

@@ -528,7 +528,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1342886103232377846">Pour vérifier les mots de passe compromis, accédez au gestionnaire de mots de passe Google</translation>
 <translation id="1343920184519992513">Reprenez le cours de vos activités et ouvrez un ensemble défini de pages</translation>
 <translation id="1344141078024003905">Vous diffusez votre écran. Vous pouvez suspendre ou arrêter la diffusion de votre écran à tout moment.</translation>
-<translation id="13449088910457661">Gemini accomplit les tâches que vous lui confiez à partir de vos onglets. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="1346403631707626730">Envoyez les données d'utilisation et de diagnostic. Aidez-nous à améliorer l'expérience Android de votre enfant en envoyant automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applis. L'envoi de ces données ne sera pas utilisé pour identifier votre enfant, mais pour assurer la stabilité du système et des applis, et pour apporter d'autres améliorations. Certaines données agrégées contribueront également à améliorer les applis Google et elles aideront nos partenaires, comme les développeurs Android. Si le paramètre relatif aux autres activités sur le Web et dans les applis est activé pour votre enfant, ces données peuvent être enregistrées dans son compte Google. <ph name="BEGIN_LINK1" />En savoir plus sur les mesures<ph name="BEGIN_LINK1_END" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">Confirmer et redémarrer</translation>
 <translation id="1346748346194534595">À droite</translation>
@@ -1973,6 +1972,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2319072477089403627">Connexion à votre téléphone Android en cours...</translation>
 <translation id="2319459402137712349">Sélectionnez un champ de texte pour ouvrir le clavier. Vous pouvez également sélectionner l'icône du clavier en bas de votre écran.</translation>
 <translation id="2319993584768066746">Photos à l'écran de connexion</translation>
+<translation id="2321487076181785382">Onglets divisés</translation>
 <translation id="2322193970951063277">En-têtes et pieds de page</translation>
 <translation id="2322318151094136999">Demander quand un site souhaite accéder aux ports série (recommandé)</translation>
 <translation id="2322622365472107569">Heure de fin : <ph name="TIME" /></translation>
@@ -6165,7 +6165,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5204967432542742771">Entrez le mot de passe</translation>
 <translation id="5205484256512407285">Ne jamais utiliser les données cellulaires pour effectuer les transferts</translation>
 <translation id="520568280985468584">Le réseau a bien été ajouté. L'activation de votre réseau cellulaire peut prendre plusieurs minutes.</translation>
-<translation id="520576054436518354">Laisser Gemini naviguer pour vous</translation>
 <translation id="5207949376430453814">Mettre le point d'insertion de texte en surbrillance</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> veut vérifier si vous utilisez un appareil Chrome OS admissible.</translation>
 <translation id="5208722776934437424">Modifier les autorisations</translation>
@@ -10211,6 +10210,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8011372169388649948">« <ph name="BOOKMARK_TITLE" /> » déplacé.</translation>
 <translation id="8012188750847319132">verrouillage des majuscules</translation>
 <translation id="8012463809859447963">Détails sur le point d'accès sans fil immédiat</translation>
+<translation id="8013181884974864006">Tâches contextuelles</translation>
 <translation id="8013534738634318212">Ces sites font partie d'un groupe défini par <ph name="RWS_OWNER" />. Les sites d'un groupe peuvent voir votre activité dans le groupe.</translation>
 <translation id="8013993649590906847">Si une image n'est pas accompagnée d'une description utile, Chrome essaiera de vous en proposer une. Pour créer des descriptions, les images sont envoyées à Google.</translation>
 <translation id="8014154204619229810">L'outil de mise à jour est en cours d'exécution. Procédez à une actualisation dans une minute pour vérifier à nouveau.</translation>

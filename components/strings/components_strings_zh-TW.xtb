@@ -695,7 +695,7 @@
 <translation id="2130448033692577677">你並未設定 DnsOverHttpsMode 政策，因此系統無法套用你指定的範本。</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />。<ph name="MARKETING_SNIPPET" /></translation>
-<translation id="2132825047782982803">系統採隨機方式排列，你隨時可以變更預設設定。</translation>
+<translation id="2132825047782982803">下方搜尋引擎是以隨機方式排列，你隨時可以變更預設設定。</translation>
 <translation id="2137891579555018930">正在等待許可...</translation>
 <translation id="213826338245044447">行動版書籤</translation>
 <translation id="2141000681034340397">編輯輸入內容</translation>
@@ -1443,6 +1443,7 @@
 <translation id="3342018947887487892">在此之後，你造訪的網站可以要求取得這項資訊，包括廣告主題或是曾造訪網站的廣告建議。</translation>
 <translation id="334438173029876234">滑板裝備</translation>
 <translation id="3347146863028219517">滑雪與單板滑雪</translation>
+<translation id="3349610303043713601">使用 AI 瀏覽</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">重播 10 秒</translation>
 <translation id="3352881017886802007">運動遊戲</translation>
@@ -4058,7 +4059,6 @@
 <translation id="753556296624075801">Google 技術提供</translation>
 <translation id="753713322968419914">要從 Chrome 自動填入內容移除住家地址嗎？</translation>
 <translation id="7537536606612762813">強制</translation>
-<translation id="7541043894191476250">關聯工作</translation>
 <translation id="7543525346216957623">請徵求家長同意</translation>
 <translation id="7546409722674205727">正在啟動「<ph name="APP_NAME" />」</translation>
 <translation id="7548892272833184391">修正連線錯誤</translation>

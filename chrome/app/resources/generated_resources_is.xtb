@@ -528,7 +528,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1342886103232377846">Opnaðu Google-aðgangsorðastjórnun til að leita að aðgangsorðum í hættu</translation>
 <translation id="1343920184519992513">Haltu áfram þar sem frá var horfið og opnaðu ákveðinn hóp síðna</translation>
 <translation id="1344141078024003905">Þú ert að varpa skjánum þínum. Þú getur gert hlé á eða hætt að varpa skjánum hvenær sem er.</translation>
-<translation id="13449088910457661">Gemini hefur aðgang að flipunum þínum til að ljúka verkefnum sem þú gefur því. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
 <translation id="1346403631707626730">Sendu notkunar- og greiningargögn. Hjálpaðu okkur að bæta upplifun barnsins af Android með því að senda greiningargögn og gögn um notkun tækis og forrita sjálfkrafa til Google. Gögnin verða ekki notuð til að bera kennsl á barnið, eingöngu til að stuðla að stöðugleika kerfa og forrita sem og öðrum endurbótum. Sum samantekin gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android. Ef kveikt er á ítarlegri vef- og forritavirkni fyrir barnið kunna þessi gögn að vera vistuð á Google-reikningi þess. <ph name="BEGIN_LINK1" />Nánar um mæligildi<ph name="BEGIN_LINK1_END" />Nánar<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">Staðfesta og endurræsa</translation>
 <translation id="1346748346194534595">Réttsælis</translation>
@@ -1986,6 +1985,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2319072477089403627">Tengir Android-símann þinn...</translation>
 <translation id="2319459402137712349">Veldu textareit til að opna lyklaborðið. Þú getur einnig valið lyklaborðstáknið neðst á skjánum.</translation>
 <translation id="2319993584768066746">Myndir á innskráningarskjá</translation>
+<translation id="2321487076181785382">Skipta flipum</translation>
 <translation id="2322193970951063277">Hausar og fætur</translation>
 <translation id="2322318151094136999">Spyrja þegar vefsvæði vill fá aðgang að raðtengi (ráðlagt)</translation>
 <translation id="2322622365472107569">Lokatími <ph name="TIME" /></translation>
@@ -6177,7 +6177,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5204967432542742771">Sláðu inn aðgangsorð</translation>
 <translation id="5205484256512407285">Aldrei nota farsímagögn við flutning</translation>
 <translation id="520568280985468584">Netkerfi var bætt við. Nokkrar mínútur gætu liðið áður en farsímakerfið virkjast.</translation>
-<translation id="520576054436518354">Láttu Gemini vafra fyrir þig</translation>
 <translation id="5207949376430453814">Auðkenna textainnskotsmerki</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> vill kanna hvort þú sért að nota gjaldgengt ChromeOS tæki.</translation>
 <translation id="5208722776934437424">Breyta heimildum</translation>
@@ -10224,6 +10223,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8011372169388649948">„<ph name="BOOKMARK_TITLE" />“ flutt.</translation>
 <translation id="8012188750847319132">hástafalás</translation>
 <translation id="8012463809859447963">Ítaratriði skynditengingar við heitan reit</translation>
+<translation id="8013181884974864006">Samhengismiðuð verkefni</translation>
 <translation id="8013534738634318212">Þessi vefsvæði eru í hópi sem er skilgreindur af <ph name="RWS_OWNER" />. Vefsvæði innan hóps geta séð virkni þína í hópnum.</translation>
 <translation id="8013993649590906847">Ef gagnlega lýsingu vantar við mynd reynir Chrome að útvega þér lýsingu. Til að búa til lýsingar eru myndir sendar til Google.</translation>
 <translation id="8014154204619229810">Uppsetningarforritið er í gangi. Endurnýjaðu eftir smástund til að athuga aftur.</translation>

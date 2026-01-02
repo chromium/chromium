@@ -73,7 +73,7 @@
 <translation id="1264156759663453185">نوشتار انتخاب‌شده برای ترجمه جزئی خیلی زیاد است.</translation>
 <translation id="1264974993859112054">ورزش</translation>
 <translation id="126737128831326059">‏‫Export Successful (باموفقیت صادر شد)</translation>
-<translation id="1272079795634619415">توقف</translation>
+<translation id="1272079795634619415">ایست</translation>
 <translation id="1273416271143914096">{count,plural, =1{‫{count} گذرواژه}one{‫{count} گذرواژه}other{‫{count} گذرواژه}}</translation>
 <translation id="1275718070701477396">انتخاب شد</translation>
 <translation id="1285320974508926690">این سایت هرگز ترجمه نشود</translation>
@@ -393,7 +393,7 @@
 <translation id="243275146591958220">لغو بارگیری</translation>
 <translation id="2434405374328098816">قبلاً گذرواژه‌ای برای «<ph name="USERNAME" />» در <ph name="WEBSITE" /> ذخیره کرده‌اید</translation>
 <translation id="2434918313224755415">برای مرور در «حالت ناشناس»، می‌توانید به چپ پیمایش کنید.</translation>
-<translation id="2435457462613246316">نمایش گذرواژه</translation>
+<translation id="2435457462613246316">نشان دادن گذرواژه</translation>
 <translation id="2451607499823206582">پیگیری</translation>
 <translation id="2458827363789845126">{count,plural, =1{‫{count} مورد از سابقه}one{‫{count} مورد از سابقه}other{‫{count} مورد از سابقه}}</translation>
 <translation id="2461070143328828326">تنظیمات رمز عبور</translation>
@@ -450,7 +450,7 @@
 <translation id="2652129567809778422">انتخاب گذرواژه</translation>
 <translation id="2658056020748144467">فایل باز نشد</translation>
 <translation id="2661809266906115479">‫<ph name="TITLE" />، <ph name="STATE" />، فقط در این دستگاه، <ph name="URL" /></translation>
-<translation id="2664621323652615289">توقف</translation>
+<translation id="2664621323652615289">ایست</translation>
 <translation id="2666092431469916601">بالا</translation>
 <translation id="2669454659051515572">همه افرادی که از این دستگاه استفاده می‌کنند می‌توانند فایل‌های بارگیری‌شده را ببینند</translation>
 <translation id="2671423594960767771">هم‌رسانی گروه</translation>
@@ -1470,7 +1470,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6505334220040167806">جمع کردن گروه زبانه.</translation>
 <translation id="6506996418997555004">هم‌رسانی کردن گروه زبانه «<ph name="GROUP_NAME" />»</translation>
 <translation id="6507973708545996744">برای دریافت فهرست خواندن در همه دستگاه‌هایتان، به سیستم وارد شوید</translation>
-<translation id="6518133107902771759">تأیید</translation>
+<translation id="6518133107902771759">درستی‌سنجی</translation>
 <translation id="6518861084553706202">برگه‌ها بسته خواهد شد و داده‌های حذف‌شده ممکن است شامل گذرواژه‌ها، سابقه مرور، کوکی‌ها، و موارد دیگر باشد.</translation>
 <translation id="6523575793810663688">روش کار را نشانم بده</translation>
 <translation id="6524082013156754186">ذخیره کردن در حساب</translation>

@@ -182,7 +182,7 @@
 <translation id="1289129165308566697">عرض سجلّ التصفح على الأجهزة الأخرى</translation>
 <translation id="1292571435393770077">الدُرج 16</translation>
 <translation id="1292701964462482250">‏"هناك برامج على جهاز الكمبيوتر تمنع اتصال Chrome بالويب بأمان" (أجهزة الكمبيوتر المزوّدة بنظام التشغيل Windows فقط)</translation>
-<translation id="1293556467332435079">ملفات</translation>
+<translation id="1293556467332435079">الملفات</translation>
 <translation id="1293797321964802402">ظرف مقاس 23 × 28 سم</translation>
 <translation id="129553762522093515">المغلقة حديثًا</translation>
 <translation id="1296930489679394997">مبيعات</translation>
@@ -864,7 +864,7 @@
 <translation id="2370368710215137370">تحميل الملفات</translation>
 <translation id="2370739752330685659">ربما لاحقًا</translation>
 <translation id="2371084566192454134">علامات التبويب ومجموعات علامات التبويب</translation>
-<translation id="2374629208601905275">‏بموجب قانون في منطقتك، يطلب منك Chrome اختيار محرك البحث التلقائي. تُعدّ محركات البحث هذه رائجة في منطقتك ويتم عرضها بترتيب عشوائي.</translation>
+<translation id="2374629208601905275">‏بموجب القانون الساري في منطقتك، يطلب منك Chrome اختيار محرك البحث التلقائي. يشيع استخدام محركات البحث هذه في منطقتك وتظهر بترتيب عشوائي.</translation>
 <translation id="2376455483361831781">جدول جديد</translation>
 <translation id="2377241607395428273">برامج رسومات وصور متحركة</translation>
 <translation id="2378084239755710604">تم إغلاق نافذة حفظ البطاقة.</translation>
@@ -1445,6 +1445,7 @@
 <translation id="3342018947887487892">لاحقًا، يمكن لموقع إلكتروني آخر تزوره أن يطلب هذه المعلومات، وهي إما مواضيع الإعلانات أو الإعلانات المقترَحة من المواقع الإلكترونية التي زرتها سابقًا.</translation>
 <translation id="334438173029876234">معدات ألواح التزحلق</translation>
 <translation id="3347146863028219517">تزلُّج وتزحلُق على الثلج</translation>
+<translation id="3349610303043713601">التصفّح باستخدام الذكاء الاصطناعي</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">إعادة تشغيل 10 ثوانٍ</translation>
 <translation id="3352881017886802007">ألعاب رياضية</translation>
@@ -3508,7 +3509,7 @@
 <translation id="666259744093848177">‏(معالج x86_64 مُترجَم)</translation>
 <translation id="6665553082534466207">عمل ثلاثة ثقوب يمينًا</translation>
 <translation id="6668389483194953109">‏تم العثور على اسم حجم الورقة "custom"، إلا أنّ السمة "custom_size" فارغة أو غير صالحة.</translation>
-<translation id="6670729408462528018">المعرض</translation>
+<translation id="6670729408462528018">معرض الصور</translation>
 <translation id="6671169470640320959">تمويل قروض سيارات</translation>
 <translation id="6671697161687535275">‏هل تريد إزالة اقتراح النموذج من Chromium؟</translation>
 <translation id="6675846980676550611">غير مسموح باستخدام الواقع المعزَّز</translation>
@@ -4060,7 +4061,6 @@
 <translation id="753556296624075801">‏بواسطة Google</translation>
 <translation id="753713322968419914">‏إزالة عنوان المنزل من ميزة "الملء التلقائي" في Chrome؟</translation>
 <translation id="7537536606612762813">إلزامية</translation>
-<translation id="7541043894191476250">المهام السياقية</translation>
 <translation id="7543525346216957623">طلب الإذن من والدَيك</translation>
 <translation id="7546409722674205727">جارٍ تشغيل "<ph name="APP_NAME" />"</translation>
 <translation id="7548892272833184391">إصلاح أخطاء الاتصال</translation>
