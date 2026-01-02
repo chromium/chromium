@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
-import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -83,11 +81,6 @@ public class TabSwitcherCardContextMenuTest {
                 .showContextMenu()
                 .clickAddTabToNewGroup()
                 .pressDone();
-
-        // TODO(crbug.com/468013785): Remove when BlankCTATabInitialStateRule can reset state from
-        // the Tab Switcher.
-        RegularNewTabPageStation ntp = tabSwitcher.openNewTab();
-        assertFinalDestination(ntp);
     }
 
     @Test
@@ -120,11 +113,6 @@ public class TabSwitcherCardContextMenuTest {
         assertNotNull(firstTab.getTabGroupId());
         assertNotNull(secondTab.getTabGroupId());
         assertNotEquals(firstTab.getTabGroupId(), secondTab.getTabGroupId());
-
-        // TODO(crbug.com/468013785): Remove when BlankCTATabInitialStateRule can reset state from
-        // the Tab Switcher.
-        ntp = tabSwitcher.openNewTab();
-        assertFinalDestination(ntp);
     }
 
     @Test
@@ -140,11 +128,6 @@ public class TabSwitcherCardContextMenuTest {
                 tabSwitcher.expectTabCard(secondTabId, secondTab.getTitle()).showContextMenu();
         contextMenu.share.checkAbsent();
         contextMenu.pressBackTo().exitFacility();
-
-        // TODO(crbug.com/468013785): Remove when BlankCTATabInitialStateRule can reset state from
-        // the Tab Switcher.
-        ntp = tabSwitcher.openNewTab();
-        assertFinalDestination(ntp);
     }
 
     @Test
@@ -159,11 +142,6 @@ public class TabSwitcherCardContextMenuTest {
 
         tabSwitcher.expectTabCard(firstTabId, firstTab.getTitle()).showContextMenu().pinTab();
         tabSwitcher.expectTabCard(firstTabId, firstTab.getTitle()).showContextMenu().unpinTab();
-
-        // TODO(crbug.com/468013785): Remove when BlankCTATabInitialStateRule can reset state from
-        // the Tab Switcher.
-        RegularNewTabPageStation ntp = tabSwitcher.openNewTab();
-        assertFinalDestination(ntp);
     }
 
     @Test
@@ -181,11 +159,6 @@ public class TabSwitcherCardContextMenuTest {
         contextMenu.pinTab.checkAbsent();
         contextMenu.unpinTab.checkAbsent();
         contextMenu.pressBackTo().exitFacility();
-
-        // TODO(crbug.com/468013785): Remove when BlankCTATabInitialStateRule can reset state from
-        // the Tab Switcher.
-        ntp = tabSwitcher.openNewTab();
-        assertFinalDestination(ntp);
     }
 
     @Test
@@ -208,8 +181,6 @@ public class TabSwitcherCardContextMenuTest {
         assertEquals(firstTabId, selectedTabIds.get(0).intValue());
 
         editor.openAppMenuWithEditor().groupTabs().pressDone();
-
-        assertFinalDestination(tabSwitcher.openNewTab());
     }
 
     @Test
@@ -222,8 +193,5 @@ public class TabSwitcherCardContextMenuTest {
         RegularTabSwitcherStation tabSwitcher = firstPage.openNewTabFast().openRegularTabSwitcher();
 
         tabSwitcher.expectTabCard(firstTabId, firstTab.getTitle()).showContextMenu().closeTab();
-
-        RegularNewTabPageStation ntp = tabSwitcher.openAppMenu().openNewTab();
-        assertFinalDestination(ntp);
     }
 }
