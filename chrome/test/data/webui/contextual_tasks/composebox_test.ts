@@ -188,4 +188,35 @@ suite('ContextualTasksComposeboxTest', () => {
 
     assertTrue(composebox.lensButtonDisabled);
   });
+
+  test('hides composebox and header when hideInput called', async () => {
+    const composebox = contextualTasksApp.$.composebox;
+    const header = contextualTasksApp.$.composeboxHeaderWrapper;
+
+    testProxy.callbackRouterRemote.hideInput();
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertTrue(!!composebox, 'Composebox should exist after hideInput');
+    assertTrue(!!header, 'Composebox header should exist after hideInput');
+
+    assertTrue(
+        !!header.hidden, 'Composebox header should be hidden after hideInput');
+    assertTrue(
+        !!composebox.hidden, 'Composebox should be hidden after hideInput');
+
+    testProxy.callbackRouterRemote.restoreInput();
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertTrue(!!composebox, 'Composebox should exist after restoreInput');
+    assertFalse(
+        !!composebox.hidden,
+        'Composebox should not be hidden after restoreInput');
+
+    assertTrue(!!header, 'Composebox header should exist after restoreInput');
+    assertFalse(
+        !!header.hidden,
+        'Composebox header should not be hidden after restoreInput');
+  });
 });

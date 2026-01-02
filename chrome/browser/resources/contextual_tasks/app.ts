@@ -32,6 +32,7 @@ export interface ContextualTasksAppElement {
   $: {
     threadFrame: chrome.webviewTag.WebView,
     composebox: ContextualTasksComposeboxElement,
+    composeboxHeaderWrapper: HTMLElement,
   };
 }
 
@@ -115,10 +116,7 @@ export class ContextualTasksAppElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
-      showComposebox_: {
-        type: Boolean,
-        reflect: true,
-      },
+      showComposebox_: {type: Boolean},
       // Means no queries have been submitted in current AIM thread.
       isZeroState_: {
         type: Boolean,
@@ -126,6 +124,7 @@ export class ContextualTasksAppElement extends CrLitElement {
       },
       isAiPage_: {type: Boolean, reflect: true},
       isLensOverlayShowing_: {type: Boolean},
+      showComposeboxHeader_: {type: Boolean},
     };
   }
 
@@ -141,6 +140,7 @@ export class ContextualTasksAppElement extends CrLitElement {
   protected accessor showComposebox_: boolean = true;
   protected accessor isErrorPageVisible_: boolean = false;
   protected accessor isZeroState_: boolean = false;
+  protected accessor showComposeboxHeader_: boolean = true;
 
   protected friendlyZeroStateSubtitle: string =
       loadTimeData.getString('friendlyZeroStateSubtitle');
@@ -201,9 +201,11 @@ export class ContextualTasksAppElement extends CrLitElement {
       }),
       callbackRouter.hideInput.addListener(() => {
         this.showComposebox_ = false;
+        this.showComposeboxHeader_ = false;
       }),
       callbackRouter.restoreInput.addListener(() => {
         this.showComposebox_ = true;
+        this.showComposeboxHeader_ = true;
       }),
       callbackRouter.setTaskDetails.addListener(updateTaskDetailsInUrl),
       callbackRouter.onZeroStateChange.addListener((isZeroState: boolean) => {

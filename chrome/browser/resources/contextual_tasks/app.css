@@ -188,14 +188,14 @@ error-page {
 
 @media (max-width: 900px) {
   :host([is-zero-state_]) #composebox,
-  :host([is-zero-state_]) #relativeThreadHolder {
+  :host([is-zero-state_]) #composeboxHeaderWrapper {
     inset-inline-start: 5%;
     width: calc(90% - 20px);
   }
 }
 @media (max-width: 650px) {
   :host([is-zero-state_]) #composebox,
-  :host([is-zero-state_]) #relativeThreadHolder {
+  :host([is-zero-state_]) #composeboxHeaderWrapper {
     inset-inline-start: 7.5%;
     width: calc(85% - 20px);
   }
@@ -203,7 +203,7 @@ error-page {
 
 @media (max-width: 480px) {
   :host([is-zero-state_]) #composebox,
-  :host([is-zero-state_]) #relativeThreadHolder {
+  :host([is-zero-state_]) #composeboxHeaderWrapper {
     inset-inline-start: 0;
     width: calc(100% - 20px);
   }
@@ -211,7 +211,7 @@ error-page {
 
 @media (min-width: 750px) {
   :host([is-zero-state_]:not([is-shown-in-tab_])) #composebox
-  :host([is-zero-state_]:not([is-shown-in-tab_])) #relativeThreadHolder {
+  :host([is-zero-state_]:not([is-shown-in-tab_])) #composeboxHeaderWrapper {
     inset-inline-start: 40px;
   }
 }
@@ -267,7 +267,7 @@ error-page {
   margin: 0 8px 0 0;
 }
 
-#relativeThreadHolder {
+#composeboxHeaderWrapper {
   background-color: var(--search-background-color);
   display: none;
   justify-content: flex-start;
@@ -278,7 +278,7 @@ error-page {
   width: calc(100% - 20px);
 }
 
-:host([is-zero-state_]) #relativeThreadHolder {
+:host([is-zero-state_]) #composeboxHeaderWrapper {
   display: flex;
 }
 
@@ -287,7 +287,7 @@ error-page {
     inset-inline-start: 30px;
     position: absolute;
   }
-  :host([is-shown-in-tab_]) #relativeThreadHolder {
+  :host([is-shown-in-tab_]) #composeboxHeaderWrapper {
     height: 64px;
     width: 100%;
   }
@@ -295,10 +295,10 @@ error-page {
 
 /* Give thread header more space when it wraps. */
 @media (max-width: 440px) {
-  #relativeThreadHolder {
+  #composeboxHeaderWrapper {
     padding-bottom: 10px;
   }
-  :host(:not([is-shown-in-tab_])) #relativeThreadHolder {
+  :host(:not([is-shown-in-tab_])) #composeboxHeaderWrapper {
     padding-bottom: 20px;
   }
 }
@@ -309,14 +309,14 @@ error-page {
     inset-inline-start: 28px;
     position: absolute;
   }
-  :host(:not([is-shown-in-tab_])) #relativeThreadHolder {
+  :host(:not([is-shown-in-tab_])) #composeboxHeaderWrapper {
     height: 64px;
     width: 100%;
   }
 }
 
 @media (max-height: 480px) {
-  :host([is-zero-state_]) #relativeThreadHolder {
+  :host([is-zero-state_]) #composeboxHeaderWrapper {
     margin-top: 100px;
   }
 }
