@@ -140,6 +140,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/browser_view/model",
     "//ios/chrome/browser/browser_view/test:eg_app_support+eg2",
     "//ios/chrome/browser/collaboration/model/messaging",
+    "//ios/chrome/browser/composebox/ui:eg_app_support+eg2",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/content_suggestions/public:constants",
     "//ios/chrome/browser/content_suggestions/public:ntp_home_constants",

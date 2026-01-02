@@ -5,6 +5,7 @@
 #import <XCTest/XCTest.h>
 
 #import "components/omnibox/browser/aim_eligibility_service_features.h"
+#import "ios/chrome/browser/composebox/ui/composebox_app_interface.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -85,6 +86,25 @@ NSString* kLongText =
   [[EarlGrey
       selectElementWithMatcher:
           grey_accessibilityID(kComposeboxSendButtonAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the Composebox is hidden when not eligible.
+- (void)testComposeboxHiddenWhenNotEligible {
+  // Composebox is not available on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
+  }
+
+  [ComposeboxAppInterface setAimEligible:NO];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGreyUI focusOmnibox];
+
+  // Check that Composebox elements are NOT visible.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
       assertWithMatcher:grey_notVisible()];
 }
 

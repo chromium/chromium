@@ -5,4 +5,6 @@ include_rules = [
   "+ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui/base_grid_view_controller.h",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_empty_view.h",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h",
+  "+ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h",
+  "+ios/chrome/browser/aim/model/mock_ios_chrome_aim_eligibility_service.h"
 ]

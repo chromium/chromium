@@ -77,11 +77,39 @@ source_set("ui_constants") {
   deps = [ "//base" ]
 }
 
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "composebox_app_interface.h",
+    "composebox_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/aim/model:aim_availability",
+    "//ios/chrome/browser/aim/model:test_support",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/test/app:test_support",
+    "//testing/gmock",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "composebox_app_interface.h",
+    "composebox_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}
+
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "composebox_egtest.mm" ]
   deps = [
+    ":eg_test_support+eg2",
     ":ui_constants",
     "//components/omnibox/browser:aim_eligibility_service_features",
     "//ios/chrome/browser/omnibox/public:constants",
