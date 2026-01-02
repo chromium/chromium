@@ -11,8 +11,8 @@ import org.chromium.build.annotations.Nullable;
 
 /** A ConditionalState entered when a ViewElement's View has been still for some amount of time. */
 @NullMarked
-class ViewSettledCarryOn extends CarryOn {
-    ViewSettledCarryOn(@Nullable Activity activity, ViewElement<?> viewElement) {
+public class ViewSettled extends State {
+    ViewSettled(@Nullable Activity activity, ViewElement<?> viewElement) {
         super("ViewSettled");
 
         RootSpec rootSpec;

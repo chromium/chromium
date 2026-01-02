@@ -379,20 +379,20 @@ methods**.
 
 [**`Facility`**]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.Facility&ss=chromium
 
-### CarryOn
+### State
 
-A [** CarryOn **] represents something not tied to a Station, like data written
+A [** State **] represents something not tied to a Station, like data written
 to disk, or a popup that persists through different `Stations`.
 
-Multiple `CarryOns` may be active at one time.
+Multiple `States` may be active at one time.
 
-As with `Stations`, concrete, app-specific implementations of CarryOn should be
+As with `Stations`, concrete, app-specific implementations of State should be
 created in the Transit Layer declaring **Elements**. It usually won't have any
 transition methods.
 
 ### ConditionalStates
 
-`Station`, `Facility` and `CarryOn` extend [**`ConditionalState`**], which means
+`Station`, `Facility` and `State` extend [**`ConditionalState`**], which means
 they declare enter and exit conditions as `Elements` and have a linear
 lifecycle:
 
@@ -413,7 +413,7 @@ Common `Condition` subclasses are provided by the Framework Layer (e.g.
 [`ViewConditions`] and [`CallbackCondition`]).
 
 A lightweight way to wait for multiple `Conditions` without creating any
-concrete `Stations`, `Facilities` or `CarryOns` is to use
+concrete `Stations`, `Facilities` or `States` is to use
 `Condition#runAndWaitFor()`.
 
 [`ViewConditions`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.ViewCondition&ss=chromium
@@ -492,8 +492,8 @@ Transitions into and out of `Facilities` are done by calling `enterFacility()`,
 another `Station`, any active `Facilities` have their exit conditions added to
 the transition conditions.
 
-Transitions into and out of `CarryOns` are done by calling `pickUpCarryOn()` and
-`dropCarryOn()`.
+Transitions into and out of `States` are done by calling `enterState()` and
+`exitState()`.
 
 Conditions not tied to Conditional States can be checked with
 `waitForConditions()`.
@@ -546,7 +546,7 @@ timeouts, adding retries, or disabling the pre-check.
 
 ### Ownership of the Transit Layer {#ownership}
 
-The Chrome-specific `Stations`, `Facilities`, `CarryOns` and `Conditions` that
+The Chrome-specific `Stations`, `Facilities`, `States` and `Conditions` that
 comprise the Transit Layer should be owned by the same team responsible for the
 related production code.
 

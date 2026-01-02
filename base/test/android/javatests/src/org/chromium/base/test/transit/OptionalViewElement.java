@@ -37,7 +37,7 @@ public class OptionalViewElement<ViewT extends View> extends Element<ViewT>
         implements ViewInterface {
     private final ViewSpec<ViewT> mViewSpec;
     private final ViewElement.Options mOptions;
-    private final List<ViewCarryOn<ViewT>> mCarryOns = new ArrayList<>();
+    private final List<ViewPresence<ViewT>> mStates = new ArrayList<>();
 
     OptionalViewElement(ViewSpec<ViewT> viewSpec, ViewElement.Options options) {
         super("OVE/" + viewSpec.getMatcherDescription());
@@ -48,32 +48,32 @@ public class OptionalViewElement<ViewT extends View> extends Element<ViewT>
     @Override
     ConditionWithResult<ViewT> getEnterConditionChecked() {
         // Return the last fulfilled condition.
-        for (int i = mCarryOns.size() - 1; i >= 0; i--) {
-            ViewCarryOn<ViewT> carryOn = mCarryOns.get(i);
-            if (carryOn.getPhase() == ViewCarryOn.Phase.ACTIVE) {
-                return carryOn.viewElement.getEnterConditionChecked();
+        for (int i = mStates.size() - 1; i >= 0; i--) {
+            ViewPresence<ViewT> state = mStates.get(i);
+            if (state.getPhase() == ViewPresence.Phase.ACTIVE) {
+                return state.viewElement.getEnterConditionChecked();
             }
         }
         throw new AssertionError("Need to call checkPresent() first");
     }
 
-    private ViewCarryOn<ViewT> createViewCarryOn() {
+    private ViewPresence<ViewT> createViewPresence() {
         ActivityElement<?> activityElement = mOwner.determineActivityElement();
         RootSpec rootSpec =
                 activityElement == null
                         ? RootSpec.anyRoot()
                         : RootSpec.activityOrDialogRoot(activityElement);
-        ViewCarryOn<ViewT> carryOn =
-                new ViewCarryOn<>(
+        ViewPresence<ViewT> viewPresence =
+                new ViewPresence<>(
                         mViewSpec,
                         ViewElement.newOptions().initFrom(mOptions).rootSpec(rootSpec).build());
-        mCarryOns.add(carryOn);
-        return carryOn;
+        mStates.add(viewPresence);
+        return viewPresence;
     }
 
     /** Ensures the ViewElement has been checked, possibly using a transition. */
-    private ViewCarryOn<ViewT> waitForView() {
-        return Triggers.noopTo().pickUpCarryOn(createViewCarryOn());
+    private ViewPresence<ViewT> waitForView() {
+        return Triggers.noopTo().enterState(createViewPresence());
     }
 
     public ViewT checkPresent() {

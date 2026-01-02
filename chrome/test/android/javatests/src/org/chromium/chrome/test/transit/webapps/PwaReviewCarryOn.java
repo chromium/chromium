@@ -10,13 +10,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chromium.base.test.transit.CarryOn;
+import org.chromium.base.test.transit.State;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.components.webapps.R;
 
 /** The Review Apps screen inside a bottom sheet. */
-public class PwaReviewCarryOn extends CarryOn {
+public class PwaReviewCarryOn extends State {
     static final String WEB_APPS_USED_IN_THE_LAST_MONTH = "Web apps used in the last month";
     public final ViewElement<ViewGroup> appListElement;
     public final ViewElement<View> deselectButtonElement;
@@ -35,11 +35,11 @@ public class PwaReviewCarryOn extends CarryOn {
 
     /** Ensures an entry for an app is shown. */
     public PwaReviewAppEntryCarryOn focusOnEntry(String appName) {
-        return noopTo().pickUpCarryOn(new PwaReviewAppEntryCarryOn(this, appName));
+        return noopTo().enterState(new PwaReviewAppEntryCarryOn(this, appName));
     }
 
     /** Presses back, expecting to return to the initial restore screen. */
     public PwaRestoreCarryOn pressBackToReturn() {
-        return pressBackTo().dropCarryOnAnd().pickUpCarryOn(new PwaRestoreCarryOn());
+        return pressBackTo().exitStateAnd().enterState(new PwaRestoreCarryOn());
     }
 }

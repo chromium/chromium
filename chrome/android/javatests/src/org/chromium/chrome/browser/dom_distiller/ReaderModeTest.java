@@ -458,7 +458,7 @@ public class ReaderModeTest {
 
         // TODO(crbug.com/40125950): change font family as well.
 
-        dialog.pressBackTo().dropCarryOn();
+        dialog.pressBackTo().exitState();
     }
 
     /**

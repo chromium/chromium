@@ -135,7 +135,7 @@ public class TabSwitcherLayoutPTTest {
             CtaPageStation currentStation) {
         return currentStation
                 .openRegularTabSwitcherAnd()
-                .pickUpCarryOnAnd(
+                .enterStateAnd(
                         new TabThumbnailsCapturedCarryOn(
                                 currentStation.getTabModelSelector(), /* isIncognito= */ false))
                 .completeAndGet(RegularTabSwitcherStation.class);
@@ -146,7 +146,7 @@ public class TabSwitcherLayoutPTTest {
             CtaPageStation currentStation) {
         return currentStation
                 .openIncognitoTabSwitcherAnd()
-                .pickUpCarryOnAnd(
+                .enterStateAnd(
                         new TabThumbnailsCapturedCarryOn(
                                 currentStation.getTabModelSelector(), /* isIncognito= */ true))
                 .completeAndGet(IncognitoTabSwitcherStation.class);

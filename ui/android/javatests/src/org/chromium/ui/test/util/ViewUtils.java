@@ -38,9 +38,9 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Assert;
 
-import org.chromium.base.test.transit.ViewCarryOn;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewFinder;
+import org.chromium.base.test.transit.ViewPresence;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 
@@ -235,8 +235,8 @@ public class ViewUtils {
      */
     public static ViewInteraction onViewWaiting(
             Matcher<View> viewMatcher, ViewElement.Options options) {
-        ViewCarryOn<View> viewCarryOn = ViewFinder.waitForView(viewMatcher, options);
-        return viewCarryOn.onView();
+        ViewPresence<View> viewPresence = ViewFinder.waitForView(viewMatcher, options);
+        return viewPresence.onView();
     }
 
     /**
@@ -254,8 +254,9 @@ public class ViewUtils {
         if (checkRootDialog) {
             optionsBuilder = optionsBuilder.inDialog();
         }
-        ViewCarryOn<View> viewCarryOn = ViewFinder.waitForView(viewMatcher, optionsBuilder.build());
-        return viewCarryOn.onView();
+        ViewPresence<View> viewPresence =
+                ViewFinder.waitForView(viewMatcher, optionsBuilder.build());
+        return viewPresence.onView();
     }
 
     /**
@@ -267,9 +268,9 @@ public class ViewUtils {
      * @return An interaction on the matching view.
      */
     public static ViewInteraction onViewWaiting(Matcher<View> viewMatcher) {
-        ViewCarryOn<View> viewCarryOn =
+        ViewPresence<View> viewPresence =
                 ViewFinder.waitForView(viewMatcher, ViewElement.allowDisabledOption());
-        return viewCarryOn.onView();
+        return viewPresence.onView();
     }
 
     /**

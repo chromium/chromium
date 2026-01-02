@@ -6,13 +6,13 @@ package org.chromium.chrome.test.transit.tabmodel;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
-import org.chromium.base.test.transit.CarryOn;
+import org.chromium.base.test.transit.State;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** CarryOn to check for existence of all tab thumbnails on disk for a TabModel. */
-public class TabThumbnailsCapturedCarryOn extends CarryOn {
+public class TabThumbnailsCapturedCarryOn extends State {
     public TabThumbnailsCapturedCarryOn(TabModelSelector tabModelSelector, boolean isIncognito) {
         TabModel tabModel = tabModelSelector.getModel(isIncognito);
         int tabCount = runOnUiThreadBlocking(() -> tabModel.getCount());

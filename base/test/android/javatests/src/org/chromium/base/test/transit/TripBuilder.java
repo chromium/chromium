@@ -29,8 +29,8 @@ public class TripBuilder {
 
     private final List<Facility<?>> mFacilitiesToEnter = new ArrayList<>();
     private final List<Facility<?>> mFacilitiesToExit = new ArrayList<>();
-    private final List<CarryOn> mCarryOnsToPickUp = new ArrayList<>();
-    private final List<CarryOn> mCarryOnsToDrop = new ArrayList<>();
+    private final List<State> mStatesToEnter = new ArrayList<>();
+    private final List<State> mStatesToExit = new ArrayList<>();
     private final List<Condition> mConditions = new ArrayList<>();
     private final List<Trigger> mTriggers = new ArrayList<>();
     private TransitionOptions mOptions = TransitionOptions.DEFAULT;
@@ -38,7 +38,7 @@ public class TripBuilder {
     private @Nullable Station<?> mOriginStation;
     private @Nullable Station<?> mContextStation;
     private @Nullable Facility<?> mContextFacility;
-    private @Nullable CarryOn mContextCarryOn;
+    private @Nullable State mContextState;
     private boolean mInNewTask;
     private boolean mIsComplete;
 
@@ -83,8 +83,8 @@ public class TripBuilder {
         } else if (conditionalState instanceof Facility<?> facility) {
             mContextFacility = facility;
             mContextStation = facility.getHostStation();
-        } else if (conditionalState instanceof CarryOn carryOn) {
-            mContextCarryOn = carryOn;
+        } else if (conditionalState instanceof State state) {
+            mContextState = state;
         }
         return this;
     }
@@ -165,23 +165,23 @@ public class TripBuilder {
     }
 
     @CheckReturnValue
-    public TripBuilder pickUpCarryOnAnd(CarryOn carryOn) {
-        carryOn.assertInPhase(Phase.NEW);
-        mCarryOnsToPickUp.add(carryOn);
+    public TripBuilder enterStateAnd(State state) {
+        state.assertInPhase(Phase.NEW);
+        mStatesToEnter.add(state);
         return this;
     }
 
     @CheckReturnValue
-    public TripBuilder dropCarryOnAnd() {
-        assert mContextCarryOn != null
-                : "Context CarryOn not set, pass the not to drop as a parameter";
-        return dropCarryOnAnd(mContextCarryOn);
+    public TripBuilder exitStateAnd() {
+        assert mContextState != null
+                : "Context State not set, pass the state to exit as a parameter";
+        return exitStateAnd(mContextState);
     }
 
     @CheckReturnValue
-    public TripBuilder dropCarryOnAnd(CarryOn carryOn) {
-        carryOn.assertInPhase(Phase.ACTIVE);
-        mCarryOnsToDrop.add(carryOn);
+    public TripBuilder exitStateAnd(State state) {
+        state.assertInPhase(Phase.ACTIVE);
+        mStatesToExit.add(state);
         return this;
     }
 
@@ -242,17 +242,17 @@ public class TripBuilder {
         waitForAnd(conditions).complete();
     }
 
-    public <CarryOnT extends CarryOn> CarryOnT pickUpCarryOn(CarryOnT carryOn) {
-        pickUpCarryOnAnd(carryOn).complete();
-        return carryOn;
+    public <StateT extends State> StateT enterState(StateT state) {
+        enterStateAnd(state).complete();
+        return state;
     }
 
-    public void dropCarryOn() {
-        dropCarryOnAnd().complete();
+    public void exitState() {
+        exitStateAnd().complete();
     }
 
-    public void dropCarryOn(CarryOn carryOn) {
-        dropCarryOnAnd(carryOn).complete();
+    public void exitState(State state) {
+        exitStateAnd(state).complete();
     }
 
     /** Execute the transition synchronously, entering |facility| and returning it. */
@@ -376,8 +376,8 @@ public class TripBuilder {
                         mDestinationStation,
                         mFacilitiesToExit,
                         mFacilitiesToEnter,
-                        mCarryOnsToDrop,
-                        mCarryOnsToPickUp,
+                        mStatesToExit,
+                        mStatesToEnter,
                         mOptions,
                         buildCompleteTrigger());
         trip.transitionSync();
@@ -408,8 +408,8 @@ public class TripBuilder {
         assert mDestinationStation == null : justRunErrorMessage;
         assert mFacilitiesToExit.isEmpty() : justRunErrorMessage;
         assert mFacilitiesToEnter.isEmpty() : justRunErrorMessage;
-        assert mCarryOnsToDrop.isEmpty() : justRunErrorMessage;
-        assert mCarryOnsToPickUp.isEmpty() : justRunErrorMessage;
+        assert mStatesToExit.isEmpty() : justRunErrorMessage;
+        assert mStatesToEnter.isEmpty() : justRunErrorMessage;
         assert mConditions.isEmpty() : justRunErrorMessage;
 
         Trigger trigger = buildCompleteTrigger();

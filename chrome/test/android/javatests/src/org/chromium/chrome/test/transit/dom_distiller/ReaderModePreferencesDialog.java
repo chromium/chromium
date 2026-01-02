@@ -17,7 +17,7 @@ import androidx.test.espresso.action.Press;
 import androidx.test.espresso.action.Tap;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.chromium.base.test.transit.CarryOn;
+import org.chromium.base.test.transit.State;
 import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
@@ -30,7 +30,7 @@ import org.chromium.chrome.test.util.MenuUtils;
  *
  * <p>TODO(crbug.com/350074837): Turn this into a Facility when CctPageStation exists.
  */
-public class ReaderModePreferencesDialog extends CarryOn {
+public class ReaderModePreferencesDialog extends State {
     public ViewElement<Button> darkButtonElement;
     public ViewElement<Button> sepiaButtonElement;
     public ViewElement<Button> lightButtonElement;
@@ -87,6 +87,6 @@ public class ReaderModePreferencesDialog extends CarryOn {
                                         InstrumentationRegistry.getInstrumentation(),
                                         activity,
                                         R.id.reader_mode_prefs_id))
-                .pickUpCarryOn(new ReaderModePreferencesDialog());
+                .enterState(new ReaderModePreferencesDialog());
     }
 }

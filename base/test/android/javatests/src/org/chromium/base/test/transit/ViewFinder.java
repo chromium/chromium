@@ -19,7 +19,7 @@ import org.chromium.build.annotations.NullMarked;
  * <p>waitForView() methods wait for Views to exist, be visible, displayed and enabled before
  * returning.
  *
- * <p>Returns {@link ViewCarryOn}s to get/interact with them.
+ * <p>Returns {@link ViewPresence}s to get/interact with them.
  */
 @NullMarked
 public class ViewFinder {
@@ -30,15 +30,15 @@ public class ViewFinder {
      * <p>Pass |options| to override minimum required displayed %, enabled state, etc.
      *
      * @param <ViewT> the type of View to find.
-     * @return A {@link ViewCarryOn} to get/interact with the ViewT.
+     * @return A {@link ViewPresence} to get/interact with the ViewT.
      */
-    public static <ViewT extends View> ViewCarryOn<ViewT> waitForView(
+    public static <ViewT extends View> ViewPresence<ViewT> waitForView(
             Class<ViewT> viewClass,
             Activity activity,
             Matcher<View> matcher,
             ViewElement.Options options) {
-        return noopTo().pickUpCarryOn(
-                        ViewCarryOn.create(
+        return noopTo().enterState(
+                        ViewPresence.create(
                                 viewClass,
                                 matcher,
                                 ViewElement.newOptions()
@@ -52,9 +52,9 @@ public class ViewFinder {
      * |activity|'s subwindows.
      *
      * @param <ViewT> the type of View to find.
-     * @return A {@link ViewCarryOn} to get/interact with the ViewT.
+     * @return A {@link ViewPresence} to get/interact with the ViewT.
      */
-    public static <ViewT extends View> ViewCarryOn<ViewT> waitForView(
+    public static <ViewT extends View> ViewPresence<ViewT> waitForView(
             Class<ViewT> viewClass, Activity activity, Matcher<View> matcher) {
         return waitForView(viewClass, activity, matcher, ViewElement.Options.DEFAULT);
     }
@@ -62,9 +62,9 @@ public class ViewFinder {
     /**
      * Waits for a View that matches |matcher| in one of the |activity|'s subwindows.
      *
-     * @return A {@link ViewCarryOn} to get/interact with the View.
+     * @return A {@link ViewPresence} to get/interact with the View.
      */
-    public static ViewCarryOn<View> waitForView(Activity activity, Matcher<View> matcher) {
+    public static ViewPresence<View> waitForView(Activity activity, Matcher<View> matcher) {
         return waitForView(View.class, activity, matcher);
     }
 
@@ -74,9 +74,9 @@ public class ViewFinder {
      * <p>Pass |options| to override minimum required displayed %, enabled state, etc.
      *
      * @param <ViewT> the type of View to find.
-     * @return A {@link ViewCarryOn} to get/interact with the ViewT.
+     * @return A {@link ViewPresence} to get/interact with the ViewT.
      */
-    public static <ViewT extends View> ViewCarryOn<ViewT> waitForView(
+    public static <ViewT extends View> ViewPresence<ViewT> waitForView(
             Class<ViewT> viewClass, Matcher<View> matcher, ViewElement.Options options) {
         RootSpec rootSpec = options.mRootSpec;
         // If not specified, default to anyRoot().
@@ -84,8 +84,8 @@ public class ViewFinder {
             rootSpec = RootSpec.anyRoot();
         }
 
-        return noopTo().pickUpCarryOn(
-                        ViewCarryOn.create(
+        return noopTo().enterState(
+                        ViewPresence.create(
                                 viewClass,
                                 matcher,
                                 ViewElement.newOptions()
@@ -98,9 +98,9 @@ public class ViewFinder {
      * Waits for a View of a specific subclass of View that matches |matcher| in any root.
      *
      * @param <ViewT> the type of View to find.
-     * @return A {@link ViewCarryOn} to get/interact with the ViewT.
+     * @return A {@link ViewPresence} to get/interact with the ViewT.
      */
-    public static <ViewT extends View> ViewCarryOn<ViewT> waitForView(
+    public static <ViewT extends View> ViewPresence<ViewT> waitForView(
             Class<ViewT> viewClass, Matcher<View> matcher) {
         return waitForView(viewClass, matcher, ViewElement.Options.DEFAULT);
     }
@@ -110,9 +110,9 @@ public class ViewFinder {
      *
      * <p>Pass |options| to override minimum required displayed %, enabled state, etc.
      *
-     * @return A {@link ViewCarryOn} to get/interact with the View.
+     * @return A {@link ViewPresence} to get/interact with the View.
      */
-    public static ViewCarryOn<View> waitForView(
+    public static ViewPresence<View> waitForView(
             Matcher<View> matcher, ViewElement.Options options) {
         return waitForView(View.class, matcher, options);
     }
@@ -120,9 +120,9 @@ public class ViewFinder {
     /**
      * Waits for a View that matches |matcher| in any root.
      *
-     * @return A {@link ViewCarryOn} to get/interact with the View.
+     * @return A {@link ViewPresence} to get/interact with the View.
      */
-    public static ViewCarryOn<View> waitForView(Matcher<View> matcher) {
+    public static ViewPresence<View> waitForView(Matcher<View> matcher) {
         return waitForView(View.class, matcher);
     }
 }

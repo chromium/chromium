@@ -13,7 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 /**
  * Provides ways for tests to interact with a View.
  *
- * <p>Implemented by {@link ViewElement}, {@link OptionalViewElement} and {@link ViewCarryOn}.
+ * <p>Implemented by {@link ViewElement}, {@link OptionalViewElement} and {@link ViewPresence}.
  */
 @NullMarked
 public interface ViewInterface {

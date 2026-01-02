@@ -15,13 +15,13 @@ import android.widget.CheckBox;
 
 import org.hamcrest.Matcher;
 
-import org.chromium.base.test.transit.CarryOn;
 import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.State;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.components.webapps.R;
 
 /** An entry for an app in the Review Apps screen. */
-public class PwaReviewAppEntryCarryOn extends CarryOn {
+public class PwaReviewAppEntryCarryOn extends State {
     public final ViewElement<View> appNameElement;
     public final ViewElement<View> entryElement;
     public final ViewElement<CheckBox> checkboxElement;
