@@ -5743,6 +5743,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabItemPicker.ActiveTabs.Count" units="count"
+    expires_after="2026-05-01">
+  <owner>bbetini@google.com</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    Records the number of 'active' (currently loaded in memory/session) tabs
+    that are eligible for the tab picker. Recorded when the Tab Picker UI is
+    preparing its list of displayable tabs.
+  </summary>
+</histogram>
+
+<histogram name="Android.TabItemPicker.ActiveTabsPicked.Count" units="count"
+    expires_after="2026-05-01">
+  <owner>bbetini@google.com</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    Records the number of 'active' (live) tabs actually selected by the user,
+    when the user confirms their selection in the Tab Picker.
+  </summary>
+</histogram>
+
+<histogram name="Android.TabItemPicker.CachedTabs.Count" units="count"
+    expires_after="2026-05-01">
+  <owner>bbetini@google.com</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    Records the number of tabs found in the PageContentExtractionService cache
+    that are eligible for the tab picker. Recorded when the Tab Picker UI is
+    preparing its list of displayable tabs.
+  </summary>
+</histogram>
+
+<histogram name="Android.TabItemPicker.CachedTabsPicked.Count" units="count"
+    expires_after="2026-05-01">
+  <owner>bbetini@google.com</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    Records the number of 'cached' tabs actually selected by the user, when the
+    user confirms their selection in the Tab Picker.
+  </summary>
+</histogram>
+
 <histogram name="Android.TabItemPicker.SelectableTabs.Count" units="count"
     expires_after="2026-05-01">
   <owner>haileywang@google.com</owner>

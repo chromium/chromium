@@ -41,6 +41,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionService;
 import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionServiceFactory;
@@ -138,6 +139,25 @@ public class TabItemPickerCoordinatorUnitTest {
     @After
     public void tearDown() {
         TabWindowManagerSingleton.setTabWindowManagerForTesting(null);
+    }
+
+    private Tab mockTabActiveState(int tabId, boolean isActive) {
+        Tab tab = Mockito.mock(Tab.class);
+        when(tab.getId()).thenReturn(tabId);
+        when(mTabModelSelector.getTabById(tabId)).thenReturn(tab);
+        when(tab.isFrozen()).thenReturn(!isActive);
+        when(tab.isInitialized()).thenReturn(isActive);
+        when(tab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+
+        if (isActive) {
+            WebContents webContents = Mockito.mock(WebContents.class);
+            RenderWidgetHostView rwhv = Mockito.mock(RenderWidgetHostView.class);
+            when(tab.getWebContents()).thenReturn(webContents);
+            when(webContents.getRenderWidgetHostView()).thenReturn(rwhv);
+        } else {
+            when(tab.getWebContents()).thenReturn(null);
+        }
+        return tab;
     }
 
     @Test
@@ -272,5 +292,53 @@ public class TabItemPickerCoordinatorUnitTest {
         assertFalse(
                 "Should not contain non-cached tab without WebContents",
                 shownTabs.contains(tab3NoWebContentsNotCached));
+    }
+
+    @Test
+    public void testOnCachedTabIdsRetrieved_RecordsHistograms() {
+        when(TabWindowManagerSingleton.getInstance()
+                        .requestSelectorWithoutActivity(anyInt(), any(Profile.class)))
+                .thenReturn(mTabModelSelector);
+        mProfileSupplierImpl.set(mProfile);
+
+        Tab tabActive1 = mockTabActiveState(1, true);
+        Tab tabActive2 = mockTabActiveState(2, true);
+        Tab tabCached = mockTabActiveState(3, false);
+        Tab tabNeither = mockTabActiveState(4, false);
+
+        List<Tab> allTabs = Arrays.asList(tabActive1, tabActive2, tabCached, tabNeither);
+        when(mRegularTabModel.getCount()).thenReturn(allTabs.size());
+
+        when(mRegularTabModel.getTabAt(0)).thenReturn(tabActive1);
+        when(mRegularTabModel.getTabAt(1)).thenReturn(tabActive2);
+        when(mRegularTabModel.getTabAt(2)).thenReturn(tabCached);
+        when(mRegularTabModel.getTabAt(3)).thenReturn(tabNeither);
+        when(mRegularTabModel.iterator()).thenReturn(allTabs.iterator());
+        when(mTabModelSelector.getModel(false)).thenReturn(mRegularTabModel);
+
+        long[] cachedIdsInput = new long[] {3L};
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.TabItemPicker.ActiveTabs.Count", 2)
+                        .expectIntRecord("Android.TabItemPicker.CachedTabs.Count", 1)
+                        .build();
+
+        doAnswer(
+                        invocation -> {
+                            Callback<long[]> callback = invocation.getArgument(0);
+                            callback.onResult(cachedIdsInput);
+                            return null;
+                        })
+                .when(mPageContentExtractionService)
+                .getAllCachedTabIds(any());
+
+        mItemPickerCoordinator.showTabItemPicker(mCallback);
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // Verify expected histogram and that the UI list contains the expected 3 tabs (Active or
+        // Cached)
+        watcher.assertExpected();
+        verify(mTabListEditorController).show(mTabListCaptor.capture(), any(), any());
     }
 }
