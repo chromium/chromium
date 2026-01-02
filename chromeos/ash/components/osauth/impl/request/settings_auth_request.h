@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_REQUEST_SETTINGS_AUTH_REQUEST_H_
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_REQUEST_SETTINGS_AUTH_REQUEST_H_
 
+#include <memory>
+
 #include "chromeos/ash/components/osauth/impl/request/token_based_auth_request.h"
 
 namespace ash {

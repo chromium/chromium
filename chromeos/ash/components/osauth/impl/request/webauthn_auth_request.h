@@ -5,11 +5,16 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_REQUEST_WEBAUTHN_AUTH_REQUEST_H_
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_REQUEST_WEBAUTHN_AUTH_REQUEST_H_
 
+#include <memory>
+#include <string>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/osauth/public/request/auth_request.h"
 
 namespace ash {
+
+class UserContext;
 
 // Passed to `ActiveSessionAuthController::ShowAuthDialog` when authenticating
 // with WebAuthN, handles behavior specific to those requests.
@@ -25,11 +30,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) WebAuthNAuthRequest
   WebAuthNAuthRequest& operator=(const WebAuthNAuthRequest&) = delete;
 
   // AuthRequest:
+  void NotifyAuthResult(std::unique_ptr<UserContext> user_context,
+                        AuthResult result) override;
   AuthSessionIntent GetAuthSessionIntent() const override;
   AuthRequest::Reason GetAuthReason() const override;
   const std::u16string GetDescription() const override;
-  void NotifyAuthSuccess(std::unique_ptr<UserContext> user_context) override;
-  void NotifyAuthFailure() override;
 
   const std::string GetRpId() const;
 

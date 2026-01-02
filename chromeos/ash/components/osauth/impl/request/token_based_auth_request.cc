@@ -17,20 +17,35 @@ TokenBasedAuthRequest::TokenBasedAuthRequest(
 
 TokenBasedAuthRequest::~TokenBasedAuthRequest() = default;
 
-void TokenBasedAuthRequest::NotifyAuthSuccess(
-    std::unique_ptr<UserContext> user_context) {
-  CHECK(user_context);
-  AuthProofToken token =
-      AuthSessionStorage::Get()->Store(std::move(user_context));
+void TokenBasedAuthRequest::CompleteAuthAttempt(
+    std::unique_ptr<UserContext> user_context,
+    bool success) {
   CHECK(on_auth_complete_);
-  std::move(on_auth_complete_)
-      .Run(true, token, cryptohome::kAuthsessionInitialLifetime);
-}
+  if (success) {
+    CHECK(user_context);  // A user_context should always be present on logical
+                          // success.
 
-void TokenBasedAuthRequest::NotifyAuthFailure() {
-  CHECK(on_auth_complete_);
+    AuthProofToken token{};
+    base::TimeDelta timeout = cryptohome::kAuthsessionInitialLifetime;
+
+    // Only generate a real token if we have a UserContext from a successful
+    // authentication that established a cryptohome session (i.e., has a
+    // non-null lifetime). Otherwise, for logical success without a real auth
+    // session, no token is generated.
+    if (!user_context->GetSessionLifetime().is_null()) {
+      token = AuthSessionStorage::Get()->Store(std::move(user_context));
+    }
+    std::move(on_auth_complete_).Run(true, token, timeout);
+    return;
+  }
   std::move(on_auth_complete_)
       .Run(false, ash::AuthProofToken{}, base::TimeDelta{});
+}
+
+void TokenBasedAuthRequest::NotifyAuthResult(
+    std::unique_ptr<UserContext> user_context,
+    AuthResult result) {
+  CompleteAuthAttempt(std::move(user_context), result == AuthResult::kSuccess);
 }
 
 }  // namespace ash

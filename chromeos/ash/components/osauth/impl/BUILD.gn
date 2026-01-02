@@ -66,6 +66,8 @@ component("impl") {
     "prefs.h",
     "request/password_manager_auth_request.cc",
     "request/password_manager_auth_request.h",
+    "request/payments_autofill_auth_request.cc",
+    "request/payments_autofill_auth_request.h",
     "request/settings_auth_request.cc",
     "request/settings_auth_request.h",
     "request/token_based_auth_request.cc",

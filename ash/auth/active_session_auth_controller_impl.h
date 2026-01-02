@@ -19,6 +19,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
@@ -138,8 +139,9 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
                                        // progress, awaiting callback to get
                                        // back user_context to start the
                                        // authentication.
-    kCloseRequested,  // Close requested while we are waiting password/PIN
-                      // authentication callback.
+    kCloseRequested,    // Close requested while we are waiting password/PIN
+                        // authentication callback.
+    kAuthNotAvailable,  // No authentication factors are available.
     // Note: On authentication failure, the state reverts to kInitialized.
   };
 
@@ -189,6 +191,8 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
 
   base::ScopedObservation<views::View, ViewObserver> contents_view_observer_{
       this};
+  base::ScopedObservation<SessionControllerImpl, SessionObserver>
+      session_controller_observation_{this};
 
   raw_ptr<ActiveSessionAuthView> contents_view_ = nullptr;
 

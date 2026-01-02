@@ -1,9 +1,9 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_REQUEST_PASSWORD_MANAGER_AUTH_REQUEST_H_
-#define CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_REQUEST_PASSWORD_MANAGER_AUTH_REQUEST_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_REQUEST_PAYMENTS_AUTOFILL_AUTH_REQUEST_H_
+#define CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_REQUEST_PAYMENTS_AUTOFILL_AUTH_REQUEST_H_
 
 #include <memory>
 #include <string>
@@ -15,17 +15,17 @@ namespace ash {
 class UserContext;
 
 // Passed to `ActiveSessionAuthController::ShowAuthDialog` when authenticating
-// from Google Password Manager, handles behavior specific to those requests.
+// for payments autofill, handles behavior specific to those requests.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH)
-    PasswordManagerAuthRequest : public TokenBasedAuthRequest {
+    PaymentsAutofillAuthRequest : public TokenBasedAuthRequest {
  public:
-  explicit PasswordManagerAuthRequest(
+  explicit PaymentsAutofillAuthRequest(
       const std::u16string& prompt,
       TokenBasedAuthRequest::AuthCompletionCallback on_auth_complete);
-  PasswordManagerAuthRequest(const PasswordManagerAuthRequest&) = delete;
-  PasswordManagerAuthRequest& operator=(const PasswordManagerAuthRequest&) =
+  PaymentsAutofillAuthRequest(const PaymentsAutofillAuthRequest&) = delete;
+  PaymentsAutofillAuthRequest& operator=(const PaymentsAutofillAuthRequest&) =
       delete;
-  ~PasswordManagerAuthRequest() override;
+  ~PaymentsAutofillAuthRequest() override;
 
   // AuthRequest:
   void NotifyAuthResult(std::unique_ptr<UserContext> user_context,
@@ -40,4 +40,4 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH)
 
 }  // namespace ash
 
-#endif  // CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_REQUEST_PASSWORD_MANAGER_AUTH_REQUEST_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_REQUEST_PAYMENTS_AUTOFILL_AUTH_REQUEST_H_

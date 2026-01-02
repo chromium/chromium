@@ -23,6 +23,7 @@ class ASH_PUBLIC_EXPORT InSessionAuthDialogController {
     kAccessPasswordManager,
     kAccessAuthenticationSettings,
     kAccessMultideviceSettings,
+    kAccessAutofillPayments,
   };
 
   // Returns the singleton instance.

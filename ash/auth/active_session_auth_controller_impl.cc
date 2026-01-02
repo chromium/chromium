@@ -78,6 +78,8 @@ const char* ReasonToString(AuthRequest::Reason reason) {
       return "Settings";
     case AuthRequest::Reason::kWebAuthN:
       return "WebAuthN";
+    case AuthRequest::Reason::kPaymentsAutofill:
+      return "PaymentsAutofill";
   }
   NOTREACHED();
 }
@@ -112,6 +114,9 @@ const char* ActiveSessionAuthStateToString(
     case ActiveSessionAuthControllerImpl::ActiveSessionAuthState::
         kCloseRequested:
       return "CloseRequested";
+    case ActiveSessionAuthControllerImpl::ActiveSessionAuthState::
+        kAuthNotAvailable:
+      return "AuthNotAvailable";
   }
   NOTREACHED();
 }
@@ -204,7 +209,8 @@ ActiveSessionAuthControllerImpl::~ActiveSessionAuthControllerImpl() = default;
 
 bool ActiveSessionAuthControllerImpl::IsPreInitializedState() const {
   return state_ == ActiveSessionAuthState::kOnIdle ||
-         state_ == ActiveSessionAuthState::kWaitForInit;
+         state_ == ActiveSessionAuthState::kWaitForInit ||
+         state_ == ActiveSessionAuthState::kAuthNotAvailable;
 }
 
 bool ActiveSessionAuthControllerImpl::IsSucceedState() const {
@@ -220,8 +226,9 @@ bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
   VLOG(1) << "Show is requested with reason: "
           << ReasonToString(auth_request->GetAuthReason());
   if (IsShown()) {
-    LOG(ERROR) << "ActiveSessionAuthController widget is already exists.";
-    auth_request->NotifyAuthFailure();
+    LOG(ERROR) << "ActiveSessionAuthController widget already exists.";
+    auth_request->NotifyAuthResult(nullptr,
+                                   AuthRequest::AuthResult::kSystemError);
     return false;
   }
 
@@ -242,7 +249,7 @@ bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
     return false;
   }
 
-  Shell::Get()->session_controller()->AddObserver(this);
+  session_controller_observation_.Observe(Shell::Get()->session_controller());
 
   CHECK(!auth_request_);
   auth_request_ = std::move(auth_request);
@@ -290,8 +297,13 @@ void ActiveSessionAuthControllerImpl::OnAuthSessionStarted(
   user_context_ = std::move(user_context);
 
   if (!user_exists || authentication_error.has_value()) {
-    LOG(ERROR) << "Failed to start auth session, code "
-               << authentication_error->get_cryptohome_code();
+    if (!user_exists) {
+      LOG(ERROR) << "The user does not exist.";
+    }
+    if (authentication_error.has_value()) {
+      LOG(ERROR) << "Failed to start auth session, code "
+                 << authentication_error->get_cryptohome_code();
+    }
     StartClose();
     return;
   }
@@ -316,6 +328,7 @@ void ActiveSessionAuthControllerImpl::OnAuthSessionStarted(
 
   if (available_factors_.empty() && pin_factor == nullptr) {
     LOG(ERROR) << "No password/PIN found for user.";
+    SetState(ActiveSessionAuthState::kAuthNotAvailable);
     StartClose();
     return;
   }
@@ -474,9 +487,7 @@ void ActiveSessionAuthControllerImpl::StartClose() {
     uma_recorder_.RecordClose();
   }
 
-  if (Shell::Get() && Shell::Get()->session_controller()) {
-    Shell::Get()->session_controller()->RemoveObserver(this);
-  }
+  session_controller_observation_.Reset();
 
   contents_view_observer_.Reset();
   if (contents_view_) {
@@ -512,9 +523,17 @@ void ActiveSessionAuthControllerImpl::CompleteClose(
   auth_factor_editor_.reset();
 
   if (IsSucceedState()) {
-    auth_request_->NotifyAuthSuccess(std::move(user_context_));
+    auth_request_->NotifyAuthResult(std::move(user_context_),
+                                    AuthRequest::AuthResult::kSuccess);
+  } else if (state_ == ActiveSessionAuthState::kAuthNotAvailable) {
+    // Some AuthRequest implementations may treat "no auth available" as a
+    // logical success and still require the user context. We move the context
+    // here to allow the specific request to handle this case.
+    auth_request_->NotifyAuthResult(std::move(user_context_),
+                                    AuthRequest::AuthResult::kAuthNotAvailable);
   } else {
-    auth_request_->NotifyAuthFailure();
+    auth_request_->NotifyAuthResult(nullptr,
+                                    AuthRequest::AuthResult::kAuthFailed);
     user_context_.reset();
   }
   auth_request_.reset();
@@ -549,6 +568,7 @@ void ActiveSessionAuthControllerImpl::OnSessionStateChanged(
     case ActiveSessionAuthState::kFingerprintAuthSucceeded:
     case ActiveSessionAuthState::kFingerprintAuthSucceededWaiting:
     case ActiveSessionAuthState::kCloseRequested:
+    case ActiveSessionAuthState::kAuthNotAvailable:
       return;
   }
   NOTREACHED();
@@ -635,6 +655,7 @@ void ActiveSessionAuthControllerImpl::OnClose() {
   switch (state_) {
     case ActiveSessionAuthState::kOnIdle:
     case ActiveSessionAuthState::kWaitForInit:
+    case ActiveSessionAuthState::kAuthNotAvailable:
       NOTREACHED();
     case ActiveSessionAuthState::kInitialized:
       StartClose();
@@ -701,6 +722,9 @@ void ActiveSessionAuthControllerImpl::SetState(ActiveSessionAuthState state) {
             state_ == ActiveSessionAuthState::kPinAuthStarted);
       contents_view_->SetInputEnabled(false);
       break;
+    case ActiveSessionAuthState::kAuthNotAvailable:
+      CHECK_EQ(state_, ActiveSessionAuthState::kWaitForInit);
+      break;
   }
   state_ = state;
 }
@@ -726,6 +750,7 @@ void ActiveSessionAuthControllerImpl::OnAuthFactorStatusUpdate(
 
     case ActiveSessionAuthState::kOnIdle:
     case ActiveSessionAuthState::kWaitForInit:
+    case ActiveSessionAuthState::kAuthNotAvailable:
       return;
 
     case ActiveSessionAuthState::kPasswordAuthSucceeded:

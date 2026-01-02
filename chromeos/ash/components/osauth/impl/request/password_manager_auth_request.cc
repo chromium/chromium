@@ -8,6 +8,7 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -18,6 +19,12 @@ PasswordManagerAuthRequest::PasswordManagerAuthRequest(
     : TokenBasedAuthRequest(std::move(on_auth_complete)), prompt_(prompt) {}
 
 PasswordManagerAuthRequest::~PasswordManagerAuthRequest() = default;
+
+void PasswordManagerAuthRequest::NotifyAuthResult(
+    std::unique_ptr<UserContext> user_context,
+    AuthResult result) {
+  TokenBasedAuthRequest::NotifyAuthResult(std::move(user_context), result);
+}
 
 AuthSessionIntent PasswordManagerAuthRequest::GetAuthSessionIntent() const {
   return AuthSessionIntent::kVerifyOnly;

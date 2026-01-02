@@ -112,6 +112,15 @@ bool ActiveSessionFingerprintClientImpl::IsFingerprintAvailable(
       }
       return false;
     }
+    case AuthRequest::Reason::kPaymentsAutofill: {
+      const base::Value::List& factors =
+          pref_service->GetList(prefs::kQuickUnlockModeAllowlist);
+      if (base::Contains(factors, base::Value(kFactorsOptionAll)) ||
+          base::Contains(factors, base::Value(kFactorsOptionFingerprint))) {
+        return true;
+      }
+      return false;
+    }
   }
   NOTREACHED();
 }

@@ -29,15 +29,11 @@ const std::u16string WebAuthNAuthRequest::GetDescription() const {
                                     base::UTF8ToUTF16(rp_id_));
 }
 
-void WebAuthNAuthRequest::NotifyAuthSuccess(
-    std::unique_ptr<UserContext> user_context) {
+void WebAuthNAuthRequest::NotifyAuthResult(
+    std::unique_ptr<UserContext> user_context,
+    AuthResult result) {
   CHECK(finish_callback_);
-  std::move(finish_callback_).Run(true);
-}
-
-void WebAuthNAuthRequest::NotifyAuthFailure() {
-  CHECK(finish_callback_);
-  std::move(finish_callback_).Run(false);
+  std::move(finish_callback_).Run(result == AuthResult::kSuccess);
 }
 
 const std::string WebAuthNAuthRequest::GetRpId() const {
