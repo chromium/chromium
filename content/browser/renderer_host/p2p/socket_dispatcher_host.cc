@@ -100,9 +100,9 @@ void P2PSocketDispatcherHost::BindReceiver(
 
 void P2PSocketDispatcherHost::PauseSocketManagerForRenderFrameHost(
     const GlobalRenderFrameHostId& frame_id) {
-  if (frame_host_to_socket_manager_id_.contains(frame_id)) {
-    mojo::RemoteSetElementId manager_id =
-        frame_host_to_socket_manager_id_[frame_id];
+  if (auto it = frame_host_to_socket_manager_id_.find(frame_id);
+      it != frame_host_to_socket_manager_id_.end()) {
+    mojo::RemoteSetElementId manager_id = it->second;
     if (trusted_socket_managers_.Contains(manager_id)) {
       trusted_socket_managers_.Get(manager_id)
           ->PauseNetworkChangeNotifications();
@@ -111,9 +111,9 @@ void P2PSocketDispatcherHost::PauseSocketManagerForRenderFrameHost(
 }
 void P2PSocketDispatcherHost::ResumeSocketManagerForRenderFrameHost(
     const GlobalRenderFrameHostId& frame_id) {
-  if (frame_host_to_socket_manager_id_.contains(frame_id)) {
-    mojo::RemoteSetElementId manager_id =
-        frame_host_to_socket_manager_id_[frame_id];
+  if (auto it = frame_host_to_socket_manager_id_.find(frame_id);
+      it != frame_host_to_socket_manager_id_.end()) {
+    mojo::RemoteSetElementId manager_id = it->second;
     if (trusted_socket_managers_.Contains(manager_id)) {
       trusted_socket_managers_.Get(manager_id)
           ->ResumeNetworkChangeNotifications();
