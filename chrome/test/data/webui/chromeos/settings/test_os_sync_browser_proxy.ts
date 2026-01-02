@@ -135,4 +135,6 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   startKeyRetrieval(): void {}
 
   showSyncPassphraseDialog(): void {}
+
+  showBookmarkLimitExceededHelp(): void {}
 }
