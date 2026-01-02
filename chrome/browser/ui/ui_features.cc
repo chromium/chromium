@@ -93,50 +93,6 @@ BASE_FEATURE(kShowTabGroupsMacSystemMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSideBySide, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE_PARAM(int,
-                   kSideBySideDropTargetMinWidth,
-                   &kSideBySide,
-                   "drop_target_min_width",
-                   120);
-BASE_FEATURE_PARAM(int,
-                   kSideBySideDropTargetMaxWidth,
-                   &kSideBySide,
-                   "drop_target_max_width",
-                   420);
-BASE_FEATURE_PARAM(int,
-                   kSideBySideDropTargetTargetWidthPercentage,
-                   &kSideBySide,
-                   "drop_target_width_percentage",
-                   30);
-BASE_FEATURE_PARAM(int,
-                   kSideBySideDropTargetForLinkTargetWidthPercentage,
-                   &kSideBySide,
-                   "drop_target_for_link_width_percentage",
-                   15);
-BASE_FEATURE_PARAM(int,
-                   kSideBySideDropTargetHideForOSWidth,
-                   &kSideBySide,
-                   "drop_target_hide_for_os_width",
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-                   32
-#elif BUILDFLAG(IS_LINUX)
-                   50
-#else
-                   0
-#endif
-);
-
-BASE_FEATURE_PARAM(double,
-                   kSideBySideDropTargetHideForOSPercentage,
-                   &kSideBySide,
-                   "drop_target_hide_for_os_percentage",
-#if BUILDFLAG(IS_WIN)
-                   1.4
-#else
-                   0
-#endif
-);
-
 BASE_FEATURE(kSideBySideDropTargetNudge, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,

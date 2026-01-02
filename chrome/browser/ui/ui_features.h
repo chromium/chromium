@@ -144,20 +144,6 @@ BASE_DECLARE_FEATURE(kScrimForBrowserWindowModal);
 
 BASE_DECLARE_FEATURE(kSideBySide);
 
-// Feature params for the width of the multi-contents drop target.
-// If the `kSideBySideDropTargetNudge` feature is enabled, then these only
-// apply for tab dragging.
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetMinWidth);
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetMaxWidth);
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetTargetWidthPercentage);
-BASE_DECLARE_FEATURE_PARAM(int,
-                           kSideBySideDropTargetForLinkTargetWidthPercentage);
-
-// The size of the edge of the screen where the Split View drop target is hidden
-// will be the max of the width and the percentage times the screen width.
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetHideForOSWidth);
-BASE_DECLARE_FEATURE_PARAM(double, kSideBySideDropTargetHideForOSPercentage);
-
 // Feature and params to control the "nudge" behavior of drop targets.
 BASE_DECLARE_FEATURE(kSideBySideDropTargetNudge);
 BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetNudgeMinWidth);

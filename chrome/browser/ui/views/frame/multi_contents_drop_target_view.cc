@@ -162,13 +162,11 @@ int MultiContentsDropTargetView::GetMaxWidth(int web_contents_width,
           features::kSideBySideDropTargetNudgeToFullTargetWidthPercentage.Get();
       break;
     case DropTargetState::kFull:
-      min_width = features::kSideBySideDropTargetMinWidth.Get();
-      max_width = features::kSideBySideDropTargetMaxWidth.Get();
-      percentage =
-          drag_type == DragType::kTab
-              ? features::kSideBySideDropTargetTargetWidthPercentage.Get()
-              : features::kSideBySideDropTargetForLinkTargetWidthPercentage
-                    .Get();
+      min_width = kDropTargetMinWidth;
+      max_width = kDropTargetMaxWidth;
+      percentage = drag_type == DragType::kTab
+                       ? kDropTargetTargetWidthPercentage
+                       : kDropTargetForLinkTargetWidthPercentage;
       break;
     default:
       NOTREACHED();

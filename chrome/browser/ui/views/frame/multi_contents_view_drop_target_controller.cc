@@ -31,6 +31,22 @@ static constexpr base::TimeDelta kShowDropTargetForLinkAfterHideLookbackWindow =
     base::Seconds(30);
 static constexpr base::TimeDelta kHideDropTargetDelay = base::Milliseconds(100);
 static constexpr base::TimeDelta kShowNudgeDelay = base::Milliseconds(1000);
+
+static constexpr int kDropTargetHideForOSWidth =
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+    32;
+#elif BUILDFLAG(IS_LINUX)
+    50;
+#else
+    0;
+#endif
+static constexpr double kDropTargetHideForOSPercentage =
+#if BUILDFLAG(IS_WIN)
+    1.4;
+#else
+    0;
+#endif
+
 }  // namespace
 
 MultiContentsViewDropTargetController::MultiContentsViewDropTargetController(
@@ -436,10 +452,8 @@ bool MultiContentsViewDropTargetController::PointOverlapsWithOSDropTarget(
       point_in_screen.x() - screen_bounds.x();
 
   const float hide_for_os_width = std::max(
-      features::kSideBySideDropTargetHideForOSWidth.Get(),
-      static_cast<int>(
-          screen_width *
-          features::kSideBySideDropTargetHideForOSPercentage.Get() / 100));
+      kDropTargetHideForOSWidth,
+      static_cast<int>(screen_width * kDropTargetHideForOSPercentage / 100));
 
   return (drag_x_relative_to_screen_bounds < hide_for_os_width) ||
          (drag_x_relative_to_screen_bounds > screen_width - hide_for_os_width);

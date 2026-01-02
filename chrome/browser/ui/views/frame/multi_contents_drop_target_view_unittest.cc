@@ -296,17 +296,18 @@ TEST_F(DropTargetViewTest, GetPreferredWidth) {
   EXPECT_TRUE(view->GetVisible());
 
   // Width is clamped to the minimum.
-  EXPECT_EQ(features::kSideBySideDropTargetMinWidth.Get(),
+  EXPECT_EQ(MultiContentsDropTargetView::kDropTargetMinWidth,
             view->GetPreferredWidth(400));
 
   // Width is clamped to the maximum.
-  EXPECT_EQ(features::kSideBySideDropTargetMaxWidth.Get(),
+  EXPECT_EQ(MultiContentsDropTargetView::kDropTargetMaxWidth,
             view->GetPreferredWidth(3000));
 
   // Width is the target percentage of the web contents width.
-  EXPECT_EQ(
-      1000 * features::kSideBySideDropTargetTargetWidthPercentage.Get() / 100,
-      view->GetPreferredWidth(1000));
+  EXPECT_EQ(1000 *
+                MultiContentsDropTargetView::kDropTargetTargetWidthPercentage /
+                100,
+            view->GetPreferredWidth(1000));
 
   // When hidden, width should be 0.
   view->Hide();
@@ -322,16 +323,17 @@ TEST_F(DropTargetViewTest, GetPreferredWidthForLink) {
   EXPECT_TRUE(view->GetVisible());
 
   // Width is clamped to the minimum.
-  EXPECT_EQ(features::kSideBySideDropTargetMinWidth.Get(),
+  EXPECT_EQ(MultiContentsDropTargetView::kDropTargetMinWidth,
             view->GetPreferredWidth(400));
 
   // Width is clamped to the maximum.
-  EXPECT_EQ(features::kSideBySideDropTargetMaxWidth.Get(),
+  EXPECT_EQ(MultiContentsDropTargetView::kDropTargetMaxWidth,
             view->GetPreferredWidth(3000));
 
   // Width is the target percentage of the web contents width.
   EXPECT_EQ(
-      1000 * features::kSideBySideDropTargetForLinkTargetWidthPercentage.Get() /
+      1000 *
+          MultiContentsDropTargetView::kDropTargetForLinkTargetWidthPercentage /
           100,
       view->GetPreferredWidth(1000));
 
@@ -365,7 +367,8 @@ TEST_F(DropTargetViewTest, GetPreferredWidthWithAnimation) {
 
   // Width should be proportional to the animation progress.
   const int final_width =
-      1000 * features::kSideBySideDropTargetTargetWidthPercentage.Get() / 100;
+      1000 * MultiContentsDropTargetView::kDropTargetTargetWidthPercentage /
+      100;
   int animated_width = view->GetPreferredWidth(1000);
   EXPECT_GT(animated_width, 0);
   EXPECT_LT(animated_width, final_width);
@@ -413,12 +416,13 @@ TEST_F(DropTargetViewTest, GetPreferredWidthWithStates) {
              MultiContentsDropTargetView::DropTargetState::kFull,
              MultiContentsDropTargetView::DragType::kLink);
   EXPECT_TRUE(view->GetVisible());
-  EXPECT_EQ(features::kSideBySideDropTargetMinWidth.Get(),
+  EXPECT_EQ(MultiContentsDropTargetView::kDropTargetMinWidth,
             view->GetPreferredWidth(400));
-  EXPECT_EQ(features::kSideBySideDropTargetMaxWidth.Get(),
+  EXPECT_EQ(MultiContentsDropTargetView::kDropTargetMaxWidth,
             view->GetPreferredWidth(3000));
   EXPECT_EQ(
-      1000 * features::kSideBySideDropTargetForLinkTargetWidthPercentage.Get() /
+      1000 *
+          MultiContentsDropTargetView::kDropTargetForLinkTargetWidthPercentage /
           100,
       view->GetPreferredWidth(1000));
 }
