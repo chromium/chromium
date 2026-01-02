@@ -92,6 +92,7 @@
       <structure type="chrome_scaled_image" name="IDR_COOKIE_STORAGE_ICON" file="common/cookie_storage.png" />
       <if expr="not is_android">
         <structure type="chrome_scaled_image" name="IDR_DOWNLOADS_FAVICON" file="common/favicon_downloads.png" />
+        <structure type="chrome_scaled_image" name="IDR_ENHANCED_BROWSING_ON_IOS" file="common/enhanced_browsing_on_ios.png" />
       </if>
       <if expr="enable_extensions_core">
         <structure type="chrome_scaled_image" name="IDR_EXTENSIONS_RATING_STAR_HALF_LEFT" file="common/extensions_rating_star_half_left.png" />

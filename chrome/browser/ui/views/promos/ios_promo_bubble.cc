@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 #include "build/branding_buildflags.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/promos/promos_pref_names.h"
@@ -190,7 +189,7 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpEnhancedBrowsingBubble(
       config.accept_button_text_id =
           IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_REMINDER;
       config.promo_image =
-          ui::ImageModel::FromVectorIcon(kEnhancedBrowsingOnIosIcon);
+          ui::ImageModel::FromResourceId(IDR_ENHANCED_BROWSING_ON_IOS);
       break;
     case BubbleType::kReminderConfirmation: {
       SetUpBaseReminderConfirmationConfig(config);

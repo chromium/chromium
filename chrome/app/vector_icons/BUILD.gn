@@ -80,7 +80,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "drag_handle.icon",
     "drive_shortcut_chrome_refresh.icon",
     "edit_chrome_refresh.icon",
-    "enhanced_browsing_on_ios.icon",
     "exit_menu.icon",
     "extension_crashed.icon",
     "file_download_shelf.icon",
