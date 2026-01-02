@@ -961,6 +961,10 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
       return std::nullopt;
     }
 
+    std::optional<std::u16string> GetFilename() const override {
+      return std::nullopt;
+    }
+
     void SetBypassRequiresJustification(bool value) {
       bypass_requires_justification_ = value;
     }
@@ -1003,6 +1007,10 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
     }
 
     std::optional<std::u16string> OverrideCancelButtonText() const override {
+      return std::nullopt;
+    }
+
+    std::optional<std::u16string> GetFilename() const override {
       return std::nullopt;
     }
 

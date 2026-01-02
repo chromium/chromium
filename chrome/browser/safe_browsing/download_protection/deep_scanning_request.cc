@@ -706,7 +706,8 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
         new enterprise_connectors::ContentAnalysisDialogController(
             std::make_unique<
                 enterprise_connectors::ContentAnalysisDownloadsDelegate>(
-                u"", u"", GURL(), false, std::move(keep_closure),
+                metadata_->GetTargetFilePath().BaseName().AsUTF16Unsafe(), u"",
+                GURL(), false, std::move(keep_closure),
                 std::move(discard_closure), nullptr,
                 enterprise_connectors::ContentAnalysisResponse::Result::
                     TriggeredRule::CustomRuleMessage()),

@@ -211,6 +211,8 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
 
   std::optional<std::u16string> OverrideCancelButtonText() const override;
 
+  std::optional<std::u16string> GetFilename() const override;
+
   // Returns true if the deep scanning feature is enabled in the upload
   // direction via enterprise policies.  If the appropriate enterprise policies
   // are not set this feature is not enabled.

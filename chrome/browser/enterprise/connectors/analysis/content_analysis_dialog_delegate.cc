@@ -415,8 +415,13 @@ std::u16string ContentAnalysisDialogDelegate::GetForceSaveToCloudMessage()
     const {
   DCHECK(is_force_save_to_cloud());
 
-  return l10n_util::GetStringUTF16(
-      IDS_DEEP_SCANNING_DIALOG_SAVE_TO_CLOUD_STORAGE_MESSAGE);
+  std::u16string filename =
+      delegate_base_->GetFilename().has_value()
+          ? delegate_base_->GetFilename().value()
+          : l10n_util::GetStringUTF16(
+                IDS_DEEP_SCANNING_DIALOG_SAVE_TO_CLOUD_FILENAME_PLACEHOLDER);
+  return l10n_util::GetStringFUTF16(
+      IDS_DEEP_SCANNING_DIALOG_SAVE_TO_CLOUD_STORAGE_MESSAGE, filename);
 }
 
 std::u16string ContentAnalysisDialogDelegate::GetFailureMessage() const {

@@ -202,4 +202,17 @@ TEST_F(ContentAnalysisDownloadsDelegateTest,
             *(delegate.GetCustomMessage()));
 }
 
+TEST_F(ContentAnalysisDownloadsDelegateTest, TestFilenameNulloptIfEmpty) {
+  // Most arguments copied from other tests
+  ContentAnalysisDownloadsDelegate delegate(
+      u"", kTestMessage, GURL(kTestUrl), true,
+      base::BindOnce(&ContentAnalysisDownloadsDelegateTest::OpenCallback,
+                     base::Unretained(this)),
+      base::BindOnce(&ContentAnalysisDownloadsDelegateTest::DiscardCallback,
+                     base::Unretained(this)),
+      nullptr, CreateSampleCustomRuleMessage(kTestMessage2, kTestInvalidUrl));
+
+  EXPECT_EQ(delegate.GetFilename(), std::nullopt);
+}
+
 }  // namespace enterprise_connectors

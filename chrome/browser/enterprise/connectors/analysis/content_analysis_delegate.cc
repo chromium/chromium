@@ -319,6 +319,10 @@ ContentAnalysisDelegate::OverrideCancelButtonText() const {
   return std::nullopt;
 }
 
+std::optional<std::u16string> ContentAnalysisDelegate::GetFilename() const {
+  return std::nullopt;
+}
+
 // static
 bool ContentAnalysisDelegate::IsEnabled(Profile* profile,
                                         GURL url,

@@ -48,6 +48,9 @@ class ContentAnalysisDelegateBase {
   // std::nullopt if no text is specified by this delegate. Takes precedence
   // over any other text that would be chosen by the dialog.
   virtual std::optional<std::u16string> OverrideCancelButtonText() const = 0;
+
+  // Returns the file name of the content, if it exists.
+  virtual std::optional<std::u16string> GetFilename() const = 0;
 };
 
 }  // namespace enterprise_connectors
