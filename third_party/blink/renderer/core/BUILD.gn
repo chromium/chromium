@@ -1513,6 +1513,7 @@ source_set("unit_tests") {
                          "",
                          "scheduler_integration_tests")
   sources += rebase_path(blink_core_tests_script, "", "script")
+  sources += rebase_path(blink_core_tests_script_tools, "", "script_tools")
   sources += rebase_path(blink_core_tests_scroll, "", "scroll")
   sources +=
       rebase_path(blink_core_tests_speculation_rules, "", "speculation_rules")

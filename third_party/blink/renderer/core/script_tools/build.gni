@@ -10,3 +10,5 @@ blink_core_sources_script_tools = [
   "model_context_testing.cc",
   "model_context_testing.h",
 ]
+
+blink_core_tests_script_tools = [ "model_context_test.cc" ]
