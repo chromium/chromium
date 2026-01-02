@@ -18,6 +18,8 @@ namespace {
 constexpr char kShowReasonHistogram[] = "Ash.Auth.ActiveSessionShowReason";
 constexpr char kAuthStartedHistogram[] = "Ash.Auth.ActiveSessionAuthStart";
 constexpr char kAuthFailedHistogram[] = "Ash.Auth.ActiveSessionAuthFailed";
+constexpr char kAuthNotAvailableHistogram[] =
+    "Ash.Auth.ActiveSessionAuthNotAvailable";
 constexpr char kAuthSucceededHistogram[] =
     "Ash.Auth.ActiveSessionAuthSucceeded";
 constexpr char kClosedWithSuccessHistogram[] =
@@ -310,6 +312,16 @@ TEST_F(ActiveSessionAuthMetricsRecorderTest, PasswordlessPinAttemptFailedTest) {
   metrics_recorder_.RecordClose();
   histogram_tester_->ExpectBucketCount(
       kClosedPasswordlessUserWithSuccessHistogram, 1, 0);
+}
+
+// Verifies that the histogram records when the authentication dialog is
+// triggered but no authentication factors are available.
+TEST_F(ActiveSessionAuthMetricsRecorderTest, AuthNotAvailableTest) {
+  metrics_recorder_.RecordAuthNotAvailable(
+      AuthRequest::Reason::kPaymentsAutofill);
+
+  histogram_tester_->ExpectUniqueSample(
+      kAuthNotAvailableHistogram, AuthRequest::Reason::kPaymentsAutofill, 1);
 }
 
 }  // namespace ash

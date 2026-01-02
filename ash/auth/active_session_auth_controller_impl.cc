@@ -329,6 +329,7 @@ void ActiveSessionAuthControllerImpl::OnAuthSessionStarted(
   if (available_factors_.empty() && pin_factor == nullptr) {
     LOG(ERROR) << "No password/PIN found for user.";
     SetState(ActiveSessionAuthState::kAuthNotAvailable);
+    uma_recorder_.RecordAuthNotAvailable(auth_request_->GetAuthReason());
     StartClose();
     return;
   }

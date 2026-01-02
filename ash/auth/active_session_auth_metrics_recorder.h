@@ -30,6 +30,7 @@ class ASH_EXPORT ActiveSessionAuthMetricsRecorder {
   void RecordShow(AuthRequest::Reason reason, AuthFactorSet available_factors);
   void RecordClose();
 
+  void RecordAuthNotAvailable(AuthRequest::Reason reason);
   void RecordAuthStarted(AuthInputType input_type);
   void RecordAuthFailed(AuthInputType input_type);
   void RecordAuthSucceeded(AuthInputType input_type);

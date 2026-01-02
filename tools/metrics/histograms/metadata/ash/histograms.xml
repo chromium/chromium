@@ -853,6 +853,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Auth.ActiveSessionAuthNotAvailable"
+    enum="ActiveSessionAuthControllerReason" expires_after="2026-12-11">
+  <owner>iscsi@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Records the reason for an authentication request when no authentication
+    factors were available. Recorded when the active session authentication
+    dialog is triggered, but cryptohome reports no configured authentication
+    factors.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Auth.ActiveSessionAuthOpenDuration" units="ms"
     expires_after="2026-06-28">
   <owner>iscsi@google.com</owner>
