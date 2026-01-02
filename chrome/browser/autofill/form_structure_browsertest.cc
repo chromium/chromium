@@ -295,7 +295,11 @@ std::unique_ptr<HttpResponse> FormStructureBrowserTest::HandleRequest(
   return std::move(response);
 }
 
-IN_PROC_BROWSER_TEST_P(FormStructureBrowserTest, DataDrivenHeuristics) {
+// TODO(crbug.com/472755511): consistent failing on multiple bots.
+// AllForms/FormStructureBrowserTest.DataDrivenHeuristics/181
+// AllForms/FormStructureBrowserTest.DataDrivenHeuristics/182
+IN_PROC_BROWSER_TEST_P(FormStructureBrowserTest,
+                       DISABLED_DataDrivenHeuristics) {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   GTEST_SKIP() << "DataDrivenHeuristics tests are only supported with legacy "
                   "parsing patterns";
