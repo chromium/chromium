@@ -878,8 +878,8 @@ class EnrollmentStateFetcherImpl::Sequence {
                                   status);
     if (status ==
         ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown) {
-      LOG(ERROR) << "Device ownership is unknown. Skipping enrollment";
-      return ReportResult(AutoEnrollmentResult::kNoEnrollment);
+      // See crbug.com/470630590
+      LOG(ERROR) << "Device ownership is unknown. Powerwash might be required.";
     }
 
     if (status ==
