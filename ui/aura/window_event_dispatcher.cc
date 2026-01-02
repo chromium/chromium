@@ -25,7 +25,6 @@
 #include "ui/aura/env.h"
 #include "ui/aura/env_input_state_controller.h"
 #include "ui/aura/window_delegate.h"
-#include "ui/aura/window_event_dispatcher_observer.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"
@@ -78,22 +77,6 @@ bool IsEventCandidateForHold(const ui::Event& event) {
 }
 
 }  // namespace
-
-WindowEventDispatcher::ObserverNotifier::ObserverNotifier(
-    WindowEventDispatcher* dispatcher,
-    const ui::Event& event)
-    : dispatcher_(dispatcher) {
-  Env::GetInstance()->window_event_dispatcher_observers().Notify(
-      &WindowEventDispatcherObserver::OnWindowEventDispatcherStartedProcessing,
-      dispatcher, event);
-}
-
-WindowEventDispatcher::ObserverNotifier::~ObserverNotifier() {
-  Env::GetInstance()->window_event_dispatcher_observers().Notify(
-      &WindowEventDispatcherObserver::
-          OnWindowEventDispatcherFinishedProcessingEvent,
-      dispatcher_);
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // WindowEventDispatcher, public:
@@ -520,15 +503,8 @@ void WindowEventDispatcher::OnEventProcessingStarted(ui::Event* event) {
   // The held events are already in |window()|'s coordinate system. So it is
   // not necessary to apply the transform to convert from the host's
   // coordinate system to |window()|'s coordinate system.
-  if (event->IsLocatedEvent() && !is_dispatched_held_event(*event))
+  if (event->IsLocatedEvent() && !is_dispatched_held_event(*event)) {
     TransformEventForDeviceScaleFactor(static_cast<ui::LocatedEvent*>(event));
-
-  observer_notifiers_.push(std::make_unique<ObserverNotifier>(this, *event));
-}
-
-void WindowEventDispatcher::OnEventProcessingFinished(ui::Event* event) {
-  if (!observer_notifiers_.empty()) {
-    observer_notifiers_.pop();
   }
 }
 
@@ -838,10 +814,6 @@ ui::EventDispatchDetails WindowEventDispatcher::DispatchHeldEvents() {
 
   if (!dispatch_details.dispatcher_destroyed) {
     dispatching_held_event_ = nullptr;
-    Env::GetInstance()->window_event_dispatcher_observers().Notify(
-        &WindowEventDispatcherObserver::
-            OnWindowEventDispatcherDispatchedHeldEvents,
-        this);
     if (did_dispatch_held_move_event_callback_)
       std::move(did_dispatch_held_move_event_callback_).Run();
   }
@@ -1093,9 +1065,6 @@ DispatchDetails WindowEventDispatcher::PreDispatchTouchEvent(
     // The event is invalid - ignore it.
     event->StopPropagation();
     event->DisableSynchronousHandling();
-    env->window_event_dispatcher_observers().Notify(
-        &WindowEventDispatcherObserver::OnWindowEventDispatcherIgnoredEvent,
-        this);
     return DispatchDetails();
   }
 
