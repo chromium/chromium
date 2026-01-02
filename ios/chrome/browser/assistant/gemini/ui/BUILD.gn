@@ -4,8 +4,12 @@
 
 source_set("ui") {
   sources = [
+    "assistant_gemini_consumer.h",
     "assistant_gemini_view_controller.h",
     "assistant_gemini_view_controller.mm",
   ]
-  deps = [ "//ui/base" ]
+  deps = [
+    "//ios/chrome/browser/assistant/ui",
+    "//ui/base",
+  ]
 }

@@ -58,12 +58,10 @@
   _childCoordinator.handler = self;
   [_childCoordinator start];
 
-  [_viewController setChildViewController:_childCoordinator.viewController];
-  // Configure the assistant bar using the child's configuration.
-  [_viewController setBarConfiguration:_childCoordinator.barConfiguration];
-
   // Add the view controller as a child view controller.
+  [_viewController setChildViewController:_childCoordinator.viewController];
   [self.baseViewController addChildViewController:_viewController];
+
   // Add the view to the hierarchy.
   [self.baseViewController.view addSubview:_viewController.view];
   [_viewController didMoveToParentViewController:self.baseViewController];

@@ -4,27 +4,28 @@
 
 #import "ios/chrome/browser/assistant/gemini/coordinator/assistant_gemini_coordinator.h"
 
-#import "ios/chrome/browser/assistant/coordinator/assistant_commands.h"
+#import "ios/chrome/browser/assistant/gemini/coordinator/assistant_gemini_mediator.h"
 #import "ios/chrome/browser/assistant/gemini/ui/assistant_gemini_view_controller.h"
-#import "ios/chrome/browser/assistant/ui/assistant_sheet_consumer.h"
 
-@implementation AssistantGeminiCoordinator
+@implementation AssistantGeminiCoordinator {
+  AssistantGeminiMediator* _mediator;
+  AssistantGeminiViewController* _viewController;
+}
 
-@synthesize viewController = _viewController;
+- (UIViewController*)viewController {
+  return _viewController;
+}
 
 - (void)start {
   _viewController = [[AssistantGeminiViewController alloc] init];
+  _mediator = [[AssistantGeminiMediator alloc] init];
+  _mediator.handler = self.handler;
+  _mediator.consumer = _viewController;
 }
 
 - (void)stop {
   _viewController = nil;
-}
-
-- (AssistantBarConfiguration*)barConfiguration {
-  AssistantBarConfiguration* config = [[AssistantBarConfiguration alloc] init];
-  // TODO(crbug.com/469050167): Localize.
-  config.title = @"Gemini";
-  return config;
+  _mediator = nil;
 }
 
 @end

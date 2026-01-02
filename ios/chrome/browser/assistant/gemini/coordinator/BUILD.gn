@@ -6,11 +6,14 @@ source_set("coordinator") {
   sources = [
     "assistant_gemini_coordinator.h",
     "assistant_gemini_coordinator.mm",
+    "assistant_gemini_mediator.h",
+    "assistant_gemini_mediator.mm",
   ]
   deps = [
     "//ios/chrome/browser/assistant/coordinator:child_coordinator",
     "//ios/chrome/browser/assistant/gemini/ui",
     "//ios/chrome/browser/assistant/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/ui/symbols",
   ]
 }

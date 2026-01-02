@@ -7,8 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-// View Controller for the 'AIM' assistant screen.
-@interface AssistantAIMViewController : UIViewController
+#import "ios/chrome/browser/assistant/aim/ui/assistant_aim_consumer.h"
+#import "ios/chrome/browser/assistant/ui/assistant_sheet_consumer.h"
+
+@interface AssistantAIMViewController : UIViewController <AssistantAIMConsumer>
 
 @end
 

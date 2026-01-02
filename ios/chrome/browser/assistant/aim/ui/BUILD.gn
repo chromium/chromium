@@ -4,8 +4,12 @@
 
 source_set("ui") {
   sources = [
+    "assistant_aim_consumer.h",
     "assistant_aim_view_controller.h",
     "assistant_aim_view_controller.mm",
   ]
-  deps = [ "//ui/base" ]
+  deps = [
+    "//ios/chrome/browser/assistant/ui",
+    "//ui/base",
+  ]
 }

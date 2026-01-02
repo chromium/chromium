@@ -6,11 +6,14 @@ source_set("coordinator") {
   sources = [
     "assistant_aim_coordinator.h",
     "assistant_aim_coordinator.mm",
+    "assistant_aim_mediator.h",
+    "assistant_aim_mediator.mm",
   ]
   deps = [
     "//ios/chrome/browser/assistant/aim/ui",
     "//ios/chrome/browser/assistant/coordinator:child_coordinator",
     "//ios/chrome/browser/assistant/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/ui/symbols",
   ]
 }
