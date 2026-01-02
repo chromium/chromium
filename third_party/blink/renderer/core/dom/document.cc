@@ -9572,7 +9572,6 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(focused_element_change_observers_);
   visitor->Trace(pending_link_header_preloads_);
   visitor->Trace(elements_needing_shadow_tree_);
-  visitor->Trace(scroll_target_group_to_scrollable_areas_);
 #if BUILDFLAG(IS_ANDROID)
   visitor->Trace(payment_link_handler_);
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -10206,91 +10205,6 @@ VisitedLinkState& Document::GetVisitedLinkState() {
     visited_link_state_ = MakeGarbageCollected<VisitedLinkState>(*this);
   }
   return *visited_link_state_;
-}
-
-namespace {
-
-// Recursively traverses the DOM tree to find all elements with
-// scroll-target-group properties and collects their descendant
-// HTMLAnchorElements.
-void RecalcScrollTargetGroupRelations(Element& element,
-                                      Element* scroll_target_group_container) {
-  if (scroll_target_group_container && element.HasTagName(html_names::kATag)) {
-    if (To<HTMLAnchorElement>(element).ScrollTargetElement()) {
-      ScrollMarkerGroupData& data =
-          scroll_target_group_container->EnsureScrollTargetGroupData();
-      data.AddToFocusGroup(element);
-    }
-  }
-  if (const ComputedStyle* style = element.GetComputedStyle()) {
-    if (!style->ScrollTargetGroupNone()) {
-      scroll_target_group_container = &element;
-      element.GetDocument().AddScrollTargetGroup(
-          &element.EnsureScrollTargetGroupData());
-    }
-  }
-  for (Element* child = element.firstElementChild(); child;
-       child = child->nextElementSibling()) {
-    RecalcScrollTargetGroupRelations(*child, scroll_target_group_container);
-  }
-}
-
-}  // namespace
-
-void Document::UpdateScrollTargetGroupRelations() {
-  if (!needs_scroll_target_group_relations_update_) {
-    return;
-  }
-  if (scroll_target_group_to_scrollable_areas_.empty()) {
-    return;
-  }
-  for (auto& [scroll_marker_group, scrollable_areas] :
-       scroll_target_group_to_scrollable_areas_) {
-    for (PaintLayerScrollableArea* scrollable_area : scrollable_areas) {
-      scrollable_area->RemoveScrollMarkerGroupContainerData(
-          scroll_marker_group);
-    }
-    scroll_marker_group->ClearFocusGroup();
-  }
-  scroll_target_group_to_scrollable_areas_.clear();
-  if (document_element_) {
-    RecalcScrollTargetGroupRelations(*document_element_, nullptr);
-  }
-  needs_scroll_target_group_relations_update_ = false;
-}
-
-void Document::UpdateScrollTargetGroupToScrollableAreasMap() {
-  if (!needs_scroll_target_groups_map_update_) {
-    return;
-  }
-  for (auto& [scroll_target_group, scrollable_areas] :
-       scroll_target_group_to_scrollable_areas_) {
-    scroll_target_group->UpdateScrollableAreaSubscriptions(scrollable_areas);
-    scroll_target_group->UpdateSelectedScrollMarker();
-  }
-  needs_scroll_target_groups_map_update_ = false;
-}
-
-void Document::AddScrollTargetGroup(
-    ScrollMarkerGroupData* scroll_marker_group) {
-  scroll_target_group_to_scrollable_areas_.insert(
-      scroll_marker_group, HeapHashSet<Member<PaintLayerScrollableArea>>());
-  needs_scroll_target_group_relations_update_ = true;
-}
-
-void Document::RemoveScrollTargetGroup(
-    ScrollMarkerGroupData* scroll_marker_group_data) {
-  auto it =
-      scroll_target_group_to_scrollable_areas_.find(scroll_marker_group_data);
-  if (it == scroll_target_group_to_scrollable_areas_.end()) {
-    return;
-  }
-  for (PaintLayerScrollableArea* scrollable_area : it->value) {
-    scrollable_area->RemoveScrollMarkerGroupContainerData(
-        scroll_marker_group_data);
-  }
-  scroll_target_group_to_scrollable_areas_.erase(it);
-  needs_scroll_target_group_relations_update_ = true;
 }
 
 net::SchemefulSite Document::GetCachedTopFrameSite(VisitedLinkPassKey) {

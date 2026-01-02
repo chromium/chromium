@@ -48,6 +48,9 @@ struct TreeOrderComparator {
 //   - OnItemDetached(T*) - called when item is detached
 //   - CreatesScope(const Element&) - returns true if element creates a scope
 //   - UpdateItemsInScope(const OrderedScope<T>*) - updates items recursively
+//   - StoresItemsInScope() - returns whether items are stored in items_
+//     (optional, defaults to true). When false, OnItemAttached/OnItemDetached
+//     are still called but items_ is not populated.
 template <typename T>
 class OrderedScope : public GarbageCollected<OrderedScope<T>> {
  public:
@@ -62,28 +65,36 @@ class OrderedScope : public GarbageCollected<OrderedScope<T>> {
   static void OnItemDetached(T* item);
   static bool CreatesScope(const Element& element);
   static void UpdateItemsInScope(const OrderedScope<T>* scope);
+  // Returns whether items should be stored in items_. Default is true.
+  // Override to false when items are stored elsewhere (e.g., focus_group_).
+  static bool StoresItemsInScope() { return true; }
+  // Called when scope is cleared without reattaching to parent.
+  // Used when StoresItemsInScope() is false to clear external storage.
+  static void OnScopeCleared(OrderedScope<T>* scope) {}
+  // Called when scope items should be reattached to parent.
+  // Used when StoresItemsInScope() is false to reattach from external storage.
+  static void OnScopeReattachItems(OrderedScope<T>* scope,
+                                   OrderedScope<T>* parent) {}
+  // Called when a new scope is created to move items from parent.
+  // Used when StoresItemsInScope() is false.
+  static void OnScopeMoveItemsFromParent(OrderedScope<T>* new_scope,
+                                         OrderedScope<T>* parent_scope) {}
+  // Called after a new scope is created. Allows type-specific initialization.
+  static void OnScopeCreated(OrderedScope<T>* scope) {}
 
   // Attaches an item to this scope, maintaining tree order.
   void AttachItem(T& item) {
-    const Element* item_element = GetItemElement(&item);
-    CHECK(item_element);
-
-    // Find insertion position in tree order, which is the first item that goes
-    // after `item_element`, and then insert before it.
-    auto comp = blink::ordered_scope_internal::TreeOrderComparator<
-        T, decltype(&GetItemElement)>{&GetItemElement};
-    auto it =
-        std::upper_bound(items_.begin(), items_.end(), item_element, comp);
-
-    items_.insert(static_cast<wtf_size_t>(it - items_.begin()), &item);
+    if (StoresItemsInScope()) {
+      InsertItemInTreeOrder(item);
+    }
     OnItemAttached(&item, this);
   }
 
   // Detaches an item from this scope.
   void DetachItem(T& item) {
-    wtf_size_t pos = items_.Find(&item);
-    CHECK_NE(pos, kNotFound);
-    items_.EraseAt(pos);
+    if (StoresItemsInScope()) {
+      RemoveItemFromList(item);
+    }
     OnItemDetached(&item);
   }
 
@@ -94,29 +105,13 @@ class OrderedScope : public GarbageCollected<OrderedScope<T>> {
       return;
     }
 
-    // Find position for the first item, then insert all items sequentially.
-    if (!items_.empty()) {
-      const Element* first_element = GetItemElement(items_.front());
-      auto comp = blink::ordered_scope_internal::TreeOrderComparator<
-          T, decltype(&GetItemElement)>{&GetItemElement};
-      auto it = std::upper_bound(parent_->items_.begin(), parent_->items_.end(),
-                                 first_element, comp);
-      wtf_size_t insert_pos =
-          static_cast<wtf_size_t>(it - parent_->items_.begin());
-
-      for (T* item : items_) {
-        OnItemDetached(item);
-        parent_->items_.insert(insert_pos++, item);
-        OnItemAttached(item, parent_);
-      }
-      items_.clear();
+    if (StoresItemsInScope()) {
+      ReattachStoredItemsToParent();
+    } else {
+      OnScopeReattachItems(this, parent_);
     }
 
-    auto children = std::move(children_);
-    for (OrderedScope<T>* child : children) {
-      child->SetParent(nullptr);
-      parent_->AppendChild(child);
-    }
+    ReattachChildrenToParent();
     parent_->RemoveChild(this);
   }
 
@@ -126,14 +121,12 @@ class OrderedScope : public GarbageCollected<OrderedScope<T>> {
     if (parent_) {
       parent_->RemoveChild(this);
     }
-    for (OrderedScope<T>* child : children_) {
-      child->SetParent(nullptr);
+    ClearChildren();
+    if (StoresItemsInScope()) {
+      ClearStoredItems();
+    } else {
+      OnScopeCleared(this);
     }
-    children_.clear();
-    for (T* item : items_) {
-      OnItemDetached(item);
-    }
-    items_.clear();
   }
 
   // Appends a child scope.
@@ -198,6 +191,69 @@ class OrderedScope : public GarbageCollected<OrderedScope<T>> {
   friend class OrderedScopeTree<T>;
 
   void SetParent(OrderedScope<T>* parent) { parent_ = parent; }
+
+  // Inserts an item into items_ maintaining tree order.
+  void InsertItemInTreeOrder(T& item) {
+    const Element* item_element = GetItemElement(&item);
+    CHECK(item_element);
+    auto comp = blink::ordered_scope_internal::TreeOrderComparator<
+        T, decltype(&GetItemElement)>{&GetItemElement};
+    auto it =
+        std::upper_bound(items_.begin(), items_.end(), item_element, comp);
+    items_.insert(static_cast<wtf_size_t>(it - items_.begin()), &item);
+  }
+
+  // Removes an item from items_.
+  void RemoveItemFromList(T& item) {
+    wtf_size_t pos = items_.Find(&item);
+    CHECK_NE(pos, kNotFound);
+    items_.EraseAt(pos);
+  }
+
+  // Reattaches all stored items to parent scope.
+  void ReattachStoredItemsToParent() {
+    if (items_.empty()) {
+      return;
+    }
+    const Element* first_element = GetItemElement(items_.front());
+    auto comp = blink::ordered_scope_internal::TreeOrderComparator<
+        T, decltype(&GetItemElement)>{&GetItemElement};
+    auto it = std::upper_bound(parent_->items_.begin(), parent_->items_.end(),
+                               first_element, comp);
+    wtf_size_t insert_pos =
+        static_cast<wtf_size_t>(it - parent_->items_.begin());
+    for (T* item : items_) {
+      OnItemDetached(item);
+      parent_->items_.insert(insert_pos++, item);
+      OnItemAttached(item, parent_);
+    }
+    items_.clear();
+  }
+
+  // Reattaches all children to parent scope.
+  void ReattachChildrenToParent() {
+    auto children = std::move(children_);
+    for (OrderedScope<T>* child : children) {
+      child->SetParent(nullptr);
+      parent_->AppendChild(child);
+    }
+  }
+
+  // Clears children without reattaching.
+  void ClearChildren() {
+    for (OrderedScope<T>* child : children_) {
+      child->SetParent(nullptr);
+    }
+    children_.clear();
+  }
+
+  // Clears stored items, notifying detachment.
+  void ClearStoredItems() {
+    for (T* item : items_) {
+      OnItemDetached(item);
+    }
+    items_.clear();
+  }
 
   WeakMember<const Element> scope_root_;
   Member<OrderedScope<T>> parent_;
