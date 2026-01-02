@@ -205,12 +205,8 @@ error-page {
 @media (max-width: 480px) {
   :host([is-zero-state_]) #composebox {
     inset-inline-start: 0;
+    width: calc(100% - 20px);
   }
-}
-
-:host([is-zero-state_]:not([is-shown-in-tab_])) #composebox {
-  /* Since whole window is cut off by around 20px on right in side panel. */
-  margin-right: 40px;
 }
 
 @media (min-width: 750px) {
@@ -226,10 +222,10 @@ error-page {
    * TODO(crbug.com/470121831): change this when webview height
    * changes + 100% overlay incorporated.
    */
-  height: 780px;
+  height: 880px;
   justify-content: center;
-  position: absolute;
   pointer-events: none;
+  position: absolute;
   width: 100%;
 }
 

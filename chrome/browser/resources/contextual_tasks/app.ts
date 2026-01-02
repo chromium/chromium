@@ -21,6 +21,7 @@ import type {Tab} from './contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {PostMessageHandler} from './post_message_handler.js';
+import type {ZeroStateOverlayElement} from './zero_state_overlay.js';
 
 type ChromeEventFunctionType<T> =
     T extends ChromeEvent<infer ListenerType>? ListenerType : never;
@@ -33,6 +34,7 @@ export interface ContextualTasksAppElement {
   $: {
     threadFrame: chrome.webviewTag.WebView,
     composebox: ContextualTasksComposeboxElement,
+    zeroStateOverlay: ZeroStateOverlayElement,
   };
 }
 
@@ -163,6 +165,8 @@ export class ContextualTasksAppElement extends CrLitElement {
         'ContextualTasks.WebUI.UserAction.OpenNewThread', true);
     const {url} = await this.browserProxy_.handler.getThreadUrl();
     this.$.threadFrame.src = url.url;
+    this.$.composebox.startExpandAnimation();
+    this.$.zeroStateOverlay.startOverlayAnimation();
     this.$.composebox.clearInputAndFocus();
   }
 
