@@ -129,6 +129,7 @@ class AffiliationServiceImpl : public AffiliationService {
   void UpdateAffiliationsAndBranding(const std::vector<FacetURI>& facets,
                                      base::OnceClosure callback) override;
   void RegisterSource(std::unique_ptr<AffiliationSource> source) override;
+  base::WeakPtr<AffiliationService> AsWeakPtr() override;
 
   AffiliationBackend* GetBackendForTesting() { return backend_.get(); }
 

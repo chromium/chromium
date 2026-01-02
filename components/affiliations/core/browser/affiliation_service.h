@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "components/affiliations/core/browser/affiliation_source.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -98,6 +99,8 @@ class AffiliationService : public KeyedService {
   // the prefetcher, and observed for changes in their underlying data model to
   // keep an updated cache of affiliations.
   virtual void RegisterSource(std::unique_ptr<AffiliationSource> source) = 0;
+
+  virtual base::WeakPtr<AffiliationService> AsWeakPtr() = 0;
 };
 
 }  // namespace affiliations

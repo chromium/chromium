@@ -341,4 +341,8 @@ void AffiliationServiceImpl::OnPSLExtensionsLoaded(
   std::move(callback).Run(std::move(psl_extensions));
 }
 
+base::WeakPtr<AffiliationService> AffiliationServiceImpl::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace affiliations
