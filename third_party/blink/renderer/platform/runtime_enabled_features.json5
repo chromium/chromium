@@ -1621,6 +1621,11 @@
       status: "test",
     },
     {
+      name: "CSSRandomFunctionTypedOM",
+      status: "test",
+      depends_on: ["CSSRandomFunction"],
+    },
+    {
       // Non-standard 'auto' keyword for the CSS resize property. Used for
       // selectively enable resize corner for textarea via UA stylesheet, but
       // unintentionally exposed to author sheets. UA rule is now using

@@ -5,7 +5,7 @@
 // Represents CSS random() function.
 [
   Exposed=(Window,LayoutWorklet,PaintWorklet),
-  RuntimeEnabled=CSSRandomFunction
+  RuntimeEnabled=CSSRandomFunctionTypedOM
 ] interface CSSMathRandom : CSSMathValue {
   [RaisesException] constructor(double baseValue, CSSNumberish min, CSSNumberish max, optional CSSNumberish? step = null);
   readonly attribute double baseValue;

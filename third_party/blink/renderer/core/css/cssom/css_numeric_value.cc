@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -155,7 +156,8 @@ CSSNumericValue* CalcToNumericValue(const CSSMathExpressionNode& root) {
     return CSSMathSum::Create(std::move(values));
   }
 
-  if (root.IsRandomFunction()) {
+  if (root.IsRandomFunction() &&
+      RuntimeEnabledFeatures::CSSRandomFunctionTypedOMEnabled()) {
     const auto& node = To<CSSMathExpressionRandomFunction>(root);
     DCHECK(node.GetRandomValueSharing()->IsFixed());
     CSSNumericValue* min = CalcToNumericValue(*node.Min());
