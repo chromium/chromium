@@ -195,6 +195,7 @@
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/split_tab_visual_data.h"
+#include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -3487,23 +3488,31 @@ void Browser::SyncHistoryWithTabs(int index) {
     return;
   }
 
-  for (int i = index; i < tab_strip_model_->count(); ++i) {
-    WebContents* web_contents = tab_strip_model_->GetWebContentsAt(i);
+  if (index >= GetTabStripModel()->count()) {
+    return;
+  }
+
+  int current_index = index;
+  for (tabs::TabCollection::TabIterator it(
+           GetTabStripModel()->GetTabAtIndex(index));
+       it != GetTabStripModel()->end(); ++it) {
+    WebContents* web_contents = it->GetContents();
     if (web_contents) {
       SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
       if (service) {
-        service->SetPinnedState(session_id(), tab_id,
-                                tab_strip_model_->IsTabPinned(i));
+        service->SetPinnedState(session_id(), tab_id, it->IsPinned());
       }
 
       if (!IsRelevantToAppSessionService(type_) && session_service) {
-        session_service->SetTabIndexInWindow(session_id(), tab_id, i);
+        session_service->SetTabIndexInWindow(session_id(), tab_id,
+                                             current_index);
 
         std::optional<tab_groups::TabGroupId> group_id =
-            tab_strip_model_->GetTabGroupForTab(i);
+            tab_strip_model_->GetTabGroupForTab(current_index);
         session_service->SetTabGroup(session_id(), tab_id, std::move(group_id));
       }
     }
+    current_index++;
   }
 }
 

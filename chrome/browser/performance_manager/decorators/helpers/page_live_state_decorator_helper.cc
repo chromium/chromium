@@ -173,8 +173,8 @@ class ActiveTabObserver : public TabStripModelObserver,
            change.GetInsert()->contents) {
         // Pinned tabs can be restored from previous session in pinned state
         // and hence won't trigger a pinned state changed event
-        PageLiveStateDecorator::SetIsPinnedTab(
-            tab.contents, tab_strip_model->IsTabPinned(tab.index));
+        PageLiveStateDecorator::SetIsPinnedTab(tab.contents,
+                                               tab.tab->IsPinned());
       }
     } else if (change.type() == TabStripModelChange::kReplaced) {
       auto* replace = change.GetReplace();

@@ -50,10 +50,11 @@ void BrowserSyncedWindowDelegate::OnTabStripModelChanged(
 
 bool BrowserSyncedWindowDelegate::IsTabPinned(
     const sync_sessions::SyncedTabDelegate* tab) const {
-  for (int i = 0; i < tab_strip_model_->count(); ++i) {
-    sync_sessions::SyncedTabDelegate* current = GetTabAt(i);
+  for (const tabs::TabInterface* tab_interface : *tab_strip_model_) {
+    sync_sessions::SyncedTabDelegate* current =
+        BrowserSyncedTabDelegate::FromWebContents(tab_interface->GetContents());
     if (tab == current) {
-      return tab_strip_model_->IsTabPinned(i);
+      return tab_interface->IsPinned();
     }
   }
   // The window and tab are not always updated atomically, so it's possible

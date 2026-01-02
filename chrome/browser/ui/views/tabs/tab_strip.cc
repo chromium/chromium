@@ -1613,7 +1613,7 @@ views::View* TabStrip::GetDefaultFocusableChild() {
   return active.has_value() ? tab_at(active.value()) : nullptr;
 }
 
-BrowserWindowInterface* TabStrip::GetBrowserWindowInterface() {
+BrowserWindowInterface* TabStrip::GetBrowserWindowInterface() const {
   return controller_->GetBrowserWindowInterface();
 }
 
@@ -1626,10 +1626,13 @@ std::optional<int> TabStrip::GetActiveIndex() const {
 }
 
 int TabStrip::NumPinnedTabsInModel() const {
-  for (int i = 0; i < controller_->GetCount(); ++i) {
-    if (!controller_->IsTabPinned(i)) {
-      return i;
+  int count = 0;
+  for (const tabs::TabInterface* tab :
+       *GetBrowserWindowInterface()->GetTabStripModel()) {
+    if (!tab->IsPinned()) {
+      return count;
     }
+    count++;
   }
 
   // All tabs are pinned.

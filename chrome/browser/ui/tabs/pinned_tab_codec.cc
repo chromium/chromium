@@ -39,8 +39,12 @@ base::Value::Dict EncodeTab(const GURL& url) {
 void EncodePinnedTabs(BrowserWindowInterface* browser,
                       base::Value::List& serialized_tabs) {
   const TabStripModel* const tab_model = browser->GetTabStripModel();
-  for (int i = 0; i < tab_model->count() && tab_model->IsTabPinned(i); ++i) {
-    content::WebContents* web_contents = tab_model->GetWebContentsAt(i);
+  for (const tabs::TabInterface* tab : *tab_model) {
+    if (!tab->IsPinned()) {
+      break;
+    }
+
+    content::WebContents* web_contents = tab->GetContents();
     NavigationEntry* entry =
         web_contents->GetController().GetLastCommittedEntry();
     if (entry) {

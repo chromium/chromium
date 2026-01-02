@@ -240,7 +240,7 @@ class TabStrip : public views::View,
   views::View* GetDefaultFocusableChild();
 
   // The browser window interface for the hosting browser.
-  BrowserWindowInterface* GetBrowserWindowInterface();
+  BrowserWindowInterface* GetBrowserWindowInterface() const;
 
   // TabContainerController:
   bool IsValidModelIndex(int index) const override;

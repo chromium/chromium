@@ -742,17 +742,20 @@ void SessionServiceBase::BuildCommandsForBrowser(
               split_id, tab_strip->GetSplitData(split_id)->visual_data()));
     }
 
-  for (int i = 0; i < tab_strip->count(); ++i) {
-    WebContents* tab = tab_strip->GetWebContentsAt(i);
-    DCHECK(tab);
-    const std::optional<tab_groups::TabGroupId> group_id =
-        tab_strip->GetTabGroupForTab(i);
-    const std::optional<split_tabs::SplitTabId> split_id =
-        tab_strip->GetSplitForTab(i);
+    int index = 0;
+    for (const tabs::TabInterface* tab_interface : *tab_strip) {
+      WebContents* tab = tab_interface->GetContents();
+      DCHECK(tab);
+      const std::optional<tab_groups::TabGroupId> group_id =
+          tab_strip->GetTabGroupForTab(index);
+      const std::optional<split_tabs::SplitTabId> split_id =
+          tab_strip->GetSplitForTab(index);
 
-    BuildCommandsForTab(browser->session_id(), tab, i, group_id, split_id,
-                        tab_strip->IsTabPinned(i), tab_to_available_range);
-  }
+      BuildCommandsForTab(browser->session_id(), tab, index, group_id, split_id,
+                          tab_interface->IsPinned(), tab_to_available_range);
+
+      index++;
+    }
 
   windows_to_track->insert(browser->session_id());
 }

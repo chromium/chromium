@@ -84,7 +84,9 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "components/sessions/core/session_types.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -1256,10 +1258,16 @@ class SessionRestoreImpl : public BrowserListObserver {
     if (!service) {
       return;
     }
-    TabStripModel* tab_strip = browser->tab_strip_model();
-    for (int i = initial_count; i < tab_strip->count(); ++i) {
-      service->TabRestored(tab_strip->GetWebContentsAt(i),
-                           tab_strip->IsTabPinned(i));
+
+    TabStripModel* model = browser->tab_strip_model();
+    if (initial_count >= model->count()) {
+      return;
+    }
+
+    for (tabs::TabCollection::TabIterator it(
+             model->GetTabAtIndex(initial_count));
+         it != model->end(); ++it) {
+      service->TabRestored(it->GetContents(), it->IsPinned());
     }
   }
 
