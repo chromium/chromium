@@ -45,6 +45,10 @@ class CSSImageSetOptionValue : public CSSValue {
 
   bool Equals(const CSSImageSetOptionValue& other) const;
 
+  const CSSValue* CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+      const CSSPropertyName&,
+      wtf_size_t property_value_index) const;
+
   void TraceAfterDispatch(blink::Visitor* visitor) const;
 
  private:

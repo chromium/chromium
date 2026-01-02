@@ -43,6 +43,14 @@ class CORE_EXPORT CSSImageSetValue : public CSSValueList {
   explicit CSSImageSetValue();
   ~CSSImageSetValue();
 
+  CSSImageSetValue(StyleImage* cached_image,
+                   float device_scale_factor,
+                   HeapVector<Member<const CSSImageSetOptionValue>>&& options)
+      : CSSValueList(kImageSetClass, kCommaSeparator),
+        cached_image_(cached_image),
+        cached_device_scale_factor_(device_scale_factor),
+        options_(std::move(options)) {}
+
   bool IsCachePending(const float device_scale_factor) const;
   StyleImage* CachedImage(const float device_scale_factor) const;
   StyleImage* CacheImage(StyleImage*, const float device_scale_factor);
@@ -57,6 +65,10 @@ class CORE_EXPORT CSSImageSetValue : public CSSValueList {
   const CSSImageSetValue& ResolveValuesIfNeeded(
       const StyleResolverState&) const;
   CSSImageSetValue& ResolveValuesIfNeeded(const StyleResolverState&);
+
+  const CSSValue* CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+      const CSSPropertyName&,
+      wtf_size_t property_value_index) const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

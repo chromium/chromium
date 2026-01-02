@@ -333,6 +333,7 @@ test_random_computed_value('color', 'rgb(from blue random(51, 10) random(g + 51,
 test_random_computed_value('color', 'color-mix(in srgb, rgb(random(30, 10) 0 0), rgb(random(21, 10) 0 0))', 'color(srgb 0.1 0 0)');
 test_random_computed_value('math-depth', 'add(random(30, 10))', '30');
 test_random_computed_value('view-transition-name', 'ident("myident" random(30, 10))', 'myident30');
+test_random_computed_value('background-image', 'image-set(url("http://example.com/image.png") calc(random(fixed 0.3, 0, 10) * 1x))', 'image-set(url("http://example.com/image.png") 3dppx)');
 
 // Test random value sharing
 test(() => {

@@ -1275,13 +1275,9 @@ class CORE_EXPORT CSSMathExpressionRandomFunction final
       const CSSLengthResolver&) const final {
     return std::nullopt;
   }
-  std::optional<double> ComputeValueInCanonicalUnit() const final {
-    NOTREACHED();
-  }
+  std::optional<double> ComputeValueInCanonicalUnit() const final;
   std::optional<double> ComputeValueInCanonicalUnit(
-      const CSSLengthResolver& length_resolver) const final {
-    NOTREACHED();
-  }
+      const CSSLengthResolver& length_resolver) const final;
   String CustomCSSText() const final;
   bool operator==(const CSSMathExpressionNode& other) const final;
   bool IsComputationallyIndependent() const final;

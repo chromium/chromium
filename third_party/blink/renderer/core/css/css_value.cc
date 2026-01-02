@@ -1162,6 +1162,14 @@ const CSSValue* CSSValue::CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
       return To<CSSCustomIdentValue>(this)
           ->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
               property_name, property_value_index);
+    case kImageSetOptionClass:
+      return To<CSSImageSetOptionValue>(this)
+          ->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+              property_name, property_value_index);
+    case kImageSetClass:
+      return To<CSSImageSetValue>(this)
+          ->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+              property_name, property_value_index);
     default:
       return this;
   }
