@@ -152,7 +152,7 @@ class UnpackedInstaller : public base::RefCountedThreadSafe<
   void UnregisterLoadRetryListener();
 
   // Notify the frontend that there was an error loading an extension.
-  void ReportExtensionLoadError(const std::string& error);
+  void ReportExtensionLoadError(const std::u16string& error);
 
   // Passes the extension onto extension service.
   void InstallExtension();

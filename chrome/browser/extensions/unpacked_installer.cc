@@ -68,13 +68,13 @@ namespace extensions {
 
 namespace {
 
-const char kUnpackedExtensionsBlocklistedError[] =
-    "Loading of unpacked extensions is disabled by the administrator.";
+const char16_t kUnpackedExtensionsBlocklistedError[] =
+    u"Loading of unpacked extensions is disabled by the administrator.";
 
-const char kImportMinVersionNewer[] =
-    "'import' version requested is newer than what is installed.";
-const char kImportMissing[] = "'import' extension is not installed.";
-const char kImportNotSharedModule[] = "'import' is not a shared module.";
+const char16_t kImportMinVersionNewer[] =
+    u"'import' version requested is newer than what is installed.";
+const char16_t kImportMissing[] = u"'import' extension is not installed.";
+const char16_t kImportNotSharedModule[] = u"'import' is not a shared module.";
 
 class BrowserContextShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
@@ -172,7 +172,7 @@ bool UnpackedInstaller::LoadFromCommandLine(const base::FilePath& path_in,
   std::u16string error;
   if (!LoadExtension(mojom::ManifestLocation::kCommandLine, GetFlags(),
                      &error)) {
-    ReportExtensionLoadError(base::UTF16ToUTF8(error));
+    ReportExtensionLoadError(error);
     return false;
   }
 
@@ -182,8 +182,8 @@ bool UnpackedInstaller::LoadFromCommandLine(const base::FilePath& path_in,
     return true;
 #else
     // Defined here to avoid unused variable errors in official builds.
-    const char extension_instead_of_app_error[] =
-        "App loading flags cannot be used to load extensions. Please use "
+    const char16_t extension_instead_of_app_error[] =
+        u"App loading flags cannot be used to load extensions. Please use "
         "--load-extension instead.";
     ReportExtensionLoadError(extension_instead_of_app_error);
     return false;
@@ -270,7 +270,7 @@ void UnpackedInstaller::OnInstallChecksComplete(
     error_message = requirements_check_->GetErrorMessage();
 
   DCHECK(!error_message.empty());
-  ReportExtensionLoadError(base::UTF16ToUTF8(error_message));
+  ReportExtensionLoadError(error_message);
 }
 
 int UnpackedInstaller::GetFlags() {
@@ -386,7 +386,7 @@ void UnpackedInstaller::LoadWithFileAccessOnFileThread(int flags) {
     content::GetUIThreadTaskRunner({base::TaskPriority::USER_BLOCKING})
         ->PostTask(FROM_HERE,
                    base::BindOnce(&UnpackedInstaller::ReportExtensionLoadError,
-                                  this, base::UTF16ToUTF8(error)));
+                                  this, error));
     return;
   }
 
@@ -396,20 +396,16 @@ void UnpackedInstaller::LoadWithFileAccessOnFileThread(int flags) {
                  base::BindOnce(&UnpackedInstaller::StartInstallChecks, this));
 }
 
-// TODO(crbug.com/41317803): Continue removing std::string error and
-// replacing with std::u16string.
-void UnpackedInstaller::ReportExtensionLoadError(const std::string &error) {
+void UnpackedInstaller::ReportExtensionLoadError(const std::u16string& error) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (browser_context_) {
     LoadErrorReporter::GetInstance()->ReportLoadError(
-        extension_path_, base::UTF8ToUTF16(error), browser_context_,
-        be_noisy_on_failure_);
+        extension_path_, error, browser_context_, be_noisy_on_failure_);
   }
 
   if (!callback_.is_null())
-    std::move(callback_).Run(nullptr, extension_path_,
-                             base::UTF8ToUTF16(error));
+    std::move(callback_).Run(nullptr, extension_path_, error);
 }
 
 void UnpackedInstaller::InstallExtension() {
