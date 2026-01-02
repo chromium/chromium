@@ -9,11 +9,13 @@
 
 #include <dbt.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 
 #include "base/at_exit.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -34,7 +36,9 @@ DeviceMonitorMessageWindow* g_message_window;
 // STL map.
 struct CompareGUID {
   bool operator()(const GUID& a, const GUID& b) const {
-    return UNSAFE_TODO(memcmp(&a, &b, sizeof a)) < 0;
+    return std::lexicographical_compare(
+        base::byte_span_from_ref(a).begin(), base::byte_span_from_ref(a).end(),
+        base::byte_span_from_ref(b).begin(), base::byte_span_from_ref(b).end());
   }
 };
 }  // namespace
