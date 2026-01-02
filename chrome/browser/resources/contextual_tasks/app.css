@@ -181,11 +181,14 @@ error-page {
 }
 
 :host([is-zero-state_]) #composebox {
+  bottom: 0;
+  height: auto;
   inset-inline-start: 20px;
   max-width: var(--max-composebox-width);
   min-width: var(--min-composebox-width);
   pointer-events: auto;
   position: relative;
+  top: auto;
   z-index: 2;
   /* Left/right padding of parent is 20px. */
   width: calc(100% - 20px);
@@ -225,9 +228,11 @@ error-page {
   align-items: center;
   display: flex;
   flex-direction: column;
-  height: 100%;
   gap: 36px;
-  justify-content: center;
+  height: 51%;
+  justify-content: flex-end;
+  min-height: 300px;
+  overflow-anchor: none;
   pointer-events: none;
   position: absolute;
   width: 100%;
@@ -314,21 +319,5 @@ error-page {
 @media (max-width: 280px) {
   .thread-header {
     font-size: 11vw;
-  }
-}
-
-:host([is-zero-state_]) #composebox {
-  margin-bottom: 22.5vh;
-}
-:host(:not([is-shown-in-tab_])[is-zero-state_]) #composebox {
-  margin-bottom: 15vh;
-}
-
-@media (max-width: 480px) {
-  :host([is-zero-state_]) #composebox {
-    margin-bottom: 15vh;
-  }
-  :host(:not([is-shown-in-tab_])[is-zero-stae_]) #composebox {
-    margin-bottom: 10vh;
   }
 }
