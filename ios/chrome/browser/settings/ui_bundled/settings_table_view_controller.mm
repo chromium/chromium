@@ -482,9 +482,7 @@ struct EnhancedSafeBrowsingActivePromoData
     [self updateBWGNewIPHBadge];
   }
 
-  if ([self shouldShowNotificationsSettings]) {
-    [self updateNotificationsDetailText];
-  }
+  [self updateNotificationsDetailText];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -536,11 +534,9 @@ struct EnhancedSafeBrowsingActivePromoData
     [model addItem:[self BWGSettingsDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   }
-  if ([self shouldShowNotificationsSettings]) {
-    _notificationsItem = [self notificationsItem];
-    [model addItem:_notificationsItem
-        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-  }
+  _notificationsItem = [self notificationsItem];
+  [model addItem:_notificationsItem
+      toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   [model addItem:[self voiceSearchDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   [model addItem:[self safetyCheckDetailItem]
@@ -1302,7 +1298,6 @@ struct EnhancedSafeBrowsingActivePromoData
           [[AutofillProfileTableViewController alloc] initWithBrowser:_browser];
       break;
     case SettingsItemTypeNotifications:
-      CHECK([self shouldShowNotificationsSettings]);
       base::RecordAction(base::UserMetricsAction("Settings.Notifications"));
       [self showNotifications];
       break;
@@ -1986,11 +1981,6 @@ struct EnhancedSafeBrowsingActivePromoData
                                browser:_browser];
   _downloadsSettingsCoordinator.delegate = self;
   [_downloadsSettingsCoordinator start];
-}
-
-// Returns YES if the Notifications settings should show.
-- (BOOL)shouldShowNotificationsSettings {
-  return base::FeatureList::IsEnabled(kNotificationSettingsMenuItem);
 }
 
 // Records that the user has reached the impression limit for the enhanced safe

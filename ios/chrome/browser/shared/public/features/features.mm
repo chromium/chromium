@@ -300,8 +300,6 @@ constexpr base::FeatureParam<int>
         &kNonModalDefaultBrowserPromoImpressionLimit,
         /*name=*/"impression-limit", /*default_value=*/3};
 
-BASE_FEATURE(kNotificationSettingsMenuItem, base::FEATURE_ENABLED_BY_DEFAULT);
-
 const char kBottomOmniboxEvolutionParam[] = "kBottomOmniboxEvolutionParam";
 const char kBottomOmniboxEvolutionParamEditStateFollowSteadyState[] =
     "kBottomOmniboxEvolutionParamEditStateFollowSteadyState";

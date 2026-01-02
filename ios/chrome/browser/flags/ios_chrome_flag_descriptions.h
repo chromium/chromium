@@ -711,9 +711,6 @@ extern const char kNonModalSignInPromoDescription[];
 extern const char kNotificationCollisionManagementName[];
 extern const char kNotificationCollisionManagementDescription[];
 
-extern const char kNotificationSettingsMenuItemName[];
-extern const char kNotificationSettingsMenuItemDescription[];
-
 extern const char kNtpAlphaBackgroundCollectionsName[];
 extern const char kNtpAlphaBackgroundCollectionsDescription[];
 

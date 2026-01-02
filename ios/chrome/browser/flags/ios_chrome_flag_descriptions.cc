@@ -1178,12 +1178,6 @@ const char kNotificationCollisionManagementName[] =
 const char kNotificationCollisionManagementDescription[] =
     "Enables delays to notifications to space them out more";
 
-const char kNotificationSettingsMenuItemName[] =
-    "Notification Settings Menu Item";
-const char kNotificationSettingsMenuItemDescription[] =
-    "Displays the menu item for the notification controls inside the chrome "
-    "settings UI.";
-
 const char kNtpAlphaBackgroundCollectionsName[] =
     "Enable alpha background collections";
 const char kNtpAlphaBackgroundCollectionsDescription[] =

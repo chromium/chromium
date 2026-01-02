@@ -7321,11 +7321,6 @@
     "expiry_milestone": 106
   },
   {
-      "name": "notification-settings-menu-item",
-      "owners": ["danieltwhite@chromium.org", "ajuma@chromium.org" ],
-      "expiry_milestone": 116
-  },
-  {
       "name": "notifications-ignore-require-interaction",
       "owners": ["amehfooz@chromium.org", "joelhockey@chromium.org" ],
       "expiry_milestone": 160
