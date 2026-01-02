@@ -476,9 +476,9 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
 
   // If there are no visible badges, the placeholder badge should be shown and
   // we should use the default badge tap logic instead of the tap overlay.
-  BOOL hasVisibleBadges = ![self hasVisibleBadges];
-  _tapOverlayButton.hidden = hasVisibleBadges;
-  _containerStackView.userInteractionEnabled = hasVisibleBadges;
+  BOOL noVisibleBadges = ![self hasVisibleBadges];
+  _tapOverlayButton.hidden = noVisibleBadges;
+  _containerStackView.userInteractionEnabled = noVisibleBadges;
 }
 
 @end
