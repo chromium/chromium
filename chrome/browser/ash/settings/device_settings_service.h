@@ -197,8 +197,14 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
   // hasn't been checked yet.
   OwnershipStatus GetOwnershipStatus();
 
-  // Determines the ownership status and reports the result to |callback|. This
-  // is guaranteed to never return OWNERSHIP_UNKNOWN.
+  // Determines the ownership status and reports the result to `callback`.
+  // This obtains the ownership status of the device by reading the public owner
+  // key.
+  // As a side effect, it also obtains device settings from the session manager,
+  // see SessionManagerOperation::StartLoading().
+  //
+  // May pass OWNERSHIP_UNKNOWN to `callback` if the public owner key file is
+  // invalid (empty), see also ash::SessionManagerOperation::LoadPublicKey().
   virtual void GetOwnershipStatusAsync(OwnershipStatusCallback callback);
 
   // Checks whether we have the private owner key.

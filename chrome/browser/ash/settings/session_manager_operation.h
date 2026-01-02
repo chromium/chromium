@@ -104,6 +104,10 @@ class SessionManagerOperation {
 
  private:
   // Loads the owner key from disk. Must be run on a thread that can do I/O.
+  // Returns
+  //  * an empty key if the file is not present,
+  //  * nullptr if the file is invalid,
+  //  * the content of the file otherwise.
   static scoped_refptr<ownership::PublicKey> LoadPublicKey(
       scoped_refptr<ownership::OwnerKeyUtil> util,
       scoped_refptr<ownership::PublicKey> current_key);
