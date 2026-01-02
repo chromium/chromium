@@ -169,6 +169,13 @@ class ContextualTasksUiService : public KeyedService {
     return auto_tab_context_suggestion_enabled_;
   }
 
+  // Return whether there is a user signed into the browser with valid
+  // credentials (aka, an OAuth token can be obtained).
+  virtual bool IsSignedInToBrowserWithValidCredentials();
+
+  // Return whether the cookie jar contains the primary account.
+  virtual bool CookieJarContainsPrimaryAccount();
+
  protected:
   // The actual implementation of `HandleNavigation` that extracts more of the
   // components needed to decide if the navigation should be handled by this
@@ -181,10 +188,6 @@ class ContextualTasksUiService : public KeyedService {
 
   // Returns whether the provided URL is for the primary account in Chrome.
   virtual bool IsUrlForPrimaryAccount(const GURL& url);
-
-  // Return whether there is a user signed into the browser with valid
-  // credentials (aka, an OAuth token can be obtained).
-  virtual bool IsSignedInToBrowserWithValidCredentials();
 
  private:
   // Focus an existing tab based on the provided URL if it exists. The URLs must

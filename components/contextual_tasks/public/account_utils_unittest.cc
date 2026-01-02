@@ -238,4 +238,65 @@ TEST_F(AccountUtilsTest, IsUserSignedInToWeb_NoAccounts) {
                           GURL("https://google.com/u/0/test")));
 }
 
+TEST_F(AccountUtilsTest, CookieJarContainsPrimaryAccount_NoPrimaryAccount) {
+  // No primary account, empty cookie jar.
+  EXPECT_FALSE(CookieJarContainsPrimaryAccount(
+      identity_test_environment_.identity_manager()));
+
+  // No primary account, non-empty cookie jar.
+  identity_test_environment_.SetCookieAccounts(
+      {{"test@example.com", GaiaId("test_gaia")}});
+  EXPECT_FALSE(CookieJarContainsPrimaryAccount(
+      identity_test_environment_.identity_manager()));
+}
+
+TEST_F(AccountUtilsTest, CookieJarContainsPrimaryAccount_EmptyCookieJar) {
+  identity_test_environment_.MakePrimaryAccountAvailable(
+      "primary@example.com", signin::ConsentLevel::kSignin);
+  identity_test_environment_.SetCookieAccounts({});
+
+  EXPECT_FALSE(CookieJarContainsPrimaryAccount(
+      identity_test_environment_.identity_manager()));
+}
+
+TEST_F(AccountUtilsTest,
+       CookieJarContainsPrimaryAccount_OtherAccountInCookieJar) {
+  identity_test_environment_.MakePrimaryAccountAvailable(
+      "primary@example.com", signin::ConsentLevel::kSignin);
+  identity_test_environment_.SetCookieAccounts(
+      {{"other@example.com", GaiaId("other_gaia")}});
+
+  EXPECT_FALSE(CookieJarContainsPrimaryAccount(
+      identity_test_environment_.identity_manager()));
+}
+
+TEST_F(AccountUtilsTest,
+       CookieJarContainsPrimaryAccount_MatchesPrimaryAccount) {
+  AccountInfo primary_account =
+      identity_test_environment_.MakePrimaryAccountAvailable(
+          "primary@example.com", signin::ConsentLevel::kSignin);
+  identity_test_environment_.SetCookieAccounts(
+      {{primary_account.email, primary_account.gaia}});
+
+  EXPECT_TRUE(CookieJarContainsPrimaryAccount(
+      identity_test_environment_.identity_manager()));
+}
+
+TEST_F(AccountUtilsTest,
+       CookieJarContainsPrimaryAccount_MatchesPrimaryAccountInMixedJar) {
+  AccountInfo primary_account =
+      identity_test_environment_.MakePrimaryAccountAvailable(
+          "primary@example.com", signin::ConsentLevel::kSignin);
+  identity_test_environment_.SetCookieAccounts(
+      {{"other@example.com", GaiaId("other_gaia")},
+       {primary_account.email, primary_account.gaia}});
+
+  EXPECT_TRUE(CookieJarContainsPrimaryAccount(
+      identity_test_environment_.identity_manager()));
+}
+
+TEST_F(AccountUtilsTest, CookieJarContainsPrimaryAccount_NullIdentityManager) {
+  EXPECT_FALSE(CookieJarContainsPrimaryAccount(nullptr));
+}
+
 }  // namespace contextual_tasks

@@ -16,6 +16,8 @@
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -112,6 +114,30 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
   bool is_locally_eligible_;
   bool is_server_eligible_;
   bool server_eligibility_enabled_;
+};
+
+class TestingContextualTasksUiService
+    : public contextual_tasks::ContextualTasksUiService {
+ public:
+  TestingContextualTasksUiService(
+      Profile* profile,
+      contextual_tasks::ContextualTasksService* contextual_tasks_service,
+      signin::IdentityManager* identity_manager)
+      : ContextualTasksUiService(profile,
+                                 contextual_tasks_service,
+                                 identity_manager) {}
+  ~TestingContextualTasksUiService() override = default;
+
+  bool CookieJarContainsPrimaryAccount() override {
+    return cookie_jar_contains_primary_account_;
+  }
+
+  void SetCookieJarContainsPrimaryAccount(bool contains) {
+    cookie_jar_contains_primary_account_ = contains;
+  }
+
+ private:
+  bool cookie_jar_contains_primary_account_ = true;
 };
 
 class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
@@ -1583,6 +1609,18 @@ class ContextualTasksLensOverlayControllerInteractiveUiTest
               /*server_eligibility_enabled=*/true, *profile->GetPrefs(),
               /*template_url_service=*/nullptr);
         }));
+    contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
+        ->SetTestingFactory(
+            context,
+            base::BindLambdaForTesting([](content::BrowserContext* context) {
+              Profile* profile = Profile::FromBrowserContext(context);
+              return static_cast<std::unique_ptr<KeyedService>>(
+                  std::make_unique<TestingContextualTasksUiService>(
+                      profile,
+                      contextual_tasks::ContextualTasksServiceFactory::
+                          GetForProfile(profile),
+                      IdentityManagerFactory::GetForProfile(profile)));
+            }));
   }
 
   void SetUpOnMainThread() override {
