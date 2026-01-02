@@ -20,7 +20,6 @@ namespace actor {
 struct ActionResultWithLatencyInfo;
 class ActorKeyedService;
 class ActorTaskDelegate;
-class ActorTask;
 }  // namespace actor
 
 namespace glic {
@@ -72,7 +71,9 @@ class GlicActorTaskManager {
       actor::mojom::ActionResultCode result_code,
       std::optional<size_t> index_of_failed_action,
       std::vector<actor::ActionResultWithLatencyInfo> action_results);
-  void ReloadTab(actor::ActorTask& task, base::OnceClosure callback);
+  void ReloadCrashedTab(tabs::TabInterface& crashed_tab,
+                        actor::TaskId task_id,
+                        base::OnceClosure callback);
   void CreateActorTabFinished(
       glic::mojom::WebClientHandler::CreateActorTabCallback callback,
       tabs::TabInterface* new_tab);
@@ -85,7 +86,13 @@ class GlicActorTaskManager {
   raw_ptr<actor::ActorKeyedService> actor_keyed_service_;
 
   actor::TaskId current_task_id_;
-  bool attempted_reload_ = false;
+  // Only attempt to reload a crashed tab once *per task*. Crashes should be
+  // rare so if we're getting repeated crashes it's likely being triggered by
+  // actor code; retrying repeatedly will only trigger more crashes. After the
+  // second crash we prefer to proceed to observation code with a crashed tab
+  // which will be noticed there and return with a TAB_OBSERVATION_PAGE_CRASHED
+  // code.
+  bool attempted_reload_after_crash_ = false;
   std::unique_ptr<actor::ObservationDelayController> reload_observer_;
 
   base::WeakPtrFactory<GlicActorTaskManager> weak_ptr_factory_{this};
