@@ -295,6 +295,7 @@ if (!skip_android_unmigrated_actor_files) {
       "actor_keyed_service_unittest.cc",
       "actor_metrics_unittest.cc",
       "actor_task_metadata_unittest.cc",
+      "actor_test_util_unittest.cc",
       "aggregated_journal_unittest.cc",
       "safety_list_manager_unittest.cc",
       "safety_list_unittest.cc",

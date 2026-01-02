@@ -5,6 +5,7 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -30,11 +31,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
-using ::base::test::TestFuture;
-using ::optimization_guide::proto::ClickAction;
-using ::optimization_guide::proto::TabObservation;
-using ::testing::Property;
-
 namespace mojo {
 template <>
 struct TypeConverter<base::Value, glic::mojom::GetTabContextOptions> {
@@ -57,6 +53,14 @@ struct TypeConverter<base::Value, glic::mojom::GetTabContextOptions> {
 
 namespace actor {
 namespace {
+
+using ::base::test::TestFuture;
+using ::base::test::ValueIs;
+using ::optimization_guide::proto::Actions;
+using ::optimization_guide::proto::ActionsResult;
+using ::optimization_guide::proto::ClickAction;
+using ::optimization_guide::proto::TabObservation;
+using ::testing::Property;
 
 // Helper to mock the result returned on a TabObservation built using
 // actor::BuildActionsResultWithObservations. While live, use the provided
@@ -94,6 +98,66 @@ base::expected<base::Value, std::string> ToExpected(
   }
   return base::ok(std::move(result).TakeValue());
 }
+
+Actions MakeWaitForTaskId(base::TimeDelta duration, int task_id) {
+  Actions action = MakeWait(duration);
+  action.set_task_id(task_id);
+  return action;
+}
+
+// Helper class that utilizes content::DOMMessageQueue to capture the result of
+// an asynchronous PerformActions call. It listens for messages sent via
+// domAutomationController and filters by request ID to ensure the correct
+// result is returned.
+class AsyncActionWaiter {
+ public:
+  AsyncActionWaiter(content::RenderFrameHost* rfh, std::string request_id)
+      : queue_(rfh), request_id_(std::move(request_id)) {}
+
+  base::expected<ActionsResult, std::string> Wait() {
+    while (true) {
+      std::string json_message;
+      if (!queue_.WaitForMessage(&json_message)) {
+        return base::unexpected("Failed to wait for message from JS.");
+      }
+
+      auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+          json_message, base::JSON_PARSE_RFC);
+      if (!json_value.has_value()) {
+        return base::unexpected("Failed to parse JSON result from JS: " +
+                                json_value.error().message);
+      }
+
+      const base::Value::Dict* dict = json_value->GetIfDict();
+      if (!dict) {
+        return base::unexpected("Expected a JSON object from JS.");
+      }
+
+      const std::string* id = dict->FindString("requestId");
+      if (!id) {
+        return base::unexpected(
+            "Expected a string value for `requestId` key in JSON object from "
+            "JS");
+      }
+
+      if (*id != request_id_) {
+        // Message not for us
+        continue;
+      }
+
+      const std::string* result_base64 = dict->FindString("result");
+      if (!result_base64) {
+        return base::unexpected("JSON result missing 'result' field.");
+      }
+
+      return ParseBase64Proto<ActionsResult>(*result_base64);
+    }
+  }
+
+ private:
+  content::DOMMessageQueue queue_;
+  std::string request_id_;
+};
 
 class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
  public:
@@ -166,29 +230,15 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
 
   // Helper for JavaScript calls that return a Base64 encoded string
   // representing a serialized protobuf of type `ProtoType`.
-  // `proto_name` is used for error messages since RTTI is disabled.
   template <typename ProtoType>
   base::expected<ProtoType, std::string> EvalJsInGlicForBase64Proto(
-      std::string_view script,
-      std::string_view proto_name) {
+      std::string_view script) {
     ASSIGN_OR_RETURN(base::Value js_result, EvalJsInGlic(script));
     const std::string* result_base64 = js_result.GetIfString();
     if (!result_base64) {
       return base::unexpected("Expected a string value from JavaScript.");
     }
-    std::string decoded_result;
-    ProtoType proto_result;
-    if (!base::Base64Decode(*result_base64, &decoded_result)) {
-      return base::unexpected(
-          base::StrCat({"Failed to Base64-decode the result for ", proto_name,
-                        " from JavaScript."}));
-    }
-
-    if (!proto_result.ParseFromString(decoded_result)) {
-      return base::unexpected(base::StrCat(
-          {"Failed to parse ", proto_name, " proto from the decoded result."}));
-    }
-    return base::ok(proto_result);
+    return ParseBase64Proto<ProtoType>(*result_base64);
   }
 
   // Helper to call the CreateTask TS API.
@@ -206,32 +256,48 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
     return base::ok(actor::TaskId(task_id_int));
   }
 
-  // Helper to call the PerformActions TS API.
+  // Helper to call the PerformActions TS API synchronously.
   // Takes an `Actions` proto and returns the resulting `ActionsResult` proto.
-  [[nodiscard]] optimization_guide::proto::ActionsResult PerformActions(
-      const optimization_guide::proto::Actions& actions) {
-    // TODO(crbug.com/465206246): Revise the PerformActions helper method to
-    // support async requests.
+  // Note: This blocks until all Actions are completed by wrapping
+  // PerformActionsAsync.
+  [[nodiscard]] base::expected<ActionsResult, std::string> PerformActions(
+      const Actions& actions) {
+    return PerformActionsAsync(actions)->Wait();
+  }
+
+  // Helper to run PerformActions asynchronously.
+  // Returns an AsyncActionWaiter that can be used to wait for the result.
+  [[nodiscard]] std::unique_ptr<AsyncActionWaiter> PerformActionsAsync(
+      const Actions& actions) {
+    // TODO(crbug.com/471254787): Revise PerformActionsAsync to handle async JS
+    // calls in a blocking manner in C++.
     std::string serialized_actions;
     CHECK(actions.SerializeToString(&serialized_actions));
     const std::string proto_base64 = base::Base64Encode(serialized_actions);
 
-    const std::string script = R"(
-      (async (protoAsBase64) => {
+    static int counter = 0;
+    std::string request_id = base::NumberToString(++counter);
+    auto waiter = std::make_unique<AsyncActionWaiter>(FindGlicGuestMainFrame(),
+                                                      request_id);
+    // Script to call PerformActions() and send the result via
+    // domAutomationController to be received by the AsyncActionWaiter.
+    const std::string script = content::JsReplace(
+        R"(
+      (async () => {
         const resultBuffer =
             await window.client.browser.performActions(
-                Uint8Array.fromBase64(protoAsBase64).buffer);
-        return new Uint8Array(resultBuffer).toBase64();
-      })($1)
-    )";
+                Uint8Array.fromBase64($1).buffer);
+        window.domAutomationController.send({
+            requestId: $2,
+            result: new Uint8Array(resultBuffer).toBase64()
+        });
+      })();
+    )",
+        proto_base64, request_id);
 
-    const std::string full_script = content::JsReplace(script, proto_base64);
-    base::expected<optimization_guide::proto::ActionsResult, std::string>
-        result_expected = EvalJsInGlicForBase64Proto<
-            optimization_guide::proto::ActionsResult>(
-            full_script, "optimization_guide::proto::ActionsResult");
-    CHECK(result_expected.has_value()) << result_expected.error();
-    return result_expected.value();
+    content::ExecuteScriptAsync(FindGlicGuestMainFrame(), script);
+
+    return waiter;
   }
 
   // Helper to call the StopActorTask TS API.
@@ -358,12 +424,11 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
   // Construct the Actions proto.
   const GURL target_url =
       embedded_test_server()->GetURL("/actor/blank.html?target");
-  optimization_guide::proto::Actions action =
-      MakeNavigate(active_tab()->GetHandle(), target_url.spec());
+  Actions action = MakeNavigate(active_tab()->GetHandle(), target_url.spec());
   action.set_task_id(task_id.value());
 
   EXPECT_THAT(PerformActions(action),
-              HasResultCode(mojom::ActionResultCode::kOk));
+              ValueIs(HasResultCode(mojom::ActionResultCode::kOk)));
   EXPECT_EQ(target_url, web_contents()->GetURL());
 
   StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
@@ -390,13 +455,13 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, CreateTask_Click_StopTask) {
   // Click link to navigate to target page.
   std::optional<int> link_node_id =
       content::GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#link");
-  optimization_guide::proto::Actions actions =
+  Actions action =
       MakeClick(*web_contents()->GetPrimaryMainFrame(), link_node_id.value(),
                 ClickAction::LEFT, ClickAction::SINGLE);
-  actions.set_task_id(task_id.value());
+  action.set_task_id(task_id.value());
 
-  EXPECT_THAT(PerformActions(actions),
-              HasResultCode(mojom::ActionResultCode::kOk));
+  EXPECT_THAT(PerformActions(action),
+              ValueIs(HasResultCode(mojom::ActionResultCode::kOk)));
   EXPECT_EQ(target_url, web_contents()->GetURL());
 
   StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
@@ -423,13 +488,12 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, PauseAndResumeCreatedTask) {
 
   const GURL target_url =
       embedded_test_server()->GetURL("/actor/blank.html?target");
-  optimization_guide::proto::Actions action =
-      MakeNavigate(active_tab()->GetHandle(), target_url.spec());
+  Actions action = MakeNavigate(active_tab()->GetHandle(), target_url.spec());
   action.set_task_id(task_id.value());
 
   // Performing an action on a paused task should fail.
   EXPECT_THAT(PerformActions(action),
-              HasResultCode(mojom::ActionResultCode::kTaskPaused));
+              ValueIs(HasResultCode(mojom::ActionResultCode::kTaskPaused)));
   EXPECT_NE(target_url, web_contents()->GetURL());
 
   EXPECT_THAT(
@@ -442,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, PauseAndResumeCreatedTask) {
 
   // Performing the action again should succeed.
   EXPECT_THAT(PerformActions(action),
-              HasResultCode(mojom::ActionResultCode::kOk));
+              ValueIs(HasResultCode(mojom::ActionResultCode::kOk)));
   EXPECT_EQ(target_url, web_contents()->GetURL());
 
   StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
@@ -487,6 +551,30 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, PauseAndResumeInactiveTask) {
 }
 
 IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
+                       PerformConcurrentAsyncWaitActions) {
+  // Manually create tasks via ActorKeyedService.
+  TaskId task_id_1 = actor_keyed_service()->CreateTask();
+  TaskId task_id_2 = actor_keyed_service()->CreateTask();
+
+  // Perform two WaitActions where the first resolves after the second
+  Actions action_1 =
+      MakeWaitForTaskId(base::Milliseconds(20), task_id_1.value());
+  Actions action_2 =
+      MakeWaitForTaskId(base::Milliseconds(10), task_id_2.value());
+
+  std::unique_ptr<AsyncActionWaiter> waiter_1 = PerformActionsAsync(action_1);
+  std::unique_ptr<AsyncActionWaiter> waiter_2 = PerformActionsAsync(action_2);
+
+  // We should still be able to wait for result_2 after result_1 despite
+  // action_2 resolving first.
+  ASSERT_OK_AND_ASSIGN(ActionsResult result_1, waiter_1->Wait());
+  ASSERT_OK_AND_ASSIGN(ActionsResult result_2, waiter_2->Wait());
+
+  EXPECT_THAT(result_1, HasResultCode(mojom::ActionResultCode::kOk));
+  EXPECT_THAT(result_2, HasResultCode(mojom::ActionResultCode::kOk));
+}
+
+IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
                        PerformActionsOnCrashedTabReloadsTab) {
   const GURL& initial_url = web_contents()->GetLastCommittedURL();
   ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
@@ -500,15 +588,15 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
   content::CrashTab(web_contents());
 
   // Perform a click action on the crashed tab.
-  ::optimization_guide::proto::Actions action =
-      MakeClick(active_tab()->GetHandle(), gfx::Point(1, 1),
-                ::optimization_guide::proto::ClickAction::LEFT,
-                ::optimization_guide::proto::ClickAction::SINGLE);
+  Actions action = MakeClick(active_tab()->GetHandle(), gfx::Point(1, 1),
+                             ::optimization_guide::proto::ClickAction::LEFT,
+                             ::optimization_guide::proto::ClickAction::SINGLE);
   action.set_task_id(task_id.value());
 
   content::TestNavigationManager reload_observer(web_contents(), initial_url);
-  EXPECT_THAT(PerformActions(action),
-              HasResultCode(mojom::ActionResultCode::kRendererCrashed));
+  EXPECT_THAT(
+      PerformActions(action),
+      ValueIs(HasResultCode(mojom::ActionResultCode::kRendererCrashed)));
   EXPECT_TRUE(reload_observer.WaitForNavigationFinished());
   EXPECT_FALSE(web_contents()->IsCrashed());
 }
@@ -538,7 +626,7 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
   }));
 
   EXPECT_THAT(PerformActions(action),
-              HasResultCode(mojom::ActionResultCode::kOk));
+              ValueIs(HasResultCode(mojom::ActionResultCode::kOk)));
   EXPECT_EQ(num_calls, 2);
 }
 
@@ -560,7 +648,8 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
     return TabObservation::TAB_OBSERVATION_PAGE_CONTEXT_NOT_ELIGIBLE;
   }));
 
-  optimization_guide::proto::ActionsResult result = PerformActions(action);
+  optimization_guide::proto::ActionsResult result =
+      PerformActions(action).value();
   EXPECT_THAT(result, HasResultCode(mojom::ActionResultCode::kOk));
   ASSERT_EQ(result.tabs_size(), 1);
   ASSERT_TRUE(result.tabs().at(0).has_result());

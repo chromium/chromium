@@ -11,8 +11,11 @@
 #include <type_traits>
 #include <vector>
 
+#include "base/base64.h"
+#include "base/strings/strcat.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
@@ -22,6 +25,7 @@
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "third_party/protobuf/src/google/protobuf/descriptor.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace base {
@@ -223,6 +227,21 @@ void SetUpBlocklist(base::CommandLine* command_line,
 
 // For tests with link pages whose destination is encoded in URL parameters.
 std::string EncodeURI(const std::string& component);
+
+// Helper to parse a Base64 string into a protobuf of type `ProtoType`.
+template <typename ProtoType>
+base::expected<ProtoType, std::string> ParseBase64Proto(
+    std::string_view base64_string) {
+  std::string decoded_result;
+  if (!base::Base64Decode(base64_string, &decoded_result)) {
+    return base::unexpected(
+        base::StrCat({"Failed to Base64-decode the result (", base64_string,
+                      ") from JavaScript."}));
+  }
+  ProtoType proto_result;
+  proto_result.ParseFromString(decoded_result);
+  return base::ok(proto_result);
+}
 
 }  // namespace actor
 
