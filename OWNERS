@@ -104,6 +104,7 @@ per-file third_party/depot_tools=*
 per-file third_party/devtools-frontend-internal=*
 per-file third_party/devtools-frontend/src=*
 per-file third_party/dom_distiller_js/dist=*
+per-file third_party/dragonbox/src=*
 per-file third_party/eigen3/src=*
 per-file third_party/emoji-metadata/src=*
 per-file third_party/emoji-segmenter/src=*
