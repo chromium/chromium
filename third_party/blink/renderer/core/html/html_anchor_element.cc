@@ -758,13 +758,13 @@ HTMLAnchorElement::AncestorScrollableAreaOfScrollTargetElement() const {
   if (!scroll_target || !scroll_target->GetLayoutObject()) {
     return nullptr;
   }
-  for (LayoutBox* parent_box = scroll_target->GetLayoutObject()->EnclosingBox();
-       parent_box; parent_box = parent_box->ParentBox()) {
-    if (ScrollableArea* scrollable_area =
-            scroll_into_view_util::GetScrollableAreaForLayoutBox(
-                *parent_box, /*make_visible_in_visual_viewport=*/false)) {
-      return DynamicTo<PaintLayerScrollableArea>(scrollable_area);
-    }
+  if (const LayoutBox* scroller =
+          scroll_target->GetLayoutObject()->ContainingScrollContainer()) {
+    ScrollableArea* scrollable_area =
+        scroll_into_view_util::GetScrollableAreaForLayoutBox(
+            *scroller,
+            /*make_visible_in_visual_viewport=*/false);
+    return DynamicTo<PaintLayerScrollableArea>(scrollable_area);
   }
   return nullptr;
 }
