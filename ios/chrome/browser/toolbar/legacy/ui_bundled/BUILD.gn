@@ -18,8 +18,6 @@ source_set("coordinator") {
     "secondary_toolbar_mediator.h",
     "secondary_toolbar_mediator.mm",
     "toolbar_coordinatee.h",
-    "toolbar_coordinator.h",
-    "toolbar_coordinator.mm",
     "toolbar_mediator.h",
     "toolbar_mediator.mm",
   ]
@@ -185,10 +183,7 @@ source_set("ui") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "adaptive_toolbar_mediator_unittest.mm",
-    "toolbar_coordinator_unittest.mm",
-  ]
+  sources = [ "adaptive_toolbar_mediator_unittest.mm" ]
   deps = [
     ":coordinator",
     ":ui",

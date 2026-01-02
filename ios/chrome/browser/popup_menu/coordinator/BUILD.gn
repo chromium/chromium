@@ -145,6 +145,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/toolbar/coordinator",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled:coordinator",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/test",
     "//ios/chrome/browser/web/model/font_size",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_TOOLBAR_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_TOOLBAR_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_TOOLBAR_COORDINATOR_TOOLBAR_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_TOOLBAR_COORDINATOR_TOOLBAR_COORDINATOR_H_
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/composebox/public/composebox_animation_base.h"
@@ -104,4 +104,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_TOOLBAR_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_TOOLBAR_COORDINATOR_TOOLBAR_COORDINATOR_H_
