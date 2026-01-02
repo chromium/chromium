@@ -11,11 +11,11 @@ export function getHtml(this: RecentTabChipElement) {
   return this.recentTab ? html`<!--_html_template_start_-->
   <cr-button id="recentTabButton"
       @click="${this.addTabContext_}"
-      title="${this.recentTab.title}"
+      title="${this.recentTabChipTitle_}"
       aria-label="${this.recentTab.showInCurrentTabChip ?
           this.i18n('askAboutThisPageAriaLabel',
-          this.recentTab.title) : this.i18n('askAboutPreviousTabAriaLabel',
-          this.recentTab.title)}">
+          this.recentTabChipTitle_) : this.i18n('askAboutPreviousTabAriaLabel',
+          this.recentTabChipTitle_)}">
     <div class="button-content">
       <cr-composebox-tab-favicon
           class="favicon"
