@@ -293,6 +293,11 @@ void SharedWorkerHost::Start(
         creator_policy_container_host_->policies()
             .allow_non_secure_local_network_access;
 
+    policies.ip_address_space = CalculateIPAddressSpace(
+        result.final_response_url,
+        result.main_script_load_params->response_head.get(),
+        GetContentClient()->browser());
+
     worker_client_security_state_ = DeriveClientSecurityState(
         policies, PrivateNetworkRequestContext::kWorker);
 

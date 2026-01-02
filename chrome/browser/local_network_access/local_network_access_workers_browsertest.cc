@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/files/file_util.h"
 #include "chrome/browser/local_network_access/local_network_access_browsertest_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -10,6 +11,7 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/policy/policy_constants.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -17,6 +19,23 @@
 #include "content/public/test/web_transport_simple_test_server.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/path_service.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
+#include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_paths.h"
+#include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/test_extension_dir.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Local network access browser tests related to workers
 // (dedicated/shared/service).
@@ -258,5 +277,133 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWorkersBrowserTest,
   CheckCounter(WebFeature::kPrivateNetworkAccessWithinWorker, 1);
   CheckCounter(WebFeature::kLocalNetworkAccessWithinSharedWorker, 1);
 }
+
+// ChromeApps are only enabled on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+class ChromeAppLocalNetworkAccessWorkersBrowserTest
+    : public LocalNetworkAccessBrowserTestBase {
+ public:
+  void LaunchPlatformApp(const extensions::Extension* extension) {
+    apps::AppServiceProxyFactory::GetForProfile(GetProfile())
+        ->BrowserAppLauncher()
+        ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+            extension->id(), apps::LaunchContainer::kLaunchContainerNone,
+            WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
+  }
+
+  // Install and launch ChromeApp with main html page taken from
+  // local_network_access test sources specified by `app_html_name` which will
+  // launch worker with `worker_js_name` from the same dir.
+  content::WebContents* InstallAndLaunchChromeApp(std::string app_js_name,
+                                                  std::string worker_js_name) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    ExtensionTestMessageListener listener_launched("Launched");
+
+    extensions::ChromeTestExtensionLoader extension_loader(GetProfile());
+    extension_loader.set_pack_extension(false);
+    base::FilePath test_data_path;
+    CHECK(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
+    test_data_path = test_data_path.Append("local_network_access");
+
+    extension_dir_.WriteManifest(R"({
+                  "name": "Fetch in worker LNA test",
+                  "version": "1.0",
+                  "manifest_version": 2,
+                  "app": {
+                    "background": {
+                      "scripts": ["background.js"]
+                    }
+                  }
+                })");
+
+    extension_dir_.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+                  chrome.app.runtime.onLaunched.addListener(function() {
+                    chrome.app.window.create('app.html', {});
+                  });
+                )");
+
+    extension_dir_.WriteFile(FILE_PATH_LITERAL("app.html"), R"(
+              <!doctype html>
+              <script src="app.js"></script>
+              <script src="chrome_app.js"></script>
+            )");
+
+    extension_dir_.WriteFile(FILE_PATH_LITERAL("chrome_app.js"), R"(
+          onload = function() {
+            chrome.test.sendMessage('Launched');
+          }
+        )");
+
+    std::string contents;
+    base::ReadFileToString(test_data_path.Append(app_js_name), &contents);
+    extension_dir_.WriteFile(FILE_PATH_LITERAL("app.js"), std::move(contents));
+
+    base::FilePath worker_file_path = test_data_path.Append(worker_js_name);
+    base::ReadFileToString(worker_file_path, &contents);
+    extension_dir_.WriteFile(worker_file_path.BaseName().value(),
+                             std::move(contents));
+
+    scoped_refptr<const extensions::Extension> extension =
+        extension_loader.LoadExtension(extension_dir_.UnpackedPath());
+    CHECK(extension);
+
+    apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+        extension->id());
+
+    LaunchPlatformApp(extension.get());
+    CHECK(listener_launched.WaitUntilSatisfied());
+
+    // Flush any pending events to make sure we start with a clean slate.
+    content::RunAllPendingInMessageLoop();
+
+    extensions::AppWindowRegistry* app_registry =
+        extensions::AppWindowRegistry::Get(browser()->profile());
+
+    extensions::AppWindow* window =
+        app_registry->GetCurrentAppWindowForApp(extension->id());
+    CHECK(window);
+
+    return window->web_contents();
+  }
+
+ private:
+  extensions::TestExtensionDir extension_dir_;
+};
+
+// Test that Dedicated Worker inside ChromeApp can successfully do fetch
+// to a private network without a permission prompt, because
+// ChromeApp is considered loopback which is more restrictive then private.
+IN_PROC_BROWSER_TEST_F(ChromeAppLocalNetworkAccessWorkersBrowserTest,
+                       DedicatedWorkerFetchWorks) {
+  GURL fetch_url = https_server().GetURL("b.com", kLnaPath);
+
+  content::WebContents* web_contents = InstallAndLaunchChromeApp(
+      "request-from-worker-as-public-address-page.js",
+      "request-from-worker-as-public-address-worker.js");
+
+  std::string_view script_template = "fetch_from_worker($1);";
+  ASSERT_EQ("Access-Control-Allow-Origin: *",
+            content::EvalJs(web_contents,
+                            content::JsReplace(script_template, fetch_url)));
+}
+
+// Test that Shared Worker inside ChromeApp can successfully do fetch
+// to a private network without a permission prompt, because
+// ChromeApp is considered loopback which is more restrictive then private.
+IN_PROC_BROWSER_TEST_F(ChromeAppLocalNetworkAccessWorkersBrowserTest,
+                       SharedWorkerFetchWorks) {
+  GURL fetch_url = https_server().GetURL("b.com", kLnaPath);
+
+  content::WebContents* web_contents = InstallAndLaunchChromeApp(
+      "fetch-from-shared-worker-as-public-address-page.js",
+      "fetch-from-shared-worker-as-public-address-worker.js");
+
+  std::string_view script_template = "fetch_from_shared_worker($1);";
+  ASSERT_EQ("Access-Control-Allow-Origin: *",
+            content::EvalJs(web_contents,
+                            content::JsReplace(script_template, fetch_url)));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace local_network_access
