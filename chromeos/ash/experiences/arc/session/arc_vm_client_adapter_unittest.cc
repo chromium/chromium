@@ -21,6 +21,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -256,9 +257,8 @@ class TestArcVmBootNotificationServer
         << "abstract_addr is too long: " << abstract_addr;
     ASSERT_EQ('\0', abstract_addr[0])
         << "abstract_addr is not abstract: " << abstract_addr;
-    UNSAFE_TODO(memset(addr.sun_path, 0, sizeof(addr.sun_path)));
-    UNSAFE_TODO(
-        memcpy(addr.sun_path, abstract_addr.data(), abstract_addr.size()));
+    std::ranges::fill(base::span(addr.sun_path), 0);
+    base::span(addr.sun_path).copy_prefix_from(base::span(abstract_addr));
     LOG(INFO) << "Abstract address: \\0" << &(addr.sun_path[1]);
 
     ASSERT_EQ(HANDLE_EINTR(bind(fd_.get(), reinterpret_cast<sockaddr*>(&addr),
