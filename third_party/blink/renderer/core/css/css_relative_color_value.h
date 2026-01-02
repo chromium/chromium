@@ -39,6 +39,10 @@ class CORE_EXPORT CSSRelativeColorValue : public CSSValue {
   // Alpha will be nullptr if it was not specified.
   const CSSValue* Alpha() const;
 
+  const CSSValue* CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+      const CSSPropertyName& property_name,
+      wtf_size_t property_value_index) const;
+
  private:
   Member<const CSSValue> origin_color_;
   const Color::ColorSpace color_interpolation_space_;

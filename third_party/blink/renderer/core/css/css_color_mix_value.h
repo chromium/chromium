@@ -77,6 +77,10 @@ class CORE_EXPORT CSSColorMixValue : public CSSValue {
   PercentageValuesForSerialization(const CSSPrimitiveValue* p1,
                                    const CSSPrimitiveValue* p2);
 
+  const CSSValue* CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+      const CSSPropertyName& property_name,
+      wtf_size_t property_value_index) const;
+
  private:
   Member<const CSSValue> color1_;
   Member<const CSSValue> color2_;

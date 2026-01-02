@@ -46,9 +46,10 @@
     left: random(element-shared, 0px, 100000px);
     right: random(element-shared, 0px, 100000px);
     margin: random(element-shared 0px, 100000px) random(element-shared 0px, 100000px);
-    translate: random(10%, 30%);
+    translate: random(element-shared, 10%, 30%);
     scale: random(element-shared, 1, 3) random(element-shared, 3, 9);
     math-depth: add(random(element-shared, 1, 100));
+    color: color-mix(in srgb, rgb(from blue random(51, 10) random(g + 51, g) random(b, b)), rgb(random(21, 10) 0 0));
   }
   .randomIdentifier {
     width: random(--identifier, 0px, 100px);
@@ -325,6 +326,9 @@ test_random_base_is_not_1('width', 'random(fixed random(1, 2), 10px, 100px)');
 test_random_computed_value_has_fixed('translate', 'random(fixed random(-2, -1), 10%, 100%)', '10%', '100%', 0);
 
 // Random inside function
+test_random_computed_value('color', 'rgb(random(30, 10) random(60, 10) random(90, 10))', 'rgb(30, 60, 90)');
+test_random_computed_value('color', 'rgb(from blue random(51, 10) random(g + 51, g) random(b, b))', 'color(srgb 0.2 0.2 1)');
+test_random_computed_value('color', 'color-mix(in srgb, rgb(random(30, 10) 0 0), rgb(random(21, 10) 0 0))', 'color(srgb 0.1 0 0)');
 test_random_computed_value('math-depth', 'add(random(30, 10))', '30');
 
 // Test random value sharing
@@ -574,6 +578,29 @@ test(() => {
     document.body.removeChild(holder);
   }
 }, `Shared between elements within a property, random inside function: random(element-shared, a, b)`);
+
+test(() => {
+  const holder = document.createElement('div');
+  document.body.appendChild(holder);
+
+  try {
+    for (i = 0; i < iterations; ++i) {
+      const t1 = document.createElement('div');
+      t1.className = 'randomMatchElement';
+      holder.appendChild(t1);
+      const t2 = document.createElement('div');
+      t2.className = 'randomMatchElement';
+      holder.appendChild(t2);
+
+      let t1ComputedColor = getComputedStyle(t1)['color'];
+      let t2ComputedColor = getComputedStyle(t2)['color'];
+      test_random_equals(t1ComputedColor, t2ComputedColor,
+                         "color values on different elements should be equal");
+    }
+  } finally {
+    document.body.removeChild(holder);
+  }
+}, `Shared between elements within a property, random inside color functions: random(element-shared, a, b)`);
 
 test(() => {
   const holder = document.createElement('div');

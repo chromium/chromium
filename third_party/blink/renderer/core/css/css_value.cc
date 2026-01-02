@@ -1146,6 +1146,18 @@ const CSSValue* CSSValue::CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
       return To<CSSFunctionValue>(this)
           ->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
               property_name, property_value_index);
+    case kUnresolvedColorClass:
+      return To<cssvalue::CSSUnresolvedColorValue>(this)
+          ->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+              property_name, property_value_index);
+    case kRelativeColorClass:
+      return To<cssvalue::CSSRelativeColorValue>(this)
+          ->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+              property_name, property_value_index);
+    case kColorMixClass:
+      return To<cssvalue::CSSColorMixValue>(this)
+          ->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+              property_name, property_value_index);
     default:
       return this;
   }

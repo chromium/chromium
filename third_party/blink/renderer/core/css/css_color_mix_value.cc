@@ -154,6 +154,41 @@ String CSSColorMixValue::CustomCSSText() const {
   return result.ReleaseString();
 }
 
+const CSSValue*
+CSSColorMixValue::CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+    const CSSPropertyName& property_name,
+    wtf_size_t property_value_index) const {
+  const CSSValue* color1 =
+      color1_ ? color1_->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+                    property_name, property_value_index)
+              : nullptr;
+  const CSSValue* color2 =
+      color2_ ? color2_->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+                    property_name, property_value_index + 1)
+              : nullptr;
+  const CSSPrimitiveValue* percentage1 =
+      percentage1_
+          ? To<CSSPrimitiveValue>(
+                percentage1_
+                    ->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+                        property_name, property_value_index + 2))
+          : nullptr;
+  const CSSPrimitiveValue* percentage2 =
+      percentage2_
+          ? To<CSSPrimitiveValue>(
+                percentage2_
+                    ->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+                        property_name, property_value_index + 3))
+          : nullptr;
+  if (color1 != color1_ || color2 != color2_ || percentage1 != percentage1_ ||
+      percentage2 != percentage2_) {
+    return MakeGarbageCollected<CSSColorMixValue>(
+        color1, color2, percentage1, percentage2, color_interpolation_space_,
+        hue_interpolation_method_);
+  }
+  return this;
+}
+
 void CSSColorMixValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(color1_);
   visitor->Trace(color2_);
