@@ -125,6 +125,22 @@ bool CSSCustomIdentValue::Equals(const CSSCustomIdentValue& other) const {
          string_ == other.string_;
 }
 
+const CSSValue*
+CSSCustomIdentValue::CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+    const CSSPropertyName& property_name,
+    wtf_size_t property_value_index) const {
+  if (!ident_function_) {
+    return this;
+  }
+  const CSSFunctionValue* new_ident_function_ = To<CSSFunctionValue>(
+      ident_function_->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+          property_name, property_value_index));
+  if (ident_function_ != new_ident_function_) {
+    return MakeGarbageCollected<CSSCustomIdentValue>(*new_ident_function_);
+  }
+  return this;
+}
+
 void CSSCustomIdentValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(tree_scope_);
   visitor->Trace(ident_function_);

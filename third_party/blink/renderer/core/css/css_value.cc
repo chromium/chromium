@@ -1158,6 +1158,10 @@ const CSSValue* CSSValue::CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
       return To<cssvalue::CSSColorMixValue>(this)
           ->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
               property_name, property_value_index);
+    case kCustomIdentClass:
+      return To<CSSCustomIdentValue>(this)
+          ->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
+              property_name, property_value_index);
     default:
       return this;
   }
