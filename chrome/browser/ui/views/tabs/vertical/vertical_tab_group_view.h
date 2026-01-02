@@ -25,6 +25,9 @@ class VerticalTabGroupView : public views::View, public views::LayoutDelegate {
   VerticalTabGroupView& operator=(const VerticalTabGroupView&) = delete;
   ~VerticalTabGroupView() override;
 
+  // views::View:
+  void OnThemeChanged() override;
+
   // views::LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;

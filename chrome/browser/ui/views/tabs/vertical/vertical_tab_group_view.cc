@@ -68,6 +68,11 @@ VerticalTabGroupView::VerticalTabGroupView(TabCollectionNode* collection_node)
 
 VerticalTabGroupView::~VerticalTabGroupView() = default;
 
+void VerticalTabGroupView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  OnDataChanged();
+}
+
 views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   views::ProposedLayout layouts;
