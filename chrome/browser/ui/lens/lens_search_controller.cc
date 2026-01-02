@@ -31,8 +31,6 @@
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
-#include "chrome/browser/ui/promos/ios_promo_trigger_service.h"
-#include "chrome/browser/ui/promos/ios_promo_trigger_service_factory.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
@@ -40,7 +38,6 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/contextual_tasks/public/features.h"
-#include "components/desktop_to_mobile_promos/features.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/lens/lens_url_utils.h"
@@ -936,7 +933,6 @@ void LensSearchController::HandleStartQueryResponse(
 void LensSearchController::HandleInteractionURLResponse(
     lens::proto::LensOverlayUrlResponse response) {
   lens_overlay_controller_->HandleInteractionURLResponse(response);
-  MaybeShowMobilePromo();
 }
 
 void LensSearchController::OnSuggestInputsReady() {
@@ -1100,16 +1096,3 @@ void LensSearchController::OnPageContextUpdatedForZeroStateRequest(
   }
 }
 
-void LensSearchController::MaybeShowMobilePromo() {
-  if (MobilePromoOnDesktopTypeEnabled(
-          MobilePromoOnDesktopPromoType::kLensPromo)) {
-    IOSPromoTriggerService* service =
-        IOSPromoTriggerServiceFactory::GetForProfile(
-            Profile::FromBrowserContext(
-                tab_->GetContents()->GetBrowserContext()));
-    if (service) {
-      service->NotifyPromoShouldBeShown(
-          desktop_to_mobile_promos::PromoType::kLens);
-    }
-  }
-}

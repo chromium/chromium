@@ -389,9 +389,6 @@ class LensSearchController {
   void StartLensSession(lens::LensOverlayInvocationSource invocation_source,
                         bool suppress_contextualization = false);
 
-  // Shows the mobile promo if the user is eligible.
-  void MaybeShowMobilePromo();
-
   // Runs the eligibility checks necessary for Lens to open on this tab. If the
   // user has not granted permission to use Lens on this tab, the permission
   // request will be shown and callback will be called after the user accepts.

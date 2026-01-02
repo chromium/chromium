@@ -59,6 +59,8 @@
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "chrome/browser/ui/lens/page_content_type_conversions.h"
+#include "chrome/browser/ui/promos/ios_promo_trigger_service.h"
+#include "chrome/browser/ui/promos/ios_promo_trigger_service_factory.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -75,6 +77,8 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
+#include "components/contextual_tasks/public/features.h"
+#include "components/desktop_to_mobile_promos/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/lens/lens_features.h"
@@ -137,6 +141,10 @@ constexpr base::TimeDelta kFadeoutAnimationTimeout = base::Milliseconds(300);
 // The amount of time to wait for a reflow after closing the side panel before
 // taking a screenshot.
 constexpr base::TimeDelta kReflowWaitTimeout = base::Milliseconds(200);
+
+// The amount of time to wait after the side panel opens before showing the
+// mobile promo.
+constexpr base::TimeDelta kMobilePromoShowDelay = base::Seconds(4);
 
 // Copy the objects of a vector into another without transferring
 // ownership.
@@ -566,6 +574,14 @@ void LensOverlayController::SendObjects(
 void LensOverlayController::NotifyResultsPanelOpened() {
   if (page_) {
     page_->NotifyResultsPanelOpened();
+  }
+
+  if (IsVisualSelectionType(lens_selection_type_)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&LensOverlayController::MaybeShowMobilePromo,
+                       weak_factory_.GetWeakPtr()),
+        kMobilePromoShowDelay);
   }
 }
 
@@ -3086,4 +3102,18 @@ LensOverlayController::GetContextualizationController() {
 lens::LensSessionMetricsLogger*
 LensOverlayController::GetLensSessionMetricsLogger() {
   return lens_search_controller_->lens_session_metrics_logger();
+}
+
+void LensOverlayController::MaybeShowMobilePromo() {
+  if (MobilePromoOnDesktopTypeEnabled(
+          MobilePromoOnDesktopPromoType::kLensPromo)) {
+    IOSPromoTriggerService* service =
+        IOSPromoTriggerServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(
+                tab_->GetContents()->GetBrowserContext()));
+    if (service) {
+      service->NotifyPromoShouldBeShown(
+          desktop_to_mobile_promos::PromoType::kLens);
+    }
+  }
 }
