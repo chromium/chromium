@@ -39,6 +39,11 @@ BASE_FEATURE(kAutofillAcrossIframesIosThrottling,
 BASE_FEATURE(kAutofillAcrossIframesIosTriggerFormExtraction,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch: If enabled, `ChromeAutofillClient` may enter the actor mode,
+// changing how the UI, parsing and the server predictions work. For more
+// context see: go/autofill-actor-mode-implementation
+BASE_FEATURE(kAutofillActorMode, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether to rewrite the credit card trigger field to the first
 // credit card number field in the same section.
 BASE_FEATURE(kAutofillActorRewriteCreditCardTriggerField,

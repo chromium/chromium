@@ -1281,7 +1281,9 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
 #else
   // TODO(crbug.com/469428128) Enable on android once crrev.com/c/7298488 lands.
   if (actor::ActorKeyedService* actor_service =
-          actor::ActorKeyedService::Get(GetProfile())) {
+          base::FeatureList::IsEnabled(features::kAutofillActorMode)
+              ? actor::ActorKeyedService::Get(GetProfile())
+              : nullptr) {
     // `base::Unretained(this)` is safe since
     // `actor_task_state_changed_subscription_` removes the subscription when
     // `this` is destroyed.
