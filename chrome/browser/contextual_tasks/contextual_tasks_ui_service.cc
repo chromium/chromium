@@ -127,7 +127,11 @@ ContextualTasksUiService::ContextualTasksUiService(
     : profile_(profile),
       contextual_tasks_service_(contextual_tasks_service),
       identity_manager_(identity_manager) {
-  ai_page_host_ = GURL(kAiPageHost);
+  ai_page_hosts_.emplace_back(kAiPageHost);
+  std::string forced_host = contextual_tasks::GetForcedEmbeddedPageHost();
+  if (!forced_host.empty()) {
+    ai_page_hosts_.emplace_back(base::StrCat({"https://", forced_host}));
+  }
 }
 
 ContextualTasksUiService::~ContextualTasksUiService() = default;
@@ -737,8 +741,7 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
 }
 
 bool ContextualTasksUiService::IsAiUrl(const GURL& url) {
-  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() ||
-      !net::SchemefulSite::IsSameSite(url, ai_page_host_)) {
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() || !IsAllowedHost(url)) {
     return false;
   }
 
@@ -759,7 +762,6 @@ bool ContextualTasksUiService::IsAiUrl(const GURL& url) {
       nem_value == kNemAiValue) {
     return true;
   }
-
   return false;
 }
 
@@ -769,8 +771,11 @@ bool ContextualTasksUiService::IsContextualTasksUrl(const GURL& url) {
 }
 
 bool ContextualTasksUiService::IsValidSearchResultsPage(const GURL& url) {
-  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() ||
-      !net::SchemefulSite::IsSameSite(url, ai_page_host_)) {
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+
+  if (!IsAllowedHost(url)) {
     return false;
   }
 
@@ -867,4 +872,14 @@ void ContextualTasksUiService::OnTabClickedFromSourcesMenu(
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
 }
+
+bool ContextualTasksUiService::IsAllowedHost(const GURL& url) {
+  for (const auto& host : ai_page_hosts_) {
+    if (net::SchemefulSite::IsSameSite(url, host)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace contextual_tasks
