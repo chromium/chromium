@@ -1577,7 +1577,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceResetViaHmacFallback"
-    enum="TrackedPreference" expires_after="2025-12-16">
+    enum="TrackedPreference" expires_after="2026-06-22">
   <owner>zackhan@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
