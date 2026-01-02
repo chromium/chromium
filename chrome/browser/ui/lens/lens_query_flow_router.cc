@@ -87,6 +87,14 @@ void LensQueryFlowRouter::StartQueryFlow(
 
     // Create a contextual session for this WebContents if one does not exist.
     CHECK(!pending_session_handle_);
+
+    // If a session handle is already being observed (e.g. from the side panel),
+    // remove the observer before creating a new session handle.
+    auto* session_handle = GetContextualSearchSessionHandle();
+    if (session_handle && session_handle->GetController()) {
+      session_handle->GetController()->RemoveObserver(this);
+    }
+
     pending_session_handle_ = CreateContextualSearchSessionHandle();
     pending_session_handle_->NotifySessionStarted();
 
