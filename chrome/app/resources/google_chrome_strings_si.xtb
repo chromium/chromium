@@ -89,6 +89,7 @@
 <translation id="1874309113135274312">Google Chrome බීටා (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome යල් පැන ගොස් ඇත</translation>
 <translation id="1880677175115548835">පාඨය තෝරන්න</translation>
+<translation id="1896602904211344018">Chrome යෙදුම ලබා ගන්න</translation>
 <translation id="1919130412786645364">Chrome පුරනයට ඉඩ දෙන්න</translation>
 <translation id="1953553007165777902">බාගනිමින්... මිනිත්තු <ph name="MINUTE" />ක් ඉතිරිව ඇත</translation>
 <translation id="1979600810166324878">iOS සඳහා Chrome හි ඉහළ නැංවූ සුරක්ෂිත පිරික්සුම සමග ගමනේ දී ආරක්ෂිතව සිටින්න</translation>
@@ -316,6 +317,7 @@
 <translation id="4334294535648607276">බාගැනීම සම්පූර්ණයි.</translation>
 <translation id="4337324600316876133">අනාගත Google Chrome යාවත්කාලීන ලබා ගැනීමට, ඔබට macOS 12 හෝ ඊට පසු අනුවාද අවශ්‍ය වෙයි. මෙම පරිගණකය macOS 11 භාවිත කරයි.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> Chrome වෙත එක් කර ඇත</translation>
+<translation id="4344128547036991536">ඔබ Google Lens විවෘත කරන විට, PDF ඇතුළු පිටු මාතෘකාව, URL සහ අන්තර්ගතය ස්වයංක්‍රීයව Google වෙත යවනු ලැබේ. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">පුද්ගලායනය ලබා ගැනීමට, වෙබ් සහ යෙදුම් ක්‍රියාකාරකම තුළ Chrome ඇතුළු කරන්න</translation>
 <translation id="436060642166082913">ගොනුව ඔබේ පුද්ගලික සහ සමාජ ජාල ගිණුම් වලට හානි කළ හැකි නිසා Chrome මෙම බාගැනීම අවහිර කර ඇත</translation>
 <translation id="4367027658822022112">ඔබට පහසු ප්‍රවේශය සඳහා Google Lens ඇමිණිය හැක; පැති පැනලයේ ඉහළින් ඇමුණුම් බොත්තම ක්ලික් කරන්න</translation>
@@ -379,6 +381,7 @@
 <translation id="5163087008893166964">Chrome වෙත සාදරයෙන් පිළිගනිමු; නව බ්‍රවුසර කවුළුවක් විවෘත කරන ලදි</translation>
 <translation id="5166439563123238795">Chrome හට ඔබේ අත් නිරීක්ෂණය කිරීමට අවසරය අවශ්‍යයි</translation>
 <translation id="5167819546851111585">අද ඔබේ සිතෙහි ඇත්තේ කුමක් ද?</translation>
+<translation id="5169778651486082413">ඔබේ දුරකථනයේ Chrome සමග ඔබේ මුරපද භාවිතා කරන්න</translation>
 <translation id="5170938038195470297">ඔබේ පැතිකඩ Google Chrome නව සංස්කරණයකින් එන බැවින් භාවිත කළ නොහැක.
 
 ඇතැම් විශේෂාංග නොපවතිනු ඇත. කරුණාකර Chrome නි නව සංස්කරණය භාවිතයට වෙනස් පැතිකඩ නාමාවලියක් භාවිත කරන්න.</translation>
@@ -463,6 +466,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="6008161919456049856">ඔබ ඔබේ Google ගිණුමේ සුරකින ලද ඔබේ මුරපද, ගෙවීම් ක්‍රම, සහ ලිපින මෙම උපාංගයෙන් ඉවත් කරනු ලැබේ. ඒවා නැවත Chrome තුළ භාවිතා කිරීමට, නැවත පුරන්න.</translation>
 <translation id="6009821354356307391">පසු විපරමක් විමසන්න</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome වෙතින් මෙවලම්<ph name="END_LINK" /> සමගින්, ඔබට සුරක්ෂිතව බ්‍රවුස් කර පාලනයේ සිටිය හැක</translation>
+<translation id="6018578474045062808">ඔබේ දුරකථනයේ Chrome සමග Google Lens උත්සාහ කරන්න</translation>
 <translation id="6022659036123304283">Chrome ඔබේම කර ගන්න</translation>
 <translation id="6025087594896450715">Google Chrome <ph name="REMAINING_TIME" />කින් යළි ඇරඹෙනු ඇත</translation>
 <translation id="6040143037577758943">වසන්න</translation>
@@ -512,6 +516,8 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="6418662306461808273">තිබෙන Chrome පැතිකඩට මාරු වන්නද?</translation>
 <translation id="6426623519983252346">ඔබ මීළඟ වතාවේ Chrome iOS විවෘත කරන විට <ph name="FEATURE_NAME" /> උත්සාහ කිරීමට ඔබට ප්‍රේරකයක් පෙනෙනු ඇත.</translation>
 <translation id="6434035853014503219">ඔබේ පෙරනිමි බ්‍රව්සරය ලෙස Chrome තෝරා ගැනීම ගැන ස්තුතියි!</translation>
+<translation id="6438015621983209660">ඔබේ දුරකථනයේ Chrome සමග ඉහළ නැංවූ සුරක්ෂිත පිරික්සුම දීර්ඝ කරන්න</translation>
+<translation id="6442774133615368941">Chrome iOS යෙදුම මත ඔබේ කැමරාව සමග ඔබ දකින දේ සාප්පු යන්න, පරිවර්තනය කරන්න සහ හඳුනා ගන්න</translation>
 <translation id="6473905796280459355">Chrome ගැන පිටුවට යන්න</translation>
 <translation id="6481963882741794338">පුද්ගලායන සහ වෙනත් අරමුණු සඳහා Chrome සහ වෙනත් Google සේවා සම්බන්‍ධ කරන්න</translation>
 <translation id="648319183876919572">ඉහළ නැංවූ සුරක්ෂිත පිරික්සුම භයානක වෙබ් අඩවි සහ බාගැනීම්වලින් ඔබව ආරක්ෂා කිරීමට බොහෝ දේ කරයි</translation>
@@ -649,6 +655,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="7832314606810669113">ඔබේ සියලු උපාංග මත ඔබේ පිටුසන් සහ තවත් දේ ලබා ගැනීමට, Chrome වෙත පුරන්න. ඔබ පුරනය වූ පසු මෙම පිටුසන ඔබේ Google ගිණුම තුළ සුරකිනු ලැබේ.</translation>
 <translation id="7845233973568007926">ස්ථාපනය කිරීම වෙනුවෙන් ස්තුතියි. ඔබ <ph name="BUNDLE_NAME" /> භාවිත කිරීමට පෙර ඔබගේ පරිගණකය යළි ඇරඹිය යුතුය.</translation>
 <translation id="7849037457735762883">ඔබ නතර කළ තැනින් ඉදිරියට යන්න: ඔබ යළි අරඹන සෑම අවස්ථාවකම Chrome හට ඔබේ පටිති ප්‍රතිසාධනය කළ හැක. මෙය ක්‍රියාත්මක කිරීමට, වෙත යන්න</translation>
+<translation id="7869620795354551924">ඔබේ සුරකින ලද මුරපද භාවිත කිරීමට QR කේතය අනුගමන කර iOS සඳහා Chrome බාගෙන ඔබේ Google ගිණුමට පුරන්න</translation>
 <translation id="7872446069773932638">බාගනිමින්... තත්පර <ph name="SECONDS" />ක් ඉතිරිව ඇත</translation>
 <translation id="7886087451482920026">Google Lens සමග පෙළ තෝරන්න</translation>
 <translation id="7887929410013642057">සැම විට ම AI මාදිලි කෙටිමං පෙන්වන්න</translation>
@@ -735,6 +742,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="878572486461146056">ස්ථාපන දෝෂය: ඔබේ ජාල පරිපාලකයා ස්ථාපනය කිරීම වළක්වන සමූහ ප්‍රතිපත්තියක් යොදවා ඇත: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796919761992612392">ඔබේ Chrome අභිරුචි&amp;කරණය කරන්න</translation>
 <translation id="8798550110818026746">ඔබේ සංවිධානයට ඔබේ පිටුසන්, ඉතිහාසය, සහ මුරපද වැනි බ්‍රවුස් කිරීමේ දත්ත බැලීමට සහ කළමනාකරණය කිරීමට හැක. එයට වෙනත් Chrome පැතිකඩවල බ්‍රවුස් කිරීමේ දත්ත දැකිය නොහැක</translation>
+<translation id="8813277370772331957">මට පසුව සිහිකැඳවන්න</translation>
 <translation id="8821043148920470810">අනාගත Google Chrome යාවත්කාලීන ලබා ගැනීමට, ඔබට Windows 10 හෝ ඊට පසු අවශ්‍ය වේ. මෙම පරිගණකය Windows 7 භාවිතා කරයි.</translation>
 <translation id="8823341990149967727">Chrome යල් පැන ගොස් ඇත</translation>
 <translation id="8834965163890861871">Google Chrome මුරපද සංස්කරණ කිරීමට උත්සහ කරයි. එයට ඉඩදීම සඳහා Windows මුරපදය යොදන්න.</translation>

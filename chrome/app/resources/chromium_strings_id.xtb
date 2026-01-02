@@ -21,6 +21,7 @@
 <translation id="1184145431117212167">Penginstalan gagal karena versi Windows Anda tidak didukung.</translation>
 <translation id="1185134272377778587">Tentang Chromium</translation>
 <translation id="1203500561924088507">Terima kasih telah menginstal. Anda harus memulai ulang browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1232234696885483911">Saat Anda membuka Penelusuran Gambar, judul halaman, URL, dan konten, termasuk PDF, akan otomatis dikirim ke server. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Saat Anda login, Anda dapat menggunakan sandi Anda dan info lainnya dari Akun Google Anda di Chromium. Untuk mengubahnya, buka “Akun Anda di Chromium”.</translation>
 <translation id="1262876892872089030">Saat tab ini tidak aktif, memori akan dikosongkan agar Chromium tetap cepat. Anda dapat memilih untuk selalu mengecualikan situs ini agar tetap aktif.</translation>
 <translation id="1265577313130862557">Chromium memblokir download ini karena file tersebut berbahaya</translation>
@@ -220,9 +221,11 @@
 <translation id="3352986031709923790">pojok kanan atas area penelusuran: kanan <ph name="RIGHT" />%, atas <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Data Chromium di akun Anda</translation>
 <translation id="3369405342922656244">Telusuri halaman ini dengan Penelusuran Gambar</translation>
+<translation id="3375770072980084583">Gunakan sandi dengan Chromium di ponsel</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Beralih ke profil Chromium yang sudah ada?</translation>
 <translation id="3412460710772753638">Di Pengelola Sandi di perangkat ini</translation>
+<translation id="3455907671758333080">Manfaatkan Safe Browsing yang Disempurnakan dengan Chromium di ponsel</translation>
 <translation id="3461644266919055473">Personalisasi Chromium untuk Anda...</translation>
 <translation id="347328004046849135">Chromium akan memberi tahu Anda saat Anda login dengan sandi yang telah dibobol</translation>
 <translation id="3474745554856756813">Tindakan ini akan menghapus <ph name="ITEMS_COUNT" /> item dari perangkat. Untuk mengambil data nanti, login ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
@@ -249,6 +252,7 @@
 <translation id="3798048725356732506">Profil Chromium membantu Anda memisahkan berbagai bagian dalam hidup Anda. Tambahkan profil baru sekarang.</translation>
 <translation id="3802055581630249637">Chromium melakukan pramuat halaman yang mungkin akan Anda buka, agar halaman tersebut dimuat lebih cepat saat Anda membukanya</translation>
 <translation id="3810973564298564668">Kelola</translation>
+<translation id="3823384748599722168">Untuk menggunakan sandi yang telah disimpan, ikuti kode QR, download Chromium untuk iOS, dan login ke Akun Google Anda</translation>
 <translation id="3846683726093018685">**Ringkas:** Dalam satu kalimat kurang dari 30 kata, deskripsikan subjek utama dan tujuan konten dalam screenshot.
 
           **Sarankan Pertanyaan:** Buat daftar berbutir berisi 3-5 pertanyaan yang dapat diajukan pengguna untuk lebih memahami screenshot. Pertanyaan ini harus mencakup setidaknya satu pertanyaan yang secara khusus membahas objek visual, desain, atau penempatannya.</translation>
@@ -324,6 +328,7 @@
 <translation id="4548534452171747496">Chromium akan melakukan pramuat halaman yang membuat penjelajahan dan penelusuran menjadi lebih cepat. <ph name="BEGIN_LINK" />Pelajari lebih lanjut cara melakukan pramuat halaman<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Anda login sebagai <ph name="USER_EMAIL_ADDRESS" />. Kini Anda dapat mengakses bookmark, histori, dan setelan lainnya pada seluruh perangkat yang Anda masuki.</translation>
 <translation id="4570813286784708942">Chromium memblokir download ini karena Anda menonaktifkan Safe Browsing dan file tidak dapat diverifikasi</translation>
+<translation id="4583692638088316420">Coba Google Lens dengan Chromium di ponsel</translation>
 <translation id="4594305310729380060">Ke Pengelola Sandi di perangkat ini</translation>
 <translation id="459535195905078186">Aplikasi Chromium</translation>
 <translation id="4598116752460667024">Telusuri proses apa saja dari daftar.</translation>
@@ -368,6 +373,7 @@
 <translation id="5254739261293693943">Tanyakan info tentang video ini</translation>
 <translation id="5277894862589591112">Untuk menerapkan perubahan Anda, luncurkan ulang Chromium</translation>
 <translation id="5286907366254680517">Terdeteksi</translation>
+<translation id="5289287148052354622">Dapatkan aplikasi Chromium</translation>
 <translation id="5294316920224716406">Jika menjelajah dalam mode Samaran, Chromium akan memperingatkan Anda sebelum memuat situs menggunakan koneksi yang tidak aman</translation>
 <translation id="5313228254328109263">Layanan Internal Chromium Updater</translation>
 <translation id="5346389065299425353">Perdalam penelusuran Anda dengan menambahkan beberapa tab, file, dan alat</translation>
@@ -634,6 +640,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8254601181414348851">Login ke Chromium di profil baru?</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium akan memperingatkan Anda<ph name="END_LINK" /> tentang situs dan download yang tidak aman</translation>
 <translation id="8295827201165805317">Anda tidak membuka situs ini baru-baru ini. Chromium menghapus izin <ph name="PERMISSION" />.</translation>
+<translation id="8296236834352487533">Gunakan kamera di aplikasi Chromium versi iOS untuk berbelanja, menerjemahkan teks, dan mengidentifikasi objek yang Anda lihat</translation>
 <translation id="8313851650939857356">Error saat sistem dimulai: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Organisasi Anda menutup Chromium saat tidak digunakan selama <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Simpan sebagai gambar</translation>
@@ -679,6 +686,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8747073452963259673">pojok kiri bawah area penelusuran: kiri <ph name="LEFT" />%, bawah <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">Error penginstalan: Administrator jaringan Anda telah menerapkan Kebijakan Grup yang mencegah penginstalan: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium memerlukan izin akses ke kamera dan mikrofon untuk situs ini</translation>
+<translation id="8813277370772331957">Ingatkan saya nanti</translation>
 <translation id="8818550178040858407">Login ke Chromium?</translation>
 <translation id="8823401858233292222">Jadikan Chromium sebagai browser default dan sematkan ke taskbar</translation>
 <translation id="8826492472752484139">Klik “Pengelola Sandi”</translation>

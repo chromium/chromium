@@ -196,6 +196,7 @@
 <translation id="1124772482545689468">उपयोगकर्ता</translation>
 <translation id="1125371304736839151">Gemini को ब्राउज़र में सबसे ऊपर दिखाएं</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> जैसा लगता है (मूल)</translation>
+<translation id="1125816658532547876">अपने <ph name="DEVICE_TYPE" /> पर पासवर्ड इस्तेमाल करें</translation>
 <translation id="1125921926864945797">वॉलपेपर और स्टाइल</translation>
 <translation id="1128591060186966949">खोज इंजन में बदलाव करें</translation>
 <translation id="1129348283834595293">सायबरपंक</translation>
@@ -566,6 +567,7 @@
 <translation id="1372841398847029212">अपने खाते से सिंक करें</translation>
 <translation id="1373176046406139583">'किसको दिखाई दे' सेटिंग में जाकर, आप यह तय कर सकते हैं कि डिवाइस की स्क्रीन अनलॉक होने पर, कौन आपके साथ फ़ाइलें शेयर कर सकता है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">नेटवर्क "<ph name="NETWORK_NAME" />" के लिए ज़रूरी प्रमाणपत्र या तो इंस्टॉल नहीं है या अब मान्य नहीं है.  कृपया नया प्रमाणपत्र पाएं और फिर से कनेक्ट करने की कोशिश करें.</translation>
+<translation id="1374948751106271187">आपके डेटा को हर समय सुरक्षित रखने के लिए, अतिरिक्त सुरक्षा पाएं</translation>
 <translation id="1375557162880614858">क्या आपको ChromeOS Flex के बिल्ट-इन स्क्रीन रीडर ChromeVox को चालू करना है?</translation>
 <translation id="1375938286942050085">सेट अप पूरा हो गया है! अब अपने डिवाइस को गेमिंग के लिए तैयार करें</translation>
 <translation id="137651782282853227">सेव किए गए पते यहां दिखेंगे</translation>
@@ -1088,6 +1090,7 @@
 <translation id="1709085899471866534">एक नज़र में देखें कि टैब कब इनऐक्टिव हैं. सेटिंग में जाकर, इसे कभी भी बंद किया जा सकता है.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (स्थानीय)</translation>
 <translation id="1709217939274742847">पुष्टि करने के लिए टिकट चुनें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">टैब सबसे ऊपर दिखाएं</translation>
 <translation id="1709762881904163296">नेटवर्क सेटिंग</translation>
 <translation id="1709916727352927457">पासकी मिटाएं</translation>
 <translation id="1709972045049031556">फ़ाइल शेयर नहीं की जा सकती</translation>
@@ -1267,6 +1270,7 @@
 <translation id="183445248400150852">साइटें इस सुविधा का इस्तेमाल, आपके कीबोर्ड इनपुट में बदलाव करने के लिए करती हैं. उदाहरण: इसका इस्तेमाल गेम या रिमोट डेस्कटॉप ऐप्लिकेशन वगैरह के लिए किया जाता है</translation>
 <translation id="1834503245783133039">फ़ाइल डाउनलोड नहीं हो सकी: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux को बेहतर बनाया जा रहा है</translation>
+<translation id="1837292628323740716">अपने <ph name="DEVICE_TYPE" /> पर बेहतर सुरक्षित ब्राउज़िंग की सुविधा पाएं</translation>
 <translation id="1837441256780906162">Microsoft OneDrive ने अनुरोध अस्वीकार कर दिया. कृपया बाद में कोशिश करें.</translation>
 <translation id="1838374766361614909">खोज साफ़ करें</translation>
 <translation id="1839021455997460752">आपका ईमेल पता</translation>
@@ -4891,6 +4895,7 @@
 <translation id="4281844954008187215">सेवा की शर्तें</translation>
 <translation id="4281849573951338030">पेन के बटनों को पसंद के मुताबिक बनाएं</translation>
 <translation id="4282196459431406533">Smart Lock चालू है</translation>
+<translation id="4283635301190260296">वर्टिकल टैब को छोटा करें</translation>
 <translation id="4284903252249997120">ChromeVox स्क्रीन रीडर और 'चुनें और सुनें' सुविधा</translation>
 <translation id="4285418559658561636">पासवर्ड अपडेट करें</translation>
 <translation id="4285498937028063278">अनपिन करें</translation>
@@ -8460,6 +8465,7 @@
 <translation id="6783036716881942511">क्या इस डिवाइस को हटाना है?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive की सेटिंग</translation>
 <translation id="6784523122863989144">इस प्रोफ़ाइल से वीएम मशीन को चलाया जा सकता है</translation>
+<translation id="678520006562636090">अपने <ph name="DEVICE_TYPE" /> पर Google Lens आज़माएं</translation>
 <translation id="6785594991951195537">अपने <ph name="PASSWORD_DOMAIN" /> का इस्तेमाल करें</translation>
 <translation id="6785739405821760313">सेव किए गए डेस्क देखे जा रहे हैं. नेविगेट करने के लिए Tab दबाएं.</translation>
 <translation id="6785915470941880363">उलटी दिशा में स्क्रोल करना <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
@@ -8553,6 +8559,7 @@
 <translation id="6833753236242482566">बैलेंस तरीके से (सुझाया गया)</translation>
 <translation id="6835624277262316125">अगर आपने Chrome में अपने ऑफ़िस का पता सेट किया है, तो Google की अलग-अलग सेवाओं का आसानी से फ़ायदा लिया जा सकता है. जैसे, ज़्यादा काम के नतीजे पाना और Google Maps में ऑफ़िस जाने का रास्ता देखना. <ph name="BEGIN_LINK" />Google खाते <ph name="USERNAME" /><ph name="END_LINK" /> में जाकर, अपने पते में बदलाव किया जा सकता है या उसे मिटाया जा सकता है.</translation>
 <translation id="6835762382653651563">अपने <ph name="DEVICE_TYPE" /> को अपडेट करने के लिए कृपया इंटरनेट से कनेक्ट करें.</translation>
+<translation id="6836441935577925845">टैब को साइड में दिखाएं</translation>
 <translation id="6838992358006915573">Magnifier की सुविधा, उसी कॉन्टेंट पर फ़ोकस करती है जिस पर ChromeVox से फ़ोकस किया गया है</translation>
 <translation id="6839916869147598086">साइन इन बदल गया है</translation>
 <translation id="6840155290835956714">भेजने से पहले पूछें</translation>

@@ -1062,7 +1062,7 @@
 <translation id="2690699652723742414">Минатите 30 дена</translation>
 <translation id="2691385045260836588">Модел</translation>
 <translation id="2691924980723297736">Безбедносно предупредување</translation>
-<translation id="2694088736180584846">мрежа со луп</translation>
+<translation id="2694088736180584846">мрежа со повратна врска</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core ви овозможува да управувате со правилата, апликациите и екстензиите за прелистувачот од облакот</translation>
 <translation id="2697248912349197812">Прашајте го <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Достапно е подмени, па користете <ph name="SHORTCUT" /> за да дојдете до дополнителните опции.</translation>
@@ -1236,6 +1236,7 @@
 <translation id="299122504639061328">Управувајте со стандардниот пребарувач и пребарувањето сајтови</translation>
 <translation id="2991571918955627853">Не може да го посетите <ph name="SITE" /> во моментов затоа што веб-сајтот користи HSTS. Грешките на мрежата и нападите обично се привремени, така што страницава веројатно ќе работи подоцна.</translation>
 <translation id="2991865971341174470">Потврдете го вашиот идентитет за да може Chrome да ги пополни вашите податоци за плаќање.</translation>
+<translation id="2995010188916335277">За да ги понуди опцииве, Google ги користи податоците од страницата за наплата, а и други релевантни податоци. За да ги скриете опциите за „Платете подоцна“ во „Автоматско пополнување“, одете во <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2995121550202354573">Користи за сите гостински профили</translation>
 <translation id="2995517112308048736">Големина на датотека:</translation>
 <translation id="299990983510665749">Хечбек автомобили</translation>
@@ -1395,7 +1396,7 @@
 <translation id="3238395604961564389">Отвори го линкот во прозорец „Инкогнито“</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да го приспособите изгледот на прелистувачот</translation>
 <translation id="3240791268468473923">Листот што означува дека нема акредитив што се совпаѓа за акредитивот за безбедно плаќање е отворен</translation>
-<translation id="3241320538788585298">Мрежа со луп</translation>
+<translation id="3241320538788585298">Мрежа со повратна врска</translation>
 <translation id="324180406144491771">Линковите до „<ph name="HOST_NAME" />“ се блокирани</translation>
 <translation id="3243650379537999343">Цртај</translation>
 <translation id="3248329428895535435">Не прикажувај на сајтов</translation>
@@ -3534,7 +3535,7 @@
 <translation id="6688851075017682769">Тестирајте адреса според земја</translation>
 <translation id="6689249931105087298">Релативна, со компресија на црни точки</translation>
 <translation id="6689271823431384964">Chrome нуди да ви ги зачува картичките во вашата сметка на Google бидејќи сте најавени. Ваквото однесување може да го смените во поставки. Името на сопственикот на картичката доаѓа од сметката.</translation>
-<translation id="6690688090329768424">„<ph name="PROXY_INVALID_DESTINATION" />“ не е важечка шема на дестинација.</translation>
+<translation id="6690688090329768424">„<ph name="PROXY_INVALID_DESTINATION" />“ не е важечка дестинациска шема.</translation>
 <translation id="6691397311652656001">Ослободете повеќе од <ph name="REQUIRED_FREE_DISK_SPACE" /> простор</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за „Најди го мојот уред“ во сметката на Google</translation>
 <translation id="6695428916538794739">Акциони и авантуристички филмови</translation>

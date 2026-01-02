@@ -1236,6 +1236,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="299122504639061328">Xestionar o teu motor de busca predeterminado e a busca de sitios</translation>
 <translation id="2991571918955627853">Non podes visitar <ph name="SITE" /> neste momento porque o sitio web utiliza HSTS. Normalmente, os erros de rede e os ataques son temporais, polo que é posible que esta páxina funcione máis tarde.</translation>
 <translation id="2991865971341174470">Verifica a túa identidade para que Chrome poida completar a túa información de pago.</translation>
+<translation id="2995010188916335277">Google usa a información da páxina de tramitación da compra e outros datos relevantes para ofrecer estas opcións de pago aprazado. Para ocultalas na función de autocompletar, vai a <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2995121550202354573">Usar para todos os perfís de convidado</translation>
 <translation id="2995517112308048736">Tamaño do ficheiro:</translation>
 <translation id="299990983510665749">Vehículos compactos</translation>

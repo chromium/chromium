@@ -1089,6 +1089,7 @@
 <translation id="1709085899471866534">ដឹងនៅពេលផ្ទាំងអសកម្មដោយមើលមួយភ្លែត។ អ្នកអាចបិទរូបរាងថ្មីនេះនៅក្នុងការ​កំណត់បានគ្រប់ពេល។</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ដើម)</translation>
 <translation id="1709217939274742847">សូមជ្រើសរើស​សំបុត្រ ដើម្បីប្រើសម្រាប់​ការផ្ទៀងផ្ទាត់។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">បង្ហាញ​ផ្ទាំង​នៅផ្នែក​ខាងលើ</translation>
 <translation id="1709762881904163296">ការកំណត់បណ្ដាញ</translation>
 <translation id="1709916727352927457">លុបកូដសម្ងាត់</translation>
 <translation id="1709972045049031556">មិនអាច​ចែករំលែក​បានទេ</translation>
@@ -2343,6 +2344,7 @@
 <translation id="2545743249923338554">ផ្ទាំងថ្មីៗ</translation>
 <translation id="2546302722632337735">កុំអនុញ្ញាតឱ្យ​គេហទំព័រប្រើ​ព័ត៌មានសម្គាល់ ដើម្បីចាក់​ខ្លឹមសារដែលមាន​ការការពារ</translation>
 <translation id="2546991196809436099">ពង្រីក ដើម្បី​ធ្វើឱ្យ​ធាតុ​នៅលើ​អេក្រង់​ធំជាងមុន។ ប្រើប្រាស់ Search + Ctrl + M ដើម្បីបើក និង​បិទ​កែវពង្រីក។</translation>
+<translation id="2547602044908040111">ប្រសិនបើ​អ្នកជា​សកម្មជន អ្នក​កាសែត បុគ្គលសាធារណៈ បុគ្គលិក​រៀបចំ​ការបោះឆ្នោត ឬអ្នក​ផ្សេងទៀត​ដែលមាន​តួនាទី​ដែលប្រឈមនឹង​ហានិភ័យខ្ពស់​ជាពិសេស អ្នកអាច​ចាប់អារម្មណ៍លើ<ph name="BEGIN_LINK" />កម្មវិធី​ការពារ​កម្រិតខ្ពស់<ph name="END_LINK" />របស់ Google។</translation>
 <translation id="2548347166720081527">បានអនុញ្ញាត <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">កំណត់ឃ្លាំងបម្រុងកម្រងព័ត៌មាន eSIM ឡើងវិញ</translation>
 <translation id="2549985041256363841">ចាប់​ផ្តើម​ថត</translation>
@@ -4892,6 +4894,7 @@
 <translation id="4281844954008187215">លក្ខខណ្ឌសេវាកម្ម</translation>
 <translation id="4281849573951338030">ប្ដូរ​ប៊ូតុង​ប៊ិក​តាមបំណង</translation>
 <translation id="4282196459431406533">Smart Lock បានបើកហើយ</translation>
+<translation id="4283635301190260296">បង្រួម​ផ្ទាំង​បញ្ឈរ</translation>
 <translation id="4284903252249997120">មុខងារ​ជ្រើសរើសដើម្បីអាន និង​កម្មវិធី​អាន​អេក្រង់ ChromeVox</translation>
 <translation id="4285418559658561636">ធ្វើ​បច្ចុប្បន្នភាព​ពាក្យសម្ងាត់</translation>
 <translation id="4285498937028063278">ដកការដៅ</translation>
@@ -8554,6 +8557,7 @@
 <translation id="6833753236242482566">មាន​តុល្យភាព (បាន​ណែនាំ)</translation>
 <translation id="6835624277262316125">អាសយដ្ឋាន​កន្លែង​ធ្វើការ​របស់អ្នក​អាចជួយ​អ្នកក្នុងការ​បំពេញកិច្ចការ​នានា​នៅលើ​សេវាកម្ម Google ដូចជា​លទ្ធផល​ស្វែងរក​ដែលកាន់តែ​ពាក់ព័ន្ធ និង​ទិសដៅ​នៅក្នុង Google ផែនទី​ជាដើម។ អ្នកអាច​កែ ឬ​លុប​អាសយដ្ឋាន​របស់អ្នក​នៅក្នុង<ph name="BEGIN_LINK" />គណនី Google <ph name="USERNAME" /><ph name="END_LINK" /> របស់អ្នក។</translation>
 <translation id="6835762382653651563">សូមភា្ជប់អ៊ីនធឺណិតដើម្បីធ្វើបច្ចុប្បន្នភាព <ph name="DEVICE_TYPE" /> របស់អ្នក។</translation>
+<translation id="6836441935577925845">បង្ហាញ​ផ្ទាំង​នៅចំហៀង</translation>
 <translation id="6838992358006915573">កែវពង្រីក​ទៅតាម​ការផ្ដោតរបស់ ChromeVox</translation>
 <translation id="6839916869147598086">ការចូលគណនី​បានផ្លាស់ប្ដូរហើយ</translation>
 <translation id="6840155290835956714">សួរមុនពេលផ្ញើ</translation>
@@ -11129,6 +11133,7 @@
 <translation id="859246725979739260">គេហទំព័រ​នេះ​ត្រូវបាន​ទប់ស្កាត់​មិនឱ្យ​ចូលប្រើទីតាំងរបស់អ្នក។</translation>
 <translation id="8593450223647418235">អ្នក​នឹង​មិន​អាច​បើក​ឯកសារ​នៅ​ក្នុង Microsoft 365 បាន​ទេ រហូត​ទាល់តែ​ការរៀបចំចប់។</translation>
 <translation id="8593686980889923154"><ph name="APP_NAME" /> ត្រូវបាន​ទប់ស្កាត់នៅលើ <ph name="DEVICE_TYPE" /> របស់អ្នក</translation>
+<translation id="8593938084085018349">ការកំណត់​សុវត្ថិភាព​របស់អ្នក​ត្រូវបាន​ធ្វើឱ្យ​ប្រសើរឡើង</translation>
 <translation id="8594912907680633924">បើក​តំណ​នៅក្នុង​ទិដ្ឋភាព​បំបែក</translation>
 <translation id="8596400097994526901">សកម្មភាព​ច្រើន​ទៀត​សម្រាប់ <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="8596540852772265699">ឯកសារផ្ទាល់ខ្លួន</translation>

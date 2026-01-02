@@ -1087,6 +1087,7 @@
 <translation id="1709085899471866534">টেবসমূহ নিষ্ক্ৰিয় হৈ থাকিলে এক দৃষ্টিত চাওক। আপুনি যিকোনো সময়তে এই নতুন ৰূপটো ছেটিঙত অফ কৰিব পাৰে।</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (স্থানীয়)</translation>
 <translation id="1709217939274742847">বিশ্বাসযোগ্যতা প্ৰমাণীকৰণৰ বাবে ব্যৱহাৰ কৰিবলৈ এটা টিকেট বাছনি কৰক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">টেবসমূহ একেবাৰে ওপৰত দেখুৱাওক</translation>
 <translation id="1709762881904163296">নেটৱৰ্কৰ ছেটিংসমূহ</translation>
 <translation id="1709916727352927457">পাছকী মচক</translation>
 <translation id="1709972045049031556">শ্বেয়াৰ কৰিব নোৱাৰি</translation>
@@ -4891,6 +4892,7 @@
 <translation id="4281844954008187215">সেৱাৰ চৰ্তাৱলী</translation>
 <translation id="4281849573951338030">পেনৰ বুটামৰ নাম</translation>
 <translation id="4282196459431406533">স্মার্ট লক অন কৰা হৈছে</translation>
+<translation id="4283635301190260296">উলম্ব টেব সংকোচন কৰক</translation>
 <translation id="4284903252249997120">ChromeVox স্ক্ৰীন ৰীডাৰ আৰু কথা ক’বলৈ বাছনি কৰক</translation>
 <translation id="4285418559658561636">পাছৱৰ্ড আপডে’ট কৰক</translation>
 <translation id="4285498937028063278">আনপিন কৰক</translation>
@@ -8556,6 +8558,7 @@
 <translation id="6833753236242482566">সন্তুলিত (চুপাৰিছ কৰা)</translation>
 <translation id="6835624277262316125">আপোনাৰ কৰ্মস্থানৰ ঠিকনাটোৱে সমগ্ৰ Google সেৱাত আপোনাৰ কামসমূহ কৰাত আপোনাক সহায় কৰিব পাৰে, যেনে, অধিক প্ৰাসংগিক Search ফলাফল আৰু Google Maps দিক্-নিৰ্দেশনা লাভ কৰা। আপুনি নিজৰ <ph name="BEGIN_LINK" />Google একাউণ্ট <ph name="USERNAME" /><ph name="END_LINK" />ত নিজৰ ঠিকনা সম্পাদনা কৰিব বা মচিব পাৰে।</translation>
 <translation id="6835762382653651563">অনুগ্ৰহ কৰি আপোনাৰ <ph name="DEVICE_TYPE" /> আপডে’ট কৰিবলৈ ইন্টাৰনেটৰ সৈতে সংযোগ কৰক।</translation>
+<translation id="6836441935577925845">টেবসমূহ কাষত দেখুৱাওক</translation>
 <translation id="6838992358006915573">বিৱৰ্ধকে ChromeVoxৰ ফ’কাছ অনুসৰণ কৰে</translation>
 <translation id="6839916869147598086">ছাইন ইন প্ৰক্ৰিয়া সলনি হৈছে</translation>
 <translation id="6840155290835956714">পঠিওৱাৰ আগতে সোধক</translation>

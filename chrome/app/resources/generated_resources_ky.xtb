@@ -1089,6 +1089,7 @@
 <translation id="1709085899471866534">Өтмөктөр жигердүү болбогондо дароо көрүңүз. Бул жаңы көрүнүштү каалаган убакта параметрлерден өчүрө аласыз.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> х <ph name="HEIGHT" /> (Түпнуска)</translation>
 <translation id="1709217939274742847">Аутентификациядан өтүү үчүн билет тандоо. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">Өтмөктөрдү жогору жакта көрсөтүү</translation>
 <translation id="1709762881904163296">Тармак параметрлери</translation>
 <translation id="1709916727352927457">Мүмкүндүк алуу ачкычын өчүрүү</translation>
 <translation id="1709972045049031556">Бөлүшүү мүмкүн эмес</translation>
@@ -4894,6 +4895,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4281844954008187215">Тейлөө шарттары</translation>
 <translation id="4281849573951338030">Калемдин баскычтарын ыңгайлаштыруу</translation>
 <translation id="4282196459431406533">Smart Lock күйгүзүлгөн</translation>
+<translation id="4283635301190260296">Тигинен жайгашкан өтмөктөрдү жыйыштыруу</translation>
 <translation id="4284903252249997120">ChromeVox экрандагыны окугучу жана "басып туруп угуңуз" функциясы</translation>
 <translation id="4285418559658561636">Сырсөздү жаңыртуу</translation>
 <translation id="4285498937028063278">Бошотуу</translation>
@@ -8557,6 +8559,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6833753236242482566">Тең салмактуу (сунушталат)</translation>
 <translation id="6835624277262316125">Жумушуңуздун дареги Google кызматтарында табылган нерселер жана Google Карталардагы багыттар сыяктуу нерселерди колдонууга жардам берет. Даректи <ph name="BEGIN_LINK" />Google аккаунтуңуздан<ph name="USERNAME" /><ph name="END_LINK" /> түзөтүп же өчүрө аласыз.</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> түзмөгүңүздү жаңыртуу үчүн сырсөзүңүздү кайра киргизиңиз.</translation>
+<translation id="6836441935577925845">Өтмөктөрдү капталда көрсөтүү</translation>
 <translation id="6838992358006915573">Лупаны ChromeVox менен жылдыруу</translation>
 <translation id="6839916869147598086">Аккаунтка кирүү өзгөрдү</translation>
 <translation id="6840155290835956714">Жөнөтүүдөн мурун суроо</translation>

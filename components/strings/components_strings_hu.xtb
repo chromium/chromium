@@ -1236,6 +1236,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="299122504639061328">Kezelheti az alapértelmezett keresőmotort és a webhelyen való keresést</translation>
 <translation id="2991571918955627853">A(z) <ph name="SITE" /> webhelyet pillanatnyilag nem tudja felkeresni, mert a webhely HSTS-t használ. A hálózati hibák és támadások rendszerint átmenetiek, ezért az említett oldal működése később valószínűleg helyreáll.</translation>
 <translation id="2991865971341174470">Igazolja személyazonosságát, hogy a Chrome kitölthesse a fizetési adatait.</translation>
+<translation id="2995010188916335277">A Google a fizetési oldalon szereplő információkat és az egyéb releváns adatokat használja fel ezeknek a lehetőségeknek a felkínálásához. Ha el szeretné rejteni a későbbi fizetési lehetőségeket az automatikus kitöltésnél, lépjen ide: <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2995121550202354573">Használat az összes vendégprofilnál</translation>
 <translation id="2995517112308048736">Fájlméret:</translation>
 <translation id="299990983510665749">Ötajtós autók</translation>

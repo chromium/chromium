@@ -315,6 +315,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4334294535648607276">Sťahovanie bolo dokončené.</translation>
 <translation id="4337324600316876133">Ak chcete dostávať budúce aktualizácie prehliadača Google Chrome, musíte používať systém macOS 12 alebo novší. V tomto počítači používate macOS 11.</translation>
 <translation id="4343195214584226067">Rozšírenie <ph name="EXTENSION_NAME" /> bolo pridané do Chromu</translation>
+<translation id="4344128547036991536">Keď otvoríte Google Lens, názov stránky, webová adresa a obsah vrátane súborov PDF sa automaticky odošlú Googlu. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">Ak chcete mať k dispozícii prispôsobenie, zahrňte Chrome do aktivity na internete a v aplikáciách</translation>
 <translation id="436060642166082913">Chrome toto sťahovanie zablokoval, pretože daný súbor môže poškodiť vaše osobné účty aj účty sociálnych sietí</translation>
 <translation id="4367027658822022112">Funkciu Google Lens si môžete pripnúť, aby ste k nej mali jednoduchý prístup. Hore na bočnom paneli kliknite na tlačidlo Pripnúť.</translation>
@@ -739,6 +740,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="878572486461146056">Chyba inštalácie: správca siete uplatnil skupinové pravidlá, ktoré zabraňujú inštalácii: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796919761992612392">P&amp;rispôsobiť Chrome</translation>
 <translation id="8798550110818026746">Vaša organizácia si môže zobraziť a spravovať dáta prehliadania, napríklad záložky, históriu a heslá. Nemôže si zobrazovať dáta prehliadania v iných profiloch Chromu.</translation>
+<translation id="8813277370772331957">Pripomenúť neskôr</translation>
 <translation id="8821043148920470810">Ak chcete dostávať budúce aktualizácie prehliadača Google Chrome, budete potrebovať systém Windows 10 alebo novší. Tento počítač používa Windows 7.</translation>
 <translation id="8823341990149967727">Prehliadač Chrome je zastaraný</translation>
 <translation id="8834965163890861871">Google Chrome sa pokúša upraviť heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>

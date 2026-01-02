@@ -1236,6 +1236,7 @@
 <translation id="299122504639061328">기본 검색엔진 및 사이트 검색 관리</translation>
 <translation id="2991571918955627853">웹사이트에서 HSTS를 사용하므로 지금은 <ph name="SITE" />에 방문할 수 없습니다. 네트워크 오류와 공격은 대체로 일시적인 문제이기 때문에 나중에 이 페이지가 정상적으로 작동할 수 있습니다.</translation>
 <translation id="2991865971341174470">Chrome에서 결제 정보를 입력할 수 있도록 본인임을 인증하세요.</translation>
+<translation id="2995010188916335277">Google은 결제 페이지의 정보 및 기타 관련 데이터를 사용하여 이러한 옵션을 제공합니다. 자동 완성에서 후불 결제 옵션을 숨기려면 <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />으로 이동하세요.</translation>
 <translation id="2995121550202354573">모든 게스트 프로필에 사용</translation>
 <translation id="2995517112308048736">파일 크기:</translation>
 <translation id="299990983510665749">해치백</translation>

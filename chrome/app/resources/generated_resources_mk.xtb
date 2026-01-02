@@ -196,6 +196,7 @@
 <translation id="1124772482545689468">Корисник</translation>
 <translation id="1125371304736839151">Прикажи го Gemini најгоре во прелистувачот</translation>
 <translation id="1125550662859510761">Изгледа како <ph name="WIDTH" /> x <ph name="HEIGHT" /> (матична)</translation>
+<translation id="1125816658532547876">Користете ги вашите лозинки на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Тапет и стил</translation>
 <translation id="1128591060186966949">Уредете го пребарувачот</translation>
 <translation id="1129348283834595293">Сајберпанк</translation>
@@ -566,6 +567,7 @@
 <translation id="1372841398847029212">Синхронизирајте со вашата сметка</translation>
 <translation id="1373176046406139583">Видливоста на вашиот уред контролира кој може да споделува со вас додека ви е отклучен екранот. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Сертификатот што го бара мрежата „<ph name="NETWORK_NAME" />“ или не е инсталиран или повеќе не е важечки. Земете нов сертификат и обидете се повторно да се поврзете.</translation>
+<translation id="1374948751106271187">Додајте дополнителен слој заштита кога сте во движење</translation>
 <translation id="1375557162880614858">Дали сакате да го активирате ChromeVox, вградениот читач на екранот за ChromeOS Flex?</translation>
 <translation id="1375938286942050085">Поставувањето е завршено! Следно, подгответе го уредот за играње</translation>
 <translation id="137651782282853227">Зачуваните адреси ќе се појават тука</translation>
@@ -1088,6 +1090,7 @@
 <translation id="1709085899471866534">Видете кога се неактивни картичките со еден поглед. Новиов изглед може да го исклучите во поставките кога сакате.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (природна)</translation>
 <translation id="1709217939274742847">Изберете билет што ќе го користите за проверка. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">Прикажи ги картичките најгоре</translation>
 <translation id="1709762881904163296">Поставки за мрежата</translation>
 <translation id="1709916727352927457">Избришете го криптографскиот клуч</translation>
 <translation id="1709972045049031556">Не може да се сподели</translation>
@@ -1267,6 +1270,7 @@
 <translation id="183445248400150852">Сајтовите ја користат функцијава за да го отфрлаат внесувањето преку тастатурата, на пр., за игри или апликации за далечински пристап</translation>
 <translation id="1834503245783133039">Преземањето е неуспешно: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Се надградува Linux</translation>
+<translation id="1837292628323740716">„Подобрено безбедно прелистување“ на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="1837441256780906162">Microsoft OneDrive го одби барањето. Обидете се повторно подоцна.</translation>
 <translation id="1838374766361614909">Исчисти го пребарувањето</translation>
 <translation id="1839021455997460752">Вашата адреса на е-пошта</translation>
@@ -2828,7 +2832,7 @@
 <translation id="2878889940310164513">Додајте мобилна мрежа…</translation>
 <translation id="288042212351694283">Пристапете на вашите уреди Universal 2nd Factor</translation>
 <translation id="2881076733170862447">Кога ќе кликнете на екстензијата</translation>
-<translation id="2882301808122022326">Одговор на Омаха</translation>
+<translation id="2882301808122022326">Одговор на Omaha</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> ќе се рестартира и ресетира моментално</translation>
 <translation id="2884070497102362193">Тестирајте ги вашите батерија, CPU, меморија, поврзливост и друго</translation>
 <translation id="2885129935310217435">Има копче со истото име. Изберете друго.</translation>
@@ -4892,6 +4896,7 @@
 <translation id="4281844954008187215">Услови за користење</translation>
 <translation id="4281849573951338030">Приспособете ги копчињата на пенкалото</translation>
 <translation id="4282196459431406533">Smart Lock е вклучен</translation>
+<translation id="4283635301190260296">Собери ги вертикалните картички</translation>
 <translation id="4284903252249997120">Читач на екран ChromeVox и „Изберете за говор“</translation>
 <translation id="4285418559658561636">Ажурирање на лозинката</translation>
 <translation id="4285498937028063278">Откачи</translation>
@@ -8463,6 +8468,7 @@
 <translation id="6783036716881942511">Да се заборави уредов?</translation>
 <translation id="6783667414610055871">Поставки за Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Профилот е поддржан</translation>
+<translation id="678520006562636090">Испробајте ја Google Lens на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Користете ја лозинката за <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Се прикажуваат зачуваните работни површини. Притиснете Tab за навигација.</translation>
 <translation id="6785915470941880363">Обратно лизгање <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
@@ -8556,6 +8562,7 @@
 <translation id="6833753236242482566">Урамнотежено (препорачано)</translation>
 <translation id="6835624277262316125">Вашата адреса на работа може да ви помогне да завршувате работи во услугите на Google, како порелевантни резултати од „Пребарување“ и насоки во „Карти на Google“. Адресата може да ја измените или избришете во вашата <ph name="BEGIN_LINK" />сметка на Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="6835762382653651563">Поврзете се на интернет за да го ажурирате <ph name="DEVICE_TYPE" />.</translation>
+<translation id="6836441935577925845">Прикажи ги картичките отстрана</translation>
 <translation id="6838992358006915573">Лупата го следи фокусот на ChromeVox</translation>
 <translation id="6839916869147598086">Најавувањето се промени</translation>
 <translation id="6840155290835956714">Прашај пред да испратиш</translation>
@@ -9948,7 +9955,7 @@
     Видливо за уредите во близина како <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="7786889348652477777">&amp;Вчитај ја апликацијата повторно</translation>
 <translation id="7787308148023287649">Прикажи на друг екран</translation>
-<translation id="7788976206742181876">Барање до Омаха</translation>
+<translation id="7788976206742181876">Барање до Omaha</translation>
 <translation id="7789895198197042595">Вашата домашна адреса може да ви помогне да завршувате работи во услугите на Google, како порелевантни резултати од „Пребарување“ и насоки во „Карти на Google“. Адресата може да ја измените или избришете во вашата <ph name="BEGIN_LINK" />сметка на Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="7791269138074599214">Метод за внесување</translation>
 <translation id="7791436592012979144">Лизгањето наназад е овозможено</translation>
@@ -11384,7 +11391,7 @@
 <translation id="8745034592125932220">Не е дозволено зачувување податоци на вашиот уред</translation>
 <translation id="8746654918629346731">Веќе побаравте „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="874689135111202667">{0,plural, =1{Дали да се прикачи една датотека на сајтов?}one{Дали да се прикачи # датотека на сајтов?}other{Дали да се прикачат # датотеки на сајтов?}}</translation>
-<translation id="8748714929822124637">Не дозволувај сајтовите да пристапуваат до други уреди во вашата локална мрежа</translation>
+<translation id="8748714929822124637">Не дозволувај сајтовите да пристапуваат до други уреди во локалната мрежа</translation>
 <translation id="8748916845823567967">Сите податоци и колачиња што ги складирал сајтот <ph name="SITE" /> ќе се избришат.</translation>
 <translation id="8749805710397399240">Не може да се емитува екранот. Проверете ја дозволата за „Снимање на екранот“ во „Поставките за системот“.</translation>
 <translation id="8749826920799243530">Уредот не е регистриран</translation>

@@ -2343,6 +2343,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2545743249923338554">Uudet välilehdet</translation>
 <translation id="2546302722632337735">Älä anna sivustojen käyttää tunnisteita suojatun sisällön toistamiseen</translation>
 <translation id="2546991196809436099">Suurenna näytöllä olevia kohteita lähentämällä. Laita suurennus päälle tai pois päältä painamalla Haku + Ctrl + M.</translation>
+<translation id="2547602044908040111">Jos olet aktivisti, toimittaja, julkisuuden henkilö, vaalityöntekijä tai muussa erityisen riskialttiissa roolissa, sinua voisi kiinnostaa Googlen <ph name="BEGIN_LINK" />Lisäsuojaus-ohjelma<ph name="END_LINK" />.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> sallittu</translation>
 <translation id="2548545707296594436">Nollaa eSIM-profiilin välimuisti</translation>
 <translation id="2549985041256363841">Aloita tallennus</translation>
@@ -11132,6 +11133,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="859246725979739260">Tältä sivustolta on estetty sijaintitietojesi käyttö.</translation>
 <translation id="8593450223647418235">Et voi avata tiedostoja Microsoft 365:ssä, ennen kuin käyttöönotto on valmis.</translation>
 <translation id="8593686980889923154"><ph name="APP_NAME" /> on estetty laitteella (<ph name="DEVICE_TYPE" />)</translation>
+<translation id="8593938084085018349">Suojausasetukset on päivitetty</translation>
 <translation id="8594912907680633924">Avaa linkki jaetussa näkymässä</translation>
 <translation id="8596400097994526901"><ph name="SEARCH_ENGINE_NAME" />: lisää toimintoja</translation>
 <translation id="8596540852772265699">Muokatut tiedostot</translation>

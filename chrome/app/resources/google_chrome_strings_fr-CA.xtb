@@ -317,6 +317,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4334294535648607276">Téléchargement terminé.</translation>
 <translation id="4337324600316876133">Vous devez disposer de macOS 12 ou d'une version ultérieure pour recevoir les futures mises à jour de Google Chrome. Cet ordinateur fonctionne sous macOS 11.</translation>
 <translation id="4343195214584226067">L'extension « <ph name="EXTENSION_NAME" /> » a été ajoutée à Chrome</translation>
+<translation id="4344128547036991536">Lorsque vous ouvrez Lentille Google, le titre de la page, l'URL et le contenu, y compris les fichiers PDF, seront automatiquement envoyés à Google. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">Pour bénéficier de la personnalisation, incluez Chrome dans l'activité sur le Web et dans les applications</translation>
 <translation id="436060642166082913">Chrome a bloqué ce téléchargement, car le fichier peut endommager vos comptes personnels et de réseaux sociaux</translation>
 <translation id="4367027658822022112">Vous pouvez épingler Lentille Google pour un accès facile; cliquez sur le bouton Épingler en haut du panneau latéral</translation>
@@ -740,6 +741,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="878572486461146056">Erreur d'installation : votre administrateur réseau a appliqué une politique de groupe qui empêche l'installation : <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796919761992612392">&amp;Personnaliser votre Chrome</translation>
 <translation id="8798550110818026746">Votre organisation peut consulter et gérer les données de navigation, comme vos favoris, votre historique et vos mots de passe. Elle ne peut pas consulter les données de navigation dans d'autres profils Chrome</translation>
+<translation id="8813277370772331957">Me le rappeler plus tard</translation>
 <translation id="8821043148920470810">Pour recevoir les futures mises à jour de Google Chrome, vous devrez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur fonctionne sous Windows 7.</translation>
 <translation id="8823341990149967727">Google Chrome n'est plus à jour</translation>
 <translation id="8834965163890861871">Google Chrome essaie de modifier des mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>

@@ -196,6 +196,7 @@
 <translation id="1124772482545689468">Користувач</translation>
 <translation id="1125371304736839151">Показувати Gemini угорі вебпереглядача</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" />x<ph name="HEIGHT" /> (оригінальна)</translation>
+<translation id="1125816658532547876">Користуйтеся своїми паролями на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Оформлення й стиль</translation>
 <translation id="1128591060186966949">Змінити пошукову систему</translation>
 <translation id="1129348283834595293">Кіберпанк</translation>
@@ -568,6 +569,7 @@
 <translation id="1372841398847029212">Синхронізувати з обліковим записом</translation>
 <translation id="1373176046406139583">Видимість пристрою визначає, хто може надсилати вам дані, коли ваш екран розблоковано. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Сертифікат, який вимагає мережа "<ph name="NETWORK_NAME" />", не встановлено або він більше не дійсний. Отримайте новий сертифікат і повторіть спробу під’єднатися.</translation>
+<translation id="1374948751106271187">Увімкніть покращений захист, щоб додатково вбезпечити себе навіть у дорозі</translation>
 <translation id="1375557162880614858">Активувати ChromeVox, вбудовану програму зчитування з екрана для ОС Chrome Flex?</translation>
 <translation id="1375938286942050085">Налаштування завершено! Підготуйте пристрій до ігор</translation>
 <translation id="137651782282853227">Тут відображатимуться збережені адреси</translation>
@@ -1090,6 +1092,7 @@
 <translation id="1709085899471866534">Швидко дізнавайтеся, коли вкладки неактивні. Цю нову функцію можна будь-коли вимкнути в налаштуваннях.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" />x<ph name="HEIGHT" /> (оригінальна)</translation>
 <translation id="1709217939274742847">Виберіть квиток для автентифікації. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">Показувати вкладки вгорі</translation>
 <translation id="1709762881904163296">Мережеві налаштування</translation>
 <translation id="1709916727352927457">Видалити ключ доступу</translation>
 <translation id="1709972045049031556">Не вдалося надіслати</translation>
@@ -1269,6 +1272,7 @@
 <translation id="183445248400150852">Сайти використовують цю функцію, щоб перевизначати дані, введені за допомогою клавіатури (наприклад, під час ігор або для віддаленого керування)</translation>
 <translation id="1834503245783133039">Не вдалося завантажити файл "<ph name="FILE_NAME" />"</translation>
 <translation id="1835261175655098052">Linux оновлюється</translation>
+<translation id="1837292628323740716">Використовуйте Безпечний перегляд із розширеним захистом на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="1837441256780906162">Microsoft OneDrive відхиляє запит. Спробуйте пізніше.</translation>
 <translation id="1838374766361614909">Очистити поле пошуку</translation>
 <translation id="1839021455997460752">Ваша електронна адреса</translation>
@@ -4894,6 +4898,7 @@
 <translation id="4281844954008187215">Умови використання</translation>
 <translation id="4281849573951338030">Налаштувати кнопки пера</translation>
 <translation id="4282196459431406533">Smart Lock увімкнено</translation>
+<translation id="4283635301190260296">Згорнути вертикальні вкладки</translation>
 <translation id="4284903252249997120">Програма зчитування з екрана ChromeVox і функція "Читання з екрана"</translation>
 <translation id="4285418559658561636">Оновити пароль</translation>
 <translation id="4285498937028063278">Відкріпити</translation>
@@ -8464,6 +8469,7 @@
 <translation id="6783036716881942511">Забути цей пристрій?</translation>
 <translation id="6783667414610055871">Налаштування Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Профіль підтримується</translation>
+<translation id="678520006562636090">Спробуйте Google Об’єктив на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Використати <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Перегляд збережених робочих столів. Для навігації натисніть клавішу Tab.</translation>
 <translation id="6785915470941880363">Зворотне прокручування <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
@@ -8557,6 +8563,7 @@
 <translation id="6833753236242482566">Збалансоване (рекомендовано)</translation>
 <translation id="6835624277262316125">Указавши робочу адресу, ви можете ефективніше використовувати сервіси Google, зокрема отримувати доречніші результати пошуку й маршрути на Картах Google. Ви можете змінити або видалити адресу в <ph name="BEGIN_LINK" />обліковому записі Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="6835762382653651563">Щоб оновити свій <ph name="DEVICE_TYPE" />, під’єднайтеся до Інтернету.</translation>
+<translation id="6836441935577925845">Показувати вкладки збоку</translation>
 <translation id="6838992358006915573">Лупа показує об’єкти, виділені в ChromeVox</translation>
 <translation id="6839916869147598086">Спосіб входу в обліковий запис змінено</translation>
 <translation id="6840155290835956714">Запитувати, перш ніж надсилати</translation>

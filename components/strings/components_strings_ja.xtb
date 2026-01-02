@@ -1236,6 +1236,7 @@
 <translation id="299122504639061328">デフォルトの検索エンジンとサイト内検索を管理します</translation>
 <translation id="2991571918955627853"><ph name="SITE" /> では HSTS が使用されているため、現在アクセスできません。通常、ネットワーク エラーやネットワークへの攻撃は一時的なものです。しばらくするとページにアクセスできるようになります。</translation>
 <translation id="2991865971341174470">Chrome がお支払い情報を入力できるよう、本人確認を行ってください。</translation>
+<translation id="2995010188916335277">Google は、購入手続きページの情報やその他の関連データを使用して、これらのオプションを提供しています。自動入力で後払いオプションを非表示にするには、<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> に移動してください。</translation>
 <translation id="2995121550202354573">すべてのゲストモードのプロフィールで使用する</translation>
 <translation id="2995517112308048736">ファイルサイズ:</translation>
 <translation id="299990983510665749">ハッチバック</translation>

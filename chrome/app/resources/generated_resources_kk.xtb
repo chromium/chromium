@@ -1077,6 +1077,7 @@
 <translation id="1709085899471866534">Әрекетсіз қойындылар туралы қысқаша мәлімет алыңыз. Бұл жаңа көріністі параметрлерден кез келген уақытта өшіре аласыз.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (жергілікті)</translation>
 <translation id="1709217939274742847">Аутентификация үшін қолдануға арналған билетті таңдаңыз. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">Қойындыларды жоғарғы жақта көрсету</translation>
 <translation id="1709762881904163296">Желі параметрлері</translation>
 <translation id="1709916727352927457">Кіру кілтін жою</translation>
 <translation id="1709972045049031556">Бөлісу мүмкін емес</translation>
@@ -4876,6 +4877,7 @@
 <translation id="4281844954008187215">Қызмет көрсету шарттары</translation>
 <translation id="4281849573951338030">Қалам түймелерін бейімдеу</translation>
 <translation id="4282196459431406533">Smart Lock қосулы</translation>
+<translation id="4283635301190260296">Тік қойындыларды жию</translation>
 <translation id="4284903252249997120">ChromeVox экран оқу құралы және Select to Speak функциясы</translation>
 <translation id="4285418559658561636">Құпия сөзді жаңарту</translation>
 <translation id="4285498937028063278">Босату</translation>
@@ -8534,6 +8536,7 @@
 <translation id="6833753236242482566">Теңдестірілген (ұсынылады)</translation>
 <translation id="6835624277262316125">Жұмыс мекенжайы сәйкес іздеу нәтижелері және Google Maps-тегі бағыттар сияқты Google қызметтерінде көп тапсырма орындауға мүмкіндік береді. Мекенжайды <ph name="BEGIN_LINK" />Google аккаунтында (<ph name="USERNAME" />)<ph name="END_LINK" /> өзгертуге немесе жоюға болады.</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> жаңарту үшін, интернетке қосылыңыз.</translation>
+<translation id="6836441935577925845">Қойындыларды бүйір жақта көрсету</translation>
 <translation id="6838992358006915573">Ұлғайтқыш ChromeVox ерекшелейтін мәтін ізімен жүреді</translation>
 <translation id="6839916869147598086">Аккаунтқа кіру жолы өзгерді</translation>
 <translation id="6840155290835956714">Жіберу алдында рұқсат сұрау</translation>

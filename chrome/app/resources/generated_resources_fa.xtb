@@ -428,7 +428,7 @@
 <translation id="126710816202626562">زبان ترجمه:</translation>
 <translation id="1267649802567297774">تصویر تولیدشده <ph name="INDEX" /> از <ph name="SUBJECT" />، در سبک <ph name="STYLE" />، با حال‌وهوای <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">۱۶ برابر</translation>
-<translation id="1272079795634619415">توقف</translation>
+<translation id="1272079795634619415">ایست</translation>
 <translation id="1272508081857842302">باز کردن <ph name="BEGIN_LINK" />پیوندهای پشتیبانی‌شده<ph name="END_LINK" /></translation>
 <translation id="1272978324304772054">این حساب کاربری متعلق به دامنه‌ای که دستگاه در آن ثبت‌ شده است، نیست. اگر می‌خواهید در دامنه دیگری ثبت‌نام کنید ابتدا باید دستگاه را بازیابی کنید.</translation>
 <translation id="1273937721055267968">مسدود کردن <ph name="DOMAIN" /></translation>
@@ -738,7 +738,7 @@
 <translation id="1486616492435615702">پیش‌نویس تهیه کنید یا کار موجود را پالایش کنید.</translation>
 <translation id="1487335504823219454">روشن - تنظیمات سفارشی</translation>
 <translation id="1489101155914355052">درحال تولید کردن پیشنهادهایی برای این سند…</translation>
-<translation id="1493152297698462486">‏با Gemini تصویر بسازید</translation>
+<translation id="1493152297698462486">‏تصویر ساختن با Gemini</translation>
 <translation id="1493892686965953381">انتظار برای <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">سایت‌ها می‌توانند برای استفاده از قلم‌های نصب‌شده در دستگاه درخواست دهند</translation>
 <translation id="1494429729245089920">ماشین مجازی «<ph name="VM_NAME" />» وجود دارد، اما ظاهراً ماشین مجازی <ph name="APP_NAME" /> معتبری نیست. لطفاً با سرپرست تماس بگیرید.</translation>
@@ -1087,6 +1087,7 @@
 <translation id="1709085899471866534">برگه‌های غیرفعال را در یک نگاه ببینید. هرزمان بخواهید می‌توانید این ظاهر جدید را در تنظیمات خاموش کنید.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (اصلی)</translation>
 <translation id="1709217939274742847">بلیتی انتخاب کنید تا برای اصالت‌سنجی از آن استفاده کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">نشان دادن زبانه‌ها در بالا</translation>
 <translation id="1709762881904163296">«تنظیمات شبکه»</translation>
 <translation id="1709916727352927457">حذف گذرکلید</translation>
 <translation id="1709972045049031556">هم‌رسانی نشد</translation>
@@ -4891,6 +4892,7 @@
 <translation id="4281844954008187215">شرایط استفاده از سرویس</translation>
 <translation id="4281849573951338030">سفارشی‌سازی دکمه‌های قلم</translation>
 <translation id="4282196459431406533">‏Smart Lock روشن شده است</translation>
+<translation id="4283635301190260296">جمع کردن زبانه‌های عمودی</translation>
 <translation id="4284903252249997120">‏ویژگی «انتخاب برای شنیدن» و صفحه‌خوان ChromeVox</translation>
 <translation id="4285418559658561636">به‌روزرسانی گذرواژه</translation>
 <translation id="4285498937028063278">برداشتن سنجاق</translation>
@@ -8556,6 +8558,7 @@
 <translation id="6833753236242482566">متعادل (توصیه می‌شود)</translation>
 <translation id="6835624277262316125">‏نشانی محل کار می‌تواند در انجام کارها در سراسر سرویس‌های Google به شما کمک کند، مانند نتایج «جستجو» و مسیرهای مربوط‌تر در Google Maps. می‌توانید در <ph name="BEGIN_LINK" />«حساب Google» خود (<ph name="USERNAME" />)<ph name="END_LINK" /> نشانی‌تان را ویرایش یا حذف کنید.</translation>
 <translation id="6835762382653651563">برای به‌روزرسانی <ph name="DEVICE_TYPE" />، لطفاً به اینترنت وصل شوید.</translation>
+<translation id="6836441935577925845">نشان دادن زبانه‌ها در کنار صفحه</translation>
 <translation id="6838992358006915573">‏ذره‌بین تمرکز ChromeVox را دنبال کند</translation>
 <translation id="6839916869147598086">ورود به سیستم تغییر کرده است</translation>
 <translation id="6840155290835956714">پیش از ارسال سؤال شود</translation>
@@ -8648,7 +8651,7 @@
 <translation id="6899427698619335650">‏مجاز کردن حرکت‌گذاری انعطاف‌پذیر. برای مثال، می‌توانید با تایپ کردن «anh1» یا «a1nh» به «ánh» برسید.</translation>
 <translation id="6900284862687837908">برنامه پس‌زمینه: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">محافظت بهبودیافته</translation>
-<translation id="6900632443249221072">‏با Gemini تصویر بسازید</translation>
+<translation id="6900632443249221072">‏تصویر ساختن با Gemini</translation>
 <translation id="6900651018461749106">برای به‌روزرسانی <ph name="USER_EMAIL" />، دوباره به سیستم وارد شوید</translation>
 <translation id="6900654715912436255">مطمئنید می‌خواهید این موتور جستجو را حذف کنید؟</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>

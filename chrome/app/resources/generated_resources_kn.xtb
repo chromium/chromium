@@ -1083,6 +1083,7 @@
 <translation id="1709085899471866534">ಟ್ಯಾಬ್‌ಗಳು ಯಾವಾಗ ನಿಷ್ಕ್ರಿಯವಾಗಿವೆ ಎಂಬುದನ್ನು ಇಣುಕು ನೋಟದಲ್ಲಿ ನೋಡಿ. ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಈ ಹೊಸ ನೋಟವನ್ನು ಆಫ್ ಮಾಡಬಹುದು.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ಸ್ಥಳೀಯ)</translation>
 <translation id="1709217939274742847">ದೃಢೀಕರಣಕ್ಕಾಗಿ ಬಳಸಲು ಟಿಕೆಟ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">ಮೇಲ್ಭಾಗದಲ್ಲಿ ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1709762881904163296">ನೆಟ್‌ವರ್ಕ್‌ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="1709916727352927457">ಪಾಸ್‌ಕೀಯನ್ನು ಅಳಿಸಿ</translation>
 <translation id="1709972045049031556">ಹಂಚಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
@@ -4886,6 +4887,7 @@
 <translation id="4281844954008187215">ಸೇವೆಯ ನಿಯಮಗಳು</translation>
 <translation id="4281849573951338030">ಪೆನ್ ಬಟನ್‌ಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="4282196459431406533">Smart Lock ಅನ್ನು ಆನ್‌ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="4283635301190260296">ವರ್ಟಿಕಲ್ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಕುಗ್ಗಿಸಿ</translation>
 <translation id="4284903252249997120">ChromeVox ಸ್ಕ್ರೀನ್ ರೀಡರ್ ಮತ್ತು ಧ್ವನಿ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="4285418559658561636">ಪಾಸ್‌ವರ್ಡ್ ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="4285498937028063278">ಅನ್‌ಪಿನ್</translation>
@@ -8551,6 +8553,7 @@
 <translation id="6833753236242482566">ಸಮತೋಲಿತ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="6835624277262316125">ನಿಮ್ಮ ಕೆಲಸದ ಸ್ಥಳವು Google ಸೇವೆಗಳಾದ್ಯಂತ ಕೆಲಸಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡುತ್ತದೆ, ಉದಾಹರಣೆಗೆ Google Maps ನಲ್ಲಿ ಇನ್ನಷ್ಟು ಸೂಕ್ತವಾದ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳು ಮತ್ತು ಮಾರ್ಗ ನಿರ್ದೇಶನಗಳು. ನಿಮ್ಮ <ph name="BEGIN_LINK" />Google ಖಾತೆ <ph name="USERNAME" /><ph name="END_LINK" /> ನಲ್ಲಿ ನಿಮ್ಮ ವಿಳಾಸವನ್ನು ನೀವು ಎಡಿಟ್ ಮಾಡಬಹುದು ಅಥವಾ ಅಳಿಸಬಹುದು.</translation>
 <translation id="6835762382653651563">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ದಯವಿಟ್ಟು ಇಂಟರ್ನೆಟ್‌ಗೆ ಸಂಪರ್ಕಗೊಳಿಸಿ.</translation>
+<translation id="6836441935577925845">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪಕ್ಕದಲ್ಲಿ ತೋರಿಸಿ</translation>
 <translation id="6838992358006915573">ಮ್ಯಾಗ್ನಿಫೈಯರ್ ChromeVox ಫೋಕಸ್ ಅನ್ನು ಫಾಲೋ ಮಾಡುತ್ತದೆ</translation>
 <translation id="6839916869147598086">ಸೈನ್ ಇನ್ ಬದಲಾಗಿದೆ</translation>
 <translation id="6840155290835956714">ಕಳುಹಿಸುವ ಮೊದಲು ಕೇಳಿ</translation>

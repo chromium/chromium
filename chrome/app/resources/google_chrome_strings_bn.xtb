@@ -87,6 +87,7 @@
 <translation id="1874309113135274312">Google Chrome বিটা (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome পুরানো হয়ে গেছে</translation>
 <translation id="1880677175115548835">টেক্সট বেছে নিন</translation>
+<translation id="1896602904211344018">Chrome অ্যাপ ডাউনলোড করুন</translation>
 <translation id="1919130412786645364">Chrome-এ সাইন-ইন করতে দিন</translation>
 <translation id="1953553007165777902">ডাউনলোড হচ্ছে... <ph name="MINUTE" /> মিনিট বাকি আছে</translation>
 <translation id="1979600810166324878">iOS-এর জন্য Chrome-এ উন্নত Safe Browsing সুবিধার সাহায্যে যেতে যেতে সুরক্ষিত থাকুন</translation>
@@ -315,6 +316,7 @@
 <translation id="4334294535648607276">ডাউনলোড সম্পূর্ণ।</translation>
 <translation id="4337324600316876133">আপনার কাছে macOS 12 বা তার পরের ভার্সন থাকলে, তবেই ভবিষ্যতে Google Chrome সম্পর্কিত আপডেট পাবেন। এই কম্পিউটারে macOS 11 ভার্সন ব্যবহার করা হচ্ছে।</translation>
 <translation id="4343195214584226067">Chrome-এ <ph name="EXTENSION_NAME" /> যোগ করা হয়েছে</translation>
+<translation id="4344128547036991536">আপনি Google Lens খুললে, পৃষ্ঠার টাইটেল, URL এবং পিডিএফ সহ কন্টেন্ট অটোমেটিক Google-এ পাঠানো হবে। <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">পছন্দমতো সুবিধা পেতে ওয়েব ও অ্যাপ অ্যাক্টিভিটিতে Chrome যোগ করে নিন</translation>
 <translation id="436060642166082913">Chrome এটি ডাউনলোড করা বন্ধ করে দিয়েছে কারণ ফাইলটি আপনার ব্যক্তিগত ও সোশ্যাল নেটওয়ার্ক অ্যাকাউন্টের ক্ষতি করতে পারে</translation>
 <translation id="4367027658822022112">সহজে অ্যাক্সেস করার জন্য আপনি Google Lens পিন করে রাখতে পারেন; সাইড প্যানেলের একেবারে উপরে পিন করুন বোতামে ক্লিক করুন</translation>
@@ -378,6 +380,7 @@
 <translation id="5163087008893166964">Chrome-এ স্বাগতম; নতুন ব্রাউজার উইন্ডো খোলা হয়েছে</translation>
 <translation id="5166439563123238795">আপনার হাত ট্র্যাক করতে Chrome-এর অনুমতি প্রয়োজন</translation>
 <translation id="5167819546851111585">আজ আপনি কী ভাবছেন?</translation>
+<translation id="5169778651486082413">আপনার ফোনে Chrome-এর সাথে পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="5170938038195470297">আপনার প্রোফাইল ব্যবহার করা যাবে কারণ এটি Google Chrome-এর একটি নতুন ভার্সনে গঠিত৷ 
 
 কিছু বৈশিষ্ট্য অনুপলভ্য হতে পারে৷ একটি ভিন্ন প্রোফাইল নির্দেশিকা সুনির্দিষ্টভাবে উল্লেখ করুন অথবা Chrome এর নতুন ভার্সন ব্যবহার করুন৷</translation>
@@ -460,6 +463,7 @@
 <translation id="6008161919456049856">পাসওয়ার্ড, পেমেন্ট পদ্ধতি এবং ঠিকানা যা আপনার Google অ্যাকাউন্টে সেভ করে রেখেছেন সেগুলি এই ডিভাইস থেকে সরিয়ে দেওয়া হবে। Chrome-এ সেগুলি পুনরায় ব্যবহার করতে, আবার সাইন-ইন করুন।</translation>
 <translation id="6009821354356307391">ফলো-আপের জন্য বলুন</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome-এর টুল<ph name="END_LINK" /> দিয়ে আপনি নিরাপদে ব্রাউজ ও কন্ট্রোল করতে পারবেন</translation>
+<translation id="6018578474045062808">আপনার ফোনে Chrome-এর সাথে Google Lens ব্যবহার করে দেখুন</translation>
 <translation id="6022659036123304283">Chrome-কে আপনার করে নিন</translation>
 <translation id="6025087594896450715">Google Chrome <ph name="REMAINING_TIME" />-এর মধ্যে রিস্টার্ট হবে</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
@@ -509,6 +513,8 @@
 <translation id="6418662306461808273">বর্তমান Chrome প্রোফাইলে পাল্টাতে চান?</translation>
 <translation id="6426623519983252346">পরেরবার Chrome iOS খোলার সময় আপনি <ph name="FEATURE_NAME" /> ব্যবহার করে দেখার প্রম্পট দেখতে পাবেন।</translation>
 <translation id="6434035853014503219">আপনার ডিফল্ট ব্রাউজার হিসেবে Chrome বেছে নেওয়ার জন্য ধন্যবাদ!</translation>
+<translation id="6438015621983209660">আপনার ফোনে Chrome-এর মাধ্যমে উন্নত Safe Browsing সুবিধা বাড়িয়ে নিন</translation>
+<translation id="6442774133615368941">Chrome iOS অ্যাপে আপনার ক্যামেরা ব্যবহার করে যা দেখেন তা কিনুন, অনুবাদ ও শনাক্ত করুন</translation>
 <translation id="6473905796280459355">'Chrome সম্পর্কে' পৃষ্ঠায় যান</translation>
 <translation id="6481963882741794338">পছন্দমতো অভিজ্ঞতা এবং অন্যান্য সুবিধা পেতে Google-এর সব পরিষেবাগুলি সাথে Chrome লিঙ্ক করুন</translation>
 <translation id="648319183876919572">উন্নত Safe Browsing আপনাকে বিপজ্জনক ওয়েবসাইট, ডাউনলোড থেকে আরও সুরক্ষা দেয়</translation>
@@ -646,6 +652,7 @@
 <translation id="7832314606810669113">আপনার সব ডিভাইসে বুকমার্কে ও আরও অনেক কিছু পেতে, Chrome-এ সাইন-ইন করুন। সাইন-ইন করার পরে, আপনার Google অ্যাকাউন্টে এই বুকমার্ক সেভ করা হবে।</translation>
 <translation id="7845233973568007926">ইনস্টল করার জন্য ধন্যবাদ। <ph name="BUNDLE_NAME" /> ব্যবহার করার আগে আপনাকে অবশ্যই কম্পিউটার রিস্টার্ট করতে হবে।</translation>
 <translation id="7849037457735762883">আপনি যেখান থেকে শেষ করেছিলেন সেখান থেকেই চালিয়ে যান: আপনি প্রত্যেকবার রিস্টার্ট করার সময় Chrome আপনার ট্যাব ফিরিয়ে আনতে পারবে। এটি চালু করতে, এখানে যান</translation>
+<translation id="7869620795354551924">আপনার সেভ করা পাসওয়ার্ড ব্যবহার করতে, QR কোড ফলো করুন, iOS-এর জন্য Chrome ডাউনলোড করুন এবং আপনার Google অ্যাকাউন্টে সাইন-ইন করুন</translation>
 <translation id="7872446069773932638">ডাউনলোড হচ্ছে... <ph name="SECONDS" /> সেকেন্ড বাকি আছে</translation>
 <translation id="7886087451482920026">Google Lens-এর সাহায্যে টেক্সট বেছে নিন</translation>
 <translation id="7887929410013642057">সবসময় AI মোড শর্টকাট দেখুন</translation>
@@ -732,6 +739,7 @@
 <translation id="878572486461146056">ইনস্টল সংক্রান্ত সমস্যা: আপনার নেটওয়ার্ক অ্যাডমিনিস্ট্রেটর একটি গ্রুপ নীতি প্রয়োগ করেছেন যা ইনস্টলেশনে বাধা তৈরি করছে: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796919761992612392">আপনার Chrome কা&amp;স্টমাইজ করুন</translation>
 <translation id="8798550110818026746">বুকমার্ক, ইতিহাস ও পাসওয়ার্ডের মতো ব্রাউজ করা ডেটা, আপনার সংস্থা দেখতে ও ম্যানেজ করতে পারে। এটি Chrome-এর প্রোফাইলে ব্রাউজ করা ডেটা দেখতে পায় না</translation>
+<translation id="8813277370772331957">আমাকে পরে মনে করানো হোক</translation>
 <translation id="8821043148920470810">ভবিষ্যতে Google Chrome আপডেট পেতে হলে, আপনার কম্পিউটারে Windows 10 বা এর পরবর্তী যেকোনও ভার্সন থাকতে হবে। এই কম্পিউটারে Windows 7 ভার্সন ব্যবহার করা হচ্ছে।</translation>
 <translation id="8823341990149967727">Chrome পুরানো হয়ে গেছে</translation>
 <translation id="8834965163890861871">Google Chrome আপনার পাসওয়ার্ড এডিট করার অনুমতি চাইছে। অনুমতি দিতে আপনার Windows পাসওয়ার্ড টাইপ করুন।</translation>

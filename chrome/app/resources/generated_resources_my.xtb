@@ -196,6 +196,7 @@
 <translation id="1124772482545689468">အသုံးပြုသူ</translation>
 <translation id="1125371304736839151">ဘရောင်ဇာထိပ်တွင် Gemini ကို ပြပါ</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (မူရင်း) ဟု ယူဆရပါသည်</translation>
+<translation id="1125816658532547876">သင့် <ph name="DEVICE_TYPE" /> တွင် စကားဝှက်များ သုံးပါ</translation>
 <translation id="1125921926864945797">နောက်ခံနှင့် ပုံစံ</translation>
 <translation id="1128591060186966949">ရှာဖွေမှုအင်ဂျင်ကို တည်းဖြတ်ပါ</translation>
 <translation id="1129348283834595293">ဆိုက်ဘာသိပ္ပံ</translation>
@@ -565,6 +566,7 @@
 <translation id="1372841398847029212">သင့်အကောင့်သို့ စင့်ခ်လုပ်ရန်</translation>
 <translation id="1373176046406139583">ဖန်သားပြင်ဖွင့်ထားစဉ် သင့်အားမျှဝေနိုင်သူကို သင့်စက်၏မြင်နိုင်မှုက ထိန်းချုပ်သည်။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">"<ph name="NETWORK_NAME" />" ကွန်ယက်က လိုအပ်သော လက်မှတ်ကို ထည့်သွင်းမထားခြင်း သို့မဟုတ် သက်တမ်းမရှိတော့ခြင်း ဖြစ်နေပါသည်။ ကျေးဇူးပြုပြီး လက်မှတ်အသစ် ရယူပြီး နောက်တစ်ကြိမ် ပြန်ဆက်သွယ်ပေးပါ။</translation>
+<translation id="1374948751106271187">သွားရင်းလာရင်း အကာအကွယ် ထပ်ဆောင်းအလွှာ ထည့်နိုင်သည်</translation>
 <translation id="1375557162880614858">ChromeOS Flex အတွက် အသင့်ပါသည့် ဖန်သားပြင်ဖတ်အက်ပ် ChromeVox ကို ဖွင့်လိုပါသလား။</translation>
 <translation id="1375938286942050085">စနစ်ထည့်သွင်းပြီးပါပြီ။ ပြီးနောက် ဂိမ်းကစားရန်အတွက် စက်ကိုအသင့်ပြင်ပါ</translation>
 <translation id="137651782282853227">သိမ်းထားသော လိပ်စာများ ဤနေရာတွင်ပေါ်လာပါမည်</translation>
@@ -1086,6 +1088,7 @@
 <translation id="1709085899471866534">တဘ်များ အသုံးမပြုချိန်ကို တစ်ချက်ကြည့်ရုံမျှဖြင့် သိနိုင်သည်။ ဤအသွင်သစ်ကို ဆက်တင်များတွင် အချိန်မရွေး ပိတ်နိုင်သည်။</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (မူလ)</translation>
 <translation id="1709217939274742847">အထောက်အထားစိစစ်ရာတွင် အသုံးပြုရန် လက်မှတ်တစ်ခု ရွေးပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">တဘ်များကို ထိပ်တွင်ပြပါ</translation>
 <translation id="1709762881904163296">ကွန်ရက်ဆက်တင်များ</translation>
 <translation id="1709916727352927457">လျှို့ဝှက်ကီး ဖျက်ရန်</translation>
 <translation id="1709972045049031556">မျှဝေ၍ မရပါ</translation>
@@ -1265,6 +1268,7 @@
 <translation id="183445248400150852">ဝဘ်ဆိုက်များသည် ဂိမ်းများ (သို့) အဝေးထိန်း ဒက်စ်တော့အက်ပ်များအတွက်ကဲ့သို့ သင့်ကီးဘုတ်၏ ဖြည့်သွင်းချက်ကို အစားထိုးရန် ဤဝန်ဆောင်မှုကို အသုံးပြုသည်</translation>
 <translation id="1834503245783133039">ဒေါင်းလုဒ်လုပ်ခြင်း မအောင်မြင်ပါ− <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux ကို အဆင့်မြှင့်နေသည်</translation>
+<translation id="1837292628323740716">သင့် <ph name="DEVICE_TYPE" /> တွင် ‘အရည်အသွေးမြှင့် ဘေးကင်းလုံခြုံသည့် အသုံးပြုမှု’</translation>
 <translation id="1837441256780906162">Microsoft OneDrive က တောင်းဆိုချက်ကို ငြင်းပယ်လိုက်သည်။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="1838374766361614909">ရှာဖွေမှုကို ရှင်းပါ</translation>
 <translation id="1839021455997460752">သင့်အီးမေးလ်လိပ်စာ</translation>
@@ -4889,6 +4893,7 @@
 <translation id="4281844954008187215">ဝန်ဆောင်မှု စည်းမျဉ်းများ</translation>
 <translation id="4281849573951338030">ဘော့ပင်ခလုတ်များ စိတ်ကြိုက်လုပ်ရန်</translation>
 <translation id="4282196459431406533">Smart Lock ကို ဖွင့်ထားသည်</translation>
+<translation id="4283635301190260296">ဒေါင်လိုက်တဘ်များ လျှော့ပြပါ</translation>
 <translation id="4284903252249997120">ChromeVox ဖန်သားပြင်ဖတ်အက်ပ်နှင့် ‘စကားပြောရွေးခြင်း’</translation>
 <translation id="4285418559658561636">စကားဝှက်ကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="4285498937028063278">ပင်ဖြုတ်ရန်</translation>
@@ -8456,6 +8461,7 @@
 <translation id="6783036716881942511">ဤစက်ကို မေ့ပစ်မလား။</translation>
 <translation id="6783667414610055871">Microsoft OneDrive ဆက်တင်များ</translation>
 <translation id="6784523122863989144">ပရိုဖိုင်ကို ပံ့ပိုးထားသည်</translation>
+<translation id="678520006562636090">သင့် <ph name="DEVICE_TYPE" /> တွင် Google Lens ကို စမ်းကြည့်ပါ</translation>
 <translation id="6785594991951195537">သင့် <ph name="PASSWORD_DOMAIN" /> သုံးခြင်း</translation>
 <translation id="6785739405821760313">သိမ်းထားသော မျက်နှာပြင်များ ကြည့်နေသည်။ ရွှေ့ရန် တဘ်ကိုနှိပ်ပါ။</translation>
 <translation id="6785915470941880363">ပြောင်းပြန်လှိမ့်ခြင်း <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
@@ -8549,6 +8555,7 @@
 <translation id="6833753236242482566">မျှမျှတတ (အကြံပြုထားသည်)</translation>
 <translation id="6835624277262316125">ပိုမိုသက်ဆိုင်သော Search ရလဒ်များနှင့် Google Maps ရှိ ခရီးလမ်းညွှန်ချက်များ ကဲ့သို့သော Google ဝန်ဆောင်မှုများတွင် အလုပ်ပြီးမြောက်စေရန် သင်၏ အလုပ်လိပ်စာက ကူညီပေးနိုင်သည်။ သင်၏ <ph name="BEGIN_LINK" />Google Account <ph name="USERNAME" /><ph name="END_LINK" /> တွင် သင့်လိပ်စာကို တည်းဖြတ်နိုင် (သို့) ဖျက်နိုင်သည်။</translation>
 <translation id="6835762382653651563">သင့် <ph name="DEVICE_TYPE" /> ကို အသစ်မွမ်းမံရန် ကျေးဇူးပြု၍ အင်တာနက်နှင့် ချိတ်ဆက်ပါ။</translation>
+<translation id="6836441935577925845">တဘ်များကို ဘေးတွင်ပြပါ</translation>
 <translation id="6838992358006915573">Magnifier သည် ChromeVox အထူးပြသမှုနောက်သို့ လိုက်သည်</translation>
 <translation id="6839916869147598086">အကောင့်ဝင်ရောက်ခြင်းကို ပြောင်းထားသည်</translation>
 <translation id="6840155290835956714">မပို့မီ မေးမြန်းရန်</translation>

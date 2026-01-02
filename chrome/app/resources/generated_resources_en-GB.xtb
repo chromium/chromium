@@ -1089,6 +1089,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1709085899471866534">See when tabs are inactive at a glance. You can turn off this new look in settings at any time.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Native)</translation>
 <translation id="1709217939274742847">Choose a ticket to use for authentication. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">Show tabs at the top</translation>
 <translation id="1709762881904163296">Network settings</translation>
 <translation id="1709916727352927457">Delete passkey</translation>
 <translation id="1709972045049031556">Can’t share</translation>
@@ -4894,6 +4895,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4281844954008187215">Terms of Service</translation>
 <translation id="4281849573951338030">Customise pen buttons</translation>
 <translation id="4282196459431406533">Smart Lock is turned on</translation>
+<translation id="4283635301190260296">Collapse vertical tabs</translation>
 <translation id="4284903252249997120">ChromeVox screen reader and select-to-speak</translation>
 <translation id="4285418559658561636">Update Password</translation>
 <translation id="4285498937028063278">Unpin</translation>
@@ -8557,6 +8559,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6833753236242482566">Balanced (recommended)</translation>
 <translation id="6835624277262316125">Your work address can help you get things done across Google services, like more relevant search results and directions in Google Maps. You can edit or delete your address in your <ph name="BEGIN_LINK" />Google Account <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="6835762382653651563">Please connect to the Internet to update your <ph name="DEVICE_TYPE" />.</translation>
+<translation id="6836441935577925845">Show tabs to the side</translation>
 <translation id="6838992358006915573">Magnifier follows ChromeVox focus</translation>
 <translation id="6839916869147598086">Sign-in has changed</translation>
 <translation id="6840155290835956714">Ask before sending</translation>

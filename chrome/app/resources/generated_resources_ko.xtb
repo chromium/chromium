@@ -196,6 +196,7 @@
 <translation id="1124772482545689468">사용자</translation>
 <translation id="1125371304736839151">브라우저 상단에 Gemini 표시</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" />x<ph name="HEIGHT" />(기본)처럼 보입니다.</translation>
+<translation id="1125816658532547876"><ph name="DEVICE_TYPE" />에서 비밀번호를 사용하세요</translation>
 <translation id="1125921926864945797">배경화면 및 스타일</translation>
 <translation id="1128591060186966949">검색엔진 수정</translation>
 <translation id="1129348283834595293">사이버펑크</translation>
@@ -565,6 +566,7 @@
 <translation id="1372841398847029212">내 계정에 동기화</translation>
 <translation id="1373176046406139583">화면이 잠금 해제되어 있을 때 나와 파일을 공유할 수 있는 사람은 기기 공개 범위에 따라 다릅니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">네트워크 '<ph name="NETWORK_NAME" />'에 필요한 인증서가 설치되지 않았거나 더 이상 유효하지 않습니다. 새로운 인증서를 받아 다시 연결하세요.</translation>
+<translation id="1374948751106271187">이동 중에 보안을 한층 더 강화하세요.</translation>
 <translation id="1375557162880614858">ChromeOS Flex의 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까?</translation>
 <translation id="1375938286942050085">설정이 완료되었습니다. 기기에서 게임을 즐길 준비를 하세요</translation>
 <translation id="137651782282853227">저장한 주소가 여기 표시됩니다.</translation>
@@ -1087,6 +1089,7 @@
 <translation id="1709085899471866534">탭이 비활성 상태인 경우 한눈에 확인할 수 있습니다. 언제든지 설정에서 새로운 디자인을 사용 중지할 수 있습니다.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" />x<ph name="HEIGHT" />(기본)</translation>
 <translation id="1709217939274742847">인증에 사용할 티켓을 선택하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">상단에 탭 표시</translation>
 <translation id="1709762881904163296">네트워크 설정</translation>
 <translation id="1709916727352927457">패스키 삭제</translation>
 <translation id="1709972045049031556">공유할 수 없음</translation>
@@ -1266,6 +1269,7 @@
 <translation id="183445248400150852">사이트에서 이 기능을 사용하여 게임이나 원격 데스크톱 앱과 같은 키보드 입력을 재정의합니다.</translation>
 <translation id="1834503245783133039">다운로드 실패: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux 업그레이드 중</translation>
+<translation id="1837292628323740716"><ph name="DEVICE_TYPE" />에서 향상된 세이프 브라우징을 사용하세요</translation>
 <translation id="1837441256780906162">Microsoft OneDrive에서 요청을 거부했습니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="1838374766361614909">검색어 지우기</translation>
 <translation id="1839021455997460752">이메일 주소</translation>
@@ -4891,6 +4895,7 @@
 <translation id="4281844954008187215">서비스 약관</translation>
 <translation id="4281849573951338030">펜 버튼 맞춤설정</translation>
 <translation id="4282196459431406533">Smart Lock이 사용 설정됨</translation>
+<translation id="4283635301190260296">세로 탭 접기</translation>
 <translation id="4284903252249997120">ChromeVox 스크린 리더 및 텍스트 읽어주기</translation>
 <translation id="4285418559658561636">비밀번호 업데이트</translation>
 <translation id="4285498937028063278">고정 해제</translation>
@@ -8461,6 +8466,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6783036716881942511">이 기기를 삭제하시겠습니까?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive 설정</translation>
 <translation id="6784523122863989144">지원되는 프로필입니다.</translation>
+<translation id="678520006562636090"><ph name="DEVICE_TYPE" />에서 Google 렌즈를 사용해 보세요</translation>
 <translation id="6785594991951195537"><ph name="PASSWORD_DOMAIN" /> 사용</translation>
 <translation id="6785739405821760313">저장된 데스크를 보는 중입니다. 이동하려면 Tab을 누르세요.</translation>
 <translation id="6785915470941880363">역방향 스크롤 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
@@ -8554,6 +8560,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6833753236242482566">균형(권장)</translation>
 <translation id="6835624277262316125">직장 주소를 입력하면 더 관련성 높은 Google 검색 결과를 확인하고 Google 지도에서 경로 안내를 받는 등 Google 서비스 전반에서 작업을 처리하는 데 도움이 됩니다. <ph name="BEGIN_LINK" />Google 계정 <ph name="USERNAME" /><ph name="END_LINK" />에서 주소를 수정하거나 삭제할 수 있습니다.</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />을(를) 업데이트하려면 인터넷에 연결하세요.</translation>
+<translation id="6836441935577925845">측면에 탭 표시</translation>
 <translation id="6838992358006915573">ChromeVox 포커스를 따라 돋보기 이동</translation>
 <translation id="6839916869147598086">로그인 변경됨</translation>
 <translation id="6840155290835956714">보내기 전에 확인</translation>

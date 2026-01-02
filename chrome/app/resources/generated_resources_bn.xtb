@@ -196,6 +196,7 @@
 <translation id="1124772482545689468">ব্যবহারকারী</translation>
 <translation id="1125371304736839151">ব্রাউজারের একদম উপরে Gemini দেখুন</translation>
 <translation id="1125550662859510761">মনে হচ্ছে <ph name="WIDTH" /> x <ph name="HEIGHT" /> (স্থানীয়)</translation>
+<translation id="1125816658532547876">আপনার <ph name="DEVICE_TYPE" />-এ পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="1125921926864945797">ওয়ালপেপার ও স্টাইল</translation>
 <translation id="1128591060186966949">সার্চ ইঞ্জিন সম্পাদনা করুন</translation>
 <translation id="1129348283834595293">সাইবারপাঙ্ক</translation>
@@ -566,6 +567,7 @@
 <translation id="1372841398847029212">আপনার অ্যাকাউন্টে সিঙ্ক করুন</translation>
 <translation id="1373176046406139583">'ডিভাইসের দৃশ্যমানতা' ফিচার ব্যবহার করে আপনার স্ক্রিন আনলক থাকাকালীন কারা আপনার সাথে ফাইল শেয়ার করতে পারবেন তা নিয়ন্ত্রণ করা যায়। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">নেটওয়ার্কের প্রয়োজনীয় সার্টিফিকেট "<ph name="NETWORK_NAME" />" হয় ইনস্টল করা নেই অথবা তা আর বৈধ নয়৷ অনুগ্রহ করে একটি নতুন সার্টিফিকেট আনুন আর সংযোগ করতে পুনরায় চেষ্টা করুন৷</translation>
+<translation id="1374948751106271187">যেতে যেতেও সুরক্ষার অতিরিক্ত স্তর যোগ করুন</translation>
 <translation id="1375557162880614858">আপনি কি ChromeOS Flex-এর বিল্ট-ইন স্ক্রিন রিডার ChromeVox অ্যাক্টিভেট চালু করতে চাইছেন?</translation>
 <translation id="1375938286942050085">সেট-আপ সম্পূর্ণ হয়েছে! পরবর্তী গেমিংয়ের জন্য আপনার ডিভাইস তৈরি করুন</translation>
 <translation id="137651782282853227">সংরক্ষিত ঠিকানাগুলি এখানে দেখা যাবে</translation>
@@ -1088,6 +1090,7 @@
 <translation id="1709085899471866534">ট্যাব কখন বন্ধ আছে তা এক ঝলকে দেখুন। আপনি যেকোনও সময়ে সেটিংস থেকে এই নতুন লুক বন্ধ করতে পারবেন।</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (নির্ধারিত)</translation>
 <translation id="1709217939274742847">যাচাইকরণের জন্য ব্যবহার করতে একটি টিকিট বেছে নিন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">একদম উপরে ট্যাব দেখুন</translation>
 <translation id="1709762881904163296">নেটওয়ার্ক সেটিংস</translation>
 <translation id="1709916727352927457">পাসকী মুছুন</translation>
 <translation id="1709972045049031556">শেয়ার করা যাচ্ছে না</translation>
@@ -1267,6 +1270,7 @@
 <translation id="183445248400150852">সাইট এই ফিচার আপনার কীবোর্ডের ইনপুট ওভাররাইড করতে ব্যবহার করে, যেমন গেম বা রিমোট ডেস্কটপ অ্যাপের জন্য</translation>
 <translation id="1834503245783133039">ডাউনলোড হয়নি: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux আপগ্রেড করা হচ্ছে</translation>
+<translation id="1837292628323740716">আপনার <ph name="DEVICE_TYPE" />-এ উন্নত Safe Browsing চালু করুন</translation>
 <translation id="1837441256780906162">Microsoft OneDrive অনুরোধ বাতিল করে দিয়েছে। পরে আবার চেষ্টা করে দেখুন।</translation>
 <translation id="1838374766361614909">সার্চ সাফ করুন</translation>
 <translation id="1839021455997460752">আপনার ইমেল আইডি</translation>
@@ -4892,6 +4896,7 @@
 <translation id="4281844954008187215">পরিষেবার শর্তাদি</translation>
 <translation id="4281849573951338030">পেনের বোতাম কাস্টমাইজ করুন</translation>
 <translation id="4282196459431406533">Smart Lock চালু আছে</translation>
+<translation id="4283635301190260296">ভার্টিক্যাল ট্যাব আড়াল করুন</translation>
 <translation id="4284903252249997120">ChromeVox স্ক্রিন রিডার এবং 'বাছুন ও শুনুন' ফিচার</translation>
 <translation id="4285418559658561636">পাসওয়ার্ড আপডেট করুন</translation>
 <translation id="4285498937028063278">আনপিন</translation>
@@ -8464,6 +8469,7 @@
 <translation id="6783036716881942511">এই ডিভাইসটিকে পুরোপুরি সরিয়ে দেবেন?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive সেটিংস</translation>
 <translation id="6784523122863989144">প্রোফাইল ব্যবহার করা যাবে</translation>
+<translation id="678520006562636090">আপনার <ph name="DEVICE_TYPE" />-এ Google Lens ব্যবহার করে দেখুন</translation>
 <translation id="6785594991951195537"><ph name="PASSWORD_DOMAIN" /> ব্যবহার করুন</translation>
 <translation id="6785739405821760313">'সেভ করা ডেস্ক' মোডে দেখছেন। নেভিগেট করতে Tab প্রেস করুন।</translation>
 <translation id="6785915470941880363">রিভার্স স্ক্রলিং <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
@@ -8557,6 +8563,7 @@
 <translation id="6833753236242482566">ব্যালেন্স (সাজেস্ট করা হয়েছে)</translation>
 <translation id="6835624277262316125">আপনার কর্মস্থলের ঠিকানা Google পরিষেবা জুড়ে বিভিন্ন কাজে আপনাকে সাহায্য করতে পারে, যেমন আরও বেশি প্রাসঙ্গিক সার্চ ফলাফল এবং Google Maps-এ দিকনির্দেশ পাওয়া। আপনার <ph name="BEGIN_LINK" />Google অ্যাকাউন্ট <ph name="USERNAME" /><ph name="END_LINK" /> থেকে আপনার ঠিকানা এডিট করতে বা মুছে ফেলতে পারবেন।</translation>
 <translation id="6835762382653651563">আপনার <ph name="DEVICE_TYPE" /> আপডেট করার জন্য দয়া করে ইন্টারনেটে সংযুক্ত হোন।</translation>
+<translation id="6836441935577925845">পাশের দিকে ট্যাব দেখুন</translation>
 <translation id="6838992358006915573">ChromeVox ফোকাসের পরে ম্যাগনিফায়ার থাকে</translation>
 <translation id="6839916869147598086">সাইন-ইন পরিবর্তন করা হয়েছে</translation>
 <translation id="6840155290835956714">পাঠানোর আগে জিজ্ঞাসা করুন</translation>

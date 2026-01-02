@@ -196,6 +196,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1124772482545689468">Kasutaja</translation>
 <translation id="1125371304736839151">Kuva Gemini brauseri ülaosas</translation>
 <translation id="1125550662859510761">Näib kui <ph name="WIDTH" /> × <ph name="HEIGHT" /> (loomulik eraldusvõime)</translation>
+<translation id="1125816658532547876">Kasutage oma paroole seadmes <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Taustapilt ja stiil</translation>
 <translation id="1128591060186966949">Otsingumootori muutmine</translation>
 <translation id="1129348283834595293">Küberpunk</translation>
@@ -565,6 +566,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1372841398847029212">Sünkrooni minu kontoga</translation>
 <translation id="1373176046406139583">Teie seadme nähtavus määrab, kes saavad teiega jagada, kui teie ekraanikuva on avatud. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Võrk „<ph name="NETWORK_NAME" />” nõuab sertifikaati, mis on installimata või kehtetu. Hankige uus sertifikaat ja proovige uuesti ühendust luua.</translation>
+<translation id="1374948751106271187">Lisage liikvel olles täiendav kaitsekiht.</translation>
 <translation id="1375557162880614858">Kas soovite aktiveerida Chrome OS Flexi sisseehitatud ekraanilugeja ChromeVox?</translation>
 <translation id="1375938286942050085">Seadistamine on lõpetatud! Valmistage nüüd oma seade mängude jaoks ette</translation>
 <translation id="137651782282853227">Salvestatud aadressid kuvatakse siin</translation>
@@ -1079,6 +1081,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1709085899471866534">Vaadake kiiresti inaktiivsete vahelehtede ülevaadet. Seadetes saate inaktiivsete vahelehtede uutmoodi kuvamise igal ajal keelata.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (omaeraldusvõime)</translation>
 <translation id="1709217939274742847">Valige pilet, mida autentimiseks kasutada. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">Kuva vahelehed ülaosas</translation>
 <translation id="1709762881904163296">Võrguseaded</translation>
 <translation id="1709916727352927457">Pääsuvõtme kustutamine</translation>
 <translation id="1709972045049031556">Ei saa jagada</translation>
@@ -1258,6 +1261,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="183445248400150852">Saidid kasutavad seda funktsiooni teie klaviatuuri sisendi alistamiseks, näiteks mängude või Remote Desktopi rakenduste jaoks</translation>
 <translation id="1834503245783133039">Allalaadimine nurjus: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux versiooni uuendamine</translation>
+<translation id="1837292628323740716">Täiustage ohutut sirvimist oma seadmes <ph name="DEVICE_TYPE" /></translation>
 <translation id="1837441256780906162">Microsoft OneDrive lükkas taotluse tagasi. Proovige hiljem uuesti.</translation>
 <translation id="1838374766361614909">Otsingu kustutamine</translation>
 <translation id="1839021455997460752">Teie e-posti aadress</translation>
@@ -4882,6 +4886,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4281844954008187215">Teenusetingimused</translation>
 <translation id="4281849573951338030">Pliiatsinuppude kohandamine</translation>
 <translation id="4282196459431406533">Smart Lock on sisse lülitatud</translation>
+<translation id="4283635301190260296">Ahenda vertikaalsed vahelehed</translation>
 <translation id="4284903252249997120">Ekraanilugeja ChromeVox ning funktsioon Vali ja kuula</translation>
 <translation id="4285418559658561636">Värskenda parooli</translation>
 <translation id="4285498937028063278">Vabasta</translation>
@@ -8451,6 +8456,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6783036716881942511">Kas unustada see seade?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive'i seaded</translation>
 <translation id="6784523122863989144">Profiili ei toetata</translation>
+<translation id="678520006562636090">Proovige oma seadmes <ph name="DEVICE_TYPE" /> Google Lensi</translation>
 <translation id="6785594991951195537">Kas kasutada domeeni <ph name="PASSWORD_DOMAIN" /> parooli?</translation>
 <translation id="6785739405821760313">Kuvatud on salvestatud töölauad. Navigeerimiseks vajutage tabulaatorit.</translation>
 <translation id="6785915470941880363">Tagurpidi kerimine (<ph name="LINK_BEGIN" />lisateave<ph name="LINK_END" />)</translation>
@@ -8544,6 +8550,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6833753236242482566">Tasakaalustatud (soovitatud)</translation>
 <translation id="6835624277262316125">Teie töökoha aadress aitab teil Google'i teenustes asju ajada, näiteks saada Google Mapsis asjakohasemaid otsingutulemusi ja juhiseid. Saate oma aadressi muuta või kustutada oma <ph name="BEGIN_LINK" />Google'i kontol <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="6835762382653651563">Seadme <ph name="DEVICE_TYPE" /> värskendamiseks looge ühendus Internetiga.</translation>
+<translation id="6836441935577925845">Kuva vahelehed küljel</translation>
 <translation id="6838992358006915573">Luup järgib ChromeVoxi fookust</translation>
 <translation id="6839916869147598086">Sisselogimine on muutunud</translation>
 <translation id="6840155290835956714">Küsi enne saatmist</translation>

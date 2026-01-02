@@ -196,6 +196,7 @@
 <translation id="1124772482545689468">प्रयोगकर्ता</translation>
 <translation id="1125371304736839151">Gemini लाई ब्राउजरको सिरानमा देखाउनुहोस्</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (नेटिभ) जस्तो देखिन्छ</translation>
+<translation id="1125816658532547876">आफ्नो <ph name="DEVICE_TYPE" /> मा आफ्ना पासवर्डहरू प्रयोग गर्नुहोस्</translation>
 <translation id="1125921926864945797">वालपेपर तथा शैली</translation>
 <translation id="1128591060186966949">खोज इन्जिनलाई सम्पादन गर्नुहोस्</translation>
 <translation id="1129348283834595293">साइबरपङ्क</translation>
@@ -565,6 +566,7 @@
 <translation id="1372841398847029212">आफ्नो खातासँग सिंक गर्नुहोस्</translation>
 <translation id="1373176046406139583">तपाईंको डिभाइसको पहुँचसम्बन्धी सेटिङमा गई तपाईंको स्क्रिन अनलक हुँदा तपाईंसँग कसले सेयर गर्न सक्छन् भन्ने कुरा तोक्न सकिन्छ। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">नेटवर्क "<ph name="NETWORK_NAME" />" का लागि चाहिने प्रमाणपत्र की त स्थापना गरिएको छैन वा उप्रान्त मान्य छैन । कृपया नयाँ प्रमाणपत्र प्राप्त गरी पुनः जडान प्रयास गर्नुहोस्।</translation>
+<translation id="1374948751106271187">तपाईं जहाँ भए पनि अतिरिक्त सुरक्षा सुविधा पाउनुहोस्</translation>
 <translation id="1375557162880614858">तपाईं ChromeOS Flex मा पहिले नै इन्स्टल गरिएको ChromeVox नामक स्क्रिन रिडर एक्टिभेट गर्न चाहनुहुन्छ?</translation>
 <translation id="1375938286942050085">सेटअप गर्ने कार्य पूरा भयो! अब आफ्नो डिभाइस गेमिङका लागि तयार पार्नुहोस्</translation>
 <translation id="137651782282853227">सुरक्षित गरिएका पासवर्डहरू यहाँ देखापर्ने छन्</translation>
@@ -1079,6 +1081,7 @@
 <translation id="1709085899471866534">ट्याबहरू कति बेला निष्क्रिय भए भन्ने कुरा छोटकरीमा हेर्नुहोस्। तपाईं जुनसुकै बेला सेटिङमा गई यो नयाँ स्वरूप अफ गर्न सक्नुहुन्छ।</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> गुणा <ph name="HEIGHT" /> (मूल)</translation>
 <translation id="1709217939274742847">प्रमाणीकरणका लागि प्रयोग गर्न कुनै टिकट छान्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">ट्याबहरू सिरानमा देखाउनुहोस्</translation>
 <translation id="1709762881904163296">नेटवर्कसम्बन्धी सेटिङहरू</translation>
 <translation id="1709916727352927457">पासकी मेटाउनुहोस्</translation>
 <translation id="1709972045049031556">सेयर गर्न सकिँदैन</translation>
@@ -1258,6 +1261,7 @@
 <translation id="183445248400150852">किबोर्डको इन्पुट ओभरराइड गर्ने प्रयोजनका लागि साइटहरूले गेम वा रिमोट डेस्कटप एपहरूले जसरी नै यो सुविधा प्रयोग गर्छन्</translation>
 <translation id="1834503245783133039">डाउनलोड असफल भयो: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux को स्तरवृद्धि गर्दै</translation>
+<translation id="1837292628323740716">तपाईंको <ph name="DEVICE_TYPE" /> मा परिष्कृत सुरक्षित ब्राउजिङ</translation>
 <translation id="1837441256780906162">Microsoft OneDrive ले अनुरोध अस्वीकार गरेको छ। कृपया पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1838374766361614909">खोजी खाली गर्नुहोस्</translation>
 <translation id="1839021455997460752">तपाईंको इमेल ठेगाना</translation>
@@ -4877,6 +4881,7 @@
 <translation id="4281844954008187215">सेवाका सर्तहरू</translation>
 <translation id="4281849573951338030">पेनका बटनहरू कस्टमाइज गर्नुहोस्</translation>
 <translation id="4282196459431406533">Smart Lock सक्रिय छ</translation>
+<translation id="4283635301190260296">ठाडा ट्याबहरू कोल्याप्स गर्नुहोस्</translation>
 <translation id="4284903252249997120">ChromeVox स्क्रिन रिडर र सेलेक्ट टु स्पिक</translation>
 <translation id="4285418559658561636">पासवर्ड अपडेट गर्नुहोस्</translation>
 <translation id="4285498937028063278">अनपिन गर्नुहोस्</translation>
@@ -8445,6 +8450,7 @@
 <translation id="6783036716881942511">यो डिभाइस बिर्सने हो?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive का सेटिङ</translation>
 <translation id="6784523122863989144">प्रोफाइल प्रयोग गर्न मिल्ने हुनु पर्छ</translation>
+<translation id="678520006562636090">आफ्नो <ph name="DEVICE_TYPE" /> मा Google लेन्स प्रयोग गरी हेर्नुहोस्</translation>
 <translation id="6785594991951195537">आफ्नो <ph name="PASSWORD_DOMAIN" /> प्रयोग गर्नुहोस्</translation>
 <translation id="6785739405821760313">सेभ गरिएका डेस्कहरू देखाइँदै छ। तपाईं नेभिगेट गर्न चाहनुहुन्छ भने ट्याब की थिच्नुहोस्।</translation>
 <translation id="6785915470941880363">विपरीत स्क्रोलिङ <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
@@ -8538,6 +8544,7 @@
 <translation id="6833753236242482566">सन्तुलित (सिफारिस गरिएको)</translation>
 <translation id="6835624277262316125">तपाईंले Chrome मा कार्यस्थलको ठेगाना हालेका खण्डमा तपाईं Google का विभिन्न सेवाबाट अझ राम्रा सुविधाहरू प्राप्त गर्न (जस्तै: अझ सान्दर्भिक खोज परिणामहरू प्राप्त गर्न र Google नक्सामा कार्यस्थल जाने बाटो हेर्न) सक्नुहुन्छ। तपाईं आफ्नो <ph name="BEGIN_LINK" />Google खाता <ph name="USERNAME" /><ph name="END_LINK" /> मा गई आफ्नो ठेगाना परिवर्तन गर्न वा मेटाउन सक्नुहुन्छ।</translation>
 <translation id="6835762382653651563">कृपया तपाईँको <ph name="DEVICE_TYPE" /> अद्यावधिक गर्न इन्टरनेटमा कनेक्ट गर्नुहोस्।</translation>
+<translation id="6836441935577925845">ट्याबहरू छेउमा देखाउनुहोस्</translation>
 <translation id="6838992358006915573">म्याग्निफायरले ChromeVox ले फोकस गरेकै सामग्रीमा फोकस गर्छ</translation>
 <translation id="6839916869147598086">साइन इन परिवर्तन गरिएको छ</translation>
 <translation id="6840155290835956714">पठाउनु अघि सोध्नुहोस्</translation>

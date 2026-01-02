@@ -85,6 +85,7 @@
 <translation id="1874309113135274312">Бета-версія Google Chrome (mDNS-In)</translation>
 <translation id="1877026089748256423">Версія Chrome застаріла</translation>
 <translation id="1880677175115548835">Вибрати текст</translation>
+<translation id="1896602904211344018">Завантажити додаток Chrome</translation>
 <translation id="1919130412786645364">Дозволити вхід у Chrome</translation>
 <translation id="1953553007165777902">Завантаження… Залишилося: <ph name="MINUTE" /> хв.</translation>
 <translation id="1979600810166324878">Подбайте про себе в дорозі завдяки Безпечному перегляду з розширеним захистом у Chrome для iOS</translation>
@@ -313,6 +314,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="4334294535648607276">Завантажено.</translation>
 <translation id="4337324600316876133">Щоб отримувати майбутні оновлення Google Chrome, потрібна операційна система macOS 12 або новішої версії. На цьому комп’ютері встановлено macOS 11.</translation>
 <translation id="4343195214584226067">Розширення <ph name="EXTENSION_NAME" /> додано в Chrome</translation>
+<translation id="4344128547036991536">Коли ви відкриваєте Google Об’єктив, у Google автоматично надсилається назва сторінки, її URL-адреса й контент, зокрема файли PDF. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">Щоб користуватися персоналізацією, включіть Chrome в історію додатків і вебпошуку</translation>
 <translation id="436060642166082913">Вебпереглядач Chrome заблокував завантаження, оскільки цей файл може зашкодити вашим особистим обліковим записам і обліковим записам у соціальних мережах</translation>
 <translation id="4367027658822022112">Ви можете закріпити Google Об’єктив для швидкого доступу. Для цього вгорі бічної панелі натисніть кнопку "Закріпити".</translation>
@@ -376,6 +378,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="5163087008893166964">Вітаємо в Chrome! Відкрито нове вікно веб-переглядача</translation>
 <translation id="5166439563123238795">Вебпереглядачу Chrome потрібен дозвіл на відстеження ваших рук</translation>
 <translation id="5167819546851111585">Про що ви думаєте?</translation>
+<translation id="5169778651486082413">Користуйтеся своїми паролями в Chrome на телефоні</translation>
 <translation id="5170938038195470297">Ваш профіль не можна використати, оскільки його створено в новішій версії Google Chrome. Деякі функції можуть бути недоступними. Укажіть інший каталог профілю чи скористайтеся новішою версією Chrome.</translation>
 <translation id="5174969993834422967">Зазвичай ви блокуєте сповіщення. Щоб дозволити сайту показувати сповіщення, натисніть значок сповіщення в правому куті панелі місцезнаходження.</translation>
 <translation id="5174983315706567306">Недостатньо місця на диску.</translation>
@@ -456,6 +459,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6008161919456049856">Ваші паролі, способи оплати й адреси, збережені в обліковому записі Google, буде вилучено із цього пристрою. Щоб знову використовувати їх у Chrome, увійдіть в обліковий запис.</translation>
 <translation id="6009821354356307391">Введіть додатковий запит</translation>
 <translation id="6014316319780893079">Безпечно переглядайте веб-сторінки й керуйте налаштуваннями завдяки <ph name="BEGIN_LINK" />інструментам від Chrome<ph name="END_LINK" /></translation>
+<translation id="6018578474045062808">Спробуйте Google Об’єктив у Chrome на телефоні</translation>
 <translation id="6022659036123304283">Ваш персональний Chrome</translation>
 <translation id="6025087594896450715">Google Chrome перезапуститься через <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Закрити</translation>
@@ -505,6 +509,8 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6418662306461808273">Перейти в наявний профіль Chrome?</translation>
 <translation id="6426623519983252346">Коли ви наступного разу відкриєте Chrome для iOS, з’явиться запит спробувати <ph name="FEATURE_NAME" />.</translation>
 <translation id="6434035853014503219">Дякуємо, що зробили Chrome вебпереглядачем за умовчанням.</translation>
+<translation id="6438015621983209660">Використовуйте Безпечний перегляд із розширеним захистом у Chrome на телефоні</translation>
+<translation id="6442774133615368941">Здійснюйте покупки, перекладайте тексти й визначайте об’єкти навколо за допомогою камери в додатку Chrome для iOS</translation>
 <translation id="6473905796280459355">Перейти на сторінку "Про Chrome"</translation>
 <translation id="6481963882741794338">Зв’яжіть Chrome з іншими сервісами Google для персоналізації і інших цілей</translation>
 <translation id="648319183876919572">Безпечний перегляд із розширеним захистом додатково захищає вас від небезпечних веб-сайтів і завантажень</translation>
@@ -642,6 +648,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="7832314606810669113">Щоб отримати доступ до закладок і інших даних на всіх своїх пристроях, увійдіть у Chrome. Після входу цю закладку буде збережено в обліковому записі Google.</translation>
 <translation id="7845233973568007926">Дякуємо за встановлення. Щоб почати використовувати пакет <ph name="BUNDLE_NAME" />, потрібно перезапустити комп’ютер.</translation>
 <translation id="7849037457735762883">Продовжуйте роботу з місця, де зупинилися: Chrome може відновлювати ваші вкладки після кожного перезапуску. Щоб увімкнути цю функцію, перейдіть у</translation>
+<translation id="7869620795354551924">Щоб користуватися збереженими паролями, відскануйте QR-код, завантажте Chrome для iOS і ввійдіть у свій обліковий запис Google</translation>
 <translation id="7872446069773932638">Завантаження… Залишилося: <ph name="SECONDS" /> с.</translation>
 <translation id="7886087451482920026">Виберіть текст за допомогою Google Об’єктива</translation>
 <translation id="7887929410013642057">Завжди показувати ярлики режиму ШІ</translation>
@@ -728,6 +735,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="878572486461146056">Сталася помилка. Адміністратор мережі застосував правило для груп, яке забороняє встановлення: <ph name="INSTALL_ERROR" />.</translation>
 <translation id="8796919761992612392">Н&amp;алаштувати Chrome</translation>
 <translation id="8798550110818026746">Адміністратор організації може бачити дані вебперегляду (зокрема закладки, історію і паролі) та керувати ними. Він не має доступу до даних вебперегляду в особистих профілях Chrome.</translation>
+<translation id="8813277370772331957">Нагадати пізніше</translation>
 <translation id="8821043148920470810">Щоб отримувати майбутні оновлення Google Chrome, потрібна операційна система Windows 10 або новішої версії. На цьому комп’ютері встановлено Windows 7.</translation>
 <translation id="8823341990149967727">Версія Chrome застаріла</translation>
 <translation id="8834965163890861871">Google Chrome намагається змінити паролі. Щоб дозволити, введіть свій пароль Windows.</translation>

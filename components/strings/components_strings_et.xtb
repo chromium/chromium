@@ -1236,6 +1236,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="299122504639061328">Vaikeotsingumootori ja -saidiotsingu haldamine</translation>
 <translation id="2991571918955627853">Te ei saa saiti <ph name="SITE" /> praegu külastada, sest veebisait kasutab HSTS-i. Võrguvead ja -rünnakud on tavaliselt ajutised, nii et leht tõenäoliselt hiljem töötab.</translation>
 <translation id="2991865971341174470">Kinnitage oma isik, et Chrome saaks teie makseteabe sisestada.</translation>
+<translation id="2995010188916335277">Google kasutab nende valikute pakkumiseks teavet kassalehelt ja muid asjakohaseid andmeid. Hiljem maksmise valikute peitmiseks automaattäites avage <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2995121550202354573">Kasuta kõigi külaliseprofiilide puhul</translation>
 <translation id="2995517112308048736">Faili suurus:</translation>
 <translation id="299990983510665749">Luukpäraga autod</translation>
@@ -1412,7 +1413,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3266793032086590337">Väärtus (konflikt)</translation>
 <translation id="3268451620468152448">Avatud vahelehed</translation>
 <translation id="3270041629388773465">CVC-de salvestamise korral tasute kassas kiiremini</translation>
-<translation id="3270343151253360050">Valige selle ostu lõpuleviimiseks mõni muu makseviis.-</translation>
+<translation id="3270343151253360050">Valige selle ostu lõpuleviimiseks mõni muu makseviis.</translation>
 <translation id="3270847123878663523">&amp;Võta korrastamine tagasi</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> soovib ühenduse luua</translation>
 <translation id="3272091146646336650">Super B</translation>
