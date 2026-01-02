@@ -50,8 +50,6 @@ build_webui("build") {
     "internals/app.ts",
     "internals/app.html.ts",
     "internals/browser_proxy.ts",
-    "zero_state_overlay.html.ts",
-    "zero_state_overlay.ts",
   ]
 
   css_files = [
@@ -63,7 +61,6 @@ build_webui("build") {
     "onboarding_tooltip.css",
     "top_toolbar.css",
     "internals/app.css",
-    "zero_state_overlay.css",
   ]
 
   mojo_files_deps = [

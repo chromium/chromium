@@ -65,7 +65,7 @@
   width: 100%;
 }
 
-:host(:not([is-zero-state])) {
+:host(:not([is-zero-state])) #composeboxContainer {
   margin-bottom: var(--composebox-margin-bottom);
 }
 
@@ -89,7 +89,7 @@
   --composebox-width: calc(100% - 30px); /* 15px on each side */
   --expanded-border-radius: 24px;
   --input-bottom-spacing: 16px;
-  --inset-start-indent_: 20px;
+  --inset-start-indent_: 15px;
   --text-input-left-spacing: 24px;
   --text-input-top-spacing: 16px;
   --composebox-context-menu-entrypoint-button-color: var(--color-composebox-voice-lens-button);
@@ -98,19 +98,19 @@
   display: block;
   inset-inline-start: var(--inset-start-indent_);
   position: relative;
-  /* 100% - (24px right indent + left indent), up to max width. */
-  width: calc(100% - (24px + var(--inset-start-indent_)));
+  /* 100% - (right indent + left indent), up to max width. */
+  width: calc(100% - (15px + var(--inset-start-indent_)));
 }
 
-#composebox::before {
-  content: '';
+:host(:not([is-zero-state])) #composebox::before {
   background: var(--search-background-color);
   border-radius: 24px;
-  content: "";
+  content: '';
   display: block;
-  /* Expand past the bottom of the screen. */
+  /* Expand past the bottom of the composebox.
+   * Requires parent to have overflow hidden.
+   */
   height: 40vh;
-  display: block;
   position: absolute;
   width: 100%;
 }
@@ -182,11 +182,18 @@
 
 :host([is-side-panel]) #composebox {
   --inset-start-indent_: 0;
-  inset-inline-start: 20px;
+  inset-inline-start: 15px;
   max-width: var(--composebox-max-width);
   min-width: 200px;
-  /* 20px on each side -> 40px. */
-  width: calc(100% - 40px);
+  /* 15px on each side -> 30px. */
+  width: calc(100% - 30px);
+}
+
+@media (min-width: 1236px) {
+  :host([is-side-panel]) #composebox {
+    background-color: red;
+    inset-inline-start: 96px;
+  }
 }
 
 #composebox::part(error-scrim) {

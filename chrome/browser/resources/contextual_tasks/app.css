@@ -57,10 +57,12 @@
   --thumbnail-chip-padding: 6px;
   --thumbnail-chip-width: 154px;
 
-  display: flex;
-  flex-direction: column;
-  height: 100%;
   background-color: var(--search-background-color);
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  height: 100%;
+  overflow: hidden;
 }
 
 
@@ -144,19 +146,9 @@
 
 #threadFrame {
   border: none;
-  flex-grow: 1;
+  grid-column: 1;
+  grid-row: 1;
   overflow: hidden;
-}
-
-/* Set height for webview so its layout is
- * predictable for zero-state overlay.
- * !important is used, just in case
- * inner iframe height is not overridden within the webview.
- */
-:host([is-zero-state_]) #threadFrame {
-  flex-shrink: 0;
-  max-height: 900px !important;
-  min-height: 900px !important;
 }
 
 /* Disable scroll for zero state. */
@@ -224,7 +216,14 @@ error-page {
   }
 }
 
+.flex-center {
+  align-self: end;
+  grid-column: 1;
+  grid-row: 1;
+}
+
 :host([is-zero-state_]) .flex-center {
+  align-self: start;
   align-items: center;
   display: flex;
   flex-direction: column;
@@ -238,10 +237,15 @@ error-page {
   width: 100%;
 }
 
-#toolbar {
+#toolbarOverlay {
+  align-self: start;
+  background-color: var(--search-background-color);
+  grid-column: 1;
+  grid-row: 1;
+  /* Cover the AIM toolbar. */
+  height: 64px;
   z-index: 2;
 }
-
 
 .thread-header {
   color: var(--color-zero-state-greeting);
@@ -264,6 +268,7 @@ error-page {
 }
 
 #relativeThreadHolder {
+  background-color: var(--search-background-color);
   display: none;
   justify-content: flex-start;
   /* Same width so stays at same centering as composebox with flexbox. */
