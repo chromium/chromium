@@ -27,6 +27,7 @@
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
+#include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "net/base/url_util.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"

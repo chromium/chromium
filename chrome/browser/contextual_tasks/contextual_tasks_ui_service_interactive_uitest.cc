@@ -8,6 +8,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -391,7 +392,10 @@ IN_PROC_BROWSER_TEST_F(
 
   // Call OnTaskChanged and verify that both tabs are now associated with
   // the second task.
-  service->OnTaskChanged(browser(), nullptr, task2.GetTaskId(), false);
+  auto dummy_web_contents = content::WebContents::Create(
+      content::WebContents::CreateParams(browser()->profile()));
+  service->OnTaskChanged(browser(), dummy_web_contents.get(), task2.GetTaskId(),
+                         false);
   EXPECT_EQ(
       task2.GetTaskId(),
       contextual_tasks_service->GetContextualTaskForTab(tab1_id)->GetTaskId());
@@ -433,7 +437,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
 
   // Call OnTaskChanged and verify that the first tab is now associated
   // with an empty task.
-  service->OnTaskChanged(browser(), nullptr, base::Uuid(), false);
+  auto dummy_web_contents = content::WebContents::Create(
+      content::WebContents::CreateParams(browser()->profile()));
+  service->OnTaskChanged(browser(), dummy_web_contents.get(), base::Uuid(),
+                         false);
   std::optional<ContextualTask> empty_task =
       contextual_tasks_service->GetContextualTaskForTab(tab1_id);
 
@@ -477,7 +484,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
 
   // Call OnTaskChanged with is_shown_in_tab = true and verify that tabs
   // remain associated with the first task.
-  service->OnTaskChanged(browser(), nullptr, task2.GetTaskId(), true);
+  auto dummy_web_contents = content::WebContents::Create(
+      content::WebContents::CreateParams(browser()->profile()));
+  service->OnTaskChanged(browser(), dummy_web_contents.get(), task2.GetTaskId(),
+                         true);
   EXPECT_EQ(
       task1.GetTaskId(),
       contextual_tasks_service->GetContextualTaskForTab(tab1_id)->GetTaskId());

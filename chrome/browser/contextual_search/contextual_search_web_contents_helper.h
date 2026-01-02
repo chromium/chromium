@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_CONTEXTUAL_SEARCH_CONTEXTUAL_SEARCH_WEB_CONTENTS_HELPER_H_
 
 #include <memory>
+#include <optional>
+#include <vector>
 
+#include "base/uuid.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -27,20 +30,31 @@ class ContextualSearchWebContentsHelper
       const ContextualSearchWebContentsHelper&) = delete;
   ~ContextualSearchWebContentsHelper() override;
 
-  // Takes ownership of a contextual session handle and stores it.
-  void set_session_handle(
+  // Sets the task ID and the contextual search session handle for the task.
+  // `task_id` can be std::nullopt when transferring session before task
+  // assignment.
+  void SetTaskSession(
+      std::optional<base::Uuid> task_id,
       std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
           handle) {
+    task_id_ = task_id;
     session_handle_ = std::move(handle);
   }
-  // Returns the owned contextual session handle. May return nullptr.
+  // Returns the contextual search session handle. May return nullptr.
   contextual_search::ContextualSearchSessionHandle* session_handle() const {
     return session_handle_.get();
   }
-  // Takes ownership away from this helper and returns it.
-  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
-  TakeSessionHandle() {
-    return std::move(session_handle_);
+
+  // Returns the task ID associated with the current contextual search session.
+  // std::nullopt if the web_contents isn't showing a contextual task.
+  const std::optional<base::Uuid>& task_id() const { return task_id_; }
+
+  // Returns contextual search session handle only if it matches `task_id`.
+  // Returns nullptr if no session exists or `task_id` doesn't match.
+  contextual_search::ContextualSearchSessionHandle* GetSessionForTask(
+      const base::Uuid& task_id) const {
+    return (session_handle_ && task_id_ == task_id) ? session_handle_.get()
+                                                    : nullptr;
   }
 
  private:
@@ -48,6 +62,8 @@ class ContextualSearchWebContentsHelper
       content::WebContents* web_contents);
   friend class content::WebContentsUserData<ContextualSearchWebContentsHelper>;
 
+  // The task ID the session handle is associated with, if any.
+  std::optional<base::Uuid> task_id_;
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       session_handle_;
 

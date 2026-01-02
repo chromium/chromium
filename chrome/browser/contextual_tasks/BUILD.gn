@@ -151,6 +151,8 @@ if (!is_android) {
 
   source_set("ui_impl") {
     sources = [
+      "contextual_search_session_finder.cc",
+      "contextual_search_session_finder.h",
       "contextual_tasks_composebox_handler.cc",
       "contextual_tasks_internals_page_handler.cc",
       "contextual_tasks_navigation_throttle.cc",

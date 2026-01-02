@@ -16,6 +16,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_internals.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/task_info_delegate.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
@@ -49,6 +50,7 @@ struct AccessTokenInfo;
 
 namespace contextual_tasks {
 class ContextualTasksService;
+class ContextualTasksSidePanelCoordinator;
 class ContextualTasksUiService;
 }  // namespace contextual_tasks
 
@@ -197,12 +199,6 @@ class ContextualTasksUI : public TaskInfoDelegate,
   // to send it to the guest content.
   virtual void PostMessageToWebview(const lens::ClientToAimMessage& message);
 
-  void set_session_handle(
-      std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
-          session_handle) {
-    session_handle_ = std::move(session_handle);
-  }
-
   mojo::Remote<contextual_tasks::mojom::Page>& page() { return page_; }
 
   // Transfers an existing navigation to the page embedded in this WebUI. This
@@ -248,6 +244,9 @@ class ContextualTasksUI : public TaskInfoDelegate,
   // Update the task's details in the WebUI.
   void PushTaskDetailsToPage();
 
+  contextual_tasks::ContextualTasksSidePanelCoordinator*
+  GetSidePanelCoordinator();
+
   // The OAuth token fetcher is used to fetch the OAuth token for the signed in
   // user. This is used to authenticate the user when making requests in the
   // embedded page.
@@ -255,10 +254,6 @@ class ContextualTasksUI : public TaskInfoDelegate,
 
   // A timer used to refresh the OAuth token before it expires.
   base::OneShotTimer token_refresh_timer_;
-
-  // Must outlive `composebox_handler_`.
-  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
-      session_handle_;
 
   std::unique_ptr<ContextualTasksComposeboxHandler> composebox_handler_;
   raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;

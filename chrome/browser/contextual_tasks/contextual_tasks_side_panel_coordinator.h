@@ -8,7 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+// #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -22,6 +22,15 @@ class PrefService;
 namespace base {
 class Uuid;
 }
+
+namespace contextual_search {
+class ContextualSearchService;
+class ContextualSearchSessionHandle;
+}  // namespace contextual_search
+
+namespace content {
+class NavigationHandle;
+}  // namespace content
 
 namespace views {
 class View;
@@ -117,6 +126,18 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   contextual_search::ContextualSearchSessionHandle*
   GetContextualSearchSessionHandleForSidePanel();
 
+  // Helper method to set task ID and session handle on the
+  // ContextualSearchWebContentsHelper associated with the given `web_contents`.
+  // Must be invoked whenever a the thread associated with the `web_contents`.
+  // changes. Finds an existing session open in browser if possible. If not
+  // found, creates a new session.
+  void UpdateContextualSearchWebContentsHelperForTask(
+      content::WebContents* web_contents,
+      const base::Uuid& task_id);
+
+  // Returns a list of all cached side panel WebContents.
+  std::vector<content::WebContents*> GetSidePanelWebContentsList() const;
+
  private:
   friend class ContextualTasksSidePanelCoordinatorInteractiveUiTest;
 
@@ -199,6 +220,9 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
 
   // Context controller to query task information.
   const raw_ptr<ContextualTasksService> contextual_tasks_service_;
+
+  const raw_ptr<contextual_search::ContextualSearchService>
+      contextual_search_service_;
 
   const raw_ptr<ContextualTasksUiService> ui_service_;
 
