@@ -559,22 +559,6 @@ class AvatarToolbarButtonBaseBrowserTest {
     GetTestSyncService()->FireStateChanged();
   }
 
-  void SimulateBookmarksLimitExceededError() {
-    GetTestSyncService()->SetBookmarksLimitExceeded(true);
-    GetTestSyncService()->FireStateChanged();
-    ASSERT_EQ(
-        GetTestSyncService()->GetUserActionableError(),
-        syncer::SyncService::UserActionableError::kBookmarksLimitExceeded);
-  }
-
-  void ClearBookmarksLimitExceededError() {
-    GetTestSyncService()->SetBookmarksLimitExceeded(false);
-    GetTestSyncService()->FireStateChanged();
-    ASSERT_NE(
-        GetTestSyncService()->GetUserActionableError(),
-        syncer::SyncService::UserActionableError::kBookmarksLimitExceeded);
-  }
-
   // Waits for `time`.
   void WaitForTime(base::TimeDelta time) {
     base::RunLoop waiting_run_loop;
@@ -1006,38 +990,6 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithSyncBrowserTest, SyncError) {
 
   ClearSyncError();
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
-}
-
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithSyncBrowserTest,
-                       BookmarksLimitExceededErrorForSyncingUser) {
-  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar_button->GetText().empty());
-
-  EnableSyncWithImageAndClearGreeting(avatar_button, u"test@gmail.com");
-  SimulateBookmarksLimitExceededError();
-  EXPECT_EQ(avatar_button->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_AVATAR_BUTTON_SYNC_ERROR_BOOKMARKS_LIMIT_EXCEEDED));
-
-  ClearBookmarksLimitExceededError();
-  EXPECT_TRUE(avatar_button->GetText().empty());
-}
-
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
-                       BookmarksLimitExceededErrorForSignedInUser) {
-  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar_button->GetText().empty());
-
-  SigninWithImageAndClearGreetingAndSyncPromo(avatar_button, u"test@gmail.com");
-  SimulateBookmarksLimitExceededError();
-  EXPECT_EQ(avatar_button->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_AVATAR_BUTTON_SYNC_ERROR_BOOKMARKS_LIMIT_EXCEEDED));
-
-  ClearBookmarksLimitExceededError();
-  EXPECT_TRUE(avatar_button->GetText().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithSyncBrowserTest,
