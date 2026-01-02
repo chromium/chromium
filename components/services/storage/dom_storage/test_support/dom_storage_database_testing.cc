@@ -307,7 +307,7 @@ void FakeCommitter::PutMapKeyValueSync(DomStorageDatabase::Key key,
 
 std::optional<DomStorageDatabase::MapBatchUpdate>
 FakeCommitter::CollectCommit() {
-  return std::move(pending_commit_);
+  return std::exchange(pending_commit_, std::nullopt);
 }
 
 base::OnceCallback<void(DbStatus)> FakeCommitter::GetCommitCompleteCallback() {
