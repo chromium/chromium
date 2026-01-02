@@ -7,21 +7,19 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/memory/raw_ptr.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_dismissal_callback.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_presentation_callback.h"
 
 @class OverlayRequestCoordinator;
-class OverlayRequest;
 
 // Container holding information about the state of overlay UI for a given
 // request.
 class OverlayRequestUIState {
  public:
-  explicit OverlayRequestUIState(OverlayRequest* request);
+  OverlayRequestUIState();
   ~OverlayRequestUIState();
 
-  // Called when the OverlayPresenter requests the presentation of `request_`.
+  // Called when the OverlayPresenter requests the presentation of the request.
   // This may or may not correspond with an OverlayUIWasPresented() if the
   // presentation context is inactive.  `presentation_callback` and
   // `dismissal_callback` are stored in the state, and will be executed when
@@ -50,7 +48,6 @@ class OverlayRequestUIState {
   }
 
  private:
-  raw_ptr<OverlayRequest, DanglingUntriaged> request_ = nullptr;
   OverlayRequestCoordinator* coordinator_ = nil;
   bool has_ui_been_presented_ = false;
   OverlayPresentationCallback presentation_callback_;
