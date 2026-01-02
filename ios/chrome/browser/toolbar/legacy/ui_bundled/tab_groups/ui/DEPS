@@ -1,3 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/saved_tab_groups/ui/face_pile_providing.h",
-]

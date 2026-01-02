@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/tab_groups/ui/tab_group_indicator_constants.h"
+#import "ios/chrome/browser/toolbar/tab_group/ui/tab_group_indicator_constants.h"
 
 const CGFloat kTabGroupIndicatorHeight = 36.0f;
 const CGFloat kTabGroupIndicatorVerticalMargin = 24.0f;

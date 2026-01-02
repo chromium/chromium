@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/tab_groups/coordinator/tab_group_indicator_coordinator.h"
+#import "ios/chrome/browser/toolbar/tab_group/coordinator/tab_group_indicator_coordinator.h"
 
 #import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
@@ -37,9 +37,9 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_tab_group_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_confirmation_coordinator.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/tab_groups/coordinator/tab_group_indicator_mediator.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/tab_groups/coordinator/tab_group_indicator_mediator_delegate.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/tab_groups/ui/tab_group_indicator_view.h"
+#import "ios/chrome/browser/toolbar/tab_group/coordinator/tab_group_indicator_mediator.h"
+#import "ios/chrome/browser/toolbar/tab_group/coordinator/tab_group_indicator_mediator_delegate.h"
+#import "ios/chrome/browser/toolbar/tab_group/ui/tab_group_indicator_view.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"

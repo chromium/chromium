@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/primary_toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/primary_toolbar_view_controller.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/primary_toolbar_view_controller_delegate.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/tab_groups/coordinator/tab_group_indicator_coordinator.h"
+#import "ios/chrome/browser/toolbar/tab_group/coordinator/tab_group_indicator_coordinator.h"
 
 @interface PrimaryToolbarCoordinator () <PrimaryToolbarViewControllerDelegate>
 

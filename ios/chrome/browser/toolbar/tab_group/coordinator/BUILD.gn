@@ -44,7 +44,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/tab_switcher/ui_bundled:tab_group_confirmation",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:tab_group_creation",
-    "//ios/chrome/browser/toolbar/legacy/ui_bundled/tab_groups/ui",
+    "//ios/chrome/browser/toolbar/tab_group/ui",
     "//ios/chrome/browser/url_loading/model",
     "//ios/web/public",
     "//ui/base",

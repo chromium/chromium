@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_TAB_GROUPS_UI_TAB_GROUP_INDICATOR_VIEW_H_
-#define IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_TAB_GROUPS_UI_TAB_GROUP_INDICATOR_VIEW_H_
+#ifndef IOS_CHROME_BROWSER_TOOLBAR_TAB_GROUP_UI_TAB_GROUP_INDICATOR_VIEW_H_
+#define IOS_CHROME_BROWSER_TOOLBAR_TAB_GROUP_UI_TAB_GROUP_INDICATOR_VIEW_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/tab_groups/ui/tab_group_indicator_consumer.h"
+#import "ios/chrome/browser/toolbar/tab_group/ui/tab_group_indicator_consumer.h"
 
 @protocol TabGroupIndicatorMutator;
 @protocol ToolbarHeightDelegate;
@@ -46,4 +46,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_TAB_GROUPS_UI_TAB_GROUP_INDICATOR_VIEW_H_
+#endif  // IOS_CHROME_BROWSER_TOOLBAR_TAB_GROUP_UI_TAB_GROUP_INDICATOR_VIEW_H_

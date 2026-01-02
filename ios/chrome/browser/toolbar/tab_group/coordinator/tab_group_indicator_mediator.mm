@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/tab_groups/coordinator/tab_group_indicator_mediator.h"
+#import "ios/chrome/browser/toolbar/tab_group/coordinator/tab_group_indicator_mediator.h"
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
@@ -30,8 +30,8 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/tab_groups/coordinator/tab_group_indicator_mediator_delegate.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/tab_groups/ui/tab_group_indicator_consumer.h"
+#import "ios/chrome/browser/toolbar/tab_group/coordinator/tab_group_indicator_mediator_delegate.h"
+#import "ios/chrome/browser/toolbar/tab_group/ui/tab_group_indicator_consumer.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/web/public/web_state.h"
