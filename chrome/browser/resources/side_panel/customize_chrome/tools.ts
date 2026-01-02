@@ -8,6 +8,7 @@ import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
 import type {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getCss} from './tools.css.js';
@@ -75,6 +76,10 @@ export class ToolChipsElement extends CrLitElement {
   // a Mojo call to the CC page handler to update the pref and broadcast the
   // change to other instances of the CC page handler.
   private setChipsEnabled_(isEnabled: boolean) {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.SHOW_ACTION_CHIPS_TOGGLE_CLICKED);
+    chrome.metricsPrivate.recordBoolean(
+        'NewTabPage.ActionChips.ToggledVisibility', isEnabled);
     this.isChipsEnabled_ = isEnabled;
     this.pageHandler_.setToolChipsVisible(this.isChipsEnabled_);
   }
