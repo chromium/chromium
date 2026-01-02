@@ -182,6 +182,18 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
+<histogram name="ContextualSearch.Query.TextLength.{ContextualSearchSource}"
+    units="characters" expires_after="2026-03-22">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Number of characters in the composebox submission request. May be zero in
+    the case that only a file was uploaded. Recorded after navigation to the AIM
+    page occurs.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
 <histogram
     name="ContextualSearch.Query.Time.ToSubmission.{ContextualSearchSource}"
     units="ms" expires_after="2026-05-24">
@@ -400,19 +412,6 @@ chromium-metrics-reviews@google.com.
     <variant name="UploadSuccessful" summary="File upload successful"/>
     <variant name="ValidationFailed" summary="File validation failed"/>
   </token>
-  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
-</histogram>
-
-<histogram
-    name="ContextualSearch.Session.Query.TextLength.{ContextualSearchSource}"
-    units="characters" expires_after="2026-03-22">
-  <owner>hujasonx@google.com</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    Number of characters in the composebox submission request. May be zero in
-    the case that only a file was uploaded. Recorded after navigation to the AIM
-    page occurs.
-  </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
