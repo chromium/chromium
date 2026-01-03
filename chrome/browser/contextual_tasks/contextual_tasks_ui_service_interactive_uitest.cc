@@ -37,7 +37,8 @@ class ContextualTasksUiServiceInteractiveUiTest
     : public InteractiveBrowserTest {
  public:
   ContextualTasksUiServiceInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeature(kContextualTasks);
+    scoped_feature_list_.InitWithFeatures(
+        {kContextualTasks, kContextualTasksForceEntryPointEligibility}, {});
   }
 
  protected:
@@ -683,8 +684,10 @@ class ContextualTasksUiServiceWithoutSidePanelInteractiveUiTest
     : public ContextualTasksUiServiceInteractiveUiTest {
  public:
   ContextualTasksUiServiceWithoutSidePanelInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kContextualTasks, {{"OpenSidePanelOnLinkClicked", "false"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{kContextualTasks, {{"OpenSidePanelOnLinkClicked", "false"}}},
+         {kContextualTasksForceEntryPointEligibility, {}}},
+        {});
   }
   ~ContextualTasksUiServiceWithoutSidePanelInteractiveUiTest() override =
       default;

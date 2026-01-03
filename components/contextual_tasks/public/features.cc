@@ -41,6 +41,10 @@ BASE_FEATURE(kContextualTasksShowOnboardingTooltip,
              "ContextualTasksShowOnboardingTooltip",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Overrides the value of EntryPointEligibilitymanager::IsEligible to true.
+BASE_FEATURE(kContextualTasksForceEntryPointEligibility,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Forces the country code to be US.
 BASE_FEATURE(kContextualTasksForceCountryCodeUS,
              base::FEATURE_DISABLED_BY_DEFAULT);

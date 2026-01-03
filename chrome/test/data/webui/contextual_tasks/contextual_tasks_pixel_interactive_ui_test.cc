@@ -34,7 +34,10 @@ class ContextualTasksComposeBoxPixelTest
       public testing::WithParamInterface<ComposeBoxPixelTestParams> {
  public:
   void SetUp() override {
-    feature_list_.InitWithFeatures({contextual_tasks::kContextualTasks}, {});
+    feature_list_.InitWithFeatures(
+        {contextual_tasks::kContextualTasks,
+         contextual_tasks::kContextualTasksForceEntryPointEligibility},
+        {});
     WebUIComposeBoxPixelTest::SetUp();
   }
 
