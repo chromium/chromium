@@ -122,11 +122,6 @@ function initialize() {
     addSentCSBRRsInfo(result);
   });
 
-  sendWithPromise('getSentHitReports', []).then((sentHitReports: string[]) => {
-    sentHitReports.forEach(function(hitReports) {
-      addSentHitReportsInfo(hitReports);
-    });
-  });
   addWebUiListener('sent-hit-report-list', function(result: string) {
     addSentHitReportsInfo(result);
   });

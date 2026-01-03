@@ -143,10 +143,6 @@ void WebUIInfoSingleton::SetOnCSBRRLoggedCallbackForTesting(
   on_csbrr_logged_for_testing_ = std::move(on_done);
 }
 
-void WebUIInfoSingleton::ClearHitReportsSent() {
-  std::vector<std::unique_ptr<HitReport>>().swap(hit_reports_sent_);
-}
-
 void WebUIInfoSingleton::AddToPGEvents(
     const sync_pb::UserEventSpecifics& event) {
   if (!HasListener()) {
@@ -466,7 +462,6 @@ void WebUIInfoSingleton::ClearListenerForTesting() {
 void WebUIInfoSingleton::MaybeClearData() {
   if (!HasListener()) {
     ClearCSBRRsSent();
-    ClearHitReportsSent();
     ClearDownloadUrlsChecked();
     ClearClientDownloadRequestsSent();
     ClearClientDownloadResponsesReceived();

@@ -180,10 +180,6 @@ void SafeBrowsingContentUIHandler::RegisterMessages() {
       base::BindRepeating(&SafeBrowsingUIHandler::GetSentCSBRRs,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getSentHitReports",
-      base::BindRepeating(&SafeBrowsingUIHandler::GetSentHitReports,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "getPGEvents", base::BindRepeating(&SafeBrowsingUIHandler::GetPGEvents,
                                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(

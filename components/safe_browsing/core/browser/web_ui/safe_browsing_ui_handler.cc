@@ -233,21 +233,6 @@ void SafeBrowsingUIHandler::GetSentCSBRRs(const base::Value::List& args) {
   ResolveCallback(callback_id, sent_reports);
 }
 
-void SafeBrowsingUIHandler::GetSentHitReports(const base::Value::List& args) {
-  const std::vector<std::unique_ptr<HitReport>>& reports =
-      web_ui_info_singleton()->hit_reports_sent();
-
-  base::Value::List sent_reports;
-
-  for (const auto& report : reports) {
-    sent_reports.Append(web_ui::SerializeHitReport(*report));
-  }
-
-  DCHECK(!args.empty());
-  const std::string& callback_id = args[0].GetString();
-  ResolveCallback(callback_id, sent_reports);
-}
-
 void SafeBrowsingUIHandler::GetPGEvents(const base::Value::List& args) {
   const std::vector<sync_pb::UserEventSpecifics>& events =
       web_ui_info_singleton()->pg_event_log();

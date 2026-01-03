@@ -85,9 +85,6 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
 
   void SetOnCSBRRLoggedCallbackForTesting(base::OnceClosure on_done);
 
-  // Clear the list of the sent HitReport messages.
-  void ClearHitReportsSent();
-
   // Add the new message in |pg_event_log_| and send it to all the open
   // chrome://safe-browsing tabs.
   void AddToPGEvents(const sync_pb::UserEventSpecifics& event);
@@ -237,12 +234,6 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
     return csbrrs_sent_;
   }
 
-  // Get the list of the sent HitReports that have been collected since the
-  // oldest currently open chrome://safe-browsing tab was opened.
-  const std::vector<std::unique_ptr<HitReport>>& hit_reports_sent() const {
-    return hit_reports_sent_;
-  }
-
   // Get the list of WebUI listener objects.
   const std::vector<
       raw_ptr<WebUIInfoSingletonEventObserver, VectorExperimental>>&
@@ -383,12 +374,6 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
 
   // Gets fired at the end of the AddToCSBRRsSent function. Only used for tests.
   base::OnceClosure on_csbrr_logged_for_testing_;
-
-  // List of HitReports sent since since the oldest currently open
-  // chrome://safe-browsing tab was opened.
-  // "HitReport" cannot be const, due to being used by
-  // functions that call AllowJavascript(), which is not marked const.
-  std::vector<std::unique_ptr<HitReport>> hit_reports_sent_;
 
   // List of PhishGuard events sent since the oldest currently open
   // chrome://safe-browsing tab was opened.

@@ -75,10 +75,6 @@ class SafeBrowsingUIHandler {
   // open chrome://safe-browsing tab was opened.
   void GetSentCSBRRs(const base::Value::List& args);
 
-  // Get the HitReports that have been collected since the oldest currently
-  // open chrome://safe-browsing tab was opened.
-  void GetSentHitReports(const base::Value::List& args);
-
   // Get the PhishGuard events that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
   void GetPGEvents(const base::Value::List& args);
