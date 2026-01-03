@@ -250,22 +250,9 @@ suite('AppTest', function() {
       const carousel = localApp.shadowRoot?.querySelector(
           'contextual-entrypoint-and-carousel');
       assertTrue(!!carousel);
-      let recentTabChip =
+      const recentTabChip =
           carousel.shadowRoot.querySelector<HTMLElement>('#recentTabChip');
-      // Assert chip does not show when no matches are available.
-      assertFalse(!!recentTabChip);
-
-      const matches = [
-        createSearchMatch(),
-      ];
-      testProxy.page.autocompleteResultChanged(createAutocompleteResult({
-        matches: matches,
-      }));
-
-      await microtasksFinished();
-      recentTabChip =
-          carousel.shadowRoot.querySelector<HTMLElement>('#recentTabChip');
-      // Assert chip does show when matches are available.
+      // Assert chip shows.
       assertTrue(!!recentTabChip);
     });
   });

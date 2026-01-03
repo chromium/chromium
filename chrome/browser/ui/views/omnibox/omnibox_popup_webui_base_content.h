@@ -105,7 +105,6 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
 
   raw_ptr<OmniboxPopupPresenterBase> popup_presenter_ = nullptr;
   raw_ptr<LocationBarView> location_bar_view_ = nullptr;
-  raw_ptr<OmniboxPopupPresenterBase> omnibox_popup_presenter_ = nullptr;
   // The controller for the Omnibox.
   raw_ptr<OmniboxController> controller_ = nullptr;
 

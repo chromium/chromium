@@ -207,6 +207,11 @@ class AutocompleteResult {
     smart_compose_inline_hint_ = smart_compose_inline_hint;
   }
 
+  // Sets if there are contextual chips available to show.
+  void set_has_contextual_chips(bool has_contextual_chips) {
+    has_contextual_chips_ = has_contextual_chips;
+  }
+
   // Sets |has_tab_match| in matches whose URL matches an open tab's URL.
   // Also, fixes up the description if not using another UI element to
   // annotate (e.g. tab switch button). |input| can be null; if provided,
@@ -273,6 +278,8 @@ class AutocompleteResult {
   const std::string smart_compose_inline_hint() const {
     return smart_compose_inline_hint_;
   }
+
+  bool has_contextual_chips() const { return has_contextual_chips_; }
 
   const SessionData& session() const { return session_; }
 
@@ -525,6 +532,10 @@ class AutocompleteResult {
 
   // The smart compose completion, if any.
   std::string smart_compose_inline_hint_;
+
+  // Whether or not the result can show the contextual chips (e.g. "Ask about
+  // this page")
+  bool has_contextual_chips_ = false;
 
   // The map of suggestion group IDs to suggestion group information for the
   // current result set. Cleared along with `matches_` on `ClearMatches()` or

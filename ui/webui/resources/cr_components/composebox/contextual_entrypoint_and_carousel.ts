@@ -202,7 +202,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   private shouldShowContextualSearchChips_(): boolean {
-    return this.showDropdown && this.files_.size === 0 && !this.inToolMode_ &&
+    return this.files_.size === 0 && !this.inToolMode_ &&
         !(this.searchboxLayoutMode === 'Compact' &&
           this.entrypointName === 'Realbox');
   }

@@ -105,6 +105,15 @@ void OmniboxPopupWebUIBaseContent::ShowUI() {
   }
   SetWebContents(contents_wrapper_->web_contents());
 
+  // The content height is reset to 1 in OmniboxPopupPresenter::Hide(), so we
+  // need to manually restore it from the cached preferred size of the WebView
+  // if the renderer doesn't trigger a new auto-resize event (which it won't
+  // if the size hasn't changed).
+  const gfx::Size preferred_size = GetPreferredSize();
+  if (!preferred_size.IsEmpty()) {
+    popup_presenter_->OnContentHeightChanged(preferred_size.height());
+  }
+
   is_shown_ = true;
 }
 
