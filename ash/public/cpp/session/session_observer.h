@@ -8,6 +8,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "components/session_manager/session_manager_types.h"
 
 class AccountId;
@@ -16,6 +17,7 @@ class PrefService;
 namespace ash {
 
 enum class LoginStatus;
+class SessionController;
 
 class ASH_PUBLIC_EXPORT SessionObserver : public base::CheckedObserver {
  public:
@@ -95,7 +97,7 @@ class ASH_PUBLIC_EXPORT ScopedSessionObserver {
   virtual ~ScopedSessionObserver();
 
  private:
-  const raw_ptr<SessionObserver> observer_;
+  base::ScopedObservation<SessionController, SessionObserver> observation_;
 };
 
 }  // namespace ash
