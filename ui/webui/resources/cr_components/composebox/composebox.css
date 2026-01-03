@@ -578,6 +578,12 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
   --cr-icon-button-size: 36px;
 }
 
+@media (forced-colors: active) {
+  contextual-entrypoint-and-carousel::part(voice-icon) {
+    --cr-icon-button-fill-color: ButtonText;
+  }
+}
+
 :host([searchbox-next-enabled][searchbox-layout-mode='Compact']) #submitOverlay,
 :host([searchbox-next-enabled][searchbox-layout-mode='TallBottomContext']) #submitOverlay {
   position: relative;
