@@ -191,7 +191,6 @@
 
 @media (min-width: 1236px) {
   :host([is-side-panel]) #composebox {
-    background-color: red;
     inset-inline-start: 96px;
   }
 }
