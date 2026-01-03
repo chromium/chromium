@@ -4,6 +4,9 @@
 
 #include "chrome/updater/crash_client.h"
 
+#include <algorithm>
+#include <cstddef>
+#include <functional>
 #include <optional>
 #include <vector>
 
@@ -104,8 +107,14 @@ bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
   if (status_completed == crashpad::CrashReportDatabase::kNoError) {
     VLOG(1) << "Found " << reports_completed.size()
             << " completed crash reports";
-    for (const auto& report : reports_completed) {
-      VLOG(3) << "Crash since last run: ID \"" << report.id << "\", created at "
+    // Display only the most recent N crashes to avoid log spam for crash
+    // looping clients.
+    std::ranges::sort(reports_completed, std::greater<>{},
+                      &crashpad::CrashReportDatabase::Report::creation_time);
+    for (size_t i = 0; i < std::min(reports_completed.size(), std::size_t{5});
+         ++i) {
+      const auto& report = reports_completed.at(i);
+      VLOG(1) << "Crash since last run: ID \"" << report.id << "\", created at "
               << report.creation_time << ", " << report.upload_attempts
               << " upload attempts, file path \"" << report.file_path
               << "\", unique ID \"" << report.uuid.ToString()
