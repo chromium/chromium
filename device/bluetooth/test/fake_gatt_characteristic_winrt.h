@@ -43,6 +43,7 @@ class FakeGattCharacteristicWinrt
       delete;
 
   ~FakeGattCharacteristicWinrt() override;
+  void ClearBluetoothTestWinrt();
 
   // IGattCharacteristic:
   IFACEMETHODIMP GetDescriptors(

@@ -34,7 +34,6 @@ class BluetoothTestMac : public BluetoothTestBase {
   void SetUp() override;
 
   // BluetoothTestBase overrides:
-  bool PlatformSupportsLowEnergy() override;
   void InitWithDefaultAdapter() override;
   void InitWithoutDefaultAdapter() override;
   void InitWithFakeAdapter() override;

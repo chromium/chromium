@@ -44,6 +44,7 @@ class FakeBluetoothLEDeviceWinrt
       delete;
 
   ~FakeBluetoothLEDeviceWinrt() override;
+  void ClearBluetoothTestWinrt();
 
   // IBluetoothLEDevice:
   IFACEMETHODIMP get_DeviceId(HSTRING* value) override;
@@ -210,6 +211,7 @@ class FakeBluetoothLEDeviceStaticsWinrt
       const FakeBluetoothLEDeviceStaticsWinrt&) = delete;
 
   ~FakeBluetoothLEDeviceStaticsWinrt() override;
+  void ClearBluetoothTestWinrt();
 
   // IBluetoothLEDeviceStatics:
   IFACEMETHODIMP FromIdAsync(

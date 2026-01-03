@@ -40,6 +40,8 @@ class FakeGattDescriptorWinrt
 
   ~FakeGattDescriptorWinrt() override;
 
+  void ClearBluetoothTestWinrt();
+
   // IGattDescriptor:
   IFACEMETHODIMP get_ProtectionLevel(
       ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::

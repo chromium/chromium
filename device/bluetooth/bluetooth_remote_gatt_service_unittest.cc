@@ -39,9 +39,6 @@ class BluetoothRemoteGattServiceTest :
 #else
     BluetoothTest::SetUp();
 #endif
-    if (!PlatformSupportsLowEnergy()) {
-      GTEST_SKIP() << "Bluetooth Low Energy unavailable.";
-    }
   }
 };
 

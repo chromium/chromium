@@ -100,10 +100,6 @@ void BluetoothTestAndroid::PostDelayedTaskFromJava(
       base::Milliseconds(delayMillis));
 }
 
-bool BluetoothTestAndroid::PlatformSupportsLowEnergy() {
-  return true;
-}
-
 void BluetoothTestAndroid::InitWithDefaultAdapter() {
   j_default_bluetooth_adapter_ =
       BluetoothAdapterWrapper_CreateWithDefaultAdapter();

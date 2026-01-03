@@ -78,6 +78,13 @@ FakeGattCharacteristicWinrt::FakeGattCharacteristicWinrt(
 
 FakeGattCharacteristicWinrt::~FakeGattCharacteristicWinrt() = default;
 
+void FakeGattCharacteristicWinrt::ClearBluetoothTestWinrt() {
+  bluetooth_test_winrt_ = nullptr;
+  for (const auto& descriptor : fake_descriptors_) {
+    descriptor->ClearBluetoothTestWinrt();
+  }
+}
+
 HRESULT FakeGattCharacteristicWinrt::GetDescriptors(
     GUID descriptor_uuid,
     IVectorView<GattDescriptor*>** value) {
@@ -127,6 +134,9 @@ HRESULT FakeGattCharacteristicWinrt::ReadValueAsync(
 HRESULT FakeGattCharacteristicWinrt::ReadValueWithCacheModeAsync(
     BluetoothCacheMode cache_mode,
     IAsyncOperation<GattReadResult*>** value) {
+  if (!bluetooth_test_winrt_) {
+    return E_UNEXPECTED;
+  }
   if (cache_mode != BluetoothCacheMode_Uncached)
     return E_NOTIMPL;
 
@@ -221,6 +231,9 @@ HRESULT FakeGattCharacteristicWinrt::WriteValueWithResultAndOptionAsync(
     IBuffer* value,
     GattWriteOption write_option,
     IAsyncOperation<GattWriteResult*>** operation) {
+  if (!bluetooth_test_winrt_) {
+    return E_UNEXPECTED;
+  }
   uint8_t* data;
   uint32_t size;
   base::win::GetPointerToBufferData(value, &data, &size);
@@ -244,6 +257,9 @@ HRESULT FakeGattCharacteristicWinrt::
         GattClientCharacteristicConfigurationDescriptorValue
             client_characteristic_configuration_descriptor_value,
         IAsyncOperation<GattWriteResult*>** operation) {
+  if (!bluetooth_test_winrt_) {
+    return E_UNEXPECTED;
+  }
   bluetooth_test_winrt_->OnFakeBluetoothGattSetCharacteristicNotification(
       static_cast<BluetoothTestBase::NotifyValueState>(
           client_characteristic_configuration_descriptor_value));
@@ -282,6 +298,9 @@ void FakeGattCharacteristicWinrt::SimulateGattCharacteristicWriteError(
 
 void FakeGattCharacteristicWinrt::SimulateGattDescriptor(
     std::string_view uuid) {
+  if (!bluetooth_test_winrt_) {
+    return;
+  }
   fake_descriptors_.push_back(Make<FakeGattDescriptorWinrt>(
       bluetooth_test_winrt_, uuid, ++last_descriptor_attribute_handle_));
 }

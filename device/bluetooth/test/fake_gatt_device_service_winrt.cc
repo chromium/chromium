@@ -71,6 +71,13 @@ FakeGattDeviceServiceWinrt::~FakeGattDeviceServiceWinrt() {
   fake_device_->RemoveReference();
 }
 
+void FakeGattDeviceServiceWinrt::ClearBluetoothTestWinrt() {
+  bluetooth_test_winrt_ = nullptr;
+  for (const auto& characteristic : fake_characteristics_) {
+    characteristic->ClearBluetoothTestWinrt();
+  }
+}
+
 HRESULT FakeGattDeviceServiceWinrt::GetCharacteristics(
     GUID characteristic_uuid,
     IVectorView<GattCharacteristic*>** value) {
@@ -201,6 +208,9 @@ FakeGattDeviceServiceWinrt::GetIncludedServicesForUuidWithCacheModeAsync(
 void FakeGattDeviceServiceWinrt::SimulateGattCharacteristic(
     std::string_view uuid,
     int properties) {
+  if (!bluetooth_test_winrt_) {
+    return;
+  }
   // In order to ensure attribute handles are unique across the Gatt Server
   // we reserve sufficient address space for descriptors for each
   // characteristic. We allocate space for 32 descriptors, which should be

@@ -29,7 +29,6 @@ class BluetoothTestAndroid : public BluetoothTestBase {
   void TearDown() override;
 
   // BluetoothTestBase overrides:
-  bool PlatformSupportsLowEnergy() override;
   void InitWithDefaultAdapter() override;
   void InitWithoutDefaultAdapter() override;
   void InitWithFakeAdapter() override;

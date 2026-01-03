@@ -54,9 +54,6 @@ class BluetoothRemoteGattCharacteristicTest :
 #else
     BluetoothTest::SetUp();
 #endif
-    if (!PlatformSupportsLowEnergy()) {
-      GTEST_SKIP() << "Low Energy Bluetooth unavailable.";
-    }
   }
 
   // Creates adapter_, device_, service_, characteristic1_, & characteristic2_.

@@ -43,6 +43,7 @@ class FakeGattDeviceServiceWinrt
       delete;
 
   ~FakeGattDeviceServiceWinrt() override;
+  void ClearBluetoothTestWinrt();
 
   // IGattDeviceService:
   IFACEMETHODIMP GetCharacteristics(
@@ -123,7 +124,7 @@ class FakeGattDeviceServiceWinrt
   void SimulateGattCharacteristic(std::string_view uuid, int proporties);
 
  private:
-  const raw_ptr<BluetoothTestWinrt> bluetooth_test_winrt_;
+  raw_ptr<BluetoothTestWinrt> bluetooth_test_winrt_;
   const Microsoft::WRL::ComPtr<FakeBluetoothLEDeviceWinrt> fake_device_;
   const GUID uuid_;
   const uint16_t attribute_handle_;
