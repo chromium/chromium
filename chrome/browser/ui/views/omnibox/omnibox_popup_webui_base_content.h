@@ -80,6 +80,10 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   // GetWebContents() since that may be nullptr if the popup isn't visible.
   content::WebContents* GetWrappedWebContents();
 
+  // content::WebContentsObserver:
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
+
  protected:
   // Callback for cleaning up the `context_menu_` field.
   void OnMenuClosed();

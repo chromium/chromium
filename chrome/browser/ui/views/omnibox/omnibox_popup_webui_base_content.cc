@@ -7,6 +7,8 @@
 #include <string_view>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -96,7 +98,10 @@ void OmniboxPopupWebUIBaseContent::ShowUI() {
   // the content URL and create a new renderer.
   if (contents_wrapper_->web_contents() &&
       contents_wrapper_->web_contents()->IsCrashed()) {
+    base::UmaHistogramBoolean("Omnibox.Popup.WebUI.CrashRecovery", true);
     LoadContent();
+  } else {
+    base::UmaHistogramBoolean("Omnibox.Popup.WebUI.CrashRecovery", false);
   }
   SetWebContents(contents_wrapper_->web_contents());
 
@@ -204,6 +209,16 @@ content::WebContents* OmniboxPopupWebUIBaseContent::GetWrappedWebContents() {
 
 void OmniboxPopupWebUIBaseContent::OnMenuClosed() {
   std::move(context_menu_).reset();
+}
+
+void OmniboxPopupWebUIBaseContent::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
+  if (browser_shutdown::HasShutdownStarted()) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration("Omnibox.Popup.WebUI.RendererProcessGoneStatus",
+                                status, base::TERMINATION_STATUS_MAX_ENUM);
 }
 
 BEGIN_METADATA(OmniboxPopupWebUIBaseContent)

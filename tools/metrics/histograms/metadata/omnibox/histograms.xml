@@ -2821,6 +2821,16 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.Popup.WebUI.CrashRecovery" enum="Boolean"
+    expires_after="2026-12-22">
+  <owner>avivkiss@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records whether the renderer process has crashed and the contents is being
+    reloaded before showing the WebUI Omnibox popup.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.Popup.WebUI.PageRemoteIsBoundOnFirstCall"
     enum="Boolean" expires_after="2026-11-12">
   <owner>mahmadi@chromium.org</owner>
@@ -2829,6 +2839,16 @@ Keep consistent with active providers. Doesn't need to include every provider in
     Records whether WebUI page remote is bound and ready to receive calls when
     the WebUI Handler attempts to make its first call to the WebUI Page.
     Recorded at most once per browser window.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.Popup.WebUI.RendererProcessGoneStatus"
+    enum="OmniboxWebUIRendererProcessGoneStatus" expires_after="2026-12-22">
+  <owner>avivkiss@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the termination status of the Omnibox WebUI renderer process when it
+    goes away. This helps monitor crash rates and types.
   </summary>
 </histogram>
 

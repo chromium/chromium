@@ -250,6 +250,20 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Shortcut text prefix"/>
 </enum>
 
+<enum name="OmniboxWebUIRendererProcessGoneStatus">
+  <int value="0" label="Normal termination"/>
+  <int value="1" label="Abnormal termination"/>
+  <int value="2" label="Process was killed"/>
+  <int value="3" label="Process crashed"/>
+  <int value="4" label="Still running"/>
+  <int value="5" label="Process was killed by OOM"/>
+  <int value="6" label="OOM protected"/>
+  <int value="7" label="Launch failed"/>
+  <int value="8" label="OOM"/>
+  <int value="9" label="Integrity failure"/>
+  <int value="10" label="Evicted for memory"/>
+</enum>
+
 <!-- LINT.IfChange(OpenMatchWithKeyboardModifiers) -->
 
 <enum name="OpenMatchWithKeyboardModifiers">

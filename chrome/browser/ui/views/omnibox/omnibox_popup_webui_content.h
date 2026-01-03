@@ -45,6 +45,10 @@ class OmniboxPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
 
   bool wants_focus() const { return wants_focus_; }
 
+  // content::WebContentsObserver:
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
+
  private:
   // Returns the WebUI Omnibox Handler. Can return null.
   WebuiOmniboxHandler* omnibox_handler();
