@@ -142,8 +142,8 @@ class UsbDeviceHandleWin::Request : public base::win::ObjectWatcher::Delegate {
   Request(WINUSB_INTERFACE_HANDLE handle, int interface_number)
       : handle_(handle),
         interface_number_(interface_number),
+        overlapped_{},
         event_(CreateEvent(nullptr, false, false, nullptr)) {
-    UNSAFE_TODO(memset(&overlapped_, 0, sizeof(overlapped_)));
     overlapped_.hEvent = event_.Get();
   }
 
