@@ -26,13 +26,13 @@ suite('ContextualTasksAppTest', function() {
     }
   });
 
-  test('gets thread url', async () => {
+  test('gets thread url', () => {
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     BrowserProxyImpl.setInstance(proxy);
 
     document.body.appendChild(document.createElement('contextual-tasks-app'));
 
-    assertEquals(await proxy.handler.getCallCount('getThreadUrl'), 1);
+    assertEquals(1, proxy.handler.getCallCount('getThreadUrl'));
   });
 
   test('gets task url when query param set and updates title', async () => {
@@ -49,10 +49,10 @@ suite('ContextualTasksAppTest', function() {
     document.body.appendChild(document.createElement('contextual-tasks-app'));
 
     assertDeepEquals(
-        await proxy.handler.whenCalled('getUrlForTask'), {value: taskId});
+        {value: taskId}, await proxy.handler.whenCalled('getUrlForTask'));
     assertDeepEquals(
-        await proxy.handler.whenCalled('setTaskId'), {value: taskId});
-    assertEquals(await proxy.handler.whenCalled('setThreadTitle'), query);
+        {value: taskId}, await proxy.handler.whenCalled('setTaskId'));
+    assertEquals(query, await proxy.handler.whenCalled('setThreadTitle'));
 
     proxy.callbackRouterRemote.setThreadTitle(query);
     await proxy.callbackRouterRemote.$.flushForTesting();
@@ -73,16 +73,16 @@ suite('ContextualTasksAppTest', function() {
     document.body.appendChild(document.createElement('contextual-tasks-app'));
 
     assertDeepEquals(
-        await proxy.handler.whenCalled('getUrlForTask'), {value: taskId});
+        {value: taskId}, await proxy.handler.whenCalled('getUrlForTask'));
     assertDeepEquals(
-        await proxy.handler.whenCalled('setTaskId'), {value: taskId});
-    assertEquals(await proxy.handler.whenCalled('setThreadTitle'), '');
+        {value: taskId}, await proxy.handler.whenCalled('setTaskId'));
+    assertEquals('', await proxy.handler.whenCalled('setThreadTitle'));
 
     proxy.callbackRouterRemote.setThreadTitle('');
     await proxy.callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
 
-    assertEquals(document.title, 'AI Mode');
+    assertEquals('AI Mode', document.title);
   });
 
   test('restores thread url with webui url params', async () => {
@@ -172,7 +172,7 @@ suite('ContextualTasksAppTest', function() {
     await proxy.callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
 
-    assertEquals(webview.getAttribute('src'), fixtureUrl);
+    assertEquals(fixtureUrl, webview.getAttribute('src'));
   });
 
   test('thread url set immediately if oauth token available', async () => {
@@ -204,7 +204,7 @@ suite('ContextualTasksAppTest', function() {
 
     const webview = app.shadowRoot.querySelector('webview');
     assertTrue(!!webview);
-    assertEquals(webview.getAttribute('src'), fixtureUrl);
+    assertEquals(fixtureUrl, webview.getAttribute('src'));
   });
 
   test('composebox visibility toggles', async () => {
