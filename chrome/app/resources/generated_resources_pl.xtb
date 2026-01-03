@@ -2317,6 +2317,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2545743249923338554">Nowe karty</translation>
 <translation id="2546302722632337735">Nie zezwalaj stronom na używanie identyfikatorów do odtwarzania treści chronionych</translation>
 <translation id="2546991196809436099">Powiększa elementy na ekranie. Aby włączyć lub wyłączyć lupę, użyj klawisza wyszukiwania + Ctrl + M.</translation>
+<translation id="2547602044908040111">Jeśli jesteś aktywistą, dziennikarzem, osobą publiczną, pracownikiem komisji wyborczej lub należysz do innej grupy osób o szczególnie wysokim ryzyku, możesz zainteresować się <ph name="BEGIN_LINK" />programem ochrony zaawansowanej<ph name="END_LINK" /> Google.</translation>
 <translation id="2548347166720081527">Przyznano uprawnienie: <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Zresetuj pamięć podręczną profilu eSIM</translation>
 <translation id="2549985041256363841">Zacznij nagrywanie</translation>
@@ -11101,6 +11102,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="859246725979739260">Tej stronie zablokowano dostęp do Twojej lokalizacji.</translation>
 <translation id="8593450223647418235">Dopóki nie dokończysz konfiguracji, nie będzie można otwierać plików w Microsoft 365.</translation>
 <translation id="8593686980889923154">Aplikacja <ph name="APP_NAME" /> jest zablokowana na Twoim urządzeniu (<ph name="DEVICE_TYPE" />)</translation>
+<translation id="8593938084085018349">Twoje ustawienia zabezpieczeń zostały uaktualnione</translation>
 <translation id="8594912907680633924">Otwórz link w widoku dzielonym</translation>
 <translation id="8596400097994526901">Więcej działań dotyczących: <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="8596540852772265699">Pliki niestandardowe</translation>

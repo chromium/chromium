@@ -2346,6 +2346,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2545743249923338554">Nye faner</translation>
 <translation id="2546302722632337735">Tillad ikke, at websites bruger id'er til at afspille beskyttet indhold</translation>
 <translation id="2546991196809436099">Zoom ind for at forstørre elementer på skærmen. Brug søgetasten+Ctrl+M til at aktivere eller deaktivere luppen.</translation>
+<translation id="2547602044908040111">Hvis du er aktivist, journalist, offentlig person, valgtilforordnet eller på anden måde befinder dig i en risikogruppe, kan du med fordel tjekke <ph name="BEGIN_LINK" />programmet Avanceret beskyttelse<ph name="END_LINK" /> hos Google.</translation>
 <translation id="2548347166720081527">Tillod <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Nulstil eSIM-kortprofilens cache</translation>
 <translation id="2549985041256363841">Start optagelse</translation>
@@ -11140,6 +11141,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="859246725979739260">Dette website er blevet blokeret, så det ikke kan få adgang til din lokation.</translation>
 <translation id="8593450223647418235">Du kan ikke åbne filer i Microsoft 365, før konfigurationen er fuldført.</translation>
 <translation id="8593686980889923154"><ph name="APP_NAME" /> er blokeret på din <ph name="DEVICE_TYPE" /></translation>
+<translation id="8593938084085018349">Dine sikkerhedsindstillinger er blevet opgraderet</translation>
 <translation id="8594912907680633924">Åbn link i opdelt visning</translation>
 <translation id="8596400097994526901">Flere handlinger for <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="8596540852772265699">Tilpassede filer</translation>

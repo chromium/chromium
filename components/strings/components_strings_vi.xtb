@@ -1236,6 +1236,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="299122504639061328">Quản lý công cụ tìm kiếm mặc định và công cụ tìm kiếm trang web</translation>
 <translation id="2991571918955627853">Bạn không thể truy cập vào <ph name="SITE" /> ngay bây giờ vì trang web sử dụng HSTS. Lỗi mạng và các cuộc tấn công mạng thường chỉ là tạm thời nên trang này có thể sẽ hoạt động lại sau.</translation>
 <translation id="2991865971341174470">Xác minh danh tính của bạn để Chrome có thể giúp bạn điền thông tin thanh toán.</translation>
+<translation id="2995010188916335277">Google sử dụng thông tin trên trang thanh toán và các dữ liệu liên quan khác để đưa ra những lựa chọn này. Để ẩn các lựa chọn trả sau trong tính năng tự động điền, hãy chuyển đến <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2995121550202354573">Sử dụng cho tất cả Hồ sơ khách</translation>
 <translation id="2995517112308048736">Kích thước tệp:</translation>
 <translation id="299990983510665749">Ô tô hatchback</translation>

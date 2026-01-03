@@ -2335,6 +2335,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2545743249923338554">Uued vahelehed</translation>
 <translation id="2546302722632337735">Ära luba saitidel identifikaatorite alusel kaitstud sisu esitada</translation>
 <translation id="2546991196809436099">Suumige sisse, et üksused ekraanil suuremaks teha. Suurenduse sisse- ja väljalülitamiseks kasutage klahvikombinatsiooni Otsing + Ctrl + M.</translation>
+<translation id="2547602044908040111">Kui olete aktivist, ajakirjanik, avaliku elu tegelane, valimistöötaja või keegi teine, kelle rolliga kaasnevad suuremad riskid, võib teid huvitada Google'i <ph name="BEGIN_LINK" />täiustatud kaitse programm<ph name="END_LINK" />.</translation>
 <translation id="2548347166720081527">Lubati <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Lähtesta eSIM-i profiili vahemälu</translation>
 <translation id="2549985041256363841">Alusta salvestamist</translation>
@@ -11127,6 +11128,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="859246725979739260">Juurdepääs teie asukohale on selle saidi jaoks blokeeritud.</translation>
 <translation id="8593450223647418235">Te ei saa teenuses Microsoft 365 faile enne avada, kui seadistamine on lõpetatud.</translation>
 <translation id="8593686980889923154"><ph name="APP_NAME" /> on seadmes <ph name="DEVICE_TYPE" /> blokeeritud</translation>
+<translation id="8593938084085018349">Teie turvaseadeid täiendati</translation>
 <translation id="8594912907680633924">Ava link poolitatud vaates</translation>
 <translation id="8596400097994526901">Rohkem toiminguid: <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="8596540852772265699">Kohandatud failid</translation>

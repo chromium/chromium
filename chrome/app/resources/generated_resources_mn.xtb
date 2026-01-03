@@ -1086,6 +1086,7 @@
 <translation id="1709085899471866534">Табыг идэвхгүй үед гялс харна уу. Та энэ шинэ төрхийг тохиргоонд хүссэн үедээ унтраах боломжтой.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Төрөлх)</translation>
 <translation id="1709217939274742847">Нотолгоонд хэрэглэх тасалбарыг сонгоно уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">Табуудыг дээд талд харуулах</translation>
 <translation id="1709762881904163296">Сүлжээний тохиргоо</translation>
 <translation id="1709916727352927457">Passkey-г устгах</translation>
 <translation id="1709972045049031556">Хуваалцах боломжгүй</translation>
@@ -2340,6 +2341,7 @@
 <translation id="2545743249923338554">Шинэ табууд</translation>
 <translation id="2546302722632337735">Хамгаалагдсан контентыг тоглуулахын тулд танигч ашиглахыг сайтуудад зөвшөөрөхгүй</translation>
 <translation id="2546991196809436099">Дэлгэц дээрх зүйлсийг томсгохын тулд томруулна уу. Томруулагчийг асаах болон унтраахын тулд Search + Ctrl + M-г ашиглана уу.</translation>
+<translation id="2547602044908040111">Хэрэв та идэвхтэн, сэтгүүлч, олны танил, сонгуулийн ажилтан эсвэл онцгой өндөр эрсдэлтэй үүрэг гүйцэтгэдэг хүн бол Google-н <ph name="BEGIN_LINK" />Дэвшилтэт хамгаалалтын хөтөлбөрийг<ph name="END_LINK" /> сонирхож магадгүй.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" />-г зөвшөөрсөн</translation>
 <translation id="2548545707296594436">eSIM профайлын завсрын санах ойг шинэчлэх</translation>
 <translation id="2549985041256363841">Бичиж эхлэх</translation>
@@ -4890,6 +4892,7 @@
 <translation id="4281844954008187215">Үйлчилгээний нөхцөл</translation>
 <translation id="4281849573951338030">Үзгийн товчлууруудыг өөрчлөх</translation>
 <translation id="4282196459431406533">Smart Lock-г асаасан</translation>
+<translation id="4283635301190260296">Босоо табуудыг хураах</translation>
 <translation id="4284903252249997120">ChromeVox дэлгэц уншигч болон ярихаар сонгох</translation>
 <translation id="4285418559658561636">Нууц үгийг шинэчлэх</translation>
 <translation id="4285498937028063278">Сонголтоос гаргах</translation>
@@ -8553,6 +8556,7 @@
 <translation id="6833753236242482566">Тэнцвэртэй (санал болгосон)</translation>
 <translation id="6835624277262316125">Таны ажлын хаяг танд илүү хамааралтай Хайлтын илэрц харах, Google Газрын зураг дахь илүү нарийвчилсан чиглэл авах зэрэг Google-н үйлчилгээн дээр зүйлсийг хийж гүйцэтгэхэд туслах боломжтой. Та <ph name="BEGIN_LINK" /><ph name="USERNAME" /> Google Бүртгэл<ph name="END_LINK" /> дэх хаягаа засах, устгах боломжтой.</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />-ээ шинэчлэхийн тулд интернэтэд холбогдоно уу.</translation>
+<translation id="6836441935577925845">Табуудыг хажуу талд харуулах</translation>
 <translation id="6838992358006915573">Томруулагч нь ChromeVox-н фокусыг дагана</translation>
 <translation id="6839916869147598086">Нэвтрэх өөрчлөгдлөө</translation>
 <translation id="6840155290835956714">Илгээхээсээ өмнө асуух</translation>
@@ -11126,6 +11130,7 @@
 <translation id="859246725979739260">Байршилд тань хандахыг энэ сайтад хориглосон.</translation>
 <translation id="8593450223647418235">Та тохируулгыг дуусгах хүртэл Microsoft 365-д файлууд нээх боломжгүй болно.</translation>
 <translation id="8593686980889923154"><ph name="APP_NAME" />-г таны <ph name="DEVICE_TYPE" /> дээр блоклосон</translation>
+<translation id="8593938084085018349">Таны аюулгүй байдлын тохиргоог сайжруулсан</translation>
 <translation id="8594912907680633924">Холбоосыг хуваасан харагдах байдалд нээх</translation>
 <translation id="8596400097994526901"><ph name="SEARCH_ENGINE_NAME" />-н бусад үйлдэл</translation>
 <translation id="8596540852772265699">Энгийн файлууд</translation>

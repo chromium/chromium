@@ -2340,6 +2340,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2545743249923338554">Нови раздели</translation>
 <translation id="2546302722632337735">Да не се разрешава на сайтовете да използват идентификатори с цел възпроизвеждане на защитено съдържание</translation>
 <translation id="2546991196809436099">Увеличете мащаба, за да уголемите елементите на екрана. Използвайте клавиша „търсене“ + Ctrl + M, за да включите или изключите лупата.</translation>
+<translation id="2547602044908040111">Ако сте активист, журналист, публична личност, служител в изборна комисия или имате друга уникална високорискова роля, може да се заинтересувате от <ph name="BEGIN_LINK" />програмата ни „Разширена защита“<ph name="END_LINK" />.</translation>
 <translation id="2548347166720081527">„<ph name="PERMISSION" />“ е разрешено</translation>
 <translation id="2548545707296594436">Нулиране на кеша на потребителските профили на електронната SIM карта</translation>
 <translation id="2549985041256363841">Старт на записа</translation>
@@ -11134,6 +11135,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="859246725979739260">Достъпът до местоположението ви е блокиран за този сайт.</translation>
 <translation id="8593450223647418235">Няма да можете да отваряте файлове в Microsoft 365, докато не завършите настройването.</translation>
 <translation id="8593686980889923154">Приложението <ph name="APP_NAME" /> е блокирано на вашия <ph name="DEVICE_TYPE" /></translation>
+<translation id="8593938084085018349">Настройките ви за сигурност бяха надстроени</translation>
 <translation id="8594912907680633924">Отваряне на връзката в режим на разделен изглед</translation>
 <translation id="8596400097994526901">Още действия за <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="8596540852772265699">Персонализирани файлове</translation>

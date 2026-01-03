@@ -777,7 +777,7 @@
 <translation id="1521933835545997395">Android ଫୋନ ସହ କନେକ୍ଟ କରାଯାଇଛି</translation>
 <translation id="1523279371236772909">ଗତ ମାସରେ ଦେଖାଯାଇଛି</translation>
 <translation id="1523978563989812243">ଟେକ୍ସଟ୍-ଟୁ-ସ୍ପିଚ୍ ଇଞ୍ଜିନଗୁଡ଼ିକ</translation>
-<translation id="1524563461097350801">ନାହିଁ, ଥାଉ</translation>
+<translation id="1524563461097350801">ନା, ଧନ୍ୟବାଦ</translation>
 <translation id="1525740877599838384">ଲୋକେସନ୍‌ ସ୍ଥିର କରିବାକୁ କେବଳ ୱାଇ-ଫାଇ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="152629053603783244">Linux ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="1526560967942511387">ଆଖ୍ୟାବିହୀନ ଡକ୍ୟୁମେଣ୍ଟ</translation>
@@ -2329,6 +2329,7 @@
 <translation id="2545743249923338554">ନୂଆ ଟାବଗୁଡ଼ିକ</translation>
 <translation id="2546302722632337735">ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁକୁ ଚଲାଇବା ପାଇଁ ଚିହ୍ନଟକାରୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ନିମନ୍ତେ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="2546991196809436099">ସ୍କ୍ରିନରେ ଥିବା ଆଇଟମଗୁଡ଼ିକୁ ଆହୁରି ବଡ଼ କରିବା ପାଇଁ ଜୁମ ଇନ କରନ୍ତୁ। ମେଗ୍ନିଫାୟରକୁ ଚାଲୁ ଏବଂ ବନ୍ଦ କରିବା ପାଇଁ Search + Ctrl + M ବ୍ୟବହାର କରନ୍ତୁ।</translation>
+<translation id="2547602044908040111">ଯଦି ଆପଣ ଜଣେ ଏକ୍ଟିଭିଷ୍ଟ, ସାମ୍ବାଦିକ, ପବ୍ଲିକ ଫିଗର, ନିର୍ବାଚନ କର୍ମୀ କିମ୍ବା ସ୍ୱତନ୍ତ୍ର ଭାବରେ ଅଧିକ ବିପଦପୂର୍ଣ୍ଣ ଭୂମିକାରେ ଥିବା ଅନ୍ୟ କୌଣସି ବ୍ୟକ୍ତି ଅଟନ୍ତି, ତେବେ ଆପଣଙ୍କର Googleର <ph name="BEGIN_LINK" />Advanced Protection Program<ph name="END_LINK" />ରେ ରୁଚି ଥାଇପାରେ।</translation>
 <translation id="2548347166720081527">ଅନୁମୋଦିତ <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">eSIM ପ୍ରୋଫାଇଲ୍ କ୍ୟାଶକୁ ରିସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="2549985041256363841">ରେକର୍ଡିଂ ଆରମ୍ଭ କରନ୍ତୁ</translation>
@@ -11115,6 +11116,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="859246725979739260">ଆପଣଙ୍କ ଲୋକେସନ୍ ଆକ୍ସେସ୍ କରିବାରୁ ଏହି ସାଇଟକୁ ବ୍ଲକ୍ କରାଯାଇଛି।</translation>
 <translation id="8593450223647418235">ସେଟଅପ ସମ୍ପୂର୍ଣ୍ଣ ନହେବା ପର୍ଯ୍ୟନ୍ତ ଆପଣ Microsoft 365ରେ ଫାଇଲ ଖୋଲିବାକୁ ସକ୍ଷମ ହେବେ ନାହିଁ।</translation>
 <translation id="8593686980889923154"><ph name="APP_NAME" />କୁ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ବ୍ଲକ କରାଯାଇଛି</translation>
+<translation id="8593938084085018349">ଆପଣଙ୍କ ସିକ୍ୟୁରିଟି ସେଟିଂସକୁ ଅପଗ୍ରେଡ କରାଯାଇଛି</translation>
 <translation id="8594912907680633924">ସ୍ପ୍ଲିଟ ଭ୍ୟୁରେ ଲିଙ୍କ ଖୋଲନ୍ତୁ</translation>
 <translation id="8596400097994526901"><ph name="SEARCH_ENGINE_NAME" /> ପାଇଁ ଅଧିକ ପଦକ୍ଷେପ</translation>
 <translation id="8596540852772265699">କଷ୍ଟମ୍ ଫାଇଲ୍ସ</translation>

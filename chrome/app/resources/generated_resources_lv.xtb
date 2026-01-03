@@ -2333,6 +2333,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2545743249923338554">Jaunas cilnes</translation>
 <translation id="2546302722632337735">Neļaut vietnēm izmantot identifikatorus, lai atskaņotu aizsargātu saturu</translation>
 <translation id="2546991196809436099">Tuviniet, lai palielinātu ekrānā redzamos vienumus. Lai ieslēgtu vai izslēgtu lupu, nospiediet meklēšanas taustiņu + Ctrl + M.</translation>
+<translation id="2547602044908040111">Ja esat aktīvists, žurnālists, sabiedrisks darbinieks, vēlēšanu darbinieks vai kāda cita persona, kam ir unikāli augsts riska līmenis, jūs varētu interesēt Google <ph name="BEGIN_LINK" />papildu aizsardzības programma<ph name="END_LINK" />.</translation>
 <translation id="2548347166720081527">Piešķirta atļauja “<ph name="PERMISSION" />”</translation>
 <translation id="2548545707296594436">Atiestatīt eSIM profila kešatmiņu</translation>
 <translation id="2549985041256363841">Sākt ierakstīšanu</translation>
@@ -11123,6 +11124,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="859246725979739260">Šai vietnei tika liegta piekļuve jūsu atrašanās vietas datiem.</translation>
 <translation id="8593450223647418235">Jūs nevarēsiet atvērt failus sistēmā Microsoft 365, kamēr nebūs pabeigta iestatīšana.</translation>
 <translation id="8593686980889923154">Lietotne <ph name="APP_NAME" /> ir bloķēta jūsu ierīcē (<ph name="DEVICE_TYPE" />)</translation>
+<translation id="8593938084085018349">Jūsu drošības iestatījumi tika jaunināti.</translation>
 <translation id="8594912907680633924">Atvērt saiti dalītajā skatā</translation>
 <translation id="8596400097994526901"><ph name="SEARCH_ENGINE_NAME" />: citas darbības</translation>
 <translation id="8596540852772265699">Pielāgotie faili</translation>

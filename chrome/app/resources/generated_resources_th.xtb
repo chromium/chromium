@@ -2331,6 +2331,7 @@
 <translation id="2545743249923338554">แท็บใหม่</translation>
 <translation id="2546302722632337735">ไม่อนุญาตให้เว็บไซต์ใช้ตัวระบุเพื่อเล่นเนื้อหาที่มีการคุ้มครอง</translation>
 <translation id="2546991196809436099">ซูมเข้าเพื่อทำให้รายการในหน้าจอมีขนาดใหญ่ขึ้น ใช้แป้นค้นหา + Ctrl + M เพื่อเปิดและปิดแว่นขยาย</translation>
+<translation id="2547602044908040111">หากคุณเป็นนักเคลื่อนไหว นักข่าว บุคคลสาธารณะ เจ้าหน้าที่จัดการเลือกตั้ง หรือบุคคลอื่นที่มีบทบาทที่มีความเสี่ยงสูงเป็นพิเศษ คุณอาจสนใจ<ph name="BEGIN_LINK" />โปรแกรมการปกป้องขั้นสูง<ph name="END_LINK" />ของ Google</translation>
 <translation id="2548347166720081527">อนุญาตการเข้าถึง<ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">รีเซ็ตแคชของโปรไฟล์ eSIM</translation>
 <translation id="2549985041256363841">เริ่มบันทึก</translation>
@@ -11115,6 +11116,7 @@
 <translation id="859246725979739260">เว็บไซต์นี้ถูกบล็อกไม่ให้เข้าถึงตำแหน่งของคุณ</translation>
 <translation id="8593450223647418235">คุณจะเปิดไฟล์ใน Microsoft 365 ไม่ได้จนกว่าการตั้งค่าจะเสร็จสมบูรณ์</translation>
 <translation id="8593686980889923154"><ph name="APP_NAME" /> ถูกบล็อกใน <ph name="DEVICE_TYPE" /></translation>
+<translation id="8593938084085018349">อัปเกรดการตั้งค่าความปลอดภัยแล้ว</translation>
 <translation id="8594912907680633924">เปิดลิงก์ในมุมมองแบบแยก</translation>
 <translation id="8596400097994526901">การดำเนินการเพิ่มเติมสำหรับ <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="8596540852772265699">ไฟล์ที่กำหนดเอง</translation>

@@ -1545,7 +1545,7 @@
 <translation id="2023167225947895179">قد يكون رقم التعريف الشخصي سهل التخمين</translation>
 <translation id="202352106777823113">استغرق التنزيل وقتًا طويلاً للغاية وتم إيقافه بواسطة الشبكة.</translation>
 <translation id="2024195579772565064">حذف محرك البحث</translation>
-<translation id="202500043506723828">EID</translation>
+<translation id="202500043506723828">‏معرّف شريحة SIM المضمّنة (EID)</translation>
 <translation id="2025123106058020990">النقر الدقيق</translation>
 <translation id="2025632980034333559">لقد تعطل <ph name="APP_NAME" />. انقر على هذا البالون لإعادة تحميل الإضافة.</translation>
 <translation id="2026367923222947564">صفحة كاملة</translation>
@@ -2336,6 +2336,7 @@
 <translation id="2545743249923338554">علامات التبويب الجديدة</translation>
 <translation id="2546302722632337735">عدم السماح للمواقع الإلكترونية باستخدام المعرّفات لتشغيل المحتوى المحمي</translation>
 <translation id="2546991196809436099">‏يمكنك تكبير العناصر على الشاشة. اضغط على مفتاح البحث ‏+ Ctrl ‏+ M لتفعيل ميزة "مكبّر الشاشة" أو إيقافها.</translation>
+<translation id="2547602044908040111">‏إذا كنت من النشطاء أو الصحفيين أو الشخصيات العامة أو العاملين في الانتخابات أو الأشخاص الآخرين المعرّضين لخطر كبير، قد يهمّك الاشتراك في <ph name="BEGIN_LINK" />برنامج الحماية المتقدّمة<ph name="END_LINK" /> من Google.</translation>
 <translation id="2548347166720081527">تم منح إذن <ph name="PERMISSION" />.</translation>
 <translation id="2548545707296594436">‏إعادة ضبط ذاكرة التخزين المؤقت الخاصة بالملف الشخصي لبطاقة eSIM</translation>
 <translation id="2549985041256363841">بدء التسجيل</translation>
@@ -11135,6 +11136,7 @@
 <translation id="859246725979739260">تم حظر هذا الموقع الإلكتروني من الوصول إلى موقعك الجغرافي.</translation>
 <translation id="8593450223647418235">‏لن تتمكّن من فتح الملفات في Microsoft 365 إلى أن تكتمل عملية الإعداد.</translation>
 <translation id="8593686980889923154">تم حظر "<ph name="APP_NAME" />" على <ph name="DEVICE_TYPE" /></translation>
+<translation id="8593938084085018349">تمت ترقية إعدادات الأمان</translation>
 <translation id="8594912907680633924">فتح الرابط في وضع "تقسيم العرض"</translation>
 <translation id="8596400097994526901">مزيد من الإجراءات لمحرك البحث <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="8596540852772265699">ملفات مخصصة</translation>

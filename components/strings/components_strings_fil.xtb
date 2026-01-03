@@ -1236,6 +1236,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="299122504639061328">Pamahalaan ang iyong default na search engine at site search</translation>
 <translation id="2991571918955627853">Hindi mo maaaring bisitahin ang <ph name="SITE" /> sa ngayon dahil gumagamit ng HSTS ang website. Karaniwang pansamantala lang ang mga error at pag-atake sa network, kaya malamang na gagana ang page na ito sa ibang pagkakataon.</translation>
 <translation id="2991865971341174470">I-verify na ikaw ito para mapunan ng Chrome ang iyong impormasyon sa pagbabayad.</translation>
+<translation id="2995010188916335277">Gumagamit ang Google ng impormasyon mula sa page para sa pag-checkout at iba pang nauugnay na data para maialok ang mga opsyong ito. Para i-hide ang mga opsyon sa pay later sa autofill, pumunta sa <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2995121550202354573">Gamitin para sa lahat ng profile ng Bisita</translation>
 <translation id="2995517112308048736">Laki ng file:</translation>
 <translation id="299990983510665749">Mga hatchback</translation>

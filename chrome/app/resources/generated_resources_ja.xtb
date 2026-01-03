@@ -2326,6 +2326,7 @@
 <translation id="2545743249923338554">新しいタブ</translation>
 <translation id="2546302722632337735">識別子の使用と保護されたコンテンツの再生をサイトに許可しない</translation>
 <translation id="2546991196809436099">画面上の項目を拡大表示します。拡大鏡をオンまたはオフにするには、検索+Ctrl+M キーを使用します。</translation>
+<translation id="2547602044908040111">活動家、ジャーナリスト、著名人、選挙関係者、その他リスクの高い特殊な役割を担っている方は、Google の<ph name="BEGIN_LINK" />高度な保護機能プログラム<ph name="END_LINK" />の利用をご検討ください。</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" />を許可</translation>
 <translation id="2548545707296594436">eSIM プロファイルのキャッシュをリセット</translation>
 <translation id="2549985041256363841">撮影を開始</translation>
@@ -11105,6 +11106,7 @@
 <translation id="859246725979739260">このサイトでは位置情報へのアクセスがブロックされています。</translation>
 <translation id="8593450223647418235">設定が完了するまで、Microsoft 365 でファイルを開くことはできません。</translation>
 <translation id="8593686980889923154"><ph name="APP_NAME" /> は <ph name="DEVICE_TYPE" /> でブロックされています</translation>
+<translation id="8593938084085018349">セキュリティ設定がアップグレードされました</translation>
 <translation id="8594912907680633924">分割ビューでリンクを開く</translation>
 <translation id="8596400097994526901"><ph name="SEARCH_ENGINE_NAME" /> に対するその他の操作</translation>
 <translation id="8596540852772265699">カスタム ファイル</translation>

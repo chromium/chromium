@@ -2343,6 +2343,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2545743249923338554">Új lapok</translation>
 <translation id="2546302722632337735">A webhelyek nem használhatnak azonosítókat a védett tartalmakhoz</translation>
 <translation id="2546991196809436099">Felnagyíthatja a képernyőn megjelenő elemeket. A nagyító be- és kikapcsolásához használja a Keresés + Ctrl + M billentyűparancsot.</translation>
+<translation id="2547602044908040111">Ha Ön aktivista, újságíró, közszereplő, választási dolgozó vagy más olyan személy, aki különösen magas kockázatú szerepet tölt be, akkor érdekelheti a Google <ph name="BEGIN_LINK" />Speciális védelem programja<ph name="END_LINK" />.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> engedélyezve</translation>
 <translation id="2548545707296594436">eSIM-profil gyorsítótárának visszaállítása</translation>
 <translation id="2549985041256363841">Felvétel megkezdése</translation>
@@ -11134,6 +11135,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="859246725979739260">Ez a webhely nem férhet hozzá az Ön tartózkodási helyéhez.</translation>
 <translation id="8593450223647418235">A beállítás befejezéséig nem tud majd fájlokat megnyitni a Microsoft 365 szolgáltatásban.</translation>
 <translation id="8593686980889923154">A(z) <ph name="APP_NAME" /> le van tiltva <ph name="DEVICE_TYPE" /> eszközödön</translation>
+<translation id="8593938084085018349">A biztonsági beállítások frissítve lettek</translation>
 <translation id="8594912907680633924">Link megnyitása osztott nézetben</translation>
 <translation id="8596400097994526901">További műveletek a következőhöz: <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="8596540852772265699">Egyéni fájlok</translation>

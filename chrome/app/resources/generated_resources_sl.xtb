@@ -2347,6 +2347,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2545743249923338554">Novi zavihki</translation>
 <translation id="2546302722632337735">Spletnim mestom ne dovoli uporabe identifikatorjev za predvajanje zaščitene vsebine</translation>
 <translation id="2546991196809436099">Povečajte sliko, če želite povečati elemente na zaslonu. Če želite vklopiti ali izklopiti lupo, pritisnite tipko za iskanje + Ctrl + M.</translation>
+<translation id="2547602044908040111">Če ste aktivist, novinar, javna osebnost, oseba, ki sodeluje pri izvedbi volitev, ali druga oseba na pomembnem položaju z visokim tveganjem, bi vas morda zanimal Googlov <ph name="BEGIN_LINK" />program dodatne zaščite<ph name="END_LINK" />.</translation>
 <translation id="2548347166720081527">Omogočeno je dovoljenje <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Ponastavi predpomnilnik profila za eSIM</translation>
 <translation id="2549985041256363841">Začetek snemanja</translation>
@@ -11147,6 +11148,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="859246725979739260">Temu spletnemu mestu je preprečen dostop do vaše lokacije.</translation>
 <translation id="8593450223647418235">Dokler nastavitev ni dokončana, ne boste mogli odpirati datotek v storitvi Microsoft 365.</translation>
 <translation id="8593686980889923154">Aplikacija <ph name="APP_NAME" /> je blokirana v napravi <ph name="DEVICE_TYPE" /></translation>
+<translation id="8593938084085018349">Varnostne nastavitve so bile nadgrajene</translation>
 <translation id="8594912907680633924">Odpiranje povezave v razdeljenem pogledu</translation>
 <translation id="8596400097994526901">Več dejanj za <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="8596540852772265699">Datoteke po meri</translation>

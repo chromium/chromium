@@ -2332,6 +2332,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2545743249923338554">File noi</translation>
 <translation id="2546302722632337735">Nu permite site-urilor să folosească identificatori pentru a reda conținut protejat</translation>
 <translation id="2546991196809436099">Mărește pentru a face mai mari elementele de pe ecran. Folosește tasta de căutare + Ctrl + M pentru a activa și a dezactiva lupa.</translation>
+<translation id="2547602044908040111">Dacă faci parte dintr-o organizație activistă, practici jurnalismul, ești persoană publică, reprezinți un partid într-o secție de votare sau o altă persoană care ocupă un rol cu risc ridicat, te poate interesa <ph name="BEGIN_LINK" />Programul Protecție avansată<ph name="END_LINK" /> de la Google.</translation>
 <translation id="2548347166720081527">Se permite <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Resetează memoria cache a profilului eSIM</translation>
 <translation id="2549985041256363841">Pornește înregistrarea</translation>
@@ -11123,6 +11124,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="859246725979739260">Acest site nu are permisiunea de a accesa locația.</translation>
 <translation id="8593450223647418235">Nu vei putea deschide fișiere în Microsoft 365 până când nu se finalizează configurarea.</translation>
 <translation id="8593686980889923154"><ph name="APP_NAME" /> este blocată pe <ph name="DEVICE_TYPE" /></translation>
+<translation id="8593938084085018349">Ți s-a făcut upgrade setărilor de securitate.</translation>
 <translation id="8594912907680633924">Deschide linkul în afișarea împărțită</translation>
 <translation id="8596400097994526901">Mai multe acțiuni pentru <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="8596540852772265699">Fișiere personalizate</translation>

@@ -2332,6 +2332,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2545743249923338554">Nouveaux onglets</translation>
 <translation id="2546302722632337735">Ne pas autoriser les sites à utiliser des ID pour lire du contenu protégé</translation>
 <translation id="2546991196809436099">Zoomez pour agrandir des éléments à l'écran. Appuyez sur Recherche+Ctrl+M pour activer ou désactiver la loupe.</translation>
+<translation id="2547602044908040111">Si vous êtes un activiste, un journaliste, une personnalité publique, un agent électoral ou une personne occupant un rôle particulièrement à risque, le <ph name="BEGIN_LINK" />Programme Protection avancée<ph name="END_LINK" /> de Google pourrait vous intéresser.</translation>
 <translation id="2548347166720081527">Autorisation "<ph name="PERMISSION" />" accordée</translation>
 <translation id="2548545707296594436">Réinitialiser le cache du profil eSIM</translation>
 <translation id="2549985041256363841">Démarrer l'enregistrement</translation>
@@ -10252,7 +10253,7 @@ Fichier de clé : <ph name="KEY_FILE" />
 
 Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la création de nouvelles versions de l'extension.</translation>
 <translation id="8000020256436988724">Barre d'outils</translation>
-<translation id="800117767980299235">Retranscription vocale</translation>
+<translation id="800117767980299235">Mise en surbrillance du texte lu</translation>
 <translation id="8001561107130904792">Partage du contenu de la page</translation>
 <translation id="8002274832045662704">Configuration avancée de l'imprimante</translation>
 <translation id="8002597610026749658">Chrome peut créer des sous-titres pour les langues affichées ici</translation>
@@ -11123,6 +11124,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="859246725979739260">L'accès à votre position a été bloqué pour ce site.</translation>
 <translation id="8593450223647418235">Vous ne pourrez pas ouvrir de fichiers dans Microsoft 365 tant que la configuration n'est pas terminée.</translation>
 <translation id="8593686980889923154"><ph name="APP_NAME" /> est bloqué sur votre <ph name="DEVICE_TYPE" /></translation>
+<translation id="8593938084085018349">Vos paramètres de sécurité ont été mis à niveau</translation>
 <translation id="8594912907680633924">Ouvrir le lien en vue fractionnée</translation>
 <translation id="8596400097994526901">Plus d'actions pour <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="8596540852772265699">Fichiers personnalisés</translation>

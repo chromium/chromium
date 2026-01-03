@@ -2323,6 +2323,7 @@
 <translation id="2545743249923338554">新标签页</translation>
 <translation id="2546302722632337735">不允许网站使用标识符来播放受保护内容</translation>
 <translation id="2546991196809436099">放大屏幕上的各项内容。使用搜索键 + Ctrl + M 可开启和关闭放大镜。</translation>
+<translation id="2547602044908040111">如果您是活动家、记者、公众人物、选举工作人员或从事其他高风险工作，那么您可能会对 Google 的<ph name="BEGIN_LINK" />高级保护计划<ph name="END_LINK" />感兴趣。</translation>
 <translation id="2548347166720081527">已允许使用<ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">重置 eSIM 卡配置文件缓存</translation>
 <translation id="2549985041256363841">开始录制</translation>
@@ -11107,6 +11108,7 @@
 <translation id="859246725979739260">此网站无法使用您的位置信息。</translation>
 <translation id="8593450223647418235">完成设置前，您无法在 Microsoft 365 中打开文件。</translation>
 <translation id="8593686980889923154">“<ph name="APP_NAME" />”在您的 <ph name="DEVICE_TYPE" /> 上已被屏蔽</translation>
+<translation id="8593938084085018349">您的安全设置已升级</translation>
 <translation id="8594912907680633924">在拆分视图中打开链接</translation>
 <translation id="8596400097994526901">可对<ph name="SEARCH_ENGINE_NAME" />执行的更多操作</translation>
 <translation id="8596540852772265699">自定义文件</translation>

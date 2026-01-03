@@ -2331,6 +2331,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2545743249923338554">Pestanyes noves</translation>
 <translation id="2546302722632337735">No permetis que els llocs web utilitzin identificadors per reproduir contingut protegit</translation>
 <translation id="2546991196809436099">Amplia perquè els elements de la pantalla siguin més grans. Fes servir Cerca+Ctrl+M per activar i desactivar la lupa.</translation>
+<translation id="2547602044908040111">Si ets activista, periodista, una figura pública, un treballador electoral o una altra persona amb un rol que comporta un risc especialment alt, et pot interessar el <ph name="BEGIN_LINK" />programa Protecció avançada<ph name="END_LINK" /> de Google.</translation>
 <translation id="2548347166720081527">S'ha permès <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Restableix la memòria cau del perfil eSIM</translation>
 <translation id="2549985041256363841">Inicia la gravació</translation>
@@ -11117,6 +11118,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="859246725979739260">No es permet que aquest lloc web accedeixi a la teva ubicació.</translation>
 <translation id="8593450223647418235">No podràs obrir fitxers a Microsoft 365 fins que la configuració no s'hagi completat.</translation>
 <translation id="8593686980889923154">L'aplicació <ph name="APP_NAME" /> està bloquejada al dispositiu <ph name="DEVICE_TYPE" /></translation>
+<translation id="8593938084085018349">La configuració de seguretat s'ha actualitzat</translation>
 <translation id="8594912907680633924">Obre l'enllaç amb la vista dividida</translation>
 <translation id="8596400097994526901">Més accions per a <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="8596540852772265699">Fitxers personalitzats</translation>

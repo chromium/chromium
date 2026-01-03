@@ -2332,6 +2332,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="2545743249923338554">Nouveaux onglets</translation>
 <translation id="2546302722632337735">Ne pas autoriser les sites à utiliser des identifiants pour faire jouer du contenu protégé</translation>
 <translation id="2546991196809436099">Zoomez pour agrandir les éléments à l'écran. Utilisez Recherche+Ctrl+M pour activer et désactiver la loupe.</translation>
+<translation id="2547602044908040111">Si vous travaillez comme journaliste, ou si vous êtes une personne militante, une personnalité publique, un membre du personnel électoral ou une personne occupant un rôle particulièrement à risque, le <ph name="BEGIN_LINK" />programme de protection avancée<ph name="END_LINK" /> de Google pourrait vous intéresser.</translation>
 <translation id="2548347166720081527">Autorisé <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Réinitialiser le cache du profil eSIM</translation>
 <translation id="2549985041256363841">Commencer l'enregistrement</translation>
@@ -11124,6 +11125,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="859246725979739260">L'accès à votre position a été bloqué pour ce site.</translation>
 <translation id="8593450223647418235">Vous ne pourrez pas ouvrir de fichiers dans Microsoft 365 tant que la configuration n'est pas terminée.</translation>
 <translation id="8593686980889923154">L'appli <ph name="APP_NAME" /> est bloquée sur votre <ph name="DEVICE_TYPE" /></translation>
+<translation id="8593938084085018349">Vos paramètres de sécurité ont été mis à niveau</translation>
 <translation id="8594912907680633924">Ouvrir le lien dans l'affichage partagé</translation>
 <translation id="8596400097994526901">Autres actions pour <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="8596540852772265699">Fichiers personnalisés</translation>
