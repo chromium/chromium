@@ -32,6 +32,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -2429,6 +2430,323 @@ TEST_F(ScrollViewTest, TestSettingContentsToNull) {
   // The contents view should have also been deleted (and therefore the tracker
   // is no longer tracking a view).
   EXPECT_FALSE(tracker.view());
+}
+
+TEST_F(ScrollViewTest, TestOpacityGradientVerticalBottom) {
+  ScrollViewTestApi test_api(scroll_view_.get());
+
+  // Set up with vertical scrollbar.
+  auto contents = std::make_unique<FixedView>();
+  contents->SetPreferredSize(gfx::Size(kWidth, kMaxHeight * 5));
+  scroll_view_->SetOverflowGradientMask(
+      ScrollView::GradientDirection::kVertical);
+  scroll_view_->SetContents(std::move(contents));
+  scroll_view_->ClipHeightTo(0, kMaxHeight);
+
+  // Make sure the size is set such that no horizontal scrollbar gets shown.
+  scroll_view_->SetSize(gfx::Size(
+      kWidth + test_api.GetScrollBar(VERTICAL)->GetThickness(), kMaxHeight));
+
+  // Make sure the initial origin is 0,0
+  EXPECT_EQ(gfx::PointF(0, 0), test_api.CurrentOffset());
+
+  // The vertical scroll bar should be visible and the horizontal scroll bar
+  // should not.
+  CheckScrollbarVisibility(scroll_view_.get(), VERTICAL, true);
+  CheckScrollbarVisibility(scroll_view_.get(), HORIZONTAL, false);
+
+  const gfx::LinearGradient gradient = scroll_view_->layer()->gradient_mask();
+  const int expected_vert_angle = 270;
+  EXPECT_EQ(expected_vert_angle, gradient.angle());
+  EXPECT_EQ(4u, gradient.step_count());
+
+  EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, 0.);
+  EXPECT_EQ(gradient.steps()[0].alpha, 255);
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .1);
+  EXPECT_EQ(gradient.steps()[1].alpha, 255);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .9);
+  EXPECT_EQ(gradient.steps()[2].alpha, 255);
+  EXPECT_FLOAT_EQ(gradient.steps()[3].fraction, 1.0);
+  EXPECT_EQ(gradient.steps()[3].alpha, 0);
+}
+
+TEST_F(ScrollViewTest, TestOpacityGradientVerticalTopAndBottom) {
+  ScrollViewTestApi test_api(scroll_view_.get());
+
+  // Set up with vertical scrollbar.
+  auto contents = std::make_unique<FixedView>();
+  contents->SetPreferredSize(gfx::Size(kWidth, kMaxHeight * 5));
+  scroll_view_->SetOverflowGradientMask(
+      ScrollView::GradientDirection::kVertical);
+  scroll_view_->SetContents(std::move(contents));
+  scroll_view_->ClipHeightTo(0, kMaxHeight);
+
+  // Make sure the size is set such that no horizontal scrollbar gets shown.
+  scroll_view_->SetSize(gfx::Size(
+      kWidth + test_api.GetScrollBar(VERTICAL)->GetThickness(), kMaxHeight));
+
+  // Make sure the initial origin is 0,0
+  EXPECT_EQ(gfx::PointF(0, 0), test_api.CurrentOffset());
+
+  // The vertical scroll bar should be visible and the horizontal scroll bar
+  // should not.
+  CheckScrollbarVisibility(scroll_view_.get(), VERTICAL, true);
+  CheckScrollbarVisibility(scroll_view_.get(), HORIZONTAL, false);
+
+  int offset = kMaxHeight * 3;
+  scroll_view_->ScrollToPosition(test_api.GetScrollBar(VERTICAL), offset);
+  EXPECT_EQ(gfx::PointF(0, offset), test_api.CurrentOffset());
+
+  // Run layout to get new position
+  views::test::RunScheduledLayout(scroll_view_.get());
+
+  EXPECT_TRUE(scroll_view_->layer() &&
+              scroll_view_->layer()->HasGradientMask());
+
+  const gfx::LinearGradient gradient = scroll_view_->layer()->gradient_mask();
+  const int expected_vert_angle = 270;
+  EXPECT_EQ(expected_vert_angle, gradient.angle());
+  EXPECT_EQ(4u, gradient.step_count());
+
+  EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, 0.);
+  EXPECT_EQ(gradient.steps()[0].alpha, 0);
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .1);
+  EXPECT_EQ(gradient.steps()[1].alpha, 255);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .9);
+  EXPECT_EQ(gradient.steps()[2].alpha, 255);
+  EXPECT_FLOAT_EQ(gradient.steps()[3].fraction, 1.0);
+  EXPECT_EQ(gradient.steps()[3].alpha, 0);
+}
+
+TEST_F(ScrollViewTest, TestOpacityGradientVerticalTop) {
+  ScrollViewTestApi test_api(scroll_view_.get());
+
+  // Set up with vertical scrollbar.
+  auto contents = std::make_unique<FixedView>();
+  contents->SetPreferredSize(gfx::Size(kWidth, kMaxHeight * 5));
+  scroll_view_->SetOverflowGradientMask(
+      ScrollView::GradientDirection::kVertical);
+  scroll_view_->SetContents(std::move(contents));
+  scroll_view_->ClipHeightTo(0, kMaxHeight);
+
+  // Make sure the size is set such that no horizontal scrollbar gets shown.
+  scroll_view_->SetSize(gfx::Size(
+      kWidth + test_api.GetScrollBar(VERTICAL)->GetThickness(), kMaxHeight));
+
+  // Make sure the initial origin is 0,0
+  EXPECT_EQ(gfx::PointF(0, 0), test_api.CurrentOffset());
+
+  // The vertical scroll bar should be visible and the horizontal scroll bar
+  // should not.
+  CheckScrollbarVisibility(scroll_view_.get(), VERTICAL, true);
+  CheckScrollbarVisibility(scroll_view_.get(), HORIZONTAL, false);
+
+  // Scroll to the bottom
+  int offset = kMaxHeight * 4;
+  scroll_view_->ScrollToPosition(test_api.GetScrollBar(VERTICAL), offset);
+  EXPECT_EQ(gfx::PointF(0, offset), test_api.CurrentOffset());
+
+  // Run layout to get new position
+  views::test::RunScheduledLayout(scroll_view_.get());
+
+  EXPECT_TRUE(scroll_view_->layer() &&
+              scroll_view_->layer()->HasGradientMask());
+
+  const gfx::LinearGradient gradient = scroll_view_->layer()->gradient_mask();
+  const int expected_vert_angle = 270;
+  EXPECT_EQ(expected_vert_angle, gradient.angle());
+  EXPECT_EQ(4u, gradient.step_count());
+
+  EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, 0.);
+  EXPECT_EQ(gradient.steps()[0].alpha, 0);
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .1);
+  EXPECT_EQ(gradient.steps()[1].alpha, 255);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .9);
+  EXPECT_EQ(gradient.steps()[2].alpha, 255);
+  EXPECT_FLOAT_EQ(gradient.steps()[3].fraction, 1.0);
+  EXPECT_EQ(gradient.steps()[3].alpha, 255);
+}
+
+TEST_F(ScrollViewTest, TestOpacityGradientHorizontalEnd) {
+  const int kHeight = 100;
+
+  ScrollViewTestApi test_api(scroll_view_.get());
+
+  // Set up with horizontal scrollbar.
+  auto* contents = scroll_view_->SetContents(std::make_unique<FixedView>());
+  contents->SetPreferredSize(gfx::Size(kWidth * 5, kHeight));
+  scroll_view_->SetOverflowGradientMask(
+      ScrollView::GradientDirection::kHorizontal);
+
+  // Make sure the size is set such that no vertical scrollbar gets shown.
+  scroll_view_->SetSize(gfx::Size(
+      kWidth, kHeight + test_api.GetScrollBar(HORIZONTAL)->GetThickness()));
+
+  contents->SetBounds(0, 0, kWidth * 5, kHeight);
+
+  // Make sure the initial origin is 0,0
+  EXPECT_EQ(gfx::PointF(0, 0), test_api.CurrentOffset());
+
+  // The horizontal scroll bar should be visible and the vertical scroll bar
+  // should not.
+  CheckScrollbarVisibility(scroll_view_.get(), HORIZONTAL, true);
+  CheckScrollbarVisibility(scroll_view_.get(), VERTICAL, false);
+
+  const gfx::LinearGradient gradient = scroll_view_->layer()->gradient_mask();
+  EXPECT_EQ(0, gradient.angle());
+  EXPECT_EQ(4u, gradient.step_count());
+
+  EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, 0.);
+  EXPECT_EQ(gradient.steps()[0].alpha, 255);
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .1);
+  EXPECT_EQ(gradient.steps()[1].alpha, 255);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .9);
+  EXPECT_EQ(gradient.steps()[2].alpha, 255);
+  EXPECT_FLOAT_EQ(gradient.steps()[3].fraction, 1.0);
+  EXPECT_EQ(gradient.steps()[3].alpha, 0);
+}
+
+TEST_F(ScrollViewTest, TestOpacityGradientHorizontalStartAndEnd) {
+  const int kHeight = 100;
+
+  ScrollViewTestApi test_api(scroll_view_.get());
+
+  // Set up with horizontal scrollbar.
+  auto* contents = scroll_view_->SetContents(std::make_unique<FixedView>());
+  contents->SetPreferredSize(gfx::Size(kWidth * 5, kHeight));
+  scroll_view_->SetOverflowGradientMask(
+      ScrollView::GradientDirection::kHorizontal);
+
+  // Make sure the size is set such that no vertical scrollbar gets shown.
+  scroll_view_->SetSize(gfx::Size(
+      kWidth, kHeight + test_api.GetScrollBar(HORIZONTAL)->GetThickness()));
+
+  contents->SetBounds(0, 0, kWidth * 5, kHeight);
+
+  // Make sure the initial origin is 0,0
+  EXPECT_EQ(gfx::PointF(0, 0), test_api.CurrentOffset());
+
+  // The horizontal scroll bar should be visible and the vertical scroll bar
+  // should not.
+  CheckScrollbarVisibility(scroll_view_.get(), HORIZONTAL, true);
+  CheckScrollbarVisibility(scroll_view_.get(), VERTICAL, false);
+
+  int offset = kWidth * 3;
+  scroll_view_->ScrollToPosition(test_api.GetScrollBar(HORIZONTAL), offset);
+  EXPECT_EQ(gfx::PointF(offset, 0), test_api.CurrentOffset());
+
+  // Run layout to get new position
+  views::test::RunScheduledLayout(scroll_view_.get());
+
+  EXPECT_TRUE(scroll_view_->layer() &&
+              scroll_view_->layer()->HasGradientMask());
+
+  const gfx::LinearGradient gradient = scroll_view_->layer()->gradient_mask();
+  EXPECT_EQ(0, gradient.angle());
+  EXPECT_EQ(4u, gradient.step_count());
+
+  EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, 0.);
+  EXPECT_EQ(gradient.steps()[0].alpha, 0);
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .1);
+  EXPECT_EQ(gradient.steps()[1].alpha, 255);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .9);
+  EXPECT_EQ(gradient.steps()[2].alpha, 255);
+  EXPECT_FLOAT_EQ(gradient.steps()[3].fraction, 1.0);
+  EXPECT_EQ(gradient.steps()[3].alpha, 0);
+}
+
+TEST_F(ScrollViewTest, TestOpacityGradientHorizontalStart) {
+  const int kHeight = 100;
+
+  ScrollViewTestApi test_api(scroll_view_.get());
+
+  // Set up with horizontal scrollbar.
+  auto* contents = scroll_view_->SetContents(std::make_unique<FixedView>());
+  contents->SetPreferredSize(gfx::Size(kWidth * 5, kHeight));
+  scroll_view_->SetOverflowGradientMask(
+      ScrollView::GradientDirection::kHorizontal);
+
+  // Make sure the size is set such that no vertical scrollbar gets shown.
+  scroll_view_->SetSize(gfx::Size(
+      kWidth, kHeight + test_api.GetScrollBar(HORIZONTAL)->GetThickness()));
+
+  contents->SetBounds(0, 0, kWidth * 5, kHeight);
+
+  // Make sure the initial origin is 0,0
+  EXPECT_EQ(gfx::PointF(0, 0), test_api.CurrentOffset());
+
+  // The horizontal scroll bar should be visible and the vertical scroll bar
+  // should not.
+  CheckScrollbarVisibility(scroll_view_.get(), HORIZONTAL, true);
+  CheckScrollbarVisibility(scroll_view_.get(), VERTICAL, false);
+
+  // Scroll to the bottom
+  int offset = kWidth * 4;
+  scroll_view_->ScrollToPosition(test_api.GetScrollBar(HORIZONTAL), offset);
+  EXPECT_EQ(gfx::PointF(offset, 0), test_api.CurrentOffset());
+
+  // Run layout to get new position
+  views::test::RunScheduledLayout(scroll_view_.get());
+
+  EXPECT_TRUE(scroll_view_->layer() &&
+              scroll_view_->layer()->HasGradientMask());
+
+  const gfx::LinearGradient gradient = scroll_view_->layer()->gradient_mask();
+  EXPECT_EQ(0, gradient.angle());
+  EXPECT_EQ(4u, gradient.step_count());
+
+  EXPECT_FLOAT_EQ(gradient.steps()[0].fraction, 0.);
+  EXPECT_EQ(gradient.steps()[0].alpha, 0);
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .1);
+  EXPECT_EQ(gradient.steps()[1].alpha, 255);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .9);
+  EXPECT_EQ(gradient.steps()[2].alpha, 255);
+  EXPECT_FLOAT_EQ(gradient.steps()[3].fraction, 1.0);
+  EXPECT_EQ(gradient.steps()[3].alpha, 255);
+}
+
+TEST_F(ScrollViewTest, TestOpacityGradientRemovedWhenNotNeeded) {
+  ScrollViewTestApi test_api(scroll_view_.get());
+
+  // Set up with vertical scrollbar.
+  auto contents = std::make_unique<FixedView>();
+  contents->SetPreferredSize(gfx::Size(kWidth, kMaxHeight * 5));
+  scroll_view_->SetOverflowGradientMask(
+      ScrollView::GradientDirection::kVertical);
+  scroll_view_->SetContents(std::move(contents));
+  scroll_view_->ClipHeightTo(0, kMaxHeight);
+
+  // Make sure the size is set such that no horizontal scrollbar gets shown.
+  scroll_view_->SetSize(gfx::Size(
+      kWidth + test_api.GetScrollBar(VERTICAL)->GetThickness(), kMaxHeight));
+
+  // Make sure the initial origin is 0,0
+  EXPECT_EQ(gfx::PointF(0, 0), test_api.CurrentOffset());
+
+  // The vertical scroll bar should be visible and the horizontal scroll bar
+  // should not.
+  CheckScrollbarVisibility(scroll_view_.get(), VERTICAL, true);
+  CheckScrollbarVisibility(scroll_view_.get(), HORIZONTAL, false);
+
+  // Scroll to the bottom
+  int offset = kMaxHeight * 4;
+  scroll_view_->ScrollToPosition(test_api.GetScrollBar(VERTICAL), offset);
+  EXPECT_EQ(gfx::PointF(0, offset), test_api.CurrentOffset());
+
+  // Run layout to get new position
+  views::test::RunScheduledLayout(scroll_view_.get());
+
+  EXPECT_TRUE(scroll_view_->layer() &&
+              scroll_view_->layer()->HasGradientMask());
+
+  scroll_view_->ClipHeightTo(0, kMaxHeight * 6);
+  scroll_view_->SetSize(
+      gfx::Size(kWidth + test_api.GetScrollBar(VERTICAL)->GetThickness(),
+                kMaxHeight * 6));
+  views::test::RunScheduledLayout(scroll_view_.get());
+
+  const gfx::LinearGradient gradient = scroll_view_->layer()->gradient_mask();
+  EXPECT_EQ(gradient, gfx::LinearGradient::GetEmpty());
 }
 
 // Test scrolling behavior when clicking on the scroll track.

@@ -32,6 +32,8 @@ void SetScrollViewProperties(views::ScrollView* scroll_view) {
   scroll_view->SetBackgroundColor(std::nullopt);
   scroll_view->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
+  scroll_view->SetOverflowGradientMask(
+      views::ScrollView::GradientDirection::kVertical);
 }
 }  // namespace
 
