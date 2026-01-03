@@ -137,8 +137,10 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 30;
     case VERTICAL_TAB_MIN_WIDTH:
       return 32;
-    case VERTICAL_TAB_STRIP_HORIZONTAL_PADDING:
+    case VERTICAL_TAB_STRIP_UNCOLLAPSED_HORIZONTAL_PADDING:
       return 12;
+    case VERTICAL_TAB_STRIP_COLLAPSED_HORIZONTAL_PADDING:
+      return 8;
     case VERTICAL_TAB_STRIP_TOP_BUTTON_ICON_SIZE:
       return 20;
     case VERTICAL_TAB_STRIP_BOTTOM_BUTTON_PADDING:

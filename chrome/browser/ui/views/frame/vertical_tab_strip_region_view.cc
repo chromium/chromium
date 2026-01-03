@@ -60,14 +60,10 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
     : tab_strip_model_(browser->GetTabStripModel()),
       state_controller_(state_controller),
       resize_animation_(this) {
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
+  flex_layout_ = SetLayoutManager(std::make_unique<views::FlexLayout>());
+  flex_layout_->SetOrientation(views::LayoutOrientation::kVertical)
       .SetInteriorMargin(kRegionInteriorMargins)
       .SetCollapseMargins(true)
-      .SetDefault(views::kMarginsKey,
-                  gfx::Insets::VH(
-                      kRegionVerticalPadding,
-                      GetLayoutConstant(VERTICAL_TAB_STRIP_HORIZONTAL_PADDING)))
       .SetDefault(
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
@@ -346,16 +342,11 @@ views::View* VerticalTabStripRegionView::SetTabStripView(
   CHECK(views::IsViewClass<VerticalTabStripView>(view.get()));
   tab_strip_view_ =
       static_cast<VerticalTabStripView*>(AddChildView(std::move(view)));
-  tab_strip_view_->SetCollapsedState(state_controller_->IsCollapsed());
-  gfx::Insets tab_container_margins = gfx::Insets::TLBR(
-      kRegionVerticalPadding,
-      GetLayoutConstant(VERTICAL_TAB_STRIP_HORIZONTAL_PADDING),
-      kRegionVerticalPadding, 0);
+  OnCollapsedStateChanged(state_controller_);
   tab_strip_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
-  tab_strip_view_->SetProperty(views::kMarginsKey, tab_container_margins);
   std::optional<size_t> separator_index = GetIndexOf(top_button_separator_);
   CHECK(separator_index.has_value());
   ReorderChildView(tab_strip_view_, separator_index.value() + 1);
@@ -372,8 +363,21 @@ void VerticalTabStripRegionView::OnCollapsedStateChanged(
     // happen due to the collapse button being pressed.
     UpdateCollapseState(state_controller_->GetState());
   }
+
+  const int horizontal_padding = GetLayoutConstant(
+      state_controller_->IsCollapsed()
+          ? VERTICAL_TAB_STRIP_COLLAPSED_HORIZONTAL_PADDING
+          : VERTICAL_TAB_STRIP_UNCOLLAPSED_HORIZONTAL_PADDING);
+  flex_layout_->SetDefault(
+      views::kMarginsKey,
+      gfx::Insets::VH(kRegionVerticalPadding, horizontal_padding));
+
   if (tab_strip_view_) {
     tab_strip_view_->SetCollapsedState(state_controller->IsCollapsed());
+    tab_strip_view_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(kRegionVerticalPadding, horizontal_padding,
+                          kRegionVerticalPadding, 0));
   }
 }
 

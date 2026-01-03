@@ -196,8 +196,12 @@ enum LayoutConstant {
   VERTICAL_TAB_PINNED_BORDER_THICKNESS,
 
   // The horizontal padding between the sides of the vertical tab strip and its
-  // content.
-  VERTICAL_TAB_STRIP_HORIZONTAL_PADDING,
+  // content when in the uncollapsed state.
+  VERTICAL_TAB_STRIP_UNCOLLAPSED_HORIZONTAL_PADDING,
+
+  // The horizontal padding between the sides of the vertical tab strip and its
+  // content when in the collapsed state.
+  VERTICAL_TAB_STRIP_COLLAPSED_HORIZONTAL_PADDING,
 
   // The icon size of top buttons in the vertical tab strip.
   VERTICAL_TAB_STRIP_TOP_BUTTON_ICON_SIZE,

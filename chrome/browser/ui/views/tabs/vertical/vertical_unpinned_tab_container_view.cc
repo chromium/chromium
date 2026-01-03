@@ -47,8 +47,10 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
   views::ProposedLayout layouts;
   int width = 0;
   int height = 0;
-  int horizontal_padding =
-      GetLayoutConstant(VERTICAL_TAB_STRIP_HORIZONTAL_PADDING);
+
+  const int horizontal_padding = GetLayoutConstant(
+      is_collapsed_ ? VERTICAL_TAB_STRIP_COLLAPSED_HORIZONTAL_PADDING
+                    : VERTICAL_TAB_STRIP_UNCOLLAPSED_HORIZONTAL_PADDING);
 
   const auto children = collection_node_->GetDirectChildren();
 
@@ -201,6 +203,11 @@ base::CallbackListSubscription
 VerticalUnpinnedTabContainerView::RegisterWillDestroyCallback(
     base::OnceClosure callback) {
   return on_will_destroy_callback_list_.Add(std::move(callback));
+}
+
+void VerticalUnpinnedTabContainerView::SetCollapsedState(bool is_collapsed) {
+  // Parent view handles triggering layout update.
+  is_collapsed_ = is_collapsed;
 }
 
 bool VerticalUnpinnedTabContainerView::CanDropTab() {

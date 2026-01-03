@@ -63,9 +63,11 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
   // Since all children are allocated the same width this will be the same for
   // every row.
   if (size_bounds.width().is_bounded() && size_bounds.width().value() > 0) {
+    const int region_horizontal_padding = GetLayoutConstant(
+        is_collapsed_ ? VERTICAL_TAB_STRIP_COLLAPSED_HORIZONTAL_PADDING
+                      : VERTICAL_TAB_STRIP_UNCOLLAPSED_HORIZONTAL_PADDING);
     int available_width =
-        size_bounds.width().value() -
-        GetLayoutConstant(VERTICAL_TAB_STRIP_HORIZONTAL_PADDING);
+        size_bounds.width().value() - region_horizontal_padding;
 
     children_on_row =
         std::min(children_on_row,
@@ -102,6 +104,11 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
   }
   layouts.host_size = gfx::Size(total_width, total_height);
   return layouts;
+}
+
+void VerticalPinnedTabContainerView::SetCollapsedState(bool is_collapsed) {
+  // Parent view handles triggering layout update.
+  is_collapsed_ = is_collapsed;
 }
 
 void VerticalPinnedTabContainerView::ResetCollectionNode() {

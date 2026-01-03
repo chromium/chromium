@@ -29,8 +29,12 @@ class VerticalPinnedTabContainerView : public views::View,
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
 
+  void SetCollapsedState(bool is_collapsed);
+
  private:
   void ResetCollectionNode();
+
+  bool is_collapsed_ = false;
 
   raw_ptr<TabCollectionNode> collection_node_;
 

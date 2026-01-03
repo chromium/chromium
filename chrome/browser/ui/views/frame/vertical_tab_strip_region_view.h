@@ -33,6 +33,7 @@ namespace views {
 class ResizeArea;
 class Separator;
 class View;
+class FlexLayout;
 }  // namespace views
 
 // Container for the vertical tabstrip and the other views sharing space with
@@ -151,6 +152,7 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   raw_ptr<VerticalTabStripBottomContainer> bottom_button_container_ = nullptr;
   raw_ptr<views::View> gemini_button_ = nullptr;
   raw_ptr<views::ResizeArea> resize_area_ = nullptr;
+  raw_ptr<views::FlexLayout> flex_layout_ = nullptr;
 
   // The drag handler is a view (required for capturing mouse inputs during
   // a drag loop) owned by the tab strip's View.

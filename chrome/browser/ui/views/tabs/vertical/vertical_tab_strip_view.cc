@@ -65,8 +65,11 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
   if (!size_bounds.is_fully_bounded()) {
     return layouts;
   }
-  const int region_horizontal_padding =
-      GetLayoutConstant(VERTICAL_TAB_STRIP_HORIZONTAL_PADDING);
+
+  const int region_horizontal_padding = GetLayoutConstant(
+      is_collapsed_ ? VERTICAL_TAB_STRIP_COLLAPSED_HORIZONTAL_PADDING
+                    : VERTICAL_TAB_STRIP_UNCOLLAPSED_HORIZONTAL_PADDING);
+
   views::SizeBounds tab_container_size_bounds =
       size_bounds.Inset(gfx::Insets::VH(kRegionVeritcalInteriorMargin, 0));
   int y = 0;
@@ -135,6 +138,8 @@ VerticalTabStripView::GetUnpinnedTabsContainer() {
 void VerticalTabStripView::SetCollapsedState(bool is_collapsed) {
   if (is_collapsed != is_collapsed_) {
     is_collapsed_ = is_collapsed;
+    pinned_tabs_container_view_->SetCollapsedState(is_collapsed);
+    unpinned_tabs_container_view_->SetCollapsedState(is_collapsed);
     InvalidateLayout();
   }
 }
