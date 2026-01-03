@@ -96,6 +96,8 @@ std::string GetMimeTypeParamValue(lens::MimeType mime_type) {
       return kVisualInputTypeQueryParameterImageValue;
     case lens::MimeType::kAnnotatedPageContent:
       return kVisualInputTypeQueryParameterWebpageValue;
+    case lens::MimeType::kUnknown:
+      return kVisualInputTypeQueryParameterImageValue;
     default:
       NOTREACHED() << "File type not supported.";
   }
