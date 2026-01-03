@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -55,7 +56,10 @@ void IfTable2Deleter(PMIB_IF_TABLE2 interface_table) {
 }  // namespace
 
 bool GuidOperatorLess::operator()(const GUID& guid1, const GUID& guid2) const {
-  return UNSAFE_TODO(memcmp(&guid1, &guid2, sizeof(GUID))) < 0;
+  return std::lexicographical_compare(base::byte_span_from_ref(guid1).begin(),
+                                      base::byte_span_from_ref(guid1).end(),
+                                      base::byte_span_from_ref(guid2).begin(),
+                                      base::byte_span_from_ref(guid2).end());
 }
 
 typedef DWORD(WINAPI* WlanOpenHandleFunction)(DWORD dwClientVersion,
