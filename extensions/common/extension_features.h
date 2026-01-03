@@ -274,6 +274,11 @@ BASE_DECLARE_FEATURE(kOptimizeServiceWorkerStartRequests);
 // TODO(crbug.com/424432184): Clean up when experiment is complete.
 BASE_DECLARE_FEATURE(kAvoidCloneArgsOnExtensionFunctionDispatch);
 
+// If enabled, the ContentVerifier cache key will include the extension root
+// path. This prevents collisions when an extension is updated or reloaded
+// to a new directory while keeping the same version ID.
+BASE_DECLARE_FEATURE(kContentVerifierCacheIncludesExtensionRoot);
+
 // Addresses content verification race conditions during extension updates. When
 // an extension updates, a content verification job for a previous version can
 // sometimes run *after* the new version has been loaded. This can lead to two

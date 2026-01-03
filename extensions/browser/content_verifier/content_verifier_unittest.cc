@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/with_feature_override.h"
 #include "base/values.h"
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
 #include "extensions/browser/content_verifier/test_utils.h"
@@ -19,6 +20,7 @@
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest_constants.h"
@@ -499,9 +501,20 @@ TEST_F(ContentVerifierTest, NeverVerifiedPaths) {
   }
 }
 
+class ContentVerifierExtensionRootHashTest
+    : public base::test::WithFeatureOverride,
+      public ContentVerifierTest {
+ public:
+  ContentVerifierExtensionRootHashTest()
+      : base::test::WithFeatureOverride(
+            extensions_features::kContentVerifierCacheIncludesExtensionRoot) {}
+};
+
 // Tests that when multiple extension roots exist for the same extension version
-// we create separate `ContentHash`es for them.
-TEST_F(ContentVerifierTest, ContentHashesForDifferentExtensionRoots) {
+// we create different `ContentHash`es for them if the extension root feature is
+// enabled, otherwise the hashes are the same.
+TEST_P(ContentVerifierExtensionRootHashTest,
+       ContentHashesForDifferentExtensionRoots) {
   content_verifier_delegate_raw()->SetVerifierSourceType(
       ContentVerifierDelegate::VerifierSourceType::UNSIGNED_HASHES);
 
@@ -540,7 +553,8 @@ TEST_F(ContentVerifierTest, ContentHashesForDifferentExtensionRoots) {
       base::BindOnce(
           [](scoped_refptr<ContentVerifier> verifier, ExtensionId id,
              base::Version version, base::FilePath root_a,
-             base::FilePath root_b, base::RepeatingClosure quit_closure) {
+             base::FilePath root_b, bool is_feature_enabled,
+             base::RepeatingClosure quit_closure) {
             auto hash_a = verifier->GetCachedContentHash(
                 id, version, root_a,
                 /*force_missing_computed_hashes_creation=*/false);
@@ -548,18 +562,24 @@ TEST_F(ContentVerifierTest, ContentHashesForDifferentExtensionRoots) {
                 id, version, root_b,
                 /*force_missing_computed_hashes_creation=*/false);
 
-            EXPECT_TRUE(hash_a);
-            EXPECT_EQ(hash_a->extension_root(), root_a);
-
-            EXPECT_TRUE(hash_b);
-            EXPECT_EQ(hash_b->extension_root(), root_b);
-
-            EXPECT_NE(hash_a, hash_b);
+            if (is_feature_enabled) {
+              EXPECT_EQ(hash_a->extension_root(), root_a);
+              EXPECT_EQ(hash_b->extension_root(), root_b);
+              EXPECT_NE(hash_a, hash_b);
+            } else {
+              EXPECT_EQ(hash_a, hash_b);
+              // When the feature is disabled, the cache key ignores the root,
+              // so the second load (root_b) overwrites the first (root_a).
+              // Thus both lookups return the hash for root_b.
+              EXPECT_EQ(hash_a->extension_root(), root_b);
+            }
             quit_closure.Run();
           },
           content_verifier(), extension()->id(), extension()->version(), root_a,
-          root_b, run_loop.QuitClosure()));
+          root_b, IsParamFeatureEnabled(), run_loop.QuitClosure()));
   run_loop.Run();
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ContentVerifierExtensionRootHashTest);
 
 }  // namespace extensions

@@ -153,6 +153,13 @@ std::unique_ptr<ContentVerifierIOData::ExtensionData> CreateIOData(
   return result;
 }
 
+base::FilePath GetExtensionRootToUse(const base::FilePath& extension_root) {
+  return base::FeatureList::IsEnabled(
+             extensions_features::kContentVerifierCacheIncludesExtensionRoot)
+             ? extension_root
+             : base::FilePath();
+}
+
 }  // namespace
 
 struct ContentVerifier::CacheKey {
@@ -162,7 +169,7 @@ struct ContentVerifier::CacheKey {
            bool needs_force_missing_computed_hashes_creation)
       : extension_id(extension_id),
         version(version),
-        extension_root(extension_root),
+        extension_root(GetExtensionRootToUse(extension_root)),
         needs_force_missing_computed_hashes_creation(
             needs_force_missing_computed_hashes_creation) {}
 
@@ -210,8 +217,8 @@ class ContentVerifier::HashHelper {
               const base::Version& extension_version,
               const base::FilePath& extension_root) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-    auto callback_key =
-        std::make_tuple(extension_id, extension_version, extension_root);
+    auto callback_key = std::make_tuple(extension_id, extension_version,
+                                        GetExtensionRootToUse(extension_root));
     auto iter = callback_infos_.find(callback_key);
     if (iter == callback_infos_.end())
       return;
@@ -230,7 +237,7 @@ class ContentVerifier::HashHelper {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
     auto callback_key =
         std::make_tuple(fetch_key.extension_id, fetch_key.extension_version,
-                        fetch_key.extension_root);
+                        GetExtensionRootToUse(fetch_key.extension_root));
     auto iter = callback_infos_.find(callback_key);
     if (iter != callback_infos_.end()) {
       iter->second.callbacks.push_back(std::move(callback));
