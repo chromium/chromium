@@ -207,6 +207,11 @@
   transition: var(--icon-entry-transition);
 }
 
+#composebox[show-file-carousel_]::part(carousel-container) {
+  /* Give room for the close button in the top right. */
+  --context-carousel-inline-end-spacing: 52px;
+}
+
 #composebox:not([expanding_])[show-file-carousel_]::part(cr-composebox-file-carousel) {
   pointer-events: none;
 }
