@@ -48,6 +48,76 @@ ui::ColorId ContentsContainerOutline::GetColor(bool is_active,
   return kColorMultiContentsViewInactiveContentOutline;
 }
 
+// static
+SkPath ContentsContainerOutline::GetPath(const gfx::RectF& local_bounds,
+                                         float corner_radius,
+                                         float mini_toolbar_corner_radius,
+                                         const gfx::SizeF& mini_toolbar_size) {
+  // Generate the outline path starting from the left edge right below the
+  // rounded rect arc and then conditionally either raws out a rounded rect
+  // or a path that overlaps with the mini-toolbar view in clockwise direction.
+  SkPathBuilder path;
+  path.moveTo(local_bounds.x(), local_bounds.y() + corner_radius);
+  path.arcTo(SkVector(corner_radius, corner_radius), 0.0f,
+             SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+             SkPoint(local_bounds.x() + corner_radius, local_bounds.y()));
+  path.lineTo(local_bounds.right() - corner_radius, local_bounds.y());
+  path.arcTo(SkVector(corner_radius, corner_radius), 0.0f,
+             SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+             SkPoint(local_bounds.right(), local_bounds.y() + corner_radius));
+
+  if (mini_toolbar_size.IsEmpty()) {
+    // If the mini toolbar is hidden on active view, just draw the rounded rect.
+    path.lineTo(local_bounds.right(), local_bounds.bottom() - corner_radius);
+    path.arcTo(
+        SkVector(corner_radius, corner_radius), 0.0f,
+        SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+        SkPoint(local_bounds.right() - corner_radius, local_bounds.bottom()));
+  } else {
+    // Draw the path around the mini toolbar.
+    path.lineTo(local_bounds.right(),
+                local_bounds.bottom() - mini_toolbar_size.height());
+    path.arcTo(SkVector(mini_toolbar_corner_radius, mini_toolbar_corner_radius),
+               0, SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+               SkPoint(local_bounds.right() - mini_toolbar_corner_radius,
+                       local_bounds.bottom() - mini_toolbar_size.height() +
+                           mini_toolbar_corner_radius));
+    path.lineTo(local_bounds.right() - mini_toolbar_size.width() +
+                    mini_toolbar_corner_radius * 2,
+                local_bounds.bottom() - mini_toolbar_size.height() +
+                    mini_toolbar_corner_radius);
+    path.arcTo(SkVector(mini_toolbar_corner_radius, mini_toolbar_corner_radius),
+               0, SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCCW,
+               SkPoint(local_bounds.right() - mini_toolbar_size.width() +
+                           mini_toolbar_corner_radius,
+                       local_bounds.bottom() - mini_toolbar_size.height() +
+                           mini_toolbar_corner_radius * 2));
+    path.lineTo(local_bounds.right() - mini_toolbar_size.width() +
+                    mini_toolbar_corner_radius,
+                local_bounds.bottom() - mini_toolbar_corner_radius);
+    path.arcTo(SkVector(mini_toolbar_corner_radius, mini_toolbar_corner_radius),
+               0, SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+               SkPoint(local_bounds.right() - mini_toolbar_size.width(),
+                       local_bounds.bottom()));
+  }
+
+  path.lineTo(local_bounds.x() + corner_radius, local_bounds.bottom());
+  path.arcTo(SkVector(corner_radius, corner_radius), 0.0f,
+             SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+             SkPoint(local_bounds.x(), local_bounds.bottom() - corner_radius));
+  path.close();
+
+  if (base::i18n::IsRTL()) {
+    // Mirror the path for outline in case of RTL.
+    gfx::PointF center = local_bounds.CenterPoint();
+    SkMatrix flip;
+    flip.setScale(-1, 1, center.x(), center.y());
+    path.transform(flip);
+  }
+
+  return path.detach();
+}
+
 void ContentsContainerOutline::UpdateState(bool is_active,
                                            bool is_highlighted) {
   is_active_ = is_active;
@@ -70,72 +140,18 @@ void ContentsContainerOutline::OnPaint(gfx::Canvas* canvas) {
   local_bounds.Inset(half_thickness);
   const float corner_radius = kCornerRadius - half_thickness;
 
-  // Generate the outline path starting from the left edge right below the
-  // rounded rect arc and then conditionally either raws out a rounded rect
-  // or a path that overlaps with the mini-toolbar view in clockwise direction.
-  SkPathBuilder path;
-  path.moveTo(local_bounds.x(), local_bounds.y() + corner_radius);
-  path.arcTo(SkVector(corner_radius, corner_radius), 0.0f,
-             SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
-             SkPoint(local_bounds.x() + corner_radius, local_bounds.y()));
-  path.lineTo(local_bounds.right() - corner_radius, local_bounds.y());
-  path.arcTo(SkVector(corner_radius, corner_radius), 0.0f,
-             SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
-             SkPoint(local_bounds.right(), local_bounds.y() + corner_radius));
-
-  if (is_active_ && is_highlighted_) {
-    // If the mini toolbar is hidden on active view, just draw the rounded rect.
-    path.lineTo(local_bounds.right(), local_bounds.bottom() - corner_radius);
-    path.arcTo(SkVector(corner_radius, corner_radius), 0.0f,
-               SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
-               SkPoint(local_bounds.right() - corner_radius,
-                       local_bounds.bottom()));
-  } else {
-    // Draw the path around the mini toolbar. This uses a corner radius which
-    // is half thickness greater than the clip path. The outline path needs
-    // to match the clip path.
+  // Get the mini toolbar size if it's visible.
+  gfx::SizeF mini_toolbar_size;
+  const bool hide_mini_toolbar = is_active_ && is_highlighted_;
+  if (!hide_mini_toolbar) {
     CHECK(mini_toolbar_.get());
-    const gfx::SizeF mini_toolbar_size(mini_toolbar_->size());
-    path.lineTo(local_bounds.right(),
-                local_bounds.bottom() - mini_toolbar_size.height());
-    path.arcTo(SkVector(kCornerRadius, kCornerRadius), 0,
-               SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
-               SkPoint(local_bounds.right() - kCornerRadius,
-                       local_bounds.bottom() - mini_toolbar_size.height() +
-                           kCornerRadius));
-    path.lineTo(
-        local_bounds.right() - mini_toolbar_size.width() + kCornerRadius * 2,
-        local_bounds.bottom() - mini_toolbar_size.height() + kCornerRadius);
-    path.arcTo(SkVector(kCornerRadius, kCornerRadius), 0,
-               SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCCW,
-               SkPoint(local_bounds.right() - mini_toolbar_size.width() +
-                           kCornerRadius,
-                       local_bounds.bottom() - mini_toolbar_size.height() +
-                           kCornerRadius * 2));
-    path.lineTo(
-        local_bounds.right() - mini_toolbar_size.width() + kCornerRadius,
-        local_bounds.bottom() - kCornerRadius);
-    path.arcTo(SkVector(kCornerRadius, kCornerRadius), 0,
-               SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
-               SkPoint(local_bounds.right() - mini_toolbar_size.width(),
-                       local_bounds.bottom()));
+    mini_toolbar_size = gfx::SizeF(mini_toolbar_->size());
   }
 
-  path.lineTo(local_bounds.x() + corner_radius, local_bounds.bottom());
-  path.arcTo(SkVector(corner_radius, corner_radius), 0.0f,
-             SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
-             SkPoint(local_bounds.x(), local_bounds.bottom() - corner_radius));
-  path.close();
+  SkPath path =
+      GetPath(local_bounds, corner_radius, kCornerRadius, mini_toolbar_size);
 
-  if (base::i18n::IsRTL()) {
-    // Mirror the path for outline in case of RTL.
-    gfx::PointF center = gfx::RectF(GetLocalBounds()).CenterPoint();
-    SkMatrix flip;
-    flip.setScale(-1, 1, center.x(), center.y());
-    path.transform(flip);
-  }
-
-  canvas->DrawPath(path.detach(), flags);
+  canvas->DrawPath(path, flags);
 }
 
 void ContentsContainerOutline::OnViewBoundsChanged(views::View* observed_view) {

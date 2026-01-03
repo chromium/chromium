@@ -31,6 +31,10 @@ class ContentsContainerOutline : public views::View,
 
   static int GetThickness(bool is_highlighted);
   static ui::ColorId GetColor(bool is_active, bool is_highlighted);
+  static SkPath GetPath(const gfx::RectF& local_bounds,
+                        float corner_radius,
+                        float mini_toolbar_corner_radius,
+                        const gfx::SizeF& mini_toolbar_size);
 
   bool is_highlighted() const { return is_highlighted_; }
 
