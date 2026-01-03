@@ -302,12 +302,12 @@ void WebuiOmniboxHandler::AddTabContext(int32_t tab_id,
     context = std::make_unique<SearchboxContextData::Context>();
   }
 
-  auto tab_attachment = searchbox::mojom::TabAttachmentStub::New();
+  auto tab_attachment = searchbox::mojom::TabAttachment::New();
   tab_attachment->tab_id = tab_id;
   tab_attachment->title = base::UTF16ToUTF8(tab_renderer_data.title);
   tab_attachment->url = tab_renderer_data.last_committed_url;
   context->file_infos.push_back(
-      searchbox::mojom::SearchContextAttachmentStub::NewTabAttachment(
+      searchbox::mojom::SearchContextAttachment::NewTabAttachment(
           std::move(tab_attachment)));
 
   searchbox_context_data->SetPendingContext(std::move(context));

@@ -12,7 +12,7 @@ import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PageHandlerInterface as SearchboxPageHandlerInterface, SearchContextStub} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {PageHandlerInterface as SearchboxPageHandlerInterface, SearchContext} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import {getCss} from './aim_app.css.js';
 import {getHtml} from './aim_app.html.js';
@@ -123,7 +123,7 @@ export class OmniboxAimAppElement extends CrLitElement {
     this.preserveContextOnClose_ = preserveContextOnClose;
   }
 
-  private onPopupShown_(context: SearchContextStub) {
+  private onPopupShown_(context: SearchContext) {
     if (!this.preserveContextOnClose_) {
       // Avoid showing the glow animation when coming back from a preserved
       // context on close as this indicates that the user is returning to the
@@ -135,7 +135,7 @@ export class OmniboxAimAppElement extends CrLitElement {
     this.preserveContextOnClose_ = false;
   }
 
-  private addContext_(context: SearchContextStub) {
+  private addContext_(context: SearchContext) {
     this.$.composebox.addSearchContext(context);
     this.$.composebox.focusInput();
   }

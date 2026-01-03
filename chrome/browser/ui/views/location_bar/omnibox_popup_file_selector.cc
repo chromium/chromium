@@ -146,7 +146,7 @@ void OmniboxPopupFileSelector::UpdateSearchboxContextData(
     std::string file_name,
     std::string mime_string,
     const base::UnguessableToken& file_token) {
-  auto file_attachment = searchbox::mojom::FileAttachmentStub::New();
+  auto file_attachment = searchbox::mojom::FileAttachment::New();
   file_attachment->uuid = file_token;
   file_attachment->name = file_name;
   file_attachment->mime_type = mime_string;
@@ -170,7 +170,7 @@ void OmniboxPopupFileSelector::UpdateSearchboxContextData(
     context = std::make_unique<SearchboxContextData::Context>();
   }
   context->file_infos.push_back(
-      searchbox::mojom::SearchContextAttachmentStub::NewFileAttachment(
+      searchbox::mojom::SearchContextAttachment::NewFileAttachment(
           std::move(file_attachment)));
   searchbox_context_data->SetPendingContext(std::move(context));
 }
