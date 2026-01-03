@@ -1477,7 +1477,7 @@
 <translation id="340924996148642843">కంపారిజన్ చేయడం ప్రస్తుతం అందుబాటులో లేదు</translation>
 <translation id="3409896703495473338">భద్రతా సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="3411091017011773343">అప్‌లోడ్ <ph name="HOURS" /> గంటల్లో</translation>
-<translation id="341134412449102894">మీ సమాచారం <ph name="ACCOUNT" /> కోసం <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />‌లో సేవ్ చేయబడింది</translation>
+<translation id="341134412449102894">మీ సమాచారం <ph name="ACCOUNT" /> కోసం <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />‌లో సేవ్ అయింది</translation>
 <translation id="3413466783792948876">మీరు పబ్లిక్ నెట్‌వర్క్‌ను ఉపయోగిస్తున్నట్లయితే, ఈ సైట్‌కు తరువాత ఎప్పుడైనా వెళ్లడం అత్యంత సురక్షితమని సూచిస్తున్నాము. మీ ఇంట్లో లేదా ఆఫీసులో ఉండే Wi-Fi వంటి విశ్వసనీయమైన నెట్‌వర్క్ అయితే తక్కువ రిస్క్ ఉంటుంది.</translation>
 <translation id="3414275587143250384">డిస్ట్రిబ్యూషన్ &amp; క్లౌడ్ కంప్యూటింగ్</translation>
 <translation id="3414952576877147120">సైజ్‌:</translation>
@@ -3119,7 +3119,7 @@
 <translation id="6051898664905071243">పేజీల సంఖ్య:</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="605237284704429106">IBANను పూరించడం</translation>
-<translation id="6053584886670442526">మీరు Google ప్రోడక్ట్‌లలో సేవ్ చేసిన అడ్రస్‌లను ఉపయోగించవచ్చు. ఈ అడ్రస్ మీ Google ఖాతా <ph name="ACCOUNT" />లో సేవ్ చేయబడింది.</translation>
+<translation id="6053584886670442526">మీరు Google ప్రోడక్ట్‌ల్లో సేవ్ చేసిన అడ్రస్‌లను ఉపయోగించవచ్చు. ఈ అడ్రస్ మీ Google ఖాతా <ph name="ACCOUNT" />లో సేవ్ అయింది.</translation>
 <translation id="6053735090575989697">Google మీ డేటాను ఎలా రక్షిస్తుంది అనే దాని గురించి మా గోప్యతా పాలసీలో మరింత తెలుసుకోండి.</translation>
 <translation id="6055888660316801977">సురక్షితమైన పేమెంట్ ఆధారానికి సంబంధించిన మ్యాచ్ అయ్యే ఆధారాల షీట్ ఏదీ లేదు</translation>
 <translation id="6055982527635883756">ఎన్వలప్ (ఆర్కైవల్)</translation>
@@ -4692,7 +4692,7 @@
 <translation id="8577348305244205642">వర్చువల్ కార్డ్ అందుబాటులో లేదు</translation>
 <translation id="8579000896558714521">కీబోర్డ్ ఓవర్‌రైడ్</translation>
 <translation id="8580265901435899937">టూరిస్ట్ గమ్యస్థానాలు</translation>
-<translation id="8581064022803799721">ఈ పేజీ <ph name="LAST_BOOKMARKS_FOLDER" />‌లో సేవ్ చేయబడింది.</translation>
+<translation id="8581064022803799721">ఈ పేజీ <ph name="LAST_BOOKMARKS_FOLDER" />‌లో సేవ్ అయింది.</translation>
 <translation id="8586082901536468629">స్క్వాష్ &amp; రాకెట్‌బాల్ ఎక్విప్‌మెంట్</translation>
 <translation id="858637041960032120">ఫోన్ నం. జోడిం.</translation>
 <translation id="8587100480629037893">హ్యాండ్ ట్రాకింగ్ అనుమతించబడదు</translation>

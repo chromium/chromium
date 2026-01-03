@@ -6129,7 +6129,7 @@
 <translation id="5180276433875360121"><ph name="CERT_LIST" />‌ను చూపించండి</translation>
 <translation id="5181140330217080051">డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="5181172023548002891"><ph name="ACCOUNT" /> కోసం Google Password Managerకు</translation>
-<translation id="5181551096188687373">ఈ పాస్‌వర్డ్ ఈ పరికరంలో మాత్రమే సేవ్ చేయబడింది. దీన్ని మీ ఇతర పరికరాలలో ఉపయోగించడానికి, మీ Google ఖాతా, <ph name="USER_EMAIL" />‌లో దీన్ని సేవ్ చేయండి.</translation>
+<translation id="5181551096188687373">ఈ పాస్‌వర్డ్ ఈ డివైజ్‌లో మాత్రమే సేవ్ అయింది. దీన్ని మీ ఇతర డివైజ్‌ల్లో ఉపయోగించడానికి, మీ Google ఖాతా, <ph name="USER_EMAIL" />‌లో దీన్ని సేవ్ చేయండి.</translation>
 <translation id="5183344263225877832">HID పరికర అనుమతులన్నింటినీ రీసెట్ చేయాలా?</translation>
 <translation id="5184063094292164363">&amp;JavaScript కన్సోల్</translation>
 <translation id="5184209580557088469">ఈ వినియోగదారు పేరుతో ఇప్పటికే ఒక టికెట్ ఉంది</translation>
@@ -6306,7 +6306,7 @@
 <translation id="5296350763804564124">'మాటల ప్రతిస్పందన'ను వినండి, తద్వారా మీరు స్క్రీన్‌ను చూడకుండానే మీ పరికరాన్ని ఉపయోగించవచ్చు. కనెక్ట్ అయిన పరికరంలో బ్రెయిలీ ఫీడ్‌బ్యాక్ అందుబాటులో ఉంది.</translation>
 <translation id="5296536303670088158">హానికరమైన వెబ్‌సైట్‌ల నుండి రక్షణ పొందడానికి మీ దగ్గర Chrome అత్యంత శక్తివంతమైన సెక్యూరిటీ ఉంది</translation>
 <translation id="5297005732522718715">టెథరింగ్ కాన్ఫిగరేషన్‌ను రిఫ్రెష్ చేయండి</translation>
-<translation id="5297082477358294722">పాస్‌వర్డ్ సేవ్ చేయబడింది. మీ <ph name="SAVED_PASSWORDS_STORE" />లో సేవ్ చేసిన పాస్‌వర్డ్‌లను చూడండి మరియు నిర్వహించండి.</translation>
+<translation id="5297082477358294722">పాస్‌వర్డ్ సేవ్ అయింది. మీ <ph name="SAVED_PASSWORDS_STORE" />లో సేవ్ చేసిన పాస్‌వర్డ్‌లను చూడండి, మేనేజ్ చేయండి.</translation>
 <translation id="5297548311167268289"><ph name="RP_ID" />‌కు సైన్ ఇన్ చేయండి</translation>
 <translation id="5297946558563358707">వేరొకరు మీ స్క్రీన్‌ను చూసినప్పుడు, మీ స్క్రీన్ దిగువున కుడి వైపున గోప్యతా కన్ను చిహ్నాన్ని చూపండి</translation>
 <translation id="5297984209202974345"><ph name="SUBJECT" />‌కు సంబంధించి, <ph name="STYLE" /> స్టయిల్‌లో ఇటీవలి AI రూపం <ph name="INDEX" /></translation>
@@ -8815,7 +8815,7 @@
 <translation id="7044211973375150246">ఒక యాప్, <ph name="APP_NAME" /> తెరిచిన అవే లింక్‌లను తెరవడానికి సిద్ధంగా ఉంది. ఇది సపోర్ట్ చేయబడిన లింక్‌లను తెరవకుండా <ph name="APP_NAME_2" />ను డిజేబుల్ చేస్తుంది.</translation>
 <translation id="7044606776288350625">డేటా సింక్</translation>
 <translation id="7050037487872780845">చెల్లని హాట్‌స్పాట్ కాన్ఫిగరేషన్</translation>
-<translation id="7051222203795962489">{COUNT,plural, =1{మీ Google ఖాతా, <ph name="USER_EMAIL" />‌లో పాస్‌వర్డ్ సేవ్ చేయబడింది}other{మీ Google ఖాతా, <ph name="USER_EMAIL" />‌లో పాస్‌వర్డ్‌లను సేవ్ చేయబడ్డాయి}}</translation>
+<translation id="7051222203795962489">{COUNT,plural, =1{మీ Google ఖాతా, <ph name="USER_EMAIL" />‌లో పాస్‌వర్డ్ సేవ్ అయింది}other{మీ Google ఖాతా, <ph name="USER_EMAIL" />‌లో పాస్‌వర్డ్‌లు సేవ్ అయ్యాయి}}</translation>
 <translation id="7052147783849658969">ప్రస్తుతం ఇన్‌యాక్టివ్ ట్యాబ్‌లు ఏవీ లేవు</translation>
 <translation id="7052762602787632571">&amp;బ్రౌజింగ్ డేటాను తొలగించండి...</translation>
 <translation id="705352103640172578">వాటర్‌ఫాల్</translation>

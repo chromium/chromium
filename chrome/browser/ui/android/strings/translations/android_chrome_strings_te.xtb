@@ -1112,7 +1112,7 @@
 <translation id="5823093032261493462">అయినా సరే మీరు <ph name="DOWNLOAD_DOMAIN" /> నుండి "<ph name="FILE_NAME" />"ను డౌన్‌లోడ్ చేసుకోవాలనుకుంటున్నారా?</translation>
 <translation id="5825135637446025843">Chrome రీస్టార్ట్ అయిన తర్వాత, మీ కొత్త ప్రొవైడర్‌లో సేవ్ చేసిన మీ సమాచారం పాస్‌వర్డ్‌లు, పాస్-కీలు, అడ్రస్‌లు, పేమెంట్ ఆప్షన్‌లు, ఇతర సమాచారాన్ని ఆటోఫిల్ చేయడానికి ఉపయోగించబడుతుంది.</translation>
 <translation id="5828921839638612740">మీరు Chrome సెట్టింగ్‌లలో డేటాను తొలగించవచ్చు</translation>
-<translation id="5829586821381540080"><ph name="FOLDER_NAME" />లో సేవ్ చేయబడింది</translation>
+<translation id="5829586821381540080"><ph name="FOLDER_NAME" />లో సేవ్ అయింది</translation>
 <translation id="583281660410589416">తెలియని</translation>
 <translation id="5833984609253377421">లింక్‌ను షేర్ చేయండి</translation>
 <translation id="5839058148541733625">Chrome డినో</translation>
@@ -1859,7 +1859,7 @@
 <translation id="8790193082819560975">కొత్త ట్యాబ్‌లో ప్రోడక్ట్ కోసం కొనుగోలు ఆప్షన్‌లను సెర్చ్ చేయడానికి ట్యాప్ చేయండి.</translation>
 <translation id="8798449543960971550">చదవండి</translation>
 <translation id="8803526663383843427">ఆన్‌లో ఉన్నప్పుడు</translation>
-<translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{మీ Google ఖాతా, <ph name="ACCOUNT_EMAIL" />‌లో ఐటెమ్ సేవ్ చేయబడింది.}other{మీ Google ఖాతా, <ph name="ACCOUNT_EMAIL" />‌లో ఐటెమ్‌లు సేవ్ చేయబడ్డాయి.}}</translation>
+<translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{మీ Google ఖాతా, <ph name="ACCOUNT_EMAIL" />‌లో ఐటెమ్ సేవ్ అయింది.}other{మీ Google ఖాతా, <ph name="ACCOUNT_EMAIL" />‌లో ఐటెమ్‌లు సేవ్ అయ్యాయి.}}</translation>
 <translation id="8804742093141782941">గ్రూప్‌ను అలాగే ఉంచండి</translation>
 <translation id="8812260976093120287">కొన్ని వెబ్‌సైట్‌ల‌లో, మీరు మీ పరికరంలో ఎగువ పేర్కొన్న మద్దతు గల చెల్లింపు యాప్‌లతోచెల్లించవచ్చు.</translation>
 <translation id="8816556050903368450">చేర్చిన లింక్: <ph name="ORIGIN" /></translation>

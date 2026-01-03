@@ -7458,7 +7458,7 @@
 <translation id="6111718295497931251">‏برداشتن دسترسی به Google Drive</translation>
 <translation id="6112727384379533756">افزودن بلیت</translation>
 <translation id="6112931163620622315">تلفن را بررسی کنید</translation>
-<translation id="6113434369102685411">‏تنظیم موتور جستجوی پیش‌فرض برای مرورگر Chrome و «راه‌انداز <ph name="DEVICE_TYPE" />»</translation>
+<translation id="6113434369102685411">‏تعیین کردن موتور جستجوی پیش‌فرض برای مرورگر Chrome و «راه‌انداز <ph name="DEVICE_TYPE" />»</translation>
 <translation id="6113832060210023016">راه‌انداز + کلیک</translation>
 <translation id="6113942107547980621">‏برای استفاده از Smart Lock، به نمایه کاربر اصلی در تلفن جابه‌جا شوید</translation>
 <translation id="6116921718742659598">تغییر تنظیمات زبان و ورودی</translation>
@@ -8472,7 +8472,7 @@
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> را نمی‌توان به‌عنوان ریشه اجرا کرد.</translation>
 <translation id="6812841287760418429">حفظ تغییرات</translation>
 <translation id="681360534161436378">{NUM_APPS,plural,offset:2 =1{سرپرستتان می‌تواند صفحه‌نمایش را با <ph name="APP0_NAME" /> ضبط کند.}=2{سرپرستتان می‌تواند صفحه‌نمایش را با <ph name="APP0_NAME" /> و <ph name="APP1_NAME" /> ضبط کند.}=3{سرپرستتان می‌تواند صفحه‌نمایش را با <ph name="APP0_NAME" />، <ph name="APP1_NAME" />، و ۱ برنامه دیگر ضبط کند.}one{سرپرستتان می‌تواند صفحه‌نمایش را با <ph name="APP0_NAME" />، <ph name="APP1_NAME" />، و # برنامه دیگر ضبط کند.}other{سرپرستتان می‌تواند صفحه‌نمایش را با <ph name="APP0_NAME" />، <ph name="APP1_NAME" />، و # برنامه دیگر ضبط کند.}}</translation>
-<translation id="6813907279658683733">تمام صفحه</translation>
+<translation id="6813907279658683733">کل صفحه‌نمایش</translation>
 <translation id="6814754908910736855">‏اطلاعات کارخواهان Wi-Fi Direct:</translation>
 <translation id="6815376457351236663">درهرصورت باز شود</translation>
 <translation id="6815787852028615386">این فایل فریبنده است و ممکن است تغییرات غیرمنتظره‌ای در دستگاهتان ایجاد کند</translation>
@@ -9291,7 +9291,7 @@
 <translation id="7393435859300249877">هنگام استفاده از برنامه‌های خاصی مثل برنامه‌های گپ تصویری، اگر با میکروفون بی‌صدا صحبت کنید به شما اطلاع داده می‌شود. صدا هرگز از دستگاهتان خارج نمی‌شود.</translation>
 <translation id="7395008140803590549">گواهینامه حذف نشد</translation>
 <translation id="7395163818609347230">اندازه پنجره‌های سمت راست تغییر کرد</translation>
-<translation id="7395774987022469191">تمام صفحه</translation>
+<translation id="7395774987022469191">کل صفحه‌نمایش</translation>
 <translation id="7396017167185131589">پوشه‌های هم‌رسانی‌شده اینجا ظاهر خواهند شد</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> در هنگام راه‌اندازی سیستم شروع به کار می‌کند و در پس‌زمینه همچنان فعال خواهد بود، حتی زمانی که تمام پنجره‌های دیگر <ph name="PRODUCT_NAME" /> را ببندید.</translation>
 <translation id="7399045143794278225">سفارشی کردن همگام‌سازی</translation>
@@ -10550,7 +10550,7 @@
 <translation id="8235418492073272647">صفحه هم‌رسانی‌شده از <ph name="DEVICE_NAME" /></translation>
 <translation id="8236802542508794819">این زبانه و زبانه‌های دیگر از منابع مشترکی استفاده می‌کنند که این امر می‌تواند در اشکال‌زدایی تداخل ایجاد کند.</translation>
 <translation id="8236911020904880539">خروج</translation>
-<translation id="8236917170563564587">درعوض این برگه را هم‌رسانی کنید</translation>
+<translation id="8236917170563564587">یا هم‌رسانی کردن این زبانه</translation>
 <translation id="8237647586961940482">صورتی تیره و قرمز</translation>
 <translation id="8239032431519548577">ثبت‌نام شرکت تکمیل شد</translation>
 <translation id="8239932336306009582">اجازه ندارد اعلان ارسال کند</translation>

@@ -546,7 +546,7 @@
 <translation id="186539747722034544">केबल तथा स्याटेलाइट प्रदायक</translation>
 <translation id="1870473978371099486">निजी ट्युसन सेवा</translation>
 <translation id="1871208020102129563">प्रोक्सी निश्चित प्रोक्सी सर्भर प्रयोग गर्न सेट गरिएको छ, .pac स्क्रिप्ट युआरएल होइन।</translation>
-<translation id="1871284979644508959">आवश्यक क्षेत्र</translation>
+<translation id="1871284979644508959">भर्नु पर्ने फिल्ड</translation>
 <translation id="1871739799120352748">धेरै महँगो मूल्य</translation>
 <translation id="1874224422119691492">तपाईं <ph name="SETTINGS" />मा गई पासवर्ड हाल्दा स्क्रिन लक प्रयोग गर्ने वा नगर्ने भन्ने कुरा बदल्न सक्नुहुन्छ</translation>
 <translation id="1875025161375567525">फोटो ट्रे</translation>
@@ -914,7 +914,7 @@
 <translation id="2452098632681057184">पर्यावरण विज्ञान तथा वातावरण</translation>
 <translation id="2452837234288608067">यस सम्बन्धमा मद्दत गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2453045048779611513">तपाईंको सङ्गठनले तपाईंले सेभ गर्न पाउने कुराहरूको सीमा तोकेको छ</translation>
-<translation id="2456755709261364512">तपाईंको ब्याट्री अनिवार्य रूपमा कम्तीमा पनि <ph name="REQUIRED_BATTERY_PRECENT" />% हुने गरी चार्ज गरिएको हुनु पर्छ</translation>
+<translation id="2456755709261364512">तपाईंको ब्याट्री कम्तीमा पनि <ph name="REQUIRED_BATTERY_PRECENT" />% हुने गरी चार्ज गरिएको हुनु पर्छ</translation>
 <translation id="2459882793359532780">लागू गरिएका ब्राउजरसम्बन्धी नीतिहरू (मेसिन तथा प्रोफाइलसम्बन्धी नीतिहरू)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core ले तपाईंलाई क्लाउडबाट ब्राउजरसम्बन्धी नीतिहरू कन्फिगर गर्ने प्रयोजनका लागि केन्द्रीकृत टुल प्रदान गर्छ</translation>
 <translation id="2461822463642141190">हालको</translation>
@@ -3596,7 +3596,7 @@
 <translation id="6805030849054648206">Envelope B6/C4</translation>
 <translation id="6807791860691150411">शिक्षा</translation>
 <translation id="6808579246645021886">सेयर गरिएका ट्याब तथा फाइलहरू</translation>
-<translation id="681021252041861472">अनिवार्य क्षेत्र</translation>
+<translation id="681021252041861472">भर्नु पर्ने फिल्ड</translation>
 <translation id="6810899417690483278">अनुकूलनको ID</translation>
 <translation id="6816109178681043245">खेलकुदसम्बन्धी सामान</translation>
 <translation id="6817217109584391709">JavaScript</translation>

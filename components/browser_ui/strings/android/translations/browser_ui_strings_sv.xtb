@@ -71,7 +71,7 @@
 <translation id="1799920918471566157">Chrome-tips</translation>
 <translation id="1816835383954230954">När den är aktiverad körs Chrome snabbare och funktioner som använder JavaScript bör fungera som de ska. När den är inaktiverad sänks prestandan men V8 blir mer motståndskraftig mot attacker.</translation>
 <translation id="1818308510395330587">Om du vill att <ph name="APP_NAME" /> ska använda AR måste du även aktivera kameran i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
-<translation id="1848033246551405023">Font (Sans Serif)</translation>
+<translation id="1848033246551405023">Font Sans Serif</translation>
 <translation id="1861262398884155592">Mappen är tom</translation>
 <translation id="1881806992065048905">Ark på nedre delen av skärmen för utseende på sidan Ny flik</translation>
 <translation id="1887786770086287077">Platsåtkomst har inaktiverats på enheten. Aktivera det i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
@@ -323,7 +323,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="4412683424767388419">Ark på nedre delen av skärmen för Chrome-färger har öppnats över halva skärmen</translation>
 <translation id="4412992751769744546">Tillåt cookies från tredje part</translation>
 <translation id="4419929467120297501">Chrome blockerar webbplatser från att spåra dig med hjälp av tredjepartscookies när du surfar. Öppna inställningarna för att <ph name="BEGIN_LINK" />hantera åtkomst till tredjepartscookies<ph name="END_LINK" />.</translation>
-<translation id="4425416282877905577">Font (Serif)</translation>
+<translation id="4425416282877905577">Font Serif</translation>
 <translation id="443121186588148776">Serieport</translation>
 <translation id="4434045419905280838">Popup-fönster och omdirigeringar</translation>
 <translation id="443552056913301231">Om du gör detta raderas all lokal data, inklusive cookies, och alla behörigheter för <ph name="ORIGIN" /> återställs</translation>

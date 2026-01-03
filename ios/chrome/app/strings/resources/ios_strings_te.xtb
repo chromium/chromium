@@ -229,7 +229,7 @@
 <translation id="1824490729233982311">మీరు మీ ఇతర పరికరాల నుండి ట్యాబ్‌లను స్వీకరించినప్పుడు అలర్ట్‌లను పొందండి.</translation>
 <translation id="1827529786398596735">మొదటి స్క్రీన్‌ను నొక్కి, పట్టుకోండి</translation>
 <translation id="1832848789136765277">మీ సింక్ చేసిన డేటాను మీరు ఎల్లప్పుడూ యాక్సెస్ చేయగలరని నిర్ధారించుకోవడానికి, అది మీరేనని వెరిఫై చేయండి</translation>
-<translation id="1836891464494477513">{count,plural, =1{బుక్‌మార్క్ మీ Google ఖాతా, {email}‌లో సేవ్ చేయబడింది}other{బుక్‌మార్క్‌లు మీ Google ఖాతా, {email}‌లో సేవ్ చేయబడ్డాయి}}</translation>
+<translation id="1836891464494477513">{count,plural, =1{బుక్‌మార్క్ మీ Google ఖాతా, {email}‌లో సేవ్ అయింది}other{బుక్‌మార్క్‌లు మీ Google ఖాతా, {email}‌లో సేవ్ అయ్యాయి}}</translation>
 <translation id="1838089197478136166">Walletలో తెరవాలా?</translation>
 <translation id="183878838231635348">మీ కోసం సేఫ్టీ చెక్ ఆటోమేటిక్‌గా గుర్తించే ఏవైనా గోప్యత లేదా సెక్యూరిటీ సమస్యలను ఈ కార్డ్ చూపుతుంది.</translation>
 <translation id="1845230888742614096">గ్రూప్‌ను అలాగే ఉంచండి</translation>
@@ -473,13 +473,13 @@
 <translation id="2761788987260570878">మీ సెర్చ్‌ను ఫోటో తీయండి</translation>
 <translation id="2761898608071930085">మరో ఖాతాను ఉపయోగించండి</translation>
 <translation id="2762000892062317888">ఇప్పుడే</translation>
-<translation id="2772667768515195373">మీరు Google ప్రోడక్ట్‌లలో సేవ్ చేసిన అడ్రస్‌లను ఉపయోగించవచ్చు. ఈ అడ్రస్ మీ Google ఖాతా <ph name="USER_EMAIL" />లో సేవ్ చేయబడింది.</translation>
+<translation id="2772667768515195373">మీరు Google ప్రోడక్ట్‌లలో సేవ్ చేసిన అడ్రస్‌లను ఉపయోగించవచ్చు. ఈ అడ్రస్ మీ Google ఖాతా <ph name="USER_EMAIL" />లో సేవ్ అయింది.</translation>
 <translation id="2773344962924806829">ఈమెయిల్ నోటిఫికేషన్‌లు</translation>
 <translation id="2781331604911854368">ఆన్‌లో ఉంది</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783161812871838616">డెస్క్‌టాప్ సైట్‌ను రిక్వెస్ట్ చేయండి</translation>
 <translation id="2789486458103222910">సరే</translation>
-<translation id="2789552044937754463">{COUNT,plural, =1{మీ Google ఖాతా, {EMAIL}‌లో పాస్‌వర్డ్ సేవ్ చేయబడింది}other{మీ Google ఖాతా, {EMAIL}‌లో పాస్‌వర్డ్‌లను సేవ్ చేయబడ్డాయి}}</translation>
+<translation id="2789552044937754463">{COUNT,plural, =1{మీ Google ఖాతా, {EMAIL}‌లో పాస్‌వర్డ్ సేవ్ అయింది}other{మీ Google ఖాతా, {EMAIL}‌లో పాస్‌వర్డ్‌లను సేవ్ అయ్యాయి}}</translation>
 <translation id="2791174088547598693">పాస్‌వర్డ్‌ను జోడించండి…</translation>
 <translation id="2793703503584038325">పాస్‌వర్డ్‌ను ఎంచుకుని, “షేర్ చేయండి” అనే చిహ్నాన్ని ట్యాప్ చేయండి</translation>
 <translation id="2797029671965852011">హిస్టరీని చూడండి</translation>
@@ -813,7 +813,7 @@
 <translation id="4158491215857439601">Password Manager</translation>
 <translation id="4159430626587776301">మీరు ఇటీవల బ్రౌజ్ చేసిన ప్రోడక్ట్‌ల రివ్యూలను చూడండి</translation>
 <translation id="4161488339191275792">మీ తెరిచిన ట్యాబ్‌లను ఆర్గనైజ్ చేయడానికి ట్యాబ్ గ్రూప్‌లను క్రియేట్ చేయండి</translation>
-<translation id="4163699139741158298">{count,plural, =1{బుక్‌మార్క్ "{title}"కు సేవ్ చేయబడింది. ఇది ఈ పరికరంలో మాత్రమే సేవ్ చేయబడుతుంది.}other{{count} బుక్‌మార్క్‌లు "{title}"లో సేవ్ అయ్యాయి. అవి ఈ పరికరంలో మాత్రమే సేవ్ చేయబడతాయి.}}</translation>
+<translation id="4163699139741158298">{count,plural, =1{బుక్‌మార్క్ "{title}"కు సేవ్ అయింది. ఇది ఈ డివైజ్‌లో మాత్రమే సేవ్ అవుతుంది.}other{{count} బుక్‌మార్క్‌లు "{title}"లో సేవ్ అయ్యాయి. అవి ఈ డివైజ్‌లో మాత్రమే సేవ్ అవుతాయి.}}</translation>
 <translation id="4164514562270305824">డౌన్‌లోడ్‌లను ఆటోమేటిక్‌గా తొలగించండి</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" />తో ముగిసే <ph name="NETWORK_NAME" /></translation>
 <translation id="4169535189173047238">అనుమతించవద్దు</translation>
@@ -1072,7 +1072,7 @@
 <translation id="5118462200606189584">ఖాతాను జోడించండి…</translation>
 <translation id="5118764316110575523">ఆఫ్ చేయబడి ఉంది</translation>
 <translation id="5119329531859909472">ప్రోడక్ట్‌ను ట్రాక్ చేయడానికి, 'ట్రాక్ చేయండి' ఆప్షన్‌ను ట్యాప్ చేయండి</translation>
-<translation id="5121618895923301719">మీరు ఇప్పటికే ఈ ప్రోడక్ట్‌ను ట్రాక్ చేస్తున్నారు. ఈ పేజీ <ph name="BEGIN_LINK" />మొబైల్ బుక్‌మార్క్‌ల<ph name="END_LINK" />‌లో సేవ్ చేయబడింది.</translation>
+<translation id="5121618895923301719">మీరు ఇప్పటికే ఈ ప్రోడక్ట్‌ను ట్రాక్ చేస్తున్నారు. ఈ పేజీ <ph name="BEGIN_LINK" />మొబైల్ బుక్‌మార్క్‌ల<ph name="END_LINK" />‌లో సేవ్ అయింది.</translation>
 <translation id="512533434554095351">మీ వద్ద అనేక పాస్‌వర్డ్ సమస్యలు ఉన్నాయి.</translation>
 <translation id="5127538504377457572"><ph name="DAYS" /> రోజుల క్రితం యాక్టివ్‌గా ఉంది</translation>
 <translation id="5128788795241319992">కొత్త మెనూను అన్వేషించండి</translation>
@@ -1108,7 +1108,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5229315183665181733">సైట్‌ను ఎడిట్ చేయండి</translation>
 <translation id="5233638681132016545">కొత్త‌ ట్యాబ్</translation>
-<translation id="5234094073825090254">{count,plural, =1{మీ Google ఖాతా, {email}‌లో బుక్‌మార్క్ సేవ్ చేయబడింది.}other{మీ Google ఖాతా, {email}‌లో బుక్‌మార్క్‌లు సేవ్ చేయబడ్డాయి.}}</translation>
+<translation id="5234094073825090254">{count,plural, =1{మీ Google ఖాతా, {email}‌లో బుక్‌మార్క్ సేవ్ అయింది.}other{మీ Google ఖాతా, {email}‌లో బుక్‌మార్క్‌లు సేవ్ అయ్యాయి.}}</translation>
 <translation id="5234764350956374838">తొలగించండి</translation>
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" />, <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />‌కు సైన్ ఇన్ చేయడానికి Google Password Managerను ఉపయోగించినప్పుడు, వారు ఇప్పుడు మీ యూజర్‌నేమ్‌ను, పాస్‌వర్డ్‌ను ఉపయోగించవచ్చు.</translation>
 <translation id="5241106044372754566">ప్రస్తుతం <ph name="NAME" />, <ph name="EMAIL" />, ప్రస్తుతంఎంపిక చేయబడింది, ఇది మీ సంస్థ ద్వారా మేనేజ్ చేయబడుతోంది. ఒక ఖాతాను ఎంచుకోండి.</translation>
@@ -1369,7 +1369,7 @@
 <translation id="6168647875670665004">కథనం సూచనలు</translation>
 <translation id="6169031022444660352">సేవ్ చేసిన అన్ని ఆధారాలను తొలగించడానికి, మీరు ముందుగా మీ పరికరంలో పాస్‌కోడ్‌ను సెటప్ చేయాలి.</translation>
 <translation id="6172428250974276014">అవును, డేటాను వేరుగా సేవ్ చేయండి (సిఫార్సు చేశారు)</translation>
-<translation id="6173499589275053515">పాస్‌వర్డ్ మీ Google ఖాతా, <ph name="EMAIL" />లో సేవ్ చేయబడింది</translation>
+<translation id="6173499589275053515">పాస్‌వర్డ్ మీ Google ఖాతా, <ph name="EMAIL" />లో సేవ్ అయింది</translation>
 <translation id="6181969657494915430">సెర్చ్ స్క్రీన్</translation>
 <translation id="6182851675249594487">కలర్ థీమ్‌ను అనుకూలంగా మార్చండి</translation>
 <translation id="6187302354554850004">చివరగా సింక్ చేసింది: <ph name="LAST_USED_TIME" /></translation>
@@ -1558,7 +1558,7 @@
 <translation id="6806550742467879742">పేజీ టూల్స్</translation>
 <translation id="6807287147325542056">ఇతర యాప్స్‌లోని పాస్‌వర్డ్‌లు</translation>
 <translation id="681368974849482173">అంశం క్రియేట్ చేయబడింది</translation>
-<translation id="6825078212112407882">{count,plural, =1{బుక్‌మార్క్ మీ Google ఖాతా, {email}‌లో సేవ్ చేయబడింది}other{{count} బుక్‌మార్క్‌లు మీ Google ఖాతా, {email}‌లో సేవ్ చేయబడ్డాయి}}</translation>
+<translation id="6825078212112407882">{count,plural, =1{బుక్‌మార్క్ మీ Google ఖాతా, {email}‌లో సేవ్ అయింది}other{{count} బుక్‌మార్క్‌లు మీ Google ఖాతా, {email}‌లో సేవ్ అయ్యాయి}}</translation>
 <translation id="6830728435402077660">సురక్షితం కాదు</translation>
 <translation id="6831043979455480757">అనువదించు</translation>
 <translation id="6842136130964845393">మీరు మీ సేవ్ చేయబడిన పాస్‌వర్డ్‌లను ఎల్లప్పుడూ యాక్సెస్ చేయగలరని నిర్ధారించుకోవడానికి, అది మీరేనని వెరిఫై చేయండి</translation>
@@ -1695,7 +1695,7 @@
 <translation id="7399802613464275309">సేఫ్టీ చెక్</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7402375256128852434">ఇటీవలి ట్యాబ్‌లను జోడించండి</translation>
-<translation id="7402602673739047753">{count,plural, =1{ఈ పరికరంలో 1 బుక్‌మార్క్ మాత్రమే సేవ్ చేయబడింది. దీన్ని మీ ఇతర పరికరాలలో ఉపయోగించడానికి, మీ Google ఖాతా, {email}‌లో దీన్ని సేవ్ చేయండి.}other{ఈ పరికరంలో {count} బుక్‌మార్క్‌లు మాత్రమే సేవ్ చేయబడ్డాయి. వాటిని మీ ఇతర పరికరాలలో ఉపయోగించడానికి, వాటిని మీ Google ఖాతా, {email}‌లో సేవ్ చేయండి.}}</translation>
+<translation id="7402602673739047753">{count,plural, =1{ఈ డివైజ్‌లో 1 బుక్‌మార్క్ మాత్రమే సేవ్ అయింది. దీన్ని మీ ఇతర డివైజ్‌ల్లో ఉపయోగించడానికి, మీ Google ఖాతా, {email}‌లో దీన్ని సేవ్ చేయండి.}other{ఈ డివైజ్‌లో {count} బుక్‌మార్క్‌లు మాత్రమే సేవ్ అయ్యాయి. వాటిని మీ ఇతర డివైజ్‌ల్లో ఉపయోగించడానికి, మీ Google ఖాతా, {email}‌లో సేవ్ చేయండి.}}</translation>
 <translation id="7403227077090127147"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) తక్షణమే “<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్‌ను కోల్పోతారు</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> చదవని కథనాలు ఉన్నాయి.</translation>
 <translation id="7412027924265291969">కొనసాగించండి</translation>
@@ -1793,7 +1793,7 @@
 <translation id="7712361583414030698">ఆఫ్‌లైన్ వెర్షన్‌ను చూస్తున్నారు</translation>
 <translation id="7719038820139380048">మీ ఆసక్తుల ఆధారంగా కంటెంట్‌ను పొందడానికి సైన్ ఇన్ చేయండి.</translation>
 <translation id="7720901330179380635"><ph name="SEARCH_ENGINE" />‌ను ఉపయోగించి సెర్చ్ చేస్తోంది</translation>
-<translation id="7724085059277147439">{count,plural, =1{మీ Google ఖాతా, {email}‌లో ఐటెమ్ సేవ్ చేయబడింది}other{మీ Google ఖాతా, {email}‌లో ఐటెమ్‌లు సేవ్ చేయబడ్డాయి}}</translation>
+<translation id="7724085059277147439">{count,plural, =1{మీ Google ఖాతా, {email}‌లో ఐటెమ్ సేవ్ అయింది}other{మీ Google ఖాతా, {email}‌లో ఐటెమ్‌లు సేవ్ అయ్యాయి}}</translation>
 <translation id="7729458878441927652">మీ ఇతర పరికరాల నుండి ట్యాబ్‌లను చూడటానికి, మీ ట్యాబ్‌లను, హిస్టరీని సింక్ చేయండి.</translation>
 <translation id="7730020510075123961">లేదు, డేటాను విలీనం చేయండి</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. ఈ పరికరంలో మాత్రమే ఉంది.</translation>
@@ -2130,7 +2130,7 @@
 <translation id="8907722425137681851">పేజీలో కనుగొనండి…</translation>
 <translation id="8909135823018751308">షేర్ చేయండి…</translation>
 <translation id="8909459547399237818">Password Managerను ఎంచుకుని, ఆపై విడ్జెట్‌ను జోడించండి ఆప్షన్‌ను ట్యాప్ చేయండి</translation>
-<translation id="891282356902782456">ఈ పాస్‌వర్డ్ ఈ పరికరంలో మాత్రమే సేవ్ చేయబడింది. దీన్ని మీ ఇతర పరికరాలలో ఉపయోగించడానికి, మీ Google ఖాతా, <ph name="EMAIL" />లో దీన్ని సేవ్ చేయండి.</translation>
+<translation id="891282356902782456">ఈ పాస్‌వర్డ్ ఈ డివైజ్‌లో మాత్రమే సేవ్ అయింది. దీన్ని మీ ఇతర డివైజ్‌ల్లో ఉపయోగించడానికి, మీ Google ఖాతా, <ph name="EMAIL" />లో దీన్ని సేవ్ చేయండి.</translation>
 <translation id="8915916167043355778">అన్నింటినీ మూసివేయండి</translation>
 <translation id="892185197271200809">అందరూ వెంటనే "<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్‌ను కోల్పోతారు, అది మీ పరికరాలన్నింటి నుండి తొలగించబడుతుంది</translation>
 <translation id="8923178205567790913">పాస్‌వర్డ్‌లు</translation>

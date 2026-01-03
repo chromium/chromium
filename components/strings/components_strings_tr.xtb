@@ -696,7 +696,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2130448033692577677">Belirttiğiniz şablonlar, DnsOverHttpsMode politikası ayarlanmadığı için uygulanamayabilir.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
-<translation id="2132825047782982803">Bunlar rastgele sırada gösterilir. Varsayılan ayarı dilediğiniz zaman değiştirebilirsiniz.</translation>
+<translation id="2132825047782982803">Sıralama rastgeledir. Varsayılan ayarı dilediğiniz zaman değiştirebilirsiniz.</translation>
 <translation id="2137891579555018930">İzin bekleniyor...</translation>
 <translation id="213826338245044447">Mobil Yer İşaretleri</translation>
 <translation id="2141000681034340397">Girişinizi düzenleyin</translation>
@@ -4109,7 +4109,7 @@ Ek ayrıntılar:
 <translation id="7613889955535752492">Son kullanım tarihi: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında şifrelerinizi görüntüleyip yönetmek için Sekme'ye, sonra Enter'a basın</translation>
 <translation id="7615932826417658001">Kimlik kartı ekleyin</translation>
-<translation id="7616390733770379387">Bunlar rastgele sırada gösterilir.</translation>
+<translation id="7616390733770379387">Sıralama rastgeledir.</translation>
 <translation id="7616645509853975347">Yöneticiniz, tarayıcınızda Chrome Enterprise Connectors özelliğini etkinleştirdi. Bu bağlayıcıların verilerinizin bir kısmına erişimi vardır.</translation>
 <translation id="7617825962482469577">Zarf C7/C6</translation>
 <translation id="7618270539713451657">Dövüş Sanatları</translation>
