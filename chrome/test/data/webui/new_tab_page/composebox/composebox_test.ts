@@ -225,7 +225,7 @@ suite('NewTabPageComposeboxTest', () => {
         Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
 
     // Check submit button disabled.
-    assertStyle(composeboxElement.$.submitContainer, 'cursor', 'default');
+    assertStyle(composeboxElement.$.submitContainer, 'cursor', 'not-allowed');
     // Add input.
     composeboxElement.$.input.value = 'test';
     composeboxElement.$.input.dispatchEvent(new Event('input'));
@@ -238,8 +238,10 @@ suite('NewTabPageComposeboxTest', () => {
     await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
     await microtasksFinished();
 
-    // Check submit button enabled and file uploaded.
-    assertStyle(composeboxElement.$.submitContainer, 'cursor', 'pointer');
+    /* Submit button will not be enabled since frontend has not been
+     * notified that file is done uploading. Carousel should
+     * still have the file marked as added.
+     */
     assertEquals(composeboxElement.$.context.$.carousel.files.length, 1);
 
     // Clear input.
@@ -250,7 +252,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(searchboxHandler.getCallCount('clearFiles'), 1);
 
     // Check submit button disabled and files empty.
-    assertStyle(composeboxElement.$.submitContainer, 'cursor', 'default');
+    assertStyle(composeboxElement.$.submitContainer, 'cursor', 'not-allowed');
     assertFalse(!!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));
 
     // Close composebox.
@@ -262,10 +264,18 @@ suite('NewTabPageComposeboxTest', () => {
 
   test('upload image', async () => {
     createComposeboxElement();
-    assertStyle(composeboxElement.$.submitContainer, 'cursor', 'default');
-    const token = {low: BigInt(1), high: BigInt(2)};
+    // Submit button is disabled without any input.
+    assertStyle(composeboxElement.$.submitContainer, 'cursor', 'not-allowed');
     await uploadFileAndVerify(
-        token, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
+        FAKE_TOKEN_STRING, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        FAKE_TOKEN_STRING,
+        FileUploadStatus.kUploadSuccessful,
+        null,
+    );
+    await composeboxElement.$.context.updateComplete;
+    await microtasksFinished();
+
     assertStyle(composeboxElement.$.submitContainer, 'cursor', 'pointer');
   });
 
@@ -965,7 +975,7 @@ suite('NewTabPageComposeboxTest', () => {
         }));
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
-    composeboxElement.$.submitContainer.click();
+    composeboxElement.$.submitOverlay.click();
     await microtasksFinished();
 
     // Assert call occurs.
@@ -989,7 +999,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertTrue(submitButton.hasAttribute('disabled'));
 
     // Act.
-    composeboxElement.$.submitContainer.click();
+    composeboxElement.$.submitOverlay.click();
     await microtasksFinished();
 
     // Assert no calls were made.
@@ -1716,7 +1726,7 @@ suite('NewTabPageComposeboxTest', () => {
     await uploadFileAndVerify(
         token, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
 
-    composeboxElement.$.submitContainer.click();
+    composeboxElement.$.submitOverlay.click();
     await microtasksFinished();
 
     // Assert call occurs.
@@ -2445,11 +2455,12 @@ suite('NewTabPageComposeboxTest', () => {
     await collapsibleBox.updateComplete;
 
     // Submit query.
-    collapsibleBox.$.submitContainer.click();
+    collapsibleBox.$.submitOverlay.click();
     await collapsibleBox.updateComplete;
     await microtasksFinished();
 
-    assertStyle(composeboxElement.$.submitContainer, 'cursor', 'default');
+    // Submit container should be disabled.
+    assertStyle(composeboxElement.$.submitContainer, 'cursor', 'not-allowed');
     assertEquals('', collapsibleInput.value, 'Input should be cleared');
   });
 
