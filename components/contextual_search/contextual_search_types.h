@@ -12,6 +12,7 @@
 #include "components/sessions/core/session_id.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 #include "url/gurl.h"
+#include "components/lens/contextual_input.h"
 
 namespace lens {
 enum class MimeType;
@@ -109,6 +110,9 @@ struct FileInfo {
 
   // The raw response bodies from the upload requests.
   std::vector<std::string> response_bodies;
+
+  // The input data associated with this file.
+  std::unique_ptr<lens::ContextualInputData> input_data;
 };
 
 // LINT.IfChange(SubmissionType)

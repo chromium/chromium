@@ -136,6 +136,11 @@ void ContextualTasksOmniboxClient::OnAutocompleteAccept(
   composebox_handler_->CreateAndSendQueryMessage(query_text);
 }
 
+// The amount of change in bytes that is considered a significant change and
+// should trigger a page content update request. This provides tolerance in
+// case there is slight variation in the retrieved bytes in between calls.
+constexpr float kByteChangeTolerancePercent = 0.01;
+
 }  // namespace
 
 ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
@@ -335,12 +340,14 @@ void ContextualTasksComposeboxHandler::OnTabContextualizationFetched(
     return;
   }
 
-  // TODO(crbug.com/468431232): Add logic to check if the content has actually
-  // changed significantly enough to warrant a re-upload. For now, always
-  // re-upload.
   std::optional<int64_t> maybe_context_id = std::nullopt;
   if (page_content_data->tab_session_id.has_value()) {
     maybe_context_id = GetContextIdForTab(*context, *page_content_data);
+  }
+
+  if (!ShouldUploadTabContext(maybe_context_id, *page_content_data)) {
+    barrier_closure.Run();
+    return;
   }
 
   UploadTabContextWithData(
@@ -387,19 +394,10 @@ ContextualTasksComposeboxHandler::GetTabsToUpdate(
                                             tabs_to_update.end());
   }
 
-  std::unique_ptr<url_deduplication::URLDeduplicationHelper>
-      url_duplication_helper =
-          contextual_tasks::CreateURLDeduplicationHelperForContextualTask();
-  std::vector<const contextual_tasks::UrlAttachment*> matching_attachments =
-      context.GetMatchingUrlAttachments(
-          active_tab->GetContents()->GetLastCommittedURL(),
-          url_duplication_helper.get());
-
-  for (const auto* attachment : matching_attachments) {
-    if (attachment->GetTabSessionId() == active_tab_session_id) {
-      tabs_to_update.insert(active_tab);
-      break;
-    }
+  if (GetMatchingAttachment(context,
+                            active_tab->GetContents()->GetLastCommittedURL(),
+                            active_tab_session_id)) {
+    tabs_to_update.insert(active_tab);
   }
 
   return std::vector<tabs::TabInterface*>(tabs_to_update.begin(),
@@ -429,26 +427,176 @@ std::optional<int64_t> ContextualTasksComposeboxHandler::GetContextIdForTab(
     return std::nullopt;
   }
 
+  if (!page_content_data.page_url.has_value()) {
+    return std::nullopt;
+  }
+
+  if (GetMatchingAttachment(context, page_content_data.page_url.value(),
+                            tab_session_id)) {
+    const auto& file_info_list = search_context_controller->GetFileInfoList();
+    for (const auto* file_info : file_info_list) {
+      if (file_info->tab_session_id == tab_session_id) {
+        return file_info->GetContextId();
+      }
+    }
+  }
+  return std::nullopt;
+}
+
+bool ContextualTasksComposeboxHandler::ShouldUploadTabContext(
+    std::optional<int64_t> context_id,
+    const lens::ContextualInputData& page_content_data) {
+  // If the tab was not previously uploaded, or if the tab has expired, or if
+  // the tab contents have changed significantly, the tab context should be
+  // uploaded.
+  if (!context_id.has_value()) {
+    return true;
+  }
+
+  if (!page_content_data.tab_session_id.has_value()) {
+    return true;
+  }
+  SessionID tab_session_id = page_content_data.tab_session_id.value();
+
+  auto* contextual_session_handle = GetContextualSessionHandle();
+  if (!contextual_session_handle) {
+    return true;
+  }
+
+  auto* search_context_controller = contextual_session_handle->GetController();
+  if (!search_context_controller) {
+    return true;
+  }
+
+  const auto& file_info_list = search_context_controller->GetFileInfoList();
+  const contextual_search::FileInfo* matching_file_info = nullptr;
+  for (const auto* file_info : file_info_list) {
+    if (file_info->tab_session_id == tab_session_id) {
+      matching_file_info = file_info;
+      break;
+    }
+  }
+
+  if (!matching_file_info) {
+    return true;
+  }
+
+  if (matching_file_info->upload_status ==
+      contextual_search::FileUploadStatus::kUploadExpired) {
+    return true;
+  }
+
+  if (!matching_file_info->input_data) {
+    return true;
+  }
+
+  const auto& old_data = *matching_file_info->input_data;
+  const auto& new_data = page_content_data;
+
+  // Check if primary content type changed.
+  if (old_data.primary_content_type != new_data.primary_content_type) {
+    return true;
+  }
+
+  // Check if page contents changed.
+  if (new_data.primary_content_type.has_value()) {
+    const std::vector<lens::ContextualInput>& old_inputs =
+        old_data.context_input.has_value()
+            ? *old_data.context_input
+            : std::vector<lens::ContextualInput>();
+    const std::vector<lens::ContextualInput>& new_inputs =
+        new_data.context_input.has_value()
+            ? *new_data.context_input
+            : std::vector<lens::ContextualInput>();
+    auto old_it = std::ranges::find_if(old_inputs, [&](const auto& input) {
+      return input.content_type_ == new_data.primary_content_type.value();
+    });
+    auto new_it = std::ranges::find_if(new_inputs, [&](const auto& input) {
+      return input.content_type_ == new_data.primary_content_type.value();
+    });
+
+    if (old_it != old_inputs.end() && new_it != new_inputs.end()) {
+      const float old_size = old_it->bytes_.size();
+      const float new_size = new_it->bytes_.size();
+      if (old_size > 0) {
+        const float percent_changed = abs((new_size - old_size) / old_size);
+        if (percent_changed >= kByteChangeTolerancePercent) {
+          return true;
+        }
+      } else if (new_size > 0) {
+        return true;
+      }
+    } else if (old_it != old_inputs.end() || new_it != new_inputs.end()) {
+      // One has content and the other doesn't.
+      return true;
+    }
+  }
+
+  // Check if viewport screenshot changed.
+  // TODO(crbug.com/471960792): Add support for only recontextualizing the
+  // screenshot when the viewport has changed but the page contents are the
+  // same.
+
+  // The screenshot may be in either the byte array or bitmap members of
+  // ContextualInputData. Both should be checked for changes.
+  bool old_has_screenshot = old_data.viewport_screenshot_bytes.has_value() &&
+                            !old_data.viewport_screenshot_bytes->empty();
+  bool new_has_screenshot = new_data.viewport_screenshot_bytes.has_value() &&
+                            !new_data.viewport_screenshot_bytes->empty();
+
+  if (old_has_screenshot != new_has_screenshot) {
+    return true;
+  }
+
+  if (old_has_screenshot) {
+    const auto& old_bytes = old_data.viewport_screenshot_bytes.value();
+    const auto& new_bytes = new_data.viewport_screenshot_bytes.value();
+    if (old_bytes.size() != new_bytes.size()) {
+      return true;
+    }
+    // Exact byte comparison for screenshot.
+    if (old_bytes != new_bytes) {
+      return true;
+    }
+  }
+
+  bool old_has_bitmap = old_data.viewport_screenshot.has_value();
+  bool new_has_bitmap = new_data.viewport_screenshot.has_value();
+
+  if (old_has_bitmap != new_has_bitmap) {
+    return true;
+  }
+
+  if (old_has_bitmap) {
+    const auto& old_bitmap = old_data.viewport_screenshot.value();
+    const auto& new_bitmap = new_data.viewport_screenshot.value();
+    if (!new_bitmap.drawsNothing() &&
+        (old_bitmap.drawsNothing() ||
+         !gfx::BitmapsAreEqual(old_bitmap, new_bitmap))) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+const contextual_tasks::UrlAttachment*
+ContextualTasksComposeboxHandler::GetMatchingAttachment(
+    const contextual_tasks::ContextualTaskContext& context,
+    const GURL& url,
+    SessionID session_id) {
   std::unique_ptr<url_deduplication::URLDeduplicationHelper>
       url_duplication_helper =
           contextual_tasks::CreateURLDeduplicationHelperForContextualTask();
   std::vector<const contextual_tasks::UrlAttachment*> matching_attachments =
-      context.GetMatchingUrlAttachments(page_content_data.page_url.value(),
-                                        url_duplication_helper.get());
+      context.GetMatchingUrlAttachments(url, url_duplication_helper.get());
 
   for (const auto* attachment : matching_attachments) {
-    // Check if the attachment matches the tab session ID.
-    if (attachment->GetTabSessionId() == tab_session_id) {
-      const auto& file_info_list = search_context_controller->GetFileInfoList();
-      for (const auto* file_info : file_info_list) {
-        if (file_info->tab_session_id == tab_session_id) {
-          return file_info->GetContextId();
-        }
-      }
-      break;
+    if (attachment->GetTabSessionId() == session_id) {
+      return attachment;
     }
   }
-  return std::nullopt;
+  return nullptr;
 }
 
 void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
