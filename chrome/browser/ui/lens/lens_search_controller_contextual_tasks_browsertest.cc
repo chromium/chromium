@@ -36,6 +36,8 @@ class LensSearchControllerHelper : public LensSearchController {
   explicit LensSearchControllerHelper(tabs::TabInterface* tab)
       : LensSearchController(tab) {}
   ~LensSearchControllerHelper() override = default;
+
+  bool should_route_to_contextual_tasks() const override { return true; }
 };
 
 // Override the factory to create our helper.
@@ -152,9 +154,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
 
   // Simulate a region selection which calls IssueLensRegionRequest.
   auto region = lens::mojom::CenterRotatedBox::New();
-  region->box = gfx::RectF(0, 0, 10, 10);
+  region->box = gfx::RectF(0.5, 0.5, 0.1, 0.1);
   region->coordinate_type =
-      lens::mojom::CenterRotatedBox_CoordinateType::kImage;
+      lens::mojom::CenterRotatedBox_CoordinateType::kNormalized;
   controller->lens_overlay_controller()->IssueLensRegionRequestForTesting(
       std::move(region), /*is_click=*/false);
 

@@ -33,6 +33,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
@@ -446,6 +447,19 @@ void ContextualTasksUI::SetIsAiPage(bool is_ai_page) {
   if (page_) {
     page_->OnAiPageStatusChanged(is_ai_page);
   }
+
+  // When AI page is first loaded, close the Lens overlay if it's open.
+  if (is_ai_page && !was_ai_page_) {
+    auto* browser = GetBrowser();
+    if (browser) {
+      if (auto* controller = LensSearchController::FromTabWebContents(
+              browser->GetTabStripModel()->GetActiveWebContents())) {
+        controller->CloseLensAsync(
+            lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted);
+      }
+    }
+  }
+  was_ai_page_ = is_ai_page;
 }
 
 const GURL& ContextualTasksUI::GetInnerFrameUrl() const {

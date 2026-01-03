@@ -218,12 +218,13 @@ void ContextualTasksComposeboxHandler::SubmitQuery(
   CreateAndSendQueryMessage(query_text);
   // TODO(crbug.com/469535685): This should reflect the response from the
   // webview when PostMessageToWebview provides one.
-  CloseLensOverlay(
-      lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted);
 }
 
 void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
     const std::string& query) {
+  // Every time a query is submitted, close the Lens overlay if it's open.
+  CloseLensOverlay(
+      lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted);
   std::optional<base::Uuid> task_id = web_ui_controller_->GetTaskId();
   auto* contextual_tasks_service = GetContextualTasksService();
   if (!task_id.has_value() || !contextual_tasks_service) {

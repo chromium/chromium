@@ -445,6 +445,7 @@ void ContextualTasksSidePanelCoordinator::
     session_handle = contextual_search_service_->CreateSession(
         ntp_composebox::CreateQueryControllerConfigParams(),
         contextual_search::ContextualSearchSource::kContextualTasks);
+    session_handle->NotifySessionStarted();
   }
 
   // Update the session handle with the new task ID.

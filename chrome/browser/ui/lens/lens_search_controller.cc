@@ -797,13 +797,21 @@ void LensSearchController::NotifyOverlayOpened() {
 void LensSearchController::OnThumbnailProcessed(
     bool is_region_selection,
     const std::string& thumbnail_uri) {
+  if (should_route_to_contextual_tasks()) {
+    if (!is_region_selection || !thumbnail_created_callback_) {
+      return;
+    }
+    // This function returns full viewport thumbnails and region selection
+    // thumbnails. Only region search selections should trigger the thumbnail
+    // created callback to be run.
+    thumbnail_created_callback_.Run(thumbnail_uri);
+    return;
+  }
+
   lens_searchbox_controller_->SetSearchboxThumbnail(thumbnail_uri);
   if (is_region_selection &&
       lens_overlay_controller_->use_aim_for_visual_search()) {
     lens_composebox_controller_->AddVisualSelectionContext(thumbnail_uri);
-  }
-  if (thumbnail_created_callback_) {
-    thumbnail_created_callback_.Run(thumbnail_uri);
   }
 }
 
@@ -825,6 +833,7 @@ void LensSearchController::CloseLensPart2(
   lens_overlay_query_controller_.reset();
   query_router_.reset();
   invocation_source_.reset();
+  thumbnail_created_callback_.Reset();
 
   // Record end of session metrics.
   lens_session_metrics_logger_->RecordEndOfSessionMetrics(dismissal_source);
@@ -979,7 +988,7 @@ void LensSearchController::HandleInteractionResponse(
 void LensSearchController::HandleThumbnailCreated(
     const std::string& thumbnail_bytes,
     const SkBitmap& region_bitmap) {
-  lens_overlay_controller_->HandleRegionBitmapCreated(region_bitmap);
+  lens_overlay_controller()->HandleRegionBitmapCreated(region_bitmap);
 
   std::string thumbnail_uri =
       webui::MakeDataURIForImage(base::as_byte_span(thumbnail_bytes), "jpeg");
