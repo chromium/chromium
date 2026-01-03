@@ -1343,6 +1343,62 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>
 
+<histogram name="SBClientPhishing.ServerSideModelExecutionDuration" units="ms"
+    expires_after="2026-06-28">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the duration it took to execute the server-side model. This happens
+    for Enhanced Safe Browsing enabled users who called to execute the
+    server-side model when inquiring for intelligent scan.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.ServerSideModelExecutionError"
+    enum="OptimizationGuideModelExecutionError" expires_after="2026-06-28">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the error returned in the server-side model execution response for
+    intelligent scan. Recorded every time an error is encountered during
+    server-side model execution.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.ServerSideModelExecutionSuccess"
+    enum="BooleanSuccess" expires_after="2026-06-28">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the server-side model execution is successful or not. This
+    happens for Enhanced Safe Browsing enabled users who called to execute the
+    server-side model when inquiring for intelligent scan.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.ServerSideModelHitQuotaAtInquiryTime"
+    enum="BooleanHit" expires_after="2026-06-28">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the user has hit the quota for intelligent scan when they
+    try to start an intelligent scan. This is logged if the server-side model is
+    available.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.ServerSideModelPrefEmptyWhenRemovingQuota"
+    enum="BooleanEmpty" expires_after="2026-06-28">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the pref list for intelligent scan timestamps is empty when
+    we try to remove a timestamp from it. This is logged when a scam warning is
+    shown to the user, which refunds the quota. This should never happen if the
+    pref is intact.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.TimeSinceLastReportAtLimit" units="ms"
     expires_after="2026-02-22">
   <owner>andysjlim@chromium.org</owner>

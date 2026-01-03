@@ -54,6 +54,7 @@ class ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry {
           result);
 
   void RemoteExecutionCallback(
+      base::TimeTicks remote_execution_start_time,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
@@ -93,7 +94,7 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::Start(
         std::move(request), /*options=*/{},
         base::BindOnce(&ClientSideDetectionIntelligentScanDelegateAndroid::
                            Inquiry::RemoteExecutionCallback,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
     // Do not access `parent_` at this point. The callback may be called
     // immediately and this object will delete itself.
     return;
@@ -184,13 +185,22 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
 
 void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
     RemoteExecutionCallback(
+        base::TimeTicks remote_execution_start_time,
         optimization_guide::OptimizationGuideModelExecutionResult result,
         std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   CHECK(callback_);
+  bool execution_success = result.response.has_value();
+  base::UmaHistogramBoolean("SBClientPhishing.ServerSideModelExecutionSuccess",
+                            execution_success);
+  base::UmaHistogramMediumTimes(
+      "SBClientPhishing.ServerSideModelExecutionDuration",
+      base::TimeTicks::Now() - remote_execution_start_time);
   // Server model does not return model version.
   int model_version = IntelligentScanResult::kModelVersionUnavailable;
-  if (!result.response.has_value()) {
-    // TODO(crbug.com/462643935): Log error_response from result.execution_info.
+  if (!execution_success) {
+    base::UmaHistogramEnumeration(
+        "SBClientPhishing.ServerSideModelExecutionError",
+        result.response.error().error());
     std::move(callback_).Run(
         IntelligentScanResult::Failure(model_version, ModelType::kServerSide));
     return;
@@ -312,14 +322,24 @@ std::optional<base::UnguessableToken>
 ClientSideDetectionIntelligentScanDelegateAndroid::StartIntelligentScan(
     std::string rendered_texts,
     IntelligentScanDoneCallback callback) {
-  if (!IsIntelligentScanAvailable(/*log_failed_eligibility_reason=*/false) ||
-      IsAtIntelligentScanQuota()) {
-    // TODO(crbug.com/462643935): Log a metric for quota exceeded. Add a new
-    // IntelligentScanResult for quota exceeded.
+  ModelType model_type =
+      is_server_model_enabled_ ? ModelType::kServerSide : ModelType::kOnDevice;
+  if (!IsIntelligentScanAvailable(/*log_failed_eligibility_reason=*/false)) {
     std::move(callback).Run(IntelligentScanResult::Failure(
-        IntelligentScanResult::kModelVersionUnavailable,
-        is_server_model_enabled_ ? ModelType::kServerSide
-                                 : ModelType::kOnDevice));
+        IntelligentScanResult::kModelVersionUnavailable, model_type));
+    return std::nullopt;
+  }
+  bool is_at_quota = IsAtIntelligentScanQuota();
+  if (is_server_model_enabled_) {
+    // Only server model checks quota at inquiry time.
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.ServerSideModelHitQuotaAtInquiryTime", is_at_quota);
+  }
+  if (is_at_quota) {
+    // TODO(crbug.com/462643935): Add a new IntelligentScanResult for quota
+    // exceeded.
+    std::move(callback).Run(IntelligentScanResult::Failure(
+        IntelligentScanResult::kModelVersionUnavailable, model_type));
     return std::nullopt;
   }
 
@@ -453,7 +473,9 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::
     RemoveLastIntelligentScanQuota() {
   ScopedListPrefUpdate update(pref_.get(),
                               prefs::kSafeBrowsingCsdIntelligentScanTimestamps);
-  // TODO(crbug.com/462643935): Add a metric on how often update is empty.
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.ServerSideModelPrefEmptyWhenRemovingQuota",
+      update->empty());
   if (!update->empty()) {
     update->erase(update.Get().end() - 1);
   }

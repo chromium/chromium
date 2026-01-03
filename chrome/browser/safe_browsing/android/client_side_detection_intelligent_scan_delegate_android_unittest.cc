@@ -299,6 +299,10 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
   EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 0);
 
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.ServerSideModelExecutionSuccess", true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.ServerSideModelExecutionDuration", 1);
   // server-side model execution shouldn't log on-device model execution
   // metrics.
   histogram_tester_.ExpectTotalCount(
@@ -336,6 +340,15 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   EXPECT_EQ(future.Get().brand, "");
   EXPECT_EQ(future.Get().intent, "");
   EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.ServerSideModelExecutionSuccess", false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.ServerSideModelExecutionError",
+      optimization_guide::OptimizationGuideModelExecutionError::
+          ModelExecutionError::kGenericFailure,
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.ServerSideModelExecutionDuration", 1);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
@@ -381,6 +394,11 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   for (int i = 0; i < kMaxScansPerDay; ++i) {
     delegate_->StartIntelligentScan("test", base::DoNothing());
   }
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.ServerSideModelHitQuotaAtInquiryTime", false,
+      kMaxScansPerDay);
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ServerSideModelHitQuotaAtInquiryTime", true, 0);
 
   // At quota, scan should fail.
   {
@@ -393,6 +411,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
     EXPECT_FALSE(future.Get().execution_success);
     EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
   }
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ServerSideModelHitQuotaAtInquiryTime", true, 1);
 
   // Fast forward time by 2 days, the quota should be cleared.
   task_environment_.FastForwardBy(base::Days(2));
@@ -405,6 +425,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
                                         future.GetCallback());
     EXPECT_TRUE(token.has_value());
   }
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ServerSideModelHitQuotaAtInquiryTime", false,
+      kMaxScansPerDay + 1);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
@@ -619,6 +642,10 @@ TEST_F(
       "SBClientPhishing.OnDeviceModelExecutionSuccess", true, 1);
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.OnDeviceModelExecutionDuration", 1);
+  // Histograms related to quota should not be logged when server model is
+  // disabled.
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.ServerSideModelHitQuotaAtInquiryTime", 0);
 }
 
 TEST_F(
