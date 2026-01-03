@@ -266,13 +266,13 @@
   display: block;
   inset-inline-end: var(--composebox-last-icon-inline-end);
   position: absolute;
+  transition: ease-out 100ms;
 }
 
 #composebox[show-submit_][submit-enabled_]::part(lens-icon) {
   inset-inline-end: calc(var(--composebox-submit-container-size)
       + var(--icon-menu-spacing)
       + var(--composebox-submit-container-inline-end));
-  transition: ease-out 100ms;
 }
 
 #composebox:not([expanding_])::part(cancel),
@@ -362,10 +362,16 @@
 
 #composebox[show-submit_][submit-enabled_]::part(voice-icon) {
   inset-inline-end: calc(var(--composebox-submit-container-size)
+      + var(--icon-menu-spacing)
+      + var(--composebox-submit-container-inline-end));
+}
+
+/* Lens is only shown in side panel, so adjust spacing. */
+#composebox[show-submit_][is-side-panel][submit-enabled_]::part(voice-icon) {
+  inset-inline-end: calc(var(--composebox-submit-container-size)
       + var(--icon-menu-button-size)
       + 2 * var(--icon-menu-spacing)
       + var(--composebox-submit-container-inline-end));
-  transition: ease-out 100ms;
 }
 
 #composebox::part(voice-icon) {
@@ -373,13 +379,18 @@
   --cr-icon-button-icon-size: var(--icon-menu-icon-size);
   --cr-icon-button-size: var(--icon-menu-button-size);
   bottom: var(--composebox-icon-menu-bottom);
+  inset-inline-end: var(--composebox-last-icon-inline-end);
+  position: absolute;
+  top: auto;
+  transition: ease-out 100ms;
+}
+
+/* Lens is only shown in side panel, so adjust spacing. */
+#composebox[is-side-panel]::part(voice-icon) {
   inset-inline-end: calc(
       var(--icon-menu-button-size)
       + var(--icon-menu-spacing)
       + var(--composebox-last-icon-inline-end));
-  position: absolute;
-  top: auto;
-  transition: ease-out 100ms;
 }
 
 #composebox::part(voice-close-button) {
