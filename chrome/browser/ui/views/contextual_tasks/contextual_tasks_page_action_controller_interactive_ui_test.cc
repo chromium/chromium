@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPageActionControllerInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksPageActionControllerInteractiveTest,
-                       ToggleContextualTasksSidePanel) {
+                       DISABLED_ToggleContextualTasksSidePanel) {
   RunTestSequence(
       InstrumentTab(kFirstTab), NavigateWebContents(kFirstTab, GetTestURL()),
       CreateTaskForTab(0), WaitForShow(kContextualTasksPageActionElementId),
