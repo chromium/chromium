@@ -428,6 +428,18 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
+<histogram
+    name="ContextualSearch.Session.QuerySubmittedWithoutSessionStart.{ContextualSearchSource}"
+    enum="Boolean" expires_after="2026-06-21">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks queries that were submitted without calling session start. This
+    should never happen. Always recorded as true.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
 <histogram name="ContextualSearch.TabContextAdded.{ContextualSearchSource}"
     units="count" expires_after="2026-06-10">
   <owner>hujasonx@google.com</owner>

@@ -69,7 +69,7 @@ ContextualSearchMetricsRecorder::ContextualSearchMetricsRecorder(
     ContextualSearchSource source)
     : source_(source),
       metrics_suffix_(ContextualSearchSourceToString(source)),
-      session_metrics_{std::make_unique<SessionMetrics>()} {}
+      session_metrics_(std::make_unique<SessionMetrics>()) {}
 
 ContextualSearchMetricsRecorder::~ContextualSearchMetricsRecorder() {
   // Record session abandonments and completions.
@@ -230,6 +230,15 @@ void ContextualSearchMetricsRecorder::NotifySessionStarted() {
 }
 
 void ContextualSearchMetricsRecorder::NotifyQuerySubmitted() {
+  if (!session_metrics_->session_elapsed_timer) {
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {"ContextualSearch.Session.QuerySubmittedWithoutSessionStart", ".",
+             metrics_suffix_}),
+        true);
+    return;
+  }
+
   base::TimeDelta time_to_query_submission =
       session_metrics_->session_elapsed_timer->Elapsed();
   base::UmaHistogramMediumTimes(
