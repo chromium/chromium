@@ -145,6 +145,9 @@ BASE_FEATURE(kClientSideDetectionShowScamVerdictWarningAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kClientSideDetectionSkipErrorPage,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClientSideDetectionVibrationApi,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

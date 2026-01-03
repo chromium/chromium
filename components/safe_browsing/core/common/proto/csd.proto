@@ -422,7 +422,8 @@ enum PreClassificationCheckResult {
   OBSOLETE_NO_CLASSIFY_NOT_ALLOWED_BY_POLICY = 17;
   NO_CLASSIFY_MATCH_HC_ALLOWLIST = 18;
   NO_CLASSIFY_ALLOWLIST_METRIC = 19;
-  NO_CLASSIFY_MAX = 20;  // Always add before this, and update this value.
+  NO_CLASSIFY_ERROR_DOCUMENT = 20;
+  NO_CLASSIFY_MAX = 21;  // Always add before this, and update this value.
 }
 
 // This value must be kept in sync with those in

@@ -826,6 +826,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.IsErrorDocumentOnSupportedMimeType"
+    enum="Boolean" expires_after="2027-01-02">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether or not the page of supported mime type is an error document.
+    This is recorded on every supported mime type pages in the
+    PreClassificationCheck.
+  </summary>
+</histogram>
+
 <histogram
     name="SBClientPhishing.IsIntelligentScanAvailableAtInquiryTime{IntelligentScanRequestType}"
     enum="BooleanSuccess" expires_after="2026-05-03">

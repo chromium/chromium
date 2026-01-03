@@ -1322,6 +1322,42 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckLocalResource) {
   fake_phishing_detector_.CheckMessage(nullptr);
 }
 
+TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckErrorDocument) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  base::HistogramTester histogram_tester;
+  feature_list_.InitAndEnableFeature(kClientSideDetectionSkipErrorPage);
+
+  GURL url("http://host.com/");
+  // IsLocalResource is checked before IsErrorDocument. It should be mocked to
+  // return false. IsPrivateIPAddress is checked after, so it shouldn't be
+  // called.
+  ExpectPreClassificationChecks(url, /*is_private=*/nullptr,
+                                /*match_csd_allowlist=*/nullptr,
+                                /*get_valid_cached_result=*/nullptr,
+                                /*over_phishing_report_limit=*/nullptr,
+                                /*is_local=*/&kFalse);
+
+  // Simulate a navigation that results in an error page. This will trigger the
+  // pre-classification check.
+  auto navigation =
+      content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
+  navigation->Fail(net::ERR_FAILED);
+  navigation->CommitErrorPage();
+  WaitAndCheckPreClassificationChecks();
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.PreClassificationCheckResult",
+      PreClassificationCheckResult::NO_CLASSIFY_ERROR_DOCUMENT, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.PreClassificationCheckResult.TriggerModel",
+      PreClassificationCheckResult::NO_CLASSIFY_ERROR_DOCUMENT, 1);
+
+  // No phishing detection IPC should be sent.
+  fake_phishing_detector_.CheckMessage(nullptr);
+}
+
 TEST_F(ClientSideDetectionHostIncognitoTest,
        TestPreClassificationCheckIncognito) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {

@@ -375,8 +375,22 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
           PreClassificationCheckResult::NO_CLASSIFY_LOCAL_RESOURCE);
     }
 
-    // Only classify [X]HTML documents.
-    if (mime_type_ != "text/html" && mime_type_ != "application/xhtml+xml") {
+    bool is_mime_type_unsupported =
+        mime_type_ != "text/html" && mime_type_ != "application/xhtml+xml";
+    content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+    bool is_error_page = rfh && rfh->IsErrorDocument();
+    if (!is_mime_type_unsupported) {
+      base::UmaHistogramBoolean(
+          "SBClientPhishing.IsErrorDocumentOnSupportedMimeType", is_error_page);
+    }
+
+    if (base::FeatureList::IsEnabled(kClientSideDetectionSkipErrorPage) &&
+        is_error_page) {
+      DontClassifyForPhishing(
+          PreClassificationCheckResult::NO_CLASSIFY_ERROR_DOCUMENT);
+    }
+
+    if (is_mime_type_unsupported) {
       DontClassifyForPhishing(
           PreClassificationCheckResult::NO_CLASSIFY_UNSUPPORTED_MIME_TYPE);
     }

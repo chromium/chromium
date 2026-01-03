@@ -144,6 +144,8 @@ BASE_DECLARE_FEATURE(kClientSideDetectionShowLlamaScamVerdictWarning);
 BASE_DECLARE_FEATURE(kClientSideDetectionShowScamVerdictWarningAndroid);
 #endif
 
+BASE_DECLARE_FEATURE(kClientSideDetectionSkipErrorPage);
+
 // Expand CSPP beyond phishing and trigger when vibration API is called on the
 // web page.
 BASE_DECLARE_FEATURE(kClientSideDetectionVibrationApi);

@@ -336,6 +336,8 @@ class ClientSideDetectionHost
                            CreditCardFormTriggersPreclassificationCheck);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostCreditCardFormTest,
                            CreditCardFormClassificationTriggersCSDPing);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostBrowserTest,
+                           NavigateTo404PageLogsErrorDocument);
 
   // Extracts suspicious tokens from a copied clipboard payload into a
   // structured object.

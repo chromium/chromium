@@ -276,6 +276,7 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="(Obsolete) NOT_ALLOWED_BY_POLICY"/>
   <int value="18" label="MATCH_HC_ALLOWLIST"/>
   <int value="19" label="ALLOWLIST_MATCH_METRIC"/>
+  <int value="20" label="ERROR_DOCUMENT"/>
 </enum>
 
 <!-- LINT.IfChange(SBClientDownloadAndroidDownloadProtectionOutcome) -->
