@@ -95,6 +95,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
   ${this.lazyRender_
     && this.ntpNextFeaturesEnabled_ && this.isActionChipsVisible_ ? html`
     <ntp-action-chips
+        ?theme-has-background-image="${this.themeHasBackgroundImage_()}"
         @action-chip-click="${this.openComposebox_}"
         @action-chips-retrieval-state-changed="${this.onActionChipsRetrievalStateChanged_}">
     </ntp-action-chips>
