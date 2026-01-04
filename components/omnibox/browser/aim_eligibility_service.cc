@@ -540,6 +540,10 @@ void AimEligibilityService::LoadMostRecentResponse() {
 
   most_recent_response_ = prefs_response;
   most_recent_response_source_ = EligibilityResponseSource::kPrefs;
+
+  // Calling this is necessary because this function can be called
+  // asynchronously instead of from the constructor.
+  OnEligibilityResponseChanged();
 }
 
 GURL AimEligibilityService::GetRequestUrl(
