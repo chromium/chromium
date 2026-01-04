@@ -484,7 +484,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     if (pendingStatus) {
       this.pendingFiles_.delete(fileAttachment.uuid);
     }
-    this.fire('add-file_context', {file: composeboxFile});
+    this.onFileContextAdded(composeboxFile);
   }
 
   private addTabFromAttachment_(tabAttachment: TabAttachment) {
