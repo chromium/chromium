@@ -7305,7 +7305,7 @@
 <translation id="6061408389284235459"><ph name="DEVICE_NAME" /> သို့ အကြောင်းကြားချက် ပို့ထားသည်</translation>
 <translation id="6063284707309177505">QR ကုဒ် ပြုလုပ်ရန်</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />မှတ်ချက်-<ph name="END_BOLD" /> ဆင်တူသောအသံ (သို့) အသံသွင်းချက်ဖြင့် <ph name="SUPERVISED_USER_NAME" /> ၏ ကိုယ်ရေးကိုယ်တာ ရလဒ်များသို့ ဝင်ခွင့်ရသွားနိုင်ပါသည်။ ဘက်ထရီချွေတာရန် ဤစက်ကို ပါဝါနှင့် ချိတ်ဆက်ထားသည့်အခါတွင်သာ “Ok Google” ကို ဖွင့်ရန်<ph name="SUPERVISED_USER_NAME" /> ၏ Assistant ဆက်တင်များတွင် ရွေးနိုင်သည်။</translation>
-<translation id="6064217302520318294">ဖန်သားပြင်လော့ခ်</translation>
+<translation id="6064217302520318294">စခရင်လော့ခ်</translation>
 <translation id="606449270532897041">ဝဘ်ဆိုက် ဒေတာကို စီမံရန်</translation>
 <translation id="6064764629679333574">အရည်အသွေးနိမ့်အသံကို အရည်အသွေးမြင့်အသံသို့ မြှင့်တင်ခြင်းဖြင့် ဘလူးတုသ်မိုက်၏ အသံအရည်အသွေး ပိုကောင်းအောင်လုပ်နိုင်သည်။</translation>
 <translation id="6065289257230303064">လက်မှတ် အကြောင်းအရာ ဒါရိုက်ထရီ အချင်းလက္ခဏာများ</translation>
@@ -11872,7 +11872,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" /> သည် <ph name="FOLDERNAME" /> ရှိ ဖိုင်များကို ပြင်ဆင်နိုင်ပါမည်</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> တွင် ရှာဖွေရန်</translation>
 <translation id="9201117361710210082">ယခင်က ကြည့်ထားသည်</translation>
-<translation id="9201220332032049474">မျက်နှာပြင် လော့ခ်ချရန် ရွေးချယ်စရာများ</translation>
+<translation id="9201220332032049474">စခရင်လော့ခ်ချခြင်း ရွေးချယ်စရာများ</translation>
 <translation id="9201842707396338580">တစ်ခုခုမှားသွားသည်။ သင့်စက်ပိုင်ရှင် သို့မဟုတ် စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။ အမှားကုဒ် - <ph name="ERROR_CODE" />။</translation>
 <translation id="9203296457393252944">အနီ-အစိမ်း၊ အစိမ်းအားနည်း (အစိမ်း မမြင်ရခြင်း)</translation>
 <translation id="9203398526606335860">&amp;ပရိုဖိုင်ကြည့်မှု ဖွင့်ထား</translation>
