@@ -100,16 +100,20 @@
 }
 
 :host-context([in-deep-search-mode_]) #textContainer {
-  display: block;
-  line-clamp: 2;
   overflow: hidden;
-  box-orient: vertical;
   white-space: normal;
+  line-height: 24px;
 }
 
-:host-context([in-deep-search-mode_]),
+:host-context([in-deep-search-mode_]) {
+  height: auto;
+  min-height: var(--cr-composebox-match-height, 44px);
+}
+
 :host-context([in-deep-search-mode_]) .container {
-  height: 68px;
+  height: auto;
+  min-height: 24px;
+  padding-block: 10px;
 }
 
 :host-context([in-deep-search-mode_]) .container {
