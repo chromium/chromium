@@ -249,4 +249,27 @@ suite('ContextualTasksAppTest', function() {
     assertEquals('1111', currentUrl.searchParams.get('thread'));
     assertEquals('2222', currentUrl.searchParams.get('turn'));
   });
+
+  test('isAiPage reflected in dom', async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    assertFalse(appElement.hasAttribute('is-ai-page_'));
+
+    proxy.callbackRouterRemote.onAiPageStatusChanged(true);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertTrue(appElement.hasAttribute('is-ai-page_'));
+
+    proxy.callbackRouterRemote.onAiPageStatusChanged(false);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertFalse(appElement.hasAttribute('is-ai-page_'));
+  });
 });
