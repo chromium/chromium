@@ -1692,7 +1692,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3713277100229669269">Nå kan du se kortfordelene før du betaler</translation>
 <translation id="371420189621607696">Videospillkonkurranser</translation>
 <translation id="3714633008798122362">nettkalender</translation>
-<translation id="3714780639079136834">Slå på mobildata eller Wifi</translation>
+<translation id="3714780639079136834">Slå på mobildata eller wifi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Filen er blokkert for opplasting}other{<ph name="FILE_COUNT" /> filer er blokkert for opplasting}}</translation>
 <translation id="3715597595485130451">Tilkobling til wifi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Sjekk proxy-tjener-, brannmur- og DNS-konfigurasjonen<ph name="END_LINK" /></translation>

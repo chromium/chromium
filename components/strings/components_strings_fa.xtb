@@ -745,7 +745,7 @@
 <translation id="2200678913752027654">‏دکمه رأی مخالف. برای باز کردن فرم ارسال بازخورد دقیق درباره دلیل نپسندیدن این پیشنهاد، کلید Enter را فشار دهید</translation>
 <translation id="2202627062836089804">پشت کارت</translation>
 <translation id="2204482073374652408">به‌روزرسانی تکمیل شد!</translation>
-<translation id="2207770355672215546">همیشه مجاز باشد، با هر کارتی</translation>
+<translation id="2207770355672215546">همیشه اجازه داشتن باشد، با هر کارتی</translation>
 <translation id="2208053750671792556">کد را دریافت نکردید؟ <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">سینی ۳</translation>
 <translation id="2210794033760923560">بارگذاری گزارش</translation>
@@ -1936,7 +1936,7 @@
 <translation id="4113354056388982663">‏به‌روزرسانی ضروری عملکرد Android</translation>
 <translation id="4114007503059268298">‏می‌خواهید این کارت در «حساب Google» شما و این دستگاه ذخیره شود؟</translation>
 <translation id="4114146879518089587">رفتن به سایت</translation>
-<translation id="4116663294526079822">همیشه مجاز در این سایت</translation>
+<translation id="4116663294526079822">همیشه اجازه داشتن در این سایت</translation>
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">محدوده خط‌مشی پشتیبانی نمی‌شود.</translation>
@@ -4889,7 +4889,7 @@
 <translation id="8919740778133505789">اتومبیل‌های اسپورت</translation>
 <translation id="8919895429178014996">پنهان کردن همه موارد</translation>
 <translation id="8919989290032064330">هویتتان را برای تکمیل خودکار روش‌های پرداخت درستی‌سنجی می‌کنید؟</translation>
-<translation id="8922013791253848639">آگهی‌ها همیشه در این سایت مجاز باشند</translation>
+<translation id="8922013791253848639">همیشه اجازه داشتن آگهی‌ها در این سایت</translation>
 <translation id="8922734931659847428">فهرست محدودی از نشانی وب صفحه‌هایی که بازدید می‌کنید و <ph name="BEGIN_LINK" />رویدادهای فناوری قدیمی<ph name="END_LINK" /> در آن‌ها روی می‌دهد</translation>
 <translation id="892588693504540538">سوراخ در بالا سمت راست</translation>
 <translation id="8926082624786998759">‏‫DevTools در این صفحه مجاز نیست</translation>
