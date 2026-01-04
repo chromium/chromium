@@ -788,6 +788,27 @@ bool ContextualTasksUiService::IsValidSearchResultsPage(const GURL& url) {
           !value.empty());
 }
 
+void ContextualTasksUiService::OnLensOverlayStateChanged(
+    BrowserWindowInterface* browser_window_interface,
+    bool is_showing) {
+  auto* coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser_window_interface);
+  if (!coordinator || !coordinator->IsSidePanelOpenForContextualTask()) {
+    return;
+  }
+
+  auto* panel_contents = coordinator->GetActiveWebContents();
+  if (!panel_contents || !panel_contents->GetWebUI()) {
+    return;
+  }
+
+  auto* controller =
+      panel_contents->GetWebUI()->GetController()->GetAs<ContextualTasksUI>();
+  if (controller) {
+    controller->OnLensOverlayStateChanged(is_showing);
+  }
+}
+
 void ContextualTasksUiService::AssociateWebContentsToTask(
     content::WebContents* web_contents,
     const base::Uuid& task_id) {

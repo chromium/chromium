@@ -25,6 +25,7 @@ class MockPage extends TestBrowserProxy implements PageInterface {
       'onAiPageStatusChanged',
       'onContextUpdated',
       'onHandshakeComplete',
+      'onLensOverlayStateChanged',
       'onSidePanelStateChanged',
       'restoreInput',
       'setOAuthToken',
@@ -82,6 +83,10 @@ class MockPage extends TestBrowserProxy implements PageInterface {
 
   onAiPageStatusChanged(isAiPage: boolean) {
     this.methodCalled('onAiPageStatusChanged', isAiPage);
+  }
+
+  onLensOverlayStateChanged(isOverlayShowing: boolean) {
+    this.methodCalled('onLensOverlayStateChanged', isOverlayShowing);
   }
 
   setTaskDetails(taskId: Uuid, threadId: string, turnId: string) {

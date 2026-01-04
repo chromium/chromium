@@ -150,10 +150,6 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
-      lensButtonDisabled_: {
-        reflect: true,
-        type: Boolean,
-      },
       /**
        * Feature flag for New Tab Page Realbox Next.
        */
@@ -173,6 +169,10 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
       },
       tabSuggestions: {type: Array},
+      lensButtonDisabled: {
+        reflect: true,
+        type: Boolean,
+      },
       errorScrimVisible_: {type: Boolean},
       contextFilesSize_: {
         type: Number,
@@ -209,6 +209,7 @@ export class ComposeboxElement extends I18nMixinLit
   accessor entrypointName: string = '';
   accessor disableVoiceSearchAnimation: boolean = false;
   accessor tabSuggestions: TabInfo[] = [];
+  accessor lensButtonDisabled: boolean = false;
   protected composeboxNoFlickerSuggestionsFix_: boolean =
       loadTimeData.getBoolean('composeboxNoFlickerSuggestionsFix');
   // If isCollapsible is set to true, the composebox will be a pill shape until
@@ -237,7 +238,6 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor showFileCarousel_: boolean = false;
   protected accessor inCreateImageMode_: boolean = false;
   protected accessor inDeepSearchMode_: boolean = false;
-  protected accessor lensButtonDisabled_: boolean = false;
   protected accessor errorScrimVisible_: boolean = false;
   protected accessor contextFilesSize_: number = 0;
   protected accessor transcript_: string = '';
