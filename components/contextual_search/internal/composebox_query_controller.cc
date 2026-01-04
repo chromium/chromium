@@ -608,6 +608,17 @@ void ComposeboxQueryController::StartFileUploadFlow(
       contextual_input_data->viewport_screenshot.has_value();
 
   bool has_viewport_screenshot = has_viewport_bitmap || has_viewport_bytes;
+
+  // Determine the update mode based on file type and viewport.
+  lens::RequestIdUpdateMode base_update_mode =
+      lens::RequestIdUpdateMode::kPageContentRequest;
+  if (current_file_info.mime_type == lens::MimeType::kImage) {
+    base_update_mode = lens::RequestIdUpdateMode::kFullImageRequest;
+  } else if (has_viewport_screenshot) {
+    base_update_mode =
+        lens::RequestIdUpdateMode::kPageContentWithViewportRequest;
+  }
+
   // For the multi-context input flow, whether or not to use the _AND_IMAGE
   // media type depends on whether or not to use separate request ids for the
   // viewport image upload request.
@@ -615,6 +626,7 @@ void ComposeboxQueryController::StartFileUploadFlow(
       has_viewport_screenshot &&
       (!enable_multi_context_input_flow_ ||
        !use_separate_request_ids_for_multi_context_viewport_images_);
+
   if (enable_context_id_migration_) {
     int64_t context_id = contextual_input_data->context_id.has_value()
                              ? contextual_input_data->context_id.value()
@@ -628,23 +640,49 @@ void ComposeboxQueryController::StartFileUploadFlow(
                  context_id)
              .get();
   } else {
-    // Unlike image uploads, PDF / page content uploads need to increment the
-    // long context id instead of the image sequence id.
-    current_file_info.request_id =
-        *request_id_generator_
-             .GetNextRequestId(
-                 enable_multi_context_input_flow_
-                     ? lens::RequestIdUpdateMode::kMultiContextUploadRequest
-                     : (current_file_info.mime_type == lens::MimeType::kImage
-                            ? lens::RequestIdUpdateMode::kFullImageRequest
-                            : (has_viewport_screenshot
-                                   ? lens::RequestIdUpdateMode::
-                                         kPageContentWithViewportRequest
-                                   : lens::RequestIdUpdateMode::
-                                         kPageContentRequest)),
-                 lens::MimeTypeToMediaType(current_file_info.mime_type,
-                                           use_has_viewport_media_type))
-             .get();
+    std::optional<lens::LensOverlayRequestId> previous_request_id =
+        std::nullopt;
+    if (contextual_input_data->context_id.has_value()) {
+      for (const auto& [token, info] : active_files_) {
+        if (!info) {
+          continue;
+        }
+        if (info->request_id.context_id() ==
+            contextual_input_data->context_id.value()) {
+          previous_request_id = info->request_id;
+          break;
+        }
+      }
+    }
+
+    if (previous_request_id.has_value()) {
+      // If the previous request ID is available, increment the request ID
+      // based on the content type. The media type is assumed to remain
+      // unchanged since the previous request id was retrieved from the same
+      // source.
+      auto previous_request_id_proto =
+          std::make_unique<lens::LensOverlayRequestId>(
+              previous_request_id.value());
+      current_file_info.request_id =
+          *request_id_generator_.CreateNextRequestIdForUpdate(
+              std::move(previous_request_id_proto), base_update_mode);
+    } else {
+      // Unlike image uploads, PDF / page content uploads need to increment the
+      // long context id instead of the image sequence id.
+      int64_t context_id = contextual_input_data->context_id.has_value()
+                               ? contextual_input_data->context_id.value()
+                               : RandInt64();
+      lens::RequestIdUpdateMode update_mode =
+          enable_multi_context_input_flow_
+              ? lens::RequestIdUpdateMode::kMultiContextUploadRequest
+              : base_update_mode;
+
+      current_file_info.request_id = *request_id_generator_.GetNextRequestId(
+          update_mode,
+          lens::MimeTypeToMediaType(current_file_info.mime_type,
+                                    use_has_viewport_media_type),
+          context_id);
+    }
   }
 
   // Update the file upload status to processing.
