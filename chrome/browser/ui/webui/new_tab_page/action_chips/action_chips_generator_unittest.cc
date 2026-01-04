@@ -650,33 +650,10 @@ TEST(ActionChipGeneratorTest,
                           Eq(std::cref(GetStaticImageGenerationChip()))));
 }
 
-struct SimplifiedUIParamTestCase {
-  std::string test_name;
-  std::string url;
-  std::string expected_host;
-};
-
-using ActionChipGeneratorSimplifiedUITest =
-    testing::TestWithParam<SimplifiedUIParamTestCase>;
-
-INSTANTIATE_TEST_SUITE_P(
-    ActionChipGeneratorTests,
-    ActionChipGeneratorSimplifiedUITest,
-    ::testing::ValuesIn(
-        {SimplifiedUIParamTestCase{.test_name = "WithWWW",
-                                   .url = "https://www.google.com/",
-                                   .expected_host = "google.com"},
-         SimplifiedUIParamTestCase{.test_name = "WithoutWWW",
-                                   .url = "https://news.google.com/",
-                                   .expected_host = "news.google.com"}}),
-    [](const testing::TestParamInfo<SimplifiedUIParamTestCase>& param) {
-      return param.param.test_name;
-    });
-
-TEST_P(ActionChipGeneratorSimplifiedUITest,
-       GenerateSimplifiedRecentTabChipWhenSimplificationUIParamIsTrue) {
+TEST(ActionChipGeneratorTest,
+     GenerateSimplifiedRecentTabChipWhenSimplificationUIParamIsTrue) {
   EnvironmentFixture env;
-  const GURL page_url(GetParam().url);
+  const GURL page_url("https://www.google.com/");
   const std::u16string page_title(u"Some Title");
   TabFixture tab_fixture(page_url, page_title);
   GeneratorFixture generator_fixture;
@@ -696,7 +673,7 @@ TEST_P(ActionChipGeneratorSimplifiedUITest,
   TabInfoPtr tab_info = CreateTabInfo(&tab_fixture.mock_tab());
   ActionChipPtr expected_recent_tab_chip =
       ActionChip::New(/*title=*/"Ask Google about this tab",
-                      /*suggestion=*/GetParam().expected_host,
+                      /*suggestion=*/"Some Title",
                       /*type=*/ChipType::kRecentTab, /*tab=*/tab_info->Clone());
 
   EXPECT_THAT(actual,

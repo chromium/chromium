@@ -118,17 +118,11 @@ ActionChipPtr CreateRecentTabChip(TabInfoPtr tab, std::string_view suggestion) {
   chip->type = ChipType::kRecentTab;
 
   if (ntp_features::kNtpNextShowSimplificationUIParam.Get()) {
-    std::string_view host = tab->url.host();
-
-    if (base::StartsWith(host, "www.", base::CompareCase::INSENSITIVE_ASCII)) {
-      host = host.substr(4);
-    }
-
     chip->title = !suggestion.empty()
                       ? suggestion
                       : l10n_util::GetStringUTF8(
                             IDS_WEBUI_OMNIBOX_COMPOSE_ASK_ABOUT_THIS_TAB);
-    chip->suggestion = host;
+    chip->suggestion = tab->title;
   } else {
     chip->title = tab->title;
     chip->suggestion = !suggestion.empty()
