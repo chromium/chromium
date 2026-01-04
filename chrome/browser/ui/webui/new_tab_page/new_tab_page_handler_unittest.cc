@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/hash/hash.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -31,6 +32,8 @@
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_observer.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
@@ -263,6 +266,13 @@ std::unique_ptr<TestingProfile> MakeTestingProfile(
       base::BindRepeating([](content::BrowserContext* context)
                               -> std::unique_ptr<KeyedService> {
         return std::make_unique<testing::NiceMock<MockMicrosoftAuthService>>();
+      }));
+  profile_builder.AddTestingFactory(
+      OptimizationGuideKeyedServiceFactory::GetInstance(),
+      base::BindRepeating([](content::BrowserContext* context)
+                              -> std::unique_ptr<KeyedService> {
+        return std::make_unique<
+            testing::NiceMock<MockOptimizationGuideKeyedService>>();
       }));
   profile_builder.SetSharedURLLoaderFactory(url_loader_factory);
   auto profile = profile_builder.Build();
@@ -1190,6 +1200,9 @@ TEST_F(NewTabPageHandlerModuleRemovalTest,
 
 TEST_F(NewTabPageHandlerTest, SetModulesDisabledTrue) {
   // Arrange.
+  histogram_tester_.ExpectTotalCount("NewTabPage.Modules.AutoRemoval", 0);
+  histogram_tester_.ExpectTotalCount("NewTabPage.Modules.AutoRemovalModuleId",
+                                     0);
   ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
   base::Value::List& initial_disabled_modules_list = update.Get();
   initial_disabled_modules_list.Append(ntp_modules::kOutlookCalendarModuleId);
@@ -1218,10 +1231,20 @@ TEST_F(NewTabPageHandlerTest, SetModulesDisabledTrue) {
                   ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
                   .FindBool(ntp_modules::kGoogleCalendarModuleId)
                   .value_or(false));
+  histogram_tester_.ExpectTotalCount("NewTabPage.Modules.AutoRemoval", 1);
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.Modules.AutoRemovalModuleId",
+      base::PersistentHash(ntp_modules::kDriveModuleId), 1);
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.Modules.AutoRemovalModuleId",
+      base::PersistentHash(ntp_modules::kGoogleCalendarModuleId), 1);
 }
 
 TEST_F(NewTabPageHandlerTest, SetModulesDisabledFalse) {
   // Arrange.
+  histogram_tester_.ExpectTotalCount("NewTabPage.Modules.AutoRemovalUndone", 0);
+  histogram_tester_.ExpectTotalCount(
+      "NewTabPage.Modules.AutoRemovalUndoneModuleId", 0);
   ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
   base::Value::List& initial_disabled_modules_list = update.Get();
   initial_disabled_modules_list.Append(ntp_modules::kOutlookCalendarModuleId);
@@ -1242,10 +1265,20 @@ TEST_F(NewTabPageHandlerTest, SetModulesDisabledFalse) {
   // Assert.
   EXPECT_EQ(expected_disabled_modules_list,
             profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules));
+  histogram_tester_.ExpectTotalCount("NewTabPage.Modules.AutoRemovalUndone", 1);
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.Modules.AutoRemovalUndoneModuleId",
+      base::PersistentHash(ntp_modules::kDriveModuleId), 1);
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.Modules.AutoRemovalUndoneModuleId",
+      base::PersistentHash(ntp_modules::kGoogleCalendarModuleId), 1);
 }
 
 TEST_F(NewTabPageHandlerTest, SetModulesDisabledEmptyList) {
   // Arrange.
+  histogram_tester_.ExpectTotalCount("NewTabPage.Modules.AutoRemoval", 0);
+  histogram_tester_.ExpectTotalCount("NewTabPage.Modules.AutoRemovalModuleId",
+                                     0);
   ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
   base::Value::List& initial_disabled_modules_list = update.Get();
   initial_disabled_modules_list.Append(ntp_modules::kDriveModuleId);
@@ -1260,6 +1293,9 @@ TEST_F(NewTabPageHandlerTest, SetModulesDisabledEmptyList) {
   // Assert.
   EXPECT_EQ(initial_disabled_modules_list,
             profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules));
+  histogram_tester_.ExpectTotalCount("NewTabPage.Modules.AutoRemoval", 0);
+  histogram_tester_.ExpectTotalCount("NewTabPage.Modules.AutoRemovalModuleId",
+                                     0);
 }
 
 TEST_F(NewTabPageHandlerTest, SurveyLaunchedEligibleModulesCriteria) {

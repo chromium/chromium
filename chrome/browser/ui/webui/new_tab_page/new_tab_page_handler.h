@@ -107,6 +107,12 @@ class NewTabPageHandler
   // Histograms being recorded when a module is dismissed or restored.
   static const char kModuleDismissedHistogram[];
   static const char kModuleRestoredHistogram[];
+  // Histograms being recorded when auto removal/undo event is triggered.
+  static const char kModuleAutoRemovalHistogram[];
+  static const char kModuleAutoRemovalUndoneHistogram[];
+  // Histograms being recorded when a module is automatically removed or undone.
+  static const char kModuleAutoRemovalModuleIdHistogram[];
+  static const char kModuleAutoRemovalUndoneModuleIdHistogram[];
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

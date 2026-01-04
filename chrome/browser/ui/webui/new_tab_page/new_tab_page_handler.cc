@@ -21,6 +21,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/hash/hash.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
@@ -454,6 +455,14 @@ const char NewTabPageHandler::kModuleDismissedHistogram[] =
     "NewTabPage.Modules.Dismissed";
 const char NewTabPageHandler::kModuleRestoredHistogram[] =
     "NewTabPage.Modules.Restored";
+const char NewTabPageHandler::kModuleAutoRemovalHistogram[] =
+    "NewTabPage.Modules.AutoRemoval";
+const char NewTabPageHandler::kModuleAutoRemovalUndoneHistogram[] =
+    "NewTabPage.Modules.AutoRemovalUndone";
+const char NewTabPageHandler::kModuleAutoRemovalModuleIdHistogram[] =
+    "NewTabPage.Modules.AutoRemovalModuleId";
+const char NewTabPageHandler::kModuleAutoRemovalUndoneModuleIdHistogram[] =
+    "NewTabPage.Modules.AutoRemovalUndoneModuleId";
 
 NewTabPageHandler::NewTabPageHandler(
     mojo::PendingReceiver<new_tab_page::mojom::PageHandler>
@@ -688,6 +697,15 @@ void NewTabPageHandler::SetModulesDisabled(
 
   ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
   base::Value::List& list = update.Get();
+  // Histogram for the total number of times auto removal/undo is triggered.
+  base::UmaHistogramExactLinear(disabled ? kModuleAutoRemovalHistogram
+                                         : kModuleAutoRemovalUndoneHistogram,
+                                1, 1);
+  // Sparse Histogram for the number of times auto removal/undo is triggered
+  // for each module.
+  const std::string sparse_histogram =
+      disabled ? kModuleAutoRemovalModuleIdHistogram
+               : kModuleAutoRemovalUndoneModuleIdHistogram;
   for (const auto& module_id : module_ids) {
     base::Value module_id_value(module_id);
     if (disabled) {
@@ -698,6 +716,7 @@ void NewTabPageHandler::SetModulesDisabled(
     } else {
       list.EraseValue(module_id_value);
     }
+    base::UmaHistogramSparse(sparse_histogram, base::PersistentHash(module_id));
   }
 }
 
