@@ -169,6 +169,9 @@ class ContextualSearchContextController {
 
     // Whether create images is selected.
     bool create_images_selected = false;
+
+    // Additional CGI params to append to the search request URL.
+    std::map<std::string, std::string> additional_cgi_params;
   };
 
   virtual ~ContextualSearchContextController() = default;

@@ -53,6 +53,9 @@ message QueryPayload {
   // Whether to use Image Generation for this query.
   bool use_image_generation = 12;
 
+  // CGI params.
+  map<string, string> additional_cgi_params = 13;
+
   // Deprecated fields to match the Silk QueryPayload.
   reserved 5, 7;
 }

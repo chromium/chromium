@@ -541,6 +541,13 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
   submit_query->mutable_payload()->set_use_image_generation(
       create_client_to_aim_request_info->create_images_selected);
 
+  // Add additional CGI params.
+  for (const auto& param :
+       create_client_to_aim_request_info->additional_cgi_params) {
+    (*submit_query->mutable_payload()
+          ->mutable_additional_cgi_params())[param.first] = param.second;
+  }
+
   // Add the request id data for each file token.
   if (!active_files_.empty() && cluster_info_.has_value()) {
     for (const auto& file_token :
