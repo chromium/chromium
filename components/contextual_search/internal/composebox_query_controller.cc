@@ -1176,7 +1176,8 @@ void ComposeboxQueryController::UpdateFileUploadStatus(
     observer.OnFileUploadStatusChanged(file_token, file_info->mime_type, status,
                                        error_type);
   }
-  if (!IsValidFileUploadStatusForMultimodalRequest(status)) {
+  if (!IsValidFileUploadStatusForMultimodalRequest(status) &&
+      status != contextual_search::FileUploadStatus::kUploadExpired) {
     active_files_.erase(file_token);
   } else {
     file_info->upload_status = status;
