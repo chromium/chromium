@@ -47,6 +47,11 @@ export class TopToolbarElement extends CrLitElement {
         reflect: true,
         attribute: 'dark-mode',
       },
+      isAiPage: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'is-ai-page',
+      },
       logoImageUrl_: {type: String},
       title: {type: String},
     };
@@ -55,6 +60,7 @@ export class TopToolbarElement extends CrLitElement {
   override accessor title: string = '';
   accessor attachedTabs: Tab[] = [];
   accessor darkMode: boolean = false;
+  accessor isAiPage: boolean = false;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   override render() {
