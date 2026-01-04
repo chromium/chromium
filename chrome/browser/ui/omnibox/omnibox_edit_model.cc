@@ -1559,6 +1559,12 @@ void OmniboxEditModel::OnCurrentMatchChanged() {
     original_user_text_with_keyword_.clear();
   }
 
+  // Update the popup selection before calling `OnPopupDataChanged()` because
+  // `OnPopupDataChanged()` triggers `GetInfoForCurrentText()` which uses the
+  // popup selection to retrieve the match. If the result set has shrunk, the
+  // old selection index might be out of bounds.
+  UpdatePopupSelectionOnResultChanged();
+
   // OnPopupDataChanged() resets OmniboxController's |current_match_| early
   // on.  Therefore, copy match.inline_autocompletion to a temp to preserve
   // its value across the entire call.
@@ -1570,7 +1576,7 @@ void OmniboxEditModel::OnCurrentMatchChanged() {
   // Notify observers after the match has been safely copied to |current_match_|
   // in OnPopupDataChanged(). This prevents use-after-free if observers
   // invalidate the autocomplete results. See https://crbug.com/462736555.
-  OnPopupResultChanged();
+  observers_.Notify(&Observer::OnContentsChanged);
 }
 
 // static
@@ -1622,14 +1628,8 @@ void OmniboxEditModel::GetInfoForCurrentText(AutocompleteMatch* match,
     } else if (controller_->IsPopupOpen() &&
                GetPopupSelection().line != OmniboxPopupSelection::kNoMatch) {
       const OmniboxPopupSelection selection = GetPopupSelection();
-      // TODO(crbug.com/468047546): https://crrev.com/c/7191448 introduced a
-      // change in events that makes it possible for the selection to be out of
-      // bounds here. Follow up to figure out why this is and fix in a wholistic
-      // way.
-      if (selection.line < autocomplete_controller()->result().size()) {
-        *match = autocomplete_controller()->result().match_at(selection.line);
-        found_match_for_text = true;
-      }
+      *match = autocomplete_controller()->result().match_at(selection.line);
+      found_match_for_text = true;
     }
     if (found_match_for_text && alternate_nav_url &&
         (!popup_view_ || IsPopupSelectionOnInitialLine())) {
@@ -2181,7 +2181,7 @@ OmniboxEditModel::MaybeGetPopupAccessibilityLabelForIPHSuggestion() {
   return label;
 }
 
-void OmniboxEditModel::OnPopupResultChanged() {
+void OmniboxEditModel::UpdatePopupSelectionOnResultChanged() {
   if (!popup_view_) {
     return;
   }
@@ -2200,6 +2200,13 @@ void OmniboxEditModel::OnPopupResultChanged() {
       popup_selection_.state != OmniboxPopupSelection::FOCUSED_BUTTON_AIM) {
     view_->ApplyFocusRingToAimButton(false);
   }
+}
+
+void OmniboxEditModel::OnPopupResultChanged() {
+  if (!popup_view_) {
+    return;
+  }
+  UpdatePopupSelectionOnResultChanged();
   observers_.Notify(&Observer::OnContentsChanged);
 }
 
