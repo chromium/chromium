@@ -810,7 +810,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
 
     ui_service_->OnTaskChanged(task_info_delegate_->GetBrowser(),
                                task_info_delegate_->GetWebUIWebContents(),
-                               base::Uuid(),
+                               new_task_id,
                                task_info_delegate_->IsShownInTab());
     return;
   }
@@ -835,7 +835,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
   bool is_pending_task =
       task_info_delegate_->GetTaskId().has_value() && !webui_thread_id;
 
-  // In cases where the webui doesn't know about an existing threaad ID or
+  // In cases where the webui doesn't know about an existing thread ID or
   // there's a mismatch, either create a new task or update to use an existing
   // one (if it exists).
   if (!is_pending_task &&
