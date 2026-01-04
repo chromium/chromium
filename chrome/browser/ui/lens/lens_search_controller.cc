@@ -386,6 +386,13 @@ void LensSearchController::CloseLensAsync(
     return;
   }
 
+  // While the overlay is closing, the session handle can be destroyed or
+  // moved. It needs to be reset here to avoid a crash when the query router is
+  // eventually destroyed.
+  if (query_router_) {
+    query_router_->reset_file_upload_status_observation();
+  }
+
   // Close the side panel if it is showing. This provides a smooth closing
   // animation.
   auto* const side_panel_ui =
