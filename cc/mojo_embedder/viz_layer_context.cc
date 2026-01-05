@@ -1388,6 +1388,8 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
   }
   update->may_throttle_if_undrawn_frames =
       host_impl_->may_throttle_if_undrawn_frames();
+  update->is_viewport_mobile_optimized =
+      host_impl_->viewport_mobile_optimized();
   update->max_safe_area_inset_bottom = tree.max_safe_area_inset_bottom();
   update->browser_controls_params = tree.browser_controls_params();
   update->browser_controls_offset_tag_modifications =

@@ -231,6 +231,9 @@ struct LayerTreeUpdate {
 
   // Whether the compositor should throttle if there are undrawn frames.
   bool may_throttle_if_undrawn_frames;
+
+  // Whether the viewport is mobile optimized.
+  bool is_viewport_mobile_optimized;
 };
 
 // Drives updates to a GPU-side LayerTreeHostImpl from its corresponding

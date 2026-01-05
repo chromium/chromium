@@ -1876,6 +1876,8 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   }
   host_impl_->SetMayThrottleIfUndrawnFrames(
       update->may_throttle_if_undrawn_frames);
+  host_impl_->set_viewport_mobile_optimized(
+      update->is_viewport_mobile_optimized);
 
   {
     TRACE_EVENT1("viz", "DeserializeTilings", "TilingCount",
