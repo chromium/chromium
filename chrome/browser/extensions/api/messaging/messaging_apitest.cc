@@ -281,6 +281,18 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingNoBackground) {
       << message_;
 }
 
+// Tests that a large number of concurrent messages from different frames
+// are all correctly handled when the listener responds asynchronously which
+// results in the queueing of many response callbacks to handle them.
+// Regression test for crbug.com/438884253.
+IN_PROC_BROWSER_TEST_F(MessagingApiTest, SendMessageStressTest) {
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/stress_test",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
+}
+
 // Tests that messages with event_urls are only passed to extensions with
 // appropriate permissions.
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingEventURL) {

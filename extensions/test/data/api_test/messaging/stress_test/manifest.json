@@ -1,0 +1,17 @@
+{
+  "version": "1.0",
+  "manifest_version": 3,
+  "name": "Messaging Stress Test",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["content_script.js"],
+    "run_at": "document_idle"
+  }],
+  "web_accessible_resources": [{
+    "resources": ["iframe.html", "iframe.js"],
+    "matches": ["<all_urls>"]
+  }]
+}
