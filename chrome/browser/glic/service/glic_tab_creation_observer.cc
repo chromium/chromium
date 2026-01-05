@@ -8,9 +8,9 @@
 #include "base/logging.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_entry.h"
@@ -20,7 +20,7 @@
 GlicTabCreationObserver::GlicTabCreationObserver(Profile* profile,
                                                  TabCreatedCallback callback)
     : profile_(profile), callback_(std::move(callback)) {
-  BrowserList::AddObserver(this);
+  browser_observation_.Observe(GlobalBrowserCollection::GetInstance());
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [this, profile](BrowserWindowInterface* browser) {
         if (browser->GetProfile() == profile) {
@@ -31,19 +31,18 @@ GlicTabCreationObserver::GlicTabCreationObserver(Profile* profile,
       });
 }
 
-GlicTabCreationObserver::~GlicTabCreationObserver() {
-  BrowserList::RemoveObserver(this);
-}
+GlicTabCreationObserver::~GlicTabCreationObserver() = default;
 
-void GlicTabCreationObserver::OnBrowserAdded(Browser* browser) {
-  if (browser->profile() == profile_) {
-    browser->tab_strip_model()->AddObserver(this);
+void GlicTabCreationObserver::OnBrowserCreated(
+    BrowserWindowInterface* browser) {
+  if (browser->GetProfile() == profile_) {
+    browser->GetTabStripModel()->AddObserver(this);
   }
 }
 
-void GlicTabCreationObserver::OnBrowserRemoved(Browser* browser) {
-  if (browser->profile() == profile_) {
-    browser->tab_strip_model()->RemoveObserver(this);
+void GlicTabCreationObserver::OnBrowserClosed(BrowserWindowInterface* browser) {
+  if (browser->GetProfile() == profile_) {
+    browser->GetTabStripModel()->RemoveObserver(this);
   }
 }
 

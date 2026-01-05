@@ -7,21 +7,22 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_multi_source_observation.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/navigation_entry.h"
 #include "ui/base/page_transition_types.h"
 
 class Profile;
-class Browser;
 class TabStripModel;
+class BrowserCollection;
+class BrowserWindowInterface;
 
 // GlicTabCreationObserver monitors tab creation events across all browser
 // windows for a specific profile. It filters for tabs created by explicit
 // user actions (e.g., Ctrl+T, '+' button) and identifies the new tab
 // and the previously active tab.
-class GlicTabCreationObserver : public BrowserListObserver,
+class GlicTabCreationObserver : public BrowserCollectionObserver,
                                 public TabStripModelObserver {
  public:
   // Callback to be called when a new tab is created. This will only be called
@@ -34,9 +35,9 @@ class GlicTabCreationObserver : public BrowserListObserver,
                                    TabCreatedCallback callback);
   ~GlicTabCreationObserver() override;
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -47,6 +48,8 @@ class GlicTabCreationObserver : public BrowserListObserver,
  private:
   raw_ptr<Profile> profile_;
   TabCreatedCallback callback_;
+  base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
+      browser_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_GLIC_SERVICE_GLIC_TAB_CREATION_OBSERVER_H_
