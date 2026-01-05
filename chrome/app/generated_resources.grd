@@ -3920,9 +3920,6 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_ACCESSED_ON_DEVICE_SITE_DATA_MESSAGE" desc="Tooltip and bubble info header text when a page saves site data while saving all site data is blocked.">
         This site is allowed to save data on your device.
       </message>
-      <message name="IDS_BLOCKED_COOKIES_INFO" desc="Info link to a dialog showing the blocked/allowed cookies, displayed in bubble when a page tries to write cookies or other site data.">
-        Show cookies and other site data...
-      </message>
       <message name="IDS_BLOCKED_IMAGES_TITLE" desc="Tooltip and bubble info header text when a page is not allowed to display images.">
         Images blocked
       </message>
@@ -4108,12 +4105,6 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION" desc="Descriptive text in the trackings protection bubble mentioning the option to enable third-party cookies and mentions the trade off of doing so.">
         Try temporarily allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.
       </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_LIMITING_RESTART_TITLE" desc="Subtitle shown on the tracking protection bubble indicating how long until cookies will be limited again.">
-        {COUNT, plural,
-              =0 {Chrome will limit cookies again today}
-              =1 {Chrome will limit cookies again tomorrow}
-              other {# days until Chrome limits cookies again}}
-      </message>
       <message name="IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_TITLE" desc="Subtitle shown on the tracking protection bubble indicating how long until cookies are blocked again.">
         {COUNT, plural,
               =0 {Cookies will be blocked again today}
@@ -4149,12 +4140,6 @@ are declared in tools/grit/grit_args.gni.
       </message>
       <message name="IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL" desc="Label in the Page Action (omnibox) icon indicating that cookies are blocked on the current site.">
         Third-party cookies blocked
-      </message>
-      <message name="IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_LIMITED_LABEL" desc="Label in the Page Action (omnibox) icon indicating that cookies are limited on the current site.">
-        Third-party cookies limited
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_PAGE_ACTION_SITE_NOT_WORKING_LABEL" desc="Label for the Page Action (omnibox) icon that highlights the Tracking Protection bubble entrypoint when cookies are blocked and we have high confidence that this is breaking the current site.">
-        Site not working?
       </message>
       <message name="IDS_COOKIE_CONTROLS_PROMO_TITLE" desc="Title of the in-product-help bubble shown for the cookie controls bubble. Indicates that cookies are blocked on the current site.">
         Third-party cookies blocked

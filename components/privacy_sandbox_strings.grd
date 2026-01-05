@@ -286,10 +286,6 @@
       <message name="IDS_SETTINGS_TOPICS_PAGE_DISCLAIMER_CLANK" desc="Disclaimer of the new Ad topics setting. This text appears beneath the sublabel." formatter_data="android_java">
         Ad topics are just one of many things a site can use to personalize ads. Even without ad topics, sites can still show you ads but they may be less personalized. Learn more about <ph name="BEGIN_LINK_1">&lt;link1&gt;</ph>managing your ad privacy<ph name="END_LINK_1">&lt;/link1&gt;</ph>.
       </message>
-      <!-- Third Party Cookie settings  -->
-      <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_LIMITED" desc="Sub-label for a button that links to the 'Third-party cookies' settings page when the user has third-party cookies limited.">
-        Third-party cookies are limited
-      </message>
       <!-- PS Internals UI - Private State Tokens -->
       <message name="IDS_PRIVATE_STATE_TOKENS_HEADING_LABEL" desc="Title of the page that contains information about Private State Tokens." translateable="false">
         Private State Tokens
@@ -322,12 +318,6 @@
       </message>
       <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are blocked.">
         Blocked
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_LIMITED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are limited (i.e. blocked with mitigations).">
-        Limited
-      </message>
-      <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_LIMITED_TITLE" desc="Title shown on the cookie controls bubble when third-party cookies are limited.">
-        Third-party cookies limited
       </message>
       <!-- Privacy UX WebUI -->
       <!-- Privacy Sandbox Ads Notice -->

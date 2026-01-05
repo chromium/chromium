@@ -203,11 +203,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             @CookieControlsState int controlsState,
             @CookieControlsEnforcement int enforcement,
             long expiration) {
-        if (enforcement == CookieControlsEnforcement.ENFORCED_BY_TPCD_GRANT) {
-            setTpcdGrantState();
-            updateContentDescriptionsForA11y();
-            return;
-        }
         boolean visible = controlsState != CookieControlsState.HIDDEN;
         mCookieSwitch.setVisible(visible);
         mThirdPartyCookiesTitle.setVisible(visible);
@@ -228,24 +223,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                 assert false : "Should not be reached.";
         }
         updateContentDescriptionsForA11y();
-    }
-
-    private void setTpcdGrantState() {
-        mCookieSwitch.setVisible(false);
-        mThirdPartyCookiesTitle.setVisible(false);
-        mCookieSummary.setVisible(false);
-        mThirdPartyCookiesSummary.setSummary(
-                SpanApplier.applySpans(
-                        getString(R.string.page_info_tracking_protection_site_grant_description),
-                        new SpanApplier.SpanInfo(
-                                "<link>",
-                                "</link>",
-                                new ChromeClickableSpan(
-                                        getContext(),
-                                        (view) -> {
-                                            mOnCookieSettingsLinkClicked.run();
-                                        }))));
-        mThirdPartyCookiesSummary.setDividerAllowedAbove(true);
     }
 
     private void setBlocked3pcTitleAndSummary() {

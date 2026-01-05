@@ -605,9 +605,6 @@
       <message name="IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_LABEL" desc="The label used in the Page Info dialog to label a toggle button that when enabled allows third-party cookies and when disabled blocks third-party cookies.">
         Third-party cookies
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_GRANT_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info view for when a site has a TPCD grant. Contains a link to the 'Third-party cookies' settings page.">
-        Chrome limits most sites from using third-party cookies. But third-party cookies are allowed on this site because it relies on them to provide basic services.\n\nVisit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
-      </message>
       <message name="IDS_PAGE_INFO_ANDROID_LOCATION_BLOCKED" desc="The label used in the Page Info dialog to indicate that location has been been disabled for the device in Android settings">
         Turned off for this device
       </message>
