@@ -10,7 +10,6 @@
 #if defined(WEBRTC_USE_PIPEWIRE)
 #include "media/capture/video/linux/video_capture_device_factory_webrtc.h"
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
-#include "media/capture/video/video_capture_metrics.h"
 
 namespace media {
 
@@ -28,7 +27,6 @@ VideoCaptureDeviceFactoryLinux::~VideoCaptureDeviceFactoryLinux() = default;
 
 VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryLinux::CreateDevice(
     const VideoCaptureDeviceDescriptor& device_descriptor) {
-  LogCaptureDeviceHashedModelId(device_descriptor);
 #if defined(WEBRTC_USE_PIPEWIRE)
   if (webrtc_factory_->IsAvailable() &&
       device_descriptor.capture_api ==

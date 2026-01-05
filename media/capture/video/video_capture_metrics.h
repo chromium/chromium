@@ -16,9 +16,6 @@ CAPTURE_EXPORT
 void LogCaptureDeviceMetrics(
     base::span<const media::VideoCaptureDeviceInfo> devices_info);
 
-void LogCaptureDeviceHashedModelId(
-    const media::VideoCaptureDeviceDescriptor& descriptor);
-
 CAPTURE_EXPORT
 void LogCaptureDeviceEffects(mojom::PhotoStatePtr photo_state);
 
