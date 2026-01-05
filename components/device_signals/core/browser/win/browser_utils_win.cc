@@ -101,11 +101,10 @@ SettingValue GetOSFirewall() {
   // The most restrictive active profile takes precedence.
   constexpr NET_FW_PROFILE_TYPE2 kProfileTypes[] = {
       NET_FW_PROFILE2_PUBLIC, NET_FW_PROFILE2_PRIVATE, NET_FW_PROFILE2_DOMAIN};
-  for (size_t i = 0; i < std::size(kProfileTypes); ++i) {
-    if ((profile_types & UNSAFE_TODO(kProfileTypes[i])) != 0) {
+  for (const auto profile_type : kProfileTypes) {
+    if ((profile_types & profile_type) != 0) {
       VARIANT_BOOL enabled = VARIANT_TRUE;
-      hr = firewall_policy->get_FirewallEnabled(UNSAFE_TODO(kProfileTypes[i]),
-                                                &enabled);
+      hr = firewall_policy->get_FirewallEnabled(profile_type, &enabled);
       if (FAILED(hr)) {
         return SettingValue::UNKNOWN;
       }
