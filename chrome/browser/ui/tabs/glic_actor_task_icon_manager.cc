@@ -140,12 +140,20 @@ void GlicActorTaskIconManager::UpdateTaskListBubble(actor::TaskId task_id) {
 
     if (icon_v3_enabled) {
       actor_task_list_bubble_rows_[task_id] = requires_processing;
-    } else if (requires_processing) {
-      // Old implementation does not use this field.
-      actor_task_list_bubble_rows_[task_id] = false;
+    }
+    if (requires_processing) {
+      if (!icon_v3_enabled) {
+        // Old implementation does not use this field, but it needs to be set to
+        // show the row in the bubble.
+        actor_task_list_bubble_rows_[task_id] = false;
+      }
+      // Notify the bubble only if a task now requires processing. This callback
+      // will open the task list bubble and make it active, in order to bring it
+      // to the user's attention. This is also necessary for when a user
+      // switches windows in order to show the bubble in the active window.
+      task_list_bubble_change_callback_list_.Notify();
     }
   }
-  task_list_bubble_change_callback_list_.Notify();
 }
 
 base::CallbackListSubscription
