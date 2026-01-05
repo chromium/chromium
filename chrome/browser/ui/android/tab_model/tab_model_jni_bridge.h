@@ -77,11 +77,12 @@ class TabModelJniBridge : public TabModel {
   void ForceCloseAllTabs() override;
   void CloseTabAt(int index) override;
 
-  void CreateTab(TabAndroid* parent,
-                 content::WebContents* web_contents,
-                 int index,
-                 TabLaunchType type,
-                 bool should_pin) override;
+  tabs::TabInterface* CreateTab(
+      TabAndroid* parent,
+      std::unique_ptr<content::WebContents> web_contents,
+      int index,
+      TabLaunchType type,
+      bool should_pin) override;
   void HandlePopupNavigation(TabAndroid* parent,
                              NavigateParams* params) override;
 

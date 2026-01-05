@@ -258,7 +258,7 @@ void XrBrowserTestBase::OpenNewTab(const std::string& url, bool incognito) {
       content::WebContents::Create(content::WebContents::CreateParams(profile));
   EXPECT_TRUE(content::NavigateToURL(contents.get(), GURL(url)));
   // TabModel takes ownership of the WebContents, so we release it here.
-  tab_model->CreateTab(first_tab, contents.release(), TabModel::kInvalidIndex,
+  tab_model->CreateTab(first_tab, std::move(contents), TabModel::kInvalidIndex,
                        TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
                        /*should_pin=*/false);
 #else

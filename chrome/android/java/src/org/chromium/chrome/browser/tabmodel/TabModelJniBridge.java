@@ -278,7 +278,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
      * @return Whether or not the Tab was successfully created.
      */
     @CalledByNative
-    private boolean createTabWithWebContents(
+    private @JniType("TabAndroid*") @Nullable Tab createTabWithWebContents(
             Tab parent,
             Profile profile,
             WebContents webContents,
@@ -286,15 +286,14 @@ public abstract class TabModelJniBridge implements TabModelInternal {
             @TabLaunchType int type,
             boolean shouldPin) {
         return getTabCreator(profile.isOffTheRecord())
-                        .createTabWithWebContents(
-                                parent,
-                                shouldPin,
-                                webContents,
-                                type,
-                                webContents.getVisibleUrl(),
-                                index,
-                                /* addTabToModel= */ true)
-                != null;
+                .createTabWithWebContents(
+                        parent,
+                        shouldPin,
+                        webContents,
+                        type,
+                        webContents.getVisibleUrl(),
+                        index,
+                        /* addTabToModel= */ true);
     }
 
     @CalledByNative

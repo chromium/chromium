@@ -180,7 +180,7 @@ sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
       original_session_type == sessions::tab_restore::TAB
           ? TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND
           : TabModel::TabLaunchType::FROM_RECENT_TABS;
-  tab_model_->CreateTab(nullptr, web_contents.release(), tab.tabstrip_index,
+  tab_model_->CreateTab(nullptr, std::move(web_contents), tab.tabstrip_index,
                         type, tab.pinned);
   // Don't load the tab yet. This prevents a renderer from starting which keeps
   // the tab restore lightweight as the tab is opened in the background only.

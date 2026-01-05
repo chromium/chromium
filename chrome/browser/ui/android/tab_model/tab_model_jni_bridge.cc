@@ -294,19 +294,27 @@ tabs::TabInterface* TabModelJniBridge::GetActiveTab() {
   return GetTab(GetActiveIndex());
 }
 
-void TabModelJniBridge::CreateTab(TabAndroid* parent,
-                                  WebContents* web_contents,
-                                  int index,
-                                  TabLaunchType type,
-                                  bool should_pin) {
+tabs::TabInterface* TabModelJniBridge::CreateTab(
+    TabAndroid* parent,
+    std::unique_ptr<WebContents> web_contents,
+    int index,
+    TabLaunchType type,
+    bool should_pin) {
   JNIEnv* env = AttachCurrentThread();
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  Java_TabModelJniBridge_createTabWithWebContents(
+  TabAndroid* new_tab = Java_TabModelJniBridge_createTabWithWebContents(
       env, java_object_.get(env), (parent ? parent->GetJavaObject() : nullptr),
       profile->GetJavaObject(), web_contents->GetJavaWebContents(), index,
       static_cast<int>(type), should_pin);
+  // If new tab creation is successful, Java assumes ownership of the lifetime
+  // of the cloned WebContents.
+  if (new_tab) {
+    web_contents.release();
+  }
+
+  return new_tab;
 }
 
 void TabModelJniBridge::HandlePopupNavigation(TabAndroid* parent,

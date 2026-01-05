@@ -1033,13 +1033,12 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
     return;
   }
   // TODO(crbug.com/406406862): Show it in a web app window instead of a tab.
-  tab_model->CreateTab(
-      nullptr,
-      OwnedMainWebContents::TakeWebContents(std::move(owned_main_web_contents_))
-          .release(),
-      TabModel::kInvalidIndex,
-      TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
-      /*should_pin=*/false);
+  tab_model->CreateTab(nullptr,
+                       OwnedMainWebContents::TakeWebContents(
+                           std::move(owned_main_web_contents_)),
+                       TabModel::kInvalidIndex,
+                       TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
+                       /*should_pin=*/false);
   OverrideAndSyncDevToolsRendererPrefs();
 #else
   if (is_docked_) {

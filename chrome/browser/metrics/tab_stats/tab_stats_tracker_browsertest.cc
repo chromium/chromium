@@ -200,18 +200,19 @@ class TabStatsTrackerBrowserTest : public PlatformBrowserTest {
     // until it's added to the tab strip.
     content::WebContents::CreateParams create_params(tab_strip.GetProfile());
     create_params.initially_hidden = true;
-    content::WebContents* new_contents =
-        content::WebContents::Create(create_params).release();
+    std::unique_ptr<content::WebContents> contents =
+        content::WebContents::Create(create_params);
+    content::WebContents* raw_contents = contents.get();
 
     // CreateTab works with both OwningTestTabModel and the initial tab strip,
     // which is a production TabModel.
     tab_strip.tab_model()->CreateTab(
-        TabAndroid::FromWebContents(active_contents), new_contents,
+        TabAndroid::FromWebContents(active_contents), std::move(contents),
         TabModel::kInvalidIndex,
         TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
         /*should_pin=*/false);
 
-    NavigateNewTabToUrl(new_contents, url);
+    NavigateNewTabToUrl(raw_contents, url);
     return true;
   }
 

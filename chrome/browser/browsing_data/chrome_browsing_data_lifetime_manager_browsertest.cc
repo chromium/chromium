@@ -404,8 +404,9 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
   TabAndroid* current_tab = TabAndroid::FromWebContents(first_tab);
   std::unique_ptr<content::WebContents> contents = content::WebContents::Create(
       content::WebContents::CreateParams(GetProfile()));
-  auto* second_tab = contents.release();
-  tab_model->CreateTab(current_tab, second_tab, TabModel::kInvalidIndex,
+  auto* second_tab = contents.get();
+  tab_model->CreateTab(current_tab, std::move(contents),
+                       TabModel::kInvalidIndex,
                        TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
                        /*should_pin=*/false);
   ASSERT_TRUE(content::NavigateToURL(second_tab, url));

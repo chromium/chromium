@@ -171,11 +171,9 @@ void WebAuthFlow::OnBrowserWindowInterfaceInitialized(
     BrowserWindowInterface* browser) {
   TabModel* tab_model =
       TabModelList::FindTabModelWithWindowSessionId(browser->GetSessionID());
-  // TODO(crbug.com/434156398): Update the CreateTab() signature to accept
-  // std::unique_ptr<WebContents>.
   tab_model->CreateTab(
       TabAndroid::FromWebContents(tab_model->GetActiveWebContents()),
-      web_contents_.release(), TabModel::kInvalidIndex,
+      std::move(web_contents_), TabModel::kInvalidIndex,
       TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
       /*should_pin=*/false);
 }

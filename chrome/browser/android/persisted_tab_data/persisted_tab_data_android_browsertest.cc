@@ -43,8 +43,7 @@ class PersistedTabDataAndroidBrowserTest : public AndroidBrowserTest {
     std::unique_ptr<content::WebContents> contents =
         content::WebContents::Create(
             content::WebContents::CreateParams(profile()));
-    content::WebContents* second_web_contents = contents.release();
-    tab_model->CreateTab(tab_android(), second_web_contents,
+    tab_model->CreateTab(tab_android(), std::move(contents),
                          TabModel::kInvalidIndex,
                          TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
                          /*should_pin=*/false);

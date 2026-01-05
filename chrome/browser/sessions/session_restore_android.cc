@@ -61,7 +61,7 @@ content::WebContents* SessionRestore::RestoreForeignSessionTab(
   // parent will ensure group state, position, etc. should be kept.
   if (disposition == WindowOpenDisposition::CURRENT_TAB) {
     // This will never be a bulk session restore so we can select the tab here.
-    tab_model->CreateTab(current_tab, new_web_contents.release(),
+    tab_model->CreateTab(current_tab, std::move(new_web_contents),
                          TabModel::kInvalidIndex,
                          TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
                          /*should_pin=*/false);
@@ -72,7 +72,7 @@ content::WebContents* SessionRestore::RestoreForeignSessionTab(
          disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB);
   // Do not select a tab here it will interrupt bulk session restores.
   tab_model->CreateTab(
-      current_tab, new_web_contents.release(), TabModel::kInvalidIndex,
+      current_tab, std::move(new_web_contents), TabModel::kInvalidIndex,
       TabModel::TabLaunchType::FROM_RECENT_TABS, /*should_pin=*/false);
   return raw_new_web_contents;
 }

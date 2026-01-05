@@ -76,11 +76,14 @@ base::android::ScopedJavaLocalRef<jobject> TestTabModel::GetJavaObject() const {
   return nullptr;
 }
 
-void TestTabModel::CreateTab(TabAndroid* parent,
-                             content::WebContents* web_contents,
-                             int index,
-                             TabLaunchType type,
-                             bool should_pin) {}
+tabs::TabInterface* TestTabModel::CreateTab(
+    TabAndroid* parent,
+    std::unique_ptr<content::WebContents> web_contents,
+    int index,
+    TestTabModel::TabLaunchType type,
+    bool should_pin) {
+  return nullptr;
+}
 
 void TestTabModel::HandlePopupNavigation(TabAndroid* parent,
                                          NavigateParams* params) {}
@@ -344,11 +347,12 @@ void OwningTestTabModel::CloseTabAt(int index) {
   observer_list_.Notify(&TabModelObserver::TabRemoved, tab.get());
 }
 
-void OwningTestTabModel::CreateTab(TabAndroid* parent,
-                                   content::WebContents* web_contents,
-                                   int index,
-                                   TabLaunchType type,
-                                   bool should_pin) {
+tabs::TabInterface* OwningTestTabModel::CreateTab(
+    TabAndroid* parent,
+    std::unique_ptr<content::WebContents> web_contents,
+    int index,
+    TestTabModel::TabLaunchType type,
+    bool should_pin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   size_t insertion_index =
@@ -360,9 +364,9 @@ void OwningTestTabModel::CreateTab(TabAndroid* parent,
       type, is_new_tab_incognito, GetProfile()->IsOffTheRecord());
 
   // Take ownership of the WebContents.
-  AddTabFromWebContents(std::unique_ptr<content::WebContents>(web_contents),
-                        insertion_index, select_tab,
-                        TabModel::TabLaunchType::FROM_RESTORE);
+  return AddTabFromWebContents(std::move(web_contents), insertion_index,
+                               select_tab,
+                               TabModel::TabLaunchType::FROM_RESTORE);
 }
 
 bool OwningTestTabModel::IsActiveModel() const {

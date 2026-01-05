@@ -123,7 +123,7 @@ class PageContentCacheBrowserTest : public AndroidBrowserTest {
     std::unique_ptr<content::WebContents> contents =
         content::WebContents::Create(
             content::WebContents::CreateParams(profile()));
-    content::WebContents* new_web_contents = contents.release();
+    content::WebContents* new_web_contents = contents.get();
 
     content::NavigationController::LoadURLParams params(url);
     params.transition_type =
@@ -132,7 +132,8 @@ class PageContentCacheBrowserTest : public AndroidBrowserTest {
     new_web_contents->GetController().LoadURLWithParams(params);
     content::WaitForLoadStop(new_web_contents);
 
-    tab_model->CreateTab(parent_tab, new_web_contents, TabModel::kInvalidIndex,
+    tab_model->CreateTab(parent_tab, std::move(contents),
+                         TabModel::kInvalidIndex,
                          TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
                          /*should_pin=*/false);
     return new_web_contents;

@@ -250,11 +250,12 @@ class TabModel : public TabListInterface {
   virtual void ForceCloseAllTabs() = 0;
   virtual void CloseTabAt(int index) = 0;
 
-  virtual void CreateTab(TabAndroid* parent,
-                         content::WebContents* web_contents,
-                         int index,
-                         TabLaunchType type,
-                         bool should_pin) = 0;
+  virtual tabs::TabInterface* CreateTab(
+      TabAndroid* parent,
+      std::unique_ptr<content::WebContents> web_contents,
+      int index,
+      TabLaunchType type,
+      bool should_pin) = 0;
 
   virtual void HandlePopupNavigation(TabAndroid* parent,
                                      NavigateParams* params) = 0;

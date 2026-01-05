@@ -120,16 +120,12 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
           params->initiating_profile);
       std::unique_ptr<content::WebContents> web_contents =
           content::WebContents::Create(create_params);
-      // Tab will take ownership of these WebContents.
-      // TODO (crbug.com/471276663) This might have a use-after-free if
-      // !new_tab.
-      content::WebContents* raw_web_contents = web_contents.release();
       // Create a new tab (opens in the background).
-      tab_model->CreateTab(nullptr, raw_web_contents, insertion_index,
-                           TabModel::TabLaunchType::FROM_TAB_LIST_INTERFACE,
-                           /*should_pin=*/false);
+      tabs::TabInterface* new_tab = tab_model->CreateTab(
+          nullptr, std::move(web_contents), insertion_index,
+          TabModel::TabLaunchType::FROM_TAB_LIST_INTERFACE,
+          /*should_pin=*/false);
 
-      TabAndroid* new_tab = TabAndroid::FromWebContents(raw_web_contents);
       if (!new_tab || !new_tab->GetContents()) {
         return nullptr;
       }
