@@ -9,6 +9,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -557,6 +558,11 @@ void DocumentStorageAccess::ProcessTopLevelStorageAccessPermissionState(
     FireRequestStorageAccessForMetrics(
         RequestStorageResult::APPROVED_NEW_OR_EXISTING_GRANT,
         ExecutionContext::From(script_state));
+
+    UseCounter::Count(
+        GetSupplementable(),
+        mojom::blink::WebFeature::
+            kStorageAccessAPI_requestStorageAccessFor_Method_AsyncSuccess);
     resolver->Resolve();
   } else {
     LocalFrame::ConsumeTransientUserActivation(GetSupplementable()->GetFrame());

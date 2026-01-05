@@ -577,6 +577,7 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
                        RequestStorageAccessForEmbeddedOriginScoping) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
+  base::HistogramTester histogram_tester;
 
   SetBlockThirdPartyCookies(true);
 
@@ -599,6 +600,13 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostASubdomain,
                                             /*cors_enabled=*/true),
             "");
+
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::
+          kStorageAccessAPI_requestStorageAccessFor_Method_AsyncSuccess,
+      /*expected_count=*/0);
 
   EXPECT_THAT(
       ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
@@ -793,6 +801,13 @@ IN_PROC_BROWSER_TEST_F(
                   kRequestOutcomeHistogram,
                   TopLevelStorageAccessRequestOutcome::kGrantedByFirstPartySet),
               Gt(0));
+
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::
+          kStorageAccessAPI_requestStorageAccessFor_Method_AsyncSuccess,
+      /*expected_count=*/1);
 
   EXPECT_THAT(
       ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,

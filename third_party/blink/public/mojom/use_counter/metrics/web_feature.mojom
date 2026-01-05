@@ -5086,6 +5086,7 @@ enum WebFeature {
   kDigitalCredentialsProtocolUnknown = 5770,
   kSetCookieWithEmptyName = 5771,
   kSetCookieWithEmptyNameAndAmbiguousValue = 5772,
+  kStorageAccessAPI_requestStorageAccessFor_Method_AsyncSuccess = 5773,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
