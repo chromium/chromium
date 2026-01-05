@@ -314,7 +314,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
             case DialogOption.CLEAR_FORM_DATA:
                 return R.drawable.ic_edit_24dp;
             case DialogOption.CLEAR_HISTORY:
-                return R.drawable.ic_watch_later_24dp;
+                return R.drawable.ic_schedule_fill_24dp;
             case DialogOption.CLEAR_PASSWORDS:
                 return R.drawable.ic_password_manager_key;
             case DialogOption.CLEAR_SITE_SETTINGS:
