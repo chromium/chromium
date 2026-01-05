@@ -10,6 +10,7 @@
 #include "base/trace_event/trace_event.h"
 #include "content/public/common/content_features.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace content {
 ServiceWorkerResourceLoader::ServiceWorkerResourceLoader() = default;
@@ -17,11 +18,10 @@ ServiceWorkerResourceLoader::~ServiceWorkerResourceLoader() = default;
 
 void ServiceWorkerResourceLoader::SetCommitResponsibility(
     FetchResponseFrom fetch_response_from) {
-  TRACE_EVENT_WITH_FLOW2(
+  TRACE_EVENT(
       "ServiceWorker", "ServiceWorkerResourceLoader::SetCommitResponsibility",
-      this, TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-      "commit_responsibility_", commit_responsibility_, "fetch_response_from",
-      fetch_response_from);
+      perfetto::Flow::FromPointer(this), "commit_responsibility_",
+      commit_responsibility_, "fetch_response_from", fetch_response_from);
   switch (fetch_response_from) {
     case FetchResponseFrom::kNoResponseYet:
       NOTREACHED();

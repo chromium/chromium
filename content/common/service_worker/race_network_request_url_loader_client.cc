@@ -26,6 +26,7 @@
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace content {
 namespace {
@@ -77,10 +78,10 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::
       request_start_time_(base::Time::Now()),
       clone_completed_for_fetch_handler_callback_(
           std::move(clone_completed_for_fetch_handler_callback)) {
-  TRACE_EVENT_WITH_FLOW0("ServiceWorker",
-                         "ServiceWorkerRaceNetworkRequestURLLoaderClient::"
-                         "ServiceWorkerRaceNetworkRequestURLLoaderClient",
-                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerRaceNetworkRequestURLLoaderClient::"
+              "ServiceWorkerRaceNetworkRequestURLLoaderClient",
+              perfetto::Flow::FromPointer(this));
 
   // Create two data pipes. One is for RaceNetworkRequest. The other is for the
   // corresponding request in the fetch handler.
@@ -100,10 +101,10 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::
 
 ServiceWorkerRaceNetworkRequestURLLoaderClient::
     ~ServiceWorkerRaceNetworkRequestURLLoaderClient() {
-  TRACE_EVENT_WITH_FLOW0("ServiceWorker",
-                         "ServiceWorkerRaceNetworkRequestURLLoaderClient::"
-                         "~ServiceWorkerRaceNetworkRequestURLLoaderClient",
-                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerRaceNetworkRequestURLLoaderClient::"
+              "~ServiceWorkerRaceNetworkRequestURLLoaderClient",
+              perfetto::TerminatingFlow::FromPointer(this));
   if (simple_buffer_manager_.has_value()) {
     RecordDataTransferCompletionResult();
   } else {
@@ -142,12 +143,11 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse(
   if (!owner_) {
     return;
   }
-  TRACE_EVENT_WITH_FLOW2(
+  TRACE_EVENT(
       "ServiceWorker",
       "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse",
-      TRACE_ID_LOCAL(this),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url",
-      resource_request_url_, "state", state_);
+      perfetto::Flow::FromPointer(this), "url", resource_request_url_, "state",
+      state_);
   TransitionState(State::kResponseReceived);
 
   // Set the response received time, and record the time delta between the
@@ -202,12 +202,11 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
   if (!owner_) {
     return;
   }
-  TRACE_EVENT_WITH_FLOW2(
+  TRACE_EVENT(
       "ServiceWorker",
       "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect",
-      TRACE_ID_LOCAL(this),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url",
-      resource_request_url_, "state", state_);
+      perfetto::Flow::FromPointer(this), "url", resource_request_url_, "state",
+      state_);
   TransitionState(State::kRedirect);
   // If redirect happened, we don't have to create another data pipe.
   data_consume_policy_ = DataConsumePolicy::kForwardingOnly;
@@ -259,12 +258,10 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnComplete(
   if (!owner_) {
     return;
   }
-  TRACE_EVENT_WITH_FLOW2(
-      "ServiceWorker",
-      "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnComplete",
-      TRACE_ID_LOCAL(this),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url",
-      resource_request_url_, "state", state_);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnComplete",
+              perfetto::Flow::FromPointer(this), "url", resource_request_url_,
+              "state", state_);
   base::UmaHistogramBoolean(
       base::StrCat({owner_->IsMainResourceLoader()
                         ? kMainResourceHistogramForRaceNetworkFetchEvent
@@ -388,12 +385,11 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse() {
   if (!owner_) {
     return;
   }
-  TRACE_EVENT_WITH_FLOW2(
+  TRACE_EVENT(
       "ServiceWorker",
       "ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse",
-      TRACE_ID_LOCAL(this),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url",
-      resource_request_url_, "state", state_);
+      perfetto::Flow::FromPointer(this), "url", resource_request_url_, "state",
+      state_);
   bool is_aborted = false;
   switch (state_) {
     case State::kAborted:
@@ -471,12 +467,11 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnDataTransferComplete() {
-  TRACE_EVENT_WITH_FLOW2(
+  TRACE_EVENT(
       "ServiceWorker",
       "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnDataTransferComplete",
-      TRACE_ID_LOCAL(this),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url",
-      resource_request_url_, "state", state_);
+      perfetto::Flow::FromPointer(this), "url", resource_request_url_, "state",
+      state_);
   MaybeCommitResponse();
   TransitionState(State::kDataTransferFinished);
   MaybeCompleteResponse();
@@ -511,11 +506,10 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::Read(
   }
 
   auto [read_result, read_buffer] = read_buffer_manager_->ReadData();
-  TRACE_EVENT_WITH_FLOW2(
-      "ServiceWorker", "ServiceWorkerRaceNetworkRequestURLLoaderClient::Read",
-      TRACE_ID_LOCAL(this),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url",
-      resource_request_url_, "read_data_result", read_result);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerRaceNetworkRequestURLLoaderClient::Read",
+              perfetto::Flow::FromPointer(this), "url", resource_request_url_,
+              "read_data_result", read_result);
   switch (read_result) {
     case MOJO_RESULT_OK:
       write_buffer_manager_for_race_network_request_.ArmOrNotify();
