@@ -6,6 +6,7 @@
 
 #include "base/trace_event/trace_event.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace cc {
 
@@ -18,11 +19,11 @@ BeginFrameTracker::~BeginFrameTracker() = default;
 
 void BeginFrameTracker::Start(const viz::BeginFrameArgs& new_args) {
   // Trace the frame time being passed between BeginFrameTrackers.
-  TRACE_EVENT_WITH_FLOW1(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler.frames"),
-                         "BeginFrameArgs",
-                         new_args.frame_time.since_origin().InMicroseconds(),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "location", location_string_);
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler.frames"),
+              "BeginFrameArgs",
+              perfetto::Flow::Global(
+                  new_args.frame_time.since_origin().InMicroseconds()),
+              "location", location_string_);
 
   // Trace this specific begin frame tracker Start/Finish times.
   TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN2(

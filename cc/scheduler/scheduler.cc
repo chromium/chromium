@@ -28,6 +28,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_compositor_scheduler_state.pbzero.h"
 
 namespace cc {
@@ -412,10 +413,10 @@ bool Scheduler::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
   }
 
   // Trace this begin frame time through the Chrome stack
-  TRACE_EVENT_WITH_FLOW0(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler.frames"),
-                         "viz::BeginFrameArgs",
-                         args.frame_time.since_origin().InMicroseconds(),
-                         TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT(
+      TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler.frames"),
+      "viz::BeginFrameArgs",
+      perfetto::Flow::Global(args.frame_time.since_origin().InMicroseconds()));
 
   if (settings_.using_synchronous_renderer_compositor) {
     BeginImplFrameSynchronous(args);
@@ -870,11 +871,10 @@ void Scheduler::DrawForced() {
       state_machine_.active_tree_needs_first_draw() &&
       !state_machine_.previous_pending_tree_was_impl_side();
   if (drawing_with_new_active_tree) {
-    TRACE_EVENT_WITH_FLOW1(
+    TRACE_EVENT(
         "viz,benchmark", "Graphics.Pipeline.DrawForced",
-        TRACE_ID_GLOBAL(last_activate_origin_frame_args().trace_id),
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "trace_id",
-        last_activate_origin_frame_args().trace_id);
+        perfetto::Flow::Global(last_activate_origin_frame_args().trace_id),
+        "trace_id", last_activate_origin_frame_args().trace_id);
   }
   compositor_timing_history_->WillDraw();
   state_machine_.WillDraw();

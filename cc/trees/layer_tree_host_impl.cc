@@ -144,6 +144,7 @@
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -2951,12 +2952,10 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
         std::make_unique<gfx::DelegatedInkMetadata>(
             *delegated_ink_metadata_ptr);
     delegated_ink_metadata->set_frame_time(CurrentBeginFrameArgs().frame_time);
-    TRACE_EVENT_WITH_FLOW1(
-        "delegated_ink_trails",
-        "Delegated Ink Metadata set on compositor frame metadata",
-        TRACE_ID_GLOBAL(delegated_ink_metadata->trace_id()),
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "metadata",
-        delegated_ink_metadata->ToString());
+    TRACE_EVENT("delegated_ink_trails",
+                "Delegated Ink Metadata set on compositor frame metadata",
+                perfetto::Flow::Global(delegated_ink_metadata->trace_id()),
+                "metadata", delegated_ink_metadata->ToString());
     metadata.delegated_ink_metadata = std::move(delegated_ink_metadata);
   }
 

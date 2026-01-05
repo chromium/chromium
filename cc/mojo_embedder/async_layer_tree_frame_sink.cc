@@ -27,6 +27,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "services/viz/public/mojom/compositing/thread.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace cc {
 namespace mojo_embedder {
@@ -247,28 +248,26 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
     // TRACE_ID_LOCAL, and the outgoing flow using TRACE_ID_GLOBAL. This is
     // needed to ensure the incoming flow is not messed up. The outgoing flow is
     // going to a different process.
-    TRACE_EVENT_WITH_FLOW2(
-        TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
-        "LocalSurfaceId.Submission.Flow",
-        TRACE_ID_LOCAL(local_surface_id_.submission_trace_id()),
-        TRACE_EVENT_FLAG_FLOW_IN, "step", "SubmitCompositorFrame", "surface_id",
-        local_surface_id_.ToString());
-    TRACE_EVENT_WITH_FLOW2(
-        TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
-        "LocalSurfaceId.Submission.Flow",
-        TRACE_ID_GLOBAL(local_surface_id_.submission_trace_id()),
-        TRACE_EVENT_FLAG_FLOW_OUT, "step", "SubmitCompositorFrame",
-        "surface_id", local_surface_id_.ToString());
+    TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
+                "LocalSurfaceId.Submission.Flow",
+                perfetto::TerminatingFlow::ProcessScoped(
+                    local_surface_id_.submission_trace_id()),
+                "step", "SubmitCompositorFrame", "surface_id",
+                local_surface_id_.ToString());
+    TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
+                "LocalSurfaceId.Submission.Flow",
+                perfetto::Flow::Global(local_surface_id_.submission_trace_id()),
+                "step", "SubmitCompositorFrame", "surface_id",
+                local_surface_id_.ToString());
   }
 
   // The trace_id is negated in order to keep the Graphics.Pipeline and
   // Event.Pipeline flows separated.
   const int64_t trace_id = frame.metadata.begin_frame_ack.trace_id;
   const int64_t negated_trace_id = ~trace_id;
-  TRACE_EVENT_WITH_FLOW1(TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"),
-                         "Event.Pipeline", TRACE_ID_GLOBAL(negated_trace_id),
-                         TRACE_EVENT_FLAG_FLOW_OUT, "step",
-                         "SubmitHitTestData");
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"),
+              "Event.Pipeline", perfetto::Flow::Global(negated_trace_id),
+              "step", "SubmitHitTestData");
 
   TRACE_EVENT(
       "graphics.pipeline", "Graphics.Pipeline",

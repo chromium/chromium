@@ -18,6 +18,7 @@
 #include "cc/trees/occlusion.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace cc {
@@ -79,13 +80,12 @@ void SurfaceLayerImpl::SetRange(const viz::SurfaceRange& surface_range,
 
   if (surface_range_.end() != surface_range.end() &&
       surface_range.end().local_surface_id().is_valid()) {
-    TRACE_EVENT_WITH_FLOW2(
-        TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
-        "LocalSurfaceId.Embed.Flow",
-        TRACE_ID_GLOBAL(
-            surface_range.end().local_surface_id().embed_trace_id()),
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "step",
-        "ImplSetSurfaceId", "surface_id", surface_range.end().ToString());
+    TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
+                "LocalSurfaceId.Embed.Flow",
+                perfetto::Flow::Global(
+                    surface_range.end().local_surface_id().embed_trace_id()),
+                "step", "ImplSetSurfaceId", "surface_id",
+                surface_range.end().ToString());
   }
 
   surface_range_ = surface_range;
