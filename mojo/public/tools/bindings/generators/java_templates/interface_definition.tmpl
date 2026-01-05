@@ -89,8 +89,11 @@ public static final {{manager_class(interface, True)}} MANAGER =
     }
 
     @Override
-    public Stub buildStub(org.chromium.mojo.system.Core core, {{interface|name}} impl) {
-        return new Stub(core, impl);
+    public org.chromium.mojo.bindings.Stub<{{interface|name}}> buildStub(
+            org.chromium.mojo.system.Core core,
+            {{interface|name}} impl,
+            int interfaceId) {
+        return new {{interface|name}}Stub(core, impl, interfaceId);
     }
 
     @Override
@@ -221,10 +224,10 @@ class {{interface|name}}_Internal {
 
     }
 
-    static final class Stub extends org.chromium.mojo.bindings.Interface.Stub<{{interface|name}}> {
+    static final class {{interface|name}}Stub extends org.chromium.mojo.bindings.Stub<{{interface|name}}> {
 
-        Stub(org.chromium.mojo.system.Core core, {{interface|name}} impl) {
-            super(core, impl);
+        {{interface|name}}Stub(org.chromium.mojo.system.Core core, {{interface|name}} impl, int interfaceId) {
+            super(core, impl, interfaceId);
         }
 
         @Override
@@ -271,8 +274,7 @@ class {{interface|name}}_Internal {
 
     {{ struct_def(response_struct, True)|indent(4) }}
 
-    static class {{response_struct|name}}ForwardToCallback extends org.chromium.mojo.bindings.SideEffectFreeCloseable
-            implements org.chromium.mojo.bindings.MessageReceiver {
+    static class {{response_struct|name}}ForwardToCallback implements org.chromium.mojo.bindings.MessageReceiver {
         private final {{interface|name}}.{{method|interface_response_name}} mCallback;
 
         {{response_struct|name}}ForwardToCallback({{interface|name}}.{{method|interface_response_name}} callback) {
@@ -306,6 +308,9 @@ class {{interface|name}}_Internal {
                 return false;
             }
         }
+
+        @Override
+        public void close() {}
     }
 
     static class {{response_struct|name}}ProxyToResponder implements {{interface|name}}.{{method|interface_response_name}} {

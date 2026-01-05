@@ -41,8 +41,11 @@ class IFaceWithTypemap_Internal {
         }
 
         @Override
-        public Stub buildStub(org.chromium.mojo.system.Core core, IFaceWithTypemap impl) {
-            return new Stub(core, impl);
+        public org.chromium.mojo.bindings.Stub<IFaceWithTypemap> buildStub(
+                org.chromium.mojo.system.Core core,
+                IFaceWithTypemap impl,
+                int interfaceId) {
+            return new IFaceWithTypemapStub(core, impl, interfaceId);
         }
 
         @Override
@@ -88,10 +91,10 @@ Echo_Response callback) {
 
     }
 
-    static final class Stub extends org.chromium.mojo.bindings.Interface.Stub<IFaceWithTypemap> {
+    static final class IFaceWithTypemapStub extends org.chromium.mojo.bindings.Stub<IFaceWithTypemap> {
 
-        Stub(org.chromium.mojo.system.Core core, IFaceWithTypemap impl) {
-            super(core, impl);
+        IFaceWithTypemapStub(org.chromium.mojo.system.Core core, IFaceWithTypemap impl, int interfaceId) {
+            super(core, impl, interfaceId);
         }
 
         @Override
@@ -167,6 +170,11 @@ Echo_Response callback) {
                 System.err.println(e.toString());
                 return false;
             }
+        }
+
+        @Override
+        public void close() {
+            getImpl().close();
         }
     }
 
@@ -297,8 +305,7 @@ Echo_Response callback) {
         }
     }
 
-    static class IFaceWithTypemapEchoResponseParamsForwardToCallback extends org.chromium.mojo.bindings.SideEffectFreeCloseable
-            implements org.chromium.mojo.bindings.MessageReceiver {
+    static class IFaceWithTypemapEchoResponseParamsForwardToCallback implements org.chromium.mojo.bindings.MessageReceiver {
         private final IFaceWithTypemap.Echo_Response mCallback;
 
         IFaceWithTypemapEchoResponseParamsForwardToCallback(IFaceWithTypemap.Echo_Response callback) {
@@ -326,6 +333,9 @@ Echo_Response callback) {
                 return false;
             }
         }
+
+        @Override
+        public void close() {}
     }
 
     static class IFaceWithTypemapEchoResponseParamsProxyToResponder implements IFaceWithTypemap.Echo_Response {

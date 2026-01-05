@@ -41,6 +41,8 @@ import java.util.Scanner;
 public class ValidationTest {
     @Rule public MojoTestRule mTestRule = new MojoTestRule();
 
+    private static final int INTERFACE_ID = 999; // doesn't matter
+
     /** The path where validation test data is. */
     private static final File VALIDATION_TEST_DATA_PATH =
             new File(
@@ -206,7 +208,8 @@ public class ValidationTest {
                 ConformanceTestInterface.MANAGER.buildStub(
                         CoreImpl.getInstance(),
                         ConformanceTestInterface.MANAGER.buildProxy(
-                                CoreImpl.getInstance(), new SinkMessageReceiver())));
+                                CoreImpl.getInstance(), new SinkMessageReceiver()),
+                        INTERFACE_ID));
     }
 
     /** Testing the integration suite for message headers. */
@@ -219,7 +222,8 @@ public class ValidationTest {
                         IntegrationTestInterface.MANAGER.buildStub(
                                 null,
                                 IntegrationTestInterface.MANAGER.buildProxy(
-                                        null, new SinkMessageReceiver())),
+                                        null, new SinkMessageReceiver()),
+                                INTERFACE_ID),
                         IntegrationTestInterfaceTestHelper
                                 .newIntegrationTestInterfaceMethodCallback()));
     }
@@ -234,7 +238,8 @@ public class ValidationTest {
                         IntegrationTestInterface.MANAGER.buildStub(
                                 null,
                                 IntegrationTestInterface.MANAGER.buildProxy(
-                                        null, new SinkMessageReceiver())),
+                                        null, new SinkMessageReceiver()),
+                                INTERFACE_ID),
                         IntegrationTestInterfaceTestHelper
                                 .newIntegrationTestInterfaceMethodCallback()));
     }
@@ -249,7 +254,8 @@ public class ValidationTest {
                         IntegrationTestInterface.MANAGER.buildStub(
                                 null,
                                 IntegrationTestInterface.MANAGER.buildProxy(
-                                        null, new SinkMessageReceiver())),
+                                        null, new SinkMessageReceiver()),
+                                INTERFACE_ID),
                         IntegrationTestInterfaceTestHelper
                                 .newIntegrationTestInterfaceMethodCallback()));
     }

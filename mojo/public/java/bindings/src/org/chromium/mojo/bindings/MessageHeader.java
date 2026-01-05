@@ -45,6 +45,9 @@ public class MessageHeader {
     /** Flag for a header of a message that is a response to a sync method. */
     public static final int MESSAGE_IS_SYNC_FLAG = 1 << 2;
 
+    private static final int KNOWN_FLAGS =
+            (MESSAGE_EXPECTS_RESPONSE_FLAG | MESSAGE_IS_RESPONSE_FLAG | MESSAGE_IS_SYNC_FLAG);
+
     private final DataHeader mDataHeader;
     private final int mInterfaceId;
     private final int mMethodId;
@@ -159,9 +162,7 @@ public class MessageHeader {
      * knows about in order to allow this class to work with future version of the header format.
      */
     public boolean hasExactFlags(int expectedFlags) {
-        int knownFlags =
-                (MESSAGE_EXPECTS_RESPONSE_FLAG | MESSAGE_IS_RESPONSE_FLAG | MESSAGE_IS_SYNC_FLAG);
-        return (getFlags() & knownFlags) == expectedFlags;
+        return (getFlags() & KNOWN_FLAGS) == expectedFlags;
     }
 
     /**

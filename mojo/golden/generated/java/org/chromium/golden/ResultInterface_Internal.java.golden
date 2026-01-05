@@ -42,8 +42,11 @@ class ResultInterface_Internal {
         }
 
         @Override
-        public Stub buildStub(org.chromium.mojo.system.Core core, ResultInterface impl) {
-            return new Stub(core, impl);
+        public org.chromium.mojo.bindings.Stub<ResultInterface> buildStub(
+                org.chromium.mojo.system.Core core,
+                ResultInterface impl,
+                int interfaceId) {
+            return new ResultInterfaceStub(core, impl, interfaceId);
         }
 
         @Override
@@ -114,10 +117,10 @@ SyncMethod_Response callback) {
 
     }
 
-    static final class Stub extends org.chromium.mojo.bindings.Interface.Stub<ResultInterface> {
+    static final class ResultInterfaceStub extends org.chromium.mojo.bindings.Stub<ResultInterface> {
 
-        Stub(org.chromium.mojo.system.Core core, ResultInterface impl) {
-            super(core, impl);
+        ResultInterfaceStub(org.chromium.mojo.system.Core core, ResultInterface impl, int interfaceId) {
+            super(core, impl, interfaceId);
         }
 
         @Override
@@ -210,6 +213,11 @@ SyncMethod_Response callback) {
                 System.err.println(e.toString());
                 return false;
             }
+        }
+
+        @Override
+        public void close() {
+            getImpl().close();
         }
     }
 
@@ -356,8 +364,7 @@ SyncMethod_Response callback) {
         }
     }
 
-    static class ResultInterfaceMethodResponseParamsForwardToCallback extends org.chromium.mojo.bindings.SideEffectFreeCloseable
-            implements org.chromium.mojo.bindings.MessageReceiver {
+    static class ResultInterfaceMethodResponseParamsForwardToCallback implements org.chromium.mojo.bindings.MessageReceiver {
         private final ResultInterface.Method_Response mCallback;
 
         ResultInterfaceMethodResponseParamsForwardToCallback(ResultInterface.Method_Response callback) {
@@ -386,6 +393,9 @@ SyncMethod_Response callback) {
                 return false;
             }
         }
+
+        @Override
+        public void close() {}
     }
 
     static class ResultInterfaceMethodResponseParamsProxyToResponder implements ResultInterface.Method_Response {
@@ -563,8 +573,7 @@ SyncMethod_Response callback) {
         }
     }
 
-    static class ResultInterfaceSyncMethodResponseParamsForwardToCallback extends org.chromium.mojo.bindings.SideEffectFreeCloseable
-            implements org.chromium.mojo.bindings.MessageReceiver {
+    static class ResultInterfaceSyncMethodResponseParamsForwardToCallback implements org.chromium.mojo.bindings.MessageReceiver {
         private final ResultInterface.SyncMethod_Response mCallback;
 
         ResultInterfaceSyncMethodResponseParamsForwardToCallback(ResultInterface.SyncMethod_Response callback) {
@@ -593,6 +602,9 @@ SyncMethod_Response callback) {
                 return false;
             }
         }
+
+        @Override
+        public void close() {}
     }
 
     static class ResultInterfaceSyncMethodResponseParamsProxyToResponder implements ResultInterface.SyncMethod_Response {

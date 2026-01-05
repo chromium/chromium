@@ -35,8 +35,7 @@ public class InterfaceControlMessagesHelper {
      * MessageReceiver that forwards a message containing a {@link RunResponseMessageParams} to a
      * callback.
      */
-    private static class RunResponseForwardToCallback extends SideEffectFreeCloseable
-            implements MessageReceiver {
+    private static class RunResponseForwardToCallback implements MessageReceiver {
         private final SendRunMessageCallback mCallback;
 
         RunResponseForwardToCallback(SendRunMessageCallback callback) {
@@ -53,6 +52,9 @@ public class InterfaceControlMessagesHelper {
             mCallback.call(response);
             return true;
         }
+
+        @Override
+        public void close() {}
     }
 
     /** Sends the given run message through the receiver, registering the callback. */

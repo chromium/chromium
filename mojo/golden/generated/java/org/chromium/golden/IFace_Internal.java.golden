@@ -41,8 +41,11 @@ class IFace_Internal {
         }
 
         @Override
-        public Stub buildStub(org.chromium.mojo.system.Core core, IFace impl) {
-            return new Stub(core, impl);
+        public org.chromium.mojo.bindings.Stub<IFace> buildStub(
+                org.chromium.mojo.system.Core core,
+                IFace impl,
+                int interfaceId) {
+            return new IFaceStub(core, impl, interfaceId);
         }
 
         @Override
@@ -88,10 +91,10 @@ Method_Response callback) {
 
     }
 
-    static final class Stub extends org.chromium.mojo.bindings.Interface.Stub<IFace> {
+    static final class IFaceStub extends org.chromium.mojo.bindings.Stub<IFace> {
 
-        Stub(org.chromium.mojo.system.Core core, IFace impl) {
-            super(core, impl);
+        IFaceStub(org.chromium.mojo.system.Core core, IFace impl, int interfaceId) {
+            super(core, impl, interfaceId);
         }
 
         @Override
@@ -167,6 +170,11 @@ Method_Response callback) {
                 System.err.println(e.toString());
                 return false;
             }
+        }
+
+        @Override
+        public void close() {
+            getImpl().close();
         }
     }
 
@@ -295,8 +303,7 @@ Method_Response callback) {
         }
     }
 
-    static class IFaceMethodResponseParamsForwardToCallback extends org.chromium.mojo.bindings.SideEffectFreeCloseable
-            implements org.chromium.mojo.bindings.MessageReceiver {
+    static class IFaceMethodResponseParamsForwardToCallback implements org.chromium.mojo.bindings.MessageReceiver {
         private final IFace.Method_Response mCallback;
 
         IFaceMethodResponseParamsForwardToCallback(IFace.Method_Response callback) {
@@ -324,6 +331,9 @@ Method_Response callback) {
                 return false;
             }
         }
+
+        @Override
+        public void close() {}
     }
 
     static class IFaceMethodResponseParamsProxyToResponder implements IFace.Method_Response {

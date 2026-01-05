@@ -40,12 +40,9 @@ class AutoCloseableRouter implements Router {
         mAllocationException = new Exception("AutocloseableRouter allocated at:");
     }
 
-    /**
-     * @see Router#setIncomingMessageReceiver(MessageReceiverWithResponder)
-     */
     @Override
-    public void setIncomingMessageReceiver(MessageReceiverWithResponder incomingMessageReceiver) {
-        mRouter.setIncomingMessageReceiver(incomingMessageReceiver);
+    public void setPrimaryStub(Stub stub) {
+        mRouter.setPrimaryStub(stub);
     }
 
     /**

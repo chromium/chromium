@@ -86,7 +86,7 @@ public class RouterImpl implements Router {
      * The {@link MessageReceiverWithResponder} that will consume the messages received from the
      * pipe.
      */
-    private @Nullable MessageReceiverWithResponder mIncomingMessageReceiver;
+    private final Map<Integer, Stub> mStubs = new HashMap();
 
     /** The next id to use for a request id which needs a response. It is auto-incremented. */
     private long mNextRequestId = 1;
@@ -95,17 +95,13 @@ public class RouterImpl implements Router {
     private final Map<Long, MessageReceiver> mResponders = new HashMap<Long, MessageReceiver>();
 
     /**
-     * An Executor that will run on the thread associated with the MessagePipe to which
-     * this Router is bound. This may be {@code Null} if the MessagePipeHandle passed
-     * in to the constructor is not valid.
+     * An Executor that will run on the thread associated with the MessagePipe to which this Router
+     * is bound. This may be {@code Null} if the MessagePipeHandle passed in to the constructor is
+     * not valid.
      */
     private final @Nullable Executor mExecutor;
 
-    /**
-     * Constructor that will use the default {@link Watcher}.
-     *
-     * @param messagePipeHandle The {@link MessagePipeHandle} to route message for.
-     */
+    /** Constructor that will use the default {@link Watcher}. */
     public RouterImpl(MessagePipeHandle messagePipeHandle) {
         this(messagePipeHandle, BindingsHelper.getWatcherForHandleNonNull(messagePipeHandle));
     }
@@ -136,12 +132,16 @@ public class RouterImpl implements Router {
         mConnector.start();
     }
 
-    /**
-     * @see Router#setIncomingMessageReceiver(MessageReceiverWithResponder)
-     */
     @Override
-    public void setIncomingMessageReceiver(MessageReceiverWithResponder incomingMessageReceiver) {
-        this.mIncomingMessageReceiver = incomingMessageReceiver;
+    public void setPrimaryStub(Stub primaryStub) {
+        if (primaryStub.getInterfaceId() != PRIMARY_INTERFACE_ID) {
+            throw new IllegalArgumentException("primary stub must have an interface id of 0");
+        }
+        addStub(primaryStub);
+    }
+
+    private void addStub(Stub stub) {
+        this.mStubs.put(stub.getInterfaceId(), stub);
     }
 
     /**
@@ -208,9 +208,10 @@ public class RouterImpl implements Router {
     /** Receive a message from the connector. Returns |true| if the message has been handled. */
     private boolean handleIncomingMessage(Message message) {
         MessageHeader header = message.asServiceMessage().getHeader();
+        var stub = mStubs.get(header.getInterfaceId());
         if (header.hasFlag(MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG)) {
-            if (mIncomingMessageReceiver != null) {
-                return mIncomingMessageReceiver.acceptWithResponder(message, new ResponderThunk());
+            if (stub != null) {
+                return stub.acceptWithResponder(message, new ResponderThunk());
             }
             // If we receive a request expecting a response when the client is not
             // listening, then we have no choice but to tear down the pipe.
@@ -225,8 +226,8 @@ public class RouterImpl implements Router {
             mResponders.remove(requestId);
             return responder.accept(message);
         } else {
-            if (mIncomingMessageReceiver != null) {
-                return mIncomingMessageReceiver.accept(message);
+            if (stub != null) {
+                return stub.accept(message);
             }
             // OK to drop the message.
         }
@@ -234,8 +235,9 @@ public class RouterImpl implements Router {
     }
 
     private void handleConnectorClose() {
-        if (mIncomingMessageReceiver != null) {
-            mIncomingMessageReceiver.close();
+        var primaryStub = mStubs.get(PRIMARY_INTERFACE_ID);
+        if (primaryStub != null) {
+            primaryStub.close();
         }
     }
 

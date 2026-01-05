@@ -16,7 +16,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.mojo.MojoTestRule;
 import org.chromium.mojo.bindings.BindingsTestUtils.CapturingErrorHandler;
-import org.chromium.mojo.bindings.BindingsTestUtils.RecordingMessageReceiverWithResponder;
+import org.chromium.mojo.bindings.BindingsTestUtils.RecordingStub;
 import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.Core.HandleSignals;
 import org.chromium.mojo.system.Handle;
@@ -37,7 +37,7 @@ public class RouterTest {
 
     private MessagePipeHandle mHandle;
     private Router mRouter;
-    private RecordingMessageReceiverWithResponder mReceiver;
+    private RecordingStub mStub;
     private CapturingErrorHandler mErrorHandler;
 
     /**
@@ -46,22 +46,40 @@ public class RouterTest {
     @Before
     public void setUp() {
         Core core = CoreImpl.getInstance();
+        mStub = new RecordingStub();
         Pair<MessagePipeHandle, MessagePipeHandle> handles = core.createMessagePipe(null);
         mHandle = handles.first;
         mRouter = new RouterImpl(handles.second);
-        mReceiver = new RecordingMessageReceiverWithResponder();
-        mRouter.setIncomingMessageReceiver(mReceiver);
+        mRouter.setPrimaryStub(mStub);
         mErrorHandler = new CapturingErrorHandler();
         mRouter.setErrorHandler(mErrorHandler);
         mRouter.start();
     }
 
     /** Testing sending a message via the router that expected a response. */
+    /** TODO(crbug.com/469861566): add tests which exercises iface routing. */
     @Test
     @SmallTest
     public void testSendingToRouterWithResponse() {
         final int requestMethodId = 0xdead;
         final int responseMethodId = 0xbeaf;
+
+        var responseReceiver =
+                new MessageReceiver() {
+                    public Message received;
+
+                    @Override
+                    public boolean accept(Message response) {
+                        if (received != null) {
+                            throw new RuntimeException("unexpectedly set twice");
+                        }
+                        received = response;
+                        return true;
+                    }
+
+                    @Override
+                    public void close() {}
+                };
 
         // Sending a message expecting a response.
         MessageHeader header =
@@ -72,7 +90,7 @@ public class RouterTest {
                         0);
         Encoder encoder = new Encoder(CoreImpl.getInstance(), header.getSize());
         header.encode(encoder);
-        mRouter.acceptWithResponder(encoder.getMessage(), mReceiver);
+        mRouter.acceptWithResponder(encoder.getMessage(), responseReceiver);
         ResultAnd<MessagePipeHandle.ReadMessageResult> result =
                 mHandle.readMessage(MessagePipeHandle.ReadFlags.NONE);
 
@@ -102,8 +120,8 @@ public class RouterTest {
                 MessagePipeHandle.WriteFlags.NONE);
         mTestRule.runLoopUntilIdle();
 
-        Assert.assertEquals(1, mReceiver.messages.size());
-        ServiceMessage receivedResponseMessage = mReceiver.messages.get(0).asServiceMessage();
+        Assert.assertNotNull(responseReceiver.received);
+        ServiceMessage receivedResponseMessage = responseReceiver.received.asServiceMessage();
         Assert.assertEquals(
                 MessageHeader.MESSAGE_IS_RESPONSE_FLAG,
                 receivedResponseMessage.getHeader().getFlags());
@@ -134,9 +152,9 @@ public class RouterTest {
                 MessagePipeHandle.WriteFlags.NONE);
         mTestRule.runLoopUntilIdle();
 
-        Assert.assertEquals(messageIndex + 1, mReceiver.messagesWithReceivers.size());
+        Assert.assertEquals(messageIndex + 1, mStub.messagesWithReceivers.size());
         Pair<Message, MessageReceiver> receivedMessage =
-                mReceiver.messagesWithReceivers.get(messageIndex);
+                mStub.messagesWithReceivers.get(messageIndex);
         Assert.assertEquals(headerMessage.getData(), receivedMessage.first.getData());
     }
 
@@ -149,7 +167,7 @@ public class RouterTest {
      */
     private void sendResponseFromRouter(int messageIndex, int responseMethodId) {
         Pair<Message, MessageReceiver> receivedMessage =
-                mReceiver.messagesWithReceivers.get(messageIndex);
+                mStub.messagesWithReceivers.get(messageIndex);
 
         long requestId = receivedMessage.first.asServiceMessage().getHeader().getRequestId();
 
@@ -172,11 +190,10 @@ public class RouterTest {
     }
 
     /**
-     * Clears {@code mReceiver.messagesWithReceivers} allowing all message receivers to be
-     * finalized.
-     * <p>
-     * Since there is no way to force the Garbage Collector to actually call finalize and we want to
-     * test the effects of the finalize() method, we explicitly call finalize() on all of the
+     * Clears {@code mStub.messagesWithReceivers} allowing all message receivers to be finalized.
+     *
+     * <p>Since there is no way to force the Garbage Collector to actually call finalize and we want
+     * to test the effects of the finalize() method, we explicitly call finalize() on all of the
      * message receivers. We do this in a custom thread to better approximate what the JVM does.
      */
     private void clearAllMessageReceivers() {
@@ -185,7 +202,7 @@ public class RouterTest {
                     @Override
                     public void run() {
                         for (Pair<Message, MessageReceiver> receivedMessage :
-                                mReceiver.messagesWithReceivers) {
+                                mStub.messagesWithReceivers) {
                             RouterImpl.ResponderThunk thunk =
                                     (RouterImpl.ResponderThunk) receivedMessage.second;
                             try {
@@ -202,7 +219,7 @@ public class RouterTest {
         } catch (InterruptedException e) {
             // ignore.
         }
-        mReceiver.messagesWithReceivers.clear();
+        mStub.messagesWithReceivers.clear();
     }
 
     /** Testing receiving a message via the router that expected a response. */

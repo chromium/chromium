@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.mojo.MojoTestRule;
 import org.chromium.mojo.bindings.BindingsTestUtils.CapturingErrorHandler;
-import org.chromium.mojo.bindings.BindingsTestUtils.RecordingMessageReceiver;
 import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.Handle;
 import org.chromium.mojo.system.MessagePipeHandle;
@@ -27,6 +26,7 @@ import org.chromium.mojo.system.impl.CoreImpl;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.List;
 
 /** Testing the {@link Connector} class. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -38,8 +38,21 @@ public class ConnectorTest {
     private MessagePipeHandle mHandle;
     private Connector mConnector;
     private Message mTestMessage;
-    private RecordingMessageReceiver mReceiver;
     private CapturingErrorHandler mErrorHandler;
+    private TestReceiver mReceiver;
+
+    static class TestReceiver implements MessageReceiver {
+        public final List<Message> messages = new ArrayList();
+
+        @Override
+        public boolean accept(Message message) {
+            messages.add(message);
+            return true;
+        }
+
+        @Override
+        public void close() {}
+    }
 
     /**
      * @see MojoTestCase#setUp()
@@ -51,7 +64,7 @@ public class ConnectorTest {
                 core.createMessagePipe(new MessagePipeHandle.CreateOptions());
         mHandle = handles.first;
         mConnector = new Connector(handles.second);
-        mReceiver = new RecordingMessageReceiver();
+        mReceiver = new TestReceiver();
         mConnector.setIncomingMessageReceiver(mReceiver);
         mErrorHandler = new CapturingErrorHandler();
         mConnector.setErrorHandler(mErrorHandler);

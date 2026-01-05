@@ -18,35 +18,41 @@ import java.util.List;
 
 /** Utility class for bindings tests. */
 public class BindingsTestUtils {
-    /** {@link MessageReceiver} that records any message it receives. */
-    public static class RecordingMessageReceiver extends SideEffectFreeCloseable
-            implements MessageReceiver {
+    private static class TestInterface implements Interface {
+        @Override
+        public void close() {}
+
+        @Override
+        public void onConnectionError(MojoException error) {
+            throw error;
+        }
+    }
+
+    /** A stub that records any messages that it receives. */
+    public static class RecordingStub extends Stub<TestInterface> {
+        public RecordingStub() {
+            super(CoreImpl.getInstance(), new TestInterface(), 0);
+        }
+
+        public final List<Pair<Message, MessageReceiver>> messagesWithReceivers =
+                new ArrayList<Pair<Message, MessageReceiver>>();
+
         public final List<Message> messages = new ArrayList<Message>();
 
-        /**
-         * @see MessageReceiver#accept(Message)
-         */
         @Override
         public boolean accept(Message message) {
             messages.add(message);
             return true;
         }
-    }
 
-    /** {@link MessageReceiverWithResponder} that records any message it receives. */
-    public static class RecordingMessageReceiverWithResponder extends RecordingMessageReceiver
-            implements MessageReceiverWithResponder {
-        public final List<Pair<Message, MessageReceiver>> messagesWithReceivers =
-                new ArrayList<Pair<Message, MessageReceiver>>();
-
-        /**
-         * @see MessageReceiverWithResponder#acceptWithResponder(Message, MessageReceiver)
-         */
         @Override
         public boolean acceptWithResponder(Message message, MessageReceiver responder) {
             messagesWithReceivers.add(Pair.create(message, responder));
             return true;
         }
+
+        @Override
+        public void close() {}
     }
 
     /** {@link ConnectionErrorHandler} that records any error it received. */

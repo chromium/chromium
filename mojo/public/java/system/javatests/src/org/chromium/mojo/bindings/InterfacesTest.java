@@ -221,7 +221,7 @@ public class InterfacesTest {
     public void testProxyAndStub() {
         MockNamedObjectImpl impl = new MockNamedObjectImpl();
         NamedObject.Proxy proxy =
-                NamedObject.MANAGER.buildProxy(null, NamedObject.MANAGER.buildStub(null, impl));
+                NamedObject.MANAGER.buildProxy(null, NamedObject.MANAGER.buildStub(null, impl, 0));
 
         checkProxy(proxy, impl);
     }
