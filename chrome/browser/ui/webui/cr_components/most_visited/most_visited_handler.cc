@@ -167,6 +167,8 @@ void MostVisitedHandler::UndoMostVisitedAutoRemoval() {
   DisableShortcutsAutoRemoval(profile_);
   // Set the pref to true to show the shortcuts.
   profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
+  logger_.LogEvent(NTP_SHORTCUTS_AUTO_REMOVE_UNDO,
+                   base::TimeDelta() /* unused */);
 }
 
 void MostVisitedHandler::UndoMostVisitedTileAction(
@@ -436,6 +438,7 @@ void MostVisitedHandler::MaybeRemoveStaleShortcuts() {
   profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled,
                                    true);
   page_->OnMostVisitedTilesAutoRemoval();
+  logger_.LogEvent(NTP_SHORTCUTS_AUTO_REMOVE, base::TimeDelta() /* unused */);
 }
 
 void MostVisitedHandler::OnMigrationRun() {
