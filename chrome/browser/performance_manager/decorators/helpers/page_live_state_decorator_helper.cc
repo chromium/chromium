@@ -29,9 +29,10 @@
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -135,10 +136,11 @@ class ActiveTabObserver : public TabModelListObserver {
 // Browsers and their tab strips, and updates PageLiveState data with whether
 // each tab is currently active or not.
 class ActiveTabObserver : public TabStripModelObserver,
-                          public BrowserListObserver {
+                          public BrowserCollectionObserver {
  public:
   ActiveTabObserver() {
-    BrowserList::AddObserver(this);
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
     ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
         [this](BrowserWindowInterface* browser) {
           AddBrowserTabStripObservation(browser);
@@ -146,10 +148,11 @@ class ActiveTabObserver : public TabStripModelObserver,
         });
   }
 
-  ~ActiveTabObserver() override { BrowserList::RemoveObserver(this); }
+  ~ActiveTabObserver() override = default;
 
  private:
   void AddBrowserTabStripObservation(BrowserWindowInterface* browser) {
+    // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
     browser->GetTabStripModel()->AddObserver(this);
   }
 
@@ -191,15 +194,13 @@ class ActiveTabObserver : public TabStripModelObserver,
     PageLiveStateDecorator::SetIsPinnedTab(tab->GetContents(), tab->IsPinned());
   }
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override {
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
     AddBrowserTabStripObservation(browser);
   }
 
-  void OnBrowserRemoved(Browser* browser) override {
-    browser->tab_strip_model()->RemoveObserver(this);
-  }
-
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
   SEQUENCE_CHECKER(sequence_checker_);
 };
 #endif  // BUILDFLAG(IS_ANDROID)

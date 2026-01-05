@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -39,8 +40,10 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
@@ -249,12 +252,14 @@ content::PreloadingFailureReason ToPreloadingFailureReasonFromFinalStatus(
 
 // Waits for a new tab to open and a navigation or swap in it.
 class NewTabNavigationOrSwapObserver : public TabStripModelObserver,
-                                       public BrowserListObserver {
+                                       public BrowserCollectionObserver {
  public:
   NewTabNavigationOrSwapObserver() {
-    BrowserList::AddObserver(this);
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
     ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
         [this](BrowserWindowInterface* browser) {
+          // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
           browser->GetTabStripModel()->AddObserver(this);
           return true;
         });
@@ -265,9 +270,7 @@ class NewTabNavigationOrSwapObserver : public TabStripModelObserver,
   NewTabNavigationOrSwapObserver& operator=(
       const NewTabNavigationOrSwapObserver&) = delete;
 
-  ~NewTabNavigationOrSwapObserver() override {
-    BrowserList::RemoveObserver(this);
-  }
+  ~NewTabNavigationOrSwapObserver() override = default;
 
   void Wait() {
     new_tab_run_loop_.Run();
@@ -291,14 +294,17 @@ class NewTabNavigationOrSwapObserver : public TabStripModelObserver,
     new_tab_run_loop_.Quit();
   }
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override {
-    browser->tab_strip_model()->AddObserver(this);
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
+    // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
+    browser->GetTabStripModel()->AddObserver(this);
   }
 
  private:
   base::RunLoop new_tab_run_loop_;
   std::unique_ptr<NavigationOrSwapObserver> swap_observer_;
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 class NoStatePrefetchBrowserTest
