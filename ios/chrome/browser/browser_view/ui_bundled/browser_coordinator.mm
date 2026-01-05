@@ -2465,6 +2465,9 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)showSendTabToSelfUI:(const GURL&)url title:(NSString*)title {
+  // According to crbug.com/472243358 a second coordinator can be opened while
+  // the first one is not stopped. In doubt, let’s stop the first one.
+  [_sendTabToSelfCoordinator stop];
   _sendTabToSelfCoordinator = [[SendTabToSelfCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser

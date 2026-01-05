@@ -180,6 +180,10 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!_signinPresenter, base::NotFatalUntil::M152);
+}
+
 #pragma mark - ChromeCoordinator Methods
 
 - (void)start {
@@ -211,6 +215,9 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   [_mediator disconnect];
   _mediator.delegate = nil;
   _mediator = nil;
+  _signinPresenter = nil;
+  _browserCoordinatorHandler = nil;
+  _title = nil;
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:self.dismissedCompletion];
