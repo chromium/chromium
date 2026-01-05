@@ -1140,7 +1140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.TimeDatabaseMigrationToV24" units="ms"
-    expires_after="2026-02-09">
+    expires_after="2026-08-15">
   <owner>arichiv@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
