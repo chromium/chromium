@@ -15,7 +15,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {SettingsOption} from '../content/read_anything_types.js';
+import {SettingsOption, ToolbarEvent} from '../content/read_anything_types.js';
 import {openMenu} from '../shared/common.js';
 
 import {getCss} from './settings_menu.css.js';
@@ -267,7 +267,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     }
 
     if (e.type === 'click') {
-      this.close();
+      this.fire(ToolbarEvent.CLOSE_ALL_MENUS);
     }
   }
 }

@@ -44,6 +44,11 @@ suite('LineFocusMenuElement', () => {
   });
 
   test('line focus change', async () => {
+    const numberOfItems = 3;
+    let closeAllMenusCount = 0;
+    document.addEventListener(
+        ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
+
     const window = chrome.readingMode.lineFocusThreeLineWindow;
     lineFocusMenu.$.menu.dispatchEvent(
         new CustomEvent(ToolbarEvent.LINE_FOCUS, {detail: {data: window}}));
@@ -62,7 +67,9 @@ suite('LineFocusMenuElement', () => {
     assertEquals(
         ReadAnythingSettingsChange.LINE_FOCUS_CHANGE,
         await metrics.whenCalled('recordTextSettingsChange'));
-    assertEquals(3, metrics.getCallCount('recordTextSettingsChange'));
+    assertEquals(
+        numberOfItems, metrics.getCallCount('recordTextSettingsChange'));
+    assertEquals(numberOfItems, closeAllMenusCount);
   });
 
   test('restores saved line focus option', async () => {

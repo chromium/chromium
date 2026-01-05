@@ -99,14 +99,7 @@ ${getToolbarAudioControlsHtml.call(this)}
     iron-icon="read-anything:voice-selection"
     @click="${this.onVoiceSelectionMenuClick_}">
 </cr-icon-button>
-<voice-selection-menu id="voiceSelectionMenu"
-    .nonModal="${this.isImmersiveEnabled_}"
-    .selectedVoice="${this.selectedVoice}"
-    .availableVoices="${this.availableVoices}"
-    .enabledLangs="${this.enabledLangs}"
-    .localeToDisplayName="${this.localeToDisplayName}"
-    .previewVoicePlaying="${this.previewVoicePlaying}">
-</voice-selection-menu>
+
 <cr-icon-button class="toolbar-button" id="highlight" tabindex="-1"
     iron-icon="read-anything:highlight-on"
     title="${this.getHighlightButtonLabel_()}"
@@ -177,40 +170,6 @@ ${renderTextStyleOptions.call(this)}
 </cr-action-menu>
 `}'>
 </cr-lazy-render-lit>
-<highlight-menu
-    id="highlightMenu"
-    .nonModal="${this.isImmersiveEnabled_}"
-    .settingsPrefs="${this.settingsPrefs}"
-    @highlight-change="${this.onHighlightChange_}">
-</highlight-menu>
-<color-menu
-    id="colorMenu"
-    .nonModal="${this.isImmersiveEnabled_}"
-    .settingsPrefs="${this.settingsPrefs}">
-</color-menu>
-<line-spacing-menu
-    id="lineSpacingMenu"
-    .nonModal="${this.isImmersiveEnabled_}"
-    .settingsPrefs="${this.settingsPrefs}">
-</line-spacing-menu>
-<letter-spacing-menu
-    id="letterSpacingMenu"
-    .nonModal="${this.isImmersiveEnabled_}"
-    .settingsPrefs="${this.settingsPrefs}">
-</letter-spacing-menu>
-<font-menu
-    id="fontMenu"
-    .nonModal="${this.isImmersiveEnabled_}"
-    .areFontsLoaded="${this.areFontsLoaded_}"
-    .settingsPrefs="${this.settingsPrefs}"
-    .pageLanguage="${this.pageLanguage}"
-    @font-change="${this.onFontChange_}">
-</font-menu>
-<line-focus-menu
-    id="lineFocusMenu"
-    .nonModal="${this.isImmersiveEnabled_}"
-    .settingsPrefs="${this.settingsPrefs}">
-</line-focus-menu>
 <!--_html_template_end_-->`;
   // clang-format on
 }
@@ -229,7 +188,8 @@ ${renderTextStyleOptions.call(this)}
 </cr-icon-button>
 <settings-menu
   id="settingsMenu"
-  .presentationState="${this.presentationState}">
+  .presentationState="${this.presentationState}"
+  @close-all-menus="${this.onCloseAllMenus_}">
 </settings-menu>
 <!--_html_template_end_-->`;
   // clang-format on
@@ -279,6 +239,53 @@ export function getHtml(this: ReadAnythingToolbarElement) {
   </cr-action-menu>
   `}'>
   </cr-lazy-render-lit>
+  <highlight-menu
+    id="highlightMenu"
+    .nonModal="${this.isImmersiveEnabled_}"
+    .settingsPrefs="${this.settingsPrefs}"
+    @highlight-change="${this.onHighlightChange_}">
+  </highlight-menu>
+  <color-menu
+      id="colorMenu"
+      .nonModal="${this.isImmersiveEnabled_}"
+      .settingsPrefs="${this.settingsPrefs}"
+      @close-all-menus="${this.onCloseAllMenus_}">
+  </color-menu>
+  <line-spacing-menu
+      id="lineSpacingMenu"
+      .nonModal="${this.isImmersiveEnabled_}"
+      .settingsPrefs="${this.settingsPrefs}"
+      @close-all-menus="${this.onCloseAllMenus_}">
+  </line-spacing-menu>
+  <letter-spacing-menu
+      id="letterSpacingMenu"
+      .nonModal="${this.isImmersiveEnabled_}"
+      .settingsPrefs="${this.settingsPrefs}"
+      @close-all-menus="${this.onCloseAllMenus_}">
+  </letter-spacing-menu>
+  <font-menu
+      id="fontMenu"
+      .nonModal="${this.isImmersiveEnabled_}"
+      .areFontsLoaded="${this.areFontsLoaded_}"
+      .settingsPrefs="${this.settingsPrefs}"
+      .pageLanguage="${this.pageLanguage}"
+      @font-change="${this.onFontChange_}">
+  </font-menu>
+  <line-focus-menu
+      id="lineFocusMenu"
+      .nonModal="${this.isImmersiveEnabled_}"
+      .settingsPrefs="${this.settingsPrefs}"
+      @close-all-menus="${this.onCloseAllMenus_}">
+  </line-focus-menu>
+  <voice-selection-menu id="voiceSelectionMenu"
+      .nonModal="${this.isImmersiveEnabled_}"
+      .selectedVoice="${this.selectedVoice}"
+      .availableVoices="${this.availableVoices}"
+      .enabledLangs="${this.enabledLangs}"
+      .localeToDisplayName="${this.localeToDisplayName}"
+      .previewVoicePlaying="${this.previewVoicePlaying}"
+      @close-all-menus="${this.onCloseAllMenus_}">
+  </voice-selection-menu>
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

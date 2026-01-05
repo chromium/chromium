@@ -5,6 +5,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {SettingsMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 suite('SettingsMenuElement', () => {
@@ -17,13 +18,12 @@ suite('SettingsMenuElement', () => {
     settingsMenu.$.lazyMenu.get();
   });
 
-  test('click outside calls close()', () => {
+  test('click outside fires close-all-menus event', () => {
     settingsMenu.open(document.body);
 
     let closeWasCalled = false;
-    settingsMenu.close = () => {
-      closeWasCalled = true;
-    };
+    document.addEventListener(
+        ToolbarEvent.CLOSE_ALL_MENUS, () => closeWasCalled = true);
 
     document.body.dispatchEvent(new MouseEvent('click', {
       bubbles: true,
@@ -32,16 +32,17 @@ suite('SettingsMenuElement', () => {
       view: window,
     }));
     assertTrue(
-        closeWasCalled, 'Clicking outside should call the close() method');
+        closeWasCalled,
+        'Clicking outside should fire the close-all-menus event');
+    assertFalse(settingsMenu.$.lazyMenu.get().open);
   });
 
-  test('click inside does NOT call close()', () => {
+  test('click inside does NOT fires close-all-menus event', () => {
     settingsMenu.open(document.body);
 
     let closeWasCalled = false;
-    settingsMenu.close = () => {
-      closeWasCalled = true;
-    };
+    document.addEventListener(
+        ToolbarEvent.CLOSE_ALL_MENUS, () => closeWasCalled = true);
 
     const internalMenu = settingsMenu.$.lazyMenu.get();
     internalMenu.dispatchEvent(new MouseEvent('click', {
@@ -51,6 +52,7 @@ suite('SettingsMenuElement', () => {
       view: window,
     }));
     assertFalse(
-        closeWasCalled, 'Clicking inside should NOT call the close() method');
+        closeWasCalled,
+        'Clicking inside should NOT fire the close-all-menus event');
   });
 });

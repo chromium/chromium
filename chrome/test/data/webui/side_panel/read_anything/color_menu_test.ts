@@ -37,6 +37,11 @@ suite('ColorMenuElement', () => {
   });
 
   test('theme change', async () => {
+    const numberOfThemes = 7;
+    let closeAllMenusCount = 0;
+    document.addEventListener(
+        ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
+
     const theme1 = chrome.readingMode.blueTheme;
     colorMenu.$.menu.dispatchEvent(
         new CustomEvent(ToolbarEvent.THEME, {detail: {data: theme1}}));
@@ -75,7 +80,9 @@ suite('ColorMenuElement', () => {
     assertEquals(
         ReadAnythingSettingsChange.THEME_CHANGE,
         await metrics.whenCalled('recordTextSettingsChange'));
-    assertEquals(7, metrics.getCallCount('recordTextSettingsChange'));
+    assertEquals(
+        numberOfThemes, metrics.getCallCount('recordTextSettingsChange'));
+    assertEquals(numberOfThemes, closeAllMenusCount);
   });
 
   test('restores saved color option', async () => {

@@ -117,6 +117,12 @@ suite('Toolbar', () => {
         const voiceButton = getButton('voice-selection');
         assertFalse(!!voiceButton);
       });
+
+      test('does have settings menu', () => {
+        stubAnimationFrame();
+        const moreButton = getButton('more');
+        assertTrue(!!moreButton);
+      });
     });
   });
 

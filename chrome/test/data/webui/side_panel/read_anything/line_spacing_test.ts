@@ -39,6 +39,11 @@ suite('LineSpacing', () => {
 
   test('spacing change', async () => {
     const veryLoose = chrome.readingMode.veryLooseLineSpacing;
+    const numberOfItems = 3;
+    let closeAllMenusCount = 0;
+    document.addEventListener(
+        ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
+
     lineSpacingMenu.$.menu.dispatchEvent(new CustomEvent(
         ToolbarEvent.LINE_SPACING, {detail: {data: veryLoose}}));
     assertEquals(veryLoose, chrome.readingMode.lineSpacing);
@@ -56,7 +61,9 @@ suite('LineSpacing', () => {
     assertEquals(
         ReadAnythingSettingsChange.LINE_HEIGHT_CHANGE,
         await metrics.whenCalled('recordTextSettingsChange'));
-    assertEquals(3, metrics.getCallCount('recordTextSettingsChange'));
+    assertEquals(
+        numberOfItems, metrics.getCallCount('recordTextSettingsChange'));
+    assertEquals(numberOfItems, closeAllMenusCount);
   });
 
   test('restores saved spacing option', async () => {

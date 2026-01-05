@@ -46,6 +46,7 @@ export enum ToolbarEvent {
   VOICE_MENU_OPEN = 'voice-menu-open',
   VOICE_MENU_CLOSE = 'voice-menu-close',
   LINE_FOCUS = 'line-focus-change',
+  CLOSE_ALL_MENUS = 'close-all-menus',
 }
 
 // The available menu items in Reading mode

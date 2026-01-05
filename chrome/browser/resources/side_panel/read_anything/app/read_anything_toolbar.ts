@@ -754,6 +754,13 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     elementToFocus.focus();
   }
 
+  protected onCloseAllMenus_() {
+    if (!this.isImmersiveEnabled_) {
+      return;
+    }
+    this.$.settingsMenu.close();
+  }
+
   private getMoreOptionsButtons_(): HTMLElement[] {
     return Array.from(
         this.$.toolbarContainer.querySelectorAll(moreOptionsClass));

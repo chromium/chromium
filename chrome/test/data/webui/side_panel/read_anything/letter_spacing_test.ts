@@ -38,6 +38,11 @@ suite('LetterSpacing', () => {
   });
 
   test('spacing change', async () => {
+    const numberOfSpacings = 3;
+    let closeAllMenusCount = 0;
+    document.addEventListener(
+        ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
+
     const veryWide = chrome.readingMode.veryWideLetterSpacing;
     letterSpacingMenu.$.menu.dispatchEvent(new CustomEvent(
         ToolbarEvent.LETTER_SPACING, {detail: {data: veryWide}}));
@@ -56,7 +61,9 @@ suite('LetterSpacing', () => {
     assertEquals(
         ReadAnythingSettingsChange.LETTER_SPACING_CHANGE,
         await metrics.whenCalled('recordTextSettingsChange'));
-    assertEquals(3, metrics.getCallCount('recordTextSettingsChange'));
+    assertEquals(
+        numberOfSpacings, metrics.getCallCount('recordTextSettingsChange'));
+    assertEquals(numberOfSpacings, closeAllMenusCount);
   });
 
   test('restores saved spacing option', async () => {
