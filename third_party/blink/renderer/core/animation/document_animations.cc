@@ -379,13 +379,7 @@ void DocumentAnimations::RemoveReplacedAnimations(
 }
 
 void DocumentAnimations::UpdateAnimationTriggerAttachments() {
-  if (RuntimeEnabledFeatures::LimitTriggerAttachmentUpdatesEnabled()) {
-    ExecuteTriggerAttachmentUpdates();
-  } else {
-    for (const auto& timeline : timelines_) {
-      timeline->UpdateAnimationTriggerAttachments();
-    }
-  }
+  ExecuteTriggerAttachmentUpdates();
 }
 
 void DocumentAnimations::AddAnimationTrigger(AnimationTrigger& trigger) {

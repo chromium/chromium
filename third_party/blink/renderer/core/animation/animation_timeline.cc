@@ -247,29 +247,6 @@ void AnimationTimeline::ServiceTriggers() {
   update_triggers_ = false;
 }
 
-void AnimationTimeline::UpdateAnimationTriggerAttachments() {
-  DCHECK(RuntimeEnabledFeatures::AnimationTriggerEnabled());
-  if (!GetDocument() || !GetDocument()->View()) {
-    return;
-  }
-  base::AutoReset<bool> in_trigger_attachments_update(
-      &in_trigger_attachments_update_, true);
-  for (Animation* animation : animations_) {
-    CSSAnimation* css_animation = DynamicTo<CSSAnimation>(animation);
-    if (!css_animation) {
-      continue;
-    }
-
-    auto attach_function = [&](AnimationTrigger& trigger,
-                               const StyleTriggerAttachment& attachment) {
-      attachment.Attach(trigger, *css_animation);
-    };
-
-    GetDocument()->GetDocumentAnimations().UpdateTriggerAttachment(
-        *css_animation, attach_function);
-  }
-}
-
 void AnimationTimeline::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(animations_needing_update_);

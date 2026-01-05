@@ -1456,26 +1456,6 @@
             ]
         }
     ],
-    "AnimationTrigger": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "AnimationTriggerOn_LimitTriggerAttachmentUpdatesOn_20251111",
-                    "enable_features": [
-                        "AnimationTrigger",
-                        "LimitTriggerAttachmentUpdates"
-                    ]
-                }
-            ]
-        }
-    ],
     "AnnotatedPageContentExtraction": [
         {
             "platforms": [
