@@ -94,7 +94,7 @@ base::android::ScopedJavaLocalRef<jobjectArray> CreateGroupCollectionData(
   for (auto& loaded_group : loaded_groups) {
     auto* android_group =
         new TabGroupCollectionDataAndroid(std::move(loaded_group));
-    j_loaded_group_vector.push_back(android_group->GetJavaObject());
+    j_loaded_group_vector.push_back(android_group->GetJavaObject(env));
   }
 
   base::android::ScopedJavaLocalRef<jclass> type = base::android::GetClass(
