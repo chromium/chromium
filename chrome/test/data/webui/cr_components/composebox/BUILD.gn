@@ -13,6 +13,7 @@ build_webui_tests("build") {
     "composebox_lens_search_test.ts",
     "context_menu_entrypoint_test.ts",
     "composebox_test_utils.ts",
+    "file_carousel_test.ts",
     "recent_tab_chip_test.ts",
   ]
 

@@ -6,6 +6,7 @@ import './composebox_tool_chip.js';
 import './context_menu_entrypoint.js';
 import './composebox_lens_search.js';
 import './file_carousel.js';
+import './file_thumbnail.js';
 import './icons.html.js';
 import './recent_tab_chip.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -197,6 +198,22 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   hasAutomaticActiveTabChipToken(): boolean {
     return this.automaticActiveTabChipToken_ !== null;
   }
+
+  getAutomaticActiveTabChipElement(): HTMLElement|null {
+    if (!this.automaticActiveTabChipToken_) {
+      return null;
+    }
+    const carousel =
+        this.shadowRoot?.querySelector<ComposeboxFileCarouselElement>(
+            '#carousel');
+    if (!carousel) {
+      return null;
+    }
+
+    return carousel.getThumbnailElementByUuid(
+        this.automaticActiveTabChipToken_);
+  }
+
   protected get inToolMode_(): boolean {
     return this.inDeepSearchMode_ || this.inCreateImageMode_;
   }

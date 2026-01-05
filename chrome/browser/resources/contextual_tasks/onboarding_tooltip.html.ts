@@ -9,7 +9,7 @@ import type {ContextualTasksOnboardingTooltipElement} from './onboarding_tooltip
 export function getHtml(this: ContextualTasksOnboardingTooltipElement) {
   return html`<!--_html_template_start_-->
     <cr-tooltip id="tooltip"
-      position="left"
+      position="top"
       offset="0"
       fit-to-visible-bounds
       manual-mode>

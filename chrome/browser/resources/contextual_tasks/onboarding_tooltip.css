@@ -12,8 +12,7 @@ cr-tooltip {
   --paper-tooltip-delay-in: 300ms;
   --paper-tooltip-delay-out: 0ms;
   --paper-tooltip-opacity: 1.0;
-  margin-top: -120px;
-  margin-inline-start: var(--composebox-start-indent, 24px);
+  margin-top: -20px;
 }
 
 cr-tooltip::part(tooltip) {
@@ -23,6 +22,8 @@ cr-tooltip::part(tooltip) {
     drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
   padding: 16px;
   max-width: 300px;
+  width: var(--onboarding-tooltip-width, auto);
+  box-sizing: border-box;
   font-size: 12px;
   line-height: 16px;
   position: relative;
@@ -33,7 +34,7 @@ cr-tooltip::part(tooltip)::after {
   content: "";
   position: absolute;
   top: 100%;
-  inset-inline-start: 35px;
+  inset-inline-start: 12.5px; /* Aligns the caret to the chip thumbnail*/
   border-width: 8px;
   border-style: solid;
   border-color: var(--paper-tooltip-background) transparent transparent

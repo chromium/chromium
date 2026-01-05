@@ -4,6 +4,7 @@
 import './file_thumbnail.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
 import type {ComposeboxFile} from './common.js';
 import {getCss} from './file_carousel.css.js';
@@ -42,6 +43,17 @@ export class ComposeboxFileCarouselElement extends CrLitElement {
   accessor files: ComposeboxFile[] = [];
 
   private resizeObserver_: ResizeObserver|null = null;
+
+  getThumbnailElementByUuid(uuid: UnguessableToken): HTMLElement|null {
+    const thumbnails =
+        this.shadowRoot.querySelectorAll('cr-composebox-file-thumbnail');
+    for (const thumbnail of thumbnails) {
+      if (thumbnail.file.uuid === uuid) {
+        return thumbnail;
+      }
+    }
+    return null;
+  }
 
   override connectedCallback() {
     super.connectedCallback();
