@@ -882,7 +882,7 @@
   {
     "name": "autofill-enable-card-benefits-for-bmo",
     "owners": [ "ferny@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 145
+    "expiry_milestone": 155
   },
   {
     "name": "autofill-enable-card-benefits-sync",
