@@ -460,34 +460,4 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, GlobalLaunchQueue) {
                                       ClientMode::kAuto, 1);
 }
 
-// https://crbug.com/1444959
-// TODO(crbug.com/40919435): Re-enable this test
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_SelectActiveBrowser DISABLED_SelectActiveBrowser
-#else
-#define MAYBE_SelectActiveBrowser SelectActiveBrowser
-#endif
-IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
-                       MAYBE_SelectActiveBrowser) {
-  webapps::AppId app_id =
-      InstallTestWebApp("/web_apps/basic.html", /*await_metric=*/false);
-  EXPECT_EQ(GetLaunchHandler(app_id), std::nullopt);
-
-  Browser* browser_1 = LaunchWebAppBrowser(app_id);
-  Browser* browser_2 = LaunchWebAppBrowser(app_id);
-  EXPECT_NE(browser_1, browser_2);
-
-  {
-    ScopedRegistryUpdate update = WebAppProvider::GetForTest(profile())
-                                      ->sync_bridge_unsafe()
-                                      .BeginUpdate();
-    WebApp* web_app = update->UpdateApp(app_id);
-    web_app->SetLaunchHandler(LaunchHandler{ClientMode::kFocusExisting});
-  }
-
-  Browser* browser_3 = LaunchWebAppBrowser(app_id);
-  // Select the most recently opened app window.
-  EXPECT_EQ(browser_3, browser_2);
-}
-
 }  // namespace web_app
