@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
+#include "chrome/browser/ui/views/frame/main_background_region_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
@@ -377,6 +378,19 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   if (IsParentedTo(views().main_background_region, views().browser_view)) {
     layout.AddChild(views().main_background_region, params.visual_client_area,
                     has_toolbar_height_side_panel);
+    if (has_toolbar_height_side_panel) {
+      if (auto* const main_background =
+              views::AsViewClass<MainBackgroundRegionView>(
+                  views().main_background_region)) {
+        const bool supports_top_corners =
+            !layout_top_container_before_side_panels &&
+            !delegate().GetImmersiveModeController()->IsEnabled();
+        main_background->SetTrailingCornerVisible(supports_top_corners);
+        main_background->SetLeadingCornerVisible(
+            supports_top_corners &&
+            !delegate().IsActiveTabAtLeadingWindowEdge());
+      }
+    }
   }
 
   // The insets for main region and its containing views when the

@@ -48,6 +48,7 @@ class BrowserViewLayoutDelegate {
   virtual bool IsInfobarVisible() const = 0;
   virtual bool IsContentsSeparatorEnabled() const = 0;
   virtual bool IsActiveTabSplit() const = 0;
+  virtual bool IsActiveTabAtLeadingWindowEdge() const = 0;
   virtual const ImmersiveModeController* GetImmersiveModeController() const = 0;
   virtual ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() const = 0;
   virtual bool IsTopControlsSlideBehaviorEnabled() const = 0;

@@ -8,7 +8,6 @@
 
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
@@ -34,42 +33,61 @@ MainBackgroundRegionView::MainBackgroundRegionView(BrowserView& browser_view)
 }
 MainBackgroundRegionView::~MainBackgroundRegionView() = default;
 
+void MainBackgroundRegionView::SetLeadingCornerVisible(
+    bool leading_corner_visible) {
+  if (leading_corner_visible_ == leading_corner_visible) {
+    return;
+  }
+  leading_corner_visible_ = leading_corner_visible;
+  InvalidateLayout(true);
+}
+
+void MainBackgroundRegionView::SetTrailingCornerVisible(
+    bool trailing_corner_visible) {
+  if (trailing_corner_visible_ == trailing_corner_visible) {
+    return;
+  }
+  trailing_corner_visible_ = trailing_corner_visible;
+  InvalidateLayout(true);
+}
+
 void MainBackgroundRegionView::Layout(PassKey) {
   background_view_->SetBoundsRect(GetLocalBounds());
 
-  auto* vertical_tab_strip_state_controller =
-      tabs::VerticalTabStripStateController::From(browser_view_->browser());
-  if (ImmersiveModeController::From(browser_view_->browser())->IsEnabled() ||
-      (vertical_tab_strip_state_controller &&
-       vertical_tab_strip_state_controller->ShouldDisplayVerticalTabs())) {
-    // Rounded top corners are not needed in immersive mode or when showing
-    // vertical tabs, so use an empty clip path.
-    background_view_->SetClipPath(SkPathBuilder().detach());
-  } else {
-    const int corner_radius =
-        GetLayoutConstant(MAIN_BACKGROUND_REGION_CORNER_RADIUS);
+  const int corner_radius =
+      GetLayoutConstant(MAIN_BACKGROUND_REGION_CORNER_RADIUS);
 
-    leading_corner_background_->SetBounds(0, 0, corner_radius, corner_radius);
-    trailing_corner_background_->SetBounds(width() - corner_radius, 0,
-                                           corner_radius, corner_radius);
+  const int leading_corner_radius = leading_corner_visible_ ? corner_radius : 0;
+  const int trailing_corner_radius =
+      trailing_corner_visible_ ? corner_radius : 0;
 
+  leading_corner_background_->SetBounds(0, 0, leading_corner_radius,
+                                        leading_corner_radius);
+  trailing_corner_background_->SetBounds(width() - trailing_corner_radius, 0,
+                                         trailing_corner_radius,
+                                         trailing_corner_radius);
+
+  if (leading_corner_visible_ || trailing_corner_visible_) {
     // Clip path that outlines the main background region with rounded corners
     // at the top left and top right of the view.
     const SkPath path =
         SkPathBuilder()
             .moveTo(0, height())
-            .lineTo(0, corner_radius)
-            .arcTo(SkVector(corner_radius, corner_radius), 0,
+            .lineTo(0, leading_corner_radius)
+            .arcTo(SkVector(leading_corner_radius, leading_corner_radius), 0,
                    SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
-                   SkPoint(corner_radius, 0))
-            .lineTo(width() - corner_radius, 0)
-            .arcTo(SkVector(corner_radius, corner_radius), 0,
+                   SkPoint(leading_corner_radius, 0))
+            .lineTo(width() - trailing_corner_radius, 0)
+            .arcTo(SkVector(trailing_corner_radius, trailing_corner_radius), 0,
                    SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
-                   SkPoint(width(), corner_radius))
+                   SkPoint(width(), trailing_corner_radius))
             .lineTo(width(), height())
             .lineTo(0, height())
             .detach();
     background_view_->SetClipPath(path);
+  } else {
+    // Rounded top corners are not needed in various modes.
+    background_view_->SetClipPath(SkPathBuilder().detach());
   }
 
   // Call super implementation to ensure layout manager and child layouts

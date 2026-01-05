@@ -40,6 +40,7 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
   bool IsInfobarVisible() const override;
   bool IsContentsSeparatorEnabled() const override;
   bool IsActiveTabSplit() const override;
+  bool IsActiveTabAtLeadingWindowEdge() const override;
   const ImmersiveModeController* GetImmersiveModeController() const override;
   ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() const override;
   bool IsTopControlsSlideBehaviorEnabled() const override;

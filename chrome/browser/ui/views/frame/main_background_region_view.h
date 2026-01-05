@@ -19,6 +19,9 @@ class MainBackgroundRegionView : public views::View {
   MainBackgroundRegionView& operator=(const MainBackgroundRegionView&) = delete;
   ~MainBackgroundRegionView() override;
 
+  void SetLeadingCornerVisible(bool leading_corner_visible);
+  void SetTrailingCornerVisible(bool trailing_corner_visible);
+
   // views::View:
   void Layout(PassKey) override;
 
@@ -27,6 +30,8 @@ class MainBackgroundRegionView : public views::View {
   raw_ptr<views::View> background_view_;
   raw_ptr<views::View> leading_corner_background_;
   raw_ptr<views::View> trailing_corner_background_;
+  bool leading_corner_visible_ = false;
+  bool trailing_corner_visible_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_MAIN_BACKGROUND_REGION_VIEW_H_

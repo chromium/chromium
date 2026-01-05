@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
@@ -139,6 +140,18 @@ bool BrowserViewLayoutDelegateImpl::IsActiveTabSplit() const {
   // inconsistency would cause unnecessary re-layout of content view during
   // tab switch.
   return browser_view_->browser()->tab_strip_model()->IsActiveTabSplit();
+}
+
+bool BrowserViewLayoutDelegateImpl::IsActiveTabAtLeadingWindowEdge() const {
+  if (auto* const frame = GetFrameView()) {
+    const bool has_leading_search_button =
+        tabs::GetTabSearchPosition(browser_view_->GetProfile()) ==
+        tabs::TabSearchPosition::kLeadingHorizontalTabstrip;
+    if (!frame->CaptionButtonsOnLeadingEdge() && !has_leading_search_button) {
+      return browser_view_->browser()->tab_strip_model()->IsTabInForeground(0);
+    }
+  }
+  return false;
 }
 
 const ImmersiveModeController*
