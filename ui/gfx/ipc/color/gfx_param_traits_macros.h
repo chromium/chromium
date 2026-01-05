@@ -14,12 +14,6 @@
 #undef IPC_MESSAGE_EXPORT
 #define IPC_MESSAGE_EXPORT GFX_IPC_COLOR_EXPORT
 
-IPC_ENUM_TRAITS_MAX_VALUE(gfx::ColorSpace::PrimaryID,
-                          gfx::ColorSpace::PrimaryID::kMaxValue)
-IPC_ENUM_TRAITS_MAX_VALUE(gfx::ColorSpace::TransferID,
-                          gfx::ColorSpace::TransferID::kMaxValue)
-IPC_ENUM_TRAITS_MAX_VALUE(gfx::ColorSpace::MatrixID,
-                          gfx::ColorSpace::MatrixID::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(gfx::ColorSpace::RangeID,
                           gfx::ColorSpace::RangeID::kMaxValue)
 
