@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_item_type.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -68,7 +68,7 @@ class SafetyCheckUtilsTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
-    mock_application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
+    mock_application_handler_ = OCMProtocolMock(@protocol(SceneCommands));
     mock_settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));
   }
 

@@ -32,9 +32,9 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/synced_set_up_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
@@ -202,9 +202,9 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   CHECK_EQ(step, _currentGuidedTourStep);
   if (step == GuidedTourStep::kNTP) {
     _currentGuidedTourStep = GuidedTourStep::kTabGridIncognito;
-    id<ApplicationCommands> applicationHandler =
-        HandlerForProtocol([self commandDispatcher], ApplicationCommands);
-    [applicationHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
+    id<SceneCommands> sceneHandler =
+        HandlerForProtocol([self commandDispatcher], SceneCommands);
+    [sceneHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
   }
 }
 
@@ -435,11 +435,11 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 
 // Shows the entry point to import data from Safari.
 - (void)displaySafariDataImportEntryPoint {
-  id<ApplicationCommands> applicationHandler =
-      HandlerForProtocol([self commandDispatcher], ApplicationCommands);
-  [applicationHandler displaySafariDataImportFromEntryPoint:
-                          SafariDataImportEntryPoint::kFirstRun
-                                              withUIHandler:self];
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol([self commandDispatcher], SceneCommands);
+  [sceneHandler displaySafariDataImportFromEntryPoint:
+                    SafariDataImportEntryPoint::kFirstRun
+                                        withUIHandler:self];
 }
 
 // Logs the user decision for the Guided Tour promo.

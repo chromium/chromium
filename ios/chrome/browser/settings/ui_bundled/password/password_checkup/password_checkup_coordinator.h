@@ -9,12 +9,13 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/password_manager_reauthentication_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@protocol ApplicationCommands;
 @class PasswordCheckupCoordinator;
+@protocol SceneCommands;
+@protocol ReauthenticationProtocol;
+
 namespace password_manager {
 enum class WarningType;
 }
-@protocol ReauthenticationProtocol;
 
 // Delegate for PasswordCheckupCoordinator.
 @protocol
@@ -42,7 +43,7 @@ enum class WarningType;
 
 @property(nonatomic, weak) id<PasswordCheckupCoordinatorDelegate> delegate;
 
-@property(nonatomic, weak) id<ApplicationCommands> dispatcher;
+@property(nonatomic, weak) id<SceneCommands> dispatcher;
 
 // Show the Password Issues page for `warningType`.
 - (void)showPasswordIssuesWithWarningType:

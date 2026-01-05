@@ -20,11 +20,11 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -80,8 +80,7 @@
   self.viewController = viewController;
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  viewController.applicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
+  viewController.sceneHandler = HandlerForProtocol(dispatcher, SceneCommands);
   viewController.browserHandler =
       HandlerForProtocol(dispatcher, BrowserCommands);
   viewController.settingsHandler =

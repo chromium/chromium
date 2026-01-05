@@ -13,10 +13,10 @@ class AffiliatedGroup;
 struct CredentialUIEntry;
 }  // namespace password_manager
 
-@protocol ApplicationCommands;
 class Browser;
 @protocol PasswordDetailsCoordinatorDelegate;
 @protocol ReauthenticationProtocol;
+@protocol SceneCommands;
 
 // This coordinator presents a password details for the user.
 @interface PasswordDetailsCoordinator : ChromeCoordinator

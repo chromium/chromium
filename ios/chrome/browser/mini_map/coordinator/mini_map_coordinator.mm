@@ -13,10 +13,10 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/web/model/annotations/annotations_util.h"
@@ -218,9 +218,9 @@
 - (void)reportAnIssueFromMiniMapInViewController:
     (UIViewController*)viewController {
   [self.mediator userReportedAnIssueFromMiniMap];
-  id<ApplicationCommands> applicationCommandHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [applicationCommandHandler
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler
       showReportAnIssueFromViewController:viewController
                                    sender:UserFeedbackSender::MiniMap];
 }
@@ -232,9 +232,9 @@
     OpenNewTabCommand* command =
         [OpenNewTabCommand commandWithURLFromChrome:net::GURLWithNSURL(url)
                                         inIncognito:self.isOffTheRecord];
-    id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ApplicationCommands);
-    [applicationHandler openURLInNewTab:command];
+    id<SceneCommands> sceneHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+    [sceneHandler openURLInNewTab:command];
   } else {
     [self.mediator userClosedMiniMap];
   }
@@ -253,9 +253,9 @@
     OpenNewTabCommand* command =
         [OpenNewTabCommand commandWithURLFromChrome:url
                                         inIncognito:self.isOffTheRecord];
-    id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ApplicationCommands);
-    [applicationHandler openURLInNewTab:command];
+    id<SceneCommands> sceneHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+    [sceneHandler openURLInNewTab:command];
   } else {
     [self.mediator userClosedMiniMap];
   }

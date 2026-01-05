@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
 
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 
 SigninInProgress::SigninInProgress(id<SignInInProgressAudience> audience)
     : audience_(audience) {

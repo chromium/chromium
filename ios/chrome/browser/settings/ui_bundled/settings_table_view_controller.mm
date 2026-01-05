@@ -117,10 +117,10 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -1344,8 +1344,8 @@ struct EnhancedSafeBrowsingActivePromoData
     case SettingsItemTypeSafariDataImport: {
       CHECK(ShouldShowSafariDataImportEntryPoint(_profile->GetPrefs()));
       base::RecordAction(base::UserMetricsAction("Settings.SafariImport"));
-      id<ApplicationCommands> handler = HandlerForProtocol(
-          _browser->GetCommandDispatcher(), ApplicationCommands);
+      id<SceneCommands> handler =
+          HandlerForProtocol(_browser->GetCommandDispatcher(), SceneCommands);
       [handler displaySafariDataImportFromEntryPoint:
                    SafariDataImportEntryPoint::kSetting
                                        withUIHandler:self];

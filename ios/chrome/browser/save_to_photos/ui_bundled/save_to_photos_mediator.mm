@@ -24,10 +24,10 @@
 #import "ios/chrome/browser/photos/model/photos_service.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_mediator_delegate.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -96,7 +96,7 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   raw_ptr<signin::IdentityManager> _identityManager;
   id<ManageStorageAlertCommands> _manageStorageAlertHandler;
-  id<ApplicationCommands> _applicationHandler;
+  id<SceneCommands> _sceneHandler;
   id<GoogleOneCommands> _googleOneHandler;
   NSString* _imageName;
   NSData* _imageData;
@@ -116,8 +116,7 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
                       identityManager:(signin::IdentityManager*)identityManager
             manageStorageAlertHandler:
                 (id<ManageStorageAlertCommands>)manageStorageAlertHandler
-                   applicationHandler:
-                       (id<ApplicationCommands>)applicationHandler
+                         sceneHandler:(id<SceneCommands>)sceneHandler
                      googleOneHandler:(id<GoogleOneCommands>)googleOneHandler {
   self = [super init];
   if (self) {
@@ -126,13 +125,13 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
     CHECK(accountManagerService);
     CHECK(identityManager);
     CHECK(manageStorageAlertHandler);
-    CHECK(applicationHandler);
+    CHECK(sceneHandler);
     _photosService = photosService;
     _prefService = prefService;
     _accountManagerService = accountManagerService;
     _identityManager = identityManager;
     _manageStorageAlertHandler = manageStorageAlertHandler;
-    _applicationHandler = applicationHandler;
+    _sceneHandler = sceneHandler;
     _googleOneHandler = googleOneHandler;
   }
   return self;

@@ -62,8 +62,8 @@
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/profile/scoped_profile_keep_alive_ios.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
@@ -1214,12 +1214,12 @@ void ProcessIncomingNotification(
       (client) ? std::make_optional(client->GetClientId()) : std::nullopt;
 
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
-  id<ApplicationCommands> applicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(dispatcher, SceneCommands);
   id<SettingsCommands> settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
   __block base::OnceClosure completion2 = std::move(completion);
-  [applicationHandler
+  [sceneHandler
       prepareToPresentModalWithSnackbarDismissal:YES
                                       completion:^{
                                         [settingsHandler

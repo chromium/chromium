@@ -8,10 +8,10 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/password_manager_reauthentication_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@protocol ApplicationCommands;
 class Browser;
 @class PasswordIssuesCoordinator;
 @protocol ReauthenticationProtocol;
+@protocol SceneCommands;
 
 namespace password_manager {
 enum class WarningType;
@@ -42,7 +42,7 @@ enum class WarningType;
 
 @property(nonatomic, weak) id<PasswordIssuesCoordinatorDelegate> delegate;
 
-@property(nonatomic, weak) id<ApplicationCommands> dispatcher;
+@property(nonatomic, weak) id<SceneCommands> dispatcher;
 
 // Whether Local Authentication should be skipped when the coordinator is
 // started. Defaults to NO. Authentication should be required when starting the

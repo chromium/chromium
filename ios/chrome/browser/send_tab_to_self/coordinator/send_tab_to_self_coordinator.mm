@@ -39,10 +39,10 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
@@ -120,8 +120,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
     return;
   }
 
-  id<ApplicationCommands> handler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
+  id<SceneCommands> handler = HandlerForProtocol(dispatcher, SceneCommands);
   [handler openURLInNewTab:[OpenNewTabCommand
                                commandWithURLFromChrome:
                                    GURL(kGoogleMyAccountDeviceActivityURL)]];

@@ -10,9 +10,9 @@
 #include "base/ios/block_types.h"
 #include "ios/web/public/navigation/navigation_manager.h"
 
-@protocol ApplicationCommands;
-@class SadTabView;
 class GURL;
+@class SadTabView;
+@protocol SceneCommands;
 
 // Describes the mode of the Sad Tab, whether it should offer an attempt to
 // reload content, or whether it should offer a way to provide feedback.

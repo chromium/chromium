@@ -218,7 +218,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
   self.viewController.dispatcher =
-      static_cast<id<ActivityServiceCommands, ApplicationCommands,
+      static_cast<id<ActivityServiceCommands, SceneCommands,
                      BrowserCoordinatorCommands, LoadQueryCommands,
                      LensCommands, LensOverlayCommands, OmniboxCommands>>(
           self.browser->GetCommandDispatcher());

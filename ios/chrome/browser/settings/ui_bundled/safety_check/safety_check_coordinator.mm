@@ -33,10 +33,10 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -71,7 +71,7 @@ using password_manager::WarningType;
     PasswordCheckupCoordinator* passwordCheckupCoordinator;
 
 // Dispatcher which can handle changing passwords on sites.
-@property(nonatomic, strong) id<ApplicationCommands> handler;
+@property(nonatomic, strong) id<SceneCommands> handler;
 
 // Coordinator for the Privacy and Security screen (SafeBrowsing toggle
 // location).
@@ -101,8 +101,8 @@ using password_manager::WarningType;
                                    browser:browser];
   if (self) {
     _baseNavigationController = navigationController;
-    _handler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                                  ApplicationCommands);
+    _handler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
     _referrer = referrer;
   }
   return self;

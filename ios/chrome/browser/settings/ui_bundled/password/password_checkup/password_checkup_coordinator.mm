@@ -28,10 +28,10 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -112,8 +112,8 @@ using password_manager::PasswordCheckReferrer;
 
     _baseNavigationController = navigationController;
     _reauthModule = reauthModule;
-    _dispatcher = HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                                     ApplicationCommands);
+    _dispatcher =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
     _referrer = referrer;
     password_manager::LogPasswordCheckReferrer(referrer);
 

@@ -25,12 +25,12 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -100,8 +100,7 @@ class AccountMenuCoordinatorTest : public PlatformTest,
 
     presentation_delegate_ = OCMStrictProtocolMock(@protocol(
         SyncEncryptionPassphraseTableViewControllerPresentationDelegate));
-    mock_application_commands_handler_ =
-        OCMStrictProtocolMock(@protocol(ApplicationCommands));
+    mock_scene_handler_ = OCMStrictProtocolMock(@protocol(SceneCommands));
     mock_snackbar_commands_handler_ =
         OCMStrictProtocolMock(@protocol(SnackbarCommands));
     mock_help_commands_handler_ =
@@ -113,8 +112,8 @@ class AccountMenuCoordinatorTest : public PlatformTest,
     mock_browser_coordinator_commands_handler_ =
         OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-    [dispatcher startDispatchingToTarget:mock_application_commands_handler_
-                             forProtocol:@protocol(ApplicationCommands)];
+    [dispatcher startDispatchingToTarget:mock_scene_handler_
+                             forProtocol:@protocol(SceneCommands)];
     [dispatcher startDispatchingToTarget:mock_snackbar_commands_handler_
                              forProtocol:@protocol(SnackbarCommands)];
     [dispatcher startDispatchingToTarget:mock_help_commands_handler_
@@ -166,7 +165,7 @@ class AccountMenuCoordinatorTest : public PlatformTest,
     EXPECT_OCMOCK_VERIFY((id)mediator_);
     EXPECT_OCMOCK_VERIFY((id)scene_state_mock_);
     EXPECT_OCMOCK_VERIFY((id)view_controller_);
-    EXPECT_OCMOCK_VERIFY((id)mock_application_commands_handler_);
+    EXPECT_OCMOCK_VERIFY((id)mock_scene_handler_);
     EXPECT_OCMOCK_VERIFY((id)mock_browser_commands_handler_);
     EXPECT_OCMOCK_VERIFY((id)mock_browser_coordinator_commands_handler_);
     EXPECT_OCMOCK_VERIFY((id)mock_settings_commands_handler_);
@@ -186,7 +185,7 @@ class AccountMenuCoordinatorTest : public PlatformTest,
 
   AccountMenuCoordinator<UIAdaptivePresentationControllerDelegate>*
       coordinator_;
-  id<ApplicationCommands> mock_application_commands_handler_;
+  id<SceneCommands> mock_scene_handler_;
   id<SnackbarCommands> mock_snackbar_commands_handler_;
   id<HelpCommands> mock_help_commands_handler_;
   id<SettingsCommands> mock_settings_commands_handler_;

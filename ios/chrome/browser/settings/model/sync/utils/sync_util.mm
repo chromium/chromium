@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/settings/model/sync/utils/sync_error_infobar_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"

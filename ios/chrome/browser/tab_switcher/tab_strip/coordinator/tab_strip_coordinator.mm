@@ -30,8 +30,8 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_command.h"
 #import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -349,12 +349,12 @@ constexpr CGFloat kFacePileAvatarSize = 16;
 
   // Create the "Open Tab Groups" action.
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  __weak id<ApplicationCommands> applicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
+  __weak id<SceneCommands> sceneHandler =
+      HandlerForProtocol(dispatcher, SceneCommands);
   __weak id<TabGridCommands> tabGridHandler =
       HandlerForProtocol(dispatcher, TabGridCommands);
   void (^openTabGroupPanelAction)() = ^{
-    [applicationHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
+    [sceneHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
     [tabGridHandler showPage:TabGridPageTabGroups animated:NO];
   };
 

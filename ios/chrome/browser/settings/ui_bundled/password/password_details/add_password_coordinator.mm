@@ -22,9 +22,9 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -41,7 +41,7 @@
 @property(nonatomic, strong) AddPasswordMediator* mediator;
 
 // Dispatcher.
-@property(nonatomic, weak) id<ApplicationCommands, BrowserCommands> dispatcher;
+@property(nonatomic, weak) id<SceneCommands, BrowserCommands> dispatcher;
 
 // Used for requiring authentication after the browser comes from the background
 // with Add Password open.
@@ -62,7 +62,7 @@
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     DCHECK(viewController);
-    _dispatcher = static_cast<id<BrowserCommands, ApplicationCommands>>(
+    _dispatcher = static_cast<id<BrowserCommands, SceneCommands>>(
         browser->GetCommandDispatcher());
   }
   return self;

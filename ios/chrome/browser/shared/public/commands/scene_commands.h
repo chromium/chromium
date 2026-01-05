@@ -1,4 +1,4 @@
-// Copyright 2026 The Chromium Authors
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,7 @@ enum class TabGridOpeningMode {
   kRegular,
 };
 
-// Protocol for commands that will generally be handled by the scene,
+// Protocol for commands that will generally be handled by the application,
 // rather than a specific tab; in practice this means the SceneController
 // instance.
 @protocol SceneCommands

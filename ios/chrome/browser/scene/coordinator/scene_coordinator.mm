@@ -8,20 +8,20 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator.h"
 
 @implementation SceneCoordinator {
-  id<ApplicationCommands> _applicationCommandEndpoint;
+  id<SceneCommands> _sceneCommandsEndpoint;
   base::WeakPtr<Browser> _inactiveBrowser;
   base::WeakPtr<Browser> _regularBrowser;
   // Coordinator for the Tab Grid
   TabGridCoordinator* _tabGridCoordinator;
 }
 
-- (instancetype)initWithApplicationCommandEndpoint:
-                    (id<ApplicationCommands>)applicationCommandEndpoint
-                                    regularBrowser:(Browser*)regularBrowser
-                                   inactiveBrowser:(Browser*)inactiveBrowser
-                                  incognitoBrowser:(Browser*)incognitoBrowser {
+- (instancetype)initWithSceneCommandsEndpoint:
+                    (id<SceneCommands>)sceneCommandsEndpoint
+                               regularBrowser:(Browser*)regularBrowser
+                              inactiveBrowser:(Browser*)inactiveBrowser
+                             incognitoBrowser:(Browser*)incognitoBrowser {
   if ((self = [super init])) {
-    _applicationCommandEndpoint = applicationCommandEndpoint;
+    _sceneCommandsEndpoint = sceneCommandsEndpoint;
     _regularBrowser = regularBrowser->AsWeakPtr();
     _inactiveBrowser = inactiveBrowser->AsWeakPtr();
     _incognitoBrowser = incognitoBrowser;
@@ -31,10 +31,10 @@
 
 - (void)start {
   _tabGridCoordinator = [[TabGridCoordinator alloc]
-      initWithApplicationCommandEndpoint:_applicationCommandEndpoint
-                          regularBrowser:_regularBrowser.get()
-                         inactiveBrowser:_inactiveBrowser.get()
-                        incognitoBrowser:_incognitoBrowser];
+      initWithSceneCommandsEndpoint:_sceneCommandsEndpoint
+                     regularBrowser:_regularBrowser.get()
+                    inactiveBrowser:_inactiveBrowser.get()
+                   incognitoBrowser:_incognitoBrowser];
   _tabGridCoordinator.delegate = self.delegate;
   [_tabGridCoordinator start];
 }

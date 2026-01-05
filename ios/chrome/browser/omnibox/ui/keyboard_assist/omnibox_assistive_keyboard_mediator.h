@@ -9,12 +9,12 @@
 
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 
-@protocol ApplicationCommands;
 @protocol BrowserCoordinatorCommands;
 @protocol LensCommands;
+@class OmniboxAssistiveKeyboardMediator;
 @protocol OmniboxTextInput;
 @protocol QRScannerCommands;
-@class OmniboxAssistiveKeyboardMediator;
+@protocol SceneCommands;
 
 @protocol OmniboxAssistiveKeyboardMediatorDelegate <NSObject>
 
@@ -31,7 +31,7 @@
 @interface OmniboxAssistiveKeyboardMediator
     : NSObject <OmniboxAssistiveKeyboardDelegate>
 
-@property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 @property(nonatomic, weak) id<BrowserCoordinatorCommands>
     browserCoordinatorCommandsHandler;
 @property(nonatomic, weak) id<LensCommands> lensCommandsHandler;

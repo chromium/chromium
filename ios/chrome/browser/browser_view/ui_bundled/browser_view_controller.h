@@ -23,19 +23,22 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_height_delegate.h"
 #import "ios/chrome/browser/web/model/web_state_container_view_provider.h"
 
-@protocol ApplicationCommands;
 @class BookmarksCoordinator;
 @class BrowserContainerViewController;
 @protocol DefaultPromoNonModalPresentationDelegate;
 @protocol FindInPageCommands;
 class FullscreenController;
 @protocol HelpCommands;
+@protocol IncognitoReauthCommands;
 @class KeyCommandsProvider;
+@class LayoutGuideCenter;
+@protocol LoadQueryCommands;
 @class NewTabPageCoordinator;
 @protocol OmniboxCommands;
 @protocol PopupMenuCommands;
 @class PopupMenuCoordinator;
 @class SafeAreaProvider;
+@protocol SceneCommands;
 @class SideSwipeCoordinator;
 class SnapshotBrowserAgent;
 @class TabStripCoordinator;
@@ -43,9 +46,6 @@ class TabUsageRecorderBrowserAgent;
 @protocol TextZoomCommands;
 @class ToolbarAccessoryPresenter;
 @class ToolbarCoordinator;
-@protocol IncognitoReauthCommands;
-@class LayoutGuideCenter;
-@protocol LoadQueryCommands;
 class UrlLoadingBrowserAgent;
 @protocol VoiceSearchController;
 
@@ -61,7 +61,7 @@ typedef struct {
   id<TextZoomCommands> textZoomHandler;
   id<HelpCommands> helpHandler;
   id<PopupMenuCommands> popupMenuCommandsHandler;
-  id<ApplicationCommands> applicationCommandsHandler;
+  id<SceneCommands> sceneHandler;
   id<FindInPageCommands> findInPageCommandsHandler;
   LayoutGuideCenter* layoutGuideCenter;
   BOOL isOffTheRecord;

@@ -28,8 +28,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -436,8 +436,8 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 
   // Activate the tab group in grid view.
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
-  id<ApplicationCommands> applicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
-  [applicationHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(dispatcher, SceneCommands);
+  [sceneHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
 }
 @end

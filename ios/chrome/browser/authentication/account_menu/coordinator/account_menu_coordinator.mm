@@ -53,11 +53,11 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -615,8 +615,7 @@ void maybeShowSettingsIPH(Browser* browser) {
 - (void)configureHandlersForRootViewController:
     (id<SettingsRootViewControlling>)controller {
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  controller.applicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
+  controller.sceneHandler = HandlerForProtocol(dispatcher, SceneCommands);
   controller.browserHandler = HandlerForProtocol(dispatcher, BrowserCommands);
   controller.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
   controller.snackbarHandler = HandlerForProtocol(dispatcher, SnackbarCommands);

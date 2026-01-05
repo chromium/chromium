@@ -161,7 +161,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -173,6 +172,7 @@
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -1289,9 +1289,9 @@ void RecordIfNeededSigninFullscreenPromoEvent(
       OpenNewTabCommand* command = [OpenNewTabCommand commandWithIncognito:NO];
       command.userInitiated = NO;
       Browser* browser = self.currentInterface.browser;
-      id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-          browser->GetCommandDispatcher(), ApplicationCommands);
-      [applicationHandler openURLInNewTab:command];
+      id<SceneCommands> sceneHandler =
+          HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
+      [sceneHandler openURLInNewTab:command];
       [self finishActivatingBrowserDismissingTabSwitcher];
     }
 
@@ -1414,10 +1414,10 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   _mainWebStateObserver->Observe(self.mainInterface.browser->GetWebStateList());
 
   _mainCoordinator = [[SceneCoordinator alloc]
-      initWithApplicationCommandEndpoint:self
-                          regularBrowser:self.mainInterface.browser
-                         inactiveBrowser:self.mainInterface.inactiveBrowser
-                        incognitoBrowser:self.incognitoInterface.browser];
+      initWithSceneCommandsEndpoint:self
+                     regularBrowser:self.mainInterface.browser
+                    inactiveBrowser:self.mainInterface.inactiveBrowser
+                   incognitoBrowser:self.incognitoInterface.browser];
   _mainCoordinator.delegate = self;
 
   [_mainCoordinator start];
@@ -1482,9 +1482,9 @@ void RecordIfNeededSigninFullscreenPromoEvent(
         commandWithIncognito:self.currentInterface.incognito];
     command.userInitiated = NO;
     Browser* currentBrowser = self.currentInterface.browser;
-    id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-        currentBrowser->GetCommandDispatcher(), ApplicationCommands);
-    [applicationHandler openURLInNewTab:command];
+    id<SceneCommands> sceneHandler = HandlerForProtocol(
+        currentBrowser->GetCommandDispatcher(), SceneCommands);
+    [sceneHandler openURLInNewTab:command];
   }
 }
 
@@ -1817,15 +1817,15 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   // Add scene agents that require CommandDispatcher.
   CommandDispatcher* mainCommandDispatcher =
       mainBrowser->GetCommandDispatcher();
-  id<ApplicationCommands> applicationCommandsHandler =
-      HandlerForProtocol(mainCommandDispatcher, ApplicationCommands);
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(mainCommandDispatcher, SceneCommands);
   id<PolicyChangeCommands> policyChangeCommandsHandler =
       HandlerForProtocol(mainCommandDispatcher, PolicyChangeCommands);
 
   [sceneState
       addAgent:[[SigninPolicySceneAgent alloc]
                        initWithSceneUIProvider:self
-                    applicationCommandsHandler:applicationCommandsHandler
+                                  sceneHandler:sceneHandler
                    policyChangeCommandsHandler:policyChangeCommandsHandler]];
 
   enterprise_idle::IdleService* idleService =
@@ -1834,11 +1834,11 @@ void RecordIfNeededSigninFullscreenPromoEvent(
       static_cast<id<SnackbarCommands>>(mainCommandDispatcher);
 
   [sceneState addAgent:[[IdleTimeoutPolicySceneAgent alloc]
-                              initWithSceneUIProvider:self
-                           applicationCommandsHandler:applicationCommandsHandler
-                              snackbarCommandsHandler:snackbarCommandsHandler
-                                          idleService:idleService
-                                          mainBrowser:mainBrowser]];
+                           initWithSceneUIProvider:self
+                                      sceneHandler:sceneHandler
+                           snackbarCommandsHandler:snackbarCommandsHandler
+                                       idleService:idleService
+                                       mainBrowser:mainBrowser]];
 
   // Now that the main browser's command dispatcher is created and the newly
   // started UI coordinators have registered with it, inject it into the
@@ -1902,9 +1902,8 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   [_sceneState addAgent:[[IncognitoBlockerSceneAgent alloc] init]];
   [_sceneState
       addAgent:[[IncognitoReauthSceneAgent alloc]
-                         initWithReauthModule:[[ReauthenticationModule alloc]
-                                                  init]
-                   applicationCommandsHandler:self]];
+                   initWithReauthModule:[[ReauthenticationModule alloc] init]
+                           sceneHandler:self]];
   [_sceneState addAgent:[[StartSurfaceSceneAgent alloc] init]];
   [_sceneState addAgent:[[SessionSavingSceneAgent alloc] init]];
   [_sceneState addAgent:[[LayoutGuideSceneAgent alloc] init]];
@@ -1912,7 +1911,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   [_sceneState addAgent:[[ShareExtensionSceneAgent alloc] init]];
 }
 
-#pragma mark - ApplicationCommands
+#pragma mark - SceneCommands
 
 - (void)showFullscreenSigninPromoWithCompletion:
     (SigninCoordinatorCompletionCallback)dismissalCompletion {
@@ -2147,14 +2146,13 @@ using UserFeedbackDataCallback =
 
   Browser* browser = self.mainInterface.browser;
 
-  id<ApplicationCommands> handler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  id<SceneCommands> handler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
 
   if (ios::provider::CanUseStartUserFeedbackFlow()) {
     UserFeedbackConfiguration* configuration =
         [[UserFeedbackConfiguration alloc] init];
     configuration.data = data;
-    configuration.handler = handler;
     configuration.sceneHandler = handler;
     configuration.singleSignOnService =
         GetApplicationContext()->GetSingleSignOnService();
@@ -4081,7 +4079,7 @@ using UserFeedbackDataCallback =
                   incognito:self.currentInterface.incognito
                  completion:completion];
   [HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
-                      ApplicationCommands)
+                      SceneCommands)
       setIncognitoContentVisible:self.currentInterface.incognito];
 }
 

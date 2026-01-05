@@ -17,9 +17,9 @@
 #import "ios/chrome/browser/passwords/ui_bundled/password_breach_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/web/public/web_state.h"
@@ -107,8 +107,8 @@ using password_manager::CredentialLeakType;
 #pragma mark - PasswordBreachPresenter
 
 - (void)openPasswordCheckup {
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  id<SceneCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   base::RecordAction(
       base::UserMetricsAction("MobilePasswordBreachOpenPasswordCheckup"));
 

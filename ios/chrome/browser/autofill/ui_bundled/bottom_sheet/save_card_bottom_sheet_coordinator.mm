@@ -16,10 +16,10 @@
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 
 @implementation SaveCardBottomSheetCoordinator {
   // The model providing resources and callbacks for save card bottomsheet.
@@ -79,9 +79,9 @@
 
 - (void)didTapLinkURL:(CrURL*)URL {
   [_mediator onBottomSheetDismissedWithLinkClicked:YES];
-  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [applicationHandler
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler
       openURLInNewTab:[OpenNewTabCommand commandWithURLFromChrome:URL.gurl]];
 }
 

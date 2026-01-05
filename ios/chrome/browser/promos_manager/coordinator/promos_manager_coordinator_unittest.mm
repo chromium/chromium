@@ -20,9 +20,9 @@
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -84,8 +84,8 @@ class PromosManagerCoordinatorTest : public PlatformTest {
     coordinator_ = [[PromosManagerCoordinator alloc]
             initWithBaseViewController:view_controller_
                                browser:browser
-                    applicationHandler:OCMStrictProtocolMock(
-                                           @protocol(ApplicationCommands))
+                          sceneHandler:OCMStrictProtocolMock(
+                                           @protocol(SceneCommands))
         credentialProviderPromoHandler:OCMStrictProtocolMock(@protocol(
                                            CredentialProviderPromoCommands))
                    dockingPromoHandler:OCMStrictProtocolMock(

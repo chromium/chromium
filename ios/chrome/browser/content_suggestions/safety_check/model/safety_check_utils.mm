@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/content_suggestions/safety_check/public/safety_check_constants.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_item_type.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/channel_info.h"
@@ -90,9 +90,8 @@ void RecordPasswordCheckReferrerUserAction(
 using password_manager::WarningType;
 using password_manager::WarningType::kCompromisedPasswordsWarning;
 
-void HandleSafetyCheckUpdateChromeTap(
-    const GURL& chrome_upgrade_url,
-    id<ApplicationCommands> applicationHandler) {
+void HandleSafetyCheckUpdateChromeTap(const GURL& chrome_upgrade_url,
+                                      id<SceneCommands> sceneHandler) {
   switch (::GetChannel()) {
     case version_info::Channel::STABLE:
     case version_info::Channel::BETA:
@@ -101,7 +100,7 @@ void HandleSafetyCheckUpdateChromeTap(
       OpenNewTabCommand* command =
           [OpenNewTabCommand commandWithURLFromChrome:chrome_upgrade_url];
 
-      [applicationHandler openURLInNewTab:command];
+      [sceneHandler openURLInNewTab:command];
 
       break;
     }
@@ -114,7 +113,7 @@ void HandleSafetyCheckPasswordTap(
     std::vector<password_manager::CredentialUIEntry>& insecure_credentials,
     password_manager::InsecurePasswordCounts insecure_password_counts,
     password_manager::PasswordCheckReferrer referrer,
-    id<ApplicationCommands> applicationHandler,
+    id<SceneCommands> sceneHandler,
     id<SettingsCommands> settingsHandler) {
   // If there's only one compromised credential, navigate users to the detail
   // view for that particular credential.
@@ -140,8 +139,7 @@ void HandleSafetyCheckPasswordTap(
                            : password_manager::GetWarningOfHighestPriority(
                                  insecure_credentials);
 
-    [applicationHandler showPasswordIssuesWithWarningType:type
-                                                 referrer:referrer];
+    [sceneHandler showPasswordIssuesWithWarningType:type referrer:referrer];
 
     return;
   }
@@ -151,8 +149,7 @@ void HandleSafetyCheckPasswordTap(
   // If there are multiple passwords (with multiple warning types), or no
   // compromised credentials at all, navigate users to the Password Checkup
   // overview screen.
-  [applicationHandler
-      dismissModalsAndShowPasswordCheckupPageForReferrer:referrer];
+  [sceneHandler dismissModalsAndShowPasswordCheckupPageForReferrer:referrer];
 }
 
 bool InvalidUpdateChromeState(UpdateChromeSafetyCheckState state) {

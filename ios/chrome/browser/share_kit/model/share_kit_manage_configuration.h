@@ -7,9 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol ApplicationCommands;
-enum class ShareKitFlowOutcome;
 @protocol SceneCommands;
+enum class ShareKitFlowOutcome;
 class TabGroup;
 
 typedef void (^ShareKitShouldUnshareGroupBlock)(BOOL shouldDelete);
@@ -28,9 +27,6 @@ typedef void (^ShareKitShouldUnshareGroupBlock)(BOOL shouldDelete);
 
 // The group image preview.
 @property(nonatomic, copy) UIImage* groupImage;
-
-// Application commands handler.
-@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
 
 // Scene commands handler.
 @property(nonatomic, weak) id<SceneCommands> sceneHandler;

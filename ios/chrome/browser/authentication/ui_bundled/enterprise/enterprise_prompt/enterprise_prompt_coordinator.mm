@@ -7,10 +7,10 @@
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt/enterprise_prompt_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "url/gurl.h"
 
@@ -104,9 +104,9 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 - (void)openManagementPage {
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:GURL(kChromeUIManagementURL)];
-  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [applicationHandler openURLInNewTab:command];
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler openURLInNewTab:command];
 }
 
 @end

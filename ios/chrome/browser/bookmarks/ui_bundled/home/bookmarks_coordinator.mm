@@ -44,9 +44,9 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -118,9 +118,8 @@ enum class PresentedState {
 
 @property(nonatomic, strong) BookmarkMediator* mediator;
 
-// Handler for Application Commands.
-@property(nonatomic, readonly, weak) id<ApplicationCommands>
-    applicationCommandsHandler;
+// Handler for Scene Commands.
+@property(nonatomic, readonly, weak) id<SceneCommands> sceneHandler;
 
 // Handler for Snackbar Commands.
 @property(nonatomic, readonly, weak) id<SnackbarCommands>
@@ -142,7 +141,7 @@ enum class PresentedState {
   ReminderNotificationsCoordinator* _reminderNotificationsCoordinator;
 }
 
-@synthesize applicationCommandsHandler = _applicationCommandsHandler;
+@synthesize sceneHandler = _sceneHandler;
 @synthesize baseViewController = _baseViewController;
 @synthesize snackbarCommandsHandler = _snackbarCommandsHandler;
 
@@ -212,14 +211,14 @@ enum class PresentedState {
   [super stop];
 }
 
-- (id<ApplicationCommands>)applicationCommandsHandler {
-  // Using lazy loading here to avoid potential crashes with ApplicationCommands
+- (id<SceneCommands>)sceneHandler {
+  // Using lazy loading here to avoid potential crashes with SceneCommands
   // not being yet dispatched.
-  if (!_applicationCommandsHandler) {
-    _applicationCommandsHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ApplicationCommands);
+  if (!_sceneHandler) {
+    _sceneHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   }
-  return _applicationCommandsHandler;
+  return _sceneHandler;
 }
 
 - (id<SnackbarCommands>)snackbarCommandsHandler {
@@ -804,8 +803,7 @@ enum class PresentedState {
   self.bookmarkBrowser =
       [[BookmarksHomeViewController alloc] initWithBrowser:self.browser];
   self.bookmarkBrowser.homeDelegate = self;
-  self.bookmarkBrowser.applicationCommandsHandler =
-      self.applicationCommandsHandler;
+  self.bookmarkBrowser.sceneHandler = self.sceneHandler;
   self.bookmarkBrowser.snackbarCommandsHandler = self.snackbarCommandsHandler;
 
   NSArray<BookmarksHomeViewController*>* replacementViewControllers = nil;

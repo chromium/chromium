@@ -155,14 +155,14 @@ UIViewController* GetActiveViewController() {
   return active_view_controller;
 }
 
-id<ApplicationCommands,
+id<SceneCommands,
    BrowserCommands,
    BrowserCoordinatorCommands,
    CountryCodePickerCommands,
    UnitConversionCommands,
    DriveFilePickerCommands>
 HandlerForActiveBrowser() {
-  return static_cast<id<ApplicationCommands, BrowserCommands,
+  return static_cast<id<SceneCommands, BrowserCommands,
                         BrowserCoordinatorCommands, UnitConversionCommands,
                         CountryCodePickerCommands, DriveFilePickerCommands>>(
       GetMainBrowser()->GetCommandDispatcher());

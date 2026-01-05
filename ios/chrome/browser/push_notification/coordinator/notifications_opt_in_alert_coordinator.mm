@@ -27,8 +27,8 @@
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -235,8 +235,8 @@ GaiaId GetGaiaIdForProfile(ProfileIOS* profile) {
       HandlerForProtocol(dispatcher, SnackbarCommands);
   __weak id<SettingsCommands> weakSettingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
-  __weak id<ApplicationCommands> weakApplicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
+  __weak id<SceneCommands> weakApplicationHandler =
+      HandlerForProtocol(dispatcher, SceneCommands);
   [snackbarHandler
       showSnackbarWithMessage:self.confirmationMessage
                    buttonText:buttonText

@@ -15,10 +15,10 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 
 @interface VirtualCardEnrollmentBottomSheetCoordinator () <
     VirtualCardEnrollmentBottomSheetDelegate>
@@ -35,7 +35,7 @@
 
   // Opening links on the enrollment bottom sheet is delegated to this
   // handler.
-  __weak id<ApplicationCommands> _applicationHandler;
+  __weak id<SceneCommands> _sceneHandler;
 }
 
 @synthesize mediator;
@@ -52,8 +52,8 @@
     _model = std::move(model);
     _callbacks = AutofillBottomSheetTabHelper::FromWebState(activeWebState)
                      ->GetVirtualCardEnrollmentCallbacks();
-    _applicationHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ApplicationCommands);
+    _sceneHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   }
   return self;
 }
@@ -96,7 +96,7 @@
 #pragma mark VirtualCardEnrollmentBottomSheetDelegate
 
 - (void)didTapLinkURL:(CrURL*)URL text:(NSString*)text {
-  [_applicationHandler
+  [_sceneHandler
       openURLInNewTab:[OpenNewTabCommand
                           commandWithURLFromChrome:URL.gurl
                                        inIncognito:self.profile

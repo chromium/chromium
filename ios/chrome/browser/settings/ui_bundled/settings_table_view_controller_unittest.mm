@@ -35,10 +35,10 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -140,15 +140,14 @@ class SettingsTableViewControllerTest
     // Create mock command handlers. These are just for initializing the view
     // controller; because the handlers are local to this methdd, they will not
     // exist during tests, so if the tests call any commands they will fail.
-    id mock_application_handler =
-        OCMProtocolMock(@protocol(ApplicationCommands));
+    id mock_application_handler = OCMProtocolMock(@protocol(SceneCommands));
     id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
     id mock_snackbar_handler = OCMProtocolMock(@protocol(SnackbarCommands));
     mock_popup_menu_handler_ = OCMProtocolMock(@protocol(PopupMenuCommands));
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:mock_application_handler
-                             forProtocol:@protocol(ApplicationCommands)];
+                             forProtocol:@protocol(SceneCommands)];
     [dispatcher startDispatchingToTarget:mock_settings_handler
                              forProtocol:@protocol(SettingsCommands)];
     [dispatcher startDispatchingToTarget:mock_settings_handler
@@ -167,8 +166,7 @@ class SettingsTableViewControllerTest
         initWithRootViewController:controller
                            browser:browser_.get()
                           delegate:nil];
-    controller.applicationHandler =
-        HandlerForProtocol(dispatcher, ApplicationCommands);
+    controller.sceneHandler = HandlerForProtocol(dispatcher, SceneCommands);
     controller.settingsHandler =
         HandlerForProtocol(dispatcher, SettingsCommands);
     controller.snackbarHandler =

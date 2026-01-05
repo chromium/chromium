@@ -91,8 +91,8 @@ void OpenNewTabInWindowWithNumber(int windowNumber) {
       [controller addANewTabAndPresentBrowser:browser withURLLoadParams:params];
       return;
     }
-    id<ApplicationCommands, BrowserCommands> handler =
-        static_cast<id<ApplicationCommands, BrowserCommands>>(
+    id<SceneCommands, BrowserCommands> handler =
+        static_cast<id<SceneCommands, BrowserCommands>>(
             GetCurrentBrowserForWindowWithNumber(windowNumber)
                 ->GetCommandDispatcher());
     [handler openURLInNewTab:command];

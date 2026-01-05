@@ -103,7 +103,6 @@
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -111,6 +110,7 @@
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -1308,9 +1308,9 @@
 #pragma mark - OverscrollActionsControllerDelegate
 
 - (void)overscrollActionNewTab:(OverscrollActionsController*)controller {
-  id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [applicationCommandsHandler openURLInNewTab:[OpenNewTabCommand command]];
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler openURLInNewTab:[OpenNewTabCommand command]];
   [self.NTPMetricsRecorder
       recordOverscrollActionForType:OverscrollActionType::kOpenedNewTab];
 }
@@ -1827,9 +1827,9 @@
   command.extraHeaders =
       web_navigation_util::VariationHeadersForURL(URL, /*is_incognito=*/false);
 
-  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [applicationHandler openURLInNewTab:command];
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler openURLInNewTab:command];
 }
 
 - (void)preloadVoiceSearch {
@@ -1847,9 +1847,9 @@
   [layoutGuideCenter referenceView:voiceSearchSourceView
                          underName:kVoiceSearchButtonGuide];
 
-  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [applicationHandler startVoiceSearch];
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler startVoiceSearch];
 }
 
 - (void)openIncognitoSearch {
@@ -1858,9 +1858,9 @@
 
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithIncognito:YES];
   command.shouldFocusOmnibox = YES;
-  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [applicationHandler openURLInNewTab:command];
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler openURLInNewTab:command];
 }
 
 #pragma mark - TabGridObserving

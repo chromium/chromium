@@ -24,9 +24,9 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
@@ -136,7 +136,7 @@
 - (void)openNewTabWithURL:(const GURL&)URL {
   [self FREWillBeBackgrounded];
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
-  [self.applicationHandler openURLInNewTab:command];
+  [self.sceneHandler openURLInNewTab:command];
 }
 
 #pragma mark - Private

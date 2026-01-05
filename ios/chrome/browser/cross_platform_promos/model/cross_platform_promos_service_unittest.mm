@@ -28,10 +28,10 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -106,9 +106,9 @@ class CrossPlatformPromosServiceTest : public PlatformTest {
   }
 
   // Stubs the `-prepareToPresentModalWithSnackbarDismissal:` method from
-  // `ApplicationCommands` so that it immediately calls the completion block.
+  // `SceneCommands` so that it immediately calls the completion block.
   void StubPrepareToPresentModal() {
-    id mock_application_handler = MockHandler(@protocol(ApplicationCommands));
+    id mock_application_handler = MockHandler(@protocol(SceneCommands));
     OCMStub([mock_application_handler
         prepareToPresentModalWithSnackbarDismissal:NO
                                         completion:[OCMArg invokeBlock]]);

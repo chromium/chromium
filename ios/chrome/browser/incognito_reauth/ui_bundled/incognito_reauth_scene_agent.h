@@ -13,7 +13,7 @@ enum class IncognitoLockState;
 class PrefRegistrySimple;
 class PrefService;
 @protocol ReauthenticationProtocol;
-@protocol ApplicationCommands;
+@protocol SceneCommands;
 
 @protocol IncognitoReauthObserver <NSObject>
 
@@ -37,11 +37,10 @@ class PrefService;
 
 // Designated initializer.
 // The `reauthModule` is used for authentication.
-// The `applicationCommandsHandler` is used to transition between the tab and
+// The `sceneHandler` is used to transition between the tab and
 // tab switcher.
 - (instancetype)initWithReauthModule:(id<ReauthenticationProtocol>)reauthModule
-          applicationCommandsHandler:
-              (id<ApplicationCommands>)applicationCommandsHandler
+                        sceneHandler:(id<SceneCommands>)sceneHandler
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -38,20 +38,19 @@ bool CollaborationOutOfDateInfoBarDelegate::Create(ProfileIOS* profile) {
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(active_web_state);
 
-  id<ApplicationCommands> application_commands_handler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  id<SceneCommands> scene_handler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
 
   std::unique_ptr<CollaborationOutOfDateInfoBarDelegate> delegate =
-      std::make_unique<CollaborationOutOfDateInfoBarDelegate>(
-          application_commands_handler);
+      std::make_unique<CollaborationOutOfDateInfoBarDelegate>(scene_handler);
   std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
       InfobarType::kInfobarTypeCollaborationOutOfDate, std::move(delegate));
   return !!infobar_manager->AddInfoBar(std::move(infobar));
 }
 
 CollaborationOutOfDateInfoBarDelegate::CollaborationOutOfDateInfoBarDelegate(
-    id<ApplicationCommands> application_commands_handler)
-    : application_commands_handler_(application_commands_handler) {}
+    id<SceneCommands> scene_handler)
+    : scene_handler_(scene_handler) {}
 
 CollaborationOutOfDateInfoBarDelegate::
     ~CollaborationOutOfDateInfoBarDelegate() {}
@@ -77,7 +76,7 @@ std::u16string CollaborationOutOfDateInfoBarDelegate::GetButtonLabel(
 }
 
 bool CollaborationOutOfDateInfoBarDelegate::Accept() {
-  [application_commands_handler_ showAppStorePage];
+  [scene_handler_ showAppStorePage];
   return true;
 }
 

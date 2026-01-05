@@ -9,12 +9,12 @@
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 
-@protocol ApplicationCommands;
 class Browser;
 @protocol CountryCodePickerCommands;
 @protocol DriveFilePickerCommands;
 @class MainController;
 class ProfileIOS;
+@protocol SceneCommands;
 @class SceneController;
 @class SceneState;
 @class UIViewController;
@@ -55,7 +55,7 @@ Browser* GetCurrentBrowser();
 UIViewController* GetActiveViewController();
 
 // Returns the dispatcher for the active Browser.
-id<ApplicationCommands,
+id<SceneCommands,
    BrowserCommands,
    BrowserCoordinatorCommands,
    UnitConversionCommands,

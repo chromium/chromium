@@ -142,7 +142,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
@@ -152,6 +151,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -361,7 +361,7 @@ using segmentation_platform::TipIdentifier;
       self.contentSuggestionsMetricsRecorder;
   _shortcutsMediator.NTPActionsDelegate = self.NTPActionsDelegate;
   _shortcutsMediator.dispatcher = static_cast<
-      id<ApplicationCommands, BrowserCoordinatorCommands, WhatsNewCommands>>(
+      id<SceneCommands, BrowserCoordinatorCommands, WhatsNewCommands>>(
       self.browser->GetCommandDispatcher());
   [moduleMediators addObject:_shortcutsMediator];
   self.contentSuggestionsMediator.shortcutsMediator = _shortcutsMediator;
@@ -387,7 +387,7 @@ using segmentation_platform::TipIdentifier;
   _tabResumptionMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
   _tabResumptionMediator.dispatcher = static_cast<
-      id<ApplicationCommands, PriceTrackedItemsCommands, SnackbarCommands>>(
+      id<SceneCommands, PriceTrackedItemsCommands, SnackbarCommands>>(
       self.browser->GetCommandDispatcher());
 
   [moduleMediators addObject:_tabResumptionMediator];
@@ -409,7 +409,7 @@ using segmentation_platform::TipIdentifier;
                   faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
                                     profile)];
     _priceTrackingPromoMediator.dispatcher =
-        static_cast<id<ApplicationCommands, SnackbarCommands>>(
+        static_cast<id<SceneCommands, SnackbarCommands>>(
             self.browser->GetCommandDispatcher());
     _priceTrackingPromoMediator.actionDelegate = self;
     _priceTrackingPromoMediator.NTPActionsDelegate = self.NTPActionsDelegate;
@@ -1149,8 +1149,8 @@ using segmentation_platform::TipIdentifier;
   IOSChromeSafetyCheckManager* safetyCheckManager =
       IOSChromeSafetyCheckManagerFactory::GetForProfile(browser->GetProfile());
 
-  id<ApplicationCommands> applicationHandler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
   id<SettingsCommands> settingsHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SettingsCommands);
 
@@ -1158,7 +1158,7 @@ using segmentation_platform::TipIdentifier;
     case SafetyCheckItemType::kUpdateChrome: {
       const GURL& chrome_upgrade_url =
           safetyCheckManager->GetChromeAppUpgradeUrl();
-      HandleSafetyCheckUpdateChromeTap(chrome_upgrade_url, applicationHandler);
+      HandleSafetyCheckUpdateChromeTap(chrome_upgrade_url, sceneHandler);
       break;
     }
     case SafetyCheckItemType::kPassword: {
@@ -1171,7 +1171,7 @@ using segmentation_platform::TipIdentifier;
       HandleSafetyCheckPasswordTap(
           insecure_credentials, insecure_password_counts,
           password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack,
-          applicationHandler, settingsHandler);
+          sceneHandler, settingsHandler);
 
       break;
     }

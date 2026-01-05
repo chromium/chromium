@@ -32,10 +32,10 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tabs_animation_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -149,8 +149,8 @@ using browsing_data::DeleteBrowsingDataDialogAction;
     NOTREACHED();
   }
 
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  id<SceneCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
   [handler closePresentedViewsAndOpenURL:command];
 }
@@ -235,10 +235,9 @@ using browsing_data::DeleteBrowsingDataDialogAction;
                     browsingDataRemoverParams:params];
   };
 
-  id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [applicationCommandsHandler
-      displayTabGridInMode:TabGridOpeningMode::kRegular];
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
 
   id<QuickDeleteCommands> quickDeleteHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), QuickDeleteCommands);

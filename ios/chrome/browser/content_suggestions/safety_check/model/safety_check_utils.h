@@ -13,7 +13,7 @@
 #import "base/time/time.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 
-@protocol ApplicationCommands;
+@protocol SceneCommands;
 @protocol SettingsCommands;
 namespace password_manager {
 struct CredentialUIEntry;
@@ -26,9 +26,8 @@ enum class SafetyCheckItemType;
 
 // Fires the proper UI command to navigate users to `chrome_upgrade_url` if the
 // app is on a valid channel.
-void HandleSafetyCheckUpdateChromeTap(
-    const GURL& chrome_upgrade_url,
-    id<ApplicationCommands> applicationHandler);
+void HandleSafetyCheckUpdateChromeTap(const GURL& chrome_upgrade_url,
+                                      id<SceneCommands> sceneHandler);
 
 // Fires the proper UI command based on the current `insecure_credentials`
 // and `insecure_password_counts`, logging the navigation with the provided
@@ -38,7 +37,7 @@ void HandleSafetyCheckPasswordTap(
     std::vector<password_manager::CredentialUIEntry>& insecure_credentials,
     password_manager::InsecurePasswordCounts insecure_password_counts,
     password_manager::PasswordCheckReferrer referrer,
-    id<ApplicationCommands> applicationHandler,
+    id<SceneCommands> sceneHandler,
     id<SettingsCommands> settingsHandler);
 
 // Returns true if `state` is considered an invalid state for the Update Chrome

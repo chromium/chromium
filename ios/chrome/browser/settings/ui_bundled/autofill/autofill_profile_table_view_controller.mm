@@ -42,8 +42,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
@@ -491,7 +491,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     OpenNewTabCommand* command = [OpenNewTabCommand
         commandWithURLFromChrome:
             GURL(plus_addresses::features::kPlusAddressManagementUrl.Get())];
-    [self.applicationHandler closePresentedViewsAndOpenURL:command];
+    [self.sceneHandler closePresentedViewsAndOpenURL:command];
     return;
   }
 
@@ -883,7 +883,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                  : hasWorkProfile
                                      ? kGoogleMyAccountWorkAddressURL
                                      : kGoogleAccountNameEmailAddressEditURL)];
-                    [weakSelf.applicationHandler
+                    [weakSelf.sceneHandler
                         closePresentedViewsAndOpenURL:command];
                   }
                    style:UIAlertActionStyleDefault];

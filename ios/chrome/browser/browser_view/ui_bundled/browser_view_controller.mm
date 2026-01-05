@@ -55,12 +55,12 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -311,8 +311,8 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 // Command handler for popup menu commands.
 @property(nonatomic, weak) id<PopupMenuCommands> popupMenuCommandsHandler;
 
-// Command handler for application commands.
-@property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
+// Command handler for scene commands.
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
 // Command handler for find in page commands.
 @property(nonatomic, weak) id<FindInPageCommands> findInPageCommandsHandler;
@@ -387,7 +387,7 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
     self.textZoomHandler = dependencies.textZoomHandler;
     self.helpHandler = dependencies.helpHandler;
     self.popupMenuCommandsHandler = dependencies.popupMenuCommandsHandler;
-    self.applicationCommandsHandler = dependencies.applicationCommandsHandler;
+    self.sceneHandler = dependencies.sceneHandler;
     self.findInPageCommandsHandler = dependencies.findInPageCommandsHandler;
     _isOffTheRecord = dependencies.isOffTheRecord;
     _visibilityState = BrowserViewVisibilityState::kNotInViewHierarchy;
@@ -2620,7 +2620,7 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
                    }]
             forControlEvents:UIControlEventTouchUpInside];
       } else {
-        DCHECK(self.applicationCommandsHandler);
+        DCHECK(self.sceneHandler);
         __weak __typeof(self) weakSelf = self;
         [self.blockingView.secondaryButton
                    addAction:[UIAction actionWithHandler:^(UIAction* action) {
@@ -2632,7 +2632,7 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
                        base::RecordAction(base::UserMetricsAction(
                            "IOS.IncognitoLock.Overlay.SeeOtherTabs"));
                      }
-                     [weakSelf.applicationCommandsHandler
+                     [weakSelf.sceneHandler
                          displayTabGridInMode:TabGridOpeningMode::kRegular];
                    }]
             forControlEvents:UIControlEventTouchUpInside];
@@ -2650,7 +2650,7 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
     [firstResponder resignFirstResponder];
     // Close presented view controllers, e.g. share sheets.
     if (self.presentedViewController) {
-      [self.applicationCommandsHandler dismissModalDialogsWithCompletion:nil];
+      [self.sceneHandler dismissModalDialogsWithCompletion:nil];
     }
 
   } else {

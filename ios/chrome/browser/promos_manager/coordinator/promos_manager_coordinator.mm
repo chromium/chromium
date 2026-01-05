@@ -55,11 +55,11 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -102,8 +102,8 @@
   // The currently displayed promo data, if any.
   std::optional<PromoDisplayData> _currentPromoData;
 
-  // The handler for the ApplicationCommands.
-  id<ApplicationCommands> _applicationCommandHandler;
+  // The handler for the SceneCommands.
+  id<SceneCommands> _sceneHandler;
 
   // The handler for the CredentialProviderPromoCommands.
   id<CredentialProviderPromoCommands> _credentialProviderPromoCommandHandler;
@@ -133,20 +133,19 @@
 
 #pragma mark - Initialization
 
-- (instancetype)
-        initWithBaseViewController:(UIViewController*)viewController
-                           browser:(Browser*)browser
-                applicationHandler:(id<ApplicationCommands>)applicationHandler
-    credentialProviderPromoHandler:
-        (id<CredentialProviderPromoCommands>)credentialProviderPromoHandler
-               dockingPromoHandler:
-                   (id<DockingPromoCommands>)dockingPromoHandler {
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                              sceneHandler:(id<SceneCommands>)sceneHandler
+            credentialProviderPromoHandler:(id<CredentialProviderPromoCommands>)
+                                               credentialProviderPromoHandler
+                       dockingPromoHandler:
+                           (id<DockingPromoCommands>)dockingPromoHandler {
   DCHECK(ShouldPromoManagerDisplayPromos());
   if ((self = [super initWithBaseViewController:viewController
                                         browser:browser])) {
     CHECK(viewController, base::NotFatalUntil::M140);
     CHECK(browser, base::NotFatalUntil::M140);
-    _applicationCommandHandler = applicationHandler;
+    _sceneHandler = sceneHandler;
     _credentialProviderPromoCommandHandler = credentialProviderPromoHandler;
     _dockingPromoCommandHandler = dockingPromoHandler;
 
@@ -624,8 +623,8 @@
   if (ShouldShowSafariDataImportEntryPoint(self.profile->GetPrefs())) {
     _displayHandlerPromos[promos_manager::Promo::SafariImportRemindMeLater] =
         [[SafariDataImportReminderPromoDisplayHandler alloc]
-            initWithApplicationCommandsHandler:_applicationCommandHandler
-                        promosManagerUIHandler:self];
+            initWithSceneCommandsHandler:_sceneHandler
+                  promosManagerUIHandler:self];
   }
 }
 

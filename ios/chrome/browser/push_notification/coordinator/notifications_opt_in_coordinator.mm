@@ -20,8 +20,8 @@
 #import "ios/chrome/browser/push_notification/ui/notifications_opt_in_presenter.h"
 #import "ios/chrome/browser/push_notification/ui/notifications_opt_in_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -100,7 +100,7 @@
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:completion];
-  [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
+  [HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands)
               showSignin:command
       baseViewController:_viewController];
 }

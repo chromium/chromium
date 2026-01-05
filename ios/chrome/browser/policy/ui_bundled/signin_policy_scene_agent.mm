@@ -24,9 +24,9 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -47,9 +47,8 @@
   FullscreenSigninCoordinator* _fullscreenSigninCoordinator;
 }
 
-// Handler of application commands.
-@property(nonatomic, weak, readonly) id<ApplicationCommands>
-    applicationCommandsHandler;
+// Handler of scene commands.
+@property(nonatomic, weak, readonly) id<SceneCommands> sceneHandler;
 
 // Browser of the main interface of the scene.
 @property(nonatomic, assign) Browser* mainBrowser;
@@ -66,14 +65,13 @@
 @implementation SigninPolicySceneAgent
 
 - (instancetype)initWithSceneUIProvider:(id<SceneUIProvider>)sceneUIProvider
-             applicationCommandsHandler:
-                 (id<ApplicationCommands>)applicationCommandsHandler
+                           sceneHandler:(id<SceneCommands>)sceneHandler
             policyChangeCommandsHandler:
                 (id<PolicyChangeCommands>)policyChangeCommandsHandler {
   self = [super init];
   if (self) {
     _sceneUIProvider = sceneUIProvider;
-    _applicationCommandsHandler = applicationCommandsHandler;
+    _sceneHandler = sceneHandler;
     _policyChangeCommandsHandler = policyChangeCommandsHandler;
   }
   return self;
@@ -252,7 +250,7 @@
                                           UIBlockerExtent::kApplication);
 
     __weak __typeof(self) weakSelf = self;
-    [self.applicationCommandsHandler dismissModalDialogsWithCompletion:^{
+    [self.sceneHandler dismissModalDialogsWithCompletion:^{
       [weakSelf showForcedSigninPrompt];
       // Remove the blocker after the showSignin: command to make sure that the
       // blocker doesn't go down to 0 in which case the other scenes will try to
@@ -262,7 +260,7 @@
   }
 }
 
-// Shows the forced sign-in prompt using the application command.
+// Shows the forced sign-in prompt using the scene commands.
 - (void)showForcedSigninPrompt {
   // It's possible that the force-signin is *not* required anymore at this point
   // (either because the policy changed, or because the user is already signed

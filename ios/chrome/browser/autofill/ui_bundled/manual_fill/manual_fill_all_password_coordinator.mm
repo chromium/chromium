@@ -22,9 +22,9 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
@@ -172,8 +172,8 @@
   // Dismiss `passwordViewController` and open header link in a new tab.
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:URL.gurl];
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  id<SceneCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   [self.manualFillAllPasswordCoordinatorDelegate
       manualFillAllPasswordCoordinatorWantsToBeDismissed:self];
   [handler openURLInNewTab:command];

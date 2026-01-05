@@ -9,13 +9,13 @@
 
 #import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
 
-@protocol ApplicationCommands;
 @protocol BookmarksCommands;
 class Browser;
 @protocol BrowserCoordinatorCommands;
 @protocol FindInPageCommands;
 @protocol OmniboxCommands;
 @protocol QuickDeleteCommands;
+@protocol SceneCommands;
 @protocol SettingsCommands;
 
 // Handles the keyboard commands registration and handling for the
@@ -24,7 +24,7 @@ class Browser;
 
 // Key command actions are converted to Chrome commands and sent to these
 // handlers.
-@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 @property(nonatomic, weak) id<FindInPageCommands> findInPageHandler;
 @property(nonatomic, weak) id<BookmarksCommands> bookmarksHandler;
 @property(nonatomic, weak) id<BrowserCoordinatorCommands>

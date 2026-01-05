@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -37,6 +36,7 @@
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -107,11 +107,10 @@ class ToolbarCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:mock_lens_handler
                      forProtocol:@protocol(LensCommands)];
 
-    id mock_application_handler =
-        OCMProtocolMock(@protocol(ApplicationCommands));
+    id mock_application_handler = OCMProtocolMock(@protocol(SceneCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_application_handler
-                     forProtocol:@protocol(ApplicationCommands)];
+                     forProtocol:@protocol(SceneCommands)];
 
     id mock_QR_scanner_handler = OCMProtocolMock(@protocol(QRScannerCommands));
     [browser_->GetCommandDispatcher()

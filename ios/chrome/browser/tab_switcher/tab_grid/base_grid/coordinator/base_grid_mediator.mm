@@ -53,10 +53,10 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_command.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
@@ -1077,11 +1077,11 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
     return;
   }
 
-  id<ApplicationCommands> applicationHandler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
   TabGridOpeningMode openingMode =
       incognito ? TabGridOpeningMode::kIncognito : TabGridOpeningMode::kRegular;
-  [applicationHandler displayTabGridInMode:openingMode];
+  [sceneHandler displayTabGridInMode:openingMode];
 
   id<TabGroupsCommands> tabGroupsHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), TabGroupsCommands);

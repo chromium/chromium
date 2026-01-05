@@ -26,10 +26,10 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/adaptive_toolbar_coordinator+subclassing.h"
@@ -218,8 +218,7 @@ using tab_groups::VersioningMessageController;
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
 
-  actionHandler.applicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
+  actionHandler.sceneHandler = HandlerForProtocol(dispatcher, SceneCommands);
   actionHandler.activityHandler =
       HandlerForProtocol(dispatcher, ActivityServiceCommands);
   actionHandler.menuHandler = HandlerForProtocol(dispatcher, PopupMenuCommands);

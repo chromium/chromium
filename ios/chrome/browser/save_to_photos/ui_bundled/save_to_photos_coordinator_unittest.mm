@@ -24,11 +24,11 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -84,11 +84,10 @@ class SaveToPhotosCoordinatorTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_snackbar_commands_handler_
                      forProtocol:@protocol(SnackbarCommands)];
-    mock_application_commands_handler_ =
-        OCMStrictProtocolMock(@protocol(ApplicationCommands));
+    mock_scene_handler_ = OCMStrictProtocolMock(@protocol(SceneCommands));
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_application_commands_handler_
-                     forProtocol:@protocol(ApplicationCommands)];
+        startDispatchingToTarget:mock_scene_handler_
+                     forProtocol:@protocol(SceneCommands)];
     mock_settings_commands_handler_ =
         OCMStrictProtocolMock(@protocol(SettingsCommands));
     [browser_->GetCommandDispatcher()
@@ -116,7 +115,7 @@ class SaveToPhotosCoordinatorTest : public PlatformTest {
                           identityManager:ios::OCM::AnyPointer<
                                               signin::IdentityManager>()
                 manageStorageAlertHandler:[OCMArg any]
-                       applicationHandler:[OCMArg any]
+                             sceneHandler:[OCMArg any]
                          googleOneHandler:[OCMArg any]])
         .andReturn(mock_save_to_photos_mediator_);
   }
@@ -143,7 +142,7 @@ class SaveToPhotosCoordinatorTest : public PlatformTest {
   void TearDown() final {
     EXPECT_OCMOCK_VERIFY(mock_save_to_photos_commands_handler_);
     EXPECT_OCMOCK_VERIFY(mock_snackbar_commands_handler_);
-    EXPECT_OCMOCK_VERIFY(mock_application_commands_handler_);
+    EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
     EXPECT_OCMOCK_VERIFY(mock_settings_commands_handler_);
     EXPECT_OCMOCK_VERIFY(mock_google_one_commands_handler_);
     EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_);
@@ -178,7 +177,7 @@ class SaveToPhotosCoordinatorTest : public PlatformTest {
   id mock_account_picker_coordinator_;
   id mock_save_to_photos_commands_handler_;
   id mock_snackbar_commands_handler_;
-  id mock_application_commands_handler_;
+  id mock_scene_handler_;
   id mock_settings_commands_handler_;
   id mock_google_one_commands_handler_;
 };
@@ -209,7 +208,7 @@ TEST_F(SaveToPhotosCoordinatorTest, StartsAndDisconnectsMediator) {
                     identityManager:identityManager
           manageStorageAlertHandler:static_cast<id<ManageStorageAlertCommands>>(
                                         browser_->GetCommandDispatcher())
-                 applicationHandler:static_cast<id<ApplicationCommands>>(
+                       sceneHandler:static_cast<id<SceneCommands>>(
                                         browser_->GetCommandDispatcher())
                    googleOneHandler:static_cast<id<GoogleOneCommands>>(
                                         browser_->GetCommandDispatcher())])

@@ -47,7 +47,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -66,6 +65,7 @@
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reminder_notifications_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
@@ -277,8 +277,7 @@ using base::UserMetricsAction;
 
     mediator.activityServiceHandler =
         HandlerForProtocol(dispatcher, ActivityServiceCommands);
-    mediator.applicationHandler =
-        HandlerForProtocol(dispatcher, ApplicationCommands);
+    mediator.sceneHandler = HandlerForProtocol(dispatcher, SceneCommands);
     mediator.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
     mediator.tabGroupsHandler =
         HandlerForProtocol(dispatcher, TabGroupsCommands);
@@ -289,8 +288,7 @@ using base::UserMetricsAction;
           HandlerForProtocol(dispatcher, LensOverlayCommands);
     }
     if (experimental_flags::EnableAIPrototypingMenu()) {
-      mediator.applicationHandler =
-          HandlerForProtocol(dispatcher, ApplicationCommands);
+      mediator.sceneHandler = HandlerForProtocol(dispatcher, SceneCommands);
     }
 
     if (IsPageActionMenuEnabled()) {
@@ -454,8 +452,8 @@ using base::UserMetricsAction;
   self.actionHandler = [[PopupMenuActionHandler alloc] init];
   self.actionHandler.baseViewController = self.baseViewController;
   self.actionHandler.dispatcher = static_cast<
-      id<ApplicationCommands, BrowserCommands, FindInPageCommands,
-         LoadQueryCommands, PriceTrackedItemsCommands, TextZoomCommands>>(
+      id<SceneCommands, BrowserCommands, FindInPageCommands, LoadQueryCommands,
+         PriceTrackedItemsCommands, TextZoomCommands>>(
       self.browser->GetCommandDispatcher());
   self.actionHandler.bookmarksCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BookmarksCommands);

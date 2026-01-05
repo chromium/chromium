@@ -27,8 +27,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
@@ -70,8 +70,8 @@
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
-  // Handler for application commands, used to change active surfaces.
-  id<ApplicationCommands> _applicationCommandsHandler;
+  // Handler for scene commands, used to change active surfaces.
+  id<SceneCommands> _sceneHandler;
   // Tracks whether the lock surface was switched during the current foreground
   // session.
   BOOL _switchedToIncognitoGrid;
@@ -101,13 +101,12 @@
 #pragma mark - public
 
 - (instancetype)initWithReauthModule:(id<ReauthenticationProtocol>)reauthModule
-          applicationCommandsHandler:
-              (id<ApplicationCommands>)applicationCommandsHandler {
+                        sceneHandler:(id<SceneCommands>)sceneHandler {
   self = [super init];
   if (self) {
     DCHECK(reauthModule);
     _reauthModule = reauthModule;
-    _applicationCommandsHandler = applicationCommandsHandler;
+    _sceneHandler = sceneHandler;
     _observers = [IncognitoReauthObserverList
         observersWithProtocol:@protocol(IncognitoReauthObserver)];
     [[NSNotificationCenter defaultCenter]
@@ -334,8 +333,7 @@
     _switchedToIncognitoGrid = YES;
     // TODO(crbug.com/417621249): Add callback that allows specifying animation
     // type.
-    [_applicationCommandsHandler
-        displayTabGridInMode:TabGridOpeningMode::kIncognito];
+    [_sceneHandler displayTabGridInMode:TabGridOpeningMode::kIncognito];
   }
 }
 

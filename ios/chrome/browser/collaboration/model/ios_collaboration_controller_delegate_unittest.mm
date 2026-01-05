@@ -33,8 +33,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -150,11 +150,9 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
     tab_group_sync_service_->AddGroup(saved_group);
 
     CommandDispatcher* command_dispatcher = browser_->GetCommandDispatcher();
-    application_commands_mock_ =
-        OCMStrictProtocolMock(@protocol(ApplicationCommands));
-    [command_dispatcher
-        startDispatchingToTarget:application_commands_mock_
-                     forProtocol:@protocol(ApplicationCommands)];
+    mock_scene_handler_ = OCMStrictProtocolMock(@protocol(SceneCommands));
+    [command_dispatcher startDispatchingToTarget:mock_scene_handler_
+                                     forProtocol:@protocol(SceneCommands)];
     signin_coordinator_mock_ = OCMStrictClassMock([SigninCoordinator class]);
     signin_coordinator_class_mock_ =
         OCMStrictClassMock([SigninCoordinator class]);
@@ -218,7 +216,7 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
   }
 
   void TearDown() override {
-    EXPECT_OCMOCK_VERIFY(application_commands_mock_);
+    EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
     EXPECT_OCMOCK_VERIFY((id)signin_coordinator_mock_);
     EXPECT_OCMOCK_VERIFY(signin_coordinator_class_mock_);
     PlatformTest::TearDown();
@@ -255,7 +253,7 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
   raw_ptr<WebStateList, DanglingUntriaged> web_state_list_;
   id signin_coordinator_class_mock_;
   SigninCoordinator* signin_coordinator_mock_;
-  id application_commands_mock_;
+  id mock_scene_handler_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestProfileIOS> profile_;
   UIViewController* base_view_controller_;

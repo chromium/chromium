@@ -7,9 +7,9 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/observing_scene_state_agent.h"
 
-@protocol SceneUIProvider;
-@protocol ApplicationCommands;
 @protocol PolicyChangeCommands;
+@protocol SceneCommands;
+@protocol SceneUIProvider;
 
 // A scene agent that monitors the state of the app and policy updates to show
 // the sign-out and sign-in prompts. Will show prompts when determined to be
@@ -31,8 +31,7 @@
 @interface SigninPolicySceneAgent : ObservingSceneAgent
 
 - (instancetype)initWithSceneUIProvider:(id<SceneUIProvider>)sceneUIProvider
-             applicationCommandsHandler:
-                 (id<ApplicationCommands>)applicationCommandsHandle
+                           sceneHandler:(id<SceneCommands>)sceneHandlerHandle
             policyChangeCommandsHandler:
                 (id<PolicyChangeCommands>)policyChangeCommandsHandler;
 

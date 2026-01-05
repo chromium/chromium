@@ -15,8 +15,8 @@
 #import "ios/chrome/browser/settings/ui_bundled/cells/version_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
@@ -171,7 +171,7 @@ const CGFloat kDefaultHeight = 70;
 
 - (void)openURL:(GURL)URL {
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
-  [self.applicationHandler closePresentedViewsAndOpenURL:command];
+  [self.sceneHandler closePresentedViewsAndOpenURL:command];
 }
 
 - (std::string)versionString {

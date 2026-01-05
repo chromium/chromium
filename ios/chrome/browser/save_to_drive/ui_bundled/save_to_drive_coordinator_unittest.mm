@@ -20,10 +20,10 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/account_picker_commands.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -72,11 +72,10 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_save_to_drive_commands_handler_
                      forProtocol:@protocol(SaveToDriveCommands)];
-    mock_application_commands_handler_ =
-        OCMStrictProtocolMock(@protocol(ApplicationCommands));
+    mock_scene_handler_ = OCMStrictProtocolMock(@protocol(SceneCommands));
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_application_commands_handler_
-                     forProtocol:@protocol(ApplicationCommands)];
+        startDispatchingToTarget:mock_scene_handler_
+                     forProtocol:@protocol(SceneCommands)];
     mock_settings_commands_handler_ =
         OCMStrictProtocolMock(@protocol(SettingsCommands));
     [browser_->GetCommandDispatcher()
@@ -108,7 +107,7 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
   void TearDown() final {
     [mock_save_to_drive_mediator_ stopMocking];
     EXPECT_OCMOCK_VERIFY(mock_save_to_drive_commands_handler_);
-    EXPECT_OCMOCK_VERIFY(mock_application_commands_handler_);
+    EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
     EXPECT_OCMOCK_VERIFY(mock_settings_commands_handler_);
     EXPECT_OCMOCK_VERIFY(mock_save_to_drive_mediator_);
     PlatformTest::TearDown();
@@ -139,7 +138,7 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
 
   id mock_save_to_drive_mediator_;
   id mock_save_to_drive_commands_handler_;
-  id mock_application_commands_handler_;
+  id mock_scene_handler_;
   id mock_settings_commands_handler_;
 };
 

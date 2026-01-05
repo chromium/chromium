@@ -23,9 +23,9 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -122,12 +122,11 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
 
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
-    // Set up ApplicationCommands mock.
-    id mock_application_handler =
-        OCMProtocolMock(@protocol(ApplicationCommands));
+    // Set up SceneCommands mock.
+    id mock_application_handler = OCMProtocolMock(@protocol(SceneCommands));
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:mock_application_handler
-                             forProtocol:@protocol(ApplicationCommands)];
+                             forProtocol:@protocol(SceneCommands)];
 
     // Set up QuickDeleteCommands mock.
     id mock_quick_delete_handler_ =
@@ -142,18 +141,17 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
 
     AddAgentsToBrowser(incognito_browser_.get());
 
-    id mockApplicationCommandHandler =
-        OCMProtocolMock(@protocol(ApplicationCommands));
+    id mockSceneHandler = OCMProtocolMock(@protocol(SceneCommands));
     IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
-              initWithReauthModule:[[ReauthenticationModule alloc] init]
-        applicationCommandsHandler:mockApplicationCommandHandler];
+        initWithReauthModule:[[ReauthenticationModule alloc] init]
+                sceneHandler:mockSceneHandler];
     [scene_state_ addAgent:reauth_agent];
 
     coordinator_ = [[TabGridCoordinator alloc]
-        initWithApplicationCommandEndpoint:mockApplicationCommandHandler
-                            regularBrowser:browser_.get()
-                           inactiveBrowser:browser_->CreateInactiveBrowser()
-                          incognitoBrowser:incognito_browser_.get()];
+        initWithSceneCommandsEndpoint:mockSceneHandler
+                       regularBrowser:browser_.get()
+                      inactiveBrowser:browser_->CreateInactiveBrowser()
+                     incognitoBrowser:incognito_browser_.get()];
     coordinator_.animationsDisabledForTesting = YES;
 
     // TabGridCoordinator will make its view controller the root, so stash the

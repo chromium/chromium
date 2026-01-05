@@ -7,8 +7,8 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@protocol ApplicationCommands;
 @class GoogleServicesSettingsCoordinator;
+@protocol SceneCommands;
 
 // Delegate for GoogleServicesSettingsCoordinator.
 @protocol GoogleServicesSettingsCoordinatorDelegate

@@ -66,8 +66,8 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
@@ -860,8 +860,8 @@ NSString* GetIdForWebState(web::WebState* web_state) {
 + (void)openSettingsInWindowWithNumber:(int)windowNumber {
   SceneState* scene = [self sceneStateWithNumber:windowNumber];
   Browser* browser = scene.browserProviderInterface.mainBrowserProvider.browser;
-  id<ApplicationCommands> handler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  id<SceneCommands> handler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
   [handler showSettingsFromViewController:nil];
 }
 

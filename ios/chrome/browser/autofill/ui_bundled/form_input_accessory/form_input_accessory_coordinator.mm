@@ -68,10 +68,10 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -528,9 +528,9 @@ const base::Feature* FetchIPHFeatureFromEnum(
         autofill::payments::GetManageInstrumentUrl(card.instrument_id());
     OpenNewTabCommand* command =
         [OpenNewTabCommand commandWithURLFromChrome:paymentsURL];
-    id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ApplicationCommands);
-    [applicationHandler openURLInNewTab:command];
+    id<SceneCommands> sceneHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+    [sceneHandler openURLInNewTab:command];
 
     return;
   }
@@ -550,32 +550,32 @@ const base::Feature* FetchIPHFeatureFromEnum(
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSupportForHomeAndWork)) {
     autofill::AutofillProfile::RecordType type = address.record_type();
-    id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ApplicationCommands);
+    id<SceneCommands> sceneHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
     if (type == autofill::AutofillProfile::RecordType::kAccountHome) {
       OpenNewTabCommand* command = [OpenNewTabCommand
           commandWithURLFromChrome:GURL(kGoogleMyAccountHomeAddressURL)];
-      [applicationHandler openURLInNewTab:command];
+      [sceneHandler openURLInNewTab:command];
       return;
     }
 
     if (type == autofill::AutofillProfile::RecordType::kAccountWork) {
       OpenNewTabCommand* command = [OpenNewTabCommand
           commandWithURLFromChrome:GURL(kGoogleMyAccountWorkAddressURL)];
-      [applicationHandler openURLInNewTab:command];
+      [sceneHandler openURLInNewTab:command];
       return;
     }
   }
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSupportForNameAndEmail)) {
-    id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ApplicationCommands);
+    id<SceneCommands> sceneHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
     if (address.record_type() ==
         autofill::AutofillProfile::RecordType::kAccountNameEmail) {
       OpenNewTabCommand* command = [OpenNewTabCommand
           commandWithURLFromChrome:GURL(kGoogleAccountNameEmailAddressEditURL)];
-      [applicationHandler openURLInNewTab:command];
+      [sceneHandler openURLInNewTab:command];
       return;
     }
   }
@@ -633,9 +633,9 @@ const base::Feature* FetchIPHFeatureFromEnum(
       commandWithURLFromChrome:
           GURL(plus_addresses::features::kPlusAddressManagementUrl.Get())];
 
-  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [applicationHandler openURLInNewTab:command];
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler openURLInNewTab:command];
 }
 
 #pragma mark - ExpandedManualFillCoordinatorDelegate

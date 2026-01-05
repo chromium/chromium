@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 
 class Browser;

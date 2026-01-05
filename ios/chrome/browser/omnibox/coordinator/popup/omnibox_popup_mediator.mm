@@ -36,9 +36,9 @@
 #import "ios/chrome/browser/omnibox/ui/popup/carousel/carousel_item_menu_provider.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_consumer.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_presenter.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
@@ -503,7 +503,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
         UIAccessibilityCustomAction*) {
       NSUserActivity* activity =
           ActivityToLoadURL(WindowActivityContentSuggestionsOrigin, copyURL);
-      [weakSelf.applicationCommandsHandler openNewWindowWithActivity:activity];
+      [weakSelf.sceneHandler openNewWindowWithActivity:activity];
       return YES;
     };
     UIAccessibilityCustomAction* newWindowAction =
@@ -571,20 +571,20 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 /// `incognito`: open in incognito tab.
 - (void)openNewTabWithMostVisitedItem:(CarouselItem*)carouselItem
                             incognito:(BOOL)incognito {
-  DCHECK(self.applicationCommandsHandler);
+  DCHECK(self.sceneHandler);
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:carouselItem.URL.gurl
                                       inIncognito:incognito];
-  [self.applicationCommandsHandler openURLInNewTab:command];
+  [self.sceneHandler openURLInNewTab:command];
 }
 
 /// Opens suggestAction in a new tab.
 - (void)openNewTabWithSuggestAction:(SuggestAction*)suggestAction {
-  DCHECK(self.applicationCommandsHandler);
+  DCHECK(self.sceneHandler);
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:suggestAction.actionURI
                                       inIncognito:NO];
-  [self.applicationCommandsHandler openURLInNewTab:command];
+  [self.sceneHandler openURLInNewTab:command];
 }
 
 @end

@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -60,7 +60,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 @implementation SettingsRootTableViewController
 
-@synthesize applicationHandler = _applicationHandler;
+@synthesize sceneHandler = _sceneHandler;
 @synthesize browserHandler = _browserHandler;
 @synthesize settingsHandler = _settingsHandler;
 @synthesize snackbarHandler = _snackbarHandler;
@@ -139,7 +139,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 - (void)configureHandlersForRootViewController:
     (id<SettingsRootViewControlling>)controller {
-  controller.applicationHandler = self.applicationHandler;
+  controller.sceneHandler = self.sceneHandler;
   controller.browserHandler = self.browserHandler;
   controller.settingsHandler = self.settingsHandler;
   controller.snackbarHandler = self.snackbarHandler;
@@ -285,10 +285,10 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
   // Subclass must have a valid dispatcher assigned.
-  DCHECK(self.applicationHandler);
+  DCHECK(self.sceneHandler);
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:URL.gurl];
-  [self.applicationHandler closePresentedViewsAndOpenURL:command];
+  [self.sceneHandler closePresentedViewsAndOpenURL:command];
 }
 
 #pragma mark - Private

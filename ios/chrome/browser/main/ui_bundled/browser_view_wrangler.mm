@@ -28,8 +28,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
@@ -39,7 +39,7 @@
   raw_ptr<ProfileIOS> _profile;
 
   __weak SceneState* _sceneState;
-  __weak id<ApplicationCommands> _applicationEndpoint;
+  __weak id<SceneCommands> _applicationEndpoint;
   __weak id<SettingsCommands> _settingsEndpoint;
 
   std::unique_ptr<Browser> _mainBrowser;
@@ -53,7 +53,7 @@
 
 - (instancetype)initWithProfile:(ProfileIOS*)profile
                      sceneState:(SceneState*)sceneState
-            applicationEndpoint:(id<ApplicationCommands>)applicationEndpoint
+            applicationEndpoint:(id<SceneCommands>)applicationEndpoint
                settingsEndpoint:(id<SettingsCommands>)settingsEndpoint {
   if ((self = [super init])) {
     _profile = profile;
@@ -281,7 +281,7 @@
                            forProtocol:@protocol(IncognitoReauthCommands)];
 
   [dispatcher startDispatchingToTarget:_applicationEndpoint
-                           forProtocol:@protocol(ApplicationCommands)];
+                           forProtocol:@protocol(SceneCommands)];
   [dispatcher startDispatchingToTarget:_settingsEndpoint
                            forProtocol:@protocol(SettingsCommands)];
 }

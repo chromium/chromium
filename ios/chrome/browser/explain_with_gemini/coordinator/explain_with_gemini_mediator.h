@@ -11,14 +11,14 @@
 #import "ios/chrome/browser/browser_container/model/edit_menu_builder.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 
-@protocol ApplicationCommands;
+@protocol SceneCommands;
 
 // Mediator that mediates between the browser container views and Explain
 // Gemini.
 @interface ExplainWithGeminiMediator : NSObject <EditMenuBuilder>
 
-// The handler for ApplicationCommands commands.
-@property(nonatomic, weak) id<ApplicationCommands> applicationCommandHandler;
+// The handler for SceneCommands commands.
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
 // Initializer for a mediator.
 - (instancetype)initWithIdentityManager:

@@ -46,7 +46,6 @@
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
@@ -54,6 +53,7 @@
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -200,8 +200,8 @@
   self.pasteDelegate.textInput = textInput;
 
   _keyboardMediator = [[OmniboxAssistiveKeyboardMediator alloc] init];
-  _keyboardMediator.applicationCommandsHandler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  _keyboardMediator.sceneHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
   _keyboardMediator.lensCommandsHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), LensCommands);
   _keyboardMediator.qrScannerCommandsHandler =
@@ -236,8 +236,7 @@
 
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
   OmniboxPedalAnnotator* annotator = [[OmniboxPedalAnnotator alloc] init];
-  annotator.applicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
+  annotator.sceneHandler = HandlerForProtocol(dispatcher, SceneCommands);
   annotator.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
   annotator.omniboxHandler = HandlerForProtocol(dispatcher, OmniboxCommands);
   annotator.quickDeleteHandler =

@@ -13,14 +13,15 @@
 #import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
-@protocol ApplicationCommands;
 @class BookmarksHomeViewController;
 class Browser;
+class GURL;
+@protocol SceneCommands;
+@protocol SnackbarCommands;
+
 namespace bookmarks {
 class BookmarkNode;
 }  // namespace bookmarks
-class GURL;
-@protocol SnackbarCommands;
 
 @protocol BookmarksHomeViewControllerDelegate
 // The view controller wants to be dismissed. If `urls` is not empty, then
@@ -52,8 +53,8 @@ class GURL;
 // cases.
 @property(nonatomic, weak) id<BookmarksHomeViewControllerDelegate> homeDelegate;
 
-// Handler for Application Commands.
-@property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
+// Handler for Scene Commands.
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
 // Handler for Snackbar Commands.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;

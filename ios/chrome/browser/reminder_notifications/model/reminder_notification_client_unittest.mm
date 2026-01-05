@@ -27,9 +27,9 @@
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -250,7 +250,7 @@ TEST_F(ReminderNotificationClientTest, NoScheduleWhenNotPermitted) {
 TEST_F(ReminderNotificationClientTest, HandleInteractionOpensUrlInNewTab) {
   GURL url_to_open("https://www.chromium.org/reminders");
 
-  id mock_application_handler = MockHandler(@protocol(ApplicationCommands));
+  id mock_application_handler = MockHandler(@protocol(SceneCommands));
 
   OCMExpect([mock_application_handler
       openURLInNewTab:[OCMArg checkWithBlock:^BOOL(OpenNewTabCommand* command) {

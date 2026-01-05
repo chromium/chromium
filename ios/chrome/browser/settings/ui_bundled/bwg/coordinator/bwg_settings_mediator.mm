@@ -11,8 +11,8 @@
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_settings_consumer.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
@@ -107,7 +107,7 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
 
 - (void)openNewTabWithURL:(const GURL&)URL {
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
-  [self.applicationHandler openURLInNewTab:command];
+  [self.sceneHandler openURLInNewTab:command];
 }
 
 - (void)setPreciseLocationPref:(BOOL)value {

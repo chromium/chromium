@@ -8,10 +8,10 @@
 #import "ios/chrome/browser/enterprise/model/idle/idle_service.h"
 #import "ios/chrome/browser/shared/coordinator/scene/observing_scene_state_agent.h"
 
-@protocol ApplicationCommands;
+class Browser;
+@protocol SceneCommands;
 @protocol SceneUIProvider;
 @protocol SnackbarCommands;
-class Browser;
 
 // Scene agent that acts as an IdleTimeoutObserver to update the UI when the
 // browser times out and when the idle timeout actions run. See
@@ -25,12 +25,12 @@ class Browser;
 // with no scenes left in foreground.
 @interface IdleTimeoutPolicySceneAgent : ObservingSceneAgent
 
-- (instancetype)
-       initWithSceneUIProvider:(id<SceneUIProvider>)sceneUIProvider
-    applicationCommandsHandler:(id<ApplicationCommands>)applicationHandler
-       snackbarCommandsHandler:(id<SnackbarCommands>)snackbarHandler
-                   idleService:(enterprise_idle::IdleService*)idleService
-                   mainBrowser:(Browser*)mainBrowser;
+- (instancetype)initWithSceneUIProvider:(id<SceneUIProvider>)sceneUIProvider
+                           sceneHandler:(id<SceneCommands>)sceneHandler
+                snackbarCommandsHandler:(id<SnackbarCommands>)snackbarHandler
+                            idleService:
+                                (enterprise_idle::IdleService*)idleService
+                            mainBrowser:(Browser*)mainBrowser;
 
 @end
 

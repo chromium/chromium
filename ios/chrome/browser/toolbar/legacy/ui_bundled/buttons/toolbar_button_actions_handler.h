@@ -7,10 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol ApplicationCommands;
 @protocol ActivityServiceCommands;
-@protocol PopupMenuCommands;
 @protocol OmniboxCommands;
+@protocol PopupMenuCommands;
+@protocol SceneCommands;
 
 class TabBasedIPHBrowserAgent;
 class WebNavigationBrowserAgent;
@@ -19,7 +19,7 @@ class WebNavigationBrowserAgent;
 @interface ToolbarButtonActionsHandler : NSObject
 
 // Action Handlers
-@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 @property(nonatomic, weak) id<ActivityServiceCommands> activityHandler;
 @property(nonatomic, weak) id<PopupMenuCommands> menuHandler;
 @property(nonatomic, weak) id<OmniboxCommands> omniboxHandler;

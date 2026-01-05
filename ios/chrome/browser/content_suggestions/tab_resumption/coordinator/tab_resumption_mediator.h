@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol ApplicationCommands;
 class AuthenticationService;
 class Browser;
 @class ContentSuggestionsMetricsRecorder;
@@ -17,6 +16,7 @@ class OptimizationGuideService;
 class PrefService;
 @protocol PriceTrackedItemsCommands;
 class PushNotificationService;
+@protocol SceneCommands;
 @protocol SnackbarCommands;
 @class TabResumptionItem;
 @protocol TabResumptionMediatorDelegate;
@@ -51,7 +51,7 @@ class IdentityManager;
 
 // Dispatcher.
 @property(nonatomic, weak)
-    id<ApplicationCommands, PriceTrackedItemsCommands, SnackbarCommands>
+    id<SceneCommands, PriceTrackedItemsCommands, SnackbarCommands>
         dispatcher;
 
 // Default initializer.

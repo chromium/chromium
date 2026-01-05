@@ -10,9 +10,9 @@
 #import "ios/chrome/app/application_mode.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 
-@protocol ApplicationCommands;
 class Browser;
 class ProfileIOS;
+@protocol SceneCommands;
 @class SceneState;
 @protocol SettingsCommands;
 @class WrangledBrowser;
@@ -36,7 +36,7 @@ class ProfileIOS;
 // dispatched to.
 - (instancetype)initWithProfile:(ProfileIOS*)profile
                      sceneState:(SceneState*)sceneState
-            applicationEndpoint:(id<ApplicationCommands>)applicationEndpoint
+            applicationEndpoint:(id<SceneCommands>)applicationEndpoint
                settingsEndpoint:(id<SettingsCommands>)settingsEndpoint
     NS_DESIGNATED_INITIALIZER;
 

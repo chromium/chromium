@@ -43,8 +43,8 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
@@ -190,8 +190,8 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
   self.viewController.handler = self;
   self.viewController.delegate = self.mediator;
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  self.viewController.applicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
+  self.viewController.sceneHandler =
+      HandlerForProtocol(dispatcher, SceneCommands);
   self.viewController.snackbarHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
   if (self.openInEditMode) {

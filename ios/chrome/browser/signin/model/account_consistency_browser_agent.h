@@ -11,13 +11,13 @@
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 
-@protocol ApplicationCommands;
-@protocol SettingsCommands;
 class Browser;
+@class ManageAccountsDelegateBridge;
+@protocol SceneCommands;
 @class SceneState;
+@protocol SettingsCommands;
 @class SigninCoordinator;
 @protocol SystemIdentity;
-@class ManageAccountsDelegateBridge;
 @class UIViewController;
 
 // A browser agent that tracks the addition and removal of webstates, registers
@@ -66,7 +66,7 @@ class AccountConsistencyBrowserAgent
   void ShowAccountMenu(const GURL& url);
 
   UIViewController* base_view_controller_;
-  id<ApplicationCommands> application_handler_;
+  id<SceneCommands> application_handler_;
   id<SettingsCommands> settings_handler_;
   SigninCoordinator* add_account_coordinator_;
 

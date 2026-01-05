@@ -102,8 +102,8 @@
   _viewController.handler = _sharedViewController;
   _viewController.snackbarCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);
-  _viewController.applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  _viewController.sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
 
   if (self.openInEditMode) {
     [_viewController editButtonPressed];

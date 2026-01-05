@@ -29,8 +29,8 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_controller+Testing.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_line_text_edit_item.h"
@@ -576,14 +576,14 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestMutedCompromisedPassword) {
 TEST_F(PasswordDetailsTableViewControllerTest, TestChangePasswordOnWebsite) {
   SetPassword(kExampleCom, kUsername, kPassword, kNote,
               /*is_compromised=*/true);
-  id applicationCommandsMock = OCMProtocolMock(@protocol(ApplicationCommands));
-  passwords_controller().applicationHandler = applicationCommandsMock;
+  id sceneHandlerMock = OCMProtocolMock(@protocol(SceneCommands));
+  passwords_controller().sceneHandler = sceneHandlerMock;
 
   TableViewModel* model = passwords_controller().tableViewModel;
   NSIndexPath* indexPath =
       [model indexPathForItemType:PasswordDetailsItemTypeChangePasswordButton];
 
-  OCMExpect([applicationCommandsMock
+  OCMExpect([sceneHandlerMock
       closePresentedViewsAndOpenURL:[OCMArg checkWithBlock:^BOOL(id value) {
         // This block verifies that the closePresentedViewsAndOpenURL
         // function is called with a URL argument which matches the initial URL
@@ -595,7 +595,7 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestChangePasswordOnWebsite) {
       }]]);
   [passwords_controller() tableView:passwords_controller().tableView
             didSelectRowAtIndexPath:indexPath];
-  EXPECT_OCMOCK_VERIFY(applicationCommandsMock);
+  EXPECT_OCMOCK_VERIFY(sceneHandlerMock);
 }
 
 // Tests the “Dismiss Warning” button.

@@ -56,7 +56,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -69,6 +68,7 @@
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
@@ -249,10 +249,10 @@ class BrowserViewControllerTest : public BlockCleanupTest {
                              forProtocol:@protocol(BWGCommands)];
 
     // Set up Applicationhander and SettingsHandler mocks.
-    mock_application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
+    mock_application_handler_ = OCMProtocolMock(@protocol(SceneCommands));
     id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
     [dispatcher startDispatchingToTarget:mock_application_handler_
-                             forProtocol:@protocol(ApplicationCommands)];
+                             forProtocol:@protocol(SceneCommands)];
     [dispatcher startDispatchingToTarget:mock_settings_handler
                              forProtocol:@protocol(SettingsCommands)];
 
@@ -329,7 +329,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         LayoutGuideCenterForBrowser(browser_.get());
     dependencies.webStateList = browser_->GetWebStateList()->AsWeakPtr();
     dependencies.safeAreaProvider = safe_area_provider_;
-    dependencies.applicationCommandsHandler = mock_application_handler_;
+    dependencies.sceneHandler = mock_application_handler_;
     dependencies.ntpCoordinator = NTPCoordinator_;
 
     bvc_ = [[BrowserViewController alloc]

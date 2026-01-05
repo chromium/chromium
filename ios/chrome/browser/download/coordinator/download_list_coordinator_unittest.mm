@@ -21,11 +21,11 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
 #import "ios/chrome/browser/shared/public/commands/download_record_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -164,11 +164,11 @@ TEST_F(DownloadListCoordinatorTest, StartCreatesAndPresentsDownloadListUI) {
 TEST_F(DownloadListCoordinatorTest, OpenFileWithDownloadRecordPDF) {
   [coordinator_ start];
 
-  // Create a mock ApplicationCommands handler
-  id mockApplicationCommands = OCMProtocolMock(@protocol(ApplicationCommands));
+  // Create a mock SceneCommands handler.
+  id mockSceneCommands = OCMProtocolMock(@protocol(SceneCommands));
   CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-  [dispatcher startDispatchingToTarget:mockApplicationCommands
-                           forProtocol:@protocol(ApplicationCommands)];
+  [dispatcher startDispatchingToTarget:mockSceneCommands
+                           forProtocol:@protocol(SceneCommands)];
 
   // Create a PDF file in the downloads directory for testing.
   base::FilePath downloads_directory;
@@ -184,7 +184,7 @@ TEST_F(DownloadListCoordinatorTest, OpenFileWithDownloadRecordPDF) {
   pdf_record.original_url = "https://example.com/document.pdf";
 
   // Set up detailed expectation for openURLInNewTab call.
-  OCMExpect([mockApplicationCommands
+  OCMExpect([mockSceneCommands
       openURLInNewTab:[OCMArg checkWithBlock:^BOOL(OpenNewTabCommand* command) {
         // Verify the command object properties match expected values.
         EXPECT_TRUE(command != nil);
@@ -216,7 +216,7 @@ TEST_F(DownloadListCoordinatorTest, OpenFileWithDownloadRecordPDF) {
   task_environment_.RunUntilIdle();
 
   // Verify all mock expectations were met.
-  [mockApplicationCommands verify];
+  [mockSceneCommands verify];
 
   // Clean up the test file.
   base::DeleteFile(pdf_file_path);
@@ -240,14 +240,14 @@ TEST_F(DownloadListCoordinatorTest, OpenFileWithDownloadRecordNonPDF) {
   image_record.mime_type = "image/jpeg";
   image_record.original_url = "https://example.com/test.jpg";
 
-  // Create a mock ApplicationCommands handler.
-  id mockApplicationCommands = OCMProtocolMock(@protocol(ApplicationCommands));
+  // Create a mock SceneCommands handler.
+  id mockSceneCommands = OCMProtocolMock(@protocol(SceneCommands));
   CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-  [dispatcher startDispatchingToTarget:mockApplicationCommands
-                           forProtocol:@protocol(ApplicationCommands)];
+  [dispatcher startDispatchingToTarget:mockSceneCommands
+                           forProtocol:@protocol(SceneCommands)];
 
   // For non-PDF files, openURLInNewTab should NOT be called.
-  [[mockApplicationCommands reject] openURLInNewTab:[OCMArg any]];
+  [[mockSceneCommands reject] openURLInNewTab:[OCMArg any]];
 
   // Call the method under test through command dispatcher.
   dispatcher = browser_->GetCommandDispatcher();
@@ -261,7 +261,7 @@ TEST_F(DownloadListCoordinatorTest, OpenFileWithDownloadRecordNonPDF) {
   task_environment_.RunUntilIdle();
 
   // Verify all mock expectations were met.
-  [mockApplicationCommands verify];
+  [mockSceneCommands verify];
 
   // Clean up the test file.
   base::DeleteFile(image_file_path);
@@ -279,14 +279,14 @@ TEST_F(DownloadListCoordinatorTest, OpenFileWithDownloadRecordFileNotExists) {
   missing_record.mime_type = kAdobePortableDocumentFormatMimeType;
   missing_record.original_url = "https://example.com/nonexistent.pdf";
 
-  // Create a mock ApplicationCommands handler.
-  id mockApplicationCommands = OCMProtocolMock(@protocol(ApplicationCommands));
+  // Create a mock SceneCommands handler.
+  id mockSceneCommands = OCMProtocolMock(@protocol(SceneCommands));
   CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-  [dispatcher startDispatchingToTarget:mockApplicationCommands
-                           forProtocol:@protocol(ApplicationCommands)];
+  [dispatcher startDispatchingToTarget:mockSceneCommands
+                           forProtocol:@protocol(SceneCommands)];
 
   // For non-existent files, openURLInNewTab should NOT be called.
-  [[mockApplicationCommands reject] openURLInNewTab:[OCMArg any]];
+  [[mockSceneCommands reject] openURLInNewTab:[OCMArg any]];
 
   // Call the method under test through command dispatcher.
   dispatcher = browser_->GetCommandDispatcher();
@@ -300,5 +300,5 @@ TEST_F(DownloadListCoordinatorTest, OpenFileWithDownloadRecordFileNotExists) {
   task_environment_.RunUntilIdle();
 
   // Verify all mock expectations were met.
-  [mockApplicationCommands verify];
+  [mockSceneCommands verify];
 }

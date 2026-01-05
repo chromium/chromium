@@ -18,9 +18,9 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
@@ -63,8 +63,8 @@ enum class ReauthenticationState {
 // Module used for requesting Local Authentication.
 @property(nonatomic, strong) id<ReauthenticationProtocol> reauthModule;
 
-// Application Commands dispatcher for closing settings ui and opening tabs.
-@property(nonatomic, strong) id<ApplicationCommands> dispatcher;
+// Scene Commands dispatcher for closing settings ui and opening tabs.
+@property(nonatomic, strong) id<SceneCommands> dispatcher;
 
 // The view controller presented by the coordinator.
 @property(nonatomic, strong)
@@ -106,7 +106,7 @@ enum class ReauthenticationState {
                         : password_manager::BuildReauthenticationModule();
     _baseNavigationController = navigationController;
     _dispatcher =
-        static_cast<id<ApplicationCommands>>(browser->GetCommandDispatcher());
+        static_cast<id<SceneCommands>>(browser->GetCommandDispatcher());
     _reauthenticationState =
         authOnStart ? ReauthenticationState::kReauthenticationRequired
                     : ReauthenticationState::kReauthenticationIdle;

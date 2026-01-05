@@ -220,7 +220,6 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_share_url_command.h"
 #import "ios/chrome/browser/shared/public/commands/add_contacts_commands.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/auto_deletion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -263,6 +262,7 @@
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/share_highlight_command.h"
 #import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_command.h"
@@ -1299,8 +1299,8 @@ const char kChromeAppStoreUrl[] =
   ProfileIOS* profile = browser->GetProfile();
 
   _keyCommandsProvider = [[KeyCommandsProvider alloc] initWithBrowser:browser];
-  _keyCommandsProvider.applicationHandler =
-      HandlerForProtocol(_dispatcher, ApplicationCommands);
+  _keyCommandsProvider.sceneHandler =
+      HandlerForProtocol(_dispatcher, SceneCommands);
   _keyCommandsProvider.findInPageHandler =
       HandlerForProtocol(_dispatcher, FindInPageCommands);
   _keyCommandsProvider.browserCoordinatorHandler =
@@ -1425,8 +1425,8 @@ const char kChromeAppStoreUrl[] =
       HandlerForProtocol(_dispatcher, HelpCommands);
   _viewControllerDependencies.popupMenuCommandsHandler =
       HandlerForProtocol(_dispatcher, PopupMenuCommands);
-  _viewControllerDependencies.applicationCommandsHandler =
-      HandlerForProtocol(_dispatcher, ApplicationCommands);
+  _viewControllerDependencies.sceneHandler =
+      HandlerForProtocol(_dispatcher, SceneCommands);
   _viewControllerDependencies.findInPageCommandsHandler =
       HandlerForProtocol(_dispatcher, FindInPageCommands);
   _viewControllerDependencies.isOffTheRecord = profile->IsOffTheRecord();
@@ -3202,8 +3202,8 @@ const char kChromeAppStoreUrl[] =
 
 - (void)showPromo {
   if (!self.promosManagerCoordinator) {
-    id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ApplicationCommands);
+    id<SceneCommands> sceneHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
     id<CredentialProviderPromoCommands> credentialProviderPromoHandler =
         HandlerForProtocol(self.browser->GetCommandDispatcher(),
                            CredentialProviderPromoCommands);
@@ -3213,7 +3213,7 @@ const char kChromeAppStoreUrl[] =
     self.promosManagerCoordinator = [[PromosManagerCoordinator alloc]
             initWithBaseViewController:self.viewController
                                browser:self.browser
-                    applicationHandler:applicationHandler
+                          sceneHandler:sceneHandler
         credentialProviderPromoHandler:credentialProviderPromoHandler
                    dockingPromoHandler:dockingPromoHandler];
 
@@ -3293,7 +3293,7 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)showFullscreenSigninPromo {
-  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+  [HandlerForProtocol(self.dispatcher, SceneCommands)
       showFullscreenSigninPromoWithCompletion:^(SigninCoordinator* coordinator,
                                                 SigninCoordinatorResult result,
                                                 id<SystemIdentity>) {
@@ -4371,7 +4371,7 @@ const char kChromeAppStoreUrl[] =
 
 - (void)presentLensIconBubble {
   __weak NewTabPageCoordinator* weakNTPCoordinator = _NTPCoordinator;
-  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+  [HandlerForProtocol(self.dispatcher, SceneCommands)
       prepareToPresentModalWithSnackbarDismissal:YES
                                       completion:^{
                                         [weakNTPCoordinator
@@ -4477,11 +4477,10 @@ const char kChromeAppStoreUrl[] =
 #pragma mark - OverscrollActionsControllerDelegate methods.
 
 - (void)overscrollActionNewTab:(OverscrollActionsController*)controller {
-  id<ApplicationCommands> applicationCommandsHandler =
-      HandlerForProtocol(_dispatcher, ApplicationCommands);
-  [applicationCommandsHandler
-      openURLInNewTab:[OpenNewTabCommand
-                          commandWithIncognito:self.isOffTheRecord]];
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(_dispatcher, SceneCommands);
+  [sceneHandler openURLInNewTab:[OpenNewTabCommand
+                                    commandWithIncognito:self.isOffTheRecord]];
 }
 
 - (void)overscrollActionCloseTab:(OverscrollActionsController*)controller {
@@ -4747,11 +4746,10 @@ const char kChromeAppStoreUrl[] =
     [weakSelf clearPresentedStateWithCompletion:nil dismissOmnibox:YES];
     // The protocol might not have a valid target when the shutdown of Quick
     // Delete is happening at the same time the UI is being shutdown.
-    if ([weakDispatcher
-            dispatchingForProtocol:@protocol(ApplicationCommands)]) {
-      id<ApplicationCommands> applicationCommandsHandler =
-          HandlerForProtocol(weakDispatcher, ApplicationCommands);
-      [applicationCommandsHandler dismissModalDialogsWithCompletion:nil];
+    if ([weakDispatcher dispatchingForProtocol:@protocol(SceneCommands)]) {
+      id<SceneCommands> sceneHandler =
+          HandlerForProtocol(weakDispatcher, SceneCommands);
+      [sceneHandler dismissModalDialogsWithCompletion:nil];
     }
   };
   [self.viewController dismissViewControllerAnimated:YES

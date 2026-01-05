@@ -20,10 +20,10 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
@@ -39,7 +39,7 @@ AccountConsistencyBrowserAgent::AccountConsistencyBrowserAgent(
     : BrowserUserData(browser), base_view_controller_(base_view_controller) {
   StartObserving(browser, Policy::kOnlyRealized);
   application_handler_ =
-      HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
+      HandlerForProtocol(browser_->GetCommandDispatcher(), SceneCommands);
   settings_handler_ =
       HandlerForProtocol(browser_->GetCommandDispatcher(), SettingsCommands);
 }

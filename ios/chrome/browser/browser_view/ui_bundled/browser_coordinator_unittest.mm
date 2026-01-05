@@ -41,13 +41,13 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
@@ -152,21 +152,20 @@ class BrowserCoordinatorTest : public PlatformTest {
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
 
-    // Set up ApplicationCommands mock. Because ApplicationCommands conforms
+    // Set up SceneCommands mock. Because SceneCommands conforms
     // to SettingsCommands, that needs to be mocked and dispatched
     // as well.
-    id mockApplicationCommandHandler =
-        OCMProtocolMock(@protocol(ApplicationCommands));
+    id mockSceneHandler = OCMProtocolMock(@protocol(SceneCommands));
     id mockSettingsCommandHandler =
         OCMProtocolMock(@protocol(SettingsCommands));
-    [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
-                             forProtocol:@protocol(ApplicationCommands)];
+    [dispatcher startDispatchingToTarget:mockSceneHandler
+                             forProtocol:@protocol(SceneCommands)];
     [dispatcher startDispatchingToTarget:mockSettingsCommandHandler
                              forProtocol:@protocol(SettingsCommands)];
 
     IncognitoReauthSceneAgent* reauthAgent = [[IncognitoReauthSceneAgent alloc]
-              initWithReauthModule:[[ReauthenticationModule alloc] init]
-        applicationCommandsHandler:mockApplicationCommandHandler];
+        initWithReauthModule:[[ReauthenticationModule alloc] init]
+                sceneHandler:mockSceneHandler];
     [scene_state_ addAgent:reauthAgent];
     [dispatcher startDispatchingToTarget:reauthAgent
                              forProtocol:@protocol(IncognitoReauthCommands)];

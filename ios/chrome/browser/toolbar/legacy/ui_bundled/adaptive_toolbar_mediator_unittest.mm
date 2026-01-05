@@ -30,11 +30,11 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/test/toolbar_test_navigation_manager.h"
@@ -129,11 +129,10 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
     strict_consumer_ = OCMStrictProtocolMock(@protocol(ToolbarConsumer));
     SetUpWebStateList();
 
-    mock_application_commands_handler_ =
-        OCMStrictProtocolMock(@protocol(ApplicationCommands));
+    mock_scene_handler_ = OCMStrictProtocolMock(@protocol(SceneCommands));
     [test_browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_application_commands_handler_
-                     forProtocol:@protocol(ApplicationCommands)];
+        startDispatchingToTarget:mock_scene_handler_
+                     forProtocol:@protocol(SceneCommands)];
 
     mock_settings_commands_handler_ =
         OCMStrictProtocolMock(@protocol(SettingsCommands));
@@ -176,7 +175,7 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
 
     EXPECT_OCMOCK_VERIFY(consumer_);
     EXPECT_OCMOCK_VERIFY(strict_consumer_);
-    EXPECT_OCMOCK_VERIFY(mock_application_commands_handler_);
+    EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
     EXPECT_OCMOCK_VERIFY(mock_settings_commands_handler_);
     EXPECT_OCMOCK_VERIFY(mock_browser_coordinator_commands_handler_);
     EXPECT_OCMOCK_VERIFY(mock_qr_scanner_commands_handler_);
@@ -216,7 +215,7 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
   FakeWebStateListDelegate web_state_list_delegate_;
   id consumer_;
   id strict_consumer_;
-  id mock_application_commands_handler_;
+  id mock_scene_handler_;
   id mock_settings_commands_handler_;
   id mock_browser_coordinator_commands_handler_;
   id mock_qr_scanner_commands_handler_;

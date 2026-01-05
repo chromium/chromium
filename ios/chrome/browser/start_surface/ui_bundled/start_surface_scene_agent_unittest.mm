@@ -78,7 +78,7 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
     dispatcher_ = browser->GetCommandDispatcher();
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser);
     TabInsertionBrowserAgent::CreateForBrowser(browser);
-    application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
+    application_handler_ = OCMProtocolMock(@protocol(SceneCommands));
     [[NSUserDefaults standardUserDefaults] setObject:@14400
                                               forKey:@"HomeSurfaceDuration"];
   }
@@ -124,7 +124,7 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
   StartSurfaceSceneAgent* agent_;
   ScopedKeyWindow scoped_window_;
   base::HistogramTester histogram_tester_;
-  id<ApplicationCommands> application_handler_;
+  id<SceneCommands> application_handler_;
   id dispatcher_;
 
   // Returns the Browser for the SceneState.
@@ -467,7 +467,7 @@ TEST_F(StartSurfaceSceneAgentTest, ShowTabGroupInGridOnStart) {
       scene_state_, time_last_background);
 
   [dispatcher_ startDispatchingToTarget:application_handler_
-                            forProtocol:@protocol(ApplicationCommands)];
+                            forProtocol:@protocol(SceneCommands)];
 
   InsertNewWebState(0, GURL(kURL));
   WebStateList* web_state_list = GetWebStateList();
@@ -510,7 +510,7 @@ TEST_F(StartSurfaceSceneAgentTest,
           ->GetCommandDispatcher();
 
   [dispatcherIncognito startDispatchingToTarget:application_handler_
-                                    forProtocol:@protocol(ApplicationCommands)];
+                                    forProtocol:@protocol(SceneCommands)];
 
   InsertNewIncognitoWebState(0, GURL(kURL));
   WebStateList* web_state_list = GetIncognitoWebStateList();
@@ -546,7 +546,7 @@ TEST_F(StartSurfaceSceneAgentTest,
       scene_state_, time_last_background);
 
   [dispatcher_ startDispatchingToTarget:application_handler_
-                            forProtocol:@protocol(ApplicationCommands)];
+                            forProtocol:@protocol(SceneCommands)];
 
   InsertNewWebState(0, GURL(kURL));
   WebStateList* web_state_list = GetWebStateList();
@@ -582,7 +582,7 @@ TEST_F(StartSurfaceSceneAgentTest,
       scene_state_, time_last_background);
 
   [dispatcher_ startDispatchingToTarget:application_handler_
-                            forProtocol:@protocol(ApplicationCommands)];
+                            forProtocol:@protocol(SceneCommands)];
 
   InsertNewWebState(0, GURL(kURL));
   WebStateList* web_state_list = GetWebStateList();
@@ -621,7 +621,7 @@ TEST_F(StartSurfaceSceneAgentTest,
       scene_state_, time_last_background);
 
   [dispatcher_ startDispatchingToTarget:application_handler_
-                            forProtocol:@protocol(ApplicationCommands)];
+                            forProtocol:@protocol(SceneCommands)];
 
   InsertNewWebState(0, GURL(kURL));
   WebStateList* web_state_list = GetWebStateList();
@@ -657,7 +657,7 @@ TEST_F(StartSurfaceSceneAgentTest,
       scene_state_, time_last_background);
 
   [dispatcher_ startDispatchingToTarget:application_handler_
-                            forProtocol:@protocol(ApplicationCommands)];
+                            forProtocol:@protocol(SceneCommands)];
 
   InsertNewWebState(0, GURL(kURL));
   WebStateList* web_state_list = GetWebStateList();
@@ -692,7 +692,7 @@ TEST_F(StartSurfaceSceneAgentTest, OpenNTPAfterFourHours) {
       scene_state_, time_last_background);
 
   [dispatcher_ startDispatchingToTarget:application_handler_
-                            forProtocol:@protocol(ApplicationCommands)];
+                            forProtocol:@protocol(SceneCommands)];
 
   InsertNewWebState(0, GURL(kURL));
   WebStateList* web_state_list = GetWebStateList();
@@ -724,7 +724,7 @@ TEST_F(StartSurfaceSceneAgentTest, OpenNTPAfterFourHoursOutsideActiveGroup) {
       scene_state_, time_last_background);
 
   [dispatcher_ startDispatchingToTarget:application_handler_
-                            forProtocol:@protocol(ApplicationCommands)];
+                            forProtocol:@protocol(SceneCommands)];
 
   InsertNewWebState(0, GURL(kURL));
   WebStateList* web_state_list = GetWebStateList();

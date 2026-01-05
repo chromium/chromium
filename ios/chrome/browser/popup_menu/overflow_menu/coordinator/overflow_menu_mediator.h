@@ -25,14 +25,13 @@ class SyncService;
 }
 
 @protocol ActivityServiceCommands;
-@protocol ApplicationCommands;
 class AuthenticationService;
 @protocol BookmarksCommands;
 @protocol BrowserCoordinatorCommands;
 class BrowserPolicyConnectorIOS;
+@protocol BWGCommands;
 @protocol FindInPageCommands;
 @protocol HelpCommands;
-@protocol ReaderModeCommands;
 @protocol LensOverlayCommands;
 @protocol OverflowMenuCustomizationCommands;
 @class OverflowMenuOrderer;
@@ -43,18 +42,19 @@ class PrefService;
 @protocol PriceTrackedItemsCommands;
 class PromosManager;
 @protocol QuickDeleteCommands;
+@protocol ReaderModeCommands;
 class ReadingListBrowserAgent;
 class ReadingListModel;
 @protocol ReminderNotificationsCommands;
+@protocol SceneCommands;
 @protocol SettingsCommands;
 class TabBasedIPHBrowserAgent;
+@protocol TabGroupsCommands;
 class TemplateURLService;
 @protocol TextZoomCommands;
 class WebNavigationBrowserAgent;
 class WebStateList;
 @protocol WhatsNewCommands;
-@protocol BWGCommands;
-@protocol TabGroupsCommands;
 
 // Mediator for the overflow menu. This object is in charge of creating and
 // updating the items of the overflow menu.
@@ -70,7 +70,7 @@ class WebStateList;
 
 // Command Handlers.
 @property(nonatomic, weak) id<ActivityServiceCommands> activityServiceHandler;
-@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 @property(nonatomic, weak) id<SettingsCommands> settingsHandler;
 @property(nonatomic, weak) id<BookmarksCommands> bookmarksHandler;
 @property(nonatomic, weak) id<LensOverlayCommands> lensOverlayHandler;

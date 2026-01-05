@@ -46,12 +46,12 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -256,7 +256,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   }
 
   void SetupCommandHandlerMocks() {
-    application_handler_mock_ = OCMProtocolMock(@protocol(ApplicationCommands));
+    application_handler_mock_ = OCMProtocolMock(@protocol(SceneCommands));
     help_commands_handler_mock_ = OCMProtocolMock(@protocol(HelpCommands));
     omnibox_commands_handler_mock_ =
         OCMProtocolMock(@protocol(OmniboxCommands));
@@ -268,7 +268,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
         OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
     [browser_.get()->GetCommandDispatcher()
         startDispatchingToTarget:application_handler_mock_
-                     forProtocol:@protocol(ApplicationCommands)];
+                     forProtocol:@protocol(SceneCommands)];
     [browser_.get()->GetCommandDispatcher()
         startDispatchingToTarget:help_commands_handler_mock_
                      forProtocol:@protocol(HelpCommands)];

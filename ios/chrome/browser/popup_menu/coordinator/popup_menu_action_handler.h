@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/popup_menu/public/popup_menu_table_view_controller_delegate.h"
 
-@protocol ApplicationCommands;
 @protocol BookmarksCommands;
 @protocol BrowserCommands;
 @protocol BrowserCoordinatorCommands;
@@ -21,6 +20,7 @@
 @protocol PopupMenuCommands;
 @protocol PriceTrackedItemsCommands;
 @protocol QRScannerCommands;
+@protocol SceneCommands;
 @protocol TextZoomCommands;
 class WebNavigationBrowserAgent;
 
@@ -35,11 +35,11 @@ class WebNavigationBrowserAgent;
 @property(nonatomic, weak) id<PopupMenuActionHandlerDelegate> delegate;
 
 // Dispatcher.
-@property(nonatomic, weak) id<ApplicationCommands,
-                              BrowserCommands,
+@property(nonatomic, weak) id<BrowserCommands,
                               FindInPageCommands,
                               LoadQueryCommands,
                               PriceTrackedItemsCommands,
+                              SceneCommands,
                               TextZoomCommands>
     dispatcher;
 

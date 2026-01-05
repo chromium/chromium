@@ -29,10 +29,10 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
@@ -230,8 +230,8 @@ const CGFloat kPromoMaxImpressionCount = 3;
                BWGService:BwgServiceFactory::GetForProfile(self.profile)
           BWGBrowserAgent:BwgBrowserAgent::FromBrowser(self.browser)
                   tracker:_tracker];
-  _mediator.applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  _mediator.sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
 
   _mediator.delegate = self;
 

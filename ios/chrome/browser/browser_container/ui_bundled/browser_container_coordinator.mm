@@ -31,9 +31,9 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -133,10 +133,10 @@
       [[SearchWithMediator alloc] initWithTemplateURLService:templateURLService
                                                    incognito:incognito];
 
-  id<ApplicationCommands> applicationCommandsHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(dispatcher, SceneCommands);
 
-  _searchWithMediator.applicationCommandHandler = applicationCommandsHandler;
+  _searchWithMediator.sceneHandler = sceneHandler;
   _browserEditMenuHandler.searchWithDelegate = _searchWithMediator;
 
   _dataControlsEditMenuBuilder = [[DataControlsEditMenuBuilder alloc] init];
@@ -150,8 +150,7 @@
                     authService:AuthenticationServiceFactory::GetForProfile(
                                     profile)];
 
-    _explainWithGeminiMediator.applicationCommandHandler =
-        applicationCommandsHandler;
+    _explainWithGeminiMediator.sceneHandler = sceneHandler;
     _browserEditMenuHandler.explainWithGeminiDelegate =
         _explainWithGeminiMediator;
   }

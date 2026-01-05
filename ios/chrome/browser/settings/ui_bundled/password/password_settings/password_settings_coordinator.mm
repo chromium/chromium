@@ -42,9 +42,9 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -151,7 +151,7 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
   PasswordSettingsMediator* _mediator;
 
   // Command dispatcher.
-  __weak id<ApplicationCommands> _dispatcher;
+  __weak id<SceneCommands> _dispatcher;
 
   // Module handling reauthentication before accessing sensitive data.
   ReauthenticationModule* _reauthModule;
@@ -224,8 +224,8 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
                                             GetForProfile(profile)
                                identity:_identity];
 
-  _dispatcher = static_cast<id<ApplicationCommands>>(
-      self.browser->GetCommandDispatcher());
+  _dispatcher =
+      static_cast<id<SceneCommands>>(self.browser->GetCommandDispatcher());
 
   _passwordSettingsViewController =
       [[PasswordSettingsViewController alloc] init];

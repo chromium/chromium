@@ -12,11 +12,11 @@
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "url/gurl.h"
@@ -47,11 +47,11 @@
 
 - (void)tabGridTouchDown {
   [IntentDonationHelper donateIntent:IntentType::kOpenTabGrid];
-  [self.applicationHandler prepareTabSwitcher];
+  [self.sceneHandler prepareTabSwitcher];
 }
 
 - (void)tabGridTouchUp {
-  [self.applicationHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
+  [self.sceneHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
 }
 
 - (void)toolsMenuAction {
@@ -77,7 +77,7 @@
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithIncognito:self.incognito
                                   originPoint:center];
-  [self.applicationHandler openURLInNewTab:command];
+  [self.sceneHandler openURLInNewTab:command];
 
   [IntentDonationHelper donateIntent:IntentType::kOpenNewTab];
 }

@@ -72,8 +72,8 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/elements/home_waiting_view.h"
@@ -1862,7 +1862,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
       [[BookmarksHomeViewController alloc] initWithBrowser:_browser.get()];
   controller.displayedFolderNode = displayedFolderNode;
   controller.homeDelegate = self.homeDelegate;
-  controller.applicationCommandsHandler = self.applicationCommandsHandler;
+  controller.sceneHandler = self.sceneHandler;
   controller.snackbarCommandsHandler = self.snackbarCommandsHandler;
 
   return controller;
@@ -2488,7 +2488,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     titleString = GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW);
     auto action = ^{
       [weakSelf dismissActionSheetCoordinator];
-      [weakSelf.applicationCommandsHandler
+      [weakSelf.sceneHandler
           openNewWindowWithActivity:ActivityToLoadURL(
                                         WindowActivityBookmarksOrigin,
                                         nodeURL)];

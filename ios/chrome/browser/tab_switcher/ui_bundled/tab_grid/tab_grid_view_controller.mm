@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"

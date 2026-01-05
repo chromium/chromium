@@ -37,7 +37,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/notifications/notifications_settings_observer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"

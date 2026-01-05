@@ -23,10 +23,10 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -72,15 +72,14 @@ class GeminiCoordinatorTest : public PlatformTest {
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     mock_bwg_command_handler_ = OCMProtocolMock(@protocol(BWGCommands));
     mock_help_command_handler_ = OCMProtocolMock(@protocol(HelpCommands));
-    id mock_application_commands_handler =
-        OCMProtocolMock(@protocol(ApplicationCommands));
+    id mock_scene_handler = OCMProtocolMock(@protocol(SceneCommands));
 
     [dispatcher startDispatchingToTarget:mock_bwg_command_handler_
                              forProtocol:@protocol(BWGCommands)];
     [dispatcher startDispatchingToTarget:mock_help_command_handler_
                              forProtocol:@protocol(HelpCommands)];
-    [dispatcher startDispatchingToTarget:mock_application_commands_handler
-                             forProtocol:@protocol(ApplicationCommands)];
+    [dispatcher startDispatchingToTarget:mock_scene_handler
+                             forProtocol:@protocol(SceneCommands)];
   }
 
   void StartCoordinatorWithEntryPoint(gemini::EntryPoint entryPoint) {

@@ -15,10 +15,10 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -54,11 +54,10 @@ class AccountConsistencyBrowserAgentTestBase : public PlatformTest {
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
-    application_commands_mock_ =
-        OCMStrictProtocolMock(@protocol(ApplicationCommands));
+    mock_scene_handler_ = OCMStrictProtocolMock(@protocol(SceneCommands));
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:application_commands_mock_
-                     forProtocol:@protocol(ApplicationCommands)];
+        startDispatchingToTarget:mock_scene_handler_
+                     forProtocol:@protocol(SceneCommands)];
     settings_commands_mock_ =
         OCMStrictProtocolMock(@protocol(SettingsCommands));
     [browser_->GetCommandDispatcher()
@@ -84,7 +83,7 @@ class AccountConsistencyBrowserAgentTestBase : public PlatformTest {
   }
 
   void TearDown() override {
-    EXPECT_OCMOCK_VERIFY((id)application_commands_mock_);
+    EXPECT_OCMOCK_VERIFY((id)mock_scene_handler_);
     EXPECT_OCMOCK_VERIFY((id)settings_commands_mock_);
     EXPECT_OCMOCK_VERIFY((id)browser_coordinator_commands_mock_);
     EXPECT_OCMOCK_VERIFY((id)base_view_controller_mock_);
@@ -111,7 +110,7 @@ class AccountConsistencyBrowserAgentTestBase : public PlatformTest {
   raw_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   raw_ptr<AccountConsistencyBrowserAgent> agent_;
-  id<ApplicationCommands> application_commands_mock_;
+  id<SceneCommands> mock_scene_handler_;
   id<SettingsCommands> settings_commands_mock_;
   id<BrowserCoordinatorCommands> browser_coordinator_commands_mock_;
   UIViewController* base_view_controller_mock_;
@@ -137,7 +136,7 @@ class AccountConsistencyBrowserAgentWithSeparateProfilesTest
 // Tests the command sent by OnGoIncognito() when there is no URL.
 TEST_P(AccountConsistencyBrowserAgentTest, OnGoIncognitoWithNoURL) {
   __block OpenNewTabCommand* received_command = nil;
-  OCMExpect([application_commands_mock_
+  OCMExpect([mock_scene_handler_
       openURLInNewTab:AssignValueToVariable(received_command)]);
   agent_->OnGoIncognito(GURL());
   EXPECT_NE(received_command, nil);
@@ -151,7 +150,7 @@ TEST_P(AccountConsistencyBrowserAgentTest, OnGoIncognitoWithURL) {
   // This URL is not opened.
   GURL url("http://www.example.com");
   __block OpenNewTabCommand* received_command = nil;
-  OCMExpect([application_commands_mock_
+  OCMExpect([mock_scene_handler_
       openURLInNewTab:AssignValueToVariable(received_command)]);
   agent_->OnGoIncognito(url);
   EXPECT_NE(received_command, nil);
@@ -167,8 +166,8 @@ TEST_P(AccountConsistencyBrowserAgentTest, OnAddAccountWithPresentedView) {
   OCMStub([base_view_controller_mock_ presentedViewController])
       .andReturn([[UIViewController alloc] init]);
   agent_->OnAddAccount(GURL(), "");
-  // Expect [application_commands_mock_ showSignin:baseViewController:] to not
-  // be called. This is ensured by TearDown because application_commands_mock_
+  // Expect [mock_scene_handler_ showSignin:baseViewController:] to not
+  // be called. This is ensured by TearDown because mock_scene_handler_
   // is a strict mock.
 }
 
@@ -203,22 +202,22 @@ TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
 
   // Since there is another profile, the agent should trigger the account menu
   // instead of the add-account flow.
-  OCMExpect([application_commands_mock_ showAccountMenuFromWebWithURL:url]);
+  OCMExpect([mock_scene_handler_ showAccountMenuFromWebWithURL:url]);
   agent_->OnAddAccount(url, "");
-  // Expect [application_commands_mock_ showSignin:baseViewController:] to not
-  // be called. This is ensured by TearDown because application_commands_mock_
+  // Expect [mock_scene_handler_ showSignin:baseViewController:] to not
+  // be called. This is ensured by TearDown because mock_scene_handler_
   // is a strict mock.
 }
 
 // Tests that calling the `OnRestoreGaiaCookies()` callback invokes the account
 // notification command.
 TEST_P(AccountConsistencyBrowserAgentTest, OnRestorGaiaCookiesCallsCommand) {
-  OCMExpect([application_commands_mock_
-      showSigninAccountNotificationFromViewController:
-          base_view_controller_mock_]);
+  OCMExpect(
+      [mock_scene_handler_ showSigninAccountNotificationFromViewController:
+                               base_view_controller_mock_]);
   agent_->OnRestoreGaiaCookies();
   // Expect -showSigninAccountNotificationFromViewController to have
-  // been called. This is ensured by TearDown because application_commands_mock_
+  // been called. This is ensured by TearDown because mock_scene_handler_
   // is a strict mock.
 }
 
@@ -249,10 +248,10 @@ TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
 
   // Since there is another profile, the agent should trigger the account menu
   // instead of the manage accounts screen.
-  OCMExpect([application_commands_mock_ showAccountMenuFromWebWithURL:url]);
+  OCMExpect([mock_scene_handler_ showAccountMenuFromWebWithURL:url]);
   agent_->OnManageAccounts(url);
   // Expect showAccountsSettingsFromViewController:skipIfUINotAvailable: to not
-  // be called. This is ensured by TearDown because application_commands_mock_
+  // be called. This is ensured by TearDown because mock_scene_handler_
   // is a strict mock.
 }
 
@@ -266,12 +265,12 @@ TEST_P(AccountConsistencyBrowserAgentTest,
   web_state_list->ActivateWebStateAt(0);
   web::WebState* web_state =
       browser_.get()->GetWebStateList()->GetActiveWebState();
-  OCMExpect([application_commands_mock_
+  OCMExpect([mock_scene_handler_
       showWebSigninPromoFromViewController:base_view_controller_mock_
                                        URL:url]);
   agent_->OnShowConsistencyPromo(url, web_state);
   // Expect -showWebSigninPromoFromViewController:URL: to have been called.
-  // This is ensured by TearDown because application_commands_mock_ is a strict
+  // This is ensured by TearDown because mock_scene_handler_ is a strict
   // mock.
 }
 
@@ -293,7 +292,7 @@ TEST_P(AccountConsistencyBrowserAgentTest,
   web::WebState* web_state = web_state_list->GetWebStateAt(1);
   agent_->OnShowConsistencyPromo(url, web_state);
   // Expect -showWebSigninPromoFromViewController:URL: to have not been called.
-  // This is ensured by TearDown because application_commands_mock_ is a strict
+  // This is ensured by TearDown because mock_scene_handler_ is a strict
   // mock.
 }
 

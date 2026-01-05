@@ -29,8 +29,8 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -568,7 +568,7 @@ void SafetyCheckNotificationClient::ClearAndRescheduleSafetyCheckNotifications(
           weak_ptr_factory_.GetWeakPtr(), interacted_notification_metadata_,
           browser->AsWeakPtr()));
 
-      [HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands)
+      [HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands)
           prepareToPresentModalWithSnackbarDismissal:NO
                                           completion:showUICallback];
     }
@@ -621,8 +621,8 @@ void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
     }
   }
 
-  id<ApplicationCommands> applicationHandler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
 
   id<SettingsCommands> settingsHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SettingsCommands);
@@ -645,7 +645,7 @@ void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
   // If Update Chrome notification, then show the Chrome App Upgrade page.
   if (notification_metadata[kSafetyCheckUpdateChromeNotificationID]) {
     HandleSafetyCheckUpdateChromeTap(
-        safety_check_manager->GetChromeAppUpgradeUrl(), applicationHandler);
+        safety_check_manager->GetChromeAppUpgradeUrl(), sceneHandler);
 
     return;
   }
@@ -663,7 +663,7 @@ void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
     HandleSafetyCheckPasswordTap(
         insecure_credentials, insecure_password_counts,
         password_manager::PasswordCheckReferrer::kSafetyCheckNotification,
-        applicationHandler, settingsHandler);
+        sceneHandler, settingsHandler);
 
     return;
   }

@@ -13,9 +13,9 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -50,10 +50,10 @@ class BrowserContainerCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:mocked_settings_handler_
                      forProtocol:@protocol(SettingsCommands)];
     mocked_application_handler_ =
-        OCMStrictProtocolMock(@protocol(ApplicationCommands));
+        OCMStrictProtocolMock(@protocol(SceneCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mocked_application_handler_
-                     forProtocol:@protocol(ApplicationCommands)];
+                     forProtocol:@protocol(SceneCommands)];
 
     // FullscreenController depends on ToolbarsSizeBrowserAgent, so the agent
     // must be created first. Please maintain this order.

@@ -18,7 +18,6 @@ namespace commerce {
 class ShoppingService;
 }  // namespace commerce
 
-@protocol ApplicationCommands;
 class AuthenticationService;
 class FaviconLoader;
 @protocol NewTabPageActionsDelegate;
@@ -27,6 +26,7 @@ class PrefService;
 @class PriceTrackingPromoItem;
 @protocol PriceTrackingPromoMediatorDelegate;
 class PushNotificationService;
+@protocol SceneCommands;
 @protocol SnackbarCommands;
 
 // Mediator for the Price Tracking Promo card in the Magic Stack.
@@ -36,7 +36,7 @@ class PushNotificationService;
 @property(nonatomic, weak) id<PriceTrackingPromoMediatorDelegate> delegate;
 
 // Dispatcher.
-@property(nonatomic, weak) id<ApplicationCommands, SnackbarCommands> dispatcher;
+@property(nonatomic, weak) id<SceneCommands, SnackbarCommands> dispatcher;
 
 // Delegate to delegate actions to the owner of the PriceTrackingPromoMediator
 @property(nonatomic, weak) id<PriceTrackingPromoActionDelegate> actionDelegate;

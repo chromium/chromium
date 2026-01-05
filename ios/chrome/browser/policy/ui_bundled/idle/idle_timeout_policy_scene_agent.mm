@@ -29,8 +29,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -58,10 +58,10 @@
   // SceneUIProvider that provides the scene UI objects.
   id<SceneUIProvider> _sceneUIProvider;
 
-  // Handler for application commands.
-  __weak id<ApplicationCommands> _applicationHandler;
+  // Handler for scene commands.
+  __weak id<SceneCommands> _sceneHandler;
 
-  // Handler for application commands.
+  // Handler for scene commands.
   __weak id<SnackbarCommands> _snackbarHandler;
 
   // Service handling IdleTimeout and IdleTimeoutActions policies.
@@ -83,16 +83,16 @@
   UIWindow* _launchScreenWindow;
 }
 
-- (instancetype)
-       initWithSceneUIProvider:(id<SceneUIProvider>)sceneUIProvider
-    applicationCommandsHandler:(id<ApplicationCommands>)applicationHandler
-       snackbarCommandsHandler:(id<SnackbarCommands>)snackbarHandler
-                   idleService:(enterprise_idle::IdleService*)idleService
-                   mainBrowser:(Browser*)mainBrowser {
+- (instancetype)initWithSceneUIProvider:(id<SceneUIProvider>)sceneUIProvider
+                           sceneHandler:(id<SceneCommands>)sceneHandler
+                snackbarCommandsHandler:(id<SnackbarCommands>)snackbarHandler
+                            idleService:
+                                (enterprise_idle::IdleService*)idleService
+                            mainBrowser:(Browser*)mainBrowser {
   self = [super init];
   if (self) {
     _sceneUIProvider = sceneUIProvider;
-    _applicationHandler = applicationHandler;
+    _sceneHandler = sceneHandler;
     _snackbarHandler = snackbarHandler;
     _mainBrowser = mainBrowser;
     _idleService = idleService;
@@ -346,7 +346,7 @@
   _UIBlocker = std::make_unique<ScopedUIBlocker>(self.sceneState,
                                                  UIBlockerExtent::kApplication);
   __weak __typeof(self) weakSelf = self;
-  [_applicationHandler dismissModalDialogsWithCompletion:^{
+  [_sceneHandler dismissModalDialogsWithCompletion:^{
     [weakSelf showIdleTimeoutConfirmation];
   }];
 }

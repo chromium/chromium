@@ -21,12 +21,12 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -547,9 +547,9 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
 - (void)close {
   if (self.locationBarFocused) {
-    id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ApplicationCommands);
-    [applicationCommandsHandler dismissModalDialogsWithCompletion:nil];
+    id<SceneCommands> sceneHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+    [sceneHandler dismissModalDialogsWithCompletion:nil];
   }
 }
 

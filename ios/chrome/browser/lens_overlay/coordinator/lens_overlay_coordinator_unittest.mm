@@ -23,12 +23,12 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -123,10 +123,10 @@ class LensOverlayCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:lens_commands_handler_
                      forProtocol:@protocol(LensCommands)];
 
-    application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
+    application_handler_ = OCMProtocolMock(@protocol(SceneCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:application_handler_
-                     forProtocol:@protocol(ApplicationCommands)];
+                     forProtocol:@protocol(SceneCommands)];
 
     load_query_handler_ = OCMProtocolMock(@protocol(LoadQueryCommands));
     [browser_->GetCommandDispatcher()
@@ -245,7 +245,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   UIViewController* root_view_controller_ = nil;
   id dispatcher_;
   raw_ptr<LensOverlayTabHelper> tab_helper_;
-  id<ApplicationCommands> application_handler_;
+  id<SceneCommands> application_handler_;
   id<LoadQueryCommands> load_query_handler_;
   id<LensCommands> lens_commands_handler_;
   id<BrowserCoordinatorCommands> browser_coordinator_commands_handler_;

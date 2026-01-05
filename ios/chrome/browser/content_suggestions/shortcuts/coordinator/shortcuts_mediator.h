@@ -17,12 +17,12 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
-@protocol ApplicationCommands;
 @protocol BrowserCoordinatorCommands;
 @protocol ContentSuggestionsConsumer;
 @class ContentSuggestionsMetricsRecorder;
 @protocol NewTabPageActionsDelegate;
 class ReadingListModel;
+@protocol SceneCommands;
 @class ShortcutsConfig;
 @protocol ShortcutsMediatorDelegate;
 @protocol WhatsNewCommands;
@@ -48,7 +48,7 @@ class ReadingListModel;
 
 // Dispatcher.
 @property(nonatomic, weak)
-    id<ApplicationCommands, BrowserCoordinatorCommands, WhatsNewCommands>
+    id<SceneCommands, BrowserCoordinatorCommands, WhatsNewCommands>
         dispatcher;
 
 // Default initializer.

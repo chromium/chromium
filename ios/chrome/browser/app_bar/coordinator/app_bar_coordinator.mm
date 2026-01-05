@@ -8,8 +8,8 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator/tab_grid_scene_agent.h"
 
 @implementation AppBarCoordinator {
@@ -31,10 +31,10 @@
 
 - (void)start {
   _viewController = [[AppBarViewController alloc] init];
-  // It is ok to use the regular browser here as the Application commands are
+  // It is ok to use the regular browser here as the Scene commands are
   // handled by the same object for both modes.
-  _viewController.applicationHandler = HandlerForProtocol(
-      _regularBrowser->GetCommandDispatcher(), ApplicationCommands);
+  _viewController.sceneHandler = HandlerForProtocol(
+      _regularBrowser->GetCommandDispatcher(), SceneCommands);
   _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(nil);
 
   _mediator = [[AppBarMediator alloc]

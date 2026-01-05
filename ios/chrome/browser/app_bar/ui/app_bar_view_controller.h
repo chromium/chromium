@@ -10,8 +10,8 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 
 @protocol AppBarMutator;
-@protocol ApplicationCommands;
 @class LayoutGuideCenter;
+@protocol SceneCommands;
 
 // View controller for the app bar.
 @interface AppBarViewController : UIViewController <AppBarConsumer>
@@ -20,8 +20,8 @@
 @property(nonatomic, weak) id<AppBarMutator> mutator;
 // This view controller's LayoutGuideCenter.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
-// Command handler for the Application commands.
-@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+// Command handler for the Scene commands.
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
 @end
 

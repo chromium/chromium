@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/search_with/ui_bundled/search_with_mediator.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
@@ -451,8 +451,7 @@ TEST_F(BrowserEditMenuHandlerTest, CheckCustomizedMenuDescription) {
                 fullscreenController:nullptr
                            incognito:NO];
 
-  id application_commands_handler =
-      OCMProtocolMock(@protocol(ApplicationCommands));
+  id scene_handler = OCMProtocolMock(@protocol(SceneCommands));
   TemplateURLService* template_url_service =
       ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
   TemplateURLData template_url_data;
@@ -462,7 +461,7 @@ TEST_F(BrowserEditMenuHandlerTest, CheckCustomizedMenuDescription) {
   SearchWithMediator* search_with_mediator = [[SearchWithMediator alloc]
       initWithTemplateURLService:template_url_service
                        incognito:NO];
-  search_with_mediator.applicationCommandHandler = application_commands_handler;
+  search_with_mediator.sceneHandler = scene_handler;
 
   LinkToTextMediator* link_to_text_mediator = [[LinkToTextMediator alloc] init];
   DataControlsEditMenuBuilder* data_controls_menu_builder =

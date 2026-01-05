@@ -35,8 +35,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
@@ -98,9 +98,9 @@
   self.recentTabsTableViewController.browser = self.browser;
   self.recentTabsTableViewController.loadStrategy = self.loadStrategy;
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  id<ApplicationCommands> applicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
-  self.recentTabsTableViewController.applicationHandler = applicationHandler;
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(dispatcher, SceneCommands);
+  self.recentTabsTableViewController.sceneHandler = sceneHandler;
   id<SettingsCommands> settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
   self.recentTabsTableViewController.settingsHandler = settingsHandler;
@@ -250,8 +250,7 @@
 - (void)showHistoryFromRecentTabs {
   // Dismiss recent tabs before presenting history.
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  id<ApplicationCommands> handler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
+  id<SceneCommands> handler = HandlerForProtocol(dispatcher, SceneCommands);
   __weak RecentTabsCoordinator* weakSelf = self;
   self.completion = ^{
     [handler showHistory];

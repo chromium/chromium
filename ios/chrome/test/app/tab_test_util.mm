@@ -70,7 +70,7 @@ void OpenNewTab() {
                     withURLLoadParams:params];
       return;
     }
-    id<ApplicationCommands, BrowserCommands> handler =
+    id<SceneCommands, BrowserCommands> handler =
         chrome_test_util::HandlerForActiveBrowser();
     [handler openURLInNewTab:command];
   }
@@ -98,7 +98,7 @@ void OpenNewIncognitoTab() {
                                                       withURLLoadParams:params];
       return;
     }
-    id<ApplicationCommands, BrowserCommands> handler =
+    id<SceneCommands, BrowserCommands> handler =
         chrome_test_util::HandlerForActiveBrowser();
     [handler openURLInNewTab:command];
   }

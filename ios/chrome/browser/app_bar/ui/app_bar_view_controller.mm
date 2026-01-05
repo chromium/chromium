@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -215,7 +215,7 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 
 // Called when the Assistant button is tapped.
 - (void)didTapAssistantButton {
-  [self.applicationHandler showAssistant];
+  [self.sceneHandler showAssistant];
 }
 
 // Called when the New Tab button is tapped.

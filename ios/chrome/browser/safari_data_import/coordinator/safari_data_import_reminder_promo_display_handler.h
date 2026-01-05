@@ -7,8 +7,8 @@
 
 #import "ios/chrome/browser/promos_manager/coordinator/standard_promo_display_handler.h"
 
-@protocol ApplicationCommands;
 @protocol PromosManagerUIHandler;
+@protocol SceneCommands;
 
 /// Handler for displaying the reminder to import data from Safari.
 ///
@@ -18,10 +18,9 @@
     : NSObject <StandardPromoDisplayHandler>
 
 /// Initializer.
-- (instancetype)initWithApplicationCommandsHandler:
-                    (id<ApplicationCommands>)applicationHandler
-                            promosManagerUIHandler:(id<PromosManagerUIHandler>)
-                                                       promosManagerUIHandler
+- (instancetype)initWithSceneCommandsHandler:(id<SceneCommands>)sceneHandler
+                      promosManagerUIHandler:
+                          (id<PromosManagerUIHandler>)promosManagerUIHandler
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

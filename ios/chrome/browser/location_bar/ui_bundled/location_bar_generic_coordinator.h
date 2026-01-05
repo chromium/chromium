@@ -10,15 +10,15 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_url_loader.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 
-class WebStateList;
-@class CommandDispatcher;
-@protocol ApplicationCommands;
 @protocol BrowserCommands;
+@class CommandDispatcher;
 @protocol EditViewAnimatee;
 @protocol LocationBarAnimatee;
-@protocol OmniboxPopupPresenterDelegate;
 @protocol OmniboxFocusDelegate;
+@protocol OmniboxPopupPresenterDelegate;
 class ProfileIOS;
+@protocol SceneCommands;
+class WebStateList;
 
 @protocol LocationBarGenericCoordinator <NSObject,
                                          LocationBarURLLoader,

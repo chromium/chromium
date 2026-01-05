@@ -14,12 +14,12 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -54,11 +54,10 @@ class BrowserActionFactoryTest : public PlatformTest {
 
     test_browser_ = std::make_unique<TestBrowser>(profile_.get());
 
-    mock_application_commands_handler_ =
-        OCMStrictProtocolMock(@protocol(ApplicationCommands));
+    mock_scene_handler_ = OCMStrictProtocolMock(@protocol(SceneCommands));
     [test_browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_application_commands_handler_
-                     forProtocol:@protocol(ApplicationCommands)];
+        startDispatchingToTarget:mock_scene_handler_
+                     forProtocol:@protocol(SceneCommands)];
 
     mock_settings_commands_handler_ =
         OCMStrictProtocolMock(@protocol(SettingsCommands));
@@ -97,7 +96,7 @@ class BrowserActionFactoryTest : public PlatformTest {
   NSString* test_title_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> test_browser_;
-  id mock_application_commands_handler_;
+  id mock_scene_handler_;
   id mock_settings_commands_handler_;
   id mock_browser_coordinator_commands_handler_;
   id mock_qr_scanner_commands_handler_;
