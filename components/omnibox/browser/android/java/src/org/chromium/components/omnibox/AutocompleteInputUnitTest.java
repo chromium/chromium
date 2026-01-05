@@ -15,6 +15,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AimToolsAndModelsProto.ChromeAimToolsAndModels;
 
 import java.util.Set;
 
@@ -272,5 +273,15 @@ public class AutocompleteInputUnitTest {
         assertTrue(mInput.isInCacheableContext());
         assertTrue(mInput.isInZeroPrefixContext());
         assertFalse(mInput.allowExactKeywordMatch());
+    }
+
+    @Test
+    public void toolMode() {
+        assertEquals(ChromeAimToolsAndModels.TOOL_MODE_UNSPECIFIED_VALUE, mInput.getToolMode());
+        mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
+        assertEquals(ChromeAimToolsAndModels.TOOL_MODE_IMAGE_GEN_VALUE, mInput.getToolMode());
+        mInput.setHasAttachments(true);
+        assertEquals(
+                ChromeAimToolsAndModels.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE, mInput.getToolMode());
     }
 }

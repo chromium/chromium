@@ -20,6 +20,7 @@ public class AutocompleteInput {
     private String mPageTitle;
     private String mUserText;
     private boolean mAllowExactKeywordMatch;
+    private boolean mHasAttachments;
     private @AutocompleteRequestType int mRequestType;
 
     public AutocompleteInput() {
@@ -93,7 +94,9 @@ public class AutocompleteInput {
     public /* ChromeAimToolsAndModels */ int getToolMode() {
         return switch (mRequestType) {
             case AutocompleteRequestType.IMAGE_GENERATION ->
-                    ChromeAimToolsAndModels.TOOL_MODE_IMAGE_GEN_VALUE;
+                    mHasAttachments
+                            ? ChromeAimToolsAndModels.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE
+                            : ChromeAimToolsAndModels.TOOL_MODE_IMAGE_GEN_VALUE;
             default -> ChromeAimToolsAndModels.TOOL_MODE_UNSPECIFIED_VALUE;
         };
     }
@@ -156,6 +159,10 @@ public class AutocompleteInput {
         }
     }
 
+    public void setHasAttachments(boolean hasAttachments) {
+        mHasAttachments = hasAttachments;
+    }
+
     /**
      * Resets the AutocompleteInput to its default state.
      *
@@ -167,6 +174,7 @@ public class AutocompleteInput {
         mAllowExactKeywordMatch = false;
         mPageUrl = GURL.emptyGURL();
         mPageTitle = "";
+        mHasAttachments = false;
         mPageClassification = PageClassification.BLANK_VALUE;
 
         return this;
