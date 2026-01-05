@@ -26,5 +26,5 @@ span {
 .elided-text {
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: var(--cr-toast-white-space, nowrap);
 }
