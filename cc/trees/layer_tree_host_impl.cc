@@ -605,14 +605,6 @@ LayerTreeHostImpl::LayerTreeHostImpl(
       this, settings.top_controls_show_threshold,
       settings.top_controls_hide_threshold);
 
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableLayerTreeHostMemoryPressure)) {
-    memory_pressure_listener_registration_ =
-        std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
-            FROM_HERE, base::MemoryPressureListenerTag::kLayerTreeHostImpl,
-            this);
-  }
-
   SetDebugState(settings.initial_debug_state);
   compositor_frame_reporting_controller_->SetFrameSorter(&frame_sorter_);
   compositor_frame_reporting_controller_->SetFrameSequenceTrackerCollection(
@@ -4444,48 +4436,6 @@ void LayerTreeHostImpl::ActivateStateForImages() {
 
   image_animation_controller_.DidActivate();
   tile_manager_.DidActivateSyncTree();
-}
-
-void LayerTreeHostImpl::OnMemoryPressure(base::MemoryPressureLevel level) {
-  if (level == base::MEMORY_PRESSURE_LEVEL_NONE) {
-    return;
-  }
-
-  if (settings_.trees_in_viz_in_viz_process) {
-    return;
-  }
-
-  // Only work for low-end devices for now.
-  if (!base::SysInfo::IsLowEndDevice())
-    return;
-
-  if (!ImageDecodeCacheUtils::ShouldEvictCaches(level))
-    return;
-
-    // TODO(crbug.com/42050253): Unlocking decoded-image-tracker images causes
-    // flickering in visible trees if Out-Of-Process rasterization is enabled.
-#if BUILDFLAG(IS_FUCHSIA)
-  if (use_gpu_rasterization() && visible())
-    return;
-#endif  // BUILDFLAG(IS_FUCHSIA)
-
-  ReleaseTileResources();
-  active_tree_->OnPurgeMemory();
-  if (pending_tree_)
-    pending_tree_->OnPurgeMemory();
-  if (recycle_tree_)
-    recycle_tree_->OnPurgeMemory();
-
-  EvictAllUIResources();
-  if (resource_pool_)
-    resource_pool_->OnMemoryPressure(level);
-
-  tile_manager_.decoded_image_tracker().UnlockAllImages();
-
-  // There is no need to notify the |image_decode_cache| about the memory
-  // pressure as it (the gpu one as the software one doesn't keep outstanding
-  // images pinned) listens to memory pressure events and purges memory base on
-  // the ImageDecodeCacheUtils::ShouldEvictCaches' return value.
 }
 
 void LayerTreeHostImpl::SetVisible(bool visible) {
