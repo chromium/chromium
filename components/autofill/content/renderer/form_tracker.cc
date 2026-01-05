@@ -746,14 +746,13 @@ void FormTracker::UpdateLastInteractedElement(
   // `document` is the WebDocument of `element_id`'s element. It is not
   // necessarily the same as the current frame's document.
   //
-  // `form` is null if `element_id` is a FieldRendererId.
+  // `form_element` is null if `element_id` is a FieldRendererId.
   auto [document, form_element] = std::visit(
       absl::Overload{
           [this](FormRendererId form_id) {
             CHECK(form_id);
             WebFormElement form = form_util::GetFormByRendererId(form_id);
-            last_interacted_.form =
-                FormRef(form_util::GetFormByRendererId(form_id));
+            last_interacted_.form = FormRef(form);
             return std::pair(form.GetDocument(), form);
           },
           [this](FieldRendererId field_id) {
