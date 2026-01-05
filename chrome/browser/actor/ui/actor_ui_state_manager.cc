@@ -240,6 +240,11 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
           [this](const StopTask& e) {
             if (base::FeatureList::IsEnabled(
                     features::kGlicActorUiGlobalTaskIndicator)) {
+              // Cancelled tasks are intentionally not stored.
+              if (e.final_state == ActorTask::State::kCancelled) {
+                return;
+              }
+
               stopped_task_info_.emplace(
                   e.task_id,
                   StoppedTaskInfo{

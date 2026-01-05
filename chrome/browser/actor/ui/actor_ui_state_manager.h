@@ -54,7 +54,8 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   // period after `kGlicActorUiCompletedTaskExpiryDelaySeconds` seconds.
   void ActorTaskRemoved(TaskId task_id);
 
-  // Elements in this map are cleared after
+  // Stores completed and failed tasks. Does NOT store tasks intentionally
+  // cancelled by the user. Elements in this map are cleared after
   // kGlicActorUiCompletedTaskExpiryDelaySeconds period of time.
   absl::flat_hash_map<TaskId, StoppedTaskInfo> stopped_task_info_;
 
