@@ -240,7 +240,7 @@ void AnimationTimeline::ServiceTriggers() {
 
   if (update_triggers_) {
     for (TimelineTrigger* trigger : triggers_) {
-      trigger->Update();
+      trigger->UpdateAnimations();
     }
   }
 

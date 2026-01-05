@@ -3121,11 +3121,16 @@ bool ComputedStyle::HasAnimationTrigger() const {
     return false;
   }
 
-  return std::any_of(data->TriggerAttachmentsList().begin(),
-                     data->TriggerAttachmentsList().end(),
-                     [](Member<StyleTriggerAttachmentVector> attachments_list) {
-                       return attachments_list.Get();
-                     });
+  return std::any_of(
+             data->TriggerAttachmentsList().begin(),
+             data->TriggerAttachmentsList().end(),
+             [](const Member<StyleTriggerAttachmentVector>& attachments_list) {
+               return attachments_list.Get();
+             }) ||
+         std::any_of(
+             data->TimelineTriggerNameList().begin(),
+             data->TimelineTriggerNameList().end(),
+             [](const Member<ScopedCSSName>& name) { return name.Get(); });
 }
 
 bool ComputedStyle::HasBaseEffectiveAppearance() const {

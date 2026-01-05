@@ -112,9 +112,9 @@ class CORE_EXPORT DocumentAnimations final
   // crbug.com/447174988 is investigated.
   // TODO(crbug.com/447174988): Remove UpdateAnimationTriggerAttachments when
   // the bug is resolved.
-  void ExecutePendingTriggerAttachmentUpdates();
-  void AddPendingTriggerAttachmentUpdate(CSSAnimation* animation);
-  void RemovePendingTriggerAttachmentUpdate(CSSAnimation* animation);
+  void ExecuteTriggerAttachmentUpdates();
+  void AddTriggeredAnimation(CSSAnimation* animation);
+  void RemoveTriggeredAnimation(CSSAnimation* animation);
 
   void UpdateCompositorAnimationTriggers();
 
@@ -135,7 +135,7 @@ class CORE_EXPORT DocumentAnimations final
   HeapHashSet<WeakMember<AnimationTrigger>> triggers_;
   // Animations which should be attached to triggers after style and layout
   // updates.
-  HeapHashSet<WeakMember<CSSAnimation>> pending_trigger_attachment_updates_;
+  HeapHashSet<WeakMember<CSSAnimation>> triggered_animations_;
 };
 
 }  // namespace blink

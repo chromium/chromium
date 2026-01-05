@@ -295,7 +295,7 @@ void DocumentAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(timelines_);
   visitor->Trace(triggers_);
-  visitor->Trace(pending_trigger_attachment_updates_);
+  visitor->Trace(triggered_animations_);
 }
 
 void DocumentAnimations::GetAnimationsTargetingTreeScope(
@@ -380,7 +380,7 @@ void DocumentAnimations::RemoveReplacedAnimations(
 
 void DocumentAnimations::UpdateAnimationTriggerAttachments() {
   if (RuntimeEnabledFeatures::LimitTriggerAttachmentUpdatesEnabled()) {
-    ExecutePendingTriggerAttachmentUpdates();
+    ExecuteTriggerAttachmentUpdates();
   } else {
     for (const auto& timeline : timelines_) {
       timeline->UpdateAnimationTriggerAttachments();
@@ -403,29 +403,14 @@ void DocumentAnimations::UpdateCompositorAnimationTriggers() {
   }
 }
 
-void DocumentAnimations::AddPendingTriggerAttachmentUpdate(
-    CSSAnimation* animation) {
-  pending_trigger_attachment_updates_.insert(animation);
-}
-
-void DocumentAnimations::RemovePendingTriggerAttachmentUpdate(
-    CSSAnimation* animation) {
-  pending_trigger_attachment_updates_.erase(animation);
-}
-
-void DocumentAnimations::ExecutePendingTriggerAttachmentUpdates() {
-  // Track animations whose attachments weren't completely fulfilled.
-  HeapHashSet<WeakMember<CSSAnimation>> defer;
-
-  for (CSSAnimation* animation : pending_trigger_attachment_updates_) {
+void DocumentAnimations::ExecuteTriggerAttachmentUpdates() {
+  for (CSSAnimation* animation : triggered_animations_) {
     const Member<const StyleTriggerAttachmentVector>&
         animation_trigger_attachments = animation->GetTriggerAttachments();
     if (!animation_trigger_attachments) {
       continue;
     }
 
-    wtf_size_t expected_attachments_size =
-        animation_trigger_attachments->size();
     HeapHashMap<WeakMember<AnimationTrigger>,
                 WeakMember<const StyleTriggerAttachment>>
         relevant_attachments;
@@ -440,17 +425,15 @@ void DocumentAnimations::ExecutePendingTriggerAttachmentUpdates() {
     for (const auto& [trigger, attachment] : relevant_attachments) {
       attachment->Attach(*trigger, *animation);
     }
-
-    if (expected_attachments_size != relevant_attachments.size()) {
-      // We didn't find all the triggers with the names declared in this
-      // animation's animation-trigger declaration. Queue this animation up for
-      // another attempt to find its triggers after we've run style and layout
-      // again.
-      defer.insert(animation);
-    }
   }
+}
 
-  pending_trigger_attachment_updates_.swap(defer);
+void DocumentAnimations::AddTriggeredAnimation(CSSAnimation* animation) {
+  triggered_animations_.insert(animation);
+}
+
+void DocumentAnimations::RemoveTriggeredAnimation(CSSAnimation* animation) {
+  triggered_animations_.erase(animation);
 }
 
 }  // namespace blink

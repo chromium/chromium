@@ -8,6 +8,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
+#include "third_party/blink/renderer/core/animation/timeline_trigger.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_values.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/layout/forms/layout_fieldset.h"
@@ -198,6 +199,10 @@ bool ScrollSnapshotTimeline::UpdateSnapshotInternal(bool service_animations) {
   // ResolveTimelineOffsets is called.
   timeline_state_snapshotted_ = new_state;
   ResolveTimelineOffsets();
+
+  for (TimelineTrigger* trigger : GetTriggers()) {
+    snapshot_changed |= trigger->UpdateState();
+  }
 
   for (Animation* animation : GetAnimations()) {
     // Avoid setting a deferred start time during the update snapshot phase.

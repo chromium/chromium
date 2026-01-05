@@ -140,7 +140,7 @@ TimelineTrigger::TimelineTrigger(AnimationTimeline* timeline,
         *this);
   }
   // A default trigger will need to trip immediately.
-  Update();
+  UpdateState();
 }
 
 /* static */
@@ -302,7 +302,7 @@ std::optional<TimelineTriggerState> TimelineTrigger::ComputeState() {
   bool within_exit_range = WithinRange(
       boundaries.current_offset, boundaries.exit_start, boundaries.exit_end);
 
-  State previous_state = state_;
+  State previous_state = last_snapshot_state_;
   State new_state = previous_state;
 
   if (within_trigger_range) {
@@ -323,19 +323,28 @@ std::optional<TimelineTriggerState> TimelineTrigger::ComputeState() {
   return new_state;
 }
 
-void TimelineTrigger::Update() {
+bool TimelineTrigger::UpdateState() {
   std::optional<State> new_state = ComputeState();
   if (!new_state) {
-    return;
+    return false;
   }
 
-  State old_state = state_;
+  State old_state = last_snapshot_state_;
   if (new_state.value() == old_state) {
+    return true;
+  }
+  last_snapshot_state_ = *new_state;
+  return false;
+}
+
+void TimelineTrigger::UpdateAnimations() {
+  if (last_snapshot_state_ == last_animation_update_state_) {
     return;
   }
-  state_ = *new_state;
 
-  switch (state_) {
+  last_animation_update_state_ = last_snapshot_state_;
+
+  switch (last_animation_update_state_) {
     case State::kPrimary:
       PerformActivate();
       break;
@@ -360,7 +369,8 @@ void TimelineTrigger::HandlePostTripAdd(Animation* animation,
                                         Behavior activate_behavior,
                                         Behavior deactivate_behavior,
                                         ExceptionState& exception_state) {
-  if (state_ == State::kIdle || HasPausedCSSPlayState(animation)) {
+  if (last_snapshot_state_ == State::kIdle ||
+      HasPausedCSSPlayState(animation)) {
     return;
   }
 
@@ -370,7 +380,7 @@ void TimelineTrigger::HandlePostTripAdd(Animation* animation,
   std::optional<Behavior> new_behavior_for_current_state;
   auto old_data_it = BehaviorMap().find(animation);
 
-  switch (state_) {
+  switch (last_snapshot_state_) {
     case State::kPrimary:
       // We last tripped into "activate"; we might need to act.
       new_behavior_for_current_state = activate_behavior;

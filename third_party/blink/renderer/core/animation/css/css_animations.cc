@@ -2320,13 +2320,11 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     css_animation.SetTriggerAttachments(entry.trigger_attachments);
     if (RuntimeEnabledFeatures::LimitTriggerAttachmentUpdatesEnabled()) {
       if (entry.trigger_attachments) {
-        element->GetDocument()
-            .GetDocumentAnimations()
-            .AddPendingTriggerAttachmentUpdate(&css_animation);
+        element->GetDocument().GetDocumentAnimations().AddTriggeredAnimation(
+            &css_animation);
       } else {
-        element->GetDocument()
-            .GetDocumentAnimations()
-            .RemovePendingTriggerAttachmentUpdate(&css_animation);
+        element->GetDocument().GetDocumentAnimations().RemoveTriggeredAnimation(
+            &css_animation);
       }
     }
     css_animation.SetTriggerActionPlayState(
@@ -2370,9 +2368,8 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
       animation->pause();
       animation->SetPausedForTrigger(true);
       if (RuntimeEnabledFeatures::LimitTriggerAttachmentUpdatesEnabled()) {
-        element->GetDocument()
-            .GetDocumentAnimations()
-            .AddPendingTriggerAttachmentUpdate(animation);
+        element->GetDocument().GetDocumentAnimations().AddTriggeredAnimation(
+            animation);
       }
     } else {
       animation->play();

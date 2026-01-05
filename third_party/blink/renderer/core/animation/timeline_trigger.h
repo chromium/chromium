@@ -56,8 +56,9 @@ class CORE_EXPORT TimelineTrigger : public AnimationTrigger {
   bool IsTimelineTrigger() const override;
 
   AnimationTimeline* GetTimelineInternal() { return timeline_.Get(); }
-  State GetState() { return state_; }
-  void Update();
+  State GetState() { return last_snapshot_state_; }
+  bool UpdateState();
+  void UpdateAnimations();
 
   void Trace(Visitor* visitor) const override;
 
@@ -125,7 +126,12 @@ class CORE_EXPORT TimelineTrigger : public AnimationTrigger {
   Member<const RangeBoundary> exit_range_start_;
   Member<const RangeBoundary> exit_range_end_;
 
-  State state_;
+  // The state the trigger was in when we last got a chance to update the
+  // animations.
+  State last_animation_update_state_;
+  // The state the trigger was in when we last took a snapshot of our associated
+  // timeline.
+  State last_snapshot_state_;
 };
 
 template <>

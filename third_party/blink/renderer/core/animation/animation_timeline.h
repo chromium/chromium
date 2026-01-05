@@ -124,6 +124,9 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   const HeapHashSet<WeakMember<Animation>>& GetAnimations() const {
     return animations_;
   }
+  const HeapHashSet<Member<TimelineTrigger>>& GetTriggers() const {
+    return triggers_;
+  }
 
   cc::AnimationTimeline* CompositorTimeline() const {
     return compositor_timeline_.get();
