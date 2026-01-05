@@ -1397,8 +1397,9 @@ class WaylandDesktop(Desktop):
       logging.error("Unable to import env vars into systemd, "
                     "returncode: %s, output: %s" % (err.returncode,
                                                     err.output))
-      # Host process will not be functional without these services.
-      sys.exit(1)
+      logging.error("Continuing without restarting Portal services - "
+                    "this may cause some unexpected problems.")
+      return
 
     try:
       portals = \
@@ -1408,8 +1409,13 @@ class WaylandDesktop(Desktop):
     except subprocess.CalledProcessError as err:
       logging.error("Unable to restart portal services on the host, "
                     "returncode: %s, output: %s" % (err.returncode, err.output))
-      # Host process will not be functional without these services.
-      sys.exit(1)
+      # For GNOME, the Portal services are not required, since the host process
+      # uses the private GNOME APIs. For non-GNOME desktops, the Portal services
+      # are needed, but a failure to restart them here is not necessarily fatal.
+      # If the Portal services are needed but are not running, the host process
+      # can detect this condition and terminate with an exit-code.
+      return
+
     logging.info("Done restarting the portal services")
 
   def _wait_for_setup_before_host_launch(self):
