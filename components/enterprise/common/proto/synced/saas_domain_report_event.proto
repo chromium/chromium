@@ -30,7 +30,7 @@ message SaaSDomainReportEvent {
   repeated SaaSDomainMetrics domain_metrics = 4;
 }
 
-message SaasDomainMetrics {
+message SaaSDomainMetrics {
   // The domain of the SaaS site.
   string domain = 1;
 
