@@ -42,8 +42,6 @@
 //! This bridge is built using the `cxx` crate, which automates the generation
 //! of safe FFI bindings between the two languages.
 
-use cxx;
-
 use symphonia::core::audio::{AudioBufferRef, RawSampleBuffer};
 use symphonia::core::codecs::CodecParameters;
 use symphonia::core::errors::Error;
@@ -495,7 +493,7 @@ impl From<DecodeResult> for ffi::SymphoniaDecodeResult {
             Ok(buffer) => ffi::SymphoniaDecodeResult {
                 status: ffi::SymphoniaDecodeStatus::Ok,
                 error_str: String::new(),
-                buffer: buffer,
+                buffer,
             },
             Err((status, error_str)) => ffi::SymphoniaDecodeResult {
                 status,
