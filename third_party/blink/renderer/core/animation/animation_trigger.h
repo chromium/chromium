@@ -45,8 +45,6 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
   virtual bool IsTimelineTrigger() const;
   virtual bool IsEventTrigger() const;
 
-  void RemoveAnimations();
-
   void UpdateBehaviorMap(Animation& animation,
                          Behavior activate_behavior,
                          Behavior deactivate_behavior);

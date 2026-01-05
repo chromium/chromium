@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
+#include "third_party/blink/renderer/core/dom/trigger_scoped_name.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -91,11 +92,16 @@ class CORE_EXPORT DocumentAnimations final
     return timelines_;
   }
 
-  static void UpdateTriggerAttachment(
+  using TriggerAttachmentMap =
+      HeapHashMap<Member<const TriggerScopedName>,
+                  std::pair<Member<AnimationTrigger>,
+                            Member<const StyleTriggerAttachment>>>;
+  static void FindRelevantTriggerAttachments(
       CSSAnimation& animation,
-      base::FunctionRef<void(AnimationTrigger& trigger,
-                             const StyleTriggerAttachment& attachment)>
-          function);
+      TriggerAttachmentMap& relevant_attachments_out);
+  static void UpdateTriggerAttachments(
+      CSSAnimation& animation,
+      const TriggerAttachmentMap& relevant_attachments);
 
   void AddAnimationTrigger(AnimationTrigger& trigger);
 
@@ -114,7 +120,6 @@ class CORE_EXPORT DocumentAnimations final
   // the bug is resolved.
   void ExecuteTriggerAttachmentUpdates();
   void AddTriggeredAnimation(CSSAnimation* animation);
-  void RemoveTriggeredAnimation(CSSAnimation* animation);
 
   void UpdateCompositorAnimationTriggers();
 

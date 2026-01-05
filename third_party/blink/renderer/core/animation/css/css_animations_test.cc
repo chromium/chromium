@@ -1354,7 +1354,7 @@ class CSSAnimationsTriggerTest : public CSSAnimationsTest {
       if (!fragment.NamedTriggers()) {
         continue;
       }
-      return fragment.NamedTriggers()->begin()->key->GetScopedNameForTesting();
+      return fragment.NamedTriggers()->begin()->key->GetScopedName();
     }
     return nullptr;
   }
@@ -1365,7 +1365,11 @@ class CSSAnimationsTriggerTest : public CSSAnimationsTest {
       if (!fragment.NamedTriggers()) {
         continue;
       }
-      return fragment.NamedTriggers()->begin()->value;
+      const TriggerScopedName* scoped_name =
+          fragment.NamedTriggers()->begin()->key.Get();
+      const Element* trigger_owner = fragment.NamedTriggers()->begin()->value;
+      const ScopedCSSName* name = scoped_name->GetScopedName();
+      return trigger_owner->NamedTrigger(name);
     }
     return nullptr;
   }

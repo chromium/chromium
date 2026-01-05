@@ -55,6 +55,7 @@ void CSSAnimationUpdate::Copy(const CSSAnimationUpdate& update) {
   changed_view_timelines_ = update.changed_view_timelines_;
   changed_deferred_timelines_ = update.changed_deferred_timelines_;
   changed_timeline_attachments_ = update.changed_timeline_attachments_;
+  needs_named_trigger_update_ = update.needs_named_trigger_update_;
 }
 
 void CSSAnimationUpdate::Clear() {
@@ -72,6 +73,7 @@ void CSSAnimationUpdate::Clear() {
   changed_view_timelines_.clear();
   changed_deferred_timelines_.clear();
   changed_timeline_attachments_.clear();
+  needs_named_trigger_update_ = false;
 }
 
 void CSSAnimationUpdate::StartTransition(

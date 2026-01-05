@@ -588,7 +588,7 @@ class CORE_EXPORT FragmentBuilder {
   void CreateNamedTriggersForSelf();
   TriggerScopedNameMap& EnsureNamedTriggers();
   void SetNamedTrigger(const TriggerScopedName& trigger_scoped_name,
-                       AnimationTrigger* trigger);
+                       const Element* trigger_owner);
 
   LayoutInputNode node_;
   const ConstraintSpace& space_;

@@ -9,6 +9,26 @@
 
 namespace blink {
 
+// static
+bool CSSAnimationData::TimelineTriggerDataChanged(
+    const CSSAnimationData* old_data,
+    const CSSAnimationData* new_data) {
+  if (old_data && new_data) {
+    return !old_data->TriggersMatchForStyleRecalc(*new_data);
+  } else if (old_data || new_data) {
+    // If one of the ComputedStyles didn't have CSSAnimationData and the other
+    // did, the other is only meaningfully different if it declared a named
+    // trigger.
+    const CSSAnimationData* data = new_data ? new_data : old_data;
+    return std::any_of(data->TimelineTriggerNameList().begin(),
+                       data->TimelineTriggerNameList().end(),
+                       [](Member<const ScopedCSSName> trigger_name) {
+                         return trigger_name.Get();
+                       });
+  }
+  return false;
+}
+
 CSSAnimationData::CSSAnimationData() : CSSTimingData(InitialDuration()) {
   name_list_.push_back(InitialName());
   timeline_list_.push_back(InitialTimeline());

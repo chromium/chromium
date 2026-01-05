@@ -216,14 +216,6 @@ void AnimationTrigger::DidAddAnimation() {}
 
 void AnimationTrigger::DidRemoveAnimation(Animation* animation) {}
 
-void AnimationTrigger::RemoveAnimations() {
-  AnimationBehaviorMap animation_behavior_map;
-  animation_behavior_map_.swap(animation_behavior_map);
-  for (Animation* animation : animation_behavior_map.Keys()) {
-    removeAnimation(animation);
-  }
-}
-
 void AnimationTrigger::UpdateBehaviorMap(Animation& animation,
                                          Behavior activate_behavior,
                                          Behavior deactivate_behavior) {

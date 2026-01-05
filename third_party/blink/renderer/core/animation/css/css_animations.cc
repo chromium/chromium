@@ -1189,16 +1189,16 @@ CSSDeferredTimelineMap CSSAnimations::CalculateChangedDeferredTimelines(
 }
 
 // static
-void CSSAnimations::UpdateNamedTriggers(
-    const ComputedStyleBuilder& style_builder,
-    const CSSAnimationUpdate& update,
-    Element& element) {
+void CSSAnimations::UpdateNamedTriggers(Element& element,
+                                        const CSSAnimationUpdate& update) {
   NamedAnimationTriggerMap* existing_trigger_map = element.NamedTriggers();
   NamedAnimationTriggerMap new_trigger_map;
 
+  const ComputedStyle* style = element.GetComputedStyle();
+  const CSSAnimationData* data = style ? style->Animations() : nullptr;
   bool is_update_needed = false;
 
-  if (const CSSAnimationData* data = style_builder.Animations()) {
+  if (data) {
     const HeapVector<Member<const ScopedCSSName>>& trigger_names =
         data->TimelineTriggerNameList();
 
@@ -1211,41 +1211,23 @@ void CSSAnimations::UpdateNamedTriggers(
       TimelineTrigger* existing_trigger =
           DynamicTo<TimelineTrigger>(element.NamedTrigger(name));
       TimelineTrigger* new_trigger = CSSAnimations::ComputeTimelineTrigger(
-          data, i, update, style_builder.EffectiveZoom(), &element,
-          existing_trigger);
+          data, i, update, style->EffectiveZoom(), &element, existing_trigger);
 
       new_trigger_map.Set(name, new_trigger);
-
       if (new_trigger == existing_trigger) {
         continue;
       }
 
-      if (existing_trigger) {
-        // If the previous trigger is now obsolete, disassociate it from its
-        // animations.
-        existing_trigger->RemoveAnimations();
-      }
-
-      // Make sure that the new trigger is propagated throughout the tree.
       is_update_needed = true;
     }
   }
 
   if (existing_trigger_map) {
     for (const auto& entry : *existing_trigger_map) {
-      AnimationTrigger* trigger = entry.value;
       const ScopedCSSName* name = entry.key;
       if (new_trigger_map.Contains(name)) {
         continue;
       }
-
-      // NOTE: This is only okay as long as script has no way to
-      // access CSS triggers. If it becomes possible to reference a CSS
-      // trigger via script, we'll need a way to distinguish between
-      // animations that were attached to a trigger via CSS and animations
-      // that were attached to the trigger via script. We only want to remove
-      // the former here.
-      trigger->RemoveAnimations();
 
       // Make sure the rest of the DOM knows this name is now obsolete.
       is_update_needed = true;
@@ -2057,6 +2039,13 @@ void CSSAnimations::CalculateAnimationUpdate(
   }
 
   CalculateAnimationActiveInterpolations(update, animating_element);
+
+  CSSAnimationData* old_animations =
+      old_style ? old_style->Animations() : nullptr;
+  if (CSSAnimationData::TimelineTriggerDataChanged(old_animations,
+                                                   animation_data)) {
+    update.SetNeedsNamedTriggerUpdate();
+  }
 }
 
 AnimationEffect::EventDelegate* CSSAnimations::CreateEventDelegate(
@@ -2316,13 +2305,9 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     }
     css_animation.SetRange(entry.range_start, entry.range_end);
 
-    css_animation.RemoveStaleNamedTriggerAttachments(entry.trigger_attachments);
     css_animation.SetTriggerAttachments(entry.trigger_attachments);
     if (entry.trigger_attachments) {
       element->GetDocument().GetDocumentAnimations().AddTriggeredAnimation(
-          &css_animation);
-    } else {
-      element->GetDocument().GetDocumentAnimations().RemoveTriggeredAnimation(
           &css_animation);
     }
     css_animation.SetTriggerActionPlayState(
@@ -2465,6 +2450,11 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
             new_transition->reversing_shortening_factor);
     transitions_.Set(property, running_transition);
   }
+
+  if (pending_update_.NeedsNamedTriggerUpdate()) {
+    UpdateNamedTriggers(*element, pending_update_);
+  }
+
   ClearPendingUpdate();
 }
 

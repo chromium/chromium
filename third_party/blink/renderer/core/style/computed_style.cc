@@ -298,22 +298,8 @@ static bool DiffNeedsFullLayoutForAnimationTriggers(
     const ComputedStyle& new_style) {
   const CSSAnimationData* old_animations = old_style.Animations();
   const CSSAnimationData* new_animations = new_style.Animations();
-  if (old_animations && new_animations) {
-    return (old_animations != new_animations) &&
-           !old_animations->AnimationsMatchForStyleRecalc(*new_animations);
-  } else if (old_animations || new_animations) {
-    // If one of the ComputedStyles didn't have CSSAnimationData and the other
-    // did, the other is only meaningfully different if it declared a named
-    // trigger.
-    const CSSAnimationData* animations =
-        new_animations ? new_animations : old_animations;
-    return std::any_of(animations->TimelineTriggerNameList().begin(),
-                       animations->TimelineTriggerNameList().end(),
-                       [](Member<const ScopedCSSName> trigger_name) {
-                         return trigger_name.Get();
-                       });
-  }
-  return false;
+  return CSSAnimationData::TimelineTriggerDataChanged(old_animations,
+                                                      new_animations);
 }
 
 bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,

@@ -39,7 +39,7 @@ class CORE_EXPORT NamingScope : public GarbageCollected<NamingScope> {
       : name_(&name), scope_element_(scope_element) {}
 
   const AtomicString& GetName() const { return name_->GetName(); }
-  const ScopedCSSName* GetScopedNameForTesting() const { return name_.Get(); }
+  const ScopedCSSName* GetScopedName() const { return name_.Get(); }
 
   bool operator==(const NamingScope& other) const {
     return base::ValuesEquivalent(name_, other.name_) &&

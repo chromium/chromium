@@ -1417,7 +1417,6 @@ const ComputedStyle* StyleResolver::ResolveStyle(
 
   ApplyAnchorData(state);
   ApplyInertness(state);
-  ApplyTriggerData(state);
 
   IncrementResolvedStyleCounters(style_request, GetDocument());
   if (InvalidationTracingFlag::IsEnabled()) [[unlikely]] {
@@ -3660,21 +3659,6 @@ StyleRulePositionTry* StyleResolver::ResolvePositionTryRule(
   }
 
   return position_try_rule;
-}
-
-void StyleResolver::ApplyTriggerData(StyleResolverState& state) {
-  if (state.GetPseudoId() != PseudoId::kPseudoIdNone) {
-    // TODO(crbug.com/451477493): Applying trigger data here would clobber the
-    // style of the pseudo's originating element. We should investigate a
-    // cleaner solution to this than making an exception here.
-    return;
-  }
-
-  // TODO(crbug.com/467727342): Move this to a safer location. This function
-  // is called during ResolveStyle which might not correspond to an actual
-  // change in the affected element's style.
-  CSSAnimations::UpdateNamedTriggers(
-      state.StyleBuilder(), state.AnimationUpdate(), state.GetElement());
 }
 
 }  // namespace blink

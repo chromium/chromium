@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
+
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/trigger_scoped_name.h"
 
 namespace blink {
 
@@ -123,32 +125,10 @@ CSSAnimation::PlayStateTransitionScope::~PlayStateTransitionScope() {
     animation_.ignore_css_play_state_ = true;
 }
 
-void CSSAnimation::SetNamedTriggerAttachment(Member<const ScopedCSSName> name,
-                                             AnimationTrigger* trigger) {
-  named_trigger_attachments_.Set(name, trigger);
-}
-
-void CSSAnimation::RemoveStaleNamedTriggerAttachments(
-    const Member<const StyleTriggerAttachmentVector>& attachment_declarations) {
-  HeapHashMap<Member<const ScopedCSSName>, Member<AnimationTrigger>>
-      named_trigger_attachments_copy = named_trigger_attachments_;
-
-  for (const auto& [name, trigger] : named_trigger_attachments_copy) {
-    if (attachment_declarations) {
-      bool name_present = std::any_of(
-          attachment_declarations->begin(), attachment_declarations->end(),
-          [&](Member<StyleTriggerAttachment> attachment) {
-            return attachment->TriggerName()->GetName() == name->GetName();
-          });
-
-      if (name_present) {
-        continue;
-      }
-    }
-
-    trigger->removeAnimation(this);
-    named_trigger_attachments_.erase(name);
-  }
+void CSSAnimation::SetNamedTriggerAttachment(
+    Member<const TriggerScopedName> scope,
+    AnimationTrigger* trigger) {
+  named_trigger_attachments_.Set(scope, trigger);
 }
 
 void CSSAnimation::Trace(blink::Visitor* visitor) const {

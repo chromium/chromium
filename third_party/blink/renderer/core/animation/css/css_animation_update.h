@@ -225,6 +225,9 @@ class CORE_EXPORT CSSAnimationUpdate final {
     changed_timeline_attachments_ = std::move(attachments);
   }
 
+  void SetNeedsNamedTriggerUpdate() { needs_named_trigger_update_ = true; }
+  bool NeedsNamedTriggerUpdate() { return needs_named_trigger_update_; }
+
   const HeapVector<NewCSSAnimation>& NewAnimations() const {
     return new_animations_;
   }
@@ -335,7 +338,8 @@ class CORE_EXPORT CSSAnimationUpdate final {
            !changed_scroll_timelines_.empty() ||
            !changed_view_timelines_.empty() ||
            !changed_deferred_timelines_.empty() ||
-           !changed_timeline_attachments_.empty();
+           !changed_timeline_attachments_.empty() ||
+           needs_named_trigger_update_;
   }
 
   void Trace(Visitor* visitor) const {
@@ -380,6 +384,8 @@ class CORE_EXPORT CSSAnimationUpdate final {
 
   ActiveInterpolationsMap active_interpolations_for_animations_;
   ActiveInterpolationsMap active_interpolations_for_transitions_;
+
+  bool needs_named_trigger_update_ = false;
 
   friend class PendingAnimationUpdate;
 };

@@ -191,6 +191,9 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
     return nullptr;
   }
 
+  static bool TimelineTriggerDataChanged(const CSSAnimationData* old_data,
+                                         const CSSAnimationData* new_data);
+
  private:
   Vector<AtomicString> name_list_;
   Vector<StyleTimeline> timeline_list_;

@@ -1156,35 +1156,33 @@ void FragmentBuilder::PropagateSizeDependentData() {
 
 void FragmentBuilder::SetNamedTrigger(
     const TriggerScopedName& trigger_scoped_name,
-    AnimationTrigger* trigger) {
+    const Element* trigger_owner) {
   TriggerScopedNameMap& named_triggers = EnsureNamedTriggers();
 
   auto it = named_triggers.find(&trigger_scoped_name);
   if (it == named_triggers.end()) {
-    named_triggers.Set(&trigger_scoped_name, trigger);
+    named_triggers.Set(&trigger_scoped_name, trigger_owner);
     return;
   }
 
-  if (it->value == trigger) {
+  if (it->value == trigger_owner) {
     // If we have the same name, scope and trigger, there is nothing to update.
     // We can get here with elements that generate multiple fragments.
     // IsBeforeInPreOrder below doesn't like looking at the same LayoutObjects.
     return;
   }
 
-  DCHECK(trigger->OwningElement());
-  DCHECK(trigger->OwningElement()->GetLayoutObject());
-  DCHECK(it->value->OwningElement());
-  DCHECK(it->value->OwningElement()->GetLayoutObject());
-  const LayoutObject* existing_layout_object =
-      it->value->OwningElement()->GetLayoutObject();
+  DCHECK(trigger_owner);
+  DCHECK(trigger_owner->GetLayoutObject());
+  DCHECK(it->value);
+  DCHECK(it->value->GetLayoutObject());
+  const LayoutObject* existing_layout_object = it->value->GetLayoutObject();
 
   if (existing_layout_object->IsBeforeInPreOrder(
-          *trigger->OwningElement()->GetLayoutObject())) {
-    named_triggers.Set(&trigger_scoped_name, trigger);
+          *trigger_owner->GetLayoutObject())) {
+    named_triggers.Set(&trigger_scoped_name, trigger_owner);
     it = named_triggers.find(&trigger_scoped_name);
-    DCHECK_EQ(it->value->OwningElement()->GetLayoutObject(),
-              trigger->OwningElement()->GetLayoutObject());
+    DCHECK_EQ(it->value->GetLayoutObject(), trigger_owner->GetLayoutObject());
   }
 }
 
@@ -1205,19 +1203,16 @@ void FragmentBuilder::CreateNamedTriggersForSelf() {
   }
 
   const Element* element = DynamicTo<Element>(node_.GetDOMNode());
-  if (!element || !element->NamedTriggers()) {
+  if (!element) {
     return;
   }
 
   if (const CSSAnimationData* data = Style().Animations()) {
     for (const auto& name : data->TimelineTriggerNameList()) {
       if (name) {
-        AnimationTrigger* trigger = element->NamedTrigger(name);
-        DCHECK(trigger);
-
         TriggerScopedName* trigger_scoped_name =
             ToTriggerScopedName(*name, *element);
-        SetNamedTrigger(*trigger_scoped_name, trigger);
+        SetNamedTrigger(*trigger_scoped_name, element);
       }
     }
   }
