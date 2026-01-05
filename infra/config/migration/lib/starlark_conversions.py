@@ -10,6 +10,8 @@ from . import pyl
 from . import values
 
 _MAGIC_ARG_MAPPING = {
+    '$$MAGIC_SUBSTITUTION_AndroidDesktopGtestRemote':
+    'ANDROID_DESKTOP_GTEST_REMOTE',
     '$$MAGIC_SUBSTITUTION_AndroidDesktopTelemetryRemote':
     'ANDROID_DESKTOP_TELEMETRY_REMOTE',
     '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote': 'CROS_TELEMETRY_REMOTE',

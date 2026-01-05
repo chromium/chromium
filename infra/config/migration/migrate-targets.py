@@ -73,11 +73,14 @@ def main(argv: list[str]):
       edits,
   )
 
+  with open(_INFRA_CONFIG_DIR / 'PACKAGE.lock') as f:
+    package = json.load(f)
+
   subprocess.check_call(['lucicfg', 'fmt'], cwd=_INFRA_CONFIG_DIR)
 
   # Regenerate the configs
-  subprocess.check_call([_INFRA_CONFIG_DIR / 'main.star'])
-  subprocess.check_call([_INFRA_CONFIG_DIR / 'dev.star'])
+  for entrypoint in package['packages'][0]['entrypoints']:
+    subprocess.check_call([_INFRA_CONFIG_DIR / entrypoint])
 
   # Copy the relevant portions of the testing/buildbot json files to the
   # newly-generated json files to make it easy to compare what's different
@@ -113,8 +116,8 @@ def main(argv: list[str]):
   subprocess.check_call(['git', 'add', '.'], cwd=_INFRA_CONFIG_DIR)
 
   # Regenerate the configs
-  subprocess.check_call([_INFRA_CONFIG_DIR / 'main.star'])
-  subprocess.check_call([_INFRA_CONFIG_DIR / 'dev.star'])
+  for entrypoint in package['packages'][0]['entrypoints']:
+    subprocess.check_call([_INFRA_CONFIG_DIR / entrypoint])
 
 
 if __name__ == '__main__':

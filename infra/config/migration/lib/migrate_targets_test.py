@@ -516,8 +516,8 @@ class MigrateTargetsTest(unittest.TestCase):
     file_target = f'{star_file}:__pkg__'
     builder_target = f'{star_file}:builder-1'
 
-    mock_buildozer_run.assert_any_call('new_load //lib/targets.star targets',
-                                       file_target)
+    mock_buildozer_run.assert_any_call(
+        'new_load @chromium-luci//targets.star targets', file_target)
 
     temp_name = 'NO_DECLARATION_SHOULD_EXIST_WITH_THIS_NAME'
     temp_target = f'{star_file}:{temp_name}'
@@ -603,7 +603,7 @@ class MigrateTargetsTest(unittest.TestCase):
     # load is always called
     self.assertEqual(mock_buildozer_run.call_count, 1)
     mock_buildozer_run.assert_called_once_with(
-        'new_load //lib/targets.star targets', f'{star_file}:__pkg__')
+        'new_load @chromium-luci//targets.star targets', f'{star_file}:__pkg__')
 
 
 if __name__ == '__main__':

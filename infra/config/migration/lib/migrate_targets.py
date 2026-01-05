@@ -182,11 +182,22 @@ def _compute_edits(
             case ('android_webview_gpu_telemetry_tests'
                   | 'cast_streaming_tests' | 'gpu_telemetry_tests'
                   | 'gtest_tests' | 'isolated_scripts' | 'scripts'):
-              targets_builder.append(starlark_conversions.convert_direct(suite))
+              converted_value = starlark_conversions.convert_direct(suite)
+              converted_value = comments.ensure_no_comments(
+                  suite,
+                  converted_value,
+                  message=f'value for suite type {suite_type.value}')
+              converted_value = comments.comment(suite_type, converted_value)
+              targets_builder.append(converted_value)
 
             case 'skylab_tests' | 'skylab_gpu_telemetry_tests':
-              skylab_targets_builder.append(
-                  starlark_conversions.convert_direct(suite))
+              converted_value = starlark_conversions.convert_direct(suite)
+              converted_value = comments.ensure_no_comments(
+                  suite,
+                  converted_value,
+                  message=f'value for suite type {suite_type.value}')
+              converted_value = comments.comment(suite_type, converted_value)
+              skylab_targets_builder.append(converted_value)
               settings_builder['use_swarming'] = 'False'
 
             case 'junit_tests' | _:
@@ -401,7 +412,7 @@ def update_starlark(
   # on the file level, such as adding a new rule, use __pkg__ as the target name
   file_target = f'{star_file}:__pkg__'
 
-  buildozer.run('new_load //lib/targets.star targets', file_target)
+  buildozer.run('new_load @chromium-luci//targets.star targets', file_target)
 
   def create_defaults(kind):
     # %{kind} as the pattern tells it to operate on all rules of that kind.
