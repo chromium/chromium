@@ -1403,7 +1403,8 @@
       {
         "args": [
           "--enable-features=TreesInViz",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.blink_platform_unittests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.blink_platform_unittests.filter",
+          "--git-revision=${got_revision}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1412,6 +1413,11 @@
         "module_name": "//third_party/blink/renderer/platform:blink_platform_unittests",
         "module_scheme": "gtest",
         "name": "trees_in_viz_blink_platform_unittests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
