@@ -62,7 +62,7 @@ struct ChromeMLModelData {
   // File holding the weights data. The file will be owned by the inference
   // library and closed once weight loading is complete. kApuBackend provides
   // the `model_path` and not this field.
-  PlatformFile weights_file;
+  PlatformFile weights_file = kInvalidPlatformFile;
   // A unique ID to identify `weights_file`s which point to the same data.
   // Matching `file_id` tells the backend that the data also matches.
   std::optional<uint32_t> file_id;
