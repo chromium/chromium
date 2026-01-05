@@ -211,7 +211,10 @@
   font-size: 12px;
   font-weight: 400;
   line-height: 18px;
+  overflow: hidden;
   text-align: start;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   width: 100%;
 }
 
