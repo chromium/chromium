@@ -1,0 +1,16 @@
+{
+  "name": "Block Chrome signin page extension",
+  "declarative_net_request": {
+    "rule_resources": [{
+      "id": "1",
+      "path": "rules.json",
+      "enabled": true
+    }]
+  },
+  "manifest_version": 3,
+  "permissions": [
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback"
+  ],
+  "version": "1.0"
+}
