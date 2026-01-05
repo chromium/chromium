@@ -570,8 +570,11 @@ void TabRestoreServiceHelper::UpdateSavedGroupIDsForTabEntries(
     std::vector<std::unique_ptr<tab_restore::Tab>>& tabs,
     const std::map<tab_groups::TabGroupId, base::Uuid>& group_mapping) {
   for (auto& tab : tabs) {
-    if (tab->group.has_value() && group_mapping.contains(tab->group.value())) {
-      tab->saved_group_id = group_mapping.at(tab->group.value());
+    if (tab->group.has_value()) {
+      if (auto it = group_mapping.find(*tab->group);
+          it != group_mapping.end()) {
+        tab->saved_group_id = it->second;
+      }
     }
   }
 }
