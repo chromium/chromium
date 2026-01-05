@@ -75,7 +75,7 @@ template("swift_source_set") {
     if (defined(invoker.cxx_modulemaps)) {
       configs += [
         ":${target_name}_cxx_interop_config",
-        "//build/config/ios:enable_swift_cxx_interop",
+        "//build/config/ios:swift_cxx_interop",
       ]
 
       # Build targets with a direct dependency on a swift_source_set need to be
