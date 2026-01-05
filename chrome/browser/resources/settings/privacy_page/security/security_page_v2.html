@@ -397,16 +397,16 @@
     <settings-toggle-button id="passwordsLeakToggle"
         pref="{{prefs.generated.password_leak_detection}}"
         label="$i18n{securityPasswordsLeakDetectionTitle}"
-        sub-label="$i18n{securityPasswordsLeakDetectionDesc}" class="box">
+        sub-label="$i18n{securityPasswordsLeakDetectionDesc}">
     </settings-toggle-button>
     <template is="dom-if" if="[[enableSecurityKeysSubpage_]]">
-      <cr-link-row id="securityKeysSubpageTrigger" class="box"
+      <cr-link-row id="securityKeysSubpageTrigger"
           label="$i18n{securityKeysTitle}" sub-label="$i18n{securityKeysDesc}"
           on-click="onSecurityKeysClick_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
     </template>
-    <cr-link-row id="manageCertificatesLinkRow" class="box"
+    <cr-link-row id="manageCertificatesLinkRow"
         role-description="$i18n{subpageArrowRoleDescription}"
         label="$i18n{manageCertificates}"
         sub-label="$i18n{manageCertificatesDescription}"
