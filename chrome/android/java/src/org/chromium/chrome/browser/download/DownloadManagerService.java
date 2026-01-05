@@ -1336,16 +1336,19 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     private void openDownloadItem(DownloadItem downloadItem, @DownloadOpenSource int source) {
         DownloadInfo downloadInfo = downloadItem.getDownloadInfo();
         assumeNonNull(downloadInfo);
-        boolean canOpen =
-                DownloadUtils.openFile(
-                        assertNonNull(downloadInfo.getFilePath()),
-                        downloadInfo.getMimeType(),
-                        downloadInfo.getDownloadGuid(),
-                        downloadInfo.getOtrProfileId(),
-                        downloadInfo.getOriginalUrl().getSpec(),
-                        downloadInfo.getReferrer().getSpec(),
-                        source,
-                        ContextUtils.getApplicationContext());
+        DownloadOpenRequest req =
+            DownloadOpenRequest.builder(
+                    ContextUtils.getApplicationContext(),
+                    assertNonNull(downloadInfo.getFilePath()))
+                .mimeType(downloadInfo.getMimeType())
+                .downloadGuid(downloadInfo.getDownloadGuid())
+                .otrProfileId(downloadInfo.getOtrProfileId())
+                .originalUrl(downloadInfo.getOriginalUrl().getSpec())
+                .referrer(downloadInfo.getReferrer().getSpec())
+                .source(source)
+                .fileName(downloadInfo.getFileName())
+                .build();
+        boolean canOpen = DownloadUtils.openFile(req);
         if (!canOpen) {
             openDownloadsPage(downloadInfo.getOtrProfileId(), source);
         }

@@ -598,6 +598,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/download/DownloadUpdate.java",
   "java/src/org/chromium/chrome/browser/download/DownloadUserInitiatedTaskManager.java",
   "java/src/org/chromium/chrome/browser/download/DownloadUtils.java",
+  "java/src/org/chromium/chrome/browser/download/DownloadOpenRequest.java",
   "java/src/org/chromium/chrome/browser/download/DuplicateDownloadClickableSpan.java",
   "java/src/org/chromium/chrome/browser/download/DuplicateDownloadDialog.java",
   "java/src/org/chromium/chrome/browser/download/DuplicateDownloadDialogBridge.java",

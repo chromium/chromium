@@ -88,7 +88,9 @@ void DownloadUtils::OpenDownload(download::DownloadItem* item,
   Java_DownloadUtils_openDownload(
       env, item->GetTargetFilePath().value(), item->GetMimeType(),
       item->GetGuid(), otr_profile_id, original_url,
-      item->GetReferrerUrl().spec(), static_cast<jint>(open_source));
+      item->GetReferrerUrl().spec(), static_cast<jint>(open_source),
+      base::android::ConvertUTF8ToJavaString(
+        env, item->GetFileNameToReportUser().value()));
 }
 
 // static
