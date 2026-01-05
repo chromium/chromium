@@ -441,6 +441,11 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   }
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  [self updateUIForEditState];
+}
+
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
 
