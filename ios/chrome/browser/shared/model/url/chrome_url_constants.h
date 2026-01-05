@@ -48,6 +48,8 @@ inline constexpr char kChromeUICrashHost[] = "crash";
 inline constexpr char kChromeUIChromeURLsHost[] = "chrome-urls";
 inline constexpr char kChromeUICrashesHost[] = "crashes";
 inline constexpr char kChromeUICreditsHost[] = "credits";
+inline constexpr char kChromeUIConnectorsInternalsHost[] =
+    "connectors-internals";
 inline constexpr char kChromeUIDataSharingInternalsHost[] =
     "data-sharing-internals";
 inline constexpr char kChromeUIDinoHost[] = "dino";

@@ -12,11 +12,14 @@ build_webui("build") {
   web_component_files = [
     "app.ts",
     "connectors_tabs.ts",
-    "signals_reporting.ts",
     "managed_client_certificate.ts",
   ]
 
-  if (!is_android) {
+  if (!is_ios) {
+    web_component_files += [ "signals_reporting.ts" ]
+  }
+
+  if (!is_android && !is_ios) {
     web_component_files += [ "device_trust_connector.ts" ]
   }
 
