@@ -189,22 +189,6 @@ class LocalStorageImplTest : public testing::Test {
     committer.PutMapKeyValueSync(std::move(key), std::move(value));
   }
 
-  // Overwrites the database's version to simulate a corrupt, invalid version.
-  void PutVersionForTesting(AsyncDomStorageDatabase& async_database,
-                            int64_t version) {
-    base::RunLoop run_loop;
-    DbStatus status;
-
-    async_database.database().PostTaskWithThisObject(base::BindLambdaForTesting(
-        [&](DomStorageDatabase* dom_storage_database) {
-          status = dom_storage_database->PutVersionForTesting(version);
-          run_loop.Quit();
-        }));
-
-    run_loop.Run();
-    EXPECT_TRUE(status.ok()) << status.ToString();
-  }
-
   // Use `AsyncDomStorageDatabase::DeleteStorageKeysFromSession()` to delete all
   // local storage key/value pairs and metadata from the database.
   void ClearDatabase() {

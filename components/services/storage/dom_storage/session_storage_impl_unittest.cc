@@ -27,7 +27,7 @@
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
-#include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
+#include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
 #include "components/services/storage/dom_storage/test_support/storage_area_test_util.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -35,7 +35,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/leveldatabase/env_chromium.h"
 
 namespace storage {
 
@@ -469,17 +468,24 @@ void SessionStorageImplTest::TestInvalidVersionOnDisk(
 
   ShutDownSessionStorage();
   {
+    // Re-open the database.
+    base::RunLoop open_db_run_loop;
+    DbStatus status;
+
+    std::unique_ptr<AsyncDomStorageDatabase> database =
+        AsyncDomStorageDatabase::Open(
+            StorageType::kSessionStorage, temp_path(), kSessionStorageDirectory,
+            /*memory_dump_id=*/std::nullopt,
+            base::BindLambdaForTesting([&](DbStatus callback_status) {
+              status = callback_status;
+              open_db_run_loop.Quit();
+            }));
+
+    open_db_run_loop.Run();
+    ASSERT_TRUE(status.ok()) << status.ToString();
+
     // Mess up version number in database.
-    leveldb_env::ChromiumEnv env;
-    std::unique_ptr<leveldb::DB> db;
-    leveldb_env::Options options;
-    options.env = &env;
-    base::FilePath db_path =
-        temp_path().Append(FILE_PATH_LITERAL("Session Storage"));
-    ASSERT_TRUE(leveldb_env::OpenDB(options, db_path.AsUTF8Unsafe(), &db).ok());
-    ASSERT_TRUE(
-        db->Put(leveldb::WriteOptions(), "version", invalid_version_string)
-            .ok());
+    PutVersionForTesting(*database, 654654);
   }
 
   opt_value = DoTestGet(namespace_id, storage_key, "key");
@@ -518,7 +524,7 @@ TEST_F(SessionStorageImplTest, CorruptionOnDisk) {
   EXPECT_EQ(StringViewToUint8Vector("value"), opt_value.value());
 
   ShutDownSessionStorage();
-  // Also flush Task Scheduler tasks to make sure the leveldb is fully closed.
+  // Also flush Task Scheduler tasks to make sure the database is fully closed.
   RunUntilIdle();
 
   // Delete manifest files to mess up opening DB.
@@ -582,12 +588,15 @@ TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
   open_loop->Run();
 
   // Ensure that the first opened database always fails to write data.
-  session_storage_impl()->GetDatabaseForTesting().PostTaskWithThisObject(
-      base::BindLambdaForTesting([&](DomStorageDatabase* db) {
-        db->MakeAllCommitsFailForTesting();
-        db->SetDestructionCallbackForTesting(
-            base::BindLambdaForTesting([&] { ++num_databases_destroyed; }));
-      }));
+  session_storage_impl()
+      ->GetDatabaseForTesting()
+      ->database()
+      .PostTaskWithThisObject(
+          base::BindLambdaForTesting([&](DomStorageDatabase* db) {
+            db->MakeAllCommitsFailForTesting();
+            db->SetDestructionCallbackForTesting(
+                base::BindLambdaForTesting([&] { ++num_databases_destroyed; }));
+          }));
 
   // Verify one attempt was made to open the database.
   ASSERT_EQ(1u, num_database_open_requests);
@@ -695,12 +704,15 @@ TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
   open_loop->Run();
 
   // Ensure that this database always fails to write data.
-  session_storage_impl()->GetDatabaseForTesting().PostTaskWithThisObject(
-      base::BindLambdaForTesting([&](DomStorageDatabase* db) {
-        db->MakeAllCommitsFailForTesting();
-        db->SetDestructionCallbackForTesting(
-            base::BindLambdaForTesting([&] { ++num_databases_destroyed; }));
-      }));
+  session_storage_impl()
+      ->GetDatabaseForTesting()
+      ->database()
+      .PostTaskWithThisObject(
+          base::BindLambdaForTesting([&](DomStorageDatabase* db) {
+            db->MakeAllCommitsFailForTesting();
+            db->SetDestructionCallbackForTesting(
+                base::BindLambdaForTesting([&] { ++num_databases_destroyed; }));
+          }));
 
   // Verify one attempt was made to open the database.
   EXPECT_EQ(1u, num_database_open_requests);
@@ -715,7 +727,7 @@ TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
         open_loop->Quit();
 
         // Ensure that this database also always fails to write data.
-        session_storage_impl()->GetDatabaseForTesting().AsyncCall(
+        session_storage_impl()->GetDatabaseForTesting()->database().AsyncCall(
             &DomStorageDatabase::MakeAllCommitsFailForTesting);
       }));
 
@@ -850,9 +862,10 @@ TEST_F(SessionStorageImplTest, DeleteStorage) {
 }
 
 TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
+  DomStorageDatabase::Key key = StringViewToUint8Vector("key1");
+  DomStorageDatabase::Key value = StringViewToUint8Vector("value1");
+
   std::string namespace_id1 =
-      base::Uuid::GenerateRandomV4().AsLowercaseString();
-  std::string namespace_id2 =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   blink::StorageKey storage_key1 =
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
@@ -862,26 +875,45 @@ TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
   session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area.BindNewPipeAndPassReceiver());
 
-  // Put some data in both.
-  EXPECT_TRUE(test::PutSync(area.get(), StringViewToUint8Vector("key1"),
-                            StringViewToUint8Vector("value1"), std::nullopt,
-                            "source1"));
+  // Write a key/value pair to the map in `area`.
+  EXPECT_TRUE(test::PutSync(area.get(), key, value, std::nullopt, "source1"));
   session_storage_impl()->FlushAreaForTesting(namespace_id1, storage_key1);
-
   area.reset();
 
-  // Clear all the data from the backing database.
-  base::RunLoop loop;
-  session_storage_impl()->DatabaseForTesting()->RunDatabaseTask(
-      base::BindOnce([](DomStorageDatabaseLevelDB& db) {
-        std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
-            db.CreateBatchOperation();
-        EXPECT_TRUE(batch->DeletePrefixed(StringViewToUint8Vector("map")).ok());
-        EXPECT_TRUE(batch->Commit().ok());
-        return 0;
-      }),
-      base::IgnoreArgs<int>(loop.QuitClosure()));
-  loop.Run();
+  // Find the `MapLocator` required to modify the map's key/values in the
+  // database.
+  const SessionStorageMetadata::NamespaceStorageKeyMap&
+      namespace_storage_key_map = session_storage_impl()
+                                      ->GetMetadataForTesting()
+                                      .namespace_storage_key_map();
+  auto namespace_it = namespace_storage_key_map.find(namespace_id1);
+  ASSERT_NE(namespace_it, namespace_storage_key_map.end());
+
+  const std::map<blink::StorageKey,
+                 scoped_refptr<DomStorageDatabase::SharedMapLocator>>&
+      storage_key_map = namespace_it->second;
+  auto storage_key_it = storage_key_map.find(storage_key1);
+  ASSERT_NE(storage_key_it, storage_key_map.end());
+
+  // Verify the key/value pair exists in the database.
+  const DomStorageDatabase::MapLocator& map_locator = *storage_key_it->second;
+  std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> map_entries;
+  ASSERT_NO_FATAL_FAILURE(
+      ReadMapKeyValuesSync(*session_storage_impl()->DatabaseForTesting(),
+                           map_locator.Clone(), &map_entries));
+  EXPECT_EQ(map_entries.size(), 1u);
+  EXPECT_EQ(map_entries[key], value);
+
+  // Delete the key/value pair from the database.
+  FakeCommitter committer(session_storage_impl()->DatabaseForTesting(),
+                          map_locator.Clone());
+  committer.ClearMapSync();
+
+  // Verify the key/value pair no longer exists in the database.
+  ASSERT_NO_FATAL_FAILURE(
+      ReadMapKeyValuesSync(*session_storage_impl()->DatabaseForTesting(),
+                           map_locator.Clone(), &map_entries));
+  EXPECT_EQ(map_entries.size(), 0u);
 
   // Now open many new wrappers (for different storage_keys) to trigger clean
   // up.

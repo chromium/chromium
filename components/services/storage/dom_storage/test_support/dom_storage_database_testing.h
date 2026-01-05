@@ -97,11 +97,16 @@ class FakeCommitter : public AsyncDomStorageDatabase::Committer {
   void PutMapKeyValueSync(DomStorageDatabase::Key key,
                           DomStorageDatabase::Value value);
 
+  // Deletes all of the map's key/value pairs.
+  void ClearMapSync();
+
   // `AsyncDomStorageDatabase::Committer`:
   std::optional<DomStorageDatabase::MapBatchUpdate> CollectCommit() override;
   base::OnceCallback<void(DbStatus)> GetCommitCompleteCallback() override;
 
  private:
+  void CommitSync(DomStorageDatabase::MapBatchUpdate map_update);
+
   // Records `commit_complete_result_` then quits `commit_complete_run_loop_`.
   void OnCommitCompleted(DbStatus status);
 
@@ -114,6 +119,10 @@ class FakeCommitter : public AsyncDomStorageDatabase::Committer {
   std::unique_ptr<base::RunLoop> commit_complete_run_loop_;
   std::optional<DbStatus> commit_complete_result_;
 };
+
+// Overwrites the database's version to simulate a corrupt, invalid version.
+void PutVersionForTesting(AsyncDomStorageDatabase& async_database,
+                          int64_t version);
 
 }  // namespace storage
 

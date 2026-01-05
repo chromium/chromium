@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "storage/common/database/db_status.h"
@@ -290,6 +291,27 @@ void FakeCommitter::PutMapKeyValueSync(DomStorageDatabase::Key key,
   // Create a batch update that writes `key` and `value`.
   DomStorageDatabase::MapBatchUpdate map_update(map_locator_.Clone());
   map_update.entries_to_add.emplace_back(std::move(key), std::move(value));
+  CommitSync(std::move(map_update));
+}
+
+std::optional<DomStorageDatabase::MapBatchUpdate>
+FakeCommitter::CollectCommit() {
+  return std::exchange(pending_commit_, std::nullopt);
+}
+
+void FakeCommitter::ClearMapSync() {
+  // Create a batch update that clears all keys and values.
+  DomStorageDatabase::MapBatchUpdate map_update(map_locator_.Clone());
+  map_update.clear_all_first = true;
+  CommitSync(std::move(map_update));
+}
+
+base::OnceCallback<void(DbStatus)> FakeCommitter::GetCommitCompleteCallback() {
+  return base::BindOnce(&FakeCommitter::OnCommitCompleted,
+                        base::Unretained(this));
+}
+
+void FakeCommitter::CommitSync(DomStorageDatabase::MapBatchUpdate map_update) {
   pending_commit_ = std::move(map_update);
 
   // Commit the update to the database.
@@ -301,26 +323,31 @@ void FakeCommitter::PutMapKeyValueSync(DomStorageDatabase::Key key,
   commit_complete_run_loop_->Run();
   commit_complete_run_loop_.reset();
 
-  // Verify that Put() successfully wrote an entry to the database.
+  // Verify that the commit succeeded.
   ASSERT_NE(commit_complete_result_, std::nullopt);
   EXPECT_TRUE(commit_complete_result_->ok())
       << commit_complete_result_->ToString();
   commit_complete_result_.reset();
 }
 
-std::optional<DomStorageDatabase::MapBatchUpdate>
-FakeCommitter::CollectCommit() {
-  return std::exchange(pending_commit_, std::nullopt);
-}
-
-base::OnceCallback<void(DbStatus)> FakeCommitter::GetCommitCompleteCallback() {
-  return base::BindOnce(&FakeCommitter::OnCommitCompleted,
-                        base::Unretained(this));
-}
-
 void FakeCommitter::OnCommitCompleted(DbStatus status) {
   commit_complete_result_ = status;
   commit_complete_run_loop_->Quit();
+}
+
+void PutVersionForTesting(AsyncDomStorageDatabase& async_database,
+                          int64_t version) {
+  base::RunLoop run_loop;
+  DbStatus status;
+
+  async_database.database().PostTaskWithThisObject(
+      base::BindLambdaForTesting([&](DomStorageDatabase* dom_storage_database) {
+        status = dom_storage_database->PutVersionForTesting(version);
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+  EXPECT_TRUE(status.ok()) << status.ToString();
 }
 
 }  // namespace storage
