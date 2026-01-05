@@ -63,6 +63,8 @@ class CWVPreferencesTest : public PlatformTest {
         ios_web_view::kCWVAutofillVCNUsageEnabled, false);
     pref_registry->RegisterBooleanPref(ios_web_view::kUseImageFetcherEnabled,
                                        false);
+    pref_registry->RegisterBooleanPref(ios_web_view::kUseCardCustomImageEnabled,
+                                       false);
 
     base::FilePath temp_dir_path;
     EXPECT_TRUE(base::PathService::Get(base::DIR_TEMP, &temp_dir_path));
@@ -151,6 +153,16 @@ TEST_F(CWVPreferencesTest, UseImageFetcherEnabled) {
   EXPECT_FALSE(preferences.useImageFetcherEnabled);
   preferences.useImageFetcherEnabled = YES;
   EXPECT_TRUE(preferences.useImageFetcherEnabled);
+}
+
+// Tests CWVPreferences `useCardCustomImageEnabled`.
+TEST_F(CWVPreferencesTest, useCardCustomImageEnabled) {
+  std::unique_ptr<PrefService> pref_service = CreateTestPrefService();
+  CWVPreferences* preferences =
+      [[CWVPreferences alloc] initWithPrefService:pref_service.get()];
+  EXPECT_FALSE(preferences.useCardCustomImageEnabled);
+  preferences.useCardCustomImageEnabled = YES;
+  EXPECT_TRUE(preferences.useCardCustomImageEnabled);
 }
 
 // Tests CWVPreferences `passwordAffiliationEnabled`.
