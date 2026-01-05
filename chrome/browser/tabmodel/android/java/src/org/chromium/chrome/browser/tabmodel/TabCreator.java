@@ -13,6 +13,8 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * Creates Tabs. If the TabCreator creates Tabs asynchronously, null pointers will be returned
  * everywhere instead of a Tab.
@@ -97,10 +99,12 @@ public interface TabCreator {
      * @param webContents The web contents to create a Tab around.
      * @param type The TabLaunchType describing how this Tab was created.
      * @param url URL to show in the Tab. (Needed only for asynchronous tab creation.)
-     * @param addTabToModel Whether the newly created Tab should be added to the tab model.
-     *     Typically this should be true, however, sometimes it is beneficial to create a Tab
-     *     without adding it to the current TabModel (e.g. if the Tab will ultimately be shown to
-     *     the user in a new window).
+     * @param addTabToModel A CompletableFuture that should be eventually completed by the caller
+     *     with the decision whether the newly created Tab should be added to the tab model.
+     *     Typically this Future should be already completed with |true| before passing it to this
+     *     method, however, sometimes it is beneficial to create a Tab without adding it to the
+     *     current TabModel (e.g. if the Tab will ultimately be shown to the user in a new window
+     *     and it's not possible to make this decision at new Tab's creation time).
      * @return The new Tab or null if a Tab was not created successfully.
      */
     default @Nullable Tab createTabWithWebContents(
@@ -109,7 +113,7 @@ public interface TabCreator {
             WebContents webContents,
             @TabLaunchType int type,
             GURL url,
-            boolean addTabToModel) {
+            CompletableFuture<Boolean> addTabToModel) {
         return createTabWithWebContents(
                 parent,
                 shouldPin,
@@ -129,10 +133,12 @@ public interface TabCreator {
      * @param type The TabLaunchType describing how this Tab was created.
      * @param url URL to show in the Tab. (Needed only for asynchronous tab creation.)
      * @param index The index to insert the tab at.
-     * @param addTabToModel Whether the newly created Tab should be added to the tab model.
-     *     Typically this should be true, however, sometimes it is beneficial to create a Tab
-     *     without adding it to the current TabModel (e.g. if the Tab will ultimately be shown to
-     *     the user in a new window).
+     * @param addTabToModel A CompletableFuture that should be eventually completed by the caller
+     *     with the decision whether the newly created Tab should be added to the tab model.
+     *     Typically this Future should be already completed with |true| before passing it to this
+     *     method, however, sometimes it is beneficial to create a Tab without adding it to the
+     *     current TabModel (e.g. if the Tab will ultimately be shown to the user in a new window
+     *     and it's not possible to make this decision at new Tab's creation time).
      * @return The new Tab or null if a Tab was not created successfully.
      */
     @Nullable Tab createTabWithWebContents(
@@ -142,7 +148,7 @@ public interface TabCreator {
             @TabLaunchType int type,
             GURL url,
             int index,
-            boolean addTabToModel);
+            CompletableFuture<Boolean> addTabToModel);
 
     /**
      * Creates a {@link Tab} with the same history stack as {@param parent}.

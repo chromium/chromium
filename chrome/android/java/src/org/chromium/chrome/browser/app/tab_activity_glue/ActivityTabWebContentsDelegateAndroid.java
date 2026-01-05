@@ -76,6 +76,7 @@ import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 /**
@@ -292,6 +293,8 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                                 .getInterceptNavigationDelegate()
                                 .shouldReparentTab(targetUrl);
 
+        final CompletableFuture<Boolean> addTabToModel =
+                CompletableFuture.completedFuture(!openingPopup && !willReparentTab);
         Tab tab =
                 tabCreator.createTabWithWebContents(
                         mTab,
@@ -299,8 +302,10 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                         webContents,
                         TabLaunchType.FROM_LONGPRESS_FOREGROUND,
                         targetUrl,
-                        !openingPopup && !willReparentTab);
+                        addTabToModel);
         if (tab == null) return false;
+
+        assert addTabToModel.isDone();
 
         if (openingPopup) {
             assert window != null;

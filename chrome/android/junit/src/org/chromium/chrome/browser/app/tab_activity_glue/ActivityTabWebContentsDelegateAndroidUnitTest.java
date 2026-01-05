@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.app.tab_activity_glue;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -62,6 +63,7 @@ import org.chromium.url.GURL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 /** Unit test for {@link ActivityTabWebContentsDelegateAndroid}. */
@@ -281,8 +283,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         doReturn(Token.createRandom()).when(parentTab).getTabGroupId();
         doReturn(newTab)
                 .when(mTabCreator)
-                .createTabWithWebContents(
-                        any(), anyBoolean(), any(), anyInt(), any(), anyBoolean());
+                .createTabWithWebContents(any(), anyBoolean(), any(), anyInt(), any(), any());
         doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(any());
         doReturn(true).when(mTabGroupModelFilter).isTabModelRestored();
         Map<WebContents, Tab> tabMap = Map.of(mWebContents, parentTab, newWebContents, newTab);
@@ -309,8 +310,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         Tab newTab = mock(Tab.class);
         doReturn(newTab)
                 .when(mTabCreator)
-                .createTabWithWebContents(
-                        any(), anyBoolean(), any(), anyInt(), any(), anyBoolean());
+                .createTabWithWebContents(any(), anyBoolean(), any(), anyInt(), any(), any());
 
         mTabWebContentsDelegateAndroid.addNewContents(
                 mWebContents,
@@ -321,10 +321,18 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 true,
                 null);
 
+        ArgumentCaptor<CompletableFuture> futureCaptor =
+                ArgumentCaptor.forClass(CompletableFuture.class);
         verify(mTabCreator, times(1))
-                .createTabWithWebContents(any(), anyBoolean(), any(), anyInt(), any(), eq(true));
-        verify(mTabCreator, never())
-                .createTabWithWebContents(any(), anyBoolean(), any(), anyInt(), any(), eq(false));
+                .createTabWithWebContents(
+                        any(), anyBoolean(), any(), anyInt(), any(), futureCaptor.capture());
+        CompletableFuture<Boolean> capturedFuture = futureCaptor.getValue();
+        assertTrue(
+                "The final decision to add the tab to the TabModel should have already been made",
+                capturedFuture.isDone());
+        assertTrue(
+                "The final decision to add the tab to the TabModel should be positive",
+                capturedFuture.getNow(null));
     }
 
     @Test

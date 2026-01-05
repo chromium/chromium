@@ -51,6 +51,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 /** This class creates various kinds of new tabs and adds them to the right {@link TabModel}. */
@@ -479,8 +480,8 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
             WebContents webContents,
             @TabLaunchType int type,
             GURL url,
-            int position,
-            boolean addTabToModel) {
+            int suggestedPosition,
+            CompletableFuture<Boolean> futureAddTabToModel) {
         assert webContents != null;
 
         // The parent tab was already closed. Do not open child tabs.
@@ -490,11 +491,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
         // Measure tab creation duration for different launch types to understand tab creation
         // performance using an existing WebContents.
         try (TraceEvent te = TraceEvent.scoped("ChromeTabCreator.createTabWithWebContents")) {
-            if (position == TabModel.INVALID_TAB_INDEX) {
-                int index = TabModelUtils.getTabIndexById(mTabModel, parentId);
-                // If parent is in the same tab model, place the new tab next to it.
-                if (index != TabModel.INVALID_TAB_INDEX) position = index + 1;
-            }
+            final int position = evaluateNewTabPosition(suggestedPosition, parentId);
 
             boolean openInForeground = mOrderController.willOpenInForeground(type, mIncognito);
             TabDelegateFactory delegateFactory =
@@ -532,7 +529,12 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
                                 ? TabCreationState.LIVE_IN_FOREGROUND
                                 : TabCreationState.LIVE_IN_BACKGROUND;
             }
-            if (addTabToModel) mTabModel.addTab(tab, position, type, creationState);
+            futureAddTabToModel.thenAccept(
+                    addTabToModel -> {
+                        if (addTabToModel) {
+                            mTabModel.addTab(tab, position, type, creationState);
+                        }
+                    });
             return tab;
         }
     }
@@ -792,5 +794,28 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
     /** Returns the default tab delegate factory to be used if creating new tabs w/o parents. */
     private @Nullable TabDelegateFactory createDefaultTabDelegateFactory() {
         return mTabDelegateFactorySupplier != null ? mTabDelegateFactorySupplier.get() : null;
+    }
+
+    /**
+     * Returns the best position in the {@link TabModel} of the new tab basing on the explicitly
+     * suggested position and, if not provided, on whereabouts of its parent tab.
+     */
+    private int evaluateNewTabPosition(int suggestedPosition, int parentId) {
+        if (suggestedPosition != TabModel.INVALID_TAB_INDEX) {
+            return suggestedPosition;
+        }
+        if (parentId == Tab.INVALID_TAB_ID) {
+            return TabModel.INVALID_TAB_INDEX;
+        }
+
+        // This eventually calls the native part. For performance reasons be careful not to call
+        // this when not necessary.
+        final int index = TabModelUtils.getTabIndexById(mTabModel, parentId);
+
+        if (index != TabModel.INVALID_TAB_INDEX) {
+            return index + 1;
+        }
+
+        return TabModel.INVALID_TAB_INDEX;
     }
 }

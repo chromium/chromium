@@ -15,6 +15,7 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * A {@link TabCreator} that doesn't create anything, always returning nulls. But it records and
@@ -108,7 +109,7 @@ public class AccumulatingTabCreator implements TabCreator {
             @TabLaunchType int type,
             GURL url,
             int index,
-            boolean addTabToModel) {
+            CompletableFuture<Boolean> addTabToModel) {
         // Should never be called.
         assert false;
         return null;

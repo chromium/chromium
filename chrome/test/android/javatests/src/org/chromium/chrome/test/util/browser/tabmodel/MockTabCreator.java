@@ -22,6 +22,8 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
+import java.util.concurrent.CompletableFuture;
+
 /** MockTabCreator for use in tests. */
 public class MockTabCreator implements TabCreator {
     public final SparseArray<TabState> created;
@@ -99,7 +101,7 @@ public class MockTabCreator implements TabCreator {
             @TabLaunchType int type,
             GURL url,
             int index,
-            boolean addTabToModel) {
+            CompletableFuture<Boolean> addTabToModel) {
         return null;
     }
 

@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 /** Bridges between the C++ and Java {@link TabModel} interfaces. */
 @NullMarked
@@ -293,7 +294,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                         type,
                         webContents.getVisibleUrl(),
                         index,
-                        /* addTabToModel= */ true);
+                        /* addTabToModel= */ CompletableFuture.completedFuture(true));
     }
 
     @CalledByNative
