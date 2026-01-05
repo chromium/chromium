@@ -2016,13 +2016,6 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
           "enabled", base::FeatureList::IsEnabled(
                          ::features::kDevToolsIndividualRequestThrottling)));
 
-  base::Value::Dict starting_style_debugging;
-  starting_style_debugging.Set(
-      "enabled", base::FeatureList::IsEnabled(
-                     ::features::kDevToolsStartingStyleDebugging));
-  response_dict.Set("devToolsStartingStyleDebugging",
-                    std::move(starting_style_debugging));
-
   base::Value::Dict prompt_api_dict;
   prompt_api_dict.Set("enabled", base::FeatureList::IsEnabled(
                                      ::features::kDevToolsAiPromptApi));

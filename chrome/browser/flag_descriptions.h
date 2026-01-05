@@ -522,11 +522,6 @@ inline constexpr char kDevToolsProjectSettingsDescription[] =
     "form of a `com.chrome.devtools.json` file from a well-known URI "
     "on local debugging targets.";
 
-inline constexpr char kDevToolsStartingStyleDebuggingName[] =
-    "DevTools @starting-style debugging";
-inline constexpr char kDevToolsStartingStyleDebuggingDescription[] =
-    "Enables the debugging of @starting-style in the elements panel.";
-
 inline constexpr char kEnableAdpfEfficiencyModeName[] =
     "Android Power Efficiency Mode";
 inline constexpr char kEnableAdpfEfficiencyModeDescription[] =

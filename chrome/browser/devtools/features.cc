@@ -196,9 +196,6 @@ const base::FeatureParam<bool> kDevToolsAiPromptApiAllowWithoutGpu{
     &kDevToolsAiPromptApi, "allow_without_gpu",
     /*default_value=*/false};
 
-// Whether showing animation styles in the styles tab is enabled.
-BASE_FEATURE(kDevToolsStartingStyleDebugging, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether Network panel should use Durable Messages to preserve network bodies.
 BASE_FEATURE(kDevToolsEnableDurableMessages, base::FEATURE_DISABLED_BY_DEFAULT);
 
