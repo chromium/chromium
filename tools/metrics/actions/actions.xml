@@ -189,7 +189,6 @@ should be able to be added at any place in this file.
       summary="For AddToHomescreen IPH feature."/>
   <variant name="_AddToHomescreenTextBubble"
       summary="For AddToHomescreen IPH feature using text bubble (obsolete)."/>
-  <variant name="_AIHubNewBadge" summary="For AI Hub New Badge feature."/>
   <variant name="_AndroidTabDeclutter" summary="For archived tabs on android."/>
   <variant name="_AppSpecificHistory"
       summary="For App Specific History feature."/>
@@ -382,8 +381,6 @@ should be able to be added at any place in this file.
       summary="For FocusHelpBubbleScreenReaderPromo feature."/>
   <variant name="_FollowWhileBrowsing"
       summary="For Follow While-Browsing IPH feature."/>
-  <variant name="_GeminiContextualCueChip"
-      summary="For Gemini contextual cue chip feature."/>
   <variant name="_GenericAlwaysTriggerHelpUiFeature"
       summary="For generic always show help UI feature."/>
   <variant name="_GlicPromo" summary="For Glic feature."/>
@@ -417,6 +414,7 @@ should be able to be added at any place in this file.
                intent chip."/>
   <variant name="_iOSAddressPromoDesktop"
       summary="For iOSAddressPromoDesktop feature"/>
+  <variant name="_iOSAIHubNewBadge" summary="For AI Hub New Badge feature."/>
   <variant name="_IOSBWGPromoFeature" summary="For IOSBWGPromoFeature feature"/>
   <variant name="_iOSChoiceScreen"
       summary="(obsolete) For iOSChoiceScreen feature"/>
@@ -448,6 +446,8 @@ should be able to be added at any place in this file.
       summary="For iOSFeedSwipeAnimatedFeature feature"/>
   <variant name="_iOSFeedSwipeStaticFeature"
       summary="For iOSFeedSwipeStaticFeature feature"/>
+  <variant name="_iOSGeminiContextualCueChip"
+      summary="For Gemini contextual cue chip feature."/>
   <variant name="_iOSGeminiFullscreenPromoFeature"
       summary="For iOSGeminiFullscreenPromoFeature feature"/>
   <variant name="_iOSHistoryOnOverflowMenuFeature"

@@ -53,7 +53,6 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_AddToHomescreenTextBubble"
       summary="(obsolete) educating users about adding website shortcuts to
                their home screen (using a text bubble)"/>
-  <variant name="IPH_AIHubNewBadge" summary="AI Hub entrypoint on the omnibox"/>
   <variant name="IPH_AndroidTabDeclutter"
       summary="Shows how to access tabs which have been archived."/>
   <variant name="IPH_AppSpecificHistory" summary="App Specific History action"/>
@@ -252,8 +251,6 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_FeedSwipeRefresh" summary="swipe refreshing feeds on NTP"/>
   <variant name="IPH_FollowWhileBrowsing"
       summary="IPH for following the current site"/>
-  <variant name="IPH_GeminiContextualCueChip"
-      summary="Gemini contextual cue chip on the omnibox"/>
   <variant name="IPH_GenericAlwaysTriggerHelpUiFeature"
       summary="generic feature to always show help Ui whenever asked"/>
   <variant name="IPH_GlicPromo" summary="Glic promotion"/>
@@ -283,6 +280,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_IntentChip" summary="opening a webpage in an app"/>
   <variant name="IPH_iOSAddressPromoDesktop"
       summary="showing the iOS address promo on desktop"/>
+  <variant name="IPH_iOSAIHubNewBadge"
+      summary="AI Hub entrypoint on the omnibox"/>
   <variant name="IPH_iOSBWGPromo" summary="shows users a promo for BWG"/>
   <variant name="IPH_iOSChoiceScreenFeature"
       summary="(obsolete) showing the Choice screen on iOS"/>
@@ -315,6 +314,8 @@ chromium-metrics-reviews@google.com.
       summary="Showing the animated Feed Swipe IPH on iOS."/>
   <variant name="IPH_iOSFeedSwipeStaticFeature"
       summary="Showing the static Feed Swipe IPH on iOS."/>
+  <variant name="IPH_iOSGeminiContextualCueChip"
+      summary="Gemini contextual cue chip on the omnibox"/>
   <variant name="IPH_iOSGeminiFullscreenPromoFeature"
       summary="showing the fullscreen Gemini promo on iOS"/>
   <variant name="IPH_iOSHistoryOnOverflowMenuFeature"
