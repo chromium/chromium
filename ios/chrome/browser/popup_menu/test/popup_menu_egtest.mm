@@ -88,9 +88,7 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
   // Tap entry to go back 3 pages, and verify that entry 1 is loaded.
   [[EarlGrey selectElementWithMatcher:grey_text(entry1)]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::OmniboxText(URL1.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:URL1];
 
   // Long press forward button.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ForwardButton()]
@@ -106,9 +104,7 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
   // Tap entry to go forward 2 pages, and verify that entry 3 is loaded.
   [[EarlGrey selectElementWithMatcher:grey_text(entry3)]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::OmniboxText(URL3.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:URL3];
 }
 
 #pragma mark - Tools Menu
