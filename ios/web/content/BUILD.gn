@@ -43,6 +43,7 @@ source_set("content") {
     "//components/embedder_support/ios:web_contents_delegate",
     "//components/javascript_dialogs",
     "//components/js_injection/browser",
+    "//components/js_injection/common:common_mojom",
     "//content/public/browser",
     "//ios/web/annotations",
     "//ios/web/common",
