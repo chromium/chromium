@@ -34,7 +34,7 @@ bool IDNToASCII(std::u16string_view src, CanonOutputW* output) {
 
   std::u16string utf16_result =
       base::android::ConvertJavaStringToUTF16(java_result);
-  output->Append(utf16_result.data(), utf16_result.size());
+  output->Append(utf16_result);
   return true;
 }
 

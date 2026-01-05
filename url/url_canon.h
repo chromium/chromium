@@ -120,16 +120,15 @@ class CanonOutputT {
   }
 
   // Appends the given string to the output.
-  void Append(const T* str, size_t str_len) {
+  void Append(std::basic_string_view<T> str) {
+    size_t str_len = str.length();
     if (str_len > buffer_len_ - cur_len_) {
       if (!Grow(str_len - (buffer_len_ - cur_len_)))
         return;
     }
-    UNSAFE_TODO(memcpy(buffer_ + cur_len_, str, str_len * sizeof(T)));
+    Span().subspan(cur_len_, str_len).copy_from(base::span(str));
     cur_len_ += str_len;
   }
-
-  void Append(std::basic_string_view<T> str) { Append(str.data(), str.size()); }
 
   void ReserveSizeIfNeeded(size_t estimated_size) {
     // Reserve a bit extra to account for escaped chars.
@@ -160,6 +159,12 @@ class CanonOutputT {
     } while (new_len < buffer_len_ + min_additional);
     Resize(new_len);
     return true;
+  }
+
+  // Returns a span for the whole buffer.
+  base::span<T> Span() {
+    // SAFETY: Resize() must ensure `buffer_` has `buffer_len_` size.
+    return UNSAFE_BUFFERS(base::span(buffer_, buffer_len_));
   }
 
   // RAW_PTR_EXCLUSION: Performance (based on analysis of sampling profiler

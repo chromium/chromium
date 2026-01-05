@@ -78,7 +78,7 @@ void DoAppendStringOfType(std::basic_string_view<CHAR> source,
   if constexpr (sizeof(CHAR) == 1) {
     if (type == CHAR_QUERY && length >= kMinimumLengthForSIMD) {
       i = FindInitialQuerySafeString(source);
-      output->Append(source.data(), i);
+      output->Append(source.substr(0, i));
     }
   }
   for (; i < length; i++) {

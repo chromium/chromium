@@ -421,8 +421,7 @@ bool DoReplaceComponents(std::string_view spec,
     size_t spec_after_colon =
         parsed.scheme.is_valid() ? parsed.scheme.end() + 1 : 1;
     if (spec.length() > spec_after_colon) {
-      scheme_replaced.Append(&spec[spec_after_colon],
-                             spec.length() - spec_after_colon);
+      scheme_replaced.Append(spec.substr(spec_after_colon));
     }
 
     // We now need to completely re-parse the resulting string since its meaning
