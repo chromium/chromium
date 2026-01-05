@@ -198,8 +198,7 @@
 
 - (void)signinDone {
   if (![self isSignedIn]) {
-    // TODO(crbug.com/418696054): Convert to NOTREACHED.
-    DUMP_WILL_BE_NOTREACHED();
+    NOTREACHED(base::NotFatalUntil::M150);
     return;
   }
   _syncUserSettings->SetSelectedType(syncer::UserSelectableType::kHistory,
