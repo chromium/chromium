@@ -288,6 +288,7 @@ class TabDragController : public views::WidgetObserver,
   std::unique_ptr<tabs::TabModel> DetachTabAtForInsertion(
       int drag_idx) override;
   const DragSessionData& GetSessionData() const override;
+  const TabDragContext* GetAttachedContext() const override;
 
   // Forget the source tabstrip. It doesn't exist any more, so it doesn't
   // make sense to insert dragged tabs back into it if the drag is reverted.

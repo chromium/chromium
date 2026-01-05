@@ -795,6 +795,10 @@ const DragSessionData& TabDragController::GetSessionData() const {
   return drag_data_;
 }
 
+const TabDragContext* TabDragController::GetAttachedContext() const {
+  return attached_context();
+}
+
 void TabDragController::OnSourceTabStripEmpty() {
   // NULL out source_context_ so that we don't attempt to add back to it (in
   // the case of a revert).

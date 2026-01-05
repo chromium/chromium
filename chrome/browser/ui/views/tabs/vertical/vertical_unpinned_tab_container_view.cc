@@ -111,8 +111,8 @@ TabDragContext* VerticalUnpinnedTabContainerView::OnTabDragUpdated(
   // Used to determine whether the layout should snap into position without
   // animating at the end of this drag cycle.
   bool is_initial_drag = false;
-  if (!TabDragController::IsAttachedTo(
-          controller->GetDragHandler().GetDragContext())) {
+  if (drag_controller.GetAttachedContext() !=
+      controller->GetDragHandler().GetDragContext()) {
     // Do nothing until the drag attaches to this window's context.
     return controller->GetDragHandler().GetDragContext();
   } else if (dragging_views_.empty()) {

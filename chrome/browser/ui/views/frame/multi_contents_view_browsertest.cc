@@ -62,6 +62,7 @@ class MockDragController : public TabDragTarget::DragController {
               (int),
               (override));
   MOCK_METHOD(const DragSessionData&, GetSessionData, (), (const, override));
+  MOCK_METHOD(const TabDragContext*, GetAttachedContext, (), (const, override));
 };
 
 }  // namespace

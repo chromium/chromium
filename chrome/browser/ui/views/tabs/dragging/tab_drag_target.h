@@ -42,6 +42,7 @@ class TabDragTarget {
     virtual std::unique_ptr<tabs::TabModel> DetachTabAtForInsertion(
         int drag_idx) = 0;
     virtual const DragSessionData& GetSessionData() const = 0;
+    virtual const TabDragContext* GetAttachedContext() const = 0;
   };
 
   virtual ~TabDragTarget() = default;
