@@ -50,12 +50,17 @@ media::JpegHuffmanTable ConvertToJpegHuffmanTable(
     const media::fuzzing::JpegHuffmanTable& proto_huffman_table) {
   media::JpegHuffmanTable huffman_table{};
   huffman_table.valid = proto_huffman_table.valid();
-  memcpy(huffman_table.code_length, proto_huffman_table.code_length().data(),
-         std::min(std::size(huffman_table.code_length),
-                  proto_huffman_table.code_length().size()));
-  memcpy(huffman_table.code_value, proto_huffman_table.code_value().data(),
-         std::min(std::size(huffman_table.code_value),
-                  proto_huffman_table.code_value().size()));
+  const size_t code_length_min_size =
+      std::min(huffman_table.code_length.size(),
+               proto_huffman_table.code_length().size());
+  base::span(huffman_table.code_length)
+      .copy_prefix_from(base::span(proto_huffman_table.code_value())
+                            .first(code_length_min_size));
+  const size_t code_value_min_size = std::min(
+      huffman_table.code_value.size(), proto_huffman_table.code_value().size());
+  base::span(huffman_table.code_value)
+      .copy_prefix_from(base::span(proto_huffman_table.code_value())
+                            .first(code_value_min_size));
   return huffman_table;
 }
 
@@ -121,9 +126,12 @@ media::JpegParseResult ConvertToJpegParseResult(
     const media::fuzzing::JpegQuantizationTable& input_q_table =
         proto_parse_result.q_table()[i];
     parse_result.q_table[i].valid = input_q_table.valid();
-    memcpy(parse_result.q_table[i].value, input_q_table.value().data(),
-           std::min(std::size(parse_result.q_table[i].value),
-                    input_q_table.value().size()));
+    const size_t value_min_size = std::min(
+        std::size(parse_result.q_table[i].value), input_q_table.value().size());
+    base::span(parse_result.q_table[i].value)
+        .first(value_min_size)
+        .copy_from_nonoverlapping(
+            base::span(input_q_table.value()).first(value_min_size));
   }
 
   // Convert the scan header.

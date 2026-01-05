@@ -8,6 +8,7 @@
 #include <va/va.h>
 
 #include <iostream>
+#include <numeric>
 #include <type_traits>
 
 #include "base/compiler_specific.h"
@@ -33,15 +34,17 @@ static void FillPictureParameters(
   pic_param->picture_height = frame_header.coded_height;
   pic_param->num_components = frame_header.num_components;
 
-  for (int i = 0; i < pic_param->num_components; i++) {
-    UNSAFE_TODO(pic_param->components[i]).component_id =
-        frame_header.components[i].id;
-    UNSAFE_TODO(pic_param->components[i]).h_sampling_factor =
-        frame_header.components[i].horizontal_sampling_factor;
-    UNSAFE_TODO(pic_param->components[i]).v_sampling_factor =
-        frame_header.components[i].vertical_sampling_factor;
-    UNSAFE_TODO(pic_param->components[i]).quantiser_table_selector =
-        frame_header.components[i].quantization_table_selector;
+  const auto pic_param_components = base::span(pic_param->components);
+  const auto frame_header_components = base::span(frame_header.components);
+
+  for (size_t i = 0; i < frame_header_components.size(); i++) {
+    pic_param_components[i].component_id = frame_header_components[i].id;
+    pic_param_components[i].h_sampling_factor =
+        frame_header_components[i].horizontal_sampling_factor;
+    pic_param_components[i].v_sampling_factor =
+        frame_header_components[i].vertical_sampling_factor;
+    pic_param_components[i].quantiser_table_selector =
+        frame_header_components[i].quantization_table_selector;
   }
 }
 
@@ -53,13 +56,17 @@ static void FillIQMatrix(base::span<const JpegQuantizationTable> q_table,
   static_assert(
       sizeof(iq_matrix->quantiser_table[0]) == sizeof(q_table[0].value),
       "number of quantization entries mismatched");
+
+  auto load_quantiser_table = base::span(iq_matrix->load_quantiser_table);
+  auto iq_matrix_quantiser_table = base::span(iq_matrix->quantiser_table);
+
   for (size_t i = 0; i < kJpegMaxQuantizationTableNum; i++) {
     if (!q_table[i].valid)
       continue;
-    UNSAFE_TODO(iq_matrix->load_quantiser_table[i]) = 1;
-    for (size_t j = 0; j < std::size(q_table[i].value); j++)
-      UNSAFE_TODO(iq_matrix->quantiser_table[i][j]) =
-          UNSAFE_TODO(q_table[i].value[j]);
+    load_quantiser_table[i] = 1;
+
+    auto dest_span = base::span(iq_matrix_quantiser_table[i]);
+    dest_span.copy_from_nonoverlapping(q_table[i].value);
   }
 }
 
@@ -88,42 +95,49 @@ static void FillHuffmanTable(base::span<const JpegHuffmanTable> dc_table,
   static_assert(sizeof(huffman_table->huffman_table[0].dc_values[0]) ==
                     sizeof(dc_table[0].code_value[0]),
                 "size of huffman table code value mismatch");
+
+  auto load_huffman_table_span = base::span(huffman_table->load_huffman_table);
   for (size_t i = 0; i < kJpegMaxHuffmanTableNumBaseline; i++) {
     if (!dc_table[i].valid || !ac_table[i].valid)
       continue;
-    UNSAFE_TODO(huffman_table->load_huffman_table[i]) = 1;
+    load_huffman_table_span[i] = 1;
+    auto huffman_tbl = base::span(huffman_table->huffman_table);
 
-    UNSAFE_TODO(memcpy(huffman_table->huffman_table[i].num_dc_codes,
-                       dc_table[i].code_length,
-                       sizeof(huffman_table->huffman_table[i].num_dc_codes)));
-    UNSAFE_TODO(memcpy(huffman_table->huffman_table[i].dc_values,
-                       dc_table[i].code_value,
-                       sizeof(huffman_table->huffman_table[i].dc_values)));
-    UNSAFE_TODO(memcpy(huffman_table->huffman_table[i].num_ac_codes,
-                       ac_table[i].code_length,
-                       sizeof(huffman_table->huffman_table[i].num_ac_codes)));
-    UNSAFE_TODO(memcpy(huffman_table->huffman_table[i].ac_values,
-                       ac_table[i].code_value,
-                       sizeof(huffman_table->huffman_table[i].ac_values)));
+    base::span(huffman_tbl[i].num_dc_codes)
+        .copy_from_nonoverlapping(base::span(dc_table[i].code_length));
+    auto dc_values = base::span(huffman_tbl[i].dc_values);
+    dc_values.copy_from_nonoverlapping(
+        base::span(dc_table[i].code_value).first(dc_values.size()));
+    base::span(huffman_tbl[i].num_ac_codes)
+        .copy_from_nonoverlapping(base::span(ac_table[i].code_length));
+    auto ac_values = base::span(huffman_tbl[i].ac_values);
+    ac_values.copy_from_nonoverlapping(
+        base::span(ac_table[i].code_value).first(ac_values.size()));
   }
 }
 
 static void FillSliceParameters(
     const JpegParseResult& parse_result,
     VASliceParameterBufferJPEGBaseline* slice_param) {
-  slice_param->slice_data_size = parse_result.data_size;
+  slice_param->slice_data_size = parse_result.data.size();
   slice_param->slice_data_offset = 0;
   slice_param->slice_data_flag = VA_SLICE_DATA_FLAG_ALL;
   slice_param->slice_horizontal_position = 0;
   slice_param->slice_vertical_position = 0;
   slice_param->num_components = parse_result.scan.num_components;
-  for (int i = 0; i < slice_param->num_components; i++) {
-    UNSAFE_TODO(slice_param->components[i]).component_selector =
-        parse_result.scan.components[i].component_selector;
-    UNSAFE_TODO(slice_param->components[i]).dc_table_selector =
-        parse_result.scan.components[i].dc_selector;
-    UNSAFE_TODO(slice_param->components[i]).ac_table_selector =
-        parse_result.scan.components[i].ac_selector;
+
+  const auto slice_param_components =
+      base::span(slice_param->components).first(slice_param->num_components);
+  const auto scan_components = base::span(parse_result.scan.components)
+                                   .first(slice_param->num_components);
+
+  for (size_t i = 0; i < slice_param->num_components; i++) {
+    slice_param_components[i].component_selector =
+        scan_components[i].component_selector;
+    slice_param_components[i].dc_table_selector =
+        scan_components[i].dc_selector;
+    slice_param_components[i].ac_table_selector =
+        scan_components[i].ac_selector;
   }
   slice_param->restart_interval = parse_result.restart_interval;
 
@@ -369,8 +383,8 @@ bool VaapiJpegDecoder::SubmitBuffers(const JpegParseResult& parse_result) {
        {VAIQMatrixBufferType, sizeof(iq_matrix), &iq_matrix},
        {VAHuffmanTableBufferType, sizeof(huffman_table), &huffman_table},
        {VASliceParameterBufferType, sizeof(slice_param), &slice_param},
-       {VASliceDataBufferType, parse_result.data_size,
-        const_cast<char*>(parse_result.data)}});
+       {VASliceDataBufferType, parse_result.data.size(),
+        parse_result.data.data()}});
 }
 
 }  // namespace media
