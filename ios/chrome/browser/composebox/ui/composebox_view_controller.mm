@@ -31,6 +31,8 @@ const CGFloat kCloseButtonSize = 30.0f;
 const CGFloat kCloseButtonAlpha = 0.6f;
 /// The ammount of padding to add vertically to the incognito view content.
 const CGFloat kIncognitoVerticalPadding = 24.0f;
+/// The bottom margin between the composebox and the container.
+const CGFloat kBlurBottomMargin = 20.0f;
 /// The image for the close button.
 UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   NSArray<UIColor*>* palette = @[
@@ -345,7 +347,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
                   aboveSubview:_omniboxPopupContainer];
       AddSameConstraintsToSidesWithInsets(
           _progressiveBlurEffect, _inputViewController.view, LayoutSides::kTop,
-          NSDirectionalEdgeInsetsMake(-20, 0, 0, 0));
+          NSDirectionalEdgeInsetsMake(-kBlurBottomMargin, 0, 0, 0));
       AddSameConstraintsToSides(_progressiveBlurEffect, safeAreaGuide,
                                 LayoutSides::kLeading | LayoutSides::kTrailing);
 
@@ -385,7 +387,8 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
                   aboveSubview:_omniboxPopupContainer];
       AddSameConstraintsToSidesWithInsets(
           _progressiveBlurEffect, _inputViewController.view,
-          LayoutSides::kBottom, NSDirectionalEdgeInsetsMake(0, 0, -20, 0));
+          LayoutSides::kBottom,
+          NSDirectionalEdgeInsetsMake(0, 0, -kBlurBottomMargin, 0));
       AddSameConstraintsToSides(
           _progressiveBlurEffect, safeAreaGuide,
           LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
@@ -433,12 +436,14 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
                   aboveSubview:_omniboxPopupContainer];
       AddSameConstraintsToSidesWithInsets(
           _progressiveBlurEffect, _inputViewController.view,
-          LayoutSides::kBottom, NSDirectionalEdgeInsetsMake(0, 0, -20, 0));
+          LayoutSides::kBottom,
+          NSDirectionalEdgeInsetsMake(0, 0, -kBlurBottomMargin, 0));
       AddSameConstraintsToSides(
           _progressiveBlurEffect, safeAreaGuide,
           LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
 
-      // TODO(crbug.com/469368394): position it based on the omnibox.
+      // TODO(crbug.com/469368394): Fix broken constraints so that close button
+      // can show.
       [_constraintsForCurrentPosition addObjectsFromArray:@[
         [_inputViewController.view.leadingAnchor
             constraintEqualToAnchor:safeAreaGuide.leadingAnchor
