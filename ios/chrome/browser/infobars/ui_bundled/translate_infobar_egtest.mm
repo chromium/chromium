@@ -544,9 +544,7 @@ void TestResponseProvider::GetLanguageResponse(
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey tapWebStateElementWithID:@"click"];
   [ChromeEarlGrey waitForWebStateContainingText:kLanguagePathText];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          someLanguageURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:someLanguageURL];
   [self assertContentLanguage:@"es" htmlRootLanguage:@"" adoptedLanguage:@"es"];
 }
 
