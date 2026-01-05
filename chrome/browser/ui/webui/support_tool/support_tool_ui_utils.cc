@@ -193,6 +193,8 @@ base::Value::Dict GetSupportTokenGenerationResult(bool success,
 // Returns the human readable name corresponding to `type_enum`.
 std::string GetPIITypeDescription(redaction::PIIType type_enum) {
   switch (type_enum) {
+    case redaction::PIIType::kNone:
+      return "Error: None";
     case redaction::PIIType::kAndroidAppStoragePath:
       // App storage path is part of information about an Android app.
       return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_ANDROID_APP_INFO);
@@ -223,8 +225,16 @@ std::string GetPIITypeDescription(redaction::PIIType type_enum) {
       return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_REMOVABLE_STORAGE_NAMES);
     case redaction::PIIType::kEAP:
       return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_EAP);
-    default:
-      return "Error: Undefined";
+    case redaction::PIIType::kCreditCard:
+      return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_CREDIT_CARD);
+    case redaction::PIIType::kIBAN:
+      return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_IBAN);
+    case redaction::PIIType::kCrashId:
+      return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_CRASH_ID);
+    case redaction::PIIType::kMemory:
+      return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_MEMORY);
+    case redaction::PIIType::kBluetoothHidDevice:
+      return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_BLUETOOTH_HID_DEVICE);
   }
 }
 
