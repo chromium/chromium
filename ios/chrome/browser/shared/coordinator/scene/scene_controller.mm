@@ -2155,6 +2155,7 @@ using UserFeedbackDataCallback =
         [[UserFeedbackConfiguration alloc] init];
     configuration.data = data;
     configuration.handler = handler;
+    configuration.sceneHandler = handler;
     configuration.singleSignOnService =
         GetApplicationContext()->GetSingleSignOnService();
 

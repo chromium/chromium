@@ -1,16 +1,51 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_APPLICATION_COMMANDS_H_
-#define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_APPLICATION_COMMANDS_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SCENE_COMMANDS_H_
+#define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SCENE_COMMANDS_H_
 
-#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import <UIKit/UIKit.h>
 
-// Protocol for commands that will generally be handled by the application,
+#include "base/ios/block_types.h"
+#include "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#include "ios/public/provider/chrome/browser/user_feedback/user_feedback_sender.h"
+
+enum class AccountMenuAccessPoint;
+class GURL;
+@class OpenNewTabCommand;
+@protocol SafariDataImportUIHandler;
+@class ShowSigninCommand;
+@class UIViewController;
+namespace password_manager {
+enum class PasswordCheckReferrer;
+enum class WarningType;
+}  // namespace password_manager
+namespace signin_metrics {
+enum class AccessPoint;
+}  // namespace signin_metrics
+enum class SafariDataImportEntryPoint;
+namespace syncer {
+enum class TrustedVaultUserActionTriggerForUMA;
+}  // namespace syncer
+namespace trusted_vault {
+enum class SecurityDomainId;
+}  // namespace trusted_vault
+
+// The mode in which the TabGrid should be opened.
+enum class TabGridOpeningMode {
+  // Don't force any mode, use the current one.
+  kDefault,
+  // Force to display the incognito mode.
+  kIncognito,
+  // Force to display the regular mode.
+  kRegular,
+};
+
+// Protocol for commands that will generally be handled by the scene,
 // rather than a specific tab; in practice this means the SceneController
 // instance.
-@protocol ApplicationCommands <SceneCommands>
+@protocol SceneCommands
 
 // Dismisses all modal dialogs with a completion block that is called when
 // modals are dismissed (animations done).
@@ -152,4 +187,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_APPLICATION_COMMANDS_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SCENE_COMMANDS_H_

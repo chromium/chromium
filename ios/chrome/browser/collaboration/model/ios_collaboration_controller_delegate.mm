@@ -759,6 +759,8 @@ void IOSCollaborationControllerDelegate::ConfigureAndJoinTabGroup(
   config.displayName = group_title_objc;
   config.applicationHandler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
+  config.sceneHandler =
+      HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
   config.previewItems = preview_items;
   config.previewImage = JoinGroupImage(preview_items);
 
@@ -804,6 +806,8 @@ void IOSCollaborationControllerDelegate::ConfigureAndShareTabGroup(
   config.baseViewController = base_view_controller_;
   config.applicationHandler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
+  config.sceneHandler =
+      HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
   config.completion = base::CallbackToBlock(
       base::BindOnce(&IOSCollaborationControllerDelegate::OnShareFlowComplete,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -846,6 +850,8 @@ void IOSCollaborationControllerDelegate::ConfigureAndManageTabGroup(
       collaboration_service_->GetServiceStatus().collaboration_status ==
       CollaborationStatus::kDisabledForPolicy;
   config.applicationHandler =
+      HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
+  config.sceneHandler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
   auto completion_block = base::CallbackToBlock(std::move(result));
   config.completion = ^(ShareKitFlowOutcome outcome) {

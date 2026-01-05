@@ -414,6 +414,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
       [[UserFeedbackConfiguration alloc] init];
   configuration.data = userFeedbackData;
   configuration.handler = applicationHandler;
+  configuration.sceneHandler = applicationHandler;
   configuration.singleSignOnService =
       GetApplicationContext()->GetSingleSignOnService();
 

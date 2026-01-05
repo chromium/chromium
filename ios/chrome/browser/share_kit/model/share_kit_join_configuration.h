@@ -11,6 +11,7 @@
 #import "components/data_sharing/public/group_data.h"
 
 @protocol ApplicationCommands;
+@protocol SceneCommands;
 enum class ShareKitFlowOutcome;
 @class ShareKitPreviewItem;
 
@@ -22,6 +23,9 @@ enum class ShareKitFlowOutcome;
 
 // Application commands handler.
 @property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+
+// Scene commands handler.
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
 // The token used to join the group, containing the collab ID and the secret.
 @property(nonatomic, assign) data_sharing::GroupToken token;

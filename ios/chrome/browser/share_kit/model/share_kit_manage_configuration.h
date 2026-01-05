@@ -9,6 +9,7 @@
 
 @protocol ApplicationCommands;
 enum class ShareKitFlowOutcome;
+@protocol SceneCommands;
 class TabGroup;
 
 typedef void (^ShareKitShouldUnshareGroupBlock)(BOOL shouldDelete);
@@ -30,6 +31,9 @@ typedef void (^ShareKitShouldUnshareGroupBlock)(BOOL shouldDelete);
 
 // Application commands handler.
 @property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+
+// Scene commands handler.
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
 // Whether enterprise sharing is disabled.
 @property(nonatomic, assign) BOOL enterpriseSharingDisabled;
