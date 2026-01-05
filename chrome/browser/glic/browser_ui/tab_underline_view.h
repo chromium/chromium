@@ -31,6 +31,13 @@ class TabUnderlineView : public AnimatedEffectView {
   METADATA_HEADER(TabUnderlineView, views::View)
 
  public:
+  // The height of the underline effect. Also used for the padding outside the
+  // underline.
+  static constexpr int kEffectThickness = 2;
+
+  // The radius to use for rounded corners of the underline effect.
+  static constexpr float kCornerRadius = kEffectThickness / 2.0f;
+
   // Allows the test to inject the tester at the border's creation.
   class Factory {
    public:

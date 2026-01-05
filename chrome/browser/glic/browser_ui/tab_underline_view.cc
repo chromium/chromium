@@ -11,6 +11,7 @@
 #include "chrome/browser/glic/browser_ui/tab_underline_view_controller.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -34,12 +35,6 @@ constexpr static int kMinUnderlineWidth = kSmallUnderlineWidth - 4;
 
 // The threshold for tab width at which `kMinUnderlineWidth` should be used.
 constexpr static int kMinimumTabWidthThreshold = 42;
-
-// The height of the underline effect.
-constexpr static int kEffectThickness = 2;
-
-// The radius to use for rounded corners of the underline effect.
-constexpr static float kCornerRadius = kEffectThickness / 2.0f;
 
 }  // namespace
 

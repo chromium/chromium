@@ -15,6 +15,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/layout/delegating_layout_manager.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/masked_targeter_delegate.h"
 #include "ui/views/view.h"
 
@@ -35,7 +36,6 @@ class TabUnderlineView;
 
 // View for a vertical tabstrip's tab.
 class VerticalTabView : public views::View,
-                        public views::LayoutDelegate,
                         public views::MaskedTargeterDelegate,
                         public AlertIndicatorButton::Delegate,
                         public views::ContextMenuController {
@@ -69,10 +69,6 @@ class VerticalTabView : public views::View,
   void RemovedFromWidget() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnThemeChanged() override;
-
-  // views::LayoutDelegate
-  views::ProposedLayout CalculateProposedLayout(
-      const views::SizeBounds& size_bounds) const override;
 
   // views::MaskedTargeterDelegate:
   bool GetHitTestMask(SkPath* mask) const override;
@@ -115,6 +111,7 @@ class VerticalTabView : public views::View,
   const tabs::TabInterface* GetTabInterface() const;
 
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
+  const raw_ptr<views::FlexLayout> flex_layout_;
 
   const raw_ptr<const TabStyle> tab_style_;
 

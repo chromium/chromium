@@ -44,6 +44,9 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/delegating_layout_manager.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -56,12 +59,13 @@
 #endif
 
 namespace {
-constexpr int kAfterIconPadding = 8;
-constexpr int kAfterTitlePadding = 4;
+// The padding should be 8dp but the icon contains 3dp of padding on both sides.
+constexpr int kIconPadding = 5;
+constexpr int kAfterTitlePadding = 2;
+constexpr int kCloseButtonLeftPadding = -1;
+constexpr int kCloseButtonRightPadding = 2;
 constexpr int kAfterAlertIndicatorPadding = 4;
-constexpr int kTitleNoCloseButtonRightPadding = 11;
-constexpr int kTitleHeight = 18;
-constexpr int kTabMinWidth = 38;
+constexpr int kTitleMinWidth = 10;
 
 class VerticalTabTitle : public views::Label {
   METADATA_HEADER(VerticalTabTitle, views::Label)
@@ -72,6 +76,10 @@ class VerticalTabTitle : public views::Label {
     SetHandlesTooltips(false);
     SetBackgroundColor(SK_ColorTRANSPARENT);
     SetProperty(views::kElementIdentifierKey, kVerticalTabTitleElementId);
+  }
+
+  gfx::Size GetMinimumSize() const override {
+    return gfx::Size(kTitleMinWidth, GetLineHeight());
   }
 };
 
@@ -103,6 +111,7 @@ TabStripUserGestureDetails GetGestureDetail(const ui::Event& event) {
 
 VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
     : collection_node_(collection_node),
+      flex_layout_(SetLayoutManager(std::make_unique<views::FlexLayout>())),
       tab_style_(TabStyle::Get()),
       icon_(AddChildView(std::make_unique<TabIcon>())),
       title_(AddChildView(std::make_unique<VerticalTabTitle>())),
@@ -131,14 +140,54 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
             .Build());
     glic_tab_underline_view_->SetOrientation(
         glic::TabUnderlineView::Orientation::kVertical);
+    glic_tab_underline_view_->SetProperty(views::kViewIgnoredByLayoutKey, true);
+    glic_tab_underline_view_->SetBoundsRect(
+        gfx::Rect(0, 0, 2 * glic::TabUnderlineView::kEffectThickness,
+                  GetLayoutConstant(VERTICAL_TAB_HEIGHT)));
   }
 #endif
 
-  SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
-  SetPreferredSize(
-      gfx::Size(kTabMinWidth, GetLayoutConstant(VERTICAL_TAB_HEIGHT)));
+  flex_layout_->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetCollapseMargins(true)
+      .SetMinimumCrossAxisSize(GetLayoutConstant(VERTICAL_TAB_HEIGHT));
+
+  alert_indicator_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferredSnapToZero,
+                               views::MaximumFlexSizeRule::kPreferred)
+          .WithOrder(2));
+  alert_indicator_->SetProperty(
+      views::kMarginsKey, gfx::Insets().set_right(kAfterAlertIndicatorPadding));
+  icon_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferredSnapToZero,
+                               views::MaximumFlexSizeRule::kPreferred)
+          .WithOrder(3));
+  icon_->SetProperty(views::kMarginsKey,
+                     gfx::Insets().set_left_right(kIconPadding, kIconPadding));
+
+  title_->SetProperty(views::kFlexBehaviorKey,
+                      views::FlexSpecification(
+                          views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
+                          views::MaximumFlexSizeRule::kUnbounded)
+                          .WithOrder(4));
+  title_->SetProperty(views::kMarginsKey,
+                      gfx::Insets().set_right(kAfterTitlePadding));
+
+  close_button_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferredSnapToZero,
+                               views::MaximumFlexSizeRule::kPreferred)
+          .WithOrder(1));
+  close_button_->SetProperty(views::kMarginsKey, gfx::Insets().set_left_right(
+                                                     kCloseButtonLeftPadding,
+                                                     kCloseButtonRightPadding));
+
+  SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
   // So we get don't get enter/exit on children and don't prematurely stop the
   // hover.
@@ -318,85 +367,6 @@ void VerticalTabView::OnThemeChanged() {
   UpdateColors();
 }
 
-views::ProposedLayout VerticalTabView::CalculateProposedLayout(
-    const views::SizeBounds& size_bounds) const {
-  // TODO(crbug.com/444283717): Separate pinned and unpinned tabs.
-  views::ProposedLayout layouts;
-
-  // TODO(crbug.com/454686636): Handle collapsed state.
-  const int width = std::max(kTabMinWidth, size_bounds.width().value_or(0));
-  const int height = GetLayoutConstant(VERTICAL_TAB_HEIGHT);
-  layouts.host_size = gfx::Size(width, height);
-
-  const gfx::Rect contents_rect = GetContentsBounds();
-
-  // TabIcon calculates its preferred size by starting with the favicon size,
-  // and enlarging it to fit the attention indicator and discard ring. Use its
-  // preferred size instead of gfx::kFaviconSize.
-  gfx::Size icon_size = icon_->GetPreferredSize();
-  const int icon_padding = (height - icon_size.height()) / 2;
-  const gfx::Rect icon_bounds(contents_rect.x() + icon_padding,
-                              contents_rect.y() + icon_padding,
-                              icon_size.width(), icon_size.height());
-  layouts.child_layouts.emplace_back(icon_.get(), icon_->GetVisible(),
-                                     icon_bounds);
-
-  gfx::Size close_button_size = close_button_->GetPreferredSize();
-  const int close_button_padding = (height - close_button_size.height()) / 2;
-  const gfx::Rect close_button_bounds(
-      contents_rect.right() - close_button_padding - close_button_size.width(),
-      contents_rect.y() + close_button_padding, close_button_size.width(),
-      close_button_size.height());
-  layouts.child_layouts.emplace_back(
-      close_button_.get(), close_button_->GetVisible(), close_button_bounds);
-  // The close button icon is centered within the close button.
-  const int close_button_icon_x =
-      close_button_bounds.x() +
-      (close_button_bounds.width() - GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE)) /
-          2;
-
-  gfx::Size alert_indicator_size = alert_indicator_->GetPreferredSize();
-  const int alert_indicator_padding =
-      (height - alert_indicator_size.height()) / 2;
-  const int alert_indicator_right =
-      close_button_->GetVisible()
-          ? close_button_icon_x - kAfterAlertIndicatorPadding
-          : contents_rect.right() - alert_indicator_padding;
-  const gfx::Rect alert_indicator_bounds(
-      alert_indicator_right - alert_indicator_size.width(),
-      contents_rect.y() + alert_indicator_padding, alert_indicator_size.width(),
-      alert_indicator_size.height());
-  layouts.child_layouts.emplace_back(alert_indicator_.get(),
-                                     alert_indicator_->GetVisible(),
-                                     alert_indicator_bounds);
-
-  // kAfterIconPadding is the space between the title and the favicon, however
-  // icon_ has extra space for the attention indicator and discard ring, given
-  // by its insets.
-  const int title_bounds_x =
-      icon_bounds.right() - icon_->GetInsets().right() + kAfterIconPadding;
-  const int title_bounds_y = contents_rect.y() + (height - kTitleHeight) / 2;
-  const int title_bounds_right =
-      alert_indicator_->GetVisible()
-          ? alert_indicator_bounds.x() - kAfterTitlePadding
-      : close_button_->GetVisible()
-          ? close_button_icon_x - kAfterTitlePadding
-          : contents_rect.right() - kTitleNoCloseButtonRightPadding;
-  const gfx::Rect title_bounds(title_bounds_x, title_bounds_y,
-                               title_bounds_right - title_bounds_x,
-                               kTitleHeight);
-  layouts.child_layouts.emplace_back(title_.get(), title_->GetVisible(),
-                                     title_bounds);
-#if BUILDFLAG(ENABLE_GLIC)
-  if (glic_tab_underline_view_) {
-    layouts.child_layouts.emplace_back(glic_tab_underline_view_.get(),
-                                       glic_tab_underline_view_->GetVisible(),
-                                       gfx::Rect(0, 0, width, height));
-  }
-#endif
-  return layouts;
-}
-
 bool VerticalTabView::GetHitTestMask(SkPath* mask) const {
   *mask = GetPath();
   return true;
@@ -467,14 +437,25 @@ void VerticalTabView::OnDataChanged() {
   icon_->SetActiveState(tab->IsActivated());
   icon_->SetAttention(TabIcon::AttentionType::kBlockedWebContents,
                       tab->IsActivated() && tab_data.blocked);
+  icon_->SetProperty(
+      views::kMarginsKey,
+      pinned_ ? gfx::Insets()
+              : gfx::Insets().set_left_right(kIconPadding, kIconPadding));
 
   title_->SetText(tab_data.title);
   title_->SetVisible(!pinned_);
 
   alert_indicator_->TransitionToAlertState(
       tabs::TabAlertController::GetAlertStateToShow(tab_data.alert_state));
+  alert_indicator_->SetProperty(
+      views::kMarginsKey,
+      pinned_ ? gfx::Insets()
+              : gfx::Insets().set_right(kAfterAlertIndicatorPadding));
   UpdateAlertIndicatorVisibility();
   UpdateCloseButtonVisibility();
+
+  flex_layout_->SetMainAxisAlignment(pinned_ ? views::LayoutAlignment::kCenter
+                                             : views::LayoutAlignment::kStart);
 
   UpdateColors();
   InvalidateLayout();
