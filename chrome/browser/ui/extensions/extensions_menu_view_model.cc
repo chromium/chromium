@@ -538,6 +538,7 @@ ExtensionsMenuViewModel::ExtensionsMenuViewModel(
     : browser_(browser),
       delegate_(delegate),
       toolbar_model_(ToolbarActionsModel::Get(browser_->GetProfile())) {
+  content::WebContentsObserver::Observe(GetActiveWebContents());
   permissions_manager_observation_.Observe(
       extensions::PermissionsManager::Get(browser_->GetProfile()));
   toolbar_model_observation_.Observe(toolbar_model_.get());
@@ -549,7 +550,9 @@ ExtensionsMenuViewModel::ExtensionsMenuViewModel(
   }
 }
 
-ExtensionsMenuViewModel::~ExtensionsMenuViewModel() = default;
+ExtensionsMenuViewModel::~ExtensionsMenuViewModel() {
+  WebContentsObserver::Observe(nullptr);
+}
 
 void ExtensionsMenuViewModel::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
@@ -1134,6 +1137,8 @@ void ExtensionsMenuViewModel::OnToolbarPinnedActionsChanged() {
 
 void ExtensionsMenuViewModel::OnActiveTabChanged(tabs::TabInterface* tab) {
   auto* web_contents = tab->GetContents();
+  WebContentsObserver::Observe(web_contents);
+
   for (Observer& observer : observers_) {
     observer.OnActiveWebContentsChanged(web_contents);
   }
@@ -1142,6 +1147,10 @@ void ExtensionsMenuViewModel::OnActiveTabChanged(tabs::TabInterface* tab) {
 void ExtensionsMenuViewModel::DidFinishNavigation(
     content::NavigationHandle* handle) {
   auto* web_contents = GetActiveWebContents();
+  if (!web_contents) {
+    return;
+  }
+
   for (Observer& observer : observers_) {
     observer.OnActiveWebContentsChanged(web_contents);
   }
@@ -1171,5 +1180,6 @@ ExtensionActionViewModel* ExtensionsMenuViewModel::GetActionViewModel(
 }
 
 content::WebContents* ExtensionsMenuViewModel::GetActiveWebContents() {
-  return TabListInterface::From(browser_)->GetActiveTab()->GetContents();
+  auto* tab = TabListInterface::From(browser_)->GetActiveTab();
+  return tab ? tab->GetContents() : nullptr;
 }
