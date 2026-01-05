@@ -8,16 +8,20 @@
 #include <set>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+
+class GlobalBrowserCollection;
 
 namespace metrics {
 
-// BrowserList / TabStripModelObserver used for tracking audio status.
+// BrowserCollectionObserver / TabStripModelObserver used for tracking audio
+// status.
 // TODO(chrisha): Migrate this entire thing to use RecentlyAudibleHelper
 // notifications rather then TabStripModel notifications.
 // https://crbug.com/846374
-class AudibleContentsTracker : public BrowserListObserver,
+class AudibleContentsTracker : public BrowserCollectionObserver,
                                public TabStripModelObserver {
  public:
   // Interface for an observer of the AudibleContentsTracker. The only client
@@ -50,9 +54,8 @@ class AudibleContentsTracker : public BrowserListObserver,
   ~AudibleContentsTracker() override;
 
  private:
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -72,6 +75,9 @@ class AudibleContentsTracker : public BrowserListObserver,
 
   // The set of WebContents that are currently playing audio.
   std::set<raw_ptr<content::WebContents, SetExperimental>> audible_contents_;
+
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 }  // namespace metrics

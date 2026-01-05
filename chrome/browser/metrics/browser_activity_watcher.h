@@ -6,14 +6,17 @@
 #define CHROME_BROWSER_METRICS_BROWSER_ACTIVITY_WATCHER_H_
 
 #include "base/functional/callback.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+
+class GlobalBrowserCollection;
 
 // Helper that fires a callback every time a Browser object is added or removed
 // from the BrowserList, or a browser's tab strip model is modified. This class
 // primarily exists to encapsulate this behavior and reduce the number of
 // platform-specific macros as Android doesn't use BrowserList or TabStripModel.
-class BrowserActivityWatcher : public BrowserListObserver,
+class BrowserActivityWatcher : public BrowserCollectionObserver,
                                public TabStripModelObserver {
  public:
   explicit BrowserActivityWatcher(
@@ -24,9 +27,9 @@ class BrowserActivityWatcher : public BrowserListObserver,
 
   ~BrowserActivityWatcher() override;
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -36,6 +39,9 @@ class BrowserActivityWatcher : public BrowserListObserver,
 
  private:
   base::RepeatingClosure on_browser_activity_;
+
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_METRICS_BROWSER_ACTIVITY_WATCHER_H_
