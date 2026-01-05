@@ -2,6 +2,8 @@
 
 This is a list of changes to [Cumulative Layout Shift](https://web.dev/cls).
 
+* Chrome 145
+  * Metric definition improvement: [Layout Instability attribution reports in CSS pixels](2026_02_cls.md)
 * Chrome 118
   * Implementation optimizations: [Image loading prioritizations](2023_10_image_loading_optimizations.md)
 * Chrome 116

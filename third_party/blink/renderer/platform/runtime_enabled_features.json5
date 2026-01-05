@@ -4342,7 +4342,7 @@
     },
     {
       name: "ReportLayoutShiftRectsInCssPixels",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "RequestMainFrameAfterFirstVideoFrame",
