@@ -111,13 +111,13 @@ def to_output(value: Value | CommentedValue) -> str | None:
   return value
 
 
-T = typing.TypeVar('T', bound=Value)
+T_co = typing.TypeVar('T_co', bound=Value, covariant=True)
 
 
-class CommentedValue(typing.Generic[T]):
+class CommentedValue(typing.Generic[T_co]):
   """A class for adding comments to a value."""
 
-  def __init__(self, value: T, comments: list[str]):
+  def __init__(self, value: T_co, comments: list[str]):
     self._value = value
     self._comments = comments
 
@@ -147,7 +147,7 @@ class CommentedValue(typing.Generic[T]):
     return output_stream
 
 
-MaybeCommentedValue: typing.TypeAlias = T | CommentedValue[T]
+MaybeCommentedValue: typing.TypeAlias = T_co | CommentedValue[T_co]
 
 
 class _CompoundValueBuilder(ValueBuilder):
@@ -391,7 +391,8 @@ class ListValueBuilder(_CompoundValueBuilder):
 
   def __init__(
       self,
-      elements: collections.abc.Iterable[MaybeCommentedValue[T]] | None = None,
+      elements: collections.abc.Iterable[MaybeCommentedValue[Value]]
+      | None = None,
       **kwargs,
   ):
     """Initialize the ListValueBuilder.

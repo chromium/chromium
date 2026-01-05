@@ -105,8 +105,8 @@ def convert_gn_isolate_map_pyl(
               f'{key.start}: unhandled key in isolate: "{key.value}"')
 
       converted_value = starlark_conversions.convert_direct(value)
-      assert not isinstance(converted_value, values.CommentedValue), (
-          f'{value.start} unexpected comment on value for key "{key.value}"')
+      converted_value = comments.ensure_no_comments(
+          value, converted_value, message=f'on value for key "{key.value}"')
       converted_param = starlark_conversions.param_name(key)
       declaration[converted_param] = converted_value
 
