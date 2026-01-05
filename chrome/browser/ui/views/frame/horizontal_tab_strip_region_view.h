@@ -102,6 +102,7 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   bool IsTabStripEditable() const override;
   void DisableTabStripEditingForTesting() const override;
   bool IsTabStripCloseable() const override;
+  bool ShouldDrawStrokes() const override;
   bool IsAnimating() const override;
   void StopAnimating() override;
   void UpdateLoadingAnimations(const base::TimeDelta& elapsed_time) override;

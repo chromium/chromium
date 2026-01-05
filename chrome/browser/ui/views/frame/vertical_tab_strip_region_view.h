@@ -110,6 +110,7 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
       const tab_groups::TabGroupId& group) override;
   TabDragContext* GetDragContext() override;
   void SetTabStripObserver(TabStripObserver* observer) override;
+  bool ShouldDrawStrokes() const override;
 
   // views::ResizeAreaDelegate:
   void OnResize(int resize_amount, bool done_resizing) override;
