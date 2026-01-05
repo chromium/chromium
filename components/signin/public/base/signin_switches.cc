@@ -497,6 +497,9 @@ BASE_FEATURE(kUseIssueTokenToFetchAccessTokens,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+BASE_FEATURE(kUsePrimaryAndTonalButtonsForPromos,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 BASE_FEATURE(kWebSigninLeadsToImplicitlySignedInState,
              // THIS IS A TEST-ONLY FLAG AND SHOULD NEVER BE ENABLED.

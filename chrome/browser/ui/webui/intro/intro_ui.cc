@@ -89,6 +89,9 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   source->AddResourcePath("signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS);
 
   source->AddBoolean("isDeviceManaged", is_device_managed);
+  source->AddBoolean("usePrimaryAndTonalButtonsForPromos",
+                     base::FeatureList::IsEnabled(
+                         switches::kUsePrimaryAndTonalButtonsForPromos));
 
   // Setup chrome://intro/default-browser UI.
   source->AddResourcePath(chrome::kChromeUIIntroDefaultBrowserSubPage,

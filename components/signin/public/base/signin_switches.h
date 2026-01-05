@@ -436,6 +436,11 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kUseIssueTokenToFetchAccessTokens);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+// If enabled, buttons for sign-in promos / intercepts will use consistent
+// primary - tonal button class pattern.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kUsePrimaryAndTonalButtonsForPromos);
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // If enabled, web sign-in will implicitly sign the user in.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

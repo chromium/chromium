@@ -10337,6 +10337,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "use-primary-and-tonal-buttons-for-promos",
+    "owners": [ "kbajkiewicz@google.com", "chrome-signin-desktop-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "use-sc-content-sharing-picker",
     "owners": [ "agpalak@chromium.org", "tovep@chromium.org", "eladalon@chromium.org"],
     "expiry_milestone": 150
