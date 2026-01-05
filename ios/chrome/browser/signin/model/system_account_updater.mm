@@ -172,6 +172,9 @@ void WriteAvatars(const SystemIdentityInfoDataList& list) {
       [manager removeItemAtURL:url error:nil];
     }
   }
+#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
+  ReloadAllTimelines();
+#endif
 }
 
 // Writes the avatar's image to disk, or delete it if the data is missing.
@@ -190,6 +193,9 @@ void WriteAvatar(const SystemIdentityInfoData& info) {
     NSFileManager* manager = [NSFileManager defaultManager];
     [manager removeItemAtURL:path error:nil];
   }
+#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
+  ReloadAllTimelines();
+#endif
 }
 
 // Removes items for unknown accounts from `defaults`.
