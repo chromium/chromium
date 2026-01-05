@@ -45,6 +45,14 @@ namespace {
 using PermissionsManager = extensions::PermissionsManager;
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
 
+// Returns whether host access requests can be visible in the menu.
+bool CanShowHostAccessRequests(
+    ExtensionsMenuViewModel::OptionalSection optional_section) {
+  // Requests are only visible in the 'host access requests' section.
+  return optional_section ==
+         ExtensionsMenuViewModel::OptionalSection::kHostAccessRequests;
+}
+
 // Returns the main page, if it is the correct type.
 ExtensionsMenuMainPageView* GetMainPage(views::View* page) {
   return views::AsViewClass<ExtensionsMenuMainPageView>(page);
@@ -98,12 +106,19 @@ void ExtensionsMenuDelegateDesktop::OnHostAccessRequestAddedOrUpdated(
     return;
   }
 
+  // Requests are only visible in the 'host access requests' section.
+  ExtensionsMenuViewModel::OptionalSection optional_section =
+      menu_model_->GetOptionalSection();
+  if (!CanShowHostAccessRequests(optional_section)) {
+    return;
+  }
+
   // TODO(crbug.com/330588494): Add to correct index based on alphabetic
   // order.
   int index = 0;
   AddOrUpdateExtensionRequestingAccess(main_page, extension_id, index,
                                        web_contents);
-  main_page->MaybeShowRequestsSection();
+  main_page->SetOptionalSectionVisibility(optional_section);
 }
 
 void ExtensionsMenuDelegateDesktop::OnHostAccessRequestRemoved(
@@ -116,8 +131,15 @@ void ExtensionsMenuDelegateDesktop::OnHostAccessRequestRemoved(
     return;
   }
 
+  // Requests are only visible in the 'host access requests' section.
+  ExtensionsMenuViewModel::OptionalSection optional_section =
+      menu_model_->GetOptionalSection();
+  if (!CanShowHostAccessRequests(optional_section)) {
+    return;
+  }
+
   main_page->RemoveExtensionRequestingAccess(extension_id);
-  main_page->MaybeShowRequestsSection();
+  main_page->SetOptionalSectionVisibility(optional_section);
 }
 
 void ExtensionsMenuDelegateDesktop::OnHostAccessRequestsCleared() {
@@ -127,8 +149,14 @@ void ExtensionsMenuDelegateDesktop::OnHostAccessRequestsCleared() {
     return;
   }
 
+  ExtensionsMenuViewModel::OptionalSection optional_section =
+      menu_model_->GetOptionalSection();
+  if (!CanShowHostAccessRequests(optional_section)) {
+    return;
+  }
+
   main_page->ClearExtensionsRequestingAccess();
-  main_page->MaybeShowRequestsSection();
+  main_page->SetOptionalSectionVisibility(optional_section);
 }
 
 void ExtensionsMenuDelegateDesktop::OnHostAccessRequestDismissedByUser(
@@ -141,8 +169,14 @@ void ExtensionsMenuDelegateDesktop::OnHostAccessRequestDismissedByUser(
     return;
   }
 
+  ExtensionsMenuViewModel::OptionalSection optional_section =
+      menu_model_->GetOptionalSection();
+  if (!CanShowHostAccessRequests(optional_section)) {
+    return;
+  }
+
   main_page->RemoveExtensionRequestingAccess(extension_id);
-  main_page->MaybeShowRequestsSection();
+  main_page->SetOptionalSectionVisibility(optional_section);
 }
 
 void ExtensionsMenuDelegateDesktop::OnShowHostAccessRequestsInToolbarChanged(
@@ -375,35 +409,28 @@ void ExtensionsMenuDelegateDesktop::UpdateMainPage(
   // Update the optional section.
   ExtensionsMenuViewModel::OptionalSection optional_section =
       menu_model_->GetOptionalSection();
-  switch (optional_section) {
-    case ExtensionsMenuViewModel::OptionalSection::kReloadPage:
-      main_page->ShowReloadSection();
-      break;
-    case ExtensionsMenuViewModel::OptionalSection::kHostAccessRequests: {
-      int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
-      auto* permissions_manager = PermissionsManager::Get(browser_->profile());
-      int index = 0;
+  if (optional_section ==
+      ExtensionsMenuViewModel::OptionalSection::kHostAccessRequests) {
+    int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+    auto* permissions_manager = PermissionsManager::Get(browser_->profile());
+    int index = 0;
 
-      const std::vector<std::unique_ptr<ExtensionActionViewModel>>&
-          action_models = menu_model_->action_models();
-      for (const auto& action_model : action_models) {
-        auto extension_id = action_model->GetId();
-        if (permissions_manager->HasActiveHostAccessRequest(tab_id,
-                                                            extension_id)) {
-          AddOrUpdateExtensionRequestingAccess(main_page, extension_id, index,
-                                               web_contents);
-          ++index;
-        } else {
-          // Otherwise remove its entry, if existent.
-          main_page->RemoveExtensionRequestingAccess(extension_id);
-        }
+    const std::vector<std::unique_ptr<ExtensionActionViewModel>>&
+        action_models = menu_model_->action_models();
+    for (const auto& action_model : action_models) {
+      auto extension_id = action_model->GetId();
+      if (permissions_manager->HasActiveHostAccessRequest(tab_id,
+                                                          extension_id)) {
+        AddOrUpdateExtensionRequestingAccess(main_page, extension_id, index,
+                                             web_contents);
+        ++index;
+      } else {
+        // Otherwise remove its entry, if existent.
+        main_page->RemoveExtensionRequestingAccess(extension_id);
       }
-      main_page->MaybeShowRequestsSection();
-      break;
     }
-    case ExtensionsMenuViewModel::OptionalSection::kNone:
-      break;
   }
+  main_page->SetOptionalSectionVisibility(optional_section);
 
   // Update menu entries.
   // TODO(crbug.com/40879945): Reorder the extensions after updating them, since

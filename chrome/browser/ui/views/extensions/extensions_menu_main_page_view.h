@@ -62,14 +62,6 @@ class ExtensionsMenuMainPageView : public views::View {
   void UpdateSiteSettings(
       ExtensionsMenuViewModel::SiteSettingsState site_settings_state);
 
-  // Shows the reload section in the menu. Takes precedence over the requests
-  // section.
-  void ShowReloadSection();
-
-  // Show the requests section in the menu if there are any items in
-  // `requests_entries_` and reload section is not visible.
-  void MaybeShowRequestsSection();
-
   // Adds or updates the extension entry in the `requests_access_section_` with
   // the given information. Doesn't update the requests section view
   // visibility.
@@ -85,6 +77,10 @@ class ExtensionsMenuMainPageView : public views::View {
   // Clears the entries in the `request_access_section_`, if existent. Doesn't
   // update the requests section view visibility.
   void ClearExtensionsRequestingAccess();
+
+  // Shows/hides the optional section.
+  void SetOptionalSectionVisibility(
+      ExtensionsMenuViewModel::OptionalSection optional_section);
 
   // Accessors used by tests:
   std::u16string_view GetSiteSettingLabelForTesting() const;

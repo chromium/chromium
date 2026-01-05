@@ -229,18 +229,6 @@ void ExtensionsMenuMainPageView::UpdateSiteSettings(
       site_settings_state.toggle.tooltip_text);
 }
 
-void ExtensionsMenuMainPageView::ShowReloadSection() {
-  reload_section_->SetVisible(true);
-  requests_section_->SetVisible(false);
-  SizeToPreferredSize();
-}
-
-void ExtensionsMenuMainPageView::MaybeShowRequestsSection() {
-  reload_section_->SetVisible(false);
-  requests_section_->SetVisible(!requests_entries_.empty());
-  SizeToPreferredSize();
-}
-
 void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
     const extensions::ExtensionId& id,
     const std::u16string& name,
@@ -334,8 +322,25 @@ void ExtensionsMenuMainPageView::RemoveExtensionRequestingAccess(
 void ExtensionsMenuMainPageView::ClearExtensionsRequestingAccess() {
   requests_entries_view_->RemoveAllChildViews();
   requests_entries_.clear();
+}
 
-  requests_section_->SetVisible(false);
+void ExtensionsMenuMainPageView::SetOptionalSectionVisibility(
+    ExtensionsMenuViewModel::OptionalSection optional_section) {
+  switch (optional_section) {
+    case ExtensionsMenuViewModel::OptionalSection::kReloadPage:
+      reload_section_->SetVisible(true);
+      requests_section_->SetVisible(false);
+      break;
+    case ExtensionsMenuViewModel::OptionalSection::kHostAccessRequests:
+      reload_section_->SetVisible(false);
+      requests_section_->SetVisible(!requests_entries_.empty());
+      break;
+    case ExtensionsMenuViewModel::OptionalSection::kNone:
+      reload_section_->SetVisible(false);
+      requests_section_->SetVisible(false);
+      break;
+  }
+
   SizeToPreferredSize();
 }
 
@@ -453,6 +458,8 @@ ExtensionsMenuMainPageView::CreateSiteSettingsBuilder(
                           views::BubbleBorder::Arrow::TOP_RIGHT)),
           views::Builder<views::ToggleButton>()
               .CopyAddressTo(&site_settings_toggle_)
+              .SetProperty(views::kElementIdentifierKey,
+                           kExtensionsMenuSiteSettingsToggleElementId)
               .SetProperty(views::kMarginsKey,
                            gfx::Insets::TLBR(0, menu_button_margin, 0, 0))
               .SetCallback(base::BindRepeating(
@@ -493,6 +500,8 @@ ExtensionsMenuMainPageView::CreateContentsBuilder(
                   // Reload section.
                   views::Builder<SectionContainer>()
                       .CopyAddressTo(&reload_section_)
+                      .SetProperty(views::kElementIdentifierKey,
+                                   kExtensionsMenuReloadSectionElementId)
                       .SetVisible(false)
                       .SetCrossAxisAlignment(
                           views::BoxLayout::CrossAxisAlignment::kCenter)
@@ -508,6 +517,9 @@ ExtensionsMenuMainPageView::CreateContentsBuilder(
                                   kColorExtensionsMenuSecondaryText)
                               .SetMultiLine(true),
                           views::Builder<views::MdTextButton>()
+                              .SetProperty(
+                                  views::kElementIdentifierKey,
+                                  kExtensionsMenuReloadPageButtonElementId)
                               .SetCallback(base::BindRepeating(
                                   &ExtensionsMenuHandler::
                                       OnReloadPageButtonClicked,
