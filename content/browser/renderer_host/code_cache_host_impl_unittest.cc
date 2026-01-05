@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -22,6 +23,7 @@
 #include "content/browser/site_instance_impl.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -387,7 +389,8 @@ TEST_P(CodeCacheHostImplTest, WebUiObliviousToOpenWeb) {
 
   // State for a WebUI page that also loads the above resource.
   static constexpr int kWebUiProcessId = 13;
-  const GURL web_ui_site("chrome://some.chrome.page");
+  const GURL web_ui_site(
+      base::StrCat({kChromeUIScheme, "://some.chrome.page"}));
   SetupRendererWithLock(kWebUiProcessId, web_ui_site);
 
   GeneratedCodeCacheContext::RunOrPostTask(
@@ -431,11 +434,12 @@ TEST_P(CodeCacheHostImplTest, OpenWebObliviousToWebUi) {
   base::RunLoop run_loop;
 
   // The URL of a resource loaded by a WebUI page.
-  const GURL resource_url("chrome://settings/settings.js");
+  const GURL resource_url(
+      base::StrCat({kChromeUIScheme, "://settings/settings.js"}));
 
   // State for a WebUI page that loads the above resource.
   static constexpr int kWebUiProcessId = 12;
-  const GURL web_ui_site("chrome://settings");
+  const GURL web_ui_site(base::StrCat({kChromeUIScheme, "://settings"}));
   SetupRendererWithLock(kWebUiProcessId, web_ui_site);
 
   // State for a site on the open web that wants to modify the cached data for
