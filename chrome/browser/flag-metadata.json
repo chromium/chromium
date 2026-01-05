@@ -6932,11 +6932,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "main-thread-compositing-priority",
-    "owners": [ "youssefesmat@chromium.org", "baseos-perf@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "malicious-apk-download-check",
     "owners": [ "chlily@chromium.org", "//components/safe_browsing/OWNERS"],
     "expiry_milestone": 142
