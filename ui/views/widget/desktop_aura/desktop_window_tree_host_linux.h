@@ -93,6 +93,11 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   // DesktopWindowTreeHostPlatform:
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
 
+  // WindowTreeHost:
+  bool SupportsMouseLock() override;
+  void LockMouse(aura::Window* window) override;
+  void UnlockMouse(aura::Window* window) override;
+
   // Called back by compositor_observer_ if the latter is set.
   virtual void OnCompleteSwapWithNewSize(const gfx::Size& size);
 
