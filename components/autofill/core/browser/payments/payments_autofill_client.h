@@ -555,6 +555,11 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // by the user, if applicable.
   virtual bool IsMandatoryReauthEnabled() = 0;
 
+#if BUILDFLAG(IS_IOS)
+  // Returns true if the feature to use custom card icons is enabled.
+  virtual bool IsUsingCustomCardIconEnabled() const = 0;
+#endif
+
   // Prompt the user to enable mandatory reauthentication for payment method
   // autofill. When enabled, the user will be asked to authenticate using
   // biometrics or device unlock before filling in payment method information.

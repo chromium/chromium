@@ -666,16 +666,17 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
               ? SuggestionIconType::kAccountWork
               : SuggestionIconType::kNone;
     }
-    FormSuggestion* suggestion =
-        [FormSuggestion suggestionWithValue:value
-                                 minorValue:minorValue
-                         displayDescription:displayDescription
-                                       icon:icon
-                                       type:popup_suggestion.type
-                                    payload:popup_suggestion.payload
-                fieldByFieldFillingTypeUsed:fieldByFieldFillingTypeUsed
-                             requiresReauth:NO
-                 acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
+    FormSuggestion* suggestion = [FormSuggestion
+                suggestionWithValue:value
+                         minorValue:minorValue
+                 displayDescription:displayDescription
+                               icon:icon
+              hasCustomCardArtImage:popup_suggestion.has_custom_card_art_image
+                               type:popup_suggestion.type
+                            payload:popup_suggestion.payload
+        fieldByFieldFillingTypeUsed:fieldByFieldFillingTypeUsed
+                     requiresReauth:NO
+         acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
 
     suggestion.featureForIPH = SuggestionFeatureForIPH::kUnknown;
     suggestion.suggestionIconType = suggestionIconType;

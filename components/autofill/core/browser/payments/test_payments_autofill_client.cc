@@ -311,6 +311,12 @@ bool TestPaymentsAutofillClient::IsMandatoryReauthEnabled() {
   return GetPaymentsDataManager().IsPaymentMethodsMandatoryReauthEnabled();
 }
 
+#if BUILDFLAG(IS_IOS)
+bool TestPaymentsAutofillClient::IsUsingCustomCardIconEnabled() const {
+  return true;
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 void TestPaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
     base::OnceClosure accept_mandatory_reauth_callback,
     base::OnceClosure cancel_mandatory_reauth_callback,

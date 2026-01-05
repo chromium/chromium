@@ -752,9 +752,7 @@ Suggestion CreditCardSuggestionGenerator::CreateCreditCardSuggestion(
   }
   SetSuggestionLabelsForCard(credit_card, client, trigger_field_type,
                              suggestion, metadata_logging_context);
-  SetCardArtURL(suggestion, credit_card,
-                client.GetPersonalDataManager().payments_data_manager(),
-                virtual_card_option);
+  SetCardArtURL(suggestion, credit_card, client, virtual_card_option);
 
   // For server card, show card info retrieval enrolled suggestion for card info
   // retrieval enrolled card.
@@ -1108,8 +1106,7 @@ CreditCardSuggestionGenerator::GenerateSuggestionsForStandaloneCvcField(
     suggestion.payload = Suggestion::Guid(credit_card.guid());
     suggestion.iph_metadata = Suggestion::IPHMetadata(
         &feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature);
-    SetCardArtURL(suggestion, credit_card,
-                  client.GetPersonalDataManager().payments_data_manager(),
+    SetCardArtURL(suggestion, credit_card, client,
                   /*virtual_card_option=*/true);
     // TODO(crbug.com/41483863): Create translation string for standalone CVC
     // suggestion which includes spacing.

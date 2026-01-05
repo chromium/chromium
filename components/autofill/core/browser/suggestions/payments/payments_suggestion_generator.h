@@ -264,7 +264,7 @@ std::vector<CreditCard> GetOrderedCardsToSuggest(
 // Set the URL for the card art image to be shown in the `suggestion`.
 void SetCardArtURL(Suggestion& suggestion,
                    const CreditCard& credit_card,
-                   const PaymentsDataManager& payments_data,
+                   const AutofillClient& client,
                    bool virtual_card_option);
 
 // Return a nickname for the |card| to display. This is generally the nickname

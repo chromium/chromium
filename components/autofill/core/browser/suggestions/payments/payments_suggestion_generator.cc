@@ -713,9 +713,7 @@ Suggestion CreateCreditCardSuggestion(
   }
   SetSuggestionLabelsForCard(credit_card, client, trigger_field_type,
                              metadata_logging_context, suggestion);
-  SetCardArtURL(suggestion, credit_card,
-                client.GetPersonalDataManager().payments_data_manager(),
-                virtual_card_option);
+  SetCardArtURL(suggestion, credit_card, client, virtual_card_option);
 
   // For server card, show card info retrieval enrolled suggestion for card info
   // retrieval enrolled card.
@@ -906,9 +904,11 @@ std::vector<const CreditCard*> GetCreditCardsToSuggest(
 // Set the URL for the card art image to be shown in the `suggestion`.
 void SetCardArtURL(Suggestion& suggestion,
                    const CreditCard& credit_card,
-                   const PaymentsDataManager& payments_data,
+                   const AutofillClient& client,
                    bool virtual_card_option) {
-  const GURL card_art_url = payments_data.GetCardArtURL(credit_card);
+  const GURL card_art_url =
+      client.GetPersonalDataManager().payments_data_manager().GetCardArtURL(
+          credit_card);
   // The Capital One icon for virtual cards is not card metadata, it only helps
   // distinguish FPAN from virtual cards when metadata is unavailable. FPANs
   // should only ever use the network logo or rich card art. The Capital One
@@ -920,10 +920,20 @@ void SetCardArtURL(Suggestion& suggestion,
   if constexpr (BUILDFLAG(IS_ANDROID)) {
     suggestion.custom_icon = Suggestion::CustomIconUrl(card_art_url);
   } else {
-    const gfx::Image* image =
-        payments_data.GetCachedCardArtImageForUrl(card_art_url);
+    const gfx::Image* image = client.GetPersonalDataManager()
+                                  .payments_data_manager()
+                                  .GetCachedCardArtImageForUrl(card_art_url);
     if (image) {
+#if BUILDFLAG(IS_IOS)
+      // Mark the suggestion as having custom art. The art will not be shown if
+      // the flag is off, but this allows for A/B metrics analysis.
+      suggestion.has_custom_card_art_image = true;
+      if (client.GetPaymentsAutofillClient()->IsUsingCustomCardIconEnabled()) {
+        suggestion.custom_icon = *image;
+      }
+#else
       suggestion.custom_icon = *image;
+#endif
     }
   }
 }
@@ -1148,8 +1158,7 @@ std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
     suggestion.payload = Suggestion::Guid(credit_card.guid());
     suggestion.iph_metadata = Suggestion::IPHMetadata(
         &feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature);
-    SetCardArtURL(suggestion, credit_card,
-                  client.GetPersonalDataManager().payments_data_manager(),
+    SetCardArtURL(suggestion, credit_card, client,
                   /*virtual_card_option=*/true);
     // TODO(crbug.com/41483863): Create translation string for standalone CVC
     // suggestion which includes spacing.
@@ -1367,8 +1376,7 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
     suggestion.minor_texts.emplace_back(
         credit_card.ObfuscatedNumberWithVisibleLastFourDigits());
     SetCardArtURL(
-        suggestion, credit_card,
-        manager.client().GetPersonalDataManager().payments_data_manager(),
+        suggestion, credit_card, manager.client(),
         credit_card.record_type() == CreditCard::RecordType::kVirtualCard);
     suggestion.icon = credit_card.CardIconForAutofillSuggestion();
     std::optional<Suggestion::Text> benefit_label =

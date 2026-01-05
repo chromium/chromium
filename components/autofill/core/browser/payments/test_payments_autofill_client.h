@@ -167,6 +167,9 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   TestCreditCardRiskBasedAuthenticator* GetRiskBasedAuthenticator() override;
   bool IsRiskBasedAuthEffectivelyAvailable() const override;
   bool IsMandatoryReauthEnabled() override;
+#if BUILDFLAG(IS_IOS)
+  bool IsUsingCustomCardIconEnabled() const override;
+#endif  // BUILDFLAG(IS_IOS)
   void ShowMandatoryReauthOptInPrompt(
       base::OnceClosure accept_mandatory_reauth_callback,
       base::OnceClosure cancel_mandatory_reauth_callback,
