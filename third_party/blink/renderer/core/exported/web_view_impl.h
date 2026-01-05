@@ -609,7 +609,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   void OnWindowShowStateChanged(ui::mojom::blink::WindowShowState old_state,
                                 ui::mojom::blink::WindowShowState new_state);
-#endif  //  !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // TODO(crbug.com/1149992): This is called from the associated widget and this
   // code should eventually move out of WebView into somewhere else.
@@ -799,6 +799,19 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // trigger recalculation of zoom factor for all affected widgets.
   void UpdateWidgetZoomFactors();
   void UpdateInspectorDeviceScaleFactorOverride();
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  void WasMaximized();
+  void WasMinimized();
+  void WasRestored();
+
+  enum class WindowShowStateChangeType {
+    kMaximize,
+    kMinimize,
+    kRestore,
+  };
+  void HandleWindowShowStateChangeCallbackWith(WindowShowStateChangeType type);
+#endif
 
   // A value provided by the browser to state that all Widgets in this
   // WebView's frame tree will never be user-visible and thus never need to
@@ -1018,11 +1031,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // All the registered observers.
   base::ObserverList<WebViewObserver> observers_;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  enum class WindowShowStateChangeType {
-    Maximize,
-    Minimize,
-    Restore,
-  };
   std::optional<
       std::pair<WindowShowStateChangeType, WindowShowStateChangeCallback>>
       window_show_state_change_callback_;

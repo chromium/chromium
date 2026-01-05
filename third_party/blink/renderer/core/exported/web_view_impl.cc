@@ -3185,7 +3185,7 @@ void WebViewImpl::Minimize(WindowShowStateChangeCallback callback) {
     std::move(callback).Run(/*succeeded=*/false);
   } else {
     window_show_state_change_callback_.emplace(
-        WindowShowStateChangeType::Minimize, std::move(callback));
+        WindowShowStateChangeType::kMinimize, std::move(callback));
     local_main_frame_host_remote_->Minimize();
   }
 }
@@ -3196,7 +3196,7 @@ void WebViewImpl::Maximize(WindowShowStateChangeCallback callback) {
     std::move(callback).Run(/*succeeded=*/false);
   } else {
     window_show_state_change_callback_.emplace(
-        WindowShowStateChangeType::Maximize, std::move(callback));
+        WindowShowStateChangeType::kMaximize, std::move(callback));
     local_main_frame_host_remote_->Maximize();
   }
 }
@@ -3207,7 +3207,7 @@ void WebViewImpl::Restore(WindowShowStateChangeCallback callback) {
     std::move(callback).Run(/*succeeded=*/false);
   } else {
     window_show_state_change_callback_.emplace(
-        WindowShowStateChangeType::Restore, std::move(callback));
+        WindowShowStateChangeType::kRestore, std::move(callback));
     local_main_frame_host_remote_->Restore();
   }
 }
@@ -3226,50 +3226,50 @@ void WebViewImpl::OnWindowShowStateChanged(
   }
 
   using ui::mojom::blink::WindowShowState;
+  if (old_state == new_state) {
+    return;
+  }
   switch (new_state) {
     case WindowShowState::kDefault:
     case WindowShowState::kNormal:
-      if (window_show_state_change_callback_.has_value() &&
-          window_show_state_change_callback_->first ==
-              WindowShowStateChangeType::Restore) {
-        std::move(window_show_state_change_callback_->second)
-            .Run(/*succeeded=*/true);
-        window_show_state_change_callback_.reset();
-      }
+      WasRestored();
       break;
     case WindowShowState::kMinimized:
-      if (window_show_state_change_callback_.has_value() &&
-          window_show_state_change_callback_->first ==
-              WindowShowStateChangeType::Minimize) {
-        std::move(window_show_state_change_callback_->second)
-            .Run(/*succeeded=*/true);
-        window_show_state_change_callback_.reset();
-      }
+      WasMinimized();
       break;
     case WindowShowState::kMaximized:
-      if (window_show_state_change_callback_.has_value() &&
-          window_show_state_change_callback_->first ==
-              WindowShowStateChangeType::Maximize) {
-        std::move(window_show_state_change_callback_->second)
-            .Run(/*succeeded=*/true);
-        window_show_state_change_callback_.reset();
-        break;
-      }
+      WasMaximized();
       if (old_state == WindowShowState::kMinimized ||
           old_state == WindowShowState::kFullscreen) {
-        if (window_show_state_change_callback_.has_value() &&
-            window_show_state_change_callback_->first ==
-                WindowShowStateChangeType::Restore) {
-          std::move(window_show_state_change_callback_->second)
-              .Run(/*succeeded=*/true);
-          window_show_state_change_callback_.reset();
-        }
+        WasRestored();
       }
       break;
     case WindowShowState::kInactive:
     case WindowShowState::kFullscreen:
     case WindowShowState::kEnd:
       break;
+  }
+}
+
+void WebViewImpl::WasMaximized() {
+  HandleWindowShowStateChangeCallbackWith(WindowShowStateChangeType::kMaximize);
+}
+
+void WebViewImpl::WasMinimized() {
+  HandleWindowShowStateChangeCallbackWith(WindowShowStateChangeType::kMinimize);
+}
+
+void WebViewImpl::WasRestored() {
+  HandleWindowShowStateChangeCallbackWith(WindowShowStateChangeType::kRestore);
+}
+
+void WebViewImpl::HandleWindowShowStateChangeCallbackWith(
+    WindowShowStateChangeType type) {
+  if (window_show_state_change_callback_.has_value() &&
+      window_show_state_change_callback_->first == type) {
+    std::move(window_show_state_change_callback_->second)
+        .Run(/*succeeded=*/true);
+    window_show_state_change_callback_.reset();
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
