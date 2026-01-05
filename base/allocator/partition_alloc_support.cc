@@ -125,6 +125,15 @@ BootloaderOverride GetBootloaderOverride() {
 // paste this minute.
 constexpr base::TimeDelta kFirstPAPurgeOrReclaimDelay = base::Minutes(1);
 
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+// Only tolerate up to |total_size_of_committed_pages >>
+// k***MaxEmptySlotSpansDirtyBytesShift| dirty bytes in empty slot
+// spans.
+constexpr int kForegroundMaxEmptySlotSpansDirtyBytesShift = 2;
+constexpr int kBackgroundMaxEmptySlotSpansDirtyBytesShift = 3;
+constexpr int kDefaultMaxEmptySlotSpansDirtyBytesShift = 3;
+#endif
+
 // This is defined in content/public/common/content_switches.h, which is not
 // accessible in ::base. They must be kept in sync.
 namespace switches {
@@ -162,10 +171,6 @@ class LockMetricsRecorderSupport
  private:
   base::LockMetricsRecorder* recorder_;
 };
-
-}  // namespace
-
-namespace {
 
 void RunThreadCachePeriodicPurge() {
   // Micros, since periodic purge should typically take at most a few ms.
@@ -1281,8 +1286,10 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocLargeEmptySlotSpanRing)) {
+    int16_t size = static_cast<int16_t>(
+        features::kPartitionAllocLargeEmptySlotSpanRingSize.Get());
     allocator_shim::internal::PartitionAllocMalloc::Allocator()
-        ->EnableLargeEmptySlotSpanRing();
+        ->AdjustSlotSpanRing(size, kDefaultMaxEmptySlotSpansDirtyBytesShift);
   }
 
   // `ReconfigureAfterTaskRunnerInit()` is called on the Main thread.
@@ -1406,7 +1413,10 @@ void PartitionAllocSupport::OnForegrounded(bool has_main_frame) {
 #endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED)
   if (base::FeatureList::IsEnabled(
           features::kPartitionAllocAdjustSizeWhenInForeground)) {
-    allocator_shim::AdjustDefaultAllocatorForForeground();
+    int16_t size = static_cast<int16_t>(
+        features::kPartitionAllocForegroundEmptySlotSpanRingSize.Get());
+    allocator_shim::internal::PartitionAllocMalloc::Allocator()
+        ->AdjustSlotSpanRing(size, kForegroundMaxEmptySlotSpansDirtyBytesShift);
   }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
@@ -1445,7 +1455,10 @@ void PartitionAllocSupport::OnBackgrounded() {
 #endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED)
   if (base::FeatureList::IsEnabled(
           features::kPartitionAllocAdjustSizeWhenInForeground)) {
-    allocator_shim::AdjustDefaultAllocatorForBackground();
+    int16_t size = static_cast<int16_t>(
+        features::kPartitionAllocBackgroundEmptySlotSpanRingSize.Get());
+    allocator_shim::internal::PartitionAllocMalloc::Allocator()
+        ->AdjustSlotSpanRing(size, kBackgroundMaxEmptySlotSpansDirtyBytesShift);
   }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }

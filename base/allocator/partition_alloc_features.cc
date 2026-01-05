@@ -88,6 +88,11 @@ BASE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing,
 #else
              FEATURE_DISABLED_BY_DEFAULT);
 #endif
+BASE_FEATURE_PARAM(int,
+                   kPartitionAllocLargeEmptySlotSpanRingSize,
+                   &kPartitionAllocLargeEmptySlotSpanRing,
+                   "ring-size",
+                   partition_alloc::internal::SlotSpanRingMaxSize::kMedium);
 
 BASE_FEATURE(kPartitionAllocWithAdvancedChecks, FEATURE_DISABLED_BY_DEFAULT);
 constexpr FeatureParam<PartitionAllocWithAdvancedChecksEnabledProcesses>::Option
@@ -375,6 +380,17 @@ BASE_FEATURE(kPartitionAllocAdjustSizeWhenInForeground,
 #else
              FEATURE_DISABLED_BY_DEFAULT);
 #endif
+BASE_FEATURE_PARAM(
+    int,
+    kPartitionAllocForegroundEmptySlotSpanRingSize,
+    &kPartitionAllocAdjustSizeWhenInForeground,
+    "foreground-ring-size",
+    static_cast<int>(partition_alloc::internal::kMaxEmptySlotSpanRingSize));
+BASE_FEATURE_PARAM(int,
+                   kPartitionAllocBackgroundEmptySlotSpanRingSize,
+                   &kPartitionAllocAdjustSizeWhenInForeground,
+                   "background-ring-size",
+                   partition_alloc::internal::SlotSpanRingMaxSize::kMedium);
 
 #if PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
 BASE_FEATURE(kPartitionAllocUsePriorityInheritanceLocks,

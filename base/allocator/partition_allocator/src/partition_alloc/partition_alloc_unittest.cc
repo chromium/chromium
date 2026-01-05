@@ -5910,7 +5910,9 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
             kDefaultEmptySlotSpanRingSize * bucket_size);
 
   // Now can cache more slot spans.
-  root->EnableLargeEmptySlotSpanRing();
+  constexpr size_t kLargeEmptySlotSpanRingSize = SlotSpanRingMaxSize::kMedium;
+  constexpr int kDirtyBytesShift = 0;
+  root->AdjustSlotSpanRing(kLargeEmptySlotSpanRingSize, kDirtyBytesShift);
 
   constexpr size_t single_slot_large_count = kDefaultEmptySlotSpanRingSize + 10;
   // The assertion following the alloc/free checks that the ring contains the
@@ -6221,12 +6223,16 @@ TEST_P(PartitionAllocTest, SortActiveSlotSpans) {
 TEST_P(PartitionAllocTest, GlobalEmptySlotSpanRingIndexResets) {
   // Switch to the larger slot span size, and set the
   // global_empty_slot_span_ring_index to one less than max.
-  allocator.root()->AdjustForForeground();
+  constexpr int16_t kLargeRingSize = SlotSpanRingMaxSize::kLarge;
+  constexpr int kLargeDirtyBytesShift = 2;
+  allocator.root()->AdjustSlotSpanRing(kLargeRingSize, kLargeDirtyBytesShift);
   allocator.root()->SetGlobalEmptySlotSpanRingIndexForTesting(
       internal::kMaxEmptySlotSpanRingSize - 1);
 
   // Switch to the smaller size, allocate, free, and clear the empty cache.
-  allocator.root()->AdjustForBackground();
+  constexpr int16_t kSmallRingSize = SlotSpanRingMaxSize::kMedium;
+  constexpr int kSmallirtyBytesShift = 3;
+  allocator.root()->AdjustSlotSpanRing(kSmallRingSize, kSmallirtyBytesShift);
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   allocator.root()->Free(ptr);
   ClearEmptySlotSpanCache();

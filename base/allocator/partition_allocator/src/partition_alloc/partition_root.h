@@ -656,15 +656,6 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // |limit|.
   void ShrinkEmptySlotSpansRing(size_t limit)
       PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
-  // The empty slot span ring starts "small", can be enlarged later. This
-  // improves performance by performing fewer system calls, at the cost of more
-  // memory usage.
-  void EnableLargeEmptySlotSpanRing() {
-    ::partition_alloc::internal::ScopedGuard locker{
-        internal::PartitionRootLock(this)};
-    global_empty_slot_span_ring_size =
-        internal::kBackgroundEmptySlotSpanRingSize;
-  }
 
   void DumpStats(const char* partition_name,
                  bool is_light_dump,
@@ -842,24 +833,38 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   bool brp_enabled() const { return settings.brp_enabled_; }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
-  void AdjustForForeground() {
-    max_empty_slot_spans_dirty_bytes_shift = 2;
-    ::partition_alloc::internal::ScopedGuard guard{
-        internal::PartitionRootLock(this)};
-    global_empty_slot_span_ring_size =
-        internal::kForegroundEmptySlotSpanRingSize;
-  }
-
-  void AdjustForBackground() {
-    max_empty_slot_spans_dirty_bytes_shift = 3;
+  // When a SlotSpan becomes empty, the allocator tries to avoid reusing it
+  // immediately, to help with fragmentation. At this point, it becomes dirty
+  // committed memory, which we want to minimize. This could be decommitted
+  // immediately, but that would imply doing a lot of system calls. In
+  // particular, for single-slot SlotSpans, a malloc() / free() loop would cause
+  // a *lot* of system calls.
+  //
+  // As an intermediate step, empty SlotSpans are placed into a per-partition
+  // global ring buffer, giving the newly-empty SlotSpan a chance to be reused
+  // before getting decommitted. A new entry (i.e. a newly empty SlotSpan)
+  // taking the place used by a previous one will lead the previous SlotSpan to
+  // be decommitted immediately, provided that it is still empty.
+  //
+  // Increasing the ring size means giving more time for reuse to happen, at the
+  // cost of possibly increasing peak committed memory usage (and increasing the
+  // size of PartitionRoot a bit, since the ring buffer is there). Note that the
+  // ring buffer doesn't necessarily contain an empty SlotSpan, as SlotSpans are
+  // *not* removed from it when reused. So the ring buffer really is a buffer
+  // of *possibly* empty SlotSpans.
+  //
+  // In all cases, PartitionRoot::PurgeMemory() with the
+  // PurgeFlags::kDecommitEmptySlotSpans flag will eagerly decommit all entries
+  // in the ring buffer, so with periodic purge enabled, this typically happens
+  // every few seconds.
+  void AdjustSlotSpanRing(int16_t ring_size, int dirty_bytes_shift) {
+    max_empty_slot_spans_dirty_bytes_shift = dirty_bytes_shift;
     // ShrinkEmptySlotSpansRing() will iterate through
     // kMaxEmptySlotSpanRingSize, so no need to free empty pages now.
     ::partition_alloc::internal::ScopedGuard guard{
         internal::PartitionRootLock(this)};
-    global_empty_slot_span_ring_size =
-        internal::kBackgroundEmptySlotSpanRingSize;
-    if (global_empty_slot_span_ring_index >=
-        static_cast<int16_t>(internal::kBackgroundEmptySlotSpanRingSize)) {
+    global_empty_slot_span_ring_size = ring_size;
+    if (global_empty_slot_span_ring_index >= ring_size) {
       global_empty_slot_span_ring_index = 0;
     }
   }

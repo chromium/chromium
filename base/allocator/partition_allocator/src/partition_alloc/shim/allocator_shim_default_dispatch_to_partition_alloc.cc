@@ -767,14 +767,6 @@ uint32_t GetMainPartitionRootExtrasSize() {
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)
 }
 
-void AdjustDefaultAllocatorForForeground() {
-  Allocator()->AdjustForForeground();
-}
-
-void AdjustDefaultAllocatorForBackground() {
-  Allocator()->AdjustForBackground();
-}
-
 }  // namespace allocator_shim
 
 #if !PA_BUILDFLAG( \

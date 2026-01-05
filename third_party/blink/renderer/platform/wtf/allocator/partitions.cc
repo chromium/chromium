@@ -128,7 +128,11 @@ bool Partitions::InitializeOnce() {
   buffer_root_ = buffer_allocator->root();
   if (base::FeatureList::IsEnabled(
           kBlinkUseLargeEmptySlotSpanRingForBufferRoot)) {
-    buffer_root_->EnableLargeEmptySlotSpanRing();
+    constexpr size_t kLargeEmptySlotSpanRingSize =
+        partition_alloc::internal::SlotSpanRingMaxSize::kMedium;
+    constexpr int kDefaultMaxEmptySlotSpansDirtyBytesShift = 3;
+    buffer_root_->AdjustSlotSpanRing(kLargeEmptySlotSpanRingSize,
+                                     kDefaultMaxEmptySlotSpansDirtyBytesShift);
   }
 
   // FastMalloc doesn't provide isolation, only a (hopefully fast) malloc().
@@ -433,10 +437,16 @@ void Partitions::AdjustPartitionsForForeground() {
   DCHECK(initialized_);
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocAdjustSizeWhenInForeground)) {
-    array_buffer_root_->AdjustForForeground();
-    buffer_root_->AdjustForForeground();
+    constexpr int kForegroundMaxEmptySlotSpansDirtyBytesShift = 2;
+    int16_t size = static_cast<int16_t>(
+        base::features::kPartitionAllocForegroundEmptySlotSpanRingSize.Get());
+    array_buffer_root_->AdjustSlotSpanRing(
+        size, kForegroundMaxEmptySlotSpansDirtyBytesShift);
+    buffer_root_->AdjustSlotSpanRing(
+        size, kForegroundMaxEmptySlotSpansDirtyBytesShift);
     if (fast_malloc_root_) {
-      fast_malloc_root_->AdjustForForeground();
+      fast_malloc_root_->AdjustSlotSpanRing(
+          size, kForegroundMaxEmptySlotSpansDirtyBytesShift);
     }
   }
 }
@@ -446,10 +456,16 @@ void Partitions::AdjustPartitionsForBackground() {
   DCHECK(initialized_);
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocAdjustSizeWhenInForeground)) {
-    array_buffer_root_->AdjustForBackground();
-    buffer_root_->AdjustForBackground();
+    constexpr int kBackgroundMaxEmptySlotSpansDirtyBytesShift = 3;
+    int16_t size = static_cast<int16_t>(
+        base::features::kPartitionAllocBackgroundEmptySlotSpanRingSize.Get());
+    array_buffer_root_->AdjustSlotSpanRing(
+        size, kBackgroundMaxEmptySlotSpansDirtyBytesShift);
+    buffer_root_->AdjustSlotSpanRing(
+        size, kBackgroundMaxEmptySlotSpansDirtyBytesShift);
     if (fast_malloc_root_) {
-      fast_malloc_root_->AdjustForBackground();
+      fast_malloc_root_->AdjustSlotSpanRing(
+          size, kBackgroundMaxEmptySlotSpansDirtyBytesShift);
     }
   }
 }
