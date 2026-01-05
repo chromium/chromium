@@ -768,34 +768,38 @@ bool ShouldShowWebActuationToggle(Profile* profile) {
     return false;
   }
 
+  // Don't show the toggle if allowed tiers are configured, but the
+  // corresponding flag is disabled.
   const base::flat_set<int32_t>& allowed_tiers =
       actor::ActorPolicyChecker::GetActorEligibleTiers();
-
-  // If tiers are populated, ensure the UI visibility flag is also enabled
-  // before showing the toggle.
   if (!allowed_tiers.empty() &&
-      base::FeatureList::IsEnabled(features::kGlicWebActuationSettingsToggle)) {
-    auto* subscription_service = subscription_eligibility::
-        SubscriptionEligibilityServiceFactory::GetForProfile(profile);
-    CHECK(subscription_service);
-    return allowed_tiers.contains(
-        subscription_service->GetAiSubscriptionTier());
+      !base::FeatureList::IsEnabled(
+          features::kGlicWebActuationSettingsToggle)) {
+    return false;
   }
 
   // If no specific tiers are populated, show the toggle only if the user
   // has explicitly modified the preference before.
   const PrefService::Preference* pref = profile->GetPrefs()->FindPreference(
       glic::prefs::kGlicUserEnabledActuationOnWeb);
-  if (pref && !pref->IsDefaultValue()) {
+  if (allowed_tiers.empty() && pref && !pref->IsDefaultValue()) {
     return true;
   }
-  // If tiers are empty and the user hasn't set the pref, still show toggle
-  // if enterprise policy is actively blocking it. This ensures users see the
-  // enterprise enforced state instead of it just being missing.
-  if (IsWebActuationDisabledForEnterprise(profile)) {
-    return true;
+
+  auto* actor_service =
+      actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
+  if (!actor_service) {
+    return false;
   }
-  return false;
+  actor::ActorPolicyChecker::CannotActReasons cannot_act_reasons =
+      actor_service->GetPolicyChecker().CannotActOnWebReasons();
+
+  // Don't hide the setting purely based on management status - instead the flag
+  // is shown but disabled with an enterprise icon.
+  cannot_act_reasons.erase(
+      actor::ActorPolicyChecker::CannotActReason::kManaged);
+
+  return cannot_act_reasons.empty();
 }
 
 void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {

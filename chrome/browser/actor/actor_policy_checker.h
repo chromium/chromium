@@ -95,6 +95,18 @@ class ActorPolicyChecker : public signin::IdentityManager::Observer,
 
   bool CanActOnWeb() const;
 
+  enum class CannotActReason {
+    kDataProtected,
+    kManaged,
+    kAccountCapabilityIneligible,
+    // The account is not subscribed to one of the required AI subscription
+    // tiers.
+    kAccountMissingChromeBenefits,
+  };
+  using CannotActReasons = absl::flat_hash_set<CannotActReason>;
+
+  CannotActReasons CannotActOnWebReasons() const;
+
   EnterprisePolicyBlockReason EvaluateEnterprisePolicyForUrl(
       const GURL& url) const;
 
@@ -107,7 +119,7 @@ class ActorPolicyChecker : public signin::IdentityManager::Observer,
     kByAllowlistOnly,
   };
 
-  CanActOutcome ComputeActOnWebCapability();
+  std::pair<CanActOutcome, CannotActReasons> ComputeActOnWebCapability();
 
   // Owns `this`.
   base::raw_ref<ActorKeyedService> service_;
@@ -115,6 +127,7 @@ class ActorPolicyChecker : public signin::IdentityManager::Observer,
   PrefChangeRegistrar pref_change_registrar_;
 
   CanActOutcome can_act_on_web_ = CanActOutcome::kYes;
+  CannotActReasons cannot_act_on_web_reasons_;
 
   bool can_act_on_web_for_testing_ = false;
 
