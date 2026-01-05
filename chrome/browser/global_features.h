@@ -128,10 +128,6 @@ class GlobalFeatures {
   whats_new::WhatsNewRegistry* whats_new_registry() {
     return whats_new_registry_.get();
   }
-
-  default_browser::DefaultBrowserManager* default_browser_manager() {
-    return default_browser_manager_.get();
-  }
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)

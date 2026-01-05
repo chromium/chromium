@@ -11,6 +11,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -48,7 +49,7 @@ void ChangeDefaultBrowserProgId(const std::wstring& new_prog_id) {
 
 #if BUILDFLAG(IS_WIN)
 class DefaultBrowserManagerWinBrowserTest : public InProcessBrowserTest {
- public:
+ protected:
   DefaultBrowserManagerWinBrowserTest() = default;
   ~DefaultBrowserManagerWinBrowserTest() override = default;
 
@@ -58,10 +59,10 @@ class DefaultBrowserManagerWinBrowserTest : public InProcessBrowserTest {
     base::win::RegKey key;
     ASSERT_EQ(ERROR_SUCCESS,
               key.Create(HKEY_CURRENT_USER, kRegistryPath, KEY_WRITE));
+
     InProcessBrowserTest::SetUp();
   }
 
- protected:
   registry_util::RegistryOverrideManager registry_override_manager_;
 };
 
@@ -69,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
                        ChangeIsDetectedAndObserverIsNotified) {
   CreateDefaultBrowserKey(L"ChromeHTML");
   DefaultBrowserManager* manager =
-      g_browser_process->GetFeatures()->default_browser_manager();
+      DefaultBrowserManager::From(g_browser_process);
   ASSERT_TRUE(manager);
 
   base::test::TestFuture<void> future;
@@ -83,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
                        SubscriptionDestroyedPreventsCallback) {
   CreateDefaultBrowserKey(L"ChromeHTML");
   DefaultBrowserManager* manager =
-      g_browser_process->GetFeatures()->default_browser_manager();
+      DefaultBrowserManager::From(g_browser_process);
   ASSERT_TRUE(manager);
 
   base::test::TestFuture<void> future;
@@ -101,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
                        AllRegisteredObserversAreNotified) {
   CreateDefaultBrowserKey(L"ChromeHTML");
   DefaultBrowserManager* manager =
-      g_browser_process->GetFeatures()->default_browser_manager();
+      DefaultBrowserManager::From(g_browser_process);
   ASSERT_TRUE(manager);
 
   base::test::TestFuture<void> future1;
@@ -120,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
                        SubsequentChangesAreAlsoDetected) {
   CreateDefaultBrowserKey(L"ChromeHTML");
   DefaultBrowserManager* manager =
-      g_browser_process->GetFeatures()->default_browser_manager();
+      DefaultBrowserManager::From(g_browser_process);
   ASSERT_TRUE(manager);
 
   {
@@ -147,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(
     SubsequentChangesAreAlsoDetectedWithTheSameSubscription) {
   CreateDefaultBrowserKey(L"ChromeHTML");
   DefaultBrowserManager* manager =
-      g_browser_process->GetFeatures()->default_browser_manager();
+      DefaultBrowserManager::From(g_browser_process);
   ASSERT_TRUE(manager);
 
   int call_count = 0;

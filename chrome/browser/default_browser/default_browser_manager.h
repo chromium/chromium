@@ -12,7 +12,10 @@
 #include "base/functional/callback_forward.h"
 #include "build/buildflag.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
+
+class BrowserProcess;
 
 namespace default_browser {
 
@@ -27,6 +30,8 @@ using DefaultBrowserCheckCompletionCallback =
 // default-browser utilities.
 class DefaultBrowserManager {
  public:
+  DECLARE_USER_DATA(DefaultBrowserManager);
+
   // Delegate for performing shell-dependent operations.
   class ShellDelegate {
    public:
@@ -45,12 +50,14 @@ class DefaultBrowserManager {
 #endif  // BUILDFLAG(IS_WIN)
   };
 
-  explicit DefaultBrowserManager(std::unique_ptr<ShellDelegate> shell_delegate);
+  explicit DefaultBrowserManager(BrowserProcess* browser_process,
+                                 std::unique_ptr<ShellDelegate> shell_delegate);
   ~DefaultBrowserManager();
 
   DefaultBrowserManager(const DefaultBrowserManager&) = delete;
   DefaultBrowserManager& operator=(const DefaultBrowserManager&) = delete;
 
+  static DefaultBrowserManager* From(BrowserProcess* browser_process);
   static std::unique_ptr<ShellDelegate> CreateDefaultDelegate();
 
   // Selects an appropriate setter, and create and returns a unique pointer to a
@@ -71,6 +78,10 @@ class DefaultBrowserManager {
   base::CallbackListSubscription RegisterDefaultBrowserChanged(
       base::RepeatingClosure callback);
 
+  ShellDelegate* GetShellDelegateForTesting() {
+    return const_cast<ShellDelegate*>(shell_delegate_.get());
+  }
+
  private:
   void OnDefaultBrowserCheckResult(
       default_browser::DefaultBrowserCheckCompletionCallback callback,
@@ -88,6 +99,8 @@ class DefaultBrowserManager {
   // The platform default browser change monitor that handles the low-level
   // logic for detecting when the system's default browser has changed.
   std::unique_ptr<DefaultBrowserMonitor> monitor_;
+
+  ui::ScopedUnownedUserData<DefaultBrowserManager> scoped_unowned_user_data_;
 };
 
 }  // namespace default_browser

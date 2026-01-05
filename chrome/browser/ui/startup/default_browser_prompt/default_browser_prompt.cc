@@ -132,9 +132,7 @@ void ShowDefaultBrowserPrompt(Profile* profile,
     return;
   }
 
-  default_browser::DefaultBrowserManager* default_browser_manager =
-      g_browser_process->GetFeatures()->default_browser_manager();
-
-  default_browser_manager->GetDefaultBrowserState(base::BindOnce(
-      &OnCheckIsDefaultBrowserFinished, profile, std::move(done_callback)));
+  default_browser::DefaultBrowserManager::From(g_browser_process)
+      ->GetDefaultBrowserState(base::BindOnce(
+          &OnCheckIsDefaultBrowserFinished, profile, std::move(done_callback)));
 }

@@ -14,9 +14,12 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -81,11 +84,6 @@ class DefaultBrowserManagerTest : public testing::Test {
   DefaultBrowserManagerTest() {
     scoped_feature_list_.InitAndEnableFeature(
         kPerformDefaultBrowserCheckValidations);
-
-    auto shell_delegate = std::make_unique<FakeShellDelegate>();
-    shell_delegate_ = shell_delegate.get();
-    default_browser_manager_ =
-        std::make_unique<DefaultBrowserManager>(std::move(shell_delegate));
   }
 
   ~DefaultBrowserManagerTest() override = default;
@@ -98,23 +96,41 @@ class DefaultBrowserManagerTest : public testing::Test {
     ASSERT_EQ(ERROR_SUCCESS,
               key.Create(HKEY_CURRENT_USER, kRegistryPath, KEY_WRITE));
 #endif
-    testing::Test::SetUp();
+
+    global_feature_override_ =
+        GlobalFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+            base::BindRepeating([](BrowserProcess& browser_process) {
+              return std::make_unique<DefaultBrowserManager>(
+                  TestingBrowserProcess::GetGlobal(),
+                  std::make_unique<FakeShellDelegate>());
+            }));
+
+    TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+        /*profile_manager=*/false);
+  }
+
+  void TearDown() override {
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
   DefaultBrowserManager& default_browser_manager() {
-    return *default_browser_manager_.get();
+    return *DefaultBrowserManager::From(TestingBrowserProcess::GetGlobal());
   }
 
-  FakeShellDelegate& shell_delegate() { return *shell_delegate_.get(); }
+  FakeShellDelegate& shell_delegate() {
+    return *static_cast<FakeShellDelegate*>(
+        DefaultBrowserManager::From(TestingBrowserProcess::GetGlobal())
+            ->GetShellDelegateForTesting());
+  }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<DefaultBrowserManager> default_browser_manager_;
-  raw_ptr<FakeShellDelegate> shell_delegate_;
 #if BUILDFLAG(IS_WIN)
   registry_util::RegistryOverrideManager registry_override_manager_;
 #endif
+
+  ui::UserDataFactory::ScopedOverride global_feature_override_;
 };
 
 TEST_F(DefaultBrowserManagerTest, GetDefaultBrowserState) {

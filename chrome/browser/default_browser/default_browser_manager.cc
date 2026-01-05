@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/default_browser/default_browser_monitor.h"
 #include "chrome/browser/default_browser/setters/shell_integration_default_browser_setter.h"
@@ -144,9 +145,14 @@ DefaultBrowserManager::CreateDefaultDelegate() {
   return std::make_unique<ShellDelegateImpl>();
 }
 
+DEFINE_USER_DATA(DefaultBrowserManager);
+
 DefaultBrowserManager::DefaultBrowserManager(
+    BrowserProcess* browser_process,
     std::unique_ptr<ShellDelegate> shell_delegate)
-    : shell_delegate_(std::move(shell_delegate)) {}
+    : shell_delegate_(std::move(shell_delegate)),
+      scoped_unowned_user_data_(browser_process->GetUnownedUserDataHost(),
+                                *this) {}
 
 DefaultBrowserManager::~DefaultBrowserManager() = default;
 
@@ -156,6 +162,13 @@ DefaultBrowserManager::CreateControllerFor(
     DefaultBrowserEntrypointType entrypoint) {
   return std::make_unique<DefaultBrowserController>(
       std::make_unique<ShellIntegrationDefaultBrowserSetter>(), entrypoint);
+}
+
+// static
+DefaultBrowserManager* DefaultBrowserManager::From(
+    BrowserProcess* browser_process) {
+  return browser_process ? Get(browser_process->GetUnownedUserDataHost())
+                         : nullptr;
 }
 
 void DefaultBrowserManager::GetDefaultBrowserState(

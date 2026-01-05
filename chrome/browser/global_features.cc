@@ -145,8 +145,10 @@ void GlobalFeatures::PostBrowserProcessInitCore() {
   whats_new_registry_ = CreateWhatsNewRegistry();
 
   default_browser_manager_ =
-      std::make_unique<default_browser::DefaultBrowserManager>(
-          default_browser::DefaultBrowserManager::CreateDefaultDelegate());
+      GetUserDataFactory()
+          .CreateInstance<default_browser::DefaultBrowserManager>(
+              *g_browser_process, g_browser_process,
+              default_browser::DefaultBrowserManager::CreateDefaultDelegate());
 #endif
 
   application_locale_storage_ = std::make_unique<ApplicationLocaleStorage>();
