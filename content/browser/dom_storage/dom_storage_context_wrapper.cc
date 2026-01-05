@@ -102,11 +102,6 @@ scoped_refptr<DOMStorageContextWrapper> DOMStorageContextWrapper::Create(
 DOMStorageContextWrapper::DOMStorageContextWrapper(
     StoragePartitionImpl* partition)
     : partition_(partition) {
-  memory_pressure_listener_registration_ =
-      std::make_unique<base::MemoryPressureListenerRegistration>(
-          FROM_HERE, base::MemoryPressureListenerTag::kDOMStorageContextWrapper,
-          this);
-
   // `partition_` can be null in test environments.
   if (!partition_) {
     return;
@@ -262,7 +257,6 @@ void DOMStorageContextWrapper::Shutdown() {
   // Signals the implementation to perform shutdown operations.
   session_storage_control_.reset();
   local_storage_control_.reset();
-  memory_pressure_listener_registration_.reset();
 
   // Make sure the observer drops its reference to |this|.
   storage_policy_observer_.reset();
@@ -429,19 +423,6 @@ void DOMStorageContextWrapper::RemoveNamespace(
   base::AutoLock lock(alive_namespaces_lock_);
   DCHECK(base::Contains(alive_namespaces_, namespace_id));
   alive_namespaces_.erase(namespace_id);
-}
-
-void DOMStorageContextWrapper::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
-    return;
-  }
-
-  PurgeOption purge_option = PURGE_UNOPENED;
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    purge_option = PURGE_AGGRESSIVE;
-  }
-  PurgeMemory(purge_option);
 }
 
 void DOMStorageContextWrapper::PurgeMemory(PurgeOption purge_option) {
