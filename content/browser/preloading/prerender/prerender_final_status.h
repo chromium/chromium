@@ -183,7 +183,10 @@ enum class PrerenderFinalStatus {
 
   kMaxValue = kPrerenderHostReused,
 };
-// LINT.ThenChange(//third_party/blink/public/devtools_protocol/browser_protocol.pdl)
+// LINT.ThenChange(
+//     //third_party/blink/public/devtools_protocol/browser_protocol.pdl,
+//     //tools/metrics/histograms/enums.xml
+// )
 
 // Helper method to convert PrerenderFinalStatus to PreloadingFailureReason.
 PreloadingFailureReason CONTENT_EXPORT

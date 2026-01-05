@@ -23662,6 +23662,7 @@ Called by update_net_error_codes.py.-->
   <int value="85" label="kV8OptimizerDisabled (obsoleted)"/>
   <int value="86" label="kPrerenderFailedDuringPrefetch"/>
   <int value="87" label="kBrowsingDataRemoved"/>
+  <int value="88" label="kPrerenderHostReused"/>
 </enum>
 
 <enum name="PrimaryButtonRight">
