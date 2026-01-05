@@ -16,6 +16,7 @@ assert(enable_glic || enable_glic_android)
 # the "impl" target.
 source_set("glic") {
   sources = [
+    "glic_metrics.h",
     "glic_pref_names.h",
     "glic_user_status_code.h",
     "glic_user_status_fetcher.h",
@@ -50,7 +51,6 @@ source_set("glic") {
       "browser_ui/scoped_glic_button_indicator.h",
       "fre/glic_fre_ui.h",
       "gemini_act_on_web_settings_policy_handler.h",
-      "glic_metrics.h",
       "glic_net_log.h",
       "glic_profile_manager.h",
       "glic_settings_util.h",
@@ -149,6 +149,7 @@ source_set("enum") {
 # dependencies that are only needed internally.
 source_set("impl") {
   sources = [
+    "glic_metrics.cc",
     "glic_pref_names.cc",
     "glic_user_status_fetcher.cc",
     "glic_user_status_request.cc",
@@ -178,7 +179,6 @@ source_set("impl") {
     # desktop-only section.
     sources += [
       "gemini_act_on_web_settings_policy_handler.cc",
-      "glic_metrics.cc",
       "glic_metrics_provider.cc",
       "glic_metrics_provider.h",
       "glic_net_log.cc",
