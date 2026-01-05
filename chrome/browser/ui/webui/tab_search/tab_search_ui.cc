@@ -233,7 +233,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   source->AddString(
       "declutterInactiveBody",
       l10n_util::GetStringFUTF16(IDS_DECLUTTER_INACTIVE_BODY, u"7"));
-  source->AddString("newTabPageUrl", chrome::kChromeUINewTabPageURL);
+  source->AddString("newTabPageUrl", chrome::kChromeUINewTabURL);
 
   webui::SetupWebUIDataSource(source, kTabSearchResources,
                               IDR_TAB_SEARCH_TAB_SEARCH_HTML);
