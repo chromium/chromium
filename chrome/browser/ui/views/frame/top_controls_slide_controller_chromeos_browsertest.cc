@@ -1504,4 +1504,63 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
 
 // TODO(crbug.com/40638200): Add test coverage that covers using WebUITabStrip.
 
+// Regression test for crbug.com/470873053.
+IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
+                       LayerWithoutCompositorIsHandledSafely) {
+  auto layer = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
+  EXPECT_EQ(nullptr, layer->GetCompositor());
+
+  ui::Layer* browser_layer = browser_view()->browser_widget()->GetLayer();
+  ASSERT_NE(nullptr, browser_layer);
+  EXPECT_NE(nullptr, browser_layer->GetCompositor());
+
+  browser_layer->SetMasksToBounds(true);
+  EXPECT_TRUE(browser_layer->GetMasksToBounds());
+  browser_layer->SetMasksToBounds(false);
+  EXPECT_FALSE(browser_layer->GetMasksToBounds());
+}
+
+// Regression test for crbug.com/470873053.
+IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
+                       NoCrashOnSetMasksToBoundsDuringSliding) {
+  ToggleTabletMode();
+  ASSERT_TRUE(GetTabletModeEnabled());
+  EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
+  EXPECT_FLOAT_EQ(top_controls_slide_controller()->GetShownRatio(), 1.f);
+
+  NavigateActiveTabToUrl(
+      embedded_test_server()->GetURL("/top_controls_scroll.html"));
+  auto* active_contents = browser_view()->GetActiveWebContents();
+
+  for (int i = 0; i < 3; ++i) {
+    SCOPED_TRACE(base::StringPrintf("Scroll cycle %d", i));
+    ScrollAndExpectTopChromeToBe(ScrollDirection::kDown,
+                                 TopChromeShownState::kFullyHidden);
+    SynchronizeBrowserWithRenderer(active_contents);
+    ScrollAndExpectTopChromeToBe(ScrollDirection::kUp,
+                                 TopChromeShownState::kFullyShown);
+    SynchronizeBrowserWithRenderer(active_contents);
+  }
+
+  aura::Window* browser_window = browser()->window()->GetNativeWindow();
+  ui::test::EventGenerator event_generator(browser_window->GetRootWindow(),
+                                           browser_window);
+  const gfx::Point start_point = event_generator.current_screen_location();
+
+  event_generator.PressTouch();
+  SynchronizeBrowserWithRenderer(active_contents);
+
+  auto current_point = start_point;
+  for (int j = 0; j < 50; ++j) {
+    current_point += gfx::Vector2d(0, -2);
+    event_generator.MoveTouch(current_point);
+  }
+
+  event_generator.ReleaseTouch();
+
+  TopControlsShownRatioWaiter waiter(top_controls_slide_controller());
+  waiter.WaitForRatio(0.f);
+  EXPECT_FLOAT_EQ(top_controls_slide_controller()->GetShownRatio(), 0.f);
+}
+
 }  // namespace
