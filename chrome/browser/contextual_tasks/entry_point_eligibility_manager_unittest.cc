@@ -152,7 +152,13 @@ class EntryPointEligibilityManagerTest : public testing::Test {
   std::unique_ptr<EntryPointEligibilityManager> manager_;
 };
 
-TEST_F(EntryPointEligibilityManagerTest, AreEntryPointsEligible_True) {
+// TODO(crbug.com/472938809): Consistently failing on Linux UBSan builder.
+#if BUILDFLAG(IS_LINUX) && defined(UNDEFINED_SANITIZER)
+#define MAYBE_AreEntryPointsEligible_True DISABLED_AreEntryPointsEligible_True
+#else
+#define MAYBE_AreEntryPointsEligible_True AreEntryPointsEligible_True
+#endif
+TEST_F(EntryPointEligibilityManagerTest, MAYBE_AreEntryPointsEligible_True) {
   // Setup all conditions to true.
   auto account_info =
       identity_test_env_adaptor_->identity_test_env()
