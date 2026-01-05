@@ -32,7 +32,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.window.layout.WindowMetricsCalculator;
 
 import com.google.android.material.appbar.AppBarLayout;
 
@@ -432,22 +431,19 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 isMultiColumnSettingEnabled()
                         ? this::updateFirstVisibleTitle
                         : CallbackUtils.emptyCallback();
-        // TODO(crbug.com/439911511): Refactor to use `isTwoColumnSettingsVisible` instead of
-        // `getUseMultiColumn`.
-        // Ensure `mMultiColumnSettings.isTwoColumn()` is reliable by confirming layout pass
-        // completion
-        // before direct replacement, as premature usage can lead to incorrect behavior.
         mSearchCoordinator =
                 new SettingsSearchCoordinator(
                         this,
-                        this::getUseMultiColumn,
+                        this::isTwoColumnSettingsVisible,
                         mMultiColumnSettings,
                         mItemDecorations,
                         mProfile,
                         updateFirstVisibleTitle,
                         getModalDialogManagerSupplier());
-        mSearchCoordinator.initializeSearchUi();
-        if (mMultiColumnSettings != null) mMultiColumnSettings.addObserver(mSearchCoordinator);
+        if (mMultiColumnSettings != null) {
+            mMultiColumnSettings.setOnCreateViewRunnable(mSearchCoordinator::initializeSearchUi);
+            mMultiColumnSettings.addObserver(mSearchCoordinator);
+        }
     }
 
     private void updateFirstVisibleTitle(int index) {
@@ -456,20 +452,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     private void onTitleTapped(@Nullable String entryName) {
         if (mSearchCoordinator != null) mSearchCoordinator.onTitleTapped(entryName);
-    }
-
-    /**
-     * Returns true if multi-column mode will be displayed. This happens when the flag
-     * #settings-multicolumn is enabled and the screen width is broad enough to activate the
-     * multi-column mode.
-     */
-    private boolean getUseMultiColumn() {
-        if (!isMultiColumnSettingEnabled()) return false;
-
-        var windowMetrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(this);
-        return windowMetrics.getBounds().width()
-                >= getResources()
-                        .getDimensionPixelSize(R.dimen.settings_min_multi_column_screen_width);
     }
 
     /** Returns true if the AndroidSettingsContainment feature is enabled. */
