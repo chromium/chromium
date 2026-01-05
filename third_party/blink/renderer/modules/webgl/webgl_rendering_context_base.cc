@@ -2019,7 +2019,7 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
   return resource_provider_.get();
 }
 
-CanvasResourceProvider*
+CanvasResourceProviderSharedImage*
 WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
     SourceDrawingBuffer source_buffer) {
   TRACE_EVENT0(

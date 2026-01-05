@@ -72,7 +72,7 @@ class PaintCanvasVideoRenderer;
 namespace blink {
 
 class AcceleratedStaticBitmapImage;
-class CanvasResourceProvider;
+class CanvasResourceProviderSharedImage;
 class CanvasSnapshotProvider;
 class EXTDisjointTimerQuery;
 class EXTDisjointTimerQueryWebGL2;
@@ -2040,9 +2040,9 @@ class MODULES_EXPORT WebGLRenderingContextBase
   CanvasResourceProviderSharedImage* GetSharedImageResourceProvider();
 
   // Attempts to paint the most recent rendering results into a
-  // CanvasResourceProvider. Returns the CanvasResourceProvider if the paint
+  // CanvasResourceProviderSharedImage. Returns the provider if the paint
   // succeeded; otherwise returns nullptr.
-  CanvasResourceProvider* PaintRenderingResultsToResourceProvider(
+  CanvasResourceProviderSharedImage* PaintRenderingResultsToResourceProvider(
       SourceDrawingBuffer source_buffer);
   void TexImageHelperMediaVideoFrame(
       TexImageParams,
