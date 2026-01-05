@@ -137,8 +137,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 }
 
 - (void)closeToolsMenu {
-  if ([ChromeEarlGrey isNewOverflowMenuEnabled] &&
-      [ChromeEarlGrey isCompactWidth]) {
+  if ([ChromeEarlGrey isCompactWidth]) {
     // With the new overflow menu on compact devices, the half sheet covers the
     // bottom half of the screen. Swiping down on the sheet will close the menu.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuView()]
@@ -184,20 +183,12 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 
 - (void)openSettingsMenu {
   [self openToolsMenu];
-  if ([ChromeEarlGrey isNewOverflowMenuEnabled]) {
-    [self tapToolsMenuButton:SettingsDestinationButton()];
-  } else {
-    [self tapToolsMenuButton:SettingsActionButton()];
-  }
+  [self tapToolsMenuButton:SettingsDestinationButton()];
 }
 
 - (void)openSettingsMenuInWindowWithNumber:(int)windowNumber {
   [self openToolsMenuInWindowWithNumber:windowNumber];
-  if ([ChromeEarlGrey isNewOverflowMenuEnabled]) {
-    [self tapToolsMenuButton:SettingsDestinationButton()];
-  } else {
-    [self tapToolsMenuButton:SettingsActionButton()];
-  }
+  [self tapToolsMenuButton:SettingsDestinationButton()];
 }
 
 - (void)openNewTabMenu {
@@ -217,18 +208,13 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
   ScopedDisableTimerTracking disabler;
   id<GREYMatcher> interactableSettingsButton =
       grey_allOf(buttonMatcher, grey_interactable(), nil);
-  id<GREYAction> scrollAction =
-      [ChromeEarlGrey isNewOverflowMenuEnabled] ? ScrollRight() : ScrollDown();
+  id<GREYAction> scrollAction = ScrollRight();
   [[[EarlGrey selectElementWithMatcher:interactableSettingsButton]
          usingSearchAction:scrollAction
       onElementWithMatcher:ToolsMenuView()] performAction:grey_tap()];
 }
 
 - (void)tapToolsMenuAction:(id<GREYMatcher>)buttonMatcher {
-  if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
-    [self tapToolsMenuButton:buttonMatcher];
-    return;
-  }
   ScopedDisableTimerTracking disabler;
   id<GREYMatcher> interactableSettingsButton =
       grey_allOf(buttonMatcher, grey_interactable(), nil);

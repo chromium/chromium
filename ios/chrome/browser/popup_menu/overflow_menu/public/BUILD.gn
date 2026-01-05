@@ -7,18 +7,6 @@ source_set("public") {
   deps = [ ":overflow_menu_constants" ]
 }
 
-source_set("feature_flags") {
-  sources = [
-    "feature_flags.h",
-    "feature_flags.mm",
-  ]
-  deps = [
-    "//base",
-    "//components/password_manager/core/common:features",
-    "//ios/chrome/browser/shared/public/features",
-  ]
-}
-
 source_set("overflow_menu_constants") {
   sources = [
     "overflow_menu_constants.cc",

@@ -10,7 +10,6 @@
 #import "base/values.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
-#import "ios/chrome/browser/popup_menu/overflow_menu/public/feature_flags.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_action_provider.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/ui/ui_swift.h"

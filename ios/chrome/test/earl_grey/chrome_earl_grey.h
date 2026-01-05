@@ -767,9 +767,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // can, open multiple windows.
 - (BOOL)areMultipleWindowsSupported;
 
-// Returns whether the NewOverflowMenu feature is enabled.
-- (BOOL)isNewOverflowMenuEnabled;
-
 // Returns whether the UseLensToSearchForImage feature is enabled;
 - (BOOL)isUseLensToSearchForImageEnabled;
 

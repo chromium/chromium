@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/popup_menu/overflow_menu/public/feature_flags.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_action_provider.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/ui/ui_swift.h"
@@ -224,10 +223,6 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 // Possibly shows the IPH for the Overflow Menu Customization feature. Returns
 // whether or not the IPH was shown.
 - (BOOL)showCustomizationIPHInMenu:(UIViewController*)menu {
-  if (!IsNewOverflowMenuEnabled()) {
-    return NO;
-  }
-
   // In global coordinate system
   CGPoint anchorPointInView = CGPointMake(CGRectGetMaxX(menu.view.frame) / 2,
                                           CGRectGetMaxY(menu.view.frame) - 20);

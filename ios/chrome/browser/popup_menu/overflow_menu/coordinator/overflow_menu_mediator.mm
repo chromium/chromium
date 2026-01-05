@@ -56,7 +56,6 @@
 #import "ios/chrome/browser/policy/ui_bundled/user_policy_util.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/coordinator/overflow_menu_orderer.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/model/destination_usage_history.h"
-#import "ios/chrome/browser/popup_menu/overflow_menu/public/feature_flags.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/ui/overflow_menu_metrics.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/ui/ui_swift.h"

@@ -1150,15 +1150,10 @@ id<GREYMatcher> AddBookmarkButton() {
   [ChromeEarlGrey verifyOpenInNewWindowActionWithContent:"pony jokes"];
 }
 
-- (void)testBookmarksSyncInMultiwindow {
+// TODO(crbug.com/40210654).
+- (void)DISABLED_testBookmarksSyncInMultiwindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
-  }
-
-  // TODO(crbug.com/40210654).
-  if ([ChromeEarlGrey isNewOverflowMenuEnabled]) {
-    EARL_GREY_TEST_DISABLED(
-        @"Earl Grey doesn't work properly with SwiftUI and multiwindow");
   }
 
   GURL URL1 = web::test::HttpServer::MakeUrl(kURL1);

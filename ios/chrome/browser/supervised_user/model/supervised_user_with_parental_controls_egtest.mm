@@ -790,9 +790,7 @@ static const char* kInterstitialDetails = "Details";
       grey_accessibilityID(kToolsMenuTextZoom), grey_accessibilityTrait(trait),
       grey_sufficientlyVisible(), nil);
   id<GREYMatcher> tableViewMatcher =
-      [ChromeEarlGrey isNewOverflowMenuEnabled]
-          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
-          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+      grey_accessibilityID(kPopupMenuToolsMenuActionListId);
   [[[EarlGrey selectElementWithMatcher:zoomActionMatcher]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
       onElementWithMatcher:tableViewMatcher] assertWithMatcher:grey_notNil()];

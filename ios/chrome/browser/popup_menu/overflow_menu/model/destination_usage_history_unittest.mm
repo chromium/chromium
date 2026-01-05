@@ -11,7 +11,6 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/prefs/testing_pref_service.h"
-#import "ios/chrome/browser/popup_menu/overflow_menu/public/feature_flags.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"

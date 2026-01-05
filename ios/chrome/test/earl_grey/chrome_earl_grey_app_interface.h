@@ -556,9 +556,6 @@ enum class TipsNotificationType;
 // can, open multiple windows.
 + (BOOL)areMultipleWindowsSupported;
 
-// Returns whether the NewOverflowMenu feature is enabled.
-+ (BOOL)isNewOverflowMenuEnabled;
-
 // Returns whether the UseLensToSearchForImage feature is enabled.
 + (BOOL)isUseLensToSearchForImageEnabled;
 

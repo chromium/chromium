@@ -1081,9 +1081,7 @@ void TestResponseProvider::GetLanguageResponse(
   [ChromeEarlGreyUI openToolsMenu];
 
   id<GREYMatcher> tableViewMatcher =
-      [ChromeEarlGrey isNewOverflowMenuEnabled]
-          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
-          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+      grey_accessibilityID(kPopupMenuToolsMenuActionListId);
   [[[[EarlGrey selectElementWithMatcher:grey_allOf(grey_accessibilityID(
                                                        kToolsMenuTranslateId),
                                                    grey_interactable(), nil)]
@@ -1315,9 +1313,7 @@ void TestResponseProvider::GetLanguageResponse(
   [ChromeEarlGreyUI openToolsMenu];
 
   id<GREYMatcher> tableViewMatcher =
-      [ChromeEarlGrey isNewOverflowMenuEnabled]
-          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
-          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+      grey_accessibilityID(kPopupMenuToolsMenuActionListId);
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityID(kToolsMenuTranslateId),
@@ -1369,9 +1365,7 @@ void TestResponseProvider::GetLanguageResponse(
   [ChromeEarlGreyUI openToolsMenu];
 
   id<GREYMatcher> tableViewMatcher =
-      [ChromeEarlGrey isNewOverflowMenuEnabled]
-          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
-          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+      grey_accessibilityID(kPopupMenuToolsMenuActionListId);
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityID(kToolsMenuTranslateId),
@@ -1429,9 +1423,7 @@ void TestResponseProvider::GetLanguageResponse(
   [ChromeEarlGreyUI openToolsMenu];
 
   id<GREYMatcher> tableViewMatcher =
-      [ChromeEarlGrey isNewOverflowMenuEnabled]
-          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
-          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+      grey_accessibilityID(kPopupMenuToolsMenuActionListId);
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityID(kToolsMenuTranslateId),

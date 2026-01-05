@@ -1424,10 +1424,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface areMultipleWindowsSupported];
 }
 
-- (BOOL)isNewOverflowMenuEnabled {
-  return [ChromeEarlGreyAppInterface isNewOverflowMenuEnabled];
-}
-
 // Returns whether the UseLensToSearchForImage feature is enabled;
 - (BOOL)isUseLensToSearchForImageEnabled {
   return [ChromeEarlGreyAppInterface isUseLensToSearchForImageEnabled];

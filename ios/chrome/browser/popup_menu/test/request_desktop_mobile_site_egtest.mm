@@ -52,9 +52,7 @@ constexpr base::TimeDelta kWaitForUserAgentChangeTimeout = base::Seconds(15);
 // Returns the correct matcher for the collection view containing the Request
 // Desktop/Mobile button given the current overflow menu.
 id<GREYMatcher> CollectionViewMatcher() {
-  return [ChromeEarlGrey isNewOverflowMenuEnabled]
-             ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
-             : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+  return grey_accessibilityID(kPopupMenuToolsMenuActionListId);
 }
 
 // Select the button to request desktop site by scrolling the collection.

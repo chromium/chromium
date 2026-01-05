@@ -193,9 +193,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   [ChromeEarlGreyUI openToolsMenu];
 
   id<GREYMatcher> tableViewMatcher =
-      [ChromeEarlGrey isNewOverflowMenuEnabled]
-          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
-          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+      grey_accessibilityID(kPopupMenuToolsMenuActionListId);
   id<GREYMatcher> readerModeButtonMatcher =
       grey_allOf(grey_accessibilityID(kToolsMenuReaderMode),
                  grey_accessibilityTrait(UIAccessibilityTraitButton),

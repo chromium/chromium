@@ -144,9 +144,7 @@ FindInPageTestCrossOriginFramePageHttpResponse(
   [ChromeEarlGreyUI openToolsMenu];
 
   id<GREYMatcher> tableViewMatcher =
-      [ChromeEarlGrey isNewOverflowMenuEnabled]
-          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
-          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+      grey_accessibilityID(kPopupMenuToolsMenuActionListId);
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityID(kToolsMenuFindInPageId),

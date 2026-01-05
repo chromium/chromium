@@ -7,7 +7,6 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
-#import "ios/chrome/browser/popup_menu/overflow_menu/public/feature_flags.h"
 #import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -25,9 +24,6 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-
-NSString* const kOverflowMenuSkipTestMessage =
-    @"Can only test Overflow Menu destinations where the feature is supported";
 
 NSString* const kPassphrase = @"hello";
 
@@ -130,10 +126,6 @@ void ResolvePassphraseErrorFromOverflowMenu() {
 // Emulates a passphrase error in the signed in account to trigger the identity
 // error indicators (in butter mode, no Sync).
 - (void)testSettingsDestinationWithIdentityErrorInButterMode {
-  if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
-    EARL_GREY_TEST_SKIPPED(kOverflowMenuSkipTestMessage)
-  }
-
   // Encrypt synced data with a passphrase to enable passphrase encryption for
   // the signed in account.
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
@@ -164,10 +156,6 @@ void ResolvePassphraseErrorFromOverflowMenu() {
 // Emulates a passphrase error in the synced account to trigger the error
 // indicator.
 - (void)testSettingsDestinationIdentityErrorBadgeWithSync {
-  if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
-    EARL_GREY_TEST_SKIPPED(kOverflowMenuSkipTestMessage)
-  }
-
   // Encrypt synced data with a passphrase to enable passphrase encryption for
   // the signed in account.
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
@@ -187,10 +175,6 @@ void ResolvePassphraseErrorFromOverflowMenu() {
 // TODO(crbug.com/40263342): This test is very flaky. Fails especially on
 // devices.
 - (void)FLAKY_testNonErrorDestinationHighlights {
-  if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
-    EARL_GREY_TEST_SKIPPED(kOverflowMenuSkipTestMessage)
-  }
-
   AppLaunchConfiguration config;
   // Enable Overflow Menu destinations highlight features.
   config.additional_args.push_back(
@@ -217,10 +201,6 @@ void ResolvePassphraseErrorFromOverflowMenu() {
 // link to more information about family accounts.
 // TODO(crbug.com/339689514): Failing on ios-simulator-noncq
 - (void)DISABLED_testOverflowMenuFooterFamilyLink {
-  if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
-    EARL_GREY_TEST_SKIPPED(kOverflowMenuSkipTestMessage)
-  }
-
   // Sign in and Sync account.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity
@@ -242,10 +222,6 @@ void ResolvePassphraseErrorFromOverflowMenu() {
 }
 
 - (void)testOverflowMenuCustomizationIPH {
-  if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
-    EARL_GREY_TEST_SKIPPED(kOverflowMenuSkipTestMessage)
-  }
-
   AppLaunchConfiguration config;
   config.iph_feature_enabled =
       feature_engagement::kIPHiOSOverflowMenuCustomizationFeature.name;
