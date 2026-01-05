@@ -2810,7 +2810,7 @@
     "args": [
       "--enable-blink-features=RunSnapshotPostLayoutStateSteps"
     ],
-    "expires": "Jan 1, 2026"
+    "expires": "Jun 1, 2026"
   },
   {
     "prefix": "sandbox-allow-same-site-none-cookies-3PC-blocked",
