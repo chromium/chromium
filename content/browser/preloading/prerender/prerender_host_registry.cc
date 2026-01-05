@@ -1179,7 +1179,7 @@ bool PrerenderHostRegistry::CancelNewTabHostInternal(
   return true;
 }
 
-FrameTreeNodeId PrerenderHostRegistry::FindPotentialHostToActivate(
+PrerenderHostId PrerenderHostRegistry::FindPotentialHostToActivate(
     NavigationRequest& navigation_request) {
   TRACE_EVENT(
       "navigation", "PrerenderHostRegistry::FindPotentialHostToActivate",
@@ -1195,7 +1195,7 @@ FrameTreeNodeId PrerenderHostRegistry::FindPotentialHostToActivate(
   // Also, disallow activation when the navigation happens in the prerendering
   // frame tree.
   if (!navigation_request.IsInPrimaryMainFrame()) {
-    return FrameTreeNodeId();
+    return PrerenderHostId();
   }
 
   // Collect hosts that can match the navigation request.
@@ -1216,7 +1216,7 @@ FrameTreeNodeId PrerenderHostRegistry::FindPotentialHostToActivate(
   RecordPotentialPrerenderProcessReuse(!matchable_hosts.empty(),
                                        navigation_request.GetURL());
   if (matchable_hosts.empty()) {
-    return FrameTreeNodeId();
+    return PrerenderHostId();
   }
   // Use the first match. This prioritizes the exact match or No-Vary-Search
   // header match than No-Vary-Search hint match.
@@ -1229,18 +1229,18 @@ FrameTreeNodeId PrerenderHostRegistry::FindPotentialHostToActivate(
   if (!host->GetInitialNavigationId().has_value()) {
     CancelHost(host->prerender_host_id(),
                PrerenderFinalStatus::kActivatedBeforeStarted);
-    return FrameTreeNodeId();
+    return PrerenderHostId();
   }
 
   return CanNavigationActivateHost(navigation_request, *host)
-             ? host->frame_tree_node_id()
-             : FrameTreeNodeId();
+             ? host->prerender_host_id()
+             : PrerenderHostId();
 }
 
 std::optional<ReservedPrerenderHostInfo>
 PrerenderHostRegistry::ReserveHostToActivate(
     NavigationRequest& navigation_request,
-    FrameTreeNodeId expected_host_id) {
+    PrerenderHostId expected_host_id) {
   RenderFrameHostImpl* render_frame_host =
       navigation_request.frame_tree_node()->current_frame_host();
   TRACE_EVENT("navigation", "PrerenderHostRegistry::ReserveHostToActivate",
@@ -1256,7 +1256,8 @@ PrerenderHostRegistry::ReserveHostToActivate(
   // expected prerendered page is ready for activation by waiting for
   // PrerenderCommitDeferringCondition before this point, while the new
   // matched pages may not be ready for activation yet.
-  auto it = prerender_host_by_frame_tree_node_id_.find(expected_host_id);
+  auto it = prerender_host_by_frame_tree_node_id_.find(
+      PrerenderHost::GetFrameTreeNodeIdForId(expected_host_id));
   if (it == prerender_host_by_frame_tree_node_id_.end()) {
     return std::nullopt;
   }
@@ -1276,7 +1277,7 @@ PrerenderHostRegistry::ReserveHostToActivate(
     return std::nullopt;
   }
 
-  FrameTreeNodeId host_id = host_ref.frame_tree_node_id();
+  FrameTreeNodeId host_ftn_id = host_ref.frame_tree_node_id();
 
   // Disallow activation when ongoing navigations exist. It can happen when the
   // main frame navigation starts after PrerenderCommitDeferringCondition posts
@@ -1290,9 +1291,9 @@ PrerenderHostRegistry::ReserveHostToActivate(
 
   // Remove the host from the map of non-reserved hosts.
   std::unique_ptr<PrerenderHost> host =
-      std::move(prerender_host_by_frame_tree_node_id_[host_id]);
-  prerender_host_by_frame_tree_node_id_.erase(host_id);
-  CHECK_EQ(host_id, host->frame_tree_node_id());
+      std::move(prerender_host_by_frame_tree_node_id_[host_ftn_id]);
+  prerender_host_by_frame_tree_node_id_.erase(host_ftn_id);
+  CHECK_EQ(host_ftn_id, host->frame_tree_node_id());
   CHECK(host->IsUrlMatch(navigation_request.GetURL()));
 
   if (match_type.value() == UrlMatchType::kNoVarySearch) {
@@ -1306,26 +1307,26 @@ PrerenderHostRegistry::ReserveHostToActivate(
   reserved_prerender_host_ = std::move(host);
 
   return ReservedPrerenderHostInfo(
-      host_id, reserved_prerender_host_->trigger_type(),
+      expected_host_id, reserved_prerender_host_->trigger_type(),
       reserved_prerender_host_->embedder_histogram_suffix(),
       reserved_prerender_host_->host_reused());
 }
 
 RenderFrameHostImpl* PrerenderHostRegistry::GetRenderFrameHostForReservedHost(
-    FrameTreeNodeId frame_tree_node_id) {
+    PrerenderHostId prerender_host_id) {
   if (!reserved_prerender_host_)
     return nullptr;
 
-  CHECK_EQ(frame_tree_node_id, reserved_prerender_host_->frame_tree_node_id());
+  CHECK_EQ(prerender_host_id, reserved_prerender_host_->prerender_host_id());
 
   return reserved_prerender_host_->GetPrerenderedMainFrameHost();
 }
 
 std::unique_ptr<StoredPage> PrerenderHostRegistry::ActivateReservedHost(
-    FrameTreeNodeId frame_tree_node_id,
+    PrerenderHostId prerender_host_id,
     NavigationRequest& navigation_request) {
   CHECK(reserved_prerender_host_);
-  CHECK_EQ(frame_tree_node_id, reserved_prerender_host_->frame_tree_node_id());
+  CHECK_EQ(prerender_host_id, reserved_prerender_host_->prerender_host_id());
 
   std::unique_ptr<PrerenderHost> prerender_host =
       std::move(reserved_prerender_host_);
@@ -1333,10 +1334,9 @@ std::unique_ptr<StoredPage> PrerenderHostRegistry::ActivateReservedHost(
 }
 
 void PrerenderHostRegistry::OnActivationFinished(
-    FrameTreeNodeId frame_tree_node_id) {
+    PrerenderHostId prerender_host_id) {
   // OnActivationFinished() should not be called for non-reserved hosts.
-  CHECK(!base::Contains(prerender_host_by_frame_tree_node_id_,
-                        frame_tree_node_id));
+  CHECK(!FindNonReservedHostById(prerender_host_id));
 
   if (!reserved_prerender_host_) {
     // The activation finished successfully and has already activated the
@@ -1346,7 +1346,7 @@ void PrerenderHostRegistry::OnActivationFinished(
 
   // The activation navigation is cancelled before activating the prerendered
   // page, which means the activation failed.
-  CHECK_EQ(frame_tree_node_id, reserved_prerender_host_->frame_tree_node_id());
+  CHECK_EQ(prerender_host_id, reserved_prerender_host_->prerender_host_id());
 
   // TODO(crbug.com/40243805): Monitor the final status metric and see
   // whether it could be possible.

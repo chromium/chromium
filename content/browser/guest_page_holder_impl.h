@@ -61,6 +61,7 @@ class GuestPageHolderImpl : public GuestPageHolder,
   bool OnRenderFrameProxyVisibilityChanged(
       RenderFrameProxyHost* render_frame_proxy_host,
       blink::mojom::FrameVisibility visibility) override;
+  PrerenderHostId GetPrerenderHostId() override;
 
   // NavigationControllerDelegate implementation.
   void NotifyNavigationStateChangedFromController(

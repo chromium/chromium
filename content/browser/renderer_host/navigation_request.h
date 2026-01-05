@@ -1134,10 +1134,10 @@ class CONTENT_EXPORT NavigationRequest
     return is_running_potential_prerender_activation_checks_;
   }
 
-  FrameTreeNodeId prerender_frame_tree_node_id() const {
-    DCHECK(prerender_frame_tree_node_id_.has_value())
+  PrerenderHostId activating_prerender_host_id() const {
+    DCHECK(activating_prerender_host_id_.has_value())
         << "Must be called after StartNavigation()";
-    return prerender_frame_tree_node_id_.value();
+    return *activating_prerender_host_id_;
   }
 
   const std::optional<FencedFrameProperties>& GetFencedFrameProperties() const {
@@ -1765,7 +1765,7 @@ class CONTENT_EXPORT NavigationRequest
   // activating a prerendered page.
   void OnPrerenderingActivationChecksComplete(
       CommitDeferringCondition::NavigationType navigation_type,
-      std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id);
+      std::optional<PrerenderHostId> candidate_prerender_host_id);
 
   // Get the `FencedFrameURLMapping` associated with the current page.
   FencedFrameURLMapping& GetFencedFrameURLMap();
@@ -2354,12 +2354,12 @@ class CONTENT_EXPORT NavigationRequest
   // a network response yet, or when going to an "about:blank" page.
   std::optional<WebExposedIsolationInfo> ComputeWebExposedIsolationInfo();
 
-  // Assign an invalid frame tree node id to `prerender_frame_tree_node_id_`.
+  // Assign an invalid frame tree node id to `activating_prerender_host_id_`.
   // Called as soon as when we are certain that this navigation won't activate a
   // prerendered page. This is needed because `IsPrerenderedPageActivation()`,
   // which may be called at any point after BeginNavigation(), will assume that
-  // 'prerender_frame_tree_node_id_' has an value assigned.
-  void MaybeAssignInvalidPrerenderFrameTreeNodeId();
+  // 'activating_prerender_host_id_' has an value assigned.
+  void MaybeAssignInvalidActivatingPrerenderHostId();
 
   // The NavigationDownloadPolicy is currently fully computed by the renderer
   // process. It is left empty for browser side initiated navigation. This is a
@@ -3020,15 +3020,15 @@ class CONTENT_EXPORT NavigationRequest
   // The start time of fenced frame url mapping.
   base::TimeTicks fenced_frame_url_mapping_start_time_;
 
-  // The root frame tree node id of the prerendered page. This will be a valid
-  // FrameTreeNodeId value when this navigation will activate a prerendered
-  // page. For all other navigations this will be an invalid FrameTreeNodeId. We
-  // only know whether this is the case when BeginNavigation is called so the
-  // optional will be empty until then and callers must not query its value
-  // before it's been computed.
+  // The id of the prerendered page. This will be a valid PrerenderHostId value
+  // when this navigation will activate a prerendered page. For all other
+  // navigations this will be an invalid FrameTreeNodeId. We only know whether
+  // this is the case when BeginNavigation is called so the optional will be
+  // empty until then and callers must not query its value before it's been
+  // computed.
   // TODO(crbug.com/427054641): Remove this field once the migration to use
   // `reserved_prerender_host_info_` is complete.
-  std::optional<FrameTreeNodeId> prerender_frame_tree_node_id_;
+  std::optional<PrerenderHostId> activating_prerender_host_id_;
 
   // Contains state pertaining to a prerender activation. This is only used if
   // this navigation is a prerender activation.

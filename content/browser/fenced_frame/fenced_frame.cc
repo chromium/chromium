@@ -229,6 +229,10 @@ bool FencedFrame::OnRenderFrameProxyVisibilityChanged(
   return false;
 }
 
+PrerenderHostId FencedFrame::GetPrerenderHostId() {
+  return PrerenderHostId();
+}
+
 FrameTree* FencedFrame::GetDocumentPictureInPictureOpenerFrameTree() {
   return nullptr;
 }

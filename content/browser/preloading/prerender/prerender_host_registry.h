@@ -184,7 +184,7 @@ class CONTENT_EXPORT PrerenderHostRegistry
   // host so it can be destroyed or activated by another navigation. This also
   // cancels all the prerender hosts except the one to be activated. See also
   // comments on ReserveHostToActivate().
-  FrameTreeNodeId FindPotentialHostToActivate(
+  PrerenderHostId FindPotentialHostToActivate(
       NavigationRequest& navigation_request);
 
   // For activators. Reserves the host to activate for a navigation for the
@@ -197,23 +197,23 @@ class CONTENT_EXPORT PrerenderHostRegistry
   // the one to be activated.
   std::optional<ReservedPrerenderHostInfo> ReserveHostToActivate(
       NavigationRequest& navigation_request,
-      FrameTreeNodeId expected_host_id);
+      PrerenderHostId expected_host_id);
 
   // For activators.
   // Activates the host reserved by ReserveHostToActivate() and returns the
   // StoredPage containing the page that was activated on success, or nullptr
   // on failure.
   std::unique_ptr<StoredPage> ActivateReservedHost(
-      FrameTreeNodeId frame_tree_node_id,
+      PrerenderHostId prerender_host_id,
       NavigationRequest& navigation_request);
 
   RenderFrameHostImpl* GetRenderFrameHostForReservedHost(
-      FrameTreeNodeId frame_tree_node_id);
+      PrerenderHostId prerender_host_id);
 
   // For activators.
   // Called from the destructor of NavigationRequest that reserved the host.
   // `frame_tree_node_id` should be the id returned by ReserveHostToActivate().
-  void OnActivationFinished(FrameTreeNodeId frame_tree_node_id);
+  void OnActivationFinished(PrerenderHostId prerender_host_id);
 
   // Returns the non-reserved host with the given id. Returns nullptr if the id
   // does not match any non-reserved host.

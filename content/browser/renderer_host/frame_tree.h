@@ -210,6 +210,10 @@ class CONTENT_EXPORT FrameTree {
     virtual bool OnRenderFrameProxyVisibilityChanged(
         RenderFrameProxyHost* render_frame_proxy_host,
         blink::mojom::FrameVisibility visibility) = 0;
+
+    // Returns the PrerenderHostId hosting this FrameTree. Returns an invalid ID
+    // when this FrameTree is not being prerendered.
+    virtual PrerenderHostId GetPrerenderHostId() = 0;
   };
 
   // Type of FrameTree instance.

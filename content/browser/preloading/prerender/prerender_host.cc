@@ -230,6 +230,11 @@ bool PrerenderHost::PrerenderFrameTreeDelegate::
   return false;
 }
 
+PrerenderHostId
+PrerenderHost::PrerenderFrameTreeDelegate::GetPrerenderHostId() {
+  return prerender_host_->prerender_host_id();
+}
+
 void PrerenderHost::PrerenderFrameTreeDelegate::
     ActivateAndShowRepostFormWarningDialog() {
   // Not supported, cancel pending reload.

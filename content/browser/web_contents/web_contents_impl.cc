@@ -4312,6 +4312,10 @@ void WebContentsImpl::OnRenderWidgetHostDestroyed(
   DCHECK_EQ(1u, num_erased);
 }
 
+PrerenderHostId WebContentsImpl::GetPrerenderHostId() {
+  return PrerenderHostId();
+}
+
 void WebContentsImpl::AddWebContentsDestructionObserver(
     WebContentsImpl* web_contents) {
   OPTIONAL_TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
