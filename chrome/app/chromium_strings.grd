@@ -3077,6 +3077,15 @@ Chromium is unable to recover your settings.
         <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS desktop password promo bubble footer which lets the user know how to use their saved passwords on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
           To use your saved passwords, follow the QR code, download Chromium for iOS and sign in to your Google Account
         </message>
+        <message name="IDS_IOS_DESKTOP_LENS_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Lens promo notification.">
+          Chromium Tip: Search With Lens
+        </message>
+        <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Password promo notification.">
+          Chromium Tip: Save Passwords
+        </message>
+        <message name="IDS_IOS_DESKTOP_SAFE_BROWSING_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Enhanced Safe Browsing promo notification.">
+          Chromium Tip: Enhanced Safe Browsing
+        </message>
       </if>
 
       <!--Default Search Engine Reset Notification-->

@@ -10497,6 +10497,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS desktop password promo bubble which lets the user know they can access their saved password on the Google Password Manager.">
           You can access it on Google Password Manager.
         </message>
+        <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_NOTIFICATION_BODY" desc="The body for the iOS desktop Password promo notification.">
+          Save and autofill your passwords to easily sign in to sites and apps
+        </message>
       </if>
 
       <!--Desktop to iOS address promo strings-->
@@ -10571,6 +10574,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_IOS_DESKTOP_ESB_PROMO_BUBBLE_TITLE_REMINDER" desc="The title for the iOS desktop ESB promo bubble with a reminder button.">
           Enhance Safe Browsing on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>
         </message>
+        <message name="IDS_IOS_DESKTOP_SAFE_BROWSING_PROMO_NOTIFICATION_BODY" desc="The body for the iOS desktop Enhanced Safe Browsing promo notification.">
+          Add an extra layer of protection against online threats
+        </message>
       </if>
 
       <!--Desktop to iOS Lens promo strings-->
@@ -10580,6 +10586,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
         <message name="IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_TITLE_REMINDER" desc="The title for the iOS desktop Lens promo bubble with a reminder button.">
           Try Google Lens on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>
+        </message>
+        <message name="IDS_IOS_DESKTOP_LENS_PROMO_NOTIFICATION_BODY" desc="The body for the iOS desktop Lens promo notification.">
+          Shop, translate, and identify what you see with your camera.
         </message>
       </if>
 
