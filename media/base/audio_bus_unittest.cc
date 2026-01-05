@@ -497,6 +497,23 @@ class TypedAudioBusTest : public testing::Test {
     return bus;
   }
 
+  constexpr base::span<uint8_t> as_writable_bytes(base::span<SampleType> span) {
+    if constexpr (std::is_same_v<SampleType, float>) {
+      return base::as_writable_bytes(base::allow_nonunique_obj, span);
+    } else {
+      return base::as_writable_bytes(span);
+    }
+  }
+
+  constexpr base::span<const uint8_t> as_bytes(
+      base::span<const SampleType> span) {
+    if constexpr (std::is_same_v<SampleType, float>) {
+      return base::as_bytes(base::allow_nonunique_obj, span);
+    } else {
+      return base::as_bytes(span);
+    }
+  }
+
   constexpr float GetEpsilon() {
     if constexpr (std::is_same_v<SampleType, uint8_t>) {
       // Biased uint8_t calculations have poor precision, so the epsilon here is
@@ -549,6 +566,13 @@ TYPED_TEST(TypedAudioBusTest, FromInterleaved) {
     VerifyAreEqualWithEpsilon(bus.get(), expected.get(), this->GetEpsilon());
   }
   {
+    SCOPED_TRACE("FromBytes");
+    std::unique_ptr<AudioBus> bus = this->GetTestBus();
+    bus->template FromInterleavedBytes<SampleTypeTraits>(
+        this->as_bytes(this->GetInterleavedSpan()));
+    VerifyAreEqualWithEpsilon(bus.get(), expected.get(), this->GetEpsilon());
+  }
+  {
     SCOPED_TRACE("Unsafe");
     std::unique_ptr<AudioBus> bus = this->GetTestBus();
     bus->template FromInterleaved<SampleTypeTraits>(
@@ -580,6 +604,16 @@ TYPED_TEST(TypedAudioBusTest, FromInterleaved_Zero) {
         this->GetTestBus(/*fill_value=*/kGuardValue);
     bus->template FromInterleaved<SampleTypeTraits>(
         interleaved_subspan,
+        /*zero_remaining_frames=*/true);
+    VerifyAreEqualWithEpsilon(bus.get(), expected.get(), this->GetEpsilon());
+  }
+  {
+    SCOPED_TRACE("FromBytes");
+    // Fill with guard values that should be zero'ed out.
+    std::unique_ptr<AudioBus> bus =
+        this->GetTestBus(/*fill_value=*/kGuardValue);
+    bus->template FromInterleavedBytes<SampleTypeTraits>(
+        this->as_bytes(interleaved_subspan),
         /*zero_remaining_frames=*/true);
     VerifyAreEqualWithEpsilon(bus.get(), expected.get(), this->GetEpsilon());
   }
@@ -628,6 +662,16 @@ TYPED_TEST(TypedAudioBusTest, FromInterleavedPartial) {
     VerifyAreEqualWithEpsilon(bus.get(), expected.get(), this->GetEpsilon());
   }
   {
+    SCOPED_TRACE("FromBytes");
+    // Fill with guard values that should untouched.
+    std::unique_ptr<AudioBus> bus =
+        this->GetTestBus(/*fill_value=*/kGuardValue);
+    bus->template FromInterleavedBytesPartial<SampleTypeTraits>(
+        this->as_bytes(interleaved_data), kOffset);
+
+    VerifyAreEqualWithEpsilon(bus.get(), expected.get(), this->GetEpsilon());
+  }
+  {
     SCOPED_TRACE("Unsafe");
     // Fill with guard values that should untouched.
     std::unique_ptr<AudioBus> bus =
@@ -660,6 +704,13 @@ TYPED_TEST(TypedAudioBusTest, ToInterleaved) {
     SCOPED_TRACE("Safe");
     TestArray dest_array;
     source_bus->template ToInterleaved<SampleTypeTraits>(dest_array);
+    verify_array(dest_array);
+  }
+  {
+    SCOPED_TRACE("ToBytes");
+    TestArray dest_array;
+    source_bus->template ToInterleavedBytes<SampleTypeTraits>(
+        this->as_writable_bytes(dest_array));
     verify_array(dest_array);
   }
   {
@@ -701,6 +752,13 @@ TYPED_TEST(TypedAudioBusTest, ToInterleavedPartial) {
     TestArray dest_array;
     source_bus->template ToInterleavedPartial<SampleTypeTraits>(kOffset,
                                                                 dest_array);
+    verify_array(dest_array);
+  }
+  {
+    SCOPED_TRACE("ToBytes");
+    TestArray dest_array;
+    source_bus->template ToInterleavedBytesPartial<SampleTypeTraits>(
+        kOffset, this->as_writable_bytes(dest_array));
     verify_array(dest_array);
   }
   {
