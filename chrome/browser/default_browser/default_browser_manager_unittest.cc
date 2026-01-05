@@ -14,6 +14,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
+#include "chrome/browser/default_browser/test_support/fake_shell_delegate.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -46,38 +47,6 @@ void CreateDefaultBrowserKey(const std::wstring& prog_id) {
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
-
-class FakeShellDelegate : public DefaultBrowserManager::ShellDelegate {
- public:
-  FakeShellDelegate() = default;
-  ~FakeShellDelegate() override = default;
-
-  void StartCheckIsDefault(
-      shell_integration::DefaultWebClientWorkerCallback callback) override {
-    std::move(callback).Run(default_state_);
-  }
-
-#if BUILDFLAG(IS_WIN)
-  void StartCheckDefaultClientProgId(
-      const GURL& scheme,
-      base::OnceCallback<void(const std::u16string&)> callback) override {
-    std::u16string prog_id = u"";
-    if (scheme.scheme() == "http") {
-      prog_id = http_assoc_prog_id_;
-    }
-    std::move(callback).Run(prog_id);
-  }
-#endif  // BUILDFLAG(IS_WIN)
-
-  void set_default_state(DefaultBrowserState state) { default_state_ = state; }
-  void set_http_assoc_prog_id(const std::u16string& prog_id) {
-    http_assoc_prog_id_ = prog_id;
-  }
-
- private:
-  DefaultBrowserState default_state_ = shell_integration::NUM_DEFAULT_STATES;
-  std::u16string http_assoc_prog_id_ = u"";
-};
 
 class DefaultBrowserManagerTest : public testing::Test {
  protected:

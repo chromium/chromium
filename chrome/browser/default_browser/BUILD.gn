@@ -46,6 +46,21 @@ source_set("default_browser") {
   }
 }
 
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_support/fake_shell_delegate.cc",
+    "test_support/fake_shell_delegate.h",
+  ]
+
+  deps = [
+    ":default_browser",
+    "//chrome/browser:shell_integration",
+    "//chrome/test:test_support",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -58,6 +73,7 @@ source_set("unit_tests") {
 
   deps = [
     ":default_browser",
+    ":test_support",
     "//base/test:test_support",
     "//chrome/browser:global_features",
     "//chrome/browser:shell_integration",
