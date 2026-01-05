@@ -65,7 +65,6 @@ class VpnServiceForExtension
   void OnConfigRemoved(const std::string& configuration_name) override;
   void OnPlatformMessage(const std::string& configuration_name,
                          int32_t platform_message) override;
-  void OnPacketReceived(const std::vector<uint8_t>& data) override;
 
   mojo::Remote<crosapi::mojom::VpnServiceForExtension>& Proxy() {
     return vpn_service_;
@@ -164,12 +163,14 @@ class VpnService : public extensions::api::VpnServiceInterface,
       const std::string& extension_id,
       const std::string& configuration_name);
 
+  bool OwnsActiveConfiguration(const std::string& extension_id) const;
+
   // Sends the given event to the given extension.
   void SendToExtension(const std::string& extension_id,
                        std::unique_ptr<extensions::Event> event);
 
-  bool OwnsActiveConfiguration(const std::string& extension_id) const;
-
+  void SendOnPacketReceivedToExtension(const std::string& extension_id,
+                                       const std::vector<char>& data);
   void SendOnPlatformMessageToExtension(const std::string& extension_id,
                                         const std::string& configuration_name,
                                         uint32_t platform_message);

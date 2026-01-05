@@ -51,14 +51,6 @@ void VpnServiceForExtensionAsh::DispatchConfigRemovedEvent(
   }
 }
 
-void VpnServiceForExtensionAsh::DispatchOnPacketReceivedEvent(
-    const std::vector<char>& data) {
-  std::vector<uint8_t> data_(data.begin(), data.end());
-  for (auto& observer : observers_) {
-    observer->OnPacketReceived(data_);
-  }
-}
-
 void VpnServiceForExtensionAsh::DispatchOnPlatformMessageEvent(
     const std::string& configuration_name,
     int32_t platform_message) {

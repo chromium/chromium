@@ -107,9 +107,8 @@ class VpnService::VpnConfiguration
 void VpnService::VpnConfiguration::OnPacketReceived(
     const std::vector<char>& data) {
   DCHECK(vpn_service_);
-  vpn_service_->GetVpnService()
-      ->GetVpnServiceForExtension(extension_id())
-      ->DispatchOnPacketReceivedEvent(data);
+  vpn_service_->GetVpnService()->GetVpnServiceForExtension(extension_id());
+  vpn_service_->SendOnPacketReceivedToExtension(extension_id(), data);
 }
 
 void VpnService::VpnConfiguration::OnPlatformMessage(
@@ -166,16 +165,6 @@ void VpnServiceForExtension::OnPlatformMessage(
           configuration_name,
           static_cast<api_vpn::PlatformMessage>(platform_message),
           /*error=*/std::string{}),
-      browser_context_));
-}
-
-void VpnServiceForExtension::OnPacketReceived(
-    const std::vector<uint8_t>& data) {
-  DispatchEvent(std::make_unique<extensions::Event>(
-      extensions::events::VPN_PROVIDER_ON_PACKET_RECEIVED,
-      api_vpn::OnPacketReceived::kEventName,
-      api_vpn::OnPacketReceived::Create(
-          std::vector<uint8_t>(data.begin(), data.end())),
       browser_context_));
 }
 
@@ -247,6 +236,18 @@ bool VpnService::OwnsActiveConfiguration(
     const std::string& extension_id) const {
   return active_configuration_ &&
          active_configuration_->extension_id() == extension_id;
+}
+
+void VpnService::SendOnPacketReceivedToExtension(
+    const std::string& extension_id,
+    const std::vector<char>& data) {
+  SendToExtension(extension_id,
+                  std::make_unique<extensions::Event>(
+                      extensions::events::VPN_PROVIDER_ON_PACKET_RECEIVED,
+                      api_vpn::OnPacketReceived::kEventName,
+                      api_vpn::OnPacketReceived::Create(
+                          std::vector<uint8_t>(data.begin(), data.end())),
+                      browser_context_));
 }
 
 void VpnService::SendOnPlatformMessageToExtension(
