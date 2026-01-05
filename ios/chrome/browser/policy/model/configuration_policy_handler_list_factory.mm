@@ -22,6 +22,7 @@
 #import "components/enterprise/browser/reporting/cloud_reporting_frequency_policy_handler.h"
 #import "components/enterprise/browser/reporting/cloud_reporting_policy_handler.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
+#import "components/enterprise/client_certificates/core/prefs.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"
 #import "components/enterprise/connectors/core/enterprise_connectors_policy_handler.h"
 #import "components/enterprise/data_controls/core/browser/data_controls_policy_handler.h"
@@ -189,6 +190,12 @@ constexpr auto kSimplePolicyMap = std::to_array<PolicyToPreferenceMapEntry>({
   { policy::key::kIncognitoModeUrlAllowlist,
     policy::policy_prefs::kIncognitoModeUrlAllowlist,
     base::Value::Type::LIST },
+  { policy::key::kProvisionManagedClientCertificateForUser,
+    client_certificates::prefs::kProvisionManagedClientCertificateForUserPrefs,
+    base::Value::Type::INTEGER },
+  { policy::key::kProvisionManagedClientCertificateForBrowser,
+    client_certificates::prefs::kProvisionManagedClientCertificateForBrowserPrefs,
+    base::Value::Type::INTEGER },
 });
 // clang-format on
 
@@ -324,6 +331,14 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
       std::make_unique<data_controls::DataControlsPolicyHandler>(
           policy::key::kDataControlsRules,
           data_controls::kDataControlsRulesPref, chrome_schema));
+
+  handlers->AddHandler(
+      std::make_unique<policy::SimpleJsonStringSchemaValidatingPolicyHandler>(
+          policy::key::kAutoSelectCertificateForUrls,
+          prefs::kManagedAutoSelectCertificateForUrls,
+          chrome_schema.GetValidationSchema(),
+          policy::SimpleSchemaValidatingPolicyHandler::RECOMMENDED_ALLOWED,
+          policy::SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
 
   return handlers;
 }

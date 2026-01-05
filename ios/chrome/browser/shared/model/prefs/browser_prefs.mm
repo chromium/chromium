@@ -26,6 +26,7 @@
 #import "components/dom_distiller/core/distilled_page_prefs.h"
 #import "components/enterprise/browser/identifiers/identifiers_prefs.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
+#import "components/enterprise/client_certificates/core/prefs.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"
 #import "components/enterprise/data_controls/core/browser/prefs.h"
 #import "components/enterprise/idle/idle_pref_names.h"
@@ -437,6 +438,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   breadcrumbs::RegisterPrefs(registry);
   ProfileAttributesStorageIOS::RegisterPrefs(registry);
   chrome_urls::RegisterPrefs(registry);
+  client_certificates::RegisterLocalStatePrefs(registry);
   flags_ui::PrefServiceFlagsStorage::RegisterPrefs(registry);
   signin::IdentityManager::RegisterLocalStatePrefs(registry);
   IOSChromeMetricsServiceClient::RegisterPrefs(registry);
