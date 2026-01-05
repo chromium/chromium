@@ -383,6 +383,10 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
     [self updateBackgroundVisibility];
     [self updateTapOverlayButtonVisibility];
   }
+
+  if (IsProactiveSuggestionsFrameworkEnabled() && _incognito) {
+    _containerStackView.userInteractionEnabled = YES;
+  }
 }
 
 // Creates and configures transparent overlay button for unified badge tapping.
