@@ -35,7 +35,9 @@ The current status of existing standards and Abseil features is:
 *   **C++17:** _Default allowed; see banned features below_
 *   **C++20:** _Initially supported November 13, 2023; see allowed/banned/TBD
     features below_
-*   **C++23:** _Not yet supported_
+*   **C++23:** _Initially supported January 2026; see allowed/banned/TBD
+    features below_
+*   **C++26:** _Not yet supported_
 *   **Abseil:** _Default allowed; see banned/TBD features below. The following
     dates represent the start of the two-year TBD periods for certain parts of
     Abseil:_
@@ -1733,6 +1735,563 @@ UTF-8-encoded text.
 See notes on `char8_t` above.
 ***
 
+## C++23 Allowed Language Features {#core-allowlist-23}
+
+The following C++23 language features are allowed in the Chromium codebase.
+
+## C++23 Allowed Library Features {#library-allowlist-23}
+
+The following C++23 library features are allowed in the Chromium codebase.
+
+### std::to_underlying <sup>[allowed]</sup>
+
+```c++
+auto x = std::to_underlying(enum_val);
+```
+
+**Description:** Converts an enumeration to its underlying type.
+
+**Documentation:**
+[std::to_underlying](https://en.cppreference.com/w/cpp/utility/to_underlying)
+
+**Notes:**
+*** promo
+Migration from `base::to_underlying` is tracked in https://crbug.com/470039537.
+***
+
+## C++23 TBD Language Features {#core-review-23}
+
+The following C++23 language features are not allowed in the Chromium codebase.
+See the top of this page on how to propose moving a feature from this list into
+the allowed or banned sections.
+
+### if consteval <sup>[tbd]</sup>
+
+```c++
+if consteval {
+  ...
+}
+```
+
+**Description:** consteval if statement.
+
+**Documentation:**
+[if statement](https://en.cppreference.com/w/cpp/language/if)
+
+**Notes:**
+*** promo
+None
+***
+
+### #elifdef, #elifndef <sup>[tbd]</sup>
+
+```c++
+#ifdef FOO
+...
+#elifdef BAR  // New.
+...
+#elifndef BAZ  // New.
+...
+#endif
+```
+
+**Description:** New conditional inclusion preprocessor directives.
+
+**Documentation:**
+[Conditional inclusion](https://en.cppreference.com/w/cpp/preprocessor/conditional.html)
+
+**Notes:**
+*** promo
+None
+***
+
+### Static operators () and [] <sup>[tbd]</sup>
+
+```
+struct FooHash {
+  // Does not take an implicit pointer to `this`, which would have been useless.
+  static size_t operator()(const Foo& foo) {
+    return ...;
+  }
+};
+```
+
+**Description:** Static operators () and []
+
+**Documentation:**
+[Operator overloading](https://en.cppreference.com/w/cpp/language/operators.html)
+
+**Notes:**
+*** promo
+Avoids unnecessary `this` argument for functors, improving performance.
+***
+
+### Explicit object parameter <sup>[tbd]</sup>
+
+```c++
+struct S {
+  void f(this S& self);
+};
+```
+
+**Description:** Allows explicit specification of the object parameter (deducing `this`) in member functions.
+
+**Documentation:**
+[Explicit object parameter](https://en.cppreference.com/w/cpp/language/member_functions#Explicit_object_parameter)
+
+**Notes:**
+*** promo
+None
+***
+
+### Multidimensional subscript operator <sup>[tbd]</sup>
+
+```c++
+struct S {
+  int operator[](int i, int j);
+};
+```
+
+**Description:** Allows multiple arguments in the subscript operator.
+
+**Documentation:**
+[Operator overloading](https://en.cppreference.com/w/cpp/language/operators#Array_subscript_operator)
+
+**Notes:**
+*** promo
+None
+***
+
+### auto(x), auto{x} <sup>[tbd]</sup>
+
+```c++
+void f(const int& i) {
+  auto copy = auto(i);
+}
+```
+
+**Description:** Prvalue copy (decay-copy).
+
+**Documentation:**
+[Functional cast](https://en.cppreference.com/w/cpp/language/explicit_cast)
+
+**Notes:**
+*** promo
+None
+***
+
+### [[assume]] <sup>[tbd]</sup>
+
+```c++
+[[assume(n > 0)]];
+```
+
+**Description:** Provides a hint to the optimizer.
+
+**Documentation:**
+[dcl.attr.assume](https://en.cppreference.com/w/cpp/language/attributes/assume)
+
+**Notes:**
+*** promo
+None
+***
+
+### #warning <sup>[tbd]</sup>
+
+```c++
+#warning "This is a warning"
+```
+
+**Description:** Standardized preprocessor warning directive.
+
+**Documentation:**
+[#warning](https://en.cppreference.com/w/cpp/preprocessor/warning)
+
+**Notes:**
+*** promo
+This was standardized in C++23, but was already supported by clang.
+From thakis@: #warning doesn't honor -Werror, and we want things to either be
+errors, or silent.
+***
+
+### Literal suffix for size_t <sup>[tbd]</sup>
+
+```c++
+auto s = 10uz;
+```
+
+**Description:** Literal suffix `z` or `uz` for `std::size_t`.
+
+**Documentation:**
+[Integer literal](https://en.cppreference.com/w/cpp/language/integer_literal)
+
+**Notes:**
+*** promo
+None
+***
+
+### Named character escapes <sup>[tbd]</sup>
+
+```c++
+auto c = "\N{LATIN CAPITAL LETTER A}";
+```
+
+**Description:** Universal character names using `\N{...}`.
+
+**Documentation:**
+[Escape sequences](https://en.cppreference.com/w/cpp/language/escape)
+
+**Notes:**
+*** promo
+None
+***
+
+## C++23 TBD Library Features {#library-review-23}
+
+The following C++23 library features are not allowed in the Chromium codebase.
+See the top of this page on how to propose moving a feature from this list into
+the allowed or banned sections.
+
+### Various new ranges algorithms <sup>[tbd]</sup>
+
+```c++
+std::ranges::contains, std::ranges::contains_subrange
+std::ranges::starts_with
+std::ranges::ends_with
+std::ranges::find_last, std::ranges::find_last_if, std::ranges::find_last_if_not
+std::ranges::iota
+std::ranges::fold_left
+std::ranges::fold_left_with_iter
+// The ones below are pending libc++ implementation as of 01/2026.
+std::ranges::shift_left, std::ranges::shift_right
+std::ranges::fold_left_first
+std::ranges::fold_right
+std::ranges::fold_right_last
+std::ranges::fold_left_first_with_iter
+```
+
+**Description:** Various new ranges algorithms
+
+**Documentation:**
+[`<algorithm>`](https://en.cppreference.com/w/cpp/header/algorithm.html)
+
+**Notes:**
+*** promo
+The majority of uses of base::Contains() can now be converted to .contains() or
+std::ranges::contains(), so we might want to migrate away from it
+([thread](https://groups.google.com/a/chromium.org/g/cxx/c/yiaBrakhcrQ)).
+***
+
+### Constructing containers with std::from_range <sup>[tbd]</sup>
+
+```c++
+std::set<int> a_very_long_container_name = {1, 2, 3};
+std::vector<int> old_way(
+  a_very_long_container_name.begin(), a_very_long_container_name.end());
+std::vector<int> new_way(std::from_range, a_very_long_container_name);
+```
+
+**Description:** More concise conversion from one container type to another.
+
+**Documentation:**
+[std::from_range](https://en.cppreference.com/w/cpp/ranges/from_range.html)
+
+**Notes:**
+*** promo
+See also std::ranges::to which offers something similar.
+***
+
+### std::basic_string::contains <sup>[tbd]</sup>
+
+```c++
+if (str.contains("foo")) ...
+```
+
+**Description:** More concise substring check.
+
+**Documentation:**
+[std::basic_string::contains](https://en.cppreference.com/w/cpp/string/basic_string/contains)
+
+**Notes:**
+*** promo
+None
+***
+
+### Monadic operations for std::optional <sup>[tbd]</sup>
+
+```c++
+opt.and_then(f).transform(g).or_else(h);
+```
+
+**Description:** `and_then`, `transform`, `or_else` member functions.
+
+**Documentation:**
+[std::optional](https://en.cppreference.com/w/cpp/utility/optional)
+
+**Notes:**
+*** promo
+None
+***
+
+### std::expected <sup>[tbd]</sup>
+
+```c++
+std::expected<int, std::string> e;
+```
+
+**Description:** A vocabulary type that contains an expected value or an error.
+
+**Documentation:**
+[std::expected](https://en.cppreference.com/w/cpp/utility/expected)
+
+**Notes:**
+*** promo
+Overlaps with `base::expected`.
+***
+
+### std::flat_map, std::flat_multimap, std::flat_set, std::flat_multiset <sup>[tbd]</sup>
+
+```c++
+std::flat_map<int, std::string> map;
+```
+
+**Description:** Container adaptors that provide the functionality of associative containers using sorted vectors.
+
+**Documentation:**
+[std::flat_map](https://en.cppreference.com/w/cpp/container/flat_map)
+[std::flat_multimap](https://en.cppreference.com/w/cpp/container/flat_multimap)
+[std::flat_set](https://en.cppreference.com/w/cpp/container/flat_set)
+[std::flat_multiset](https://en.cppreference.com/w/cpp/container/flat_multiset)
+
+**Notes:**
+*** promo
+Overlaps with `base::flat_map` and `base::flat_set`.
+***
+
+### std::out_ptr, std::inout_ptr <sup>[tbd]</sup>
+
+```c++
+std::unique_ptr<T> p;
+void GetT(T** out);
+GetT(std::out_ptr(p));
+```
+
+**Description:** Smart pointer adapters for functions that take raw pointers as
+out-parameters.
+
+**Documentation:**
+[std::out_ptr](https://en.cppreference.com/w/cpp/memory/out_ptr_t/out_ptr),
+[std::inout_ptr](https://en.cppreference.com/w/cpp/memory/inout_ptr_t/inout_ptr)
+
+**Notes:**
+*** promo
+None
+***
+
+### std::mdspan <sup>[tbd]</sup>
+
+```c++
+std::mdspan m(ptr, 10, 10);
+```
+
+**Description:** Multidimensional array view.
+
+**Documentation:**
+[std::mdspan](https://en.cppreference.com/w/cpp/container/mdspan)
+
+**Notes:**
+*** promo
+We ban std::span in favor of base::span, which has better safety guarantees.
+If we want to support this, maybe we should implement base::mdspan.
+***
+
+### std::ranges::to <sup>[tbd]</sup>
+
+```c++
+std::set<int> s = {1, 2, 3};
+auto u = std::ranges::to<std::vector>(s);
+auto v = s | std::ranges::to<std::vector>();
+```
+
+**Description:** Converts a range to a container.
+
+**Documentation:**
+[std::ranges::to](https://en.cppreference.com/w/cpp/ranges/to)
+
+**Notes:**
+*** promo
+We should ban the 2nd case in the snippet (use as an adaptor), but might want to
+allow the 1st case (simple container conversion). Note there's also
+std::from_range for use cases like the 1st one.
+***
+
+### Range Formatting <sup>[tbd]</sup>
+
+```c++
+LOG(INFO) << std::format("Values: {}", my_vector);
+```
+
+**Description:** Extends `<format>` to support printing containers and ranges.
+
+**Documentation:**
+[`<format>`](https://en.cppreference.com/w/cpp/utility/format/format.html)
+
+**Notes:**
+*** promo
+As of 01/2026, `<format>` is still a TBD feature from C++20.
+***
+
+### std::print <sup>[tbd]</sup>
+
+```c++
+std::print("Hello {}", "world");
+```
+
+**Description:** Formatted output.
+
+**Documentation:**
+[Print functions](https://en.cppreference.com/w/cpp/io/print)
+
+**Notes:**
+*** promo
+Overlaps with LOG() and friends.
+***
+
+### std::generator <sup>[tbd]</sup>
+
+```c++
+std::generator<int> gen() { co_yield 1; }
+```
+
+**Description:** Coroutine generator.
+
+**Documentation:**
+[std::generator](https://en.cppreference.com/w/cpp/coroutine/generator)
+
+**Notes:**
+*** promo
+As of 01/2026, coroutine support in Chromium is still TBD.
+***
+
+### std::stacktrace <sup>[tbd]</sup>
+
+```c++
+auto trace = std::stacktrace::current();
+```
+
+**Description:** Captures a stack trace.
+
+**Documentation:**
+[std::stacktrace](https://en.cppreference.com/w/cpp/utility/stacktrace)
+
+**Notes:**
+*** promo
+Overlaps with `base::debug::StackTrace`.
+***
+
+### std::move_only_function <sup>[tbd]</sup>
+
+```c++
+std::move_only_function<void()> f = [x = std::make_unique<int>(1)] {};
+```
+
+**Description:** Function wrapper for move-only objects.
+
+**Documentation:**
+[std::move_only_function](https://en.cppreference.com/w/cpp/utility/functional/move_only_function)
+
+**Notes:**
+*** promo
+Overlaps with `base::OnceCallback`.
+***
+
+### std::byteswap <sup>[tbd]</sup>
+
+```c++
+auto x = std::byteswap(y);
+```
+
+**Description:** Reverses the bytes of an integer.
+
+**Documentation:**
+[std::byteswap](https://en.cppreference.com/w/cpp/numeric/byteswap)
+
+**Notes:**
+*** promo
+Overlaps with `base::ByteSwap`.
+***
+
+### std::unreachable <sup>[tbd]</sup>
+
+```c++
+std::unreachable();
+```
+
+**Description:** Indicates unreachable code.
+
+**Documentation:**
+[std::unreachable](https://en.cppreference.com/w/cpp/utility/unreachable)
+
+**Notes:**
+*** promo
+Overlaps with `NOTREACHED()`.
+***
+
+### std::spanstream <sup>[tbd]</sup>
+
+```c++
+std::spanstream s(buffer);
+```
+
+**Description:** Input/output stream using a span as buffer.
+
+**Documentation:**
+[std::spanstream](https://en.cppreference.com/w/cpp/header/spanstream.html)
+
+**Notes:**
+*** promo
+None
+***
+
+### Fixed width floating-point types <sup>[tbd]</sup>
+
+```c++
+#include <stdfloat>
+
+int main()
+{
+    std::float64_t f = 0.1f64;
+}
+```
+
+**Description:** Similar to int32_t and friends but for floats.
+
+**Documentation:**
+[<stdfloat>](https://en.cppreference.com/w/cpp/types/floating-point.html#Fixed_width_floating-point_types)
+
+**Notes:**
+*** promo
+None
+***
+
+### std::start_lifetime_as <sup>[tbd]</sup>
+
+```c++
+void* storage = std::malloc(sizeof(T));
+T* p = std::start_lifetime_as<T>(storage);
+```
+
+**Description:** Explicitly starts the lifetime of an object of type T in the
+given storage.
+
+**Documentation:**
+[std::start_lifetime_as](https://en.cppreference.com/w/cpp/memory/start_lifetime_as)
+
+**Notes:**
+*** promo
+None
+***
+
 ## Abseil Banned Library Features {#absl-blocklist}
 
 The following Abseil library features are not allowed in the Chromium codebase.
@@ -2221,5 +2780,3 @@ amortized insertions and lookups, as well as iteration in the insertion order.
 **Documentation:**
 *   [linked_hash_set.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/container/linked_hash_set.h)
 *   [linked_hash_map.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/container/linked_hash_map.h)
-
-

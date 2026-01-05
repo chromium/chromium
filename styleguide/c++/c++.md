@@ -23,8 +23,9 @@ Blink code in `third_party/blink` uses [Blink style](blink-c++.md).
 
 ## Modern C++ features
 
-Google and Chromium style
-[targets C++20](https://google.github.io/styleguide/cppguide.html#C++_Version).
+Chromium style targets C++23, whereas Google style
+[targets C++20](https://google.github.io/styleguide/cppguide.html#C++_Version)
+(as of 01/2026).
 Additionally, some features of supported C++ versions remain forbidden. The
 status of Chromium's C++ support is covered in more detail in
 [Modern C++ use in Chromium](c++-features.md).
