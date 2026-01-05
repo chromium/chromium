@@ -137,21 +137,15 @@ export function getHtml(this: MostVisitedElement) {
   </cr-action-menu>
 </div>
 <cr-toast-manager id="toastManager" duration="10000">
-  ${!this.autoRemovalInProgress_ ? html`
-    <cr-button id="undo" aria-label="${this.i18n('undoDescription')}"
-        @click="${this.onUndoClick_}">
-      ${this.i18n('undo')}
-    </cr-button>
-    <cr-button id="restore"
-        aria-label="${this.getRestoreButtonText_()}"
-        @click="${this.onRestoreDefaultsClick_}">
-      ${this.getRestoreButtonText_()}
-    </cr-button>` : html`
-    <cr-button id="undoAutoRemoval"
-        aria-label="${this.i18n('undoDescription')}"
-        @click="${this.onUndoAutoRemovalClick_}">
-      ${this.i18n('undo')}
-    </cr-button>`}
+  <cr-button id="undo" aria-label="${this.i18n('undoDescription')}"
+      @click="${this.onUndoClick_}">
+    ${this.i18n('undo')}
+  </cr-button>
+  <cr-button id="restore"
+      aria-label="${this.getRestoreButtonText_()}"
+      @click="${this.onRestoreDefaultsClick_}">
+    ${this.getRestoreButtonText_()}
+  </cr-button>
 </cr-toast-manager>
 <!--_html_template_end_-->`;
   // clang-format on

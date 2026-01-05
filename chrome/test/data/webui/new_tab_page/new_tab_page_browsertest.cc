@@ -280,6 +280,11 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, NewTabFooter) {
           "runMochaSuite('NewTabPageAppTest NewTabFooter')");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, AutoRemovalToast) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppTest AutoRemovalToast')");
+}
+
 class NewTabPageModulesMostRelevantTabResumptionModuleTest
     : public NewTabPageBrowserTest {
  protected:

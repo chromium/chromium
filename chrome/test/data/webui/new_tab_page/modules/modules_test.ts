@@ -9,7 +9,7 @@ import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -703,6 +703,18 @@ suite('NewTabPageModulesModulesV2Test', () => {
       });
     }
 
+    function setupAutoRemovalListener() {
+      let event: CustomEvent<{message: string, undo: () => void}>|null = null;
+      document.body.addEventListener('modules-auto-removed', (e: any) => {
+        event = e;
+      }, {once: true});
+      return {
+        get event() {
+          return event;
+        },
+      };
+    }
+
     test('ModulesAutoRemoval: Single module auto removed', async () => {
       // Arrange.
       setupModuleAutoRemovalTest();
@@ -723,6 +735,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
         moduleIds: removedModuleIds,
       });
 
+      const autoRemovalListener = setupAutoRemovalListener();
+
       // Act - Creates and loads the modules element.
       const modulesElement = await createModulesElement(
           [
@@ -742,22 +756,19 @@ suite('NewTabPageModulesModulesV2Test', () => {
       assertEquals(1, handler.getCallCount('setModulesDisabled'));
       assertDeepEquals(
           [removedModuleIds, true], handler.getArgs('setModulesDisabled')[0]);
-      assertTrue(modulesElement.$.undoToast.open);
+      assertNotEquals(null, autoRemovalListener.event);
       assertEquals(
           'Single module has been removed',
-          modulesElement.$.undoToastMessage.textContent.trim());
+          autoRemovalListener.event!.detail.message);
+      assertFalse(modulesElement.$.undoToast.open);
 
-      // Act - Click the undo button to restore the modules.
-      const undoButton =
-          modulesElement.shadowRoot.querySelector<HTMLElement>('#undoButton');
-      assertTrue(!!undoButton);
-      undoButton.click();
+      // Act - Execute the undo callback.
+      autoRemovalListener.event!.detail.undo();
 
       // Assert.
       assertEquals(2, handler.getCallCount('setModulesDisabled'));
       assertDeepEquals(
           [removedModuleIds, false], handler.getArgs('setModulesDisabled')[1]);
-      assertFalse(modulesElement.$.undoToast.open);
     });
 
     test('ModulesAutoRemoval: Multiple modules auto removed', async () => {
@@ -780,6 +791,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
       handler.setResultFor('getModulesEligibleForRemoval', {
         moduleIds: removedModuleIds,
       });
+
+      const autoRemovalListener = setupAutoRemovalListener();
 
       // Act - Creates and loads the modules element.
       const modulesElement = await createModulesElement(
@@ -805,22 +818,19 @@ suite('NewTabPageModulesModulesV2Test', () => {
       assertEquals(1, handler.getCallCount('setModulesDisabled'));
       assertDeepEquals(
           [removedModuleIds, true], handler.getArgs('setModulesDisabled')[0]);
-      assertTrue(modulesElement.$.undoToast.open);
+      assertNotEquals(null, autoRemovalListener.event);
       assertEquals(
           'Multiple modules have been removed',
-          modulesElement.$.undoToastMessage.textContent.trim());
+          autoRemovalListener.event!.detail.message);
+      assertFalse(modulesElement.$.undoToast.open);
 
-      // Act - Click the undo button to restore the modules.
-      const undoButton =
-          modulesElement.shadowRoot.querySelector<HTMLElement>('#undoButton');
-      assertTrue(!!undoButton);
-      undoButton.click();
+      // Act - Execute the undo callback.
+      autoRemovalListener.event!.detail.undo();
 
       // Assert.
       assertEquals(2, handler.getCallCount('setModulesDisabled'));
       assertDeepEquals(
           [removedModuleIds, false], handler.getArgs('setModulesDisabled')[1]);
-      assertFalse(modulesElement.$.undoToast.open);
     });
 
     test(
@@ -844,6 +854,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
             moduleIds: removedModuleIds,
           });
 
+          const autoRemovalListener = setupAutoRemovalListener();
+
           // Act - Creates and loads the modules element. In this case, the
           // removed module is not loaded, so no auto removal should occur.
           const modulesElement = await createModulesElement(
@@ -857,6 +869,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
 
           // Assert.
           assertEquals(0, handler.getCallCount('setModulesDisabled'));
+          assertEquals(null, autoRemovalListener.event);
           assertFalse(modulesElement.$.undoToast.open);
         });
 

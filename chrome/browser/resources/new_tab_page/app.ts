@@ -164,6 +164,8 @@ export interface AppElement {
     logo: LogoElement,
     searchbox: SearchboxElement,
     composebox: ComposeboxElement,
+    undoToast: CrToastElement,
+    undoToastMessage: HTMLElement,
   };
 }
 
@@ -320,6 +322,8 @@ export class AppElement extends AppElementBase {
       showScrim_: {type: Boolean, reflect: true},
 
       contextMenuGlifAnimationState_: {type: String},
+      undoAutoRemovalCallback_: {type: Object},
+      undoAutoRemovalMessage_: {type: Object},
     };
   }
 
@@ -406,6 +410,8 @@ export class AppElement extends AppElementBase {
       this.ntpNextFeaturesEnabled_ && this.isActionChipsVisible_ ?
       GlifAnimationState.SPINNER_ONLY :
       GlifAnimationState.INELIGIBLE;
+  protected accessor undoAutoRemovalCallback_: (() => void)|null = null;
+  protected accessor undoAutoRemovalMessage_: string|null = null;
   protected enableModalComposebox_: boolean =
       loadTimeData.getBoolean('enableModalComposebox');
   protected ephemeralContextMenuDescriptionEnabled_: boolean =
@@ -433,6 +439,8 @@ export class AppElement extends AppElementBase {
   private pendingComposeboxContextFiles_: ContextualUpload[] = [];
   private pendingComposeboxText_: string = '';
   private pendingComposeboxMode_: ComposeboxMode = ComposeboxMode.DEFAULT;
+  private pendingAutoRemovalToasts_:
+      Array<{message: string, undo: () => void}> = [];
 
   constructor() {
     performance.mark('app-creation-start');
@@ -1407,6 +1415,57 @@ export class AppElement extends AppElementBase {
         this.contextMenuGlifAnimationState_ = GlifAnimationState.STARTED;
       }
     }
+  }
+
+  /**
+   * Called whenever an auto-removed feature is being processed and the undo
+   * toast needs to be shown. This will queue up the toast in the pending FIFO
+   * list and then call the processing function.
+   *
+   * @param undoToastContext - An event that contains the undo toast message and
+   *                           the undo callback function.
+   */
+  protected showAutoRemovedToast_(
+      undoToastContext: CustomEvent<{message: string, undo: () => void}>) {
+    this.pendingAutoRemovalToasts_.push(undoToastContext.detail);
+    this.processPendingAutoRemovalToasts_();
+  }
+
+  /**
+   * Called whenever the pending toasts need to be processed. This is called
+   * whenever a new toast is added to the pending list through an auto-removal
+   * event, or when the user clicks on the undo button in the toast.
+   *
+   * In case the undo toast is already open, then it's a no-op to avoid showing
+   * multiple toasts at the same time. Otherwise, the first pending toast is
+   * popped and shown.
+   */
+  private processPendingAutoRemovalToasts_() {
+    if (this.pendingAutoRemovalToasts_.length === 0) {
+      return;
+    }
+
+    if (this.$.undoToast.open) {
+      return;
+    }
+
+    const undoToastContext = this.pendingAutoRemovalToasts_.shift()!;
+    this.undoAutoRemovalCallback_ = undoToastContext.undo;
+    this.undoAutoRemovalMessage_ = undoToastContext.message;
+    this.$.undoToast.show();
+  }
+
+  /**
+   * Processes an auto-removal undo click. It will hide the toast, call the
+   * undo callback, and call the processing function to handle the next queued
+   * toast (if any).
+   */
+  protected onAutoRemovalUndoClick_() {
+    this.$.undoToast.hide();
+    this.undoAutoRemovalCallback_?.();
+    this.undoAutoRemovalCallback_ = null;
+    this.undoAutoRemovalMessage_ = null;
+    this.processPendingAutoRemovalToasts_();
   }
 }
 

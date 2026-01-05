@@ -2259,48 +2259,39 @@ suite('ShortcutsAutoRemovalToast', () => {
     await setUpTest();
   });
 
-  test('toast shown with Undo auto removal button', async () => {
+  test('auto removal event fired', async () => {
+    let autoRemovalEvent: CustomEvent<{message: string, undo: () => void}>|
+        null = null;
+    mostVisited.addEventListener('most-visited-auto-removed', (e: any) => {
+      autoRemovalEvent = e;
+    }, {once: true});
+
     callbackRouterRemote.onMostVisitedTilesAutoRemoval();
     await callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
-    assertTrue(mostVisited.$.toastManager.isToastOpen);
 
-    // Check undo auto removal button is visible.
-    const undoAutoRemovalButton =
-        mostVisited.shadowRoot.querySelector<HTMLElement>('#undoAutoRemoval');
-    assertTrue(!!undoAutoRemovalButton);
-    assertFalse(undoAutoRemovalButton.hidden);
-
-    // Check other buttons are removed from the DOM.
-    const undoButton =
-        mostVisited.shadowRoot.querySelector<HTMLElement>('#undo');
-    assertEquals(null, undoButton);
-    const restoreButton =
-        mostVisited.shadowRoot.querySelector<HTMLElement>('#restore');
-    assertEquals(null, restoreButton);
+    assertNotEquals(null, autoRemovalEvent);
+    assertEquals(
+        loadTimeData.getString('shortcutsInactivityRemovalMsg'),
+        autoRemovalEvent!.detail.message);
+    assertFalse(mostVisited.$.toastManager.isToastOpen);
   });
 
-  test('toast undo auto removal button', async () => {
-    // Check toast is not open initially.
-    assertFalse(mostVisited.$.toastManager.isToastOpen);
+  test('undo auto removal via event callback', async () => {
+    let autoRemovalEvent: CustomEvent<{message: string, undo: () => void}>|
+        null = null;
+    mostVisited.addEventListener('most-visited-auto-removed', (e: any) => {
+      autoRemovalEvent = e;
+    }, {once: true});
 
-    // Check toast is open after auto removal event.
     callbackRouterRemote.onMostVisitedTilesAutoRemoval();
     await callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
-    assertTrue(mostVisited.$.toastManager.isToastOpen);
 
-    // Check undo auto removal button is visible.
-    const undoAutoRemovalButton =
-        mostVisited.shadowRoot.querySelector<HTMLElement>('#undoAutoRemoval');
-    assertTrue(!!undoAutoRemovalButton);
-    assertFalse(undoAutoRemovalButton.hidden);
+    assertNotEquals(null, autoRemovalEvent);
 
-    // Check undo auto removal button click calls the handler and closes the
-    // toast.
     const wait = handler.whenCalled('undoMostVisitedAutoRemoval');
-    undoAutoRemovalButton.click();
+    autoRemovalEvent!.detail.undo();
     await wait;
-    assertFalse(mostVisited.$.toastManager.isToastOpen);
   });
 });

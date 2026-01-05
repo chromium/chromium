@@ -358,16 +358,14 @@ export class ModulesElement extends CrLitElement {
           loadTimeData.getString('moduleInactivityRemovalMsg') :
           loadTimeData.getString('modulesInactivityRemovalMsg');
 
-      this.undoData_ = {
+      this.pendingAutoRemovedModules_ = moduleIds;
+      this.pageHandler_.setModulesDisabled(moduleIds, /*disabled=*/ true);
+      this.fire('modules-auto-removed', {
         message: undoToastMessage,
         undo: () => {
           this.pageHandler_.setModulesDisabled(moduleIds, /*disabled=*/ false);
         },
-      };
-
-      this.pendingAutoRemovedModules_ = moduleIds;
-      this.pageHandler_.setModulesDisabled(moduleIds, /*disabled=*/ true);
-      this.$.undoToast.show();
+      });
     }
   }
 
