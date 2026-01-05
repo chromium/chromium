@@ -74,11 +74,6 @@ void AccountCapabilitiesTestMutator::set_can_use_chromeos_generative_ai(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-void AccountCapabilitiesTestMutator::set_can_use_copyeditor_feature(
-    bool value) {
-  capabilities_->capabilities_map_[kCanUseCopyEditorFeatureName] = value;
-}
-
 #if !BUILDFLAG(IS_IOS)
 void AccountCapabilitiesTestMutator::
     set_can_use_devtools_generative_ai_features(bool value) {

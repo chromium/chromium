@@ -94,9 +94,6 @@ class AccountCapabilities {
   signin::Tribool can_use_chromeos_generative_ai() const;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  // The user account is able to use copyeditor feature.
-  signin::Tribool can_use_copyeditor_feature() const;
-
 #if !BUILDFLAG(IS_IOS)
   // The user account is able to use DevTools AI features.
   signin::Tribool can_use_devtools_generative_ai_features() const;

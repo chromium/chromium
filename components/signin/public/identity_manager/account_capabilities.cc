@@ -134,10 +134,6 @@ signin::Tribool AccountCapabilities::can_use_chromeos_generative_ai() const {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-signin::Tribool AccountCapabilities::can_use_copyeditor_feature() const {
-  return GetCapabilityByName(kCanUseCopyEditorFeatureName);
-}
-
 #if !BUILDFLAG(IS_IOS)
 signin::Tribool AccountCapabilities::can_use_devtools_generative_ai_features()
     const {

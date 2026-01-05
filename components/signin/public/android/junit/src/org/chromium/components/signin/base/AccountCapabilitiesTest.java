@@ -50,8 +50,6 @@ public final class AccountCapabilitiesTest {
                 return capabilities.canShowHistorySyncOptInsWithoutMinorModeRestrictions();
             case AccountCapabilitiesConstants.CAN_USE_CHROMEOS_GENERATIVE_AI:
                 return capabilities.canUseChromeOSGenerativeAi();
-            case AccountCapabilitiesConstants.CAN_USE_COPYEDITOR_FEATURE_NAME:
-                return capabilities.canUseCopyeditorFeature();
             case AccountCapabilitiesConstants
                     .CAN_USE_DEVTOOLS_GENERATIVE_AI_FEATURES_CAPABILITY_NAME:
                 return capabilities.canUseDevToolsGenerativeAiFeatures();
@@ -118,11 +116,6 @@ public final class AccountCapabilitiesTest {
                                 .value(
                                         AccountCapabilitiesConstants
                                                 .IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME),
-                        new ParameterSet()
-                                .name("CanUseCopyEditorFeature")
-                                .value(
-                                        AccountCapabilitiesConstants
-                                                .CAN_USE_COPYEDITOR_FEATURE_NAME),
                         new ParameterSet()
                                 .name("CanUseDevToolsGenerativeAiFeatures")
                                 .value(
