@@ -2457,6 +2457,52 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    public void testDyingGroupTitleReplaced() {
+        // Initialize.
+        initializeTest(false, false, 0, 2);
+        groupTabs(0, 2, TAB_GROUP_ID_1);
+        StripLayoutView[] viewsBefore = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutGroupTitle oldGroupTitle = (StripLayoutGroupTitle) viewsBefore[0];
+
+        // Close the tabs and group.
+        List<Tab> closingTabs = new ArrayList<>();
+        closingTabs.add(mModel.getTabAt(1));
+        closingTabs.add(mModel.getTabAt(0));
+        mModel.closeTabs(TabClosureParams.closeTabs(closingTabs).build());
+        mStripLayoutHelper.multipleTabsClosed(closingTabs);
+        mStripLayoutHelper
+                .getTabGroupModelFilterObserverForTesting()
+                .didRemoveTabGroup(
+                        Tab.INVALID_TAB_ID, TAB_GROUP_ID_1, DidRemoveTabGroupReason.CLOSE);
+
+        // Finish animations, as is done in the TabModelObserver.
+        mStripLayoutHelper.finishAnimations();
+
+        assertTrue(oldGroupTitle.isDying());
+
+        // Restore tabs state for undo.
+        mModel.addTab("Tab 1");
+        mModel.addTab("Tab 2");
+        when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(true);
+        List<Tab> relatedTabs = new ArrayList<>();
+        relatedTabs.add(mModel.getTabAt(0));
+        relatedTabs.add(mModel.getTabAt(1));
+        when(mTabGroupModelFilter.getTabsInGroup(TAB_GROUP_ID_1)).thenReturn(relatedTabs);
+        when(mModel.getTabAt(0).getTabGroupId()).thenReturn(TAB_GROUP_ID_1);
+        when(mModel.getTabAt(1).getTabGroupId()).thenReturn(TAB_GROUP_ID_1);
+
+        // Call closure cancelled.
+        mStripLayoutHelper.tabClosureCancelled(TIMESTAMP, mModel.getTabAt(0).getId());
+
+        StripLayoutView[] viewsAfter = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertTrue(viewsAfter[0] instanceof StripLayoutGroupTitle);
+        StripLayoutGroupTitle newGroupTitle = (StripLayoutGroupTitle) viewsAfter[0];
+
+        assertNotEquals(oldGroupTitle, newGroupTitle);
+        assertFalse(newGroupTitle.isDying());
+    }
+
+    @Test
     @Config(sdk = Build.VERSION_CODES.R)
     public void testOnLongPress_WithDragDrop_OnTab() {
         var tabs = initializeTest_ForTab();
