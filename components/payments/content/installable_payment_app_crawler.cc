@@ -538,8 +538,10 @@ void InstallablePaymentAppCrawler::OnPaymentWebAppIconDownloadAndDecoded(
                   "\" for payment handler manifest \"" +
                   method_manifest_url.spec() + "\".");
       } else {
-        CHECK(refetched_app_metadata_.contains(web_app_manifest_url));
-        refetched_app_metadata_[web_app_manifest_url]->icon =
+        auto refetched_app_metadata_it =
+            refetched_app_metadata_.find(web_app_manifest_url);
+        CHECK(refetched_app_metadata_it != refetched_app_metadata_.end());
+        refetched_app_metadata_it->second->icon =
             std::make_unique<SkBitmap>(icon);
       }
       break;
