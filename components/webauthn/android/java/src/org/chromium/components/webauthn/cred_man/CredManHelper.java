@@ -675,7 +675,9 @@ public class CredManHelper {
             return AuthenticatorStatus.NOT_ALLOWED_ERROR;
         }
 
-        mRequestPasswords = options.mediation == Mediation.IMMEDIATE && options.password;
+        if (options.mediation == Mediation.IMMEDIATE) {
+            mRequestPasswords = options.password;
+        }
         mCancellableUiState =
                 options.mediation == Mediation.CONDITIONAL
                         ? CancellableUiState.WAITING_FOR_CREDENTIAL_LIST
