@@ -19893,6 +19893,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_REMOVE_FILTER" desc="Accessibility label for the button that removes a specific filter chip.">
         Remove filter
       </message>
+      <message name="IDS_UPDATER_SCOPE_SYSTEM" desc="Tooltip explaining that an event belongs to a per-system installation of the updater as opposed to a per-user installation.">
+        Per-system updater
+      </message>
+      <message name="IDS_UPDATER_SCOPE_USER" desc="Tooltip explaining that an event belongs to a per-user installation of the updater as opposed to a per-system installation.">
+        Per-user updater
+      </message>
       <message name="IDS_UPDATER_START_DATE" desc="Label for the start date input field.">
         Start Date:
       </message>

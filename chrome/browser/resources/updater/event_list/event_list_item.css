@@ -68,8 +68,17 @@ cr-expand-button {
   min-height: 1em;
 }
 
+.event-scope-column {
+  flex-basis: 10%;
+  flex-shrink: 0;
+}
+
+.event-scope-column cr-icon {
+  color: var(--cr-secondary-text-color);
+}
+
 .event-type-column {
-  flex-basis: 20%;
+  flex-basis: 10%;
   flex-shrink: 0;
   overflow: hidden;
   text-overflow: ellipsis;

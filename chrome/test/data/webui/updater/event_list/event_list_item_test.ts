@@ -5,7 +5,7 @@
 import 'chrome://updater/event_list/event_list_item.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {MergedHistoryEvent, MergedInstallEvent, MergedUpdaterProcessEvent, PersistedDataEvent} from 'chrome://updater/event_history.js';
+import type {MergedHistoryEvent, MergedInstallEvent, MergedUpdaterProcessEvent, PersistedDataEvent, Scope} from 'chrome://updater/event_history.js';
 import {localizeEventType, UpdaterProcessMap} from 'chrome://updater/event_history.js';
 import type {EventListItemElement} from 'chrome://updater/event_list/event_list_item.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -682,5 +682,85 @@ suite('EventListItemElement', () => {
     const appSpan = item.shadowRoot.querySelector('.event-app');
     assertTrue(!!appSpan);
     assertEquals('{UNKNOWN-APP}', appSpan.textContent.trim());
+  });
+
+  test('displays scope icon', () => {
+    function makeUpdaterProcessEvent(scope: Scope): MergedUpdaterProcessEvent {
+      return {
+        eventType: 'UPDATER_PROCESS',
+        startEvent: {
+          eventType: 'UPDATER_PROCESS',
+          eventId: '1',
+          deviceUptime: 0,
+          pid: 1234,
+          processToken: 'token',
+          bound: 'START',
+          errors: [],
+          scope,
+        },
+        endEvent: {
+          eventType: 'UPDATER_PROCESS',
+          eventId: '1',
+          deviceUptime: 1000,
+          pid: 1234,
+          processToken: 'token',
+          bound: 'END',
+          errors: [],
+        },
+      };
+    }
+
+    const event: MergedHistoryEvent = {
+      eventType: 'INSTALL',
+      startEvent: {
+        eventType: 'INSTALL',
+        eventId: '2',
+        deviceUptime: 500,
+        pid: 1234,
+        processToken: 'token',
+        bound: 'START',
+        errors: [],
+        appId: '{app1}',
+      },
+      endEvent: {
+        eventType: 'INSTALL',
+        eventId: '2',
+        deviceUptime: 600,
+        pid: 1234,
+        processToken: 'token',
+        bound: 'END',
+        errors: [],
+        version: '1.0',
+      },
+    };
+
+
+    test('per-user', async () => {
+      const updaterProcessEvent = makeUpdaterProcessEvent('USER');
+      const processMap = new UpdaterProcessMap([updaterProcessEvent]);
+
+      item.event = event;
+      item.processMap = processMap;
+      await microtasksFinished();
+
+      const iconElement = item.shadowRoot.querySelector('cr-icon');
+      assertTrue(!!iconElement);
+      assertEquals('cr:person', iconElement.icon);
+      assertEquals(loadTimeData.getString('scopeUser'), iconElement.title);
+    });
+
+    test('per-system', async () => {
+      const updaterProcessEvent = makeUpdaterProcessEvent('SYSTEM');
+      const processMap = new UpdaterProcessMap([updaterProcessEvent]);
+
+      item.event = event;
+      item.processMap = processMap;
+      await microtasksFinished();
+
+      const iconElement = item.shadowRoot.querySelector('cr-icon');
+      assertTrue(!!iconElement);
+      assertEquals('cr:computer', iconElement.icon);
+      assertEquals(loadTimeData.getString('scopeSystem'), iconElement.title);
+    });
   });
 });

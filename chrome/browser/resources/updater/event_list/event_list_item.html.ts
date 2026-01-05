@@ -23,6 +23,12 @@ export function getHtml(this: EventListItemElement) {
       <span class="event-app${!this.appId ? ' internal-event' : ''}">
         ${this.appLabel ?? ''}
       </span>
+      <div class="event-scope-column">
+        ${this.scope ? html`
+          <cr-icon icon="${this.scopeIcon}" title="${this.scopeLabel}">
+          </cr-icon>
+        ` : ''}
+      </div>
       <div class="event-type-column">
         <span class="event-type">
           ${localizeEventType(this.event.eventType)}

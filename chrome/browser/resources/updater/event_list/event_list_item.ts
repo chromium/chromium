@@ -5,11 +5,13 @@
 import './raw_event_details.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 
+import {assert} from '//resources/js/assert.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {UpdaterProcessMap} from '../event_history.js';
+import type {Scope, UpdaterProcessMap} from '../event_history.js';
 import {getAppId, isMergedHistoryEvent} from '../event_history.js';
 import type {HistoryEvent, MergedActivateEvent, MergedAppCommandEvent, MergedHistoryEvent, MergedInstallEvent, MergedQualifyEvent, MergedUninstallEvent, MergedUpdateEvent, MergedUpdaterProcessEvent, PersistedDataEvent} from '../event_history.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -46,6 +48,7 @@ export class EventListItemElement extends CrLitElement {
       processMap: {type: Object},
       expanded: {type: Boolean, notify: true},
       error: {type: Boolean, reflect: true},
+      scope: {type: String, reflect: true},
     };
   }
 
@@ -54,6 +57,7 @@ export class EventListItemElement extends CrLitElement {
   accessor processMap: UpdaterProcessMap|undefined = undefined;
   accessor expanded = false;
   accessor error = false;
+  accessor scope: Scope|undefined = undefined;
 
   protected appId: string|undefined = undefined;
   protected appLabel: string|undefined = undefined;
@@ -84,6 +88,7 @@ export class EventListItemElement extends CrLitElement {
 
     if (changedProperties.has('event') || changedProperties.has('processMap')) {
       this.updaterVersion = this.computeUpdaterVersion();
+      this.scope = this.computeScope();
     }
   }
 
@@ -97,6 +102,19 @@ export class EventListItemElement extends CrLitElement {
 
   protected onExpandedChanged(e: CustomEvent<{value: boolean}>) {
     this.expanded = e.detail.value;
+  }
+
+  protected get scopeIcon(): string {
+    assert(this.scope !== undefined);
+    return this.scope === 'SYSTEM' ? 'cr:computer' : 'cr:person';
+  }
+
+  protected get scopeLabel(): string {
+    assert(this.scope !== undefined);
+    return this.scope ?
+        loadTimeData.getString(
+            this.scope === 'SYSTEM' ? 'scopeSystem' : 'scopeUser') :
+        '';
   }
 
   /**
@@ -113,6 +131,15 @@ export class EventListItemElement extends CrLitElement {
     } catch (e) {
       return undefined;
     }
+  }
+
+  private computeScope(): Scope|undefined {
+    if (this.event === undefined || this.processMap === undefined) {
+      return undefined;
+    }
+    const process = this.processMap.getUpdaterProcessForEvent(this.event);
+    assert(process !== undefined);
+    return process.startEvent.scope;
   }
 
   private computeAppLabel(): string {

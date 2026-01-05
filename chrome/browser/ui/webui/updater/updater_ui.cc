@@ -118,6 +118,8 @@ UpdaterUI::UpdaterUI(content::WebUI* web_ui)
       {"qualificationFailed", IDS_UPDATER_QUALIFICATION_FAILED},
       {"qualificationSucceeded", IDS_UPDATER_QUALIFICATION_SUCCEEDED},
       {"removeFilter", IDS_UPDATER_REMOVE_FILTER},
+      {"scopeSystem", IDS_UPDATER_SCOPE_SYSTEM},
+      {"scopeUser", IDS_UPDATER_SCOPE_USER},
       {"startDate", IDS_UPDATER_START_DATE},
       {"uninstallSummary", IDS_UPDATER_UNINSTALL_SUMMARY},
       {"updateError", IDS_UPDATER_UPDATE_ERROR},
