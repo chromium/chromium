@@ -3167,6 +3167,12 @@ crbug.com/462821200 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryService
 crbug.com/440811029 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryServices/gen-disconnect-called-before.https.window.html [ Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac ] external/wpt/css/css-scroll-anchoring/contenteditable-insert-line-at-top.tentative.html [ Timeout ]
+external/wpt/css/css-text/letter-spacing/letter-spacing-cursive-002.html [ Failure ]
+external/wpt/css/filter-effects/svg-filter-filter-units-user-space.html [ Failure ]
+external/wpt/css/filter-effects/svg-filter-primitive-units-user-space.html [ Failure ]
+virtual/scalefactor200/external/wpt/css/filter-effects/svg-filter-filter-units-user-space.html [ Failure ]
+virtual/scalefactor200/external/wpt/css/filter-effects/svg-filter-primitive-units-user-space.html [ Failure ]
 crbug.com/471016766 [ Mac ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-from-context-with-different-rate.https.html [ Pass Timeout ]
 crbug.com/471016766 [ Win ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-from-context-with-different-rate.https.html [ Pass Timeout ]
 crbug.com/470897147 external/wpt/svg/styling/css-var-on-length-attributes-02.svg [ Failure ]
@@ -9989,5 +9995,5 @@ crbug.com/457974554 external/wpt/digital-credentials/allow-attribute-with-get.ht
 crbug.com/457974554 external/wpt/digital-credentials/allow-attribute-with-create.https.html [ Failure Pass ]
 
 # Gardener 2025-12-23
-crbug.com/448800278 [ Mac ] external/wpt/notifications/registration-association.https.window.html [ Pass Failure ]
-crbug.com/40250618 [ Mac ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-opener_coop-ro_cross-origin.https.html [ Pass Failure ]
+crbug.com/448800278 [ Mac ] external/wpt/notifications/registration-association.https.window.html [ Failure Pass ]
+crbug.com/40250618 [ Mac ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-opener_coop-ro_cross-origin.https.html [ Failure Pass ]

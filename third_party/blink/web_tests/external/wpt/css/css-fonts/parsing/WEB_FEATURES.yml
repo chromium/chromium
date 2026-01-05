@@ -60,3 +60,6 @@ features:
 - name: font-feature-settings
   files:
   - font-feature-settings-*
+- name: font-kerning
+  files:
+  - font-kerning-*

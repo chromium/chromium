@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Scroll anchoring works on textarea
+  assert_equals: The scroll position should be adjusted expected 310 but got 300
+Harness: the test ran to completion.
+

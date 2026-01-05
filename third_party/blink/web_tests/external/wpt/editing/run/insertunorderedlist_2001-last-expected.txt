@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["insertunorderedlist",""],["inserttext","abc"]] "<div>{}<br></div>" queryCommandState("insertunorderedlist") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["insertunorderedlist",""],["inserttext","abc"]] "<div>{}<br></div>" queryCommandValue("insertunorderedlist") after
@@ -22,5 +22,7 @@ Found 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div class=\\"a\\"><ul><li>abc</li><li>def</li></ul></div>" not in array ["<div><ul><li class=\\"a\\">abc</li><li class=\\"b\\">def</li></ul></div>", "<ul><li class=\\"a\\">abc</li><li class=\\"b\\">def</li></ul>"]
 [FAIL] [["insertunorderedlist",""]] "<div title=\\"a\\">a[bc</div><div title=\\"b\\">de]f</div>" compare innerHTML
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div title=\\"a\\"><ul><li>abc</li><li>def</li></ul></div>" not in array ["<div><ul><li title=\\"a\\">abc</li><li title=\\"b\\">def</li></ul></div>", "<ul><li title=\\"a\\">abc</li><li title=\\"b\\">def</li></ul>"]
+[FAIL] [["insertunorderedlist",""]] "{ <span contenteditable=\\"false\\">A</span> ; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span> }" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<ul><li><br></li><li> ; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span></li></ul> <span contenteditable=\\"false\\">A</span> " not in array ["<ul><li> <span contenteditable=\\"false\\">A</span> ; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span> </li></ul>", "<ul><li><span contenteditable=\\"false\\">A</span> ; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span></li></ul>"]
 Harness: the test ran to completion.
 

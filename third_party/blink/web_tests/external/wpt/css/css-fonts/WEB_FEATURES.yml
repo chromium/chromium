@@ -91,6 +91,11 @@ features:
   - font-default-03.html
   - font-default-04.html
   - variable-in-feature-crash.html
+- name: font-kerning
+  files:
+  - font-kerning-*
+  - cjk-kerning.html
+  - hiragana-katakana-kerning.html
 - name: font-weight
   files:
   - font-weight-*
