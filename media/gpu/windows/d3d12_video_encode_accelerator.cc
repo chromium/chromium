@@ -659,7 +659,7 @@ void D3D12VideoEncodeAccelerator::RequestEncodingParametersChangeTask(
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource>
-D3D12VideoEncodeAccelerator::CreateResourceForGpuMemoryBufferVideoFrame(
+D3D12VideoEncodeAccelerator::CreateResourceForDXGIHandleBackedVideoFrame(
     const VideoFrame& frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   CHECK(frame.HasMappableSharedImage());
@@ -672,15 +672,14 @@ D3D12VideoEncodeAccelerator::CreateResourceForGpuMemoryBufferVideoFrame(
 
   const gfx::DXGIHandleToken& token = handle.dxgi_handle().token();
   if (caching_enabled) {
-    // The Video Capture Module (VCM) reuses a small, circular pool of
-    // GpuMemoryBuffers. This means the same buffer handle will reappear
-    // periodically, but each time it does, it will have been overwritten with a
-    // new frame's content by the producer. When the encoder sees a handle it
-    // has seen before, it retrieves the cached ID3D12Resource from the map.
-    // This resource object is still a valid view into the same underlying GPU
-    // resource allocation. When the GPU is instructed to use this resource for
-    // encoding, it reads the current content of that memory, which is the new
-    // frame's data.
+    // The Video Capture Module (VCM) reuses a small, circular pool of handles.
+    // This means the same buffer handle will reappear periodically, but each
+    // time it does, it will have been overwritten with a new frame's content
+    // by the producer. When the encoder sees a handle it has seen before, it
+    // retrieves the cached ID3D12Resource from the map. This resource object
+    // is still a valid view into the same underlying GPU resource allocation.
+    // When the GPU is instructed to use this resource for encoding, it reads
+    // the current content of that memory, which is the new frame's data.
     auto cache_it = shared_handle_cache_.Get(token);
     if (cache_it != shared_handle_cache_.end()) {
       return cache_it->second;
@@ -858,7 +857,7 @@ void D3D12VideoEncodeAccelerator::DoEncodeTask(
   Microsoft::WRL::ComPtr<ID3D12Resource> input_texture;
   if (frame->HasMappableSharedImage()) {
     if (frame->HasNativeGpuMemoryBuffer()) {
-      input_texture = CreateResourceForGpuMemoryBufferVideoFrame(*frame);
+      input_texture = CreateResourceForDXGIHandleBackedVideoFrame(*frame);
     } else {
       frame = ConvertToMemoryMappedFrame(std::move(frame));
       if (!frame) {
