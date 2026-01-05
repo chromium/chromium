@@ -136,6 +136,9 @@ class ExecutionEngine : public ToolDelegate {
   Profile& GetProfile() override;
   AggregatedJournal& GetJournal() override;
   favicon::FaviconService* GetFaviconService() override;
+  void IsAcceptableNavigationDestination(
+      const GURL& url,
+      DecisionCallbackWithReason callback) override;
   actor_login::ActorLoginService& GetActorLoginService() override;
   autofill::ActorFormFillingService& GetActorFormFillingService() override;
   void PromptToSelectCredential(

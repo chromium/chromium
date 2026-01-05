@@ -911,6 +911,14 @@ favicon::FaviconService* ExecutionEngine::GetFaviconService() {
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
 }
 
+void ExecutionEngine::IsAcceptableNavigationDestination(
+    const GURL& url,
+    DecisionCallbackWithReason callback) {
+  ActorKeyedService::Get(profile_)->GetPolicyChecker().MayActOnUrl(
+      url, /*allow_insecure_http=*/true, profile_, *journal_, task_->id(),
+      std::move(callback));
+}
+
 Profile& ExecutionEngine::GetProfile() {
   return *profile_;
 }

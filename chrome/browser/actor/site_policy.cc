@@ -337,22 +337,6 @@ void MayActOnUrl(const GURL& url,
                  Profile* profile,
                  AggregatedJournal& journal,
                  TaskId task_id,
-                 DecisionCallback callback) {
-  std::unique_ptr<DecisionWrapper> decision_wrapper =
-      std::make_unique<DecisionWrapper>(
-          journal, url, task_id, "MayActOnUrl",
-          base::BindOnce([](MayActOnUrlBlockReason block_reason) {
-            return block_reason == MayActOnUrlBlockReason::kAllowed;
-          }).Then(std::move(callback)));
-  MayActOnUrlInternal(url, allow_insecure_http, profile, std::nullopt,
-                      std::move(decision_wrapper));
-}
-
-void MayActOnUrl(const GURL& url,
-                 bool allow_insecure_http,
-                 Profile* profile,
-                 AggregatedJournal& journal,
-                 TaskId task_id,
                  DecisionCallbackWithReason callback) {
   std::unique_ptr<DecisionWrapper> decision_wrapper =
       std::make_unique<DecisionWrapper>(journal, url, task_id, "MayActOnUrl",

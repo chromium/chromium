@@ -67,16 +67,6 @@ void MayActOnUrl(const GURL& url,
                  Profile* profile,
                  AggregatedJournal& journal,
                  TaskId task_id,
-                 DecisionCallback callback);
-
-// Same as above, but the callback includes a `MayActOnUrlBlockReason`.
-// TODO(crbug.com/458045204): Migrate callers of other function to use this one
-// instead.
-void MayActOnUrl(const GURL& url,
-                 bool allow_insecure_http,
-                 Profile* profile,
-                 AggregatedJournal& journal,
-                 TaskId task_id,
                  DecisionCallbackWithReason callback);
 
 // Checks if navigation to `url` should be blocked using

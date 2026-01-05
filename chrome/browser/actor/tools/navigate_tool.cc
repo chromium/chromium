@@ -31,9 +31,10 @@ namespace actor {
 
 namespace {
 
-mojom::ActionResultPtr MayActOnUrlToResult(bool may_act) {
-  return may_act ? MakeOkResult()
-                 : MakeResult(mojom::ActionResultCode::kUrlBlocked);
+mojom::ActionResultPtr UrlCheckToActionResult(MayActOnUrlBlockReason reason) {
+  return reason == MayActOnUrlBlockReason::kAllowed
+             ? MakeOkResult()
+             : MakeResult(mojom::ActionResultCode::kUrlBlocked);
 }
 
 }  // namespace
@@ -57,11 +58,8 @@ void NavigateTool::Validate(ToolCallback callback) {
     return;
   }
 
-  MayActOnUrl(url_,
-              /*allow_insecure_http=*/true,
-              Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-              journal(), task_id(),
-              base::BindOnce(&MayActOnUrlToResult).Then(std::move(callback)));
+  tool_delegate().IsAcceptableNavigationDestination(
+      url_, base::BindOnce(&UrlCheckToActionResult).Then(std::move(callback)));
 }
 
 void NavigateTool::Invoke(ToolCallback callback) {
