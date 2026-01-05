@@ -260,7 +260,8 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
     auto assertion_request_params =
         BuildAssertionRequestParams(std::move(*request_info), dict);
     if (!assertion_request_params.has_value()) {
-      // TODO(460485333): Call DeferToRenderer.
+      // TODO(460485333): Log the error.
+      passkey_tab_helper->DeferToRenderer(std::move(*request_info));
       return;
     }
 
@@ -273,7 +274,8 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
     auto registration_request_params =
         BuildRegistrationRequestParams(std::move(*request_info), dict);
     if (!registration_request_params.has_value()) {
-      // TODO(460485333): Call DeferToRenderer.
+      // TODO(460485333): Log the error.
+      passkey_tab_helper->DeferToRenderer(std::move(*request_info));
       return;
     }
 

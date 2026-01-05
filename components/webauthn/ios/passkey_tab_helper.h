@@ -73,6 +73,9 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // TODO(crbug.com/460485333): Test passkey assertion flow.
   void StartPasskeyAssertion(std::string request_id, std::string credential_id);
 
+  // Utility function to defer the passkey request back to the renderer.
+  void DeferToRenderer(IOSPasskeyClient::RequestInfo request_info) const;
+
  private:
   friend class web::WebStateUserData<PasskeyTabHelper>;
   friend class PasskeyTabHelperTest;
@@ -111,7 +114,7 @@ class PasskeyTabHelper : public web::WebStateObserver,
 
   // Utility function to defer the passkey request back to the renderer.
   void DeferToRenderer(web::WebFrame* web_frame,
-                       const PasskeyRequestParams& request_params) const;
+                       const std::string& request_id) const;
 
   // If `request_id` exists in the `assertion_requests_` map, this function will
   // remove the parameters from the `assertion_requests_` map and return them.
@@ -126,7 +129,7 @@ class PasskeyTabHelper : public web::WebStateObserver,
   ExtractParamsFromRegistrationRequestsMap(std::string request_id);
 
   // Returns a web frame from a web frame id. May return null.
-  web::WebFrame* GetWebFrame(const PasskeyRequestParams& request_params) const;
+  web::WebFrame* GetWebFrame(const std::string& frame_id) const;
 
   // WebStateObserver:
   void WebStateDestroyed(web::WebState* web_state) override;
