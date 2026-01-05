@@ -11,26 +11,10 @@
 #include "content/public/browser/navigation_controller.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
-namespace {
-const char kContentLiveTabWebContentsUserDataKey[] = "content_live_tab";
-}
-
 namespace sessions {
 
-// static
-ContentLiveTab* ContentLiveTab::GetForWebContents(
-    content::WebContents* contents) {
-  if (!contents->GetUserData(kContentLiveTabWebContentsUserDataKey)) {
-    contents->SetUserData(kContentLiveTabWebContentsUserDataKey,
-                          base::WrapUnique(new ContentLiveTab(contents)));
-  }
-
-  return static_cast<ContentLiveTab*>(contents->GetUserData(
-      kContentLiveTabWebContentsUserDataKey));
-}
-
 ContentLiveTab::ContentLiveTab(content::WebContents* contents)
-    : web_contents_(contents) {}
+    : content::WebContentsUserData<ContentLiveTab>(*contents) {}
 
 ContentLiveTab::~ContentLiveTab() = default;
 
@@ -63,17 +47,19 @@ int ContentLiveTab::GetEntryCount() {
 std::unique_ptr<tab_restore::PlatformSpecificTabData>
 ContentLiveTab::GetPlatformSpecificTabData() {
   return std::make_unique<sessions::ContentPlatformSpecificTabData>(
-      web_contents());
+      &GetWebContents());
 }
 
 SerializedUserAgentOverride ContentLiveTab::GetUserAgentOverride() {
   const blink::UserAgentOverride& ua_override =
-      web_contents()->GetUserAgentOverride();
+      GetWebContents().GetUserAgentOverride();
   SerializedUserAgentOverride serialized_ua_override;
   serialized_ua_override.ua_string_override = ua_override.ua_string_override;
   serialized_ua_override.opaque_ua_metadata_override =
       blink::UserAgentMetadata::Marshal(ua_override.ua_metadata_override);
   return serialized_ua_override;
 }
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentLiveTab);
 
 }  // namespace sessions

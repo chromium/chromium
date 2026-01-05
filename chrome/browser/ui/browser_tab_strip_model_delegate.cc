@@ -233,7 +233,7 @@ std::optional<SessionID> BrowserTabStripModelDelegate::CreateHistoricalTab(
   if (service && browser_->CanSupportWindowFeature(
                      Browser::WindowFeature::kFeatureTabStrip)) {
     return service->CreateHistoricalTab(
-        sessions::ContentLiveTab::GetForWebContents(contents),
+        sessions::ContentLiveTab::GetOrCreateForWebContents(contents),
         browser_->tab_strip_model()->GetIndexOfWebContents(contents));
   }
   return std::nullopt;
@@ -281,7 +281,6 @@ bool BrowserTabStripModelDelegate::ShouldRunUnloadListenerBeforeClosing(
     content::WebContents* contents) {
   return browser_->ShouldRunUnloadListenerBeforeClosing(contents);
 }
-
 
 bool BrowserTabStripModelDelegate::CanReload() const {
   return chrome::CanReload(browser_);

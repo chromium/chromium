@@ -758,7 +758,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
       sessions::ContentLiveTab* live_tab =
           static_cast<sessions::ContentLiveTab*>(content[0]);
       ASSERT_TRUE(live_tab);
-      EXPECT_EQ(url2, live_tab->web_contents()->GetURL());
+      EXPECT_EQ(url2, live_tab->GetWebContents().GetURL());
       break;
     }
   }

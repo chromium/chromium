@@ -111,9 +111,10 @@ void CreateHistoricalTab(
   // group data for single tabs when not closing an entire group to align with
   // desktop. Right now any individual tab closure is treated as not being in a
   // group.
-  service->CreateHistoricalTab(sessions::ContentLiveTab::GetForWebContents(
-                                   scoped_web_contents->web_contents()),
-                               index);
+  service->CreateHistoricalTab(
+      sessions::ContentLiveTab::GetOrCreateForWebContents(
+          scoped_web_contents->web_contents()),
+      index);
 }
 
 void CreateHistoricalGroup(

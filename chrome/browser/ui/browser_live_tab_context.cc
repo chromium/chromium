@@ -151,12 +151,12 @@ std::string BrowserLiveTabContext::GetUserTitle() const {
 }
 
 sessions::LiveTab* BrowserLiveTabContext::GetLiveTabAt(int index) const {
-  return sessions::ContentLiveTab::GetForWebContents(
+  return sessions::ContentLiveTab::GetOrCreateForWebContents(
       tab_strip_model_->GetWebContentsAt(index));
 }
 
 sessions::LiveTab* BrowserLiveTabContext::GetActiveLiveTab() const {
-  return sessions::ContentLiveTab::GetForWebContents(
+  return sessions::ContentLiveTab::GetOrCreateForWebContents(
       tab_strip_model_->GetActiveWebContents());
 }
 
@@ -340,7 +340,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
       // Load the tab manually if there's no BackgroundTabLoadingPolicy.
       web_contents->GetController().LoadIfNecessary();
     }
-    return sessions::ContentLiveTab::GetForWebContents(web_contents);
+    return sessions::ContentLiveTab::GetOrCreateForWebContents(web_contents);
   }
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -367,7 +367,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
   web_contents->GetController().LoadIfNecessary();
 #endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
 
-  return sessions::ContentLiveTab::GetForWebContents(web_contents);
+  return sessions::ContentLiveTab::GetOrCreateForWebContents(web_contents);
 }
 
 sessions::LiveTab* BrowserLiveTabContext::ReplaceRestoredTab(
@@ -386,7 +386,7 @@ sessions::LiveTab* BrowserLiveTabContext::ReplaceRestoredTab(
       tab.normalized_navigation_index(), tab.extension_app_id,
       storage_namespace, tab.user_agent_override, tab.extra_data,
       false /* from_session_restore */);
-  return sessions::ContentLiveTab::GetForWebContents(web_contents);
+  return sessions::ContentLiveTab::GetOrCreateForWebContents(web_contents);
 }
 
 void BrowserLiveTabContext::CloseTab() {

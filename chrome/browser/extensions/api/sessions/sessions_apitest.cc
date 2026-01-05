@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedMaxResults) {
     // Our cross-platform utility function to close a tab doesn't allow
     // requesting the creation of a historical tab, so do it manually.
     service->CreateHistoricalTab(
-        sessions::ContentLiveTab::GetForWebContents(tab), tab_index);
+        sessions::ContentLiveTab::GetOrCreateForWebContents(tab), tab_index);
     // Close the tab (and wait for its destruction internally).
     CloseTabForWebContents(tab);
   }
