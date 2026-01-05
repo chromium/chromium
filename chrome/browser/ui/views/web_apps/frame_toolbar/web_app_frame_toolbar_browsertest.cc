@@ -2638,6 +2638,49 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    DisplayStateMediaQueryEventListenersCalled) {
+  InstallAndLaunchWebApp();
+  auto* web_contents = helper()->browser_view()->GetActiveWebContents();
+  auto setup_media_query_event =
+      [](const content::ToRenderFrameHost& execution_target,
+         std::string target_display_state) {
+        constexpr char script[] = R"(
+          window.mqPromise = new Promise((resolve, reject) => {
+            const mq = window.matchMedia('(display-state: $1)');
+            if (mq.matches) {
+              reject('display-state: already matches $1');
+            } else {
+              mq.addEventListener('change', (e) => { resolve(e.matches); });
+            }
+          });
+        )";
+        return content::ExecJs(
+            execution_target,
+            base::ReplaceStringPlaceholders(
+                script, {std::move(target_display_state)}, nullptr),
+            content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES);
+      };
+  EXPECT_TRUE(setup_media_query_event(web_contents, "maximized"));
+  helper()->browser_view()->GetWidget()->Maximize();
+  EXPECT_TRUE(content::ExecJs(web_contents, "window.mqPromise"));
+
+  EXPECT_TRUE(setup_media_query_event(web_contents, "normal"));
+  helper()->browser_view()->GetWidget()->Restore();
+  EXPECT_TRUE(content::ExecJs(web_contents, "window.mqPromise"));
+
+  EXPECT_TRUE(setup_media_query_event(web_contents, "fullscreen"));
+  ToggleBrowserFullscreen(/*user_initiated=*/false);
+  EXPECT_TRUE(content::ExecJs(web_contents, "window.mqPromise"));
+
+  ToggleBrowserFullscreen(/*user_initiated=*/false);
+
+  EXPECT_TRUE(setup_media_query_event(web_contents, "minimized"));
+  helper()->browser_view()->GetWidget()->Minimize();
+  EXPECT_TRUE(content::ExecJs(web_contents, "window.mqPromise"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
     RejectSimultaneousWindowChanges) {
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();

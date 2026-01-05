@@ -3256,6 +3256,23 @@ void WebViewImpl::WasMaximized() {
 }
 
 void WebViewImpl::WasMinimized() {
+  if (MainFrameWidget()) {
+    // Ensure the display-state CSS property is set correctly
+    MainFrameWidget()->UpdateLifecycle(WebLifecycleUpdate::kLayout,
+                                       DocumentUpdateReason::kComputedStyle);
+  }
+  for (Frame* frame = GetPage()->MainFrame(); frame;
+       frame = frame->Tree().TraverseNext()) {
+    if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
+      if (Document* document = local_frame->GetDocument()) {
+        // If the window is minimized, the MediaQueryList change events will be
+        // throttled. To ensure the listeners for `(display-state: minimized)`
+        // change will get executed, we need to dispatch them instead of
+        // enqueuing.
+        document->DispatchEventsForPrinting();
+      }
+    }
+  }
   HandleWindowShowStateChangeCallbackWith(WindowShowStateChangeType::kMinimize);
 }
 
