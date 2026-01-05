@@ -58,7 +58,7 @@ void ClickToolRequest::WillSendToRenderer(
   event.SetType(blink::WebInputEvent::Type::kMouseDown);
 
   // Trigger user interaction notification.
-  render_widget_host->WillSendInputEventToRenderer(event);
+  render_widget_host->SimulateUserInteraction(event);
 }
 
 }  // namespace actor

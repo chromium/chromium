@@ -836,10 +836,8 @@ void RenderWidgetHostImpl::SetIsLoading(bool is_loading) {
   }
 }
 
-void RenderWidgetHostImpl::WillSendInputEventToRenderer(
-    const WebInputEvent& event) {
-  GetRenderInputRouter()->GetDispatchToRendererCallback().Run(
-      event, input::DispatchToRendererResult::kDispatched);
+void RenderWidgetHostImpl::SimulateUserInteraction(const WebInputEvent& event) {
+  delegate_->SimulateUserInteraction(this, event);
 }
 
 void RenderWidgetHostImpl::WasHidden() {

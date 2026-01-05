@@ -128,6 +128,11 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   virtual void DidReceiveInputEvent(RenderWidgetHostImpl* render_widget_host,
                                     const blink::WebInputEvent& event) {}
 
+  // Method that exposes a way to manually trigger a user interaction
+  // notification without the need for a real InputEvent.
+  virtual void SimulateUserInteraction(RenderWidgetHostImpl* render_widget_host,
+                                       const blink::WebInputEvent& event) {}
+
   // Asks whether the page is in a state of ignoring input events.
   virtual bool ShouldIgnoreWebInputEvents(const blink::WebInputEvent& event);
   virtual bool ShouldIgnoreInputEvents();
