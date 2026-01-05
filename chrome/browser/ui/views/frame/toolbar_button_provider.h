@@ -19,6 +19,7 @@ class IconLabelBubbleView;
 class IntentChipButton;
 class PageActionIconView;
 class ReloadButton;
+class ReloadButtonWebView;
 class ReloadControl;
 class ToolbarButton;
 
@@ -106,6 +107,9 @@ class ToolbarButtonProvider {
 
   // Returns the download button.
   virtual ToolbarButton* GetDownloadButton() = 0;
+
+  // Returns the ReloadButtonWebView (if any) for testing.
+  virtual ReloadButtonWebView* GetReloadButtonWebViewForTesting() = 0;
 
   // TODO(calamity): Move other buttons and button actions into here.
  protected:

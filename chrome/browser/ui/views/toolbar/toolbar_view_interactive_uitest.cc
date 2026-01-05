@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
+#include "chrome/browser/ui/views/toolbar/reload_button_web_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -223,6 +224,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, BackButtonHoverThenClick) {
 #define MAYBE_BackButtonHoverMetricsLogged BackButtonHoverMetricsLogged
 #endif
 IN_PROC_BROWSER_TEST_F(ToolbarViewTest, MAYBE_BackButtonHoverMetricsLogged) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReloadButtonWebView);
   ASSERT_TRUE(embedded_test_server()->Start());
   ToolbarButtonProvider* toolbar_button_provider =
       BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
@@ -232,9 +234,18 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, MAYBE_BackButtonHoverMetricsLogged) {
   // done by the test wouldn't be seen as a mouse enter.
   // The choice of using the reload button as the starting position is
   // arbitrary.
-  const gfx::Point start_position = ui_test_utils::GetCenterInScreenCoordinates(
-      toolbar_button_provider->GetReloadButton()->GetAsViewClassForTesting());
-  ui_controls::SendMouseMove(start_position.x(), start_position.y());
+  if (toolbar_button_provider->GetReloadButtonWebViewForTesting()) {
+    views::ElementTrackerViews::GetInstance()->RegisterView(
+        kReloadButtonWebView,
+        toolbar_button_provider->GetReloadButtonWebViewForTesting());
+    EXPECT_TRUE(
+        RunTestSequence(MoveMouseTo(kReloadButtonWebView, {"#reload"})));
+  } else {
+    const gfx::Point start_position =
+        ui_test_utils::GetCenterInScreenCoordinates(static_cast<ReloadButton*>(
+            toolbar_button_provider->GetReloadButton()));
+    ui_controls::SendMouseMove(start_position.x(), start_position.y());
+  }
 
   const GURL first_url =
       embedded_test_server()->GetURL("a.test", "/title1.html");

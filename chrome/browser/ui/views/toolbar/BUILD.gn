@@ -38,6 +38,7 @@ source_set("toolbar") {
     "toolbar_icon_container_view.h",
     "toolbar_ink_drop_util.h",
     "toolbar_view.h",
+    "webui_reload_control.h",
   ]
 
   public_deps = [
@@ -112,6 +113,7 @@ source_set("impl") {
     "toolbar_icon_container_view.cc",
     "toolbar_ink_drop_util.cc",
     "toolbar_view.cc",
+    "webui_reload_control.cc",
   ]
 
   deps = [

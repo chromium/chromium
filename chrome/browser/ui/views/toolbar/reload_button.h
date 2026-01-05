@@ -73,7 +73,6 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
   void ChangeMode(Mode mode, bool force) override;
   bool GetMenuEnabled() const override;
   void SetMenuEnabled(bool is_menu_enabled) override;
-  views::View* GetAsViewClassForTesting() override;
 
   void ExecuteCommand(int command_id, int event_flags) override;
 

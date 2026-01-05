@@ -64,7 +64,9 @@ IN_PROC_BROWSER_TEST_F(ReloadButtonWebViewPixelBrowserTest, Basic) {
   ReloadButtonWebView* reload_view =
       views::AsViewClass<ReloadButtonWebView>(reload_view_element->view());
   ASSERT_TRUE(reload_view);
-  views::WebView* web_view = reload_view->GetWebViewForTesting();
+  ASSERT_EQ(reload_view->children().size(), 1u);
+  views::WebView* web_view =
+      views::AsViewClass<views::WebView>(reload_view->children()[0].get());
   ASSERT_TRUE(web_view);
 
   // Wait for the WebView to finish composition.
@@ -100,7 +102,9 @@ IN_PROC_BROWSER_TEST_F(ReloadButtonWebViewPixelBrowserTest, Accessibility) {
   ReloadButtonWebView* reload_view =
       views::AsViewClass<ReloadButtonWebView>(reload_view_element->view());
   ASSERT_TRUE(reload_view);
-  views::WebView* web_view = reload_view->GetWebViewForTesting();
+  ASSERT_EQ(reload_view->children().size(), 1u);
+  views::WebView* web_view =
+      views::AsViewClass<views::WebView>(reload_view->children()[0].get());
   ASSERT_TRUE(web_view);
   content::WaitForCopyableViewInWebContents(web_view->GetWebContents());
 
@@ -124,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(ReloadButtonWebViewPixelBrowserTest, Accessibility) {
   EXPECT_EQ(0, reload.GetIntAttribute(ax::mojom::IntAttribute::kHasPopup));
 
   // Verify enabling menu is reflected in HasPopup attribute.
-  reload_view->SetMenuEnabled(true);
+  reload_view->GetReloadControl()->SetMenuEnabled(true);
   content::WaitForAccessibilityTreeToChange(web_view->GetWebContents());
   content::WaitForAccessibilityTreeToContainNodeWithName(
       web_view->GetWebContents(), "Reload");

@@ -1187,7 +1187,7 @@ ToolbarButton* ToolbarView::GetBackButton() {
 
 ReloadControl* ToolbarView::GetReloadButton() {
   if (features::IsWebUIReloadButtonEnabled()) {
-    return reload_webview_;
+    return reload_webview_->GetReloadControl();
   }
   return reload_;
 }
@@ -1201,6 +1201,10 @@ ToolbarButton* ToolbarView::GetDownloadButton() {
                ? pinned_toolbar_actions_container_->GetButtonFor(
                      kActionShowDownloads)
                : nullptr;
+}
+
+ReloadButtonWebView* ToolbarView::GetReloadButtonWebViewForTesting() {
+  return reload_webview_;
 }
 
 std::optional<BrowserRootView::DropIndex> ToolbarView::GetDropIndex(

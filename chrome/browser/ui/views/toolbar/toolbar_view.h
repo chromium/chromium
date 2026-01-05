@@ -253,6 +253,7 @@ class ToolbarView : public views::AccessiblePaneView,
   ReloadControl* GetReloadButton() override;
   IntentChipButton* GetIntentChipButton() override;
   ToolbarButton* GetDownloadButton() override;
+  ReloadButtonWebView* GetReloadButtonWebViewForTesting() override;
 
   // BrowserRootView::DropTarget
   std::optional<BrowserRootView::DropIndex> GetDropIndex(

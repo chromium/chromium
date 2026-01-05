@@ -389,6 +389,11 @@ ToolbarButton* WebAppFrameToolbarView::GetDownloadButton() {
   return right_container_ ? right_container_->GetDownloadButton() : nullptr;
 }
 
+ReloadButtonWebView*
+WebAppFrameToolbarView::GetReloadButtonWebViewForTesting() {
+  return nullptr;
+}
+
 void WebAppFrameToolbarView::OnWindowControlsOverlayEnabledChanged() {
   if (browser_view_->IsWindowControlsOverlayEnabled()) {
     // The color is not set until the view is added to a widget.

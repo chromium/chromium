@@ -326,10 +326,6 @@ void ReloadButton::OnNextPresentation(
       frame_timing_details.presentation_feedback.timestamp);
 }
 
-views::View* ReloadButton::GetAsViewClassForTesting() {
-  return this;
-}
-
 BEGIN_METADATA(ReloadButton)
 ADD_PROPERTY_METADATA(bool, MenuEnabled)
 END_METADATA

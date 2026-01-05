@@ -97,6 +97,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   ReloadControl* GetReloadButton() override;
   IntentChipButton* GetIntentChipButton() override;
   ToolbarButton* GetDownloadButton() override;
+  ReloadButtonWebView* GetReloadButtonWebViewForTesting() override;
 
   void OnWindowControlsOverlayEnabledChanged();
   void UpdateBorderlessModeEnabled();
