@@ -8,6 +8,7 @@
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_handler.h"
@@ -58,6 +59,12 @@ BWGPageContextComputationStateFromPageContextWrapperError(
 // will bring the overlay towards the bottom of the viewport while a positive
 // value will do the reverse.
 CGFloat kOverlayFullscreenOffset = -100;
+
+// Used for forcing fullscreen progress value.
+CGFloat kFullscreenEnabled = 0.0;
+
+// Used for forcing non-fullscreen progress value.
+CGFloat kFullscreenDisabled = 1.0;
 
 }  // namespace
 
@@ -164,7 +171,19 @@ void BwgBrowserAgent::FullscreenProgressUpdated(
   // positive value equal to the `fullyExpandedBottomToolbarHeight`. When
   // fullscreen mode is enabled (progress == 0), the offset will be a negative
   // value, `kOverlayFullscreenOffset`.
-  ios::provider::UpdateOverlayOffsetWithOpacity(offset, 0);
+  ios::provider::UpdateOverlayOffsetWithOpacity(offset, progress);
+}
+
+void BwgBrowserAgent::FullscreenWillAnimate(FullscreenController* controller,
+                                            FullscreenAnimator* animator) {
+  base::WeakPtr<BwgBrowserAgent> weak_ptr = weak_factory_.GetWeakPtr();
+  [animator addAnimations:^{
+    if (weak_ptr) {
+      weak_ptr->FullscreenProgressUpdated(
+          controller, controller->GetProgress() < 0.5 ? kFullscreenEnabled
+                                                      : kFullscreenDisabled);
+    }
+  }];
 }
 
 #pragma mark - Private

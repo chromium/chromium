@@ -105,6 +105,8 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   // FullscreenControllerObserver:
   void FullscreenProgressUpdated(FullscreenController* controller,
                                  CGFloat progress) override;
+  void FullscreenWillAnimate(FullscreenController* controller,
+                             FullscreenAnimator* animator) override;
 
   // The gateway for bridging internal protocols.
   __strong id<BWGGatewayProtocol> bwg_gateway_ = nullptr;
@@ -124,6 +126,9 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   // Reference to fullscreen controller. Used to observe fullscreen progress
   // updates related to the Gemini overlay.
   raw_ptr<FullscreenController> fullscreen_controller_ = nullptr;
+
+  // Weak pointer factory.
+  base::WeakPtrFactory<BwgBrowserAgent> weak_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_BROWSER_AGENT_H_
