@@ -1126,5 +1126,213 @@ TEST_F(WebAppDatabaseSerializationTest,
   EXPECT_THAT(ParseWebAppProto(proto), IsNull());
 }
 
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_MigrationSource_Valid) {
+  proto::WebApp proto =
+      CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+
+  auto* source = proto.add_unvalidated_migration_sources();
+  source->set_manifest_id("https://example.com/app");
+  source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+
+  auto* validated_source = proto.add_validated_migration_sources();
+  validated_source->set_manifest_id("https://example.com/app");
+  validated_source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+  validated_source->set_install_url("https://example.com/install");
+
+  EXPECT_THAT(ParseWebAppProto(proto), NotNull());
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_MigrationSource_MissingManifestId) {
+  {
+    proto::WebApp proto =
+        CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+    auto* source = proto.add_unvalidated_migration_sources();
+    // source->set_manifest_id("https://example.com/app");
+    source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+
+    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  }
+  {
+    proto::WebApp proto =
+        CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+    auto* source = proto.add_validated_migration_sources();
+    // source->set_manifest_id("https://example.com/app");
+    source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+
+    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  }
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_MigrationSource_MissingBehavior) {
+  {
+    proto::WebApp proto =
+        CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+    auto* source = proto.add_unvalidated_migration_sources();
+    source->set_manifest_id("https://example.com/app");
+    // source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+
+    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  }
+  {
+    proto::WebApp proto =
+        CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+    auto* source = proto.add_validated_migration_sources();
+    source->set_manifest_id("https://example.com/app");
+    // source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+
+    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  }
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_MigrationSource_InvalidManifestId) {
+  {
+    proto::WebApp proto =
+        CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+    auto* source = proto.add_unvalidated_migration_sources();
+    source->set_manifest_id("invalid-url");
+    source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+
+    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  }
+  {
+    proto::WebApp proto =
+        CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+    auto* source = proto.add_validated_migration_sources();
+    source->set_manifest_id("invalid-url");
+    source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+
+    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  }
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_MigrationSource_OpaqueManifestIdOrigin) {
+  {
+    proto::WebApp proto =
+        CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+    auto* source = proto.add_unvalidated_migration_sources();
+    source->set_manifest_id("data:text/html,Hello");
+    source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+
+    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  }
+  {
+    proto::WebApp proto =
+        CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+    auto* source = proto.add_validated_migration_sources();
+    source->set_manifest_id("data:text/html,Hello");
+    source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+
+    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  }
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_MigrationSource_InvalidInstallUrl) {
+  {
+    proto::WebApp proto =
+        CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+    auto* source = proto.add_unvalidated_migration_sources();
+    source->set_manifest_id("https://example.com/app");
+    source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+    source->set_install_url("invalid-url");
+
+    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  }
+  {
+    proto::WebApp proto =
+        CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+    auto* source = proto.add_validated_migration_sources();
+    source->set_manifest_id("https://example.com/app");
+    source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+    source->set_install_url("invalid-url");
+
+    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  }
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_MigrationSource_InstallUrlOriginMismatch) {
+  {
+    proto::WebApp proto =
+        CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+    auto* source = proto.add_unvalidated_migration_sources();
+    source->set_manifest_id("https://example.com/app");
+    source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+    source->set_install_url("https://other.com/install");
+
+    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  }
+  {
+    proto::WebApp proto =
+        CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+    auto* source = proto.add_validated_migration_sources();
+    source->set_manifest_id("https://example.com/app");
+    source->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+    source->set_install_url("https://other.com/install");
+
+    EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+  }
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_PendingMigrationInfo_Valid) {
+  proto::WebApp proto =
+      CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+  auto* info = proto.add_pending_migration_info();
+  info->set_manifest_id("https://example.com/app");
+  info->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+
+  EXPECT_THAT(ParseWebAppProto(proto), NotNull());
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_PendingMigrationInfo_MissingManifestId) {
+  proto::WebApp proto =
+      CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+  auto* info = proto.add_pending_migration_info();
+  // info->set_manifest_id("https://example.com/app");
+  info->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+
+  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_PendingMigrationInfo_MissingBehavior) {
+  proto::WebApp proto =
+      CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+  auto* info = proto.add_pending_migration_info();
+  info->set_manifest_id("https://example.com/app");
+  // info->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+
+  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_PendingMigrationInfo_InvalidManifestId) {
+  proto::WebApp proto =
+      CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+  auto* info = proto.add_pending_migration_info();
+  info->set_manifest_id("invalid-url");
+  info->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+
+  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+}
+
+TEST_F(WebAppDatabaseSerializationTest,
+       ParseWebAppProto_PendingMigrationInfo_OpaqueManifestIdOrigin) {
+  proto::WebApp proto =
+      CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
+  auto* info = proto.add_pending_migration_info();
+  info->set_manifest_id("data:text/html,Hello");
+  info->set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+
+  EXPECT_THAT(ParseWebAppProto(proto), IsNull());
+}
+
 }  // namespace
 }  // namespace web_app

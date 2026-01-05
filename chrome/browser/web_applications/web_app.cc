@@ -889,18 +889,41 @@ void WebApp::SetStoredTrustedIconSizes(IconPurpose purpose,
   }
 }
 
+namespace {
+void ValidateMigrationSources(
+    const std::vector<proto::WebAppMigrationSource>& sources) {
+  for (const auto& source : sources) {
+    GURL manifest_id(source.manifest_id());
+    CHECK(manifest_id.is_valid());
+    CHECK(!url::Origin::Create(manifest_id).opaque());
+    if (source.has_install_url()) {
+      GURL install_url(source.install_url());
+      CHECK(install_url.is_valid());
+      CHECK(url::IsSameOriginWith(manifest_id, install_url));
+    }
+  }
+}
+}  // namespace
+
 void WebApp::SetUnvalidatedMigrationSources(
     std::vector<proto::WebAppMigrationSource> sources) {
+  ValidateMigrationSources(sources);
   unvalidated_migration_sources_ = std::move(sources);
 }
 
 void WebApp::SetValidatedMigrationSources(
     std::vector<proto::WebAppMigrationSource> sources) {
+  ValidateMigrationSources(sources);
   validated_migration_sources_ = std::move(sources);
 }
 
 void WebApp::SetPendingMigrationInfo(
     std::vector<proto::PendingMigrationInfo> info) {
+  for (const auto& entry : info) {
+    GURL manifest_id(entry.manifest_id());
+    CHECK(manifest_id.is_valid());
+    CHECK(!url::Origin::Create(manifest_id).opaque());
+  }
   pending_migration_info_ = std::move(info);
 }
 

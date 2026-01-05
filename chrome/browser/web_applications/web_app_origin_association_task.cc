@@ -41,9 +41,8 @@ WebAppOriginAssociationManager::Task::Task(
        migration_sources_input_) {
     url::Origin origin =
         url::Origin::Create(GURL(migration_source.manifest_id()));
-    if (!origin.opaque()) {
-      unique_origins.insert(origin);
-    }
+    CHECK(!origin.opaque());
+    unique_origins.insert(origin);
   }
   pending_origins_.assign(unique_origins.begin(), unique_origins.end());
 }

@@ -1545,9 +1545,29 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
   }
   web_app->SetInstalledBy(InstalledByPassKey(), std::move(installed_by_data));
 
+  auto is_valid_migration_source =
+      [](const proto::WebAppMigrationSource& source) {
+        if (!source.has_manifest_id() || !source.has_behavior()) {
+          return false;
+        }
+        GURL manifest_id(source.manifest_id());
+        if (!manifest_id.is_valid() ||
+            url::Origin::Create(manifest_id).opaque()) {
+          return false;
+        }
+        if (source.has_install_url()) {
+          GURL install_url(source.install_url());
+          if (!install_url.is_valid() ||
+              !url::IsSameOriginWith(manifest_id, install_url)) {
+            return false;
+          }
+        }
+        return true;
+      };
+
   std::vector<proto::WebAppMigrationSource> unvalidated_migration_sources;
   for (const auto& source_proto : proto.unvalidated_migration_sources()) {
-    if (!source_proto.has_manifest_id() || !source_proto.has_behavior()) {
+    if (!is_valid_migration_source(source_proto)) {
       RecordProtoParseResult(
           ProtoParseResult::kInvalidWebAppUnvalidatedMigrationSource);
       DLOG(ERROR) << "WebApp proto Unvalidated MigrationSource parse error";
@@ -1560,7 +1580,7 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
 
   std::vector<proto::WebAppMigrationSource> validated_migration_sources;
   for (const auto& source_proto : proto.validated_migration_sources()) {
-    if (!source_proto.has_manifest_id() || !source_proto.has_behavior()) {
+    if (!is_valid_migration_source(source_proto)) {
       RecordProtoParseResult(
           ProtoParseResult::kInvalidWebAppValidatedMigrationSource);
       DLOG(ERROR) << "WebApp proto Validated MigrationSource parse error";
@@ -1572,7 +1592,8 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
 
   std::vector<proto::PendingMigrationInfo> pending_migration_info;
   for (const auto& info_proto : proto.pending_migration_info()) {
-    if (!info_proto.has_manifest_id() || !info_proto.has_behavior()) {
+    if (!info_proto.has_manifest_id() || !info_proto.has_behavior() ||
+        url::Origin::Create(GURL(info_proto.manifest_id())).opaque()) {
       RecordProtoParseResult(ProtoParseResult::kInvalidPendingMigrationInfo);
       DLOG(ERROR) << "WebApp proto PendingMigrationInfo parse error";
       return nullptr;
