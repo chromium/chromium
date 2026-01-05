@@ -591,20 +591,6 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorInOOFs(
   return kSkip;
 }
 
-SuppressScrollAnchorScope::SuppressScrollAnchorScope(ScrollableArea* scroller) {
-  if (scroller) {
-    anchor_ = scroller->GetScrollAnchor();
-    DCHECK(anchor_);
-    anchor_->BeginSuppressAdjustment();
-  }
-}
-
-SuppressScrollAnchorScope::~SuppressScrollAnchorScope() {
-  if (anchor_) {
-    anchor_->EndSuppressAdjustment();
-  }
-}
-
 bool ScrollAnchor::ComputeScrollAnchorDisablingStyleChanged() {
   LayoutObject* current = AnchorObject();
   if (!current)
@@ -938,6 +924,20 @@ bool ScrollAnchor::RefersTo(const LayoutObject* layout_object) const {
 void ScrollAnchor::NotifyRemoved(LayoutObject* layout_object) {
   if (anchor_object_ == layout_object)
     ClearSelf();
+}
+
+SuppressScrollAnchorScope::SuppressScrollAnchorScope(ScrollableArea* scroller) {
+  if (scroller) {
+    anchor_ = scroller->GetScrollAnchor();
+    DCHECK(anchor_);
+    anchor_->BeginSuppressAdjustment();
+  }
+}
+
+SuppressScrollAnchorScope::~SuppressScrollAnchorScope() {
+  if (anchor_) {
+    anchor_->EndSuppressAdjustment();
+  }
 }
 
 }  // namespace blink
