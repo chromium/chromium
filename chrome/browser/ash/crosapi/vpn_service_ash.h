@@ -49,9 +49,6 @@ class VpnServiceForExtensionAsh
       base::OnceCallback<void(const std::string& error_name,
                               const std::string& error_message)>;
 
-  // Class forward declarations.
-  class VpnConfiguration;
-
  public:
   explicit VpnServiceForExtensionAsh(const std::string& extension_id,
                                      chromeos::VpnService* controller);
@@ -66,7 +63,6 @@ class VpnServiceForExtensionAsh
       mojo::PendingRemote<crosapi::mojom::EventObserverForExtension> observer);
 
  private:
-  friend class VpnConfigurationImpl;
   friend class chromeos::VpnProviderApiTest;
   friend class chromeos::VpnService;
   friend class TestShillControllerAsh;
@@ -125,18 +121,6 @@ class VpnServiceAsh : public crosapi::mojom::VpnService {
 
   raw_ptr<chromeos::VpnService> controller_ = nullptr;
   base::WeakPtrFactory<VpnServiceAsh> weak_factory_{this};
-};
-
-class VpnServiceForExtensionAsh::VpnConfiguration
-    : public ash::ShillThirdPartyVpnObserver {
- public:
-  virtual const std::string& extension_id() const = 0;
-  virtual const std::string& configuration_name() const = 0;
-  virtual const std::string& key() const = 0;
-  virtual const std::string& object_path() const = 0;
-
-  virtual const std::optional<std::string>& service_path() const = 0;
-  virtual void set_service_path(std::string) = 0;
 };
 
 }  // namespace crosapi

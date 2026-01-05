@@ -16,12 +16,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_interface.h"
 #include "chromeos/ash/components/network/network_configuration_observer.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/ash/components/network/vpn_providers_observer.h"
-#include "chromeos/crosapi/mojom/vpn_service.mojom.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -105,18 +103,14 @@ class VpnService : public extensions::api::VpnServiceInterface,
  private:
   friend class VpnProviderApiTest;
   friend class VpnServiceFactory;
-  // We are dismantling the crosapi VpnService (crbug.com/365902693).
-  friend class crosapi::VpnServiceForExtensionAsh;
 
   // Looks up the configuration identified by the given service path.
-  crosapi::VpnServiceForExtensionAsh::VpnConfiguration* LookupConfiguration(
-      const std::string& service_path);
+  VpnConfiguration* LookupConfiguration(const std::string& service_path);
 
   // Looks up the configuration identified by the given name and the extension
   // it belongs to.
-  crosapi::VpnServiceForExtensionAsh::VpnConfiguration* LookupConfiguration(
-      const std::string& extension_id,
-      const std::string& configuration_name);
+  VpnConfiguration* LookupConfiguration(const std::string& extension_id,
+                                        const std::string& configuration_name);
 
   bool OwnsActiveConfiguration(const std::string& extension_id) const;
 
@@ -132,24 +126,22 @@ class VpnService : public extensions::api::VpnServiceInterface,
   void SendOnConfigRemovedToExtension(const std::string& extension_id,
                                       const std::string& configuration_name);
 
-  crosapi::VpnServiceForExtensionAsh::VpnConfiguration*
-  CreateConfigurationInternal(const std::string& extension_id,
-                              const std::string& configuration_name);
+  VpnConfiguration* CreateConfigurationInternal(
+      const std::string& extension_id,
+      const std::string& configuration_name);
 
   void DestroyConfigurationsForExtension(const std::string& extension_id);
 
   // Callback used to indicate that configuration creation succeeded.
-  void OnCreateConfigurationSuccess(
-      SuccessCallback callback,
-      crosapi::VpnServiceForExtensionAsh::VpnConfiguration* configuration,
-      const std::string& service_path,
-      const std::string&);
+  void OnCreateConfigurationSuccess(SuccessCallback callback,
+                                    VpnConfiguration* configuration,
+                                    const std::string& service_path,
+                                    const std::string&);
 
   // Callback used to indicate that configuration creation failed.
-  void OnCreateConfigurationFailure(
-      FailureCallback callback,
-      crosapi::VpnServiceForExtensionAsh::VpnConfiguration* configuration,
-      const std::string& error_name);
+  void OnCreateConfigurationFailure(FailureCallback callback,
+                                    VpnConfiguration* configuration,
+                                    const std::string& error_name);
 
   // ash::VpnProvidersObserver::Delegate:
   void OnVpnExtensionsChanged(
@@ -165,13 +157,11 @@ class VpnService : public extensions::api::VpnServiceInterface,
 
   // Sets `configuration`s service path as given and enters it into
   // `service_path_to_configuration_map_`.
-  void RegisterConfiguration(
-      crosapi::VpnServiceForExtensionAsh::VpnConfiguration* configuration,
-      const std::string& service_path);
+  void RegisterConfiguration(VpnConfiguration* configuration,
+                             const std::string& service_path);
 
   // Removes configuration from the internal store and destroys it.
-  void DestroyConfigurationInternal(
-      crosapi::VpnServiceForExtensionAsh::VpnConfiguration* configuration);
+  void DestroyConfigurationInternal(VpnConfiguration* configuration);
 
   // Callback used to indicate that removing a configuration succeeded.
   void OnRemoveConfigurationSuccess(SuccessCallback);
@@ -181,8 +171,7 @@ class VpnService : public extensions::api::VpnServiceInterface,
                                     const std::string& error_name);
 
   // Sets the active configuration.
-  void SetActiveConfiguration(
-      crosapi::VpnServiceForExtensionAsh::VpnConfiguration* configuration);
+  void SetActiveConfiguration(VpnConfiguration* configuration);
 
   // Gets the unique key for the configuration |configuration_name| created by
   // the extension with id |extension_id|.
@@ -191,23 +180,19 @@ class VpnService : public extensions::api::VpnServiceInterface,
 
   // Owns all configurations. Key is a hash of |extension_id| and
   // |configuration_name|.
-  using StringToOwnedConfigurationMap = std::map<
-      std::string,
-      std::unique_ptr<crosapi::VpnServiceForExtensionAsh::VpnConfiguration>>;
+  using StringToOwnedConfigurationMap =
+      std::map<std::string, std::unique_ptr<VpnConfiguration>>;
   StringToOwnedConfigurationMap key_to_configuration_map_;
 
   // Maps shill service path to (unowned) configuration.
   using StringToConfigurationMap =
-      std::map<std::string,
-               raw_ptr<crosapi::VpnServiceForExtensionAsh::VpnConfiguration,
-                       CtnExperimental>>;
+      std::map<std::string, raw_ptr<VpnConfiguration, CtnExperimental>>;
   StringToConfigurationMap service_path_to_configuration_map_;
 
   raw_ptr<content::BrowserContext> browser_context_;
 
   // Configuration that is currently in use.
-  raw_ptr<crosapi::VpnServiceForExtensionAsh::VpnConfiguration>
-      active_configuration_ = nullptr;
+  raw_ptr<VpnConfiguration> active_configuration_ = nullptr;
 
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
