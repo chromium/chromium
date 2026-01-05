@@ -36,7 +36,7 @@
 #include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_decoder.h"
+#include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_decoder_factory.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/gif/gif_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/ico/ico_image_decoder.h"
@@ -311,8 +311,9 @@ std::unique_ptr<ImageDecoder> ImageDecoder::CreateByMimeType(
     decoder = std::make_unique<ICOImageDecoder>(alpha_option, color_behavior,
                                                 max_decoded_bytes);
   } else if (mime_type == "image/bmp" || mime_type == "image/x-xbitmap") {
-    decoder = std::make_unique<BMPImageDecoder>(alpha_option, color_behavior,
-                                                max_decoded_bytes);
+    decoder =
+        CreateBmpImageDecoder(alpha_option, high_bit_depth_decoding_option,
+                              color_behavior, max_decoded_bytes);
 #if BUILDFLAG(ENABLE_AV1_DECODER)
   } else if (mime_type == "image/avif") {
     decoder = std::make_unique<CrabbyAVIFImageDecoder>(

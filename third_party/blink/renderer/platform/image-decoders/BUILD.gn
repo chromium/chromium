@@ -15,10 +15,16 @@ component("image_decoders") {
   output_name = "image_decoders"
 
   sources = [
+    "bmp/bmp_decoder_factory.cc",
+    "bmp/bmp_decoder_factory.h",
+    "bmp/bmp_features.cc",
+    "bmp/bmp_features.h",
     "bmp/bmp_image_decoder.cc",
     "bmp/bmp_image_decoder.h",
     "bmp/bmp_image_reader.cc",
     "bmp/bmp_image_reader.h",
+    "bmp/bmp_rust_image_decoder.cc",
+    "bmp/bmp_rust_image_decoder.h",
     "fast_shared_buffer_reader.cc",
     "fast_shared_buffer_reader.h",
     "gif/gif_image_decoder.cc",
@@ -84,9 +90,6 @@ component("image_decoders") {
 source_set("unit_tests") {
   visibility = [ "//third_party/blink/renderer/platform:*" ]
   testonly = true
-
-  configs +=
-      [ "//third_party/blink/renderer/platform:blink_platform_implementation" ]
 
   sources = [
     "bmp/bmp_image_decoder_test.cc",
