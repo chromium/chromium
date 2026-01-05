@@ -196,7 +196,7 @@ struct ContentVerifier::CacheKey {
 //
 // This class makes sure we do not have more than one ContentHash request in
 // flight for a particular version of an extension. If a call to retrieve an
-// extensions's ContentHash is made while another retieval for the same
+// extension's ContentHash is made while another retrieval for the same
 // version of the extension is in flight, this class will queue up the
 // callback(s) and respond to all of them when ContentHash is available.
 class ContentVerifier::HashHelper {
