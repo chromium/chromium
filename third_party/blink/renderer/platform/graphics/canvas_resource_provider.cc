@@ -1799,7 +1799,7 @@ Canvas2DResourceProviderBitmap::CreateForTesting(
       color_params.GetGfxColorSpace(), initialize_provider, delegate);
 }
 
-std::unique_ptr<CanvasResourceProvider>
+std::unique_ptr<CanvasResourceProviderSharedImage>
 CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
     gfx::Size size,
     const Canvas2DColorParams& color_params,

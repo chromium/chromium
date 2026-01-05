@@ -162,7 +162,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
       gpu::SharedImageUsageSet shared_image_usage_flags = {},
       Delegate* delegate = nullptr);
 
-  static std::unique_ptr<CanvasResourceProvider>
+  static std::unique_ptr<CanvasResourceProviderSharedImage>
   CreateSharedImageProviderForSoftwareCompositor(
       gfx::Size size,
       const Canvas2DColorParams& color_params,
@@ -215,15 +215,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // Returns true if the resource can be used by the display compositor.
   virtual bool SupportsDirectCompositing() const = 0;
   uint32_t ContentUniqueID() const;
-
-  // Indicates that the compositing path is single buffered, meaning that
-  // ProduceCanvasResource() return a reference to the same resource each time,
-  // which implies that Producing an animation frame may overwrite the resource
-  // used by the previous frame. This results in graphics updates skipping the
-  // queue, thus reducing latency, but with the possible side effects of tearing
-  // (in cases where the resource is scanned out directly) and irregular frame
-  // rate.
-  virtual bool IsSingleBuffered() const = 0;
 
   bool IsGpuContextLost() const override;
 
@@ -382,7 +373,6 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
   bool IsValid() const override { return GetSkSurface(); }
   bool IsAccelerated() const override { return false; }
   bool SupportsDirectCompositing() const override { return false; }
-  bool IsSingleBuffered() const override { return false; }
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault) override;
 
@@ -540,7 +530,16 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) final;
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault) override;
-  bool IsSingleBuffered() const final;
+
+  // Indicates that the compositing path is single buffered, meaning that
+  // ProduceCanvasResource() return a reference to the same resource each time,
+  // which implies that Producing an animation frame may overwrite the resource
+  // used by the previous frame. This results in graphics updates skipping the
+  // queue, thus reducing latency, but with the possible side effects of tearing
+  // (in cases where the resource is scanned out directly) and irregular frame
+  // rate.
+  bool IsSingleBuffered() const;
+
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,
                    size_t row_bytes,

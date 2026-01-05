@@ -1539,12 +1539,24 @@ TEST_P(CanvasRenderingContext2DTest, ContextDisposedBeforeCanvas) {
 
 TEST_P(CanvasRenderingContext2DTest,
        UnacceleratedLowLatencyIsNotSingleBuffered) {
+  // Ensure that the context will create a SharedImage provider for the test to
+  // be meaningful.
+  ScopedCanvas2dImageChromiumForTest canvas_2d_image_chromium(true);
+  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
+  const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
+                                     ->ContextProvider()
+                                     .GetCapabilities())
+      .gpu_memory_buffer_formats.Put(gfx::BufferFormat::BGRA_8888);
+
   CreateContext(kNonOpaque, kLowLatency);
   // No need to set-up the layer bridge when testing low latency mode.
   DrawSomething();
   EXPECT_TRUE(Context2D()->getContextAttributes()->desynchronized());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
-  EXPECT_FALSE(Context2D()->GetOrCreateResourceProvider()->IsSingleBuffered());
+  EXPECT_FALSE(Context2D()
+                   ->GetOrCreateResourceProvider()
+                   ->AsSharedImageProvider()
+                   ->IsSingleBuffered());
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kCPU);
 }
 
@@ -3307,7 +3319,10 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, LowLatencyIsNotSingleBuffered) {
   EXPECT_TRUE(Context2D()->getContextAttributes()->desynchronized());
   EXPECT_FALSE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
-  EXPECT_FALSE(Context2D()->GetOrCreateResourceProvider()->IsSingleBuffered());
+  EXPECT_FALSE(Context2D()
+                   ->GetOrCreateResourceProvider()
+                   ->AsSharedImageProvider()
+                   ->IsSingleBuffered());
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
 }
 
@@ -3538,7 +3553,10 @@ TEST_P(CanvasRenderingContext2DTestImageChromium, LowLatencyIsSingleBuffered) {
   EXPECT_FALSE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  EXPECT_TRUE(Context2D()->GetOrCreateResourceProvider()->IsSingleBuffered());
+  EXPECT_TRUE(Context2D()
+                  ->GetOrCreateResourceProvider()
+                  ->AsSharedImageProvider()
+                  ->IsSingleBuffered());
   auto frame1_resource = Context2D()
                              ->GetOrCreateResourceProvider()
                              ->AsSharedImageProvider()
@@ -3584,7 +3602,10 @@ TEST_P(CanvasRenderingContext2DTestSwapChain, LowLatencyIsSingleBuffered) {
   EXPECT_FALSE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  EXPECT_TRUE(Context2D()->GetOrCreateResourceProvider()->IsSingleBuffered());
+  EXPECT_TRUE(Context2D()
+                  ->GetOrCreateResourceProvider()
+                  ->AsSharedImageProvider()
+                  ->IsSingleBuffered());
   auto frame1_resource = Context2D()
                              ->GetOrCreateResourceProvider()
                              ->AsSharedImageProvider()
