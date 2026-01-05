@@ -94,8 +94,18 @@ SocketApiFunction::ScopedWriteQuota::ScopedWriteQuota(SocketApiFunction* owner,
 }
 
 SocketApiFunction::ScopedWriteQuota::~ScopedWriteQuota() {
-  WriteQuotaChecker::Get(owner_->browser_context())
-      ->ReturnBytes(owner_->GetOriginId(), bytes_used_);
+  // Null check `BrowserContext` and `WriteQuotaChecker` since they could be
+  // released before `SocketApiFunction` during shutdown.
+  content::BrowserContext* const context = owner_->browser_context();
+  if (!context) {
+    return;
+  }
+  WriteQuotaChecker* const checker = WriteQuotaChecker::GetIfExists(context);
+  if (!checker) {
+    return;
+  }
+
+  checker->ReturnBytes(owner_->GetOriginId(), bytes_used_);
 }
 
 SocketApiFunction::SocketApiFunction() = default;

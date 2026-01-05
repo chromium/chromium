@@ -5,6 +5,7 @@
 #include "extensions/browser/api/socket/socket_api.h"
 #include "extensions/browser/api/socket/write_quota_checker.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/shell/test/shell_test.h"
@@ -91,6 +92,30 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, WriteQuotaChecker) {
 
   // Writes are allowed again.
   EXPECT_TRUE(checker->TakeBytes(extension_id, 1));
+}
+
+IN_PROC_BROWSER_TEST_F(SocketApiTest, ShutdownWithLingeringWriteQuota) {
+  // An arbitrary SocketApiFunction.
+  scoped_refptr<extensions::SocketWriteFunction> socket_function(
+      new extensions::SocketWriteFunction());
+  scoped_refptr<const Extension> empty_extension =
+      ExtensionBuilder("Test").Build();
+
+  socket_function->set_extension(empty_extension.get());
+
+  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher(
+      new ExtensionFunctionDispatcher(browser_context()));
+  socket_function->SetDispatcher(dispatcher->AsWeakPtr());
+
+  // Uses some write quota.
+  ASSERT_TRUE(socket_function->TakeWriteQuota(100));
+
+  // Ensures the function has a null BrowserContext to simulate shutdown.
+  socket_function->SetDispatcher(nullptr);
+  ASSERT_FALSE(socket_function->browser_context());
+
+  // Resets write quota and it should not crash.
+  socket_function->ReturnWriteQuota();
 }
 
 }  //  namespace extensions

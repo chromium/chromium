@@ -28,6 +28,7 @@ class WriteQuotaChecker : public BrowserContextKeyedAPI {
   };
 
   static WriteQuotaChecker* Get(content::BrowserContext* context);
+  static WriteQuotaChecker* GetIfExists(content::BrowserContext* context);
 
   // BrowserContextKeyedAPI:
   static BrowserContextKeyedAPIFactory<WriteQuotaChecker>* GetFactoryInstance();
