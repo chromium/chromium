@@ -13,11 +13,9 @@ import android.view.InputDevice;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -292,12 +290,6 @@ public class UmaSessionStats {
      */
     public static boolean isMetricsServiceAvailable() {
         return BrowserStartupController.getInstance().isFullBrowserStarted();
-    }
-
-    /** Returns whether there is a visible activity. */
-    @CalledByNative
-    private static boolean hasVisibleActivity() {
-        return ApplicationStatus.hasVisibleActivities();
     }
 
     @VisibleForTesting

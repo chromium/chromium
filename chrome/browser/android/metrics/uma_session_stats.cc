@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/metrics/uma_session_stats.h"
 
+#include "base/android/application_status_listener.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/command_line.h"
@@ -198,8 +199,7 @@ UmaSessionStats* UmaSessionStats::GetInstance() {
 
 // static
 bool UmaSessionStats::HasVisibleActivity() {
-  return Java_UmaSessionStats_hasVisibleActivity(
-      base::android::AttachCurrentThread());
+  return base::android::ApplicationStatusListener::HasVisibleActivities();
 }
 
 // Called on startup. If there is an activity, do nothing because a foreground
