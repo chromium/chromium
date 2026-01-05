@@ -133,7 +133,7 @@ export class ContextualTasksAppElement extends CrLitElement {
   }
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
-  protected accessor isAiPage_: boolean = false;
+  protected accessor isAiPage_: boolean = true;
   protected accessor isLensOverlayShowing_: boolean = false;
   // Indicates if in tab mode. Most start in a tab.
   protected accessor isShownInTab_: boolean = true;

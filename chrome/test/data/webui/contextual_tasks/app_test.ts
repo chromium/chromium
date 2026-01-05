@@ -258,12 +258,6 @@ suite('ContextualTasksAppTest', function() {
     document.body.appendChild(appElement);
     await microtasksFinished();
 
-    assertFalse(appElement.hasAttribute('is-ai-page_'));
-
-    proxy.callbackRouterRemote.onAiPageStatusChanged(true);
-    await proxy.callbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
-
     assertTrue(appElement.hasAttribute('is-ai-page_'));
 
     proxy.callbackRouterRemote.onAiPageStatusChanged(false);
@@ -271,6 +265,12 @@ suite('ContextualTasksAppTest', function() {
     await microtasksFinished();
 
     assertFalse(appElement.hasAttribute('is-ai-page_'));
+
+    proxy.callbackRouterRemote.onAiPageStatusChanged(true);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertTrue(appElement.hasAttribute('is-ai-page_'));
   });
 
   test('lens overlay state reflected in dom', async () => {
