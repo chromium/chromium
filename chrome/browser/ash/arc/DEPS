@@ -22,8 +22,6 @@ include_rules = [
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/browser_process.h",
-  "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/chromeos/arc",
   "+chrome/browser/chromeos/platform_keys",
   "+chrome/browser/chromeos/policy/dlp",
@@ -90,6 +88,13 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "arc_util(_unittest)?\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+  "arc_support_host_unittest\\.cc": [
+    "+chrome/browser/global_features.h",
+  ],
+
   "arc_support_host\\.cc": [
     "+chrome/browser/ui/extensions/app_launch_params.h",
     "+chrome/browser/ui/extensions/application_launch.h",

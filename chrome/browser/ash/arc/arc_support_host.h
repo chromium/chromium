@@ -11,14 +11,17 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ash/arc/extensions/arc_support_message_host.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
 
-class Profile;
+class ApplicationLocaleStorage;
 class GURL;
+class PrefService;
+class Profile;
 
 // Native interface to control ARC support chrome App.
 // TODO(hidehiko,lhchavez): Move this into extensions/ directory, and put it
@@ -130,7 +133,11 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
   using RequestOpenAppCallback =
       base::RepeatingCallback<void(Profile* profile)>;
 
-  explicit ArcSupportHost(Profile* profile);
+  // `local_state` and `application_locale_storage` must be non-null and must
+  // outlive `this`.
+  ArcSupportHost(PrefService* local_state,
+                 const ApplicationLocaleStorage* application_locale_storage,
+                 Profile* profile);
 
   ArcSupportHost(const ArcSupportHost&) = delete;
   ArcSupportHost& operator=(const ArcSupportHost&) = delete;
@@ -225,6 +232,9 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
                                     const PreferenceCheckboxData& data);
 
   void DisconnectMessageHost();
+
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   const raw_ptr<Profile> profile_;
   RequestOpenAppCallback request_open_app_callback_;

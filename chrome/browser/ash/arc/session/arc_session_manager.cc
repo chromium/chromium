@@ -862,7 +862,8 @@ void ArcSessionManager::Initialize() {
   // TODO(hidehiko): Revisit to think about lazy initialization.
   if (ShouldUseErrorDialog()) {
     DCHECK(!support_host_);
-    support_host_ = std::make_unique<ArcSupportHost>(profile_);
+    support_host_ = std::make_unique<ArcSupportHost>(
+        &local_state_.get(), &application_locale_storage_.get(), profile_);
     support_host_->SetErrorDelegate(this);
   }
   auto* prefs = profile_->GetPrefs();

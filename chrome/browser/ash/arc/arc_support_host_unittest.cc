@@ -11,8 +11,10 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -76,7 +78,12 @@ class ArcSupportHostTest : public BrowserWithTestWindowTest {
         ->MakePrimaryAccountAvailable("testing@account.com",
                                       signin::ConsentLevel::kSignin);
 
-    support_host_ = std::make_unique<ArcSupportHost>(profile());
+    support_host_ = std::make_unique<ArcSupportHost>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
+        profile());
     fake_arc_support_ = std::make_unique<FakeArcSupport>(support_host_.get());
   }
 
