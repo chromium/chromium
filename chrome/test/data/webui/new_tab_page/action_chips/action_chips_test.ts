@@ -245,6 +245,39 @@ suite('NewTabPageActionChipsTest', () => {
           1,
           metrics.count('NewTabPage.ActionChips.Click', ChipType.kRecentTab));
     });
+
+    test('deep dive chip triggers chip click event', async () => {
+      // Setup.
+      await initializeChips({
+        actionChips: [{
+          type: ChipType.kDeepDive,
+          title: 'Example Tab',
+          suggestion: 'Help me with this page',
+          tab: {
+            url: {url: 'https://example.com'},
+            tabId: 0,
+            title: 'Example Tab',
+            lastActiveTime: {internalValue: BigInt(0)},
+          },
+        }],
+      });
+      const deepDiveChip =
+          chips.shadowRoot.querySelector<HTMLButtonElement>('#deep-dive-0');
+      assertTrue(!!deepDiveChip);
+
+      const whenActionChipClicked =
+          eventToPromise('action-chip-click', document.body);
+
+      // Act.
+      deepDiveChip.click();
+
+      // Assert.
+      await whenActionChipClicked;
+
+      assertEquals(1, metrics.count('NewTabPage.ActionChips.Click'));
+      assertEquals(
+          1, metrics.count('NewTabPage.ActionChips.Click', ChipType.kDeepDive));
+    });
   });
 
   test('latency is recorded once for non-empty action chips', async () => {
