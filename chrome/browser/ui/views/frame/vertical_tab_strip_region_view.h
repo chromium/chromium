@@ -109,6 +109,11 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   views::View* GetTabGroupAnchorView(
       const tab_groups::TabGroupId& group) override;
   TabDragContext* GetDragContext() override;
+  std::optional<BrowserRootView::DropIndex> GetDropIndex(
+      const ui::DropTargetEvent& event) override;
+  BrowserRootView::DropTarget* GetDropTarget(
+      gfx::Point loc_in_local_coords) override;
+  views::View* GetViewForDrop() override;
   void SetTabStripObserver(TabStripObserver* observer) override;
   bool ShouldDrawStrokes() const override;
 

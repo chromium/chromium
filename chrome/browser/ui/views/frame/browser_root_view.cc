@@ -35,7 +35,6 @@
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
@@ -205,7 +204,8 @@ BrowserRootView::~BrowserRootView() {
 bool BrowserRootView::GetDropFormats(
     int* formats,
     std::set<ui::ClipboardFormatType>* format_types) {
-  if (tabstrip()->GetVisible() || toolbar()->GetVisible()) {
+  if (browser_view_->tab_strip_view()->GetVisible() ||
+      toolbar()->GetVisible()) {
     *formats = ui::OSExchangeData::URL | ui::OSExchangeData::STRING;
     return true;
   }
@@ -222,7 +222,8 @@ bool BrowserRootView::CanDrop(const ui::OSExchangeData& data) {
     return false;
   }
 
-  if (!tabstrip()->GetVisible() && !toolbar()->GetVisible()) {
+  if (!browser_view_->tab_strip_view()->GetVisible() &&
+      !toolbar()->GetVisible()) {
     return false;
   }
 
@@ -336,8 +337,8 @@ bool BrowserRootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
     views::View* hit_view = GetEventHandlerForPoint(event.location());
     int hittest =
         GetWidget()->non_client_view()->NonClientHitTest(event.location());
-    if (tabstrip()->Contains(hit_view) || hittest == HTCAPTION ||
-        hittest == HTTOP) {
+    if (browser_view_->tab_strip_view()->Contains(hit_view) ||
+        hittest == HTCAPTION || hittest == HTTOP) {
       scroll_remainder_x_ += event.x_offset();
       scroll_remainder_y_ += event.y_offset();
 
@@ -513,8 +514,8 @@ BrowserRootView::DropTarget* BrowserRootView::GetDropTarget(
 
   // See if we should drop links onto tabstrip first.
   gfx::Point loc_in_tabstrip(event.location());
-  ConvertPointToTarget(this, tabstrip(), &loc_in_tabstrip);
-  target = tabstrip()->GetDropTarget(loc_in_tabstrip);
+  ConvertPointToTarget(this, browser_view_->tab_strip_view(), &loc_in_tabstrip);
+  target = browser_view_->tab_strip_view()->GetDropTarget(loc_in_tabstrip);
 
   // See if we can drop links onto toolbar.
   if (!target) {
@@ -555,10 +556,6 @@ void BrowserRootView::OnFilteringComplete(int sequence,
 void BrowserRootView::SetOnFilteringCompleteClosureForTesting(
     base::OnceClosure closure) {
   on_filtering_complete_closure_ = std::move(closure);
-}
-
-TabStrip* BrowserRootView::tabstrip() {
-  return browser_view_->tabstrip();
 }
 
 ToolbarView* BrowserRootView::toolbar() {

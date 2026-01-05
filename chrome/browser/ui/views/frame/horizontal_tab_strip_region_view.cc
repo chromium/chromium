@@ -580,6 +580,21 @@ TabDragContext* HorizontalTabStripRegionView::GetDragContext() {
   return tab_strip_->GetDragContext();
 }
 
+std::optional<BrowserRootView::DropIndex>
+HorizontalTabStripRegionView::GetDropIndex(const ui::DropTargetEvent& event) {
+  return tab_strip_->GetDropIndex(event);
+}
+
+BrowserRootView::DropTarget* HorizontalTabStripRegionView::GetDropTarget(
+    gfx::Point loc_in_local_coords) {
+  ConvertPointToTarget(this, tab_strip_, &loc_in_local_coords);
+  return tab_strip_->GetDropTarget(loc_in_local_coords);
+}
+
+views::View* HorizontalTabStripRegionView::GetViewForDrop() {
+  return tab_strip_;
+}
+
 void HorizontalTabStripRegionView::SetTabStripObserver(
     TabStripObserver* observer) {
   tab_strip_->SetTabStripObserver(observer);

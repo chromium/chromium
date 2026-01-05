@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/views/accessible_pane_view.h"
 
@@ -16,7 +17,8 @@ class TabStripObserver;
 // This class serves as the single point of interaction for all consumers of
 // tabstrip-related functionality. This should only be owned by BrowserView and
 // backed by the View container responsible for managing the tabstrip.
-class TabStripRegionView : public views::AccessiblePaneView {
+class TabStripRegionView : public views::AccessiblePaneView,
+                           public BrowserRootView::DropTarget {
  public:
   ~TabStripRegionView() override = default;
 
@@ -37,6 +39,11 @@ class TabStripRegionView : public views::AccessiblePaneView {
 
   // -- Drag and drop --
   virtual TabDragContext* GetDragContext() = 0;
+  std::optional<BrowserRootView::DropIndex> GetDropIndex(
+      const ui::DropTargetEvent& event) override = 0;
+  BrowserRootView::DropTarget* GetDropTarget(
+      gfx::Point loc_in_local_coords) override = 0;
+  views::View* GetViewForDrop() override = 0;
 
   // -- Observers --
   virtual void SetTabStripObserver(TabStripObserver* observer) = 0;

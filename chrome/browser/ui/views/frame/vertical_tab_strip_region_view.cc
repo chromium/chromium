@@ -236,6 +236,21 @@ views::View* VerticalTabStripRegionView::GetTabGroupAnchorView(
 TabDragContext* VerticalTabStripRegionView::GetDragContext() {
   return drag_handler_.get();
 }
+
+std::optional<BrowserRootView::DropIndex>
+VerticalTabStripRegionView::GetDropIndex(const ui::DropTargetEvent& event) {
+  return std::nullopt;
+}
+
+BrowserRootView::DropTarget* VerticalTabStripRegionView::GetDropTarget(
+    gfx::Point loc_in_local_coords) {
+  return nullptr;
+}
+
+views::View* VerticalTabStripRegionView::GetViewForDrop() {
+  return nullptr;
+}
+
 void VerticalTabStripRegionView::SetTabStripObserver(
     TabStripObserver* observer) {
   // Do nothing.

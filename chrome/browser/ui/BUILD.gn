@@ -3853,7 +3853,6 @@ static_library("ui") {
       "views/frame/browser_native_widget_factory.cc",
       "views/frame/browser_native_widget_factory.h",
       "views/frame/browser_root_view.cc",
-      "views/frame/browser_root_view.h",
       "views/frame/browser_view.cc",
       "views/frame/browser_view.h",
       "views/frame/browser_widget.cc",
