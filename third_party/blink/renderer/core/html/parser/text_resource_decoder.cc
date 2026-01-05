@@ -414,8 +414,10 @@ String TextResourceDecoder::Decode(base::span<const char> data,
 
   DCHECK(encoding_.IsValid());
 
-  if (!codec_)
+  if (!codec_) {
     codec_ = NewTextCodec(encoding_);
+    CHECK(codec_) << encoding_.GetName();
+  }
 
   String result = codec_->Decode(
       base::as_bytes(data_for_decode), FlushBehavior::kDoNotFlush,
@@ -442,8 +444,10 @@ String TextResourceDecoder::Flush() {
     AutoDetectEncodingIfAllowed(buffer_);
   }
 
-  if (!codec_)
+  if (!codec_) {
     codec_ = NewTextCodec(encoding_);
+    CHECK(codec_) << encoding_.GetName();
+  }
 
   String result = codec_->Decode(
       base::as_byte_span(buffer_), FlushBehavior::kFetchEOF,

@@ -193,12 +193,18 @@ static void ExtendTextCodecMaps() {
 }
 
 std::unique_ptr<TextCodec> NewTextCodec(const TextEncoding& encoding) {
+  if (!encoding.IsValid()) {
+    return nullptr;
+  }
+
   base::AutoLock lock(EncodingRegistryLock());
 
   DCHECK(g_text_codec_map);
-  TextCodecFactory factory = g_text_codec_map->at(encoding.GetName());
-  DCHECK(factory.function);
-  return factory.function(encoding);
+  auto it = g_text_codec_map->find(encoding.GetName());
+  // All valid canonical encoding names must be registered in g_text_codec_map.
+  CHECK_NE(it, g_text_codec_map->end()) << "Not found: " << encoding.GetName();
+  DCHECK(it->value.function);
+  return it->value.function(encoding);
 }
 
 AtomicString AtomicCanonicalTextEncodingName(StringView name) {
