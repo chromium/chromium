@@ -435,6 +435,8 @@ source_set("extensions") {
     "shared_module_service.h",
     "shared_module_service_factory.cc",
     "shared_module_service_factory.h",
+    "side_panel_helper.cc",
+    "side_panel_helper.h",
     "standard_management_policy_provider.cc",
     "standard_management_policy_provider.h",
     "startup_helper.cc",
@@ -623,7 +625,10 @@ source_set("extensions") {
   defines = []
 
   if (is_mac || is_win || is_linux || is_chromeos) {
-    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+    deps += [
+      "//chrome/browser/ui/webui:webui_util",
+      "//components/webapps/isolated_web_apps:scheme",
+    ]
   }
   if (is_android) {
     sources += [
