@@ -198,7 +198,6 @@ GlicKeyedService::GlicKeyedService(
             sharing_manager_.get(), &GetSingleInstanceWindowController(),
             contextual_cueing_service);
   }
-
   if (UseDefaultWindowController()) {
     metrics_->SetControllers(&GetSingleInstanceWindowController(),
                              sharing_manager_.get());

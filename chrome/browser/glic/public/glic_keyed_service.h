@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
@@ -86,8 +87,9 @@ enum class GlicPrewarmingFreSource {
 class GlicKeyedService : public KeyedService,
                          public GlicSharingManagerProvider,
                          public Host::InstanceDelegate,
-                         public base::MemoryPressureListener,
+                         public base::MemoryPressureListener
 #if !BUILDFLAG(IS_ANDROID)
+    ,
                          public actor::ActorTaskDelegate
 #endif
 {
@@ -299,7 +301,11 @@ class GlicKeyedService : public KeyedService,
 
   // Null in multi-instance mode.
   GlicZeroStateSuggestionsManager* zero_state_suggestions_manager() {
+#if !BUILDFLAG(IS_ANDROID)
     return zero_state_suggestions_manager_.get();
+#else
+    return nullptr;
+#endif
   }
 
   // Returns whether this process host is either the Glic FRE WebUI or the Glic
@@ -377,9 +383,7 @@ class GlicKeyedService : public KeyedService,
   raw_ptr<Profile> profile_;
 
   std::unique_ptr<GlicEnabling> enabling_;
-#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<GlicMetrics> metrics_;
-#endif
   std::unique_ptr<GlicFreController> fre_controller_;
   // Is either a GlicWindowControllerImpl or GlicPanelCoordinatorImpl.
   std::unique_ptr<GlicWindowController> window_controller_;
