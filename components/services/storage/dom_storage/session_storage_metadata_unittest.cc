@@ -22,16 +22,11 @@
 #include "base/uuid.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
-#include "components/services/storage/dom_storage/leveldb/session_storage_leveldb.h"
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
 #include "storage/common/database/db_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/leveldatabase/env_chromium.h"
-#include "third_party/leveldatabase/leveldb_chrome.h"
-#include "third_party/leveldatabase/src/include/leveldb/db.h"
-#include "third_party/leveldatabase/src/include/leveldb/options.h"
 
 namespace storage {
 namespace {
@@ -42,12 +37,8 @@ std::vector<uint8_t> StdStringToUint8Vector(const std::string& s) {
 
 class SessionStorageMetadataTest : public testing::Test {
  public:
-  SessionStorageMetadataTest()
-      : test_namespace1_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
-        test_namespace2_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
-        test_namespace3_id_(
-            base::Uuid::GenerateRandomV4().AsLowercaseString()) {
-    // Create an in-memory LevelDB.
+  SessionStorageMetadataTest() {
+    // Create an in-memory database.
     base::RunLoop loop;
     database_ = AsyncDomStorageDatabase::Open(
         StorageType::kSessionStorage,
@@ -55,12 +46,8 @@ class SessionStorageMetadataTest : public testing::Test {
         /*memory_dump_id=*/std::nullopt,
         base::BindLambdaForTesting([&](DbStatus) { loop.Quit(); }));
     loop.Run();
-
-    next_map_id_key_ = std::vector<uint8_t>(std::begin(kNextMapIdKey),
-                                            std::end(kNextMapIdKey));
-    namespaces_prefix_key_ = std::vector<uint8_t>(std::begin(kNamespacePrefix),
-                                                  std::end(kNamespacePrefix));
   }
+
   ~SessionStorageMetadataTest() override = default;
 
   void ReadMetadataFromDatabase(SessionStorageMetadata* metadata) {
@@ -71,66 +58,37 @@ class SessionStorageMetadataTest : public testing::Test {
   }
 
   void SetupTestData() {
-    // | key                                    | value              |
-    // |----------------------------------------|--------------------|
-    // | map-1-key1                             | data1              |
-    // | map-3-key1                             | data3              |
-    // | map-4-key1                             | data4              |
-    // | namespace-<guid 1>-http://host1:1/     | 1                  |
-    // | namespace-<guid 1>-http://host2:2/     | 3                  |
-    // | namespace-<guid 2>-http://host1:1/     | 1                  |
-    // | namespace-<guid 2>-http://host2:2/     | 4                  |
-    // | next-map-id                            | 5                  |
-    // | version                                | 1                  |
-    base::RunLoop loop;
-    database_->database().PostTaskWithThisObject(base::BindLambdaForTesting(
-        [&](DomStorageDatabase* dom_storage_database) {
-          DomStorageDatabaseLevelDB* db = &dom_storage_database->GetLevelDB();
-          db->Put(StdStringToUint8Vector(std::string("namespace-") +
-                                         test_namespace1_id_ + "-" +
-                                         test_storage_key1_.Serialize()),
-                  StdStringToUint8Vector("1"));
-          db->Put(StdStringToUint8Vector(std::string("namespace-") +
-                                         test_namespace1_id_ + "-" +
-                                         test_storage_key2_.Serialize()),
-                  StdStringToUint8Vector("3"));
-          db->Put(StdStringToUint8Vector(std::string("namespace-") +
-                                         test_namespace2_id_ + "-" +
-                                         test_storage_key1_.Serialize()),
-                  StdStringToUint8Vector("1"));
-          db->Put(StdStringToUint8Vector(std::string("namespace-") +
-                                         test_namespace2_id_ + "-" +
-                                         test_storage_key2_.Serialize()),
-                  StdStringToUint8Vector("4"));
+    // Create two sessions in the database that each contain have two maps.
+    // Clone the first map across both sessions.
+    map1_locator_.AddSession(test_namespace2_id_);
 
-          db->Put(next_map_id_key_, StdStringToUint8Vector("5"));
+    DomStorageDatabase::Metadata metadata;
+    metadata.map_metadata.push_back({map1_locator_.Clone()});
+    metadata.map_metadata.push_back({map3_locator_.Clone()});
+    metadata.map_metadata.push_back({map4_locator_.Clone()});
+    metadata.next_map_id = 5;
 
-          db->Put(StdStringToUint8Vector("map-1-key1"),
-                  StdStringToUint8Vector("data1"));
-          db->Put(StdStringToUint8Vector("map-3-key1"),
-                  StdStringToUint8Vector("data3"));
-          db->Put(StdStringToUint8Vector("map-4-key1"),
-                  StdStringToUint8Vector("data4"));
-          loop.Quit();
-        }));
-    loop.Run();
+    ASSERT_NO_FATAL_FAILURE(PutMetadataSync(*database_, std::move(metadata)));
+
+    // Add a key/value pair to each map in the database.
+    FakeCommitter map1_committer(database_.get(), map1_locator_.Clone());
+    map1_committer.PutMapKeyValueSync(kKey1, kValue1);
+
+    FakeCommitter map3_committer(database_.get(), map3_locator_.Clone());
+    map3_committer.PutMapKeyValueSync(kKey1, kValue3);
+
+    FakeCommitter map4_committer(database_.get(), map4_locator_.Clone());
+    map4_committer.PutMapKeyValueSync(kKey1, kValue4);
   }
 
-  std::map<std::vector<uint8_t>, std::vector<uint8_t>> GetDatabaseContents() {
-    std::vector<DomStorageDatabase::KeyValuePair> entries;
-    base::RunLoop loop;
-    database_->database().PostTaskWithThisObject(base::BindLambdaForTesting(
-        [&](DomStorageDatabase* dom_storage_database) {
-          DomStorageDatabaseLevelDB& db = dom_storage_database->GetLevelDB();
-          ASSERT_OK_AND_ASSIGN(entries, db.GetPrefixed({}));
-          loop.Quit();
-        }));
-    loop.Run();
-
-    std::map<std::vector<uint8_t>, std::vector<uint8_t>> contents;
-    for (auto& entry : entries)
-      contents.emplace(entry.key, entry.value);
-    return contents;
+  // Verifies a map in the database contains `expected_entries`.
+  void ExpectMapEquals(const DomStorageDatabase::MapLocator& map_locator,
+                       std::map<DomStorageDatabase::Key,
+                                DomStorageDatabase::Value> expected_entries) {
+    std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> actual_entries;
+    ASSERT_NO_FATAL_FAILURE(
+        ReadMapKeyValuesSync(*database_, map_locator.Clone(), &actual_entries));
+    EXPECT_EQ(actual_entries, expected_entries);
   }
 
   void RunBatch(std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks,
@@ -147,17 +105,37 @@ class SessionStorageMetadataTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  const std::string test_namespace1_id_;
-  const std::string test_namespace2_id_;
-  const std::string test_namespace3_id_;
+
+  const DomStorageDatabase::Key kKey1 = StdStringToUint8Vector("key1");
+  const DomStorageDatabase::Value kValue1 = StdStringToUint8Vector("data1");
+  const DomStorageDatabase::Value kValue3 = StdStringToUint8Vector("data3");
+  const DomStorageDatabase::Value kValue4 = StdStringToUint8Vector("data4");
+
+  const std::string test_namespace1_id_ =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  const std::string test_namespace2_id_ =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  const std::string test_namespace3_id_ =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+
   const blink::StorageKey test_storage_key1_ =
       blink::StorageKey::CreateFromStringForTesting("http://host1:1/");
   const blink::StorageKey test_storage_key2_ =
       blink::StorageKey::CreateFromStringForTesting("http://host2:2/");
-  std::unique_ptr<AsyncDomStorageDatabase> database_;
 
-  std::vector<uint8_t> next_map_id_key_;
-  std::vector<uint8_t> namespaces_prefix_key_;
+  DomStorageDatabase::MapLocator map1_locator_{test_namespace1_id_,
+                                               test_storage_key1_,
+                                               /*map_id=*/1};
+
+  DomStorageDatabase::MapLocator map3_locator_{test_namespace1_id_,
+                                               test_storage_key2_,
+                                               /*map_id=*/3};
+
+  DomStorageDatabase::MapLocator map4_locator_{test_namespace2_id_,
+                                               test_storage_key2_,
+                                               /*map_id=*/4};
+
+  std::unique_ptr<AsyncDomStorageDatabase> database_;
 };
 
 TEST_F(SessionStorageMetadataTest, LoadingData) {
@@ -211,16 +189,23 @@ TEST_F(SessionStorageMetadataTest, ShallowCopies) {
   EXPECT_EQ(3u, ns3_entry->second[test_storage_key1_]->session_ids().size());
   EXPECT_EQ(2u, ns3_entry->second[test_storage_key2_]->session_ids().size());
 
-  // Verify metadata was written to disk.
-  auto contents = GetDatabaseContents();
-  EXPECT_EQ(StdStringToUint8Vector("1"),
-            contents[StdStringToUint8Vector(std::string("namespace-") +
-                                            test_namespace3_id_ + "-" +
-                                            test_storage_key1_.Serialize())]);
-  EXPECT_EQ(StdStringToUint8Vector("3"),
-            contents[StdStringToUint8Vector(std::string("namespace-") +
-                                            test_namespace3_id_ + "-" +
-                                            test_storage_key2_.Serialize())]);
+  // Verify metadata was written to disk where `test_namespace3_id_` cloned map
+  // 1 and map 3.
+  DomStorageDatabase::Metadata all_metadata;
+  ASSERT_NO_FATAL_FAILURE(ReadAllMetadataSync(*database_, &all_metadata));
+
+  EXPECT_EQ(all_metadata.next_map_id, 5);
+  ASSERT_EQ(all_metadata.map_metadata.size(), 3u);
+
+  DomStorageDatabase::MapMetadata expected_metadata[] = {
+      {map1_locator_.Clone()},
+      {map3_locator_.Clone()},
+      {map4_locator_.Clone()},
+  };
+  expected_metadata[0].map_locator.AddSession(test_namespace3_id_);
+  expected_metadata[1].map_locator.AddSession(test_namespace3_id_);
+
+  ExpectEqualsMapMetadataSpan(all_metadata.map_metadata, expected_metadata);
 }
 
 TEST_F(SessionStorageMetadataTest, TakeNamespace) {
@@ -250,17 +235,24 @@ TEST_F(SessionStorageMetadataTest, TakeNamespace) {
   EXPECT_EQ(1u, ns2_entry->second[test_storage_key2_]->session_ids().size());
 
   // Verify metadata and data was deleted from disk.
-  auto contents = GetDatabaseContents();
-  EXPECT_FALSE(base::Contains(
-      contents,
-      StdStringToUint8Vector(std::string("namespace-") + test_namespace1_id_ +
-                             "-" + test_storage_key1_.Serialize())));
-  EXPECT_FALSE(base::Contains(
-      contents,
-      StdStringToUint8Vector(std::string("namespace-") + test_namespace1_id_ +
-                             "-" + test_storage_key2_.Serialize())));
-  EXPECT_FALSE(base::Contains(contents, StdStringToUint8Vector("map-3-key1")));
-  EXPECT_TRUE(base::Contains(contents, StdStringToUint8Vector("map-1-key1")));
+  DomStorageDatabase::Metadata all_metadata;
+  ASSERT_NO_FATAL_FAILURE(ReadAllMetadataSync(*database_, &all_metadata));
+
+  EXPECT_EQ(all_metadata.next_map_id, 5);
+  ASSERT_EQ(all_metadata.map_metadata.size(), 2u);
+
+  // Two maps must remain in the database each used by session
+  // `test_namespace2_id_`.
+  DomStorageDatabase::MapMetadata expected_metadata[] = {
+      {map1_locator_.Clone()},
+      {map4_locator_.Clone()},
+  };
+  expected_metadata[0].map_locator.RemoveSession(test_namespace1_id_);
+
+  ExpectEqualsMapMetadataSpan(all_metadata.map_metadata, expected_metadata);
+  ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(map3_locator_, {}));
+  ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(map1_locator_, {{kKey1, kValue1}}));
+  ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(map4_locator_, {{kKey1, kValue4}}));
 }
 
 TEST_F(SessionStorageMetadataTest, DeleteArea) {
@@ -286,17 +278,25 @@ TEST_F(SessionStorageMetadataTest, DeleteArea) {
   EXPECT_EQ(1u, ns2_entry->second[test_storage_key2_]->session_ids().size());
 
   // Verify only the applicable data was deleted.
-  auto contents = GetDatabaseContents();
-  EXPECT_FALSE(base::Contains(
-      contents,
-      StdStringToUint8Vector(std::string("namespace-") + test_namespace1_id_ +
-                             "-" + test_storage_key1_.Serialize())));
-  EXPECT_TRUE(base::Contains(
-      contents,
-      StdStringToUint8Vector(std::string("namespace-") + test_namespace1_id_ +
-                             "-" + test_storage_key2_.Serialize())));
-  EXPECT_TRUE(base::Contains(contents, StdStringToUint8Vector("map-1-key1")));
-  EXPECT_TRUE(base::Contains(contents, StdStringToUint8Vector("map-4-key1")));
+  DomStorageDatabase::Metadata all_metadata;
+  ASSERT_NO_FATAL_FAILURE(ReadAllMetadataSync(*database_, &all_metadata));
+
+  EXPECT_EQ(all_metadata.next_map_id, 5);
+  ASSERT_EQ(all_metadata.map_metadata.size(), 3u);
+
+  // Three maps must remain in the database.  `test_namespace1_id_` and
+  // `test_namespace2_id_` no longer share a clone of map 1.
+  DomStorageDatabase::MapMetadata expected_metadata[] = {
+      {map1_locator_.Clone()},
+      {map3_locator_.Clone()},
+      {map4_locator_.Clone()},
+  };
+  expected_metadata[0].map_locator.RemoveSession(test_namespace1_id_);
+
+  ExpectEqualsMapMetadataSpan(all_metadata.map_metadata, expected_metadata);
+  ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(map3_locator_, {{kKey1, kValue3}}));
+  ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(map1_locator_, {{kKey1, kValue1}}));
+  ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(map4_locator_, {{kKey1, kValue4}}));
 
   // Now delete an area with a unique map.
   map_locator =
@@ -316,19 +316,19 @@ TEST_F(SessionStorageMetadataTest, DeleteArea) {
   EXPECT_EQ(1u, ns2_entry->second[test_storage_key1_]->session_ids().size());
   EXPECT_FALSE(base::Contains(ns2_entry->second, test_storage_key2_));
 
-  // Verify only the applicable data was deleted.
-  contents = GetDatabaseContents();
-  EXPECT_TRUE(base::Contains(
-      contents,
-      StdStringToUint8Vector(std::string("namespace-") + test_namespace2_id_ +
-                             "-" + test_storage_key1_.Serialize())));
-  EXPECT_FALSE(base::Contains(
-      contents,
-      StdStringToUint8Vector(std::string("namespace-") + test_namespace2_id_ +
-                             "-" + test_storage_key2_.Serialize())));
-  EXPECT_TRUE(base::Contains(contents, StdStringToUint8Vector("map-1-key1")));
-  EXPECT_TRUE(base::Contains(contents, StdStringToUint8Vector("map-3-key1")));
-  EXPECT_FALSE(base::Contains(contents, StdStringToUint8Vector("map-4-key1")));
+  // Verify only the applicable data was deleted, which must delete map 4 from
+  // the database.
+  ASSERT_NO_FATAL_FAILURE(ReadAllMetadataSync(*database_, &all_metadata));
+
+  EXPECT_EQ(all_metadata.next_map_id, 5);
+  ASSERT_EQ(all_metadata.map_metadata.size(), 2u);
+
+  ExpectEqualsMapMetadataSpan(all_metadata.map_metadata,
+                              base::span(expected_metadata).first(2u));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(map3_locator_, {{kKey1, kValue3}}));
+  ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(map1_locator_, {{kKey1, kValue1}}));
+  ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(map4_locator_, {}));
 }
 
 TEST_F(SessionStorageMetadataTest, InitializesNamespacesEmpty) {

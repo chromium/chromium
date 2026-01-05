@@ -24,9 +24,12 @@ std::vector<uint8_t> ToBytes(std::string source) {
   return std::vector<uint8_t>(source.begin(), source.end());
 }
 
-// Sort by the map's session ID and storage key.
+// Sort by the map's ID, session ID and storage key.
 bool CompareMapMetadata(const DomStorageDatabase::MapMetadata& left,
                         const DomStorageDatabase::MapMetadata& right) {
+  if (left.map_locator.map_id() != right.map_locator.map_id()) {
+    return left.map_locator.map_id() < right.map_locator.map_id();
+  }
   if (left.map_locator.storage_key() != right.map_locator.storage_key()) {
     return left.map_locator.storage_key() < right.map_locator.storage_key();
   }
