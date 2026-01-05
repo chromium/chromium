@@ -3539,14 +3539,16 @@ TEST_P(CanvasRenderingContext2DTestImageChromium, LowLatencyIsSingleBuffered) {
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
   EXPECT_TRUE(Context2D()->GetOrCreateResourceProvider()->IsSingleBuffered());
-  auto frame1_resource =
-      Context2D()->GetOrCreateResourceProvider()->ProduceCanvasResource(
-          FlushReason::kOther);
+  auto frame1_resource = Context2D()
+                             ->GetOrCreateResourceProvider()
+                             ->AsSharedImageProvider()
+                             ->ProduceCanvasResource(FlushReason::kOther);
   EXPECT_TRUE(frame1_resource);
   DrawSomething();
-  auto frame2_resource =
-      Context2D()->GetOrCreateResourceProvider()->ProduceCanvasResource(
-          FlushReason::kOther);
+  auto frame2_resource = Context2D()
+                             ->GetOrCreateResourceProvider()
+                             ->AsSharedImageProvider()
+                             ->ProduceCanvasResource(FlushReason::kOther);
   EXPECT_TRUE(frame2_resource);
   EXPECT_EQ(frame1_resource.get(), frame2_resource.get());
 }
@@ -3583,14 +3585,16 @@ TEST_P(CanvasRenderingContext2DTestSwapChain, LowLatencyIsSingleBuffered) {
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
   EXPECT_TRUE(Context2D()->GetOrCreateResourceProvider()->IsSingleBuffered());
-  auto frame1_resource =
-      Context2D()->GetOrCreateResourceProvider()->ProduceCanvasResource(
-          FlushReason::kOther);
+  auto frame1_resource = Context2D()
+                             ->GetOrCreateResourceProvider()
+                             ->AsSharedImageProvider()
+                             ->ProduceCanvasResource(FlushReason::kOther);
   EXPECT_TRUE(frame1_resource);
   DrawSomething();
-  auto frame2_resource =
-      Context2D()->GetOrCreateResourceProvider()->ProduceCanvasResource(
-          FlushReason::kOther);
+  auto frame2_resource = Context2D()
+                             ->GetOrCreateResourceProvider()
+                             ->AsSharedImageProvider()
+                             ->ProduceCanvasResource(FlushReason::kOther);
   EXPECT_TRUE(frame2_resource);
   EXPECT_EQ(frame1_resource.get(), frame2_resource.get());
 }

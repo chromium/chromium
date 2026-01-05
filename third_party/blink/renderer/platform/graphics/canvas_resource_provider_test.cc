@@ -288,7 +288,8 @@ std::unique_ptr<CanvasResourceProviderSharedImage> MakeCanvasResourceProvider(
       context_provider_wrapper, raster_mode, shared_image_usage_flags);
 }
 
-scoped_refptr<CanvasResource> UpdateResource(CanvasResourceProvider* provider) {
+scoped_refptr<CanvasResource> UpdateResource(
+    CanvasResourceProviderSharedImage* provider) {
   provider->ProduceCanvasResource(FlushReason::kOther);
   // Resource updated after draw.
   provider->Canvas().clear(SkColors::kWhite);

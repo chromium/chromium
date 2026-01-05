@@ -185,12 +185,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
       gpu::SharedImageUsageSet shared_image_usage_flags = {},
       Delegate* delegate = nullptr);
 
-  // Use Snapshot() for capturing a frame that is intended to be displayed via
-  // the compositor. Cases that are destined to be transferred via a
-  // TransferableResource should call ProduceCanvasResource() instead.
   // The ImageOrientationEnum conveys the desired orientation of the image, and
   // should be derived from the source of the bitmap data.
-  virtual scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) = 0;
   virtual scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault) = 0;
 
@@ -433,11 +429,6 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
                                  const gfx::ColorSpace& color_space,
                                  Delegate* delegate);
 
-  scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
-    // Production of CanvasResources is used with direct compositing, which is
-    // not supported by this class.
-    return nullptr;
-  }
   sk_sp<SkSurface> CreateSkSurface() const override;
 };
 
@@ -526,8 +517,12 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   bool IsAccelerated() const final { return is_accelerated_; }
   base::ByteSize EstimatedSizeInBytes() const override;
   bool SupportsDirectCompositing() const override { return true; }
-  scoped_refptr<CanvasResource> ProduceCanvasResource(
-      FlushReason reason) override;
+
+  // Use Snapshot() for capturing a frame that is intended to be displayed via
+  // the compositor. Cases that are destined to be transferred via a
+  // TransferableResource should call ProduceCanvasResource() instead.
+  virtual scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason);
+
   bool IsValid() const override;
   bool IsSoftwareSharedImageGpuChannelLost() const final;
 
