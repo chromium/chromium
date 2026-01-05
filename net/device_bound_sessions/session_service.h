@@ -15,6 +15,7 @@
 #include "net/device_bound_sessions/session.h"
 #include "net/device_bound_sessions/session_access.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
+#include "net/device_bound_sessions/session_display.h"
 #include "net/device_bound_sessions/session_key.h"
 #include "net/log/net_log_with_source.h"
 
@@ -136,6 +137,12 @@ class NET_EXPORT SessionService {
   // defer until completely initialized.
   virtual void GetAllSessionsAsync(
       base::OnceCallback<void(const std::vector<SessionKey>&)> callback) = 0;
+
+  // Get all sessions and return a list of display sessions. If sessions
+  // have not yet been loaded from disk, defer until completely initialized.
+  virtual void GetAllSessionDisplaysAsync(
+      base::OnceCallback<void(const std::vector<SessionDisplay>&)>
+          callback) = 0;
 
   // Delete the session matching `session_key`, notifying
   // `per_request_callback` about any deletions.

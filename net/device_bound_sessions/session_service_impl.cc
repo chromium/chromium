@@ -853,6 +853,24 @@ void SessionServiceImpl::GetAllSessionsAsync(
   }
 }
 
+void SessionServiceImpl::GetAllSessionDisplaysAsync(
+    base::OnceCallback<void(const std::vector<SessionDisplay>&)> callback) {
+  if (pending_initialization_) {
+    queued_operations_.push_back(base::BindOnce(
+        &SessionServiceImpl::GetAllSessionDisplaysAsync,
+        // `base::Unretained` is safe because the callback is stored in
+        // `queued_operations_`, which is owned by `this`.
+        base::Unretained(this), std::move(callback)));
+  } else {
+    std::vector<SessionDisplay> session_displays = base::ToVector(
+        unpartitioned_sessions_,
+        [](const auto& pair) { return pair.second->ToDisplay(); });
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), std::move(session_displays)));
+  }
+}
+
 void SessionServiceImpl::DeleteSessionAndNotify(
     DeletionReason reason,
     const SessionKey& session_key,

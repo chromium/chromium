@@ -55,6 +55,11 @@ class SessionServiceMock : public SessionService {
       GetAllSessionsAsync,
       (base::OnceCallback<void(const std::vector<SessionKey>&)> callback),
       (override));
+  MOCK_METHOD(
+      void,
+      GetAllSessionDisplaysAsync,
+      (base::OnceCallback<void(const std::vector<SessionDisplay>&)> callback),
+      (override));
   MOCK_METHOD(void,
               DeleteSessionAndNotify,
               (DeletionReason reason,

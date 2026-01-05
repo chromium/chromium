@@ -107,6 +107,9 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void GetAllSessionsAsync(
       base::OnceCallback<void(const std::vector<SessionKey>&)> callback)
       override;
+  void GetAllSessionDisplaysAsync(
+      base::OnceCallback<void(const std::vector<SessionDisplay>&)> callback)
+      override;
   void DeleteSessionAndNotify(
       DeletionReason reason,
       const SessionKey& session_key,

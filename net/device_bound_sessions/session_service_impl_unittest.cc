@@ -483,6 +483,23 @@ TEST_F(SessionServiceImplTest, GetAllSessions) {
                                                   ExpectId(kSessionId2)));
 }
 
+TEST_F(SessionServiceImplTest, GetAllSessionDisplays) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin},
+                         {kSessionId2, kRefreshUrlString2, kOrigin2}});
+
+  base::test::TestFuture<std::vector<SessionDisplay>> future;
+  service().GetAllSessionDisplaysAsync(
+      future.GetCallback<const std::vector<SessionDisplay>&>());
+  std::vector<SessionDisplay> session_displays = future.Take();
+  ASSERT_EQ(session_displays.size(), 2);
+  EXPECT_EQ(std::string(session_displays[0].key.id), kSessionId);
+  EXPECT_EQ(session_displays[0].refresh_url, kRefreshUrlString);
+  EXPECT_EQ(session_displays[0].inclusion_rules.origin, kOrigin);
+  EXPECT_EQ(std::string(session_displays[1].key.id), kSessionId2);
+  EXPECT_EQ(session_displays[1].refresh_url, kRefreshUrlString2);
+  EXPECT_EQ(session_displays[1].inclusion_rules.origin, kOrigin2);
+}
+
 TEST_F(SessionServiceImplTest, DeleteSession) {
   base::HistogramTester histograms;
 
