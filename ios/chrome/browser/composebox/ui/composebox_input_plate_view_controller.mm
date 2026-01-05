@@ -1228,6 +1228,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                         handler:^(UIAction* action) {
                           [weakSelf handleImageGenTappedFromToolMenu];
                         }];
+  createImageAction.accessibilityIdentifier =
+      kComposeboxCreateImageActionAccessibilityIdentifier;
 
   if (_imageGenerationEnabled) {
     [createImageAction setState:UIMenuElementStateOn];
@@ -1503,6 +1505,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 - (UIButton*)createImageGenerationButton {
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
   button.translatesAutoresizingMaskIntoConstraints = NO;
+  button.accessibilityIdentifier =
+      kComposeboxImageGenerationButtonAccessibilityIdentifier;
   [button addTarget:self
                 action:@selector(imageGenerationButtonTapped)
       forControlEvents:UIControlEventTouchUpInside];

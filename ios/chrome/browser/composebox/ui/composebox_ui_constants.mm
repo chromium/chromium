@@ -17,3 +17,7 @@ NSString* const kComposeboxQRCodeButtonAccessibilityIdentifier =
     @"kComposeboxQRCodeButtonAccessibilityIdentifier";
 NSString* const kComposeboxSendButtonAccessibilityIdentifier =
     @"kComposeboxSendButtonAccessibilityIdentifier";
+NSString* const kComposeboxCreateImageActionAccessibilityIdentifier =
+    @"kComposeboxCreateImageActionAccessibilityIdentifier";
+NSString* const kComposeboxImageGenerationButtonAccessibilityIdentifier =
+    @"kComposeboxImageGenerationButtonAccessibilityIdentifier";
