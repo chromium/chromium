@@ -229,8 +229,23 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
                                     chrome_pdf::kPDFCheckedOnAttribute);
       }
 
-      // TODO(crbug.com/467929963): Expose the accessible name as the Desc
-      // attribute when appropriate. Blocked on Skia feature.
+      // If the name comes from an attribute, it's unlikely to otherwise
+      // appear as text in the PDF, so provide this name as the Desc.
+      auto name_from = ax_node->GetNameFrom();
+      if (name_from == ax::mojom::NameFrom::kAttribute ||
+          name_from == ax::mojom::NameFrom::kTitle ||
+          name_from == ax::mojom::NameFrom::kCssAltText) {
+        // `appendTextString` does not copy, it only saves a `const char*`.
+        // The ax_node->data() is expected to persist, as part of the AXTree,
+        // until that value is read in `SkDocument::Close()`.
+        const std::string& name_ref = ax_node->data().GetStringAttribute(
+            ax::mojom::StringAttribute::kName);
+        if (!name_ref.empty()) {
+          tag->fAttributes.appendTextString(
+              chrome_pdf::kPDFPrintFieldAttributeOwner,
+              chrome_pdf::kPDFPrintFieldDescAttribute, name_ref.c_str());
+        }
+      }
 
       // In case someone is printing to PDF a web page that is 100% checkboxes
       // (no kStaticText nodes), the PDF should still be tagged.
@@ -295,7 +310,7 @@ namespace printing {
 sk_sp<SkDocument> MakePdfDocument(
     std::string_view creator,
     std::string_view title,
-    const ui::AXTreeUpdate& accessibility_tree,
+    ui::AXTree* tree,
     mojom::GenerateDocumentOutline generate_document_outline,
     SkWStream* stream) {
   SkPDF::Metadata metadata;
@@ -308,15 +323,12 @@ sk_sp<SkDocument> MakePdfDocument(
   metadata.fRasterDPI = 300.0f;
 
   SkPDF::StructureElementNode tag_root = {};
-  if (!accessibility_tree.nodes.empty()) {
-    ui::AXTree tree(accessibility_tree);
-    if (RecursiveBuildStructureTree(tree.root(), &tag_root)) {
-      metadata.fStructureElementTreeRoot = &tag_root;
-      metadata.fOutline =
-          generate_document_outline == mojom::GenerateDocumentOutline::kNone
-              ? SkPDF::Metadata::Outline::None
-              : SkPDF::Metadata::Outline::StructureElementHeaders;
-    }
+  if (tree && RecursiveBuildStructureTree(tree->root(), &tag_root)) {
+    metadata.fStructureElementTreeRoot = &tag_root;
+    metadata.fOutline =
+        generate_document_outline == mojom::GenerateDocumentOutline::kNone
+            ? SkPDF::Metadata::Outline::None
+            : SkPDF::Metadata::Outline::StructureElementHeaders;
   }
 
   return SkPDF::MakeDocument(stream, metadata);
