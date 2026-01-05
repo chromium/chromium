@@ -191,7 +191,7 @@ BASE_FEATURE(kWebViewStopBrowserStartupInIsMultiProcessEnabled,
 // Note:This also enables the same behaviour as WebViewUseStartupTasksLogic and
 // WebViewUseStartupTasksLogicP2, with minor additions.
 BASE_FEATURE(kWebViewStartupTasksYieldToNative,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This results in the metric logging being run on a separate thread and
 // blocking until the results are retrieved.
