@@ -48,8 +48,6 @@ public final class AccountCapabilitiesTest {
             case AccountCapabilitiesConstants
                     .CAN_SHOW_HISTORY_SYNC_OPT_INS_WITHOUT_MINOR_MODE_RESTRICTIONS_CAPABILITY_NAME:
                 return capabilities.canShowHistorySyncOptInsWithoutMinorModeRestrictions();
-            case AccountCapabilitiesConstants.CAN_USE_CHROMEOS_GENERATIVE_AI:
-                return capabilities.canUseChromeOSGenerativeAi();
             case AccountCapabilitiesConstants
                     .CAN_USE_DEVTOOLS_GENERATIVE_AI_FEATURES_CAPABILITY_NAME:
                 return capabilities.canUseDevToolsGenerativeAiFeatures();
@@ -163,12 +161,7 @@ public final class AccountCapabilitiesTest {
                                 .name("CanUseGenerativeAiPhotoEditing")
                                 .value(
                                         AccountCapabilitiesConstants
-                                                .CAN_USE_GENERATIVE_AI_PHOTO_EDITING),
-                        new ParameterSet()
-                                .name("CanUseChromeOSGenerativeAi")
-                                .value(
-                                        AccountCapabilitiesConstants
-                                                .CAN_USE_CHROMEOS_GENERATIVE_AI));
+                                                .CAN_USE_GENERATIVE_AI_PHOTO_EDITING));
 
         // Returns String value added from Capabilities ParameterSet.
         static String getCapabilityName(ParameterSet parameterSet) {

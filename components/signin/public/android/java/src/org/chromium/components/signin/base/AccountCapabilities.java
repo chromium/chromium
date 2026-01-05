@@ -100,13 +100,6 @@ public class AccountCapabilities {
     }
 
     /**
-     * @return canUseChromeOSGenerativeAi capability value.
-     */
-    public @Tribool int canUseChromeOSGenerativeAi() {
-        return getCapabilityByName(AccountCapabilitiesConstants.CAN_USE_CHROMEOS_GENERATIVE_AI);
-    }
-
-    /**
      * @return canUseDevToolsGenerativeAiFeatures capability value.
      */
     public @Tribool int canUseDevToolsGenerativeAiFeatures() {

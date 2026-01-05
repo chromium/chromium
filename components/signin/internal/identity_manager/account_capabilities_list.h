@@ -66,17 +66,17 @@ ACCOUNT_CAPABILITY(kCanToggleAutoUpdatesName,
                    "accountcapabilities/gu4dmlldmfya")
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
 ACCOUNT_CAPABILITY(kCanUseChromeOSGenerativeAi,
                    CAN_USE_CHROMEOS_GENERATIVE_AI,
                    "accountcapabilities/ge3dgmjnmnqxa")
+#endif
 
-ACCOUNT_CAPABILITY(kCanUseCopyEditorFeatureName,
-                   CAN_USE_COPYEDITOR_FEATURE_NAME,
-                   "accountcapabilities/ge2tkmznmnqxa")
-
+#if !BUILDFLAG(IS_IOS)
 ACCOUNT_CAPABILITY(kCanUseDevToolsGenerativeAiFeaturesCapabilityName,
                    CAN_USE_DEVTOOLS_GENERATIVE_AI_FEATURES_CAPABILITY_NAME,
                    "accountcapabilities/geztenjnmnqxa")
+#endif
 
 ACCOUNT_CAPABILITY(kCanUseEduFeaturesCapabilityName,
                    CAN_USE_EDU_FEATURES_CAPABILITY_NAME,
