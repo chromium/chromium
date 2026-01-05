@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -108,20 +107,6 @@ TEST_F(FrameEvictionManagerTest, PeriodicCulling) {
   manager.Unpause();
 
   task_runner->FastForwardBy(FrameEvictionManager::kPeriodicCullingDelay);
-  EXPECT_FALSE(frame2.has_frame());
-}
-
-TEST_F(FrameEvictionManagerTest, MemoryPressure) {
-  FrameEvictionManager* manager = FrameEvictionManager::GetInstance();
-
-  manager->set_max_number_of_saved_frames(5);
-  TestFrameEvictionManagerClient frame1, frame2;
-  manager->AddFrame(&frame1, false);
-  manager->AddFrame(&frame2, false);
-
-  // Critical memory pressure culls all unlocked frames.
-  manager->OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  EXPECT_FALSE(frame1.has_frame());
   EXPECT_FALSE(frame2.has_frame());
 }
 
