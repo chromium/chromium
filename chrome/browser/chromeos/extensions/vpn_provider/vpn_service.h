@@ -162,8 +162,6 @@ class VpnService : public extensions::api::VpnServiceInterface,
                        std::unique_ptr<extensions::Event> event);
 
   bool OwnsActiveConfiguration(const std::string& extension_id) const;
-  std::optional<std::string> GetActiveConfigurationObjectPath(
-      const std::string& extension_id) const;
 
   void SendOnPlatformMessageToExtension(const std::string& extension_id,
                                         const std::string& configuration_name,

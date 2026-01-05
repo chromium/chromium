@@ -249,15 +249,8 @@ void VpnService::SendToExtension(const std::string& extension_id,
 
 bool VpnService::OwnsActiveConfiguration(
     const std::string& extension_id) const {
-  return GetActiveConfigurationObjectPath(extension_id).has_value();
-}
-
-std::optional<std::string> VpnService::GetActiveConfigurationObjectPath(
-    const std::string& extension_id) const {
-  // Peek into VpnServiceAsh directly (this call does not go through mojo).
-  return GetVpnService()
-      ->GetVpnServiceForExtension(extension_id)
-      ->GetActiveConfigurationObjectPath();
+  return active_configuration_ &&
+         active_configuration_->extension_id() == extension_id;
 }
 
 void VpnService::SendOnPlatformMessageToExtension(
@@ -472,8 +465,7 @@ void VpnService::SetParameters(const std::string& extension_id,
   }
 
   ash::ShillThirdPartyVpnDriverClient::Get()->SetParameters(
-      GetActiveConfigurationObjectPath(extension_id).value(),
-      std::move(parameters),
+      active_configuration_->object_path(), std::move(parameters),
       base::IgnoreArgs<const std::string&>(std::move(success)),
       std::move(failure));
 }
@@ -493,8 +485,8 @@ void VpnService::SendPacket(const std::string& extension_id,
   }
 
   ash::ShillThirdPartyVpnDriverClient::Get()->SendPacket(
-      GetActiveConfigurationObjectPath(extension_id).value(), data,
-      std::move(success), std::move(failure));
+      active_configuration_->object_path(), data, std::move(success),
+      std::move(failure));
 }
 
 void VpnService::NotifyConnectionStateChanged(const std::string& extension_id,
@@ -507,7 +499,7 @@ void VpnService::NotifyConnectionStateChanged(const std::string& extension_id,
   }
 
   ash::ShillThirdPartyVpnDriverClient::Get()->UpdateConnectionState(
-      GetActiveConfigurationObjectPath(extension_id).value(),
+      active_configuration_->object_path(),
       connection_success
           ? std::to_underlying(
                 extensions::api::vpn_provider::VpnConnectionState::kConnected)
