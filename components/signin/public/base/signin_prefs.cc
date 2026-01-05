@@ -463,16 +463,42 @@ int SigninPrefs::GetSyncPromoIdentityPillUsedCount(
   return GetIntPrefForAccount(gaia_id, kSyncPromoIdentityPillUsedCount);
 }
 
+int SigninPrefs::GetHistoryPageHistorySyncPromoShownCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(gaia_id,
+                              prefs::kHistoryPageHistorySyncPromoShownCount);
+}
+
 void SigninPrefs::IncrementHistoryPageHistorySyncPromoShownCount(
     const GaiaId& gaia_id) {
   IncrementIntPrefForAccount(gaia_id,
                              prefs::kHistoryPageHistorySyncPromoShownCount);
 }
 
-int SigninPrefs::GetHistoryPageHistorySyncPromoShownCount(
+std::optional<base::Time>
+SigninPrefs::GetHistoryPageHistorySyncPromoLastDismissedTimestamp(
     const GaiaId& gaia_id) const {
-  return GetIntPrefForAccount(gaia_id,
-                              prefs::kHistoryPageHistorySyncPromoShownCount);
+  return GetTimePref(gaia_id,
+                     prefs::kHistoryPageHistorySyncPromoLastDismissedTimestamp);
+}
+
+void SigninPrefs::SetHistoryPageHistorySyncPromoLastDismissedTimestamp(
+    const GaiaId& gaia_id,
+    base::Time last_dismissed_timestamp) {
+  SetTimePref(last_dismissed_timestamp, gaia_id,
+              prefs::kHistoryPageHistorySyncPromoLastDismissedTimestamp);
+}
+
+bool SigninPrefs::GetHistoryPageHistorySyncPromoShownAfterDismissal(
+    const GaiaId& gaia_id) const {
+  return GetBooleanPrefForAccount(
+      gaia_id, prefs::kHistoryPageHistorySyncPromoShownAfterDismissal);
+}
+
+void SigninPrefs::SetHistoryPageHistorySyncPromoShownAfterDismissal(
+    const GaiaId& gaia_id) {
+  SetBooleanPrefForAccount(
+      gaia_id, prefs::kHistoryPageHistorySyncPromoShownAfterDismissal, true);
 }
 
 void SigninPrefs::IncrementBookmarkBatchUploadPromoDismissCountWithLastTime(

@@ -28,6 +28,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/browsing_history_service.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/data_type.h"
@@ -379,6 +380,101 @@ TEST_F(BrowsingHistoryHandlerTest, IncludeActorVisits) {
 
   MockHistoryServiceCall(query, options);
   RunQueryHistory("test");
+}
+
+TEST_F(BrowsingHistoryHandlerTest,
+       ShouldShowHistoryPageHistorySyncPromoShownLessThanThreshold) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "test@example.com", signin::ConsentLevel::kSignin);
+
+  SigninPrefs signin_prefs(*profile()->GetPrefs());
+  for (int i = 0; i < 4; ++i) {
+    signin_prefs.IncrementHistoryPageHistorySyncPromoShownCount(
+        account_info.gaia);
+  }
+  base::MockCallback<
+      BrowsingHistoryHandler::ShouldShowHistoryPageHistorySyncPromoCallback>
+      callback;
+  EXPECT_CALL(callback, Run(true));
+  handler()->ShouldShowHistoryPageHistorySyncPromo(callback.Get());
+}
+
+TEST_F(BrowsingHistoryHandlerTest,
+       ShouldShowHistoryPageHistorySyncPromoShownEqualToThreshold) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "test@example.com", signin::ConsentLevel::kSignin);
+  SigninPrefs signin_prefs(*profile()->GetPrefs());
+  for (int i = 0; i < 5; ++i) {
+    signin_prefs.IncrementHistoryPageHistorySyncPromoShownCount(
+        account_info.gaia);
+  }
+  base::MockCallback<
+      BrowsingHistoryHandler::ShouldShowHistoryPageHistorySyncPromoCallback>
+      callback;
+  EXPECT_CALL(callback, Run(false));
+  handler()->ShouldShowHistoryPageHistorySyncPromo(callback.Get());
+}
+
+TEST_F(BrowsingHistoryHandlerTest,
+       ShouldShowHistoryPageHistorySyncPromoDismissedOnceCooldownPassed) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "test@example.com", signin::ConsentLevel::kSignin);
+  SigninPrefs signin_prefs(*profile()->GetPrefs());
+  handler()->RecordHistoryPageHistorySyncPromoDismissed();
+  handler()->test_clock()->Advance(base::Days(8));
+  base::MockCallback<
+      BrowsingHistoryHandler::ShouldShowHistoryPageHistorySyncPromoCallback>
+      callback;
+  EXPECT_CALL(callback, Run(true));
+  handler()->ShouldShowHistoryPageHistorySyncPromo(callback.Get());
+}
+
+TEST_F(BrowsingHistoryHandlerTest,
+       ShouldShowHistoryPageHistorySyncPromoDismissedOnceCooldownNotPassed) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "test@example.com", signin::ConsentLevel::kSignin);
+  SigninPrefs signin_prefs(*profile()->GetPrefs());
+  handler()->RecordHistoryPageHistorySyncPromoDismissed();
+  handler()->test_clock()->Advance(base::Days(6));
+  base::MockCallback<
+      BrowsingHistoryHandler::ShouldShowHistoryPageHistorySyncPromoCallback>
+      callback;
+  EXPECT_CALL(callback, Run(false));
+  handler()->ShouldShowHistoryPageHistorySyncPromo(callback.Get());
+}
+
+TEST_F(BrowsingHistoryHandlerTest,
+       ShouldShowHistoryPageHistorySyncPromoShownAfterDismissal) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "test@example.com", signin::ConsentLevel::kSignin);
+  SigninPrefs signin_prefs(*profile()->GetPrefs());
+  handler()->RecordHistoryPageHistorySyncPromoDismissed();
+  handler()->test_clock()->Advance(base::Days(8));
+  base::MockCallback<
+      BrowsingHistoryHandler::ShouldShowHistoryPageHistorySyncPromoCallback>
+      callback_before_shown_after_dismissal;
+  EXPECT_CALL(callback_before_shown_after_dismissal, Run(true));
+  handler()->ShouldShowHistoryPageHistorySyncPromo(
+      callback_before_shown_after_dismissal.Get());
+
+  handler()->IncrementHistoryPageHistorySyncPromoShownCount();
+
+  base::MockCallback<
+      BrowsingHistoryHandler::ShouldShowHistoryPageHistorySyncPromoCallback>
+      callback_shown_after_dismissal;
+  EXPECT_CALL(callback_shown_after_dismissal, Run(false));
+  handler()->ShouldShowHistoryPageHistorySyncPromo(
+      callback_shown_after_dismissal.Get());
 }
 #endif
 

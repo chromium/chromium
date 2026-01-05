@@ -69,6 +69,9 @@ export class HistorySyncPromoElement extends HistorySyncPromoElementBase {
                 this.handleAccountInfoChanged_.bind(this));
     BrowserServiceImpl.getInstance().handler.requestAccountInfo().then(
         ({accountInfo}) => this.handleAccountInfoChanged_(accountInfo));
+
+    BrowserServiceImpl.getInstance()
+        .handler.incrementHistoryPageHistorySyncPromoShownCount();
   }
 
   override disconnectedCallback() {
@@ -86,7 +89,7 @@ export class HistorySyncPromoElement extends HistorySyncPromoElementBase {
   protected onCloseClick_() {
     this.shown_ = false;
     BrowserServiceImpl.getInstance()
-        .handler.incrementHistoryPageHistorySyncPromoShownCount();
+        .handler.recordHistoryPageHistorySyncPromoDismissed();
   }
 
   protected isSignInState_(state: HistorySignInState): boolean {

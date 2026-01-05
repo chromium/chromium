@@ -194,6 +194,10 @@ interface PageHandler {
   [EnableIfNot=is_chromeos]
   ShouldShowHistoryPageHistorySyncPromo() => (bool should_show);
 
+  // Records the time when the history sync promo was dismissed.
+  [EnableIfNot=is_chromeos]
+  RecordHistoryPageHistorySyncPromoDismissed();
+
   // Increments the history page history sync promo shown count.
   [EnableIfNot=is_chromeos]
   IncrementHistoryPageHistorySyncPromoShownCount();
