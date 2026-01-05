@@ -24,10 +24,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(gfx::ColorSpace::MatrixID,
 IPC_ENUM_TRAITS_MAX_VALUE(gfx::ColorSpace::RangeID,
                           gfx::ColorSpace::RangeID::kMaxValue)
 
-IPC_STRUCT_TRAITS_BEGIN(skcms_Matrix3x3)
-  IPC_STRUCT_TRAITS_MEMBER(vals)
-IPC_STRUCT_TRAITS_END()
-
 IPC_STRUCT_TRAITS_BEGIN(skcms_TransferFunction)
   IPC_STRUCT_TRAITS_MEMBER(a)
   IPC_STRUCT_TRAITS_MEMBER(b)
