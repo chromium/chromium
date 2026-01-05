@@ -120,7 +120,9 @@ class TestStatusIcon : public StatusIcon {
 class TestStartupLaunchManager : public StartupLaunchManager {
  public:
   explicit TestStartupLaunchManager(BrowserProcess* browser_process)
-      : StartupLaunchManager(browser_process) {}
+      : StartupLaunchManager(browser_process) {
+    CommitLaunchOnStartupState();
+  }
 
   MOCK_METHOD1(UpdateLaunchOnStartup,
                void(std::optional<StartupLaunchMode> startup_mode));

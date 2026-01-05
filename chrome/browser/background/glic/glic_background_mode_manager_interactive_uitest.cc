@@ -50,7 +50,10 @@ namespace {
 class TestStartupLaunchManager : public StartupLaunchManager {
  public:
   explicit TestStartupLaunchManager(BrowserProcess* browser_process)
-      : StartupLaunchManager(browser_process) {}
+      : StartupLaunchManager(browser_process) {
+    // Release lock acquired during launch manager construction.
+    CommitLaunchOnStartupState();
+  }
 
   MOCK_METHOD1(UpdateLaunchOnStartup,
                void(std::optional<StartupLaunchMode> startup_mode));

@@ -64,6 +64,7 @@
 #include "chrome/browser/segmentation_platform/chrome_browser_main_extra_parts_segmentation_platform.h"
 #include "chrome/browser/sessions/chrome_serialized_navigation_driver.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/browser/startup/startup_launch_manager.h"
 #include "chrome/browser/startup_data.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
@@ -1559,6 +1560,10 @@ void ChromeBrowserMainParts::PreBrowserStart() {
   // available at no cost in an indexed format. This enables activating
   // subresource filtering, if needed, also for page loads on start-up.
   g_browser_process->subresource_filter_ruleset_service();
+
+#if BUILDFLAG(IS_WIN)
+  StartupLaunchManager::From(g_browser_process)->CommitLaunchOnStartupState();
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void ChromeBrowserMainParts::PostBrowserStart() {
