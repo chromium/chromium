@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/push_notification/server_client/push_notification_desktop_api_call_flow_impl.h"
 #include "chrome/browser/push_notification/server_client/push_notification_server_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -140,8 +142,12 @@ class PushNotificationServerClientDesktopImplTest : public testing::Test {
   }
 
   void SetUp() override {
-    identity_test_environment_.MakePrimaryAccountAvailable(
-        kEmail, signin::ConsentLevel::kSync);
+    signin::ConsentLevel consent_level =
+        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+            ? signin::ConsentLevel::kSignin
+            : signin::ConsentLevel::kSync;
+    identity_test_environment_.MakePrimaryAccountAvailable(kEmail,
+                                                           consent_level);
     std::unique_ptr<FakePushNotificationApiCallFlow> api_call_flow =
         std::make_unique<FakePushNotificationApiCallFlow>();
     api_call_flow_ = api_call_flow.get();
