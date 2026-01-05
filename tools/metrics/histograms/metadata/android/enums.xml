@@ -1944,6 +1944,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/public/browser/android/transfer_input_to_viz_result.h:TransferInputToVizResult)-->
 
+<!-- LINT.IfChange(TransferredSequenceType) -->
+
+<enum name="TransferredSequenceType">
+  <int value="0" label="ActionDown"/>
+  <int value="1" label="PointerDown"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/input/input_transfer_handler_android.h:TransferredSequenceType) -->
+
 <enum name="UrlTargetType">
   <int value="0" label="URL"/>
   <int value="1" label="Search"/>

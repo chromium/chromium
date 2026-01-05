@@ -330,16 +330,25 @@ bool InputTransferHandlerAndroid::ConsumeEventsUntilCancel(
     return true;
   }
   if (event.GetAction() == ui::MotionEvent::Action::UP) {
-    // The touch sequence transferred by system was probably a different one
-    // than the one Chrome requested for.
-    constexpr InputOnVizSequenceDroppedReason reason =
-        InputOnVizSequenceDroppedReason::kAndroidOSTransferredANewSequence;
-    EmitSequenceDroppedReasonTraceEvent(reason);
-    base::UmaHistogramEnumeration(kTouchSequenceDroppedReasonHistogram, reason);
-    base::UmaHistogramCustomCounts(
-        kEventsInDroppedSequenceHistogram, num_events_in_dropped_sequence_,
-        kTouchMoveCountsMin, kTouchMoveCountsMax, kTouchMoveCountsBuckets);
-    num_events_in_dropped_sequence_ = 0;
+    if (!IsTouchSequencePotentiallyActiveOnViz()) {
+      base::UmaHistogramEnumeration(kNewSequenceTransferredByOSHistogram,
+                                    TransferredSequenceType::kActionDown);
+      // The touch sequence transferred by system was probably a different one
+      // than the one Chrome requested for since there was no active sequence on
+      // Viz.
+      constexpr InputOnVizSequenceDroppedReason reason =
+          InputOnVizSequenceDroppedReason::kAndroidOSTransferredANewSequence;
+      EmitSequenceDroppedReasonTraceEvent(reason);
+      base::UmaHistogramEnumeration(kTouchSequenceDroppedReasonHistogram,
+                                    reason);
+      base::UmaHistogramCustomCounts(
+          kEventsInDroppedSequenceHistogram, num_events_in_dropped_sequence_,
+          kTouchMoveCountsMin, kTouchMoveCountsMax, kTouchMoveCountsBuckets);
+      num_events_in_dropped_sequence_ = 0;
+    } else {
+      base::UmaHistogramEnumeration(kNewSequenceTransferredByOSHistogram,
+                                    TransferredSequenceType::kPointerDown);
+    }
   }
   if (event.GetAction() == ui::MotionEvent::Action::DOWN) {
     if ((event.GetEventTime() - last_successful_transfer_time_).is_positive()) {

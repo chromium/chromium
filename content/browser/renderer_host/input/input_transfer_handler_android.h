@@ -67,7 +67,9 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
   static constexpr const char* kEventTypesInDroppedSequenceHistogram =
       "Android.InputOnViz.Browser.EventTypesInDroppedSequence";
   static constexpr const char* kTouchSequenceDroppedReasonHistogram =
-      "Android.InputOnViz.Browser.SequenceDroppedReason2";
+      "Android.InputOnViz.Browser.SequenceDroppedReason3";
+  static constexpr const char* kNewSequenceTransferredByOSHistogram =
+      "Android.InputOnViz.Browser.NewSequenceTransferredByOS";
 
   bool touch_transferred() {
     return handler_state_ == HandlerState::kConsumeEventsUntilCancel;
@@ -119,6 +121,17 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
 
   void EmitTransferResultHistogramAndTraceEvent(
       TransferInputToVizResult result);
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(TransferredSequenceType)
+  enum class TransferredSequenceType {
+    kActionDown = 0,
+    kPointerDown = 1,
+    kMaxValue = kPointerDown,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:TransferredSequenceType)
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
