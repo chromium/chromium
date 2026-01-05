@@ -110,13 +110,13 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Delegate,
       ExtensionsMenuSitePermissionsPageView* site_permissions_page,
       content::WebContents* web_contents);
 
-  // Populates menu items in `main_page`.
+  // Populates menu entries in `main_page`.
   void PopulateMainPage(ExtensionsMenuMainPageView* main_page);
 
-  // Inserts a menu item for `extension_id` in `main_page` at `index`.
-  void InsertMenuItemMainPage(ExtensionsMenuMainPageView* main_page,
-                              ExtensionActionViewModel* action_model,
-                              int index);
+  // Inserts an entry for `extension_id` in `main_page` at `index`.
+  void InsertMenuEntry(ExtensionsMenuMainPageView* main_page,
+                       ExtensionActionViewModel* action_model,
+                       int index);
 
   // Adds or updates a request access entry for `extension_id` in `main_page` at
   // `index`.

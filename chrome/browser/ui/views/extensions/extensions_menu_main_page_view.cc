@@ -157,7 +157,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
               /*contents_margins=*/gfx::Insets::VH(0, dialog_insets.left()),
               /*reload_button_margins=*/
               gfx::Insets::TLBR(control_vertical_spacing, 0, 0, 0),
-              /*menu_items_margins=*/
+              /*menu_entries_margins=*/
               gfx::Insets::TLBR(control_vertical_spacing, 0, 0, 0)),
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
           CreateWebstoreButtonBuilder(),
@@ -199,7 +199,7 @@ void ExtensionsMenuMainPageView::CreateAndInsertMenuEntry(
                           base::Unretained(menu_handler_), extension_id));
   item->Update(entry_state);
 
-  // Add vertical spacing in between menu items.
+  // Add vertical spacing in between menu entries.
   if (index > 0) {
     ChromeLayoutProvider* const chrome_layout_provider =
         ChromeLayoutProvider::Get();
@@ -210,11 +210,11 @@ void ExtensionsMenuMainPageView::CreateAndInsertMenuEntry(
         gfx::Insets::TLBR(control_vertical_spacing, 0, 0, 0));
   }
 
-  menu_items_->AddChildViewAt(std::move(item), index);
+  menu_entries_->AddChildViewAt(std::move(item), index);
 }
 
-void ExtensionsMenuMainPageView::RemoveMenuItem(int index) {
-  menu_items_->RemoveChildViewT(menu_items_->children().at(index));
+void ExtensionsMenuMainPageView::RemoveMenuEntry(int index) {
+  menu_entries_->RemoveChildViewT(menu_entries_->children().at(index));
 }
 
 void ExtensionsMenuMainPageView::UpdateSiteSettings(
@@ -341,11 +341,11 @@ void ExtensionsMenuMainPageView::ClearExtensionsRequestingAccess() {
 
 std::vector<ExtensionsMenuEntryView*>
 ExtensionsMenuMainPageView::GetMenuEntries() const {
-  std::vector<ExtensionsMenuEntryView*> menu_item_views;
-  for (views::View* view : menu_items_->children()) {
-    menu_item_views.push_back(GetAsMenuEntry(view));
+  std::vector<ExtensionsMenuEntryView*> menu_entry_views;
+  for (views::View* view : menu_entries_->children()) {
+    menu_entry_views.push_back(GetAsMenuEntry(view));
   }
-  return menu_item_views;
+  return menu_entry_views;
 }
 
 std::u16string_view ExtensionsMenuMainPageView::GetSiteSettingLabelForTesting()
@@ -471,7 +471,7 @@ ExtensionsMenuMainPageView::CreateContentsBuilder(
     gfx::Insets scroll_margins,
     gfx::Insets contents_margins,
     gfx::Insets reload_button_margins,
-    gfx::Insets menu_items_margins) {
+    gfx::Insets menu_entries_margins) {
   // This is set so that the extensions menu doesn't fall outside the monitor in
   // a maximized window in 1024x768. See https://crbug.com/1096630.
   // TODO(crbug.com/40891805): Consider making the height dynamic.
@@ -540,10 +540,10 @@ ExtensionsMenuMainPageView::CreateContentsBuilder(
                               .CopyAddressTo(&requests_entries_view_)
                               .SetOrientation(
                                   views::BoxLayout::Orientation::kVertical)),
-                  // Menu items section.
+                  // menu entries section.
                   views::Builder<SectionContainer>()
-                      .CopyAddressTo(&menu_items_)
-                      .SetProperty(views::kMarginsKey, menu_items_margins)));
+                      .CopyAddressTo(&menu_entries_)
+                      .SetProperty(views::kMarginsKey, menu_entries_margins)));
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

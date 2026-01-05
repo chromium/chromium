@@ -175,7 +175,7 @@ void ExtensionsMenuDelegateDesktop::OnActionAdded(
     return;
   }
 
-  InsertMenuItemMainPage(main_page, action_model, index);
+  InsertMenuEntry(main_page, action_model, index);
 }
 
 void ExtensionsMenuDelegateDesktop::OnActionRemoved(
@@ -193,10 +193,10 @@ void ExtensionsMenuDelegateDesktop::OnActionRemoved(
     return;
   }
 
-  // Remove the menu item for the extension when main page is opened.
+  // Remove the menu entry for the extension when main page is opened.
   auto* main_page = GetMainPage(current_page_.view());
   CHECK(main_page);
-  main_page->RemoveMenuItem(index);
+  main_page->RemoveMenuEntry(index);
 }
 
 void ExtensionsMenuDelegateDesktop::OnActionUpdated() {
@@ -458,11 +458,11 @@ void ExtensionsMenuDelegateDesktop::PopulateMainPage(
   const std::vector<std::unique_ptr<ExtensionActionViewModel>>& action_models =
       menu_model_->action_models();
   for (size_t i = 0; i < action_models.size(); ++i) {
-    InsertMenuItemMainPage(main_page, action_models[i].get(), i);
+    InsertMenuEntry(main_page, action_models[i].get(), i);
   }
 }
 
-void ExtensionsMenuDelegateDesktop::InsertMenuItemMainPage(
+void ExtensionsMenuDelegateDesktop::InsertMenuEntry(
     ExtensionsMenuMainPageView* main_page,
     ExtensionActionViewModel* action_model,
     int index) {
