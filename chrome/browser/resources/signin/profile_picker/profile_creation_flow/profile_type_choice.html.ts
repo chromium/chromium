@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {ProfileTypeChoiceElement} from './profile_type_choice.js';
@@ -33,7 +34,11 @@ export function getHtml(this: ProfileTypeChoiceElement) {
       ?disabled="${this.profileCreationInProgress}">
     $i18n{signInButtonLabel}
   </cr-button>
-  <cr-button id="notNowButton" @click="${this.onNotNowClick_}"
+  <cr-button id="notNowButton" class="${
+      loadTimeData.getBoolean('usePrimaryAndTonalButtonsForPromos') ?
+          'tonal-button' :
+          ''}"
+      @click="${this.onNotNowClick_}"
       ?disabled="${this.profileCreationInProgress}">
     $i18n{declineSignInButtonLabel}
   </cr-button>

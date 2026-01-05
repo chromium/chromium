@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import type {ProfileSwitchElement} from './profile_switch.js';
 
@@ -29,7 +30,11 @@ export function getHtml(this: ProfileSwitchElement) {
     <div class="subtitle">$i18n{profileSwitchSubtitle}</div>
   </div>
   <div id="actionContainer">
-    <cr-button id="cancelButton" @click="${this.onCancelClick_}">
+    <cr-button id="cancelButton" class="${
+      loadTimeData.getBoolean('usePrimaryAndTonalButtonsForPromos') ?
+          'tonal-button' :
+          ''}"
+        @click="${this.onCancelClick_}">
       $i18n{cancel}
     </cr-button>
     <cr-button id="switchButton" class="action-button"

@@ -248,6 +248,10 @@ void AddStrings(content::WebUIDataSource* html_source, bool is_glic_version) {
 
   html_source->AddString("managedDeviceDisclaimer",
                          GetManagedDeviceDisclaimer());
+
+  html_source->AddBoolean("usePrimaryAndTonalButtonsForPromos",
+                          base::FeatureList::IsEnabled(
+                              switches::kUsePrimaryAndTonalButtonsForPromos));
 }
 
 void AddFlags(content::WebUIDataSource* html_source, bool is_glic_version) {
