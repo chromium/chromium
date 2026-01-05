@@ -581,12 +581,13 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
 
   inner_element_ = MakeGarbageCollected<MenuListInnerElement>(doc);
   inner_element_->setAttribute(html_names::kAriaHiddenAttr, keywords::kTrue);
+  inner_element_->SetShadowPseudoId(shadow_element_names::kSelectInnerElement);
   // Make sure InnerElement() always has a Text node.
   inner_element_->appendChild(Text::Create(doc, g_empty_string));
   root.AppendChild(inner_element_);
 
   button_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
-  button_slot_->SetIdAttribute(shadow_element_names::kSelectButton);
+  button_slot_->SetShadowPseudoId(shadow_element_names::kSelectButtonSlot);
   root.appendChild(button_slot_);
 
   popover_ = MakeGarbageCollected<PopoverElementForAppearanceBase>(doc);

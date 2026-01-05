@@ -824,6 +824,7 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoScrollMarkerGroup:
     case CSSSelector::kPseudoScrollButton:
     case CSSSelector::kPseudoOverscrollAreaParent:
+    case CSSSelector::kPseudoSelectHasSlottedButton:
       // These pseudos are not allowed to match featureless elements. When
       // adding new pseudos here, they would typically be allowed if they are
       // logical pseudos which take selector arguments.
@@ -2424,6 +2425,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
       return selector.MatchNth(NthIndexCache::NthLastOfTypeIndex(element));
     }
+    case CSSSelector::kPseudoSelectHasSlottedButton:
+      if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
+        return select->SlottedButton();
+      }
+      return false;
     case CSSSelector::kPseudoSelectorFragmentAnchor:
       return MatchesSelectorFragmentAnchorPseudoClass(element);
     case CSSSelector::kPseudoTarget:

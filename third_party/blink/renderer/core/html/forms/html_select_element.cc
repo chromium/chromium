@@ -451,6 +451,8 @@ bool HTMLSelectElement::CanSelectAll() const {
   return !UsesMenuList();
 }
 
+// This method returns hard-coded layout object types in order to enforce flex
+// layout despite the standardized inline-block display property.
 LayoutObject* HTMLSelectElement::CreateLayoutObject(
     const ComputedStyle& style) {
   if (style.IsVerticalWritingMode()) {
@@ -458,6 +460,12 @@ LayoutObject* HTMLSelectElement::CreateLayoutObject(
   }
 
   if (UsesMenuList()) {
+    if (SupportsBaseAppearance(style.EffectiveAppearance())) {
+      // Don't hard code the layout object type for customizable select. The UA
+      // stylesheet has flex in it and authors should be able to change it if
+      // they want.
+      return HTMLFormControlElementWithState::CreateLayoutObject(style);
+    }
     return MakeGarbageCollected<LayoutFlexibleBox>(this);
   }
   return MakeGarbageCollected<LayoutBlockFlow>(this);
@@ -1295,21 +1303,45 @@ void HTMLSelectElement::DefaultEventHandler(Event& event) {
 
 void HTMLSelectElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLFormControlElementWithState::ChildrenChanged(change);
-  if (RuntimeEnabledFeatures::SelectChildrenRemovedFixEnabled()) {
-    // OptionRemoved is normally called in HTMLOptionElement::RemovedFrom, but
-    // as a direct child we call OptionRemoved here in order to avoid
-    // https://issues.chromium.org/issues/444330901
-    if (change.type == ChildrenChangeType::kAllChildrenRemoved) {
-      for (Node* node : change.removed_nodes) {
-        if (auto* option = DynamicTo<HTMLOptionElement>(node)) {
-          OptionRemoved(*option);
-        }
+  bool button_changed = false;
+  if (change.type ==
+      ChildrenChangeType::kFinishedBuildingDocumentFragmentTree) {
+    for (Node& node : NodeTraversal::ChildrenOf(*this)) {
+      if (IsA<HTMLButtonElement>(node)) {
+        button_changed = true;
       }
-    } else if (change.type == ChildrenChangeType::kElementRemoved) {
-      if (auto* option = DynamicTo<HTMLOptionElement>(change.sibling_changed)) {
+    }
+  } else if (change.type == ChildrenChangeType::kElementInserted) {
+    if (IsA<HTMLButtonElement>(change.sibling_changed)) {
+      button_changed = true;
+    }
+  } else if (change.type == ChildrenChangeType::kElementRemoved) {
+    if (IsA<HTMLButtonElement>(change.sibling_changed)) {
+      button_changed = true;
+    } else if (auto* option =
+                   DynamicTo<HTMLOptionElement>(change.sibling_changed)) {
+      if (RuntimeEnabledFeatures::SelectChildrenRemovedFixEnabled()) {
+        // OptionRemoved is normally called in HTMLOptionElement::RemovedFrom,
+        // but as a direct child we call OptionRemoved here in order to avoid
+        // https://issues.chromium.org/issues/444330901
         OptionRemoved(*option);
       }
     }
+  } else if (change.type == ChildrenChangeType::kAllChildrenRemoved) {
+    for (Node* node : change.removed_nodes) {
+      if (IsA<HTMLButtonElement>(node)) {
+        button_changed = true;
+      } else if (auto* option = DynamicTo<HTMLOptionElement>(node)) {
+        if (RuntimeEnabledFeatures::SelectChildrenRemovedFixEnabled()) {
+          // See comment in kElementRemoved case.
+          OptionRemoved(*option);
+        }
+      }
+    }
+  }
+
+  if (button_changed) {
+    PseudoStateChanged(CSSSelector::kPseudoSelectHasSlottedButton);
   }
 }
 

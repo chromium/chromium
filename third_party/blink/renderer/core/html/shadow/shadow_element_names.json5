@@ -86,10 +86,6 @@
       Symbol: "kSelectOptions",
     },
     {
-      name: "select-button",
-      Symbol: "kSelectButton",
-    },
-    {
       name: "select-popover-options",
       Symbol: "kSelectPopoverOptions",
     },
@@ -189,6 +185,14 @@
     {
       name: "-internal-option-slot",
       Symbol: "kOptionSlot",
+    },
+    {
+      name: "-internal-select-button-slot",
+      Symbol: "kSelectButtonSlot",
+    },
+    {
+      name: "-internal-select-inner-element",
+      Symbol: "kSelectInnerElement",
     },
   ],
 }

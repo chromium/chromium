@@ -108,9 +108,12 @@ instead of "initial value".
 |   <shadow:root>
 |     <div>
 |       aria-hidden="true"
+|       pseudo="-internal-select-inner-element"
+|       shadow:pseudoId="-internal-select-inner-element"
 |       "initial value"
 |     <slot>
-|       id="select-button"
+|       pseudo="-internal-select-button-slot"
+|       shadow:pseudoId="-internal-select-button-slot"
 |     <div>
 |       popover="auto"
 |       pseudo="picker(select)"

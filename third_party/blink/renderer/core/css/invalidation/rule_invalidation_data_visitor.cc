@@ -161,6 +161,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoPopoverOpen:
     case CSSSelector::kPseudoMenulistPopoverWithMenubarAnchor:
     case CSSSelector::kPseudoMenulistPopoverWithMenulistAnchor:
+    case CSSSelector::kPseudoSelectHasSlottedButton:
     case CSSSelector::kPseudoSlotted:
     case CSSSelector::kPseudoVideoPersistent:
     case CSSSelector::kPseudoVideoPersistentAncestor:
@@ -1661,6 +1662,7 @@ RuleInvalidationDataVisitor<VisitorType>::InvalidationSetForSimpleSelector(
       case CSSSelector::kPseudoRequired:
       case CSSSelector::kPseudoReadOnly:
       case CSSSelector::kPseudoReadWrite:
+      case CSSSelector::kPseudoSelectHasSlottedButton:
       case CSSSelector::kPseudoState:
       case CSSSelector::kPseudoUserInvalid:
       case CSSSelector::kPseudoUserValid:

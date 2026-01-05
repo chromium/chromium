@@ -388,9 +388,11 @@ TEST_F(PositionIteratorTest, DecrementFromSelectElementOffset1) {
   EXPECT_THAT(
       ScanBackward(PositionInFlatTree(select_element, 1)),
       ElementsAre("---- SELECT@1 SELECT@offsetInAnchor[1] SELECT@beforeAnchor",
-                  "---E DIV DIV@afterChildren",
+                  "---E DIV ::-internal-select-inner-element DIV "
+                  "::-internal-select-inner-element@afterChildren",
                   "-S-E #text \"\"@0 #text \"\"@offsetInAnchor[0]",
-                  "-S-- DIV DIV@offsetInAnchor[0]"));
+                  "-S-- DIV ::-internal-select-inner-element DIV "
+                  "::-internal-select-inner-element@offsetInAnchor[0]"));
 }
 
 TEST_F(PositionIteratorTest, DecrementWithBrInOption) {
@@ -872,9 +874,11 @@ TEST_F(PositionIteratorTest, IncrementFromSelectElementBeforeNode) {
   EXPECT_THAT(
       ScanForward(PositionInFlatTree::BeforeNode(select_element)),
       ElementsAre("-S-- SELECT@0 SELECT@offsetInAnchor[0] SELECT@beforeAnchor",
-                  "-S-- DIV DIV@offsetInAnchor[0]",
+                  "-S-- DIV ::-internal-select-inner-element DIV "
+                  "::-internal-select-inner-element@offsetInAnchor[0]",
                   "-S-E #text \"\"@0 #text \"\"@offsetInAnchor[0]",
-                  "---E DIV DIV@afterChildren"));
+                  "---E DIV ::-internal-select-inner-element DIV "
+                  "::-internal-select-inner-element@afterChildren"));
 }
 
 TEST_F(PositionIteratorTest, IncrementFromSelectElementOffset0) {
@@ -885,9 +889,11 @@ TEST_F(PositionIteratorTest, IncrementFromSelectElementOffset0) {
   EXPECT_THAT(
       ScanForward(PositionInFlatTree(select_element, 0)),
       ElementsAre("-S-- SELECT@0 SELECT@offsetInAnchor[0] SELECT@beforeAnchor",
-                  "-S-- DIV DIV@offsetInAnchor[0]",
+                  "-S-- DIV ::-internal-select-inner-element DIV "
+                  "::-internal-select-inner-element@offsetInAnchor[0]",
                   "-S-E #text \"\"@0 #text \"\"@offsetInAnchor[0]",
-                  "---E DIV DIV@afterChildren"));
+                  "---E DIV ::-internal-select-inner-element DIV "
+                  "::-internal-select-inner-element@afterChildren"));
 }
 
 TEST_F(PositionIteratorTest, IncrementFromSelectElementOffset1) {
@@ -898,9 +904,9 @@ TEST_F(PositionIteratorTest, IncrementFromSelectElementOffset1) {
   EXPECT_THAT(
       ScanForward(PositionInFlatTree(select_element, 1)),
       ElementsAre("---- SELECT@1 SELECT@offsetInAnchor[1] SELECT@beforeAnchor",
-                  "-S-E SLOT id=\"select-button\" SLOT "
-                  "id=\"select-button\"@beforeAnchor SLOT "
-                  "id=\"select-button\"@offsetInAnchor[0]"));
+                  "-S-E SLOT ::-internal-select-button-slot SLOT "
+                  "::-internal-select-button-slot@beforeAnchor SLOT "
+                  "::-internal-select-button-slot@offsetInAnchor[0]"));
 }
 
 TEST_F(PositionIteratorTest, IncrementWithCollapsedSpace) {

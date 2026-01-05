@@ -2276,6 +2276,20 @@ select::-internal-select-autofill-preview-text {
   }
 }
 
+/* These style rules control whether the select's MenuListInnerElement or
+ * author provided <button> are rendered. Only one should be rendered at a
+ * time, and is based on whether the author provided a <button> and whether
+ * appearance:base-select is set. */
+select:not(:-internal-select-has-slotted-button)::-internal-select-button-slot {
+  display: none;
+}
+select:-internal-select-has-slotted-button::-internal-select-inner-element {
+  display: -internal-auto-base(block, none);
+}
+select:-internal-select-has-slotted-button::-internal-select-button-slot {
+  display: -internal-auto-base(none, contents);
+}
+
 /* These style rules switch whether <option> elements render their label text
  * via ::-internal-option-label-container or all of their children via a
  * <slot> called ::-internal-option-slot. Using the <slot> for rendering is

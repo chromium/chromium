@@ -496,6 +496,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoRightPage:
     case kPseudoRoot:
     case kPseudoScope:
+    case kPseudoSelectHasSlottedButton:
     case kPseudoSelectorFragmentAnchor:
     case kPseudoSingleButton:
     case kPseudoSlotted:
@@ -578,6 +579,8 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-internal-overscroll-target", CSSSelector::kPseudoOverscrollTarget},
     {"-internal-popover-in-top-layer", CSSSelector::kPseudoPopoverInTopLayer},
     {"-internal-relative-anchor", CSSSelector::kPseudoRelativeAnchor},
+    {"-internal-select-has-slotted-button",
+     CSSSelector::kPseudoSelectHasSlottedButton},
     {"-internal-selector-fragment-anchor",
      CSSSelector::kPseudoSelectorFragmentAnchor},
     {"-internal-shadow-host-has-non-auto-appearance",
@@ -1060,6 +1063,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoRequired:
     case kPseudoRoot:
     case kPseudoScope:
+    case kPseudoSelectHasSlottedButton:
     case kPseudoSelectorFragmentAnchor:
     case kPseudoSingleButton:
     case kPseudoStart:
@@ -1829,6 +1833,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoReadOnly:
     case kPseudoReadWrite:
     case kPseudoRequired:
+    case kPseudoSelectHasSlottedButton:
     case kPseudoSelectorFragmentAnchor:
     case kPseudoState:
     case kPseudoTarget:
