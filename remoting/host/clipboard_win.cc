@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -177,8 +178,8 @@ void ClipboardWin::InjectClipboardEvent(const protocol::ClipboardEvent& event) {
 
   clipboard.Empty();
 
-  HGLOBAL text_global =
-      ::GlobalAlloc(GMEM_MOVEABLE, (text.size() + 1) * sizeof(WCHAR));
+  const size_t num_chars = text.size() + 1;
+  HGLOBAL text_global = ::GlobalAlloc(GMEM_MOVEABLE, num_chars * sizeof(WCHAR));
   if (!text_global) {
     LOG(WARNING) << "Couldn't allocate global memory.";
     return;
@@ -186,9 +187,19 @@ void ClipboardWin::InjectClipboardEvent(const protocol::ClipboardEvent& event) {
 
   LPWSTR text_global_locked =
       reinterpret_cast<LPWSTR>(::GlobalLock(text_global));
-  UNSAFE_TODO(
-      memcpy(text_global_locked, text.data(), text.size() * sizeof(WCHAR)));
-  UNSAFE_TODO(text_global_locked[text.size()]) = (WCHAR)0;
+
+  // SAFETY: Have to trust GlobalAlloc/GlobalLock returned num_chars bytes.
+  auto dest_span = UNSAFE_BUFFERS(base::span(text_global_locked, num_chars));
+
+  // Use as_writable_chars to view both sides as compatible character types.
+  // This bypasses the wchar_t vs char16_t strict aliasing check.
+  auto dest_chars = base::as_writable_chars(dest_span);
+  auto src_chars = base::as_chars(base::span(text));
+
+  dest_chars.first(src_chars.size()).copy_from(src_chars);
+
+  // Set the null terminator using the original span (which is WCHAR).
+  dest_span[text.size()] = L'\0';
   ::GlobalUnlock(text_global);
 
   clipboard.SetData(CF_UNICODETEXT, text_global);

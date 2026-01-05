@@ -63,15 +63,17 @@ MATCHER_P(EqualsSinglePointerTouchInfo, expected, "") {
 
 // Make sure that every touch point has the right flag (pointerFlags).
 MATCHER_P(EqualsPointerTouchInfoFlag, id_to_flag_map, "") {
-  for (size_t i = 0; i < id_to_flag_map.size(); ++i) {
-    const POINTER_TOUCH_INFO* touch_info = UNSAFE_TODO(arg + i);
-    const uint32_t id = touch_info->pointerInfo.pointerId;
+  // SAFETY: arg points to the same num elements as id_to_flag_map's size.
+  auto touch_infos = UNSAFE_BUFFERS(base::span(arg, id_to_flag_map.size()));
+
+  for (const auto& touch_info : touch_infos) {
+    const uint32_t id = touch_info.pointerInfo.pointerId;
     if (!base::Contains(id_to_flag_map, id)) {
       return false;
     }
 
     if (id_to_flag_map.find(id)->second !=
-        touch_info->pointerInfo.pointerFlags) {
+        touch_info.pointerInfo.pointerFlags) {
       return false;
     }
   }

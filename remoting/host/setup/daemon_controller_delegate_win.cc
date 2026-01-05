@@ -367,10 +367,9 @@ void DaemonControllerDelegateWin::UpdateConfig(
     base::Value::Dict updated_config,
     DaemonController::CompletionCallback done) {
   // Check for bad keys.
-  for (size_t i = 0; i < std::size(kReadonlyKeys); ++i) {
-    if (updated_config.Find(UNSAFE_TODO(kReadonlyKeys[i]))) {
-      LOG(ERROR) << "Cannot update config: '" << UNSAFE_TODO(kReadonlyKeys[i])
-                 << "' is read only.";
+  for (const char* key : kReadonlyKeys) {
+    if (updated_config.Find(key)) {
+      LOG(ERROR) << "Cannot update config: '" << key << "' is read only.";
       InvokeCompletionCallback(std::move(done), false);
       return;
     }
