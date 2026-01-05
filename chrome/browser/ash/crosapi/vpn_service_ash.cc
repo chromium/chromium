@@ -44,13 +44,6 @@ void VpnServiceForExtensionAsh::BindReceiverAndObserver(
   observers_.Add(std::move(observer));
 }
 
-void VpnServiceForExtensionAsh::DispatchConfigRemovedEvent(
-    const std::string& configuration_name) {
-  for (auto& observer : observers_) {
-    observer->OnConfigRemoved(configuration_name);
-  }
-}
-
 VpnServiceAsh::VpnServiceAsh() = default;
 
 VpnServiceAsh::~VpnServiceAsh() = default;

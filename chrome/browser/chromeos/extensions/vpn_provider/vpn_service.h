@@ -61,16 +61,11 @@ class VpnServiceForExtension
   VpnServiceForExtension(const VpnServiceForExtension&) = delete;
   VpnServiceForExtension& operator=(const VpnServiceForExtension&) = delete;
 
-  // crosapi::mojom::EventObserverForExtension:
-  void OnConfigRemoved(const std::string& configuration_name) override;
-
   mojo::Remote<crosapi::mojom::VpnServiceForExtension>& Proxy() {
     return vpn_service_;
   }
 
  private:
-  void DispatchEvent(std::unique_ptr<extensions::Event>) const;
-
   const extensions::ExtensionId extension_id_;
   raw_ptr<content::BrowserContext> browser_context_;
 
@@ -172,6 +167,8 @@ class VpnService : public extensions::api::VpnServiceInterface,
   void SendOnPlatformMessageToExtension(const std::string& extension_id,
                                         const std::string& configuration_name,
                                         uint32_t platform_message);
+  void SendOnConfigRemovedToExtension(const std::string& extension_id,
+                                      const std::string& configuration_name);
 
   crosapi::VpnServiceForExtensionAsh::VpnConfiguration*
   CreateConfigurationInternal(const std::string& extension_id,

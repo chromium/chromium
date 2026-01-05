@@ -459,9 +459,6 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, VpnSuccess) {
 
 class TestEventObserverForExtension
     : public crosapi::mojom::EventObserverForExtension {
- public:
-  // crosapi::mojom::EventObserverForExtension:
-  void OnConfigRemoved(const std::string& configuration_name) override {}
 };
 
 using SuccessOrFailureCallback =

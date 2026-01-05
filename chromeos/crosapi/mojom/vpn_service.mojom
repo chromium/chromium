@@ -23,12 +23,9 @@ struct VpnErrorResponse {
 interface EventObserverForExtension {
   // OnAddDialog@0 was removed.
   // OnConfigureDialog@1 was removed.
+  // OnConfigRemoved@2 was removed.
   // OnPlatformMessage@3 was removed.
   // OnPacketReceived@4 was removed.
-
-  // Dispatches OnConfigRemoved event.
-  OnConfigRemoved@2(string configuration_name);
-
 };
 
 // VpnServiceForExtension manages VPN configurations for a specific extension.

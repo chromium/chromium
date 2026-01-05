@@ -147,21 +147,6 @@ VpnServiceForExtension::VpnServiceForExtension(
 
 VpnServiceForExtension::~VpnServiceForExtension() = default;
 
-void VpnServiceForExtension::OnConfigRemoved(
-    const std::string& configuration_name) {
-  DispatchEvent(std::make_unique<extensions::Event>(
-      extensions::events::HistogramValue::VPN_PROVIDER_ON_CONFIG_REMOVED,
-      api_vpn::OnConfigRemoved::kEventName,
-      api_vpn::OnConfigRemoved::Create(configuration_name), browser_context_));
-}
-
-// TODO(neis): Remove this in favor of VpnService::SendToExtension.
-void VpnServiceForExtension::DispatchEvent(
-    std::unique_ptr<extensions::Event> event) const {
-  extensions::EventRouter::Get(browser_context_)
-      ->DispatchEventToExtension(extension_id_, std::move(event));
-}
-
 VpnService::VpnService(content::BrowserContext* browser_context)
     : browser_context_(browser_context), vpn_providers_observer_(this) {
   GetVpnService()->SetController(this);
@@ -253,6 +238,18 @@ void VpnService::SendOnPlatformMessageToExtension(
           browser_context_));
 }
 
+void VpnService::SendOnConfigRemovedToExtension(
+    const std::string& extension_id,
+    const std::string& configuration_name) {
+  SendToExtension(
+      extension_id,
+      std::make_unique<extensions::Event>(
+          extensions::events::HistogramValue::VPN_PROVIDER_ON_CONFIG_REMOVED,
+          api_vpn::OnConfigRemoved::kEventName,
+          api_vpn::OnConfigRemoved::Create(configuration_name),
+          browser_context_));
+}
+
 crosapi::VpnServiceForExtensionAsh::VpnConfiguration*
 VpnService::LookupConfiguration(const std::string& service_path) {
   return base::FindPtrOrNull(service_path_to_configuration_map_, service_path);
@@ -276,9 +273,9 @@ void VpnService::OnConfigurationRemoved(const std::string& service_path,
     return;
   }
 
-  GetVpnService()
-      ->GetVpnServiceForExtension(configuration->extension_id())
-      ->DispatchConfigRemovedEvent(configuration->configuration_name());
+  GetVpnService()->GetVpnServiceForExtension(configuration->extension_id());
+  SendOnConfigRemovedToExtension(configuration->extension_id(),
+                                 configuration->configuration_name());
   DestroyConfigurationInternal(configuration);
 }
 

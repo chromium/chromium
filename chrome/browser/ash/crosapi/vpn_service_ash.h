@@ -65,8 +65,6 @@ class VpnServiceForExtensionAsh
       mojo::PendingReceiver<crosapi::mojom::VpnServiceForExtension> receiver,
       mojo::PendingRemote<crosapi::mojom::EventObserverForExtension> observer);
 
-  void DispatchConfigRemovedEvent(const std::string& configuration_name);
-
  private:
   friend class VpnConfigurationImpl;
   friend class chromeos::VpnProviderApiTest;
