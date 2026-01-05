@@ -447,6 +447,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         updateFirstVisibleTitle,
                         getModalDialogManagerSupplier());
         mSearchCoordinator.initializeSearchUi();
+        if (mMultiColumnSettings != null) mMultiColumnSettings.addObserver(mSearchCoordinator);
     }
 
     private void updateFirstVisibleTitle(int index) {
@@ -792,7 +793,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (mTitleUpdater != null) {
             getSupportFragmentManager().unregisterFragmentLifecycleCallbacks(mTitleUpdater);
         }
-        if (mSearchCoordinator != null) mSearchCoordinator.destroy();
+        if (mSearchCoordinator != null && mMultiColumnSettings != null) {
+            mMultiColumnSettings.removeObserver(mSearchCoordinator);
+            mSearchCoordinator.destroy();
+        }
         super.onDestroy();
     }
 

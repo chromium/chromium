@@ -40,7 +40,7 @@ import java.util.Map;
 @NullMarked
 public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
 
-    interface Observer {
+    public interface Observer {
         /** Called when detailed pane title is updated. */
         default void onTitleUpdated() {}
 

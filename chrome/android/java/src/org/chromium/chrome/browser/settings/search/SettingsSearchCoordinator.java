@@ -76,7 +76,7 @@ import java.util.function.BooleanSupplier;
 
 /** The coordinator of search in Settings. TODO(jinsukkim): Build a proper MVC structure. */
 @NullMarked
-public class SettingsSearchCoordinator {
+public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
     private static final String TAG = "SettingsSearch";
 
     public static final String FRAGMENT_TAG_RESULT = MainSettings.FRAGMENT_TAG_RESULT;
@@ -219,6 +219,14 @@ public class SettingsSearchCoordinator {
         query.findViewById(R.id.clear_text).setOnClickListener(v -> clearQueryText());
     }
 
+    @Override
+    public void onTitleUpdated() {
+        boolean reset = (getSettingsFragmentManager().getBackStackEntryCount() == 0);
+        if (reset && (mFragmentState == FS_SEARCH || mFragmentState == FS_RESULTS)) {
+            exitSearchState(/* clearFragment= */ false);
+        }
+    }
+
     private void clearQueryText() {
         EditText queryEdit = mActivity.findViewById(R.id.search_query);
         if (queryEdit.getText().toString().isEmpty()) return;
@@ -278,7 +286,7 @@ public class SettingsSearchCoordinator {
         if (mFragmentState == FS_SETTINGS) {
             // Do nothing. Let the default back action handler take care of it.
         } else if (mFragmentState == FS_SEARCH) {
-            exitSearchState();
+            exitSearchState(/* clearFragment= */ true);
         } else if (mFragmentState == FS_RESULTS) {
             exitResultState();
         } else {
@@ -401,7 +409,7 @@ public class SettingsSearchCoordinator {
         assumeNonNull(mActivity.getSupportActionBar()).setDisplayHomeAsUpEnabled(show);
     }
 
-    private void exitSearchState() {
+    private void exitSearchState(boolean clearFragment) {
         // Back action in search state. Restore the settings fragment and search UI.
         View searchBox = mActivity.findViewById(R.id.search_box);
         View queryContainer = mActivity.findViewById(R.id.search_query_container);
@@ -414,7 +422,9 @@ public class SettingsSearchCoordinator {
 
         // Clearing the fragment before popping the back stack. Otherwise the existing
         // fragment is visible behind the popped one through the transparent background.
-        clearFragment(/* imageId= */ 0, /* addToBackStack= */ false, emptyRunnable());
+        if (clearFragment) {
+            clearFragment(/* imageId= */ 0, /* addToBackStack= */ false, emptyRunnable());
+        }
         getSettingsFragmentManager().popBackStack();
         if (mMultiColumnSettings != null
                 && mMultiColumnSettings.isLayoutOpen()
