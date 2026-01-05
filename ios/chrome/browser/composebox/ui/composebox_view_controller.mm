@@ -566,13 +566,8 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   if (webView) {
     webView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view insertSubview:webView atIndex:0];
-    AddSameConstraintsToSides(webView, self.view.safeAreaLayoutGuide,
-                              LayoutSides::kLeading | LayoutSides::kTrailing);
-    [NSLayoutConstraint activateConstraints:@[
-      [webView.topAnchor constraintEqualToAnchor:_closeButton.bottomAnchor],
-      [webView.bottomAnchor
-          constraintEqualToAnchor:_inputViewController.view.topAnchor],
-    ]];
+    AddSameConstraintsWithInsets(webView, _omniboxPopupContainer,
+                                 NSDirectionalEdgeInsetsMake(4, 0, 0, 0));
   }
 }
 
