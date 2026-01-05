@@ -28,9 +28,6 @@ BASE_DECLARE_FEATURE(kContextualTasksSuggestionsEnabled);
 // Force the application locale to US and the gl query parameter to us.
 BASE_DECLARE_FEATURE(kContextualTasksForceCountryCodeUS);
 
-// Force the context id migration to be enabled.
-extern const base::FeatureParam<bool> kForceContextIdMigration;
-
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {
   kNoEntryPoint,
@@ -132,9 +129,6 @@ extern bool ShouldForceGscInTabMode();
 
 // Returns whether the country code should be forced to US.
 extern bool ShouldForceCountryCodeUS();
-
-// Returns whether the context id migration should be forced.
-extern bool ShouldForceContextIdMigration();
 
 // Returns the user agent suffix to use for requests.
 extern std::string GetContextualTasksUserAgentSuffix();

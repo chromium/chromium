@@ -1711,21 +1711,7 @@ const FeatureEntry::FeatureParam kComposeboxNextForRealboxNext[] = {
     {"ContextMenuEnableMultiTabSelection", "true"},
     {"ShowSubmit", "true"},
     {"EnableEphemeralContextMenuDescription", "true"}};
-const FeatureEntry::FeatureParam
-    kComposeboxNextForRealboxNextWithContextIdMigration[] = {
-        {"ShowContextMenu", "true"},
-        {"ShowComposeboxZps", "true"},
-        {"ShowComposeboxTypedSuggest", "true"},
-        {"ShowToolsAndModels", "true"},
-        {"ShowCreateImageTool", "true"},
-        {"ShowRecentTabChip", "true"},
-        {"ContextMenuEnableMultiTabSelection", "true"},
-        {"ShowSubmit", "true"},
-        {"EnableEphemeralContextMenuDescription", "true"},
-        {"SendLnsSurfaceParam", "true"},
-        {"EnableContextIdMigration", "true"},
-        {"UseSeparateRequestIdsForMultiContextViewportImages", "true"},
-};
+
 
 const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
     {"- Show Contextual Input Menu and Suggest, 5 File Limit",
@@ -1753,9 +1739,6 @@ const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
     {"- Next Experience Single Context for Realbox Next",
      kComposeboxNextSingleContextForRealboxNext,
      std::size(kComposeboxNextSingleContextForRealboxNext), nullptr},
-    {"- Next Experience for Realbox Next with Context ID Migration",
-     kComposeboxNextForRealboxNextWithContextIdMigration,
-     std::size(kComposeboxNextForRealboxNextWithContextIdMigration), nullptr},
 };
 
 const FeatureEntry::FeatureParam kShowNextRealboxTallBottomContext[] = {

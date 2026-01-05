@@ -282,19 +282,17 @@ ComposeboxQueryController::ComposeboxQueryController(
           ->use_separate_request_ids_for_multi_context_viewport_images;
   prioritize_suggestions_for_the_first_attached_document_ =
       feature_params->prioritize_suggestions_for_the_first_attached_document;
-  enable_context_id_migration_ = feature_params->enable_context_id_migration;
+
   attach_page_title_and_url_to_suggest_requests_ =
       feature_params->attach_page_title_and_url_to_suggest_requests;
 
-  // Enable multi-context input with the context id migration if the contextual
-  // tasks feature is enabled. This allows the query controller to behave
-  // consistently for co-browsing enabled users, even if the NTP or
-  // Omnibox entrypoints have different configurations.
-  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
-      contextual_tasks::ShouldForceContextIdMigration()) {
+  // Enable multi-context input if the contextual tasks feature is enabled.
+  // This allows the query controller to behave consistently for co-browsing
+  // enabled users, even if the NTP or Omnibox entrypoints have different
+  // configurations.
+  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
     enable_multi_context_input_flow_ = true;
     use_separate_request_ids_for_multi_context_viewport_images_ = false;
-    enable_context_id_migration_ = true;
   }
 
   attach_page_title_and_url_to_suggest_requests_ =
@@ -325,16 +323,9 @@ ComposeboxQueryController::GetRequestIdForViewportImage(
   if (enable_multi_context_input_flow_ &&
       use_separate_request_ids_for_multi_context_viewport_images_) {
     // Create a new request id for the viewport image upload request.
-    if (enable_context_id_migration_) {
-      file_info->viewport_request_id_ =
-          request_id_generator_.GetRequestIdWithMultiContextId(
-              lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE,
-              file_info->GetContextId());
-    } else {
-      file_info->viewport_request_id_ = request_id_generator_.GetNextRequestId(
-          lens::RequestIdUpdateMode::kMultiContextUploadRequest,
-          lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
-    }
+    file_info->viewport_request_id_ = request_id_generator_.GetNextRequestId(
+        lens::RequestIdUpdateMode::kMultiContextUploadRequest,
+        lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
     return *file_info->viewport_request_id_;
   }
   return file_info->request_id;
@@ -400,10 +391,7 @@ void ComposeboxQueryController::CreateSearchUrl(
           auto interaction_request_id = request_id_generator_.GetNextRequestId(
               lens::RequestIdUpdateMode::kInteractionRequest,
               last_active_file->request_id.media_type(),
-              enable_context_id_migration_
-                  ? std::make_optional<int64_t>(
-                        last_active_file->GetContextId())
-                  : std::nullopt);
+              std::make_optional<int64_t>(last_active_file->GetContextId()));
           SendInteractionRequest(
               std::move(interaction_request_id),
               search_url_request_info->query_text,
@@ -419,15 +407,10 @@ void ComposeboxQueryController::CreateSearchUrl(
 
           std::unique_ptr<lens::LensOverlayRequestId> search_url_request_id;
           lens::LensOverlayRequestId* request_id_for_vsrid;
-          if (enable_context_id_migration_) {
-            request_id_for_vsrid =
-                latest_interaction_request_data_->request_id_.get();
-          } else {
-            search_url_request_id = request_id_generator_.GetNextRequestId(
-                lens::RequestIdUpdateMode::kSearchUrl,
-                last_active_file->request_id.media_type());
-            request_id_for_vsrid = search_url_request_id.get();
-          }
+          search_url_request_id = request_id_generator_.GetNextRequestId(
+              lens::RequestIdUpdateMode::kSearchUrl,
+              last_active_file->request_id.media_type());
+          request_id_for_vsrid = search_url_request_id.get();
           std::string serialized_request_id;
           CHECK(
               request_id_for_vsrid->SerializeToString(&serialized_request_id));
@@ -655,62 +638,47 @@ void ComposeboxQueryController::StartFileUploadFlow(
       (!enable_multi_context_input_flow_ ||
        !use_separate_request_ids_for_multi_context_viewport_images_);
 
-  if (enable_context_id_migration_) {
+  std::optional<lens::LensOverlayRequestId> previous_request_id = std::nullopt;
+  if (contextual_input_data->context_id.has_value()) {
+    for (const auto& [token, info] : active_files_) {
+      if (!info) {
+        continue;
+      }
+      if (info->request_id.context_id() ==
+          contextual_input_data->context_id.value()) {
+        previous_request_id = info->request_id;
+        break;
+      }
+    }
+  }
+
+  if (previous_request_id.has_value()) {
+    // If the previous request ID is available, increment the request ID
+    // based on the content type. The media type is assumed to remain
+    // unchanged since the previous request id was retrieved from the same
+    // source.
+    auto previous_request_id_proto =
+        std::make_unique<lens::LensOverlayRequestId>(
+            previous_request_id.value());
+    current_file_info.request_id =
+        *request_id_generator_.CreateNextRequestIdForUpdate(
+            std::move(previous_request_id_proto), base_update_mode);
+  } else {
+    // Unlike image uploads, PDF / page content uploads need to increment the
+    // long context id instead of the image sequence id.
     int64_t context_id = contextual_input_data->context_id.has_value()
                              ? contextual_input_data->context_id.value()
                              : RandInt64();
-    current_file_info.request_id =
-        *request_id_generator_
-             .GetNextRequestId(
-                 lens::RequestIdUpdateMode::kMultiContextUploadRequest,
-                 lens::MimeTypeToMediaType(current_file_info.mime_type,
-                                           use_has_viewport_media_type),
-                 context_id)
-             .get();
-  } else {
-    std::optional<lens::LensOverlayRequestId> previous_request_id =
-        std::nullopt;
-    if (contextual_input_data->context_id.has_value()) {
-      for (const auto& [token, info] : active_files_) {
-        if (!info) {
-          continue;
-        }
-        if (info->request_id.context_id() ==
-            contextual_input_data->context_id.value()) {
-          previous_request_id = info->request_id;
-          break;
-        }
-      }
-    }
+    lens::RequestIdUpdateMode update_mode =
+        enable_multi_context_input_flow_
+            ? lens::RequestIdUpdateMode::kMultiContextUploadRequest
+            : base_update_mode;
 
-    if (previous_request_id.has_value()) {
-      // If the previous request ID is available, increment the request ID
-      // based on the content type. The media type is assumed to remain
-      // unchanged since the previous request id was retrieved from the same
-      // source.
-      auto previous_request_id_proto =
-          std::make_unique<lens::LensOverlayRequestId>(
-              previous_request_id.value());
-      current_file_info.request_id =
-          *request_id_generator_.CreateNextRequestIdForUpdate(
-              std::move(previous_request_id_proto), base_update_mode);
-    } else {
-      // Unlike image uploads, PDF / page content uploads need to increment the
-      // long context id instead of the image sequence id.
-      int64_t context_id = contextual_input_data->context_id.has_value()
-                               ? contextual_input_data->context_id.value()
-                               : RandInt64();
-      lens::RequestIdUpdateMode update_mode =
-          enable_multi_context_input_flow_
-              ? lens::RequestIdUpdateMode::kMultiContextUploadRequest
-              : base_update_mode;
-
-      current_file_info.request_id = *request_id_generator_.GetNextRequestId(
-          update_mode,
-          lens::MimeTypeToMediaType(current_file_info.mime_type,
-                                    use_has_viewport_media_type),
-          context_id);
-    }
+    current_file_info.request_id = *request_id_generator_.GetNextRequestId(
+        update_mode,
+        lens::MimeTypeToMediaType(current_file_info.mime_type,
+                                  use_has_viewport_media_type),
+        context_id);
   }
 
   // Update the file upload status to processing.

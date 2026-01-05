@@ -204,7 +204,6 @@ CreateQueryControllerConfigParams() {
   config_params->enable_viewport_images = kEnableViewportImages.Get();
   config_params->use_separate_request_ids_for_multi_context_viewport_images =
       kUseSeparateRequestIdsForMultiContextViewportImages.Get();
-  config_params->enable_context_id_migration = kEnableContextIdMigration.Get();
   config_params->attach_page_title_and_url_to_suggest_requests =
       kAttachPageTitleAndUrlToSuggestRequest.Get();
   return config_params;
@@ -221,11 +220,6 @@ const base::FeatureParam<bool>
         &kNtpComposebox,
         "UseSeparateRequestIdsForMultiContextViewportImages",
         false);
-
-const base::FeatureParam<bool> kEnableContextIdMigration(
-    &kNtpComposebox,
-    "EnableContextIdMigration",
-    false);
 
 const base::FeatureParam<bool> kShowComposeboxZps(&kNtpComposebox,
                                                   "ShowComposeboxZps",

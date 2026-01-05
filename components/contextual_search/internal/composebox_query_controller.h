@@ -502,10 +502,6 @@ class ComposeboxQueryController
   // attachment is available (false).
   bool prioritize_suggestions_for_the_first_attached_document_;
 
-  // Whether or not to support the context_id migration on the server, for
-  // the multi-context input flow.
-  bool enable_context_id_migration_;
-
   // Whether or not to attach the page title and url directly to the suggest
   // request params.
   bool attach_page_title_and_url_to_suggest_requests_;

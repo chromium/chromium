@@ -82,13 +82,6 @@ class LensOverlayRequestIdGenerator {
       std::unique_ptr<lens::LensOverlayRequestId> previous_request_id,
       RequestIdUpdateMode update_mode);
 
-  // Gets a request id using the migrated server flow using context_id.
-  // The resulting request ID will not have an analytics ID, image sequence ID,
-  // sequence ID, or long context ID.
-  std::unique_ptr<lens::LensOverlayRequestId> GetRequestIdWithMultiContextId(
-      lens::LensOverlayRequestId::MediaType media_type,
-      int64_t context_id);
-
   // Returns the current analytics id as a base32 encoded string.
   std::string GetBase32EncodedAnalyticsId();
 
