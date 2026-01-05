@@ -21,3 +21,7 @@ NSString* const kComposeboxCreateImageActionAccessibilityIdentifier =
     @"kComposeboxCreateImageActionAccessibilityIdentifier";
 NSString* const kComposeboxImageGenerationButtonAccessibilityIdentifier =
     @"kComposeboxImageGenerationButtonAccessibilityIdentifier";
+NSString* const kComposeboxAIMActionAccessibilityIdentifier =
+    @"kComposeboxAIMActionAccessibilityIdentifier";
+NSString* const kComposeboxAIMButtonAccessibilityIdentifier =
+    @"kComposeboxAIMButtonAccessibilityIdentifier";

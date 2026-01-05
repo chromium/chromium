@@ -973,6 +973,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   config.imagePadding = 5;
   button.layer.borderWidth = 0;
   button.accessibilityTraits = UIAccessibilityTraitButton;
+  button.accessibilityIdentifier = kComposeboxAIMButtonAccessibilityIdentifier;
 
   button.configuration = config;
 
@@ -1215,6 +1216,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
               handler:^(UIAction* action) {
                 [weakSelf handleAIMTappedFromToolMenu];
               }];
+  aimAction.accessibilityIdentifier =
+      kComposeboxAIMActionAccessibilityIdentifier;
 
   if (self.AIModeEnabled) {
     [aimAction setState:UIMenuElementStateOn];

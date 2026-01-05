@@ -24,5 +24,9 @@ extern NSString* const kComposeboxSendButtonAccessibilityIdentifier;
 extern NSString* const kComposeboxCreateImageActionAccessibilityIdentifier;
 // Accessibility identifier for the image generation button in the composebox.
 extern NSString* const kComposeboxImageGenerationButtonAccessibilityIdentifier;
+// Accessibility identifier for the AI mode action in the plus menu.
+extern NSString* const kComposeboxAIMActionAccessibilityIdentifier;
+// Accessibility identifier for the AI mode button in the composebox.
+extern NSString* const kComposeboxAIMButtonAccessibilityIdentifier;
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_UI_CONSTANTS_H_

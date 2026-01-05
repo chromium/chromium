@@ -204,4 +204,49 @@ NSString* kLongText =
       assertWithMatcher:grey_notVisible()];
 }
 
+// Tests that the AI mode action works as expected.
+- (void)testComposeboxAIModeAction {
+  // Composebox is not available on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
+  }
+
+  [ComposeboxAppInterface setAimEligible:YES];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGreyUI focusOmnibox];
+
+  // Wait for the composebox to be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ComposeboxMatcher()];
+
+  // Tap the plus button.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kComposeboxPlusButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Tap the "AI Mode" action.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kComposeboxAIMActionAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify that the AI mode button is visible.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(kComposeboxAIMButtonAccessibilityIdentifier)];
+
+  // Tap the AI mode button to disable AI mode.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kComposeboxAIMButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify that the AI mode button disappears.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kComposeboxAIMButtonAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+}
+
 @end
