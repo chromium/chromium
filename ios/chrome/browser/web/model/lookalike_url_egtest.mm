@@ -27,7 +27,6 @@
 using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
 using chrome_test_util::Omnibox;
-using chrome_test_util::OmniboxText;
 
 namespace {
 // Relative paths used for a page that opens a lookalike in a new tab.
@@ -44,7 +43,7 @@ void AssertEmptyOmnibox() {
       assertWithMatcher:chrome_test_util::LocationViewEmpty()];
   [ChromeEarlGreyUI focusOmnibox];
   [[EarlGrey selectElementWithMatcher:Omnibox()]
-      assertWithMatcher:OmniboxText("")];
+      assertWithMatcher:chrome_test_util::OmniboxText("")];
   [OmniboxEarlGrey defocusOmnibox];
 }
 
@@ -135,8 +134,7 @@ void AssertEmptyOmnibox() {
   [[EarlGrey selectElementWithMatcher:ForwardButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(_safeURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:_safeURL];
 }
 
 // Tests that a lookalike URL navigation is blocked, and the text link for
@@ -153,8 +151,7 @@ void AssertEmptyOmnibox() {
   // contents are loaded.
   [ChromeEarlGrey tapWebStateElementWithID:@"dont-proceed-link"];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(_safeURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:_safeURL];
 
   // Verify that the warning is shown when navigating back and that safe
   // content is shown when navigating forward again.
@@ -190,8 +187,7 @@ void AssertEmptyOmnibox() {
   // is loaded.
   [ChromeEarlGrey tapWebStateElementWithID:@"primary-button"];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(_safeURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:_safeURL];
 
   // Verify that the warning is shown when navigating forward and that safe
   // content is shown when navigating back again.
@@ -244,8 +240,7 @@ void AssertEmptyOmnibox() {
   // Tap on the link to ignore the warning, and verify that the page is loaded.
   [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
   [ChromeEarlGrey waitForWebStateContainingText:kLookalikeContent];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(_lookalikeURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:_lookalikeURL];
 
   // In a new tab, the warning should not be shown.
   [ChromeEarlGrey openNewTab];
@@ -273,8 +268,7 @@ void AssertEmptyOmnibox() {
   // Tap on the link to ignore the warning, and verify that the page is loaded.
   [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
   [ChromeEarlGrey waitForWebStateContainingText:kLookalikeContent];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(_lookalikeURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:_lookalikeURL];
 
   // Verify that no warning is shown when navigating back and then forward to
   // the unsafe page.
