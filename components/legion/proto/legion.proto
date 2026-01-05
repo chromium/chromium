@@ -17,6 +17,7 @@ message LegionRequest {
 
   oneof request {
     GenerateContentRequest generate_content_request = 4;
+    AnonymousTokenRequest anonymous_token_request = 8;
   }
 
   // Unique id used to represent the request which can be used to correlate the
@@ -114,4 +115,9 @@ message Candidate {
   }
 
   FinishReason finish_reason = 3;
+}
+
+message AnonymousTokenRequest {
+  bytes anonymous_token = 1;
+  bytes encoded_extensions = 2;
 }
