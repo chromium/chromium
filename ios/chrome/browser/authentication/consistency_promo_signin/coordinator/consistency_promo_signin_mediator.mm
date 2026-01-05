@@ -57,19 +57,12 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   id<SystemIdentity> _signingIdentity;
 
   // Observer for changes to the user's Google identities.
-  // TODO(crbug.com/395789708): Remove after launching
-  //     kEnableIdentityInAuthError.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserverBridge;
 
   // Observes AccountReconcilor and account cookies and determines whether the
   // web sign-in flow finished successfully or with an error.
   std::unique_ptr<signin::WebSigninTracker> _webSigninTracker;
-  // Closure to trigger the sign-in time out error. This closure exists to make
-  // sure the user doesn't wait too long before to get the cookies available
-  // on the web. This is used only when `_accessPoint` is equal to
-  // `kWebSignin`.
-  base::CancelableOnceClosure _cookieTimeoutClosure;
   AuthenticationFlow* _authenticationFlow;
   // True if the mediator was initialized with no existing account on device.
   // Kept for metrics reasons.
@@ -196,7 +189,6 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
     case SigninCoordinatorUINotAvailable:
       NOTREACHED();
   }
-  _cookieTimeoutClosure.Cancel();
   _accountManagerService = nullptr;
   _authenticationService = nullptr;
   _identityManager = nullptr;
@@ -255,34 +247,21 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   }
   // For kWebSignin access point, wait for sign-in cookies before reporting
   // success.
-  if (base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError)) {
-    CoreAccountId accountId =
-        CoreAccountId::FromGaiaId(_signingIdentity.gaiaId);
-    __weak __typeof(self) weakSelf = self;
-    base::RepeatingCallback<void(signin::WebSigninTracker::Result)> callback =
-        base::BindRepeating(
-            [](__typeof(self) strongSelf,
-               signin::WebSigninTracker::Result result) {
-              [strongSelf webSigninFinishedWithResult:result];
-            },
-            weakSelf);
-    _webSigninTracker =
-        [self.delegate trackWebSigninWithIdentityManager:_identityManager
-                                       accountReconcilor:_accountReconcilor
-                                           signinAccount:accountId
-                                            withCallback:&callback
-                                             withTimeout:kSigninTimeout];
-    return;
-  }
-  // `-[ConsistencyPromoSigninMediator onAccountsInCookieUpdated:error:]` will
-  // be called when the cookies will be ready, and then the sign-in can be
-  // finished. Or `_cookieTimeoutClosure` will be called if it takes too long.
+  CoreAccountId accountId = CoreAccountId::FromGaiaId(_signingIdentity.gaiaId);
   __weak __typeof(self) weakSelf = self;
-  _cookieTimeoutClosure.Reset(base::BindOnce(^{
-    [weakSelf cancelSigninWithError:ConsistencyPromoSigninMediatorErrorTimeout];
-  }));
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, _cookieTimeoutClosure.callback(), kSigninTimeout);
+  base::RepeatingCallback<void(signin::WebSigninTracker::Result)> callback =
+      base::BindRepeating(
+          [](__typeof(self) strongSelf,
+             signin::WebSigninTracker::Result result) {
+            [strongSelf webSigninFinishedWithResult:result];
+          },
+          weakSelf);
+  _webSigninTracker =
+      [self.delegate trackWebSigninWithIdentityManager:_identityManager
+                                     accountReconcilor:_accountReconcilor
+                                         signinAccount:accountId
+                                          withCallback:&callback
+                                           withTimeout:kSigninTimeout];
 }
 
 - (void)authenticationFlowWillSwitchProfileWithReadyCompletion:
@@ -366,48 +345,6 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
     // profile will be signed-in, the sign-in view should be dismissed.
     [self.delegate consistencyPromoSigninMediatorSignInIsImpossible:self];
   }
-}
-
-- (void)onAccountsInCookieUpdated:
-            (const signin::AccountsInCookieJarInfo&)accountsInCookieJarInfo
-                            error:(const GoogleServiceAuthError&)error {
-  if (base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError)) {
-    return;
-  }
-  CHECK(!base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError));
-  if (_authenticationFlow ||
-      _accessPoint != signin_metrics::AccessPoint::kWebSignin) {
-    // Ignore if `_authenticationFlow` is in progress since
-    // `onAccountsInCookieUpdated` may be called when data is cleared on
-    // sign-in.
-    // Ignore if the access point is different than WebSignin. Only the web
-    // sign-in needs to wait for the cookies.
-    return;
-  }
-  id<SystemIdentity> signingIdentity = _signingIdentity;
-  if (!signingIdentity) {
-    // TODO(crbug.com/40764093): This case should not happen, but
-    // `onAccountsInCookieUpdated:error:` can be called twice when there is an
-    // error. Once this bug is fixed, this `if` should be replaced with
-    // `DCHECK(!self.alertCoordinator)`.
-    return;
-  }
-  DCHECK(!_authenticationFlow);
-  _cookieTimeoutClosure.Cancel();
-  if (error.state() == GoogleServiceAuthError::State::NONE &&
-      _authenticationService->GetPrimaryIdentity(
-          signin::ConsentLevel::kSignin) &&
-      accountsInCookieJarInfo.GetPotentiallyInvalidSignedInAccounts().size() >
-          0) {
-    // Reset dismissal count.
-    if (_accessPoint == signin_metrics::AccessPoint::kWebSignin) {
-      _prefService->SetInteger(prefs::kSigninWebSignDismissalCount, 0);
-    }
-    [self.delegate consistencyPromoSigninMediatorSignInDone:self
-                                               withIdentity:signingIdentity];
-    return;
-  }
-  [self cancelSigninWithError:ConsistencyPromoSigninMediatorErrorGeneric];
 }
 
 #pragma mark - AuthenticationServiceObserving

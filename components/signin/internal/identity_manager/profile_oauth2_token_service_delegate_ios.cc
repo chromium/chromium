@@ -275,12 +275,8 @@ void ProfileOAuth2TokenServiceIOSDelegate::ReloadCredentials(
 
   // Load all new_accounts.
   for (const auto& account_to_add : accounts_to_add) {
-    GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
-    if (base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError)) {
-      error = GoogleServiceAuthErrorFromDeviceAccount(
-          new_accounts.at(account_to_add));
-    }
-    AddOrUpdateAccount(account_to_add, error);
+    AddOrUpdateAccount(account_to_add, GoogleServiceAuthErrorFromDeviceAccount(
+                                           new_accounts.at(account_to_add)));
   }
 }
 
@@ -316,14 +312,12 @@ void ProfileOAuth2TokenServiceIOSDelegate::ReloadAccountFromSystem(
     const CoreAccountId& account_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
-  if (base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError)) {
-    for (const auto& account : provider_->GetAccountsForProfile()) {
-      if (account_id != CoreAccountId::FromGaiaId(account.GetGaiaId())) {
-        continue;
-      }
-      error = GoogleServiceAuthErrorFromDeviceAccount(account);
-      break;
+  for (const auto& account : provider_->GetAccountsForProfile()) {
+    if (account_id != CoreAccountId::FromGaiaId(account.GetGaiaId())) {
+      continue;
     }
+    error = GoogleServiceAuthErrorFromDeviceAccount(account);
+    break;
   }
 
   AddOrUpdateAccount(account_id, error);

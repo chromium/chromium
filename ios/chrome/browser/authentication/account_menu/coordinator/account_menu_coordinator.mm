@@ -501,11 +501,7 @@ void maybeShowSettingsIPH(Browser* browser) {
 
 - (void)openPrimaryAccountReauthDialog {
   [self stopChildrenCoordinators];
-  if (base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError)) {
-    [self openReauthCoordinator];
-  } else {
-    [self openAddAccountReauthCoordinator];
-  }
+  [self openReauthCoordinator];
 }
 
 - (void)openReauthCoordinator {
@@ -529,34 +525,6 @@ void maybeShowSettingsIPH(Browser* browser) {
                                      kAccountMenu];
   _reauthCoordinator.delegate = self;
   [_reauthCoordinator start];
-}
-
-- (void)openAddAccountReauthCoordinator {
-  if (_addAccountSigninCoordinator.viewWillPersist) {
-    return;
-  }
-  [self stopChildrenCoordinators];
-  signin_metrics::AccessPoint accessPoint =
-      signin_metrics::AccessPoint::kAccountMenuSwitchAccount;
-  signin_metrics::PromoAction promoAction =
-      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
-  SigninContextStyle style = SigninContextStyle::kDefault;
-  _addAccountSigninCoordinator = [SigninCoordinator
-      primaryAccountReauthCoordinatorWithBaseViewController:
-          _navigationController
-                                                    browser:self.browser
-                                               contextStyle:style
-                                                accessPoint:accessPoint
-                                                promoAction:promoAction
-                                       continuationProvider:
-                                           DoNothingContinuationProvider()];
-  __weak __typeof(self) weakSelf = self;
-  _addAccountSigninCoordinator.signinCompletion =
-      ^(SigninCoordinator* coordinator, SigninCoordinatorResult signinResult,
-        id<SystemIdentity> signinCompletionIdentity) {
-        [weakSelf signinCoordinatorCompletionWithCoordinator:coordinator];
-      };
-  [_addAccountSigninCoordinator start];
 }
 
 #pragma mark - SettingsNavigationControllerDelegate
