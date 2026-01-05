@@ -339,23 +339,6 @@ void BrowserList::NotifyBrowserNoLongerActive(Browser* browser) {
   }
 }
 
-// static
-size_t BrowserList::GetGuestBrowserCount() {
-  BrowserList* list = BrowserList::GetInstance();
-  return std::ranges::count_if(*list, [](Browser* browser) {
-    return browser->profile()->IsGuestSession() && !browser->is_type_devtools();
-  });
-}
-
-// static
-bool BrowserList::IsOffTheRecordBrowserInUse(Profile* profile) {
-  BrowserList* list = BrowserList::GetInstance();
-  return std::ranges::any_of(*list, [profile](Browser* browser) {
-    return browser->profile()->IsSameOrParent(profile) &&
-           browser->profile()->IsOffTheRecord();
-  });
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserList, private:
 

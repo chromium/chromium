@@ -104,15 +104,6 @@ class BrowserList {
       const CloseCallback& on_close_aborted,
       bool skip_beforeunload);
 
-  // Returns the number of active guest browsers except devtools windows
-  // across all desktops.
-  static size_t GetGuestBrowserCount();
-
-  // Returns true if the off-the-record browser for |profile| is in use in any
-  // window across all desktops. This function considers devtools windows as
-  // well.
-  static bool IsOffTheRecordBrowserInUse(Profile* profile);
-
  private:
   BrowserList();
   ~BrowserList();
