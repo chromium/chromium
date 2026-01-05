@@ -55,15 +55,18 @@
     + var(--composebox-margin-bottom));
 
   align-items: center;
-  height: var(--composebox-container-height);
-  inset-block-end: 0;
+  height: auto;
   justify-content: flex-end;
   min-height: var(--composebox-collapsed-height);
-  position: fixed;
+  position: relative;
   /* Do not set pointer-events to none; is inherited by
    * whole composebox + buttons. Width var taken from parent.
    */
   width: 100%;
+}
+
+:host(:not([is-zero-state])) {
+  margin-bottom: var(--composebox-margin-bottom);
 }
 
 /* When the composebox is focused, make the background color
@@ -92,9 +95,9 @@
   --composebox-context-menu-entrypoint-button-color: var(--color-composebox-voice-lens-button);
 
   box-shadow: none;
+  display: block;
   inset-inline-start: var(--inset-start-indent_);
-  bottom: var(--composebox-margin-bottom);
-  position: absolute;
+  position: relative;
   /* 100% - (24px right indent + left indent), up to max width. */
   width: calc(100% - (24px + var(--inset-start-indent_)));
 }
