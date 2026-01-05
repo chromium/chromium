@@ -251,7 +251,14 @@ TEST_F(SupervisedUserPrefStoreTest, ActivateSettingsBeforeInitialization) {
 
   pref_store_->SetInitializationCompleted();
   EXPECT_TRUE(fixture.initialization_completed());
-  EXPECT_EQ(0u, fixture.changed_prefs()->size());
+
+  // This assertion is a bit weak, but here's its sense: the settings service
+  // was active before the initialization of pref store was complete. When
+  // `SetInitializationCompleted` is called, the settings service first notifies
+  // its observers about completed initialization, and then immediately sends
+  // notifications about resulting prefs (for an active settings service, that's
+  // a non-zero number).
+  EXPECT_LT(0u, fixture.changed_prefs()->size());
 }
 
 TEST_F(SupervisedUserPrefStoreTest, CreatePrefStoreAfterInitialization) {
@@ -322,31 +329,32 @@ TEST_F(SupervisedUserPrefStoreTest, ContentFiltersServiceEnablesSearchFilters) {
       Optional(static_cast<int>(policy::IncognitoModeAvailability::kDisabled)));
 }
 
-TEST_F(SupervisedUserPrefStoreTest, SuspendedSettingsServiceCannotAlterContentFilters) {
+TEST_F(SupervisedUserPrefStoreTest, InactiveSettingsServiceDoesNotAffectPrefs) {
   SupervisedUserPrefStoreFixture fixture(&service_, &content_filters_service_);
   EXPECT_FALSE(fixture.initialization_completed());
 
   pref_store_->SetInitializationCompleted();
   EXPECT_TRUE(fixture.initialization_completed());
 
-  service_.SetActive(false);
-  service_.SetSuspended(true);
+  // After set search is set, one pref is expected to change.
   content_filters_service_.SetSearchFiltersEnabled(true);
+  base::Value::Dict prefs;
+  EXPECT_EQ(2u, fixture.changed_prefs()->size());
+  EXPECT_TRUE(fixture.changed_prefs()->FindBoolByDottedPath(
+      policy::policy_prefs::kForceGoogleSafeSearch));
+  EXPECT_TRUE(fixture.changed_prefs()->FindIntByDottedPath(
+      policy::policy_prefs::kIncognitoModeAvailability));
 
-  // ==2, which is incognito mode and search setting.
-  unsigned int size = fixture.changed_prefs()->size();
-  EXPECT_EQ(2u, size);
-
-  service_.SetActive(false);
-  // the value is still unchanged
-  EXPECT_EQ(size, fixture.changed_prefs()->size());
-
-  // The following demonstrates what would happen if the service was
-  // unsuspended after the content filters were set. This is not a valid
-  // sequence of calls, but we test it anyway.
-  service_.SetSuspended(false);
-  service_.SetActive(true);
-  // And now we expect more changes, because the service is active again and is
-  // sending notifications.
-  EXPECT_LT(size, fixture.changed_prefs()->size());
+  // service_ is still inactive. On each SetLocalSetting, service_ wants to emit
+  // empty dict (empty dict because it's inactive) that would normally clear the
+  // prefs, but this happens only once (subsequent attempts to emit empty
+  // settings are vetoed). This means that prefs coming from
+  // SetSearchFiltersEnabled are maintained.
+  service_.SetLocalSetting(supervised_user::kGeolocationDisabled,
+                           base::Value(true));
+  EXPECT_EQ(2u, fixture.changed_prefs()->size());
+  EXPECT_TRUE(fixture.changed_prefs()->FindBoolByDottedPath(
+      policy::policy_prefs::kForceGoogleSafeSearch));
+  EXPECT_TRUE(fixture.changed_prefs()->FindIntByDottedPath(
+      policy::policy_prefs::kIncognitoModeAvailability));
 }

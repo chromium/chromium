@@ -178,11 +178,6 @@ void SupervisedUserSettingsService::SetActive(bool active) {
   InformSubscribers();
 }
 
-void SupervisedUserSettingsService::SetSuspended(bool suspended) {
-  CHECK(!active_) << "Only inactive services can be suspended.";
-  suspended_ = suspended;
-}
-
 bool SupervisedUserSettingsService::IsReady() const {
   // Initialization cannot be complete but have failed at the same time.
   DCHECK(!(store_->IsInitializationComplete() && initialization_failed_));
@@ -463,6 +458,11 @@ SupervisedUserSettingsService::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+base::WeakPtr<const SupervisedUserSettingsService>
+SupervisedUserSettingsService::GetWeakPtr() const {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 std::string SupervisedUserSettingsService::GetClientTag(
     const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_managed_user_setting());
@@ -561,11 +561,25 @@ base::Value::Dict SupervisedUserSettingsService::GetSettingsWithDefault()
 }
 
 void SupervisedUserSettingsService::InformSubscribers() {
-  if (!IsReady() || suspended_) {
+  if (!IsReady()) {
     return;
   }
 
   base::Value::Dict settings = GetSettingsWithDefault();
+
+  // This check prevents re-emitting the same settings, including empty
+  // settings. Main scenario is when this service is inactive but receives new
+  // settings from its backends. Then GetSettingsWithDefault() short-circuits
+  // and always returns empty settings. Re-emitting empty settings could clear
+  // the supervised user prefs store that can contain settings from device
+  // parental controls. Note: new subscribers always receive the current
+  // settings at least once.
+  if (last_notified_settings_.has_value() &&
+      settings == *last_notified_settings_) {
+    return;
+  }
+
+  last_notified_settings_ = settings.Clone();
   settings_callback_list_.Notify(std::move(settings));
 }
 

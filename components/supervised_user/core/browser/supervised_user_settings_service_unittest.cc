@@ -23,6 +23,7 @@
 #include "components/sync/protocol/managed_user_setting_specifics.pb.h"
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace supervised_user {
@@ -32,6 +33,14 @@ const char kAtomicItemName[] = "X-Wombat";
 const char kSettingsName[] = "TestingSetting";
 const char kSettingsValue[] = "SettingsValue";
 const char kSplitItemName[] = "X-SuperMoosePowers";
+
+class MockSubscriber {
+ public:
+  MOCK_METHOD(void,
+              OnNewSettingsAvailable,
+              (const base::Value::Dict& settings),
+              ());
+};
 
 class SupervisedUserSettingsServiceTest : public ::testing::Test {
  protected:
@@ -61,8 +70,7 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
 
   void UploadAtomicItem(const std::string& value) {
     atomic_setting_value_ = base::Value(value);
-    settings_service_.SaveItem(kAtomicItemName,
-                               base::Value(value));
+    settings_service_.SaveItem(kAtomicItemName, base::Value(value));
   }
 
   void VerifySyncDataItem(syncer::SyncData sync_data) {
@@ -470,6 +478,82 @@ TEST_F(SupervisedUserSettingsServiceTest,
     const base::Value* value = nullptr;
     EXPECT_FALSE(pref_store->GetValue(prefs::kSupervisedUserSafeSites, &value));
   }
+}
+
+TEST_F(SupervisedUserSettingsServiceTest,
+       DeactivationEmitsEmptyNotificationOnce) {
+  base::Value::Dict empty_settings;
+
+  MockSubscriber mock_subscriber;
+  // Notification sent on subscription.
+  EXPECT_CALL(mock_subscriber,
+              OnNewSettingsAvailable(testing::Ne(std::ref(empty_settings))))
+      .Times(1);
+  // Notification sent on deactivation.
+  EXPECT_CALL(mock_subscriber,
+              OnNewSettingsAvailable(testing::Eq(std::ref(empty_settings))))
+      .Times(1);
+
+  base::CallbackListSubscription subscription =
+      settings_service_.SubscribeForSettingsChange(
+          base::BindRepeating(&MockSubscriber::OnNewSettingsAvailable,
+                              base::Unretained(&mock_subscriber)));
+
+  // Deactivate several times to prove the point about single empty
+  // notification.
+  settings_service_.SetActive(false);
+  EXPECT_FALSE(settings_service_.IsActive());
+
+  settings_service_.SetActive(false);
+}
+
+TEST_F(SupervisedUserSettingsServiceTest,
+       InactiveServiceEmitsOneEmptyNotificationOnSubscription) {
+  settings_service_.SetActive(false);
+
+  MockSubscriber mock_subscriber;
+  base::Value::Dict empty_settings;
+
+  EXPECT_CALL(mock_subscriber,
+              OnNewSettingsAvailable(testing::Ne(std::ref(empty_settings))))
+      .Times(0);
+  // Only for the initial subscription.
+  EXPECT_CALL(mock_subscriber,
+              OnNewSettingsAvailable(testing::Eq(std::ref(empty_settings))))
+      .Times(1);
+
+  base::CallbackListSubscription subscription =
+      settings_service_.SubscribeForSettingsChange(
+          base::BindRepeating(&MockSubscriber::OnNewSettingsAvailable,
+                              base::Unretained(&mock_subscriber)));
+
+  // Despite multiple incoming settings, only one notification was sent on
+  // subscription.
+  settings_service_.SetLocalSetting(kGeolocationDisabled, base::Value(true));
+  settings_service_.SetLocalSetting(kSigninAllowed, base::Value(true));
+}
+
+TEST_F(SupervisedUserSettingsServiceTest, UpdatesAreSentForEachSettingUpdate) {
+  MockSubscriber mock_subscriber;
+  base::Value::Dict empty_settings;
+
+  EXPECT_CALL(mock_subscriber,
+              OnNewSettingsAvailable(testing::Eq(std::ref(empty_settings))))
+      .Times(0);
+  // One for the initial subscription, one for the update.
+  EXPECT_CALL(mock_subscriber,
+              OnNewSettingsAvailable(testing::Ne(std::ref(empty_settings))))
+      .Times(2);
+
+  base::CallbackListSubscription subscription =
+      settings_service_.SubscribeForSettingsChange(
+          base::BindRepeating(&MockSubscriber::OnNewSettingsAvailable,
+                              base::Unretained(&mock_subscriber)));
+
+  // Subscriber is called back each time a local setting is updated. Note: this
+  // specific setting is chosen because it is not one of the initial settings
+  // that are always set by the service upon subscribing.
+  settings_service_.SetLocalSetting(kGeolocationDisabled, base::Value(true));
 }
 
 }  // namespace

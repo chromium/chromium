@@ -131,6 +131,10 @@ class SupervisedUserSettingsService : public KeyedService,
   // SupervisedUserService when it is (de)activated.
   void SetActive(bool active);
 
+  // Whether the service is active. If false, it means that the profile is not
+  // requesting family link supervised user settings.
+  bool IsActive() const { return active_; }
+
   // Whether Family Link user settings are available.
   bool IsReady() const;
 
@@ -180,17 +184,13 @@ class SupervisedUserSettingsService : public KeyedService,
   std::string GetClientTag(
       const syncer::EntityData& entity_data) const override;
 
+  // Returns a weak pointer to the service.
+  base::WeakPtr<const SupervisedUserSettingsService> GetWeakPtr() const;
+
   // PrefStore::Observer implementation:
   void OnInitializationCompleted(bool success) override;
 
   bool IsCustomPassphraseAllowed() const;
-
-  // Suspended service must be prior deactivated. A suspended service is never
-  // notifying any of its observers. Inactive but unsuspended service is still
-  // sending blank notifications to the supervised user pref store, constantly
-  // clearing it which is breaking other features. A service cannot be suspended
-  // but active.
-  void SetSuspended(bool suspended);
 
   const base::Value::Dict& LocalSettingsForTest() const;
 
@@ -221,8 +221,8 @@ class SupervisedUserSettingsService : public KeyedService,
   // active, or empty dictionary otherwise.
   base::Value::Dict GetSettingsWithDefault() const;
 
-  // Sends the settings to all subscribers. This method should be called by the
-  // subclass whenever the settings change.
+  // Sends the settings to all subscribers if settings have changed since the
+  // last time a notification was sent.
   void InformSubscribers();
 
   // Used for persisting the settings. Unlike other PrefStores, this one is not
@@ -231,11 +231,9 @@ class SupervisedUserSettingsService : public KeyedService,
 
   bool active_;
 
-  // As opposed to (in)active, the inactive and suspended service won't
-  // send any notifications.
-  bool suspended_{false};
-
   bool initialization_failed_;
+
+  std::optional<base::Value::Dict> last_notified_settings_;
 
   // Set when WaitUntilReadyToSync() is invoked before initialization completes.
   base::OnceClosure wait_until_ready_to_sync_cb_;

@@ -100,6 +100,8 @@ void SupervisedUserPrefStore::Init(
         supervised_user_settings_service,
     supervised_user::SupervisedUserContentFiltersService*
         content_filters_service) {
+  settings_service_ = supervised_user_settings_service->GetWeakPtr();
+
   user_settings_subscription_ =
       supervised_user_settings_service->SubscribeForSettingsChange(
           base::BindRepeating(&SupervisedUserPrefStore::OnNewSettingsAvailable,
@@ -174,7 +176,7 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
     const base::Value::Dict& settings) {
   std::unique_ptr<PrefValueMap> old_prefs = std::move(prefs_);
   prefs_ = std::make_unique<PrefValueMap>();
-  if (!settings.empty()) {
+  if (settings_service_ && settings_service_->IsActive()) {
     supervised_user::SetSupervisedUserPrefStoreDefaults(*prefs_.get());
 
 #if BUILDFLAG(IS_ANDROID)
@@ -212,11 +214,16 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
 
+  // Unset `old_prefs` means that this is the first notification from the
+  // supervised user (Family Link) settings service.
   if (!old_prefs) {
-    for (Observer& observer : observers_) {
-      observer.OnInitializationCompleted(true);
-    }
-    return;
+    // If this is the first notification from the settings service, notify
+    // observers about initialization completion.
+    observers_.Notify(&PrefStore::Observer::OnInitializationCompleted, true);
+
+    // Set `old_prefs` to an empty value to fulfill the contract of
+    // `NotifyObserversAboutChanges()`.
+    old_prefs = std::make_unique<PrefValueMap>();
   }
 
   NotifyObserversAboutChanges(std::move(old_prefs));

@@ -449,7 +449,6 @@ void SupervisedUserService::OnSearchContentFiltersEnabled() {
     return;
   }
 
-  settings_service_->SetSuspended(true);
   content_filters_service_->SetSearchFiltersEnabled(true);
 
   // Required to emit WebFilterType metrics.
@@ -457,9 +456,6 @@ void SupervisedUserService::OnSearchContentFiltersEnabled() {
 }
 void SupervisedUserService::OnSearchContentFiltersDisabled() {
   content_filters_service_->SetSearchFiltersEnabled(false);
-  if (!IsSupervisedLocally()) {
-    settings_service_->SetSuspended(false);
-  }
 }
 
 void SupervisedUserService::
@@ -478,7 +474,6 @@ void SupervisedUserService::OnBrowserContentFiltersEnabled() {
   }
 
   RemoveURLFilterPrefChangeHandlers();
-  settings_service_->SetSuspended(true);
   content_filters_service_->SetBrowserFiltersEnabled(true);
 
   // Add handlers that will prevent unsupported url filter changes.
@@ -492,9 +487,6 @@ void SupervisedUserService::OnBrowserContentFiltersEnabled() {
 void SupervisedUserService::OnBrowserContentFiltersDisabled() {
   RemoveURLFilterPrefChangeHandlers();
   content_filters_service_->SetBrowserFiltersEnabled(false);
-  if (!IsSupervisedLocally()) {
-    settings_service_->SetSuspended(false);
-  }
 
   // Required to emit WebFilterType metrics and reclassifies the observed
   // navigations.

@@ -9,13 +9,13 @@
 #include <string_view>
 
 #include "base/callback_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "components/prefs/pref_store.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/supervised_user/core/browser/supervised_user_content_filters_service.h"
 #include "components/supervised_user/core/common/supervised_users.h"
-#include "base/memory/weak_ptr.h"
 
 class PrefValueMap;
 
@@ -62,9 +62,11 @@ class SupervisedUserPrefStore : public PrefStore {
 
   void OnNewSettingsAvailable(const base::Value::Dict& settings);
 
-  void OnNewContentFiltersStateAvailable(supervised_user::SupervisedUserContentFiltersService::State state);
+  void OnNewContentFiltersStateAvailable(
+      supervised_user::SupervisedUserContentFiltersService::State state);
 
-  // Notifies observers about changes in the prefs_ compared to the diff_base.
+  // Notifies observers about changes in the prefs_ compared to the diff_base,
+  // which must own a valid pointer.
   void NotifyObserversAboutChanges(std::unique_ptr<PrefValueMap> diff_base);
 
  private:
@@ -79,6 +81,9 @@ class SupervisedUserPrefStore : public PrefStore {
   base::CallbackListSubscription shutdown_subscription_;
 
   std::unique_ptr<PrefValueMap> prefs_;
+
+  base::WeakPtr<const supervised_user::SupervisedUserSettingsService>
+      settings_service_;
 
   base::ObserverList<PrefStore::Observer, true> observers_;
 
