@@ -57,7 +57,6 @@ class GlicMetrics;
 class GlicOcclusionNotifier;
 class GlicProfileManager;
 class GlicRegionCaptureController;
-class GlicScreenshotCapturer;
 class GlicShareImageHandler;
 class GlicTabDataObserver;
 class GlicWindowController;
@@ -88,7 +87,10 @@ class GlicKeyedService : public KeyedService,
                          public GlicSharingManagerProvider,
                          public Host::InstanceDelegate,
                          public base::MemoryPressureListener,
-                         public actor::ActorTaskDelegate {
+#if !BUILDFLAG(IS_ANDROID)
+                         public actor::ActorTaskDelegate
+#endif
+{
  public:
   explicit GlicKeyedService(
       Profile* profile,
@@ -144,7 +146,9 @@ class GlicKeyedService : public KeyedService,
   GlicMetrics* metrics() { return metrics_.get(); }
   GlicFreController& fre_controller();
   GlicWindowController& window_controller() const;
+#if !BUILDFLAG(IS_ANDROID)
   GlicWindowControllerInterface& GetSingleInstanceWindowController() const;
+#endif
   GlicSharingManager& sharing_manager() override;
 
   // Called when a webview guest is created within a chrome://glic WebUI.
@@ -321,6 +325,7 @@ class GlicKeyedService : public KeyedService,
 
   GlicTabDataObserver& tab_data_observer() { return *tab_data_observer_; }
 
+#if !BUILDFLAG(IS_ANDROID)
   // ActorTaskDelegate:
   void OnTabAddedToTask(actor::TaskId task_id,
                         const tabs::TabInterface::Handle& tab_handle) override;
@@ -344,6 +349,7 @@ class GlicKeyedService : public KeyedService,
       actor::TaskId task_id,
       std::vector<autofill::ActorFormFillingRequest> requests,
       AutofillSuggestionSelectedCallback callback) override;
+#endif
 
  private:
   // A helper function to route GetZeroStateSuggestionsForFocusedTabCallback
@@ -371,21 +377,24 @@ class GlicKeyedService : public KeyedService,
   raw_ptr<Profile> profile_;
 
   std::unique_ptr<GlicEnabling> enabling_;
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<GlicMetrics> metrics_;
+#endif
   std::unique_ptr<GlicFreController> fre_controller_;
   // Is either a GlicWindowControllerImpl or GlicPanelCoordinatorImpl.
   std::unique_ptr<GlicWindowController> window_controller_;
   std::unique_ptr<GlicSharingManager> sharing_manager_;
   std::unique_ptr<GlicShareImageHandler> share_image_handler_;
-  std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
   std::unique_ptr<GlicRegionCaptureController> region_capture_controller_;
   std::unique_ptr<AuthController> auth_controller_;
   std::unique_ptr<base::MemoryPressureListenerRegistration>
       memory_pressure_listener_registration_;
+#if !BUILDFLAG(IS_ANDROID)
   // Null in multi-instance mode.
   std::unique_ptr<GlicOcclusionNotifier> occlusion_notifier_;
   std::unique_ptr<GlicZeroStateSuggestionsManager>
       zero_state_suggestions_manager_;
+#endif
   base::OnceCallback<void()> preload_callback_;
   std::unique_ptr<GlicActorTaskManager> actor_task_manager_;
   std::unique_ptr<GlicTabDataObserver> tab_data_observer_;

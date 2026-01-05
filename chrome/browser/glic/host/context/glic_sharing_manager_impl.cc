@@ -20,6 +20,10 @@
 #include "glic_pinned_tab_manager.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
+#endif
+
 namespace glic {
 
 bool IsGlicTabContextEnabled(PrefService* pref_service) {
@@ -56,6 +60,7 @@ GlicGetContextResult TransformFetcherResult(
 }
 }  // namespace
 
+#if !BUILDFLAG(IS_ANDROID)
 GlicSharingManagerImpl::GlicSharingManagerImpl(
     Profile* profile,
     GlicWindowControllerInterface* window_controller,
@@ -72,6 +77,7 @@ GlicSharingManagerImpl::GlicSharingManagerImpl(
                                                  metrics)),
       profile_(profile),
       metrics_(metrics) {}
+#endif
 
 GlicSharingManagerImpl::GlicSharingManagerImpl(
     std::unique_ptr<GlicFocusedTabManagerInterface> focused_tab_manager,
