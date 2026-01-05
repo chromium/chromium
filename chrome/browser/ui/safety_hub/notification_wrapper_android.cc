@@ -5,22 +5,25 @@
 #include "chrome/browser/ui/safety_hub/notification_wrapper_android.h"
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "chrome/browser/safety_hub/android/jni_headers/UnsubscribedNotificationsNotificationManager_jni.h"
 
 NotificationWrapperAndroid::~NotificationWrapperAndroid() = default;
 
 void NotificationWrapperAndroid::DisplayNotification(
-    int num_revoked_permissions) {
+    int num_revoked_permissions,
+    std::string& first_affected_domain) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_UnsubscribedNotificationsNotificationManager_displayNotification(
-      env, num_revoked_permissions);
+      env, num_revoked_permissions, first_affected_domain);
 }
 
 void NotificationWrapperAndroid::UpdateNotification(
-    int num_revoked_permissions) {
+    int num_revoked_permissions,
+    std::string& first_affected_domain) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_UnsubscribedNotificationsNotificationManager_updateNotification(
-      env, num_revoked_permissions);
+      env, num_revoked_permissions, first_affected_domain);
 }
 
 DEFINE_JNI(UnsubscribedNotificationsNotificationManager)

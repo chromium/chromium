@@ -45,13 +45,13 @@ public class UnsubscribedNotificationsNotificationManagerTest {
     @Test
     @DisableFeatures(ChromeFeatureList.AUTO_REVOKE_SUSPICIOUS_NOTIFICATION)
     public void testDisplayNotificationOneSite() {
-        UnsubscribedNotificationsNotificationManager.displayNotification(1);
+        UnsubscribedNotificationsNotificationManager.displayNotification(1, "example.com");
         List<MockNotificationManagerProxy.NotificationEntry> notifications =
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notifications.size());
         Notification notification = notifications.get(0).notification;
         assertEquals(
-                "Unsubscribed from one unused site",
+                "Unsubscribed from example.com",
                 notification.extras.getString(Notification.EXTRA_TITLE));
         assertEquals(
                 "Chrome stopped notifications from this site. You can review and manage.",
@@ -65,13 +65,13 @@ public class UnsubscribedNotificationsNotificationManagerTest {
     @Test
     @DisableFeatures(ChromeFeatureList.AUTO_REVOKE_SUSPICIOUS_NOTIFICATION)
     public void testDisplayNotificationMultipleSites() {
-        UnsubscribedNotificationsNotificationManager.displayNotification(2);
+        UnsubscribedNotificationsNotificationManager.displayNotification(2, "example.com");
         List<MockNotificationManagerProxy.NotificationEntry> notifications =
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notifications.size());
         Notification notification = notifications.get(0).notification;
         assertEquals(
-                "Unsubscribed from 2 unused sites",
+                "Unsubscribed from 2 sites",
                 notification.extras.getString(Notification.EXTRA_TITLE));
         assertEquals(
                 "Chrome stopped notifications from these sites. You can review and manage.",
@@ -83,26 +83,26 @@ public class UnsubscribedNotificationsNotificationManagerTest {
     public void testDisplayNotificationUpdates() {
         assertEquals(0, mMockNotificationManager.getNotifications().size());
 
-        UnsubscribedNotificationsNotificationManager.displayNotification(0);
+        UnsubscribedNotificationsNotificationManager.displayNotification(0, "example.com");
         assertEquals(0, mMockNotificationManager.getNotifications().size());
 
-        UnsubscribedNotificationsNotificationManager.displayNotification(1);
+        UnsubscribedNotificationsNotificationManager.displayNotification(1, "example.com");
         List<MockNotificationManagerProxy.NotificationEntry> notifications =
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notifications.size());
         assertEquals(
-                "Unsubscribed from one unused site",
+                "Unsubscribed from example.com",
                 notifications.get(0).notification.extras.getString(Notification.EXTRA_TITLE));
         assertEquals(
                 "Chrome stopped notifications from this site. You can review and manage.",
                 notifications.get(0).notification.extras.getString(Notification.EXTRA_TEXT));
 
-        UnsubscribedNotificationsNotificationManager.displayNotification(3);
+        UnsubscribedNotificationsNotificationManager.displayNotification(3, "example.com");
         List<MockNotificationManagerProxy.NotificationEntry> notificationsAfter =
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notificationsAfter.size());
         assertEquals(
-                "Unsubscribed from 3 unused sites",
+                "Unsubscribed from 3 sites",
                 notificationsAfter.get(0).notification.extras.getString(Notification.EXTRA_TITLE));
         assertEquals(
                 "Chrome stopped notifications from these sites. You can review and manage.",
@@ -111,13 +111,13 @@ public class UnsubscribedNotificationsNotificationManagerTest {
         assertThat(notificationsAfter.get(0).notification.when)
                 .isGreaterThan(notifications.get(0).notification.when);
 
-        UnsubscribedNotificationsNotificationManager.displayNotification(0);
+        UnsubscribedNotificationsNotificationManager.displayNotification(0, "example.com");
         assertEquals(0, mMockNotificationManager.getNotifications().size());
     }
 
     @Test
     public void testUpdateNotificationWithNoPreexistentNotification() {
-        UnsubscribedNotificationsNotificationManager.updateNotification(1);
+        UnsubscribedNotificationsNotificationManager.updateNotification(1, "example.com");
         List<MockNotificationManagerProxy.NotificationEntry> notifications =
                 mMockNotificationManager.getNotifications();
         assertEquals(0, notifications.size());
@@ -126,23 +126,23 @@ public class UnsubscribedNotificationsNotificationManagerTest {
     @Test
     @DisableFeatures(ChromeFeatureList.AUTO_REVOKE_SUSPICIOUS_NOTIFICATION)
     public void testUpdateNotificationNewNumber() {
-        UnsubscribedNotificationsNotificationManager.displayNotification(1);
+        UnsubscribedNotificationsNotificationManager.displayNotification(1, "example.com");
         List<MockNotificationManagerProxy.NotificationEntry> notifications =
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notifications.size());
         assertEquals(
-                "Unsubscribed from one unused site",
+                "Unsubscribed from example.com",
                 notifications.get(0).notification.extras.getString(Notification.EXTRA_TITLE));
         assertEquals(
                 "Chrome stopped notifications from this site. You can review and manage.",
                 notifications.get(0).notification.extras.getString(Notification.EXTRA_TEXT));
 
-        UnsubscribedNotificationsNotificationManager.updateNotification(2);
+        UnsubscribedNotificationsNotificationManager.updateNotification(2, "example.com");
         List<MockNotificationManagerProxy.NotificationEntry> notificationsAfter =
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notificationsAfter.size());
         assertEquals(
-                "Unsubscribed from 2 unused sites",
+                "Unsubscribed from 2 sites",
                 notificationsAfter.get(0).notification.extras.getString(Notification.EXTRA_TITLE));
         assertEquals(
                 "Chrome stopped notifications from these sites. You can review and manage.",
@@ -156,9 +156,9 @@ public class UnsubscribedNotificationsNotificationManagerTest {
     @Test
     @DisableFeatures(ChromeFeatureList.AUTO_REVOKE_SUSPICIOUS_NOTIFICATION)
     public void testUpdateNotificationDismisses() {
-        UnsubscribedNotificationsNotificationManager.displayNotification(1);
+        UnsubscribedNotificationsNotificationManager.displayNotification(1, "example.com");
         assertEquals(1, mMockNotificationManager.getNotifications().size());
-        UnsubscribedNotificationsNotificationManager.updateNotification(0);
+        UnsubscribedNotificationsNotificationManager.updateNotification(0, "example.com");
         assertEquals(0, mMockNotificationManager.getNotifications().size());
     }
 
@@ -167,18 +167,18 @@ public class UnsubscribedNotificationsNotificationManagerTest {
     public void testDisplayUpdateNotification_AutoRevokeSuspiciousNotificationEnabled() {
         assertEquals(0, mMockNotificationManager.getNotifications().size());
 
-        UnsubscribedNotificationsNotificationManager.displayNotification(1);
+        UnsubscribedNotificationsNotificationManager.displayNotification(1, "example.com");
         List<MockNotificationManagerProxy.NotificationEntry> notifications =
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notifications.size());
         assertEquals(
-                "Unsubscribed from one site",
+                "Unsubscribed from example.com",
                 notifications.get(0).notification.extras.getString(Notification.EXTRA_TITLE));
         assertEquals(
                 "Chrome stopped notifications from this site. You can review and manage.",
                 notifications.get(0).notification.extras.getString(Notification.EXTRA_TEXT));
 
-        UnsubscribedNotificationsNotificationManager.displayNotification(3);
+        UnsubscribedNotificationsNotificationManager.displayNotification(3, "example.com");
         List<MockNotificationManagerProxy.NotificationEntry> notificationsSecondDisplay =
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notificationsSecondDisplay.size());
@@ -197,7 +197,7 @@ public class UnsubscribedNotificationsNotificationManagerTest {
                         .extras
                         .getString(Notification.EXTRA_TEXT));
 
-        UnsubscribedNotificationsNotificationManager.updateNotification(2);
+        UnsubscribedNotificationsNotificationManager.updateNotification(2, "example.com");
         List<MockNotificationManagerProxy.NotificationEntry> notificationsUpdate =
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notificationsUpdate.size());

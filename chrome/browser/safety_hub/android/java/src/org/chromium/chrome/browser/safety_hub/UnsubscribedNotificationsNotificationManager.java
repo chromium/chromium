@@ -94,17 +94,21 @@ public class UnsubscribedNotificationsNotificationManager {
      *     dismissed.
      */
     @CalledByNative
-    static void displayNotification(@JniType("int32_t") int numRevokedPermissions) {
+    static void displayNotification(
+            @JniType("int32_t") int numRevokedPermissions,
+            @JniType("std::string") String firstAffectedDomain) {
         assert numRevokedPermissions >= 0
                 : "This function expects a non-negative parameter numRevokedPermissions";
         if (numRevokedPermissions <= 0) {
             dismissNotification();
             return;
         }
-        displayOrUpdateNotification(numRevokedPermissions, TimeUtils.currentTimeMillis());
+        displayOrUpdateNotification(
+                numRevokedPermissions, TimeUtils.currentTimeMillis(), firstAffectedDomain);
     }
 
-    private static void displayOrUpdateNotification(int numRevokedPermissions, long when) {
+    private static void displayOrUpdateNotification(
+            int numRevokedPermissions, long when, String firstAffectedDomain) {
         if (!isDisruptiveNotificationRevocationEnabled()
                 && !isAutoRevokeSuspiciousNotificationEnabled()) {
             dismissNotification();
@@ -113,13 +117,20 @@ public class UnsubscribedNotificationsNotificationManager {
 
         Context context = ContextUtils.getApplicationContext();
         Resources res = context.getResources();
-        int titleId =
-                isAutoRevokeSuspiciousNotificationEnabled()
-                        ? R.plurals
-                                .safety_hub_unsubscribed_disruptive_and_suspicious_notifications_notification_title
-                        : R.plurals.safety_hub_unsubscribed_notifications_notification_title;
-        String title = res.getQuantityString(titleId, numRevokedPermissions, numRevokedPermissions);
-
+        String title;
+        if (numRevokedPermissions == 1) {
+            title =
+                    res.getString(
+                            R.string
+                                    .safety_hub_unsubscribed_disruptive_and_suspicious_notifications_notification_title_singular,
+                            firstAffectedDomain);
+        } else {
+            title =
+                    res.getString(
+                            R.string
+                                    .safety_hub_unsubscribed_disruptive_and_suspicious_notifications_notification_title_plural,
+                            numRevokedPermissions);
+        }
         String contents =
                 res.getQuantityString(
                         R.plurals.safety_hub_unsubscribed_notifications_notification_message,
@@ -216,7 +227,9 @@ public class UnsubscribedNotificationsNotificationManager {
      *     dismissed.
      */
     @CalledByNative
-    static void updateNotification(@JniType("int32_t") int numRevokedPermissions) {
+    static void updateNotification(
+            @JniType("int32_t") int numRevokedPermissions,
+            @JniType("std::string") String firstAffectedDomain) {
         assert numRevokedPermissions >= 0
                 : "This function expects a non-negative parameter numRevokedPermissions";
         if (numRevokedPermissions <= 0) {
@@ -232,7 +245,9 @@ public class UnsubscribedNotificationsNotificationManager {
                                 return;
                             }
                             displayOrUpdateNotification(
-                                    numRevokedPermissions, activeNotification.when);
+                                    numRevokedPermissions,
+                                    activeNotification.when,
+                                    firstAffectedDomain);
                         });
     }
 

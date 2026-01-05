@@ -73,10 +73,12 @@ class SafetyHubNotificationWrapperForTesting
       : display_called_with_(display_called_with),
         update_called_with_(update_called_with) {}
 
-  void DisplayNotification(int num_revoked_permissions) override {
+  void DisplayNotification(int num_revoked_permissions,
+                           std::string& first_affected_domain) override {
     display_called_with_->push_back(num_revoked_permissions);
   }
-  void UpdateNotification(int num_revoked_permissions) override {
+  void UpdateNotification(int num_revoked_permissions,
+                          std::string& first_affected_domain) override {
     update_called_with_->push_back(num_revoked_permissions);
   }
 

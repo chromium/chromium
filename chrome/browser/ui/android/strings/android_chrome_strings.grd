@@ -1683,15 +1683,11 @@ Your Google account may have other forms of browsing history like searches and a
         =1 {Chrome found a reused password that you could improve}
         other {Chrome found # reused passwords that you could improve}}
       </message>
-      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_TITLE" desc="Title for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
-        {NUM_REVOKED_PERMISSIONS, plural,
-        =1 {Unsubscribed from one unused site}
-        other {Unsubscribed from # unused sites}}
+       <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_DISRUPTIVE_AND_SUSPICIOUS_NOTIFICATIONS_NOTIFICATION_TITLE_SINGULAR" desc="Title for the notification sent from Safety Hub for telling the user that the site's notifications have been unsubscribed.">
+        Unsubscribed from <ph name="DOMAIN">%1$s<ex>example.com</ex></ph>
       </message>
-       <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_DISRUPTIVE_AND_SUSPICIOUS_NOTIFICATIONS_NOTIFICATION_TITLE" desc="Title for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
-        {NUM_REVOKED_PERMISSIONS, plural,
-        =1 {Unsubscribed from one site}
-        other {Unsubscribed from # sites}}
+      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_DISRUPTIVE_AND_SUSPICIOUS_NOTIFICATIONS_NOTIFICATION_TITLE_PLURAL" desc="Title for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
+        Unsubscribed from <ph name="COUNT">%1$d<ex>2</ex></ph> sites
       </message>
       <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_MESSAGE" desc="Message for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed." meaning="This message informs about notification permissions having been revoked from one or more sites and explains that the user can review and manage [those notification permission revocations] by either clicking on this message or on the Review button below it.">
         {NUM_REVOKED_PERMISSIONS, plural,

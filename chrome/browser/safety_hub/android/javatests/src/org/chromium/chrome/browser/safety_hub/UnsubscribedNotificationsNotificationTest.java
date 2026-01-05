@@ -56,7 +56,7 @@ public final class UnsubscribedNotificationsNotificationTest {
     @SmallTest
     @Feature({"SafetyHubNotification"})
     public void testReviewNotification() throws Exception {
-        UnsubscribedNotificationsNotificationManager.displayNotification(1);
+        UnsubscribedNotificationsNotificationManager.displayNotification(1, "example.com");
         List<MockNotificationManagerProxy.NotificationEntry> notifications =
                 mNotificationTestRule.getNotificationEntries();
         assertEquals(1, notifications.size());
@@ -91,7 +91,7 @@ public final class UnsubscribedNotificationsNotificationTest {
     @SmallTest
     @Feature({"SafetyHubNotification"})
     public void testReviewNotificationClickingOnContent() throws Exception {
-        UnsubscribedNotificationsNotificationManager.displayNotification(1);
+        UnsubscribedNotificationsNotificationManager.displayNotification(1, "example.com");
         List<MockNotificationManagerProxy.NotificationEntry> notifications =
                 mNotificationTestRule.getNotificationEntries();
         assertEquals(1, notifications.size());
