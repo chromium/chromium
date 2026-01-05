@@ -167,9 +167,17 @@ WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
   result.delta_units = motion_event.GetSource() == AINPUT_SOURCE_TOUCHPAD
                            ? ui::ScrollGranularity::kScrollByPrecisePixel
                            : ui::ScrollGranularity::kScrollByPixel;
-  result.delta_x = motion_event.ticks_x() * motion_event.GetTickMultiplier();
+  // For vertical scrolling (delta_y, wheel_ticks_y), Android's MotionEvent
+  // provides values that align with "natural" scrolling (content moves in the
+  // direction of the scroll).
+  // For horizontal scrolling (delta_x, wheel_ticks_x), the MotionEvent
+  // historically provided values that matched traditional desktop behavior
+  // (content moves opposite to scroll direction). To align with Android's
+  // "natural" scrolling expectation for horizontal input, we negate the x-axis
+  // values.
+  result.delta_x = -motion_event.ticks_x() * motion_event.GetTickMultiplier();
   result.delta_y = motion_event.ticks_y() * motion_event.GetTickMultiplier();
-  result.wheel_ticks_x = motion_event.ticks_x();
+  result.wheel_ticks_x = -motion_event.ticks_x();
   result.wheel_ticks_y = motion_event.ticks_y();
   result.SetModifiers(
       ui::EventFlagsToWebEventModifiers(motion_event.GetFlags()));
