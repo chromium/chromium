@@ -159,3 +159,66 @@ promise_test(async (test) => {
   assert_true(responseHeaders.has('Content-Length'));
   assert_true(responseHeaders.has('Content-Type'));
 }, 'WebRequest Get Response Headers');
+
+// Checks that a string is formatted properly as sha256 fingerprint
+// which is formatted as 31 pairs of "XX:" followed by one "XX".
+function isSha256Fingerprint(input) {
+  const fingerprintRegex = /^([0-9A-F]{2}:){31}[0-9A-F]{2}$/;
+  return fingerprintRegex.test(input);
+}
+
+promise_test(async (test) => {
+  const controlledframe = await createControlledFrame('/simple.html');
+  controlledframe.stop();
+
+  const targetUrl = new URL(controlledframe.src);
+  targetUrl.pathname = '/title1.html';
+
+  let securityInfo = null;
+  controlledframe.request
+      .createWebRequestInterceptor({
+        urlPatterns: [targetUrl.toString()],
+        securityInfo: true,
+      })
+      .addEventListener('headersreceived', (e) => {
+        assert_true('securityInfo' in e);
+        securityInfo = e.securityInfo;
+      });
+
+  await navigateControlledFrame(controlledframe, targetUrl.toString());
+
+  assert_equals(securityInfo.state, 'secure', 'state');
+  assert_equals(securityInfo.certificates.length, 1, 'certificates.length');
+  assert_false('rawDER' in securityInfo.certificates[0]);
+  assert_true(
+      isSha256Fingerprint(securityInfo.certificates[0].fingerprint.sha256));
+}, 'WebRequest Get Security Info');
+
+promise_test(async (test) => {
+  const controlledframe = await createControlledFrame('/simple.html');
+  controlledframe.stop();
+
+  const targetUrl = new URL(controlledframe.src);
+  targetUrl.pathname = '/title1.html';
+
+  let securityInfo = null;
+  controlledframe.request
+      .createWebRequestInterceptor({
+        urlPatterns: [targetUrl.toString()],
+        securityInfoRawDer: true,
+      })
+      .addEventListener('headersreceived', (e) => {
+        assert_true('securityInfo' in e);
+        securityInfo = e.securityInfo;
+      });
+
+  await navigateControlledFrame(controlledframe, targetUrl.toString());
+
+  assert_equals(securityInfo.state, 'secure', 'state');
+  assert_equals(securityInfo.certificates.length, 1, 'certificates.length');
+  assert_true('rawDER' in securityInfo.certificates[0]);
+  assert_true(securityInfo.certificates[0].rawDER.byteLength > 0);
+
+  assert_true(
+      isSha256Fingerprint(securityInfo.certificates[0].fingerprint.sha256));
+}, 'WebRequest Get Security Info rawDER');

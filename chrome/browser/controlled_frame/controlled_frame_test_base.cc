@@ -68,7 +68,8 @@ void ControlledFrameTestBase::ConfigureEnvironment() {
   // IsolatedWebAppBrowserTestHarness enables features::kIsolatedWebApps and
   // features::kIsolatedWebAppDevMode.
   std::vector<base::test::FeatureRef> enabled_features = {
-      blink::features::kIsolateSandboxedIframes};
+      blink::features::kIsolateSandboxedIframes,
+      blink::features::kControlledFrameWebRequestSecurityInfo};
   std::vector<base::test::FeatureRef> disabled_features = {};
   switch (feature_setting()) {
     case FeatureSetting::UNINITIALIZED:
