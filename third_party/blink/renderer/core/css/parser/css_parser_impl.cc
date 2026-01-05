@@ -2188,12 +2188,13 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
   }
 
   const ConditionalExpNode* query = query_parser.ParseCondition(stream);
-  if (!query) {
+  if (!query &&
+      (name.IsNull() || !RuntimeEnabledFeatures::ContainerNameOnlyEnabled())) {
     ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleContainer);
     return nullptr;
   }
   ContainerQuery* container_query = MakeGarbageCollected<ContainerQuery>(
-      ContainerSelector(std::move(name), *query), query);
+      ContainerSelector(std::move(name), query), query);
 
   wtf_size_t prelude_offset_end = stream.LookAheadOffset();
   if (!ConsumeEndOfPreludeForAtRuleWithBlock(

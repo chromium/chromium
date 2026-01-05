@@ -86,7 +86,7 @@ bool TypeMatches(const ComputedStyle& style,
                  const ContainerSelector& container_selector) {
   DCHECK(!container_selector.HasUnknownFeature());
   unsigned type = container_selector.Type(style.GetWritingMode());
-  return !type || ((style.ContainerType() & type) == type);
+  return type == kContainerTypeNormal || (style.ContainerType() & type) == type;
 }
 
 bool Matches(const ComputedStyle& style,
@@ -211,6 +211,10 @@ bool ContainerQueryEvaluator::EvalAndAdd(
   if (Element* container = CachedContainer(starting_element, selector,
                                            match_result.CurrentTreeScope(),
                                            container_selector_cache)) {
+    if (!query.Query()) {
+      // Querying name only, which is already matched in FindContainer.
+      return true;
+    }
     Change change = starting_element == container
                         ? Change::kNearestContainer
                         : Change::kDescendantContainers;

@@ -49,9 +49,9 @@ ContainerSelector::FeatureFlags GetFeatureFlags(const MediaQueryExp& exp) {
 }  // anonymous namespace
 
 ContainerSelector::ContainerSelector(AtomicString name,
-                                     const ConditionalExpNode& query)
+                                     const ConditionalExpNode* query)
     : name_(std::move(name)) {
-  FeatureFlags feature_flags = CollectFeatureFlags(query);
+  FeatureFlags feature_flags = query ? CollectFeatureFlags(*query) : 0;
 
   if (feature_flags & kFeatureInlineSize) {
     logical_axes_ |= kLogicalAxesInline;

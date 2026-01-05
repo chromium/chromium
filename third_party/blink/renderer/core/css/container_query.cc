@@ -23,9 +23,13 @@ String ContainerQuery::ToString() const {
   String name = selector_.Name();
   if (!name.empty()) {
     SerializeIdentifier(name, result);
-    result.Append(' ');
+    if (query_) {
+      result.Append(' ');
+    }
   }
-  result.Append(query_->Serialize());
+  if (query_) {
+    result.Append(query_->Serialize());
+  }
   return result.ReleaseString();
 }
 

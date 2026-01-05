@@ -837,6 +837,31 @@ TEST_F(ContainerQueryEvaluatorTest, FindContainer) {
             outer_size);
 }
 
+TEST_F(ContainerQueryEvaluatorTest, FindNamedContainer) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="container-name:outer">
+      <div style="container-name:inner">
+        <div>
+          <div></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* outer = GetDocument().body()->firstElementChild();
+  Element* inner = outer->firstElementChild();
+  Element* target = inner->firstElementChild()->firstElementChild();
+
+  EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
+                target, ParseContainer("inner")->Selector(), &GetDocument()),
+            inner);
+  EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
+                target, ParseContainer("outer")->Selector(), &GetDocument()),
+            outer);
+}
+
 TEST_F(ContainerQueryEvaluatorTest, FindStickyContainer) {
   SetBodyInnerHTML(R"HTML(
     <div style="container-type: scroll-state size">

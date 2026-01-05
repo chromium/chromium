@@ -55,7 +55,10 @@ String CSSContainerRule::containerName() const {
 }
 
 String CSSContainerRule::containerQuery() const {
-  return ContainerQuery().Query().Serialize();
+  if (const ConditionalExpNode* query = ContainerQuery().Query()) {
+    return query->Serialize();
+  }
+  return String();
 }
 
 const ContainerQuery& CSSContainerRule::ContainerQuery() const {
