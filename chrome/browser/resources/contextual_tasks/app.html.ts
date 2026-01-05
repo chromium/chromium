@@ -12,6 +12,7 @@ import type {ContextualTasksAppElement} from './app.js';
 export function getHtml(this: ContextualTasksAppElement) {
   return html`<!--_html_template_start_-->
   ${this.isShownInTab_ ? '' : html`
+    <div id="toolbarOverlay">
       <top-toolbar id="toolbar"
           .title="${this.threadTitle_}"
           .attachedTabs="${this.contextTabs_}"
@@ -19,14 +20,10 @@ export function getHtml(this: ContextualTasksAppElement) {
           .isAiPage="${this.isAiPage_}"
           @new-thread-click="${this.onNewThreadClick_}">
       </top-toolbar>
+    </div>
   `}
   <error-page id="errorPage"></error-page>
   <webview id="threadFrame"></webview>
-  <zero-state-overlay
-      id="zeroStateOverlay"
-      .isFirstLoad="${this.isZeroState_}"
-      .isSidePanel="${!this.isShownInTab_}">
-  </zero-state-overlay>
   <div class="flex-center">
     <div id="relativeThreadHolder">
       <h1 class="thread-header">
