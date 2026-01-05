@@ -16,6 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -98,11 +99,14 @@ class UnexportableKeyObsoleteProfileGarbageCollectorMacTest : public Test {
     return *collector_;
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   std::optional<UnexportableKeyObsoleteProfileGarbageCollector> collector_;
+  base::HistogramTester histogram_tester_;
   raw_ptr<MockUnexportableKeyService> user_data_dir_service_ = nullptr;
   base::OnceCallback<void(MockUnexportableKeyService*)>
       on_profile_service_created_;
@@ -127,6 +131,11 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
   EXPECT_CALL(*user_data_dir_service(), DeleteKeySlowlyAsync).Times(0);
 
   task_environment().FastForwardBy(kGarbageCollectionDelay);
+
+  histogram_tester().ExpectTotalCount(
+      "Crypto.UnexportableKeys.GarbageCollection.ObsoleteProfiles."
+      "TotalKeyCount",
+      0);
 }
 
 TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
@@ -146,6 +155,23 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
   EXPECT_CALL(*user_data_dir_service(), DeleteKeySlowlyAsync).Times(0);
 
   task_environment().FastForwardBy(kGarbageCollectionDelay);
+
+  histogram_tester().ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.ObsoleteProfiles."
+      "TotalKeyCount",
+      1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.ObsoleteProfiles."
+      "UsedKeyCount",
+      1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.ObsoleteProfiles."
+      "ObsoleteKeyCount",
+      0, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.ObsoleteProfiles."
+      "ObsoleteKeyDeletionCount",
+      0, 1);
 }
 
 TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
@@ -196,7 +222,8 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
 
   EXPECT_CALL(*user_data_dir_service(),
               DeleteKeySlowlyAsync(obsolete_key_id,
-                                   BackgroundTaskPriority::kBestEffort, _));
+                                   BackgroundTaskPriority::kBestEffort, _))
+      .WillOnce(RunOnceCallback<2>(base::ok()));
   EXPECT_CALL(*user_data_dir_service(),
               DeleteKeySlowlyAsync(active_key_id,
                                    BackgroundTaskPriority::kBestEffort, _))
@@ -211,6 +238,23 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
       .Times(0);
 
   task_environment().FastForwardBy(kGarbageCollectionDelay);
+
+  histogram_tester().ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.ObsoleteProfiles."
+      "TotalKeyCount",
+      4, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.ObsoleteProfiles."
+      "UsedKeyCount",
+      3, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.ObsoleteProfiles."
+      "ObsoleteKeyCount",
+      1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.ObsoleteProfiles."
+      "ObsoleteKeyDeletionCount",
+      1, 1);
 }
 
 TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
@@ -227,11 +271,28 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
   // If GetKeyTag fails, the key is assumed safe and not deleted.
   EXPECT_CALL(*user_data_dir_service(), DeleteKeySlowlyAsync).Times(0);
   task_environment().FastForwardBy(kGarbageCollectionDelay);
+
+  histogram_tester().ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.ObsoleteProfiles."
+      "TotalKeyCount",
+      1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.ObsoleteProfiles."
+      "UsedKeyCount",
+      1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.ObsoleteProfiles."
+      "ObsoleteKeyCount",
+      0, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.ObsoleteProfiles."
+      "ObsoleteKeyDeletionCount",
+      0, 1);
 }
 
 TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
        OnProfileDeletion) {
-  profile_manager().CreateTestingProfile(kProfileName);
+  Profile* profile = profile_manager().CreateTestingProfile(kProfileName);
 
   // Setup expectation for the per-profile service.
   // NOTE: This logic needs to be a callback injected before returning the
@@ -241,10 +302,21 @@ TEST_F(UnexportableKeyObsoleteProfileGarbageCollectorMacTest,
   set_on_profile_service_created(
       base::BindOnce([](MockUnexportableKeyService* service) {
         EXPECT_CALL(*service, DeleteAllKeysSlowlyAsync(
-                                  BackgroundTaskPriority::kBestEffort, _));
+                                  BackgroundTaskPriority::kBestEffort, _))
+            .WillOnce(RunOnceCallback<1>(3));
       }));
 
-  profile_manager().DeleteTestingProfile(kProfileName);
+  // TestingProfileManager::DeleteTestingProfile() does not actually invoke
+  // NotifyOnProfileMarkedForPermanentDeletion(), thus we need to invoke it
+  // explicitly ourselves.
+  // TODO(crbug.com/455538352): Add a browser test exercising these interactions
+  // end-to-end.
+  collector().OnProfileMarkedForPermanentDeletion(profile);
+
+  histogram_tester().ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.DestroyedProfiles."
+      "ObsoleteKeyDeletionCount",
+      3, 1);
 }
 
 }  // namespace

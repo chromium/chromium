@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/extend.h"
@@ -19,6 +20,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -35,6 +37,10 @@ namespace unexportable_keys {
 namespace {
 
 constexpr base::TimeDelta kGarbageCollectionDelay = base::Minutes(2);
+constexpr std::string_view kObsoleteProfilesHistogramPrefix =
+    "Crypto.UnexportableKeys.GarbageCollection.ObsoleteProfiles.";
+constexpr std::string_view kDestroyedProfilesHistogramPrefix =
+    "Crypto.UnexportableKeys.GarbageCollection.DestroyedProfiles.";
 
 std::string GetApplicationTag(crypto::UnexportableKeyProvider::Config config) {
 #if BUILDFLAG(IS_MAC)
@@ -73,10 +79,20 @@ void UnexportableKeyObsoleteProfileGarbageCollector::
   CHECK_DEREF(profile_service)
       .DeleteAllKeysSlowlyAsync(
           BackgroundTaskPriority::kBestEffort,
-          // TODO(crbug.com/455538352): Add metrics.
-          base::BindOnce([](std::unique_ptr<UnexportableKeyService>,
-                            ServiceErrorOr<size_t>) {},
-                         std::move(profile_service)));
+          base::BindOnce(
+              [](std::unique_ptr<UnexportableKeyService>,
+                 ServiceErrorOr<size_t> count_or_error) {
+                if (count_or_error.has_value()) {
+                  base::UmaHistogramCounts100(
+                      base::StrCat({kDestroyedProfilesHistogramPrefix,
+                                    "ObsoleteKeyDeletionCount"}),
+                      *count_or_error);
+                }
+              },
+              // Transfer ownership of `profile_service` to the callback to
+              // ensure that the callback is run, even after `this` is
+              // destroyed.
+              std::move(profile_service)));
 }
 
 void UnexportableKeyObsoleteProfileGarbageCollector::StartGarbageCollection() {
@@ -93,6 +109,12 @@ void UnexportableKeyObsoleteProfileGarbageCollector::
   if (!key_ids_or_error.has_value() || key_ids_or_error->empty()) {
     return;
   }
+
+  std::vector<UnexportableKeyId>& key_ids = *key_ids_or_error;
+  const size_t key_count = key_ids.size();
+  base::UmaHistogramCounts100(
+      base::StrCat({kObsoleteProfilesHistogramPrefix, "TotalKeyCount"}),
+      key_count);
 
   // Collect all profile paths that are known to the profile manager.
   std::vector<base::FilePath> profile_paths = base::ToVector(
@@ -111,7 +133,6 @@ void UnexportableKeyObsoleteProfileGarbageCollector::
 
   // Filter `key_ids`, removing ids where we can't obtain the key's tag, or the
   // tag is known to be active.
-  std::vector<UnexportableKeyId>& key_ids = *key_ids_or_error;
   std::erase_if(key_ids, [&](UnexportableKeyId key_id) -> bool {
     ASSIGN_OR_RETURN(std::string key_tag,
                      user_data_dir_service_->GetKeyTag(key_id),
@@ -123,12 +144,29 @@ void UnexportableKeyObsoleteProfileGarbageCollector::
            key_tag.starts_with(*std::prev(it));
   });
 
+  base::UmaHistogramCounts100(
+      base::StrCat({kObsoleteProfilesHistogramPrefix, "UsedKeyCount"}),
+      key_count - key_ids.size());
+
+  base::UmaHistogramCounts100(
+      base::StrCat({kObsoleteProfilesHistogramPrefix, "ObsoleteKeyCount"}),
+      key_ids.size());
+
+  const auto barrier_callback = base::BarrierCallback<ServiceErrorOr<void>>(
+      key_ids.size(),
+      base::BindOnce([](std::vector<ServiceErrorOr<void>> results) {
+        base::UmaHistogramCounts100(
+            base::StrCat(
+                {kObsoleteProfilesHistogramPrefix, "ObsoleteKeyDeletionCount"}),
+            std::ranges::count_if(
+                results, [](auto result) { return result.has_value(); }));
+      }));
+
   // Schedule the rest for deletion.
   // TODO(crbug.com/455538832): Add a bulk deletion API to the service.
   for (UnexportableKeyId key_id : key_ids) {
     user_data_dir_service_->DeleteKeySlowlyAsync(
-        // TODO(crbug.com/455538352): Add metrics.
-        key_id, BackgroundTaskPriority::kBestEffort, base::DoNothing());
+        key_id, BackgroundTaskPriority::kBestEffort, barrier_callback);
   }
 }
 
