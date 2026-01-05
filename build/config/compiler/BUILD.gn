@@ -2273,13 +2273,6 @@ config("default_warnings") {
   if (is_apple) {
     ldflags += [ "-Wl,-no_warn_duplicate_libraries" ]
   }
-
-  # Rust warnings
-
-  # Require `unsafe` blocks even in `unsafe` fns. This is intended to become
-  # an error by default eventually; see
-  # https://github.com/rust-lang/rust/issues/71668
-  rustflags = [ "-Dunsafe_op_in_unsafe_fn" ]
 }
 
 # prevent_unsafe_narrowing ----------------------------------------------------
