@@ -521,6 +521,12 @@ bool RulesetManager::ShouldEvaluateRequest(
     return false;
   }
 
+  // Declarative Net Request rules should not be matched against requests
+  // originating from WebViews.
+  if (request.is_web_view) {
+    return false;
+  }
+
   return true;
 }
 

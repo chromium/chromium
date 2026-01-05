@@ -130,6 +130,8 @@
 #include "extensions/browser/api/declarative/rules_registry.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/api/declarative/test_rules_registry.h"
+#include "extensions/browser/api/declarative_net_request/action_tracker.h"
+#include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_constants.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -5798,6 +5800,40 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          ChromeSignInWebViewTest,
                          testing::Bool(),
                          ChromeSignInWebViewTest::DescribeParams);
+
+// Check that rules from the DeclarativeNetRequest API are not matched for
+// requests originating from WebViews.
+IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
+                       DeclarativeNetRequestRulesNotMatched) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
+  // Load an extension that blocks all main frame requests into
+  // accounts.google.com which is loaded inside the WebView in
+  // chrome://chrome-signin.
+  const auto* extension = LoadExtension(test_data_dir_.AppendASCII(
+      "api_test/declarative_net_request/block_chrome_signin"));
+
+  // Navigate to a WebUI page that contains a WebView which loads
+  // accounts.google.com.
+  const GURL signin_url{"chrome://chrome-signin/?reason=5"};
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), signin_url));
+  WaitForWebViewInDom();
+
+  // Check that no rules were matched from the extension. Note that the test
+  // would not complete if the accounts.google.com request from the WebView is
+  // blocked.
+  extensions::declarative_net_request::RulesMonitorService*
+      rules_monitor_service =
+          extensions::declarative_net_request::RulesMonitorService::Get(
+              browser()->profile());
+  ASSERT_TRUE(rules_monitor_service);
+  extensions::declarative_net_request::ActionTracker& action_tracker =
+      rules_monitor_service->action_tracker();
+
+  EXPECT_TRUE(action_tracker
+                  .GetMatchedRules(*extension, std::nullopt, base::Time::Min())
+                  .empty());
+}
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // This verifies the fix for http://crbug.com/667708.
