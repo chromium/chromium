@@ -36,8 +36,6 @@
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
-#include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
-#include "components/services/storage/dom_storage/leveldb/local_storage_database.pb.h"
 #include "components/services/storage/dom_storage/leveldb/local_storage_leveldb.h"
 #include "components/services/storage/dom_storage/storage_area_impl.h"
 #include "components/services/storage/public/cpp/constants.h"
@@ -49,10 +47,6 @@
 #include "url/gurl.h"
 
 namespace storage {
-
-// For a description of the local storage LevelDB schema, see comments in
-// `leveldb/local_storage_leveldb.h`.
-
 namespace {
 
 // After this many consecutive commit errors we'll throw away the entire
@@ -606,7 +600,7 @@ LocalStorageImpl::StorageAreaHolder* LocalStorageImpl::GetOrCreateStorageArea(
 
 void LocalStorageImpl::RetrieveStorageUsage(GetUsageCallback callback) {
   if (!database_) {
-    // If for whatever reason no leveldb database is available, no storage is
+    // If for whatever reason no database is available, no storage is
     // used, so return an array only containing the current areas.
     std::vector<mojom::StorageUsageInfoPtr> result;
     base::Time now = base::Time::Now();

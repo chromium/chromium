@@ -91,18 +91,6 @@ class SessionStorageMetadataTest : public testing::Test {
     EXPECT_EQ(actual_entries, expected_entries);
   }
 
-  void RunBatch(std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks,
-                base::OnceCallback<void(DbStatus)> callback) {
-    base::RunLoop loop;
-    database_->RunBatchDatabaseTasks(
-        RunBatchTasksContext::kTest, std::move(tasks),
-        base::BindLambdaForTesting([&](DbStatus status) {
-          std::move(callback).Run(status);
-          loop.Quit();
-        }));
-    loop.Run();
-  }
-
  protected:
   base::test::TaskEnvironment task_environment_;
 

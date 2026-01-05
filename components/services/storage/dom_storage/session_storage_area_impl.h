@@ -27,7 +27,7 @@ class SessionStorageDataMap;
 // namespace-StorageKey area.
 //
 // This class delegates calls to SessionStorageDataMap objects, and can share
-// them with other SessionStorageLevelDBImpl instances to support shallow
+// them with other SessionStorageAreaImpl instances to support shallow
 // cloning (copy-on-write). This should be done through the |Clone()| method and
 // not manually.
 //

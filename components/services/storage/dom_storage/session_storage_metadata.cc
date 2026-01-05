@@ -11,14 +11,9 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
-#include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
-#include "components/services/storage/dom_storage/leveldb/session_storage_leveldb.h"
 #include "url/gurl.h"
 
 namespace storage {
-
-// For a description of the session storage LevelDB schema, see comments in
-// `leveldb/session_storage_leveldb.h
 
 DomStorageDatabase::Metadata SessionStorageMetadata::ToDomStorageMetadata(
     NamespaceEntry session) {
