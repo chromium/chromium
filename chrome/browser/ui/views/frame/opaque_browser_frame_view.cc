@@ -593,10 +593,15 @@ int OpaqueBrowserFrameView::GetTopAreaHeight() const {
       top_height = std::max(top_height, GetTabstripMinimumSize().height());
     }
   } else if (should_draw_tab_strip) {
-    top_height =
-        std::max(top_height,
-                 GetBoundsForTabStripRegion(GetTabstripMinimumSize()).bottom() -
-                     GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP));
+    gfx::Size top_element_size;
+    if (browser_view->ShouldDrawVerticalTabStrip()) {
+      top_element_size = browser_view->toolbar()->GetPreferredSize();
+    } else {
+      top_element_size = GetTabstripMinimumSize();
+    }
+    top_height = std::max(
+        top_height, GetBoundsForTabStripRegion(top_element_size).bottom() -
+                        GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP));
   }
   return top_height;
 }
