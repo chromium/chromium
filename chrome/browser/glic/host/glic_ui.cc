@@ -150,16 +150,9 @@ GlicUI::GlicUI(content::WebUI* web_ui)
     source->AddResourcePath(base::StrCat({"fre/", resource.path}), resource.id);
   }
 
-  // Setup chrome://browser-switch/internals debug UI.
-
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
-  if (local_state->GetBoolean(chrome_urls::kInternalOnlyUisEnabled)) {
-    source->AddResourcePath("internals/",
-                            IDR_GLIC_INTERNALS_GLIC_INTERNALS_HTML);
-    source->AddResourcePath("internals",
-                            IDR_GLIC_INTERNALS_GLIC_INTERNALS_HTML);
-  }
+  // Setup chrome://glic/internals debug UI.
+  source->AddResourcePath("internals/", IDR_GLIC_INTERNALS_GLIC_INTERNALS_HTML);
+  source->AddResourcePath("internals", IDR_GLIC_INTERNALS_GLIC_INTERNALS_HTML);
 
   // Add localized strings.
   source->AddLocalizedStrings(kStrings);
