@@ -2329,7 +2329,7 @@ are declared in tools/grit/grit_args.gni.
         Your organization's policies aren't met
       </message>
       <message name="IDS_FORCED_SAVE_TO_GDRIVE_DESCRIPTION" desc="Message shown to the user on chrome://downloads page to explain this local download is blocked because it contains sensitive content and download will proceed to GDrive">
-        Failed - Local download blocked
+        Your organization's policies aren't met
       </message>
       <message name="IDS_BLOCKED_TOO_LARGE_DESCRIPTION" desc="Message shown to the user on chrome://downloads page to explain this download is blocked because it is too large for deep scanning">
         This file is too big for a security check. You can open files up to 50 MB.
