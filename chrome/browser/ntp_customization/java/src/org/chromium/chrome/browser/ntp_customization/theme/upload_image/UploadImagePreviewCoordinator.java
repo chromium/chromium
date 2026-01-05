@@ -229,7 +229,6 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
     public void destroy() {
         mPreviewPropertyModel.set(NtpThemeProperty.PREVIEW_SAVE_CLICK_LISTENER, null);
         mPreviewPropertyModel.set(NtpThemeProperty.PREVIEW_CANCEL_CLICK_LISTENER, null);
-        NtpCustomizationConfigManager.getInstance().setDefaultSearchEngineLogoBitmap(null);
         mDialog.destroy();
     }
 

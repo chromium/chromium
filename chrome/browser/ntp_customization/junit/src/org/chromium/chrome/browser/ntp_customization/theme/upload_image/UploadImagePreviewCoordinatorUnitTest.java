@@ -70,6 +70,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
     private Bitmap mBitmap;
     private Matrix mPortraitMatrix;
     private Matrix mLandscapeMatrix;
+    private Bitmap mLogoBitmap;
 
     @Before
     public void setUp() {
@@ -88,6 +89,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
         View contentView = mDialog.findViewById(android.R.id.content);
         mSaveButton = contentView.findViewById(R.id.save_button);
         mCancelButton = contentView.findViewById(R.id.cancel_button);
+        mLogoBitmap = Bitmap.createBitmap(5, 5, Bitmap.Config.ARGB_8888);
 
         mConfigManager = NtpCustomizationConfigManager.getInstance();
         ChromeFeatureList.sNewTabPageCustomizationV2ShowLogoAndSearchBox.setForTesting(true);
@@ -277,6 +279,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
 
     @Test
     public void testClickSaveButton() {
+        mConfigManager.setDefaultSearchEngineLogoBitmap(mLogoBitmap);
         setupCropImageView();
 
         mSaveButton.performClick();
@@ -310,18 +313,25 @@ public class UploadImagePreviewCoordinatorUnitTest {
                 "The background image file should have been saved.",
                 NtpCustomizationUtils.createBackgroundImageFile().exists());
 
-        // Verify the on clicked callback was invoked.
+        // Verifies the on clicked callback was invoked.
         verify(mOnClickedCallback).onResult(eq(true));
 
-        // Verify the dialog was dismissed.
+        // Verifies the bitmap is still present and was not set to null.
+        assertEquals(
+                "The search engine logo bitmap should not be cleared when canceling.",
+                mLogoBitmap,
+                mConfigManager.getDefaultSearchEngineLogoBitmap());
+
+        // Verifies the dialog was dismissed.
         assertFalse("Dialog should be dismissed after clicking save.", mDialog.isShowing());
     }
 
     @Test
     public void testClickCancelButton() {
+        mConfigManager.setDefaultSearchEngineLogoBitmap(mLogoBitmap);
         mCancelButton.performClick();
 
-        // Verify the on clicked callback was invoked.
+        // Verifies the on clicked callback was invoked.
         verify(mOnClickedCallback).onResult(eq(false));
         assertFalse(
                 "The background image file should not have been saved.",
@@ -330,13 +340,19 @@ public class UploadImagePreviewCoordinatorUnitTest {
                 "The matrices should not have been saved.",
                 NtpCustomizationUtils.readNtpBackgroundImageInfo());
 
-        // Verify the dialog was dismissed.
+        // Verifies the bitmap is still present and was not set to null.
+        assertEquals(
+                "The search engine logo bitmap should not be cleared when canceling.",
+                mLogoBitmap,
+                mConfigManager.getDefaultSearchEngineLogoBitmap());
+
+        // Verifies the dialog was dismissed.
         assertFalse("Dialog should be dismissed after clicking cancel.", mDialog.isShowing());
     }
 
     @Test
     public void testDestroy() {
-        PropertyModel propertyModel = mUploadImagePreviewCoordinator.getPropertyModelForTesting();
+        mConfigManager.setDefaultSearchEngineLogoBitmap(mLogoBitmap);
 
         // Verify that the listeners are initially set and not null.
         assertTrue(
@@ -356,8 +372,11 @@ public class UploadImagePreviewCoordinatorUnitTest {
                 "Cancel button's click listener should be null after destroy.",
                 mCancelButton.hasOnClickListeners());
 
-        // Verifies that the logo bitmap is set to null in the NtpCustomizationConfigManager.
-        assertNull(NtpCustomizationConfigManager.getInstance().getDefaultSearchEngineLogoBitmap());
+        // Verifies the bitmap is still present and was not set to null.
+        assertEquals(
+                "The search engine logo bitmap should not be cleared when saving an image.",
+                mLogoBitmap,
+                mConfigManager.getDefaultSearchEngineLogoBitmap());
     }
 
     @Test
