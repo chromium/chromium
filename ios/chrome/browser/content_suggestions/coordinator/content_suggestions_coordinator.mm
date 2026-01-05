@@ -620,7 +620,7 @@ using segmentation_platform::TipIdentifier;
   [_priceTrackingPromoMediator fetchLatestSubscription];
 }
 
-#pragma mark - ContentSuggestionsCommands
+#pragma mark - ContentSuggestionsCommands and Helpers
 
 - (void)showSetUpListSeeMoreMenuExpanded:(BOOL)expanded {
   [_setUpListShowMoreViewController.presentingViewController
@@ -657,23 +657,32 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)showPinnedSiteCreator {
-  // TODO(crbug.com/469998604): Configure the view controller to be used for
-  // site creation.
-  PinnedSiteFormViewController* viewController =
-      [[PinnedSiteFormViewController alloc] init];
-  viewController.mutator = _mostVisitedTilesMediator;
-  [self.contentSuggestionsViewController presentViewController:viewController
-                                                      animated:YES
-                                                    completion:nil];
+  [self presentViewControllerWithPinnedSiteAction:PinnedSiteAction::kCreate
+                                          forItem:nil];
 }
 
 - (void)showPinnedSiteEditorForItem:(MostVisitedItem*)item {
-  // TODO(crbug.com/469998604): Configure the view controller to be used for
-  // editing.
+  [self presentViewControllerWithPinnedSiteAction:PinnedSiteAction::kModify
+                                          forItem:item];
+}
+
+// Presents the form to pin a site to the most visited tile in a
+// navigation controller. If the form is used for site editing, provide original
+// `item` for placeholding purpose.
+- (void)presentViewControllerWithPinnedSiteAction:(PinnedSiteAction)action
+                                          forItem:(MostVisitedItem*)item {
+  if (action == PinnedSiteAction::kModify) {
+    CHECK(item);
+  }
   PinnedSiteFormViewController* viewController =
-      [[PinnedSiteFormViewController alloc] init];
+      [[PinnedSiteFormViewController alloc] initWithAction:action forItem:item];
   viewController.mutator = _mostVisitedTilesMediator;
-  [self.contentSuggestionsViewController presentViewController:viewController
+  UINavigationController* navController = [[UINavigationController alloc]
+      initWithRootViewController:viewController];
+  /// TODO(crbug.com/469998604): The modal presentation style is set as a
+  /// placeholder only. Configure detent height.
+  navController.modalPresentationStyle = UIModalPresentationFormSheet;
+  [self.contentSuggestionsViewController presentViewController:navController
                                                       animated:YES
                                                     completion:nil];
 }
