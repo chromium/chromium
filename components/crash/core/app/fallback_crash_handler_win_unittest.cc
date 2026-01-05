@@ -37,9 +37,8 @@ namespace {
 
 class ExceptionPointers {
  public:
-  ExceptionPointers() {
+  ExceptionPointers() : exception_() {
     RtlCaptureContext(&context_);
-    UNSAFE_TODO(memset(&exception_, 0, sizeof(exception_)));
     exception_.ExceptionCode = EXCEPTION_ACCESS_VIOLATION;
 
     exception_ptrs_.ExceptionRecord = &exception_;
