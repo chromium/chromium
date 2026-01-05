@@ -26,6 +26,8 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom-shared.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/throbber.h"
@@ -112,6 +114,12 @@ SelectBnplIssuerDialog::SelectBnplIssuerDialog(
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kCancel));
   SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(IDS_CANCEL));
+  // There is no "prominent" button on this dialog. User much choose a provider
+  // or explicitly exit the dialog with "Esc" or click the "Cancel" button. This
+  // should make the cancel button always render as a non-prominent/non-default
+  // button.
+  SetButtonStyle(ui::mojom::DialogButton::kCancel, ui::ButtonStyle::kDefault);
+  SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowCloseButton(false);
   SetModalType(ui::mojom::ModalType::kChild);
   set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
