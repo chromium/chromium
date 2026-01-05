@@ -355,19 +355,22 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
         MovePointToWindow(theEvent.locationInWindow, source, target);
   }
 
-  // The tooltip update event should be forwarded to the window where the event
-  // occurs. This is how it works with Aura, and the backend logic expects that
-  // the mouse location is in the coordinate system of the window from which the
-  // event originated.
+  // Forward tooltip updates to the window where the mouse event actually
+  // occurred. This is how it works with Aura, and is critical for nested
+  // menus on Mac: when the mouse is over a submenu, events are captured by
+  // the parent menu's BridgedContentView, but tooltips must be set on the
+  // submenu's view for them to display correctly.
   auto* event_window =
       base::apple::ObjCCast<NativeWidgetMacNSWindow>(theEvent.window);
   remote_cocoa::NativeWidgetNSWindowBridge* event_bridge =
       [event_window bridge];
-  if (event_bridge) {
-    gfx::Point location_in_source_content = MovePointToView(
-        theEvent.locationInWindow, source, event_bridge->ns_view());
-    [self updateTooltipIfRequiredAt:location_in_source_content
-                             bridge:event_bridge];
+  BridgedContentView* event_view =
+      event_bridge ? event_bridge->ns_view() : nullptr;
+  if (event_view) {
+    gfx::Point location_in_event_view =
+        MovePointToView(theEvent.locationInWindow, source, event_view);
+    [event_view updateTooltipIfRequiredAt:location_in_event_view
+                                   bridge:event_bridge];
   } else {
     [self updateTooltipIfRequiredAt:event_location bridge:_bridge];
   }
