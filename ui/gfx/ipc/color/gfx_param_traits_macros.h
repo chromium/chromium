@@ -5,7 +5,6 @@
 #ifndef UI_GFX_IPC_COLOR_GFX_PARAM_TRAITS_MACROS_H_
 #define UI_GFX_IPC_COLOR_GFX_PARAM_TRAITS_MACROS_H_
 
-#include "base/pickle.h"
 #include "ipc/param_traits.h"
 #include "ipc/param_traits_macros.h"
 #include "ipc/param_traits_utils.h"
@@ -23,16 +22,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(gfx::ColorSpace::MatrixID,
                           gfx::ColorSpace::MatrixID::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(gfx::ColorSpace::RangeID,
                           gfx::ColorSpace::RangeID::kMaxValue)
-
-IPC_STRUCT_TRAITS_BEGIN(skcms_TransferFunction)
-  IPC_STRUCT_TRAITS_MEMBER(a)
-  IPC_STRUCT_TRAITS_MEMBER(b)
-  IPC_STRUCT_TRAITS_MEMBER(c)
-  IPC_STRUCT_TRAITS_MEMBER(d)
-  IPC_STRUCT_TRAITS_MEMBER(e)
-  IPC_STRUCT_TRAITS_MEMBER(f)
-  IPC_STRUCT_TRAITS_MEMBER(g)
-IPC_STRUCT_TRAITS_END()
 
 #undef IPC_MESSAGE_EXPORT
 #define IPC_MESSAGE_EXPORT
