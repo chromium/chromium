@@ -1558,3 +1558,8 @@ gn_args.config(
         "high_end_fuzzer_targets": True,
     },
 )
+
+gn_args.config(
+    name = "enable_swift_cxx_interop",
+    args = {"enable_swift_cxx_interop": True},
+)
