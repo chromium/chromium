@@ -387,6 +387,7 @@ source_set("unit_tests_internal") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/testing:block_swizzler",
     "//ios/testing:ocmock_support",
     "//ios/web",
     "//ios/web/public/test",
