@@ -18,7 +18,7 @@ namespace web {
 class WebState;
 }  // namespace web
 
-class PageContentCacheBridgeService;
+class PageContentCacheService;
 @class PersistTabContextStateObserver;
 
 // PersistTabContextBrowserAgent allows saving and retrieving saved page
@@ -152,7 +152,7 @@ class PersistTabContextBrowserAgent
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // The keyed service used to access the PageContentCache in.
-  raw_ptr<PageContentCacheBridgeService> page_content_cache_service_ = nullptr;
+  raw_ptr<PageContentCacheService> page_content_cache_service_ = nullptr;
 
   // Use PageContentCache for storage as opposed to the direct filesystem.
   const bool use_page_content_cache_;

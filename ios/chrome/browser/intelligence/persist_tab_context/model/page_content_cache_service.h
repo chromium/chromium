@@ -1,9 +1,9 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_PERSIST_TAB_CONTEXT_MODEL_PAGE_CONTENT_CACHE_BRIDGE_SERVICE_H_
-#define IOS_CHROME_BROWSER_INTELLIGENCE_PERSIST_TAB_CONTEXT_MODEL_PAGE_CONTENT_CACHE_BRIDGE_SERVICE_H_
+#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_PERSIST_TAB_CONTEXT_MODEL_PAGE_CONTENT_CACHE_SERVICE_H_
+#define IOS_CHROME_BROWSER_INTELLIGENCE_PERSIST_TAB_CONTEXT_MODEL_PAGE_CONTENT_CACHE_SERVICE_H_
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -28,19 +28,18 @@ class PageContentCache;
 }
 
 // iOS service that provides access to the PageContentCache.
-class PageContentCacheBridgeService : public KeyedService {
+class PageContentCacheService : public KeyedService {
  public:
   using GetPageContentCallback = base::OnceCallback<void(
       std::optional<optimization_guide::proto::PageContext>)>;
 
-  PageContentCacheBridgeService(os_crypt_async::OSCryptAsync* os_crypt_async,
-                                const base::FilePath& storage_path,
-                                base::TimeDelta max_context_age);
-  ~PageContentCacheBridgeService() override;
+  PageContentCacheService(os_crypt_async::OSCryptAsync* os_crypt_async,
+                          const base::FilePath& storage_path,
+                          base::TimeDelta max_context_age);
+  ~PageContentCacheService() override;
 
-  PageContentCacheBridgeService(const PageContentCacheBridgeService&) = delete;
-  PageContentCacheBridgeService& operator=(
-      const PageContentCacheBridgeService&) = delete;
+  PageContentCacheService(const PageContentCacheService&) = delete;
+  PageContentCacheService& operator=(const PageContentCacheService&) = delete;
 
   // Retrieves the page content for a given tab ID.
   void GetPageContentForTab(int64_t tab_id, GetPageContentCallback callback);
@@ -70,7 +69,7 @@ class PageContentCacheBridgeService : public KeyedService {
   std::unique_ptr<page_content_annotations::PageContentCache>
       page_content_cache_;
 
-  base::WeakPtrFactory<PageContentCacheBridgeService> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PageContentCacheService> weak_ptr_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PERSIST_TAB_CONTEXT_MODEL_PAGE_CONTENT_CACHE_BRIDGE_SERVICE_H_
+#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PERSIST_TAB_CONTEXT_MODEL_PAGE_CONTENT_CACHE_SERVICE_H_

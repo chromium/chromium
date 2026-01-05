@@ -18,8 +18,8 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/metrics/persist_tab_context_metrics.h"
-#import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_bridge_service.h"
-#import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_bridge_service_factory.h"
+#import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_service.h"
+#import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_service_factory.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -380,7 +380,7 @@ PersistTabContextBrowserAgent::PersistTabContextBrowserAgent(Browser* browser)
 
     if (use_page_content_cache_) {
       page_content_cache_service_ =
-          PageContentCacheBridgeServiceFactory::GetForProfile(profile);
+          PageContentCacheServiceFactory::GetForProfile(profile);
 
       // Purge the direct storage system. Intended for clients migrating to the
       // SQLite storage system from the direct filesystem.

@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_bridge_service.h"
+#import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_service.h"
 
 #import "base/feature_list.h"
 #import "base/files/file_util.h"
@@ -11,7 +11,7 @@
 #import "components/page_content_annotations/core/page_content_cache.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 
-PageContentCacheBridgeService::PageContentCacheBridgeService(
+PageContentCacheService::PageContentCacheService(
     os_crypt_async::OSCryptAsync* os_crypt_async,
     const base::FilePath& storage_path,
     base::TimeDelta max_context_age) {
@@ -33,14 +33,14 @@ PageContentCacheBridgeService::PageContentCacheBridgeService(
             }
           },
           storage_path),
-      base::BindOnce(&PageContentCacheBridgeService::InitializePageContentCache,
+      base::BindOnce(&PageContentCacheService::InitializePageContentCache,
                      weak_ptr_factory_.GetWeakPtr(), os_crypt_async,
                      storage_path, max_context_age));
 }
 
-PageContentCacheBridgeService::~PageContentCacheBridgeService() = default;
+PageContentCacheService::~PageContentCacheService() = default;
 
-void PageContentCacheBridgeService::InitializePageContentCache(
+void PageContentCacheService::InitializePageContentCache(
     os_crypt_async::OSCryptAsync* os_crypt_async,
     const base::FilePath& storage_path,
     base::TimeDelta max_context_age) {
@@ -50,7 +50,7 @@ void PageContentCacheBridgeService::InitializePageContentCache(
           os_crypt_async, storage_path, max_context_age);
 }
 
-void PageContentCacheBridgeService::GetPageContentForTab(
+void PageContentCacheService::GetPageContentForTab(
     int64_t tab_id,
     GetPageContentCallback callback) {
   if (IsCacheInitialized()) {
@@ -60,7 +60,7 @@ void PageContentCacheBridgeService::GetPageContentForTab(
   }
 }
 
-void PageContentCacheBridgeService::CachePageContent(
+void PageContentCacheService::CachePageContent(
     int64_t tab_id,
     const GURL& url,
     const base::Time& visit_timestamp,
@@ -72,13 +72,13 @@ void PageContentCacheBridgeService::CachePageContent(
   }
 }
 
-void PageContentCacheBridgeService::RemovePageContentForTab(int64_t tab_id) {
+void PageContentCacheService::RemovePageContentForTab(int64_t tab_id) {
   if (IsCacheInitialized()) {
     page_content_cache_->RemovePageContentForTab(tab_id);
   }
 }
 
-void PageContentCacheBridgeService::GetAllTabIds(
+void PageContentCacheService::GetAllTabIds(
     base::OnceCallback<void(std::vector<int64_t>)> callback) {
   if (IsCacheInitialized()) {
     page_content_cache_->GetAllTabIds(std::move(callback));
@@ -87,6 +87,6 @@ void PageContentCacheBridgeService::GetAllTabIds(
   }
 }
 
-bool PageContentCacheBridgeService::IsCacheInitialized() const {
+bool PageContentCacheService::IsCacheInitialized() const {
   return page_content_cache_ != nullptr;
 }

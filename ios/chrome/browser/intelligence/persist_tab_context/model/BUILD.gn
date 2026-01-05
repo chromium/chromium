@@ -4,10 +4,10 @@
 
 source_set("model") {
   sources = [
-    "page_content_cache_bridge_service.h",
-    "page_content_cache_bridge_service.mm",
-    "page_content_cache_bridge_service_factory.h",
-    "page_content_cache_bridge_service_factory.mm",
+    "page_content_cache_service.h",
+    "page_content_cache_service.mm",
+    "page_content_cache_service_factory.h",
+    "page_content_cache_service_factory.mm",
     "persist_tab_context_browser_agent.h",
     "persist_tab_context_browser_agent.mm",
     "persist_tab_context_state_agent.h",

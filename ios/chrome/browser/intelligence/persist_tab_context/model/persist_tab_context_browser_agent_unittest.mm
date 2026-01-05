@@ -22,8 +22,8 @@
 #import "components/page_content_annotations/core/page_content_annotations_features.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/metrics/persist_tab_context_metrics.h"
-#import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_bridge_service.h"
-#import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_bridge_service_factory.h"
+#import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_service.h"
+#import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/paths/paths_internal.h"
@@ -76,8 +76,8 @@ class PersistTabContextBrowserAgentTest
     PersistTabContextBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = PersistTabContextBrowserAgent::FromBrowser(browser_.get());
     if (GetParam() == PersistTabStorageType::kSQLite) {
-      PageContentCacheBridgeService* service =
-          PageContentCacheBridgeServiceFactory::GetForProfile(profile_.get());
+      PageContentCacheService* service =
+          PageContentCacheServiceFactory::GetForProfile(profile_.get());
       ASSERT_TRUE(base::test::RunUntil(
           [&]() { return service->IsCacheInitialized(); }));
     }
@@ -107,8 +107,8 @@ class PersistTabContextBrowserAgentTest
     context.set_url(url_spec);
 
     if (GetParam() == PersistTabStorageType::kSQLite) {
-      PageContentCacheBridgeService* service =
-          PageContentCacheBridgeServiceFactory::GetForProfile(profile_.get());
+      PageContentCacheService* service =
+          PageContentCacheServiceFactory::GetForProfile(profile_.get());
 
       service->CachePageContent(web_state_id.identifier(), GURL(url_spec),
                                 last_modified_time, last_modified_time,
@@ -132,7 +132,7 @@ class PersistTabContextBrowserAgentTest
 
   // Helper to wait for the service's background sequence to process pending
   // tasks.
-  void WaitForServiceSequence(PageContentCacheBridgeService* bridge) {
+  void WaitForServiceSequence(PageContentCacheService* bridge) {
     base::RunLoop run_loop;
     bridge->GetAllTabIds(base::BindOnce(
         [](base::RunLoop* loop, std::vector<int64_t> ignored) { loop->Quit(); },
@@ -287,8 +287,8 @@ TEST_P(PersistTabContextBrowserAgentTest, TestPurgeExpiredContexts) {
 TEST_P(PersistTabContextBrowserAgentTest, WasHiddenWithNullWebState) {
   agent_->WasHidden(nullptr);
   if (GetParam() == PersistTabStorageType::kSQLite) {
-    PageContentCacheBridgeService* bridge =
-        PageContentCacheBridgeServiceFactory::GetForProfile(profile_.get());
+    PageContentCacheService* bridge =
+        PageContentCacheServiceFactory::GetForProfile(profile_.get());
 
     base::RunLoop run_loop;
     bridge->GetAllTabIds(base::BindOnce(
