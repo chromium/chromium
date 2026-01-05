@@ -324,9 +324,12 @@ UIView* GetCheckmark() {
   symbolConfiguration.symbolImage = GetImageForItemType(item.type);
 
   if (item.status == ImportDataItemImportStatus::kBlockedByPolicy) {
-    symbolConfiguration.symbolTintColor = [UIColor colorNamed:kGrey500Color];
-    configuration.titleColor = [UIColor colorNamed:kTextSecondaryColor];
-    configuration.subtitleColor = [UIColor colorNamed:kTextSecondaryColor];
+    symbolConfiguration.symbolTintColor =
+        [[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.5];
+    configuration.titleColor =
+        [[UIColor colorNamed:kTextPrimaryColor] colorWithAlphaComponent:0.5];
+    configuration.subtitleColor =
+        [[UIColor colorNamed:kTextSecondaryColor] colorWithAlphaComponent:0.5];
   } else {
     symbolConfiguration.symbolTintColor = [UIColor colorNamed:kBlueColor];
   }
