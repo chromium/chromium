@@ -6402,7 +6402,6 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5770" label="DigitalCredentialsProtocolUnknown"/>
   <int value="5771" label="SetCookieWithEmptyName"/>
   <int value="5772" label="SetCookieWithEmptyNameAndAmbiguousValue"/>
-  <int value="5773" label="JXLImage"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
