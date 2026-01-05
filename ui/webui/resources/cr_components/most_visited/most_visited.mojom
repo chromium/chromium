@@ -105,4 +105,6 @@ interface MostVisitedPage {
   // Updates the page with the visibility of most visited tiles, whether custom
   // links are enabled, and the tiles themselves.
   SetMostVisitedInfo(MostVisitedInfo info);
+  // Called when the most visited tiles are auto removed due to inactivity.
+  OnMostVisitedTilesAutoRemoval();
 };

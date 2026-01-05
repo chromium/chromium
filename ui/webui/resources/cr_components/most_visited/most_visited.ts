@@ -277,6 +277,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
           this.info_ = info;
         });
 
+    this.callbackRouter_.onMostVisitedTilesAutoRemoval.addListener(() => {
+      this.autoRemovalToast_();
+    });
+
     this.pageHandler_.getMostVisitedExpandedState().then(({isExpanded}) => {
       this.showAll_ = isExpanded;
     });
@@ -1165,9 +1169,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
   }
 
-  // TODO(crbug.com/467437715): Make private and bind to listener once browser
-  // side is ready.
-  autoRemovalToast() {
+  private autoRemovalToast_() {
     this.autoRemovalInProgress_ = true;
     this.$.toastManager.show(
         loadTimeData.getString('shortcutsInactivityRemovalMsg'),

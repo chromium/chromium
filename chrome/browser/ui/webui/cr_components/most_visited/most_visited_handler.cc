@@ -359,6 +359,8 @@ void MostVisitedHandler::OnURLsAvailable(
     bool is_user_triggered,
     const std::map<ntp_tiles::SectionType, ntp_tiles::NTPTilesVector>&
         sections) {
+  // Filter out stale shortcuts and notify the UI to show the toast.
+  MaybeRemoveStaleShortcuts();
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
   auto result = most_visited::mojom::MostVisitedInfo::New();
@@ -400,6 +402,40 @@ MostVisitedHandler::GetNewTabPagePreloadPipelineManager() {
   tabs::TabInterface* tab = webui::GetTabInterface(web_contents_);
   return tab ? tab->GetTabFeatures()->new_tab_page_preload_pipeline_manager()
              : nullptr;
+}
+
+void MostVisitedHandler::MaybeRemoveStaleShortcuts() {
+  // Don't remove stale shortcuts if the feature is disabled.
+  if (!base::FeatureList::IsEnabled(
+          ntp_features::kNtpFeatureOptimizationShortcutsRemoval)) {
+    return;
+  }
+
+  // Don't remove stale shortcuts if the user has enterprise shortcuts.
+  if (most_visited_sites_->IsEnterpriseShortcutsEnabled()) {
+    return;
+  }
+
+  // Remove shortcuts if they are enabled, visible, and the staleness count is
+  // above the threshold.
+  if (!profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible)) {
+    return;
+  }
+
+  if (profile_->GetPrefs()->GetBoolean(
+          ntp_prefs::kNtpShortcutsAutoRemovalDisabled)) {
+    return;
+  }
+
+  if (profile_->GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsStalenessCount) <
+      ntp_features::kStaleShortcutsCountThreshold.Get()) {
+    return;
+  }
+
+  profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, false);
+  profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled,
+                                   true);
+  page_->OnMostVisitedTilesAutoRemoval();
 }
 
 void MostVisitedHandler::OnMigrationRun() {
