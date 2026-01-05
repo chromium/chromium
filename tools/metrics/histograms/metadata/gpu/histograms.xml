@@ -1266,6 +1266,7 @@ chromium-metrics-reviews@google.com.
   <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time that the GPU's main CPU thread spends producing pending CALayer
     tree on Mac. Recorded when Skia output surface schedules overlays at every
@@ -1998,6 +1999,7 @@ chromium-metrics-reviews@google.com.
   <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The average time delta between the expected BeginFrame time and the actual
     time of BeginFrame on Mac. Each recorded number is an average result of 3600

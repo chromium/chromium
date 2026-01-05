@@ -868,6 +868,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2026-06-21">
   <owner>lizeb@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Total duration (in us) for all raster tasks to execute. Recorded when raster
     tasks are scheduled, at a downsampled rate. Only reported for platforms
