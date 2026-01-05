@@ -300,7 +300,8 @@ public class UrlBar extends AutocompleteEditText {
         // IME features, for example, keyboard navigation within the Chinese / Japanese candidate
         // window.
         return (KeyNavigationUtil.isActionDown(event)
-                        && !KeyNavigationUtil.isEnter(event)
+                        // Pass NUMPAD_ENTER as IME inserts a newline character.
+                        && event.getKeyCode() != KeyEvent.KEYCODE_ENTER
                         && !KeyNavigationUtil.isGoAnyDirection(event)
                         && !KeyNavigationUtil.isTabNavigation(event)
                         && (mKeyDownListener != null
