@@ -242,9 +242,22 @@ error-page {
   background-color: var(--search-background-color);
   grid-column: 1;
   grid-row: 1;
-  /* Cover the AIM toolbar. */
-  height: 64px;
+  /* Makes the toolbar the correct height. */
+  height: 48px;
+  position: relative;
   z-index: 2;
+}
+
+/* Pseudo element to cover the AIM filter bar while in zero state. */
+:host([is-zero-state_]) #toolbarOverlay::after {
+  background-color: var(--search-background-color);
+  content: '';
+  display: block;
+  /* The explore bar is 48px, so this adds an 8px buffer margin. */
+  height: 56px;
+  position: absolute;
+  top: 100%;
+  width: 100%;
 }
 
 .thread-header {
