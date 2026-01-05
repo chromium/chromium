@@ -49,8 +49,7 @@ class MagicBoostControllerAshTest : public ChromeAshTestBase {
 
   void OnDisclaimerAcceptButtonPressed(
       int64_t display_id,
-      crosapi::mojom::MagicBoostController::TransitionAction
-          transition_action) {
+      magic_boost::TransitionAction transition_action) {
     controller.OnDisclaimerAcceptButtonPressed(display_id, transition_action);
   }
 
@@ -67,7 +66,7 @@ class MagicBoostControllerAshTest : public ChromeAshTestBase {
  protected:
   std::unique_ptr<MockMagicBoostState> mock_magic_boost_state_;
   testing::NiceMock<MockEditorPanelManager> mock_editor_panel_manager_;
-  MagicBoostControllerAsh controller;
+  MagicBoostControllerImpl controller;
 };
 
 TEST_F(MagicBoostControllerAshTest, DisclaimerWidget) {
@@ -77,10 +76,9 @@ TEST_F(MagicBoostControllerAshTest, DisclaimerWidget) {
   histogram_tester->ExpectTotalCount(kHistogramName + "Total", 0);
   histogram_tester->ExpectTotalCount(kHistogramName + "OrcaAndHmr", 0);
 
-  controller.ShowDisclaimerUi(
-      /*display_id=*/display::Screen::Get()->GetPrimaryDisplay().id(),
-      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
-      /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
+  controller.ShowDisclaimerUi(display::Screen::Get()->GetPrimaryDisplay().id(),
+                              magic_boost::TransitionAction::kDoNothing,
+                              magic_boost::OptInFeatures::kOrcaAndHmr);
 
   EXPECT_TRUE(controller.disclaimer_widget_for_test());
 
@@ -103,19 +101,17 @@ TEST_F(MagicBoostControllerAshTest, OnDisclaimerAcceptButtonPressed) {
   histogram_tester->ExpectTotalCount(kHistogramName + "HmrOnly", 0);
 
   const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
-  controller.ShowDisclaimerUi(
-      /*display_id=*/display_id,
-      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
-      /*opt_in_features=*/OptInFeatures::kHmrOnly);
+  controller.ShowDisclaimerUi(display_id,
+                              magic_boost::TransitionAction::kDoNothing,
+                              magic_boost::OptInFeatures::kHmrOnly);
 
   EXPECT_TRUE(controller.disclaimer_widget_for_test());
 
   EXPECT_CALL(*mock_magic_boost_state_, EnableOrcaFeature).Times(0);
   EXPECT_CALL(*mock_magic_boost_state_, DisableOrcaFeature).Times(0);
 
-  OnDisclaimerAcceptButtonPressed(
-      display_id,
-      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing);
+  OnDisclaimerAcceptButtonPressed(display_id,
+                                  magic_boost::TransitionAction::kDoNothing);
 
   EXPECT_EQ(chromeos::HMRConsentStatus::kApproved,
             mock_magic_boost_state_->hmr_consent_status());
@@ -139,19 +135,17 @@ TEST_F(MagicBoostControllerAshTest,
   histogram_tester->ExpectTotalCount(kHistogramName + "OrcaAndHmr", 0);
 
   const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
-  controller.ShowDisclaimerUi(
-      display_id,
-      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
-      /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
+  controller.ShowDisclaimerUi(display_id,
+                              magic_boost::TransitionAction::kDoNothing,
+                              magic_boost::OptInFeatures::kOrcaAndHmr);
 
   EXPECT_TRUE(controller.disclaimer_widget_for_test());
 
   EXPECT_CALL(*mock_magic_boost_state_, EnableOrcaFeature);
   EXPECT_CALL(*mock_magic_boost_state_, DisableOrcaFeature).Times(0);
 
-  OnDisclaimerAcceptButtonPressed(
-      display_id,
-      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing);
+  OnDisclaimerAcceptButtonPressed(display_id,
+                                  magic_boost::TransitionAction::kDoNothing);
 
   EXPECT_EQ(chromeos::HMRConsentStatus::kApproved,
             mock_magic_boost_state_->hmr_consent_status());
@@ -174,10 +168,9 @@ TEST_F(MagicBoostControllerAshTest,
       &mock_editor_panel_manager_);
 
   const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
-  controller.ShowDisclaimerUi(
-      display_id,
-      crosapi::mojom::MagicBoostController::TransitionAction::kShowEditorPanel,
-      /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
+  controller.ShowDisclaimerUi(display_id,
+                              magic_boost::TransitionAction::kShowEditorPanel,
+                              magic_boost::OptInFeatures::kOrcaAndHmr);
 
   EXPECT_TRUE(controller.disclaimer_widget_for_test());
 
@@ -186,8 +179,7 @@ TEST_F(MagicBoostControllerAshTest,
   EXPECT_CALL(mock_editor_panel_manager(), StartEditingFlow);
 
   OnDisclaimerAcceptButtonPressed(
-      display_id,
-      crosapi::mojom::MagicBoostController::TransitionAction::kShowEditorPanel);
+      display_id, magic_boost::TransitionAction::kShowEditorPanel);
 
   EXPECT_EQ(chromeos::HMRConsentStatus::kApproved,
             mock_magic_boost_state_->hmr_consent_status());
@@ -202,10 +194,9 @@ TEST_F(MagicBoostControllerAshTest, OnDisclaimerDeclineButtonPressed) {
   histogram_tester->ExpectTotalCount(kHistogramName + "Total", 0);
   histogram_tester->ExpectTotalCount(kHistogramName + "HmrOnly", 0);
 
-  controller.ShowDisclaimerUi(
-      /*display_id=*/display::Screen::Get()->GetPrimaryDisplay().id(),
-      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
-      /*opt_in_features=*/OptInFeatures::kHmrOnly);
+  controller.ShowDisclaimerUi(display::Screen::Get()->GetPrimaryDisplay().id(),
+                              magic_boost::TransitionAction::kDoNothing,
+                              magic_boost::OptInFeatures::kHmrOnly);
 
   EXPECT_TRUE(controller.disclaimer_widget_for_test());
 
@@ -237,10 +228,9 @@ TEST_F(MagicBoostControllerAshTest,
   histogram_tester->ExpectTotalCount(kHistogramName + "Total", 0);
   histogram_tester->ExpectTotalCount(kHistogramName + "OrcaAndHmr", 0);
 
-  controller.ShowDisclaimerUi(
-      /*display_id=*/display::Screen::Get()->GetPrimaryDisplay().id(),
-      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
-      /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
+  controller.ShowDisclaimerUi(display::Screen::Get()->GetPrimaryDisplay().id(),
+                              magic_boost::TransitionAction::kDoNothing,
+                              magic_boost::OptInFeatures::kOrcaAndHmr);
 
   EXPECT_TRUE(controller.disclaimer_widget_for_test());
 
@@ -267,10 +257,9 @@ TEST_F(MagicBoostControllerAshTest,
 }
 
 TEST_F(MagicBoostControllerAshTest, ClickingOnLinkClosesWidget) {
-  controller.ShowDisclaimerUi(
-      /*display_id=*/display::Screen::Get()->GetPrimaryDisplay().id(),
-      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
-      /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
+  controller.ShowDisclaimerUi(display::Screen::Get()->GetPrimaryDisplay().id(),
+                              magic_boost::TransitionAction::kDoNothing,
+                              magic_boost::OptInFeatures::kOrcaAndHmr);
 
   EXPECT_TRUE(controller.disclaimer_widget_for_test());
 

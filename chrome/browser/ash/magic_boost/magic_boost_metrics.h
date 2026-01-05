@@ -31,8 +31,9 @@ enum class DisclaimerViewAction {
 //    and the user clicked the decline button.
 //        Ash.MagicBoost.DisclaimerView.Total -> Show
 //    Records a overall showing times of the disclaimer view.
-void RecordDisclaimerViewActionMetrics(OptInFeatures opt_in_features,
-                                       DisclaimerViewAction action);
+void RecordDisclaimerViewActionMetrics(
+    magic_boost::OptInFeatures opt_in_features,
+    DisclaimerViewAction action);
 
 }  // namespace ash
 

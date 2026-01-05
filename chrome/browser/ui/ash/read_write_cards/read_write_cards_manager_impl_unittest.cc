@@ -79,7 +79,7 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase {
     // In production a shared instance of MagicBoostControllerAsh is initialized
     // by ChromeBrowserMainPartsAsh in its PreProfileInit().
     magic_boost_controller_ash_ =
-        std::make_unique<ash::MagicBoostControllerAsh>();
+        std::make_unique<ash::MagicBoostControllerImpl>();
 
     // `ReadWriteCardsManagerImpl` will initialize `QuickAnswersState`
     // indirectly. `QuickAnswersState` depends on `MagicBoostState`.
@@ -156,7 +156,7 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase {
   chromeos::ScopedMahiMediaAppEventsProxySetter
       scoped_mahi_media_app_events_proxy_{&mock_mahi_media_app_events_proxy_};
 
-  std::unique_ptr<ash::MagicBoostControllerAsh> magic_boost_controller_ash_;
+  std::unique_ptr<ash::MagicBoostControllerImpl> magic_boost_controller_ash_;
   raw_ptr<TestingProfile> testing_profile_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
 };
@@ -339,11 +339,10 @@ TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
         std::vector<ReadWriteCardController*>{magic_boost_card_controller()},
         GetControllers(params));
 
-    EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kHmrOnly,
+    EXPECT_EQ(ash::magic_boost::OptInFeatures::kHmrOnly,
               magic_boost_card_controller()->GetOptInFeatures());
-    EXPECT_EQ(
-        crosapi::mojom::MagicBoostController::TransitionAction::kShowHmrPanel,
-        magic_boost_card_controller()->transition_action_for_test());
+    EXPECT_EQ(ash::magic_boost::TransitionAction::kShowHmrPanel,
+              magic_boost_card_controller()->transition_action_for_test());
 
     // When editor mode is kPromoCard, Magic Boost should opt in both Hmr and
     // Orca.
@@ -353,11 +352,10 @@ TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
         GetControllers(params, editor_menu::EditorMode::kConsentNeeded,
                        /*editor_consent_status_settled=*/false));
 
-    EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr,
+    EXPECT_EQ(ash::magic_boost::OptInFeatures::kOrcaAndHmr,
               magic_boost_card_controller()->GetOptInFeatures());
-    EXPECT_EQ(
-        crosapi::mojom::MagicBoostController::TransitionAction::kShowHmrPanel,
-        magic_boost_card_controller()->transition_action_for_test());
+    EXPECT_EQ(ash::magic_boost::TransitionAction::kShowHmrPanel,
+              magic_boost_card_controller()->transition_action_for_test());
     return;
   }
 
@@ -382,11 +380,10 @@ TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
         std::vector<ReadWriteCardController*>{magic_boost_card_controller()},
         GetControllers(params));
 
-    EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kHmrOnly,
+    EXPECT_EQ(ash::magic_boost::OptInFeatures::kHmrOnly,
               magic_boost_card_controller()->GetOptInFeatures());
-    EXPECT_EQ(
-        crosapi::mojom::MagicBoostController::TransitionAction::kShowHmrPanel,
-        magic_boost_card_controller()->transition_action_for_test());
+    EXPECT_EQ(ash::magic_boost::TransitionAction::kShowHmrPanel,
+              magic_boost_card_controller()->transition_action_for_test());
 
     // When editor mode is kPromoCard, Magic Boost should opt in both Hmr and
     // Orca.
@@ -399,11 +396,10 @@ TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
         std::vector<ReadWriteCardController*>{magic_boost_card_controller()},
         controllers);
 
-    EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr,
+    EXPECT_EQ(ash::magic_boost::OptInFeatures::kOrcaAndHmr,
               magic_boost_card_controller()->GetOptInFeatures());
-    EXPECT_EQ(
-        crosapi::mojom::MagicBoostController::TransitionAction::kShowHmrPanel,
-        magic_boost_card_controller()->transition_action_for_test());
+    EXPECT_EQ(ash::magic_boost::TransitionAction::kShowHmrPanel,
+              magic_boost_card_controller()->transition_action_for_test());
 
     return;
   }
@@ -432,9 +428,8 @@ TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
       /*editor_consent_status_settled=*/true);
 
   if (IsMahiEnabled()) {
-    EXPECT_EQ(
-        crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
-        magic_boost_card_controller()->transition_action_for_test());
+    EXPECT_EQ(ash::magic_boost::TransitionAction::kDoNothing,
+              magic_boost_card_controller()->transition_action_for_test());
   }
 }
 
@@ -452,9 +447,8 @@ TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
       /*editor_consent_status_settled=*/false);
 
   if (IsMahiEnabled()) {
-    EXPECT_EQ(
-        crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
-        magic_boost_card_controller()->transition_action_for_test());
+    EXPECT_EQ(ash::magic_boost::TransitionAction::kDoNothing,
+              magic_boost_card_controller()->transition_action_for_test());
   }
 }
 
@@ -474,10 +468,9 @@ TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
       /*editor_consent_status_settled=*/false);
 
   if (IsMahiEnabled()) {
-    EXPECT_EQ(crosapi::mojom::MagicBoostController::TransitionAction::
-                  kShowEditorPanel,
+    EXPECT_EQ(ash::magic_boost::TransitionAction::kShowEditorPanel,
               magic_boost_card_controller()->transition_action_for_test());
-    EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr,
+    EXPECT_EQ(ash::magic_boost::OptInFeatures::kOrcaAndHmr,
               magic_boost_card_controller()->GetOptInFeatures());
   }
 }
@@ -501,10 +494,9 @@ TEST_P(ReadWriteCardsManagerImplWithAndWithoutMahiTest,
 
   if (IsMahiEnabled()) {
     // Should show opt-in for both Hmr and Orca.
-    EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr,
+    EXPECT_EQ(ash::magic_boost::OptInFeatures::kOrcaAndHmr,
               magic_boost_card_controller()->GetOptInFeatures());
-    EXPECT_EQ(crosapi::mojom::MagicBoostController::TransitionAction::
-                  kShowEditorPanel,
+    EXPECT_EQ(ash::magic_boost::TransitionAction::kShowEditorPanel,
               magic_boost_card_controller()->transition_action_for_test());
   }
 }

@@ -5,11 +5,9 @@
 #ifndef CHROME_BROWSER_UI_ASH_MAGIC_BOOST_MAGIC_BOOST_METRICS_H_
 #define CHROME_BROWSER_UI_ASH_MAGIC_BOOST_MAGIC_BOOST_METRICS_H_
 
-#include "chromeos/crosapi/mojom/magic_boost.mojom.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 
 namespace chromeos::magic_boost {
-
-using OptInFeatures = crosapi::mojom::MagicBoostController::OptInFeatures;
 
 inline constexpr char kMagicBoostOptInCardHistogram[] =
     "ChromeOS.MagicBoost.OptInCard.";
@@ -34,8 +32,9 @@ enum class OptInCardAction {
 //    the user clicked the declied button.
 //        ChromeOS.MagicBoost.OptInCard.Total -> ShowCard
 //    Records a overall showing times of the opt in card.
-void RecordOptInCardActionMetrics(OptInFeatures opt_in_features,
-                                  OptInCardAction action);
+void RecordOptInCardActionMetrics(
+    ash::magic_boost::OptInFeatures opt_in_features,
+    OptInCardAction action);
 
 }  // namespace chromeos::magic_boost
 

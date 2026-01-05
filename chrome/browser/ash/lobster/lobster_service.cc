@@ -29,7 +29,6 @@
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
-#include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "components/manta/snapper_provider.h"
 #include "ui/display/screen.h"
 
@@ -119,12 +118,9 @@ void LobsterService::QueueInsertion(const std::string& image_bytes,
 void LobsterService::ShowDisclaimerUI() {
   if (chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures()) {
     ash::MagicBoostControllerAsh::Get()->ShowDisclaimerUi(
-        /*display_id=*/display::Screen::Get()->GetPrimaryDisplay().id(),
-        /*action=*/
-        crosapi::mojom::MagicBoostController::TransitionAction::
-            kShowLobsterPanel,
-        /*opt_in_features=*/
-        crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr);
+        display::Screen::Get()->GetPrimaryDisplay().id(),
+        ash::magic_boost::TransitionAction::kShowLobsterPanel,
+        ash::magic_boost::OptInFeatures::kOrcaAndHmr);
   }
 }
 

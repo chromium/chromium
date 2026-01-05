@@ -8,18 +8,17 @@
 #include <string_view>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/ash/magic_boost/mock_magic_boost_state.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_metrics.h"
-#include "chrome/browser/ui/ash/magic_boost/test/mock_magic_boost_controller_crosapi.h"
+#include "chrome/browser/ui/ash/magic_boost/test/mock_magic_boost_controller.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
@@ -76,15 +75,14 @@ class MagicBoostOptInCardTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     // Replace the production `MagicBoostController` with a mock for testing
-    card_controller_.SetMagicBoostControllerCrosapiForTesting(
-        &crosapi_controller_);
+    card_controller_.SetMagicBoostControllerForTesting(&controller_);
 
     // Instantiates `MockMagicBoostState` (the real one is created in
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
     // the unit tests).
     mock_magic_boost_state_ = std::make_unique<ash::MockMagicBoostState>();
 
-    card_controller_.SetOptInFeature(OptInFeatures::kHmrOnly);
+    card_controller_.SetOptInFeature(ash::magic_boost::OptInFeatures::kHmrOnly);
   }
 
   void TearDown() override {
@@ -96,9 +94,7 @@ class MagicBoostOptInCardTest : public ChromeViewsTestBase {
   MagicBoostCardController card_controller_{TestingBrowserProcess::GetGlobal()
                                                 ->GetFeatures()
                                                 ->application_locale_storage()};
-  testing::NiceMock<MockMagicBoostControllerCrosapi> crosapi_controller_;
-  mojo::Receiver<crosapi::mojom::MagicBoostController> receiver_{
-      &crosapi_controller_};
+  testing::NiceMock<MockMagicBoostController> controller_;
   std::unique_ptr<ash::MockMagicBoostState> mock_magic_boost_state_;
 };
 
@@ -109,7 +105,7 @@ TEST_F(MagicBoostOptInCardTest, PrimaryButtonActions) {
   histogram_tester->ExpectTotalCount(histogram_name + "HmrOnly", 0);
 
   // Show the opt-in UI card.
-  EXPECT_CALL(crosapi_controller_, CloseDisclaimerUi);
+  EXPECT_CALL(controller_, CloseDisclaimerUi);
   card_controller_.ShowOptInUi(/*anchor_view_bounds=*/gfx::Rect());
   auto* opt_in_widget = card_controller_.opt_in_widget_for_test();
   ASSERT_TRUE(opt_in_widget);
@@ -133,7 +129,7 @@ TEST_F(MagicBoostOptInCardTest, PrimaryButtonActions) {
   EXPECT_EQ(chromeos::HMRConsentStatus::kUnset,
             mock_magic_boost_state_->hmr_consent_status());
 
-  EXPECT_CALL(crosapi_controller_, ShowDisclaimerUi);
+  EXPECT_CALL(controller_, ShowDisclaimerUi);
 
   LeftClickOn(primary_button);
   EXPECT_FALSE(card_controller_.opt_in_widget_for_test());
@@ -154,10 +150,10 @@ TEST_F(MagicBoostOptInCardTest, PrimaryButtonActions) {
 }
 
 TEST_F(MagicBoostOptInCardTest, StringVariations_NoOrca) {
-  card_controller_.SetOptInFeature(OptInFeatures::kHmrOnly);
+  card_controller_.SetOptInFeature(ash::magic_boost::OptInFeatures::kHmrOnly);
 
   // Show the opt-in UI card.
-  EXPECT_CALL(crosapi_controller_, CloseDisclaimerUi);
+  EXPECT_CALL(controller_, CloseDisclaimerUi);
   card_controller_.ShowOptInUi(/*anchor_view_bounds=*/gfx::Rect());
   auto* opt_in_widget = card_controller_.opt_in_widget_for_test();
   ASSERT_TRUE(opt_in_widget);
@@ -172,10 +168,11 @@ TEST_F(MagicBoostOptInCardTest, StringVariations_NoOrca) {
 }
 
 TEST_F(MagicBoostOptInCardTest, StringVariations_OrcaIncluded) {
-  card_controller_.SetOptInFeature(OptInFeatures::kOrcaAndHmr);
+  card_controller_.SetOptInFeature(
+      ash::magic_boost::OptInFeatures::kOrcaAndHmr);
 
   // Show the opt-in UI card.
-  EXPECT_CALL(crosapi_controller_, CloseDisclaimerUi);
+  EXPECT_CALL(controller_, CloseDisclaimerUi);
   card_controller_.ShowOptInUi(/*anchor_view_bounds=*/gfx::Rect());
   auto* opt_in_widget = card_controller_.opt_in_widget_for_test();
   ASSERT_TRUE(opt_in_widget);
@@ -193,10 +190,10 @@ TEST_F(MagicBoostOptInCardTest, SecondaryButtonActions_NoOrca) {
   histogram_tester->ExpectTotalCount(histogram_name + "Total", 0);
   histogram_tester->ExpectTotalCount(histogram_name + "HmrOnly", 0);
 
-  card_controller_.SetOptInFeature(OptInFeatures::kHmrOnly);
+  card_controller_.SetOptInFeature(ash::magic_boost::OptInFeatures::kHmrOnly);
 
   // Show the opt-in UI card.
-  EXPECT_CALL(crosapi_controller_, CloseDisclaimerUi);
+  EXPECT_CALL(controller_, CloseDisclaimerUi);
   card_controller_.ShowOptInUi(/*anchor_view_bounds=*/gfx::Rect());
   auto* opt_in_widget = card_controller_.opt_in_widget_for_test();
   ASSERT_TRUE(opt_in_widget);
@@ -240,10 +237,11 @@ TEST_F(MagicBoostOptInCardTest, SecondaryButtonActions_NoOrca) {
 }
 
 TEST_F(MagicBoostOptInCardTest, SecondaryButtonActions_IncludeOrca) {
-  card_controller_.SetOptInFeature(OptInFeatures::kOrcaAndHmr);
+  card_controller_.SetOptInFeature(
+      ash::magic_boost::OptInFeatures::kOrcaAndHmr);
 
   // Show the opt-in UI card.
-  EXPECT_CALL(crosapi_controller_, CloseDisclaimerUi);
+  EXPECT_CALL(controller_, CloseDisclaimerUi);
   card_controller_.ShowOptInUi(/*anchor_view_bounds=*/gfx::Rect());
   auto* opt_in_widget = card_controller_.opt_in_widget_for_test();
   ASSERT_TRUE(opt_in_widget);

@@ -160,7 +160,6 @@ static_library("input_method") {
     "//chromeos/ash/services/ime/public/cpp:structs",
     "//chromeos/ash/services/ime/public/mojom",
     "//chromeos/ash/services/orca/public/mojom",
-    "//chromeos/crosapi/mojom",
     "//chromeos/ui/base",
     "//components/feedback",
     "//components/keyed_service/core",

@@ -23,10 +23,9 @@ void MagicBoostNoticeHandler::ShowNotice() {
   if (chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures() &&
       ash::MagicBoostControllerAsh::Get()) {
     ash::MagicBoostControllerAsh::Get()->ShowDisclaimerUi(
-        /*display_id=*/display::Screen::Get()->GetPrimaryDisplay().id(),
-        /*action=*/
-        crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
-        /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
+        display::Screen::Get()->GetPrimaryDisplay().id(),
+        magic_boost::TransitionAction::kDoNothing,
+        magic_boost::OptInFeatures::kOrcaAndHmr);
     return;
   }
 

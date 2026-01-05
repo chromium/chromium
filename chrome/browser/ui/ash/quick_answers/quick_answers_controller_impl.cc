@@ -618,14 +618,10 @@ QuickAnswersRequest QuickAnswersControllerImpl::BuildRequest() {
 }
 
 void QuickAnswersControllerImpl::ShowMagicBoostDisclaimerView() {
+  // Display the magic boost disclaimer view in the display that most
+  // closely matches the anchor bounds.
   ash::MagicBoostControllerAsh::Get()->ShowDisclaimerUi(
-      // Display the magic boost disclaimer view in the display that most
-      // closely matches the anchor bounds.
-      /*display_id=*/display::Screen::Get()
-          ->GetDisplayMatching(anchor_bounds())
-          .id(),
-      /*action=*/
-      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
-      /*opt_in_features=*/
-      crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr);
+      display::Screen::Get()->GetDisplayMatching(anchor_bounds()).id(),
+      ash::magic_boost::TransitionAction::kDoNothing,
+      ash::magic_boost::OptInFeatures::kOrcaAndHmr);
 }

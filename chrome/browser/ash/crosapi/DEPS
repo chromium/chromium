@@ -18,7 +18,6 @@ include_rules = [
   "+chrome/browser/ash/attestation",
   "+chrome/browser/ash/file_system_provider",
   "+chrome/browser/ash/login",
-  "+chrome/browser/ash/magic_boost",
   "+chrome/browser/ash/platform_keys",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/printing",

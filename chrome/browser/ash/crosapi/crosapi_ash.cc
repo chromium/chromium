@@ -38,7 +38,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
-#include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"

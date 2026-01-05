@@ -8,12 +8,12 @@
 
 #include "base/check_deref.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/utils.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_metrics.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
-#include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/application_locale_storage/application_locale_storage.h"
@@ -140,8 +140,8 @@ MagicBoostOptInCard::MagicBoostOptInCard(
           .Build());
 
   // Create text container that holds title and body text.
-  bool include_orca =
-      controller_->GetOptInFeatures() == OptInFeatures::kOrcaAndHmr;
+  bool include_orca = controller_->GetOptInFeatures() ==
+                      ash::magic_boost::OptInFeatures::kOrcaAndHmr;
   image_and_text_container->AddChildView(
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kVertical)
@@ -301,7 +301,8 @@ void MagicBoostOptInCard::OnSecondaryButtonPressed() {
   controller_->CloseOptInUi();
 
   auto* magic_boost_state = chromeos::MagicBoostState::Get();
-  if (controller_->GetOptInFeatures() == OptInFeatures::kOrcaAndHmr) {
+  if (controller_->GetOptInFeatures() ==
+      ash::magic_boost::OptInFeatures::kOrcaAndHmr) {
     magic_boost_state->DisableOrcaFeature();
   }
   magic_boost_state->AsyncWriteConsentStatus(

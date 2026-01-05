@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
-#include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 
 namespace ash {
 
@@ -28,8 +27,6 @@ constexpr char kLearnMoreURL[] =
     "https://support.google.com/chromebook/?p=settings_help_me_read_write";
 
 }  // namespace
-
-using TransitionAction = crosapi::mojom::MagicBoostController::TransitionAction;
 
 // static
 MagicBoostControllerAsh* MagicBoostControllerAsh::Get() {
@@ -46,9 +43,14 @@ MagicBoostControllerAsh::~MagicBoostControllerAsh() {
   g_instance = nullptr;
 }
 
-void MagicBoostControllerAsh::ShowDisclaimerUi(int64_t display_id,
-                                               TransitionAction action,
-                                               OptInFeatures opt_in_features) {
+MagicBoostControllerImpl::MagicBoostControllerImpl() = default;
+
+MagicBoostControllerImpl::~MagicBoostControllerImpl() = default;
+
+void MagicBoostControllerImpl::ShowDisclaimerUi(
+    int64_t display_id,
+    magic_boost::TransitionAction action,
+    magic_boost::OptInFeatures opt_in_features) {
   opt_in_features_ = opt_in_features;
 
   // Destroy the existing `disclaimer_widget_`, if any. We always create a new
@@ -61,15 +63,15 @@ void MagicBoostControllerAsh::ShowDisclaimerUi(int64_t display_id,
       display_id,
       /*press_accept_button_callback=*/
       base::BindRepeating(
-          &MagicBoostControllerAsh::OnDisclaimerAcceptButtonPressed,
+          &MagicBoostControllerImpl::OnDisclaimerAcceptButtonPressed,
           weak_ptr_factory_.GetWeakPtr(), display_id, action),
       /*press_decline_button_callback=*/
       base::BindRepeating(
-          &MagicBoostControllerAsh::OnDisclaimerDeclineButtonPressed,
+          &MagicBoostControllerImpl::OnDisclaimerDeclineButtonPressed,
           weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(&MagicBoostControllerAsh::OnLinkPressed,
+      base::BindRepeating(&MagicBoostControllerImpl::OnLinkPressed,
                           weak_ptr_factory_.GetWeakPtr(), kDisclaimerTOSURL),
-      base::BindRepeating(&MagicBoostControllerAsh::OnLinkPressed,
+      base::BindRepeating(&MagicBoostControllerImpl::OnLinkPressed,
                           weak_ptr_factory_.GetWeakPtr(), kLearnMoreURL));
   disclaimer_widget_->Show();
 
@@ -77,32 +79,32 @@ void MagicBoostControllerAsh::ShowDisclaimerUi(int64_t display_id,
                                     DisclaimerViewAction::kShow);
 }
 
-void MagicBoostControllerAsh::CloseDisclaimerUi() {
+void MagicBoostControllerImpl::CloseDisclaimerUi() {
   disclaimer_widget_.reset();
 }
 
-void MagicBoostControllerAsh::OnDisclaimerAcceptButtonPressed(
+void MagicBoostControllerImpl::OnDisclaimerAcceptButtonPressed(
     int64_t display_id,
-    TransitionAction action) {
+    magic_boost::TransitionAction action) {
   auto* magic_boost_state =
       static_cast<MagicBoostStateAsh*>(chromeos::MagicBoostState::Get());
-  if (opt_in_features_ == OptInFeatures::kOrcaAndHmr) {
+  if (opt_in_features_ == magic_boost::OptInFeatures::kOrcaAndHmr) {
     magic_boost_state->EnableOrcaFeature();
   }
   magic_boost_state->AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus::kApproved);
 
   switch (action) {
-    case TransitionAction::kDoNothing:
+    case magic_boost::TransitionAction::kDoNothing:
       break;
-    case TransitionAction::kShowEditorPanel:
+    case magic_boost::TransitionAction::kShowEditorPanel:
       magic_boost_state->GetEditorPanelManager()->StartEditingFlow();
       break;
-    case TransitionAction::kShowHmrPanel:
+    case magic_boost::TransitionAction::kShowHmrPanel:
       chromeos::MahiManager::Get()->OpenMahiPanel(
           display_id, disclaimer_widget_->GetWindowBoundsInScreen());
       break;
-    case TransitionAction::kShowLobsterPanel:
+    case magic_boost::TransitionAction::kShowLobsterPanel:
       LobsterController* lobster_controller =
           ash::Shell::Get()->lobster_controller();
       if (lobster_controller != nullptr) {
@@ -117,9 +119,9 @@ void MagicBoostControllerAsh::OnDisclaimerAcceptButtonPressed(
   CloseDisclaimerUi();
 }
 
-void MagicBoostControllerAsh::OnDisclaimerDeclineButtonPressed() {
+void MagicBoostControllerImpl::OnDisclaimerDeclineButtonPressed() {
   auto* magic_boost_state = chromeos::MagicBoostState::Get();
-  if (opt_in_features_ == OptInFeatures::kOrcaAndHmr) {
+  if (opt_in_features_ == magic_boost::OptInFeatures::kOrcaAndHmr) {
     magic_boost_state->DisableOrcaFeature();
     magic_boost_state->DisableLobsterSettings();
   }
@@ -133,7 +135,7 @@ void MagicBoostControllerAsh::OnDisclaimerDeclineButtonPressed() {
   CloseDisclaimerUi();
 }
 
-void MagicBoostControllerAsh::OnLinkPressed(const std::string& url) {
+void MagicBoostControllerImpl::OnLinkPressed(const std::string& url) {
   NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(url), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);

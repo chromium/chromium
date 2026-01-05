@@ -19,7 +19,6 @@ mojom("mojom") {
     "keystore_service.mojom",
     "launcher_search.mojom",
     "local_printer.mojom",
-    "magic_boost.mojom",
     "mahi.mojom",
     "nullable_primitives.mojom",
     "print_preview_cros.mojom",

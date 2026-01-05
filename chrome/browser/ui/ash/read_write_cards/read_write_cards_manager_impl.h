@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_card_context.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_manager.h"
@@ -37,8 +38,6 @@ namespace chromeos {
 namespace editor_menu {
 class EditorMenuControllerImpl;
 }  // namespace editor_menu
-
-using OptInFeatures = crosapi::mojom::MagicBoostController::OptInFeatures;
 
 // `ReadWriteCardsManagerImpl` provides supported UI controller to given context
 // menu params. It could be either QuickAnswersController or
@@ -93,7 +92,7 @@ class ReadWriteCardsManagerImpl : public ReadWriteCardsManager {
 
   // Gets the opt-in features that Magic Boost should opt-in. Returns a nullopt
   // if we should not initiate an opt-in flow.
-  std::optional<OptInFeatures> GetMagicBoostOptInFeatures(
+  std::optional<ash::magic_boost::OptInFeatures> GetMagicBoostOptInFeatures(
       const content::ContextMenuParams& params,
       const editor_menu::EditorMenuCardContext& editor_menu_card_context);
 

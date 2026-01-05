@@ -367,7 +367,6 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
-    "magic_boost_ash_browsertest.cc",
     "power_ash_apitest.cc",
     "print_preview_ash_browsertest.cc",
   ]
@@ -384,8 +383,6 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/ash/fileapi",
-    "//chrome/browser/ash/magic_boost",
-    "//chrome/browser/ash/mahi",
     "//chrome/browser/ash/printing/print_preview",
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
     "//chrome/browser/ui",

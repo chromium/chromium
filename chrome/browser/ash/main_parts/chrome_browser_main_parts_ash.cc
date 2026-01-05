@@ -1099,7 +1099,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   browser_manager_ = std::make_unique<crosapi::BrowserManager>();
 
   magic_boost_controller_ash_ =
-      std::make_unique<ash::MagicBoostControllerAsh>();
+      std::make_unique<ash::MagicBoostControllerImpl>();
 
   chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
 

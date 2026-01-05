@@ -62,14 +62,13 @@ std::optional<orca::mojom::ContextPtr> CreateContext(const std::u16string& text,
   return context;
 }
 
-crosapi::mojom::MagicBoostController::TransitionAction
-ConvertToMagicBoostTransitionAction(EditorNoticeTransitionAction action) {
+magic_boost::TransitionAction ConvertToMagicBoostTransitionAction(
+    EditorNoticeTransitionAction action) {
   switch (action) {
     case EditorNoticeTransitionAction::kDoNothing:
-      return crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing;
+      return magic_boost::TransitionAction::kDoNothing;
     case EditorNoticeTransitionAction::kShowEditorPanel:
-      return crosapi::mojom::MagicBoostController::TransitionAction::
-          kShowEditorPanel;
+      return magic_boost::TransitionAction::kShowEditorPanel;
   }
 }
 
@@ -281,10 +280,9 @@ void EditorMediator::ShowNotice(
     EditorNoticeTransitionAction transition_action) {
   if (chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures()) {
     ash::MagicBoostControllerAsh::Get()->ShowDisclaimerUi(
-        /*display_id=*/display::Screen::Get()->GetPrimaryDisplay().id(),
-        /*action=*/
+        display::Screen::Get()->GetPrimaryDisplay().id(),
         ConvertToMagicBoostTransitionAction(transition_action),
-        /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
+        magic_boost::OptInFeatures::kOrcaAndHmr);
     return;
   }
 
