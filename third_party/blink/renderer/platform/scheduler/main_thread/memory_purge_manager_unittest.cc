@@ -31,7 +31,6 @@ class MemoryPurgeManagerTest : public testing::Test,
     memory_pressure_listener_registration_ =
         std::make_unique<base::MemoryPressureListenerRegistration>(
             FROM_HERE, base::MemoryPressureListenerTag::kTest, this);
-    base::MemoryPressureListener::SetNotificationsSuppressed(false);
   }
 
   void TearDown() override {

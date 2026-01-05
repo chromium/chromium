@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MEMORY_PURGE_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MEMORY_PURGE_MANAGER_H_
 
+#include <optional>
+
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -130,6 +133,10 @@ class PLATFORM_EXPORT MemoryPurgeManager {
   bool did_purge_with_page_frozen_since_backgrounded_ = false;
 
   base::OneShotTimer purge_timer_;
+
+  // Suppresses memory pressure notifications when engaged.
+  std::optional<base::MemoryPressureSuppressionToken>
+      memory_pressure_suppression_token_;
 };
 
 }  // namespace blink

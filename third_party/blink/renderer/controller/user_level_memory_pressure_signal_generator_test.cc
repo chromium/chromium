@@ -33,7 +33,6 @@ class UserLevelMemoryPressureSignalGeneratorTest
     memory_pressure_listener_registration_ =
         std::make_unique<base::MemoryPressureListenerRegistration>(
             base::MemoryPressureListenerTag::kTest, this);
-    base::MemoryPressureListener::SetNotificationsSuppressed(false);
   }
 
   void TearDown() override { memory_pressure_listener_registration_.reset(); }

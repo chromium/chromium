@@ -36,11 +36,6 @@ bool MemoryPressureListener::AreNotificationsSuppressed() {
 }
 
 // static
-void MemoryPressureListener::SetNotificationsSuppressed(bool suppressed) {
-  MemoryPressureListenerRegistry::SetNotificationsSuppressed(suppressed);
-}
-
-// static
 void MemoryPressureListener::SimulatePressureNotification(
     MemoryPressureLevel memory_pressure_level) {
   MemoryPressureListenerRegistry::SimulatePressureNotification(

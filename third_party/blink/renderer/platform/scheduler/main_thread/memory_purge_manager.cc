@@ -51,7 +51,7 @@ MemoryPurgeManager::~MemoryPurgeManager() = default;
 
 void MemoryPurgeManager::OnPageCreated() {
   total_page_count_++;
-  base::MemoryPressureListener::SetNotificationsSuppressed(false);
+  memory_pressure_suppression_token_.reset();
 
   if (!CanPurge()) {
     purge_timer_.Stop();
@@ -95,7 +95,7 @@ void MemoryPurgeManager::OnPageResumed() {
     purge_timer_.Stop();
   }
 
-  base::MemoryPressureListener::SetNotificationsSuppressed(false);
+  memory_pressure_suppression_token_.reset();
 #if BUILDFLAG(IS_ANDROID)
   // Cancel a pending compaction, since the page is now active and its memory
   // will likely be accessed soon.
@@ -185,7 +185,7 @@ void MemoryPurgeManager::PerformMemoryPurge() {
   }
 
   if (AreAllPagesFrozen()) {
-    base::MemoryPressureListener::SetNotificationsSuppressed(true);
+    memory_pressure_suppression_token_.emplace();
 #if BUILDFLAG(IS_ANDROID)
     base::android::SelfCompactionManager::OnRunningCompact();
 #endif

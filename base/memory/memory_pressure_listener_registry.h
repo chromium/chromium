@@ -31,15 +31,16 @@ class BASE_EXPORT MemoryPressureListenerRegistry {
   static void NotifyMemoryPressureFromAnyThread(
       MemoryPressureLevel memory_pressure_level);
 
+  // Adds/removes a listener.
   void AddObserver(MemoryPressureListenerRegistration* listener);
-
   void RemoveObserver(MemoryPressureListenerRegistration* listener);
 
   // These methods should not be used anywhere else but in memory measurement
   // code, where they are intended to maintain stable conditions across
   // measurements.
   static bool AreNotificationsSuppressed();
-  static void SetNotificationsSuppressed(bool suppressed);
+  static void IncreaseNotificationSuppressionCount();
+  static void DecreaseNotificationSuppressionCount();
   static void SimulatePressureNotification(
       MemoryPressureLevel memory_pressure_level);
   // Invokes `SimulatePressureNotification` asynchronously on the main thread,
@@ -54,11 +55,32 @@ class BASE_EXPORT MemoryPressureListenerRegistry {
  private:
   void DoNotifyMemoryPressure(MemoryPressureLevel memory_pressure_level);
 
+  bool AreNotificationsSuppressedImpl();
+  void IncreaseNotificationSuppressionCountImpl();
+  void DecreaseNotificationSuppressionCountImpl();
+
   MemoryPressureLevel last_memory_pressure_level_ = MEMORY_PRESSURE_LEVEL_NONE;
 
   ObserverList<MemoryPressureListenerRegistration>::Unchecked listeners_;
 
+  size_t notification_suppression_count_ GUARDED_BY_CONTEXT(thread_checker_) =
+      0u;
+
   THREAD_CHECKER(thread_checker_);
+};
+
+// Used to suppress memory pressure notifications, as long as an instance of
+// this class exists.
+class BASE_EXPORT MemoryPressureSuppressionToken {
+ public:
+  MemoryPressureSuppressionToken();
+
+  MemoryPressureSuppressionToken(const MemoryPressureSuppressionToken&) =
+      delete;
+  MemoryPressureSuppressionToken& operator=(
+      const MemoryPressureSuppressionToken&) = delete;
+
+  ~MemoryPressureSuppressionToken();
 };
 
 }  // namespace base

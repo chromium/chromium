@@ -139,7 +139,6 @@ class BASE_EXPORT MemoryPressureListener : public CheckedObserver {
   // Note: This simply forwards the call to MemoryPressureListenerRegistry to
   // avoid the need to refactor the whole codebase.
   static bool AreNotificationsSuppressed();
-  static void SetNotificationsSuppressed(bool suppressed);
   static void SimulatePressureNotification(
       MemoryPressureLevel memory_pressure_level);
   // Invokes `SimulatePressureNotification` asynchronously on the main thread,
