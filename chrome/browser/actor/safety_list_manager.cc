@@ -43,6 +43,11 @@ SafetyListManager* SafetyListManager::GetInstance() {
   return instance.get();
 }
 
+// static
+SafetyListManager SafetyListManager::CreateForTesting() {
+  return SafetyListManager();
+}
+
 SafetyListManager::SafetyListManager() {
   SafetyList::Patterns patterns;
   MaybeAppendHardcodedPatterns(patterns);
