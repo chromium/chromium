@@ -462,8 +462,6 @@ class TestEventObserverForExtension
  public:
   // crosapi::mojom::EventObserverForExtension:
   void OnConfigRemoved(const std::string& configuration_name) override {}
-  void OnPlatformMessage(const std::string& configuration_name,
-                         int32_t platform_message) override {}
 };
 
 using SuccessOrFailureCallback =

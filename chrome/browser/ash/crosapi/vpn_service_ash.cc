@@ -51,14 +51,6 @@ void VpnServiceForExtensionAsh::DispatchConfigRemovedEvent(
   }
 }
 
-void VpnServiceForExtensionAsh::DispatchOnPlatformMessageEvent(
-    const std::string& configuration_name,
-    int32_t platform_message) {
-  for (auto& observer : observers_) {
-    observer->OnPlatformMessage(configuration_name, platform_message);
-  }
-}
-
 VpnServiceAsh::VpnServiceAsh() = default;
 
 VpnServiceAsh::~VpnServiceAsh() = default;

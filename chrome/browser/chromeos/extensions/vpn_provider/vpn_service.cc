@@ -129,9 +129,9 @@ void VpnService::VpnConfiguration::OnPlatformMessage(
     vpn_service_->SetActiveConfiguration(nullptr);
   }
 
-  vpn_service_->GetVpnService()
-      ->GetVpnServiceForExtension(extension_id())
-      ->DispatchOnPlatformMessageEvent(configuration_name(), platform_message);
+  vpn_service_->GetVpnService()->GetVpnServiceForExtension(extension_id());
+  vpn_service_->SendOnPlatformMessageToExtension(
+      extension_id(), configuration_name(), platform_message);
 }
 
 VpnServiceForExtension::VpnServiceForExtension(
@@ -153,19 +153,6 @@ void VpnServiceForExtension::OnConfigRemoved(
       extensions::events::HistogramValue::VPN_PROVIDER_ON_CONFIG_REMOVED,
       api_vpn::OnConfigRemoved::kEventName,
       api_vpn::OnConfigRemoved::Create(configuration_name), browser_context_));
-}
-
-void VpnServiceForExtension::OnPlatformMessage(
-    const std::string& configuration_name,
-    int32_t platform_message) {
-  DispatchEvent(std::make_unique<extensions::Event>(
-      extensions::events::VPN_PROVIDER_ON_PLATFORM_MESSAGE,
-      api_vpn::OnPlatformMessage::kEventName,
-      api_vpn::OnPlatformMessage::Create(
-          configuration_name,
-          static_cast<api_vpn::PlatformMessage>(platform_message),
-          /*error=*/std::string{}),
-      browser_context_));
 }
 
 // TODO(neis): Remove this in favor of VpnService::SendToExtension.
@@ -254,10 +241,16 @@ void VpnService::SendOnPlatformMessageToExtension(
     const std::string& extension_id,
     const std::string& configuration_name,
     uint32_t platform_message) {
-  auto it = extension_id_to_service_.find(extension_id);
-  CHECK(it != extension_id_to_service_.end());
-  CHECK(it->second);
-  it->second->OnPlatformMessage(configuration_name, platform_message);
+  SendToExtension(
+      extension_id,
+      std::make_unique<extensions::Event>(
+          extensions::events::VPN_PROVIDER_ON_PLATFORM_MESSAGE,
+          api_vpn::OnPlatformMessage::kEventName,
+          api_vpn::OnPlatformMessage::Create(
+              configuration_name,
+              static_cast<api_vpn::PlatformMessage>(platform_message),
+              std::string{}),
+          browser_context_));
 }
 
 crosapi::VpnServiceForExtensionAsh::VpnConfiguration*

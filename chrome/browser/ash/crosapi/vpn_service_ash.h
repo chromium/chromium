@@ -75,9 +75,6 @@ class VpnServiceForExtensionAsh
 
   const extensions::ExtensionId& extension_id() const { return extension_id_; }
 
-  void DispatchOnPlatformMessageEvent(const std::string& configuration_name,
-                                      int32_t platform_message);
-
   const extensions::ExtensionId extension_id_;
   raw_ptr<chromeos::VpnService> controller_;
 
