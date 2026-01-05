@@ -127,7 +127,12 @@
       Show Gemini in Mac menu bar and turn on keyboard shortcut
     </message>
   </if>
-  <if expr="not is_macosx">
+  <if expr="is_chromeos">
+  <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE" desc="Name of the toggle that controls whether the keyboard shortcut is enabled (on ChromeOS only).">
+      Turn on Gemini keyboard shortcut
+    </message>
+  </if>
+  <if expr="is_win or is_linux">
     <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE" desc="Name of the toggle that controls whether the Gemini icon is shown in the system tray (on Windows and Linux).">
       Show Gemini in system tray and turn on keyboard shortcut
     </message>
