@@ -374,7 +374,9 @@ TipsSafeBrowsingExperimentType TipsSafeBrowsingExperimentTypeEnabled() {
       (int)TipsSafeBrowsingExperimentType::kShowEnhancedSafeBrowsingPromo));
 }
 
+#if !defined(__IPHONE_18_4) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_18_4
 BASE_FEATURE(kIOSChooseFromDrive, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kIOSDownloadNoUIUpdateInBackground,
              base::FEATURE_DISABLED_BY_DEFAULT);

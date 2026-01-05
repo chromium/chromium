@@ -453,8 +453,10 @@ SafetyCheckNotificationsImpressionTriggerEnabled();
 // `kSafetyCheckNotificationsImpressionLimit` field trial parameter.
 int SafetyCheckNotificationsImpressionLimit();
 
+#if !defined(__IPHONE_18_4) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_18_4
 // Feature flag enabling Choose from Drive.
 BASE_DECLARE_FEATURE(kIOSChooseFromDrive);
+#endif
 
 // Feature flag enabling a fix for the Download manager mediator.
 BASE_DECLARE_FEATURE(kIOSDownloadNoUIUpdateInBackground);
