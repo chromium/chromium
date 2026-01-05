@@ -13,7 +13,7 @@
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
-#include "components/safe_browsing/content/browser/client_side_detection_host.h"
+#include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -32,9 +32,8 @@ using ::testing::Return;
 
 namespace safe_browsing {
 
-using IntelligentScanResult =
-    ClientSideDetectionHost::IntelligentScanDelegate::IntelligentScanResult;
-using ModelType = ClientSideDetectionHost::IntelligentScanDelegate::ModelType;
+using IntelligentScanResult = IntelligentScanDelegate::IntelligentScanResult;
+using ModelType = IntelligentScanDelegate::ModelType;
 
 class ClientSideDetectionIntelligentScanDelegateDesktopTest
     : public testing::Test {
@@ -817,8 +816,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
           }));
 
   // Create an empty callback.
-  ClientSideDetectionHost::IntelligentScanDelegate::IntelligentScanDoneCallback
-      host_callback;
+  IntelligentScanDelegate::IntelligentScanDoneCallback host_callback;
   delegate_->StartIntelligentScan("", std::move(host_callback));
 
   histogram_tester_.ExpectUniqueSample(

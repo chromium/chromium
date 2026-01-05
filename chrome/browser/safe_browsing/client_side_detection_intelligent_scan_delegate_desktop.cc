@@ -11,6 +11,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -21,8 +22,8 @@ using ScamDetectionRequest = optimization_guide::proto::ScamDetectionRequest;
 using ScamDetectionResponse = optimization_guide::proto::ScamDetectionResponse;
 
 // Intelligent scan is always performed on the on-device model on desktop.
-constexpr auto kOnDeviceModelType = safe_browsing::ClientSideDetectionHost::
-    IntelligentScanDelegate::ModelType::kOnDevice;
+constexpr auto kOnDeviceModelType =
+    safe_browsing::IntelligentScanDelegate::ModelType::kOnDevice;
 
 // Currently, the following errors, which are used when a model may have been
 // installed but not yet loaded, are treated as waitable.

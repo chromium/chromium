@@ -13,18 +13,19 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
-#include "components/safe_browsing/content/browser/client_side_detection_host.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 
 class PrefService;
 class OptimizationGuideKeyedService;
 
 namespace safe_browsing {
 
-// Desktop implementation of IntelligentScanDelegate. This class is responsible
-// for managing the on-device model for intelligent scanning, including loading,
-// observing updates, and executing the model.
+// Client Side Detection Desktop implementation of IntelligentScanDelegate. This
+// class is responsible for managing the on-device model for intelligent
+// scanning, including loading, observing updates, and executing the model.
 class ClientSideDetectionIntelligentScanDelegateDesktop
-    : public ClientSideDetectionHost::IntelligentScanDelegate,
+    : public IntelligentScanDelegate,
       public optimization_guide::OnDeviceModelAvailabilityObserver {
  public:
   ClientSideDetectionIntelligentScanDelegateDesktop(

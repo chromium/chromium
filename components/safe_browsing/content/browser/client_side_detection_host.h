@@ -22,7 +22,6 @@
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
@@ -30,6 +29,7 @@
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/global_routing_id.h"
@@ -113,60 +113,6 @@ class ClientSideDetectionHost
     virtual internal::ReferringAppInfo GetReferringAppInfo(
         content::WebContents* web_contents) = 0;
 #endif
-  };
-
-  // Delegate for handling intelligent scanning.
-  class IntelligentScanDelegate : public KeyedService {
-   public:
-    // The model type that the client uses to perform intelligent scan.
-    enum class ModelType {
-      kNotSupported = 0,
-      kOnDevice = 1,
-      kServerSide = 2,
-    };
-
-    // Represents the result of an intelligent scan.
-    struct IntelligentScanResult {
-      static constexpr int kModelVersionUnavailable = -1;
-      static IntelligentScanResult Failure(int model_version,
-                                           ModelType model_type);
-
-      std::string brand;
-      std::string intent;
-      int model_version;
-      bool execution_success;
-      ModelType model_type;
-    };
-    using IntelligentScanDoneCallback =
-        base::OnceCallback<void(IntelligentScanResult)>;
-
-    ~IntelligentScanDelegate() override = default;
-
-    // Determines if an intelligent scan should be requested based on the
-    // verdict.
-    virtual bool ShouldRequestIntelligentScan(
-        ClientPhishingRequest* verdict) = 0;
-    // Returns the availability of intelligent scan. Also logs failed
-    // eligibility reason histograms if |log_failed_eligibility_reason| is true.
-    virtual bool IsIntelligentScanAvailable(
-        bool log_failed_eligibility_reason) = 0;
-    // Gets the intelligent scan result. The callback
-    // will return an empty optional if intelligent scan is not available.
-    // Returns a token that can be used to cancel the request. The token will be
-    // std::nullopt in case the inquiry fails immediately without start.
-    virtual std::optional<base::UnguessableToken> StartIntelligentScan(
-        std::string rendered_texts,
-        IntelligentScanDoneCallback callback) = 0;
-    // Cancels a specific intelligent scan request. If the |scan_id| is
-    // ongoing, it will return true, and false otherwise.
-    virtual bool CancelIntelligentScan(
-        const base::UnguessableToken& scan_id) = 0;
-    // Determines if a scam warning should be shown based on the intelligent
-    // scan verdict.
-    virtual bool ShouldShowScamWarning(
-        std::optional<IntelligentScanVerdict> verdict) = 0;
-    // Called when a warning is shown based on an intelligent scan verdict.
-    virtual void OnScamWarningShown() {}
   };
 
   // The caller keeps ownership of the tab object and is responsible for

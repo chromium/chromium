@@ -322,6 +322,7 @@ if (safe_browsing_mode != 0) {
       "//components/safe_browsing/content/browser",
       "//components/safe_browsing/content/common:interfaces",
       "//components/safe_browsing/content/common:visual_utils",
+      "//components/safe_browsing/core/browser:intelligent_scan_delegate",
       "//components/safe_browsing/core/browser:token_fetcher",
       "//components/safe_browsing/core/browser:verdict_cache_manager",
       "//components/safe_browsing/core/browser/db:allowlist_checker_client",

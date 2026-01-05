@@ -254,6 +254,21 @@ source_set("referring_app_info_unittest") {
   ]
 }
 
+source_set("intelligent_scan_delegate") {
+  sources = [
+    "intelligent_scan_delegate.cc",
+    "intelligent_scan_delegate.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
 source_set("safe_browsing_metrics_collector") {
   sources = [
     "safe_browsing_metrics_collector.cc",

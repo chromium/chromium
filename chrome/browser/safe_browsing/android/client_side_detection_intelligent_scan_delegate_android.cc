@@ -20,6 +20,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -30,7 +31,7 @@ namespace safe_browsing {
 namespace {
 using optimization_guide::mojom::OnDeviceFeature::kScamDetection;
 using ScamDetectionRequest = optimization_guide::proto::ScamDetectionRequest;
-using ModelType = ClientSideDetectionHost::IntelligentScanDelegate::ModelType;
+using ModelType = IntelligentScanDelegate::ModelType;
 }  // namespace
 
 class ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry {

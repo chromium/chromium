@@ -47,6 +47,7 @@
 #include "components/safe_browsing/content/common/visual_utils.h"
 #include "components/safe_browsing/core/browser/db/allowlist_checker_client.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -768,17 +769,6 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
 
   base::WeakPtrFactory<ShouldClassifyUrlRequest> weak_factory_{this};
 };
-
-// static
-ClientSideDetectionHost::IntelligentScanDelegate::IntelligentScanResult
-ClientSideDetectionHost::IntelligentScanDelegate::IntelligentScanResult::
-    Failure(int model_version, ModelType model_type) {
-  return {.brand = "",
-          .intent = "",
-          .model_version = model_version,
-          .execution_success = false,
-          .model_type = model_type};
-}
 
 // static
 std::unique_ptr<ClientSideDetectionHost> ClientSideDetectionHost::Create(
