@@ -297,7 +297,7 @@ BASE_FEATURE(kGlicActorUiTabIndicatorSpinnerIgnoreReducedMotion,
 
 // Controls theming updates for Actor UI, including the tab indicator spinner
 // and other elements.
-BASE_FEATURE(kActorUiThemed, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kActorUiThemed, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, hides handoff button when the client is in control.
 BASE_FEATURE(kGlicHandoffButtonHiddenClientControl,

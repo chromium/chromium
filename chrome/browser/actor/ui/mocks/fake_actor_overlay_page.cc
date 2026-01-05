@@ -38,7 +38,14 @@ void FakeActorOverlayPage::MoveCursorTo(const gfx::Point& point,
 }
 
 void FakeActorOverlayPage::SetTheme(mojom::ThemePtr theme) {
-  set_theme_call_count_++;
+  theme_call_count_++;
+}
+
+void FakeActorOverlayPage::ResetCounters() {
+  set_scrim_background_call_count_ = 0;
+  set_border_glow_call_count_ = 0;
+  move_cursor_call_count_ = 0;
+  theme_call_count_ = 0;
 }
 
 }  // namespace actor::ui

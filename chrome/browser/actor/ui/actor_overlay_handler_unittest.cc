@@ -116,13 +116,18 @@ TEST_F(ActorOverlayHandlerTest, SetBorderGlowVisibility) {
 }
 
 TEST_F(ActorOverlayHandlerTest, OnThemeChanged) {
+  // Setting up the first time calls set theme once so we reset the counters.
+  fake_page_.FlushForTesting();
+  fake_page_.ResetCounters();
   // Flag off
   {
+    base::test::ScopedFeatureList scoped_features;
+    scoped_features.InitAndDisableFeature(features::kActorUiThemed);
     webui::GetNativeThemeDeprecated(web_contents_.get())
         ->NotifyOnNativeThemeUpdated();
     fake_page_.FlushForTesting();
 
-    EXPECT_EQ(fake_page_.set_theme_call_count(), 0);
+    EXPECT_EQ(fake_page_.theme_call_count(), 0);
   }
   // Flag on
   {
@@ -133,7 +138,7 @@ TEST_F(ActorOverlayHandlerTest, OnThemeChanged) {
         ->NotifyOnNativeThemeUpdated();
     fake_page_.FlushForTesting();
 
-    EXPECT_EQ(fake_page_.set_theme_call_count(), 1);
+    EXPECT_EQ(fake_page_.theme_call_count(), 1);
   }
 }
 

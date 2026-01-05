@@ -25,6 +25,9 @@ class FakeActorOverlayPage : public mojom::ActorOverlayPage {
   // Waits for all messages currently in the pipe to be processed.
   void FlushForTesting();
 
+  // Resets all counters to 0.
+  void ResetCounters();
+
   // mojom::ActorOverlayPage implementation
   void SetScrimBackground(bool is_visible) override;
   void SetBorderGlowVisibility(bool is_visible) override;
@@ -41,7 +44,7 @@ class FakeActorOverlayPage : public mojom::ActorOverlayPage {
   }
   bool is_border_glow_visible() const { return is_border_glow_visible_; }
   int border_glow_call_count() const { return set_border_glow_call_count_; }
-  int set_theme_call_count() { return set_theme_call_count_; }
+  int theme_call_count() const { return theme_call_count_; }
   gfx::Point last_cursor_point() const { return last_cursor_point_; }
   int move_cursor_call_count() const { return move_cursor_call_count_; }
 
@@ -51,7 +54,7 @@ class FakeActorOverlayPage : public mojom::ActorOverlayPage {
   int set_scrim_background_call_count_ = 0;
   bool is_border_glow_visible_ = false;
   int set_border_glow_call_count_ = 0;
-  int set_theme_call_count_ = 0;
+  int theme_call_count_ = 0;
   gfx::Point last_cursor_point_;
   int move_cursor_call_count_ = 0;
 };
