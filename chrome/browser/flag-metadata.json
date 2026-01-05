@@ -6263,8 +6263,8 @@
   },
   {
     "name": "ios-docking-promo",
-    "owners": ["bwwilliams@google.com", "bling-pandamonium@google.com"],
-    "expiry_milestone": 135
+    "owners": ["gujen@google.com", "bling-mony-pod@google.com"],
+    "expiry_milestone": 150
   },
   {
     "name": "ios-expanded-tips",
