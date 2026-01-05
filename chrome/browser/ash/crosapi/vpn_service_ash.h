@@ -70,10 +70,6 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
       mojo::PendingReceiver<crosapi::mojom::VpnServiceForExtension> receiver,
       mojo::PendingRemote<crosapi::mojom::EventObserverForExtension> observer);
 
-  // crosapi::mojom::VpnServiceForExtension:
-  void DestroyConfiguration(const std::string& configuration_name,
-                            DestroyConfigurationCallback) override;
-
   // ash::NetworkConfigurationObserver:
   void OnConfigurationRemoved(const std::string& service_path,
                               const std::string& guid) override;
@@ -97,28 +93,6 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
 
   void DispatchOnPlatformMessageEvent(const std::string& configuration_name,
                                       int32_t platform_message);
-
-  // Creates a key for |key_to_configuration_map_| as a hash of |extension_id|
-  // and |configuration_name|.
-  static std::string GetKey(const std::string& extension_id,
-                            const std::string& configuration_name);
-
-  // Removes configuration from the internal store and destroys it.
-  void DestroyConfigurationInternal(VpnConfiguration*);
-
-  // Callback used to indicate that configuration creation failed.
-  void OnCreateConfigurationFailure(FailureCallback,
-                                    VpnConfiguration*,
-                                    const std::string& error_name);
-
-  // Callback used to indicate that removing a configuration succeeded.
-  void OnRemoveConfigurationSuccess(SuccessCallback);
-
-  // Callback used to indicate that removing a configuration failed.
-  void OnRemoveConfigurationFailure(FailureCallback,
-                                    const std::string& error_name);
-
-  void SetActiveConfiguration(VpnConfiguration*);
 
   const extensions::ExtensionId extension_id_;
   raw_ptr<chromeos::VpnService> controller_;

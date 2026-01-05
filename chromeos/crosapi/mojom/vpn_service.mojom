@@ -39,13 +39,8 @@ interface EventObserverForExtension {
 // Next method id: 8
 [Uuid="6743d9c7-e6c1-4f12-8f6c-571264044dea"]
 interface VpnServiceForExtension {
-  // Destroys the VPN configuration with |configuration_name| after verifying
-  // that it belongs to the extension.
-  // See chrome.vpnProvider.destroyConfiguration(...)
-  DestroyConfiguration@1(string configuration_name)
-      => (VpnErrorResponse? error);
-
   // CreateConfiguration@0 was removed.
+  // DestroyConfiguration@1 was removed.
   // SetParameters@2 was removed.
   // SendPacket@3 was removed.
   // NotifyConnectionStateChanged@4 was removed.

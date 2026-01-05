@@ -27,38 +27,6 @@
 #include "crypto/sha2.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace {
-
-using SuccessOrFailureCallback =
-    base::OnceCallback<void(crosapi::mojom::VpnErrorResponsePtr)>;
-
-void RunSuccessCallback(SuccessOrFailureCallback callback) {
-  std::move(callback).Run(nullptr);
-}
-
-void RunFailureCallback(SuccessOrFailureCallback callback,
-                        const std::string& error_name,
-                        const std::string& error_message) {
-  std::move(callback).Run(
-      crosapi::mojom::VpnErrorResponse::New(error_name, error_message));
-}
-
-// crosapi::mojom::VpnService expects a single callback, whereas the API is
-// designed to pass in two (one for success, one for failure). This function
-// unpacks (splits) the single callback into the success and failure ones
-// respectively. For the reverse transformation see
-// chrome/browser/chromeos/extensions/vpn_provider/vpn_service.cc
-std::pair<crosapi::VpnServiceForExtensionAsh::SuccessCallback,
-          crosapi::VpnServiceForExtensionAsh::FailureCallback>
-AdaptCallback(SuccessOrFailureCallback callback) {
-  auto [success, failure] = base::SplitOnceCallback(std::move(callback));
-
-  return {base::BindOnce(&RunSuccessCallback, std::move(success)),
-          base::BindOnce(&RunFailureCallback, std::move(failure))};
-}
-
-}  // namespace
-
 namespace crosapi {
 
 VpnServiceForExtensionAsh::VpnServiceForExtensionAsh(
@@ -78,50 +46,6 @@ void VpnServiceForExtensionAsh::BindReceiverAndObserver(
   observers_.Add(std::move(observer));
 }
 
-void VpnServiceForExtensionAsh::DestroyConfiguration(
-    const std::string& configuration_name,
-    DestroyConfigurationCallback callback) {
-  const std::string key = GetKey(extension_id(), configuration_name);
-
-  VpnConfiguration* configuration =
-      base::FindPtrOrNull(controller_->key_to_configuration_map_, key);
-  if (!configuration) {
-    RunFailureCallback(std::move(callback), /*error_name=*/{},
-                       "Unauthorized access.");
-    return;
-  }
-
-  // Avoid const ref here since configuration gets removed before service_path
-  // is used.
-  const std::optional<std::string> service_path = configuration->service_path();
-
-  if (!service_path) {
-    RunFailureCallback(std::move(callback), /*error_name=*/{},
-                       "Pending create.");
-    return;
-  }
-
-  if (controller_->active_configuration_ == configuration) {
-    configuration->OnPlatformMessage(
-        std::to_underlying(api_vpn::PlatformMessage::kDisconnected));
-  }
-
-  DestroyConfigurationInternal(configuration);
-
-  auto [success, failure] = AdaptCallback(std::move(callback));
-  ash::NetworkHandler::Get()
-      ->network_configuration_handler()
-      ->RemoveConfiguration(
-          *service_path,
-          /*remove_confirmer=*/{},
-          base::BindOnce(
-              &VpnServiceForExtensionAsh::OnRemoveConfigurationSuccess,
-              weak_factory_.GetWeakPtr(), std::move(success)),
-          base::BindOnce(
-              &VpnServiceForExtensionAsh::OnRemoveConfigurationFailure,
-              weak_factory_.GetWeakPtr(), std::move(failure)));
-}
-
 void VpnServiceForExtensionAsh::OnConfigurationRemoved(
     const std::string& service_path,
     const std::string& guid) {
@@ -135,7 +59,7 @@ void VpnServiceForExtensionAsh::OnConfigurationRemoved(
   }
 
   DispatchConfigRemovedEvent(configuration->configuration_name());
-  DestroyConfigurationInternal(configuration);
+  controller_->DestroyConfigurationInternal(configuration);
 }
 
 std::optional<std::string>
@@ -157,7 +81,8 @@ void VpnServiceForExtensionAsh::DestroyAllConfigurations() {
     }
   }
   for (const auto& configuration_name : to_be_destroyed) {
-    DestroyConfiguration(configuration_name, base::DoNothing());
+    controller_->DestroyConfiguration(extension_id(), configuration_name,
+                                      base::DoNothing(), base::DoNothing());
   }
 }
 
@@ -182,58 +107,6 @@ void VpnServiceForExtensionAsh::DispatchOnPlatformMessageEvent(
   for (auto& observer : observers_) {
     observer->OnPlatformMessage(configuration_name, platform_message);
   }
-}
-
-// static
-std::string VpnServiceForExtensionAsh::GetKey(
-    const std::string& extension_id,
-    const std::string& configuration_name) {
-  const std::string key =
-      crypto::SHA256HashString(extension_id + configuration_name);
-  return base::HexEncode(key);
-}
-
-void VpnServiceForExtensionAsh::DestroyConfigurationInternal(
-    VpnConfiguration* configuration) {
-  // |owned_configuration| ensures that |configuration| stays valid until the
-  // end of the scope.
-  auto owned_configuration =
-      std::move(controller_->key_to_configuration_map_[configuration->key()]);
-  controller_->key_to_configuration_map_.erase(configuration->key());
-  if (controller_->active_configuration_ == configuration) {
-    SetActiveConfiguration(nullptr);
-  }
-
-  if (const std::optional<std::string>& service_path =
-          configuration->service_path()) {
-    ash::ShillThirdPartyVpnDriverClient::Get()
-        ->RemoveShillThirdPartyVpnObserver(configuration->object_path());
-    controller_->service_path_to_configuration_map_.erase(*service_path);
-  }
-}
-
-void VpnServiceForExtensionAsh::OnCreateConfigurationFailure(
-    FailureCallback callback,
-    VpnConfiguration* configuration,
-    const std::string& error_name) {
-  DestroyConfigurationInternal(configuration);
-  std::move(callback).Run(error_name, /*error_message=*/{});
-}
-
-void VpnServiceForExtensionAsh::OnRemoveConfigurationSuccess(
-    SuccessCallback callback) {
-  std::move(callback).Run();
-}
-
-void VpnServiceForExtensionAsh::OnRemoveConfigurationFailure(
-    FailureCallback callback,
-    const std::string& error_name) {
-  std::move(callback).Run(error_name, /*error_message=*/{});
-}
-
-void VpnServiceForExtensionAsh::SetActiveConfiguration(
-    VpnConfiguration* configuration) {
-  controller_->active_configuration_ = configuration;
 }
 
 VpnServiceAsh::VpnServiceAsh() = default;

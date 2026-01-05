@@ -204,6 +204,26 @@ class VpnService : public extensions::api::VpnServiceInterface,
       crosapi::VpnServiceForExtensionAsh::VpnConfiguration* configuration,
       const std::string& service_path);
 
+  // Removes configuration from the internal store and destroys it.
+  void DestroyConfigurationInternal(
+      crosapi::VpnServiceForExtensionAsh::VpnConfiguration* configuration);
+
+  // Callback used to indicate that removing a configuration succeeded.
+  void OnRemoveConfigurationSuccess(SuccessCallback);
+
+  // Callback used to indicate that removing a configuration failed.
+  void OnRemoveConfigurationFailure(FailureCallback,
+                                    const std::string& error_name);
+
+  // Sets the active configuration.
+  void SetActiveConfiguration(
+      crosapi::VpnServiceForExtensionAsh::VpnConfiguration* configuration);
+
+  // Gets the unique key for the configuration |configuration_name| created by
+  // the extension with id |extension_id|.
+  static std::string GetKeyForTesting(const std::string& extension_id,
+                                      const std::string& configuration_name);
+
   // Owns all configurations. Key is a hash of |extension_id| and
   // |configuration_name|.
   using StringToOwnedConfigurationMap = std::map<

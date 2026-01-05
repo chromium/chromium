@@ -202,8 +202,7 @@ class VpnProviderApiTest : public VpnProviderApiTestBase {
   }
 
   std::string GetKey(const std::string& configuration_name) const {
-    return crosapi::VpnServiceForExtensionAsh::GetKey(extension_id(),
-                                                      configuration_name);
+    return VpnService::GetKeyForTesting(extension_id(), configuration_name);
   }
 
   bool DoesConfigExist(const std::string& configuration_name) {
