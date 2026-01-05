@@ -12,6 +12,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout.LayoutParams;
@@ -33,11 +34,16 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class InstanceSwitcherCoordinatorUnitTest {
     @Mock private FrameLayout mInstanceListContainer;
     @Mock private RecyclerView mActiveInstancesList;
+    @Mock private View mCommandItem;
+
+    private static final int MIN_COMMAND_ITEM_HEIGHT_PX = 173;
 
     @Before
     public void setup() {
         MockitoAnnotations.openMocks(this);
         when(mInstanceListContainer.getViewTreeObserver()).thenReturn(mock(ViewTreeObserver.class));
+        when(mCommandItem.getVisibility()).thenReturn(View.VISIBLE);
+        when(mCommandItem.getMeasuredHeight()).thenReturn(200);
     }
 
     @Test
@@ -56,7 +62,9 @@ public class InstanceSwitcherCoordinatorUnitTest {
                 InstanceSwitcherCoordinator.addInstanceListGlobalLayoutListener(
                         mInstanceListContainer,
                         mActiveInstancesList,
-                        /* isInactiveListShowing= */ false);
+                        /* isInactiveListShowing= */ false,
+                        mCommandItem,
+                        MIN_COMMAND_ITEM_HEIGHT_PX);
         listener.onGlobalLayout();
 
         // Verify there is no update to layout params, since the layout should use the default spec.
@@ -79,7 +87,9 @@ public class InstanceSwitcherCoordinatorUnitTest {
                 InstanceSwitcherCoordinator.addInstanceListGlobalLayoutListener(
                         mInstanceListContainer,
                         mActiveInstancesList,
-                        /* isInactiveListShowing= */ false);
+                        /* isInactiveListShowing= */ false,
+                        mCommandItem,
+                        MIN_COMMAND_ITEM_HEIGHT_PX);
         listener.onGlobalLayout();
 
         // Verify layout params.
@@ -106,21 +116,27 @@ public class InstanceSwitcherCoordinatorUnitTest {
                 InstanceSwitcherCoordinator.addInstanceListGlobalLayoutListener(
                         mInstanceListContainer,
                         mActiveInstancesList,
-                        /* isInactiveListShowing= */ false);
+                        /* isInactiveListShowing= */ false,
+                        mCommandItem,
+                        MIN_COMMAND_ITEM_HEIGHT_PX);
         listener.onGlobalLayout();
         // Verify layout params.
         ArgumentCaptor<LayoutParams> paramsCaptor = ArgumentCaptor.forClass(LayoutParams.class);
         verify(mInstanceListContainer).setLayoutParams(paramsCaptor.capture());
-        assertEquals(
-                "Height is incorrect.", LayoutParams.WRAP_CONTENT, paramsCaptor.getValue().height);
-        assertEquals("Weight is incorrect.", 0, paramsCaptor.getValue().weight, 0);
+        LayoutParams capturedParams = paramsCaptor.getValue();
+        assertEquals("Height is incorrect.", LayoutParams.WRAP_CONTENT, capturedParams.height);
+        assertEquals("Weight is incorrect.", 0, capturedParams.weight, 0);
+
+        when(mInstanceListContainer.getLayoutParams()).thenReturn(capturedParams);
 
         // Simulate switching to the inactive instances list, that adds the listener again.
         listener =
                 InstanceSwitcherCoordinator.addInstanceListGlobalLayoutListener(
                         mInstanceListContainer,
                         mActiveInstancesList,
-                        /* isInactiveListShowing= */ true);
+                        /* isInactiveListShowing= */ true,
+                        mCommandItem,
+                        MIN_COMMAND_ITEM_HEIGHT_PX);
         listener.onGlobalLayout();
 
         // Verify layout params.
