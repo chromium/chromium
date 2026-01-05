@@ -15,7 +15,11 @@ desc: |-
 
   As of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 128, this setting will not control developer mode on extensions page if <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME">ExtensionDeveloperModeSettings</ph> policy is set.
 
-  If you want to restrict Developer Tools access based on the page URL, use the <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME">DeveloperToolsAvailabilityBlocklist</ph> and <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME">DeveloperToolsAvailabilityAllowlist</ph> policies.
+  The availability of Developer Tools is determined in the following order of precedence:
+  1. If a URL matches a pattern in the <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME">DeveloperToolsAvailabilityAllowlist</ph> policy, Developer Tools are allowed.
+  2. If the <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME">DeveloperToolsAvailabilityAllowlist</ph> is set and the <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME">DeveloperToolsAvailabilityBlocklist</ph> is not, any URL not on the allowlist is blocked.
+  3. If a URL matches a pattern in the <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME">DeveloperToolsAvailabilityBlocklist</ph> policy, Developer Tools are blocked.
+  4. If a URL is not covered by the allowlist or blocklist, this policy (<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME">DeveloperToolsAvailability</ph>) is the fallback.
 default: 0
 example_value: 2
 features:

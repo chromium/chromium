@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_POLICY_DEVELOPER_TOOLS_POLICY_CHECKER_H_
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/browser/url_list/url_blocklist_manager.h"
@@ -39,6 +40,7 @@ class DeveloperToolsPolicyChecker : public KeyedService {
   std::optional<bool> CheckDevToolsAvailabilityForUrl(const GURL& url) const;
 
  private:
+  raw_ptr<PrefService> pref_service_;
   URLBlocklistManager url_blocklist_manager_;
 };
 
