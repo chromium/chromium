@@ -244,8 +244,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   protected get shouldShowDivider_(): boolean {
-    return this.shouldShowContextualChipsForCompactMode_ ||
-        (this.showDropdown &&
+    return this.showDropdown &&
+        (this.shouldShowContextualChipsForCompactMode_ ||
          (this.showFileCarousel_ ||
           this.searchboxLayoutMode === 'TallTopContext' ||
           this.submitButtonShown));
