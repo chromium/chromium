@@ -7,9 +7,12 @@
 
 // LINT.IfChange(FileUploadPanelContextMenuVariant)
 enum class FileUploadPanelContextMenuVariant {
-  kPhotoPickerAndCameraAndFilePicker,
-  kPhotoPickerAndFilePicker,
-  kMaxValue = kPhotoPickerAndFilePicker,
+  kPhotoPickerAndFilePicker = 0,
+  kPhotoPickerAndCameraAndFilePicker = 1,
+  kFilePickerAndDriveFilePicker = 2,
+  kPhotoPickerAndFilePickerAndDriveFilePicker = 3,
+  kPhotoPickerAndCameraAndFilePickerAndDriveFilePicker = 4,
+  kMaxValue = kPhotoPickerAndCameraAndFilePickerAndDriveFilePicker,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSFileUploadPanelContextMenuVariant)
 
@@ -42,7 +45,8 @@ enum class FileUploadPanelContextMenuActionVariant {
   kFilePicker = 0,
   kPhotoPicker = 1,
   kCamera = 2,
-  kMaxValue = kCamera,
+  kDriveFilePicker = 3,
+  kMaxValue = kDriveFilePicker,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSFileUploadPanelContextMenuActionVariant)
 

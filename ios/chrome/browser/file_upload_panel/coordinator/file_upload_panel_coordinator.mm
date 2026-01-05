@@ -8,14 +8,21 @@
 #import <UIKit/UIKit.h>
 
 #import "base/metrics/histogram_functions.h"
+#import "base/notreached.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/drive/model/drive_availability.h"
+#import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_mediator.h"
 #import "ios/chrome/browser/file_upload_panel/ui/constants.h"
 #import "ios/chrome/browser/file_upload_panel/ui/context_menu_presenter.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
+#import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_controller.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_util.h"
@@ -30,6 +37,13 @@
     UIImagePickerControllerDelegate,
     UIAdaptivePresentationControllerDelegate>
 
+// Actions to present in the context menu. Will be nil if the action is
+// unavailable in the current context. Lazily created.
+@property(nonatomic, readonly) UIAction* filePickerAction;
+@property(nonatomic, readonly) UIAction* driveFilePickerAction;
+@property(nonatomic, readonly) UIAction* photoPickerAction;
+@property(nonatomic, readonly) UIAction* cameraAction;
+
 @end
 
 @implementation FileUploadPanelCoordinator {
@@ -38,7 +52,13 @@
   UIImagePickerController* _cameraPicker;
   UIDocumentPickerViewController* _filePicker;
   PHPickerViewController* _photoPicker;
+  BOOL _isChooseFromDriveAvailable;
 }
+
+@synthesize filePickerAction = _filePickerAction;
+@synthesize driveFilePickerAction = _driveFilePickerAction;
+@synthesize photoPickerAction = _photoPickerAction;
+@synthesize cameraAction = _cameraAction;
 
 #pragma mark - ChromeCoordinator
 
@@ -58,6 +78,18 @@
   _mediator.fileUploadPanelHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), FileUploadPanelCommands);
 
+  if (!_mediator.allowsDirectorySelection) {
+    ProfileIOS* profile = self.browser->GetProfile();
+    CHECK(profile);
+    signin::IdentityManager* identityManager =
+        IdentityManagerFactory::GetInstance()->GetForProfile(profile);
+    drive::DriveService* driveService =
+        drive::DriveServiceFactory::GetForProfile(profile);
+    _isChooseFromDriveAvailable = drive::IsChooseFromDriveAvailable(
+        activeWebState, profile->IsOffTheRecord(), identityManager,
+        driveService, profile->GetPrefs());
+  }
+
   if (_mediator.shouldShowCamera) {
     base::UmaHistogramEnumeration("IOS.FileUploadPanel.EntryPointVariant",
                                   FileUploadPanelEntryPointVariant::kCamera);
@@ -66,7 +98,7 @@
     return;
   }
 
-  if (_mediator.allowsDirectorySelection || !_mediator.allowsMediaSelection) {
+  if (_mediator.allowsDirectorySelection) {
     base::UmaHistogramEnumeration(
         "IOS.FileUploadPanel.EntryPointVariant",
         FileUploadPanelEntryPointVariant::kFilePicker);
@@ -83,6 +115,7 @@
   [_mediator disconnect];
   _mediator = nil;
   [self hideFilePicker];
+  [self hideDriveFilePicker];
   [self hidePhotoPicker];
   [self hideCamera];
   [self hideContextMenu];
@@ -130,54 +163,59 @@
 
 // Returns the context menu to be presented by `-showContextMenu`.
 - (UIMenu*)contextMenu {
-  NSArray<UIMenuElement*>* actions = nil;
-  __weak __typeof(self) weakSelf = self;
+  NSMutableArray<UIMenuElement*>* menuElements = [NSMutableArray array];
 
-  UIAction* filePickerAction = [UIAction
-      actionWithTitle:[self filePickerActionLabel]
-                image:DefaultSymbolWithConfiguration(kFolderSymbol, nil)
-           identifier:@"chromium.uploadfile.choosefile"
-              handler:^(UIAction* action) {
-                [weakSelf
-                    showPickerForContextMenuActionVariant:
-                        FileUploadPanelContextMenuActionVariant::kFilePicker];
-              }];
+  UIAction* filePickerAction = self.filePickerAction;
+  UIAction* driveFilePickerAction = self.driveFilePickerAction;
+  UIAction* photoPickerAction = self.photoPickerAction;
+  UIAction* cameraAction = self.cameraAction;
 
-  UIAction* photoPickerAction = [UIAction
-      actionWithTitle:[self photoPickerActionLabel]
-                image:DefaultSymbolWithConfiguration(kPhotoOnRectangleSymbol,
-                                                     nil)
-           identifier:@"chromium.uploadfile.choosephoto"
-              handler:^(UIAction* action) {
-                [weakSelf
-                    showPickerForContextMenuActionVariant:
-                        FileUploadPanelContextMenuActionVariant::kPhotoPicker];
-              }];
-
-  if ([UIImagePickerController
-          isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-    UIAction* cameraAction = [UIAction
-        actionWithTitle:[self cameraActionLabel]
-                  image:DefaultSymbolWithConfiguration(kSystemCameraSymbol, nil)
-             identifier:@"chromium.uploadfile.usecamera"
-                handler:^(UIAction* action) {
-                  [weakSelf
-                      showPickerForContextMenuActionVariant:
-                          FileUploadPanelContextMenuActionVariant::kCamera];
-                }];
-    actions = @[ photoPickerAction, cameraAction, filePickerAction ];
-
-    base::UmaHistogramEnumeration(
-        "IOS.FileUploadPanel.ContextMenuVariant",
-        FileUploadPanelContextMenuVariant::kPhotoPickerAndCameraAndFilePicker);
+  // Recording IOS.FileUploadPanel.ContextMenuVariant histogram.
+  if (!driveFilePickerAction) {
+    if (photoPickerAction && !cameraAction) {
+      base::UmaHistogramEnumeration(
+          "IOS.FileUploadPanel.ContextMenuVariant",
+          FileUploadPanelContextMenuVariant::kPhotoPickerAndFilePicker);
+    } else if (photoPickerAction && cameraAction) {
+      base::UmaHistogramEnumeration("IOS.FileUploadPanel.ContextMenuVariant",
+                                    FileUploadPanelContextMenuVariant::
+                                        kPhotoPickerAndCameraAndFilePicker);
+    } else {
+      NOTREACHED() << "Unexpected context menu variant.";
+    }
   } else {
-    actions = @[ photoPickerAction, filePickerAction ];
-    base::UmaHistogramEnumeration(
-        "IOS.FileUploadPanel.ContextMenuVariant",
-        FileUploadPanelContextMenuVariant::kPhotoPickerAndFilePicker);
+    if (!photoPickerAction && !cameraAction) {
+      base::UmaHistogramEnumeration(
+          "IOS.FileUploadPanel.ContextMenuVariant",
+          FileUploadPanelContextMenuVariant::kFilePickerAndDriveFilePicker);
+    } else if (photoPickerAction && !cameraAction) {
+      base::UmaHistogramEnumeration(
+          "IOS.FileUploadPanel.ContextMenuVariant",
+          FileUploadPanelContextMenuVariant::
+              kPhotoPickerAndFilePickerAndDriveFilePicker);
+    } else if (photoPickerAction && cameraAction) {
+      base::UmaHistogramEnumeration(
+          "IOS.FileUploadPanel.ContextMenuVariant",
+          FileUploadPanelContextMenuVariant::
+              kPhotoPickerAndCameraAndFilePickerAndDriveFilePicker);
+    } else {
+      NOTREACHED() << "Unexpected context menu variant.";
+    }
   }
 
-  return [UIMenu menuWithTitle:@"" children:actions];
+  // Building the menu.
+  if (photoPickerAction) {
+    [menuElements addObject:photoPickerAction];
+  }
+  if (cameraAction) {
+    [menuElements addObject:cameraAction];
+  }
+  [menuElements addObject:filePickerAction];
+  if (driveFilePickerAction) {
+    [menuElements addObject:driveFilePickerAction];
+  }
+
+  return [UIMenu menuWithTitle:@"" children:menuElements];
 }
 
 // Hides the context menu presented by `-showContextMenu`.
@@ -203,6 +241,22 @@
   }
   return l10n_util::GetNSString(
       IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILE_ACTION_LABEL);
+}
+
+- (UIAction*)filePickerAction {
+  if (!_filePickerAction) {
+    __weak __typeof(self) weakSelf = self;
+    _filePickerAction = [UIAction
+        actionWithTitle:[self filePickerActionLabel]
+                  image:DefaultSymbolWithConfiguration(kFolderSymbol, nil)
+             identifier:@"chromium.uploadfile.choosefile"
+                handler:^(UIAction* action) {
+                  [weakSelf
+                      showPickerForContextMenuActionVariant:
+                          FileUploadPanelContextMenuActionVariant::kFilePicker];
+                }];
+  }
+  return _filePickerAction;
 }
 
 // Shows a file picker to select one or several files on the device.
@@ -267,6 +321,26 @@
 - (NSString*)photoPickerActionLabel {
   return l10n_util::GetNSString(
       IDS_IOS_FILE_UPLOAD_PANEL_PHOTO_LIBRARY_ACTION_LABEL);
+}
+
+- (UIAction*)photoPickerAction {
+  if (!_mediator.allowsMediaSelection) {
+    return nil;
+  }
+  if (!_photoPickerAction) {
+    __weak __typeof(self) weakSelf = self;
+    _photoPickerAction = [UIAction
+        actionWithTitle:[self photoPickerActionLabel]
+                  image:DefaultSymbolWithConfiguration(kPhotoOnRectangleSymbol,
+                                                       nil)
+             identifier:@"chromium.uploadfile.choosephoto"
+                handler:^(UIAction* action) {
+                  [weakSelf showPickerForContextMenuActionVariant:
+                                FileUploadPanelContextMenuActionVariant::
+                                    kPhotoPicker];
+                }];
+  }
+  return _photoPickerAction;
 }
 
 // Shows a photo picker to select one or several photos/videos on the device.
@@ -335,6 +409,29 @@
       IDS_IOS_FILE_UPLOAD_PANEL_TAKE_PHOTO_ACTION_LABEL);
 }
 
+- (UIAction*)cameraAction {
+  if (!_mediator.allowsMediaSelection) {
+    return nil;
+  }
+  if (![UIImagePickerController
+          isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+    return nil;
+  }
+  if (!_cameraAction) {
+    __weak __typeof(self) weakSelf = self;
+    _cameraAction = [UIAction
+        actionWithTitle:[self cameraActionLabel]
+                  image:DefaultSymbolWithConfiguration(kSystemCameraSymbol, nil)
+             identifier:@"chromium.uploadfile.choosecamera"
+                handler:^(UIAction* action) {
+                  [weakSelf
+                      showPickerForContextMenuActionVariant:
+                          FileUploadPanelContextMenuActionVariant::kCamera];
+                }];
+  }
+  return _cameraAction;
+}
+
 // Shows a camera view to take a photo/video to submit to the web page.
 - (void)showCamera {
   CHECK([UIImagePickerController
@@ -373,6 +470,49 @@
   [_mediator cancelFileSelection];
 }
 
+#pragma mark - Private (Drive File Picker)
+
+- (NSString*)driveFilePickerActionLabel {
+  return l10n_util::GetNSString(IDS_IOS_CHOOSE_FROM_DRIVE_ACTION_NAME);
+}
+
+- (UIAction*)driveFilePickerAction {
+  if (!_isChooseFromDriveAvailable) {
+    return nil;
+  }
+  if (!_driveFilePickerAction) {
+    __weak __typeof(self) weakSelf = self;
+    UIImage* driveSymbol = nil;
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+    UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle3];
+    UIImageConfiguration* driveSymbolConfiguration = [UIImageSymbolConfiguration
+        configurationWithPointSize:font.pointSize
+                            weight:UIImageSymbolWeightLight
+                             scale:UIImageSymbolScaleMedium];
+    driveSymbol = CustomSymbolWithConfiguration(kGoogleDriveSymbol,
+                                                driveSymbolConfiguration);
+#endif
+    _driveFilePickerAction = [UIAction
+        actionWithTitle:[self driveFilePickerActionLabel]
+                  image:driveSymbol
+             identifier:@"chromium.uploadfile.choosefromdrive"
+                handler:^(UIAction* action) {
+                  [weakSelf showPickerForContextMenuActionVariant:
+                                FileUploadPanelContextMenuActionVariant::
+                                    kDriveFilePicker];
+                }];
+  }
+  return _driveFilePickerAction;
+}
+
+- (void)showDriveFilePicker {
+  // TODO(crbug.com/441659098): Show the Drive file picker.
+}
+
+- (void)hideDriveFilePicker {
+  // TODO(crbug.com/441659098): Hide the Drive file picker.
+}
+
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:
@@ -395,6 +535,9 @@
       break;
     case FileUploadPanelContextMenuActionVariant::kCamera:
       [self showCamera];
+      break;
+    case FileUploadPanelContextMenuActionVariant::kDriveFilePicker:
+      [self showDriveFilePicker];
       break;
   }
 }

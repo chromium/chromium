@@ -644,6 +644,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="FilePicker"/>
   <int value="1" label="PhotoPicker"/>
   <int value="2" label="Camera"/>
+  <int value="3" label="DriveFilePicker"/>
 </enum>
 
 <!-- LINT.ThenChange(//ios/chrome/browser/file_upload_panel/ui/constants.h:FileUploadPanelContextMenuActionVariant) -->
@@ -651,8 +652,11 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(IOSFileUploadPanelContextMenuVariant) -->
 
 <enum name="IOSFileUploadPanelContextMenuVariant">
-  <int value="0" label="PhotoPickerAndCameraAndFilePicker"/>
-  <int value="1" label="PhotoPickerAndFilePicker"/>
+  <int value="0" label="PhotoPickerAndFilePicker"/>
+  <int value="1" label="PhotoPickerAndCameraAndFilePicker"/>
+  <int value="2" label="FilePickerAndDriveFilePicker"/>
+  <int value="3" label="PhotoPickerAndFilePickerAndDriveFilePicker"/>
+  <int value="4" label="PhotoPickerAndCameraAndFilePickerAndDriveFilePicker"/>
 </enum>
 
 <!-- LINT.ThenChange(//ios/chrome/browser/file_upload_panel/ui/constants.h:FileUploadPanelContextMenuVariant) -->

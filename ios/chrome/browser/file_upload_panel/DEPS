@@ -4,4 +4,7 @@ include_rules = [
     "+ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h",
     "+ios/chrome/browser/web/model/choose_file/choose_file_util.h",
     "+ios/chrome/browser/web/model/choose_file/choose_file_file_utils.h",
+    "+ios/chrome/browser/signin/model/identity_manager_factory.h",
+    "+ios/chrome/browser/drive/model/drive_availability.h",
+    "+ios/chrome/browser/drive/model/drive_service_factory.h",
 ]

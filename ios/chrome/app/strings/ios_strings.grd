@@ -1353,6 +1353,9 @@
       <message name="IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON" desc="Label of a button which starts Password Check [Length: 22em] [iOS only]" meaning="By clicking this button user will start checking all passwords for security issues.">
         Check now
       </message>
+      <message name="IDS_IOS_CHOOSE_FROM_DRIVE_ACTION_NAME" desc="Title for an action to choose a file from Google Drive. 'Google Drive' is the name of the 'Google Drive' app." meaning="Title for an action to choose a file from Google Drive. 'Google Drive' is the name of the 'Google Drive' app.">
+        Google Drive
+      </message>
       <message name="IDS_IOS_CLEAR_AUTOFILL" desc="Label for the option in settings to clear form data. [Length: 20em] [iOS only]">
         Autofill data
       </message>
