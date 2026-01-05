@@ -126,7 +126,7 @@ void SecureChannelImpl::OnResponseReceived(
     DLOG(ERROR) << "Transport error: " << static_cast<int>(response.error())
                 << " in state: " << static_cast<int>(state_);
 
-    ErrorCode error_code;
+    ErrorCode error_code = ErrorCode::kError;
     switch (state_) {
       case State::kPerformingAttestation:
         error_code = ErrorCode::kAttestationFailed;
@@ -143,8 +143,12 @@ void SecureChannelImpl::OnResponseReceived(
       case State::kClosed:
         // Transport error in these states is unexpected because no requests
         // should be in flight.
-        NOTREACHED() << "Unexpected transport error in state: "
-                     << static_cast<int>(state_);
+        //
+        // Nevertheless, we do not crash here as this branch could be triggered
+        // by misbehaving server.
+        LOG(ERROR) << "Unexpected transport error in state: "
+                   << static_cast<int>(state_);
+        break;
     }
 
     FailAllRequestsAndClose(error_code);
