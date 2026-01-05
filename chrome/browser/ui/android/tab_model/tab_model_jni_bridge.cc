@@ -490,22 +490,14 @@ tabs::TabInterface* TabModelJniBridge::DuplicateTab(tabs::TabHandle tab) {
 }
 
 tabs::TabInterface* TabModelJniBridge::DuplicateTab(TabAndroid* tab) {
-  WebContents* web_contents = tab == nullptr ? nullptr : tab->web_contents();
+  WebContents* web_contents = tab ? tab->web_contents() : nullptr;
   if (!web_contents) {
     return nullptr;
   }
 
   std::unique_ptr<WebContents> cloned_web_contents = web_contents->Clone();
-  ScopedJavaLocalRef<jobject> jweb_contents =
-      cloned_web_contents->GetJavaWebContents();
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
-
-  TabAndroid* new_tab =
-      Java_TabModelJniBridge_duplicateTab(env, jobj, tab, jweb_contents);
-  cloned_web_contents.release();
-
-  return new_tab;
+  return CreateTab(tab, std::move(cloned_web_contents), /* index= */ -1,
+                   TabLaunchType::FROM_TAB_LIST_INTERFACE, tab->IsPinned());
 }
 
 tabs::TabInterface* TabModelJniBridge::GetTab(int index) {

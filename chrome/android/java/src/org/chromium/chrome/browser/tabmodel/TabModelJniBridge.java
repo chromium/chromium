@@ -482,29 +482,6 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     }
 
     /**
-     * Duplicates the tab to the next adjacent index.
-     *
-     * <p>This method is specifically for TabListInterface and it will calculate the next valid
-     * adjacent index based on the parent tab.
-     *
-     * @param parentTab The tab to duplicate.
-     * @param webContents The {@link WebContents} for the new tab.
-     * @return The new tab, if the duplication succeeded.
-     */
-    @CalledByNative
-    protected @JniType("TabAndroid*") @Nullable Tab duplicateTab(
-            @JniType("TabAndroid*") Tab parentTab, WebContents webContents) {
-        return getTabCreator()
-                .createTabWithWebContents(
-                        parentTab,
-                        parentTab.getIsPinned(),
-                        webContents,
-                        TabLaunchType.FROM_TAB_LIST_INTERFACE,
-                        webContents.getVisibleUrl(),
-                        /* addTabToModel= */ true);
-    }
-
-    /**
      * Highlights a given list of tabs and makes one of them the active tab.
      *
      * <p>This operation is destructive; the given {@code tabs} are added to the current
