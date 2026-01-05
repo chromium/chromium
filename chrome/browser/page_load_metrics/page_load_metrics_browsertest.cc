@@ -2863,6 +2863,10 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
 
+  // Make sure that the initial implicit navigation is ended by navigating to an
+  // untracked URL.
+  NavigateToUntrackedUrl();
+
   {
     // Initial browser initiated navigation.
     base::HistogramTester histogram_tester;
@@ -2887,6 +2891,25 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
         internal::kHistogramInputCoverageWithoutUserGestureBrowserInitiated, 0);
     histogram_tester.ExpectTotalCount(
         internal::kHistogramInputCoverageWithoutUserGestureRendererInitiated,
+        0);
+    histogram_tester.ExpectTotalCount("Navigation.Timeline.Total.Duration", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.TotalExcludingBeforeUnload.Duration", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.TotalExcludingBeforeUnload.MainFrameOnly.Duration",
+        1);
+    EXPECT_GT(
+        histogram_tester.GetTotalSum("Navigation.Timeline.Total.Duration"), 0);
+    // InteractionTo* metrics are not recorded when there is no user input.
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.InteractionToActualNavigationStart.Duration", 0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.InteractionToNavigationFinished."
+        "MainFrameOnly.Duration",
+        0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.InteractionToNavigationFinished."
+        "ExcludingBeforeUnload.MainFrameOnly.Duration",
         0);
   }
 
@@ -2926,6 +2949,14 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
         internal::kHistogramInputCoverageWithoutUserGestureBrowserInitiated, 0);
     histogram_tester.ExpectTotalCount(
         internal::kHistogramInputCoverageWithoutUserGestureRendererInitiated,
+        1);
+    histogram_tester.ExpectTotalCount("Navigation.Timeline.Total.Duration", 1);
+    EXPECT_GT(
+        histogram_tester.GetTotalSum("Navigation.Timeline.Total.Duration"), 0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.TotalExcludingBeforeUnload.Duration", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.TotalExcludingBeforeUnload.MainFrameOnly.Duration",
         1);
     // InteractionTo* metrics are not recorded when there is no user input.
     histogram_tester.ExpectTotalCount(
@@ -2984,20 +3015,45 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
     histogram_tester.ExpectTotalCount(
         internal::kHistogramInputCoverageWithoutUserGestureRendererInitiated,
         0);
+    histogram_tester.ExpectTotalCount("Navigation.Timeline.Total.Duration", 1);
+    int64_t total_duration =
+        histogram_tester.GetTotalSum("Navigation.Timeline.Total.Duration");
+    EXPECT_GT(total_duration, 0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.TotalExcludingBeforeUnload.Duration", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.TotalExcludingBeforeUnload.MainFrameOnly.Duration",
+        1);
     histogram_tester.ExpectTotalCount(
         "Navigation.Timeline.InteractionToActualNavigationStart.Duration", 1);
+    EXPECT_GT(
+        histogram_tester.GetTotalSum(
+            "Navigation.Timeline.InteractionToActualNavigationStart.Duration"),
+        0);
     histogram_tester.ExpectTotalCount(
         "Navigation.Timeline.InteractionToActualNavigationStart."
         "MainFrameOnly.Duration",
         1);
+    EXPECT_GT(histogram_tester.GetTotalSum(
+                  "Navigation.Timeline.InteractionToActualNavigationStart."
+                  "MainFrameOnly.Duration"),
+              0);
     histogram_tester.ExpectTotalCount(
         "Navigation.Timeline.InteractionToNavigationFinished."
         "MainFrameOnly.Duration",
         1);
+    EXPECT_GT(histogram_tester.GetTotalSum(
+                  "Navigation.Timeline.InteractionToNavigationFinished."
+                  "MainFrameOnly.Duration"),
+              total_duration);
     histogram_tester.ExpectTotalCount(
         "Navigation.Timeline.InteractionToNavigationFinished."
         "ExcludingBeforeUnload.MainFrameOnly.Duration",
         1);
+    EXPECT_GT(histogram_tester.GetTotalSum(
+                  "Navigation.Timeline.InteractionToNavigationFinished."
+                  "ExcludingBeforeUnload.MainFrameOnly.Duration"),
+              total_duration);
   }
 }
 
