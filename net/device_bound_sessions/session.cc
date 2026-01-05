@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/to_vector.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/escape.h"
 #include "base/types/expected_macros.h"
@@ -23,6 +24,7 @@
 #include "net/device_bound_sessions/inclusion_result.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
+#include "net/device_bound_sessions/session_display.h"
 #include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_inclusion_rules.h"
 #include "net/device_bound_sessions/session_usage.h"
@@ -261,6 +263,16 @@ proto::Session Session::ToProto() const {
   }
 
   return session_proto;
+}
+
+SessionDisplay Session::ToDisplay() const {
+  std::vector<CookieCravingDisplay> display_cravings =
+      base::ToVector(cookie_cravings_,
+                     [](const auto& craving) { return craving.ToDisplay(); });
+  return SessionDisplay(SessionKey(SchemefulSite(origin()), id_), refresh_url_,
+                        inclusion_rules_.ToDisplay(),
+                        std::move(display_cravings), expiry_date_,
+                        cached_challenge_, allowed_refresh_initiators_);
 }
 
 bool Session::IsInScope(DbscRequest& request) {

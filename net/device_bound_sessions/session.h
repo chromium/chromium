@@ -26,6 +26,7 @@ class FirstPartySetMetadata;
 }  // namespace net
 
 namespace net::device_bound_sessions {
+struct SessionDisplay;
 
 namespace proto {
 class Session;
@@ -50,6 +51,9 @@ class NET_EXPORT Session {
       const SessionParams& params);
   static std::unique_ptr<Session> CreateFromProto(const proto::Session& proto);
   proto::Session ToProto() const;
+
+  // Returns a display-friendly version of this Session. Used for DevTools.
+  SessionDisplay ToDisplay() const;
 
   // Used to set the unexportable session binding key associated with this
   // session. This method can be called when a session is first bound with

@@ -5,10 +5,10 @@
 #include "services/network/public/cpp/device_bound_sessions_mojom_traits.h"
 
 #include "components/unexportable_keys/unexportable_key_id.h"
+#include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "net/cookies/cookie_constants.h"
-#include "net/device_bound_sessions/cookie_craving_display.h"
 #include "net/device_bound_sessions/inclusion_result.h"
-#include "net/device_bound_sessions/session_inclusion_rules_display.h"
+#include "net/device_bound_sessions/session_display.h"
 #include "net/device_bound_sessions/session_params.h"
 #include "services/network/public/cpp/cookie_manager_mojom_traits.h"
 #include "services/network/public/cpp/schemeful_site_mojom_traits.h"
@@ -291,4 +291,71 @@ bool StructTraits<
   return data.ReadUrlRules(&out->url_rules) && data.ReadOrigin(&out->origin);
 }
 
+// static
+const net::device_bound_sessions::SessionKey&
+StructTraits<network::mojom::DeviceBoundSessionDisplayDataView,
+             net::device_bound_sessions::SessionDisplay>::
+    key(const net::device_bound_sessions::SessionDisplay& r) {
+  return r.key;
+}
+
+// static
+const GURL& StructTraits<network::mojom::DeviceBoundSessionDisplayDataView,
+                         net::device_bound_sessions::SessionDisplay>::
+    refresh_url(const net::device_bound_sessions::SessionDisplay& r) {
+  return r.refresh_url;
+}
+
+// static
+const net::device_bound_sessions::SessionInclusionRulesDisplay&
+StructTraits<network::mojom::DeviceBoundSessionDisplayDataView,
+             net::device_bound_sessions::SessionDisplay>::
+    inclusion_rules(const net::device_bound_sessions::SessionDisplay& r) {
+  return r.inclusion_rules;
+}
+
+// static
+const std::vector<net::device_bound_sessions::CookieCravingDisplay>&
+StructTraits<network::mojom::DeviceBoundSessionDisplayDataView,
+             net::device_bound_sessions::SessionDisplay>::
+    cookie_cravings(const net::device_bound_sessions::SessionDisplay& r) {
+  return r.cookie_cravings;
+}
+
+// static
+base::Time StructTraits<network::mojom::DeviceBoundSessionDisplayDataView,
+                        net::device_bound_sessions::SessionDisplay>::
+    expiry_date(const net::device_bound_sessions::SessionDisplay& r) {
+  return r.expiry_date;
+}
+
+// static
+const std::optional<std::string>&
+StructTraits<network::mojom::DeviceBoundSessionDisplayDataView,
+             net::device_bound_sessions::SessionDisplay>::
+    cached_challenge(const net::device_bound_sessions::SessionDisplay& r) {
+  return r.cached_challenge;
+}
+
+// static
+const std::vector<std::string>&
+StructTraits<network::mojom::DeviceBoundSessionDisplayDataView,
+             net::device_bound_sessions::SessionDisplay>::
+    allowed_refresh_initiators(
+        const net::device_bound_sessions::SessionDisplay& r) {
+  return r.allowed_refresh_initiators;
+}
+
+// static
+bool StructTraits<network::mojom::DeviceBoundSessionDisplayDataView,
+                  net::device_bound_sessions::SessionDisplay>::
+    Read(network::mojom::DeviceBoundSessionDisplayDataView data,
+         net::device_bound_sessions::SessionDisplay* out) {
+  return data.ReadKey(&out->key) && data.ReadRefreshUrl(&out->refresh_url) &&
+         data.ReadInclusionRules(&out->inclusion_rules) &&
+         data.ReadCookieCravings(&out->cookie_cravings) &&
+         data.ReadExpiryDate(&out->expiry_date) &&
+         data.ReadAllowedRefreshInitiators(&out->allowed_refresh_initiators) &&
+         data.ReadCachedChallenge(&out->cached_challenge);
+}
 }  // namespace mojo

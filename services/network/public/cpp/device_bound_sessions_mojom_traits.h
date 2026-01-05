@@ -5,23 +5,26 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_DEVICE_BOUND_SESSIONS_MOJOM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_DEVICE_BOUND_SESSIONS_MOJOM_TRAITS_H_
 
+#include "base/time/time.h"
+#include "net/device_bound_sessions/cookie_craving_display.h"
 #include "net/device_bound_sessions/deletion_reason.h"
 #include "net/device_bound_sessions/session_access.h"
 #include "net/device_bound_sessions/session_error.h"
+#include "net/device_bound_sessions/session_inclusion_rules_display.h"
 #include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/session_params.h"
 #include "net/device_bound_sessions/url_rule_display.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom-shared.h"
 
 namespace net::device_bound_sessions {
-struct CookieCravingDisplay;
 enum class InclusionResult;
-struct SessionInclusionRulesDisplay;
+struct SessionDisplay;
 }
 
 namespace net {
 enum class CookieSameSite;
 }
+
 namespace mojo {
 
 template <>
@@ -806,6 +809,27 @@ struct StructTraits<
   static bool Read(
       network::mojom::DeviceBoundSessionInclusionRulesDisplayDataView data,
       net::device_bound_sessions::SessionInclusionRulesDisplay* out);
+};
+
+template <>
+struct StructTraits<network::mojom::DeviceBoundSessionDisplayDataView,
+                    net::device_bound_sessions::SessionDisplay> {
+  static const net::device_bound_sessions::SessionKey& key(
+      const net::device_bound_sessions::SessionDisplay& r);
+  static const GURL& refresh_url(
+      const net::device_bound_sessions::SessionDisplay& r);
+  static const net::device_bound_sessions::SessionInclusionRulesDisplay&
+  inclusion_rules(const net::device_bound_sessions::SessionDisplay& r);
+  static const std::vector<net::device_bound_sessions::CookieCravingDisplay>&
+  cookie_cravings(const net::device_bound_sessions::SessionDisplay& r);
+  static base::Time expiry_date(
+      const net::device_bound_sessions::SessionDisplay& r);
+  static const std::optional<std::string>& cached_challenge(
+      const net::device_bound_sessions::SessionDisplay& r);
+  static const std::vector<std::string>& allowed_refresh_initiators(
+      const net::device_bound_sessions::SessionDisplay& r);
+  static bool Read(network::mojom::DeviceBoundSessionDisplayDataView data,
+                   net::device_bound_sessions::SessionDisplay* out);
 };
 
 }  // namespace mojo

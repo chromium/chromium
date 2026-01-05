@@ -295,3 +295,22 @@ struct DeviceBoundSessionInclusionRulesDisplay {
   // `net::device_bound_sessions::SessionInclusionRules::url_rules_`.
   array<DeviceBoundSessionUrlRuleDisplay> url_rules;
 };
+
+// Session details sent to DevTools.
+struct DeviceBoundSessionDisplay {
+  // The site and session ID of the session.
+  DeviceBoundSessionKey key;
+  // See comments on `net::device_bound_sessions::Session::refresh_url_`.
+  url.mojom.Url refresh_url;
+  // See comments on `net::device_bound_sessions::Session::inclusion_rules_`.
+  DeviceBoundSessionInclusionRulesDisplay inclusion_rules;
+  // See comments on `net::device_bound_sessions::Session::cookie_cravings_`.
+  array<DeviceBoundSessionCookieCravingDisplay> cookie_cravings;
+  // See comments on `net::device_bound_sessions::Session::expiry_date_`.
+  mojo_base.mojom.Time expiry_date;
+  // See comments on `net::device_bound_sessions::Session::cached_challenge__`.
+  string? cached_challenge;
+  // See comments on
+  // `net::device_bound_sessions::Session::allowed_refresh_initiators_`.
+  array<string> allowed_refresh_initiators;
+};

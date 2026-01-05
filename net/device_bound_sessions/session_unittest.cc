@@ -16,6 +16,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/device_bound_sessions/host_patterns.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
+#include "net/device_bound_sessions/session_display.h"
 #include "net/device_bound_sessions/session_error.h"
 #include "net/log/test_net_log.h"
 #include "net/test/test_with_task_environment.h"
@@ -317,6 +318,39 @@ TEST_F(SessionTest, FailCreateFromInvalidProto) {
     s.add_allowed_refresh_initiators("a.*.example.test");
     EXPECT_FALSE(Session::CreateFromProto(s));
   }
+}
+
+TEST_F(SessionTest, ToDisplay) {
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
+                       Session::CreateIfValid(CreateValidParams()));
+  ASSERT_TRUE(session);
+  ASSERT_EQ(session->cookies().size(), 1);
+
+  // Convert to proto and validate contents.
+  SessionDisplay display = session->ToDisplay();
+  EXPECT_EQ(display.key.id, session->id());
+  EXPECT_EQ(display.key.site, SchemefulSite(session->origin()));
+  EXPECT_EQ(display.refresh_url, session->refresh_url());
+  EXPECT_LT(base::Time::Now() + base::Days(399), display.expiry_date);
+  EXPECT_EQ(display.allowed_refresh_initiators.size(), 1);
+  EXPECT_EQ(display.allowed_refresh_initiators[0], "*");
+  ASSERT_EQ(display.cookie_cravings.size(), 1);
+  CookieCravingDisplay expected_cookie_craving_display =
+      CookieCravingDisplay("test_cookie", ".example.test", "/", true, false,
+                           net::CookieSameSite::UNSPECIFIED);
+  EXPECT_EQ(display.cookie_cravings[0], expected_cookie_craving_display);
+  EXPECT_EQ(display.inclusion_rules.origin, "https://example.test");
+  EXPECT_EQ(display.inclusion_rules.include_site, false);
+  ASSERT_EQ(display.inclusion_rules.url_rules.size(), 1);
+  UrlRuleDisplay expected_url_rule_display =
+      UrlRuleDisplay(InclusionResult::kExclude, "example.test", "/refresh");
+  EXPECT_EQ(display.inclusion_rules.url_rules[0], expected_url_rule_display);
+  EXPECT_EQ(display.cached_challenge, std::nullopt);
+
+  // Check cached challenge display.
+  session->set_cached_challenge("cached challenge");
+  display = session->ToDisplay();
+  EXPECT_EQ(display.cached_challenge, "cached challenge");
 }
 
 TEST_F(SessionTest, DeferredSession) {
