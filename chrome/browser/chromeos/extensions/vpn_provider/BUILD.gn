@@ -29,7 +29,6 @@ source_set("vpn_provider") {
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:vpn_providers_observer",
-    "//chromeos/crosapi/mojom",
     "//components/keyed_service/content",
     "//content/public/browser",
     "//extensions/browser",

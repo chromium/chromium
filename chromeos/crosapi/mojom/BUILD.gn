@@ -31,7 +31,6 @@ mojom("mojom") {
     "telemetry_keyboard_event.mojom",
     "telemetry_management_service.mojom",
     "video_conference.mojom",
-    "vpn_service.mojom",
   ]
   disable_variants = true
   enable_js_fuzzing = false

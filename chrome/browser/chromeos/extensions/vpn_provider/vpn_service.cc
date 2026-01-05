@@ -31,7 +31,6 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/unloaded_extension_reason.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace chromeos {
 

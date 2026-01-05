@@ -28,7 +28,6 @@ include_rules = [
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/chromeos/extensions/file_system_provider",
-  "+chrome/browser/chromeos/extensions/vpn_provider",
   "+chrome/browser/chromeos/platform_keys",
   "+chrome/browser/extensions/extension_apitest.h",
   "+chrome/browser/file_system_access/cloud_identifier",

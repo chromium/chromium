@@ -22,7 +22,6 @@ import "chromeos/crosapi/mojom/remoting.mojom";
 import "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_event_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_management_service.mojom";
-import "chromeos/crosapi/mojom/vpn_service.mojom";
 import "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom";
 import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
 import "chromeos/crosapi/mojom/video_capture.mojom";
@@ -273,13 +272,7 @@ interface Crosapi {
   // BindWebKioskService@114 was removed.
   // BindDeviceLocalAccountExtensionService@100 was removed.
   // BindVolumeManager@94 was removed.
-
-  // Binds the vpn service. This service is used to facilirate
-  // communication between chrome.vpnProvider extension in lacros and the
-  // network services in ash.
-  [MinVersion=79] BindVpnService@82(
-      pending_receiver<VpnService> receiver);
-
+  // BindVpnService@82 was removed.
   // BindWallpaper@87 was removed.
   // BindWebPageInfoFactory@39 was removed.
   // BindWebAppPublisher@27 was removed.

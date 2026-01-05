@@ -33,8 +33,6 @@ static_library("crosapi") {
     "local_printer_ash.h",
     "primary_profile_creation_waiter.cc",
     "primary_profile_creation_waiter.h",
-    "vpn_service_ash.cc",
-    "vpn_service_ash.h",
   ]
 
   deps = [
@@ -95,7 +93,6 @@ static_library("crosapi") {
     "//chrome/browser/ash/system",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/system_web_apps/apps",
-    "//chrome/browser/chromeos/extensions/vpn_provider",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/chromeos/printing/print_preview",
     "//chrome/browser/extensions",
@@ -139,8 +136,6 @@ static_library("crosapi") {
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/nearby/common/connections_manager",
-    "//chromeos/ash/components/network",
-    "//chromeos/ash/components/network:vpn_providers_observer",
     "//chromeos/ash/components/osauth/public",
     "//chromeos/ash/components/platform_keys",
     "//chromeos/ash/components/settings",
@@ -243,7 +238,6 @@ static_library("crosapi") {
   ]
 
   allow_circular_includes_from = [
-    "//chrome/browser/chromeos/extensions/vpn_provider",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/chromeos/printing/print_preview",
     "//chrome/browser/extensions",

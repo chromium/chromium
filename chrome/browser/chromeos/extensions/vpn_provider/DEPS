@@ -15,8 +15,7 @@ include_rules = [
   # refactor chromeos codes in //chrome to break these dependencies; see
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
   # this list.
-  "+chrome/browser/ash/crosapi",
-  "+chrome/browser/ash/profiles",
+  "+chrome/browser/ash/profiles/profile_helper.h",
   "+chrome/browser/profiles",
   "+chrome/common",
 ]
