@@ -977,7 +977,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {
-  if (webui_browser::IsWebUIBrowserEnabled()) {
+  if (webui_browser::IsWebUIBrowserEnabled() && webui_browser_side_panel_ui_) {
     return webui_browser_side_panel_ui_.get();
   }
 
