@@ -11,6 +11,7 @@
       "is_debug": true,
       "is_desktop_android": true,
       "symbol_level": 1,
+      "system_headers_in_deps": true,
       "target_os": "android",
       "use_reclient": false,
       "use_remoteexec": true
@@ -25,6 +26,7 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
+      "system_headers_in_deps": true,
       "target_os": "chromeos",
       "use_cups": true,
       "use_reclient": false,
@@ -42,6 +44,7 @@
       "is_cronet_build": true,
       "is_debug": true,
       "symbol_level": 1,
+      "system_headers_in_deps": true,
       "target_cpu": "arm",
       "target_os": "android",
       "use_reclient": false,
@@ -57,6 +60,7 @@
       "enable_kythe_annotations": true,
       "is_component_build": false,
       "is_debug": false,
+      "system_headers_in_deps": true,
       "target_os": "fuchsia",
       "use_reclient": false,
       "use_remoteexec": true
@@ -71,6 +75,7 @@
       "is_clang": true,
       "is_debug": true,
       "symbol_level": 1,
+      "system_headers_in_deps": true,
       "target_environment": "device",
       "target_os": "ios",
       "use_reclient": false,
@@ -86,6 +91,7 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
+      "system_headers_in_deps": true,
       "use_reclient": false,
       "use_remoteexec": true
     }
@@ -99,6 +105,7 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
+      "system_headers_in_deps": true,
       "target_os": "mac",
       "use_reclient": false,
       "use_remoteexec": true
@@ -116,6 +123,7 @@
       "is_debug": true,
       "is_desktop_android": true,
       "symbol_level": 1,
+      "system_headers_in_deps": true,
       "target_os": "android",
       "use_reclient": false,
       "use_remoteexec": true
@@ -130,6 +138,7 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
+      "system_headers_in_deps": true,
       "use_reclient": false,
       "use_remoteexec": true
     }

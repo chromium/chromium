@@ -12,6 +12,7 @@
       "is_debug": true,
       "is_desktop_android": true,
       "symbol_level": 1,
+      "system_headers_in_deps": true,
       "target_os": "android",
       "use_reclient": false,
       "use_remoteexec": true
@@ -27,6 +28,7 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
+      "system_headers_in_deps": true,
       "use_reclient": false,
       "use_remoteexec": true
     }

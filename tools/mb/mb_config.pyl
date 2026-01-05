@@ -809,27 +809,27 @@
     # Same as regulary codesearch without blink_enable_generated_code_formatting
     'codesearch_cronet_remoteexec': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
-      'mixins': ['remoteexec', 'clang', 'shared', 'debug', 'minimal_symbols'],
+      'mixins': ['remoteexec', 'clang', 'shared', 'debug', 'minimal_symbols', 'use_system_headers'],
     },
 
     # Same as regular codesearch except ios does not allow component builds
     'codesearch_ios_remoteexec': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
       'mixins': ['remoteexec', 'clang', 'debug', 'minimal_symbols',
-                 'blink_enable_generated_code_formatting'],
+                 'blink_enable_generated_code_formatting', 'use_system_headers'],
     },
 
     'codesearch_release_remoteexec': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
       'mixins': ['release', 'static', 'remoteexec',
-                 'blink_enable_generated_code_formatting'],
+                 'blink_enable_generated_code_formatting', 'use_system_headers'],
     },
 
     # Settings used by the codesearch builders to generate cross-references.
     'codesearch_remoteexec': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
       'mixins': ['remoteexec', 'clang', 'shared', 'debug', 'minimal_symbols',
-                 'blink_enable_generated_code_formatting'],
+                 'blink_enable_generated_code_formatting', 'use_system_headers'],
     },
 
     'codesigning_identity': {
@@ -1130,6 +1130,10 @@
 
     'use_siso': {
       'gn_args': 'use_siso=true',
+    },
+
+    'use_system_headers': {
+      'gn_args': 'system_headers_in_deps=true',
     },
 
     'v8_enable_debugging_features': {
