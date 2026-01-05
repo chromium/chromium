@@ -360,6 +360,7 @@ public class FuseboxMediator {
         mModel.set(
                 FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED,
                 areAttachmentsCompatibleWithCreateImage());
+        updatePopupButtonEnabledStates();
     }
 
     private boolean areAttachmentsCompatibleWithCreateImage() {
@@ -489,10 +490,24 @@ public class FuseboxMediator {
                 type == AutocompleteRequestType.SEARCH
                         && OmniboxFeatures.sCompactFusebox.getValue());
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, type);
-        boolean allowNonImage = type != AutocompleteRequestType.IMAGE_GENERATION;
+        updatePopupButtonEnabledStates();
+    }
+
+    private void updatePopupButtonEnabledStates() {
+        // Disable Camera and Gallery Selection popup buttons if no remaining attachments are left.
+        boolean allowByCapacity = mModelList.getRemainingAttachments() > 0;
+
+        // Disables popup buttons for Current Tab, Tab Picker, and File selection if the
+        // autocomplete request is not image generation and if there are no remaining attachments.
+        boolean allowNonImage =
+                mAutocompleteRequestTypeSupplier.get() != AutocompleteRequestType.IMAGE_GENERATION
+                        && allowByCapacity;
+
         mModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED, allowNonImage);
         mModel.set(FuseboxProperties.POPUP_FILE_BUTTON_ENABLED, allowNonImage);
         mModel.set(FuseboxProperties.POPUP_TAB_PICKER_ENABLED, allowNonImage);
+        mModel.set(FuseboxProperties.POPUP_CAMERA_BUTTON_ENABLED, allowByCapacity);
+        mModel.set(FuseboxProperties.POPUP_GALLERY_BUTTON_ENABLED, allowByCapacity);
     }
 
     @VisibleForTesting

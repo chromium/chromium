@@ -83,6 +83,10 @@ class FuseboxProperties {
     public static final WritableObjectPropertyKey<Runnable> POPUP_AI_MODE_CLICKED =
             new WritableObjectPropertyKey<>();
 
+    /** Whether the Camera button in the popup is enabled. */
+    public static final WritableBooleanPropertyKey POPUP_CAMERA_BUTTON_ENABLED =
+            new WritableBooleanPropertyKey();
+
     /** Action to perform when the user clicks the Camera button in the popup. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_CAMERA_CLICKED =
             new WritableObjectPropertyKey<>();
@@ -118,6 +122,10 @@ class FuseboxProperties {
     /** Action to perform when the user clicks the File button in the popup. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_FILE_CLICKED =
             new WritableObjectPropertyKey<>();
+
+    /** Whether the Gallery button in the popup is enabled. */
+    public static final WritableBooleanPropertyKey POPUP_GALLERY_BUTTON_ENABLED =
+            new WritableBooleanPropertyKey();
 
     /** Action to perform when the user clicks the Gallery button in the popup. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_GALLERY_CLICKED =
@@ -156,6 +164,7 @@ class FuseboxProperties {
         CURRENT_TAB_BUTTON_FAVICON,
         CURRENT_TAB_BUTTON_VISIBLE,
         POPUP_AI_MODE_CLICKED,
+        POPUP_CAMERA_BUTTON_ENABLED,
         POPUP_CAMERA_CLICKED,
         POPUP_CLIPBOARD_BUTTON_VISIBLE,
         POPUP_CLIPBOARD_CLICKED,
@@ -165,6 +174,7 @@ class FuseboxProperties {
         POPUP_FILE_BUTTON_ENABLED,
         POPUP_FILE_BUTTON_VISIBLE,
         POPUP_FILE_CLICKED,
+        POPUP_GALLERY_BUTTON_ENABLED,
         POPUP_GALLERY_CLICKED,
         POPUP_TAB_PICKER_CLICKED,
         POPUP_TAB_PICKER_ENABLED,
