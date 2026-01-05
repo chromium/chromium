@@ -6337,6 +6337,24 @@
             ]
         }
     ],
+    "ClientSideDetectionImageEmbeddingMatch": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "CsdImageEmbeddingMatchWithIntelligentScan": "false"
+                    },
+                    "enable_features": [
+                        "ClientSideDetectionImageEmbeddingMatch"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClientSideDetectionRetryLimit": [
         {
             "platforms": [
