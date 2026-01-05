@@ -242,6 +242,7 @@ const InterpolationTypes* InterpolationTypesMap::Get(
       case CSSPropertyID::kFlexShrink:
       case CSSPropertyID::kFillOpacity:
       case CSSPropertyID::kFloodOpacity:
+      case CSSPropertyID::kMathDepth:
       case CSSPropertyID::kOpacity:
       case CSSPropertyID::kOrder:
       case CSSPropertyID::kOrphans:

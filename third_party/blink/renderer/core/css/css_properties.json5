@@ -1750,6 +1750,7 @@
       default_value: 0,
       field_group: "*",
       field_template: "primitive",
+      interpolable: true,
       inherited: true,
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       style_builder_custom_functions: ["value"],
