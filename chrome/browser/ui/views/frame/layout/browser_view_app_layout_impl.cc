@@ -204,8 +204,12 @@ gfx::Rect BrowserViewAppLayoutImpl::CalculateTopContainerLayout(
   if (IsParentedTo(views().web_app_frame_toolbar, views().top_container)) {
     CalculateTitlebarLayout(layout, params);
   } else if (!views().web_app_frame_toolbar) {
+#if !BUILDFLAG(IS_MAC)
     // If there's no toolbar at all, still have to make room for the titlebar.
+    // Note that on Mac, the titlebar area is native, so it is not counted in
+    // the client area and no adjustment is necessary.
     params.SetTop(GetBoundsBetweenExclusionZones(params).bottom());
+#endif
   }
 
   // Lay out the standard toolbar if present. This is used in tab fullscreen

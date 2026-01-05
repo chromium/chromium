@@ -713,11 +713,17 @@ TEST_F(BrowserViewHostedAppTest, Layout) {
   if (base::FeatureList::IsEnabled(features::kAppBrowserUseNewLayout)) {
     const auto params = frame_view->GetBrowserLayoutParams();
 
+#if BUILDFLAG(IS_MAC)
+    // The system paints the caption area, so the contents start at the top of
+    // the layout.
+    const int bottom_of_header = 0;
+#else
     // The position of the bottom of the header (the bar with the window
     // controls) in the coordinates of the browser view.
     const int bottom_of_header = base::ClampCeil(
         std::max(params.leading_exclusion.ContentWithPadding().height(),
                  params.trailing_exclusion.ContentWithPadding().height()));
+#endif
 
     // The top of the browser view in the coordinates of the frame.
     const int top_inset = bottom_of_header + params.visual_client_area.y();
