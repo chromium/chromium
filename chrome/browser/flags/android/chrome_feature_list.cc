@@ -475,7 +475,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &privacy_sandbox::kPrivacySandboxSentimentSurvey,
     &privacy_sandbox::kPrivacySandboxSettings4,
     &privacy_sandbox::kRelatedWebsiteSetsUi,
-    &privacy_sandbox::kRollBackModeB,
     &safe_browsing::kAutoRevokeSuspiciousNotification,
     &safe_browsing::kExtendedReportingRemovePrefDependency,
     &safe_browsing::kHashPrefixRealTimeLookups,

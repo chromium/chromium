@@ -140,14 +140,6 @@ BASE_DECLARE_FEATURE(kRelatedWebsiteSetsDevUI);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kRelatedWebsiteSetsUi);
 
-// Feature for rolling back Mode B.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kRollBackModeB);
-
-// Forces Mode B rollback without checking the 3pcd onboarding pref.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<bool> kRollBackModeBForced;
-
 // Privacy UX features end
 
 // Enables the notice storage for pref storage.

@@ -295,10 +295,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
                       image_fetcher::ImageFetcherConfig::kNetworkOnly),
               side_panel_registry_.get());
 
-      if (base::FeatureList::IsEnabled(privacy_sandbox::kRollBackModeB)) {
-        roll_back_mode_b_infobar_controller_ =
-            std::make_unique<RollBackModeBInfoBarController>(tab.GetContents());
-      }
+      roll_back_mode_b_infobar_controller_ =
+          std::make_unique<RollBackModeBInfoBarController>(tab.GetContents());
     }
 
     contextual_cueing::ContextualCueingHelper::MaybeCreateForWebContents(
