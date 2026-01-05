@@ -15,6 +15,7 @@
 #include "services/network/public/cpp/cors/cors.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace content {
 namespace background_fetch {
@@ -33,8 +34,8 @@ MatchRequestsTask::~MatchRequestsTask() = default;
 
 void MatchRequestsTask::Start() {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
-  TRACE_EVENT_WITH_FLOW0("CacheStorage", "MatchRequestsTask::Start",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "MatchRequestsTask::Start",
+              perfetto::Flow::Global(trace_id));
   OpenCache(registration_id_, trace_id,
             base::BindOnce(&MatchRequestsTask::DidOpenCache,
                            weak_factory_.GetWeakPtr(), trace_id));
@@ -42,9 +43,8 @@ void MatchRequestsTask::Start() {
 
 void MatchRequestsTask::DidOpenCache(int64_t trace_id,
                                      blink::mojom::CacheStorageError error) {
-  TRACE_EVENT_WITH_FLOW0("CacheStorage", "MatchRequestsTask::DidOpenCache",
-                         TRACE_ID_GLOBAL(trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "MatchRequestsTask::DidOpenCache",
+              perfetto::Flow::Global(trace_id));
 
   if (error != blink::mojom::CacheStorageError::kSuccess) {
     SetStorageErrorAndFinish(BackgroundFetchStorageError::kCacheStorageError);
@@ -80,9 +80,8 @@ void MatchRequestsTask::DidOpenCache(int64_t trace_id,
 void MatchRequestsTask::DidGetAllMatchedEntries(
     int64_t trace_id,
     blink::mojom::CacheStorageCache::GetAllMatchedEntriesResult result) {
-  TRACE_EVENT_WITH_FLOW0("CacheStorage",
-                         "MatchRequestsTask::DidGetAllMatchedEntries",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN);
+  TRACE_EVENT("CacheStorage", "MatchRequestsTask::DidGetAllMatchedEntries",
+              perfetto::TerminatingFlow::Global(trace_id));
 
   if (!result.has_value()) {
     SetStorageErrorAndFinish(BackgroundFetchStorageError::kCacheStorageError);

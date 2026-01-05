@@ -53,6 +53,7 @@
 #include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace content {
 
@@ -159,10 +160,10 @@ ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
           service_worker_client_->GetFrameTreeNodeTypeStringBeforeCommit()),
       find_registration_start_time_(std::move(find_registration_start_time)),
       fetch_event_client_id_(std::move(fetch_event_client_id)) {
-  TRACE_EVENT_WITH_FLOW0(
+  TRACE_EVENT(
       "ServiceWorker",
-      "ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader", this,
-      TRACE_EVENT_FLAG_FLOW_OUT);
+      "ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader",
+      perfetto::Flow::FromPointer(this));
 
   scoped_refptr<ServiceWorkerVersion> active_worker =
       service_worker_client_->controller();
@@ -187,10 +188,10 @@ ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
 }
 
 ServiceWorkerMainResourceLoader::~ServiceWorkerMainResourceLoader() {
-  TRACE_EVENT_WITH_FLOW0(
+  TRACE_EVENT(
       "ServiceWorker",
-      "ServiceWorkerMainResourceLoader::~ServiceWorkerMainResourceLoader", this,
-      TRACE_EVENT_FLAG_FLOW_IN);
+      "ServiceWorkerMainResourceLoader::~ServiceWorkerMainResourceLoader",
+      perfetto::TerminatingFlow::FromPointer(this));
 }
 
 void ServiceWorkerMainResourceLoader::DetachedFromRequest() {
@@ -213,10 +214,8 @@ void ServiceWorkerMainResourceLoader::StartRequest(
     const network::ResourceRequest& request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  TRACE_EVENT_WITH_FLOW1("ServiceWorker",
-                         "ServiceWorkerMainResourceLoader::StartRequest", this,
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "url", request.url.spec());
+  TRACE_EVENT("ServiceWorker", "ServiceWorkerMainResourceLoader::StartRequest",
+              perfetto::Flow::FromPointer(this), "url", request.url.spec());
   DCHECK(blink::ServiceWorkerLoaderHelpers::IsMainRequestDestination(
       request.destination));
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -690,10 +689,10 @@ void ServiceWorkerMainResourceLoader::CommitEmptyResponseAndComplete() {
 
 void ServiceWorkerMainResourceLoader::CommitCompleted(int error_code,
                                                       const char* reason) {
-  TRACE_EVENT_WITH_FLOW2(
-      "ServiceWorker", "ServiceWorkerMainResourceLoader::CommitCompleted", this,
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "error_code",
-      net::ErrorToString(error_code), "reason", TRACE_STR_COPY(reason));
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerMainResourceLoader::CommitCompleted",
+              perfetto::Flow::FromPointer(this), "error_code",
+              net::ErrorToString(error_code), "reason", TRACE_STR_COPY(reason));
 
   DCHECK(url_loader_client_.is_bound());
   TransitionToStatus(Status::kCompleted);
@@ -725,11 +724,10 @@ void ServiceWorkerMainResourceLoader::CommitCompleted(int error_code,
 void ServiceWorkerMainResourceLoader::DidPrepareFetchEvent(
     scoped_refptr<ServiceWorkerVersion> version,
     blink::EmbeddedWorkerStatus initial_worker_status) {
-  TRACE_EVENT_WITH_FLOW1(
-      "ServiceWorker", "ServiceWorkerMainResourceLoader::DidPrepareFetchEvent",
-      this, TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-      "initial_worker_status",
-      EmbeddedWorkerInstance::StatusToString(initial_worker_status));
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerMainResourceLoader::DidPrepareFetchEvent",
+              perfetto::Flow::FromPointer(this), "initial_worker_status",
+              EmbeddedWorkerInstance::StatusToString(initial_worker_status));
 
   devtools_attached_ = version->embedded_worker()->devtools_attached();
 }
@@ -743,11 +741,11 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
     scoped_refptr<ServiceWorkerVersion> version) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  TRACE_EVENT_WITH_FLOW2(
-      "ServiceWorker", "ServiceWorkerMainResourceLoader::DidDispatchFetchEvent",
-      this, TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "status",
-      blink::ServiceWorkerStatusToString(status), "result",
-      ComposeFetchEventResultString(fetch_result, *response));
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerMainResourceLoader::DidDispatchFetchEvent",
+              perfetto::Flow::FromPointer(this), "status",
+              blink::ServiceWorkerStatusToString(status), "result",
+              ComposeFetchEventResultString(fetch_result, *response));
 
   // When kRaceNetworkRequest preload is triggered, it's possible that the
   // response is already committed without waiting for the fetch event result.
@@ -1246,10 +1244,10 @@ void ServiceWorkerMainResourceLoader::StartResponse(
       blink::ServiceWorkerLoaderHelpers::ComputeRedirectInfo(resource_request_,
                                                              *response_head_);
   if (redirect_info) {
-    TRACE_EVENT_WITH_FLOW2(
-        "ServiceWorker", "ServiceWorkerMainResourceLoader::StartResponse", this,
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "result",
-        "redirect", "redirect url", redirect_info->new_url.spec());
+    TRACE_EVENT("ServiceWorker",
+                "ServiceWorkerMainResourceLoader::StartResponse",
+                perfetto::Flow::FromPointer(this), "result", "redirect",
+                "redirect url", redirect_info->new_url.spec());
     HandleRedirect(*redirect_info, response_head_);
     return;
   }
@@ -1258,10 +1256,9 @@ void ServiceWorkerMainResourceLoader::StartResponse(
 
   // Handle a stream response body.
   if (!body_as_stream.is_null() && body_as_stream->stream.is_valid()) {
-    TRACE_EVENT_WITH_FLOW1(
-        "ServiceWorker", "ServiceWorkerMainResourceLoader::StartResponse", this,
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "result",
-        "stream response");
+    TRACE_EVENT("ServiceWorker",
+                "ServiceWorkerMainResourceLoader::StartResponse",
+                perfetto::Flow::FromPointer(this), "result", "stream response");
     stream_waiter_ = std::make_unique<StreamWaiter>(
         this, std::move(body_as_stream->callback_receiver));
     CommitResponseBody(response_head_, std::move(body_as_stream->stream),
@@ -1284,20 +1281,17 @@ void ServiceWorkerMainResourceLoader::StartResponse(
       CommitCompleted(error, "Failed to read blob body");
       return;
     }
-    TRACE_EVENT_WITH_FLOW1(
-        "ServiceWorker", "ServiceWorkerMainResourceLoader::StartResponse", this,
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "result",
-        "blob response");
+    TRACE_EVENT("ServiceWorker",
+                "ServiceWorkerMainResourceLoader::StartResponse",
+                perfetto::Flow::FromPointer(this), "result", "blob response");
 
     CommitResponseBody(response_head_, std::move(data_pipe), std::nullopt);
     // We continue in OnBlobReadingComplete().
     return;
   }
 
-  TRACE_EVENT_WITH_FLOW1("ServiceWorker",
-                         "ServiceWorkerMainResourceLoader::StartResponse", this,
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "result", "no body");
+  TRACE_EVENT("ServiceWorker", "ServiceWorkerMainResourceLoader::StartResponse",
+              perfetto::Flow::FromPointer(this), "result", "no body");
 
   CommitEmptyResponseAndComplete();
 }
@@ -1358,9 +1352,9 @@ void ServiceWorkerMainResourceLoader::SetCommitResponsibility(
 }
 
 void ServiceWorkerMainResourceLoader::OnConnectionClosed() {
-  TRACE_EVENT_WITH_FLOW0(
-      "ServiceWorker", "ServiceWorkerMainResourceLoader::OnConnectionClosed",
-      this, TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerMainResourceLoader::OnConnectionClosed",
+              perfetto::Flow::FromPointer(this));
   InvalidateAndDeleteIfNeeded();
 }
 

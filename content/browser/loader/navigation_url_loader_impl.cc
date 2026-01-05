@@ -646,9 +646,8 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequestForNavigation(
 
 // TODO(kinuko): Fix the method ordering and move these methods after the ctor.
 NavigationURLLoaderImpl::~NavigationURLLoaderImpl() {
-  TRACE_EVENT_WITH_FLOW0("navigation",
-                         "NavigationURLLoaderImpl::~NavigationURLLoaderImpl",
-                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
+  TRACE_EVENT("navigation", "NavigationURLLoaderImpl::~NavigationURLLoaderImpl",
+              perfetto::TerminatingFlow::FromPointer(this));
   // If neither OnCompleted nor OnReceivedResponse has been invoked, the
   // request was canceled before receiving a response, so log a cancellation.
   // Results after receiving a non-error response are logged in the renderer,
@@ -664,9 +663,8 @@ NavigationURLLoaderImpl::~NavigationURLLoaderImpl() {
 }
 
 void NavigationURLLoaderImpl::Start() {
-  TRACE_EVENT_WITH_FLOW0("navigation", "NavigationURLLoaderImpl::Start",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("navigation", "NavigationURLLoaderImpl::Start",
+              perfetto::Flow::FromPointer(this));
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!started_);
   started_ = true;
@@ -731,10 +729,8 @@ void NavigationURLLoaderImpl::Start() {
 }
 
 void NavigationURLLoaderImpl::CreateInterceptors() {
-  TRACE_EVENT_WITH_FLOW0("navigation",
-                         "NavigationURLLoaderImpl::CreateInterceptors",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("navigation", "NavigationURLLoaderImpl::CreateInterceptors",
+              perfetto::Flow::FromPointer(this));
   if (prefetched_signed_exchange_cache_) {
     std::unique_ptr<NavigationLoaderInterceptor>
         prefetched_signed_exchange_interceptor =
@@ -810,9 +806,8 @@ void NavigationURLLoaderImpl::CreateInterceptors() {
 }
 
 void NavigationURLLoaderImpl::Restart() {
-  TRACE_EVENT_WITH_FLOW0("navigation", "NavigationURLLoaderImpl::Restart",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("navigation", "NavigationURLLoaderImpl::Restart",
+              perfetto::Flow::FromPointer(this));
   // Cancel all inflight early hints preloads except for same origin redirects.
   if (!IsSameOriginRedirect(resource_request_->navigation_redirect_chain)) {
     early_hints_manager_.reset();
@@ -1345,10 +1340,9 @@ void NavigationURLLoaderImpl::CreateThrottlingLoaderAndStart(
     scoped_refptr<network::SharedURLLoaderFactory> factory,
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
         additional_throttles) {
-  TRACE_EVENT_WITH_FLOW0(
-      "navigation", "NavigationURLLoaderImpl::CreateThrottlingLoaderAndStart",
-      TRACE_ID_LOCAL(this),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("navigation",
+              "NavigationURLLoaderImpl::CreateThrottlingLoaderAndStart",
+              perfetto::Flow::FromPointer(this));
   // TODO(https://crbug.com/434182226): Turn this to `CHECK()`.
   DUMP_WILL_BE_CHECK_EQ(loader_holder_.state(), LoaderHolder::State::kNone);
   CHECK(!loader_holder_.url_loader());
@@ -1950,10 +1944,8 @@ bool NavigationURLLoaderImpl::MaybeCreateLoaderForResponse(
 
 std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
 NavigationURLLoaderImpl::CreateURLLoaderThrottles() {
-  TRACE_EVENT_WITH_FLOW0("navigation",
-                         "NavigationURLLoaderImpl::CreateURLLoaderThrottles",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("navigation", "NavigationURLLoaderImpl::CreateURLLoaderThrottles",
+              perfetto::Flow::FromPointer(this));
   auto throttles = CreateContentBrowserURLLoaderThrottles(
       *resource_request_, browser_context_, web_contents_getter_,
       navigation_ui_data_.get(), frame_tree_node_id_,
@@ -2104,9 +2096,8 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
       ukm_source_id_(FrameTreeNode::GloballyFindByID(frame_tree_node_id_)
                          ->navigation_request()
                          ->GetNextPageUkmSourceId()) {
-  TRACE_EVENT_WITH_FLOW0("navigation",
-                         "NavigationURLLoaderImpl::NavigationURLLoaderImpl",
-                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("navigation", "NavigationURLLoaderImpl::NavigationURLLoaderImpl",
+              perfetto::Flow::FromPointer(this));
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   TRACE_EVENT_BEGIN("navigation", "Navigation timeToResponseStarted",

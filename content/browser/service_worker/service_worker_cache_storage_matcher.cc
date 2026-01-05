@@ -17,6 +17,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_response_callback.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace content {
 
@@ -32,26 +33,24 @@ ServiceWorkerCacheStorageMatcher::ServiceWorkerCacheStorageMatcher(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!request_->blob);
-  TRACE_EVENT_WITH_FLOW0(
+  TRACE_EVENT(
       "ServiceWorker",
       "ServiceWorkerCacheStorageMatcher::ServiceWorkerCacheStorageMatcher",
-      TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT);
+      perfetto::Flow::FromPointer(this));
 }
 
 ServiceWorkerCacheStorageMatcher::~ServiceWorkerCacheStorageMatcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_WITH_FLOW0(
+  TRACE_EVENT(
       "ServiceWorker",
       "ServiceWorkerCacheStorageMatcher::~ServiceWorkerCacheStorageMatcher",
-      TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
+      perfetto::TerminatingFlow::FromPointer(this));
 }
 
 void ServiceWorkerCacheStorageMatcher::Run() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_WITH_FLOW0("ServiceWorker",
-                         "ServiceWorkerCacheStorageMatcher::Run",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker", "ServiceWorkerCacheStorageMatcher::Run",
+              perfetto::Flow::FromPointer(this));
   CHECK(cache_lookup_start_.is_null());
   cache_lookup_start_ = base::TimeTicks::Now();
   // If `GetMainScriptResponse` is not set, it need to be set from the
@@ -114,10 +113,8 @@ void ServiceWorkerCacheStorageMatcher::Run() {
 void ServiceWorkerCacheStorageMatcher::DidMatch(
     blink::mojom::CacheStorage::MatchResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_WITH_FLOW0("ServiceWorker",
-                         "ServiceWorkerCacheStorageMatcher::DidMatch",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker", "ServiceWorkerCacheStorageMatcher::DidMatch",
+              perfetto::Flow::FromPointer(this));
   cache_lookup_duration_ = base::TimeTicks::Now() - cache_lookup_start_;
   base::UmaHistogramTimes(
       "ServiceWorker.StaticRouter.MainResource.CacheLookupDuration",
@@ -156,10 +153,8 @@ void ServiceWorkerCacheStorageMatcher::DidMatch(
 
 void ServiceWorkerCacheStorageMatcher::FailFallback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_WITH_FLOW0("ServiceWorker",
-                         "ServiceWorkerCacheStorageMatcher::FailFallback",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker", "ServiceWorkerCacheStorageMatcher::FailFallback",
+              perfetto::Flow::FromPointer(this));
 
   // `Run` method will be called in
   // `ServiceWorkerMainResourceLoader::StartRequest`.
@@ -188,9 +183,8 @@ void ServiceWorkerCacheStorageMatcher::RunCallback(
     blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
     blink::mojom::ServiceWorkerFetchEventTimingPtr timing) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_WITH_FLOW0("ServiceWorker",
-                         "ServiceWorkerCacheStorageMatcher::RunCallback",
-                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
+  TRACE_EVENT("ServiceWorker", "ServiceWorkerCacheStorageMatcher::RunCallback",
+              perfetto::TerminatingFlow::FromPointer(this));
   // Fetch dispatcher can be completed at this point due to a failure of
   // starting up a worker. In that case, let's simply ignore it.
   if (!fetch_callback_) {

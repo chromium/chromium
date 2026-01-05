@@ -62,6 +62,7 @@
 #include "third_party/blink/public/common/fetch/fetch_api_request_headers_map.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 using blink::mojom::CacheStorageError;
 using blink::mojom::CacheStorageVerboseError;
@@ -840,11 +841,10 @@ void CacheStorageCache::BatchDidGetBucketSpaceRemaining(
     uint64_t space_required,
     uint64_t side_data_size,
     storage::QuotaErrorOr<int64_t> space_remaining) {
-  TRACE_EVENT_WITH_FLOW1("CacheStorage",
-                         "CacheStorageCache::BatchDidGetBucketSpaceRemaining",
-                         TRACE_ID_GLOBAL(trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "operations", CacheStorageTracedValue(operations));
+  TRACE_EVENT("CacheStorage",
+              "CacheStorageCache::BatchDidGetBucketSpaceRemaining",
+              perfetto::Flow::Global(trace_id), "operations",
+              CacheStorageTracedValue(operations));
 
   base::CheckedNumeric<uint64_t> safe_space_required = space_required;
   base::CheckedNumeric<uint64_t> safe_space_required_with_side_data;
@@ -910,10 +910,8 @@ void CacheStorageCache::BatchDidGetBucketSpaceRemaining(
 
 void CacheStorageCache::BatchDidOneOperation(BatchInfo& batch_status,
                                              CacheStorageError error) {
-  TRACE_EVENT_WITH_FLOW0("CacheStorage",
-                         "CacheStorageCache::BatchDidOneOperation",
-                         TRACE_ID_GLOBAL(batch_status.trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "CacheStorageCache::BatchDidOneOperation",
+              perfetto::Flow::Global(batch_status.trace_id));
   // Nothing further to report after the callback is called.
   if (!batch_status.callback)
     return;
@@ -926,10 +924,8 @@ void CacheStorageCache::BatchDidOneOperation(BatchInfo& batch_status,
         .Run(CacheStorageVerboseError::New(error,
                                            std::move(batch_status.message)));
   } else if (batch_status.remaining_operations == 0) {
-    TRACE_EVENT_WITH_FLOW0(
-        "CacheStorage", "CacheStorageCache::BatchDidAllOperations",
-        TRACE_ID_GLOBAL(batch_status.trace_id),
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+    TRACE_EVENT("CacheStorage", "CacheStorageCache::BatchDidAllOperations",
+                perfetto::Flow::Global(batch_status.trace_id));
     std::move(batch_status.callback)
         .Run(CacheStorageVerboseError::New(CacheStorageError::kSuccess,
                                            batch_status.message));
@@ -1458,11 +1454,10 @@ void CacheStorageCache::MatchAllImpl(blink::mojom::FetchAPIRequestPtr request,
                                      CacheStorageSchedulerPriority priority,
                                      ResponsesCallback callback) {
   DCHECK_NE(BACKEND_UNINITIALIZED, backend_state_);
-  TRACE_EVENT_WITH_FLOW2("CacheStorage", "CacheStorageCache::MatchAllImpl",
-                         TRACE_ID_GLOBAL(trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "request", CacheStorageTracedValue(request), "options",
-                         CacheStorageTracedValue(options));
+  TRACE_EVENT("CacheStorage", "CacheStorageCache::MatchAllImpl",
+              perfetto::Flow::Global(trace_id), "request",
+              CacheStorageTracedValue(request), "options",
+              CacheStorageTracedValue(options));
   if (backend_state_ != BACKEND_OPEN) {
     std::move(callback).Run(
         MakeErrorStorage(ErrorStorageType::kStorageMatchAllBackendClosed),
@@ -1486,10 +1481,8 @@ void CacheStorageCache::MatchAllDidQueryCache(
     int64_t trace_id,
     CacheStorageError error,
     std::unique_ptr<QueryCacheResults> query_cache_results) {
-  TRACE_EVENT_WITH_FLOW0("CacheStorage",
-                         "CacheStorageCache::MatchAllDidQueryCache",
-                         TRACE_ID_GLOBAL(trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "CacheStorageCache::MatchAllDidQueryCache",
+              perfetto::Flow::Global(trace_id));
 
   if (error != CacheStorageError::kSuccess) {
     std::move(callback).Run(error,
@@ -1546,11 +1539,9 @@ void CacheStorageCache::WriteSideDataDidGetBucketSpaceRemaining(
     scoped_refptr<net::IOBuffer> buffer,
     int buf_len,
     storage::QuotaErrorOr<int64_t> space_remaining) {
-  TRACE_EVENT_WITH_FLOW0(
-      "CacheStorage",
-      "CacheStorageCache::WriteSideDataDidGetBucketSpaceRemaining",
-      TRACE_ID_GLOBAL(trace_id),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage",
+              "CacheStorageCache::WriteSideDataDidGetBucketSpaceRemaining",
+              perfetto::Flow::Global(trace_id));
 
   if (!space_remaining.has_value() || space_remaining.value() < buf_len) {
     scheduler_task_runner_->PostTask(
@@ -1577,10 +1568,8 @@ void CacheStorageCache::WriteSideDataImpl(ErrorCallback callback,
                                           scoped_refptr<net::IOBuffer> buffer,
                                           int buf_len) {
   DCHECK_NE(BACKEND_UNINITIALIZED, backend_state_);
-  TRACE_EVENT_WITH_FLOW1("CacheStorage", "CacheStorageCache::WriteSideDataImpl",
-                         TRACE_ID_GLOBAL(trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "url", url.spec());
+  TRACE_EVENT("CacheStorage", "CacheStorageCache::WriteSideDataImpl",
+              perfetto::Flow::Global(trace_id), "url", url.spec());
   if (backend_state_ != BACKEND_OPEN) {
     std::move(callback).Run(
         MakeErrorStorage(ErrorStorageType::kWriteSideDataImplBackendClosed));
@@ -1613,10 +1602,8 @@ void CacheStorageCache::WriteSideDataDidOpenEntry(
     scoped_refptr<net::IOBuffer> buffer,
     int buf_len,
     disk_cache::EntryResult result) {
-  TRACE_EVENT_WITH_FLOW0("CacheStorage",
-                         "CacheStorageCache::WriteSideDataDidOpenEntry",
-                         TRACE_ID_GLOBAL(trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "CacheStorageCache::WriteSideDataDidOpenEntry",
+              perfetto::Flow::Global(trace_id));
 
   if (result.net_error() != net::OK) {
     std::move(callback).Run(CacheStorageError::kErrorNotFound);
@@ -1644,10 +1631,8 @@ void CacheStorageCache::WriteSideDataDidReadMetaData(
     int buf_len,
     ScopedWritableEntry entry,
     std::unique_ptr<proto::CacheMetadata> headers) {
-  TRACE_EVENT_WITH_FLOW0("CacheStorage",
-                         "CacheStorageCache::WriteSideDataDidReadMetaData",
-                         TRACE_ID_GLOBAL(trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "CacheStorageCache::WriteSideDataDidReadMetaData",
+              perfetto::Flow::Global(trace_id));
   if (!headers || headers->response().response_time() !=
                       expected_response_time.ToInternalValue()) {
     WriteSideDataComplete(std::move(callback), std::move(entry),
@@ -1682,9 +1667,8 @@ void CacheStorageCache::WriteSideDataDidWrite(
     std::unique_ptr<::content::proto::CacheMetadata> metadata,
     int64_t trace_id,
     int rv) {
-  TRACE_EVENT_WITH_FLOW0("CacheStorage",
-                         "CacheStorageCache::WriteSideDataDidWrite",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN);
+  TRACE_EVENT("CacheStorage", "CacheStorageCache::WriteSideDataDidWrite",
+              perfetto::TerminatingFlow::Global(trace_id));
   if (rv != expected_bytes) {
     WriteSideDataComplete(std::move(callback), std::move(entry),
                           /*padding=*/0, /*side_data_padding=*/0,
@@ -1791,12 +1775,10 @@ void CacheStorageCache::Put(blink::mojom::FetchAPIRequestPtr request,
 
 void CacheStorageCache::PutImpl(std::unique_ptr<PutContext> put_context) {
   DCHECK_NE(BACKEND_UNINITIALIZED, backend_state_);
-  TRACE_EVENT_WITH_FLOW2(
-      "CacheStorage", "CacheStorageCache::PutImpl",
-      TRACE_ID_GLOBAL(put_context->trace_id),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "request",
-      CacheStorageTracedValue(put_context->request), "response",
-      CacheStorageTracedValue(put_context->response));
+  TRACE_EVENT("CacheStorage", "CacheStorageCache::PutImpl",
+              perfetto::Flow::Global(put_context->trace_id), "request",
+              CacheStorageTracedValue(put_context->request), "response",
+              CacheStorageTracedValue(put_context->response));
   if (backend_state_ != BACKEND_OPEN) {
     PutComplete(std::move(put_context),
                 MakeErrorStorage(ErrorStorageType::kPutImplBackendClosed));
@@ -1833,9 +1815,8 @@ void CacheStorageCache::PutImpl(std::unique_ptr<PutContext> put_context) {
 void CacheStorageCache::PutDidDeleteEntry(
     std::unique_ptr<PutContext> put_context,
     CacheStorageError error) {
-  TRACE_EVENT_WITH_FLOW0("CacheStorage", "CacheStorageCache::PutDidDeleteEntry",
-                         TRACE_ID_GLOBAL(put_context->trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "CacheStorageCache::PutDidDeleteEntry",
+              perfetto::Flow::Global(put_context->trace_id));
   if (backend_state_ != BACKEND_OPEN) {
     PutComplete(
         std::move(put_context),
@@ -1868,9 +1849,8 @@ void CacheStorageCache::PutDidDeleteEntry(
 void CacheStorageCache::PutDidCreateEntry(
     std::unique_ptr<PutContext> put_context,
     disk_cache::EntryResult result) {
-  TRACE_EVENT_WITH_FLOW0("CacheStorage", "CacheStorageCache::PutDidCreateEntry",
-                         TRACE_ID_GLOBAL(put_context->trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "CacheStorageCache::PutDidCreateEntry",
+              perfetto::Flow::Global(put_context->trace_id));
 
   int rv = result.net_error();
 
@@ -1971,10 +1951,8 @@ void CacheStorageCache::PutDidWriteHeaders(
     int64_t side_data_padding,
     int expected_bytes,
     int rv) {
-  TRACE_EVENT_WITH_FLOW0("CacheStorage",
-                         "CacheStorageCache::PutDidWriteHeaders",
-                         TRACE_ID_GLOBAL(put_context->trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "CacheStorageCache::PutDidWriteHeaders",
+              perfetto::Flow::Global(put_context->trace_id));
 
   if (rv != expected_bytes) {
     quota_manager_proxy_->OnClientWriteFailed(bucket_locator_.storage_key);
@@ -1997,10 +1975,8 @@ void CacheStorageCache::PutWriteBlobToCache(
   DCHECK(disk_cache_body_index == INDEX_RESPONSE_BODY ||
          disk_cache_body_index == INDEX_SIDE_DATA);
 
-  TRACE_EVENT_WITH_FLOW0("CacheStorage",
-                         "CacheStorageCache::PutWriteBlobToCache",
-                         TRACE_ID_GLOBAL(put_context->trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "CacheStorageCache::PutWriteBlobToCache",
+              perfetto::Flow::Global(put_context->trace_id));
 
   mojo::PendingRemote<blink::mojom::Blob> blob;
   int64_t blob_size = 0;
@@ -2078,10 +2054,8 @@ void CacheStorageCache::PutDidWriteBlobToCache(
     ScopedWritableEntry entry,
     bool success) {
   DCHECK(entry);
-  TRACE_EVENT_WITH_FLOW0("CacheStorage",
-                         "CacheStorageCache::PutDidWriteBlobToCache",
-                         TRACE_ID_GLOBAL(put_context->trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "CacheStorageCache::PutDidWriteBlobToCache",
+              perfetto::Flow::Global(put_context->trace_id));
 
   active_blob_to_disk_cache_writers_.Remove(blob_to_cache_key);
 
@@ -2258,12 +2232,10 @@ void CacheStorageCache::GetAllMatchedEntriesImpl(
     int64_t trace_id,
     CacheEntriesCallback callback) {
   DCHECK_NE(BACKEND_UNINITIALIZED, backend_state_);
-  TRACE_EVENT_WITH_FLOW2("CacheStorage",
-                         "CacheStorageCache::GetAllMatchedEntriesImpl",
-                         TRACE_ID_GLOBAL(trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "request", CacheStorageTracedValue(request), "options",
-                         CacheStorageTracedValue(options));
+  TRACE_EVENT("CacheStorage", "CacheStorageCache::GetAllMatchedEntriesImpl",
+              perfetto::Flow::Global(trace_id), "request",
+              CacheStorageTracedValue(request), "options",
+              CacheStorageTracedValue(options));
   if (backend_state_ != BACKEND_OPEN) {
     std::move(callback).Run(
         MakeErrorStorage(
@@ -2290,10 +2262,9 @@ void CacheStorageCache::GetAllMatchedEntriesDidQueryCache(
     CacheEntriesCallback callback,
     blink::mojom::CacheStorageError error,
     std::unique_ptr<QueryCacheResults> query_cache_results) {
-  TRACE_EVENT_WITH_FLOW0("CacheStorage",
-                         "CacheStorageCache::GetAllMatchedEntriesDidQueryCache",
-                         TRACE_ID_GLOBAL(trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage",
+              "CacheStorageCache::GetAllMatchedEntriesDidQueryCache",
+              perfetto::Flow::Global(trace_id));
 
   if (error != CacheStorageError::kSuccess) {
     std::move(callback).Run(error, {});
@@ -2398,11 +2369,10 @@ void CacheStorageCache::KeysImpl(blink::mojom::FetchAPIRequestPtr request,
                                  int64_t trace_id,
                                  RequestsCallback callback) {
   DCHECK_NE(BACKEND_UNINITIALIZED, backend_state_);
-  TRACE_EVENT_WITH_FLOW2("CacheStorage", "CacheStorageCache::KeysImpl",
-                         TRACE_ID_GLOBAL(trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "request", CacheStorageTracedValue(request), "options",
-                         CacheStorageTracedValue(options));
+  TRACE_EVENT("CacheStorage", "CacheStorageCache::KeysImpl",
+              perfetto::Flow::Global(trace_id), "request",
+              CacheStorageTracedValue(request), "options",
+              CacheStorageTracedValue(options));
 
   if (backend_state_ != BACKEND_OPEN) {
     std::move(callback).Run(
@@ -2426,9 +2396,8 @@ void CacheStorageCache::KeysDidQueryCache(
     int64_t trace_id,
     CacheStorageError error,
     std::unique_ptr<QueryCacheResults> query_cache_results) {
-  TRACE_EVENT_WITH_FLOW0("CacheStorage", "CacheStorageCache::KeysDidQueryCache",
-                         TRACE_ID_GLOBAL(trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "CacheStorageCache::KeysDidQueryCache",
+              perfetto::Flow::Global(trace_id));
 
   if (error != CacheStorageError::kSuccess) {
     std::move(callback).Run(error, nullptr);

@@ -18,6 +18,7 @@
 #include "content/public/browser/web_contents.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -135,8 +136,8 @@ void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
   ++num_received_frames_;
 
   uint64_t frame_id = base::trace_event::GetNextGlobalTraceId();
-  TRACE_EVENT_WITH_FLOW0("ui", "Tab.Preview.ProcessVideoCaptureFrame", frame_id,
-                         TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ui", "Tab.Preview.ProcessVideoCaptureFrame",
+              perfetto::Flow::ProcessScoped(frame_id));
 
   // The SkBitmap's pixels will be marked as immutable, but the installPixels()
   // API requires a non-const pointer. So, cast away the const.

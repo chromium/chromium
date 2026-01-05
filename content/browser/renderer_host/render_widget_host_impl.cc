@@ -124,6 +124,7 @@
 #include "third_party/blink/public/mojom/drag/drag.mojom.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/cursor/cursor.h"
@@ -894,8 +895,7 @@ void RenderWidgetHostImpl::WasShown(
     return;
   }
 
-  TRACE_EVENT_WITH_FLOW0("renderer_host", "RenderWidgetHostImpl::WasShown",
-                         routing_id_, TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("renderer_host", "RenderWidgetHostImpl::WasShown");
   is_hidden_ = false;
   latest_shown_time_ = base::TimeTicks::Now();
   if (!was_ever_shown_) {
@@ -1348,12 +1348,12 @@ bool RenderWidgetHostImpl::SynchronizeVisualProperties(
   // TODO(jonross): Untangle startup so that we don't have this invalid partial
   // state. (https://crbug.com/1185286) (https://crbug.com/419087)
   if (visual_properties->local_surface_id.has_value()) {
-    TRACE_EVENT_WITH_FLOW2(
+    TRACE_EVENT_INSTANT(
         TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
         "RenderWidgetHostImpl::SynchronizeVisualProperties send message",
-        visual_properties->local_surface_id->submission_trace_id(),
-        TRACE_EVENT_FLAG_FLOW_OUT, "message",
-        "WidgetMsg_SynchronizeVisualProperties", "local_surface_id",
+        perfetto::Flow::ProcessScoped(
+            visual_properties->local_surface_id->submission_trace_id()),
+        "message", "WidgetMsg_SynchronizeVisualProperties", "local_surface_id",
         visual_properties->local_surface_id->ToString());
   }
   visual_properties_ack_pending_ =
@@ -2634,11 +2634,10 @@ void RenderWidgetHostImpl::ForwardDelegatedInkPoint(
     return;
   }
 
-  TRACE_EVENT_WITH_FLOW1("delegated_ink_trails",
-                         "Forwarding delegated ink point from browser.",
-                         TRACE_ID_GLOBAL(delegated_ink_point.trace_id()),
-                         TRACE_EVENT_FLAG_FLOW_OUT, "delegated point",
-                         delegated_ink_point.ToString());
+  TRACE_EVENT("delegated_ink_trails",
+              "Forwarding delegated ink point from browser.",
+              perfetto::Flow::Global(delegated_ink_point.trace_id()),
+              "delegated point", delegated_ink_point.ToString());
 
   // Calling this will result in IPC calls to get |delegated_ink_point| to
   // viz. The decision to do this here was made with the understanding that
@@ -2811,14 +2810,15 @@ void RenderWidgetHostImpl::OnRenderFrameSubmission() {}
 
 void RenderWidgetHostImpl::OnLocalSurfaceIdChanged(
     const cc::RenderFrameMetadata& metadata) {
-  TRACE_EVENT_WITH_FLOW1(
+  TRACE_EVENT(
       "renderer_host," TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
       "RenderWidgetHostImpl::OnLocalSurfaceIdChanged",
-      metadata.local_surface_id && metadata.local_surface_id->is_valid()
-          ? metadata.local_surface_id->submission_trace_id() +
-                metadata.local_surface_id->embed_trace_id()
-          : 0,
-      TRACE_EVENT_FLAG_FLOW_IN, "local_surface_id",
+      perfetto::TerminatingFlow::ProcessScoped(
+          metadata.local_surface_id && metadata.local_surface_id->is_valid()
+              ? metadata.local_surface_id->submission_trace_id() +
+                    metadata.local_surface_id->embed_trace_id()
+              : 0),
+      "local_surface_id",
       metadata.local_surface_id ? metadata.local_surface_id->ToString()
                                 : "null");
 

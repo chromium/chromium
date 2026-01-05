@@ -15,6 +15,7 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace content {
 namespace background_fetch {
@@ -57,8 +58,8 @@ DeleteRegistrationTask::~DeleteRegistrationTask() = default;
 
 void DeleteRegistrationTask::Start() {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
-  TRACE_EVENT_WITH_FLOW0("CacheStorage", "DeleteRegistrationTask::Start",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "DeleteRegistrationTask::Start",
+              perfetto::Flow::Global(trace_id));
 
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
       2u, base::BindOnce(&DeleteRegistrationTask::FinishWithError,
@@ -135,9 +136,8 @@ void DeleteRegistrationTask::DidDeleteCache(
     base::OnceClosure done_closure,
     int64_t trace_id,
     blink::mojom::CacheStorageError error) {
-  TRACE_EVENT_WITH_FLOW0("CacheStorage",
-                         "DeleteRegistrationTask::DidDeleteCache",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN);
+  TRACE_EVENT("CacheStorage", "DeleteRegistrationTask::DidDeleteCache",
+              perfetto::TerminatingFlow::Global(trace_id));
   if (error != blink::mojom::CacheStorageError::kSuccess &&
       error != blink::mojom::CacheStorageError::kErrorNotFound) {
     SetStorageError(BackgroundFetchStorageError::kCacheStorageError);

@@ -21,6 +21,7 @@
 #include "third_party/inspector_protocol/crdtp/cbor.h"
 #include "third_party/inspector_protocol/crdtp/dispatch.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace content {
 namespace {
@@ -374,9 +375,9 @@ void DevToolsSession::HandleCommandInternal(crdtp::Dispatchable dispatchable,
   crdtp::UberDispatcher::DispatchResult dispatched =
       dispatcher_->Dispatch(dispatchable);
   if (browser_only_ || dispatched.MethodFound()) {
-    TRACE_EVENT_WITH_FLOW2(
+    TRACE_EVENT(
         "devtools", "DevToolsSession::HandleCommand in Browser",
-        dispatchable.CallId(), TRACE_EVENT_FLAG_FLOW_OUT, "method",
+        perfetto::Flow::ProcessScoped(dispatchable.CallId()), "method",
         std::string(dispatchable.Method().begin(), dispatchable.Method().end()),
         "call_id", dispatchable.CallId());
     dispatched.Run();
@@ -445,19 +446,17 @@ void DevToolsSession::DispatchToAgent(const PendingMessage& message) {
   // Debugger.pause don't get stuck behind other blocking messages.
   if (ShouldSendOnIO(crdtp::SpanFrom(message.method)) || use_io_session_) {
     if (io_session_) {
-      TRACE_EVENT_WITH_FLOW2(
-          "devtools", "DevToolsSession::DispatchToAgent on IO", message.call_id,
-          TRACE_EVENT_FLAG_FLOW_OUT, "method", message.method, "call_id",
-          message.call_id);
+      TRACE_EVENT("devtools", "DevToolsSession::DispatchToAgent on IO",
+                  perfetto::Flow::ProcessScoped(message.call_id), "method",
+                  message.method, "call_id", message.call_id);
       io_session_->DispatchProtocolCommand(message.call_id, message.method,
                                            message.payload);
     }
   } else {
     if (session_) {
-      TRACE_EVENT_WITH_FLOW2("devtools", "DevToolsSession::DispatchToAgent",
-                             message.call_id, TRACE_EVENT_FLAG_FLOW_OUT,
-                             "method", message.method, "call_id",
-                             message.call_id);
+      TRACE_EVENT("devtools", "DevToolsSession::DispatchToAgent",
+                  perfetto::Flow::ProcessScoped(message.call_id), "method",
+                  message.method, "call_id", message.call_id);
       session_->DispatchProtocolCommand(message.call_id, message.method,
                                         message.payload);
     }
@@ -536,9 +535,9 @@ void DevToolsSession::DispatchProtocolResponse(
     blink::mojom::DevToolsMessagePtr message,
     int call_id,
     blink::mojom::DevToolsSessionStatePtr updates) {
-  TRACE_EVENT_WITH_FLOW1("devtools",
-                         "DevToolsSession::DispatchProtocolResponse", call_id,
-                         TRACE_EVENT_FLAG_FLOW_IN, "call_id", call_id);
+  TRACE_EVENT("devtools", "DevToolsSession::DispatchProtocolResponse",
+              perfetto::TerminatingFlow::ProcessScoped(call_id), "call_id",
+              call_id);
   ApplySessionStateUpdates(std::move(updates));
   auto it = waiting_for_response_.find(call_id);
   // TODO(johannes): Consider shutting down renderer instead of just

@@ -38,6 +38,7 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace content {
 
@@ -139,12 +140,11 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
       callback_(std::move(callback)) {
   DCHECK(browser_context);
 
-  TRACE_EVENT_WITH_FLOW2("ServiceWorker",
-                         "ServiceWorkerSingleScriptUpdateChecker::"
-                         "ServiceWorkerSingleScriptUpdateChecker",
-                         this, TRACE_EVENT_FLAG_FLOW_OUT, "script_url",
-                         script_url.spec(), "main_script_url",
-                         main_script_url.spec());
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerSingleScriptUpdateChecker::"
+              "ServiceWorkerSingleScriptUpdateChecker",
+              perfetto::Flow::FromPointer(this), "script_url",
+              script_url.spec(), "main_script_url", main_script_url.spec());
 
   network::ResourceRequest resource_request =
       service_worker_loader_helpers::CreateRequestForServiceWorkerScript(
@@ -224,10 +224,9 @@ void ServiceWorkerSingleScriptUpdateChecker::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle consumer,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
-  TRACE_EVENT_WITH_FLOW0(
-      "ServiceWorker",
-      "ServiceWorkerSingleScriptUpdateChecker::OnReceiveResponse", this,
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerSingleScriptUpdateChecker::OnReceiveResponse",
+              perfetto::Flow::FromPointer(this));
   DCHECK_EQ(network_loader_state_,
             ServiceWorkerUpdatedScriptLoader::LoaderState::kLoadingHeader);
 
@@ -288,10 +287,9 @@ void ServiceWorkerSingleScriptUpdateChecker::OnReceiveResponse(
 void ServiceWorkerSingleScriptUpdateChecker::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr response_head) {
-  TRACE_EVENT_WITH_FLOW0(
-      "ServiceWorker",
-      "ServiceWorkerSingleScriptUpdateChecker::OnReceiveRedirect", this,
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerSingleScriptUpdateChecker::OnReceiveRedirect",
+              perfetto::Flow::FromPointer(this));
 
   // Resource requests for the main service worker script should not follow
   // redirects.
@@ -321,10 +319,10 @@ void ServiceWorkerSingleScriptUpdateChecker::OnTransferSizeUpdated(
 
 void ServiceWorkerSingleScriptUpdateChecker::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
-  TRACE_EVENT_WITH_FLOW1(
-      "ServiceWorker", "ServiceWorkerSingleScriptUpdateChecker::OnComplete",
-      this, TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "status",
-      net::ErrorToString(status.error_code));
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerSingleScriptUpdateChecker::OnComplete",
+              perfetto::Flow::FromPointer(this), "status",
+              net::ErrorToString(status.error_code));
 
   ServiceWorkerUpdatedScriptLoader::LoaderState previous_loader_state =
       network_loader_state_;
@@ -409,9 +407,9 @@ const char* ServiceWorkerSingleScriptUpdateChecker::ResultToString(
 
 void ServiceWorkerSingleScriptUpdateChecker::WriteHeaders(
     network::mojom::URLResponseHeadPtr response_head) {
-  TRACE_EVENT_WITH_FLOW0(
-      "ServiceWorker", "ServiceWorkerSingleScriptUpdateChecker::WriteHeaders",
-      this, TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerSingleScriptUpdateChecker::WriteHeaders",
+              perfetto::Flow::FromPointer(this));
 
   DCHECK_EQ(header_writer_state_,
             ServiceWorkerUpdatedScriptLoader::WriterState::kNotStarted);
@@ -436,10 +434,9 @@ void ServiceWorkerSingleScriptUpdateChecker::WriteHeaders(
 
 void ServiceWorkerSingleScriptUpdateChecker::OnWriteHeadersComplete(
     net::Error error) {
-  TRACE_EVENT_WITH_FLOW1(
-      "ServiceWorker",
-      "ServiceWorkerSingleScriptUpdateChecker::OnWriteHeadersComplete", this,
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "error", error);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerSingleScriptUpdateChecker::OnWriteHeadersComplete",
+              perfetto::Flow::FromPointer(this), "error", error);
 
   DCHECK_EQ(header_writer_state_,
             ServiceWorkerUpdatedScriptLoader::WriterState::kWriting);
@@ -462,24 +459,22 @@ void ServiceWorkerSingleScriptUpdateChecker::
     MaybeStartNetworkConsumerHandleWatcher() {
   if (network_loader_state_ ==
       ServiceWorkerUpdatedScriptLoader::LoaderState::kLoadingHeader) {
-    TRACE_EVENT_WITH_FLOW1("ServiceWorker",
-                           "ServiceWorkerSingleScriptUpdateChecker::"
-                           "MaybeStartNetworkConsumerHandleWatcher",
-                           this,
-                           TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                           "state", "wait for the body");
+    TRACE_EVENT("ServiceWorker",
+                "ServiceWorkerSingleScriptUpdateChecker::"
+                "MaybeStartNetworkConsumerHandleWatcher",
+                perfetto::Flow::FromPointer(this), "state",
+                "wait for the body");
 
     // OnReceiveResponse() or OnComplete() will continue the sequence.
     return;
   }
   if (header_writer_state_ !=
       ServiceWorkerUpdatedScriptLoader::WriterState::kCompleted) {
-    TRACE_EVENT_WITH_FLOW1("ServiceWorker",
-                           "ServiceWorkerSingleScriptUpdateChecker::"
-                           "MaybeStartNetworkConsumerHandleWatcher",
-                           this,
-                           TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                           "state", "wait for writing header");
+    TRACE_EVENT("ServiceWorker",
+                "ServiceWorkerSingleScriptUpdateChecker::"
+                "MaybeStartNetworkConsumerHandleWatcher",
+                perfetto::Flow::FromPointer(this), "state",
+                "wait for writing header");
 
     DCHECK_EQ(header_writer_state_,
               ServiceWorkerUpdatedScriptLoader::WriterState::kWriting);
@@ -487,12 +482,10 @@ void ServiceWorkerSingleScriptUpdateChecker::
     return;
   }
 
-  TRACE_EVENT_WITH_FLOW1("ServiceWorker",
-                         "ServiceWorkerSingleScriptUpdateChecker::"
-                         "MaybeStartNetworkConsumerHandleWatcher",
-                         this,
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "state", "start loading body");
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerSingleScriptUpdateChecker::"
+              "MaybeStartNetworkConsumerHandleWatcher",
+              perfetto::Flow::FromPointer(this), "state", "start loading body");
 
   DCHECK_EQ(body_writer_state_,
             ServiceWorkerUpdatedScriptLoader::WriterState::kNotStarted);
@@ -519,11 +512,10 @@ void ServiceWorkerSingleScriptUpdateChecker::OnNetworkDataAvailable(
       &network_consumer_, &pending_buffer);
 
   const uint32_t bytes_available = pending_buffer ? pending_buffer->size() : 0;
-  TRACE_EVENT_WITH_FLOW2(
-      "ServiceWorker",
-      "ServiceWorkerSingleScriptUpdateChecker::OnNetworkDataAvailable", this,
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "result", result,
-      "bytes_available", bytes_available);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerSingleScriptUpdateChecker::OnNetworkDataAvailable",
+              perfetto::Flow::FromPointer(this), "result", result,
+              "bytes_available", bytes_available);
 
   switch (result) {
     case MOJO_RESULT_OK:
@@ -556,9 +548,9 @@ void ServiceWorkerSingleScriptUpdateChecker::OnNetworkDataAvailable(
 void ServiceWorkerSingleScriptUpdateChecker::CompareData(
     scoped_refptr<network::MojoToNetPendingBuffer> pending_buffer,
     uint32_t bytes_to_compare) {
-  TRACE_EVENT_WITH_FLOW0(
-      "ServiceWorker", "ServiceWorkerSingleScriptUpdateChecker::CompareData",
-      this, TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerSingleScriptUpdateChecker::CompareData",
+              perfetto::Flow::FromPointer(this));
 
   DCHECK(pending_buffer || bytes_to_compare == 0);
   auto buffer = base::MakeRefCounted<WrappedIOBuffer>(UNSAFE_BUFFERS(
@@ -592,11 +584,10 @@ void ServiceWorkerSingleScriptUpdateChecker::OnCompareDataComplete(
     scoped_refptr<network::MojoToNetPendingBuffer> pending_buffer,
     uint32_t bytes_written,
     net::Error error) {
-  TRACE_EVENT_WITH_FLOW2(
-      "ServiceWorker",
-      "ServiceWorkerSingleScriptUpdateChecker::OnCompareDataComplete", this,
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "error", error,
-      "bytes_written", bytes_written);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerSingleScriptUpdateChecker::OnCompareDataComplete",
+              perfetto::Flow::FromPointer(this), "error", error,
+              "bytes_written", bytes_written);
 
   DCHECK(pending_buffer || bytes_written == 0);
 
@@ -642,11 +633,10 @@ void ServiceWorkerSingleScriptUpdateChecker::Fail(
     blink::ServiceWorkerStatusCode status,
     const std::string& error_message,
     network::URLLoaderCompletionStatus network_status) {
-  TRACE_EVENT_WITH_FLOW2("ServiceWorker",
-                         "ServiceWorkerSingleScriptUpdateChecker::Fail", this,
-                         TRACE_EVENT_FLAG_FLOW_IN, "status",
-                         blink::ServiceWorkerStatusToString(status),
-                         "error_message", error_message);
+  TRACE_EVENT("ServiceWorker", "ServiceWorkerSingleScriptUpdateChecker::Fail",
+              perfetto::TerminatingFlow::FromPointer(this), "status",
+              blink::ServiceWorkerStatusToString(status), "error_message",
+              error_message);
 
   Finish(Result::kFailed,
          /*paused_state=*/nullptr,
@@ -658,9 +648,10 @@ void ServiceWorkerSingleScriptUpdateChecker::Fail(
 void ServiceWorkerSingleScriptUpdateChecker::Succeed(
     Result result,
     std::unique_ptr<PausedState> paused_state) {
-  TRACE_EVENT_WITH_FLOW1(
-      "ServiceWorker", "ServiceWorkerSingleScriptUpdateChecker::Succeed", this,
-      TRACE_EVENT_FLAG_FLOW_IN, "result", ResultToString(result));
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerSingleScriptUpdateChecker::Succeed",
+              perfetto::TerminatingFlow::FromPointer(this), "result",
+              ResultToString(result));
   DCHECK_NE(result, Result::kFailed);
 
   // Get calculated sha256 checksum when below conditions are both satisfied:

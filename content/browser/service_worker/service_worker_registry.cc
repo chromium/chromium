@@ -39,6 +39,7 @@
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "url/origin.h"
 
 namespace content {
@@ -320,10 +321,10 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
   // trace event id.
   int64_t trace_event_id =
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
-  TRACE_EVENT_WITH_FLOW1(
+  TRACE_EVENT(
       "ServiceWorker", "ServiceWorkerRegistry::FindRegistrationForClientUrl",
-      TRACE_ID_WITH_SCOPE("ServiceWorkerRegistry", trace_event_id),
-      TRACE_EVENT_FLAG_FLOW_OUT, "URL", client_url.spec());
+      perfetto::Flow::ProcessScoped(trace_event_id, "ServiceWorkerRegistry"),
+      "URL", client_url.spec());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   bool is_mojo_called = false;
@@ -1299,10 +1300,10 @@ void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
     storage::mojom::ServiceWorkerDatabaseStatus database_status,
     storage::mojom::ServiceWorkerFindRegistrationResultPtr result,
     const std::optional<std::vector<GURL>>& scopes) {
-  TRACE_EVENT_WITH_FLOW0(
-      "ServiceWorker", "ServiceWorkerRegistry::DidFindRegistrationForClientUrl",
-      TRACE_ID_WITH_SCOPE("ServiceWorkerRegistry", trace_event_id),
-      TRACE_EVENT_FLAG_FLOW_IN);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerRegistry::DidFindRegistrationForClientUrl",
+              perfetto::TerminatingFlow::ProcessScoped(
+                  trace_event_id, "ServiceWorkerRegistry"));
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Discard RegistrationScopes from storage_shared_buffer.
   storage_shared_buffer().TakeRegistrationScopes();
