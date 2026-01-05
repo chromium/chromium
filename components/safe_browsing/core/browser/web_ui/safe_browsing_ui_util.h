@@ -10,13 +10,13 @@
 #include "build/build_config.h"
 #include "components/enterprise/common/proto/upload_request_response.pb.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
+#include "url/gurl.h"
 
 namespace safe_browsing {
 namespace internal {
@@ -140,7 +140,6 @@ std::string SerializeClientPhishingResponse(const ClientPhishingResponse& cpr);
 std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report);
 std::string SerializeDownloadUrlChecked(const std::vector<GURL>& urls,
                                         DownloadCheckResult result);
-std::string SerializeHitReport(const HitReport& hit_report);
 std::string SerializeJson(base::ValueView value);
 base::Value::Dict SerializePGEvent(const sync_pb::UserEventSpecifics& event);
 base::Value::Dict SerializeSecurityEvent(

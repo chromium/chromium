@@ -4,7 +4,6 @@
 
 #include "components/safe_browsing/core/browser/web_ui/web_ui_info_singleton_event_observer_impl.h"
 
-#include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_ui_util.h"
 
 namespace safe_browsing {
@@ -63,13 +62,6 @@ void WebUIInfoSingletonEventObserverImpl::NotifyCSBRRJsListener(
     ClientSafeBrowsingReportRequest* csbrr) {
   delegate_->SendEventToHandler("sent-csbrr-update",
                                 base::Value(web_ui::SerializeCSBRR(*csbrr)));
-}
-
-void WebUIInfoSingletonEventObserverImpl::NotifyHitReportJsListener(
-    HitReport* hit_report) {
-  delegate_->SendEventToHandler(
-      "sent-hit-report-list",
-      base::Value(web_ui::SerializeHitReport(*hit_report)));
 }
 
 void WebUIInfoSingletonEventObserverImpl::NotifyPGEventJsListener(

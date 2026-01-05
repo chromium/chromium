@@ -19,7 +19,6 @@
 #include "url/gurl.h"
 
 namespace safe_browsing {
-struct HitReport;
 namespace web_ui {
 struct ClientPhishingRequestAndToken;
 struct DeepScanDebugData;
@@ -80,10 +79,6 @@ class WebUIInfoSingletonEventObserver {
   // sent, while one or more WebUI tabs are opened.
   virtual void NotifyCSBRRJsListener(
       ClientSafeBrowsingReportRequest* csbrr) = 0;
-
-  // Get the new HitReport messages sent from PingManager when a ping is
-  // sent, while one or more WebUI tabs are opened.
-  virtual void NotifyHitReportJsListener(HitReport* hit_report) = 0;
 
   // Called when any new PhishGuard events are sent while one or more WebUI tabs
   // are open.

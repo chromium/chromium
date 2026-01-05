@@ -107,6 +107,7 @@ source_set("util") {
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto_extras",
     "//components/safe_browsing/core/common/proto:webui_proto",
     "//components/sync/protocol",
+    "//url",
   ]
 
   if (!is_android) {

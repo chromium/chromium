@@ -122,10 +122,6 @@ function initialize() {
     addSentCSBRRsInfo(result);
   });
 
-  addWebUiListener('sent-hit-report-list', function(result: string) {
-    addSentHitReportsInfo(result);
-  });
-
   sendWithPromise('getPGEvents', []).then((pgEvents: ReportingResult[]) => {
     pgEvents.forEach(function(pgEvent) {
       addPGEvent(pgEvent);
@@ -448,11 +444,6 @@ function addReceivedClientPhishingResponseInfo(phishingResponseInfo: string) {
 function addSentCSBRRsInfo(csbrrsInfo: string) {
   const logDiv = $('sent-csbrrs-list');
   appendChildWithInnerText(logDiv, csbrrsInfo);
-}
-
-function addSentHitReportsInfo(hitReportsInfo: string) {
-  const logDiv = $('sent-hit-report-list');
-  appendChildWithInnerText(logDiv, hitReportsInfo);
 }
 
 function addPGEvent(pgEvent: ReportingResult) {

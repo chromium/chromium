@@ -30,7 +30,6 @@ class WebUIInfoSingletonEventObserverImpl
   void NotifyClientPhishingResponseJsListener(
       ClientPhishingResponse* client_phishing_response) override;
   void NotifyCSBRRJsListener(ClientSafeBrowsingReportRequest* csbrr) override;
-  void NotifyHitReportJsListener(HitReport* hit_report) override;
   void NotifyPGEventJsListener(
       const sync_pb::UserEventSpecifics& event) override;
   void NotifySecurityEventJsListener(
