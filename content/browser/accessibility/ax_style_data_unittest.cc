@@ -6,7 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/ax_enums.mojom-data-view.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 
 namespace content {
 

@@ -11,7 +11,7 @@
 #include "base/check_op.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
-#include "ui/accessibility/ax_enums.mojom-data-view.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
 
 namespace content {
 
