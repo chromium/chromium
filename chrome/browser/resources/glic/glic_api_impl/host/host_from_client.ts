@@ -11,7 +11,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {ContentSettingsType} from '../../content_settings_types.mojom-webui.js';
 import type {ActorTaskPauseReason as ActorTaskPauseReasonMojo, ActorTaskStopReason as ActorTaskStopReasonMojo, CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, ScrollToSelector as ScrollToSelectorMojo, TabDataHandlerInterface, TabDataMojoType, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
 import {CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserverReceiver, CurrentView as CurrentViewMojo, PinCandidatesObserverReceiver, ResponseStopCause as ResponseStopCauseMojo, SettingsPageField as SettingsPageFieldMojo, TabDataHandlerReceiver, WebClientReceiver} from '../../glic.mojom-webui.js';
-import type {ActorTaskPauseReason, ActorTaskStopReason, CaptureRegionErrorReason, ConversationInfo, DraggableArea, GetPinCandidatesOptions, Journal, OnResponseStoppedDetails, OpenSettingsOptions, PinTabsOptions, Screenshot, ScrollToParams, TabContextOptions, TaskOptions, UnpinTabsOptions, ViewChangedNotification, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
+import type {ActorTaskPauseReason, ActorTaskStopReason, CaptureRegionErrorReason, ConversationInfo, CreateSkillRequest, DraggableArea, GetPinCandidatesOptions, Journal, OnResponseStoppedDetails, OpenSettingsOptions, PinTabsOptions, Screenshot, ScrollToParams, Skill, SkillSource, TabContextOptions, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, ViewChangedNotification, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {CaptureScreenshotErrorReason, ClientView, CreateTaskErrorReason, PerformActionsErrorReason, ResponseStopCause, ScrollToErrorReason} from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
 import {ResponseExtras} from '../post_message_transport.js';
@@ -379,6 +379,36 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     this.handler.uninterruptActorTask(request.taskId);
   }
 
+  async glicBrowserCreateSkill(request: {
+    request: CreateSkillRequest,
+  }): Promise<{modalOpened: boolean}> {
+    return await this.handler.createSkill(request.request);
+  }
+
+  async glicBrowserUpdateSkill(request: {
+    request: UpdateSkillRequest,
+  }): Promise<{modalOpened: boolean}> {
+    return await this.handler.updateSkill(request.request);
+  }
+
+  async glicBrowserGetSkill(request: {
+    id: string,
+  }): Promise<{skill?: Skill}> {
+    const {skill: mojoSkill} = await this.handler.getSkill(request.id);
+    if (!mojoSkill) {
+      return {};
+    }
+    return {
+      skill: {
+        ...mojoSkill,
+        preview: {
+          ...mojoSkill.preview,
+          source: mojoSkill.preview.source as number as SkillSource,
+        },
+      },
+    };
+  }
+
   async glicBrowserCreateActorTab(request: {
     taskId: number,
     options: {
@@ -718,8 +748,9 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
 
   glicBrowserOpenOsPermissionSettingsMenu(request: {permission: string}) {
     // Warning: calling openOsPermissionSettingsMenu with unsupported content
-    // setting type will terminate the render process (bad mojo message). Update
-    // GlicWebClientHandler:OpenOsPermissionSettingsMenu with any new types.
+    // setting type will terminate the render process (bad mojo message).
+    // Update GlicWebClientHandler:OpenOsPermissionSettingsMenu with any new
+    // types.
     switch (request.permission) {
       case 'media':
         return this.handler.openOsPermissionSettingsMenu(
@@ -866,9 +897,9 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
         options: TabContextOptions[],
       },
       _extras: ResponseExtras): Promise<{results: TabContextResultPrivate[]}> {
-    // TODO(crbug.com/458761731): Once `loadAndExtractContent` is defined in the
-    // handler interface, call `this.handler.loadAndExtractContent` to get the
-    // response, then return the tab context to client.
+    // TODO(crbug.com/458761731): Once `loadAndExtractContent` is defined in
+    // the handler interface, call `this.handler.loadAndExtractContent` to get
+    // the response, then return the tab context to client.
 
     return Promise.reject(new Error('Not implemented'));
   }

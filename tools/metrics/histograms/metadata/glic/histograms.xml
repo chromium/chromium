@@ -152,6 +152,7 @@ chromium-metrics-reviews@google.com.
     <variant name="ClosePanel"/>
     <variant name="ClosePanelAndShutdown"/>
     <variant name="CreateActorTab"/>
+    <variant name="CreateSkill"/>
     <variant name="CreateTab"/>
     <variant name="CreateTask"/>
     <variant name="DetachPanel"/>
@@ -162,6 +163,7 @@ chromium-metrics-reviews@google.com.
     <variant name="GetContextFromTab"/>
     <variant name="GetModelQualityClientId"/>
     <variant name="GetOsMicrophonePermissionStatus"/>
+    <variant name="GetSkill"/>
     <variant name="GetUserProfileInfo"/>
     <variant name="GetZeroStateSuggestionsAndSubscribe"/>
     <variant name="GetZeroStateSuggestionsForFocusedTab"/>
@@ -225,6 +227,7 @@ chromium-metrics-reviews@google.com.
     <variant name="UnpinTabs"/>
     <variant name="UnsubscribeFromCaptureRegion"/>
     <variant name="UnsubscribeFromPinCandidates"/>
+    <variant name="UpdateSkill"/>
     <variant name="WebClientCreated"/>
     <variant name="WebClientInitialized"/>
   </token>

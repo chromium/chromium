@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AdditionalContext, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ConversationInfo, CreateActorTabOptions, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, Journal, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UserConfirmationDialogRequest, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
+import type {AdditionalContext, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ConversationInfo, CreateActorTabOptions, CreateSkillRequest, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, Journal, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, Skill, SkillPreview, SkillSource, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, HostCapability} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 
@@ -56,6 +56,8 @@ type WebClientMessageHandlerInterface = {
 
 class WebClientMessageHandler implements WebClientMessageHandlerInterface {
   private cachedPinnedTabs: TabData[]|undefined = undefined;
+  private cachedSkillPreviews: SkillPreview[] = [];
+  private cachedSkillPrompts = new Map<string, string>();
 
   constructor(
       private webClient: GlicWebClient, private host: GlicBrowserHostImpl) {}
@@ -202,6 +204,42 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
       return cachedTab;
     });
     this.host.pinnedTabs.assignAndSignal(this.cachedPinnedTabs);
+  }
+
+  glicWebClientNotifySkillPreviewsChanged(payload: {
+    skillPreviews: SkillPreview[],
+  }): void {
+    this.cachedSkillPrompts.clear();
+    this.cachedSkillPreviews = payload.skillPreviews;
+    this.host.skillPreviews.assignAndSignal(this.cachedSkillPreviews);
+  }
+
+  glicWebClientNotifySkillPreviewChanged(payload: {skillPreview: SkillPreview}):
+      void {
+    const skillPreview = payload.skillPreview;
+    this.cachedSkillPrompts.delete(skillPreview.id);
+
+    const index = this.cachedSkillPreviews.findIndex(
+        (cachedSkillPreview) => cachedSkillPreview.id === skillPreview.id);
+
+    if (index !== -1) {
+      // SkillPreview with the same ID exists, replace it.
+      this.cachedSkillPreviews = [
+        ...this.cachedSkillPreviews.slice(0, index),
+        skillPreview,
+        ...this.cachedSkillPreviews.slice(index + 1),
+      ];
+    } else {
+      // SkillPreview with this ID not found, add it to the cache.
+      this.cachedSkillPreviews = [...this.cachedSkillPreviews, skillPreview];
+    }
+
+    // Signal the change to the host.
+    this.host.skillPreviews.assignAndSignal(this.cachedSkillPreviews);
+  }
+
+  glicWebClientNotifySkillToInvokeChanged(payload: {skill: Skill}): void {
+    this.host.skillToInvoke.assignAndSignal(payload.skill);
   }
 
   glicWebClientNotifyActorTaskStateChanged(
@@ -433,6 +471,13 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
   }): void {
     this.host.getTabByIdSubscriberSet.handleTabDataChanged(payload);
   }
+
+  cacheSkillPrompt(skill: Skill) {
+    const preview = skill.preview;
+    if (preview.id && skill.prompt) {
+      this.cachedSkillPrompts.set(preview.id, skill.prompt);
+    }
+  }
 }
 
 class GlicBrowserHostImpl implements GlicBrowserHost {
@@ -465,6 +510,8 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private metrics: GlicBrowserHostMetricsImpl;
   private manuallyResizing = ObservableValueImpl.withValue<boolean>(false);
   pinnedTabs = ObservableValueImpl.withNoValue<TabData[]>();
+  skillPreviews = ObservableValueImpl.withNoValue<SkillPreview[]>();
+  skillToInvoke = ObservableValueImpl.withNoValue<Skill>();
   pinCandidates: PinCandidatesObservable|undefined;
   captureRegionObservable?: CaptureRegionObservable;
   // Makes IDs that are unique within the scope of this class.
@@ -576,6 +623,20 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
             HostCapability.GET_MODEL_QUALITY_CLIENT_ID)) {
       // MOJO_RUNTIME_FEATURE_GATED GetModelQualityClientId
       this.getModelQualityClientId = undefined;
+    }
+
+    if (state.enableSkills) {
+      if (state.skillPreviews) {
+        this.skillPreviews.assignAndSignal(
+            state.skillPreviews.map(s => ({
+                                      ...s,
+                                      source: s.source as number as SkillSource,
+                                    })));
+      }
+    } else {
+      this.createSkill = undefined;
+      this.updateSkill = undefined;
+      this.getSkill = undefined;
     }
 
     if (!state.enableScrollTo) {
@@ -1086,6 +1147,40 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return (await this.sender.requestWithResponse(
                 'glicBrowserUnpinTabs', {tabIds, options}))
         .unpinnedAll;
+  }
+
+  async createSkill?(request: CreateSkillRequest): Promise<void> {
+    const result = await this.sender.requestWithResponse(
+        'glicBrowserCreateSkill', {request});
+    if (!result.modalOpened) {
+      throw new Error('createSkill: failed to open dialog');
+    }
+  }
+
+  async updateSkill?(request: UpdateSkillRequest): Promise<void> {
+    const result = await this.sender.requestWithResponse(
+        'glicBrowserUpdateSkill', {request});
+    if (!result.modalOpened) {
+      throw new Error('updateSkill: failed to open dialog');
+    }
+  }
+
+  async getSkill?(id: string): Promise<Skill> {
+    const result =
+        await this.sender.requestWithResponse('glicBrowserGetSkill', {id});
+    if (!result.skill) {
+      throw new Error('getSkill: failed');
+    }
+    this.webClientMessageHandler.cacheSkillPrompt(result.skill);
+    return result.skill;
+  }
+
+  getSkills?(): ObservableValue<SkillPreview[]> {
+    return this.skillPreviews;
+  }
+
+  getSkillToInvoke?(): ObservableValue<Skill> {
+    return this.skillToInvoke;
   }
 
   unpinAllTabs?(options?: UnpinTabsOptions): void {

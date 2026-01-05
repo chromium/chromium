@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {WebClientInitialState} from '../glic.mojom-webui.js';
-import type {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AdditionalContext, AdditionalContextPart, AnnotatedPageData, AutofillSuggestion, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ConversationInfo, Credential, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFillingRequest, GetPinCandidatesOptions, HostCapability, Journal, MetricUserInputReactionType, NavigationConfirmationRequest, NavigationConfirmationResponse, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectAutofillSuggestionsDialogResponse, SelectCredentialDialogRequest, SelectCredentialDialogResponse, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UserConfirmationDialogRequest, UserConfirmationDialogResponse, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AdditionalContext, AdditionalContextPart, AnnotatedPageData, AutofillSuggestion, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ConversationInfo, CreateSkillRequest, Credential, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFillingRequest, GetPinCandidatesOptions, HostCapability, Journal, MetricUserInputReactionType, NavigationConfirmationRequest, NavigationConfirmationResponse, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectAutofillSuggestionsDialogResponse, SelectCredentialDialogRequest, SelectCredentialDialogResponse, Skill, SkillPreview, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserConfirmationDialogResponse, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -479,6 +479,30 @@ export declare type HostRequestTypes = ValidateRequestMap<{
       options?: UnpinTabsOptions,
     },
   },
+  glicBrowserCreateSkill: {
+    request: {
+      request: CreateSkillRequest,
+    },
+    response: {
+      modalOpened: boolean,
+    },
+  },
+  glicBrowserUpdateSkill: {
+    request: {
+      request: UpdateSkillRequest,
+    },
+    response: {
+      modalOpened: boolean,
+    },
+  },
+  glicBrowserGetSkill: {
+    request: {
+      id: string,
+    },
+    response: {
+      skill?: Skill,
+    },
+  },
   glicBrowserSubscribeToPinCandidates: {
     backgroundAllowed: false,
     request: {
@@ -688,6 +712,21 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
       tabData: TabDataPrivate,
     },
   },
+  glicWebClientNotifySkillPreviewsChanged: {
+    request: {
+      skillPreviews: SkillPreview[],
+    },
+  },
+  glicWebClientNotifySkillPreviewChanged: {
+    request: {
+      skillPreview: SkillPreview,
+    },
+  },
+  glicWebClientNotifySkillToInvokeChanged: {
+    request: {
+      skill: Skill,
+    },
+  },
   glicWebClientPinCandidatesChanged: {
     request: {
       candidates: PinCandidatePrivate[],
@@ -876,6 +915,9 @@ export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
         LoadAndExtractContent: 79,
         SetOnboardingCompleted: 80,
         SubscribeToTabData: 81,
+        CreateSkill: 82,
+        UpdateSkill: 83,
+        GetSkill: 84,
       };
       return {...result, MAX_VALUE: Math.max(...Object.values(result))};
     })();

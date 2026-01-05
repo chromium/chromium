@@ -356,6 +356,9 @@ chromium-metrics-reviews@google.com.
   <int value="79" label="LoadAndExtractContent"/>
   <int value="80" label="SetOnboardingCompleted"/>
   <int value="81" label="SubscribeToTabData"/>
+  <int value="82" label="CreateSkill"/>
+  <int value="83" label="UpdateSkill"/>
+  <int value="84" label="GetSkill"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:ApiRequestType) -->

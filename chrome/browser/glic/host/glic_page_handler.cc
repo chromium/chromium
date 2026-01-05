@@ -1187,6 +1187,26 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     host().instance_delegate().UninterruptActorTask(actor::TaskId(task_id));
   }
 
+  void CreateSkill(mojom::CreateSkillRequestPtr request,
+                   CreateSkillCallback callback) override {
+    // TODO(crbug.com/471796872): Add the actual implementation.
+    NOTIMPLEMENTED();
+    std::move(callback).Run(true);
+  }
+
+  void UpdateSkill(mojom::UpdateSkillRequestPtr request,
+                   UpdateSkillCallback callback) override {
+    // TODO(crbug.com/471796872): Add the actual implementation.
+    NOTIMPLEMENTED();
+    std::move(callback).Run(true);
+  }
+
+  void GetSkill(const std::string& id, GetSkillCallback callback) override {
+    // TODO(crbug.com/471796872): Add the actual implementation.
+    NOTIMPLEMENTED();
+    std::move(callback).Run(nullptr);
+  }
+
   void CreateActorTab(int32_t task_id,
                       bool open_in_background,
                       std::optional<int32_t> initiator_tab_id,

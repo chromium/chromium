@@ -410,6 +410,10 @@ struct WebClientInitialState {
   bool enable_trust_first_onboarding;
   // Whether the user has completed the onboarding flow.
   bool onboarding_completed;
+  // Whether the skills feature is enabled.
+  bool enable_skills;
+  // The initial list of skill previews.
+  array<SkillPreview> skill_previews;
 };
 
 // Options for getting tab context.
@@ -549,6 +553,49 @@ enum ScrollToErrorReason {
 struct SuggestionContent {
   // The suggestion. Always provided.
   string suggestion;
+};
+
+// @generate glic_api
+// Enum to specify the source of the Skill.
+[Stable, Extensible]
+enum SkillSource {
+  [Default] kUnknown = 0,
+  // Skill created by Google.
+  kFirstParty = 1,
+  // Skill created by an end-user.
+  kUserCreated = 2,
+};
+
+// A single skill preview.
+struct SkillPreview {
+  // The unique identifier of the skill which is an UUID.
+  string id;
+  // The name of the skill.
+  string name;
+  // The icon of the skill, which is an emoji.
+  string icon;
+  // The source of the skill which can be 1P or user created.
+  SkillSource source;
+};
+
+// A single skill.
+struct Skill {
+  // The preview of the skill which contains the basic information of the skill.
+  SkillPreview preview;
+  // The prompt of the skill.
+  string prompt;
+};
+
+// Request to create a skill.
+struct CreateSkillRequest {
+  // A prompt for the skill which can be an empty string.
+  string prompt;
+};
+
+// Request to update a skill.
+struct UpdateSkillRequest {
+  // The unique identifier of the skill to be updated.
+  string id;
 };
 
 // A list of suggestions for the currently focused tab.
@@ -734,6 +781,20 @@ interface WebClientHandler {
   // Unpins all currently pinned tabs.
   [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
   UnpinAllTabs(UnpinTabsOptions? options);
+
+  // Initiates the creation of a skill by opening a modal dialog. It returns a
+  // boolean indicating whether the modal dialog was opened successfully.
+  // TODO(crbug.com/471796872): Add the actual c++ implementation.
+  CreateSkill(CreateSkillRequest request) => (bool modal_opened);
+
+  // Initiates the update of a skill by opening a modal dialog. It returns a
+  // boolean indicating whether the modal dialog was opened successfully.
+  // TODO(crbug.com/471796872): Add the actual c++ implementation.
+  UpdateSkill(UpdateSkillRequest request) => (bool modal_opened);
+
+  // Gets a skill by its id. Returns null if the skill does not exist.
+  // TODO(crbug.com/471796872): Add the actual c++ implementation.
+  GetSkill(string id) => (Skill? skill);
 
   // Subscribes to receive updates on pin candidates.
   [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
@@ -1087,6 +1148,8 @@ struct PanelOpeningData {
   // If set, the textbox for user input will be populated with the given string
   // before the panel opens.
   string? prompt_suggestion;
+  // An optional Skill object. If provided, the Gemini app should auto-run it.
+  Skill? skill_to_invoke;
   // Up to 3 most recently active conversations, ordered by most recently active
   // first.
   array<ConversationInfo>? recently_active_conversations;
@@ -1324,6 +1387,15 @@ interface WebClient {
   // Notify that the TabData for a pinned tab has changed.
   [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
   NotifyPinnedTabDataChanged(TabData tab_data);
+
+  // Notify that the skills previews have changed.
+  NotifySkillPreviewsChanged(array<SkillPreview> skill_previews);
+
+  // Notify that a skill preview has changed.
+  NotifySkillPreviewChanged(SkillPreview skill_preview);
+
+  // Notify that the skill to invoke has changed.
+  NotifySkillToInvokeChanged(Skill skill);
 
   // Informs the client that the zero state suggestions have changed.
   NotifyZeroStateSuggestionsChanged(ZeroStateSuggestionsV2? suggestions,
