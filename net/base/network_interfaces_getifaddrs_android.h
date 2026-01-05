@@ -7,6 +7,8 @@
 
 #include <ifaddrs.h>
 
+#include "net/base/net_export.h"
+
 namespace net::internal {
 
 // Implementation of getifaddrs for Android.
@@ -16,8 +18,8 @@ namespace net::internal {
 // Due to some buggy getifaddrs() implementation in Android 11, Chromium
 // provides its own version. See https://crbug.com/1240237 for more context.
 // ifa_ifu(ifa_broadaddr, ifa_dstaddr) is not populated in this function.
-int Getifaddrs(struct ifaddrs** result);
-void Freeifaddrs(struct ifaddrs* addrs);
+NET_EXPORT_PRIVATE int Getifaddrs(struct ifaddrs** result);
+NET_EXPORT_PRIVATE void Freeifaddrs(struct ifaddrs* addrs);
 
 }  // namespace net::internal
 
