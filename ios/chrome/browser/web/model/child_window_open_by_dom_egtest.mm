@@ -16,8 +16,6 @@
 #import "net/test/embedded_test_server/http_response.h"
 #import "net/test/embedded_test_server/request_handler_util.h"
 
-using chrome_test_util::OmniboxText;
-
 namespace {
 // Test link text and ids.
 NSString* const kNamedWindowLink = @"openWindowWithName";
@@ -237,8 +235,7 @@ std::unique_ptr<net::test_server::HttpResponse> SlowResponseHandler(
                                         timeout:kSlowPathDelay * 2];
 
   GURL slowURL = self.testServer->GetURL(kSlowPath);
-  [[EarlGrey selectElementWithMatcher:OmniboxText(slowURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:slowURL];
 }
 
 @end
