@@ -37,6 +37,8 @@ using testing::ReturnRef;
 
 namespace contextual_tasks {
 
+namespace {
+
 class MockContextualTasksUiService : public ContextualTasksUiService {
  public:
   explicit MockContextualTasksUiService(ContextualTasksService* controller)
@@ -120,6 +122,8 @@ class MockActiveTaskContextProvider : public ActiveTaskContextProvider {
   MOCK_METHOD(void, OnSidePanelStateUpdated, (), (override));
   MOCK_METHOD(void, SetSessionHandleGetter, (SessionHandleGetter), (override));
 };
+
+}  // namespace
 
 class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
  public:

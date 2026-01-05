@@ -41,6 +41,8 @@ using testing::NiceMock;
 using testing::Return;
 using testing::ReturnRef;
 
+namespace {
+
 class MockContextualTasksUiService : public ContextualTasksUiService {
  public:
   MockContextualTasksUiService(Profile* profile,
@@ -59,6 +61,8 @@ std::unique_ptr<KeyedService> BuildTestSigninClient(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<TestSigninClient>(profile->GetPrefs());
 }
+
+}  // namespace
 
 class EntryPointEligibilityManagerTest : public testing::Test {
  public:
