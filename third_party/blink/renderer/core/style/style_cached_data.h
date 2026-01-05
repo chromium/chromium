@@ -42,7 +42,6 @@ struct HashTraits<PseudoElementStyleCacheKey>
 
   static const bool kEmptyValueIsZero = false;
   static void ConstructDeletedValue(PseudoElementStyleCacheKey& slot) {
-    AtomicString pseudo_argument;
     PseudoElementStyleCacheKey* value = new (base::NotNullTag::kNotNull, &slot)
         PseudoElementStyleCacheKey{PseudoId::kPseudoIdNone, g_null_atom};
     HashTraits<AtomicString>::ConstructDeletedValue(value->pseudo_argument);
