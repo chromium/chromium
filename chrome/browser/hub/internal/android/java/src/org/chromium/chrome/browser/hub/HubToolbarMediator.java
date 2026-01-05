@@ -77,7 +77,7 @@ public class HubToolbarMediator {
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:HubSearchEntrypoint)
 
-    private static final int INVALID_PANE_SWITCHER_INDEX = -1;
+    static final int INVALID_PANE_SWITCHER_INDEX = -1;
 
     private final ComponentCallbacks mComponentCallbacks =
             new ComponentCallbacks() {

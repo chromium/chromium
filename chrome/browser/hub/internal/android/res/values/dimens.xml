@@ -22,6 +22,7 @@ found in the LICENSE file.
     <dimen name="hub_pane_switcher_tab_radius">12dp</dimen>
     <dimen name="hub_pane_switcher_tab_item_padding">8dp</dimen>
     <dimen name="hub_pane_switcher_tab_item_horizontal_margin">2dp</dimen>
+    <dimen name="hub_edge_swipe_gutter_width">80dp</dimen>
 
     <!-- Pane switcher tab item hover color alpha values -->
     <item name="hub_pane_switcher_tab_item_hover_alpha" format="float" type="dimen">0.08</item>

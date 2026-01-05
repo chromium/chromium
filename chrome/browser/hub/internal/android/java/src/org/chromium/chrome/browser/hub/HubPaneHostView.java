@@ -13,7 +13,10 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
@@ -24,6 +27,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.animation.AnimationHandler;
 
 import java.util.Objects;
@@ -31,16 +35,43 @@ import java.util.Objects;
 /** Holds the current pane's {@link View}. */
 @NullMarked
 public class HubPaneHostView extends FrameLayout {
+    /** A listener for swipe gestures on the pane host view. */
+    public interface OnPaneSwipeListener {
+        /**
+         * Called when a swipe gesture is completed.
+         *
+         * @param isSwipeLeft Whether the swipe was to the left.
+         */
+        void onPaneSwipe(boolean isSwipeLeft);
+    }
+
     private FrameLayout mPaneFrame;
     private ViewGroup mSnackbarContainer;
     private @Nullable View mCurrentViewRoot;
     private final AnimationHandler mSlideAnimatorHandler;
     private @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
+    private @Nullable OnPaneSwipeListener mOnPaneSwipeListener;
+
+    // Pane swipe-to-switch specifics.
+    private final int mSwipeEdgeGutterWidth;
+    private final int mSwipeTouchSlop;
+    private final int mMinSwipeFlingVelocity;
+
+    private boolean mIsSwipeBeingDragged;
+    private float mSwipeInitialDownX;
+    private float mSwipeInitialDownY;
+    private @Nullable VelocityTracker mVelocityTracker;
 
     /** Default {@link FrameLayout} constructor called by inflation. */
     public HubPaneHostView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         mSlideAnimatorHandler = new AnimationHandler();
+
+        ViewConfiguration vc = ViewConfiguration.get(context);
+        mSwipeEdgeGutterWidth =
+                context.getResources().getDimensionPixelSize(R.dimen.hub_edge_swipe_gutter_width);
+        mSwipeTouchSlop = vc.getScaledTouchSlop();
+        mMinSwipeFlingVelocity = vc.getScaledMinimumFlingVelocity();
     }
 
     @Override
@@ -49,6 +80,99 @@ public class HubPaneHostView extends FrameLayout {
 
         mPaneFrame = findViewById(R.id.pane_frame);
         mSnackbarContainer = findViewById(R.id.pane_host_view_snackbar_container);
+    }
+
+    public void setOnPaneSwipeListener(OnPaneSwipeListener listener) {
+        mOnPaneSwipeListener = listener;
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent motionEvent) {
+        if (!ChromeFeatureList.sEnableSwipeToSwitchPane.isEnabled()) return false;
+
+        final int action = motionEvent.getActionMasked();
+
+        // Reset drag state on CANCEL or UP.
+        if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
+            mIsSwipeBeingDragged = false;
+            return false;
+        }
+
+        // If we're already intercepting, continue to do so.
+        if (action != MotionEvent.ACTION_DOWN && mIsSwipeBeingDragged) {
+            return true;
+        }
+
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                // Record the start of the gesture.
+                mSwipeInitialDownX = motionEvent.getX();
+                mSwipeInitialDownY = motionEvent.getY();
+                mIsSwipeBeingDragged = false;
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                // Only consider swipes that start at the edge.
+                if (mSwipeInitialDownX > mSwipeEdgeGutterWidth
+                        && mSwipeInitialDownX < getWidth() - mSwipeEdgeGutterWidth) {
+                    return false;
+                }
+
+                final float x = motionEvent.getX();
+                final float y = motionEvent.getY();
+                final float dx = x - mSwipeInitialDownX;
+                final float dy = y - mSwipeInitialDownY;
+
+                // Check for a clear horizontal swipe past the touch slop.
+                if (Math.abs(dx) > mSwipeTouchSlop && Math.abs(dx) > Math.abs(dy)) {
+                    mIsSwipeBeingDragged = true;
+                    // Prevent the parent from stealing our gesture.
+                    getParent().requestDisallowInterceptTouchEvent(true);
+                }
+                break;
+        }
+
+        return mIsSwipeBeingDragged;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (mVelocityTracker == null) {
+            mVelocityTracker = VelocityTracker.obtain();
+        }
+        mVelocityTracker.addMovement(event);
+
+        if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+            // This is the up, we are NOT handling this as a click.
+            performClick();
+
+            // Calculate the velocity of the swipe.
+            mVelocityTracker.computeCurrentVelocity(1000);
+            float velocityX = mVelocityTracker.getXVelocity();
+            float velocityY = mVelocityTracker.getYVelocity();
+
+            // Check if the swipe was a horizontal fling.
+            if (Math.abs(velocityX) > mMinSwipeFlingVelocity
+                    && Math.abs(velocityX) > Math.abs(velocityY)) {
+                if (mOnPaneSwipeListener != null) {
+                    mOnPaneSwipeListener.onPaneSwipe(velocityX < 0);
+                }
+            }
+
+            mIsSwipeBeingDragged = false;
+            if (mVelocityTracker != null) {
+                mVelocityTracker.recycle();
+                mVelocityTracker = null;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean performClick() {
+        // This is a no-op, but we need to override it for accessibility.
+        super.performClick();
+        return true;
     }
 
     /**
@@ -153,5 +277,13 @@ public class HubPaneHostView extends FrameLayout {
     public void setXrSpaceModeObservableSupplier(
             @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
+    }
+
+    int getSwipeEdgeGutterWidthForTesting() {
+        return mSwipeEdgeGutterWidth;
+    }
+
+    void setVelocityTrackerForTesting(VelocityTracker tracker) {
+        mVelocityTracker = tracker;
     }
 }

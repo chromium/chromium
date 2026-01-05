@@ -439,4 +439,24 @@ public class HubCoordinatorUnitTest {
                             coordinator.destroy();
                         });
     }
+
+    @Test
+    public void onPaneSwipe_cyclesToNextPane() {
+        mHubCoordinator.onPaneSwipe(true);
+        verify(mPaneManager).focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
+    }
+
+    @Test
+    public void onPaneSwipe_cyclesToPreviousPane() {
+        mHubCoordinator.onPaneSwipe(false);
+        verify(mPaneManager).focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
+    }
+
+    @Test
+    public void onPaneSwipe_wrapsAroundFromLastPane() {
+        reset(mPaneManager);
+        assertTrue(mPaneManager.focusPane(PaneId.INCOGNITO_TAB_SWITCHER));
+        mHubCoordinator.onPaneSwipe(true);
+        verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
+    }
 }
