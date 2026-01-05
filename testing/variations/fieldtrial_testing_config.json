@@ -652,7 +652,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_WithVisualUpdate",
+                    "name": "Enabled_WithVisualUpdate_60fps",
+                    "params": {
+                        "fps_cap": "60"
+                    },
                     "enable_features": [
                         "AndroidAnimatedProgressBarInBrowser",
                         "AndroidProgressBarVisualUpdate"
