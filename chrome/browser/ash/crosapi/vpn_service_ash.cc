@@ -62,30 +62,6 @@ void VpnServiceForExtensionAsh::OnConfigurationRemoved(
   controller_->DestroyConfigurationInternal(configuration);
 }
 
-std::optional<std::string>
-VpnServiceForExtensionAsh::GetActiveConfigurationObjectPath() const {
-  VpnConfiguration* active_configuration = controller_->active_configuration_;
-  if (active_configuration &&
-      active_configuration->extension_id() == extension_id()) {
-    return active_configuration->object_path();
-  }
-  return std::nullopt;
-}
-
-void VpnServiceForExtensionAsh::DestroyAllConfigurations() {
-  std::vector<std::string> to_be_destroyed;
-  for (const auto& [key, configuration] :
-       controller_->key_to_configuration_map_) {
-    if (configuration->extension_id() == extension_id()) {
-      to_be_destroyed.push_back(configuration->configuration_name());
-    }
-  }
-  for (const auto& configuration_name : to_be_destroyed) {
-    controller_->DestroyConfiguration(extension_id(), configuration_name,
-                                      base::DoNothing(), base::DoNothing());
-  }
-}
-
 void VpnServiceForExtensionAsh::DispatchConfigRemovedEvent(
     const std::string& configuration_name) {
   for (auto& observer : observers_) {
@@ -124,26 +100,6 @@ void VpnServiceAsh::RegisterVpnServiceForExtension(
     mojo::PendingRemote<crosapi::mojom::EventObserverForExtension> observer) {
   auto* service = GetVpnServiceForExtension(extension_id);
   service->BindReceiverAndObserver(std::move(receiver), std::move(observer));
-}
-
-void VpnServiceAsh::MaybeFailActiveConnectionAndDestroyConfigurations(
-    const std::string& extension_id,
-    bool destroy_configurations) {
-  VpnServiceForExtensionAsh* service =
-      base::FindPtrOrNull(extension_id_to_service_, extension_id);
-  if (!service) {
-    return;
-  }
-  if (std::optional<std::string> object_path =
-          service->GetActiveConfigurationObjectPath()) {
-    ash::ShillThirdPartyVpnDriverClient::Get()->UpdateConnectionState(
-        *object_path, std::to_underlying(api_vpn::VpnConnectionState::kFailure),
-        base::DoNothing(), base::DoNothing());
-  }
-
-  if (destroy_configurations) {
-    service->DestroyAllConfigurations();
-  }
 }
 
 VpnServiceForExtensionAsh* VpnServiceAsh::GetVpnServiceForExtension(

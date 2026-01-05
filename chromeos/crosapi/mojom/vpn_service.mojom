@@ -60,9 +60,5 @@ interface VpnService {
       pending_receiver<VpnServiceForExtension> receiver,
       pending_remote<EventObserverForExtension> observer);
 
-  // Updates current Vpn connection state to FAILURE if the active configuration
-  // belongs to extension with id |extension_id|. If |destroy_configurations| is
-  // true, also destroys all configurations owned by this extension.
-  MaybeFailActiveConnectionAndDestroyConfigurations@1(string extension_id,
-      bool destroy_configurations);
+  // MaybeFailActiveConnectionAndDestroyConfigurations@1 was removed.
 };

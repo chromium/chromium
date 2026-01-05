@@ -171,6 +171,8 @@ class VpnService : public extensions::api::VpnServiceInterface,
   CreateConfigurationInternal(const std::string& extension_id,
                               const std::string& configuration_name);
 
+  void DestroyConfigurationsForExtension(const std::string& extension_id);
+
   // Callback used to indicate that configuration creation succeeded.
   void OnCreateConfigurationSuccess(
       SuccessCallback callback,

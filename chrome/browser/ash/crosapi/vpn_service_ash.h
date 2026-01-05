@@ -74,12 +74,6 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
   void OnConfigurationRemoved(const std::string& service_path,
                               const std::string& guid) override;
 
-  // Returns the object path of the active configuration if it exists.
-  // Otherwise, returns std::nullopt.
-  std::optional<std::string> GetActiveConfigurationObjectPath() const;
-
-  void DestroyAllConfigurations();
-
   void DispatchConfigRemovedEvent(const std::string& configuration_name);
   void DispatchOnPacketReceivedEvent(const std::vector<char>& data);
 
@@ -124,9 +118,6 @@ class VpnServiceAsh : public crosapi::mojom::VpnService {
       mojo::PendingReceiver<crosapi::mojom::VpnServiceForExtension> receiver,
       mojo::PendingRemote<crosapi::mojom::EventObserverForExtension> observer)
       override;
-  void MaybeFailActiveConnectionAndDestroyConfigurations(
-      const std::string& extension_id,
-      bool destroy_configurations) override;
 
   // Always returns a valid pointer.
   VpnServiceForExtensionAsh* GetVpnServiceForExtension(

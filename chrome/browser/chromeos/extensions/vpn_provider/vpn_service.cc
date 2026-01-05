@@ -33,7 +33,6 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/unloaded_extension_reason.h"
-#include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace chromeos {
@@ -51,11 +50,6 @@ const char* const kEventNames[] = {
     api_vpn::OnPlatformMessage::kEventName,
     api_vpn::OnPacketReceived::kEventName,
 };
-
-bool IsVpnProvider(const extensions::Extension* extension) {
-  return extension->permissions_data()->HasAPIPermission(
-      extensions::mojom::APIPermissionID::kVpnProvider);
-}
 
 // Creates a key for VpnService's |key_to_configuration_map_| as a hash of
 // |extension_id| and |configuration_name|.
@@ -515,14 +509,7 @@ void VpnService::Shutdown() {
 void VpnService::OnExtensionUninstalled(content::BrowserContext*,
                                         const extensions::Extension* extension,
                                         extensions::UninstallReason) {
-  // Extension should have a vpnProvider permission in order to use the API;
-  // therefore we can safely ignore all other extensions (because otherwise
-  // we'll just make an unnecessary mojo call).
-  if (!IsVpnProvider(extension)) {
-    return;
-  }
-  GetVpnService()->MaybeFailActiveConnectionAndDestroyConfigurations(
-      extension->id(), /*destroy_configurations=*/true);
+  DestroyConfigurationsForExtension(extension->id());
   extension_id_to_service_.erase(extension->id());
 }
 
@@ -530,19 +517,30 @@ void VpnService::OnExtensionUnloaded(
     content::BrowserContext*,
     const extensions::Extension* extension,
     extensions::UnloadedExtensionReason reason) {
-  // Extension should have a vpnProvider permission in order to use the API;
-  // therefore we can safely ignore all other extensions (because otherwise
-  // we'll just make an unnecessary mojo call).
-  if (!IsVpnProvider(extension)) {
-    return;
+  if (OwnsActiveConfiguration(extension->id())) {
+    ash::ShillThirdPartyVpnDriverClient::Get()->UpdateConnectionState(
+        active_configuration_->object_path(),
+        std::to_underlying(api_vpn::VpnConnectionState::kFailure),
+        base::DoNothing(), base::DoNothing());
   }
-  bool destroy_configurations =
-      reason == extensions::UnloadedExtensionReason::DISABLE ||
-      reason == extensions::UnloadedExtensionReason::BLOCKLIST;
-  GetVpnService()->MaybeFailActiveConnectionAndDestroyConfigurations(
-      extension->id(), destroy_configurations);
-  if (destroy_configurations) {
+  if (reason == extensions::UnloadedExtensionReason::DISABLE ||
+      reason == extensions::UnloadedExtensionReason::BLOCKLIST) {
+    DestroyConfigurationsForExtension(extension->id());
     extension_id_to_service_.erase(extension->id());
+  }
+}
+
+void VpnService::DestroyConfigurationsForExtension(
+    const std::string& extension_id) {
+  std::vector<std::string> to_be_destroyed;
+  for (const auto& [_, configuration] : key_to_configuration_map_) {
+    if (configuration->extension_id() == extension_id) {
+      to_be_destroyed.push_back(configuration->configuration_name());
+    }
+  }
+  for (const auto& configuration_name : to_be_destroyed) {
+    DestroyConfiguration(extension_id, configuration_name, base::DoNothing(),
+                         base::DoNothing());
   }
 }
 
