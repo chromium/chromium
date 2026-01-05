@@ -434,7 +434,9 @@ void ExpectPing(UpdaterScope scope,
                 ScopedServer* test_server,
                 int event_type,
                 std::optional<GURL> target_url);
-
+void ExpectInstallSource(UpdaterScope scope,
+                         ScopedServer* test_server,
+                         const std::string& install_source);
 void ExpectAppCommandPing(UpdaterScope scope,
                           ScopedServer* test_server,
                           const std::string& appid,
@@ -546,7 +548,8 @@ void RunOfflineInstall(UpdaterScope scope,
                        bool is_legacy_install,
                        bool is_silent_install,
                        int installer_result,
-                       int installer_error);
+                       int installer_error,
+                       const std::string& install_source);
 
 void RunOfflineInstallOsNotSupported(UpdaterScope scope,
                                      bool is_legacy_install,

@@ -1398,26 +1398,32 @@ void UpdateServiceImplImpl::RunInstallerImpl(
       config_->GetUpdaterPersistedData()->GetBrandCode(app_id), pv,
       config_->GetUpdaterPersistedData()->GetExistenceCheckerPath(app_id));
 
-  const base::Version installer_version([&install_settings]() -> std::string {
-    std::unique_ptr<base::Value> install_settings_deserialized =
-        JSONStringValueDeserializer(install_settings)
-            .Deserialize(
-                /*error_code=*/nullptr, /*error_message=*/nullptr);
-    if (install_settings_deserialized) {
+  std::unique_ptr<base::Value> install_settings_deserialized =
+      JSONStringValueDeserializer(install_settings)
+          .Deserialize(
+              /*error_code=*/nullptr, /*error_message=*/nullptr);
+  auto get_install_setting_string =
+      [](base::Value* install_settings_deserialized_raw,
+         std::string_view setting_key) -> std::string {
+    if (install_settings_deserialized_raw) {
       const base::Value::Dict* install_settings_dict =
-          install_settings_deserialized->GetIfDict();
+          install_settings_deserialized_raw->GetIfDict();
       if (install_settings_dict) {
-        const std::string* installer_version_value =
-            install_settings_dict->FindString(kInstallerVersion);
-        if (installer_version_value) {
-          return *installer_version_value;
+        const std::string* install_setting_value =
+            install_settings_dict->FindString(setting_key);
+        if (install_setting_value) {
+          return *install_setting_value;
         }
       }
     }
 
     return {};
-  }());
+  };
 
+  const base::Version installer_version(get_install_setting_string(
+      install_settings_deserialized.get(), kInstallerVersion));
+  const std::string install_source(get_install_setting_string(
+      install_settings_deserialized.get(), kInstallSourceSwitch));
   // Create a task runner that:
   //   1) has SequencedTaskRunner::CurrentDefaultHandle set, to run
   //      `state_update` callback.
@@ -1476,7 +1482,8 @@ void UpdateServiceImplImpl::RunInstallerImpl(
              base::RepeatingCallback<void(const UpdateState&)> state_update,
              const std::string& app_id, const std::string& ap,
              const std::string& brand, const std::string& language,
-             bool new_install, base::OnceCallback<void(Result)> callback,
+             const std::string& install_source, bool new_install,
+             base::OnceCallback<void(Result)> callback,
              const InstallerResult& result) {
             // Final state update after installation completes.
             UpdateState state;
@@ -1528,7 +1535,9 @@ void UpdateServiceImplImpl::RunInstallerImpl(
               install_data.lang = language;
               install_data.brand = brand;
               install_data.requires_network_encryption = false;
-              install_data.install_source = kInstallSourceOffline;
+              install_data.install_source = install_source.empty()
+                                                ? kInstallSourceOffline
+                                                : install_source;
               install_data.version = installer_version;
               update_client->SendPing(
                   install_data,
@@ -1552,7 +1561,8 @@ void UpdateServiceImplImpl::RunInstallerImpl(
           },
           config_, config_->GetUpdaterPersistedData(), update_client_,
           installer_version, state_update, app_info.app_id, app_info.ap,
-          app_info.brand, language, new_install, std::move(callback)));
+          app_info.brand, language, install_source, new_install,
+          std::move(callback)));
 }
 
 void UpdateServiceImplImpl::GetUpdaterState(

@@ -1335,6 +1335,23 @@ void ExpectPing(UpdaterScope scope,
   test_server->ExpectOnce(request_matchers, ")]}'\n");
 }
 
+void ExpectInstallSource(UpdaterScope scope,
+                         ScopedServer* test_server,
+                         const std::string& install_source) {
+  ASSERT_TRUE(test_server)
+      << "TEST ISSUE - nil `test_server` in ExpectInstallSource";
+  request::MatcherGroup request_matchers = {
+      request::GetPathMatcher(test_server->update_path()),
+      request::GetUpdaterUserAgentMatcher(),
+      request::GetContentMatcher(
+          {base::StringPrintf(R"(.*"eventtype":%d,.*)", 2)}),
+      request::GetContentMatcher(
+          {base::StringPrintf(R"(.*"installsource":"%s",.*)", install_source)}),
+      request::GetScopeMatcher(scope)};
+
+  test_server->ExpectOnce(request_matchers, ")]}'\n");
+}
+
 void ExpectAppCommandPing(UpdaterScope scope,
                           ScopedServer* test_server,
                           const std::string& appid,
@@ -1764,7 +1781,8 @@ void RunOfflineInstall(UpdaterScope scope,
                        bool is_legacy_install,
                        bool is_silent_install,
                        int installer_result,
-                       int installer_error) {
+                       int installer_error,
+                       const std::string& install_source) {
   ADD_FAILURE();
 }
 

@@ -209,6 +209,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                               target_url);
   }
 
+  void ExpectInstallSource(ScopedServer* test_server,
+                           const std::string& install_source) const override {
+    updater::test::ExpectInstallSource(updater_scope_, test_server,
+                                       install_source);
+  }
+
   void ExpectAppCommandPing(
       ScopedServer* test_server,
       const std::string& appid,
@@ -649,12 +655,14 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void RunOfflineInstall(bool is_legacy_install,
                          bool is_silent_install,
                          int installer_result,
-                         int installer_error) override {
+                         int installer_error,
+                         const std::string& install_source) override {
     RunCommand("run_offline_install",
                {Param("legacy_install", BoolToString(is_legacy_install)),
                 Param("silent", BoolToString(is_silent_install)),
                 Param("installer_result", base::ToString(installer_result)),
-                Param("installer_error", base::ToString(installer_error))});
+                Param("installer_error", base::ToString(installer_error)),
+                Param("install_source", install_source)});
   }
 
   void RunOfflineInstallOsNotSupported(bool is_legacy_install,

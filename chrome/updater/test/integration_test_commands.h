@@ -68,6 +68,8 @@ class IntegrationTestCommands
   virtual void ExpectPing(ScopedServer* test_server,
                           int event_type,
                           std::optional<GURL> target_url) const = 0;
+  virtual void ExpectInstallSource(ScopedServer* test_server,
+                                   const std::string& install_source) const = 0;
   virtual void ExpectAppCommandPing(
       ScopedServer* test_server,
       const std::string& appid,
@@ -232,7 +234,8 @@ class IntegrationTestCommands
   virtual void RunOfflineInstall(bool is_legacy_install,
                                  bool is_silent_install,
                                  int installer_result,
-                                 int installer_error) = 0;
+                                 int installer_error,
+                                 const std::string& install_source) = 0;
   virtual void RunOfflineInstallOsNotSupported(bool is_legacy_install,
                                                bool is_silent_install,
                                                const std::string& language) = 0;

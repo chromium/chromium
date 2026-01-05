@@ -687,6 +687,11 @@ class IntegrationTest : public ::testing::Test {
                                target_url);
   }
 
+  void ExpectInstallSource(ScopedServer* test_server,
+                           const std::string& install_source) {
+    test_commands_->ExpectInstallSource(test_server, install_source);
+  }
+
   void ExpectAppCommandPing(
       ScopedServer* test_server,
       const std::string& appid,
@@ -874,9 +879,11 @@ class IntegrationTest : public ::testing::Test {
   void RunOfflineInstall(bool is_legacy_install,
                          bool is_silent_install,
                          int installer_result = 0,
-                         int installer_error = 0) {
+                         int installer_error = 0,
+                         const std::string& install_source = "") {
     test_commands_->RunOfflineInstall(is_legacy_install, is_silent_install,
-                                      installer_result, installer_error);
+                                      installer_result, installer_error,
+                                      install_source);
   }
 
   void RunOfflineInstallOsNotSupported(bool is_legacy_install,
@@ -5046,6 +5053,37 @@ TEST_F(IntegrationTest, OfflineInstallerError) {
                                             /*is_silent_install=*/true,
                                             /*installer_result=*/1,
                                             /*installer_error=*/99));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, OfflineInstallProvidedInstallSource) {
+  ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstallSource(&test_server, "enterprisemsi"));
+  ASSERT_NO_FATAL_FAILURE(
+      RunOfflineInstall(/*is_legacy_install=*/false,
+                        /*is_silent_install=*/false,
+                        /*installer_result=*/0,
+                        /*installer_error=*/0,
+                        /*install_source=*/kInstallSourceEnterpriseMsi));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, OfflineInstallInferredInstallSource) {
+  ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectInstallSource(&test_server, updater::kInstallSourceOffline));
+  ASSERT_NO_FATAL_FAILURE(RunOfflineInstall(/*is_legacy_install=*/false,
+                                            /*is_silent_install=*/false));
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
