@@ -172,9 +172,6 @@ void GpuChildThread::Init(
   }
 #endif
 
-  memory_pressure_listener_registration_ =
-      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
-          FROM_HERE, base::MemoryPressureListenerTag::kGpuChildThread, this);
   if (sequence_manager &&
       base::FeatureList::IsEnabled(
           features::kBoostThreadsPriorityDuringInputScenario)) {
@@ -260,16 +257,6 @@ void GpuChildThread::WillProcessTask(const base::PendingTask& pending_task,
     ChildProcess::current()->io_task_runner()->PostTask(FROM_HERE,
                                                         base::DoNothing());
   }
-}
-
-void GpuChildThread::OnMemoryPressure(base::MemoryPressureLevel level) {
-  if (level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    return;
-  }
-
-  if (viz_main_.discardable_shared_memory_manager())
-    viz_main_.discardable_shared_memory_manager()->ReleaseFreeMemory();
-  SkGraphics::PurgeAllCaches();
 }
 
 void GpuChildThread::QuitSafelyHelper(
