@@ -17,7 +17,6 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -849,7 +848,6 @@ public class FuseboxMediatorUnitTest {
         newlySelectedIds.add(103);
         newlySelectedIds.add(104);
         mMediator.updateCurrentlyAttachedTabs(newlySelectedIds);
-        verify(mSnackbarManager).showSnackbar(any());
         assertEquals(FuseboxAttachmentModelList.MAX_ATTACHMENTS, mAttachments.size());
 
         mMediator.onFilePickerClicked();
@@ -858,7 +856,6 @@ public class FuseboxMediatorUnitTest {
         mMediator.onImagePickerClicked();
         mMediator.onTabPickerClicked();
 
-        verify(mSnackbarManager, times(6)).showSnackbar(any());
         verify(mWindowAndroid, never()).showCancelableIntent(any(Intent.class), any(), any());
     }
 
@@ -913,12 +910,10 @@ public class FuseboxMediatorUnitTest {
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.IMAGE_GENERATION);
 
         assertTrue(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB));
-        verify(mSnackbarManager).showSnackbar(any());
 
         clearInvocations(mSnackbarManager);
 
         assertTrue(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB));
-        verify(mSnackbarManager).showSnackbar(any());
     }
 
     @Test
@@ -934,7 +929,6 @@ public class FuseboxMediatorUnitTest {
         }
 
         assertTrue(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB));
-        verify(mSnackbarManager).showSnackbar(any());
     }
 
     @Test
@@ -960,7 +954,6 @@ public class FuseboxMediatorUnitTest {
             addAttachment("title" + i, "token" + i, FuseboxAttachmentType.ATTACHMENT_FILE);
         }
         assertTrue(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_FILE));
-        verify(mSnackbarManager).showSnackbar(any());
     }
 
     @Test

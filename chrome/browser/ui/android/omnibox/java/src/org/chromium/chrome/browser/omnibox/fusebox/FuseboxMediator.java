@@ -78,7 +78,6 @@ public class FuseboxMediator {
     private final Callback<@AutocompleteRequestType Integer> mOnAutocompleteRequestTypeChanged =
             this::onAutocompleteRequestTypeChanged;
     private final SnackbarManager mSnackbarManager;
-    private final Snackbar mAttachmentLimitSnackbar;
     private final Snackbar mAttachmentUploadFailedSnackbar;
 
     FuseboxMediator(
@@ -108,12 +107,6 @@ public class FuseboxMediator {
         mSnackbarManager = snackbarManager;
 
         mAutocompleteRequestTypeSupplier.addObserver(mOnAutocompleteRequestTypeChanged);
-
-        // Create the limit reached snackbar
-        mAttachmentLimitSnackbar =
-                createStyledSnackbar(
-                        context.getText(R.string.fusebox_max_attachments),
-                        Snackbar.UMA_FUSEBOX_MAX_ATTACHMENTS);
 
         // Create the upload failed snackbar
         mAttachmentUploadFailedSnackbar =
@@ -325,9 +318,7 @@ public class FuseboxMediator {
         var attachment = FuseboxAttachment.forTab(tab, mContext.getResources());
 
         // Use FuseboxModelList's add method which handles upload automatically
-        if (!mModelList.add(attachment)) {
-            warnForMaxAttachments();
-        }
+        mModelList.add(attachment);
     }
 
     /**
@@ -355,8 +346,6 @@ public class FuseboxMediator {
         if (mModelList.getRemainingAttachments() > 0 && !isImageGenerationUsed) {
             return false;
         }
-
-        warnForMaxAttachments();
         return true;
     }
 
@@ -474,7 +463,6 @@ public class FuseboxMediator {
                                     FuseboxAttachment.forTab(
                                             assumeNonNull(tab), mContext.getResources()));
                     if (addFailed) {
-                        warnForMaxAttachments();
                         break;
                     }
                 }
@@ -674,10 +662,6 @@ public class FuseboxMediator {
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    private void warnForMaxAttachments() {
-        mSnackbarManager.showSnackbar(mAttachmentLimitSnackbar);
-    }
-
     /**
      * Add an attachment to the Fusebox toolbar.
      *
@@ -690,9 +674,7 @@ public class FuseboxMediator {
         }
 
         // Use FuseboxModelList's unified add method.
-        if (!mModelList.add(attachment)) {
-            warnForMaxAttachments();
-        }
+        mModelList.add(attachment);
         maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
     }
 
