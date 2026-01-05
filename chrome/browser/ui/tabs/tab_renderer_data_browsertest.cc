@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/data_sharing/public/features.h"
@@ -209,6 +210,31 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, Urls) {
   EXPECT_EQ(data.last_committed_url, kUrl);
   EXPECT_TRUE(data.should_display_url);
   EXPECT_FALSE(data.should_render_empty_title);
+}
+
+IN_PROC_BROWSER_TEST_F(TabRendererDataTest, DomainUrlHiddenForNtpAndTabSearch) {
+  struct TestCase {
+    GURL url;
+    bool expected_domain_visible;
+  };
+
+  TestCase test_cases[] = {
+      {GURL("https://example.com"), true},
+      {GURL(chrome::kChromeUIVersionURL), true},
+      {GURL(chrome::kChromeUINewTabURL), false},
+      {GURL(chrome::kChromeUINewTabPageURL), false},
+      {GURL(chrome::kChromeUITabSearchURL), false},
+  };
+
+  for (const auto& test_case : test_cases) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), test_case.url, WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    TabStripModel* tab_strip_model = browser()->tab_strip_model();
+    TabRendererData data = TabRendererData::FromTabInModel(tab_strip_model, 0);
+    EXPECT_EQ(data.should_display_url, test_case.expected_domain_visible)
+        << test_case.url;
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(TabRendererDataTest, UncomittedNavigationUrl) {

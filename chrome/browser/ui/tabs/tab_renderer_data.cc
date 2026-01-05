@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "components/performance_manager/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -56,6 +57,13 @@ GetCollaborationMessage(tabs::TabInterface* tab) {
   return data->GetWeakPtr();
 }
 
+bool IsNTP(const GURL& url) {
+  return url.SchemeIs(content::kChromeUIScheme) &&
+         (url.GetHost() == chrome::kChromeUINewTabHost ||
+          url.GetHost() == chrome::kChromeUINewTabPageHost ||
+          url.GetHost() == chrome::kChromeUITabSearchHost);
+}
+
 }  // namespace
 
 // static
@@ -72,10 +80,13 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
   security_interstitials::SecurityInterstitialTabHelper*
       security_interstitial_tab_helper = security_interstitials::
           SecurityInterstitialTabHelper::FromWebContents(contents);
+
   bool should_display_url =
-      !security_interstitial_tab_helper ||
-      !security_interstitial_tab_helper->IsDisplayingInterstitial() ||
-      security_interstitial_tab_helper->ShouldDisplayURL();
+      // NTP URLs are hidden to match the omnibox behavior.
+      !IsNTP(contents->GetVisibleURL()) &&
+      (!security_interstitial_tab_helper ||
+       !security_interstitial_tab_helper->IsDisplayingInterstitial() ||
+       security_interstitial_tab_helper->ShouldDisplayURL());
 
   TabRendererData data;
 
