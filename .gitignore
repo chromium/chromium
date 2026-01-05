@@ -36,6 +36,7 @@
 !Android.mk
 .*.sw?
 .DS_Store
+/.agent
 .android
 .ccls-cache
 .cipd
