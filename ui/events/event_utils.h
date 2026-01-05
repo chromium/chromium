@@ -7,13 +7,13 @@
 
 #include <stdint.h>
 
-#include <cstring>
 #include <memory>
 #include <string_view>
 #include <vector>
 
 #include "base/bits.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "ui/display/display.h"
 #include "ui/events/base_event_utils.h"
@@ -222,10 +222,8 @@ EVENTS_EXPORT void ConvertEventLocationToTargetWindowLocation(
 // Converts a value of an unsigned integer type to an Event::PropertyValue.
 template <base::bits::UnsignedInteger T>
 Event::PropertyValue ConvertToEventPropertyValue(const T& value) {
-  Event::PropertyValue property_value;
-  property_value.resize(sizeof(T));
-  UNSAFE_TODO(
-      std::memcpy(property_value.data(), &value, property_value.size()));
+  Event::PropertyValue property_value(sizeof(T));
+  base::span(property_value).copy_from(base::byte_span_from_ref(value));
   return property_value;
 }
 
