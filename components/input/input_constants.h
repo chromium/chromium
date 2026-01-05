@@ -20,6 +20,10 @@ inline constexpr base::TimeDelta kHungRendererDelay = base::Seconds(5);
 inline constexpr base::TimeDelta kHungRendererDelay = base::Seconds(15);
 #endif
 
+// The time to wait for a ping response from the main thread before declaring
+// the renderer unresponsive.
+inline constexpr base::TimeDelta kHungRendererPingTimeout = base::Seconds(1);
+
 }  // namespace input
 
 #endif  // COMPONENTS_INPUT_INPUT_CONSTANTS_H_

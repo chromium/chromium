@@ -38,6 +38,12 @@ void RunClosureIfNotSwappedOut(base::WeakPtr<WidgetBase> widget,
   std::move(closure).Run();
 }
 
+void RunPingCallback(
+    scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner,
+    WidgetInputHandlerImpl::PingMainThreadCallback callback) {
+  callback_task_runner->PostTask(FROM_HERE, std::move(callback));
+}
+
 }  // namespace
 
 WidgetInputHandlerImpl::WidgetInputHandlerImpl(
@@ -118,6 +124,7 @@ void WidgetInputHandlerImpl::ImeSetComposition(
     int32_t start,
     int32_t end,
     WidgetInputHandlerImpl::ImeSetCompositionCallback callback) {
+  // TODO(470910193): Avoid use of GetCurrentDefault() in Blink.
   RunOnMainThread(
       base::BindOnce(&ImeSetCompositionOnMainThread, widget_,
                      base::SingleThreadTaskRunner::GetCurrentDefault(), text,
@@ -142,6 +149,7 @@ void WidgetInputHandlerImpl::ImeCommitText(
     const gfx::Range& range,
     int32_t relative_cursor_position,
     ImeCommitTextCallback callback) {
+  // TODO(470910193): Avoid use of GetCurrentDefault() in Blink.
   RunOnMainThread(base::BindOnce(
       &ImeCommitTextOnMainThread, widget_,
       base::SingleThreadTaskRunner::GetCurrentDefault(), text, ime_text_spans,
@@ -195,6 +203,16 @@ void WidgetInputHandlerImpl::WaitForInputProcessed(
   input_handler_manager_->WaitForInputProcessed(
       base::BindOnce(&WidgetInputHandlerImpl::InputWasProcessed,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void WidgetInputHandlerImpl::PingMainThread(PingMainThreadCallback callback) {
+  // TODO(470910193): Avoid use of GetCurrentDefault() in Blink.
+  auto main_thread_task = base::BindOnce(
+      &RunPingCallback, base::SingleThreadTaskRunner::GetCurrentDefault(),
+      std::move(callback));
+
+  // Queue the task onto the MainThreadEventQueue via RunOnMainThread.
+  RunOnMainThread(std::move(main_thread_task));
 }
 
 void WidgetInputHandlerImpl::InputWasProcessed() {

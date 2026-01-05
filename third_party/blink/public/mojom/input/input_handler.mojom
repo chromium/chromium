@@ -533,6 +533,11 @@ interface WidgetInputHandler {
   // displayed.
   WaitForInputProcessed() => ();
 
+  // Pings the main thread by queuing a task directly onto the
+  // MainThreadEventQueue and waiting for its execution. Used for hang
+  // detection.
+  PingMainThread() => ();
+
   // Attach the synchronous compositor interface. This method only
   // should be called for Android WebView.
   [EnableIf=is_android]

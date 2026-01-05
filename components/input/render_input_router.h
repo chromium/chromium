@@ -250,6 +250,19 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
   // This value indicates how long to wait before we consider a renderer hung.
   base::TimeDelta hung_renderer_delay_;
 
+  // Called when the response to PingMainThread is received.
+  void OnPingAck();
+
+  // State machine for the hang monitor timer.
+  enum class HangMonitorTimerState {
+    kStopped,     // Not monitoring.
+    kMonitoring,  // Monitoring responsiveness (standard timer running).
+    kPinging,     // Actively pinging the main thread (short timer running).
+  };
+
+  HangMonitorTimerState hang_monitor_timer_state_ =
+      HangMonitorTimerState::kStopped;
+
   // Must be declared before `input_router_`. The latter is constructed by
   // borrowing a reference to this object, so it must be deleted first.
   std::unique_ptr<FlingSchedulerBase> fling_scheduler_;
