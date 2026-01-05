@@ -42,6 +42,7 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
       SessionHandleGetter session_handle_getter) override;
   void AddObserver(ActiveTaskContextProvider::Observer* observer) override;
   void RemoveObserver(ActiveTaskContextProvider::Observer* observer) override;
+  void OnFullTabStateUpdated() override;
 
   // ContextualTasksService::Observer implementation.
   void OnTaskAdded(const ContextualTask& task,

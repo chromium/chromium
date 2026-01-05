@@ -17,6 +17,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_tasks/active_task_context_provider.h"
+#include "chrome/browser/contextual_tasks/contextual_search_session_finder.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
@@ -607,7 +609,28 @@ void ContextualTasksUiService::OnTaskChanged(
     content::WebContents* web_contents,
     const base::Uuid& task_id,
     bool is_shown_in_tab) {
-  if (!is_shown_in_tab && browser_window_interface) {
+  if (!browser_window_interface) {
+    return;
+  }
+
+  ContextualTasksSidePanelCoordinator* side_panel_coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser_window_interface);
+
+  if (is_shown_in_tab) {
+    auto* contextual_search_service =
+        ContextualSearchServiceFactory::GetForProfile(profile_.get());
+    UpdateContextualSearchWebContentsHelperForTask(
+        contextual_search_service, browser_window_interface,
+        contextual_tasks_service_, side_panel_coordinator, web_contents,
+        task_id);
+
+    auto* active_task_context_provider =
+        browser_window_interface->GetFeatures()
+            .contextual_tasks_active_task_context_provider();
+    if (active_task_context_provider) {
+      active_task_context_provider->OnFullTabStateUpdated();
+    }
+  } else {  // !is_shown_in_tab
     // If a new thread is started in the panel, affiliated tabs should change
     // their thread to the new one.
     base::Uuid new_task_id = task_id;
@@ -640,9 +663,7 @@ void ContextualTasksUiService::OnTaskChanged(
       contextual_tasks_service_->AssociateTabWithTask(new_task_id, active_id);
     }
 
-    ContextualTasksSidePanelCoordinator* coordinator =
-        ContextualTasksSidePanelCoordinator::From(browser_window_interface);
-    coordinator->OnTaskChanged(web_contents, new_task_id);
+    side_panel_coordinator->OnTaskChanged(web_contents, new_task_id);
   }
 }
 

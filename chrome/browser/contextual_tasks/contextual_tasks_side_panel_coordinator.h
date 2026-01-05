@@ -126,15 +126,6 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   contextual_search::ContextualSearchSessionHandle*
   GetContextualSearchSessionHandleForSidePanel();
 
-  // Helper method to set task ID and session handle on the
-  // ContextualSearchWebContentsHelper associated with the given `web_contents`.
-  // Must be invoked whenever a the thread associated with the `web_contents`.
-  // changes. Finds an existing session open in browser if possible. If not
-  // found, creates a new session.
-  void UpdateContextualSearchWebContentsHelperForTask(
-      content::WebContents* web_contents,
-      const base::Uuid& task_id);
-
   // Returns a list of all cached side panel WebContents.
   std::vector<content::WebContents*> GetSidePanelWebContentsList() const;
 
