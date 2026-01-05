@@ -5,7 +5,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {BrowserProxy, LineFocusType, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -254,7 +254,7 @@ suite('AppReceivesToolbarChanges', () => {
         chrome.readingMode.isLineFocusEnabled = true;
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS,
-            {detail: {data: {type: LineFocusType.WINDOW, lines: 1}}});
+            {detail: {data: chrome.readingMode.lineFocusOneLineWindow}});
         await microtasksFinished();
         const startingHeight =
             app.style.getPropertyValue('--line-focus-height');

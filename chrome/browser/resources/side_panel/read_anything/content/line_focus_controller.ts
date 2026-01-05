@@ -53,6 +53,20 @@ export class LineFocusController {
         (this.model_.getCurrentLineFocus() !== LineFocus.OFF));
   }
 
+  toggle(container: HTMLElement, height: number) {
+    if (!chrome.readingMode.isLineFocusEnabled) {
+      return;
+    }
+
+    const lastLineFocus =
+        this.model_.getLastEnabledLineFocus() || LineFocus.defaultValue();
+    const newLineFocus = this.isEnabled() ? LineFocus.OFF : lastLineFocus;
+    if (newLineFocus) {
+      this.setLineFocus_(newLineFocus, container, height);
+      chrome.readingMode.onLineFocusChanged(newLineFocus.enumValue());
+    }
+  }
+
   onScrollEnd(newScrollTop: number) {
     if (this.isEnabled()) {
       const distance = Math.abs(newScrollTop - this.model_.getLastScrollTop());
@@ -75,11 +89,13 @@ export class LineFocusController {
   }
 
   onTextLocationsChange(container: HTMLElement, height: number) {
+    console.error('text location change', this.isEnabled());
     if (this.isEnabled()) {
       const previousMaxY = this.model_.getMaxY();
       const previousMinY = this.model_.getMinY();
       this.calculateNewPositions_(container, height);
       if (this.isStatic_()) {
+        console.error('static');
         if (previousMaxY !== this.model_.getMaxY() ||
             previousMinY !== this.model_.getMinY()) {
           this.setCenterY_();
@@ -90,6 +106,7 @@ export class LineFocusController {
       if (this.speechController_.isSpeechActive()) {
         const highlights = container.querySelectorAll<HTMLElement>(
             `.${currentReadHighlightClass}`);
+        console.error('moving ');
         this.moveBelowHighlights_(Array.from(highlights));
       } else {
         this.setY_(this.model_.getY());
@@ -99,10 +116,17 @@ export class LineFocusController {
 
   onLineFocusChange(
       lineFocusEnumValue: number, container: HTMLElement, height: number) {
+    const lineFocus = LineFocus.fromEnumValue(lineFocusEnumValue);
+    if (lineFocus) {
+      this.setLineFocus_(lineFocus, container, height);
+    }
+  }
+
+  private setLineFocus_(
+      lineFocus: LineFocus, container: HTMLElement, height: number) {
     const wasEnabled = this.isEnabled();
-    const lineFocus = this.getLineFocusFromEnumValue_(lineFocusEnumValue);
     this.model_.setCurrentLineFocus(lineFocus);
-    if (lineFocus.type === LineFocusType.NONE) {
+    if (lineFocus === LineFocus.OFF) {
       this.logger_.logLineFocusSession();
       this.model_.setMinY(0);
       this.model_.setMaxY(0);
@@ -119,6 +143,10 @@ export class LineFocusController {
       if (!wasEnabled) {
         chrome.readingMode.startLineFocusSession();
       }
+      // TODO(crbug.com/447427066): Store this in prefs too so if the user
+      // toggles off line focus before closing RM, we can still toggle back on
+      // their last used line focus mode.
+      this.model_.setLastEnabledLineFocus(lineFocus);
       this.calculateNewPositions_(container, height);
       if (this.isStatic_()) {
         this.setCenterY_();
@@ -204,7 +232,7 @@ export class LineFocusController {
 
   private isStatic_(): boolean {
     const lineFocus = this.model_.getCurrentLineFocus();
-    return !!lineFocus && lineFocus.isStatic;
+    return lineFocus === LineFocus.STATIC_LINE;
   }
 
   // When the current line focus mode is static, scroll the content instead of
@@ -386,23 +414,6 @@ export class LineFocusController {
 
   private setCenterY_() {
     this.setY_(this.model_.getMinY() + this.model_.getMaxY() / 2);
-  }
-
-  private getLineFocusFromEnumValue_(enumValue: number): LineFocus {
-    switch (enumValue) {
-      case chrome.readingMode.lineFocusCursorLine:
-        return LineFocus.CURSOR_LINE;
-      case chrome.readingMode.lineFocusStaticLine:
-        return LineFocus.STATIC_LINE;
-      case chrome.readingMode.lineFocusOneLineWindow:
-        return LineFocus.ONE_LINE_WINDOW;
-      case chrome.readingMode.lineFocusThreeLineWindow:
-        return LineFocus.THREE_LINE_WINDOW;
-      case chrome.readingMode.lineFocusFiveLineWindow:
-        return LineFocus.FIVE_LINE_WINDOW;
-      default:
-        return LineFocus.OFF;
-    }
   }
 
   static getInstance(): LineFocusController {

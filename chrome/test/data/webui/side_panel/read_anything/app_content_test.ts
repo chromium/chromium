@@ -4,8 +4,9 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement, LanguageToastElement, SpEmptyStateElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {BrowserProxy, ContentController, ContentType, NodeStore, ReadAloudNode, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceClientSideStatusCode, VoiceLanguageController, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, ContentController, ContentType, LineFocusController, NodeStore, ReadAloudNode, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceClientSideStatusCode, VoiceLanguageController, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createApp, emitEvent, setContent, setupBasicSpeech} from './common.js';
@@ -25,6 +26,7 @@ suite('AppContent', () => {
   let notificationManager: VoiceNotificationManager;
   let readAloudModel: TestReadAloudModelBrowserProxy;
   let speech: TestSpeechBrowserProxy;
+  let lineFocusController: LineFocusController;
 
   setup(async () => {
     // Clearing the DOM should always be done first.
@@ -47,6 +49,8 @@ suite('AppContent', () => {
     SpeechController.setInstance(speechController);
     contentController = new ContentController();
     ContentController.setInstance(contentController);
+    lineFocusController = new LineFocusController();
+    LineFocusController.setInstance(lineFocusController);
 
     app = await createApp();
     emptyState =
@@ -77,6 +81,19 @@ suite('AppContent', () => {
         new MouseEvent('mousemove', {clientY: 10}));
 
     assertEquals('10px', app.style.getPropertyValue('--line-focus-y'));
+  });
+
+  test('line focus shortcut toggles line focus', async () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    assertFalse(lineFocusController.isEnabled());
+
+    keyDownOn(app, 0, undefined, 'l');
+    await microtasksFinished();
+    assertTrue(lineFocusController.isEnabled());
+
+    keyDownOn(app, 0, undefined, 'l');
+    await microtasksFinished();
+    assertFalse(lineFocusController.isEnabled());
   });
 
   test('showLoading shows spinner', async () => {

@@ -4,7 +4,7 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {currentReadHighlightClass, LineFocusController, LineFocusType, PARENT_OF_HIGHLIGHT_CLASS, previousReadHighlightClass, setInstance, SpeechBrowserProxyImpl, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {currentReadHighlightClass, LineFocus, LineFocusController, LineFocusType, PARENT_OF_HIGHLIGHT_CLASS, previousReadHighlightClass, setInstance, SpeechBrowserProxyImpl, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {LineFocusListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
@@ -403,6 +403,50 @@ suite('LineFocusController', () => {
     assertEquals(0, scrollDistance);
   });
 
+  test('toggle while on disables line focus', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    const container = createShortContainer();
+    lineFocusController.onLineFocusChange(
+        chrome.readingMode.lineFocusThreeLineWindow, container, defaultHeight);
+
+    lineFocusController.toggle(container, defaultHeight);
+
+    assertEquals(
+        LineFocusType.NONE, lineFocusController.getCurrentLineFocusType());
+  });
+
+  test('first toggle while off enables default line focus', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    const container = createShortContainer();
+    lineFocusController.onLineFocusChange(
+        chrome.readingMode.lineFocusOff, container, defaultHeight);
+
+    lineFocusController.toggle(container, defaultHeight);
+
+    assertEquals(
+        LineFocus.defaultValue().type,
+        lineFocusController.getCurrentLineFocusType());
+  });
+
+  test('toggle while off enables previously used line focus', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    const container = createShortContainer();
+    const previousMode = LineFocus.FIVE_LINE_WINDOW;
+    // If the default value changes, this test needs to change in order to test
+    // the non-default value.
+    assertNotEquals(
+        LineFocus.defaultValue().enumValue(), previousMode.enumValue());
+    lineFocusController.onLineFocusChange(
+        previousMode.enumValue(), container, defaultHeight);
+    lineFocusController.onLineFocusChange(
+        chrome.readingMode.lineFocusOff, container, defaultHeight);
+
+    lineFocusController.toggle(container, defaultHeight);
+
+    assertEquals(
+        previousMode.type, lineFocusController.getCurrentLineFocusType());
+  });
+
   test('onMouseMove does nothing if flag disabled', () => {
     lineFocusController.onLineFocusChange(
         chrome.readingMode.lineFocusCursorLine, defaultContainer,
@@ -522,7 +566,6 @@ suite('LineFocusController', () => {
     document.body.appendChild(heading);
     lineFocusMoved = false;
 
-    console.error('height', heading.offsetHeight);
     lineFocusController.onTextLocationsChange(heading, defaultHeight);
 
     assertNotEquals(NaN, lineFocusController.getTop());
@@ -542,7 +585,11 @@ suite('LineFocusController', () => {
                 'is made from what I learned from you\nyou\'ll be with me\n' +
                 'like a handprint on my heart\n' +
                 'and now whatever way our stories end\n' +
-                'Know you have rewritten mine\nby being my friend',
+                'Know you have rewritten mine\nby being my friend\n' +
+                'like a ship blown from it\'s mooring\n' +
+                'by a wind off the sea\n' +
+                'like a seed dropped by a sky bird\n' +
+                'in a distant wood',
             readAloudModel) as HTMLElement;
     container.appendChild(text);
     document.body.appendChild(container);
@@ -556,7 +603,6 @@ suite('LineFocusController', () => {
     lineFocusMoved = false;
 
     lineFocusController.onTextLocationsChange(container, 100);
-
 
     const highlights = container.querySelectorAll<HTMLElement>(
         `.${currentReadHighlightClass}`);

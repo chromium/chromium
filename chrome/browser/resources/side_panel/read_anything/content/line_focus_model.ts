@@ -29,6 +29,9 @@ export class LineFocusModel {
 
   // The current line focus mode.
   private currentLineFocus_?: LineFocus;
+  // The last line focus mode that was used when it was on. Used for toggling on
+  // line focus with the last used line focus mode.
+  private lastEnabledLineFocus_?: LineFocus;
 
   // The index of the current line in textLineBottoms_ being focused. Null if
   // line focus is moving continuously with the mouse instead of discretely.
@@ -93,6 +96,14 @@ export class LineFocusModel {
 
   setCurrentLineFocus(lineFocus: LineFocus): void {
     this.currentLineFocus_ = lineFocus;
+  }
+
+  getLastEnabledLineFocus(): LineFocus|null {
+    return this.lastEnabledLineFocus_ || null;
+  }
+
+  setLastEnabledLineFocus(lineFocus: LineFocus): void {
+    this.lastEnabledLineFocus_ = lineFocus;
   }
 
   getCurrentLineIndex(): number|null {

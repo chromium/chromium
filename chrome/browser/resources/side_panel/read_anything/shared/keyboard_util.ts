@@ -46,3 +46,7 @@ export function isHorizontalArrow(key: string): boolean {
 export function isVerticalArrow(key: string): boolean {
   return VERTICAL_ARROWS.includes(key);
 }
+
+export function isLineFocusShortcut(key: string): boolean {
+  return key === 'l';
+}
