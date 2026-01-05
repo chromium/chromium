@@ -14,7 +14,7 @@ addEventListener('load', () => {
 });
 
 addEventListener('message', (e) => {
-  e.source.postMessage(rafCount, e.origin);
+  e.source.postMessage(rafCount, "*");
 });
 </script>
 

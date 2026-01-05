@@ -408,7 +408,20 @@ String MessageEvent::originForBindings() {
 
   // If no origin was provided (e.g. we're generating this event via
   // `MessagePort.postMessage`), then we'll serialize to the empty string.
-  return origin_ ? origin_->ToString() : "";
+  //
+  // If a local-scheme origin was provided, serialize to `null`.
+  //
+  // TODO(40554285): The `file:` case should depend upon the
+  // `allow_file_access_from_file_urls` preference, but that unfortunately
+  // does not yet persist after round-tripping through `url::Origin`.
+  // Serializing to `null` is consistent with our historical behavior, and
+  // safe.
+  if (!origin_) {
+    return "";
+  } else if (origin_->IsLocal()) {
+    return "null";
+  }
+  return origin_->ToString();
 }
 
 const AtomicString& MessageEvent::InterfaceName() const {

@@ -10,7 +10,7 @@ addEventListener('message', (e) => {
     let start = performance.now();
     setTimeout(() => {
       let end = performance.now();
-      e.source.postMessage(end - start, e.origin);
+      e.source.postMessage(end - start, "*");
     }, 20);
   }, 20);
 });

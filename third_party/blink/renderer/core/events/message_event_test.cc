@@ -103,4 +103,24 @@ TEST_F(MessageEventTest, AccountForArrayBufferMemory) {
 
   scope.GetIsolate()->Exit();
 }
+
+TEST_F(MessageEventTest, OriginSerializationFile) {
+  {
+    scoped_refptr<const SecurityOrigin> origin =
+        SecurityOrigin::CreateFromString("file:///");
+    MessageEvent* event = MessageEvent::Create("", std::move(origin));
+    // TODO(40554285): This should be `file://`.
+    EXPECT_EQ("null", event->originForBindings());
+  }
+
+  {
+    scoped_refptr<SecurityOrigin> origin_local_blocked =
+        SecurityOrigin::CreateFromString("file:///");
+    origin_local_blocked->BlockLocalAccessFromLocalOrigin();
+    MessageEvent* event =
+        MessageEvent::Create("", std::move(origin_local_blocked));
+    EXPECT_EQ("null", event->originForBindings());
+  }
+}
+
 }  // namespace blink
