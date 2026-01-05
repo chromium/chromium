@@ -76,7 +76,7 @@
 #include "third_party/skia/include/core/SkShader.h"
 #include "third_party/skia/include/core/SkString.h"
 #include "third_party/skia/include/effects/SkColorMatrix.h"
-#include "third_party/skia/include/effects/SkGradientShader.h"
+#include "third_party/skia/include/effects/SkGradient.h"
 #include "third_party/skia/include/effects/SkImageFilters.h"
 #include "third_party/skia/include/effects/SkOverdrawColorFilter.h"
 #include "third_party/skia/include/effects/SkRuntimeEffect.h"
@@ -1540,7 +1540,10 @@ void SkiaRenderer::PrepareCanvas(
   }
 }
 
-#define MaskColor(a) SkColorSetARGB(a, a, a, a);
+static inline SkColor4f MaskColor(unsigned alpha) {
+    const float a = alpha / 255.f;
+    return {a, a, a, a};
+}
 
 void SkiaRenderer::PrepareGradient(
     const std::optional<gfx::MaskFilterInfo>& mask_filter_info) {
@@ -1590,7 +1593,7 @@ void SkiaRenderer::PrepareGradient(
   }
 
   std::array<SkScalar, gfx::LinearGradient::kMaxStepSize> positions;
-  std::array<SkColor, gfx::LinearGradient::kMaxStepSize> gradient_colors;
+  std::array<SkColor4f, gfx::LinearGradient::kMaxStepSize> gradient_colors;
 
   size_t i = 0;
   for (; i < gradient_mask->step_count(); ++i) {
@@ -1599,9 +1602,8 @@ void SkiaRenderer::PrepareGradient(
   }
 
   SkPoint::Offset(start_end, /*count=*/2, rect.x(), rect.y());
-  sk_sp<SkShader> gradient = SkGradientShader::MakeLinear(
-      start_end, gradient_colors.data(), positions.data(), /*count=*/i,
-      SkTileMode::kClamp);
+  sk_sp<SkShader> gradient = SkShaders::LinearGradient(
+      start_end, {{{gradient_colors.data(), i}, {positions.data(), i}, SkTileMode::kClamp}, {}});
   current_canvas_->clipShader(std::move(gradient));
 }
 

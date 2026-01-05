@@ -47,9 +47,9 @@ PaintOptions linear_grad_SRGB_sm_med_srcover() {
   PaintOptions paintOptions;
   paintOptions.setShaders({::skgpu::graphite::PrecompileShaders::LinearGradient(
       GradientShaderFlags::kNoLarge,
-      {SkGradientShader::Interpolation::InPremul::kNo,
-       SkGradientShader::Interpolation::ColorSpace::kSRGB,
-       SkGradientShader::Interpolation::HueMethod::kShorter})});
+      {SkGradient::Interpolation::InPremul::kNo,
+       SkGradient::Interpolation::ColorSpace::kSRGB,
+       SkGradient::Interpolation::HueMethod::kShorter})});
 
   paintOptions.setBlendModes({SkBlendMode::kSrcOver});
   paintOptions.setDither(true);

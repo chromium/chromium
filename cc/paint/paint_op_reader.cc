@@ -973,15 +973,15 @@ void PaintOpReader::Read(gfx::HDRMetadata* hdr_metadata) {
   DidRead(size);
 }
 
-void PaintOpReader::Read(SkGradientShader::Interpolation* interpolation) {
-  ReadEnum<SkGradientShader::Interpolation::InPremul,
-           SkGradientShader::Interpolation::InPremul::kYes>(
+void PaintOpReader::Read(SkGradient::Interpolation* interpolation) {
+  ReadEnum<SkGradient::Interpolation::InPremul,
+           SkGradient::Interpolation::InPremul::kYes>(
       &interpolation->fInPremul);
-  ReadEnum<SkGradientShader::Interpolation::ColorSpace,
-           SkGradientShader::Interpolation::ColorSpace::kLastColorSpace>(
+  ReadEnum<SkGradient::Interpolation::ColorSpace,
+           SkGradient::Interpolation::ColorSpace::kLastColorSpace>(
       &interpolation->fColorSpace);
-  ReadEnum<SkGradientShader::Interpolation::HueMethod,
-           SkGradientShader::Interpolation::HueMethod::kLastHueMethod>(
+  ReadEnum<SkGradient::Interpolation::HueMethod,
+           SkGradient::Interpolation::HueMethod::kLastHueMethod>(
       &interpolation->fHueMethod);
 }
 

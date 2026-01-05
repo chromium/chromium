@@ -16,7 +16,7 @@
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkFont.h"
-#include "third_party/skia/include/effects/SkGradientShader.h"
+#include "third_party/skia/include/effects/SkGradient.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLAssembleInterface.h"
@@ -152,9 +152,9 @@ void SkiaGlRenderer::Draw(SkCanvas* canvas, float fraction) {
   // Set up a linear gradient and draw a circle
   {
     SkPoint linearPoints[] = {{0, 0}, {300, 300}};
-    SkColor linearColors[] = {SK_ColorGREEN, SK_ColorBLACK};
-    paint.setShader(SkGradientShader::MakeLinear(
-        linearPoints, linearColors, nullptr, 2, SkTileMode::kMirror));
+    SkColor4f linearColors[] = {SkColors::kGreen, SkColors::kBlack};
+    paint.setShader(SkShaders::LinearGradient(
+        linearPoints, {{linearColors, {}, SkTileMode::kMirror}, {}}));
     paint.setAntiAlias(true);
 
     canvas->drawCircle(200, 200, 64, paint);

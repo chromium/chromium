@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/effects/SkGradientShader.h"
+#include "third_party/skia/include/effects/SkGradient.h"
 
 class SkMatrix;
 
@@ -154,7 +154,7 @@ class PLATFORM_EXPORT Gradient {
   virtual sk_sp<PaintShader> CreateShader(const ColorBuffer&,
                                           const OffsetBuffer&,
                                           SkTileMode,
-                                          SkGradientShader::Interpolation,
+                                          SkGradient::Interpolation,
                                           const SkMatrix&,
                                           SkColor4f) const = 0;
 
@@ -164,7 +164,7 @@ class PLATFORM_EXPORT Gradient {
 
  private:
   sk_sp<PaintShader> CreateShaderInternal(const SkMatrix& local_matrix);
-  SkGradientShader::Interpolation ResolveSkInterpolation() const;
+  SkGradient::Interpolation ResolveSkInterpolation() const;
 
   void SortStopsIfNecessary() const;
   void FillSkiaStops(ColorBuffer&, OffsetBuffer&) const;
