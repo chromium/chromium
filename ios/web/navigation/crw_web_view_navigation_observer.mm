@@ -338,9 +338,9 @@ using web::NavigationManagerImpl;
 // YES for the web view (since if it's not, no guesswork is needed).
 - (BOOL)isKVOChangePotentialSameDocumentNavigationToURL:(const GURL&)newURL {
   // If the origin changes, it can't be same-document.
-  if (self.documentURL.DeprecatedGetOriginAsURL().is_empty() ||
-      self.documentURL.DeprecatedGetOriginAsURL() !=
-          newURL.DeprecatedGetOriginAsURL()) {
+  if (const GURL originAsURL = self.documentURL.DeprecatedGetOriginAsURL();
+      originAsURL.is_empty() ||
+      originAsURL != newURL.DeprecatedGetOriginAsURL()) {
     return NO;
   }
   if (self.navigationHandler.navigationState ==
