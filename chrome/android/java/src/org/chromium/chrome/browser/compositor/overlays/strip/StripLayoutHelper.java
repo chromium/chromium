@@ -101,6 +101,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.MediaState;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
@@ -1641,33 +1642,32 @@ public class StripLayoutHelper
      */
     public void tabSelected(long time, int id, int prevId) {
         StripLayoutTab stripTab = findTabById(id);
-        if (stripTab == null) {
-            tabCreated(time, id, prevId, true, false, false);
-            updateSelectedTab(id, prevId);
-        } else {
-            updateSelectedTab(id, prevId);
-            updateCloseButtons();
+        // TODO(crbug.com/469826110): Switch to an assert when we can no longer get a #tabSelected
+        //  event before the tab is recreated (e.g. through an undone closure).
+        if (stripTab == null) return;
 
-            Tab tab = getTabById(id);
-            if (tab != null
-                    && mTabGroupModelFilter != null
-                    && tab.getTabGroupId() != null
-                    && mTabGroupModelFilter.getTabGroupCollapsed(tab.getTabGroupId())) {
-                mTabGroupModelFilter.deleteTabGroupCollapsed(tab.getTabGroupId());
-            }
+        updateSelectedTab(id, prevId);
+        updateCloseButtons();
 
-            if (!mReorderDelegate.getInReorderMode()) {
-                // If the tab was selected through a method other than the user tapping on the
-                // strip, it may not be currently visible. Scroll if necessary.
-                bringSelectedTabToVisibleArea(time, true);
-            }
+        Tab tab = getTabById(id);
+        if (tab != null
+                && mTabGroupModelFilter != null
+                && tab.getTabGroupId() != null
+                && mTabGroupModelFilter.getTabGroupCollapsed(tab.getTabGroupId())) {
+            mTabGroupModelFilter.deleteTabGroupCollapsed(tab.getTabGroupId());
+        }
 
-            mUpdateHost.requestUpdate();
+        if (!mReorderDelegate.getInReorderMode()) {
+            // If the tab was selected through a method other than the user tapping on the strip, it
+            // may not be currently visible. Scroll if necessary.
+            bringSelectedTabToVisibleArea(time, true);
+        }
 
-            setAccessibilityDescription(stripTab, getTabById(id));
-            if (prevId != Tab.INVALID_TAB_ID) {
-                setAccessibilityDescription(findTabById(prevId), getTabById(prevId));
-            }
+        mUpdateHost.requestUpdate();
+
+        setAccessibilityDescription(stripTab, getTabById(id));
+        if (prevId != Tab.INVALID_TAB_ID) {
+            setAccessibilityDescription(findTabById(prevId), getTabById(prevId));
         }
     }
 
@@ -1757,7 +1757,7 @@ public class StripLayoutHelper
         if (mModel == null) return;
         finishAnimations();
         final boolean selected = TabModelUtils.getCurrentTabId(mModel) == id;
-        tabCreated(time, id, Tab.INVALID_TAB_ID, selected, true, false);
+        tabCreated(time, id, findSelectedStripTabId(), selected, true, false);
         updateGroupTextAndSharedState(mModel.getTabByIdChecked(id).getTabGroupId());
     }
 
@@ -1841,6 +1841,10 @@ public class StripLayoutHelper
                                     IphType.TAB_TEARING_XR,
                                     /* enableSnoozeMode= */ true));
         }
+
+        // 6. Notify the new tab was selected. This may be needed if the tab was reselected for an
+        // undone closure. See crbug.com/469826110.
+        if (selected) tabSelected(time, id, prevId);
 
         mUpdateHost.requestUpdate();
     }
@@ -5043,7 +5047,8 @@ public class StripLayoutHelper
         return mModel == null ? null : mModel.getTabById(tabId);
     }
 
-    private int getSelectedTabId() {
+    /** Returns the ID of the selected tab determined by {@link TabModel#index()}. */
+    private @TabId int getSelectedTabId() {
         if (mModel == null) return Tab.INVALID_TAB_ID;
 
         int index = mModel.index();
@@ -5053,6 +5058,22 @@ public class StripLayoutHelper
         if (tab == null) return Tab.INVALID_TAB_ID;
 
         return tab.getId();
+    }
+
+    /**
+     * Distinct from {@link #getSelectedTabId}, since this doesn't find the ID for the tab selected
+     * in the {@link TabModel), but rather the ID of the {@link StripLayoutTab} that is currently
+     * locally marked as selected (through {@link StripLayoutTab#getIsSelected()}).
+     *
+     * @return the ID of the {@link StripLayoutTab} for which {@link StripLayoutTab#getIsSelected}
+     * was true.
+     */
+    private @TabId int findSelectedStripTabId() {
+        for (int i = 0; i < mStripTabs.length; i++) {
+            final StripLayoutTab tab = mStripTabs[i];
+            if (tab.getIsSelected()) return tab.getTabId();
+        }
+        return Tab.INVALID_TAB_ID;
     }
 
     @VisibleForTesting

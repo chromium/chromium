@@ -1952,6 +1952,20 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    public void testTabClosureCancelled_SelectsTab() {
+        initializeTest(/* tabIndex= */ 1);
+
+        // Fake cancelling a tab closure for a previously selected tab.
+        mModel.addTab("Closure-cancelled tab");
+        mModel.setIndex(5);
+        mStripLayoutHelper.tabClosureCancelled(TIMESTAMP, /* id= */ 5);
+
+        // Verify the closure-cancelled tab is selected.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        assertTrue("Expected the closure-cancelled tab to be selected.", tabs[5].getIsSelected());
+    }
+
+    @Test
     public void testOnDown_OnNewTabButton() {
         // Initialize.
         initializeTest(false, false, 0, 5);
@@ -5371,6 +5385,14 @@ public class StripLayoutHelperTest {
         initializeTest(/* tabIndex= */ 3);
         groupTabs(0, 2, TAB_GROUP_ID_1);
         when(mTabGroupModelFilter.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(true);
+        doAnswer(
+                        invocation -> {
+                            when(mTabGroupModelFilter.getTabGroupCollapsed(TAB_GROUP_ID_1))
+                                    .thenReturn(false);
+                            return null;
+                        })
+                .when(mTabGroupModelFilter)
+                .deleteTabGroupCollapsed(TAB_GROUP_ID_1);
 
         // Create a tab in the collapsed group.
         int tabId = 5;
@@ -5574,6 +5596,7 @@ public class StripLayoutHelperTest {
 
         // Trigger show iph.
         mStripLayoutHelper.finishAnimations();
+        mStripLayoutHelper.finishScrollForTesting();
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Verify iph is displayed at the correct horizontal position.
