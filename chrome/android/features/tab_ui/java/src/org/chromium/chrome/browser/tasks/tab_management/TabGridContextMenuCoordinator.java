@@ -39,7 +39,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
-import org.chromium.ui.widget.RectProvider;
+import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -144,10 +144,13 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
      * @param tabId The tab id of the interacting tab group.
      * @param focusable True if the menu should be focusable by default, false otherwise.
      */
-    public void showMenu(RectProvider anchorViewRectProvider, int tabId, boolean focusable) {
+    public void showMenu(ViewRectProvider anchorViewRectProvider, int tabId, boolean focusable) {
         mIsMenuFocusableUponCreation = focusable;
         boolean isIncognito = mTabGroupModelFilter.getTabModel().isIncognitoBranded();
         dismiss();
+
+        if (!anchorViewRectProvider.isViewShown()) return;
+
         createAndShowMenu(
                 anchorViewRectProvider,
                 tabId,
