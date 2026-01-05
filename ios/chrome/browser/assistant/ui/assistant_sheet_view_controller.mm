@@ -39,6 +39,8 @@ constexpr CGFloat kSpringDamping = 0.85;
   CGFloat _initialConstraintHeight;
   // Whether the user has manually resized the sheet.
   BOOL _hasUserResized;
+  // Whether the view has appeared.
+  BOOL _hasAppeared;
 }
 
 - (void)loadView {
@@ -88,6 +90,11 @@ constexpr CGFloat kSpringDamping = 0.85;
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
   [self updateHeightConstraint];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  _hasAppeared = YES;
 }
 
 #pragma mark - Private
@@ -171,15 +178,7 @@ constexpr CGFloat kSpringDamping = 0.85;
     }
 
     // Animate the snap.
-    [UIView animateWithDuration:kSpringDuration
-                          delay:0
-         usingSpringWithDamping:kSpringDamping
-          initialSpringVelocity:springVelocity
-                        options:UIViewAnimationOptionCurveEaseOut
-                     animations:^{
-                       [self.view.superview layoutIfNeeded];
-                     }
-                     completion:nil];
+    [self animateLayoutIfNeededWithInitialVelocity:springVelocity];
   }
 }
 
@@ -237,6 +236,20 @@ constexpr CGFloat kSpringDamping = 0.85;
   }
 }
 
+// Animates layout changes with standard spring parameters.
+- (void)animateLayoutIfNeededWithInitialVelocity:(CGFloat)velocity {
+  [UIView animateWithDuration:kSpringDuration
+                        delay:0
+       usingSpringWithDamping:kSpringDamping
+        initialSpringVelocity:velocity
+                      options:UIViewAnimationOptionCurveEaseOut |
+                              UIViewAnimationOptionBeginFromCurrentState
+                   animations:^{
+                     [self.view.superview layoutIfNeeded];
+                   }
+                   completion:nil];
+}
+
 // Updates the height constraint based on preferred content size and detents.
 - (void)updateHeightConstraint {
   // If we are currently dragging, DO NOT interfere with the constraint.
@@ -278,7 +291,13 @@ constexpr CGFloat kSpringDamping = 0.85;
   // Ensure we never break the min height limit.
   target = MAX(target, kMinSheetHeight);
   if (ABS(_heightConstraint.constant - target) > 0.1) {
-    _heightConstraint.constant = target;
+    // Animate only if visible, auto-sizing, and idle.
+    if (_hasAppeared && !_hasUserResized && !self.isAnimating) {
+      _heightConstraint.constant = target;
+      [self animateLayoutIfNeededWithInitialVelocity:0];
+    } else {
+      _heightConstraint.constant = target;
+    }
   }
 }
 
