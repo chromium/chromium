@@ -3480,8 +3480,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
         metadata.transition_directives.push_back(request->ConstructDirective(
             view_transition_element_map, display_color_spaces,
             request->delay_layer_tree_view_deletion()));
-        if (request->maybe_cross_frame_sink() &&
-            features::ShouldAckCOREarlyForViewTransition() &&
+        if (features::ShouldAckCOREarlyForViewTransition() &&
             request->delay_layer_tree_view_deletion()) {
           OnCompositorFrameTransitionDirectiveProcessed(request->sequence_id());
           if (request->type() ==
@@ -3503,8 +3502,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     }
     if (features::ShouldAckCOREarlyForViewTransition()) {
       for (auto& request : active_tree_->view_transition_requests()) {
-        if (request->maybe_cross_frame_sink() &&
-            request->delay_layer_tree_view_deletion()) {
+        if (request->delay_layer_tree_view_deletion()) {
           OnCompositorFrameTransitionDirectiveProcessed(request->sequence_id());
           if (request->type() ==
               ViewTransitionRequest::Type::kAnimateRenderer) {

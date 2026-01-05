@@ -1592,6 +1592,15 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
         return;
       }
 
+      if (features::ShouldAckCOREarlyForViewTransition() &&
+          !directive.maybe_cross_frame_sink() &&
+          directive.delay_layer_tree_view_deletion()) {
+        // Register the token for same-doc transitions to ensure
+        // CopyOutputRequest can complete.
+        frame_sink_manager_->RegisterSameDocViewTransitionToken(
+            transition_token);
+      }
+
       view_transition_token_to_animation_manager_[transition_token] =
           SurfaceAnimationManager::CreateWithSave(
               directive, surface,
@@ -1650,6 +1659,8 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
       frame_sink_manager_->ClearSurfaceAnimationManager(
           directive.transition_token());
       view_transition_token_to_animation_manager_.erase(
+          directive.transition_token());
+      frame_sink_manager_->ClearSameDocViewTransitionToken(
           directive.transition_token());
       break;
   }

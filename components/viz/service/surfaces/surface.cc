@@ -325,9 +325,9 @@ Surface::QueueFrameResult Surface::CommitFrame(FrameData frame) {
       const auto& token = directive.transition_token();
       // If there is no SurfaceAnimationManager for the `token` and an Animate
       // directive has been issued, then previous frame is held up and has not
-      // performed Save directive yet for a cross-document view transition. So
-      // add this token as dependency for new document's surface which needs to
-      // be resolved for activation.
+      // performed Save directive yet for it's view transition. So add this
+      // token as dependency for new document's surface which needs to be
+      // resolved for activation.
       if (directive.type() ==
               CompositorFrameTransitionDirective::Type::kAnimateRenderer &&
           !surface_manager_->FrameSinkManagerHasViewTransitionToken(token) &&

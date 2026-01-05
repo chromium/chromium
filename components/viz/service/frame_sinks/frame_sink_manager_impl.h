@@ -253,6 +253,23 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   bool HasViewTransitionToken(
       const blink::ViewTransitionToken& transition_token) override;
 
+  // Registers `token` for a same-document view transition. This is used for
+  // synchronizing activation of the new frame with the completion of the
+  // previous frame's capture. When a new frame with a view transition directive
+  // is committed, its activation is delayed until the previous frame's content
+  // has been successfully captured via a CopyOutputRequest. This ensures that
+  // the transition animation has all necessary resources before it begins.
+  void RegisterSameDocViewTransitionToken(
+      const blink::ViewTransitionToken& token);
+
+  // Marks the `token` as ready, indicating that the associated
+  // CopyOutputRequest has been completed and resources are available.
+  void MarkSameDocViewTransitionTokenReady(
+      const blink::ViewTransitionToken& token);
+
+  // Removes the `token` from the tracking set.
+  void ClearSameDocViewTransitionToken(const blink::ViewTransitionToken& token);
+
   // HitTestDataProvider implementation.
   // This is required to allow RenderWidgetHostInputEventRouter to find target
   // view synchronously with InputVizard.
@@ -587,6 +604,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   base::flat_map<blink::ViewTransitionToken,
                  std::unique_ptr<SurfaceAnimationManager>>
       transition_token_to_animation_manager_;
+
+  base::flat_set<blink::ViewTransitionToken> same_doc_tokens_pending_;
+  base::flat_set<blink::ViewTransitionToken> same_doc_tokens_ready_;
 
   // The ids of the frame sinks that are currently being captured.
   // These frame sinks should not be throttled.

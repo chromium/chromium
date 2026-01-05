@@ -631,9 +631,35 @@ void FrameSinkManagerImpl::AggregatedFrameSinksChanged() {
   hit_test_manager_.SetNeedsSubmit();
 }
 
+void FrameSinkManagerImpl::RegisterSameDocViewTransitionToken(
+    const blink::ViewTransitionToken& token) {
+  same_doc_tokens_pending_.insert(token);
+}
+
+void FrameSinkManagerImpl::MarkSameDocViewTransitionTokenReady(
+    const blink::ViewTransitionToken& token) {
+  if (!same_doc_tokens_pending_.erase(token)) {
+    return;
+  }
+
+  same_doc_tokens_ready_.insert(token);
+
+  // This is what Surface waits on to resolve view_transition_dependencies_.
+  for (auto& observer : observer_list_) {
+    observer.OnViewTransitionSaved(token);
+  }
+}
+
+void FrameSinkManagerImpl::ClearSameDocViewTransitionToken(
+    const blink::ViewTransitionToken& token) {
+  same_doc_tokens_pending_.erase(token);
+  same_doc_tokens_ready_.erase(token);
+}
+
 bool FrameSinkManagerImpl::HasViewTransitionToken(
     const blink::ViewTransitionToken& transition_token) {
-  return transition_token_to_animation_manager_.contains(transition_token);
+  return transition_token_to_animation_manager_.contains(transition_token) ||
+         same_doc_tokens_ready_.contains(transition_token);
 }
 
 void FrameSinkManagerImpl::AddHitTestRegionObserver(
@@ -1202,6 +1228,7 @@ void FrameSinkManagerImpl::OnViewTransitionResourcesCaptured(
   if (client_) {
     client_->OnViewTransitionResourcesCaptured(transition_token);
   }
+  MarkSameDocViewTransitionTokenReady(transition_token);
 }
 
 bool FrameSinkManagerImpl::IsFrameSinkIdInRootSinkMap(
