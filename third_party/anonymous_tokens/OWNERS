@@ -4,3 +4,6 @@ file://components/legion/OWNERS
 # //net OWNERS as secondary owners in case they need to roll this library to
 # resolve issues when rolling QUICHE (see go/quicmerge).
 file://net/OWNERS
+
+# Support autorollers.
+per-file README.chromium=*
