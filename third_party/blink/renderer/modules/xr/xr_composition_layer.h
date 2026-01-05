@@ -53,7 +53,7 @@ class XRCompositionLayer : public XRLayer {
   void Trace(Visitor*) const override;
 
  protected:
-  void SetLayout(V8XRLayerLayout layout);
+  void SetLayout(V8XRLayerLayout::Enum layout);
   void SetMipLevels(uint16_t mipLevels);
   virtual bool isStatic() const;
 
@@ -68,7 +68,7 @@ class XRCompositionLayer : public XRLayer {
   virtual void UpdateLayerBackend() = 0;
 
  private:
-  V8XRLayerLayout::Enum layout_ = V8XRLayerLayout::Enum::kDefault;
+  V8XRLayerLayout::Enum layout_ = V8XRLayerLayout::Enum::kMono;
 
   const Member<XRGraphicsBinding> binding_;
   bool blend_texture_source_alpha_{true};

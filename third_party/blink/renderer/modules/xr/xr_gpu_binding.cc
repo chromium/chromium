@@ -166,7 +166,11 @@ XRProjectionLayer* XRGPUBinding::createProjectionLayer(
   auto* drawing_context = MakeGarbageCollected<XRGPUDrawingContext>(
       this, wrapped_swap_chain, depth_stencil_swap_chain);
 
-  return MakeGarbageCollected<XRProjectionLayer>(this, drawing_context);
+  const V8XRLayerLayout::Enum layout = session()->StereoscopicViews()
+                                           ? V8XRLayerLayout::Enum::kStereo
+                                           : V8XRLayerLayout::Enum::kMono;
+
+  return MakeGarbageCollected<XRProjectionLayer>(this, drawing_context, layout);
 }
 
 XRGPUSubImage* XRGPUBinding::getViewSubImage(XRProjectionLayer* layer,

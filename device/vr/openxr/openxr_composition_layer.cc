@@ -235,12 +235,20 @@ const gfx::Rect OpenXrCompositionLayer::GetSubImageViewport(
 
 std::vector<XrEyeVisibility> OpenXrCompositionLayer::GetXrEyesForComposition()
     const {
+  if (type_ == Type::kProjection) {
+    // Projection layer uses view configurations for eyes. See
+    // OpenXrGraphicsBinding::GetProjectionViews().
+    return {XR_EYE_VISIBILITY_BOTH};
+  }
+
   if (read_only_data().layout ==
           device::mojom::XRLayerLayout::kStereoTopBottom ||
       read_only_data().layout ==
-          device::mojom::XRLayerLayout::kStereoLeftRight) {
+          device::mojom::XRLayerLayout::kStereoLeftRight ||
+      read_only_data().layout == device::mojom::XRLayerLayout::kStereo) {
     return {XR_EYE_VISIBILITY_LEFT, XR_EYE_VISIBILITY_RIGHT};
   }
+
   return {XR_EYE_VISIBILITY_BOTH};
 }
 

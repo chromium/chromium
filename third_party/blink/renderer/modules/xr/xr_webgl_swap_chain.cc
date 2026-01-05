@@ -53,7 +53,7 @@ void XRWebGLSwapChain::ClearCurrentTexture() {
 
   gl->Disable(GL_SCISSOR_TEST);
 
-  if (descriptor_.layers > 1) {
+  if (descriptor_.is_texture_array) {
     for (uint32_t i = 0; i < descriptor_.layers; ++i) {
       gl->FramebufferTextureLayer(GL_FRAMEBUFFER, attachment, texture->Object(),
                                   0, i);
@@ -118,7 +118,8 @@ WebGLUnownedTexture* XRWebGLStaticSwapChain::ProduceTexture() {
     return nullptr;
   }
 
-  GLenum target = descriptor().layers > 1 ? GL_TEXTURE_2D_ARRAY : GL_TEXTURE_2D;
+  GLenum target =
+      descriptor().is_texture_array ? GL_TEXTURE_2D_ARRAY : GL_TEXTURE_2D;
   gl->GenTextures(1, &owned_texture_);
   gl->BindTexture(target, owned_texture_);
 

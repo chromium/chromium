@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_SHAPED_LAYER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_SHAPED_LAYER_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_layer_layout.h"
 #include "third_party/blink/renderer/modules/xr/xr_composition_layer.h"
 
 namespace blink {
@@ -16,6 +17,7 @@ class XRSpace;
 class XRShapedLayer : public XRCompositionLayer {
  public:
   XRShapedLayer(const XRLayerInit* init,
+                V8XRLayerLayout::Enum final_layout,
                 XRGraphicsBinding* binding,
                 XRLayerDrawingContext* drawing_context);
   ~XRShapedLayer() override = default;

@@ -19,6 +19,7 @@ class XRQuadLayer : public XRShapedLayer {
 
  public:
   XRQuadLayer(const XRQuadLayerInit* init,
+              V8XRLayerLayout::Enum final_layout,
               XRGraphicsBinding* binding,
               XRLayerDrawingContext* drawing_context);
   ~XRQuadLayer() override = default;

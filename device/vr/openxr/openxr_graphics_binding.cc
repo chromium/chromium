@@ -44,7 +44,7 @@ void OpenXrGraphicsBinding::OnSessionCreated(XrSpace local_space,
                                              bool is_webgpu) {
   webgpu_session_ = is_webgpu;
 
-  // These values won't be used for the base layer. The swapchain image size
+  // Not all values will be used for the base layer. The swapchain image size
   // will set by SetProjectionLayerSwapchainImageSize(). But to be safe, we
   // still provide XRCompositionLayerData to the base layer.
   mojom::XRCompositionLayerDataPtr layer_data =
@@ -53,6 +53,9 @@ void OpenXrGraphicsBinding::OnSessionCreated(XrSpace local_space,
   layer_data->read_only_data = mojom::XRLayerReadOnlyData::New();
   // The base layer should have an invalid layer id.
   layer_data->read_only_data->layer_id = kInvalidLayerId;
+  layer_data->read_only_data->layout =
+      kNumPrimaryViews > 1 ? mojom::XRLayerLayout::kStereoLeftRight
+                           : mojom::XRLayerLayout::kMono;
   layer_data->read_only_data->texture_width = 0;
   layer_data->read_only_data->texture_height = 0;
   layer_data->mutable_data = mojom::XRLayerMutableData::New();
@@ -93,6 +96,11 @@ OpenXrGraphicsBinding::GetProjectionViews(
     OpenXrCompositionLayer& layer) const {
   DCHECK(view_config.Active());
   DCHECK(layer.type() == OpenXrCompositionLayer::Type::kProjection);
+
+  // The following code only works for "mono" and "stereo-left-right".
+  CHECK(layer.read_only_data().layout ==
+            mojom::XRLayerLayout::kStereoLeftRight ||
+        layer.read_only_data().layout == mojom::XRLayerLayout::kMono);
 
   std::vector<XrCompositionLayerProjectionView> projection_views;
   projection_views.resize(view_config.Views().size());
@@ -423,6 +431,11 @@ bool OpenXrGraphicsBinding::CreateCompositionLayer(
   if (!SupportsLayers()) {
     return false;
   }
+
+  // We don't support "stereo" layout here. The blink side should wrap it into
+  // "stereo-left-right".
+  CHECK_NE(layer_data->read_only_data->layout,
+           device::mojom::XRLayerLayout::kStereo);
 
   auto layer_id = layer_data->read_only_data->layer_id;
   CHECK(!layers_.contains(layer_id));

@@ -18,7 +18,8 @@ class XRProjectionLayer : public XRCompositionLayer {
 
  public:
   XRProjectionLayer(XRGraphicsBinding* binding,
-                    XRLayerDrawingContext* drawing_context);
+                    XRLayerDrawingContext* drawing_context,
+                    V8XRLayerLayout::Enum final_layout);
   ~XRProjectionLayer() override = default;
 
   XRLayerType LayerType() const override;

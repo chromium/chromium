@@ -27,6 +27,7 @@ class XRWebGLSwapChain : public XRSwapChain<WebGLUnownedTexture> {
     uint16_t width;
     uint16_t height;
     uint16_t layers;
+    bool is_texture_array;
   };
 
   XRWebGLSwapChain(WebGLRenderingContextBase*,

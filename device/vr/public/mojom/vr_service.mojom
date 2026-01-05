@@ -775,11 +775,10 @@ union XRLayerSpecificData {
 };
 
 enum XRLayerLayout {
-  kDefault = 0,
-  kMono = 1,
-  kStereo = 2,
-  kStereoLeftRight = 3,
-  kStereoTopBottom = 4,
+  kMono = 0,
+  kStereo = 1,
+  kStereoLeftRight = 2,
+  kStereoTopBottom = 3,
 };
 
 // Read-only data is only used to create a layer,

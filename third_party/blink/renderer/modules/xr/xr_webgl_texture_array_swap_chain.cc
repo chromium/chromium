@@ -23,6 +23,7 @@ XRWebGLSwapChain::Descriptor MakeLayerDescriptor(
   CHECK_EQ(descriptor.width % layers, 0ul);
   descriptor.width /= layers;
   descriptor.layers = layers;
+  descriptor.is_texture_array = true;
   return descriptor;
 }
 
