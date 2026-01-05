@@ -120,7 +120,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
     kPassThrough [[deprecated]] = 7,
     kSwapChain [[deprecated]] = 8,
     kSkiaDawnSharedImage [[deprecated]] = 9,
-    kExternalBitmap = 10,
+    kExternalBitmap [[deprecated]] = 10,
     kMaxValue = kExternalBitmap,
   };
 #pragma GCC diagnostic pop
