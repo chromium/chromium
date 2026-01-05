@@ -14,10 +14,10 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -36,7 +36,7 @@ constexpr std::array<glic::LocalHotkeyManager::Hotkey, 1> kSupportedHotkeys = {
 // all current and future BrowserViews.
 class ApplicationScopedHotkeyRegistration
     : public LocalHotkeyManager::ScopedHotkeyRegistration,
-      public BrowserListObserver {
+      public BrowserCollectionObserver {
  public:
   ApplicationScopedHotkeyRegistration(
       ui::Accelerator accelerator,
@@ -48,7 +48,8 @@ class ApplicationScopedHotkeyRegistration
           RegisterAccelerator(browser_window_interface);
           return true;
         });
-    browser_list_observation_.Observe(BrowserList::GetInstance());
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
   }
 
   ~ApplicationScopedHotkeyRegistration() override {
@@ -65,8 +66,8 @@ class ApplicationScopedHotkeyRegistration
   }
 
  private:
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override {
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
     RegisterAccelerator(browser);
   }
 
@@ -83,8 +84,8 @@ class ApplicationScopedHotkeyRegistration
 
   ui::Accelerator accelerator_;
   base::WeakPtr<ui::AcceleratorTarget> target_;
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
+  base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 }  // namespace
 
