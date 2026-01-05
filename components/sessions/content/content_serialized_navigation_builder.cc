@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "components/sessions/content/content_record_password_state.h"
 #include "components/sessions/content/content_serialized_navigation_driver.h"
 #include "components/sessions/content/extended_info_handler.h"
@@ -186,7 +187,7 @@ ContentSerializedNavigationBuilder::ToNavigationEntry(
 // static
 std::vector<std::unique_ptr<content::NavigationEntry>>
 ContentSerializedNavigationBuilder::ToNavigationEntries(
-    const std::vector<SerializedNavigationEntry>& navigations,
+    base::span<const SerializedNavigationEntry> navigations,
     content::BrowserContext* browser_context) {
   std::unique_ptr<content::NavigationEntryRestoreContext> restore_context =
       content::NavigationEntryRestoreContext::Create();
