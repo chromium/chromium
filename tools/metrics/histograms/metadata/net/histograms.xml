@@ -612,6 +612,7 @@ chromium-metrics-reviews@google.com.
     will run when a profile is deleted.
   </summary>
   <token key="KeyDeletionClient">
+    <variant name="DestroyedOTRProfiles" summary="destroyed OTR profiles"/>
     <variant name="DeviceBoundSessions"
         summary="the binding of sessions credentials with device-bound keys"/>
     <variant name="ObsoleteOTRProfiles" summary="obsolete OTR profiles"/>

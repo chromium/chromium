@@ -7,12 +7,14 @@
 #include <cstddef>
 #include <memory>
 
+#include "base/barrier_callback.h"
 #include "base/check_deref.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/types/expected_macros.h"
 #include "build/build_config.h"
@@ -32,6 +34,11 @@ namespace unexportable_keys {
 namespace {
 
 constexpr base::TimeDelta kGarbageCollectionDelay = base::Minutes(2);
+
+constexpr std::string_view kObsoleteOTRProfilesHistogramPrefix =
+    "Crypto.UnexportableKeys.GarbageCollection.ObsoleteOTRProfiles.";
+constexpr std::string_view kDestroyedOTRProfilesHistogramPrefix =
+    "Crypto.UnexportableKeys.GarbageCollection.DestroyedOTRProfiles.";
 
 std::string GetApplicationTag(crypto::UnexportableKeyProvider::Config config) {
 #if BUILDFLAG(IS_MAC)
@@ -72,6 +79,12 @@ class OriginalProfileGarbageCollectionService : public KeyedService {
       return;
     }
 
+    std::vector<UnexportableKeyId>& key_ids = *key_ids_or_error;
+    const size_t key_count = key_ids.size();
+    base::UmaHistogramCounts100(
+        base::StrCat({kObsoleteOTRProfilesHistogramPrefix, "TotalKeyCount"}),
+        key_count);
+
     // Start by creating a set of application_tag prefixes belonging to all tags
     // that correspond to still active profiles (original and all current OTR
     // profiles).
@@ -84,7 +97,6 @@ class OriginalProfileGarbageCollectionService : public KeyedService {
 
     // Remove all key ids where no tag could be obtained, or the prefix is still
     // active.
-    std::vector<UnexportableKeyId>& key_ids = *key_ids_or_error;
     std::erase_if(key_ids, [&](UnexportableKeyId key_id) -> bool {
       ASSIGN_OR_RETURN(std::string key_tag, service_->GetKeyTag(key_id),
                        [](auto) { return true; });
@@ -97,12 +109,29 @@ class OriginalProfileGarbageCollectionService : public KeyedService {
              key_tag.starts_with(*std::prev(it));
     });
 
+    base::UmaHistogramCounts100(
+        base::StrCat({kObsoleteOTRProfilesHistogramPrefix, "UsedKeyCount"}),
+        key_count - key_ids.size());
+
+    base::UmaHistogramCounts100(
+        base::StrCat({kObsoleteOTRProfilesHistogramPrefix, "ObsoleteKeyCount"}),
+        key_ids.size());
+
+    const auto barrier_callback = base::BarrierCallback<ServiceErrorOr<void>>(
+        key_ids.size(),
+        base::BindOnce([](std::vector<ServiceErrorOr<void>> results) {
+          base::UmaHistogramCounts100(
+              base::StrCat({kObsoleteOTRProfilesHistogramPrefix,
+                            "ObsoleteKeyDeletionCount"}),
+              std::ranges::count_if(
+                  results, [](auto result) { return result.has_value(); }));
+        }));
+
     // Schedule the rest for deletion.
     // TODO(crbug.com/455538832): Add a bulk deletion API to the service.
     for (UnexportableKeyId key_id : key_ids) {
       service_->DeleteKeySlowlyAsync(
-          // TODO(crbug.com/455538352): Add metrics.
-          key_id, BackgroundTaskPriority::kBestEffort, base::DoNothing());
+          key_id, BackgroundTaskPriority::kBestEffort, barrier_callback);
     }
   }
 
@@ -131,9 +160,16 @@ class OffTheRecordGarbageCollectionService : public KeyedService {
         BackgroundTaskPriority::kBestEffort,
         base::BindOnce(
             [](std::unique_ptr<UnexportableKeyService>,
-               ServiceErrorOr<size_t>) {
-              // TODO(crbug.com/455538352): Add metrics.
+               ServiceErrorOr<size_t> count_or_error) {
+              if (count_or_error.has_value()) {
+                base::UmaHistogramCounts100(
+                    base::StrCat({kDestroyedOTRProfilesHistogramPrefix,
+                                  "ObsoleteKeyDeletionCount"}),
+                    *count_or_error);
+              }
             },
+            // Transfer ownership of `service_` to the callback to ensure that
+            // the callback is run, even after `this` is destroyed.
             std::move(service_)));
   }
 
