@@ -19,7 +19,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_enabling.h"  // nogncheck
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -117,8 +117,9 @@ void RenderProcessHostTaskProvider::DeleteTask(
   auto itr = tasks_by_rph_id_.find(render_process_host_id);
   // If the render process host id isn't being tracked in `tasks_by_rph_id` do
   // nothing.
-  if (itr == tasks_by_rph_id_.end())
+  if (itr == tasks_by_rph_id_.end()) {
     return;
+  }
 
   NotifyObserverTaskRemoved(itr->second.get());
 
