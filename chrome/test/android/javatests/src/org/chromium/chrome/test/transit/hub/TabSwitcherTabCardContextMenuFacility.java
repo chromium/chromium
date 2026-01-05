@@ -49,7 +49,7 @@ public class TabSwitcherTabCardContextMenuFacility<HostStationT extends TabSwitc
             declareContainerView(
                     TouchTrackingListView.class,
                     withId(R.id.tab_group_action_menu_list),
-                    ViewElement.defaultOptions());
+                    ViewElement.initialSettleTimeOption(1000));
     private final @TabId int mTabId;
 
     public Item share;

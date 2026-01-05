@@ -396,6 +396,13 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> implements V
         return newOptions().displayingAtLeast(percentage).build();
     }
 
+    /**
+     * @param settleTimeMs the time to wait for the View to settle in ms.
+     */
+    public static Options initialSettleTimeOption(int settleTimeMs) {
+        return newOptions().initialSettleTime(settleTimeMs).build();
+    }
+
     /** Convenience {@link Options} setting rootSpec(). */
     public static Options rootSpecOption(RootSpec rootSpec) {
         return newOptions().rootSpec(rootSpec).build();
