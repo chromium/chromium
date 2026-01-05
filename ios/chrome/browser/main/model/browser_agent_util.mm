@@ -195,7 +195,8 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
   CredentialProviderBrowserAgent::CreateForBrowser(browser);
 #endif
 
-  if (!browser_is_off_record && IsPageActionMenuEnabled()) {
+  if (!browser_is_inactive && !browser_is_temporary && !browser_is_off_record &&
+      IsPageActionMenuEnabled()) {
     BwgBrowserAgent::CreateForBrowser(browser);
   }
 
