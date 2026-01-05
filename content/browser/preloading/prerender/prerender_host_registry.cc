@@ -849,8 +849,10 @@ PrerenderHostId PrerenderHostRegistry::CreateAndStartHost(
           }
           break;
         }
-        FrameTreeNodeId started_frame_tree_node_id =
+        const PrerenderHostId started_prerender_host_id =
             StartPrerendering(FrameTreeNodeId());
+        const FrameTreeNodeId started_frame_tree_node_id =
+            PrerenderHost::GetFrameTreeNodeIdForId(started_prerender_host_id);
         CHECK(started_frame_tree_node_id == frame_tree_node_id ||
               started_frame_tree_node_id.is_null());
         frame_tree_node_id = started_frame_tree_node_id;
@@ -862,7 +864,10 @@ PrerenderHostId PrerenderHostRegistry::CreateAndStartHost(
       // the return value of `StartPrerendering` because the requested prerender
       // might be cancelled due to some restrictions and a null FrameTreeNodeId
       // should be returned in that case.
-      frame_tree_node_id = StartPrerendering(frame_tree_node_id);
+      const PrerenderHostId started_prerender_host_id =
+          StartPrerendering(frame_tree_node_id);
+      frame_tree_node_id =
+          PrerenderHost::GetFrameTreeNodeIdForId(started_prerender_host_id);
       break;
   }
 
@@ -908,7 +913,7 @@ PrerenderHostId PrerenderHostRegistry::CreateAndStartHostForNewTab(
   return prerender_host_id;
 }
 
-FrameTreeNodeId PrerenderHostRegistry::StartPrerendering(
+PrerenderHostId PrerenderHostRegistry::StartPrerendering(
     FrameTreeNodeId frame_tree_node_id) {
   // TODO(crbug.com/40260412): Don't start prerendering if the current
   // memory pressure level is critical, and then retry prerendering when the
@@ -941,7 +946,7 @@ FrameTreeNodeId PrerenderHostRegistry::StartPrerendering(
         // `PrerenderCanBeStartedWhenInitiatorIsInBackground`.
         if (!initiator_web_contents->GetPrerenderHostRegistry()
                  ->PrerenderCanBeStartedWhenInitiatorIsInBackground()) {
-          return FrameTreeNodeId();
+          return PrerenderHostId();
         }
       }
 
@@ -952,7 +957,7 @@ FrameTreeNodeId PrerenderHostRegistry::StartPrerendering(
     }
 
     if (frame_tree_node_id.is_null()) {
-      return FrameTreeNodeId();
+      return PrerenderHostId();
     }
   }
 
@@ -965,11 +970,10 @@ FrameTreeNodeId PrerenderHostRegistry::StartPrerendering(
   if (!prerender_host.StartPrerendering()) {
     CancelHost(prerender_host.prerender_host_id(),
                PrerenderFinalStatus::kStartFailed);
-    return FrameTreeNodeId();
+    return PrerenderHostId();
   }
 
-  switch (prerender_host_by_frame_tree_node_id_[frame_tree_node_id]
-              ->trigger_type()) {
+  switch (prerender_host.trigger_type()) {
     case PreloadingTriggerType::kSpeculationRule:
     case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
     case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
@@ -982,10 +986,8 @@ FrameTreeNodeId PrerenderHostRegistry::StartPrerendering(
       break;
   }
 
-  RecordPrerenderTriggered(
-      prerender_host_by_frame_tree_node_id_[frame_tree_node_id]
-          ->initiator_ukm_id());
-  return frame_tree_node_id;
+  RecordPrerenderTriggered(prerender_host.initiator_ukm_id());
+  return prerender_host.prerender_host_id();
 }
 
 std::set<PrerenderHostId> PrerenderHostRegistry::CancelHosts(

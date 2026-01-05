@@ -327,8 +327,8 @@ class CONTENT_EXPORT PrerenderHostRegistry
   // there's no running prerender and `kNoFrameTreeNode` is passed as
   // `frame_tree_node_id`. If the given `frame_tree_node_id` is valid, this
   // function starts prerendering for the id. Returns starting prerender host id
-  // when it succeeds, and returns an invalid FrameTreeNodeId if it's cancelled.
-  FrameTreeNodeId StartPrerendering(FrameTreeNodeId frame_tree_node_id);
+  // when it succeeds, and returns an invalid PrerenderHostId if it's cancelled.
+  PrerenderHostId StartPrerendering(FrameTreeNodeId frame_tree_node_id);
 
   // Cancels the existing hosts that were triggered by `trigger_types`.
   void CancelHostsForTriggers(std::vector<PreloadingTriggerType> trigger_types,
