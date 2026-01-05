@@ -46,7 +46,7 @@ sync_pb::WebauthnCredentialSpecifics CreatePasskey() {
 
 class MockPasskeyUnlockManagerObserver : public PasskeyUnlockManager::Observer {
  public:
-  MOCK_METHOD(void, OnPasskeyUnlockManagerStateChanged, (), (override));
+  MOCK_METHOD(void, OnPasskeyErrorUiStateChanged, (), (override));
   MOCK_METHOD(void, OnPasskeyUnlockManagerShuttingDown, (), (override));
   MOCK_METHOD(void, OnPasskeyUnlockManagerIsReady, (), (override));
 };
@@ -175,7 +175,7 @@ TEST_F(PasskeyUnlockManagerTest, NotifyOnPasskeysChangedWhenPasskeyAdded) {
       testing::StrictMock<MockPasskeyUnlockManagerObserver>();
   passkey_unlock_manager()->AddObserver(&observer);
 
-  EXPECT_CALL(observer, OnPasskeyUnlockManagerStateChanged());
+  EXPECT_CALL(observer, OnPasskeyErrorUiStateChanged());
   sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey();
   passkey_model()->AddNewPasskeyForTesting(passkey);
   passkey_unlock_manager()->RemoveObserver(&observer);
@@ -190,7 +190,7 @@ TEST_F(PasskeyUnlockManagerTest, ErrorUiShownWithPasskeysAndActiveSync) {
 
   // With passkeys and active sync, the manager should notify and the error UI
   // should be shown.
-  EXPECT_CALL(observer, OnPasskeyUnlockManagerStateChanged());
+  EXPECT_CALL(observer, OnPasskeyErrorUiStateChanged());
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
   EXPECT_TRUE(passkey_unlock_manager()->ShouldDisplayErrorUi());
 
@@ -214,13 +214,13 @@ TEST_F(PasskeyUnlockManagerTest, ErrorUiHiddenWhenTrustedVaultKeyRequired) {
   passkey_unlock_manager()->AddObserver(&observer);
 
   // Start with a passkey and active sync.
-  EXPECT_CALL(observer, OnPasskeyUnlockManagerStateChanged());
+  EXPECT_CALL(observer, OnPasskeyErrorUiStateChanged());
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
   ASSERT_TRUE(passkey_unlock_manager()->ShouldDisplayErrorUi());
 
   // Passkey unlock error UI should not be shown when trusted vault key is
   // required because that error has a higher priority.
-  EXPECT_CALL(observer, OnPasskeyUnlockManagerStateChanged());
+  EXPECT_CALL(observer, OnPasskeyErrorUiStateChanged());
   test_sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(true);
   test_sync_service()->FireStateChanged();
   EXPECT_FALSE(passkey_unlock_manager()->ShouldDisplayErrorUi());
@@ -236,12 +236,12 @@ TEST_F(PasskeyUnlockManagerTest, ErrorUiHiddenWhenSyncDisallowed) {
   passkey_unlock_manager()->AddObserver(&observer);
 
   // Start with a passkey and active sync.
-  EXPECT_CALL(observer, OnPasskeyUnlockManagerStateChanged());
+  EXPECT_CALL(observer, OnPasskeyErrorUiStateChanged());
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
   ASSERT_TRUE(passkey_unlock_manager()->ShouldDisplayErrorUi());
 
   // Disallowing sync should cause the error UI to be hidden.
-  EXPECT_CALL(observer, OnPasskeyUnlockManagerStateChanged());
+  EXPECT_CALL(observer, OnPasskeyErrorUiStateChanged());
   test_sync_service()->SetAllowedByEnterprisePolicy(false);
   test_sync_service()->FireStateChanged();
   EXPECT_FALSE(passkey_unlock_manager()->ShouldDisplayErrorUi());
@@ -258,13 +258,13 @@ TEST_F(PasskeyUnlockManagerTest,
   passkey_unlock_manager()->AddObserver(&observer);
 
   // Start with a passkey and active sync.
-  EXPECT_CALL(observer, OnPasskeyUnlockManagerStateChanged());
+  EXPECT_CALL(observer, OnPasskeyErrorUiStateChanged());
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
   ASSERT_TRUE(passkey_unlock_manager()->ShouldDisplayErrorUi());
 
   // Passkey unlock error UI should not be shown when trusted vault
   // recoverability is degraded because that error has a higher priority.
-  EXPECT_CALL(observer, OnPasskeyUnlockManagerStateChanged());
+  EXPECT_CALL(observer, OnPasskeyErrorUiStateChanged());
   test_sync_service()->GetUserSettings()->SetTrustedVaultRecoverabilityDegraded(
       true);
   test_sync_service()->FireStateChanged();
@@ -281,12 +281,12 @@ TEST_F(PasskeyUnlockManagerTest, ErrorUiHiddenWhenPasskeysNotSynced) {
   passkey_unlock_manager()->AddObserver(&observer);
 
   // Start with a passkey and active sync.
-  EXPECT_CALL(observer, OnPasskeyUnlockManagerStateChanged());
+  EXPECT_CALL(observer, OnPasskeyErrorUiStateChanged());
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
   ASSERT_TRUE(passkey_unlock_manager()->ShouldDisplayErrorUi());
 
   // Stopping passkeys sync should cause the error UI to be hidden.
-  EXPECT_CALL(observer, OnPasskeyUnlockManagerStateChanged());
+  EXPECT_CALL(observer, OnPasskeyErrorUiStateChanged());
   test_sync_service()->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kPreferences});
@@ -329,7 +329,7 @@ TEST_F(PasskeyUnlockManagerTest, MAYBE_ErrorUiVisibleWithoutUVKeysWithGpmPin) {
       testing::StrictMock<MockPasskeyUnlockManagerObserver>();
   passkey_unlock_manager()->AddObserver(&observer);
 
-  EXPECT_CALL(observer, OnPasskeyUnlockManagerStateChanged());
+  EXPECT_CALL(observer, OnPasskeyErrorUiStateChanged());
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
 
   EXPECT_TRUE(passkey_unlock_manager()->ShouldDisplayErrorUi());
@@ -355,7 +355,7 @@ TEST_F(PasskeyUnlockManagerTest, LogsPasskeyCountHistogramWithPasskeys) {
       testing::StrictMock<MockPasskeyUnlockManagerObserver>();
   passkey_unlock_manager()->AddObserver(&observer);
 
-  EXPECT_CALL(observer, OnPasskeyUnlockManagerStateChanged());
+  EXPECT_CALL(observer, OnPasskeyErrorUiStateChanged());
   // The histogram should be logged on startup.
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
   base::HistogramTester histogram_tester;
@@ -433,7 +433,7 @@ TEST_F(PasskeyUnlockManagerTest,
       testing::StrictMock<MockPasskeyUnlockManagerObserver>();
   passkey_unlock_manager()->AddObserver(&observer);
 
-  EXPECT_CALL(observer, OnPasskeyUnlockManagerStateChanged());
+  EXPECT_CALL(observer, OnPasskeyErrorUiStateChanged());
   passkey_model()->AddNewPasskeyForTesting(CreatePasskey());
   base::HistogramTester histogram_tester;
 

@@ -91,7 +91,7 @@ void PasskeyUnlockManager::ComputeShouldDisplayErrorUiAndNotifyObservers() {
 
 void PasskeyUnlockManager::NotifyObservers() {
   for (Observer& observer : observer_list_) {
-    observer.OnPasskeyUnlockManagerStateChanged();
+    observer.OnPasskeyErrorUiStateChanged();
   }
 }
 

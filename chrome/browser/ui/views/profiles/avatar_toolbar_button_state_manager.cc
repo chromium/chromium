@@ -1201,7 +1201,7 @@ class PasskeyStateProvider : public StateProvider,
   }
 
  private:
-  void OnPasskeyUnlockManagerStateChanged() final { RequestUpdate(); }
+  void OnPasskeyErrorUiStateChanged() final { RequestUpdate(); }
 
   void OnPasskeyUnlockManagerShuttingDown() final {
     passkey_manager_observation_.Reset();

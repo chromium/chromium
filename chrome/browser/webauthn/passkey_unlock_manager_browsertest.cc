@@ -63,7 +63,7 @@ HandleEncryptionUnlockPageRequest(
 
 class MockPasskeyUnlockManagerObserver : public PasskeyUnlockManager::Observer {
  public:
-  MOCK_METHOD(void, OnPasskeyUnlockManagerStateChanged, (), (override));
+  MOCK_METHOD(void, OnPasskeyErrorUiStateChanged, (), (override));
   MOCK_METHOD(void, OnPasskeyUnlockManagerShuttingDown, (), (override));
   MOCK_METHOD(void, OnPasskeyUnlockManagerIsReady, (), (override));
 };
@@ -158,9 +158,9 @@ IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest,
   passkey_unlock_manager()->AddObserver(&observer);
 
   base::test::TestFuture<void> event_future;
-  EXPECT_CALL(observer, OnPasskeyUnlockManagerStateChanged())
+  EXPECT_CALL(observer, OnPasskeyErrorUiStateChanged())
       .WillOnce([&event_future]() {
-        // Signal the TestFuture when OnPasskeyUnlockManagerStateChanged is
+        // Signal the TestFuture when OnPasskeyErrorUiStateChanged is
         // called.
         event_future.SetValue();
       });

@@ -48,10 +48,8 @@ class PasskeyUnlockManager : public KeyedService,
 
   class Observer : public base::CheckedObserver {
    public:
-    // Notifies the observer that state has changed.
-    // TODO(crbug.com/461806010): Rename this method. The more suitable name for
-    // this method would be something like `OnPasskeyErrorUiStateChanged()`.
-    virtual void OnPasskeyUnlockManagerStateChanged() = 0;
+    // Notifies the observer that the passkey error UI state has changed.
+    virtual void OnPasskeyErrorUiStateChanged() = 0;
 
     // Notifies the observer that the passkey unlock manager is shutting down.
     virtual void OnPasskeyUnlockManagerShuttingDown() = 0;
