@@ -99,6 +99,7 @@ class ComposeboxQueryController
   const contextual_search::FileInfo* GetFileInfo(
       const base::UnguessableToken& file_token) override;
   std::vector<const contextual_search::FileInfo*> GetFileInfoList() override;
+  base::WeakPtr<ContextualSearchContextController> AsWeakPtr() override;
 
   // Returns a request id to use for the viewport image upload request for the
   // given file info, setting the viewport request id on the file info if it is
