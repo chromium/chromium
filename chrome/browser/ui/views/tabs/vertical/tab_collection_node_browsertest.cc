@@ -905,7 +905,6 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   // Pinned: 1 child (the moved tab).
   ASSERT_EQ(pinned_node->children().size(), 1u);
   // The first child of the Pinned node must be the tab we moved.
-  EXPECT_EQ(pinned_node->children()[0].get(), tab_to_pin_node);
   EXPECT_EQ(pinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
 
   // Unpinned Node verification:
@@ -914,4 +913,77 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   // Ensure the tab is no longer a child of the Unpinned node.
   EXPECT_NE(unpinned_node->children()[0].get(), tab_to_pin_node);
   EXPECT_NE(unpinned_node->children()[1].get(), tab_to_pin_node);
+}
+
+IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, ValidateViewFocusOrder) {
+  // Initial Order: [A, B, C, D, E, F]
+  for (int i = 0; i < 5; i++) {
+    AppendTab();
+  }
+
+  auto parent_view = std::make_unique<views::View>();
+
+  // Initialize the RootTabCollectionNode, which observes the
+  // TabStripService.
+  RootTabCollectionNode root_node(
+      browser()->tab_strip_model(),
+      base::BindRepeating<TabCollectionNode::CustomAddChildView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
+
+  // Wait for the initial structure to be populated.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !root_node.children().empty(); }));
+
+  // Final Order: [D, E] [[A, B, C], F]
+  auto group_id = browser()->tab_strip_model()->AddToNewGroup({1, 2});
+  browser()->tab_strip_model()->SetTabPinned(3, true);
+  browser()->tab_strip_model()->SetTabPinned(4, true);
+  browser()->tab_strip_model()->AddToExistingGroup({2}, group_id);
+
+  const auto& pinned_node = root_node.children()[0];
+  const auto& unpinned_node = root_node.children()[1];
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return pinned_node->children().size() == 2u; }));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return unpinned_node->children().size() == 2u; }));
+
+  // Verify the view focus order.
+  auto pinned_children_in_focus_order =
+      pinned_node->view()->GetChildrenFocusList();
+  EXPECT_EQ(pinned_children_in_focus_order.size(),
+            pinned_node->children().size());
+  for (size_t i = 0; i < pinned_node->children().size(); i++) {
+    EXPECT_EQ(pinned_children_in_focus_order[i],
+              pinned_node->children()[i]->view());
+  }
+
+  auto unpinned_children_in_focus_order =
+      unpinned_node->view()->GetChildrenFocusList();
+  EXPECT_EQ(unpinned_children_in_focus_order.size(),
+            unpinned_node->children().size());
+  for (size_t i = 0; i < unpinned_node->children().size(); i++) {
+    EXPECT_EQ(unpinned_children_in_focus_order[i],
+              unpinned_node->children()[i]->view());
+  }
+
+  const auto& group_node = unpinned_node->children()[0];
+  EXPECT_EQ(unpinned_node->children()[0]->type(),
+            TabCollectionNode::Type::GROUP);
+
+  auto group_children_in_focus_order =
+      group_node->view()->GetChildrenFocusList();
+  group_children_in_focus_order.erase(
+      std::remove_if(group_children_in_focus_order.begin(),
+                     group_children_in_focus_order.end(),
+                     [](views::View* view) {
+                       return !views::IsViewClass<VerticalTabView>(view);
+                     }),
+      group_children_in_focus_order.end());
+  EXPECT_EQ(group_children_in_focus_order.size(),
+            group_node->children().size());
+  for (size_t i = 0; i < group_node->children().size(); i++) {
+    EXPECT_EQ(group_children_in_focus_order[i],
+              group_node->children()[i]->view());
+  }
 }

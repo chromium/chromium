@@ -211,15 +211,19 @@ void TabCollectionNode::AddNewChild(base::PassKey<TabCollectionNode> pass_key,
   } else {
     child_node_view = child_node_ptr->CreateAndSetView();
   }
-  AddChildNodeView(std::move(child_node_view));
+
+  if (add_child_to_node_) {
+    add_child_to_node_.Run(std::move(child_node_view));
+  } else {
+    node_view_->AddChildView(std::move(child_node_view));
+  }
+
+  EnsureFocusOrder(model_index);
 }
 
-std::pair<std::unique_ptr<views::View>, std::unique_ptr<TabCollectionNode>>
-TabCollectionNode::RemoveChild(base::PassKey<TabCollectionNode> pass_key,
-                               const tabs::TabCollectionNodeHandle& handle) {
-  std::pair<std::unique_ptr<views::View>, std::unique_ptr<TabCollectionNode>>
-      removed_view_and_node;
-
+void TabCollectionNode::RemoveChild(
+    base::PassKey<TabCollectionNode> pass_key,
+    const tabs::TabCollectionNodeHandle& handle) {
   for (auto it = children_.begin(); it != children_.end(); ++it) {
     TabCollectionNode* child_node = it->get();
 
@@ -227,16 +231,14 @@ TabCollectionNode::RemoveChild(base::PassKey<TabCollectionNode> pass_key,
       continue;
     }
 
-    if (remove_child_from_node_) {
-      removed_view_and_node.first =
-          remove_child_from_node_.Run(child_node->node_view_);
-    } else {
-      removed_view_and_node.first =
-          node_view_->RemoveChildViewT(child_node->node_view_);
-    }
-    removed_view_and_node.second = std::move(*it);
+    views::View* node_to_remove = child_node->node_view_;
     children_.erase(it);
-    return removed_view_and_node;
+    if (remove_child_from_node_) {
+      remove_child_from_node_.Run(node_to_remove);
+    } else {
+      node_view_->RemoveChildViewT(node_to_remove);
+    }
+    return;
   }
 
   // The node to remove should be a direct child of this.
@@ -274,13 +276,40 @@ void TabCollectionNode::MoveChild(base::PassKey<TabCollectionNode> pass_key,
   node_view_->ReorderChildView(moved_node->node_view_,
                                static_cast<int>(children_.size() - 1));
 
-  // Explicitly set the next focusable view to follow our logical model.
-  if (target_index > 0) {
-    moved_node->node_view_->InsertAfterInFocusList(
-        children_[target_index - 1]->node_view_);
-  } else if (children_.size() > 1) {
-    moved_node->node_view_->InsertBeforeInFocusList(children_[1]->node_view_);
+  EnsureFocusOrder(target_index);
+}
+
+// static
+void TabCollectionNode::MoveChild(base::PassKey<TabCollectionNode> pass_key,
+                                  const tabs::TabCollectionNodeHandle& handle,
+                                  int new_index,
+                                  TabCollectionNode* src_parent_node,
+                                  TabCollectionNode* dst_parent_node) {
+  for (auto it = src_parent_node->children_.begin();
+       it != src_parent_node->children_.end(); ++it) {
+    TabCollectionNode* child_node = it->get();
+    if (child_node->GetHandle() != handle) {
+      continue;
+    }
+
+    std::unique_ptr<views::View> removed_view =
+        src_parent_node->node_view_->RemoveChildViewT(child_node->node_view_);
+    std::unique_ptr<TabCollectionNode> removed_node = std::move(*it);
+    src_parent_node->children_.erase(it);
+
+    dst_parent_node->AddChildNode(std::move(removed_node), new_index);
+    if (dst_parent_node->attach_child_to_node_) {
+      dst_parent_node->attach_child_to_node_.Run(std::move(removed_view),
+                                                 new_index);
+    } else {
+      dst_parent_node->node_view_->AddChildView(std::move(removed_view));
+    }
+    dst_parent_node->EnsureFocusOrder(new_index);
+    return;
   }
+
+  // The node to remove should be a direct child of src_parent_node.
+  NOTREACHED();
 }
 
 std::vector<views::View*> TabCollectionNode::GetDirectChildren() const {
@@ -298,16 +327,6 @@ std::unique_ptr<views::View> TabCollectionNode::CreateAndSetView() {
   return node_view;
 }
 
-void TabCollectionNode::AddChild(std::unique_ptr<views::View> child_node_view,
-                                 std::unique_ptr<TabCollectionNode> child_node,
-                                 size_t model_index) {
-  AddChildNode(std::move(child_node), model_index);
-
-  // Add child view after inserting the child node into children_, as adding the
-  // view may depend on the order of the node in children_.
-  AddChildNodeView(std::move(child_node_view));
-}
-
 void TabCollectionNode::AddChildNode(
     std::unique_ptr<TabCollectionNode> child_node,
     size_t model_index) {
@@ -315,11 +334,16 @@ void TabCollectionNode::AddChildNode(
   children_.insert(children_.begin() + model_index, std::move(child_node));
 }
 
-void TabCollectionNode::AddChildNodeView(
-    std::unique_ptr<views::View> child_node_view) {
-  if (add_child_to_node_) {
-    add_child_to_node_.Run(std::move(child_node_view));
-  } else {
-    node_view_->AddChildView(std::move(child_node_view));
+void TabCollectionNode::EnsureFocusOrder(size_t child_index) {
+  if (type() == Type::TABSTRIP) {
+    return;
+  }
+
+  if (child_index > 0) {
+    children_[child_index]->node_view_->InsertAfterInFocusList(
+        children_[child_index - 1]->node_view_);
+  } else if (children_.size() > 1) {
+    children_[child_index]->node_view_->InsertBeforeInFocusList(
+        children_[1]->node_view_);
   }
 }

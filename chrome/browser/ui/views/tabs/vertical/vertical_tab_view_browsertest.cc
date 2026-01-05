@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -291,16 +292,26 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, PinnedTabsHideCloseButton) {
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, PinnedTabsRenderBorder) {
   AppendPinnedTab();
 
+  const auto& pinned_node = root_node()->children()[0];
+  const auto& unpinned_node = root_node()->children()[1];
+
   // The initial tab is the first child of the pinned collection which is the
   // first child of the root node.
-  TabCollectionNode* tab_node = root_node()->children()[0]->children()[0].get();
-  VerticalTabView* tab =
-      static_cast<VerticalTabView*>(tab_node->get_view_for_testing());
+  VerticalTabView* pinned_tab = static_cast<VerticalTabView*>(
+      pinned_node->children()[0].get()->get_view_for_testing());
 
-  EXPECT_TRUE(tab->GetBorder());
+  EXPECT_TRUE(pinned_tab->GetBorder());
 
   // Unpin the tab.
   browser()->tab_strip_model()->SetTabPinned(0, false);
 
-  EXPECT_FALSE(tab->GetBorder());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return unpinned_node->children().size() == 2u; }));
+
+  // The first child of the unpinned collection is the tab that has been
+  // unpinned.
+  VerticalTabView* unpinned_tab = static_cast<VerticalTabView*>(
+      unpinned_node->children()[0].get()->get_view_for_testing());
+
+  EXPECT_FALSE(unpinned_tab->GetBorder());
 }

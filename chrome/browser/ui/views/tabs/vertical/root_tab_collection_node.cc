@@ -16,6 +16,24 @@
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 
+namespace {
+
+tabs::ConstChildPtr GetNodeFromHandle(
+    const tabs::TabCollection::NodeHandle& handle) {
+  if (std::holds_alternative<tabs::TabCollection::Handle>(handle)) {
+    const tabs::TabCollection* collection =
+        std::get<tabs::TabCollection::Handle>(handle).Get();
+    return collection;
+  } else {
+    CHECK(std::holds_alternative<tabs::TabInterface::Handle>(handle));
+    const tabs::TabInterface* tab =
+        std::get<tabs::TabInterface::Handle>(handle).Get();
+    return tab;
+  }
+}
+
+}  // namespace
+
 RootTabCollectionNode::RootTabCollectionNode(
     TabStripModel* tab_strip_model,
     CustomAddChildViewCallback add_node_view_to_parent)
@@ -38,18 +56,7 @@ void RootTabCollectionNode::OnChildrenAdded(
     const tabs::TabCollectionNodes& handles,
     bool insert_from_detached) {
   for (auto handle : handles) {
-    tabs::ConstChildPtr child;
-    if (std::holds_alternative<tabs::TabCollection::Handle>(handle)) {
-      const tabs::TabCollection* collection =
-          std::get<tabs::TabCollection::Handle>(handle).Get();
-      child = collection;
-    } else {
-      CHECK(std::holds_alternative<tabs::TabInterface::Handle>(handle));
-      const tabs::TabInterface* tab =
-          std::get<tabs::TabInterface::Handle>(handle).Get();
-      child = tab;
-    }
-
+    tabs::ConstChildPtr child = GetNodeFromHandle(handle);
     GetNodeForHandle(position.parent_handle)
         ->AddNewChild(GetPassKey(), child, position.index,
                       insert_from_detached);
@@ -75,20 +82,36 @@ void RootTabCollectionNode::OnChildMoved(
   const tabs::TabCollection::Position& from_position = node_data.position;
   const tabs::TabCollection::NodeHandle& moved_node_handle = node_data.handle;
 
-  if (from_position.parent_handle == to_position.parent_handle) {
+  TabCollectionNode* src_parent_node =
+      GetNodeForHandle(from_position.parent_handle);
+  TabCollectionNode* dst_parent_node =
+      GetNodeForHandle(to_position.parent_handle);
+
+  bool pin_state_changed =
+      (src_parent_node->type() == TabCollectionNode::Type::PINNED &&
+       dst_parent_node->type() == TabCollectionNode::Type::UNPINNED) ||
+      (src_parent_node->type() == TabCollectionNode::Type::UNPINNED &&
+       dst_parent_node->type() == TabCollectionNode::Type::PINNED);
+
+  if (pin_state_changed) {
+    // Pin state change is treated as a remove and add instead of an attach and
+    // detach since we have separate concurrent animations in each container.
+    src_parent_node->RemoveChild(GetPassKey(), moved_node_handle);
+    dst_parent_node->AddNewChild(
+        GetPassKey(), GetNodeFromHandle(moved_node_handle), to_position.index,
+        /*perform_initialization=*/true);
+  } else if (src_parent_node == dst_parent_node) {
+    // Moves within the same container treated as a reorder of views e.g. within
+    // unpinned or group containers.
     TabCollectionNode* parent_node =
         GetNodeForHandle(to_position.parent_handle);
     parent_node->MoveChild(GetPassKey(), moved_node_handle, to_position.index);
   } else {
-    TabCollectionNode* src_parent_node =
-        GetNodeForHandle(from_position.parent_handle);
-    TabCollectionNode* dst_parent_node =
-        GetNodeForHandle(to_position.parent_handle);
-
-    auto [view, node] =
-        src_parent_node->RemoveChild(GetPassKey(), moved_node_handle);
-    dst_parent_node->AddChild(std::move(view), std::move(node),
-                              to_position.index);
+    // Moves across different containers typically within the unpinned container
+    // e.g. unpinned to group, unpinned to split etc.
+    TabCollectionNode::MoveChild(GetPassKey(), moved_node_handle,
+                                 to_position.index, src_parent_node,
+                                 dst_parent_node);
   }
 }
 
