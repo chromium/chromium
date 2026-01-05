@@ -12978,6 +12978,21 @@
             ]
         }
     ],
+    "HomeModulePrefRefactor": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HomeModulePrefRefactor"
+                    ]
+                }
+            ]
+        }
+    ],
     "Hotspot": [
         {
             "platforms": [
