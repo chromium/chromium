@@ -139,7 +139,8 @@ std::unique_ptr<BrowserViewLayout> BrowserViewLayout::CreateLayout(
                    features::kAppBrowserUseNewLayout)) {
       return std::make_unique<BrowserViewAppLayoutImpl>(
           std::move(delegate), browser, std::move(views));
-    } else if ((browser->is_type_popup() || browser->is_type_devtools()) &&
+    } else if ((browser->is_type_popup() || browser->is_type_devtools() ||
+                browser->is_type_picture_in_picture()) &&
                base::FeatureList::IsEnabled(
                    features::kPopupBrowserUseNewLayout)) {
       return std::make_unique<BrowserViewPopupLayoutImpl>(
@@ -147,8 +148,7 @@ std::unique_ptr<BrowserViewLayout> BrowserViewLayout::CreateLayout(
     }
   }
 
-  // This is required for PiP still; will be broken out into a new layout in the
-  // future.
+  // If one of the flags is off we fall back to the old layout manager.
   return std::make_unique<BrowserViewLayoutImplOld>(std::move(delegate),
                                                     browser, std::move(views));
 }

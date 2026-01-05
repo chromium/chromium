@@ -121,8 +121,8 @@ gfx::Rect BrowserViewPopupLayoutImpl::CalculateTopContainerLayout(
 
   // Lay out the standard toolbar if present. This is used in tab fullscreen
   // when custom tabs are present.
+  const bool show_toolbar = delegate().IsToolbarVisible();
   if (IsParentedTo(views().toolbar, views().top_container)) {
-    const bool show_toolbar = delegate().IsToolbarVisible();
     gfx::Rect toolbar_bounds(params.visual_client_area.origin(), gfx::Size());
     if (show_toolbar) {
       toolbar_bounds.set_width(params.visual_client_area.width());
@@ -132,13 +132,22 @@ gfx::Rect BrowserViewPopupLayoutImpl::CalculateTopContainerLayout(
     params.SetTop(toolbar_bounds.bottom());
   }
 
-  // Add the top container separator. This is always present in popups.
+  // Add the top container separator. This is always present in popups but not
+  // in picture-in-picture.
   if (IsParentedTo(views().top_container_separator, views().top_container)) {
-    const gfx::Rect separator_bounds(
-        params.visual_client_area.x(), params.visual_client_area.y(),
-        params.visual_client_area.width(), views::Separator::kThickness);
-    layout.AddChild(views().top_container_separator, separator_bounds);
-    params.SetTop(separator_bounds.bottom());
+    // If there's no toolbar, even if a separator could be shown, it will not
+    // be.
+    const bool show_separator =
+        delegate().IsContentsSeparatorEnabled() && show_toolbar;
+    gfx::Rect separator_bounds;
+    if (show_separator) {
+      separator_bounds = gfx::Rect(
+          params.visual_client_area.x(), params.visual_client_area.y(),
+          params.visual_client_area.width(), views::Separator::kThickness);
+      params.SetTop(separator_bounds.bottom());
+    }
+    layout.AddChild(views().top_container_separator, separator_bounds,
+                    show_separator);
   }
 
   return gfx::Rect(params.visual_client_area.x(), original_top,
