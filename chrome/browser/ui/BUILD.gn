@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors
+# Copyright 2014 Th Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -1025,6 +1025,8 @@ static_library("ui") {
         "android/extensions/extension_keybinding_registry_android.h",
         "android/extensions/extension_util_bridge.cc",
         "android/extensions/extension_util_bridge.h",
+        "android/extensions/extensions_menu_delegate_android.cc",
+        "android/extensions/extensions_menu_delegate_android.h",
         "android/extensions/extensions_toolbar_bridge.cc",
         "android/extensions/extensions_toolbar_bridge.h",
         "extensions/icon_with_badge_image_source.cc",
