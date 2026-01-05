@@ -310,18 +310,8 @@ void FakeSafeBrowsingUIManager::MaybeSendClientSafeBrowsingWarningShownReport(
   }
 }
 
-bool FakeSafeBrowsingUIManager::hit_report_sent() {
-  return hit_report_count_ > 0;
-}
-int FakeSafeBrowsingUIManager::hit_report_count() {
-  return hit_report_count_;
-}
 bool FakeSafeBrowsingUIManager::report_sent() {
   return report_sent_;
-}
-std::optional<ThreatSource>
-FakeSafeBrowsingUIManager::hit_report_sent_threat_source() {
-  return hit_report_sent_threat_source_;
 }
 std::optional<bool> FakeSafeBrowsingUIManager::report_sent_is_async_check() {
   return report_sent_is_async_check_;

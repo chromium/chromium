@@ -132,10 +132,7 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
   void MaybeSendClientSafeBrowsingWarningShownReport(
       std::unique_ptr<ClientSafeBrowsingReportRequest> report,
       WebContents* web_contents) override;
-  bool hit_report_sent();
-  int hit_report_count();
   bool report_sent();
-  std::optional<ThreatSource> hit_report_sent_threat_source();
   std::optional<bool> report_sent_is_async_check();
   void set_threat_details_done_callback(base::OnceClosure callback);
   std::string GetReport();
@@ -150,12 +147,10 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
   std::string report_;
   base::OnceClosure threat_details_done_callback_;
   bool threat_details_done_ = false;
-  int hit_report_count_ = 0;
   bool report_sent_ = false;
   bool expect_empty_report_for_hats_ = true;
   bool expect_report_url_for_hats_ = false;
   bool expect_interstitial_interactions_ = false;
-  std::optional<ThreatSource> hit_report_sent_threat_source_;
   std::optional<bool> report_sent_is_async_check_;
 };
 
