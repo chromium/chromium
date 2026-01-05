@@ -131,11 +131,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // override in the generic IS_ANDROID block below, guarded by an appropriate
   // runtime check.
 
-  // If enabled, then use desktop page webprefs for Android devices that have
-  // large displays, specifically tablets and desktops.
-  feature_overrides.EnableFeature(
-      blink::features::kAndroidDesktopWebPrefsLargeDisplays);
-
   // Enables the caret browsing a11y feature - can use arrow keys to navigate
   // through web pages.
   // TODO(crbug.com/369139090): Remove when rollout is complete
@@ -205,9 +200,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.DisableFeature(media::kAllowEnhancedPipTransition);
   // Enable by default for desktop platforms, pending a phone / foldable /
   // tablet rollout using the same flag.
-  // TODO(crbug.com/413776899): Remove when rollout on other form factors is
-  // complete.
-  feature_overrides.EnableFeature(chrome::android::kInstanceSwitcherV2);
   // TODO(crbug.com/442327273): Remove when rollout is complete to all form
   // factors.
   feature_overrides.EnableFeature(
