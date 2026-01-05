@@ -35,6 +35,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -2271,6 +2272,16 @@ void BrowserAutofillManager::DidShowSuggestions(
   if (std::ranges::any_of(shown_suggestion_types, [](SuggestionType type) {
         return type == SuggestionType::kAddressEntryOnTyping;
       })) {
+    // TODO: crbug.com/468793696 - Remove crashkey after investigation.
+    SCOPED_CRASH_KEY_STRING64(
+        "autofill", "suggestions-shown-on-typing",
+        base::JoinString(base::ToVector(shown_suggestion_types,
+                                        [](SuggestionType type) {
+                                          return base::NumberToString(
+                                              std::to_underlying(type));
+                                        }),
+                         ","));
+
     // Assert that only the expected suggestion types exist. Note that despite
     // `SuggestionType::kDatalistEntry` is optionally added by
     // `AutofillExternalDelegate`, therefore checking for it is also required.
