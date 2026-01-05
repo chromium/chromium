@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="UpdateEngine.Attempt.ConnectionType"
-    enum="UpdateEngineConnectionType" expires_after="2025-12-31">
+    enum="UpdateEngineConnectionType" expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -39,7 +39,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.DownloadErrorCode"
-    enum="UpdateEngineDownloadErrorCode" expires_after="2025-12-31">
+    enum="UpdateEngineDownloadErrorCode" expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.DownloadSource"
-    enum="UpdateEngineDownloadSource" expires_after="2025-12-31">
+    enum="UpdateEngineDownloadSource" expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.DurationMinutes" units="minutes"
-    expires_after="2025-12-31">
+    expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -82,7 +82,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.DurationUptimeMinutes" units="minutes"
-    expires_after="2025-12-31">
+    expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -96,7 +96,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.InternalErrorCode"
-    enum="UpdateEngineErrorCode" expires_after="2025-12-31">
+    enum="UpdateEngineErrorCode" expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -124,7 +124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.PayloadBytesDownloadedMiB" units="MiB"
-    expires_after="2025-12-31">
+    expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -137,7 +137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.PayloadDownloadSpeedKBps" units="KBps"
-    expires_after="2025-12-31">
+    expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -209,7 +209,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.TimeSinceLastAttemptUptimeMinutes"
-    units="minutes" expires_after="2025-12-31">
+    units="minutes" expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -239,7 +239,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.CertificateCheck.UpdateCheck"
-    enum="UpdateEngineCertificateCheckStatus" expires_after="2025-12-31">
+    enum="UpdateEngineCertificateCheckStatus" expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Check.DownloadErrorCode"
-    enum="UpdateEngineDownloadErrorCode" expires_after="2025-12-31">
+    enum="UpdateEngineDownloadErrorCode" expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -353,7 +353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Check.TimeSinceLastCheckUptimeMinutes"
-    units="minutes" expires_after="2025-12-31">
+    units="minutes" expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -367,7 +367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.ConsecutiveUpdate.Count" units="updates"
-    expires_after="2025-12-31">
+    expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -380,7 +380,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.ConsecutiveUpdate.Failed" enum="BooleanHit"
-    expires_after="2025-12-31">
+    expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -445,7 +445,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.AttemptCount" units="count"
-    expires_after="2025-12-31">
+    expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -458,7 +458,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.BytesDownloadedMiB" units="MiB"
-    expires_after="2025-12-31">
+    expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -472,7 +472,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.BytesDownloadedMiBHttpPeer"
-    units="MiB" expires_after="2025-12-31">
+    units="MiB" expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -486,7 +486,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.BytesDownloadedMiBHttpServer"
-    units="MiB" expires_after="2025-12-31">
+    units="MiB" expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -500,7 +500,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.BytesDownloadedMiBHttpsServer"
-    units="MiB" expires_after="2025-12-31">
+    units="MiB" expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -514,7 +514,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.DownloadOverheadPercentage"
-    units="%" expires_after="2025-12-31">
+    units="%" expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -541,7 +541,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.PayloadSizeMiB" units="MiB"
-    expires_after="2025-12-31">
+    expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -596,7 +596,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.TotalDurationUptimeMinutes"
-    units="minutes" expires_after="2025-12-31">
+    units="minutes" expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -611,7 +611,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.UrlSwitchCount" units="count"
-    expires_after="2025-12-31">
+    expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -625,7 +625,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.TimeToRebootMinutes" units="minutes"
-    expires_after="2025-12-31">
+    expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -641,7 +641,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.UpdateInvalidated" enum="BooleanSuccess"
-    expires_after="2025-12-31">
+    expires_after="2026-12-31">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
