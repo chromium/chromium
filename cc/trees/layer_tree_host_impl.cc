@@ -3431,6 +3431,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
   viz::CompositorFrameMetadata metadata = MakeCompositorFrameMetadata();
   bool has_view_transition_with_animate = false;
+  bool delay_layer_tree_view_deletion = false;
 
   // Don't compute transition directives in TreesInViz mode because
   // the requests will be sent over to viz to compute them.
@@ -3487,6 +3488,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
               ViewTransitionRequest::Type::kAnimateRenderer) {
             has_view_transition_with_animate = true;
           }
+          delay_layer_tree_view_deletion = true;
         }
       }
     }
@@ -3508,6 +3510,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
               ViewTransitionRequest::Type::kAnimateRenderer) {
             has_view_transition_with_animate = true;
           }
+          delay_layer_tree_view_deletion = true;
         }
       }
     }
@@ -3520,13 +3523,9 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   // wait for animations from old RenderFrame, in case there are issues with old
   // RenderFrame being stuck, and we send CopyOutputRequest Ack early for
   // fast-path ViewTransition navigations.
-  bool delay_layer_tree_view_deletion = false;
-  for (auto& request : active_tree_->view_transition_requests()) {
-    if (request->delay_layer_tree_view_deletion()) {
-      delay_layer_tree_view_deletion = true;
-      break;
-    }
-  }
+  //
+  // Use the cached values because `TakeViewTransitionRequests()` clears the
+  // requests from the tree.
   if (features::ShouldAckCOREarlyForViewTransition() &&
       delay_layer_tree_view_deletion && has_view_transition_with_animate) {
     frame_deadline = 240;
