@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 @Lifetime.Singleton
-public class ProfileStore {
+public final class ProfileStore {
 
     @IntDef({
         CallSite.GET_DEFAULT_PROFILE,
@@ -40,19 +40,10 @@ public class ProfileStore {
 
     private final Map<String, Profile> mProfiles = new HashMap<>();
 
-    private static ProfileStore sINSTANCE;
     private static final String PROFILE_WAS_CREATED_BY_ASYNC_WEBVIEW_STARTUP_HISTOGRAM =
             "Android.WebView.ProfileWasCreatedByAsyncStartup";
 
-    private ProfileStore() {}
-
-    public static ProfileStore getInstance() {
-        ThreadUtils.checkUiThread();
-        if (sINSTANCE == null) {
-            sINSTANCE = new ProfileStore();
-        }
-        return sINSTANCE;
-    }
+    ProfileStore() {}
 
     private static String callSiteToString(@CallSite int callSite) {
         return switch (callSite) {

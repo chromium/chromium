@@ -367,6 +367,7 @@ public class WebViewChromiumAwInit {
         CallSite.STATIC_SET_RENDERER_LIBRARY_PREFETCH_MODE,
         CallSite.STATIC_GET_RENDERER_LIBRARY_PREFETCH_MODE,
         CallSite.GET_DEFAULT_COOKIE_MANAGER,
+        CallSite.GET_PROFILE_STORE,
         CallSite.COUNT,
     })
     public @interface CallSite {
@@ -478,8 +479,9 @@ public class WebViewChromiumAwInit {
         int STATIC_SET_RENDERER_LIBRARY_PREFETCH_MODE = 105;
         int STATIC_GET_RENDERER_LIBRARY_PREFETCH_MODE = 106;
         int GET_DEFAULT_COOKIE_MANAGER = 107;
+        int GET_PROFILE_STORE = 108;
         // Remember to update WebViewStartupCallSite in enums.xml when adding new values here.
-        int COUNT = 108;
+        int COUNT = 109;
     };
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:WebViewStartupCallSite)
@@ -1127,6 +1129,11 @@ public class WebViewChromiumAwInit {
         return mChromiumStartedGlobals.mAwProxyController;
     }
 
+    public ProfileStore getProfileStore() {
+        triggerAndWaitForChromiumStarted(CallSite.GET_PROFILE_STORE);
+        return mChromiumStartedGlobals.mProfileStore;
+    }
+
     public CookieManager getDefaultCookieManager() {
         if (!mGetDefaultCookieManagerCalled.get()) {
             mFirstGetDefaultCookieManagerLooper.compareAndSet(null, Looper.myLooper());
@@ -1235,9 +1242,8 @@ public class WebViewChromiumAwInit {
                                     : Set.of(AwBrowserContext.getDefaultContextName());
 
                     for (String context : profilesCopy) {
-                        ProfileStore.getInstance()
-                                .getOrCreateProfile(
-                                        context, ProfileStore.CallSite.ASYNC_WEBVIEW_STARTUP);
+                        mChromiumStartedGlobals.mProfileStore.getOrCreateProfile(
+                                context, ProfileStore.CallSite.ASYNC_WEBVIEW_STARTUP);
                     }
                     callback.onSuccess(mWebViewStartUpDiagnostics);
                 });
@@ -1255,10 +1261,12 @@ public class WebViewChromiumAwInit {
     private static final class ChromiumStartedGlobals {
         final AwTracingController mAwTracingController;
         final AwProxyController mAwProxyController;
+        final ProfileStore mProfileStore;
 
         ChromiumStartedGlobals() {
             mAwProxyController = new AwProxyController();
             mAwTracingController = new AwTracingController();
+            mProfileStore = new ProfileStore();
         }
     }
 
@@ -1278,10 +1286,9 @@ public class WebViewChromiumAwInit {
             }
             if (mDefaultProfile != null) return;
             mDefaultProfile =
-                    ProfileStore.getInstance()
-                            .getOrCreateProfile(
-                                    AwBrowserContext.getDefaultContextName(),
-                                    ProfileStore.CallSite.GET_DEFAULT_PROFILE);
+                    mChromiumStartedGlobals.mProfileStore.getOrCreateProfile(
+                            AwBrowserContext.getDefaultContextName(),
+                            ProfileStore.CallSite.GET_DEFAULT_PROFILE);
             mDefaultProfileIsInitialized.countDown();
         }
 

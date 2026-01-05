@@ -753,11 +753,12 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
     public InvocationHandler getProfileStore() {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.GET_PROFILE_STORE")) {
             recordApiCall(ApiCall.GET_PROFILE_STORE);
+            ProfileStore profileStore = mAwInit.getProfileStore();
             synchronized (mAwInit.getLazyInitLock()) {
                 if (mProfileStore == null) {
                     mProfileStore =
                             BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                    new SupportLibProfileStore(ProfileStore.getInstance()));
+                                    new SupportLibProfileStore(profileStore));
                 }
 
                 return mProfileStore;
