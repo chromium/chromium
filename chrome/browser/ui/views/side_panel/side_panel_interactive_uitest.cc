@@ -40,6 +40,7 @@
 #include "components/reading_list/core/reading_list_entry.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -136,7 +137,10 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
  public:
   PinnedSidePanelInteractiveTest()
       : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
-            {feature_engagement::kIPHSidePanelGenericPinnableFeature})) {}
+            {feature_engagement::kIPHSidePanelGenericPinnableFeature})) {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kImmersiveReadAnything);
+  }
   ~PinnedSidePanelInteractiveTest() override = default;
 
   void SetUp() override {
@@ -231,13 +235,15 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
       browser()->browser_window_features()->side_panel_ui()->Show(key);
     }));
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verify that we can open the ReadingMode side panel from the 3dot -> More
 // tools context menu.
-// TODO(crbug.com/417601707, crbug.com/472526459): Re-enable this test
 IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
-                       DISABLED_OpenReadingModeSidePanel) {
+                       OpenReadingModeSidePanel) {
   // Replace the contents of the ReadingMode side panel with an empty view so it
   // loads faster.
   auto* const registry = SidePanelRegistry::From(browser());
@@ -342,10 +348,17 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
                     EnsureNotPresent(kSidePanelPinButtonElementId)));
 }
 
-// TODO(crbug.com/417601707, crbug.com/472526459): Re-enable this test
+// TODO(crbug.com/417601707): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PinnedToolbarButtonsHighlightWhileSidePanelVisible \
+  DISABLED_PinnedToolbarButtonsHighlightWhileSidePanelVisible
+#else
+#define MAYBE_PinnedToolbarButtonsHighlightWhileSidePanelVisible \
+  PinnedToolbarButtonsHighlightWhileSidePanelVisible
+#endif
 IN_PROC_BROWSER_TEST_F(
     PinnedSidePanelInteractiveTest,
-    DISABLED_PinnedToolbarButtonsHighlightWhileSidePanelVisible) {
+    MAYBE_PinnedToolbarButtonsHighlightWhileSidePanelVisible) {
   // Replace the contents of the ReadingMode side panel with an empty view so it
   // loads faster.
   auto* const registry = SidePanelRegistry::From(browser());
