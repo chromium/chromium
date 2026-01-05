@@ -54,6 +54,8 @@ class SecureChannelImpl : public SecureChannel {
     kClosed,
   };
 
+  void AddRequestToPendingEncryptionQueue(const Request& request);
+
   // Helper function to handle state transitions and errors.
   void FailAllRequestsAndClose(ErrorCode error_code);
   void StartSessionEstablishment();

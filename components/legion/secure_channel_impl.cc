@@ -78,35 +78,37 @@ void SecureChannelImpl::EstablishChannel(EstablishChannelCallback callback) {
 bool SecureChannelImpl::Write(const Request& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (state_ == State::kClosed) {
-    DLOG(ERROR) << "SecureChannel is closed.";
-    return false;
-  }
-
-  requests_in_session_count_++;
-  pending_encryption_requests_.push_back(request);
-
   switch (state_) {
     case State::kUninitialized:
+      AddRequestToPendingEncryptionQueue(request);
       StartSessionEstablishment();
-      break;
+      return true;
     case State::kPerformingAttestation:
     case State::kWaitingHandshakeMessage:
     case State::kPerformingHandshake:
     case State::kVerifyingHandshake:
       // Request is queued and will be processed once the session is
       // established.
-      break;
+      AddRequestToPendingEncryptionQueue(request);
+      return true;
     case State::kEstablished:
       // The session is established. A new request is sent only if there is
       // no other request in flight.
+      AddRequestToPendingEncryptionQueue(request);
       ProcessPendingEncryptionRequests();
-      break;
+      return true;
     case State::kClosed:
-      // This case should not be reached because of the check at the top.
-      NOTREACHED();
+      LOG(ERROR) << "SecureChannel is closed.";
+      return false;
   }
-  return true;
+}
+
+void SecureChannelImpl::AddRequestToPendingEncryptionQueue(
+    const Request& request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  requests_in_session_count_++;
+  pending_encryption_requests_.push_back(request);
 }
 
 void SecureChannelImpl::Send(
