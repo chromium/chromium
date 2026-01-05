@@ -70,7 +70,8 @@ cr-composebox {
   --cr-composebox-submit-button-margin-inline-start: auto;
   --cr-composebox-suggestion-activity-bottom: 0;
   --cr-composebox-suggestion-activity-margin-top: 0;
-
+  --cr-composebox-submit-container-top: auto;
+  --cr-composebox-voice-icon-top: auto;
   position: relative;
 }
 
@@ -95,6 +96,14 @@ cr-composebox[searchbox-layout-mode="TallBottomContext"]::part(voice-icon) {
 
 cr-composebox[searchbox-layout-mode="TallTopContext"] {
   --cr-composebox-submit-button-margin-inline-start: 0;
+}
+
+cr-composebox[show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext']::part(voice-icon) {
+  inset-inline-end: calc(var(--cr-composebox-submit-container-size) + 10px);
+}
+
+cr-composebox[show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext']::part(carousel-divider) {
+  display: none;
 }
 
 :host-context([dir='rtl']) cr-composebox[searchbox-layout-mode="Compact"]::part(context-menu-entrypoint-icon) {
