@@ -216,7 +216,7 @@ class CORE_EXPORT SuppressScrollAnchorScope {
   ~SuppressScrollAnchorScope();
 
  private:
-  ScrollAnchor* anchor_;
+  ScrollAnchor* anchor_ = nullptr;
 };
 
 }  // namespace blink

@@ -1428,4 +1428,12 @@ TEST_F(ScrollAnchorPageTest, SvgRelativeBoundsCrashAfterClearLayoutResults) {
   doc.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   // Pass if no crashes.
 }
+
+// Verifies that SuppressScrollAnchorScope doesn't crash when constructed with
+// a nullptr ScrollableArea.
+// https://crbug.com/471610993
+TEST_F(ScrollAnchorTest, SuppressScrollAnchorScopeWithNullScroller) {
+  SuppressScrollAnchorScope scope(nullptr);
+  // Pass if no crashes.
+}
 }
