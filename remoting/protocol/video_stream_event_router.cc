@@ -67,11 +67,12 @@ base::WeakPtr<VideoChannelStateObserver> VideoStreamEventRouter::GetObserver(
     return single_stream_state_observer_;
   }
 
-  if (multi_stream_state_observers_.contains(screen_id)) {
-    auto observer = multi_stream_state_observers_.at(screen_id);
+  if (auto it = multi_stream_state_observers_.find(screen_id);
+      it != multi_stream_state_observers_.end()) {
+    auto observer = it->second;
     if (!observer) {
       LOG(WARNING) << "Removing invalid observer for screen_id: " << screen_id;
-      multi_stream_state_observers_.erase(screen_id);
+      multi_stream_state_observers_.erase(it);
     }
 
     return observer;
