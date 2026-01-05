@@ -59,4 +59,8 @@ interface ActorOverlayPage {
   //
   // Expects a response from WebUI once the transition is finished.
   MoveCursorTo(gfx.mojom.Point point) => ();
+
+  // Notifies WebUI to trigger a click animation at the current position.
+  // Expects a response from WebUI once the animation is finished.
+  TriggerClickAnimation() => ();
 };

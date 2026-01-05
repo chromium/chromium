@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -489,8 +490,9 @@ std::string WaitForCursorTransformScript() {
   )";
 }
 
-class ActorOverlayMagicCursorTest : public ActorOverlayTest,
-                                    public testing::WithParamInterface<float> {
+class ActorOverlayMagicCursorDeviceScaleFactorTest
+    : public ActorOverlayTest,
+      public testing::WithParamInterface<float> {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ActorOverlayTest::SetUpCommandLine(command_line);
@@ -499,7 +501,7 @@ class ActorOverlayMagicCursorTest : public ActorOverlayTest,
   }
 };
 
-IN_PROC_BROWSER_TEST_P(ActorOverlayMagicCursorTest,
+IN_PROC_BROWSER_TEST_P(ActorOverlayMagicCursorDeviceScaleFactorTest,
                        MagicCursorMovesToCoordinates) {
   ActorUiWindowController* window_controller =
       ActorUiWindowController::From(browser());
@@ -557,8 +559,82 @@ IN_PROC_BROWSER_TEST_P(ActorOverlayMagicCursorTest,
 
 // Run with 0.5 (Low DPI), 1.0 (Standard), and 1.5 (High DPI).
 INSTANTIATE_TEST_SUITE_P(All,
-                         ActorOverlayMagicCursorTest,
+                         ActorOverlayMagicCursorDeviceScaleFactorTest,
                          testing::Values(0.5f, 1.0f, 1.5f));
+
+std::string WaitForCursorClickingScript() {
+  return R"(
+    (async () => {
+      return new Promise(resolve => {
+        const check = () => {
+          const cursor = document.querySelector('actor-overlay-app')
+                              ?.shadowRoot
+                              ?.querySelector('#magicCursor');
+          if (cursor?.classList.contains('clicking')) {
+             resolve(true);
+          } else {
+             requestAnimationFrame(check);
+          }
+        };
+        check();
+      });
+    })();
+  )";
+}
+
+class ActorOverlayMagicCursorTest : public ActorOverlayTest {};
+
+IN_PROC_BROWSER_TEST_F(ActorOverlayMagicCursorTest,
+                       MagicCursorTriggersClickAnimation) {
+  ActorUiWindowController* window_controller =
+      ActorUiWindowController::From(browser());
+  ActorUiContentsContainerController* contents_controller =
+      window_controller->GetControllerForWebContents(
+          browser()->GetActiveTabInterface()->GetContents());
+
+  // Initialize overlay
+  ActorOverlayState init_state;
+  init_state.is_active = true;
+  TestFuture<void> init_future;
+  contents_controller->OnOverlayStateChanged(true, init_state,
+                                             init_future.GetCallback());
+  ASSERT_TRUE(init_future.Wait());
+
+  // Move Cursor
+  ActorOverlayState move_state;
+  move_state.is_active = true;
+  move_state.mouse_target = gfx::Point(100, 100);
+  TestFuture<void> move_future;
+  contents_controller->OnOverlayStateChanged(true, move_state,
+                                             move_future.GetCallback());
+  ASSERT_TRUE(move_future.Wait());
+
+  content::WebContents* overlay_contents =
+      GetActorOverlayWebViewWebContents(browser());
+  ASSERT_TRUE(content::WaitForLoadStop(overlay_contents));
+
+  // Trigger click animation
+  ActorOverlayState click_state;
+  click_state.is_active = true;
+  click_state.mouse_down = true;
+  TestFuture<void> click_future;
+  contents_controller->OnOverlayStateChanged(true, click_state,
+                                             click_future.GetCallback());
+
+  // Verify clicking animation started
+  EXPECT_EQ(content::EvalJs(overlay_contents, WaitForCursorClickingScript()),
+            true);
+  ASSERT_TRUE(click_future.Wait());
+
+  // Verify clicking animation stopped
+  bool has_class =
+      content::EvalJs(
+          overlay_contents,
+          "document.querySelector('actor-overlay-app').shadowRoot"
+          ".querySelector('#magicCursor').classList.contains('clicking')")
+          .ExtractBool();
+  EXPECT_FALSE(has_class);
+}
 
 class ActorOverlayDisabledTest : public InProcessBrowserTest {
  public:

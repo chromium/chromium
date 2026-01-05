@@ -34,6 +34,7 @@ class FakeActorOverlayPage : public mojom::ActorOverlayPage {
   void MoveCursorTo(const gfx::Point& point,
                     MoveCursorToCallback callback) override;
   void SetTheme(mojom::ThemePtr theme) override;
+  void TriggerClickAnimation(TriggerClickAnimationCallback callback) override;
 
   // Test accessors
   bool is_scrim_background_visible() const {
@@ -47,6 +48,9 @@ class FakeActorOverlayPage : public mojom::ActorOverlayPage {
   int theme_call_count() const { return theme_call_count_; }
   gfx::Point last_cursor_point() const { return last_cursor_point_; }
   int move_cursor_call_count() const { return move_cursor_call_count_; }
+  int trigger_click_animation_call_count() {
+    return trigger_click_animation_call_count_;
+  }
 
  private:
   mojo::Receiver<mojom::ActorOverlayPage> receiver_{this};
@@ -57,6 +61,7 @@ class FakeActorOverlayPage : public mojom::ActorOverlayPage {
   int theme_call_count_ = 0;
   gfx::Point last_cursor_point_;
   int move_cursor_call_count_ = 0;
+  int trigger_click_animation_call_count_ = 0;
 };
 
 }  // namespace actor::ui
