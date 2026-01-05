@@ -72,6 +72,7 @@ void ReaderModePanelItemConfiguration::DidTransitionToSmallEntrypoint() {
     engagement_tracker_->Dismissed(
         feature_engagement::kIPHiOSReaderModeLargeOmniboxEntrypointFeature);
   }
+  Invalidate();
 }
 
 #pragma mark - ReaderModeTabHelper::Observer
