@@ -48,7 +48,7 @@ UStringSearch* CreateSearcher() {
   // searches without setting both the pattern and the text.
   UErrorCode status = U_ZERO_ERROR;
   String search_collator_name =
-      CurrentSearchLocaleID() + String("@collation=search");
+      StrCat({CurrentSearchLocaleID(), "@collation=search"});
   UStringSearch* searcher =
       usearch_open(&uchar::kLineFeed, 1, &uchar::kLineFeed, 1,
                    search_collator_name.Utf8().c_str(), nullptr, &status);
