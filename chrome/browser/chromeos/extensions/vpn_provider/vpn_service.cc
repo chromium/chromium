@@ -52,13 +52,6 @@ const char* const kEventNames[] = {
     api_vpn::OnPacketReceived::kEventName,
 };
 
-void RunFailureCallback(chromeos::VpnService::FailureCallback failure,
-                        const std::optional<std::string>& error_name,
-                        const std::optional<std::string>& error_message) {
-  std::move(failure).Run(error_name.value_or(std::string{}),
-                         error_message.value_or(std::string{}));
-}
-
 bool IsVpnProvider(const extensions::Extension* extension) {
   return extension->permissions_data()->HasAPIPermission(
       extensions::mojom::APIPermissionID::kVpnProvider);
@@ -294,14 +287,12 @@ void VpnService::CreateConfiguration(const std::string& extension_id,
                                      SuccessCallback success,
                                      FailureCallback failure) {
   if (configuration_name.empty()) {
-    RunFailureCallback(std::move(failure), /*error_name=*/{},
-                       "Empty name not supported.");
+    std::move(failure).Run(/*error_name=*/"", "Empty name not supported.");
     return;
   }
 
   if (LookupConfiguration(extension_id, configuration_name)) {
-    RunFailureCallback(std::move(failure), /*error_name=*/{},
-                       "Name not unique.");
+    std::move(failure).Run(/*error_name=*/"", "Name not unique.");
     return;
   }
 
@@ -313,8 +304,9 @@ void VpnService::CreateConfiguration(const std::string& extension_id,
           ->GetProfileForUserhash(ash::ProfileHelper::GetUserIdHashFromProfile(
               ProfileManager::GetPrimaryUserProfile()));
   if (!profile) {
-    RunFailureCallback(std::move(failure), /*error_name=*/{},
-                       "No user profile for unshared network configuration.");
+    std::move(failure).Run(
+        /*error_name=*/"",
+        "No user profile for unshared network configuration.");
     return;
   }
 
@@ -407,8 +399,7 @@ void VpnService::DestroyConfiguration(const std::string& extension_id,
   crosapi::VpnServiceForExtensionAsh::VpnConfiguration* configuration =
       LookupConfiguration(extension_id, configuration_name);
   if (!configuration) {
-    RunFailureCallback(std::move(failure), /*error_name=*/{},
-                       "Unauthorized access.");
+    std::move(failure).Run(/*error_name=*/"", "Unauthorized access.");
     return;
   }
 
@@ -416,8 +407,7 @@ void VpnService::DestroyConfiguration(const std::string& extension_id,
   // is used.
   const std::optional<std::string> service_path = configuration->service_path();
   if (!service_path) {
-    RunFailureCallback(std::move(failure), /*error_name=*/{},
-                       "Pending create.");
+    std::move(failure).Run(/*error_name=*/"", "Pending create.");
     return;
   }
 
@@ -477,8 +467,7 @@ void VpnService::SetParameters(const std::string& extension_id,
                                SuccessCallback success,
                                FailureCallback failure) {
   if (!OwnsActiveConfiguration(extension_id)) {
-    RunFailureCallback(std::move(failure), /*error_name=*/{},
-                       "Unauthorized access.");
+    std::move(failure).Run(/*error_name=*/"", "Unauthorized access.");
     return;
   }
 
@@ -494,14 +483,12 @@ void VpnService::SendPacket(const std::string& extension_id,
                             SuccessCallback success,
                             FailureCallback failure) {
   if (!OwnsActiveConfiguration(extension_id)) {
-    RunFailureCallback(std::move(failure), /*error_name=*/{},
-                       "Unauthorized access.");
+    std::move(failure).Run(/*error_name=*/"", "Unauthorized access.");
     return;
   }
 
   if (data.empty()) {
-    RunFailureCallback(std::move(failure), /*error_name=*/{},
-                       "Can't send an empty packet.");
+    std::move(failure).Run(/*error_name=*/"", "Can't send an empty packet.");
     return;
   }
 
@@ -515,8 +502,7 @@ void VpnService::NotifyConnectionStateChanged(const std::string& extension_id,
                                               SuccessCallback success,
                                               FailureCallback failure) {
   if (!OwnsActiveConfiguration(extension_id)) {
-    RunFailureCallback(std::move(failure), /*error_name=*/{},
-                       "Unauthorized access.");
+    std::move(failure).Run(/*error_name=*/"", "Unauthorized access.");
     return;
   }
 
