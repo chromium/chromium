@@ -3059,8 +3059,7 @@ public class StripLayoutHelper
     public void onClick(
             long time, StripLayoutView view, int motionEventButtonState, int modifiers) {
         if (view instanceof StripLayoutTab tab) {
-            handleTabClick(
-                    tab, modifiers, MotionEventUtils.isPrimaryButton(motionEventButtonState));
+            handleTabClick(tab, modifiers);
             return;
         } else if (view instanceof StripLayoutGroupTitle groupTitle) {
             handleGroupTitleClick(groupTitle);
@@ -3182,15 +3181,12 @@ public class StripLayoutHelper
      *
      * @param tab The {@link StripLayoutTab} that was clicked by the user.
      * @param modifiers The active keyboard modifiers from the {@link MotionEvent#getMetaState()}.
-     * @param isMouseClick True if the click event originated from a mouse.
      */
-    private void handleTabClick(StripLayoutTab tab, int modifiers, boolean isMouseClick) {
+    private void handleTabClick(StripLayoutTab tab, int modifiers) {
         if (tab == null || tab.isDying() || mModel == null) return;
 
-        // Restrict modified clicks to mouse input only for a predictable experience.
         // If feature disabled, return to legacy behaviour.
-        if (!ChromeFeatureList.sAndroidTabHighlighting.isEnabled()
-                    || (!isMouseClick && !StripLayoutUtils.isTabHighlightingTestingEnabled())) {
+        if (!ChromeFeatureList.sAndroidTabHighlighting.isEnabled()) {
             selectTab(tab);
             clearMultiSelection(/* clearAnchor= */ true, /* notifyObservers= */ true);
             mRenderHost.requestRender();
