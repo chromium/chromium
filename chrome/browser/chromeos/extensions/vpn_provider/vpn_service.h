@@ -22,7 +22,6 @@
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/ash/components/network/vpn_providers_observer.h"
 #include "chromeos/crosapi/mojom/vpn_service.mojom.h"
-#include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -42,44 +41,18 @@ class BrowserContext;
 }  // namespace content
 
 namespace extensions {
+struct Event;
 class ExtensionRegistry;
 }  // namespace extensions
 
-namespace crosapi {
-class VpnServiceAsh;
-}  // namespace crosapi
-
 namespace chromeos {
-
-class VpnServiceForExtension
-    : public crosapi::mojom::EventObserverForExtension {
- public:
-  VpnServiceForExtension(const std::string& extension_id,
-                         content::BrowserContext*);
-  ~VpnServiceForExtension() override;
-
-  VpnServiceForExtension(const VpnServiceForExtension&) = delete;
-  VpnServiceForExtension& operator=(const VpnServiceForExtension&) = delete;
-
-  mojo::Remote<crosapi::mojom::VpnServiceForExtension>& Proxy() {
-    return vpn_service_;
-  }
-
- private:
-  const extensions::ExtensionId extension_id_;
-  raw_ptr<content::BrowserContext> browser_context_;
-
-  mojo::Remote<crosapi::mojom::VpnServiceForExtension> vpn_service_;
-  mojo::Receiver<crosapi::mojom::EventObserverForExtension> receiver_{this};
-};
 
 // The class manages the VPN configurations.
 class VpnService : public extensions::api::VpnServiceInterface,
                    public ash::NetworkConfigurationObserver,
                    public ash::NetworkStateHandlerObserver,
                    public ash::VpnProvidersObserver::Delegate,
-                   public extensions::ExtensionRegistryObserver,
-                   public extensions::EventRouter::Observer {
+                   public extensions::ExtensionRegistryObserver {
  public:
   explicit VpnService(content::BrowserContext*);
   ~VpnService() override;
@@ -112,8 +85,6 @@ class VpnService : public extensions::api::VpnServiceInterface,
                                     bool connection_success,
                                     SuccessCallback,
                                     FailureCallback) override;
-  void Shutdown() override;
-
   // ash::NetworkConfigurationObserver:
   void OnConfigurationRemoved(const std::string& service_path,
                               const std::string& guid) override;
@@ -129,22 +100,13 @@ class VpnService : public extensions::api::VpnServiceInterface,
                            const extensions::Extension*,
                            extensions::UnloadedExtensionReason) override;
 
-  // EventRouter::Observer:
-  void OnListenerAdded(const extensions::EventListenerInfo&) override;
-
   class VpnConfiguration;
 
  private:
   friend class VpnProviderApiTest;
-  friend class VpnServiceForExtension;
   friend class VpnServiceFactory;
   // We are dismantling the crosapi VpnService (crbug.com/365902693).
   friend class crosapi::VpnServiceForExtensionAsh;
-
-  static crosapi::VpnServiceAsh* GetVpnService();
-
-  mojo::Remote<crosapi::mojom::VpnServiceForExtension>&
-  GetVpnServiceForExtension(const std::string& extension_id);
 
   // Looks up the configuration identified by the given service path.
   crosapi::VpnServiceForExtensionAsh::VpnConfiguration* LookupConfiguration(
@@ -250,9 +212,6 @@ class VpnService : public extensions::api::VpnServiceInterface,
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
       extension_registry_observer_{this};
-
-  base::flat_map<std::string, std::unique_ptr<VpnServiceForExtension>>
-      extension_id_to_service_;
 
   ash::VpnProvidersObserver vpn_providers_observer_;
 

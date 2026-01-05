@@ -211,10 +211,6 @@ class VpnProviderApiTest : public VpnProviderApiTestBase {
   }
 
   bool IsConfigConnected() {
-    const auto& mapping = GetVpnServiceAsh()->extension_id_to_service_;
-    if (!base::Contains(mapping, extension_id())) {
-      return false;
-    }
     return service()->OwnsActiveConfiguration(extension_id());
   }
 

@@ -70,7 +70,7 @@ bool VpnServiceFactory::ServiceIsNULLWhileTesting() const {
 std::unique_ptr<KeyedService>
 VpnServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!VpnService::GetVpnService() || !IsContextForMainProfile(context)) {
+  if (!IsContextForMainProfile(context)) {
     return nullptr;
   }
   return std::make_unique<VpnService>(context);

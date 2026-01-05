@@ -41,16 +41,6 @@ namespace {
 
 namespace api_vpn = extensions::api::vpn_provider;
 
-// All events that our EventRouter::Observer should be listening to.
-// api_vpn::OnConfigCreated is intentionally omitted -- it was never
-// implemented.
-const char* const kEventNames[] = {
-    api_vpn::OnUIEvent::kEventName,
-    api_vpn::OnConfigRemoved::kEventName,
-    api_vpn::OnPlatformMessage::kEventName,
-    api_vpn::OnPacketReceived::kEventName,
-};
-
 // Creates a key for VpnService's |key_to_configuration_map_| as a hash of
 // |extension_id| and |configuration_name|.
 std::string GetKey(const std::string& extension_id,
@@ -107,7 +97,6 @@ class VpnService::VpnConfiguration
 void VpnService::VpnConfiguration::OnPacketReceived(
     const std::vector<char>& data) {
   DCHECK(vpn_service_);
-  vpn_service_->GetVpnService()->GetVpnServiceForExtension(extension_id());
   vpn_service_->SendOnPacketReceivedToExtension(extension_id(), data);
 }
 
@@ -119,48 +108,24 @@ void VpnService::VpnConfiguration::OnPlatformMessage(
 
   if (platform_message ==
       std::to_underlying(api_vpn::PlatformMessage::kConnected)) {
-    vpn_service_->GetVpnService()->GetVpnServiceForExtension(extension_id());
     vpn_service_->SetActiveConfiguration(this);
   } else if (platform_message ==
                  std::to_underlying(api_vpn::PlatformMessage::kDisconnected) ||
              platform_message ==
                  std::to_underlying(api_vpn::PlatformMessage::kError)) {
-    vpn_service_->GetVpnService()->GetVpnServiceForExtension(extension_id());
     vpn_service_->SetActiveConfiguration(nullptr);
   }
 
-  vpn_service_->GetVpnService()->GetVpnServiceForExtension(extension_id());
   vpn_service_->SendOnPlatformMessageToExtension(
       extension_id(), configuration_name(), platform_message);
 }
 
-VpnServiceForExtension::VpnServiceForExtension(
-    const std::string& extension_id,
-    content::BrowserContext* browser_context)
-    : extension_id_(extension_id), browser_context_(browser_context) {
-  auto* service_remote = VpnService::GetVpnService();
-  CHECK(service_remote);
-  service_remote->RegisterVpnServiceForExtension(
-      extension_id, vpn_service_.BindNewPipeAndPassReceiver(),
-      receiver_.BindNewPipeAndPassRemote());
-}
-
-VpnServiceForExtension::~VpnServiceForExtension() = default;
-
 VpnService::VpnService(content::BrowserContext* browser_context)
     : browser_context_(browser_context), vpn_providers_observer_(this) {
-  GetVpnService()->SetController(this);
-
   extension_registry_observer_.Observe(
       extensions::ExtensionRegistry::Get(browser_context));
   network_configuration_observer_.Observe(
       ash::NetworkHandler::Get()->network_configuration_handler());
-
-  auto* event_router = extensions::EventRouter::Get(browser_context);
-  for (const char* event_name : kEventNames) {
-    event_router->RegisterObserver(this, event_name);
-  }
-
   network_state_handler_observer_.Observe(
       ash::NetworkHandler::Get()->network_state_handler());
 
@@ -169,10 +134,7 @@ VpnService::VpnService(content::BrowserContext* browser_context)
                                 weak_factory_.GetWeakPtr()));
 }
 
-VpnService::~VpnService() {
-  key_to_configuration_map_.clear();
-  GetVpnService()->Reset();
-}
+VpnService::~VpnService() = default;
 
 void VpnService::SendShowAddDialogToExtension(const std::string& extension_id) {
   SendToExtension(
@@ -273,7 +235,6 @@ void VpnService::OnConfigurationRemoved(const std::string& service_path,
     return;
   }
 
-  GetVpnService()->GetVpnServiceForExtension(configuration->extension_id());
   SendOnConfigRemovedToExtension(configuration->extension_id(),
                                  configuration->configuration_name());
   DestroyConfigurationInternal(configuration);
@@ -512,15 +473,10 @@ void VpnService::NotifyConnectionStateChanged(const std::string& extension_id,
       std::move(success), std::move(failure));
 }
 
-void VpnService::Shutdown() {
-  extensions::EventRouter::Get(browser_context_)->UnregisterObserver(this);
-}
-
 void VpnService::OnExtensionUninstalled(content::BrowserContext*,
                                         const extensions::Extension* extension,
                                         extensions::UninstallReason) {
   DestroyConfigurationsForExtension(extension->id());
-  extension_id_to_service_.erase(extension->id());
 }
 
 void VpnService::OnExtensionUnloaded(
@@ -536,7 +492,6 @@ void VpnService::OnExtensionUnloaded(
   if (reason == extensions::UnloadedExtensionReason::DISABLE ||
       reason == extensions::UnloadedExtensionReason::BLOCKLIST) {
     DestroyConfigurationsForExtension(extension->id());
-    extension_id_to_service_.erase(extension->id());
   }
 }
 
@@ -577,9 +532,6 @@ void VpnService::OnCreateConfigurationSuccess(
 void VpnService::RegisterConfiguration(
     crosapi::VpnServiceForExtensionAsh::VpnConfiguration* configuration,
     const std::string& service_path) {
-  // Ensure the corresponding VpnServiceForExtensionAsh is created.
-  GetVpnService()->GetVpnServiceForExtension(configuration->extension_id());
-
   configuration->set_service_path(service_path);
   auto [_, inserted] =
       service_path_to_configuration_map_.emplace(service_path, configuration);
@@ -594,33 +546,6 @@ void VpnService::OnCreateConfigurationFailure(
     const std::string& error_name) {
   DestroyConfigurationInternal(configuration);
   std::move(callback).Run(error_name, /*error_message=*/{});
-}
-
-void VpnService::OnListenerAdded(const extensions::EventListenerInfo& details) {
-  // Ensures that the service is created for the extension, so that incoming VPN
-  // events can be dispatched to the extension.
-  GetVpnServiceForExtension(details.extension_id);
-}
-
-// static
-crosapi::VpnServiceAsh* VpnService::GetVpnService() {
-  // CrosapiManager may not be initialized.
-  // TODO(crbug.com/40225953): Assert it's only happening in tests.
-  if (!crosapi::CrosapiManager::IsInitialized()) {
-    LOG(ERROR) << "CrosapiManager is not initialized.";
-    return nullptr;
-  }
-  return crosapi::CrosapiManager::Get()->crosapi_ash()->vpn_service_ash();
-}
-
-mojo::Remote<crosapi::mojom::VpnServiceForExtension>&
-VpnService::GetVpnServiceForExtension(const std::string& extension_id) {
-  auto& service = extension_id_to_service_[extension_id];
-  if (!service) {
-    service = std::make_unique<VpnServiceForExtension>(extension_id,
-                                                       browser_context_);
-  }
-  return service->Proxy();
 }
 
 std::string VpnService::GetKeyForTesting(
