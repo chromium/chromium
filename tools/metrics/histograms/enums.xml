@@ -11901,6 +11901,7 @@ from previous Chrome versions.
       label="UseSyncInvalidationsForWalletAndOffer:enabled"/>
   <int value="-866097797"
       label="ExperimentalAccessibilityDictationOffline:disabled"/>
+  <int value="-865368313" label="AccessibilityAtomicLiveRegions:disabled"/>
   <int value="-865066703" label="CSSTextBoxTrim:disabled"/>
   <int value="-864835103" label="FeedbackIncludeVariations:disabled"/>
   <int value="-864481314" label="FeedVideoInlinePlayback:disabled"/>
@@ -13653,6 +13654,7 @@ from previous Chrome versions.
   <int value="-256923848" label="ProfilesUIRevamp:disabled"/>
   <int value="-256745779"
       label="IsSecurePaymentConfirmationAvailableAPI:enabled"/>
+  <int value="-256163762" label="AccessibilityAtomicLiveRegions:enabled"/>
   <int value="-255869867" label="eol-reset-dismissed-prefs:disabled"/>
   <int value="-255264176" label="OmniboxSearchEngineLogo:disabled"/>
   <int value="-255157394" label="ButtonARCNetworkDiagnostics:enabled"/>

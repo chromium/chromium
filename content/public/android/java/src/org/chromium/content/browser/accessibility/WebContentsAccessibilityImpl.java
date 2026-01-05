@@ -2219,7 +2219,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // WINDOW_CONTENT_CHANGED, our node change will be routed through announceLiveRegionText()
         // below instead.
         if (ContentFeatureMap.isEnabled(
-                ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE)) {
+                        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE)
+                || ContentFeatureMap.isEnabled(
+                        ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS)) {
             if (isAccessibilityEnabled()) {
                 AccessibilityEvent event =
                         buildAccessibilityEvent(id, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);

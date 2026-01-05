@@ -26,6 +26,8 @@ public class ContentFeatureList {
     // Features files, then remove the constants below.
 
     // Alphabetical:
+    public static final String ACCESSIBILITY_ATOMIC_LIVE_REGIONS = "AccessibilityAtomicLiveRegions";
+
     public static final String ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE =
             "AccessibilityDeprecateTypeAnnounce";
 

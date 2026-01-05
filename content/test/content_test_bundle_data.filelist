@@ -2773,6 +2773,12 @@ data/accessibility/event/live-region-add-live-attribute-expected-mac.txt
 data/accessibility/event/live-region-add-live-attribute-expected-uia-win.txt
 data/accessibility/event/live-region-add-live-attribute.html
 data/accessibility/event/live-region-add.html
+data/accessibility/event/live-region-atomic-add-expected-android-exp.txt
+data/accessibility/event/live-region-atomic-add-expected-android.txt
+data/accessibility/event/live-region-atomic-add.html
+data/accessibility/event/live-region-atomic-change-innertext-expected-android-exp.txt
+data/accessibility/event/live-region-atomic-change-innertext-expected-android.txt
+data/accessibility/event/live-region-atomic-change-innertext.html
 data/accessibility/event/live-region-change-expected-android-exp.txt
 data/accessibility/event/live-region-change-expected-android.txt
 data/accessibility/event/live-region-change-expected-auralinux.txt
@@ -3029,6 +3035,7 @@ data/accessibility/event/reparent-element-with-activedescendant-element-expected
 data/accessibility/event/reparent-element-with-activedescendant-element-expected-mac.txt
 data/accessibility/event/reparent-element-with-activedescendant-element-expected-win.txt
 data/accessibility/event/reparent-element-with-activedescendant-element.html
+data/accessibility/event/report-validity-invalid-field-expected-android-exp.txt
 data/accessibility/event/report-validity-invalid-field-expected-android.txt
 data/accessibility/event/report-validity-invalid-field-expected-mac.txt
 data/accessibility/event/report-validity-invalid-field-expected-uia-win.txt

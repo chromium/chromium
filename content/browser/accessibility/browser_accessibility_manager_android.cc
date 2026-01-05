@@ -18,6 +18,50 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
+#include "ui/accessibility/platform/one_shot_accessibility_tree_search.h"
+
+namespace {
+
+// This function traverses an atomic live region rooted at `root_node` and fires
+// LiveRegionNodeChanged events for each valid node in the subtree.
+void FireNodeChangedEventsForAtomicLiveRegion(
+    const ui::AXNode* root_node,
+    content::BrowserAccessibilityAndroid* android_root_node,
+    content::WebContentsAccessibilityAndroid& wcax) {
+  if (base::FeatureList::IsEnabled(features::kAccessibilityAtomicLiveRegions) &&
+      root_node->data().IsAtomicLiveRegionRoot()) {
+    // Start by announcing the root node (unless it does not have a valid name).
+    if (!android_root_node->GetAccessibleNameUTF16().empty()) {
+      wcax.HandleLiveRegionNodeChanged(android_root_node->GetUniqueId());
+    }
+    // The first potential match will be the one immediately following the
+    // start. Since our predicate will be searching for
+    // kContainerLiveAtomic, we start at the root node of the atomic live
+    // region (which is represented as kLiveAtomic and not
+    // kContainerLiveAtomic). Construct a one-shot tree search to go forwards
+    // through the live region subtree.
+    ui::OneShotAccessibilityTreeSearch tree_search(
+        android_root_node->manager()->GetBrowserAccessibilityRoot());
+    tree_search.SetStartNode(android_root_node);
+    // Specify that we only want to search for nodes that are contained in
+    // an atomic live region.
+    tree_search.AddPredicate(
+        std::move(ui::AccessibilityContainedInAtomicLiveRegionPredicate));
+    // Now iterate through the list of matches we obtained from the tree,
+    // firing a live region node changed event for every match.
+    for (size_t i = 0; i < tree_search.CountMatches(); i++) {
+      auto* match_android_node =
+          static_cast<content::BrowserAccessibilityAndroid*>(
+              tree_search.GetMatchAtIndex(i));
+      DCHECK(match_android_node);
+      // OneShotAccessibilityTreeSearch should filter out ignored/empty nodes
+      // automatically.
+      wcax.HandleLiveRegionNodeChanged(match_android_node->GetUniqueId());
+    }
+  }
+}
+
+}  // namespace
 
 namespace content {
 
@@ -273,6 +317,9 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     }
     case ui::AXEventGenerator::Event::ALERT: {
       wcax->HandlePaneOpened(android_node->GetUniqueId());
+      // ALERT events are only fired on the root node of the alert live region,
+      // so we are safe to provide `node` as our starter node.
+      FireNodeChangedEventsForAtomicLiveRegion(node, android_node, *wcax);
       break;
     }
     case ui::AXEventGenerator::Event::CHECKED_STATE_CHANGED:
@@ -356,13 +403,28 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
           ANDROID_ACCESSIBILITY_EVENT_CONTENT_CHANGE_TYPE_TEXT);
       break;
     }
+    case ui::AXEventGenerator::Event::LIVE_REGION_CHANGED: {
+      // When a change is made within a live region, this event is fired on the
+      // root node of that live region. For atomic live regions, we should begin
+      // at the root node and notify Android of every single node within this
+      // atomic live region's subtree.
+      FireNodeChangedEventsForAtomicLiveRegion(node, android_node, *wcax);
+      break;
+    }
     case ui::AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED: {
-      // This event is fired when an object appears in a live region.
+      //  This event is fired when an object appears in a live region.
       if (base::FeatureList::IsEnabled(
               features::kAccessibilityImproveLiveRegionAnnounce)) {
-        // When enabled, fire a WINDOW_CONTENT_CHANGED event to inform the
-        // Android Framework of the node that changed.
-        wcax->HandleLiveRegionNodeChanged(android_node->GetUniqueId());
+        bool is_atomic = node->data().IsAtomicLiveRegionRoot() ||
+                         node->data().IsContainedInAtomicLiveRegion();
+        // If kAccessibilityAtomicLiveRegions is enabled and our node is atomic,
+        // it will have been handled by the LIVE_REGION_CHANGED case above.
+        // Otherwise, fire a WINDOW_CONTENT_CHANGED event to inform the Android
+        // Framework of the individual node change.
+        if (!(is_atomic && base::FeatureList::IsEnabled(
+                               features::kAccessibilityAtomicLiveRegions))) {
+          wcax->HandleLiveRegionNodeChanged(android_node->GetUniqueId());
+        }
       } else if (!base::FeatureList::IsEnabled(
                      features::kAccessibilityDeprecateTypeAnnounce)) {
         // If we don't support WINDOW_CONTENT_CHANGED events BUT have not yet
@@ -482,7 +544,6 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::LABELED_BY_CHANGED:
     case ui::AXEventGenerator::Event::LANGUAGE_CHANGED:
     case ui::AXEventGenerator::Event::LAYOUT_INVALIDATED:
-    case ui::AXEventGenerator::Event::LIVE_REGION_CHANGED:
     case ui::AXEventGenerator::Event::LIVE_REGION_CREATED:
     case ui::AXEventGenerator::Event::LIVE_RELEVANT_CHANGED:
     case ui::AXEventGenerator::Event::LIVE_STATUS_CHANGED:
