@@ -10,6 +10,7 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/js_injection/browser/js_communication_host.h"
+#import "components/js_injection/common/enum.mojom.h"
 #import "content/public/browser/render_frame_host.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
@@ -42,7 +43,9 @@ ContentJavaScriptFeatureManager::~ContentJavaScriptFeatureManager() {}
 void ContentJavaScriptFeatureManager::AddDocumentStartScripts(
     js_injection::JsCommunicationHost* js_communication_host) {
   for (std::u16string user_script : document_start_scripts_) {
-    js_communication_host->AddDocumentStartJavaScript(user_script, {"*"});
+    js_communication_host->AddPersistentJavaScript(
+        user_script, js_injection::mojom::DocumentInjectionTime::kDocumentStart,
+        {"*"}, 0);
   }
 }
 
