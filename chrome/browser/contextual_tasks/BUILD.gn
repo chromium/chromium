@@ -263,6 +263,7 @@ source_set("unit_tests") {
       "contextual_tasks_signal_utils_unittest.cc",
       "contextual_tasks_ui_service_unittest.cc",
       "contextual_tasks_ui_unittest.cc",
+      "entry_point_eligibility_manager_unittest.cc",
       "tab_strip_context_decorator_unittest.cc",
     ]
   }
@@ -288,6 +289,7 @@ source_set("unit_tests") {
     deps += [
       ":ui",
       ":ui_impl",
+      "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/contextual_search",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui/browser_window",

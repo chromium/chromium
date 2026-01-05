@@ -529,6 +529,10 @@ bool ContextualTasksUiService::IsSignedInToBrowserWithValidCredentials() {
       primary_account);
 }
 
+bool ContextualTasksUiService::CookieJarContainsPrimaryAccount() {
+  return contextual_tasks::CookieJarContainsPrimaryAccount(identity_manager_);
+}
+
 GURL ContextualTasksUiService::GetContextualTaskUrlForTask(
     const base::Uuid& task_id) {
   GURL url(chrome::kChromeUIContextualTasksURL);

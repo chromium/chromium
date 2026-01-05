@@ -92,4 +92,29 @@ bool IsUserSignedInToWeb(signin::IdentityManager* identity_manager,
   return true;
 }
 
+bool CookieJarContainsPrimaryAccount(
+    signin::IdentityManager* identity_manager) {
+  // Identity manager can be null for guest browsers
+  if (!identity_manager) {
+    return false;
+  }
+
+  CoreAccountInfo primary_account =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+
+  auto accounts_in_cookie_jar = identity_manager->GetAccountsInCookieJar();
+  const std::vector<gaia::ListedAccount>& accounts =
+      accounts_in_cookie_jar.GetAllAccounts();
+  if (accounts.empty()) {
+    return false;
+  }
+
+  for (const gaia::ListedAccount& account : accounts) {
+    if (account.gaia_id == primary_account.gaia) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace contextual_tasks
