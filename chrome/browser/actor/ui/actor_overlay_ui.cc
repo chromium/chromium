@@ -103,9 +103,4 @@ void ActorOverlayUI::MoveCursorTo(const gfx::Point& point,
   handler_->MoveCursorTo(point, std::move(callback));
 }
 
-void ActorOverlayUI::TriggerClickAnimation(base::OnceClosure callback) {
-  DCHECK(handler_);
-  handler_->TriggerClickAnimation(std::move(callback));
-}
-
 }  // namespace actor::ui

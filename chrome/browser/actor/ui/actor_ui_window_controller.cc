@@ -228,14 +228,7 @@ void ActorUiContentsContainerController::ApplyOverlayState(
   }
   overlay_->SetBorderGlowVisibility(state.border_glow_visible);
   if (state.mouse_target.has_value()) {
-    // If we have a mouse target, we should not ALSO have a mouse_down state.
-    // This DCHECK ensures that the ActorOverlayState will only request a mouse
-    // movement OR a click, never both.
-    DCHECK(!state.mouse_down);
     overlay_->MoveCursorTo(state.mouse_target.value(), runner.Release());
-    return;
-  } else if (state.mouse_down) {
-    overlay_->TriggerClickAnimation(runner.Release());
   }
 }
 

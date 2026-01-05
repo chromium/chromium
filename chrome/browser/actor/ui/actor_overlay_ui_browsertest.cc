@@ -88,11 +88,4 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayUITest, MoveCursorToCrashesIfHandlerNull) {
       controller->MoveCursorTo(gfx::Point(10, 10), future.GetCallback()));
 }
 
-IN_PROC_BROWSER_TEST_F(ActorOverlayUITest,
-                       TriggerClickAnimationCrashesIfHandlerNull) {
-  std::unique_ptr<ActorOverlayUI> controller = CreateController();
-  base::test::TestFuture<void> future;
-  EXPECT_DCHECK_DEATH(controller->TriggerClickAnimation(future.GetCallback()));
-}
-
 }  // namespace actor::ui

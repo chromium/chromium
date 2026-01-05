@@ -62,8 +62,6 @@ class ActorUiContentsContainerController : public content::WebContentsObserver,
   void OnWebContentsDetached(views::WebView* web_view);
 
   // Called whenever the visibility of the overlay or state has changed.
-  // Note: ActorOverlayState cannot request both a mouse movement and a click in
-  // the same update.
   void OnOverlayStateChanged(bool is_visible,
                              ActorOverlayState state,
                              base::OnceClosure callback);

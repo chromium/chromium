@@ -230,7 +230,6 @@ source_set("unit_tests") {
     "actor_ui_metrics_unittest.cc",
     "actor_ui_state_manager_unittest.cc",
     "actor_ui_tab_controller_unittest.cc",
-    "actor_ui_window_controller_unittest.cc",
     "dom_node_geometry_unittest.cc",
     "event_dispatcher_unittest.cc",
     "handoff_button_controller_unittest.cc",

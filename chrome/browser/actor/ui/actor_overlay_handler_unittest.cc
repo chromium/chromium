@@ -170,15 +170,5 @@ TEST_F(ActorOverlayHandlerTest, HandlesNullTab) {
   EXPECT_FALSE(future.Take());
 }
 
-TEST_F(ActorOverlayHandlerTest, TriggerClickAnimation) {
-  base::test::TestFuture<void> future;
-
-  handler_->TriggerClickAnimation(future.GetCallback());
-  fake_page_.FlushForTesting();
-
-  EXPECT_TRUE(future.Wait());
-  EXPECT_EQ(fake_page_.trigger_click_animation_call_count(), 1);
-}
-
 }  // namespace
 }  // namespace actor::ui
