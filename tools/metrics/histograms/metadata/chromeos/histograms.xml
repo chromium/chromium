@@ -4992,18 +4992,21 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.WelcomeExperienceCompanionAppState"
-    enum="CompanionAppState" expires_after="2025-11-02">
+    enum="CompanionAppState" expires_after="2027-01-05">
   <owner>michaelcheco@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records whether companion apps are available or installed on connected
     devices. This metric is recorded once per user session for each connected
     device that has an associated companion app.
+
+    Warning: this histogram was expired from 2025-11-02 to 2026-01-05; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="ChromeOS.WelcomeExperienceNotificationEvent"
-    enum="WelcomeExperienceNotificationEventType" expires_after="2026-06-30">
+    enum="WelcomeExperienceNotificationEventType" expires_after="2027-01-05">
   <owner>michaelcheco@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
