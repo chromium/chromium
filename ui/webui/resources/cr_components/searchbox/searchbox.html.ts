@@ -131,11 +131,11 @@ ${this.ntpRealboxNextEnabled ? html`
     @dragover="${this.dragAndDropHandler?.handleDragOver}"
     @dragleave="${this.dragAndDropHandler?.handleDragLeave}"
     @drop="${this.dragAndDropHandler?.handleDrop}">
-  ${compactLayout ?
+  ${this.ntpRealboxNextEnabled ?
     html`
-      <div id="inputContainer">
-        <search-animated-glow animation-state="${this.animationState}" part="animated-glow">
-        </search-animated-glow>
+      <search-animated-glow animation-state="${this.animationState}" part="animated-glow">
+      </search-animated-glow>
+      ${compactLayout ? html`
         <div id="inputInnerContainer">
           <div class="contextualEntrypointContainer contextualEntrypointContainerCompact">
             ${contextualEntrypoint}
@@ -156,34 +156,29 @@ ${this.ntpRealboxNextEnabled ? html`
           </div>
           ` : nothing}
         </div>
-      </div>
-    ` :
-    html`
-      <div id="inputContainer">
-        ${this.ntpRealboxNextEnabled ? html`
-          <search-animated-glow animation-state="${this.animationState}" part="animated-glow">
-          </search-animated-glow>
-        ` : nothing}
+      ` : html`
         <div id="inputInnerContainer">
           ${inputContent}
-          ${!this.ntpRealboxNextEnabled ? html`
-            ${voiceSearchButton}
-            ${lensSearchButton}
-          ` : nothing}
           ${composeButton}
         </div>
-        ${!this.ntpRealboxNextEnabled ? dropdown : nothing}
-        ${this.ntpRealboxNextEnabled ? html`
-          <div id="inputInnerBottomContainer">
-              <div class="contextualEntrypointContainer">
-                ${contextualEntrypoint}
-              </div>
-              ${voiceSearchButton}
-              ${lensSearchButton}
+        <div id="inputInnerBottomContainer">
+          <div class="contextualEntrypointContainer">
+            ${contextualEntrypoint}
           </div>
-        ` : nothing}
+          ${voiceSearchButton}
+          ${lensSearchButton}
+        </div>
+      `}
+    ` :
+    html`
+      <div id="inputInnerContainer">
+        ${inputContent}
+        ${voiceSearchButton}
+        ${lensSearchButton}
+        ${composeButton}
       </div>
-  `}
+      ${dropdown}
+    `}
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

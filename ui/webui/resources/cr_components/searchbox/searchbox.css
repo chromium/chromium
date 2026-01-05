@@ -94,8 +94,14 @@
 }
 
 #inputWrapper {
-  height: 100%;
-  position: relative;
+  background-color: var(--color-searchbox-background);
+  border-radius: var(--cr-searchbox-border-radius);
+  box-shadow: var(--cr-searchbox-shadow);
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  min-height: var(--cr-searchbox-height);
+  width: 100%;
 }
 
 :host([multi-line-enabled]) textarea {
@@ -437,6 +443,10 @@ cr-searchbox-dropdown::part(dropdown-content) {
   z-index: 101;
 }
 
+:host-context([ntp-realbox-next-enabled][context-menu-glif-animation-state="ineligible"]) contextual-entrypoint-and-carousel::part(composebox-entrypoint) {
+  padding-inline-end: 14px;
+}
+
 :host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(tool-chips-container) {
   --contextual-entrypoint-and-carousel-context-menu-container-margin-bottom: 6px;
   position: relative;
@@ -528,13 +538,6 @@ cr-searchbox-dropdown::part(dropdown-content) {
   }
 }
 
-:host([searchbox-layout-mode^='Tall']) #inputWrapper {
-  background-color: var(--color-searchbox-background);
-  border-radius: var(--cr-searchbox-border-radius);
-  height: auto;
-  min-height: var(--cr-searchbox-height);
-}
-
 :host([searchbox-layout-mode^='Tall']) input {
   height: 44px;
   padding-top: var(--cr-searchbox-input-padding-top_);
@@ -577,10 +580,6 @@ cr-searchbox-dropdown::part(dropdown-content) {
   --cr-searchbox-dropdown-padding-bottom: 10px;
   --cr-searchbox-dropdown-padding-top: 10px;
   --cr-searchbox-height: 56px;
-}
-
-:host([searchbox-layout-mode='Compact']) #inputWrapper {
-  z-index: 99;
 }
 
 :host([searchbox-layout-mode='Compact']) cr-searchbox-icon {
