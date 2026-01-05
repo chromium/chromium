@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -37,7 +38,7 @@ class ProcfsStatCpuParserTest : public testing::Test {
       return false;
     }
     if (contents.size() > 0) {
-      if (!UNSAFE_TODO(stat_file_.Write(0, contents.data(), contents.size()))) {
+      if (!stat_file_.WriteAndCheck(0, base::as_byte_span(contents))) {
         return false;
       }
     }
