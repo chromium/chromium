@@ -59,8 +59,8 @@
 
   background-color: var(--search-background-color);
   display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
+  grid-template-columns: 100%;
+  grid-template-rows: auto 1fr;
   height: 100%;
   overflow: hidden;
 }
@@ -147,7 +147,7 @@
 #threadFrame {
   border: none;
   grid-column: 1;
-  grid-row: 1;
+  grid-row: 2;
   overflow: hidden;
 }
 
@@ -219,7 +219,7 @@ error-page {
 .flex-center {
   align-self: end;
   grid-column: 1;
-  grid-row: 1;
+  grid-row: 2;
 }
 
 :host([is-zero-state_]) .flex-center {
