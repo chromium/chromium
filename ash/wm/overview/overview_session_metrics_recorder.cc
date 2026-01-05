@@ -48,8 +48,8 @@ void OverviewSessionMetricsRecorder::OnOverviewSessionInitializing() {
       start_action_ == OverviewStartAction::kDragWindowFromShelf) {
     base::trace_event::EmitNamedTrigger("ash-overview-start");
   }
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "OverviewController::EnterOverview",
-                                    this);
+  TRACE_EVENT_BEGIN("ui", "OverviewController::EnterOverview",
+                    perfetto::Track::FromPointer(this));
 
   auto enter_presentation_time_recorder =
       CreatePresentationTimeHistogramRecorder(
@@ -73,8 +73,8 @@ void OverviewSessionMetricsRecorder::OnOverviewSessionInitialized(
 void OverviewSessionMetricsRecorder::OnOverviewSessionEnding() {
   RecordOverviewEndAction(session_->overview_end_action());
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "OverviewController::ExitOverview",
-                                    this);
+  TRACE_EVENT_BEGIN("ui", "OverviewController::ExitOverview",
+                    perfetto::Track::FromPointer(this));
 
   const DeskBarVisibility desk_bar_visibility =
       desk_bar_shown_immediately_
@@ -101,15 +101,15 @@ void OverviewSessionMetricsRecorder::OnOverviewSessionEnding() {
 
 void OverviewSessionMetricsRecorder::OnOverviewModeStartingAnimationComplete(
     bool canceled) {
-  TRACE_EVENT_NESTABLE_ASYNC_END1("ui", "OverviewController::EnterOverview",
-                                  this, "canceled", canceled);
+  TRACE_EVENT_END("ui", /* OverviewController::EnterOverview */
+                  perfetto::Track::FromPointer(this), "canceled", canceled);
 }
 
 void OverviewSessionMetricsRecorder::OnOverviewModeEndingAnimationComplete(
     bool canceled) {
   has_finished_exit_overview_trace_event_ = true;
-  TRACE_EVENT_NESTABLE_ASYNC_END1("ui", "OverviewController::ExitOverview",
-                                  this, "canceled", canceled);
+  TRACE_EVENT_END("ui", /* OverviewController::ExitOverview */
+                  perfetto::Track::FromPointer(this), "canceled", canceled);
 }
 
 bool OverviewSessionMetricsRecorder::IsDeskBarOpen() const {

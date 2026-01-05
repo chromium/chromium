@@ -99,8 +99,8 @@ void WriteTimes(const std::string base_name,
   // Send first event to name the track:
   // "In Chrome, we usually don't bother setting explicit track names. If none
   // is provided, the track is named after the first event on the track."
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      "startup", kBootTimes, TRACE_ID_LOCAL(kBootTimes), prev);
+  TRACE_EVENT_BEGIN("startup", kBootTimes, perfetto::NamedTrack(kBootTimes),
+                    prev);
 
   base::TimeTicks ts_login_started;
   base::TimeTicks ts_on_auth_success;
@@ -120,17 +120,15 @@ void WriteTimes(const std::string base_name,
     const LoginEventRecorder::TimeMarker& tm = times[i];
 
     if (tm.url().has_value()) {
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-          "startup", tm.name(), TRACE_ID_LOCAL(kBootTimes), prev, "url",
-          *tm.url());
-      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
-          "startup", tm.name(), TRACE_ID_LOCAL(kBootTimes), tm.time(), "url",
-          *tm.url());
+      TRACE_EVENT_BEGIN("startup", perfetto::StaticString(tm.name()),
+                        perfetto::NamedTrack(kBootTimes), prev, "url",
+                        *tm.url());
+      TRACE_EVENT_END("startup", perfetto::NamedTrack(kBootTimes), tm.time(),
+                      "url", *tm.url());
     } else {
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-          "startup", tm.name(), TRACE_ID_LOCAL(kBootTimes), prev);
-      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-          "startup", tm.name(), TRACE_ID_LOCAL(kBootTimes), tm.time());
+      TRACE_EVENT_BEGIN("startup", perfetto::StaticString(tm.name()),
+                        perfetto::NamedTrack(kBootTimes), prev);
+      TRACE_EVENT_END("startup", perfetto::NamedTrack(kBootTimes), tm.time());
     }
     if (is_login) {
       store_ts(tm, "LoginStarted", ts_login_started);
@@ -165,8 +163,8 @@ void WriteTimes(const std::string base_name,
     prev = tm.time();
   }
   output += '\n';
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      "startup", kBootTimes, TRACE_ID_LOCAL(kBootTimes), prev);
+  TRACE_EVENT_END("startup", /*kBootTimes*/ perfetto::NamedTrack(kBootTimes),
+                  prev);
 
   // Do not record login state times if any of the stage timestamp is missing.
   // This happens in tests and crash-n-restore case.

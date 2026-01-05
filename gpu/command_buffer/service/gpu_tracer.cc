@@ -64,21 +64,21 @@ void TraceOutputter::TraceDevice(GpuTracerSource source,
     named_thread_.Stop();
   }
 
-  TRACE_EVENT_COPY_BEGIN_WITH_ID_TID_AND_TIMESTAMP2(
-      TRACE_DISABLED_BY_DEFAULT("gpu.device"), name.c_str(),
-      local_trace_device_id_, named_thread_id_,
-      base::TimeTicks::FromInternalValue(start_time), "gl_category",
+  auto track =
+      perfetto::Track(local_trace_device_id_,
+                      perfetto::ThreadTrack::ForThread(named_thread_id_.raw()));
+  TRACE_EVENT_BEGIN(
+      TRACE_DISABLED_BY_DEFAULT("gpu.device"), perfetto::DynamicString(name),
+      track, base::TimeTicks::FromInternalValue(start_time), "gl_category",
       category.c_str(), "channel", kGpuTraceSourceNames[source]);
 
   // Time stamps are inclusive, since the traces are durations we subtract
   // 1 microsecond from the end time to make the trace markers show up cleaner.
   if (end_time > start_time)
     end_time -= 1;
-  TRACE_EVENT_COPY_END_WITH_ID_TID_AND_TIMESTAMP2(
-      TRACE_DISABLED_BY_DEFAULT("gpu.device"), name.c_str(),
-      local_trace_device_id_, named_thread_id_,
-      base::TimeTicks::FromInternalValue(end_time), "gl_category",
-      category.c_str(), "channel", kGpuTraceSourceNames[source]);
+  TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("gpu.device"), track,
+                  base::TimeTicks::FromInternalValue(end_time), "gl_category",
+                  category.c_str(), "channel", kGpuTraceSourceNames[source]);
   ++local_trace_device_id_;
 }
 
@@ -86,11 +86,10 @@ void TraceOutputter::TraceServiceBegin(GpuTracerSource source,
                                        const std::string& category,
                                        const std::string& name) {
   DCHECK(source >= 0 && source < NUM_TRACER_SOURCES);
-  TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN_WITH_TTS2(
-      TRACE_DISABLED_BY_DEFAULT("gpu.service"),
-      name.c_str(), local_trace_service_id_,
-      "gl_category", category.c_str(),
-      "channel", kGpuTraceSourceNames[source]);
+  TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("gpu.service"),
+                    perfetto::DynamicString(name),
+                    perfetto::Track(local_trace_service_id_), "gl_category",
+                    category.c_str(), "channel", kGpuTraceSourceNames[source]);
 
   trace_service_id_stack_[source].push(local_trace_service_id_);
   ++local_trace_service_id_;
@@ -104,11 +103,9 @@ void TraceOutputter::TraceServiceEnd(GpuTracerSource source,
   const uint64_t local_trace_id = trace_service_id_stack_[source].top();
   trace_service_id_stack_[source].pop();
 
-  TRACE_EVENT_COPY_NESTABLE_ASYNC_END_WITH_TTS2(
-      TRACE_DISABLED_BY_DEFAULT("gpu.service"),
-      name.c_str(), local_trace_id,
-      "gl_category", category.c_str(),
-      "channel", kGpuTraceSourceNames[source]);
+  TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("gpu.service"),
+                  perfetto::Track(local_trace_id), "gl_category",
+                  category.c_str(), "channel", kGpuTraceSourceNames[source]);
 }
 
 GPUTrace::GPUTrace(Outputter* outputter,

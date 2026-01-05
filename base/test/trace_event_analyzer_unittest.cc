@@ -459,14 +459,15 @@ TEST_F(TraceEventAnalyzerTest, AsyncBeginEndAssocations) {
 
   BeginTracing();
   {
-    TRACE_EVENT_ASYNC_END0("cat1", "name1", 0xA);  // no match / out of order
-    TRACE_EVENT_ASYNC_BEGIN0("cat1", "name1", 0xB);
-    TRACE_EVENT_ASYNC_BEGIN0("cat1", "name1", 0xC);
+    TRACE_EVENT_END("cat1", perfetto::Track(0xA));  // no match / out of order
+    TRACE_EVENT_BEGIN("cat1", "name1", perfetto::Track(0xB));
+    TRACE_EVENT_BEGIN("cat1", "name1", perfetto::Track(0xC));
     TRACE_EVENT_INSTANT0("cat1", "name1", TRACE_EVENT_SCOPE_THREAD);  // noise
     TRACE_EVENT0("cat1", "name1");                                    // noise
-    TRACE_EVENT_ASYNC_END0("cat1", "name1", 0xB);
-    TRACE_EVENT_ASYNC_END0("cat1", "name1", 0xC);
-    TRACE_EVENT_ASYNC_BEGIN0("cat1", "name1", 0xA);  // no match / out of order
+    TRACE_EVENT_END("cat1", perfetto::Track(0xB));
+    TRACE_EVENT_END("cat1", perfetto::Track(0xC));
+    TRACE_EVENT_BEGIN("cat1", "name1",
+                      perfetto::Track(0xA));  // no match / out of order
   }
   EndTracing();
 
@@ -478,66 +479,6 @@ TEST_F(TraceEventAnalyzerTest, AsyncBeginEndAssocations) {
   TraceEventVector found;
   analyzer->FindEvents(Query::MatchAsyncBeginWithNext(), &found);
   ASSERT_EQ(2u, found.size());
-  EXPECT_STRCASEEQ("0xb", found[0]->id.c_str());
-  EXPECT_STRCASEEQ("0xc", found[1]->id.c_str());
-}
-
-// Test AssociateAsyncBeginEndEvents
-TEST_F(TraceEventAnalyzerTest, AsyncBeginEndAssocationsWithSteps) {
-  ManualSetUp();
-
-  BeginTracing();
-  {
-    TRACE_EVENT_ASYNC_STEP_INTO0("cat", "n", 0xA, "s1");
-    TRACE_EVENT_ASYNC_END0("cat", "n", 0xA);
-    TRACE_EVENT_ASYNC_BEGIN0("cat", "n", 0xB);
-    TRACE_EVENT_ASYNC_BEGIN0("cat", "n", 0xC);
-    TRACE_EVENT_ASYNC_STEP_PAST0("cat", "n", 0xB, "s1");
-    TRACE_EVENT_ASYNC_STEP_INTO0("cat", "n", 0xC, "s1");
-    TRACE_EVENT_ASYNC_STEP_INTO1("cat", "n", 0xC, "s2", "a", 1);
-    TRACE_EVENT_ASYNC_END0("cat", "n", 0xB);
-    TRACE_EVENT_ASYNC_END0("cat", "n", 0xC);
-    TRACE_EVENT_ASYNC_BEGIN0("cat", "n", 0xA);
-    TRACE_EVENT_ASYNC_STEP_INTO0("cat", "n", 0xA, "s2");
-  }
-  EndTracing();
-
-  std::unique_ptr<TraceAnalyzer> analyzer(
-      TraceAnalyzer::Create(output_.json_output));
-  ASSERT_TRUE(analyzer.get());
-  analyzer->AssociateAsyncBeginEndEvents();
-
-  TraceEventVector found;
-  analyzer->FindEvents(Query::MatchAsyncBeginWithNext(), &found);
-  ASSERT_EQ(3u, found.size());
-
-  EXPECT_STRCASEEQ("0xb", found[0]->id.c_str());
-  EXPECT_EQ(TRACE_EVENT_PHASE_ASYNC_STEP_PAST, found[0]->other_event->phase);
-  EXPECT_EQ(found[0], found[0]->other_event->prev_event);
-  EXPECT_TRUE(found[0]->other_event->other_event);
-  EXPECT_EQ(TRACE_EVENT_PHASE_ASYNC_END,
-            found[0]->other_event->other_event->phase);
-  EXPECT_EQ(found[0]->other_event,
-            found[0]->other_event->other_event->prev_event);
-
-  EXPECT_STRCASEEQ("0xc", found[1]->id.c_str());
-  EXPECT_EQ(TRACE_EVENT_PHASE_ASYNC_STEP_INTO, found[1]->other_event->phase);
-  EXPECT_EQ(found[1], found[1]->other_event->prev_event);
-  EXPECT_TRUE(found[1]->other_event->other_event);
-  EXPECT_EQ(TRACE_EVENT_PHASE_ASYNC_STEP_INTO,
-            found[1]->other_event->other_event->phase);
-  EXPECT_EQ(found[1]->other_event,
-            found[1]->other_event->other_event->prev_event);
-  double arg_actual = 0;
-  EXPECT_TRUE(
-      found[1]->other_event->other_event->GetArgAsNumber("a", &arg_actual));
-  EXPECT_EQ(1.0, arg_actual);
-  EXPECT_TRUE(found[1]->other_event->other_event->other_event);
-  EXPECT_EQ(TRACE_EVENT_PHASE_ASYNC_END,
-            found[1]->other_event->other_event->other_event->phase);
-
-  EXPECT_STRCASEEQ("0xa", found[2]->id.c_str());
-  EXPECT_EQ(TRACE_EVENT_PHASE_ASYNC_STEP_INTO, found[2]->other_event->phase);
 }
 
 // Test that the TraceAnalyzer custom associations work.
@@ -873,11 +814,11 @@ TEST_F(TraceEventAnalyzerTest, AssociateNestableAsyncEvents) {
 
   BeginTracing();
   {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "cat", "name", 0xA, base::TimeTicks() + base::Milliseconds(100));
+    TRACE_EVENT_BEGIN("cat", "name", perfetto::Track(0xA),
+                      base::TimeTicks() + base::Milliseconds(100));
     TRACE_EVENT_BEGIN0("noise", "name2");  // not searched for, just noise
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "cat", "name", 0xA, base::TimeTicks() + base::Milliseconds(200));
+    TRACE_EVENT_END("cat", perfetto::Track(0xA),
+                    base::TimeTicks() + base::Milliseconds(200));
   }
   EndTracing();
 

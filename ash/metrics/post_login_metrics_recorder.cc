@@ -63,13 +63,12 @@ void ReportLoginThroughputEvent(const std::string& event_name,
   // cannot use dynamic strings for event names. (I.e. event names are filtered
   // out for privacy reasons when reported with TRACE_EVENT_COPY_* macros.)
 
-#define REPORT_IF_MATCH(metric)                                      \
-  if (event_name == metric) {                                        \
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(                \
-        "startup", metric, TRACE_ID_LOCAL(kLoginThroughput), begin); \
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(                  \
-        "startup", metric, TRACE_ID_LOCAL(kLoginThroughput), end);   \
-    return;                                                          \
+#define REPORT_IF_MATCH(metric)                                              \
+  if (event_name == metric) {                                                \
+    TRACE_EVENT_BEGIN("startup", metric,                                     \
+                      perfetto::NamedTrack(kLoginThroughput), begin);        \
+    TRACE_EVENT_END("startup", perfetto::NamedTrack(kLoginThroughput), end); \
+    return;                                                                  \
   }
   REPORT_IF_MATCH(kLoginThroughput);
   REPORT_IF_MATCH(kLoginThroughputUnordered);

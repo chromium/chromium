@@ -448,8 +448,8 @@ class Query {
 
   // Find ASYNC_BEGIN events that have a corresponding ASYNC_END event.
   static Query MatchAsyncBeginWithNext() {
-    return (Query(EVENT_PHASE) ==
-            Query::Phase(TRACE_EVENT_PHASE_ASYNC_BEGIN)) &&
+    return (Query::EventPhaseIs(TRACE_EVENT_PHASE_ASYNC_BEGIN) ||
+            Query::EventPhaseIs(TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN)) &&
            Query(EVENT_HAS_OTHER);
   }
 

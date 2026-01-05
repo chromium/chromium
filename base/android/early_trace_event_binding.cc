@@ -42,28 +42,19 @@ static void JNI_EarlyTraceEvent_RecordEarlyToplevelBeginEvent(JNIEnv* env,
                                                               std::string& name,
                                                               jlong time_ns,
                                                               jint thread_id) {
-  static const unsigned char* category_group_enabled =
-      TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
-          internal::kToplevelTraceCategory);
-  trace_event_internal::AddTraceEventWithThreadIdAndTimestamps(
-      TRACE_EVENT_PHASE_BEGIN, category_group_enabled, name.c_str(),
-      trace_event_internal::kNoId, PlatformThreadId(thread_id),
-      TimeTicks::FromJavaNanoTime(time_ns),
-      TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
+  auto t = perfetto::ThreadTrack::ForThread(thread_id);
+  TRACE_EVENT_BEGIN(internal::kToplevelTraceCategory,
+                    perfetto::DynamicString{name}, t,
+                    TimeTicks::FromJavaNanoTime(time_ns));
 }
 
 static void JNI_EarlyTraceEvent_RecordEarlyToplevelEndEvent(JNIEnv* env,
                                                             std::string& name,
                                                             jlong time_ns,
                                                             jint thread_id) {
-  static const unsigned char* category_group_enabled =
-      TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
-          internal::kToplevelTraceCategory);
-  trace_event_internal::AddTraceEventWithThreadIdAndTimestamps(
-      TRACE_EVENT_PHASE_END, category_group_enabled, name.c_str(),
-      trace_event_internal::kNoId, PlatformThreadId(thread_id),
-      TimeTicks::FromJavaNanoTime(time_ns),
-      TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
+  auto t = perfetto::ThreadTrack::ForThread(thread_id);
+  TRACE_EVENT_END(internal::kToplevelTraceCategory, t,
+                  TimeTicks::FromJavaNanoTime(time_ns));
 }
 
 static void JNI_EarlyTraceEvent_RecordEarlyAsyncBeginEvent(JNIEnv* env,

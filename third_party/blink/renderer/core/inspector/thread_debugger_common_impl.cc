@@ -1006,18 +1006,17 @@ static uint64_t GetTraceId(ThreadDebuggerCommonImpl* this_thread_debugger,
 
 void ThreadDebuggerCommonImpl::consoleTime(v8::Isolate* isolate,
                                            v8::Local<v8::String> label) {
-  TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN0(
-      "blink.console", ToCoreString(isolate, label).Utf8().c_str(),
-      TRACE_ID_WITH_SCOPE("console.time",
-                          TRACE_ID_LOCAL(GetTraceId(this, label))));
+  TRACE_EVENT_BEGIN(
+      "blink.console",
+      perfetto::DynamicString(ToCoreString(isolate, label).Utf8()),
+      perfetto::NamedTrack("console.time", GetTraceId(this, label)));
 }
 
 void ThreadDebuggerCommonImpl::consoleTimeEnd(v8::Isolate* isolate,
                                               v8::Local<v8::String> label) {
-  TRACE_EVENT_COPY_NESTABLE_ASYNC_END0(
-      "blink.console", ToCoreString(isolate, label).Utf8().c_str(),
-      TRACE_ID_WITH_SCOPE("console.time",
-                          TRACE_ID_LOCAL(GetTraceId(this, label))));
+  TRACE_EVENT_END(
+      "blink.console",
+      perfetto::NamedTrack("console.time", GetTraceId(this, label)));
 }
 
 void ThreadDebuggerCommonImpl::consoleTimeStamp(v8::Isolate* isolate,

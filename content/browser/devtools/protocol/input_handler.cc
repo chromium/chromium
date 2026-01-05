@@ -2153,9 +2153,10 @@ void InputHandler::SynthesizeRepeatingScroll(
 
   if (!interaction_marker_name.empty()) {
     // TODO(alexclarke): Can we move this elsewhere? It doesn't really fit here.
-    TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN0(
-        "benchmark", interaction_marker_name.c_str(),
-        TRACE_ID_WITH_SCOPE(interaction_marker_name.c_str(), id));
+    TRACE_EVENT_BEGIN(
+        "benchmark", perfetto::DynamicString(interaction_marker_name),
+        perfetto::NamedTrack(perfetto::DynamicString(interaction_marker_name),
+                             id));
   }
 
   root_view->host()->QueueSyntheticGesture(
@@ -2175,9 +2176,9 @@ void InputHandler::OnScrollFinished(
     std::unique_ptr<SynthesizeScrollGestureCallback> callback,
     SyntheticGesture::Result result) {
   if (!interaction_marker_name.empty()) {
-    TRACE_EVENT_COPY_NESTABLE_ASYNC_END0(
-        "benchmark", interaction_marker_name.c_str(),
-        TRACE_ID_WITH_SCOPE(interaction_marker_name.c_str(), id));
+    TRACE_EVENT_END("benchmark",
+                    perfetto::NamedTrack(
+                        perfetto::DynamicString(interaction_marker_name), id));
   }
 
   if (repeat_count > 0) {
