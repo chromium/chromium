@@ -77,7 +77,7 @@ class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
   explicit CSSSelectorList(base::PassKey<CSSSelectorList>) {}
 
   CSSSelectorList(CSSSelectorList&& o) {
-    UNSAFE_TODO(
+    UNSAFE_BUFFERS(
         memcpy(this, o.first_selector_, ComputeLength() * sizeof(CSSSelector)));
   }
   ~CSSSelectorList() = default;
@@ -110,7 +110,7 @@ class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
   }
   const CSSSelector& SelectorAt(wtf_size_t index) const {
     DCHECK(IsValid());
-    return UNSAFE_TODO(first_selector_[index]);
+    return UNSAFE_BUFFERS(first_selector_[index]);
   }
 
   wtf_size_t SelectorIndex(const CSSSelector& selector) const {
@@ -174,9 +174,9 @@ inline CSSSelector* CSSSelectorList::Next(CSSSelector& current) {
   // Skip subparts of compound selectors.
   CSSSelector* last = &current;
   while (!last->IsLastInComplexSelector()) {
-    UNSAFE_TODO(last++);
+    UNSAFE_BUFFERS(last++);
   }
-  return last->IsLastInSelectorList() ? nullptr : UNSAFE_TODO(last + 1);
+  return last->IsLastInSelectorList() ? nullptr : UNSAFE_BUFFERS(last + 1);
 }
 
 }  // namespace blink

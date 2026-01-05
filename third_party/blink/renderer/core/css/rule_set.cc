@@ -210,7 +210,7 @@ void RuleData::ComputeBloomFilterHashes(const StyleScope* style_scope,
   // captures most of the benefits. (It is fairly common, especially with
   // nesting, to have the same sets of parents in consecutive rules.)
   if (bloom_hash_size_ > 0 && bloom_hash_pos_ >= bloom_hash_size_ &&
-      UNSAFE_TODO(std::equal(
+      UNSAFE_BUFFERS(std::equal(
           bloom_hash_backing.begin() + bloom_hash_pos_ - bloom_hash_size_,
           bloom_hash_backing.begin() + bloom_hash_pos_,
           bloom_hash_backing.begin() + bloom_hash_pos_))) {
@@ -224,7 +224,7 @@ void RuleData::MovedToDifferentRuleSet(const Vector<uint16_t>& old_backing,
                                        unsigned new_position) {
   unsigned new_pos = new_backing.size();
   new_backing.insert(new_backing.size(),
-                     UNSAFE_TODO(old_backing.data() + bloom_hash_pos_),
+                     UNSAFE_BUFFERS(old_backing.data() + bloom_hash_pos_),
                      bloom_hash_size_);
   bloom_hash_pos_ = new_pos;
   position_ = new_position;
@@ -544,7 +544,7 @@ template <class Func>
 static void MarkAsCoveredByBucketing(CSSSelector& selector,
                                      Func&& should_mark_func) {
   for (CSSSelector* s = &selector;;
-       UNSAFE_TODO(++s)) {  // Termination condition within loop.
+       UNSAFE_BUFFERS(++s)) {  // Termination condition within loop.
     if (should_mark_func(*s)) {
       s->SetCoveredByBucketing(true);
     }
@@ -568,7 +568,7 @@ static void MarkAsCoveredByBucketing(CSSSelector& selector,
 
 static void UnmarkAsCoveredByBucketing(CSSSelector& selector) {
   for (CSSSelector* s = &selector;;
-       UNSAFE_TODO(++s)) {  // Termination condition within loop.
+       UNSAFE_BUFFERS(++s)) {  // Termination condition within loop.
     s->SetCoveredByBucketing(false);
     if (s->IsLastInComplexSelector() ||
         s->Relation() != CSSSelector::kSubSelector) {

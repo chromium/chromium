@@ -62,15 +62,15 @@ class FixedSizeCache {
     uint8_t prefilter_hash = GetPrefilterHash(hash);
 
     // Search, moving to front if we find a match.
-    if (UNSAFE_TODO(prefilter_[bucket_set]) == prefilter_hash &&
+    if (UNSAFE_BUFFERS(prefilter_[bucket_set]) == prefilter_hash &&
         cache_[bucket_set].first == key) {
       return &cache_[bucket_set].second;
     }
-    if (UNSAFE_TODO(prefilter_[bucket_set + 1]) == prefilter_hash &&
+    if (UNSAFE_BUFFERS(prefilter_[bucket_set + 1]) == prefilter_hash &&
         cache_[bucket_set + 1].first == key) {
       using std::swap;
-      swap(UNSAFE_TODO(prefilter_[bucket_set]),
-           UNSAFE_TODO(prefilter_[bucket_set + 1]));
+      swap(UNSAFE_BUFFERS(prefilter_[bucket_set]),
+           UNSAFE_BUFFERS(prefilter_[bucket_set + 1]));
       swap(cache_[bucket_set], cache_[bucket_set + 1]);
       return &cache_[bucket_set].second;
     }
@@ -92,10 +92,10 @@ class FixedSizeCache {
     DCHECK_NE(cache_[slot].first, key);
     DCHECK_NE(cache_[slot + 1].first, key);
 
-    if (UNSAFE_TODO(prefilter_[slot]) != 0) {  // Not empty.
+    if (UNSAFE_BUFFERS(prefilter_[slot]) != 0) {  // Not empty.
       ++slot;
     }
-    UNSAFE_TODO(prefilter_[slot]) = GetPrefilterHash(hash);
+    UNSAFE_BUFFERS(prefilter_[slot]) = GetPrefilterHash(hash);
     cache_[slot] = std::pair(key, value);
     return cache_[slot].second;
   }

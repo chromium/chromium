@@ -16,13 +16,13 @@ void CSSTokenizerInputStream::AdvanceUntilNonWhitespace() {
   if (string_.Is8Bit()) {
     const LChar* characters = string_.Span8().data();
     while (offset_ < string_length_ &&
-           IsHTMLSpace(UNSAFE_TODO(characters[offset_]))) {
+           IsHTMLSpace(UNSAFE_BUFFERS(characters[offset_]))) {
       ++offset_;
     }
   } else {
     const UChar* characters = string_.Span16().data();
     while (offset_ < string_length_ &&
-           IsHTMLSpace(UNSAFE_TODO(characters[offset_]))) {
+           IsHTMLSpace(UNSAFE_BUFFERS(characters[offset_]))) {
       ++offset_;
     }
   }
@@ -50,10 +50,10 @@ double CSSTokenizerInputStream::GetNaturalNumberAsDouble(unsigned start,
   // complicated rounding machinery of CharactersToDouble(),
   // and can do with a much faster variant.
   if (start < end && string_.Is8Bit() && end - start <= 14) {
-    const LChar* ptr = UNSAFE_TODO(string_.Span8().data() + offset_ + start);
+    const LChar* ptr = UNSAFE_BUFFERS(string_.Span8().data() + offset_ + start);
     double result = ptr[0] - '0';
     for (unsigned i = 1; i < end - start; ++i) {
-      result = result * 10 + (UNSAFE_TODO(ptr[i]) - '0');
+      result = result * 10 + (UNSAFE_BUFFERS(ptr[i]) - '0');
     }
     return result;
   } else {

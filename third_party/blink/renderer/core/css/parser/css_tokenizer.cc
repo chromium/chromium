@@ -600,7 +600,7 @@ StringView CSSTokenizer::ConsumeName() {
     const LChar* ptr = buffer.Span8().data();
     while (size + 16 <= buffer.length()) {
       int8_t b __attribute__((vector_size(16)));
-      UNSAFE_TODO(memcpy(&b, ptr + size, sizeof(b)));
+      UNSAFE_BUFFERS(memcpy(&b, ptr + size, sizeof(b)));
 
       // Exactly the same as IsNameCodePoint(), except the IsASCII() part,
       // which we deal with below. Note that we compute the inverted condition,
@@ -639,7 +639,8 @@ StringView CSSTokenizer::ConsumeName() {
       // We found either the end, or a sign that we need escape-aware parsing.
       size += __builtin_ctzll(bits) >> 2;
 #endif
-      if (UNSAFE_TODO(ptr[size]) == '\0' || UNSAFE_TODO(ptr[size]) == '\\') {
+      if (UNSAFE_BUFFERS(ptr[size]) == '\0' ||
+          UNSAFE_BUFFERS(ptr[size]) == '\\') {
         // We need escape-aware parsing.
         return RegisterString(blink::ConsumeName(input_));
       } else {

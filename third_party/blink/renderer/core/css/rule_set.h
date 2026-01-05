@@ -120,7 +120,7 @@ class CORE_EXPORT RuleData {
   // Member functions related to the descendant Bloom filter.
   const base::span<const uint16_t> DescendantSelectorIdentifierHashes(
       const Vector<uint16_t>& backing) const {
-    return UNSAFE_TODO({backing.data() + bloom_hash_pos_, bloom_hash_size_});
+    return UNSAFE_BUFFERS({backing.data() + bloom_hash_pos_, bloom_hash_size_});
   }
   void ComputeBloomFilterHashes(const StyleScope* style_scope,
                                 Vector<uint16_t>& backing);
@@ -249,7 +249,7 @@ class RuleMap {
     if (bucket == nullptr) {
       return {};
     } else {
-      return UNSAFE_TODO(
+      return UNSAFE_BUFFERS(
           {backing.begin() + bucket->value.start_index, bucket->value.length});
     }
   }
@@ -285,17 +285,19 @@ class RuleMap {
 
  private:
   base::span<RuleData> GetRulesFromExtent(Extent extent) {
-    return UNSAFE_TODO({backing.begin() + extent.start_index, extent.length});
+    return UNSAFE_BUFFERS(
+        {backing.begin() + extent.start_index, extent.length});
   }
   base::span<const RuleData> GetRulesFromExtent(Extent extent) const {
-    return UNSAFE_TODO({backing.begin() + extent.start_index, extent.length});
+    return UNSAFE_BUFFERS(
+        {backing.begin() + extent.start_index, extent.length});
   }
   base::span<unsigned> GetBucketNumberFromExtent(Extent extent) {
-    return UNSAFE_TODO(
+    return UNSAFE_BUFFERS(
         {bucket_number_.begin() + extent.start_index, extent.length});
   }
   base::span<const unsigned> GetBucketNumberFromExtent(Extent extent) const {
-    return UNSAFE_TODO(
+    return UNSAFE_BUFFERS(
         {bucket_number_.begin() + extent.start_index, extent.length});
   }
 

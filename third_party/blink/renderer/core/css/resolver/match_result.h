@@ -76,7 +76,7 @@ struct CORE_EXPORT MatchedProperties {
     uint8_t padding = 0;
 
     bool operator==(const Data& other) const {
-      return UNSAFE_TODO(memcmp(this, &other, sizeof(*this))) == 0;
+      return UNSAFE_BUFFERS(memcmp(this, &other, sizeof(*this))) == 0;
     }
   };
 

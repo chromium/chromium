@@ -173,8 +173,8 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     return false;
   }
   const CSSProperty* GetVisitedProperty() const {
-    CSSPropertyID visited_id = static_cast<CSSPropertyID>(
-        UNSAFE_TODO(kPropertyVisitedIDs[static_cast<unsigned>(property_id_)]));
+    CSSPropertyID visited_id = static_cast<CSSPropertyID>(UNSAFE_BUFFERS(
+        kPropertyVisitedIDs[static_cast<unsigned>(property_id_)]));
     if (visited_id == CSSPropertyID::kInvalid) {
       return nullptr;
     } else {
@@ -182,7 +182,7 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     }
   }
   const CSSProperty* GetUnvisitedProperty() const {
-    CSSPropertyID unvisited_id = static_cast<CSSPropertyID>(UNSAFE_TODO(
+    CSSPropertyID unvisited_id = static_cast<CSSPropertyID>(UNSAFE_BUFFERS(
         kPropertyUnvisitedIDs[static_cast<unsigned>(property_id_)]));
     if (unvisited_id == CSSPropertyID::kInvalid) {
       return nullptr;
