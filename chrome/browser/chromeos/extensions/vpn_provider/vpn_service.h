@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_interface.h"
+#include "chromeos/ash/components/network/network_configuration_observer.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/ash/components/network/vpn_providers_observer.h"
 #include "chromeos/crosapi/mojom/vpn_service.mojom.h"
@@ -32,6 +33,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
+class NetworkConfigurationHandler;
 class NetworkStateHandler;
 }  // namespace ash
 
@@ -81,6 +83,7 @@ class VpnServiceForExtension
 
 // The class manages the VPN configurations.
 class VpnService : public extensions::api::VpnServiceInterface,
+                   public ash::NetworkConfigurationObserver,
                    public ash::NetworkStateHandlerObserver,
                    public ash::VpnProvidersObserver::Delegate,
                    public extensions::ExtensionRegistryObserver,
@@ -118,6 +121,10 @@ class VpnService : public extensions::api::VpnServiceInterface,
                                     SuccessCallback,
                                     FailureCallback) override;
   void Shutdown() override;
+
+  // ash::NetworkConfigurationObserver:
+  void OnConfigurationRemoved(const std::string& service_path,
+                              const std::string& guid) override;
 
   // ash::NetworkStateHandlerObserver:
   void NetworkListChanged() override;
@@ -255,6 +262,10 @@ class VpnService : public extensions::api::VpnServiceInterface,
 
   // Ids of enabled vpn extensions.
   base::flat_set<std::string> vpn_extensions_;
+
+  base::ScopedObservation<ash::NetworkConfigurationHandler,
+                          ash::NetworkConfigurationObserver>
+      network_configuration_observer_{this};
 
   base::ScopedObservation<ash::NetworkStateHandler,
                           ash::NetworkStateHandlerObserver>

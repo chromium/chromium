@@ -190,8 +190,10 @@ VpnService::VpnService(content::BrowserContext* browser_context)
     : browser_context_(browser_context), vpn_providers_observer_(this) {
   GetVpnService()->SetController(this);
 
-  auto* registry = extensions::ExtensionRegistry::Get(browser_context);
-  extension_registry_observer_.Observe(registry);
+  extension_registry_observer_.Observe(
+      extensions::ExtensionRegistry::Get(browser_context));
+  network_configuration_observer_.Observe(
+      ash::NetworkHandler::Get()->network_configuration_handler());
 
   auto* event_router = extensions::EventRouter::Get(browser_context);
   for (const char* event_name : kEventNames) {
@@ -267,6 +269,23 @@ VpnService::LookupConfiguration(const std::string& extension_id,
                                 const std::string& configuration_name) {
   const std::string key = GetKey(extension_id, configuration_name);
   return base::FindPtrOrNull(key_to_configuration_map_, key);
+}
+
+void VpnService::OnConfigurationRemoved(const std::string& service_path,
+                                        const std::string& /*guid*/) {
+  crosapi::VpnServiceForExtensionAsh::VpnConfiguration* configuration =
+      LookupConfiguration(service_path);
+  if (!configuration) {
+    // Ignore removal of a configuration unknown to VPN service, which means
+    // the configuration was created internally by the platform or already
+    // removed by the extension.
+    return;
+  }
+
+  GetVpnService()
+      ->GetVpnServiceForExtension(configuration->extension_id())
+      ->DispatchConfigRemovedEvent(configuration->configuration_name());
+  DestroyConfigurationInternal(configuration);
 }
 
 void VpnService::CreateConfiguration(const std::string& extension_id,

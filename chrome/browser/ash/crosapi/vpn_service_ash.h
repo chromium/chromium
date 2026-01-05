@@ -17,17 +17,12 @@
 #include "base/scoped_observation.h"
 #include "chrome/common/extensions/api/vpn_provider.h"
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_observer.h"
-#include "chromeos/ash/components/network/network_configuration_observer.h"
 #include "chromeos/crosapi/mojom/vpn_service.mojom.h"
 #include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-
-namespace ash {
-class NetworkConfigurationHandler;
-}  // namespace ash
 
 namespace chromeos {
 
@@ -45,8 +40,8 @@ namespace api_vpn = extensions::api::vpn_provider;
 class VpnServiceAsh;
 
 // This class manages configurations for a particular extension.
-class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
-                                  public ash::NetworkConfigurationObserver {
+class VpnServiceForExtensionAsh
+    : public crosapi::mojom::VpnServiceForExtension {
  public:
   // Callback definitions.
   using SuccessCallback = base::OnceClosure;
@@ -70,10 +65,6 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
       mojo::PendingReceiver<crosapi::mojom::VpnServiceForExtension> receiver,
       mojo::PendingRemote<crosapi::mojom::EventObserverForExtension> observer);
 
-  // ash::NetworkConfigurationObserver:
-  void OnConfigurationRemoved(const std::string& service_path,
-                              const std::string& guid) override;
-
   void DispatchConfigRemovedEvent(const std::string& configuration_name);
   void DispatchOnPacketReceivedEvent(const std::vector<char>& data);
 
@@ -90,10 +81,6 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
 
   const extensions::ExtensionId extension_id_;
   raw_ptr<chromeos::VpnService> controller_;
-
-  base::ScopedObservation<ash::NetworkConfigurationHandler,
-                          ash::NetworkConfigurationObserver>
-      network_configuration_observer_{this};
 
   mojo::ReceiverSet<crosapi::mojom::VpnServiceForExtension> receivers_;
   mojo::RemoteSet<crosapi::mojom::EventObserverForExtension> observers_;

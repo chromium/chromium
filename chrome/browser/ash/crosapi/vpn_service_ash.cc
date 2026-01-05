@@ -33,8 +33,6 @@ VpnServiceForExtensionAsh::VpnServiceForExtensionAsh(
     const std::string& extension_id,
     chromeos::VpnService* controller)
     : extension_id_(extension_id), controller_(controller) {
-  network_configuration_observer_.Observe(
-      ash::NetworkHandler::Get()->network_configuration_handler());
 }
 
 VpnServiceForExtensionAsh::~VpnServiceForExtensionAsh() = default;
@@ -44,22 +42,6 @@ void VpnServiceForExtensionAsh::BindReceiverAndObserver(
     mojo::PendingRemote<crosapi::mojom::EventObserverForExtension> observer) {
   receivers_.Add(this, std::move(receiver));
   observers_.Add(std::move(observer));
-}
-
-void VpnServiceForExtensionAsh::OnConfigurationRemoved(
-    const std::string& service_path,
-    const std::string& guid) {
-  VpnConfiguration* configuration = base::FindPtrOrNull(
-      controller_->service_path_to_configuration_map_, service_path);
-  if (!configuration || configuration->extension_id() != extension_id()) {
-    // Ignore removal of a configuration unknown to VPN service, which means
-    // the configuration was created internally by the platform or already
-    // removed by the extension.
-    return;
-  }
-
-  DispatchConfigRemovedEvent(configuration->configuration_name());
-  controller_->DestroyConfigurationInternal(configuration);
 }
 
 void VpnServiceForExtensionAsh::DispatchConfigRemovedEvent(
