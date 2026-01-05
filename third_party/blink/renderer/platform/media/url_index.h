@@ -12,7 +12,6 @@
 #include <string>
 #include <utility>
 
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -272,14 +271,14 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
 };
 
 // The UrlIndex lets you look up UrlData instances by url.
-class PLATFORM_EXPORT UrlIndex : public base::MemoryPressureListener {
+class PLATFORM_EXPORT UrlIndex {
  public:
   UrlIndex(ResourceFetchContext* fetch_context,
            scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   UrlIndex(ResourceFetchContext* fetch_context,
            int block_shift,
            scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-  ~UrlIndex() override;
+  virtual ~UrlIndex();
 
   // Look up an UrlData in the index and return it. If none is found,
   // create a new one. Note that newly created UrlData entries are NOT
@@ -328,8 +327,6 @@ class PLATFORM_EXPORT UrlIndex : public base::MemoryPressureListener {
       UrlData::CorsMode cors_mode,
       UrlData::CacheMode cache_lookup_mode);
 
-  void OnMemoryPressure(base::MemoryPressureLevel) override;
-
   raw_ptr<ResourceFetchContext> fetch_context_;
   using UrlDataMap = HashMap<UrlData::KeyType, scoped_refptr<UrlData>>;
   UrlDataMap indexed_data_;
@@ -339,10 +336,6 @@ class PLATFORM_EXPORT UrlIndex : public base::MemoryPressureListener {
   // Currently only changed for testing purposes.
   const int block_shift_;
 
-  // Must be async, because it runs on the renderer's main thread, which is not
-  // the process's main thread in --single-process mode.
-  base::AsyncMemoryPressureListenerRegistration
-      memory_pressure_listener_registration_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   base::WeakPtrFactory<UrlIndex> weak_factory_{this};
