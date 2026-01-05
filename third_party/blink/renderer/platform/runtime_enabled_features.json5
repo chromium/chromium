@@ -3015,6 +3015,14 @@
       status: "stable",
     },
     {
+      // When enabled, deletion commands like Ctrl+Backspace (deleteWordBackward)
+      // with selected text will correctly report deleteContentBackward instead of
+      // deleteWordBackward in both beforeinput and input events, conforming to
+      // the W3C Input Events spec.
+      name: "InputEventsDeleteNonCollapsedSelection",
+      status: "stable",
+    },
+    {
       // The HTML parser inserts a </select> end tag before inserting <input>
       // when parsing inside of a <select> tag. We want to allow <input> inside
       // <select>, but it isn't web compatible enough. This flag allows <input>
