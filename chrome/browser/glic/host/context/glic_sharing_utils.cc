@@ -10,9 +10,9 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -63,7 +63,8 @@ GlicUnpinEvent GetEmptyUnpinEvent() {
 #if !BUILDFLAG(IS_ANDROID)
 GlicActiveTabForProfileTracker::GlicActiveTabForProfileTracker(Profile* profile)
     : active_tab_changed_callback_list_(), profile_(profile) {
-  BrowserList::AddObserver(this);
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
   // If we already have an active browser, set up active tab subscription.
   UpdateActiveTabSubscription(
       GetLastActiveBrowserWindowInterfaceWithAnyProfile());
@@ -73,9 +74,7 @@ GlicActiveTabForProfileTracker::GlicActiveTabForProfileTracker(Profile* profile)
   UpdateActiveTab();
 }
 
-GlicActiveTabForProfileTracker::~GlicActiveTabForProfileTracker() {
-  BrowserList::RemoveObserver(this);
-}
+GlicActiveTabForProfileTracker::~GlicActiveTabForProfileTracker() = default;
 
 bool GlicActiveTabForProfileTracker::IsBrowserActiveForProfile(
     BrowserWindowInterface* browser) {
@@ -93,12 +92,14 @@ void GlicActiveTabForProfileTracker::UpdateActiveTabSubscription(
   }
 }
 
-void GlicActiveTabForProfileTracker::OnBrowserSetLastActive(Browser* browser) {
+void GlicActiveTabForProfileTracker::OnBrowserActivated(
+    BrowserWindowInterface* browser) {
   UpdateActiveTabSubscription(browser);
   UpdateActiveTab();
 }
 
-void GlicActiveTabForProfileTracker::OnBrowserNoLongerActive(Browser* browser) {
+void GlicActiveTabForProfileTracker::OnBrowserDeactivated(
+    BrowserWindowInterface* browser) {
   active_tab_subscription_ = {};
 
   UpdateActiveTab();
