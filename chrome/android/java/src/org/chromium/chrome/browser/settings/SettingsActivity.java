@@ -833,11 +833,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (mSearchCoordinator != null) {
-            mSearchCoordinator.hideHelpAndFeedbackIcon();
-            return false;
-        }
-
         // By default, every screen in Settings shows a "Help & feedback" menu item.
         MenuItem help =
                 menu.add(
@@ -853,9 +848,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (ChromeFeatureList.sSearchInSettings.isEnabled()) {
-            return false;
-        }
         if (menu.size() == 1) {
             MenuItem item = menu.getItem(0);
             if (item.getIcon() != null) item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);

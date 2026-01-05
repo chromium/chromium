@@ -261,6 +261,18 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
                                 searchBox.setVisibility(View.VISIBLE);
                             }
                         });
+
+        // Help menu/icon layout may change from Fragment to Fragment. Monitor the Fragment resume
+        // event to update the search bar width in response.
+        getSettingsFragmentManager()
+                .registerFragmentLifecycleCallbacks(
+                        new FragmentManager.FragmentLifecycleCallbacks() {
+                            @Override
+                            public void onFragmentResumed(FragmentManager fm, Fragment f) {
+                                updateMultiColumnSearchUi();
+                            }
+                        },
+                        false);
     }
 
     private boolean isShowingMainSettings() {
@@ -270,16 +282,13 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         return false; // Immaterial, as search will be using multi-column settings.
     }
 
-    /** Hide the icon for Help & Feedback. */
-    public void hideHelpAndFeedbackIcon() {
+    private @Nullable View getHelpMenuView() {
         Toolbar toolbar = mActivity.findViewById(R.id.action_bar);
         for (int i = 0; i < toolbar.getChildCount(); i++) {
             View child = toolbar.getChildAt(i);
-            if (child instanceof ActionMenuView actionMenuView) {
-                actionMenuView.setVisibility(View.GONE);
-                break;
-            }
+            if (child instanceof ActionMenuView) return child;
         }
+        return null;
     }
 
     private void handleBackAction() {
@@ -525,12 +534,13 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         int settingsMargin = getPixelSize(R.dimen.settings_item_margin);
         boolean showBackIcon = mFragmentState != FS_SEARCH;
         if (mUseMultiColumn) {
+            View menuView = getHelpMenuView();
             int detailPaneWidth = mActivity.findViewById(R.id.preferences_detail).getWidth();
-            if (detailPaneWidth == 0) {
+            if (detailPaneWidth == 0 || menuView == null) {
                 mHandler.post(this::updateMultiColumnSearchUi);
                 return;
             }
-            int width = detailPaneWidth - settingsMargin * 2;
+            int width = detailPaneWidth - settingsMargin * 2 - menuView.getWidth();
             updateView(searchBox, 0, settingsMargin, width);
             updateView(query, 0, settingsMargin, width);
 
