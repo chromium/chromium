@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -725,9 +726,9 @@ D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
       LOG(ERROR) << "Failed to CreateCommittedResource for input_texture";
       return nullptr;
     }
-    std::wstring debug_name = std::format(L"D3D12VEA input_texture_ {}x{}",
-                                          config_.input_visible_size.width(),
-                                          config_.input_visible_size.height());
+    std::wstring debug_name = base::UTF8ToWide(base::StringPrintf(
+        "D3D12VEA input_texture_ %dx%d", config_.input_visible_size.width(),
+        config_.input_visible_size.height()));
     CHECK_EQ(input_texture_->SetName(debug_name.c_str()), S_OK);
   }
 
@@ -749,9 +750,9 @@ D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
       LOG(ERROR) << "Failed to CreateCommittedResource for upload_buffer";
       return nullptr;
     }
-    std::wstring debug_name = std::format(L"D3D12VEA upload_buffer_ {}x{}",
-                                          config_.input_visible_size.width(),
-                                          config_.input_visible_size.height());
+    std::wstring debug_name = base::UTF8ToWide(base::StringPrintf(
+        "D3D12VEA upload_buffer_ %dx%d", config_.input_visible_size.width(),
+        config_.input_visible_size.height()));
     CHECK_EQ(upload_buffer_->SetName(debug_name.c_str()), S_OK);
   }
 

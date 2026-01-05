@@ -7,6 +7,7 @@
 #import <variant>
 
 #import "base/memory/raw_ptr.h"
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -172,12 +173,12 @@ class HomeCustomizationBackgroundConfigurationMediatorTest
     image.asset_id = asset_id;
 
     image.image_url =
-        GURL(std::format("http://www.google.com/image{}", asset_id));
+        GURL(base::StringPrintf("http://www.google.com/image%d", asset_id));
     image.thumbnail_image_url = AddOptionsToImageURL(
         image.image_url.spec(), GetThumbnailImageOptions());
     image.attribution = {"Drawn by", "Chrome on iOS"};
-    image.attribution_action_url =
-        GURL(std::format("http://www.google.com/attribution{}", asset_id));
+    image.attribution_action_url = GURL(
+        base::StringPrintf("http://www.google.com/attribution%d", asset_id));
 
     return image;
   }
