@@ -105,6 +105,12 @@
   line-height: 24px;
 }
 
+:host-context([in-deep-search-mode_]) #focusIndicator {
+  top: 0;
+  bottom: 0;
+  height: auto;
+}
+
 :host-context([in-deep-search-mode_]) {
   height: auto;
   min-height: var(--cr-composebox-match-height, 44px);
