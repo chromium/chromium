@@ -439,9 +439,7 @@ void OpenPageSecurityInfoBubble() {
 void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   [ChromeEarlGrey waitForWebStateContainingText:kContentToKeep];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          distillable_url.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:distillable_url];
 
   // Test that the offline and online pages are properly displayed.
   if (online) {
@@ -574,9 +572,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   // Check that navigating forward navigates to the correct page.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ForwardButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          nonDistillablePageURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:nonDistillablePageURL];
 }
 
 // Tests that sharing a web page to the Reading List results in a snackbar
