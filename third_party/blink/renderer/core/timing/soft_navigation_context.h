@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -31,7 +32,7 @@ class SoftNavigationHeuristics;
 class CORE_EXPORT SoftNavigationContext
     : public GarbageCollected<SoftNavigationContext>,
       public LargestContentfulPaintCalculator::Delegate {
-  static uint64_t last_context_id_;
+  USING_PRE_FINALIZER(SoftNavigationContext, Dispose);
 
  public:
   // Each `SoftNavigationContext` has a strictly increasing numeric ID
@@ -130,7 +131,11 @@ class CORE_EXPORT SoftNavigationContext
   // Called when `SoftNavigationHeuristics` is shut down on frame detach.
   void Shutdown();
 
+  void Dispose();
+
  private:
+  static uint64_t last_context_id_;
+
   // Pre-Increment `last_context_id_` such that the newest context uses the
   // largest value and can be used to identify the most recent context.
   const uint64_t context_id_ = ++last_context_id_;
