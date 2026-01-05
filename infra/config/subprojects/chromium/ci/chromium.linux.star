@@ -264,7 +264,11 @@ ci.builder(
         "local": gn_args.config(
             configs = ["debug_builder", "linux", "x64"],
         ),
+        # TODO: remove after submitting https://crrev.com/c/7307077.
         "reclient": gn_args.config(
+            configs = ["debug_builder", "remoteexec", "linux", "x64"],
+        ),
+        "remoteexec": gn_args.config(
             configs = ["debug_builder", "remoteexec", "linux", "x64"],
         ),
     },
