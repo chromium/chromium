@@ -41,6 +41,7 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/window/hit_test_utils.h"
@@ -180,6 +181,10 @@ void BrowserFrameView::LayoutWebAppWindowTitle(
     views::Label& window_title_label) const {
   // Default is no title.
   window_title_label.SetVisible(false);
+}
+
+views::LayoutAlignment BrowserFrameView::GetWindowTitleAlignment() const {
+  return views::LayoutAlignment::kStart;
 }
 
 void BrowserFrameView::UpdateFullscreenTopUI() {}

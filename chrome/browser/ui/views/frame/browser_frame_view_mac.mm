@@ -369,6 +369,14 @@ void BrowserFrameViewMac::LayoutWebAppWindowTitle(
       ImmersiveModeController::From(GetBrowserView()->browser())->IsEnabled());
 }
 
+views::LayoutAlignment BrowserFrameViewMac::GetWindowTitleAlignment() const {
+  if (@available(macOS 26, *)) {
+    return views::LayoutAlignment::kStart;
+  } else {
+    return views::LayoutAlignment::kCenter;
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserFrameViewMac, views::FrameView implementation:
 

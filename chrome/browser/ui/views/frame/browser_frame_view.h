@@ -18,6 +18,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/window/frame_view.h"
 
@@ -111,6 +112,9 @@ class BrowserFrameView : public views::FrameView {
   // want to change other attributes of the title, such as alignment.
   virtual void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
                                        views::Label& window_title_label) const;
+
+  // Returns which alignment the title uses.
+  virtual views::LayoutAlignment GetWindowTitleAlignment() const;
 
   // Returns the inset from the top of the window to the top of the client
   // view. For a tabbed browser, this is the space occupied by the tab strip.

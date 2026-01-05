@@ -100,6 +100,11 @@ void BrowserViewLayoutDelegateImpl::LayoutWebAppWindowTitle(
                                                  window_title_label);
 }
 
+views::LayoutAlignment BrowserViewLayoutDelegateImpl::GetWindowTitleAlignment()
+    const {
+  return GetFrameView()->GetWindowTitleAlignment();
+}
+
 bool BrowserViewLayoutDelegateImpl::IsToolbarVisible() const {
   return browser_view_->IsToolbarVisible();
 }

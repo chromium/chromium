@@ -21,34 +21,28 @@
 
 namespace {
 
-views::LayoutAlignment GetWindowTitleAlignment() {
-#if BUILDFLAG(IS_MAC)
-  return views::LayoutAlignment::kCenter;
-#else
-  return views::LayoutAlignment::kStart;
-#endif
-}
-
 // Ensure that the title isn't too close to the edge of the window. The logic
 // for this may vary by platform. Only adjusts the region if it's closer to the
 // edge than allowed.
 void MaybeAdjustTitleRegionForWindowEdge(gfx::Rect& title_region,
-                                         const BrowserLayoutParams& params) {
+                                         const BrowserLayoutParams& params,
+                                         views::LayoutAlignment alignment) {
   // The minimum distance from the visual edge of the window.
   int from_edge = 0;
   // The minimum distance from the content of the exclusion area.
   int from_exclusion = 0;
-#if BUILDFLAG(IS_MAC)
-  // On Mac, this is determined by a constant percentage of window width.
-  from_edge = base::ClampRound(params.visual_client_area.width() * 0.1);
-#else
-  // Match native Windows 10 UWP apps that don't have window icons.
-  // TODO(crbug.com/40890502): Avoid hardcoding sizes like this.
-  from_edge = 11;
-  // This provides spacing next to the caption button or app icon even if there
-  // is none
-  from_exclusion = 5;
-#endif
+
+  if (alignment == views::LayoutAlignment::kCenter) {
+    // On Mac, this is determined by a constant percentage of window width.
+    from_edge = base::ClampRound(params.visual_client_area.width() * 0.1);
+  } else {
+    // Match native Windows 10 UWP apps that don't have window icons.
+    // TODO(crbug.com/40890502): Avoid hardcoding sizes like this.
+    from_edge = 11;
+    // This provides spacing next to the caption button or app icon even if
+    // there is none
+    from_exclusion = 5;
+  }
 
   int min_x = std::max(
       title_region.x(),
@@ -288,8 +282,9 @@ void BrowserViewAppLayoutImpl::CalculateTitlebarLayout(
           views().web_app_frame_toolbar->GetCenterContainerForSize(
               toolbar_rect.size());
       available.Offset(toolbar_rect.OffsetFromOrigin());
-      MaybeAdjustTitleRegionForWindowEdge(available, params);
-      switch (GetWindowTitleAlignment()) {
+      const auto title_alignment = delegate().GetWindowTitleAlignment();
+      MaybeAdjustTitleRegionForWindowEdge(available, params, title_alignment);
+      switch (title_alignment) {
         case views::LayoutAlignment::kStart:
           title_bounds = available;
           break;
