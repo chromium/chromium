@@ -3167,12 +3167,12 @@ crbug.com/462821200 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryService
 crbug.com/440811029 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryServices/gen-disconnect-called-before.https.window.html [ Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac ] external/wpt/css/css-scroll-anchoring/contenteditable-insert-line-at-top.tentative.html [ Timeout ]
-external/wpt/css/css-text/letter-spacing/letter-spacing-cursive-002.html [ Failure ]
-external/wpt/css/filter-effects/svg-filter-filter-units-user-space.html [ Failure ]
-external/wpt/css/filter-effects/svg-filter-primitive-units-user-space.html [ Failure ]
-virtual/scalefactor200/external/wpt/css/filter-effects/svg-filter-filter-units-user-space.html [ Failure ]
-virtual/scalefactor200/external/wpt/css/filter-effects/svg-filter-primitive-units-user-space.html [ Failure ]
+crbug.com/473580163 [ Mac ] external/wpt/css/css-scroll-anchoring/contenteditable-insert-line-at-top.tentative.html [ Timeout ]
+crbug.com/473579852 external/wpt/css/css-text/letter-spacing/letter-spacing-cursive-002.html [ Failure ]
+crbug.com/473562220 external/wpt/css/filter-effects/svg-filter-filter-units-user-space.html [ Failure ]
+crbug.com/473562220 external/wpt/css/filter-effects/svg-filter-primitive-units-user-space.html [ Failure ]
+crbug.com/473562220 virtual/scalefactor200/external/wpt/css/filter-effects/svg-filter-filter-units-user-space.html [ Failure ]
+crbug.com/473562220 virtual/scalefactor200/external/wpt/css/filter-effects/svg-filter-primitive-units-user-space.html [ Failure ]
 crbug.com/471016766 [ Mac ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-from-context-with-different-rate.https.html [ Pass Timeout ]
 crbug.com/471016766 [ Win ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-from-context-with-different-rate.https.html [ Pass Timeout ]
 crbug.com/470897147 external/wpt/svg/styling/css-var-on-length-attributes-02.svg [ Failure ]
