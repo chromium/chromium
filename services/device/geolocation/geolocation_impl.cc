@@ -71,9 +71,11 @@ void GeolocationImpl::StartListeningForUpdates() {
     // When the accuracy requirement changes, we should reset `current_result_`
     // so we will not report a stale position.
     current_result_.reset();
-    // Reset the subscription before creating a new one to avoid a brief
-    // transition state where two subscriptions could exist concurrently.
-    geolocation_subscription_ = {};
+    // `geolocation_subscription_` is not explicitly reset here. Allowing a
+    // short period of concurrent high/low accuracy subscriptions is preferred
+    // over stop/start transitions that exposed crbug.com/469328127.
+    // `GeolocationProviderImpl::OnClientsChanged()` handles client priority
+    // based on `kApproximateGeolocationPermission`.
     geolocation_subscription_ =
         GeolocationProvider::GetInstance()->AddLocationUpdateCallback(
             base::BindRepeating(&GeolocationImpl::OnLocationUpdate,
