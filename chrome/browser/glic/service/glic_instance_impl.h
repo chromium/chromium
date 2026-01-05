@@ -24,11 +24,11 @@
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/tabs/public/tab_interface.h"
 
+class GlobalBrowserCollection;
 class Profile;
 
 namespace tabs {
@@ -52,7 +52,7 @@ class GlicZeroStateSuggestionsManager;
 // different GlicUiEmbedders during its lifetime.
 class GlicInstanceImpl : public GlicInstance,
                          public GlicInstanceHelper::Instance,
-                         public BrowserListObserver,
+                         public BrowserCollectionObserver,
                          public Host::InstanceDelegate,
                          public Host::Observer,
                          public GlicSharingManagerProvider,
@@ -220,8 +220,8 @@ class GlicInstanceImpl : public GlicInstance,
   void AddStateObserver(PanelStateObserver* observer) override;
   void RemoveStateObserver(PanelStateObserver* observer) override;
 
-  // BrowserListObserver:
-  void OnBrowserSetLastActive(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
 
   // Host::Observer
   void ClientReadyToShow(const mojom::OpenPanelInfo& open_info) override;
@@ -387,8 +387,8 @@ class GlicInstanceImpl : public GlicInstance,
       mojom::PanelStateKind::kAttached;
   mojom::WebClientMode interaction_mode_ = mojom::WebClientMode::kText;
 
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
   base::ScopedObservation<Host, Host::Observer> host_observation_{this};
 
   std::unique_ptr<GlicZeroStateSuggestionsManager>

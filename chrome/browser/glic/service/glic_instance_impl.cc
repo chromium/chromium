@@ -33,6 +33,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -224,7 +226,8 @@ GlicInstanceImpl::GlicInstanceImpl(
               contextual_cueing_service)),
       actor_task_manager_(std::make_unique<GlicActorTaskManager>(profile)),
       last_active_time_(base::TimeTicks::Now()) {
-  browser_list_observation_.Observe(BrowserList::GetInstance());
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
   host_.SetDelegate(&empty_embedder_delegate_);
   if (!base::FeatureList::IsEnabled(features::kGlicWebContentsWarming)) {
     // Start warming the contents.
@@ -691,7 +694,7 @@ bool GlicInstanceImpl::ShouldDoAutomaticActivation() const {
              active_embedder_key_.value());
 }
 
-void GlicInstanceImpl::OnBrowserSetLastActive(Browser* browser) {
+void GlicInstanceImpl::OnBrowserActivated(BrowserWindowInterface* browser) {
   if (!ShouldDoAutomaticActivation()) {
     return;
   }
