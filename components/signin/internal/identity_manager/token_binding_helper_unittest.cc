@@ -54,9 +54,7 @@ constexpr char kGenerateAssertionResultHistogram[] =
 
 class TokenBindingHelperTest : public testing::Test {
  public:
-  void RunBackgroundTasks() {
-    task_environment_.FastForwardUntilNoTasksRemain();
-  }
+  void RunBackgroundTasks() { task_environment_.RunUntilIdle(); }
 
   TokenBindingHelper& helper() { return helper_; }
 
@@ -97,7 +95,6 @@ class TokenBindingHelperTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME,
       // QUEUED - tasks don't run until `RunUntilIdle()` is called.
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
   std::variant<crypto::ScopedFakeUnexportableKeyProvider,
@@ -275,6 +272,8 @@ TEST_F(TokenBindingHelperTest, StartGarbageCollectionDeletesUnusedKeys) {
   std::vector<uint8_t> used_wrapped_key_in_db = {10, 11, 12};
   std::vector<uint8_t> unused_wrapped_key1 = {4, 5, 6};
   std::vector<uint8_t> unused_wrapped_key2 = {7, 8, 9};
+  // This key is unused but created after the current process started.
+  std::vector<uint8_t> unused_wrapped_key_new = {13, 14, 15};
 
   auto create_mock_key = [](const std::vector<uint8_t>& wrapped_key) {
     auto mock_key = std::make_unique<unexportable_keys::MockUnexportableKey>();
@@ -287,6 +286,9 @@ TEST_F(TokenBindingHelperTest, StartGarbageCollectionDeletesUnusedKeys) {
   auto used_unexportable_key_in_db = create_mock_key(used_wrapped_key_in_db);
   auto unused_unexportable_key1 = create_mock_key(unused_wrapped_key1);
   auto unused_unexportable_key2 = create_mock_key(unused_wrapped_key2);
+  auto unused_unexportable_key_new = create_mock_key(unused_wrapped_key_new);
+  EXPECT_CALL(*unused_unexportable_key_new, GetCreationTime())
+      .WillOnce(Return(base::Time::Now()));
 
   EXPECT_CALL(mock_key_provider, GetAllSigningKeysSlowly())
       .WillOnce(Return(
@@ -295,6 +297,7 @@ TEST_F(TokenBindingHelperTest, StartGarbageCollectionDeletesUnusedKeys) {
               std::move(used_unexportable_key_in_db),
               std::move(unused_unexportable_key1),
               std::move(unused_unexportable_key2),
+              std::move(unused_unexportable_key_new),
           })));
 
   helper().SetBindingKey(CoreAccountId::FromGaiaId(GaiaId("account_id")),
@@ -302,14 +305,36 @@ TEST_F(TokenBindingHelperTest, StartGarbageCollectionDeletesUnusedKeys) {
   helper().StartGarbageCollection({used_wrapped_key_in_db});
 
   EXPECT_CALL(mock_key_provider,
-              DeleteSigningKeySlowly(Eq(unused_wrapped_key1)));
+              DeleteSigningKeySlowly(Eq(unused_wrapped_key1)))
+      .WillOnce(Return(true));
   EXPECT_CALL(mock_key_provider,
-              DeleteSigningKeySlowly(Eq(unused_wrapped_key2)));
+              DeleteSigningKeySlowly(Eq(unused_wrapped_key2)))
+      .WillOnce(Return(true));
   EXPECT_CALL(mock_key_provider,
               DeleteSigningKeySlowly(Eq(used_wrapped_key_in_memory)))
       .Times(0);
   EXPECT_CALL(mock_key_provider,
               DeleteSigningKeySlowly(Eq(used_wrapped_key_in_db)))
       .Times(0);
+  EXPECT_CALL(mock_key_provider,
+              DeleteSigningKeySlowly(Eq(unused_wrapped_key_new)))
+      .Times(0);
   RunBackgroundTasks();
+
+  histogram_tester().ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.RefreshTokenBinding."
+      "TotalKeyCount",
+      5, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.RefreshTokenBinding."
+      "UsedKeyCount",
+      3, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.RefreshTokenBinding."
+      "ObsoleteKeyCount",
+      2, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.RefreshTokenBinding."
+      "ObsoleteKeyDeletionCount",
+      2, 1);
 }
