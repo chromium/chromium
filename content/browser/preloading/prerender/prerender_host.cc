@@ -1607,7 +1607,7 @@ void PrerenderHost::Cancel(PrerenderFinalStatus status) {
   PrerenderHostRegistry* registry =
       host->delegate()->GetPrerenderHostRegistry();
   CHECK(registry);
-  registry->CancelHost(frame_tree_node_id_, status);
+  registry->CancelHost(prerender_host_id_, status);
 }
 
 void PrerenderHost::MaybeSetNoVarySearch(

@@ -105,12 +105,7 @@ PrerenderHostId PrerenderNewTabHandle::StartPrerendering(
 
 void PrerenderNewTabHandle::CancelPrerendering(
     const PrerenderCancellationReason& reason) {
-  if (!prerender_host_id_) {
-    return;
-  }
-  FrameTreeNodeId frame_tree_node_id =
-      PrerenderHost::GetFrameTreeNodeIdForId(prerender_host_id_);
-  GetPrerenderHostRegistry().CancelHost(frame_tree_node_id, reason);
+  GetPrerenderHostRegistry().CancelHost(prerender_host_id_, reason);
 }
 
 std::unique_ptr<WebContentsImpl>

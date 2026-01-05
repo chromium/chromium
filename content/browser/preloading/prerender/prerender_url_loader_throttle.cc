@@ -83,8 +83,13 @@ void PrerenderURLLoaderThrottle::WillStartRequest(
     return;
   }
 
+  PrerenderHost* prerender_host =
+      prerender_host_registry->FindNonReservedHostById(frame_tree_node_id_);
+  if (!prerender_host) {
+    return;
+  }
   prerender_host_registry->CancelHost(
-      frame_tree_node_id_,
+      prerender_host->prerender_host_id(),
       PrerenderCancellationReason(
           PrerenderFinalStatus::kPrerenderFailedDuringPrefetch));
 }

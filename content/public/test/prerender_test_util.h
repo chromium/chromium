@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/preloading_trigger_type.h"
+#include "content/public/browser/prerender_host_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/isolated_world_ids.h"
@@ -64,6 +65,8 @@ class PrerenderHostObserver {
  public:
   // Begins observing the given PrerenderHost immediately. DCHECKs if |host_id|
   // does not identify a live PrerenderHost.
+  PrerenderHostObserver(WebContents& web_contents, PrerenderHostId host_id);
+  // Deprecated: Use the PrerenderHostId version.
   PrerenderHostObserver(WebContents& web_contents, FrameTreeNodeId host_id);
 
   // Will start observing a PrerenderHost for |url| as soon as it is

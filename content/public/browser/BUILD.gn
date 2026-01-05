@@ -330,6 +330,7 @@ source_set("browser_sources") {
     "preloading_data.h",
     "preloading_trigger_type.h",
     "prerender_handle.h",
+    "prerender_host_id.h",
     "prerender_web_contents_delegate.cc",
     "prerender_web_contents_delegate.h",
     "presentation_observer.h",

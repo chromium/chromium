@@ -150,6 +150,12 @@ PrerenderHostRegistry& GetPrerenderHostRegistry(WebContents* web_contents) {
 }
 
 PrerenderHost* GetPrerenderHostById(WebContents* web_contents,
+                                    PrerenderHostId host_id) {
+  auto& registry = GetPrerenderHostRegistry(web_contents);
+  return registry.FindNonReservedHostById(host_id);
+}
+
+PrerenderHost* GetPrerenderHostById(WebContents* web_contents,
                                     FrameTreeNodeId host_id) {
   auto& registry = GetPrerenderHostRegistry(web_contents);
   return registry.FindNonReservedHostById(host_id);
@@ -291,6 +297,14 @@ base::flat_set<GURL> PrerenderHostRegistryObserver::GetTriggeredUrls() const {
 class PrerenderHostObserverImpl : public PrerenderHost::Observer {
  public:
   PrerenderHostObserverImpl(WebContents& web_contents,
+                            PrerenderHostId host_id) {
+    PrerenderHost* host = GetPrerenderHostById(&web_contents, host_id);
+    DCHECK(host)
+        << "A PrerenderHost with the given id does not, or no longer, exists.";
+    StartObserving(*host);
+  }
+
+  PrerenderHostObserverImpl(WebContents& web_contents,
                             FrameTreeNodeId host_id) {
     PrerenderHost* host = GetPrerenderHostById(&web_contents, host_id);
     DCHECK(host)
@@ -417,6 +431,11 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
   bool did_observe_ = false;
   std::optional<PrerenderFinalStatus> last_status_;
 };
+
+PrerenderHostObserver::PrerenderHostObserver(WebContents& web_contents,
+                                             PrerenderHostId host_id)
+    : impl_(
+          std::make_unique<PrerenderHostObserverImpl>(web_contents, host_id)) {}
 
 PrerenderHostObserver::PrerenderHostObserver(WebContents& web_contents,
                                              FrameTreeNodeId prerender_host)
@@ -777,7 +796,10 @@ void PrerenderTestHelper::NavigatePrerenderedPage(FrameTreeNodeId host_id,
 
 void PrerenderTestHelper::CancelPrerenderedPage(FrameTreeNodeId host_id) {
   PrerenderHostRegistry& registry = GetPrerenderHostRegistry(GetWebContents());
-  registry.CancelHost(host_id, PrerenderFinalStatus::kDestroyed);
+  PrerenderHost* host = registry.FindNonReservedHostById(host_id);
+  ASSERT_NE(host, nullptr);
+  registry.CancelHost(host->prerender_host_id(),
+                      PrerenderFinalStatus::kDestroyed);
 }
 
 // static

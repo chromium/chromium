@@ -315,7 +315,7 @@ void PrerenderNavigationThrottle::CancelPrerendering(
       frame_tree_node->current_frame_host()
           ->delegate()
           ->GetPrerenderHostRegistry();
-  prerender_host_registry->CancelHost(prerender_host_->frame_tree_node_id(),
+  prerender_host_registry->CancelHost(prerender_host_->prerender_host_id(),
                                       final_status);
 }
 

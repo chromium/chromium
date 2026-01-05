@@ -907,12 +907,9 @@ TEST_F(PrerenderHostRegistryTest, CancelHost) {
           blink::mojom::SpeculationEagerness::kImmediate,
           contents()->GetPrimaryMainFrame()));
   ASSERT_TRUE(prerender_host_id);
-  const FrameTreeNodeId prerender_frame_tree_node_id =
-      PrerenderHost::GetFrameTreeNodeIdForId(prerender_host_id);
   EXPECT_NE(registry().FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 
-  registry().CancelHost(prerender_frame_tree_node_id,
-                        PrerenderFinalStatus::kDestroyed);
+  registry().CancelHost(prerender_host_id, PrerenderFinalStatus::kDestroyed);
   EXPECT_EQ(registry().FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 }
 
@@ -930,8 +927,6 @@ TEST_F(PrerenderHostRegistryTest,
           blink::mojom::SpeculationEagerness::kImmediate,
           contents()->GetPrimaryMainFrame()));
   ASSERT_TRUE(prerender_host_id);
-  const FrameTreeNodeId prerender_frame_tree_node_id =
-      PrerenderHost::GetFrameTreeNodeIdForId(prerender_host_id);
   PrerenderHost* prerender_host =
       registry().FindHostByUrlForTesting(kPrerenderingUrl);
   CommitPrerenderNavigation(*prerender_host);
@@ -965,8 +960,7 @@ TEST_F(PrerenderHostRegistryTest,
     EXPECT_EQ(contents()->GetLastCommittedURL(), original_url);
 
     // Cancel the prerender while the CommitDeferringCondition is running.
-    registry().CancelHost(prerender_frame_tree_node_id,
-                          PrerenderFinalStatus::kDestroyed);
+    registry().CancelHost(prerender_host_id, PrerenderFinalStatus::kDestroyed);
     prerender_host_observer.WaitForDestroyed();
     EXPECT_FALSE(prerender_host_observer.was_activated());
     EXPECT_EQ(registry().FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
@@ -994,8 +988,6 @@ TEST_F(PrerenderHostRegistryTest,
           blink::mojom::SpeculationEagerness::kImmediate,
           contents()->GetPrimaryMainFrame()));
   ASSERT_TRUE(prerender_host_id);
-  const FrameTreeNodeId prerender_frame_tree_node_id =
-      PrerenderHost::GetFrameTreeNodeIdForId(prerender_host_id);
   PrerenderHost* prerender_host =
       registry().FindHostByUrlForTesting(kPrerenderingUrl);
   CommitPrerenderNavigation(*prerender_host);
@@ -1031,8 +1023,7 @@ TEST_F(PrerenderHostRegistryTest,
     EXPECT_EQ(contents()->GetLastCommittedURL(), original_url);
 
     // Cancel the prerender while the CommitDeferringCondition is running.
-    registry().CancelHost(prerender_frame_tree_node_id,
-                          PrerenderFinalStatus::kDestroyed);
+    registry().CancelHost(prerender_host_id, PrerenderFinalStatus::kDestroyed);
     prerender_host_observer.WaitForDestroyed();
     EXPECT_FALSE(prerender_host_observer.was_activated());
     EXPECT_EQ(registry().FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
@@ -1046,13 +1037,11 @@ TEST_F(PrerenderHostRegistryTest,
             blink::mojom::SpeculationEagerness::kImmediate,
             contents()->GetPrimaryMainFrame()));
     ASSERT_TRUE(prerender_host_id2);
-    const FrameTreeNodeId prerender_frame_tree_node_id2 =
-        PrerenderHost::GetFrameTreeNodeIdForId(prerender_host_id2);
     PrerenderHost* prerender_host2 =
         registry().FindHostByUrlForTesting(kPrerenderingUrl);
     CommitPrerenderNavigation(*prerender_host2);
 
-    EXPECT_NE(prerender_frame_tree_node_id, prerender_frame_tree_node_id2);
+    EXPECT_NE(prerender_host_id, prerender_host_id2);
   }
 
   // Resume the initial activation. This should not reserve the second
@@ -1350,7 +1339,7 @@ TEST_F(PrerenderHostRegistryTest,
 // End replication state matching tests ------------
 
 TEST_F(PrerenderHostRegistryTest, OneTaskToDeleteAllHosts) {
-  std::vector<FrameTreeNodeId> frame_tree_node_ids;
+  std::vector<PrerenderHostId> prerender_host_ids;
   std::vector<std::unique_ptr<test::PrerenderHostObserver>>
       prerender_host_observers;
 
@@ -1362,18 +1351,16 @@ TEST_F(PrerenderHostRegistryTest, OneTaskToDeleteAllHosts) {
             prerendering_url, PreloadingTriggerType::kSpeculationRule, "",
             blink::mojom::SpeculationEagerness::kImmediate,
             contents()->GetPrimaryMainFrame()));
-    const FrameTreeNodeId frame_tree_node_id =
-        PrerenderHost::GetFrameTreeNodeIdForId(prerender_host_id);
 
     prerender_host_observers.emplace_back(
         std::make_unique<test::PrerenderHostObserver>(*contents(),
-                                                      frame_tree_node_id));
-    frame_tree_node_ids.push_back(frame_tree_node_id);
+                                                      prerender_host_id));
+    prerender_host_ids.push_back(prerender_host_id);
   }
   int pending_task_before_posting_abandon_task =
       task_environment()->GetPendingMainThreadTaskCount();
   registry().CancelHosts(
-      frame_tree_node_ids,
+      prerender_host_ids,
       PrerenderCancellationReason(PrerenderFinalStatus::kDestroyed));
   int pending_task_after_posting_abandon_task =
       task_environment()->GetPendingMainThreadTaskCount();

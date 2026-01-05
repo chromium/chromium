@@ -74,6 +74,8 @@ class PrerenderNewTabHandle {
     return attributes_.initiator_origin;
   }
 
+  PrerenderHostId prerender_host_id() const { return prerender_host_id_; }
+
   PrerenderHostRegistry& GetPrerenderHostRegistry();
 
  private:

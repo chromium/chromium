@@ -121,7 +121,7 @@ class CONTENT_EXPORT PrerenderHostRegistry
     virtual void OnTrigger(const GURL& url) {}
 
     // Called when CancelHosts() actually cancels each host.
-    virtual void OnCancel(FrameTreeNodeId host_frame_tree_node_id,
+    virtual void OnCancel(PrerenderHostId host_id,
                           const PrerenderCancellationReason& reason) {}
 
     // Called from the registry's destructor. The observer
@@ -155,21 +155,24 @@ class CONTENT_EXPORT PrerenderHostRegistry
       const PreloadingPredictor& enacting_predictor,
       PreloadingConfidence confidence);
 
-  // Cancels the host registered for `frame_tree_node_id`. The host is
-  // immediately removed from the map of non-reserved hosts but asynchronously
-  // destroyed so that prerendered pages can cancel themselves without concern
-  // for self destruction.
+  // Cancels the host registered for PrerenderHostId. The host is immediately
+  // removed from the map of non-reserved hosts but asynchronously destroyed so
+  // that prerendered pages can cancel themselves without concern for self
+  // destruction.
   // Returns true if a cancelation has occurred.
+  bool CancelHost(PrerenderHostId prerender_host_id,
+                  PrerenderFinalStatus final_status);
+  // Deprecated: Cancels the host registered for FrameTreeNodeId
   bool CancelHost(FrameTreeNodeId frame_tree_node_id,
                   PrerenderFinalStatus final_status);
   // Same as CancelHost, but can pass a detailed reason for recording if given.
-  bool CancelHost(FrameTreeNodeId frame_tree_node_id,
+  bool CancelHost(PrerenderHostId prerender_host_id,
                   const PrerenderCancellationReason& reason);
 
   // Cancels the existing hosts specified in the vector with the same reason.
-  // Returns a subset of `frame_tree_node_ids` that were actually cancelled.
-  std::set<FrameTreeNodeId> CancelHosts(
-      const std::vector<FrameTreeNodeId>& frame_tree_node_ids,
+  // Returns a subset of `prerender_host_ids` that were actually cancelled.
+  std::set<PrerenderHostId> CancelHosts(
+      const std::vector<PrerenderHostId>& prerender_host_ids,
       const PrerenderCancellationReason& reason);
 
   // Applies CancelHost for all existing PrerenderHost.
@@ -299,9 +302,9 @@ class CONTENT_EXPORT PrerenderHostRegistry
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
 
-  bool CancelHostInternal(FrameTreeNodeId frame_tree_node_id,
+  bool CancelHostInternal(PrerenderHostId prerender_host_id,
                           const PrerenderCancellationReason& reason);
-  bool CancelNewTabHostInternal(FrameTreeNodeId frame_tree_node_id,
+  bool CancelNewTabHostInternal(PrerenderHostId prerender_host_id,
                                 const PrerenderCancellationReason& reason);
 
   // Returns true if `navigation_request` can activate `host`.
@@ -317,7 +320,7 @@ class CONTENT_EXPORT PrerenderHostRegistry
   void DeleteAbandonedHosts();
 
   void NotifyTrigger(const GURL& url);
-  void NotifyCancel(FrameTreeNodeId host_frame_tree_node_id,
+  void NotifyCancel(PrerenderHostId host_id,
                     const PrerenderCancellationReason& reason);
 
   // Pops one PrerenderHost from the queue and starts the prerendering if

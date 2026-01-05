@@ -692,7 +692,7 @@ TEST_F(PrerenderHostTest, CanceledPrerenderCannotBeReadyForActivation) {
   // reference to `registry`.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(base::BindLambdaForTesting([&]() {
-        registry().CancelHost(prerender_frame_tree_node_id,
+        registry().CancelHost(prerender_host_id,
                               PrerenderFinalStatus::kTriggerDestroyed);
       })));
 

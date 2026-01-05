@@ -180,7 +180,7 @@ PrerenderHandleImpl::~PrerenderHandleImpl() {
   }
   prerender_host->RemoveObserver(this);
 
-  prerender_host_registry_->CancelHost(frame_tree_node_id_,
+  prerender_host_registry_->CancelHost(prerender_host->prerender_host_id(),
                                        PrerenderFinalStatus::kTriggerDestroyed);
 }
 

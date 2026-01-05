@@ -169,7 +169,7 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
 
   // Collects the host ids corresponding to the URLs that are removed from the
   // speculation rules. These hosts are cancelled later.
-  std::vector<FrameTreeNodeId> removed_prerender_rules;
+  std::vector<PrerenderHostId> removed_prerender_rules;
 
   // Compare the sorted candidate and started prerender lists to one another.
   // Since they are sorted, we process the lexicographically earlier of the two
@@ -211,7 +211,7 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
 
     // Decide what started prerenders to cancel.
     for (PrerenderInfo& prerender : matching_prerenders) {
-      if (prerender.prerender_frame_tree_node_id.is_null()) {
+      if (prerender.prerender_host_id.is_null()) {
         continue;
       }
       // TODO(jbroman): This doesn't currently care about other aspects, like
@@ -219,8 +219,7 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
       // want to cancel if there are candidates which match by PrerenderInfo but
       // none of which permit this prerender.
       if (matching_candidates.empty()) {
-        removed_prerender_rules.push_back(
-            prerender.prerender_frame_tree_node_id);
+        removed_prerender_rules.push_back(prerender.prerender_host_id);
       }
     }
 
@@ -258,7 +257,7 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
               prerender_host->speculation_action()));
     }
   }
-  std::set<FrameTreeNodeId> canceled_prerender_rules_set =
+  std::set<PrerenderHostId> canceled_prerender_rules_set =
       registry_->CancelHosts(
           removed_prerender_rules,
           PrerenderCancellationReason(
@@ -281,7 +280,7 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
   CHECK(std::find_if(started_prerenders_.begin(), started_prerenders_.end(),
                      [&](const PrerenderInfo& x) {
                        return base::Contains(canceled_prerender_rules_set,
-                                             x.prerender_frame_tree_node_id);
+                                             x.prerender_host_id);
                      }) == started_prerenders_.end());
 
   // Actually start the candidates in their original order once the diffing is
@@ -511,7 +510,7 @@ bool PrerendererImpl::ShouldWaitForPrerenderResult(const GURL& url) {
   return begin != end;
 }
 
-void PrerendererImpl::OnCancel(FrameTreeNodeId host_frame_tree_node_id,
+void PrerendererImpl::OnCancel(PrerenderHostId host_id,
                                const PrerenderCancellationReason& reason) {
   switch (reason.final_status()) {
     // TODO(crbug.com/40275452): Support other final status cases.
@@ -521,8 +520,7 @@ void PrerendererImpl::OnCancel(FrameTreeNodeId host_frame_tree_node_id,
       auto erasing_prerender_it =
           std::find_if(started_prerenders_.begin(), started_prerenders_.end(),
                        [&](const PrerenderInfo& prerender_info) {
-                         return prerender_info.prerender_frame_tree_node_id ==
-                                host_frame_tree_node_id;
+                         return prerender_info.prerender_host_id == host_id;
                        });
 
       if (erasing_prerender_it != started_prerenders_.end()) {
@@ -551,10 +549,9 @@ void PrerendererImpl::SetPrerenderCancellationCallback(
 
 void PrerendererImpl::CancelStartedPrerenders() {
   if (registry_) {
-    std::vector<FrameTreeNodeId> started_prerender_ids;
+    std::vector<PrerenderHostId> started_prerender_ids;
     for (auto& prerender_info : started_prerenders_) {
-      started_prerender_ids.push_back(
-          prerender_info.prerender_frame_tree_node_id);
+      started_prerender_ids.push_back(prerender_info.prerender_host_id);
     }
     registry_->CancelHosts(
         started_prerender_ids,

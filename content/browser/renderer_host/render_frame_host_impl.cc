@@ -14300,7 +14300,7 @@ bool RenderFrameHostImpl::CancelPrerenderingForLoadingError(
     return false;
   }
   return delegate_->GetPrerenderHostRegistry()->CancelHost(
-      outermost_frame->frame_tree_node_id(),
+      prerender_host->prerender_host_id(),
       PrerenderCancellationReason::BuildForLoadingError(loading_error_code));
 }
 
@@ -14311,9 +14311,14 @@ bool RenderFrameHostImpl::CancelPrerendering(
   if (!outermost_frame) {
     return false;
   }
-
+  PrerenderHost* prerender_host =
+      delegate_->GetPrerenderHostRegistry()->FindNonReservedHostById(
+          outermost_frame->frame_tree_node_id());
+  if (!prerender_host) {
+    return false;
+  }
   return delegate_->GetPrerenderHostRegistry()->CancelHost(
-      outermost_frame->frame_tree_node_id(), reason);
+      prerender_host->prerender_host_id(), reason);
 }
 
 void RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy(
