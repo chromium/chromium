@@ -1416,9 +1416,6 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
 // Checks whether the feed top section is visible and updates the
 // `NTPContentDelegate`.
-// TODO(crbug.com/40843602): This function currently checks the visibility of
-// the entire feed top section, but it should only check the visibility of the
-// promo within it.
 - (void)updateFeedSigninPromoIsVisible {
   if (!self.feedTopSectionViewController) {
     return;
