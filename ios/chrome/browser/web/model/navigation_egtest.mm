@@ -20,7 +20,6 @@ using base::test::ios::kWaitForUIElementTimeout;
 using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
 using chrome_test_util::NTPCollectionView;
-using chrome_test_util::OmniboxText;
 
 namespace {
 
@@ -220,14 +219,12 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   // Tap button to go back 3 pages.
   [ChromeEarlGrey tapWebStateElementWithID:@"goBack3"];
   [ChromeEarlGrey waitForWebStateContainingText:kOnLoadText];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(firstURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:firstURL];
 
   // Tap button to go forward 2 pages.
   [ChromeEarlGrey tapWebStateElementWithID:kGoTwoID];
   [ChromeEarlGrey waitForWebStateContainingText:"pony"];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(thirdURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:thirdURL];
 }
 
 // Tests that calls to window.history.go() that span multiple documents causes
@@ -269,14 +266,12 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   // Tap the back button in the HTML and verify the first URL is loaded.
   [ChromeEarlGrey tapWebStateElementWithID:kGoBackID];
   [ChromeEarlGrey waitForWebStateContainingText:"pony"];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(firstURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:firstURL];
 
   // Tap the forward button in the toolbar and verify the second URL is loaded.
   [[EarlGrey selectElementWithMatcher:ForwardButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(secondURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:secondURL];
 }
 
 // Tests going back via back button then forward via history.forward().
@@ -294,14 +289,12 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   // is loaded.
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:kOnLoadText];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(firstURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:firstURL];
 
   // Tap the forward button in the HTML and verify the second URL is loaded.
   [ChromeEarlGrey tapWebStateElementWithID:kGoForwardID];
   [ChromeEarlGrey waitForWebStateContainingText:"pony"];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(secondURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:secondURL];
 
   // Verify that the forward button is visible but not enabled.
   id<GREYMatcher> disabledForwardButton =
@@ -351,10 +344,7 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   std::string backHashChangeContent = "backHashChange";
   [self addHashChangeListenerWithContent:backHashChangeContent];
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
-  const std::string page1OmniboxText =
-      net::GetContentAndFragmentForUrl(page1URL);
-  [[EarlGrey selectElementWithMatcher:OmniboxText(page1OmniboxText)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:page1URL];
   [ChromeEarlGrey waitForWebStateContainingText:backHashChangeContent];
 
   // Navigate forward to the new URL. This should fire a hashchange event.
@@ -362,11 +352,7 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   [self addHashChangeListenerWithContent:forwardHashChangeContent];
   [[EarlGrey selectElementWithMatcher:ForwardButton()]
       performAction:grey_tap()];
-  const std::string hashChangedWithHistoryOmniboxText =
-      net::GetContentAndFragmentForUrl(hashChangedWithHistoryURL);
-  [[EarlGrey
-      selectElementWithMatcher:OmniboxText(hashChangedWithHistoryOmniboxText)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:hashChangedWithHistoryURL];
   [ChromeEarlGrey waitForWebStateContainingText:forwardHashChangeContent];
 
   // Load a hash URL directly. This shouldn't fire a hashchange event.
@@ -392,26 +378,16 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 
   // Tap link to replace the location value.
   [ChromeEarlGrey tapWebStateElementWithID:kHashChangeWithoutHistoryLabel];
-  const std::string hashChangedWithoutHistoryOmniboxText =
-      net::GetContentAndFragmentForUrl(hashChangedWithoutHistoryURL);
-  [[EarlGrey selectElementWithMatcher:OmniboxText(
-                                          hashChangedWithoutHistoryOmniboxText)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:hashChangedWithoutHistoryURL];
 
   // Tap link to update the location.hash with a new value.
   [ChromeEarlGrey tapWebStateElementWithID:kHashChangeWithHistoryLabel];
-  const std::string hashChangedWithHistoryOmniboxText =
-      net::GetContentAndFragmentForUrl(hashChangedWithHistoryURL);
-  [[EarlGrey
-      selectElementWithMatcher:OmniboxText(hashChangedWithHistoryOmniboxText)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:hashChangedWithHistoryURL];
 
   // Navigate back and verify that the URL that replaced window.location
   // has been reached.
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(
-                                          hashChangedWithoutHistoryOmniboxText)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:hashChangedWithoutHistoryURL];
 }
 
 // Loads a URL and modifies window.location.hash twice, verifying that there is
@@ -428,28 +404,19 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 
   // Tap link to update location.hash with a new value.
   [ChromeEarlGrey tapWebStateElementWithID:kHashChangeWithHistoryLabel];
-  const std::string hashChangedWithHistoryOmniboxText =
-      net::GetContentAndFragmentForUrl(hashChangedWithHistoryURL);
-  [[EarlGrey
-      selectElementWithMatcher:OmniboxText(hashChangedWithHistoryOmniboxText)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:hashChangedWithHistoryURL];
 
   // Tap link to update location.hash with the same value.
   [ChromeEarlGrey tapWebStateElementWithID:kHashChangeWithHistoryLabel];
 
   // Tap back once to return to original URL.
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
-  const std::string page1OmniboxText =
-      net::GetContentAndFragmentForUrl(page1URL);
-  [[EarlGrey selectElementWithMatcher:OmniboxText(page1OmniboxText)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:page1URL];
 
   // Navigate forward and verify the URL.
   [[EarlGrey selectElementWithMatcher:ForwardButton()]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:OmniboxText(hashChangedWithHistoryOmniboxText)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:hashChangedWithHistoryURL];
 }
 
 #pragma mark Redirect operations
@@ -468,19 +435,16 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 
   [ChromeEarlGrey loadURL:initialURL];
   [ChromeEarlGrey loadURL:originURL];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
 
   // Navigating back takes the user to the new tab page.
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(initialURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:initialURL];
 
   // Navigating forward take the user to destination page.
   [[EarlGrey selectElementWithMatcher:ForwardButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
 }
 
 // Test to load a page that contains a redirect window, then does multiple back
@@ -531,50 +495,45 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
           [NSString stringWithCString:redirectLabel.c_str()
                              encoding:[NSString defaultCStringEncoding]]];
   [ChromeEarlGrey waitForWebStateContainingText:"You've arrived"];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
 
   // Navigate to a new URL, navigate back and assert that the resulting page is
   // the proper destination.
   [ChromeEarlGrey loadURL:lastURL];
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:"You've arrived"];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
 
   // Navigate back and assert that the resulting page is the initial index.
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:redirectLabel];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(indexURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:indexURL];
 
   // Navigate forward and assert the the resulting page is the proper
   // destination.
   [[EarlGrey selectElementWithMatcher:ForwardButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:"You've arrived"];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
 }
 
 // Tests that navigating forward from a WebUI URL works when resuming from
 // session restore. This is a regression test for https://crbug.com/814790.
 - (void)testRestoreHistoryToWebUIAndNavigateForward {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL versionURL = GURL("chrome://version/");
   const GURL destinationURL = self.testServer->GetURL(kSimpleFileBasedTestURL);
-  [ChromeEarlGrey loadURL:GURL("chrome://version")];
+  [ChromeEarlGrey loadURL:versionURL];
   [ChromeEarlGrey loadURL:destinationURL];
   [ChromeEarlGrey goBack];
 
   [self triggerRestoreByRestartingApplication];
 
   [ChromeEarlGrey waitForWebStateContainingText:"Revision"];
-  [[EarlGrey selectElementWithMatcher:OmniboxText("chrome://version")]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:versionURL];
   [ChromeEarlGrey goForward];
   [ChromeEarlGrey waitForWebStateContainingText:"pony"];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
 }
 
 // Tests that navigating forward from NTP works when resuming from session
@@ -592,19 +551,17 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   // Navigating right after session restore seems to sometimes be slow, so wait
   // with twice the usual timeout.
   [ChromeEarlGrey waitForWebStateContainingText:"pony"];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
 }
 
 // Tests that restoring a placeholder URL is correctly restored.  This is a
 // regression test from http://crbug.com/1011758.
 - (void)testRestoreHistoryToPlaceholderURL {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL destinationURL("chrome://crash");
+  const GURL destinationURL("chrome://crash/");
   [ChromeEarlGrey loadURL:destinationURL];
   [self triggerRestoreByRestartingApplication];
-  [[EarlGrey selectElementWithMatcher:OmniboxText("chrome://crash")]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
 }
 
 - (void)testEdgeSwipe {
