@@ -91,7 +91,7 @@ class HTMLAltTextContainerElement : public HTMLSpanElement {
       // no alt attribute, or the Document is in quirks mode The user agent is
       // expected to treat the element as a replaced element whose content is
       // the text that the element represents, if any."
-      ShowAsReplaced(builder, host_data.Width(), host_data.Height());
+      ShowAsReplaced(builder, host_data);
 
       if (!ImageSmallerThanAltImage(host_data.Width(), host_data.Height())) {
         ShowBorder(builder);
@@ -101,14 +101,15 @@ class HTMLAltTextContainerElement : public HTMLSpanElement {
 
  private:
   void ShowAsReplaced(ComputedStyleBuilder& builder,
-                      const Length& width,
-                      const Length& height) {
+                      const StyleUAShadowHostData& host_data) {
     builder.SetOverflowX(EOverflow::kHidden);
     builder.SetOverflowY(EOverflow::kHidden);
-    builder.SetDisplay(EDisplay::kInlineBlock);
+    builder.SetDisplay(EDisplay::kFlowRoot);
     builder.SetPointerEvents(EPointerEvents::kNone);
-    builder.SetHeight(height);
-    builder.SetWidth(width);
+    builder.SetMaxHeight(host_data.MaxHeight());
+    builder.SetHeight(host_data.Height());
+    builder.SetWidth(host_data.Width());
+    builder.SetMaxWidth(host_data.MaxWidth());
     // Text decorations must be reset for for inline-block,
     // see StopPropagateTextDecorations in style_adjuster.cc.
     builder.SetBaseTextDecorationData(nullptr);
@@ -196,8 +197,8 @@ class HTMLAltTextImageElement : public HTMLImageElement {
       return;
     }
 
-    // Note that floating elements are blockified by StyleAdjuster.
-    builder.SetDisplay(EDisplay::kBlock);
+    // Use kFlowRoot to unconditionally establish a new formatting context.
+    builder.SetDisplay(EDisplay::kFlowRoot);
 
     // Make sure the broken image icon appears on the appropriate side of the
     // image for the element's writing direction.
@@ -265,8 +266,9 @@ void HTMLImageFallbackHelper::AdjustHostStyle(HTMLElement& element,
   // This data will be inherited to all descendants of `element`, and will
   // be available during subsequent calls to `AdjustChildStyle`.
   builder.SetUAShadowHostData(std::make_unique<StyleUAShadowHostData>(
-      builder.Width(), builder.Height(), builder.AspectRatio(),
-      element.AltText(), element.getAttribute(html_names::kAltAttr),
+      builder.Width(), builder.Height(), builder.MaxWidth(),
+      builder.MaxHeight(), builder.AspectRatio(), element.AltText(),
+      element.getAttribute(html_names::kAltAttr),
       element.getAttribute(html_names::kSrcAttr), /* has_appearance */ false));
 
   if (!TreatImageAsReplaced(element.GetDocument(),
