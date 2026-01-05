@@ -2597,7 +2597,7 @@ class CORE_EXPORT Element : public ContainerNode {
   // We do not currently update this when attributes/classes are removed,
   // only when they are added. Attribute _values_ are not part of this
   // filter, except for the values of class="".
-  uint32_t attribute_or_class_bloom_ = 0;
+  TinyBloomFilter attribute_or_class_bloom_ = 0;
 
   // Do not add new members to Element without a good reason; prefer to
   // add to ElementRareData unless it is performance-critical. Element

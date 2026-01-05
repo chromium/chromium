@@ -283,9 +283,9 @@ class AXRelationCache {
   // aria-describedby or aria-labeledby, update the text for the related object.
   void UpdateRelatedText(Node*);
 
-  static base::span<std::pair<QualifiedName, uint32_t>>
+  static base::span<std::pair<QualifiedName, Element::TinyBloomFilter>>
   GetTextRelationAttributes();
-  static base::span<std::pair<QualifiedName, uint32_t>>
+  static base::span<std::pair<QualifiedName, Element::TinyBloomFilter>>
   GetOtherRelationAttributes();
 
   bool IsValidOwnsRelation(AXObject* owner, Node& child_node) const;
