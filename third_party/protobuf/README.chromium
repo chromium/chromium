@@ -56,9 +56,6 @@ Steps used to create the current version (or roll a newer one):
    upstream any patches out of band from unblocking the roll so we can
    eventually remove it here as well.
 
-   Run `git add src/google/protobuf/compiler/csharp/csharp_names.h` to pick up
-   the file added by 0048-csharp-names-redirect.patch
-
    Probably worth committing locally here too.
 
 4. Generate descriptor_pb2.py using the script "gen_extra_chromium_files.py" in
@@ -213,13 +210,6 @@ Description of the patches:
 - 0045-string-resize.patch
 
   Replaces usage of absl internal string routines with std::string::resize().
-
-- 0048-csharp-names-redirect.patch
-
-  A header file moved and this is added to redirect code that hasn't been
-  updated for newer protobuf to the new location. This code isn't actually
-  linked. This can be removed after GRPC is rolled. NB this has to be manually
-  added with `git add` if you are following the instructions above.
 
 - 0049-deprecated-declarations-pragma.patch
 
