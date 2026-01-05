@@ -7458,7 +7458,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Tips notifications opt in opened at full height
       </message>
       <message name="IDS_TIPS_OPT_IN_BOTTOM_SHEET_POSITIVE_BUTTON_TEXT" desc="Button text for the Tips Opt In bottom sheet to go to the notifications settings page.">
-        Turn on Tips notifications
+        Turn on tips notifications
       </message>
       <message name="IDS_TIPS_OPT_IN_BOTTOM_SHEET_NEGATIVE_BUTTON_TEXT" desc="Button text for the Tips Opt In bottom sheet to exit the promo.">
         Close

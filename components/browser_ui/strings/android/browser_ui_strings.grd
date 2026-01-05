@@ -1307,7 +1307,7 @@
         Continue
       </message>
       <message name="IDS_EDUCATIONAL_TIP_TIPS_NOTIFICATIONS_TITLE" desc="Title of the tips notifications promo that invites users to turn on tips notifications in the educational tip module on NTP.">
-        Get Chrome Tips notifications
+        Get Chrome tips notifications
       </message>
       <message name="IDS_EDUCATIONAL_TIP_TIPS_NOTIFICATIONS_DESCRIPTION" desc="Description of the tips notifications promo that invites users to turn on tips notifications in the educational tip module on NTP.">
         Turn on notifications for useful tips to help you get the best of Chrome
