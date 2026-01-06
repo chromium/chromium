@@ -231,7 +231,8 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   id<CRWWebViewNavigationProxy> GetWebViewNavigationProxy() const final;
   void GoToBackForwardListItem(WKBackForwardListItem* wk_item,
                                NavigationItem* item,
-                               NavigationInitiationType type,
+                               BackForwardNavigationType navigation_type,
+                               NavigationInitiationType initiation_type,
                                bool has_user_gesture) override;
   void RemoveWebView() override;
   NavigationItemImpl* GetPendingItem() override;

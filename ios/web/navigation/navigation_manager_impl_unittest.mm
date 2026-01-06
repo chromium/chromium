@@ -18,6 +18,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/web/common/features.h"
+#import "ios/web/navigation/back_forward_navigation_type.h"
 #import "ios/web/navigation/navigation_manager_delegate.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/navigation/wk_navigation_util.h"
@@ -109,6 +110,7 @@ class MockNavigationManagerDelegate : public NavigationManagerDelegate {
               GoToBackForwardListItem,
               (WKBackForwardListItem*,
                NavigationItem*,
+               BackForwardNavigationType,
                NavigationInitiationType,
                bool));
   MOCK_METHOD(NavigationItemImpl*, GetPendingItem, ());
@@ -2370,6 +2372,7 @@ TEST_F(NavigationManagerTest, GoBack) {
   EXPECT_CALL(delegate_,
               GoToBackForwardListItem(
                   mock_wk_list_.backList[0], manager_->GetItemAtIndex(0),
+                  BackForwardNavigationType::kBackward,
                   NavigationInitiationType::BROWSER_INITIATED,
                   /*has_user_gesture=*/true));
   manager_->GoBack();
@@ -2402,6 +2405,7 @@ TEST_F(NavigationManagerTest, GoForward) {
   EXPECT_CALL(delegate_,
               GoToBackForwardListItem(
                   mock_wk_list_.forwardList[0], manager_->GetItemAtIndex(1),
+                  BackForwardNavigationType::kForward,
                   NavigationInitiationType::BROWSER_INITIATED,
                   /*has_user_gesture=*/true));
   manager_->GoForward();
@@ -2441,6 +2445,7 @@ TEST_F(NavigationManagerTest, GoForwardShouldDiscardsUncommittedItems) {
   EXPECT_CALL(delegate_,
               GoToBackForwardListItem(
                   mock_wk_list_.forwardList[0], manager_->GetItemAtIndex(1),
+                  BackForwardNavigationType::kForward,
                   NavigationInitiationType::BROWSER_INITIATED,
                   /*has_user_gesture=*/true));
   manager_->GoForward();

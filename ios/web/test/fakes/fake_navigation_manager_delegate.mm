@@ -29,7 +29,8 @@ FakeNavigationManagerDelegate::GetWebViewNavigationProxy() const {
 void FakeNavigationManagerDelegate::GoToBackForwardListItem(
     WKBackForwardListItem* wk_item,
     NavigationItem* item,
-    NavigationInitiationType type,
+    BackForwardNavigationType navigation_type,
+    NavigationInitiationType initiation_type,
     bool has_user_gesture) {}
 void FakeNavigationManagerDelegate::RemoveWebView() {}
 

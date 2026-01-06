@@ -35,6 +35,7 @@
 #import "ios/web/js_messaging/java_script_feature_util_impl.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/js_messaging/web_view_web_state_map.h"
+#import "ios/web/navigation/back_forward_navigation_type.h"
 #import "ios/web/navigation/crw_error_page_helper.h"
 #import "ios/web/navigation/crw_js_navigation_handler.h"
 #import "ios/web/navigation/crw_navigation_item_holder.h"
@@ -734,21 +735,34 @@ BOOL ExtractInteractionState(NSData* data, NSData** interactionState) {
 
 - (void)goToBackForwardListItem:(WKBackForwardListItem*)wk_item
                  navigationItem:(web::NavigationItem*)item
-       navigationInitiationType:(web::NavigationInitiationType)type
+      backForwardNavigationType:(web::BackForwardNavigationType)navigationType
+       navigationInitiationType:(web::NavigationInitiationType)initiationType
                  hasUserGesture:(BOOL)hasUserGesture {
-  WKNavigation* navigation;
-  // Where possible, call `goBack` or `goForward` since WebKit has logic
-  // specific to those functions for skipping over maliciously-added items. See
-  // crbug.com/40072465 for an example.
-  if (wk_item == self.webView.backForwardList.backItem) {
-    navigation = [self.webView goBack];
-  } else if (wk_item == self.webView.backForwardList.forwardItem) {
-    navigation = [self.webView goForward];
-  } else {
-    navigation = [self.webView goToBackForwardListItem:wk_item];
-  }
+  // Save the URL of the target item.
+  const GURL URL = net::GURLWithNSURL(wk_item.URL);
 
-  GURL URL = net::GURLWithNSURL(wk_item.URL);
+  // Respect the `BackForwardNavigationType` value as this allow the user to
+  // go to a specific entry in the BackForwardList even if it would be skipped
+  // by the function skipping over automatically inserted items (this could be
+  // desirable if they are not maliciously added).
+  //
+  // See https://crbug.com/40072465 and https://crbug.com/464261378 for some
+  // context on why we want to skip those with Back/Forward event, but still
+  // want to have the possibility to go to a specific entry.
+  WKNavigation* navigation;
+  switch (navigationType) {
+    case web::BackForwardNavigationType::kBackward:
+      navigation = [self.webView goBack];
+      break;
+
+    case web::BackForwardNavigationType::kForward:
+      navigation = [self.webView goForward];
+      break;
+
+    case web::BackForwardNavigationType::kToEntry:
+      navigation = [self.webView goToBackForwardListItem:wk_item];
+      break;
+  }
 
   self.webStateImpl->ClearWebUI();
 
@@ -761,7 +775,7 @@ BOOL ExtractInteractionState(NSData* data, NSData** interactionState) {
           static_cast<ui::PageTransition>(
               item->GetTransitionType() |
               ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK),
-          type == web::NavigationInitiationType::RENDERER_INITIATED);
+          initiationType == web::NavigationInitiationType::RENDERER_INITIATED);
   context->SetNavigationItemUniqueID(item->GetUniqueID());
   bool isSameDocument = web::GURLByRemovingRefFromGURL(URL) ==
                         web::GURLByRemovingRefFromGURL(_documentURL);

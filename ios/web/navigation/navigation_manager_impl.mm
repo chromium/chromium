@@ -655,7 +655,8 @@ void NavigationManagerImpl::GoTo(GoToParams params) {
   WKBackForwardListItem* wk_item = web_view_cache_.GetWKItemAtIndex(index);
   if (wk_item) {
     base::AutoReset<bool> auto_reset(&going_to_back_forward_list_item_, true);
-    delegate_->GoToBackForwardListItem(wk_item, item, params.initiation_type(),
+    delegate_->GoToBackForwardListItem(wk_item, item, params.navigation_type(),
+                                       params.initiation_type(),
                                        params.has_user_gesture());
   } else {
     DCHECK(index == 0 && empty_window_open_item_)
