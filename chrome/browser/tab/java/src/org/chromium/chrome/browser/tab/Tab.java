@@ -403,31 +403,29 @@ public interface Tab extends TabLifecycle {
     int getParentId();
 
     /**
-     * Set the parent identifier for the {@link Tab}. This method is only used as a temporary
-     * workaround for invalid parent ids being present in the tab state file.
+     * Set the parent identifier for the {@link Tab}. This is equivalent to setting the "opener" tab
+     * in desktop Chrome.
      */
     void setParentId(@TabId int parentId);
 
     /**
-     * Returns the root identifier for the {@link Tab}. This method will be replaced by {@link
-     * getTabGroupId()} as part of https://crbug.com/1523745.
+     * Returns the root identifier for the {@link Tab}.
      *
-     * @deprecated Use {@link #getTabGroupId()} instead. Most public tabmodel methods have been
-     *     migrated to support tab group id. Any remaining usecases should be migrated to tab group
-     *     id. The only remaining usecase that should require a root id is fetching metadata about
-     *     the tab group (color, title, etc.). The metadata is still stored in shared prefs by root
-     *     ID key until a migration to a better storage system happens.
+     * @deprecated Use {@link #getTabGroupId()} instead. The only exceptions are for tab
+     *     persistence, and migrating from root id to tab group id for tab collections.
      */
     @Deprecated
     @TabId
     int getRootId();
 
     /**
-     * Set the root identifier for the {@link Tab}. This method will be replaced by {@link
-     * setTabGroupId()} as part of https://crbug.com/1523745.
+     * Set the root identifier for the {@link Tab}.
      *
      * @param rootId The root identifier to use.
+     * @deprecated Use {@link #setTabGroupId()} instead. The only exceptions are declutter, tab
+     *     restore, and migrating from root id to tab group id for tab collections.
      */
+    @Deprecated
     void setRootId(@TabId int rootId);
 
     /**
