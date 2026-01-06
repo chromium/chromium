@@ -13,12 +13,14 @@ import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.window.layout.WindowMetricsCalculator;
 
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
@@ -45,7 +47,7 @@ public class EmptyFragment extends Fragment {
             LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.empty_state_view, container, false);
+        return inflater.inflate(R.layout.settings_empty_state_view, container, false);
     }
 
     @Override
@@ -57,6 +59,15 @@ public class EmptyFragment extends Fragment {
         }
         ImageView stateImage = view.findViewById(R.id.empty_state_icon);
         stateImage.setImageResource(mImageSrc);
+        View content = view.findViewById(R.id.empty_state_content);
+        var lp = (FrameLayout.LayoutParams) content.getLayoutParams();
+        var windowMetrics =
+                WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(getActivity());
+
+        // Position the content above the center so that they remain visible with the soft
+        // keyboard likely also visible on screen most of the time.
+        lp.topMargin = windowMetrics.getBounds().height() / 6;
+        content.setLayoutParams(lp);
 
         TextView guideMsg = view.findViewById(R.id.empty_state_text_title);
         TextView linkHelpCenter = view.findViewById(R.id.empty_state_text_description);
