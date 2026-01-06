@@ -29,10 +29,10 @@
   --glow-stroke-width_: 2px;
 
   --search-animated-glow-background: rgb(255, 255, 255);
-  --search-animated-glow-background-z-index: 3;
-  --search-animated-glow-drag-drop-placeholder-z-index: 4;
-  --search-animated-glow-gradient-after-z-index: 1;
-  --search-animated-glow-gradient-z-index: 2;
+  --search-animated-glow-background-z-index: 103;
+  --search-animated-glow-drag-drop-placeholder-z-index: 104;
+  --search-animated-glow-gradient-after-z-index: 101;
+  --search-animated-glow-gradient-z-index: 102;
   --search-animated-glow-brand-gradient: conic-gradient(
     rgba(52, 168, 82, 0) 0deg,
     rgba(52, 168, 82, 1) 38.9738deg,
