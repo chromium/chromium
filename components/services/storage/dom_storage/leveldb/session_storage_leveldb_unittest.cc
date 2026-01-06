@@ -28,6 +28,12 @@ StatusOr<DomStorageDatabase::MapMetadata> ParseMapMetadata(
 
 DomStorageDatabase::Key GetSessionPrefix(const std::string& session_id);
 
+DomStorageDatabase::Key CreateMapMetadataKey(
+    std::string session_id,
+    const blink::StorageKey& storage_key);
+
+DomStorageDatabase::Key GetMapPrefix(int64_t map_id);
+
 std::vector<uint8_t> ToBytes(std::string source);
 
 namespace {
@@ -63,8 +69,7 @@ void VerifyDatabaseVersionEntry(
 // Return "map-<map_id>-<script_key>".
 DomStorageDatabase::Key CreateMapEntryKey(int64_t map_id,
                                           std::string script_key) {
-  DomStorageDatabase::Key map_data_key =
-      SessionStorageLevelDB::GetMapPrefix(map_id);
+  DomStorageDatabase::Key map_data_key = GetMapPrefix(map_id);
 
   map_data_key.insert(map_data_key.end(), script_key.begin(), script_key.end());
   return map_data_key;
@@ -136,8 +141,7 @@ void SessionStorageLevelDBTest::OpenInMemory(
 
 TEST_F(SessionStorageLevelDBTest, ParseMapMetadata) {
   StatusOr<DomStorageDatabase::MapMetadata> map_metadata = ParseMapMetadata({
-      SessionStorageLevelDB::CreateMapMetadataKey(kFakeSessionId,
-                                                  kFakeUrlStorageKey),
+      CreateMapMetadataKey(kFakeSessionId, kFakeUrlStorageKey),
       /*value=*/ToBytes("314"),
   });
   ASSERT_TRUE(map_metadata.has_value());
@@ -206,8 +210,7 @@ TEST_F(SessionStorageLevelDBTest, ParseMapMetadataWithStorageKeyInvalid) {
 
 TEST_F(SessionStorageLevelDBTest, ParseMapMetadataWithMapIdInvalid) {
   StatusOr<DomStorageDatabase::MapMetadata> map_metadata = ParseMapMetadata({
-      SessionStorageLevelDB::CreateMapMetadataKey(kFakeSessionId,
-                                                  kFakeUrlStorageKey),
+      CreateMapMetadataKey(kFakeSessionId, kFakeUrlStorageKey),
       /*value=*/ToBytes("invalid"),
   });
   ASSERT_FALSE(map_metadata.has_value());
@@ -216,8 +219,7 @@ TEST_F(SessionStorageLevelDBTest, ParseMapMetadataWithMapIdInvalid) {
 
 TEST_F(SessionStorageLevelDBTest, ParseMapMetadataWithMapIdEmpty) {
   StatusOr<DomStorageDatabase::MapMetadata> map_metadata = ParseMapMetadata({
-      SessionStorageLevelDB::CreateMapMetadataKey(kFakeSessionId,
-                                                  kFakeUrlStorageKey),
+      CreateMapMetadataKey(kFakeSessionId, kFakeUrlStorageKey),
       /*value=*/ToBytes(""),
   });
   ASSERT_FALSE(map_metadata.has_value());
@@ -283,15 +285,14 @@ TEST_F(SessionStorageLevelDBTest, ReadAllMapMetadata) {
   std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
   ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
 
-  ASSERT_NO_FATAL_FAILURE(
-      WriteEntries(*session_storage_leveldb,
-                   {
-                       {
-                           SessionStorageLevelDB::CreateMapMetadataKey(
-                               kFakeSessionId, kFakeUrlStorageKey),
-                           /*value=*/ToBytes("5343"),
-                       },
-                   }));
+  ASSERT_NO_FATAL_FAILURE(WriteEntries(
+      *session_storage_leveldb,
+      {
+          {
+              CreateMapMetadataKey(kFakeSessionId, kFakeUrlStorageKey),
+              /*value=*/ToBytes("5343"),
+          },
+      }));
 
   StatusOr<DomStorageDatabase::Metadata> metadata =
       session_storage_leveldb->ReadAllMetadata();
@@ -339,25 +340,23 @@ TEST_F(SessionStorageLevelDBTest, ReadAllMapMetadataWithMultipleEntries) {
   std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
   ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
 
-  ASSERT_NO_FATAL_FAILURE(
-      WriteEntries(*session_storage_leveldb,
-                   {
-                       {
-                           SessionStorageLevelDB::CreateMapMetadataKey(
-                               kFakeSessionId, kFakeUrlStorageKey),
-                           /*value=*/ToBytes("5343"),
-                       },
-                       {
-                           SessionStorageLevelDB::CreateMapMetadataKey(
-                               kOtherFakeSessionId, kFakeUrlStorageKey),
-                           /*value=*/ToBytes("5343"),
-                       },
-                       {
-                           SessionStorageLevelDB::CreateMapMetadataKey(
-                               kOtherFakeSessionId, kOtherFakeUrlStorageKey),
-                           /*value=*/ToBytes("5346"),
-                       },
-                   }));
+  ASSERT_NO_FATAL_FAILURE(WriteEntries(
+      *session_storage_leveldb,
+      {
+          {
+              CreateMapMetadataKey(kFakeSessionId, kFakeUrlStorageKey),
+              /*value=*/ToBytes("5343"),
+          },
+          {
+              CreateMapMetadataKey(kOtherFakeSessionId, kFakeUrlStorageKey),
+              /*value=*/ToBytes("5343"),
+          },
+          {
+              CreateMapMetadataKey(kOtherFakeSessionId,
+                                   kOtherFakeUrlStorageKey),
+              /*value=*/ToBytes("5346"),
+          },
+      }));
 
   StatusOr<DomStorageDatabase::Metadata> metadata =
       session_storage_leveldb->ReadAllMetadata();
@@ -385,8 +384,8 @@ TEST_F(SessionStorageLevelDBTest, ReadAllMapMetadataWithMultipleEntries) {
 }
 
 TEST_F(SessionStorageLevelDBTest, CreateMapMetadataKey) {
-  DomStorageDatabase::Key key = SessionStorageLevelDB::CreateMapMetadataKey(
-      kFakeSessionId, kFakeUrlStorageKey);
+  DomStorageDatabase::Key key =
+      CreateMapMetadataKey(kFakeSessionId, kFakeUrlStorageKey);
   EXPECT_EQ(key, ToBytes("namespace-ce8c7dc5_73b4_4320_a506_ce1f4fd3356f-https:"
                          "//a-fake.test/"));
 }
@@ -411,8 +410,8 @@ TEST_F(SessionStorageLevelDBTest, PutMetadata) {
       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
   ASSERT_EQ(all_entries.size(), 3u);
 
-  EXPECT_EQ(all_entries[0].key, SessionStorageLevelDB::CreateMapMetadataKey(
-                                    kFakeSessionId, kFakeUrlStorageKey));
+  EXPECT_EQ(all_entries[0].key,
+            CreateMapMetadataKey(kFakeSessionId, kFakeUrlStorageKey));
   EXPECT_EQ(all_entries[0].value,
             base::as_byte_span(base::NumberToString(1565)));
 
@@ -455,19 +454,19 @@ TEST_F(SessionStorageLevelDBTest, PutMetadataWithMultipleMaps) {
         session_storage_leveldb->GetLevelDB().GetPrefixed({}));
     ASSERT_EQ(all_entries.size(), 5u);
 
-    EXPECT_EQ(all_entries[0].key,
-              SessionStorageLevelDB::CreateMapMetadataKey(
-                  kOtherFakeSessionId, kOtherFakeUrlStorageKey));
+    EXPECT_EQ(
+        all_entries[0].key,
+        CreateMapMetadataKey(kOtherFakeSessionId, kOtherFakeUrlStorageKey));
     EXPECT_EQ(all_entries[0].value,
               base::as_byte_span(base::NumberToString(kOtherFakeMapId + 1)));
 
-    EXPECT_EQ(all_entries[1].key, SessionStorageLevelDB::CreateMapMetadataKey(
-                                      kFakeSessionId, kFakeUrlStorageKey));
+    EXPECT_EQ(all_entries[1].key,
+              CreateMapMetadataKey(kFakeSessionId, kFakeUrlStorageKey));
     EXPECT_EQ(all_entries[1].value,
               base::as_byte_span(base::NumberToString(kFakeMapId)));
 
-    EXPECT_EQ(all_entries[2].key, SessionStorageLevelDB::CreateMapMetadataKey(
-                                      kFakeSessionId, kOtherFakeUrlStorageKey));
+    EXPECT_EQ(all_entries[2].key,
+              CreateMapMetadataKey(kFakeSessionId, kOtherFakeUrlStorageKey));
     EXPECT_EQ(all_entries[2].value,
               base::as_byte_span(base::NumberToString(kOtherFakeMapId)));
 
@@ -514,7 +513,7 @@ TEST_F(SessionStorageLevelDBTest, PutMetadataWithMultipleSessions) {
 }
 
 TEST_F(SessionStorageLevelDBTest, GetMapPrefix) {
-  EXPECT_EQ(SessionStorageLevelDB::GetMapPrefix(1234), ToBytes("map-1234-"));
+  EXPECT_EQ(GetMapPrefix(1234), ToBytes("map-1234-"));
 }
 
 TEST_F(SessionStorageLevelDBTest, DeleteStorageKeysFromSessionWithMetadata) {

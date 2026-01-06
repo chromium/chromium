@@ -96,6 +96,57 @@ DomStorageDatabase::Key GetSessionPrefix(const std::string& session_id) {
   return session_prefix;
 }
 
+// Returns `namespace-<session_id>-<storage_key>`.
+DomStorageDatabase::Key CreateMapMetadataKey(
+    std::string session_id,
+    const blink::StorageKey& storage_key) {
+  // `session_id` must be a GUID string.
+  CHECK_EQ(session_id.size(), blink::kSessionStorageNamespaceIdLength);
+
+  std::string serialized_storage_key = storage_key.Serialize();
+
+  DomStorageDatabase::Key key;
+  key.reserve(std::size(kNamespacePrefix) + session_id.size() +
+              /*kNamespaceStorageKeySeparator=*/1 +
+              serialized_storage_key.length());
+
+  // Add 'namespace-'.
+  key.insert(key.end(), std::begin(kNamespacePrefix),
+             std::end(kNamespacePrefix));
+
+  // Append `session_id`.
+  key.insert(key.end(), session_id.begin(), session_id.end());
+
+  // Append '-'.
+  key.push_back(kNamespaceStorageKeySeparator);
+
+  // Append `storage_key`.
+  key.insert(key.end(), serialized_storage_key.begin(),
+             serialized_storage_key.end());
+  return key;
+}
+
+// Returns the prefix for all key/value pairs that belong to a specific map.
+// For example: "map-1-".
+DomStorageDatabase::Key GetMapPrefix(int64_t map_id) {
+  std::string map_id_text = base::NumberToString(map_id);
+
+  DomStorageDatabase::Key map_prefix;
+  map_prefix.reserve(std::size(kMapIdPrefix) + map_id_text.size() +
+                     /*kMapIdKeySeparator=*/1);
+
+  // Append "map-".
+  map_prefix.insert(map_prefix.end(), std::begin(kMapIdPrefix),
+                    std::end(kMapIdPrefix));
+
+  // Append `map_id` as text.
+  map_prefix.insert(map_prefix.end(), map_id_text.begin(), map_id_text.end());
+
+  // Append "-".
+  map_prefix.push_back(kMapIdKeySeparator);
+  return map_prefix;
+}
+
 SessionStorageLevelDB::SessionStorageLevelDB(PassKey) {}
 
 SessionStorageLevelDB::~SessionStorageLevelDB() = default;
@@ -257,54 +308,6 @@ void SessionStorageLevelDB::MakeAllCommitsFailForTesting() {
 void SessionStorageLevelDB::SetDestructionCallbackForTesting(
     base::OnceClosure callback) {
   leveldb_->SetDestructionCallbackForTesting(std::move(callback));
-}
-
-DomStorageDatabase::Key SessionStorageLevelDB::CreateMapMetadataKey(
-    std::string session_id,
-    const blink::StorageKey& storage_key) {
-  // `session_id` must be a GUID string.
-  CHECK_EQ(session_id.size(), blink::kSessionStorageNamespaceIdLength);
-
-  std::string serialized_storage_key = storage_key.Serialize();
-
-  Key key;
-  key.reserve(std::size(kNamespacePrefix) + session_id.size() +
-              /*kNamespaceStorageKeySeparator=*/1 +
-              serialized_storage_key.length());
-
-  // Add 'namespace-'.
-  key.insert(key.end(), std::begin(kNamespacePrefix),
-             std::end(kNamespacePrefix));
-
-  // Append `session_id`.
-  key.insert(key.end(), session_id.begin(), session_id.end());
-
-  // Append '-'.
-  key.push_back(kNamespaceStorageKeySeparator);
-
-  // Append `storage_key`.
-  key.insert(key.end(), serialized_storage_key.begin(),
-             serialized_storage_key.end());
-  return key;
-}
-
-DomStorageDatabase::Key SessionStorageLevelDB::GetMapPrefix(int64_t map_id) {
-  std::string map_id_text = base::NumberToString(map_id);
-
-  Key map_prefix;
-  map_prefix.reserve(std::size(kMapIdPrefix) + map_id_text.size() +
-                     /*kMapIdKeySeparator=*/1);
-
-  // Append "map-".
-  map_prefix.insert(map_prefix.end(), std::begin(kMapIdPrefix),
-                    std::end(kMapIdPrefix));
-
-  // Append `map_id` as text.
-  map_prefix.insert(map_prefix.end(), map_id_text.begin(), map_id_text.end());
-
-  // Append "-".
-  map_prefix.push_back(kMapIdKeySeparator);
-  return map_prefix;
 }
 
 StatusOr<int64_t> SessionStorageLevelDB::ReadNextMapId() const {
