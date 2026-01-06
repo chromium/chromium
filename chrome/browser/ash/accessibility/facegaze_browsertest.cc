@@ -442,8 +442,15 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, MouseLongClick) {
   ASSERT_FALSE(drag_event_rewriter->IsEnabled());
 }
 
-// TODO(crbug.com/367758998): Re-enable this test.
-IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DISABLED_PerformanceHistogram) {
+// TODO(crbug.com/367758998): Performance histograms are unreliable on MSan
+// due to overhead. Furthermore, the test consistently crashes on MSan
+// builders during GPU initialization due to uninstrumented Vulkan drivers.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_PerformanceHistogram DISABLED_PerformanceHistogram
+#else
+#define MAYBE_PerformanceHistogram PerformanceHistogram
+#endif
+IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, MAYBE_PerformanceHistogram) {
   const base::flat_map<FaceGazeGesture, MacroName> gestures_to_macros = {
       {FaceGazeGesture::MOUTH_PUCKER, MacroName::MOUSE_CLICK_LEFT}};
   const base::flat_map<FaceGazeGesture, int> gestures_to_confidences = {
