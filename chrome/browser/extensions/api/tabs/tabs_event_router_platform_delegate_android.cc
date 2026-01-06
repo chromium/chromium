@@ -55,6 +55,7 @@ void TabsEventRouterPlatformDelegate::TabEntry::WebContentsDestroyed() {
   if (!SessionID::IsValidValue(tab_id)) {
     return;
   }
+  owner_->router_->UnregisterForTabNotifications(*web_contents());
   int removed_count = owner_->tab_entries_.erase(tab_id);
   DCHECK_GT(removed_count, 0);
 }
@@ -104,6 +105,7 @@ void TabsEventRouterPlatformDelegate::DidAddTab(TabAndroid* tab,
     base::debug::DumpWithoutCrashing();
     return;
   }
+  router_->RegisterForTabNotifications(*tab->web_contents());
   tab_entries_.emplace(tab_id,
                        std::make_unique<TabEntry>(this, tab->web_contents()));
 
@@ -120,6 +122,7 @@ void TabsEventRouterPlatformDelegate::TabRemoved(TabAndroid* tab) {
   }
   // NOTE: Some tests call `TabRemoved()` without calling `DidAddTab()`, so
   // there may not be anything to erase.
+  router_->UnregisterForTabNotifications(*tab->web_contents());
   tab_entries_.erase(tab_id);
 }
 

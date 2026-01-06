@@ -8,12 +8,18 @@
 #include <set>
 
 #include "base/values.h"
+#include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/tabs.h"
+#include "components/favicon/content/content_favicon_driver.h"
+#include "content/public/browser/favicon_status.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/event_router.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 
 namespace extensions {
 
@@ -83,9 +89,39 @@ bool WillDispatchTabCreatedEvent(
 }  // namespace
 
 TabsEventRouter::TabsEventRouter(Profile* profile)
-    : platform_delegate_(*this, *profile) {}
+    : profile_(profile), platform_delegate_(*this, *profile) {}
 
 TabsEventRouter::~TabsEventRouter() = default;
+
+void TabsEventRouter::RegisterForTabNotifications(
+    content::WebContents& web_contents) {
+  favicon_scoped_observations_.AddObservation(
+      favicon::ContentFaviconDriver::FromWebContents(&web_contents));
+
+  // Some pages on Android (like the NTP) may not have a zoom controller.
+  if (auto* zoom_controller =
+          zoom::ZoomController::FromWebContents(&web_contents)) {
+    zoom_scoped_observations_.AddObservation(zoom_controller);
+  }
+}
+
+void TabsEventRouter::UnregisterForTabNotifications(
+    content::WebContents& web_contents) {
+  if (auto* zoom_controller =
+          zoom::ZoomController::FromWebContents(&web_contents);
+      zoom_controller &&
+      zoom_scoped_observations_.IsObservingSource(zoom_controller)) {
+    zoom_scoped_observations_.RemoveObservation(zoom_controller);
+  }
+  // `favicon_driver` should always exist, but we may not be observing it, since
+  // some tests can remove tabs without having called the corresponding method
+  // to initialize them.
+  if (auto* favicon_driver =
+          favicon::ContentFaviconDriver::FromWebContents(&web_contents);
+      favicon_scoped_observations_.IsObservingSource(favicon_driver)) {
+    favicon_scoped_observations_.RemoveObservation(favicon_driver);
+  }
+}
 
 void TabsEventRouter::DispatchTabUpdatedEvent(
     content::WebContents* contents,
@@ -118,6 +154,79 @@ void TabsEventRouter::DispatchTabCreatedEvent(content::WebContents* contents,
   event->will_dispatch_callback =
       base::BindRepeating(&WillDispatchTabCreatedEvent, contents, active);
   EventRouter::Get(profile)->BroadcastEvent(std::move(event));
+}
+
+void TabsEventRouter::DispatchEvent(
+    Profile* profile,
+    events::HistogramValue histogram_value,
+    const std::string& event_name,
+    base::Value::List args,
+    EventRouter::UserGestureState user_gesture) {
+  EventRouter* event_router = EventRouter::Get(profile);
+  if (!profile_->IsSameOrParent(profile) || !event_router) {
+    return;
+  }
+
+  auto event = std::make_unique<Event>(histogram_value, event_name,
+                                       std::move(args), profile);
+  event->user_gesture = user_gesture;
+  event_router->BroadcastEvent(std::move(event));
+}
+
+void TabsEventRouter::OnZoomControllerDestroyed(
+    zoom::ZoomController* zoom_controller) {
+  if (zoom_scoped_observations_.IsObservingSource(zoom_controller)) {
+    zoom_scoped_observations_.RemoveObservation(zoom_controller);
+  }
+}
+
+void TabsEventRouter::OnZoomChanged(
+    const zoom::ZoomController::ZoomChangedEventData& data) {
+  DCHECK(data.web_contents);
+  int tab_id = ExtensionTabUtil::GetTabId(data.web_contents);
+  if (tab_id < 0) {
+    return;
+  }
+
+  // Prepare the zoom change information.
+  api::tabs::OnZoomChange::ZoomChangeInfo zoom_change_info;
+  zoom_change_info.tab_id = tab_id;
+  zoom_change_info.old_zoom_factor =
+      blink::ZoomLevelToZoomFactor(data.old_zoom_level);
+  zoom_change_info.new_zoom_factor =
+      blink::ZoomLevelToZoomFactor(data.new_zoom_level);
+  ZoomModeToZoomSettings(data.zoom_mode, &zoom_change_info.zoom_settings);
+
+  // Dispatch the |onZoomChange| event.
+  Profile* profile =
+      Profile::FromBrowserContext(data.web_contents->GetBrowserContext());
+  DispatchEvent(profile, events::TABS_ON_ZOOM_CHANGE,
+                api::tabs::OnZoomChange::kEventName,
+                api::tabs::OnZoomChange::Create(zoom_change_info),
+                EventRouter::UserGestureState::kUnknown);
+}
+
+void TabsEventRouter::OnFaviconUpdated(
+    favicon::FaviconDriver* favicon_driver,
+    NotificationIconType notification_icon_type,
+    const GURL& icon_url,
+    bool icon_url_changed,
+    const gfx::Image& image) {
+  if (notification_icon_type == NON_TOUCH_16_DIP && icon_url_changed) {
+    favicon::ContentFaviconDriver* content_favicon_driver =
+        static_cast<favicon::ContentFaviconDriver*>(favicon_driver);
+    FaviconUrlUpdated(content_favicon_driver->web_contents());
+  }
+}
+
+void TabsEventRouter::FaviconUrlUpdated(content::WebContents* contents) {
+  content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
+  if (!entry || !entry->GetFavicon().valid) {
+    return;
+  }
+  std::set<std::string> changed_property_names;
+  changed_property_names.insert(tabs_constants::kFaviconUrlKey);
+  DispatchTabUpdatedEvent(contents, std::move(changed_property_names));
 }
 
 }  // namespace extensions

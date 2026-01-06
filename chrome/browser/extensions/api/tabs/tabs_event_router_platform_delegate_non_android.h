@@ -11,7 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
@@ -19,10 +18,7 @@
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "components/favicon/core/favicon_driver.h"
-#include "components/favicon/core/favicon_driver_observer.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
-#include "components/zoom/zoom_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/event_router.h"
 
@@ -44,8 +40,6 @@ class TabsEventRouterPlatformDelegate
     : public TabStripModelObserver,
       public BrowserTabStripTrackerDelegate,
       public BrowserListObserver,
-      public favicon::FaviconDriverObserver,
-      public zoom::ZoomObserver,
       public resource_coordinator::LifecycleUnitObserver,
       public performance_manager::PageLiveStateObserver {
  public:
@@ -81,19 +75,6 @@ class TabsEventRouterPlatformDelegate
                               int index) override;
   void OnTabGroupChanged(const TabGroupChange& change) override;
   void OnSplitTabChanged(const SplitTabChange& change) override;
-
-  // ZoomObserver:
-  void OnZoomControllerDestroyed(
-      zoom::ZoomController* zoom_controller) override;
-  void OnZoomChanged(
-      const zoom::ZoomController::ZoomChangedEventData& data) override;
-
-  // favicon::FaviconDriverObserver:
-  void OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
-                        NotificationIconType notification_icon_type,
-                        const GURL& icon_url,
-                        bool icon_url_changed,
-                        const gfx::Image& image) override;
 
   // resource_coordinator::LifecycleUnitObserver:
   void OnLifecycleUnitStateChanged(
@@ -136,9 +117,6 @@ class TabsEventRouterPlatformDelegate
   class TabEntry;
   void TabUpdated(TabEntry* entry,
                   std::set<std::string> changed_property_names);
-
-  // Triggers a tab updated event if the favicon URL changes.
-  void FaviconUrlUpdated(content::WebContents* contents);
 
   // The DispatchEvent methods forward events to the `profile`'s event router.
   // The TabsEventRouterPlatformDelegate listens to events for all profiles,
@@ -223,12 +201,6 @@ class TabsEventRouterPlatformDelegate
 
   // The main profile that owns this event router.
   raw_ref<Profile> profile_;
-
-  base::ScopedMultiSourceObservation<favicon::FaviconDriver,
-                                     favicon::FaviconDriverObserver>
-      favicon_scoped_observations_{this};
-  base::ScopedMultiSourceObservation<zoom::ZoomController, zoom::ZoomObserver>
-      zoom_scoped_observations_{this};
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
 
