@@ -199,6 +199,7 @@ TEST_F(AccountCapabilitiesTest, CanUseDevToolsGenerativeAiFeatures) {
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
+#if !BUILDFLAG(IS_IOS)
 TEST_F(AccountCapabilitiesTest, CanUseEduFeatures) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.can_use_edu_features(), signin::Tribool::kUnknown);
@@ -210,6 +211,7 @@ TEST_F(AccountCapabilitiesTest, CanUseEduFeatures) {
   mutator.set_can_use_edu_features(false);
   EXPECT_EQ(capabilities.can_use_edu_features(), signin::Tribool::kFalse);
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(AccountCapabilitiesTest, CanUseMantaService) {
   AccountCapabilities capabilities;

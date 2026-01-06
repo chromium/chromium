@@ -101,8 +101,10 @@ class AccountCapabilities {
   signin::Tribool can_use_devtools_generative_ai_features() const;
 #endif
 
+#if !BUILDFLAG(IS_IOS)
   // The user account is able to use edu features.
   signin::Tribool can_use_edu_features() const;
+#endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // The user account is able to use Gemini in Chrome.

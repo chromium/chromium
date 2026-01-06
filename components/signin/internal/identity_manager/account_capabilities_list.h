@@ -80,9 +80,11 @@ ACCOUNT_CAPABILITY(kCanUseDevToolsGenerativeAiFeaturesCapabilityName,
                    "accountcapabilities/geztenjnmnqxa")
 #endif
 
+#if !BUILDFLAG(IS_IOS)
 ACCOUNT_CAPABILITY(kCanUseEduFeaturesCapabilityName,
                    CAN_USE_EDU_FEATURES_CAPABILITY_NAME,
                    "accountcapabilities/gezdsmbnmnqxa")
+#endif
 
 ACCOUNT_CAPABILITY(kCanUseGenerativeAiInRecorderApp,
                    CAN_USE_GENERATIVE_AI_IN_RECORDER_APP,

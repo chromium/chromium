@@ -143,9 +143,11 @@ signin::Tribool AccountCapabilities::can_use_devtools_generative_ai_features()
 }
 #endif
 
+#if !BUILDFLAG(IS_IOS)
 signin::Tribool AccountCapabilities::can_use_edu_features() const {
   return GetCapabilityByName(kCanUseEduFeaturesCapabilityName);
 }
+#endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 signin::Tribool AccountCapabilities::can_use_gemini_in_chrome() const {

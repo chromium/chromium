@@ -199,9 +199,9 @@ struct AccountInfo : public CoreAccountInfo {
   // Returns `kUnknown` the value is unknown.
   signin::Tribool CanApplyAccountLevelEnterprisePolicies() const;
 
+#if !BUILDFLAG(IS_IOS)
   bool IsEduAccount() const;
 
-#if !BUILDFLAG(IS_IOS)
   // Returns true if the account email can be used in display fields.
   // If `capabilities.can_have_email_address_displayed()` is unknown at the time
   // this function is called, the email address will be considered displayable.
