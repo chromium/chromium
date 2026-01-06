@@ -489,6 +489,7 @@ ci.builder(
         additional_compile_targets = [
             "base_unittests",
             "browser_tests",
+            "chrome",
             "chromeos_unittests",
             "components_unittests",
             "compositor_unittests",
