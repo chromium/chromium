@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/i18n/char_iterator.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -97,7 +98,7 @@ base::TrimPositions TrimWhitespace(const std::u16string& input,
   return result;
 }
 
-base::TrimPositions TrimWhitespaceUTF8(const std::string& input,
+base::TrimPositions TrimWhitespaceUTF8(std::string_view input,
                                        base::TrimPositions positions,
                                        std::string* output) {
   // This implementation is not so fast since it converts the text encoding
@@ -179,7 +180,7 @@ std::string FixupHomedir(const std::string& text) {
 // (possibly invalid) file: URL in |fixed_up_url| for input beginning
 // with a drive specifier or "\\".  Returns the unchanged input in other cases
 // (including file: URLs: these don't look like filenames).
-std::string FixupPath(const std::string& text) {
+std::string FixupPath(std::string_view text) {
   DCHECK(!text.empty());
 
   std::string filename;
@@ -209,12 +210,12 @@ std::string FixupPath(const std::string& text) {
   }
 
   // Invalid file URL, just return the input.
-  return text;
+  return std::string(text);
 }
 
 // Checks |domain| to see if a valid TLD is already present.  If not, appends
 // |desired_tld| to the domain, and prepends "www." unless it's already present.
-void AddDesiredTLD(const std::string& desired_tld, std::string* domain) {
+void AddDesiredTLD(std::string_view desired_tld, std::string* domain) {
   if (desired_tld.empty() || domain->empty()) {
     return;
   }
@@ -241,7 +242,7 @@ void AddDesiredTLD(const std::string& desired_tld, std::string* domain) {
   domain->append(desired_tld);
 
   // Now, if the domain begins with "www.", stop.
-  const std::string prefix("www.");
+  const std::string_view prefix = "www.";
   if (domain->compare(0, prefix.length(), prefix) != 0) {
     // Otherwise, add www. to the beginning of the URL.
     domain->insert(0, prefix);
@@ -273,10 +274,10 @@ inline void FixupPassword(const std::string& text,
   url->append(text, part.begin, part.len);
 }
 
-void FixupHost(const std::string& text,
+void FixupHost(std::string_view text,
                const url::Component& part,
                bool has_scheme,
-               const std::string& desired_tld,
+               std::string_view desired_tld,
                std::string* url) {
   if (!part.is_valid()) {
     return;
@@ -286,22 +287,23 @@ void FixupHost(const std::string& text,
   // Strip all leading dots and all but one trailing dot, unless the user only
   // typed dots, in which case their input is totally invalid and we should just
   // leave it unchanged.
-  std::string domain(text, part.begin, part.len);
+  std::string_view domain = text.substr(part.begin, part.len);
   const size_t first_nondot(domain.find_first_not_of('.'));
-  if (first_nondot != std::string::npos) {
-    domain.erase(0, first_nondot);
+  if (first_nondot != std::string_view::npos) {
+    domain.remove_prefix(first_nondot);
     size_t last_nondot(domain.find_last_not_of('.'));
-    DCHECK(last_nondot != std::string::npos);
+    DCHECK(last_nondot != std::string_view::npos);
     last_nondot += 2;  // Point at second period in ending string
     if (last_nondot < domain.length()) {
-      domain.erase(last_nondot);
+      domain.remove_suffix(domain.length() - last_nondot);
     }
   }
 
+  std::string domain_str(domain);
   // Add any user-specified TLD, if applicable.
-  AddDesiredTLD(desired_tld, &domain);
+  AddDesiredTLD(desired_tld, &domain_str);
 
-  url->append(domain);
+  url->append(domain_str);
 }
 
 void FixupPort(const std::string& text,
@@ -567,8 +569,8 @@ std::u16string SegmentURL(const std::u16string& text, url::Parsed* parts) {
   return base::UTF8ToUTF16(scheme_utf8);
 }
 
-GURL FixupURLInternal(const std::string& text,
-                      const std::string& desired_tld,
+GURL FixupURLInternal(std::string_view text,
+                      std::string_view desired_tld,
                       size_t depth) {
   if (depth > kMaxFixupURLDepth) {
     return GURL();  // Give up and fail.
@@ -588,13 +590,14 @@ GURL FixupURLInternal(const std::string& text,
   // on.  This allows us to handle things like "view-source:google.com".
   if (scheme == kViewSourceScheme) {
     // Reject "view-source:view-source:..." to avoid deep recursion.
-    std::string view_source(kViewSourceScheme + std::string(":"));
+    std::string view_source = base::StrCat({kViewSourceScheme, ":"});
     if (!base::StartsWith(text, view_source + view_source,
                           base::CompareCase::INSENSITIVE_ASCII)) {
-      return GURL(kViewSourceScheme + std::string(":") +
-                  FixupURLInternal(trimmed.substr(scheme.length() + 1),
-                                   desired_tld, depth + 1)
-                      .possibly_invalid_spec());
+      return GURL(
+          base::StrCat({kViewSourceScheme, ":",
+                        FixupURLInternal(trimmed.substr(scheme.length() + 1),
+                                         desired_tld, depth + 1)
+                            .possibly_invalid_spec()}));
     }
   }
 
@@ -660,7 +663,7 @@ GURL FixupURLInternal(const std::string& text,
   return GURL(trimmed);
 }
 
-GURL FixupURL(const std::string& text, const std::string& desired_tld) {
+GURL FixupURL(std::string_view text, std::string_view desired_tld) {
   size_t depth = 0;
   return FixupURLInternal(text, desired_tld, depth);
 }
