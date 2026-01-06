@@ -311,8 +311,8 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_MainPage) {
   RunTest("settings/settings_main_test.js", "mocha.run()");
 }
 
-// TODO(crbug.com/454213441): Flaky on Linux debug builds.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/454213441): Flaky on Linux builds and debug ChromeOS builds.
+#if BUILDFLAG(IS_LINUX) || (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
 #define MAYBE_SettingsMain DISABLED_SettingsMain
 #else
 #define MAYBE_SettingsMain SettingsMain
