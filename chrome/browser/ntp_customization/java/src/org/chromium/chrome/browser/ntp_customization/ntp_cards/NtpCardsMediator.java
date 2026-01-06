@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.ListContainerViewDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -147,6 +148,10 @@ public class NtpCardsMediator {
         @Nullable Profile profile = mProfileSupplier.get();
         if (profile == null) return; // Return if profile not ready yet
 
+        updateBooleanUserPrefs(
+                ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED,
+                Pref.MAGIC_STACK_HOME_MODULE_ENABLED,
+                profile);
         for (@ModuleType int moduleType : MODULE_TYPE_TO_USER_PREFS_KEY.keySet()) {
             updateBooleanUserPrefs(
                     getSettingsPreferenceKey(moduleType),
