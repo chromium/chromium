@@ -1215,9 +1215,7 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
         if (use_native_input_) {
           use_native_input_ = false;
         }
-      } else if (frame->storage_type() ==
-                     media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE ||
-                 frame->HasSharedImage()) {
+      } else if (frame->HasSharedImage()) {
         if (!use_native_input_) {
           use_native_input_ = true;
           // TODO(https://issuetracker.google.com/issues/337130619): Ideally
