@@ -62,8 +62,7 @@ namespace {
 // The padding should be 8dp but the icon contains 3dp of padding on both sides.
 constexpr int kIconPadding = 5;
 constexpr int kAfterTitlePadding = 2;
-constexpr int kCloseButtonLeftPadding = -1;
-constexpr int kCloseButtonRightPadding = 2;
+constexpr int kCloseButtonPadding = 2;
 constexpr int kAfterAlertIndicatorPadding = 4;
 constexpr int kTitleMinWidth = 10;
 
@@ -183,9 +182,8 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferredSnapToZero,
                                views::MaximumFlexSizeRule::kPreferred)
           .WithOrder(1));
-  close_button_->SetProperty(views::kMarginsKey, gfx::Insets().set_left_right(
-                                                     kCloseButtonLeftPadding,
-                                                     kCloseButtonRightPadding));
+  close_button_->SetProperty(views::kMarginsKey,
+                             gfx::Insets::VH(0, kCloseButtonPadding));
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
