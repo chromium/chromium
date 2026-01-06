@@ -15,7 +15,7 @@ dictionary ResolveCallbackResolveInfo {
 interface Dns {
   // Resolves the given hostname or IP address literal.
   // |hostname| : The hostname to resolve.
-  // |Returns|: Called when the resolution operation completes.
+  // |Returns|: Promise that resolves when the resolution operation completes.
   // |PromiseValue|: resolveInfo
   [requiredCallback] static Promise<ResolveCallbackResolveInfo> resolve(
       DOMString hostname);

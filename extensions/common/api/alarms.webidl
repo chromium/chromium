@@ -75,7 +75,7 @@ interface Alarms {
   // neither <var>when</var> or <var>delayInMinutes</var> is set for a
   // repeating alarm, <var>periodInMinutes</var> is used as the default for
   // <var>delayInMinutes</var>.
-  // |Returns|: Invoked when the alarm has been created.
+  // |Returns|: Promise that resolves when the alarm has been created.
   static Promise<undefined> create(
       optional DOMString name,
       AlarmCreateInfo alarmInfo);

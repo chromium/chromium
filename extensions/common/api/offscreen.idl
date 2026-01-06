@@ -66,14 +66,15 @@ namespace offscreen {
   interface Functions {
     // Creates a new offscreen document for the extension.
     // |parameters|: The parameters describing the offscreen document to create.
-    // |callback|: Invoked when the offscreen document is created and has
-    // completed its initial page load.
+    // |callback|: Promise that resolves when the offscreen document is created
+    // and has completed its initial page load.
     static void createDocument(
         CreateParameters parameters,
         VoidCallback callback);
 
     // Closes the currently-open offscreen document for the extension.
-    // |callback|: Invoked when the offscreen document has been closed.
+    // |callback|: Promise that resolves when the offscreen document has been
+    // closed.
     static void closeDocument(VoidCallback callback);
 
     // Determines whether the extension has an active document.
@@ -81,8 +82,8 @@ namespace offscreen {
     // ship in its current form (hence the nodoc). Instead of this, we should
     // integrate offscreen documents into a service worker-compatible getViews()
     // alternative. But this is pretty useful in testing environments.
-    // |callback|: Invoked with the result of whether the extension has an
-    // active offscreen document.
+    // |callback|: Promise that resolves with the result of whether the
+    // extension has an active offscreen document.
     [nodoc] static void hasDocument(BooleanCallback callback);
   };
 };

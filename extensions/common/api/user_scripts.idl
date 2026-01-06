@@ -164,8 +164,8 @@ namespace userScripts {
   interface Functions {
     // Registers one or more user scripts for this extension.
     // |scripts|: Contains a list of user scripts to be registered.
-    // |callback|: Called once scripts have been fully registered or if an error
-    // has ocurred.
+    // |callback|: Promise that resolves once scripts have been fully
+    // registered. The promise will be rejected if an error occurs.
     static void register(
         RegisteredUserScript[] scripts,
         optional RegisterCallback callback);
@@ -173,8 +173,8 @@ namespace userScripts {
     // Returns all dynamically-registered user scripts for this extension.
     // |filter|: If specified, this method returns only the user scripts that
     // match it.
-    // |callback|: Called once scripts have been fully registered or if an error
-    // occurs.
+    // |callback|: Promise that resolves with the registered scripts.
+    // The promise will be rejected if an error occurs.
     static void getScripts(
         optional UserScriptFilter filter,
         GetScriptsCallback callback);
@@ -182,8 +182,8 @@ namespace userScripts {
     // Unregisters all dynamically-registered user scripts for this extension.
     // |filter|: If specified, this method unregisters only the user scripts
     // that match it.
-    // |callback|: Called once scripts have been fully unregistered or if an
-    // error ocurs
+    // |callback|: Promise that resolves once scripts have been fully
+    // unregistered. The promise will be rejected if an error occurs.
     static void unregister(
         optional UserScriptFilter filter,
         UnregisterCallback callback);
@@ -194,8 +194,8 @@ namespace userScripts {
     // If there are errors during script parsing/file validation, or if the IDs
     // specified do not correspond to a fully registered script, then no scripts
     // are updated.
-    // |callback|: Called once scripts have been fully updated or if an error
-    // occurs.
+    // |callback|: Promise that resolves once scripts have been fully updated.
+    // The promise will be rejected if an error occurs.
     static void update(
         RegisteredUserScript[] scripts,
         optional UpdateCallback callback);
@@ -212,13 +212,15 @@ namespace userScripts {
 
     // Configures the <code>`USER_SCRIPT`</code> execution environment.
     // |properties|: Contains the user script world configuration.
-    // |callback|: Called once world hase been configured.
+    // |callback|: Promise that resolves once the world has been
+    // configured.
     static void configureWorld(
         WorldProperties properties,
         optional ConfigureWorldCallback callback);
 
     // Retrieves all registered world configurations.
-    // |callback|: Called with the registered world configurations.
+    // |callback|: Promise that resolves with the registered world
+    // configurations.
     static void getWorldConfigurations(
         GetAllWorldConfigurationsCallback callback);
 
@@ -227,7 +229,7 @@ namespace userScripts {
     // configuration.
     // |worldId|: The ID of the user script world to reset. If omitted, resets
     // the default world's configuration.
-    // |callback|: Called when the configuration is reset.
+    // |callback|: Promise that resolves when the configuration is reset.
     static void resetWorldConfiguration(
         optional DOMString worldId,
         ResetWorldConfigurationCallback callback);
