@@ -34,4 +34,22 @@ SessionEvent SessionEvent::MakeCreationEvent(
   return event;
 }
 
+// static
+SessionEvent SessionEvent::MakeRefreshEvent(
+    SchemefulSite site,
+    const std::string& session_id,
+    bool succeeded,
+    RefreshResult refresh_result,
+    std::optional<SessionError::ErrorType> fetch_error,
+    std::optional<SessionDisplay> new_session_display,
+    bool was_fully_proactive_refresh) {
+  SessionEvent event(EventType::kRefresh, std::move(site), session_id,
+                     succeeded);
+  event.refresh_result = refresh_result;
+  event.fetch_error = fetch_error;
+  event.new_session_display = std::move(new_session_display);
+  event.was_fully_proactive_refresh = was_fully_proactive_refresh;
+  return event;
+}
+
 }  // namespace net::device_bound_sessions

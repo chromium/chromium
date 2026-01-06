@@ -206,6 +206,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void UnblockDeferredRequests(
       const SessionKey& session_key,
       RefreshResult result,
+      std::optional<SessionError::ErrorType> fetch_error = std::nullopt,
+      std::optional<SessionDisplay> new_session_display = std::nullopt,
       std::optional<bool> is_proactive_refresh_candidate = std::nullopt,
       std::optional<base::TimeDelta> minimum_proactive_refresh_threshold =
           std::nullopt);

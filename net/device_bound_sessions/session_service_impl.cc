@@ -724,17 +724,33 @@ void SessionServiceImpl::OnRefreshRequestCompletion(
 void SessionServiceImpl::UnblockDeferredRequests(
     const SessionKey& session_key,
     RefreshResult result,
+    std::optional<SessionError::ErrorType> fetch_error,
+    std::optional<SessionDisplay> new_session_display,
     std::optional<bool> is_proactive_refresh_candidate,
     std::optional<base::TimeDelta> minimum_proactive_refresh_threshold) {
+  bool has_proactive_request = false;
   if (auto it = proactive_requests_.find(session_key);
       it != proactive_requests_.end()) {
     base::UmaHistogramTimes("Net.DeviceBoundSessions.ProactiveRefreshDuration",
                             it->second.Elapsed());
     proactive_requests_.erase(it);
+    has_proactive_request = true;
   }
 
   auto it = deferred_requests_.find(session_key);
-  if (it == deferred_requests_.end()) {
+  bool has_deferred_request = it != deferred_requests_.end();
+
+  if ((has_proactive_request || has_deferred_request) &&
+      !event_callbacks_.empty()) {
+    SessionEvent event = SessionEvent::MakeRefreshEvent(
+        session_key.site, session_key.id.value(),
+        /*succeeded=*/result == RefreshResult::kRefreshed, result, fetch_error,
+        std::move(new_session_display),
+        /*was_fully_proactive_refresh=*/!has_deferred_request);
+    event_callbacks_.Notify(event);
+  }
+
+  if (!has_deferred_request) {
     return;
   }
 
@@ -1187,12 +1203,20 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
                     existing_session
                         ->TakeLastProactiveRefreshOpportunityMinimumCookieLifetime();
                 SchemefulSite new_site(new_session->origin());
+                // Don't bother creating the SessionDisplay if there are no
+                // observers that want to know about it.
+                std::optional<SessionDisplay> new_session_display =
+                    event_callbacks_.empty() ? std::optional<SessionDisplay>()
+                                             : new_session->ToDisplay();
                 AddSession(new_site, std::move(new_session));
                 // The session has been refreshed, restart the request.
+                SessionError::ErrorType success_result = SessionError::kSuccess;
                 UnblockDeferredRequests(session_key, RefreshResult::kRefreshed,
+                                        success_result,
+                                        std::move(new_session_display),
                                         is_proactive_refresh_candidate,
                                         std::move(minimum_cookie_lifetime));
-                return SessionError::kSuccess;
+                return success_result;
               },
               [&](RegistrationResult::NoSessionConfigChange) {
                 Session* existing_session = GetSession(session_key);
@@ -1202,13 +1226,14 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
                 bool is_proactive_refresh_candidate =
                     IsProactiveRefreshCandidate(
                         *existing_session, *existing_session, stored_cookies);
-
+                SessionError::ErrorType success_result = SessionError::kSuccess;
                 UnblockDeferredRequests(
-                    session_key, RefreshResult::kRefreshed,
+                    session_key, RefreshResult::kRefreshed, success_result,
+                    /*new_session_display=*/std::nullopt,
                     is_proactive_refresh_candidate,
                     existing_session
                         ->TakeLastProactiveRefreshOpportunityMinimumCookieLifetime());
-                return SessionError::kSuccess;
+                return success_result;
               },
               [&](SessionError error) {
                 if (std::optional<DeletionReason> deletion_reason =
@@ -1216,8 +1241,8 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
                     deletion_reason.has_value()) {
                   DeleteSessionAndNotify(*deletion_reason, session_key,
                                          on_access_callback);
-                  UnblockDeferredRequests(session_key,
-                                          RefreshResult::kFatalError);
+                  UnblockDeferredRequests(
+                      session_key, RefreshResult::kFatalError, error.type);
                 } else {
                   RefreshResult refresh_result;
                   if (error.IsServerError()) {
@@ -1229,7 +1254,8 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
                     refresh_result = RefreshResult::kUnreachable;
                   }
                   // Transient error, unblock the request without cookies.
-                  UnblockDeferredRequests(session_key, refresh_result);
+                  UnblockDeferredRequests(session_key, refresh_result,
+                                          error.type);
                 }
                 return error.type;
               }));

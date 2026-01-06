@@ -9,6 +9,7 @@
 #include "base/unguessable_token.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
+#include "net/device_bound_sessions/refresh_result.h"
 #include "net/device_bound_sessions/session_display.h"
 #include "net/device_bound_sessions/session_error.h"
 
@@ -18,6 +19,7 @@ struct NET_EXPORT SessionEvent {
  public:
   enum class EventType {
     kCreation,
+    kRefresh,
   };
 
   static SessionEvent MakeCreationEvent(
@@ -26,6 +28,15 @@ struct NET_EXPORT SessionEvent {
       bool succeeded,
       SessionError::ErrorType fetch_error,
       std::optional<SessionDisplay> new_session_display);
+
+  static SessionEvent MakeRefreshEvent(
+      SchemefulSite site,
+      const std::string& session_id,
+      bool succeeded,
+      RefreshResult refresh_result,
+      std::optional<SessionError::ErrorType> fetch_error,
+      std::optional<SessionDisplay> new_session_display,
+      bool was_fully_proactive_refresh);
 
   ~SessionEvent();
   SessionEvent(const SessionEvent&);
@@ -39,9 +50,14 @@ struct NET_EXPORT SessionEvent {
   EventType event_type = EventType::kCreation;
   bool succeeded = false;
 
-  // TODO(crbug.com/471021582): Add additional creation fields.
+  // TODO(crbug.com/471021582): Add additional fields.
   std::optional<SessionError::ErrorType> fetch_error;
   std::optional<SessionDisplay> new_session_display;
+  std::optional<RefreshResult> refresh_result;
+  // Proactive refresh refers to refreshes triggered before cookie expiry. A
+  // fully proactive refresh means the refresh completed before any requests had
+  // to be deferred.
+  std::optional<bool> was_fully_proactive_refresh;
 
  private:
   SessionEvent(EventType event_type,
