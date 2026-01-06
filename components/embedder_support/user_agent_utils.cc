@@ -458,8 +458,7 @@ std::string BuildOSCpuInfo(
 std::string GetProductAndVersion() {
   return base::FeatureList::IsEnabled(
              blink::features::kReduceUserAgentMinorVersion)
-             ? version_info::GetProductNameAndVersionForReducedUserAgent(
-                   blink::features::kUserAgentFrozenBuildVersion.Get())
+             ? version_info::GetProductNameAndVersionForReducedUserAgent()
              : std::string(
                    version_info::GetProductNameAndVersionForUserAgent());
 }

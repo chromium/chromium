@@ -319,12 +319,6 @@ class UserAgentUtilsTest : public testing::Test,
  public:
   // The minor version in the reduced UA string is always "0.0.0".
   static constexpr char kReducedMinorVersion[] = "0.0.0";
-  // The minor version in the ReduceUserAgentMinorVersion experiment is always
-  // "0.X.0", where X is the frozen build version.
-  const std::string kReduceUserAgentMinorVersion =
-      "0." +
-      std::string(blink::features::kUserAgentFrozenBuildVersion.Get().data()) +
-      ".0";
   // The suffix added after "Chrome/<major_version>.0.0.0" and before
   // "Safari/537.36" in the user agent string when the kUseMobileUserAgent
   // switch is enabled.
@@ -1025,9 +1019,8 @@ TEST_F(UserAgentUtilsTest, GetProductAndVersion) {
 
   // Feature kReduceUserAgentMinorVersion enabled with version.
   scoped_feature_list.Reset();
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{blink::features::kReduceUserAgentMinorVersion,
-                             {{{"build_version", "0000"}}}}},
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{blink::features::kReduceUserAgentMinorVersion},
       /*disabled_features=*/{});
   product = GetProductAndVersion();
   EXPECT_TRUE(re2::RE2::FullMatch(product, kChromeProductVersionRegex,
@@ -1035,7 +1028,7 @@ TEST_F(UserAgentUtilsTest, GetProductAndVersion) {
                                   &build_version, &patch_version));
   EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
   EXPECT_EQ(minor_version, "0");
-  EXPECT_EQ(build_version, "0000");
+  EXPECT_EQ(build_version, "0");
   EXPECT_EQ(patch_version, "0");
 }
 

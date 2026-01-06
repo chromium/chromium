@@ -1553,11 +1553,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLocalCompileHints);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kQuoteEmptySecChUaStringHeadersConsistently);
 
-// A parameter for kReduceUserAgentMinorVersion;
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string,
-                                               kUserAgentFrozenBuildVersion);
-
-// Parameters for kReduceUserAgentPlatformOsCpu;
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReducedReferrerGranularity);
 
 // Refactor CompositorThreadEventQueue to separate event queuing and coalescing.
