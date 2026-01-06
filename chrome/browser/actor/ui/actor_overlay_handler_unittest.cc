@@ -38,6 +38,12 @@ class FakeActorOverlayPage : public mojom::ActorOverlayPage {
 
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
+  void ResetCounters() {
+    set_scrim_background_call_count_ = 0;
+    set_border_glow_call_count_ = 0;
+    theme_call_count_ = 0;
+  }
+
   // mojom::ActorOverlayPage
   void SetScrimBackground(bool is_visible) override {
     is_scrim_background_visible_ = is_visible;
@@ -51,14 +57,14 @@ class FakeActorOverlayPage : public mojom::ActorOverlayPage {
   }
 
   // mojom::ActorOverlayPage
-  void SetTheme(mojom::ThemePtr theme) override { set_theme_call_count_++; }
+  void SetTheme(mojom::ThemePtr theme) override { theme_call_count_++; }
 
   // Test accessors
   bool is_scrim_background_visible() { return is_scrim_background_visible_; }
   int scrim_background_call_count() { return set_scrim_background_call_count_; }
   bool is_border_glow_visible() { return is_border_glow_visible_; }
   int border_glow_call_count() { return set_border_glow_call_count_; }
-  int set_theme_call_count() { return set_theme_call_count_; }
+  int theme_call_count() { return theme_call_count_; }
 
  private:
   mojo::Receiver<mojom::ActorOverlayPage> receiver_{this};
@@ -66,7 +72,7 @@ class FakeActorOverlayPage : public mojom::ActorOverlayPage {
   int set_scrim_background_call_count_ = 0;
   bool is_border_glow_visible_ = false;
   int set_border_glow_call_count_ = 0;
-  int set_theme_call_count_ = 0;
+  int theme_call_count_ = 0;
 };
 
 class ActorOverlayHandlerTest : public testing::Test {
@@ -158,13 +164,18 @@ TEST_F(ActorOverlayHandlerTest, SetBorderGlowVisibility) {
 }
 
 TEST_F(ActorOverlayHandlerTest, OnThemeChanged) {
+  // Setting up the first time calls set theme once so we reset the counters.
+  fake_page_.FlushForTesting();
+  fake_page_.ResetCounters();
   // Flag off
   {
+    base::test::ScopedFeatureList scoped_features;
+    scoped_features.InitAndDisableFeature(features::kActorUiThemed);
     webui::GetNativeThemeDeprecated(web_contents_.get())
         ->NotifyOnNativeThemeUpdated();
     fake_page_.FlushForTesting();
 
-    EXPECT_EQ(fake_page_.set_theme_call_count(), 0);
+    EXPECT_EQ(fake_page_.theme_call_count(), 0);
   }
   // Flag on
   {
@@ -175,7 +186,7 @@ TEST_F(ActorOverlayHandlerTest, OnThemeChanged) {
         ->NotifyOnNativeThemeUpdated();
     fake_page_.FlushForTesting();
 
-    EXPECT_EQ(fake_page_.set_theme_call_count(), 1);
+    EXPECT_EQ(fake_page_.theme_call_count(), 1);
   }
 }
 
