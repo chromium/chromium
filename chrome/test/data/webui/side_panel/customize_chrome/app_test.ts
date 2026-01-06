@@ -224,6 +224,59 @@ suite('AppTest', () => {
                     });
               })));
 
+  suite('Tools card visibility with tab type', () => {
+    suite('with flags on', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          'ntpNextFeaturesEnabled': true,
+          'aimPolicyEnabled': true,
+        });
+      });
+
+      test('toggles with tab type', async () => {
+        assertTrue(
+            !!customizeChromeApp.shadowRoot.querySelector('#tools'),
+            'Visible by default on first-party NTP');
+
+        // Switch to non-first-party.
+        callbackRouter.attachedTabStateUpdated(NewTabPageType.kThirdPartyWebUI);
+        await microtasksFinished();
+        assertEquals(
+            !!customizeChromeApp.shadowRoot.querySelector('#tools'), false,
+            'Hidden on non-first-party NTP');
+
+        // Switch back to first-party.
+        callbackRouter.attachedTabStateUpdated(NewTabPageType.kFirstPartyWebUI);
+        await microtasksFinished();
+        assertTrue(
+            !!customizeChromeApp.shadowRoot.querySelector('#tools'),
+            'Visible again on first-party NTP');
+      });
+    });
+
+    suite('with one flag off', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          'ntpNextFeaturesEnabled': true,
+          'aimPolicyEnabled': false,
+        });
+      });
+
+      test('is always hidden', async () => {
+        assertEquals(
+            !!customizeChromeApp.shadowRoot.querySelector('#tools'), false,
+            'Hidden by default with one flag off');
+
+        // Switch to first-party.
+        callbackRouter.attachedTabStateUpdated(NewTabPageType.kFirstPartyWebUI);
+        await microtasksFinished();
+        assertEquals(
+            !!customizeChromeApp.shadowRoot.querySelector('#tools'), false,
+            'Stays hidden on first-party NTP');
+      });
+    });
+  });
+
   test('source tab type should update the cards', async () => {
     const idsControlledByIsSourceTabFirstPartyNtp = [
       '#shortcuts',
