@@ -356,6 +356,9 @@
       <message name="IDS_IOS_AI_HUB_PRICE_TRACKING_LABEL" desc="The label for the Price tracking feature of the AI hub.">
         Price history
       </message>
+      <message name="IDS_IOS_AI_HUB_PRICE_TRACKING_TRACK_BUTTON_LABEL" translateable="false" desc="The button label for tracking prices in the Price tracking feature of the AI hub when the user is not tracking the product.">
+        Track
+      </message>
       <message name="IDS_IOS_AI_HUB_READER_MODE_LABEL" desc="The button label for the Reader mode entry point of the AI hub.">
         Reading Mode
       </message>
