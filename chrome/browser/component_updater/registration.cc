@@ -28,7 +28,6 @@
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
 #include "chrome/browser/component_updater/open_cookie_database_component_installer.h"
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
-#include "chrome/browser/component_updater/pnacl_component_installer.h"
 #include "chrome/browser/component_updater/privacy_sandbox_attestations_component_installer.h"
 #include "chrome/browser/component_updater/probabilistic_reveal_token_component_remover.h"
 #include "chrome/browser/component_updater/ssl_error_assistant_component_installer.h"
@@ -164,19 +163,6 @@ void RegisterComponentsForUpdate() {
     // stateful Lacros needs to be cleaned up just like a regular component.
     // TODO(crbug.com/380780352): Remove this after the stepping stone.
     component_updater::DeleteStatefulLacros(path);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-    // NaCl and PNaCl are no longer supported, clean up remaining component.
-    // PNaCl on Chrome OS is on rootfs and there is no need to clean it up. But
-    // Chrome4ChromeOS on Linux doesn't contain PNaCl so clean up component
-    // installer when running on Linux. See crbug.com/422121 for more details.
-    // Win and Mac were cleaned up previously.
-#if BUILDFLAG(IS_CHROMEOS)
-    if (!base::SysInfo::IsRunningOnChromeOS()) {
-#endif  // BUILDFLAG(IS_CHROMEOS)
-      DeletePnaclComponent(path);
-#if BUILDFLAG(IS_CHROMEOS)
-    }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
   RegisterSSLErrorAssistantComponent(cus);
