@@ -12,12 +12,19 @@ found in the LICENSE file.
       <!--
         This should not usually be needed, as the test server code is supposed
         to inject the test certs into X509Util automatically (see e.g.
-        EmbeddedTestServer::RegisterTestCerts()). However, this doesn't work
-        when tests run against platform HttpEngine (AOSP_PLATFORM), because in
-        this case the test server code is manipulating the state of the X509Util
-        class on the test side, not the one used by the Cronet code under test
-        (i.e. the platform code from the bootclasspath). We work around this
-        issue by adding the certificate here instead.
+        EmbeddedTestServer::RegisterTestCerts()). However, there are setups
+        in which this approach doesn't work:
+         - When tests run against platform HttpEngine (AOSP_PLATFORM), the test
+           server code is manipulating the state of the X509Util class on the
+           test side, not the one used by the Cronet code under test
+           (i.e. the platform code from the bootclasspath).
+         - When tests run against the Java/fallback implementation, the code
+           under test does not go through X509Util at all.
+        We work around this issue by adding the certificates here, in addition
+        to the X509Util test certificate injection mechanism.
+
+        Note: this is only supported starting from API 24. In API<24, the
+        Java/fallback implementation will sadly not trust the test certificates.
       -->
       <certificates src="@raw/quicroot" />
       <certificates src="@raw/root_ca_cert"/>
