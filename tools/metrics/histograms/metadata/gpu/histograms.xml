@@ -1427,7 +1427,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.Sandboxed" enum="Boolean" expires_after="2026-02-01">
+<histogram name="GPU.Sandboxed" enum="Boolean" expires_after="2027-02-01">
   <owner>akhna@google.com</owner>
   <owner>chromeos-hardening@google.com</owner>
   <summary>
