@@ -86,8 +86,18 @@ void TabStateStorageUpdaterBuilder::SaveNodePayload(
     return;
   }
 
+  const TabCollection* collection = nullptr;
+  if (std::holds_alternative<TabHandle>(handle)) {
+    collection = std::get<TabHandle>(handle).Get()->GetParentCollection();
+    DCHECK(collection) << "Tab must have a parent collection to be saved.";
+  } else {
+    collection = std::get<TabCollectionHandle>(handle).Get();
+    DCHECK(collection) << "Collection must not be null.";
+  }
+
   update_for_id_[id] = std::make_unique<SavePayloadPendingUpdate>(
-      id, packager_, mapping_.get(), handle);
+      id, packager_->GetWindowTag(collection),
+      packager_->IsOffTheRecord(collection), packager_, mapping_.get(), handle);
 }
 
 void TabStateStorageUpdaterBuilder::SaveChildren(

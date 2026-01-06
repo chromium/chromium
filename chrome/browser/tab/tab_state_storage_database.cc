@@ -207,7 +207,7 @@ bool TabStateStorageDatabase::Initialize() {
 
 bool TabStateStorageDatabase::SaveNode(OpenTransaction* transaction,
                                        StorageId id,
-                                       std::string window_tag,
+                                       std::string_view window_tag,
                                        bool is_off_the_record,
                                        TabStorageType type,
                                        std::vector<uint8_t> payload,
@@ -218,6 +218,14 @@ bool TabStateStorageDatabase::SaveNode(OpenTransaction* transaction,
     return true;
   }
   DCHECK(OpenTransaction::IsValid(transaction));
+
+  if (is_off_the_record) {
+    auto maybe_payload = Seal(id, window_tag, payload);
+    if (!maybe_payload) {
+      return false;
+    }
+    payload = std::move(*maybe_payload);
+  }
 
   static constexpr char kInsertNodeSql[] =
       "INSERT OR REPLACE INTO nodes"
@@ -241,8 +249,18 @@ bool TabStateStorageDatabase::SaveNode(OpenTransaction* transaction,
 
 bool TabStateStorageDatabase::SaveNodePayload(OpenTransaction* transaction,
                                               StorageId id,
+                                              std::string_view window_tag,
+                                              bool is_off_the_record,
                                               std::vector<uint8_t> payload) {
   DCHECK(OpenTransaction::IsValid(transaction));
+
+  if (is_off_the_record) {
+    auto maybe_payload = Seal(id, window_tag, payload);
+    if (!maybe_payload) {
+      return false;
+    }
+    payload = std::move(*maybe_payload);
+  }
 
   static constexpr char kUpdatePayloadSql[] =
       "UPDATE nodes "
@@ -352,8 +370,19 @@ std::unique_ptr<StorageLoadedData> TabStateStorageDatabase::LoadAllNodes(
     StorageId id = StorageIdFromBlob(select_statement.ColumnBlob(0));
     TabStorageType type =
         static_cast<TabStorageType>(select_statement.ColumnInt(1));
-    builder->AddNode(id, type, select_statement.ColumnBlob(2),
-                     base::PassKey<TabStateStorageDatabase>());
+    base::span<const uint8_t> payload = select_statement.ColumnBlob(2);
+    if (is_off_the_record) {
+      std::optional<std::vector<uint8_t>> open_payload =
+          Open(id, window_tag, payload);
+      if (!open_payload) {
+        continue;
+      }
+      builder->AddNode(id, type, *open_payload,
+                       base::PassKey<TabStateStorageDatabase>());
+    } else {
+      builder->AddNode(id, type, payload,
+                       base::PassKey<TabStateStorageDatabase>());
+    }
     builder->AddChildren(id, type, select_statement.ColumnBlob(3),
                          base::PassKey<TabStateStorageDatabase>());
   }
@@ -387,6 +416,33 @@ void TabStateStorageDatabase::SetKey(std::string window_tag,
 
 void TabStateStorageDatabase::RemoveKey(std::string_view window_tag) {
   keys_.erase(window_tag);
+}
+
+std::optional<std::vector<uint8_t>> TabStateStorageDatabase::Seal(
+    StorageId storage_id,
+    std::string_view window_tag,
+    base::span<const uint8_t> payload) {
+  auto it = keys_.find(window_tag);
+  if (it == keys_.end()) {
+    LOG(WARNING) << "Failed to seal payload, no key found for window tag: "
+                 << window_tag << " skipping save.";
+    return std::nullopt;
+  }
+  return SealPayload(it->second, payload, storage_id);
+}
+
+std::optional<std::vector<uint8_t>> TabStateStorageDatabase::Open(
+    StorageId storage_id,
+    std::string_view window_tag,
+    base::span<const uint8_t> payload) {
+  auto it = keys_.find(window_tag);
+  if (it == keys_.end()) {
+    LOG(WARNING)
+        << "Failed to open sealed payload, no key found for window tag: "
+        << window_tag << " skipping restore.";
+    return std::nullopt;
+  }
+  return OpenPayload(it->second, payload, storage_id);
 }
 
 #if defined(NDEBUG)

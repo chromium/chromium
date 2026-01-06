@@ -20,7 +20,7 @@ class StorageUpdateUnit {
   virtual ~StorageUpdateUnit() = default;
 
   // Returns false if the update operation failed. Should be called on the
-  // database task runner.
+  // database task runner. Will only be called once per-instance.
   virtual bool Execute(
       TabStateStorageDatabase* db,
       TabStateStorageDatabase::OpenTransaction* transaction) = 0;

@@ -12,6 +12,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/types/pass_key.h"
@@ -67,7 +68,7 @@ class TabStateStorageDatabase {
   // Saves a node to the database.
   bool SaveNode(OpenTransaction* transaction,
                 StorageId id,
-                std::string window_tag,
+                std::string_view window_tag,
                 bool is_off_the_record,
                 TabStorageType type,
                 std::vector<uint8_t> payload,
@@ -77,6 +78,8 @@ class TabStateStorageDatabase {
   // This will silently fail if the node does not already exist.
   bool SaveNodePayload(OpenTransaction* transaction,
                        StorageId id,
+                       std::string_view window_tag,
+                       bool is_off_the_record,
                        std::vector<uint8_t> payload);
 
   // Saves the children of a node to the database.
@@ -132,6 +135,13 @@ class TabStateStorageDatabase {
 #endif
 
  private:
+  std::optional<std::vector<uint8_t>> Seal(StorageId id,
+                                           std::string_view window_tag,
+                                           base::span<const uint8_t> payload);
+  std::optional<std::vector<uint8_t>> Open(StorageId storage_id,
+                                           std::string_view window_tag,
+                                           base::span<const uint8_t> payload);
+
   const base::FilePath profile_path_;
   const bool support_off_the_record_data_;
   sql::Database db_;
