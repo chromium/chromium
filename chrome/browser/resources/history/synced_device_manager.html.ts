@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+// <if expr="not is_chromeos">
 import {HistorySignInState} from './constants.js';
+// </if>
 
 import type {HistorySyncedDeviceManagerElement} from './synced_device_manager.js';
 

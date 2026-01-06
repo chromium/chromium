@@ -330,7 +330,6 @@ void HistoryUI::UpdateDataSource() {
       kIsHistoryClustersVisibleKey,
       profile->GetPrefs()->GetBoolean(history_clusters::prefs::kVisible) ||
           !is_managed);
-  update.Set(kIsHistoryClustersVisibleManagedByPolicyKey, is_managed);
 
   content::WebUIDataSource::Update(profile, chrome::kChromeUIHistoryHost,
                                    std::move(update));

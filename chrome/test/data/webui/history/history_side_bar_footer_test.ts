@@ -7,7 +7,7 @@ import {BrowserServiceImpl} from 'chrome://history/history.js';
 import type {PageRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
 
@@ -35,7 +35,7 @@ suite('GoogleAccountFooter', function() {
   async function callOnHasOtherFormsChanged(hasChanged: boolean) {
     callbackRouterRemote.onHasOtherFormsChanged(hasChanged);
     await callbackRouterRemote.$.flushForTesting();
-    await flushTasks();
+    await microtasksFinished();
   }
 
   function getGoogleAccountFooter() {

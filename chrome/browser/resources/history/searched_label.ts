@@ -25,8 +25,8 @@ export class HistorySearchedLabelElement extends CrLitElement {
     };
   }
 
-  accessor searchTerm: string;
-  override accessor title: string;
+  accessor searchTerm: string = '';
+  override accessor title: string = '';
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);

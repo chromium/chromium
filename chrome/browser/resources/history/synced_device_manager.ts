@@ -203,8 +203,8 @@ export class HistorySyncedDeviceManagerElement extends
     let tabs: ForeignSessionTab[] = [];
     const separatorIndexes = [];
     for (let i = 0; i < session.windows.length; i++) {
-      const windowId = session.windows[i].sessionId;
-      const newTabs = session.windows[i].tabs;
+      const windowId = session.windows[i]!.sessionId;
+      const newTabs = session.windows[i]!.tabs;
       if (newTabs.length === 0) {
         continue;
       }
@@ -221,7 +221,7 @@ export class HistorySyncedDeviceManagerElement extends
       } else {
         const searchText = this.searchTerm.toLowerCase();
         for (let j = 0; j < newTabs.length; j++) {
-          const tab = newTabs[j];
+          const tab = newTabs[j]!;
           if (tab.title.toLowerCase().indexOf(searchText) !== -1) {
             tabs.push(tab);
             windowAdded = true;
@@ -478,7 +478,7 @@ export class HistorySyncedDeviceManagerElement extends
   protected onCardOpenedChanged_(e: CustomEvent<{value: boolean}>) {
     const currentTarget = e.currentTarget as HTMLElement;
     const index = Number(currentTarget.dataset['index']);
-    const device = this.syncedDevices_[index];
+    const device = this.syncedDevices_[index]!;
     device.opened = e.detail.value;
     this.requestUpdate();
   }

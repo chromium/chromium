@@ -40,8 +40,6 @@ void HistoryClustersUtil::PopulateSource(content::WebUIDataSource* source,
   source->AddBoolean(kIsHistoryClustersVisibleKey,
                      prefs->GetBoolean(history_clusters::prefs::kVisible) ||
                          !journeys_is_managed);
-  source->AddBoolean(kIsHistoryClustersVisibleManagedByPolicyKey,
-                     journeys_is_managed);
   source->AddBoolean("isHistoryClustersDebug",
                      history_clusters::GetConfig().user_visible_debug);
   source->AddBoolean("isHistoryClustersImagesEnabled",
