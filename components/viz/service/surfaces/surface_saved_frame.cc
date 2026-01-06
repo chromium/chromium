@@ -215,8 +215,10 @@ void SurfaceSavedFrame::DispatchViewTransitionResourcesCaptured() {
     return;
   }
 
-  std::move(view_transition_resources_captured_callback_)
-      .Run(directive_.transition_token());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(view_transition_resources_captured_callback_),
+                     directive_.transition_token()));
 }
 std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
     const CompositorRenderPass& render_pass,
