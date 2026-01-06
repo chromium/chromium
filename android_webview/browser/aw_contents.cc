@@ -1791,8 +1791,12 @@ void AwContents::OnSafeBrowsingAllowListSet() {
 void AwContents::OnPerformanceMark(std::string mark_name,
                                    const base::TimeDelta& mark_time) {
   JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (!obj)
+    return;
+
   Java_AwContents_onPerformanceMark(
-      env, java_ref_.get(env), web_contents_->GetPrimaryPage().GetJavaPage(),
+      env, obj, web_contents_->GetPrimaryPage().GetJavaPage(),
       ConvertUTF8ToJavaString(env, mark_name), mark_time.InMilliseconds());
 }
 
