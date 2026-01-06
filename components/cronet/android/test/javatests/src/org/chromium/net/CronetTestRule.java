@@ -237,32 +237,38 @@ public class CronetTestRule implements TestRule {
 
         Log.i(TAG, "Implementations to be tested against: %s", implementationsUnderTest);
 
-        boolean allImplementionsSkipped = true;
-        AssumptionViolatedException lastAssumptionViolatedException = null;
-        for (CronetTestFramework.CronetImplementation implementation : implementationsUnderTest) {
-            if (BuildConfig.CRONET_FOR_AOSP_BUILD
-                    && implementation.equals(CronetTestFramework.CronetImplementation.FALLBACK)) {
-                // Skip executing tests for JavaCronetEngine.
-                continue;
+        if (packageName.startsWith("org.chromium.net")) {
+            boolean allImplementionsSkipped = true;
+            AssumptionViolatedException lastAssumptionViolatedException = null;
+            for (CronetTestFramework.CronetImplementation implementation :
+                    implementationsUnderTest) {
+                if (BuildConfig.CRONET_FOR_AOSP_BUILD
+                        && implementation.equals(
+                                CronetTestFramework.CronetImplementation.FALLBACK)) {
+                    // Skip executing tests for JavaCronetEngine.
+                    continue;
+                }
+                Log.i(TAG, "Running test against " + implementation + " implementation.");
+                setImplementationUnderTest(implementation);
+                boolean implementationSkipped = false;
+                try {
+                    evaluateWithFramework(base, testName, netLogEnabled, desc);
+                    allImplementionsSkipped = false;
+                } catch (AssumptionViolatedException assumptionViolatedException) {
+                    // Some tests may want so skip based on the implementation under test. Make sure
+                    // we try every implementation before declaring the test skipped.
+                    Log.i(
+                            TAG,
+                            implementation + " skipped due to violated assumption",
+                            assumptionViolatedException);
+                    lastAssumptionViolatedException = assumptionViolatedException;
+                }
             }
-            Log.i(TAG, "Running test against " + implementation + " implementation.");
-            setImplementationUnderTest(implementation);
-            boolean implementationSkipped = false;
-            try {
-                evaluateWithFramework(base, testName, netLogEnabled, desc);
-                allImplementionsSkipped = false;
-            } catch (AssumptionViolatedException assumptionViolatedException) {
-                // Some tests may want so skip based on the implementation under test. Make sure
-                // we try every implementation before declaring the test skipped.
-                Log.i(
-                        TAG,
-                        implementation + " skipped due to violated assumption",
-                        assumptionViolatedException);
-                lastAssumptionViolatedException = assumptionViolatedException;
+            if (allImplementionsSkipped) {
+                throw lastAssumptionViolatedException;
             }
-        }
-        if (allImplementionsSkipped) {
-            throw lastAssumptionViolatedException;
+        } else {
+            evaluateWithFramework(base, testName, netLogEnabled, desc);
         }
     }
 
