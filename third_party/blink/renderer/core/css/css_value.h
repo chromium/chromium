@@ -266,7 +266,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   // caching purposes.
   const CSSValue* CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
       const CSSPropertyName& property_name,
-      wtf_size_t property_value_index) const;
+      wtf_size_t& property_value_index) const;
 
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
   void Trace(Visitor*) const;

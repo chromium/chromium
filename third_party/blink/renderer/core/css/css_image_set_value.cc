@@ -191,13 +191,13 @@ CSSImageSetValue& CSSImageSetValue::ResolveValuesIfNeeded(
 const CSSValue*
 CSSImageSetValue::CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
     const CSSPropertyName& property_name,
-    wtf_size_t property_value_index) const {
+    wtf_size_t& property_value_index) const {
   HeapVector<Member<const CSSImageSetOptionValue>> options(options_);
   wtf_size_t random_values_count = 0;
   for (wtf_size_t i = 0; i < options.size(); i++) {
     options[i] = To<CSSImageSetOptionValue>(
         options[i]->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
-            property_name, property_value_index + random_values_count));
+            property_name, property_value_index));
     if (options[i] != options_[i]) {
       random_values_count++;
     }

@@ -3967,7 +3967,7 @@ const CSSValue* ParseLonghand(CSSPropertyID unresolved_property,
   wtf_size_t property_value_index = 0;
   if (current_shorthand != CSSPropertyID::kInvalid) {
     property_name = CSSProperty::Get(current_shorthand).GetCSSPropertyName();
-    property_value_index = static_cast<int>(property_id);
+    // TODO(crbug.com/413385732): Compute property value index correctly.
   }
 
   return result->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(

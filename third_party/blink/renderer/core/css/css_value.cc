@@ -1132,7 +1132,7 @@ String CSSValue::ClassTypeToString() const {
 
 const CSSValue* CSSValue::CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
     const CSSPropertyName& property_name,
-    wtf_size_t property_value_index) const {
+    wtf_size_t& property_value_index) const {
   switch (GetClassType()) {
     case kMathFunctionClass:
       return To<CSSMathFunctionValue>(this)

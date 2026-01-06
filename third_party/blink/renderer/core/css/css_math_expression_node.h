@@ -210,7 +210,7 @@ class CORE_EXPORT CSSMathExpressionNode
   virtual const CSSMathExpressionNode*
   CopyRandomWithPropertyNameAndValueIndexIfNeeded(
       const CSSPropertyName& property_name,
-      wtf_size_t property_value_index) const {
+      wtf_size_t& property_value_index) const {
     return this;
   }
 
@@ -732,7 +732,7 @@ class CORE_EXPORT CSSMathExpressionOperation final
 
   const CSSMathExpressionNode* CopyRandomWithPropertyNameAndValueIndexIfNeeded(
       const CSSPropertyName& property_name,
-      wtf_size_t property_value_index) const final;
+      wtf_size_t& property_value_index) const final;
 
   const Operands& GetOperands() const { return operands_; }
   CSSMathOperator OperatorType() const { return operator_; }
@@ -1191,7 +1191,7 @@ class RandomValueSharing : public GarbageCollected<RandomValueSharing> {
   // property name and index.
   const RandomValueSharing* CopyWithPropertyValueIndexNameIfNeeded(
       const CSSPropertyName& property_name,
-      wtf_size_t property_value_index) const;
+      wtf_size_t& property_value_index) const;
 
   RandomValueSharing() = default;
 
@@ -1256,7 +1256,7 @@ class CORE_EXPORT CSSMathExpressionRandomFunction final
   CSSMathExpressionNode* Copy() const override;
   const CSSMathExpressionNode* CopyRandomWithPropertyNameAndValueIndexIfNeeded(
       const CSSPropertyName& property_name,
-      wtf_size_t property_value_index) const final;
+      wtf_size_t& property_value_index) const final;
   bool IsRandomFunction() const final { return true; }
   double DoubleValue() const final { NOTREACHED(); }
   const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()

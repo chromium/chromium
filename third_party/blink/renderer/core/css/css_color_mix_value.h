@@ -79,7 +79,7 @@ class CORE_EXPORT CSSColorMixValue : public CSSValue {
 
   const CSSValue* CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
       const CSSPropertyName& property_name,
-      wtf_size_t property_value_index) const;
+      wtf_size_t& property_value_index) const;
 
  private:
   Member<const CSSValue> color1_;

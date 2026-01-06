@@ -128,7 +128,7 @@ bool CSSCustomIdentValue::Equals(const CSSCustomIdentValue& other) const {
 const CSSValue*
 CSSCustomIdentValue::CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
     const CSSPropertyName& property_name,
-    wtf_size_t property_value_index) const {
+    wtf_size_t& property_value_index) const {
   if (!ident_function_) {
     return this;
   }

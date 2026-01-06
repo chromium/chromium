@@ -101,22 +101,22 @@ const CSSValue* CSSRelativeColorValue::Alpha() const {
 const CSSValue*
 CSSRelativeColorValue::CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
     const CSSPropertyName& property_name,
-    wtf_size_t property_value_index) const {
+    wtf_size_t& property_value_index) const {
   const CSSValue* origin_color =
       origin_color_->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
           property_name, property_value_index);
   const CSSValue* channel0 =
       channel0_->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
-          property_name, property_value_index + 1);
+          property_name, property_value_index);
   const CSSValue* channel1 =
       channel1_->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
-          property_name, property_value_index + 2);
+          property_name, property_value_index);
   const CSSValue* channel2 =
       channel2_->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
-          property_name, property_value_index + 3);
+          property_name, property_value_index);
   const CSSValue* alpha =
       alpha_ ? alpha_->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
-                   property_name, property_value_index + 4)
+                   property_name, property_value_index)
              : nullptr;
   if (origin_color != origin_color_ || alpha != alpha_ ||
       channel0 != channel0_ || channel1 != channel1_ || channel2 != channel2_) {

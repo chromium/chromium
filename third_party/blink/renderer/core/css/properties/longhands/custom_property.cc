@@ -272,8 +272,9 @@ const CSSValue* CustomProperty::Parse(
   const CSSValue* result = registration_->Syntax().Parse(
       text, context, local_context.IsAnimationTainted());
   if (result) {
+    wtf_size_t property_value_index = 0;
     result = result->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
-        GetCSSPropertyName(), 0);
+        GetCSSPropertyName(), property_value_index);
   }
   return result;
 }

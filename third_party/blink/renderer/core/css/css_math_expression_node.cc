@@ -1807,7 +1807,7 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateComparisonFunction(
 const CSSMathExpressionNode*
 CSSMathExpressionOperation::CopyRandomWithPropertyNameAndValueIndexIfNeeded(
     const CSSPropertyName& property_name,
-    wtf_size_t property_value_index) const {
+    wtf_size_t& property_value_index) const {
   DCHECK(NeedsPropertyNameAndValueIndexForRandom());
   Operands operands(operands_);
   for (wtf_size_t i = 0; i < operands_.size(); i++) {
@@ -5344,7 +5344,8 @@ bool RandomValueSharing::IsElementShared() const {
 const RandomValueSharing*
 RandomValueSharing::CopyWithPropertyValueIndexNameIfNeeded(
     const CSSPropertyName& property_name,
-    wtf_size_t property_value_index) const {
+    wtf_size_t& property_value_index) const {
+  ++property_value_index;
   if (IsFixed()) {
     const CSSPrimitiveValue* fixed_with_property = To<CSSPrimitiveValue>(
         GetFixed()->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
@@ -5539,7 +5540,7 @@ CSSMathExpressionNode* CSSMathExpressionRandomFunction::Copy() const {
 const CSSMathExpressionNode* CSSMathExpressionRandomFunction::
     CopyRandomWithPropertyNameAndValueIndexIfNeeded(
         const CSSPropertyName& property_name,
-        wtf_size_t property_value_index) const {
+        wtf_size_t& property_value_index) const {
   const RandomValueSharing* random_value_sharing =
       random_value_sharing_->CopyWithPropertyValueIndexNameIfNeeded(
           property_name, property_value_index);

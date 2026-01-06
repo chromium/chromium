@@ -68,7 +68,7 @@ class CORE_EXPORT CSSImageSetValue : public CSSValueList {
 
   const CSSValue* CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
       const CSSPropertyName&,
-      wtf_size_t property_value_index) const;
+      wtf_size_t& property_value_index) const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

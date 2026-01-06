@@ -76,7 +76,7 @@ bool CSSImageSetOptionValue::Equals(const CSSImageSetOptionValue& other) const {
 const CSSValue*
 CSSImageSetOptionValue::CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
     const CSSPropertyName& property_name,
-    wtf_size_t property_value_index) const {
+    wtf_size_t& property_value_index) const {
   const CSSValue* image =
       image_ ? image_->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
                    property_name, property_value_index)

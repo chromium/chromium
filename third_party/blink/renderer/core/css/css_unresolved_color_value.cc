@@ -289,7 +289,7 @@ Color CSSUnresolvedColorValue::Resolve(
 const CSSValue*
 CSSUnresolvedColorValue::CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
     const CSSPropertyName& property_name,
-    wtf_size_t property_value_index) const {
+    wtf_size_t& property_value_index) const {
   const CSSPrimitiveValue* channel0 =
       channels_[0]
           ? To<CSSPrimitiveValue>(
@@ -302,19 +302,19 @@ CSSUnresolvedColorValue::CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
           ? To<CSSPrimitiveValue>(
                 channels_[1]
                     ->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
-                        property_name, property_value_index + 1))
+                        property_name, property_value_index))
           : nullptr;
   const CSSPrimitiveValue* channel2 =
       channels_[2]
           ? To<CSSPrimitiveValue>(
                 channels_[2]
                     ->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
-                        property_name, property_value_index + 2))
+                        property_name, property_value_index))
           : nullptr;
   const CSSPrimitiveValue* alpha =
       alpha_ ? To<CSSPrimitiveValue>(
                    alpha_->CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
-                       property_name, property_value_index + 3))
+                       property_name, property_value_index))
              : nullptr;
   if (channel0 != channels_[0] || channel1 != channels_[1] ||
       channel2 != channels_[2]) {

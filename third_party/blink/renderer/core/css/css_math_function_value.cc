@@ -254,7 +254,7 @@ const CSSMathFunctionValue* CSSMathFunctionValue::TransformAnchors(
 const CSSValue*
 CSSMathFunctionValue::CopyRandomValueWithPropertyNameAndValueIndexIfNeeded(
     const CSSPropertyName& property_name,
-    wtf_size_t property_value_index) const {
+    wtf_size_t& property_value_index) const {
   if (expression_ && expression_->NeedsPropertyNameAndValueIndexForRandom()) {
     return MakeGarbageCollected<CSSMathFunctionValue>(
         expression_->CopyRandomWithPropertyNameAndValueIndexIfNeeded(
