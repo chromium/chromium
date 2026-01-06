@@ -58,9 +58,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DeviceBoundSessionManager
 
  private:
   // State associated with a DeviceBoundSessionAccessObserver.
-  struct ObserverRegistration {
-    ObserverRegistration();
-    ~ObserverRegistration();
+  struct AccessObserverRegistration {
+    AccessObserverRegistration();
+    ~AccessObserverRegistration();
 
     // Mojo interface
     mojo::Remote<network::mojom::DeviceBoundSessionAccessObserver> remote;
@@ -74,7 +74,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DeviceBoundSessionManager
       CookieManager* cookie_manager);
 
   // Remove an observer by its registration.
-  void RemoveObserver(ObserverRegistration* registration);
+  void RemoveAccessObserver(AccessObserverRegistration* registration);
 
   void OnCreateBoundSessionsAdded(
       const std::vector<net::CanonicalCookie>& cookies_to_set,
@@ -88,7 +88,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DeviceBoundSessionManager
   // owned by the `NetworkContext`.
   raw_ptr<CookieManager> cookie_manager_;
   mojo::ReceiverSet<network::mojom::DeviceBoundSessionManager> receivers_;
-  std::vector<std::unique_ptr<ObserverRegistration>> observer_registrations_;
+  std::vector<std::unique_ptr<AccessObserverRegistration>>
+      access_observer_registrations_;
 
   base::WeakPtrFactory<DeviceBoundSessionManager> weak_factory_{this};
 };

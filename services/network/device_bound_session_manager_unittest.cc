@@ -45,7 +45,7 @@ using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::UnorderedElementsAre;
 
-class FakeDeviceBoundSessionObserver
+class FakeDeviceBoundSessionAccessObserver
     : public mojom::DeviceBoundSessionAccessObserver {
  public:
   const std::vector<SessionAccess>& notifications() const {
@@ -147,7 +147,7 @@ TEST_F(DeviceBoundSessionManagerTest, ObserverNotifiesChangeOnlyOnSite) {
   GURL url("https://example.com");
   net::SchemefulSite site(url);
 
-  FakeDeviceBoundSessionObserver observer, off_site_observer;
+  FakeDeviceBoundSessionAccessObserver observer, off_site_observer;
   manager().AddObserver(url, observer.GetPendingRemote());
   manager().AddObserver(GURL("https://not-example.com"),
                         off_site_observer.GetPendingRemote());
@@ -206,7 +206,7 @@ TEST_F(DeviceBoundSessionManagerTest, CreateBoundSessions) {
   std::vector<SessionParams> params_list;
   params_list.push_back(std::move(params));
 
-  FakeDeviceBoundSessionObserver observer;
+  FakeDeviceBoundSessionAccessObserver observer;
   manager().AddObserver(url, observer.GetPendingRemote());
 
   base::test::TestFuture<
@@ -349,7 +349,7 @@ TEST_F(DeviceBoundSessionManagerTest, CreateBoundSessions_InvalidCookie) {
   std::vector<SessionParams> params_list;
   params_list.push_back(std::move(params));
 
-  FakeDeviceBoundSessionObserver observer;
+  FakeDeviceBoundSessionAccessObserver observer;
   manager().AddObserver(url, observer.GetPendingRemote());
 
   base::test::TestFuture<
@@ -414,7 +414,7 @@ TEST_F(DeviceBoundSessionManagerTest, CreateBoundSessions_MultipleSessions) {
   cookie_options.set_same_site_cookie_context(
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
 
-  FakeDeviceBoundSessionObserver observer;
+  FakeDeviceBoundSessionAccessObserver observer;
   manager().AddObserver(url, observer.GetPendingRemote());
 
   base::test::TestFuture<
@@ -495,7 +495,7 @@ TEST_F(DeviceBoundSessionManagerTest,
   cookie_options.set_same_site_cookie_context(
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
 
-  FakeDeviceBoundSessionObserver observer;
+  FakeDeviceBoundSessionAccessObserver observer;
   manager().AddObserver(url, observer.GetPendingRemote());
 
   base::test::TestFuture<

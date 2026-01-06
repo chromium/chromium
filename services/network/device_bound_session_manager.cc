@@ -92,19 +92,19 @@ void DeviceBoundSessionManager::DeleteAllSessions(
                               std::move(completion_callback));
 }
 
-DeviceBoundSessionManager::ObserverRegistration::ObserverRegistration() =
-    default;
-DeviceBoundSessionManager::ObserverRegistration::~ObserverRegistration() =
-    default;
+DeviceBoundSessionManager::AccessObserverRegistration::
+    AccessObserverRegistration() = default;
+DeviceBoundSessionManager::AccessObserverRegistration::
+    ~AccessObserverRegistration() = default;
 
 void DeviceBoundSessionManager::AddObserver(
     const GURL& url,
     mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
         observer) {
-  auto registration = std::make_unique<ObserverRegistration>();
+  auto registration = std::make_unique<AccessObserverRegistration>();
   registration->remote.Bind(std::move(observer));
   registration->remote.set_disconnect_handler(
-      base::BindOnce(&DeviceBoundSessionManager::RemoveObserver,
+      base::BindOnce(&DeviceBoundSessionManager::RemoveAccessObserver,
                      // base::Unretained is safe because `this` owns
                      // `registration`, which owns the callback.
                      base::Unretained(this), registration.get()));
@@ -113,7 +113,7 @@ void DeviceBoundSessionManager::AddObserver(
       base::BindRepeating(&network::mojom::DeviceBoundSessionAccessObserver::
                               OnDeviceBoundSessionAccessed,
                           base::Unretained(registration->remote.get())));
-  observer_registrations_.push_back(std::move(registration));
+  access_observer_registrations_.push_back(std::move(registration));
 }
 
 void DeviceBoundSessionManager::CreateBoundSessions(
@@ -173,9 +173,10 @@ void DeviceBoundSessionManager::OnCreateBoundSessionsAdded(
   }
 }
 
-void DeviceBoundSessionManager::RemoveObserver(
-    DeviceBoundSessionManager::ObserverRegistration* registration) {
-  std::erase_if(observer_registrations_, base::MatchesUniquePtr(registration));
+void DeviceBoundSessionManager::RemoveAccessObserver(
+    AccessObserverRegistration* registration) {
+  std::erase_if(access_observer_registrations_,
+                base::MatchesUniquePtr(registration));
 }
 
 }  // namespace network
