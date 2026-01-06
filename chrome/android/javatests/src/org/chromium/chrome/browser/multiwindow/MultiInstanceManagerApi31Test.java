@@ -160,6 +160,7 @@ public class MultiInstanceManagerApi31Test {
     // Final state: max limit = 2, active tasks = 2, inactive tasks = 2.
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT)
     public void decreaseInstanceLimit_ExcessActive_ExcessTasksFinished() {
         // Set initial instance limit.
         MultiWindowUtils.setMaxInstancesForTesting(4);
@@ -201,6 +202,7 @@ public class MultiInstanceManagerApi31Test {
     // Final state: max limit = 2, active tasks = 2, inactive tasks = 1.
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT)
     public void decreaseInstanceLimit_MaxActive_NoTasksFinished() {
         // Set initial instance limit.
         MultiWindowUtils.setMaxInstancesForTesting(3);
