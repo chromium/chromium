@@ -203,12 +203,10 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
      * recalculated until {@link #requestLayerUpdateSync(boolean)} is called.
      *
      * @param disabled Whether scrolling is disabled.
-     * @return Whether the lock state is changed and request update is needed.
      */
-    public boolean setScrollingDisabled(boolean disabled) {
-        if (mScrollingDisabled == disabled) return false;
+    public void setScrollingDisabled(boolean disabled) {
+        if (mScrollingDisabled == disabled) return;
         mScrollingDisabled = disabled;
-        return true;
     }
 
     /**

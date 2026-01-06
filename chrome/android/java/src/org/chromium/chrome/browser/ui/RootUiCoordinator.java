@@ -175,7 +175,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuSubmenuHeaderItemProperties
 import org.chromium.chrome.browser.ui.appmenu.AppMenuUtil;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
-import org.chromium.chrome.browser.ui.desktop_windowing.TopControlsLockCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerCreator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
@@ -374,7 +373,6 @@ public class RootUiCoordinator
     protected @Nullable EdgeToEdgeControllerCreator mEdgeToEdgeControllerCreator;
     protected final BottomControlsStacker mBottomControlsStacker;
     protected final TopControlsStacker mTopControlsStacker;
-    protected final @Nullable TopControlsLockCoordinator mTopControlsLockCoordinator;
     @NonNull protected final ObservableSupplier<Integer> mOverviewColorSupplier;
     @Nullable private ContextualSearchObserver mReadAloudContextualSearchObserver;
     @Nullable private PageZoomBarCoordinator mPageZoomBarCoordinator;
@@ -734,16 +732,25 @@ public class RootUiCoordinator
                 new TopControlsStacker(
                         mBrowserControlsManager, getAppBrowserControlsVisibilityDelegate());
 
-        if (BrowserControlsUtils.doSyncMinHeightWithTotalHeightV2()
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
-            mTopControlsLockCoordinator =
-                    new TopControlsLockCoordinator(
-                            mActivity,
-                            mTopControlsStacker,
-                            mTabStripVisibilitySupplier,
-                            mDesktopWindowStateManager);
-        } else {
-            mTopControlsLockCoordinator = null;
+        if (BrowserControlsUtils.doSyncMinHeightWithTotalHeightV2()) {
+            if (DeviceInfo.isDesktop()
+                    || BrowserControlsUtils.doSyncMinHeightWithTotalHeight(mActivity)) {
+                mTopControlsStacker.setScrollingDisabled(true);
+            } else if (mDesktopWindowStateManager != null) {
+                mAppHeaderObserver =
+                        new AppHeaderObserver() {
+                            @Override
+                            public void onDesktopWindowingModeChanged(boolean isInDesktopWindow) {
+                                mTopControlsStacker.setScrollingDisabled(isInDesktopWindow);
+                            }
+                        };
+                mDesktopWindowStateManager.addObserver(mAppHeaderObserver);
+                var appHeaderState = mDesktopWindowStateManager.getAppHeaderState();
+                if (appHeaderState != null) {
+                    mAppHeaderObserver.onDesktopWindowingModeChanged(
+                            appHeaderState.isInDesktopWindow());
+                }
+            }
         }
     }
 
@@ -962,9 +969,6 @@ public class RootUiCoordinator
         if (mAutomotiveBackButtonToolbarCoordinator != null) {
             mAutomotiveBackButtonToolbarCoordinator.destroy();
             mAutomotiveBackButtonToolbarCoordinator = null;
-        }
-        if (mTopControlsLockCoordinator != null) {
-            mTopControlsLockCoordinator.destroy();
         }
         mBottomControlsStacker.destroy();
         mTopControlsStacker.destroy();
