@@ -39,6 +39,7 @@ namespace actor {
 
 class ActorKeyedService;
 class AggregatedJournal;
+class OriginChecker;
 
 // The central hub for checking various policies that determine whether Actor is
 // enabled for the profile, or is Actor allowed to act on a given tab or URL.
@@ -66,7 +67,7 @@ class ActorPolicyChecker : public signin::IdentityManager::Observer,
   void MayActOnTab(const tabs::TabInterface& tab,
                    AggregatedJournal& journal,
                    TaskId task_id,
-                   const ConfirmedOriginSet& confirmed_origins,
+                   const OriginChecker& origin_checker,
                    DecisionCallbackWithReason callback);
   void MayActOnUrl(const GURL& url,
                    bool allow_insecure_http,

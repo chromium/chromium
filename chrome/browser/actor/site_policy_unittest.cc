@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/origin_checker.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
@@ -106,9 +107,8 @@ class ActorSitePolicyTest : public ChromeRenderViewHostTestHarness {
 
     auto* actor_service = ActorKeyedService::Get(profile());
     base::test::TestFuture<MayActOnUrlBlockReason> allowed;
-    MayActOnTab(tab, actor_service->GetJournal(), TaskId(),
-                ConfirmedOriginSet(), std::move(enterprise_policy_eval_url),
-                allowed.GetCallback());
+    MayActOnTab(tab, actor_service->GetJournal(), TaskId(), OriginChecker(),
+                std::move(enterprise_policy_eval_url), allowed.GetCallback());
     // The result should not be provided synchronously.
     EXPECT_FALSE(allowed.IsReady());
     EXPECT_EQ(expected_allowed,

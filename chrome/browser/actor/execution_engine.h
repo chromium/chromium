@@ -19,6 +19,7 @@
 #include "base/types/optional_ref.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/origin_checker.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
@@ -343,16 +344,9 @@ class ExecutionEngine : public ToolDelegate {
   // The results for actions so far.
   std::vector<ActionResultWithLatencyInfo> action_results_;
 
-  // Origins which the browser is allowed to navigate to under actor control
-  // without needing to confirm the navigation with the web client. This set can
-  // have origins added to it by the server actions or by confirming the new
-  // origin with the model or user. Sensitive origins that are on the
-  // optimization guide blocklist are not exempt by this list.
-  AllowedOriginSet allowed_navigation_origins_;
-  // Separate allowlist for sensitive origins on the optimization guide
-  // blocklist. We cache these origins separately to not double prompt the user
-  // when they already confirmed the actor can interact with the origin.
-  ConfirmedOriginSet user_confirmed_blocklisted_origins_;
+  // Manages the sets of origins that have been allowed for navigations and
+  // sensitive operations.
+  OriginChecker origin_checker_;
 
   // For multi-step login, this is the credential that the user has chosen to
   // allow the actor to use. The key is the

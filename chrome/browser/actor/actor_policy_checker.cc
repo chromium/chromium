@@ -307,12 +307,11 @@ void ActorPolicyChecker::OnAiSubscriptionTierUpdated(
   OnPrefOrAccountChanged();
 }
 
-void ActorPolicyChecker::MayActOnTab(
-    const tabs::TabInterface& tab,
-    AggregatedJournal& journal,
-    TaskId task_id,
-    const ConfirmedOriginSet& confirmed_origins,
-    DecisionCallbackWithReason callback) {
+void ActorPolicyChecker::MayActOnTab(const tabs::TabInterface& tab,
+                                     AggregatedJournal& journal,
+                                     TaskId task_id,
+                                     const OriginChecker& origin_checker,
+                                     DecisionCallbackWithReason callback) {
   if (!CanActOnWeb()) {
     journal.Log(tab.GetContents()->GetLastCommittedURL(), task_id,
                 "MayActOnTab",
@@ -326,7 +325,7 @@ void ActorPolicyChecker::MayActOnTab(
   }
   // SafeRef as enterprise policy checks are performed synchronously.
   ::actor::MayActOnTab(
-      tab, journal, task_id, confirmed_origins,
+      tab, journal, task_id, origin_checker,
       base::BindOnce(&ActorPolicyChecker::EvaluateEnterprisePolicyForUrl,
                      weak_ptr_factory_.GetSafeRef()),
       std::move(callback));

@@ -14,6 +14,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_switches.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/origin_checker.h"
 #include "chrome/browser/lookalikes/lookalike_test_helper.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -102,7 +103,7 @@ class ActorSitePolicyBrowserTest : public InProcessBrowserTest {
     auto enterprise_policy_eval_url = base::BindOnce(
         [](const GURL&) { return EnterprisePolicyBlockReason::kNotBlocked; });
     MayActOnTab(*browser()->tab_strip_model()->GetActiveTab(),
-                actor_service->GetJournal(), TaskId(), ConfirmedOriginSet(),
+                actor_service->GetJournal(), TaskId(), OriginChecker(),
                 std::move(enterprise_policy_eval_url), allowed.GetCallback());
     // The result should not be provided synchronously.
     EXPECT_FALSE(allowed.IsReady());
@@ -179,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(ActorSitePolicyMissingBlocklistBrowserTest, FailOpen) {
   auto enterprise_policy_eval_url = base::BindOnce(
       [](const GURL&) { return EnterprisePolicyBlockReason::kNotBlocked; });
   MayActOnTab(*browser()->tab_strip_model()->GetActiveTab(),
-              actor_service->GetJournal(), TaskId(), ConfirmedOriginSet(),
+              actor_service->GetJournal(), TaskId(), OriginChecker(),
               std::move(enterprise_policy_eval_url), allowed.GetCallback());
   EXPECT_TRUE(allowed.Get() == MayActOnUrlBlockReason::kAllowed);
 }

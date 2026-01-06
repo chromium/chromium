@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ACTOR_SITE_POLICY_H_
 
 #include "base/functional/callback_forward.h"
-#include "base/types/strong_alias.h"
 #include "chrome/common/actor/task_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
@@ -21,6 +20,7 @@ class Profile;
 namespace actor {
 
 class AggregatedJournal;
+class OriginChecker;
 
 // Called during initialization of the given profile, to load the blocklist.
 void InitActionBlocklist(Profile* profile);
@@ -42,17 +42,6 @@ enum class MayActOnUrlBlockReason {
 using DecisionCallback = base::OnceCallback<void(/*may_act=*/bool)>;
 using DecisionCallbackWithReason =
     base::OnceCallback<void(MayActOnUrlBlockReason reason)>;
-
-// Types for sets of origins that the actor is able to navigate to.
-// The first, AllowedOriginSet, is the set of origins that have been approved
-// for the actor by the server. The second, ConfirmedOriginSet, is the set of
-// sensitive origins that the user has manually confirmed the actor may interact
-// with. The use of StrongAlias is to convey that these two sets should not be
-// used interchangeably and to enforce this at compile time.
-using AllowedOriginSet = base::StrongAlias<class AllowedOriginSetTag,
-                                           absl::flat_hash_set<url::Origin>>;
-using ConfirmedOriginSet = base::StrongAlias<class ConfirmedOriginSetTag,
-                                             absl::flat_hash_set<url::Origin>>;
 
 enum class EnterprisePolicyBlockReason {
   // Enterprise policy did not explicitly block a URL, but it also did not
@@ -83,7 +72,7 @@ using EnterprisePolicyCallback =
 void MayActOnTab(const tabs::TabInterface& tab,
                  AggregatedJournal& journal,
                  TaskId task_id,
-                 const ConfirmedOriginSet& confirmed_origins,
+                 const OriginChecker& origin_checker,
                  EnterprisePolicyCallback enterprise_policy_eval_url,
                  DecisionCallbackWithReason callback);
 
