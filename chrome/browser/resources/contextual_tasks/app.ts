@@ -213,6 +213,12 @@ export class ContextualTasksAppElement extends CrLitElement {
           (isOverlayShowing: boolean) => {
             this.isLensOverlayShowing_ = isOverlayShowing;
           }),
+      callbackRouter.showErrorPage.addListener(() => {
+        this.isErrorPageVisible_ = true;
+      }),
+      callbackRouter.hideErrorPage.addListener(() => {
+        this.isErrorPageVisible_ = false;
+      }),
     ];
 
     this.updateSidePanelState();

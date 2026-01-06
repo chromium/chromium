@@ -132,6 +132,11 @@ const base::FeatureParam<std::string> kContextualTasksHelpUrl(
     "ContextualTasksHelpUrl",
     "https://support.google.com/websearch/");
 
+const base::FeatureParam<bool> kEnableProtectedPageError(
+    &kContextualTasks,
+    "EnableProtectedPageError",
+    true);
+
 const base::FeatureParam<std::string> kContextualTasksOnboardingTooltipHelpUrl(
     &kContextualTasksShowOnboardingTooltip,
     "ContextualTasksOnboardingTooltipHelpUrl",
@@ -172,6 +177,10 @@ bool GetIsSteadyComposeboxVoiceSearchEnabled() {
 
 bool GetAutoSubmitVoiceSearchQuery() {
   return kAutoSubmitVoiceSearchQuery.Get();
+}
+
+bool GetIsProtectedPageErrorEnabled() {
+  return kEnableProtectedPageError.Get();
 }
 
 bool ShouldForceGscInTabMode() {

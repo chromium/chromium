@@ -341,6 +341,13 @@ void ContextualTasksComposeboxHandler::OnTabContextualizationFetched(
     return;
   }
 
+  if (contextual_tasks::GetIsProtectedPageErrorEnabled() &&
+      !page_content_data->is_page_context_eligible.value_or(false)) {
+    web_ui_controller_->OnPageContextEligibilityChecked(false);
+    barrier_closure.Run();
+    return;
+  }
+
   std::optional<int64_t> maybe_context_id = std::nullopt;
   if (page_content_data->tab_session_id.has_value()) {
     maybe_context_id = GetContextIdForTab(*context, *page_content_data);

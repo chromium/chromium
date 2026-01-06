@@ -73,6 +73,8 @@ class MockContextualTasksPage : public contextual_tasks::mojom::Page {
               SetTaskDetails,
               (const base::Uuid&, const std::string&, const std::string&),
               (override));
+  MOCK_METHOD(void, ShowErrorPage, (), (override));
+  MOCK_METHOD(void, HideErrorPage, (), (override));
 
   mojo::PendingRemote<contextual_tasks::mojom::Page> BindAndGetRemote() {
     return receiver_.BindNewPipeAndPassRemote();

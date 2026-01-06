@@ -702,6 +702,10 @@ void ContextualTasksUI::OnActiveTabContextStatusChanged() {
     return;
   }
 
+  if (contextual_tasks::GetIsProtectedPageErrorEnabled() && page_) {
+    page_->HideErrorPage();
+  }
+
   tabs::TabInterface* tab = GetBrowser()->GetActiveTabInterface();
   if (!tab) {
     composebox_handler_->UpdateSuggestedTabContext(nullptr);
@@ -732,6 +736,18 @@ void ContextualTasksUI::OnActiveTabContextStatusChanged() {
       base::BindOnce(&ContextualTasksUI::OnContextRetrievedForActiveTab,
                      weak_ptr_factory_.GetWeakPtr(),
                      tab->GetHandle().raw_value(), last_committed_url));
+}
+
+void ContextualTasksUI::OnPageContextEligibilityChecked(
+    bool is_page_context_eligible) {
+  if (!contextual_tasks::GetIsProtectedPageErrorEnabled() || !page_) {
+    return;
+  }
+  if (is_page_context_eligible) {
+    page_->HideErrorPage();
+  } else {
+    page_->ShowErrorPage();
+  }
 }
 
 void ContextualTasksUI::TransferNavigationToEmbeddedPage(
