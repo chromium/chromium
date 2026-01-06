@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/tab_groups/tab_group_color.h"
 
@@ -27,7 +26,7 @@ TabGroupVisualData::TabGroupVisualData(std::u16string title,
       color_(TabGroupColorId::kGrey),
       is_collapsed_(is_collapsed) {
   auto color_id = static_cast<tab_groups::TabGroupColorId>(color_int);
-  if (base::Contains(tab_groups::GetTabGroupColorLabelMap(), color_id)) {
+  if (tab_groups::GetTabGroupColorLabelMap().contains(color_id)) {
     color_ = color_id;
   }
 }

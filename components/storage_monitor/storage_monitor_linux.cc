@@ -17,7 +17,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/process/kill.h"
@@ -248,8 +247,7 @@ bool StorageMonitorLinux::GetStorageInfoForPath(
     return false;
 
   base::FilePath current = path;
-  while (!base::Contains(mount_info_map_, current) &&
-         current != current.DirName())
+  while (!mount_info_map_.contains(current) && current != current.DirName())
     current = current.DirName();
 
   auto mount_info = mount_info_map_.find(current);
@@ -410,7 +408,7 @@ void StorageMonitorLinux::UpdateMtab(const MountPointDeviceMap& new_mtab) {
 bool StorageMonitorLinux::IsDeviceAlreadyMounted(
     const base::FilePath& mount_device) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Contains(mount_priority_map_, mount_device);
+  return mount_priority_map_.contains(mount_device);
 }
 
 void StorageMonitorLinux::HandleDeviceMountedMultipleTimes(

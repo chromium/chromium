@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/values.h"
@@ -219,7 +218,7 @@ TEST_F(WebCryptoHmacTest, GeneratedKeysAreRandomIsh) {
   for (int i = 0; i < 16; ++i) {
     std::vector<uint8_t> key_bytes = BytesFromHmacKey(
         GenerateHmacKey(blink::kWebCryptoAlgorithmIdSha1, 512));
-    EXPECT_FALSE(base::Contains(seen_keys, key_bytes));
+    EXPECT_FALSE(seen_keys.contains(key_bytes));
     seen_keys.insert(key_bytes);
   }
 }

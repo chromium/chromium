@@ -8,7 +8,6 @@
 #include <iterator>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -259,7 +258,7 @@ void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
     // can be notified correctly.
     for (auto& replaced_app_and_filters : replaced_apps) {
       const std::string& removed_app_id = replaced_app_and_filters.first;
-      bool first_removal_for_app = !base::Contains(removed, app_id);
+      bool first_removal_for_app = !removed.contains(app_id);
       bool did_replace_supported_link = std::ranges::any_of(
           replaced_app_and_filters.second,
           [&removed_app_id](const auto& filter) {

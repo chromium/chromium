@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
@@ -35,7 +34,7 @@ std::unique_ptr<IconLoader::Releaser> StubIconLoader::LoadIconFromIconKey(
     bool allow_placeholder_icon,
     apps::LoadIconCallback callback) {
   num_load_calls_++;
-  if (base::Contains(update_version_by_app_id_, id)) {
+  if (update_version_by_app_id_.contains(id)) {
     auto icon_value = std::make_unique<IconValue>();
     icon_value->icon_type = icon_type;
     icon_value->uncompressed =

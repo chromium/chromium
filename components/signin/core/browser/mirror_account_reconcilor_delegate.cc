@@ -4,7 +4,6 @@
 
 #include "components/signin/core/browser/mirror_account_reconcilor_delegate.h"
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "components/signin/core/browser/account_reconcilor.h"

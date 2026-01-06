@@ -11,7 +11,6 @@
 
 #include "base/base64url.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -465,7 +464,7 @@ void PingManager::AttachThreatDetailsAndLaunchSurvey(
            ClientSafeBrowsingReportRequest::URL_PHISHING,
            ClientSafeBrowsingReportRequest::URL_UNWANTED,
            ClientSafeBrowsingReportRequest::URL_MALWARE});
-  CHECK(base::Contains(valid_report_types, report->type()));
+  CHECK(valid_report_types.contains(report->type()));
 
   std::string serialized_report;
   if (FinalizeAndSerializeReport(report.get(), &serialized_report) !=

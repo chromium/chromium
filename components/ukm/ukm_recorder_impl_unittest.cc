@@ -255,7 +255,7 @@ TEST(UkmRecorderImplTest, PurgeExtensionRecordings) {
   EXPECT_EQ(id1, recorder.entries()[0]->source_id);
 
   EXPECT_EQ(1U, recorder.webdx_features().size());
-  EXPECT_TRUE(base::Contains(recorder.webdx_features(), id3));
+  EXPECT_TRUE(recorder.webdx_features().contains(id3));
 
   // Recording is disabled for extensions, thus new extension URL will not be
   // recorded.
@@ -516,7 +516,7 @@ TEST(UkmRecorderImplTest, WebDXFeaturesConsent) {
   impl.RecordWebDXFeatures(kAppsSourceId, {kWebDXFeature2},
                            kWebDXFeatureNumberOfFeaturesForTesting);
   EXPECT_EQ(impl.webdx_features().size(), 1u);
-  EXPECT_TRUE(base::Contains(impl.webdx_features(), kMsbbSourceId));
+  EXPECT_TRUE(impl.webdx_features().contains(kMsbbSourceId));
   impl.webdx_features().clear();
 
   // Consent to app-sync only. Only app-related related web features should be
@@ -527,7 +527,7 @@ TEST(UkmRecorderImplTest, WebDXFeaturesConsent) {
   impl.RecordWebDXFeatures(kAppsSourceId, {kWebDXFeature2},
                            kWebDXFeatureNumberOfFeaturesForTesting);
   EXPECT_EQ(impl.webdx_features().size(), 1u);
-  EXPECT_TRUE(base::Contains(impl.webdx_features(), kAppsSourceId));
+  EXPECT_TRUE(impl.webdx_features().contains(kAppsSourceId));
   impl.webdx_features().clear();
 
   // Consent to both MSBB and app-sync. Both MSBB and app related web features
@@ -538,8 +538,8 @@ TEST(UkmRecorderImplTest, WebDXFeaturesConsent) {
   impl.RecordWebDXFeatures(kAppsSourceId, {kWebDXFeature2},
                            kWebDXFeatureNumberOfFeaturesForTesting);
   EXPECT_EQ(impl.webdx_features().size(), 2u);
-  EXPECT_TRUE(base::Contains(impl.webdx_features(), kMsbbSourceId));
-  EXPECT_TRUE(base::Contains(impl.webdx_features(), kAppsSourceId));
+  EXPECT_TRUE(impl.webdx_features().contains(kMsbbSourceId));
+  EXPECT_TRUE(impl.webdx_features().contains(kAppsSourceId));
   impl.webdx_features().clear();
 
   // Disable recording altogether. No web features should be recorded.
@@ -574,8 +574,8 @@ TEST(UkmRecorderImplTest, WebDXFeaturesSampling) {
   impl.RecordWebDXFeatures(kSampledOutSourceId, {kWebDXFeature1},
                            kWebDXFeatureNumberOfFeaturesForTesting);
   EXPECT_EQ(impl.webdx_features().size(), 1u);
-  EXPECT_TRUE(base::Contains(impl.webdx_features(), kSampledInSourceId));
-  EXPECT_FALSE(base::Contains(impl.webdx_features(), kSampledOutSourceId));
+  EXPECT_TRUE(impl.webdx_features().contains(kSampledInSourceId));
+  EXPECT_FALSE(impl.webdx_features().contains(kSampledOutSourceId));
 
   // Verify that being sampled-in or sampled-out is consistent across calls.
   // I.e., if a source is sampled-in, then all calls recording web features to
@@ -587,12 +587,12 @@ TEST(UkmRecorderImplTest, WebDXFeaturesSampling) {
   impl.RecordWebDXFeatures(kSampledOutSourceId, {kWebDXFeature2},
                            kWebDXFeatureNumberOfFeaturesForTesting);
   EXPECT_EQ(impl.webdx_features().size(), 1u);
-  ASSERT_TRUE(base::Contains(impl.webdx_features(), kSampledInSourceId));
+  ASSERT_TRUE(impl.webdx_features().contains(kSampledInSourceId));
   EXPECT_TRUE(
       impl.webdx_features().at(kSampledInSourceId).Contains(kWebDXFeature1));
   EXPECT_TRUE(
       impl.webdx_features().at(kSampledInSourceId).Contains(kWebDXFeature2));
-  EXPECT_FALSE(base::Contains(impl.webdx_features(), kSampledOutSourceId));
+  EXPECT_FALSE(impl.webdx_features().contains(kSampledOutSourceId));
 
   // Verify that the downsampling rate for web feature is populated on the
   // report alongside the recorded web features.

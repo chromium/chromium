@@ -162,12 +162,12 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_BasicFunctionality) {
   // Don't expect cache results for eeee and ffff, since they are not in the
   // cache. Expect cache results for all other prefixes.
   EXPECT_EQ(cache_results.size(), 4u);
-  EXPECT_TRUE(base::Contains(cache_results, "aaaa"));
-  EXPECT_TRUE(base::Contains(cache_results, "bbbb"));
-  EXPECT_TRUE(base::Contains(cache_results, "cccc"));
-  EXPECT_TRUE(base::Contains(cache_results, "dddd"));
-  EXPECT_FALSE(base::Contains(cache_results, "eeee"));
-  EXPECT_FALSE(base::Contains(cache_results, "ffff"));
+  EXPECT_TRUE(cache_results.contains("aaaa"));
+  EXPECT_TRUE(cache_results.contains("bbbb"));
+  EXPECT_TRUE(cache_results.contains("cccc"));
+  EXPECT_TRUE(cache_results.contains("dddd"));
+  EXPECT_FALSE(cache_results.contains("eeee"));
+  EXPECT_FALSE(cache_results.contains("ffff"));
 
   // bbbb and dddd should both have empty results, because they did not have any
   // corresponding full hashes.
@@ -322,7 +322,7 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_Attributes) {
 
   // Sanity check that adding attributes for aaaa hashes does not change the
   // fact that there should be no bbbb full hashes / associated attributes.
-  EXPECT_TRUE(base::Contains(cache_results, "bbbb"));
+  EXPECT_TRUE(cache_results.contains("bbbb"));
   EXPECT_TRUE(cache_results["bbbb"].empty());
 
   // We expect aaaa...1 and aaaa...2 both to be in the cache.
@@ -473,12 +473,12 @@ TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_NoExpiredResults) {
   CacheEntry(cache, "cccc1111111111111111111111111111", 500);
 
   EXPECT_EQ(GetNumCacheEntries(cache), 2);
-  EXPECT_TRUE(base::Contains(cache->SearchCache({"aaaa"}), "aaaa"));
-  EXPECT_TRUE(base::Contains(cache->SearchCache({"cccc"}), "cccc"));
+  EXPECT_TRUE(cache->SearchCache({"aaaa"}).contains("aaaa"));
+  EXPECT_TRUE(cache->SearchCache({"cccc"}).contains("cccc"));
   cache->ClearExpiredResults();
   EXPECT_EQ(GetNumCacheEntries(cache), 2);
-  EXPECT_TRUE(base::Contains(cache->SearchCache({"aaaa"}), "aaaa"));
-  EXPECT_TRUE(base::Contains(cache->SearchCache({"cccc"}), "cccc"));
+  EXPECT_TRUE(cache->SearchCache({"aaaa"}).contains("aaaa"));
+  EXPECT_TRUE(cache->SearchCache({"cccc"}).contains("cccc"));
 }
 
 TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_OneExpiredResult) {
@@ -489,12 +489,12 @@ TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_OneExpiredResult) {
   // After 400 seconds, aaaa is expired but not cccc.
   task_environment_.FastForwardBy(base::Seconds(400));
   EXPECT_EQ(GetNumCacheEntries(cache), 2);
-  EXPECT_FALSE(base::Contains(cache->SearchCache({"aaaa"}), "aaaa"));
-  EXPECT_TRUE(base::Contains(cache->SearchCache({"cccc"}), "cccc"));
+  EXPECT_FALSE(cache->SearchCache({"aaaa"}).contains("aaaa"));
+  EXPECT_TRUE(cache->SearchCache({"cccc"}).contains("cccc"));
   cache->ClearExpiredResults();
   EXPECT_EQ(GetNumCacheEntries(cache), 1);
-  EXPECT_FALSE(base::Contains(cache->SearchCache({"aaaa"}), "aaaa"));
-  EXPECT_TRUE(base::Contains(cache->SearchCache({"cccc"}), "cccc"));
+  EXPECT_FALSE(cache->SearchCache({"aaaa"}).contains("aaaa"));
+  EXPECT_TRUE(cache->SearchCache({"cccc"}).contains("cccc"));
 }
 
 TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_SomeExpiredResults) {
@@ -510,17 +510,17 @@ TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_SomeExpiredResults) {
   CacheEntry(cache, "gggg1111111111111111111111111111", later);
   CacheEntry(cache, "hhhh1111111111111111111111111111", soon);
 
-  auto validate_cache_contents = [](std::unique_ptr<HashRealTimeCache>&
-                                        cache_internal) {
-    EXPECT_FALSE(base::Contains(cache_internal->SearchCache({"aaaa"}), "aaaa"));
-    EXPECT_TRUE(base::Contains(cache_internal->SearchCache({"bbbb"}), "bbbb"));
-    EXPECT_FALSE(base::Contains(cache_internal->SearchCache({"cccc"}), "cccc"));
-    EXPECT_FALSE(base::Contains(cache_internal->SearchCache({"dddd"}), "dddd"));
-    EXPECT_FALSE(base::Contains(cache_internal->SearchCache({"eeee"}), "eeee"));
-    EXPECT_TRUE(base::Contains(cache_internal->SearchCache({"ffff"}), "ffff"));
-    EXPECT_TRUE(base::Contains(cache_internal->SearchCache({"gggg"}), "gggg"));
-    EXPECT_FALSE(base::Contains(cache_internal->SearchCache({"hhhh"}), "hhhh"));
-  };
+  auto validate_cache_contents =
+      [](std::unique_ptr<HashRealTimeCache>& cache_internal) {
+        EXPECT_FALSE(cache_internal->SearchCache({"aaaa"}).contains("aaaa"));
+        EXPECT_TRUE(cache_internal->SearchCache({"bbbb"}).contains("bbbb"));
+        EXPECT_FALSE(cache_internal->SearchCache({"cccc"}).contains("cccc"));
+        EXPECT_FALSE(cache_internal->SearchCache({"dddd"}).contains("dddd"));
+        EXPECT_FALSE(cache_internal->SearchCache({"eeee"}).contains("eeee"));
+        EXPECT_TRUE(cache_internal->SearchCache({"ffff"}).contains("ffff"));
+        EXPECT_TRUE(cache_internal->SearchCache({"gggg"}).contains("gggg"));
+        EXPECT_FALSE(cache_internal->SearchCache({"hhhh"}).contains("hhhh"));
+      };
 
   // After 400 seconds, all of the "soon" prefixes have expired, and none of the
   // "later" prefixes have.
@@ -550,17 +550,17 @@ TEST_F(HashRealTimeCacheTest,
   CacheEntry(cache, "gggg1111111111111111111111111111", soon);
   CacheEntry(cache, "hhhh1111111111111111111111111111", later);
 
-  auto validate_cache_contents = [](std::unique_ptr<HashRealTimeCache>&
-                                        cache_internal) {
-    EXPECT_TRUE(base::Contains(cache_internal->SearchCache({"aaaa"}), "aaaa"));
-    EXPECT_FALSE(base::Contains(cache_internal->SearchCache({"bbbb"}), "bbbb"));
-    EXPECT_TRUE(base::Contains(cache_internal->SearchCache({"cccc"}), "cccc"));
-    EXPECT_TRUE(base::Contains(cache_internal->SearchCache({"dddd"}), "dddd"));
-    EXPECT_TRUE(base::Contains(cache_internal->SearchCache({"eeee"}), "eeee"));
-    EXPECT_FALSE(base::Contains(cache_internal->SearchCache({"ffff"}), "ffff"));
-    EXPECT_FALSE(base::Contains(cache_internal->SearchCache({"gggg"}), "gggg"));
-    EXPECT_TRUE(base::Contains(cache_internal->SearchCache({"hhhh"}), "hhhh"));
-  };
+  auto validate_cache_contents =
+      [](std::unique_ptr<HashRealTimeCache>& cache_internal) {
+        EXPECT_TRUE(cache_internal->SearchCache({"aaaa"}).contains("aaaa"));
+        EXPECT_FALSE(cache_internal->SearchCache({"bbbb"}).contains("bbbb"));
+        EXPECT_TRUE(cache_internal->SearchCache({"cccc"}).contains("cccc"));
+        EXPECT_TRUE(cache_internal->SearchCache({"dddd"}).contains("dddd"));
+        EXPECT_TRUE(cache_internal->SearchCache({"eeee"}).contains("eeee"));
+        EXPECT_FALSE(cache_internal->SearchCache({"ffff"}).contains("ffff"));
+        EXPECT_FALSE(cache_internal->SearchCache({"gggg"}).contains("gggg"));
+        EXPECT_TRUE(cache_internal->SearchCache({"hhhh"}).contains("hhhh"));
+      };
 
   // After 400 seconds, all of the "soon" prefixes have expired, and none of the
   // "later" prefixes have.
@@ -580,12 +580,12 @@ TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_AllExpiredResults) {
   // After 500 seconds, both have expired.
   task_environment_.FastForwardBy(base::Seconds(500));
   EXPECT_EQ(GetNumCacheEntries(cache), 2);
-  EXPECT_FALSE(base::Contains(cache->SearchCache({"aaaa"}), "aaaa"));
-  EXPECT_FALSE(base::Contains(cache->SearchCache({"cccc"}), "cccc"));
+  EXPECT_FALSE(cache->SearchCache({"aaaa"}).contains("aaaa"));
+  EXPECT_FALSE(cache->SearchCache({"cccc"}).contains("cccc"));
   cache->ClearExpiredResults();
   EXPECT_EQ(GetNumCacheEntries(cache), 0);
-  EXPECT_FALSE(base::Contains(cache->SearchCache({"aaaa"}), "aaaa"));
-  EXPECT_FALSE(base::Contains(cache->SearchCache({"cccc"}), "cccc"));
+  EXPECT_FALSE(cache->SearchCache({"aaaa"}).contains("aaaa"));
+  EXPECT_FALSE(cache->SearchCache({"cccc"}).contains("cccc"));
 }
 
 TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_Logging) {

@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "components/services/app_service/public/cpp/instance.h"
@@ -139,7 +138,7 @@ bool InstanceRegistry::Exists(const aura::Window* window) const {
 }
 
 bool InstanceRegistry::ContainsAppId(const std::string& app_id) const {
-  return base::Contains(app_id_to_instances_, app_id);
+  return app_id_to_instances_.contains(app_id);
 }
 
 void InstanceRegistry::DoOnInstance(InstancePtr delta) {

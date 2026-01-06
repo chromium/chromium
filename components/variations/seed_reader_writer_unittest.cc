@@ -243,8 +243,7 @@ class SeedReaderWriterGroupTest
   SeedReaderWriterGroupTest() {
     SetUpSeedFileTrial(std::string(GetParam().field_trial_group));
     std::string_view seed_data_field = GetParam().seed_fields_prefs.seed;
-    histogram_suffix_ =
-        base::Contains(seed_data_field, "Safe") ? "Safe" : "Latest";
+    histogram_suffix_ = seed_data_field.contains("Safe") ? "Safe" : "Latest";
   }
 
   std::string_view GetHistogramSuffix() const { return histogram_suffix_; }

@@ -7,7 +7,6 @@
 #include <optional>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"

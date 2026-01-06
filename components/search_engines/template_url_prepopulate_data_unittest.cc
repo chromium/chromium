@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
@@ -586,7 +585,7 @@ TEST_F(TemplateURLPrepopulateDataTest, HttpsUrls) {
   for (const PrepopulatedEngine* engine : all_engines) {
     std::unique_ptr<TemplateURLData> data =
         TemplateURLDataFromPrepopulatedEngine(*engine);
-    if (base::Contains(exceptions, data->prepopulate_id))
+    if (exceptions.contains(data->prepopulate_id))
       continue;
 
     GURL logo_url = data->logo_url;

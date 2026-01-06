@@ -5,7 +5,6 @@
 #include "components/variations/seed_reader_writer.h"
 
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

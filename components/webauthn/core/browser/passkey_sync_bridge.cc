@@ -12,7 +12,6 @@
 #include <string>
 #include <variant>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
 #include "base/containers/span.h"
@@ -529,7 +528,7 @@ void PasskeySyncBridge::CreatePasskey(
   CHECK(IsPasskeyValid(passkey));
 
   std::string sync_id = passkey.sync_id();
-  CHECK(!base::Contains(data_, sync_id));
+  CHECK(!data_.contains(sync_id));
 
   AddShadowedCredentialIdsToNewPasskey(passkey);
   AddPasskeyInternal(passkey);
@@ -549,7 +548,7 @@ void PasskeySyncBridge::AddPasskeyInternal(
   CHECK(store_);
 
   std::string sync_id = specifics.sync_id();
-  CHECK(!base::Contains(data_, sync_id));
+  CHECK(!data_.contains(sync_id));
 
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();

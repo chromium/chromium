@@ -443,7 +443,7 @@ class HashRealTimeServiceTest : public PlatformTest {
     // Intercept search hashes request URL.
     auto request = std::make_unique<V5::SearchHashesRequest>();
     for (const auto& hash_prefix : UrlToHashPrefixesAsSet(url)) {
-      if (!base::Contains(cached_hash_prefixes, hash_prefix)) {
+      if (!cached_hash_prefixes.contains(hash_prefix)) {
         request->add_hash_prefixes(hash_prefix);
       }
     }

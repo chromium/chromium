@@ -10,7 +10,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -225,8 +224,8 @@ void SessionStorageImpl::CloneNamespace(
             clone_from_namespace_id);
         clone_from_ns->second->AddChildNamespaceWaitingForClone(
             clone_to_namespace_id);
-      } else if (base::Contains(metadata_.namespace_storage_key_map(),
-                                clone_from_namespace_id)) {
+      } else if (metadata_.namespace_storage_key_map().contains(
+                     clone_from_namespace_id)) {
         CHECK_EQ(connection_state_, CONNECTION_FINISHED,
                  base::NotFatalUntil::M146);
         // The namespace exists on disk but is not in-use, so do the appropriate

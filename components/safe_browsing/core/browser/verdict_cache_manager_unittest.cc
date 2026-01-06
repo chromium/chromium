@@ -109,9 +109,9 @@ class VerdictCacheManagerTest : public ::testing::Test {
     // filters out expired results. We want to confirm that the cache contents
     // themselves have been cleaned up as expected, so we access |cache_|
     // directly.
-    EXPECT_EQ(base::Contains(cache_manager_->hash_realtime_cache_->cache_,
-                             hash_prefix),
-              should_expect_entry);
+    EXPECT_EQ(
+        cache_manager_->hash_realtime_cache_->cache_.contains(hash_prefix),
+        should_expect_entry);
   }
 
   void AddThreatInfoToResponse(
@@ -1297,8 +1297,8 @@ TEST_F(VerdictCacheManagerTest, TestHashPrefixRealTimeLookupCaching) {
   auto cache_results = cache_manager_->GetCachedHashPrefixRealTimeLookupResults(
       {"aaaa", "bbbb", "cccc"});
   EXPECT_EQ(cache_results.size(), 2u);
-  EXPECT_TRUE(base::Contains(cache_results, "aaaa"));
-  EXPECT_TRUE(base::Contains(cache_results, "bbbb"));
+  EXPECT_TRUE(cache_results.contains("aaaa"));
+  EXPECT_TRUE(cache_results.contains("bbbb"));
 }
 
 TEST_F(ArtificialHashRealTimeVerdictCacheManagerTest, TestCachePopulated) {

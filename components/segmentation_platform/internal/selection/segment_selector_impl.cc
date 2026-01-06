@@ -4,7 +4,6 @@
 
 #include "components/segmentation_platform/internal/selection/segment_selector_impl.h"
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
@@ -174,7 +173,7 @@ void SegmentSelectorImpl::OnModelExecutionCompleted(SegmentId segment_id) {
   DCHECK(segment_result_provider_);
 
   // If the |segment_id| is not in config, then skip any updates early.
-  if (!base::Contains(config_->segments, segment_id))
+  if (!config_->segments.contains(segment_id))
     return;
 
   if (!IsPreviousSelectionInvalid())

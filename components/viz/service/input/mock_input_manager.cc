@@ -13,7 +13,7 @@ MockInputManager::~MockInputManager() = default;
 
 bool MockInputManager::RIRExistsForFrameSinkId(
     const FrameSinkId& frame_sink_id) {
-  return base::Contains(rir_map_, frame_sink_id);
+  return rir_map_.contains(frame_sink_id);
 }
 
 RenderInputRouterSupportBase* MockInputManager::GetSupportForFrameSink(

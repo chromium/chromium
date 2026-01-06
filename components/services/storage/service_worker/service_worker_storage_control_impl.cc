@@ -4,7 +4,6 @@
 
 #include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 
-#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/service_worker/service_worker_resource_ops.h"
@@ -140,7 +139,7 @@ void ServiceWorkerStorageControlImpl::Recover(
     std::vector<mojom::ServiceWorkerLiveVersionInfoPtr> versions,
     RecoverCallback callback) {
   for (auto& version : versions) {
-    DCHECK(!base::Contains(live_versions_, version->id));
+    DCHECK(!live_versions_.contains(version->id));
     auto reference = std::make_unique<ServiceWorkerLiveVersionRefImpl>(
         weak_ptr_factory_.GetWeakPtr(), version->id);
     reference->Add(std::move(version->reference));
@@ -701,7 +700,7 @@ void ServiceWorkerStorageControlImpl::MaybePurgeResources(
     return;
   }
 
-  if (base::Contains(live_versions_, version_id)) {
+  if (live_versions_.contains(version_id)) {
     live_versions_[version_id]->set_purgeable_resources(
         std::move(purgeable_resources));
   } else {

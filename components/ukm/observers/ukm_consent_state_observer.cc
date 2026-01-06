@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/metrics/metrics_switches.h"
@@ -208,7 +207,7 @@ void UkmConsentStateObserver::OnUrlKeyedDataCollectionConsentStateChanged(
 void UkmConsentStateObserver::UpdateProfileState(
     syncer::SyncService* sync,
     UrlKeyedDataCollectionConsentHelper* consent_helper) {
-  DCHECK(base::Contains(previous_states_, sync));
+  DCHECK(previous_states_.contains(sync));
   const ProfileState& previous_state = previous_states_[sync];
   DCHECK(consent_helper);
   ProfileState state = GetProfileState(sync, consent_helper);
@@ -224,7 +223,7 @@ void UkmConsentStateObserver::UpdateProfileState(
 }
 
 void UkmConsentStateObserver::OnSyncShutdown(syncer::SyncService* sync) {
-  DCHECK(base::Contains(previous_states_, sync));
+  DCHECK(previous_states_.contains(sync));
   auto found = consent_helpers_.find(sync);
   if (found != consent_helpers_.end()) {
     found->second->RemoveObserver(this);

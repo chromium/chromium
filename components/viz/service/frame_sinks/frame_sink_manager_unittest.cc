@@ -6,7 +6,6 @@
 
 #include <tuple>
 
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -104,8 +103,8 @@ class FrameSinkManagerTest : public testing::Test {
 
   // Checks if a [Root]CompositorFrameSinkImpl exists for |frame_sink_id|.
   bool CompositorFrameSinkExists(const FrameSinkId& frame_sink_id) {
-    return base::Contains(manager_->sink_map_, frame_sink_id) ||
-           base::Contains(manager_->root_sink_map_, frame_sink_id);
+    return manager_->sink_map_.contains(frame_sink_id) ||
+           manager_->root_sink_map_.contains(frame_sink_id);
   }
 
   CompositorFrameSinkSupport* GetFrameSinkSupport(const FrameSinkId& id) {

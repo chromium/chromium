@@ -9,7 +9,6 @@
 #include "base/auto_reset.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "components/variations/variations_crash_keys.h"
 
@@ -77,7 +76,7 @@ void ChildProcessFieldTrialSyncer::Init(
   base::FieldTrialListIncludingLowAnonymity::GetActiveFieldTrialGroups(
       &current_active_trials);
   for (const auto& trial : current_active_trials) {
-    if (!base::Contains(initially_active_trials, trial.trial_name)) {
+    if (!initially_active_trials.contains(trial.trial_name)) {
       activated_callback_.Run(trial.trial_name);
     }
   }

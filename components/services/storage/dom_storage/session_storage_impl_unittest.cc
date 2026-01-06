@@ -10,7 +10,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -1304,10 +1303,10 @@ TEST_F(SessionStorageImplTest, Bug1128318) {
   // As such, the namespace_entry for the namespace should be null.
   auto* ns = session_storage_impl()->GetNamespaceForTesting(namespace_id3);
   EXPECT_TRUE(ns);
-  EXPECT_FALSE(base::Contains(session_storage_impl()
-                                  ->GetMetadataForTesting()
-                                  .namespace_storage_key_map(),
-                              namespace_id3));
+  EXPECT_FALSE(session_storage_impl()
+                   ->GetMetadataForTesting()
+                   .namespace_storage_key_map()
+                   .contains(namespace_id3));
 }
 
 }  // namespace storage

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "components/user_education/common/tutorial/tutorial.h"
 #include "components/user_education/common/tutorial/tutorial_description.h"
@@ -21,7 +20,7 @@ TutorialRegistry::TutorialRegistry() = default;
 TutorialRegistry::~TutorialRegistry() = default;
 
 bool TutorialRegistry::IsTutorialRegistered(TutorialIdentifier id) const {
-  return base::Contains(tutorial_registry_, id);
+  return tutorial_registry_.contains(id);
 }
 
 const TutorialDescription* TutorialRegistry::GetTutorialDescription(
@@ -45,7 +44,7 @@ const std::vector<TutorialIdentifier> TutorialRegistry::GetTutorialIdentifiers()
 
 void TutorialRegistry::AddTutorial(TutorialIdentifier id,
                                    TutorialDescription description) {
-  if (base::Contains(tutorial_registry_, id)) {
+  if (tutorial_registry_.contains(id)) {
     return;
   }
 

@@ -10,7 +10,6 @@
 
 #include "base/callback_list.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -496,7 +495,7 @@ void HelpBubbleHandlerBase::BindTrackedElementHandler(
 
 bool HelpBubbleHandlerBase::ToggleHelpBubbleFocusForAccessibility(
     ui::ElementIdentifier anchor_id) {
-  if (base::Contains(element_data_, anchor_id)) {
+  if (element_data_.contains(anchor_id)) {
     GetClient()->ToggleFocusForAccessibility(anchor_id.GetName());
     return true;
   }

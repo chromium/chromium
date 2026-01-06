@@ -15,7 +15,6 @@
 #include "base/base64url.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/debug/crash_logging.h"
@@ -164,7 +163,7 @@ void PruneSyncChanges(const SyncDataMap* sync_data,
 // Sync and TemplateURLs that were initially local, assuming |sync_data| is the
 // |initial_sync_data| parameter.
 bool IsFromSync(const TemplateURL* turl, const SyncDataMap& sync_data) {
-  return base::Contains(sync_data, turl->sync_guid());
+  return sync_data.contains(turl->sync_guid());
 }
 
 bool Contains(TemplateURLService::OwnedTemplateURLVector* template_urls,
@@ -2058,7 +2057,7 @@ std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
       continue;
     }
 
-    if (base::Contains(pre_sync_deletes_, sync_turl->sync_guid())) {
+    if (pre_sync_deletes_.contains(sync_turl->sync_guid())) {
       // This entry was deleted before the initial sync began (possibly through
       // preprocessing in TemplateURLService's loading code). Ignore it and send
       // an ACTION_DELETE up to the server.

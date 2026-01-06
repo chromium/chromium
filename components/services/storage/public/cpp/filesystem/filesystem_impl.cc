@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -47,7 +46,7 @@ class LockTable {
   void RemoveLock(const base::FilePath& path) {
     const base::FilePath normalized_path = path.NormalizePathSeparators();
     base::AutoLock lock(lock_);
-    DCHECK(base::Contains(lock_paths_, normalized_path));
+    DCHECK(lock_paths_.contains(normalized_path));
     lock_paths_.erase(normalized_path);
   }
 
