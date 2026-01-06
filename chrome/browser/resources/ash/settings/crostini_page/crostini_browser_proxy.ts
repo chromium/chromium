@@ -161,21 +161,6 @@ export interface CrostiniBrowserProxy {
   /** Initiates the flow to disable ARC ADB Sideloading. */
   disableArcAdbSideload(): void;
 
-  /** Show the container upgrade UI. */
-  requestCrostiniContainerUpgradeView(): void;
-
-  /**
-   * Request chrome send a crostini-upgrader-status-changed event with the
-   * current upgrader dialog status
-   */
-  requestCrostiniUpgraderDialogStatus(): void;
-
-  /**
-   * Request chrome send a crostini-container-upgrade-available-changed event
-   * with the availability of an upgrade for the container.
-   */
-  requestCrostiniContainerUpgradeAvailable(): void;
-
   /**
    * @param vmName Name of the VM to get disk info for.
    * @param requestFullInfo Whether to request full disk info, which
@@ -406,18 +391,6 @@ export class CrostiniBrowserProxyImpl implements CrostiniBrowserProxy {
 
   disableArcAdbSideload(): void {
     chrome.send('disableArcAdbSideload');
-  }
-
-  requestCrostiniContainerUpgradeView(): void {
-    chrome.send('requestCrostiniContainerUpgradeView');
-  }
-
-  requestCrostiniUpgraderDialogStatus(): void {
-    chrome.send('requestCrostiniUpgraderDialogStatus');
-  }
-
-  requestCrostiniContainerUpgradeAvailable(): void {
-    chrome.send('requestCrostiniContainerUpgradeAvailable');
   }
 
   getCrostiniDiskInfo(vmName: string, fullInfo: boolean):

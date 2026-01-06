@@ -163,10 +163,6 @@ bool CrostiniFeatures::IsRootAccessAllowed(Profile* profile) const {
   return true;
 }
 
-bool CrostiniFeatures::IsContainerUpgradeUIAllowed(Profile* profile) const {
-  return g_crostini_features->IsAllowedNow(profile);
-}
-
 void CrostiniFeatures::CanChangeAdbSideloading(
     Profile* profile,
     CanChangeAdbSideloadingCallback callback) const {

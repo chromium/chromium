@@ -41,7 +41,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   bool IsExportLxdContainerProgressSignalConnected() override;
   bool IsImportLxdContainerProgressSignalConnected() override;
   bool IsPendingAppListUpdatesSignalConnected() override;
-  bool IsUpgradeContainerProgressSignalConnected() override;
   bool IsStartLxdProgressSignalConnected() override;
   bool IsFileWatchTriggeredSignalConnected() override;
   bool IsLowDiskSpaceTriggeredSignalConnected() override;
@@ -103,15 +102,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
       const vm_tools::cicerone::ConfigureForArcSideloadRequest& request,
       chromeos::DBusMethodCallback<
           vm_tools::cicerone::ConfigureForArcSideloadResponse> callback)
-      override;
-  void UpgradeContainer(
-      const vm_tools::cicerone::UpgradeContainerRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::cicerone::UpgradeContainerResponse>
-          callback) override;
-  void CancelUpgradeContainer(
-      const vm_tools::cicerone::CancelUpgradeContainerRequest& request,
-      chromeos::DBusMethodCallback<
-          vm_tools::cicerone::CancelUpgradeContainerResponse> callback)
       override;
   void StartLxd(
       const vm_tools::cicerone::StartLxdRequest& request,
@@ -194,9 +184,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   void set_import_lxd_container_progress_signal_connected(bool connected) {
     is_import_lxd_container_progress_signal_connected_ = connected;
   }
-  void set_upgrade_container_progress_signal_connected(bool connected) {
-    is_upgrade_container_progress_signal_connected_ = connected;
-  }
   void set_start_lxd_progress_signal_connected(bool connected) {
     is_start_lxd_progress_signal_connected_ = connected;
   }
@@ -275,16 +262,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   void set_enable_arc_sideload_response(
       const vm_tools::cicerone::ConfigureForArcSideloadResponse& response) {
     enable_arc_sideload_response_ = response;
-  }
-  void set_upgrade_container_response(
-      vm_tools::cicerone::UpgradeContainerResponse upgrade_container_response) {
-    upgrade_container_response_ = std::move(upgrade_container_response);
-  }
-  void set_cancel_upgrade_container_response(
-      vm_tools::cicerone::CancelUpgradeContainerResponse
-          cancel_upgrade_container_response) {
-    cancel_upgrade_container_response_ =
-        std::move(cancel_upgrade_container_response);
   }
   void set_start_lxd_response(
       vm_tools::cicerone::StartLxdResponse start_lxd_response) {
@@ -398,8 +375,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
       const vm_tools::cicerone::ImportLxdContainerProgressSignal& signal);
   void NotifyPendingAppListUpdates(
       const vm_tools::cicerone::PendingAppListUpdatesSignal& signal);
-  void NotifyUpgradeContainerProgress(
-      const vm_tools::cicerone::UpgradeContainerProgressSignal& signal);
   void NotifyStartLxdProgress(
       const vm_tools::cicerone::StartLxdProgressSignal& signal);
   void NotifyFileWatchTriggered(
@@ -426,7 +401,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   bool is_lxd_container_starting_signal_connected_ = true;
   bool is_export_lxd_container_progress_signal_connected_ = true;
   bool is_import_lxd_container_progress_signal_connected_ = true;
-  bool is_upgrade_container_progress_signal_connected_ = true;
   bool is_start_lxd_progress_signal_connected_ = true;
   bool is_file_watch_triggered_signal_connected_ = true;
   bool is_low_disk_space_triggered_signal_connected_ = true;
@@ -473,9 +447,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
       cancel_import_lxd_container_response_;
   vm_tools::cicerone::ConfigureForArcSideloadResponse
       enable_arc_sideload_response_;
-  vm_tools::cicerone::UpgradeContainerResponse upgrade_container_response_;
-  vm_tools::cicerone::CancelUpgradeContainerResponse
-      cancel_upgrade_container_response_;
   vm_tools::cicerone::StartLxdResponse start_lxd_response_;
   vm_tools::cicerone::AddFileWatchResponse add_file_watch_response_;
   vm_tools::cicerone::RemoveFileWatchResponse remove_file_watch_response_;

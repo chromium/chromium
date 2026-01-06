@@ -2340,7 +2340,6 @@ static_library("ui") {
       "//chrome/browser/ui/webui/ash/cellular_setup",
       "//chrome/browser/ui/webui/ash/cloud_upload",
       "//chrome/browser/ui/webui/ash/crostini_installer",
-      "//chrome/browser/ui/webui/ash/crostini_upgrader",
       "//chrome/browser/ui/webui/ash/diagnostics_dialog",
       "//chrome/browser/ui/webui/ash/edu_coexistence",
       "//chrome/browser/ui/webui/ash/emoji",

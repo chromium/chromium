@@ -5642,7 +5642,6 @@ if (!is_android) {
         "//chrome/browser/ui/webui/ash/add_supervision",
         "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
         "//chrome/browser/ui/webui/ash/cloud_upload",
-        "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings",
         "//chrome/browser/ui/webui/ash/edu_coexistence",
         "//chrome/browser/ui/webui/ash/login",
         "//chrome/browser/ui/webui/ash/manage_mirrorsync:mojo_bindings",

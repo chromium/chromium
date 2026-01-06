@@ -161,20 +161,6 @@ base::span<const SearchConcept> GetCrostiniPortForwardingSearchConcepts() {
   return tags;
 }
 
-base::span<const SearchConcept> GetCrostiniContainerUpgradeSearchConcepts() {
-  static constexpr auto tags = std::to_array<SearchConcept>({
-      {IDS_OS_SETTINGS_TAG_CROSTINI_CONTAINER_UPGRADE,
-       mojom::kCrostiniDetailsSubpagePath,
-       mojom::SearchResultIcon::kPenguin,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kCrostiniContainerUpgrade},
-       {IDS_OS_SETTINGS_TAG_CROSTINI_CONTAINER_UPGRADE_ALT1,
-        SearchConcept::kAltTagEnd}},
-  });
-  return tags;
-}
-
 base::span<const SearchConcept> GetCrostiniDiskResizingSearchConcepts() {
   static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_CROSTINI_DISK_RESIZE,
@@ -263,8 +249,6 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"crostiniRemoveButton", IDS_SETTINGS_CROSTINI_REMOVE_BUTTON},
       {"crostiniSharedUsbDevicesDescription",
        IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_DESCRIPTION},
-      {"crostiniContainerUpgradeButton",
-       IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_BUTTON},
       {"crostiniPortForwarding", IDS_SETTINGS_CROSTINI_PORT_FORWARDING},
       {"crostiniPortForwardingDescription",
        IDS_SETTINGS_CROSTINI_PORT_FORWARDING_DESCRIPTION},
@@ -383,26 +367,6 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddString(
-      "crostiniContainerUpgrade",
-      l10n_util::GetStringUTF16(
-          IDS_OS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_BOOKWORM_MESSAGE));
-
-  if (auto* pretty_name_value = guest_os::GetContainerPrefValue(
-          profile_, crostini::DefaultContainerId(),
-          guest_os::prefs::kContainerOsPrettyNameKey)) {
-    std::string pretty_name = pretty_name_value->GetString();
-    html_source->AddString("crostiniContainerUpgradeSubtext",
-                           l10n_util::GetStringFUTF16(
-                               IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_SUBTEXT,
-                               base::UTF8ToUTF16(pretty_name)));
-  } else {
-    // Blank the subtext if we don't know what the pretty version name is. This
-    // is just a fallback for users that haven't opened crostini since before we
-    // started recording that.
-    html_source->AddString("crostiniContainerUpgradeSubtext", "");
-  }
-
   // Crostini section in settings is always displayed.
   // Should we show that Crostini is supported?
   html_source->AddBoolean(
@@ -511,8 +475,6 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                           ProfileHelper::IsOwnerProfile(profile_));
   html_source->AddBoolean("isEnterpriseManaged",
                           IsDeviceManaged() || IsProfileManaged(profile_));
-  html_source->AddBoolean("showCrostiniContainerUpgrade",
-                          IsContainerUpgradeAllowed());
 }
 
 void CrostiniSection::AddHandlers(content::WebUI* web_ui) {
@@ -552,7 +514,6 @@ void CrostiniSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                      mojom::SearchResultDefaultRank::kMedium,
                                      mojom::kCrostiniDetailsSubpagePath);
   static constexpr mojom::Setting kCrostiniDetailsSettings[] = {
-      mojom::Setting::kCrostiniContainerUpgrade,
       mojom::Setting::kCrostiniDiskResize,
       mojom::Setting::kCrostiniMicAccess,
       mojom::Setting::kUninstallCrostini,
@@ -637,10 +598,6 @@ bool CrostiniSection::IsExportImportAllowed() const {
   return crostini::CrostiniFeatures::Get()->IsExportImportUIAllowed(profile_);
 }
 
-bool CrostiniSection::IsContainerUpgradeAllowed() const {
-  return crostini::ShouldAllowContainerUpgrade(profile_);
-}
-
 bool CrostiniSection::IsPortForwardingAllowed() const {
   return crostini::CrostiniFeatures::Get()->IsPortForwardingAllowed(profile_);
 }
@@ -660,7 +617,6 @@ void CrostiniSection::UpdateSearchTags() {
   updater.RemoveSearchTags(GetCrostiniOptedOutSearchConcepts());
   updater.RemoveSearchTags(GetCrostiniExportImportSearchConcepts());
   updater.RemoveSearchTags(GetCrostiniPortForwardingSearchConcepts());
-  updater.RemoveSearchTags(GetCrostiniContainerUpgradeSearchConcepts());
   updater.RemoveSearchTags(GetCrostiniDiskResizingSearchConcepts());
 
   if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile_) ||
@@ -677,10 +633,6 @@ void CrostiniSection::UpdateSearchTags() {
 
   if (IsPortForwardingAllowed()) {
     updater.AddSearchTags(GetCrostiniPortForwardingSearchConcepts());
-  }
-
-  if (IsContainerUpgradeAllowed()) {
-    updater.AddSearchTags(GetCrostiniContainerUpgradeSearchConcepts());
   }
 
   updater.AddSearchTags(GetCrostiniDiskResizingSearchConcepts());

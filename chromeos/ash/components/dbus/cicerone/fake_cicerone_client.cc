@@ -42,12 +42,6 @@ FakeCiceroneClient::FakeCiceroneClient() {
   import_lxd_container_response_.set_status(
       vm_tools::cicerone::ImportLxdContainerResponse::IMPORTING);
 
-  upgrade_container_response_.set_status(
-      vm_tools::cicerone::UpgradeContainerResponse::STARTED);
-
-  cancel_upgrade_container_response_.set_status(
-      vm_tools::cicerone::CancelUpgradeContainerResponse::CANCELLED);
-
   start_lxd_response_.set_status(
       vm_tools::cicerone::StartLxdResponse::ALREADY_RUNNING);
 
@@ -125,10 +119,6 @@ bool FakeCiceroneClient::IsExportLxdContainerProgressSignalConnected() {
 
 bool FakeCiceroneClient::IsImportLxdContainerProgressSignalConnected() {
   return is_import_lxd_container_progress_signal_connected_;
-}
-
-bool FakeCiceroneClient::IsUpgradeContainerProgressSignalConnected() {
-  return is_upgrade_container_progress_signal_connected_;
 }
 
 bool FakeCiceroneClient::IsStartLxdProgressSignalConnected() {
@@ -350,24 +340,6 @@ void FakeCiceroneClient::ConfigureForArcSideload(
       base::BindOnce(std::move(callback), enable_arc_sideload_response_));
 }
 
-void FakeCiceroneClient::UpgradeContainer(
-    const vm_tools::cicerone::UpgradeContainerRequest& request,
-    chromeos::DBusMethodCallback<vm_tools::cicerone::UpgradeContainerResponse>
-        callback) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), upgrade_container_response_));
-}
-
-void FakeCiceroneClient::CancelUpgradeContainer(
-    const vm_tools::cicerone::CancelUpgradeContainerRequest& request,
-    chromeos::DBusMethodCallback<
-        vm_tools::cicerone::CancelUpgradeContainerResponse> callback) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), cancel_upgrade_container_response_));
-}
-
 void FakeCiceroneClient::StartLxd(
     const vm_tools::cicerone::StartLxdRequest& request,
     chromeos::DBusMethodCallback<vm_tools::cicerone::StartLxdResponse>
@@ -514,13 +486,6 @@ void FakeCiceroneClient::NotifyPendingAppListUpdates(
     const vm_tools::cicerone::PendingAppListUpdatesSignal& proto) {
   for (auto& observer : observer_list_) {
     observer.OnPendingAppListUpdates(proto);
-  }
-}
-
-void FakeCiceroneClient::NotifyUpgradeContainerProgress(
-    const vm_tools::cicerone::UpgradeContainerProgressSignal& signal) {
-  for (auto& observer : observer_list_) {
-    observer.OnUpgradeContainerProgress(signal);
   }
 }
 

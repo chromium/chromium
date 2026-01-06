@@ -20,7 +20,6 @@ group("resources") {
     "borealis_installer:resources",
     "cloud_upload:resources",
     "crostini_installer:resources",
-    "crostini_upgrader:resources",
     "desk_api:resources",
     "edu_coexistence:resources",
     "emoji_picker:resources",

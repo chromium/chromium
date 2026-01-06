@@ -20,7 +20,6 @@ include_rules = [
   "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/test",
-  "+chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h",
   "+chrome/common",
   "+chrome/grit",
   "+chrome/test",

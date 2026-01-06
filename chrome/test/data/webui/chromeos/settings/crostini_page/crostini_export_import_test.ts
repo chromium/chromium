@@ -117,7 +117,6 @@ suite('<settings-crostini-export-import>', () => {
       isCrostiniAllowed: true,
       isCrostiniSupported: true,
       showCrostiniExportImport: true,
-      showCrostiniContainerUpgrade: true,
       showCrostiniPortForwarding: true,
       showCrostiniDiskResize: true,
       showCrostiniExtraContainers: true,

@@ -21,7 +21,6 @@ void FakeCrostiniFeatures::SetAll(bool flag) {
   enabled_ = flag;
   export_import_ui_allowed_ = flag;
   root_access_allowed_ = flag;
-  container_upgrade_ui_allowed_ = flag;
   can_change_adb_sideloading_ = flag;
   port_forwarding_allowed_ = flag;
   multi_container_allowed_ = flag;
@@ -33,7 +32,6 @@ void FakeCrostiniFeatures::ClearAll() {
   enabled_ = std::nullopt;
   export_import_ui_allowed_ = std::nullopt;
   root_access_allowed_ = std::nullopt;
-  container_upgrade_ui_allowed_ = std::nullopt;
   can_change_adb_sideloading_ = std::nullopt;
   port_forwarding_allowed_ = std::nullopt;
   multi_container_allowed_ = std::nullopt;
@@ -80,13 +78,6 @@ bool FakeCrostiniFeatures::IsRootAccessAllowed(Profile* profile) const {
     return *root_access_allowed_;
   }
   return original_features_->IsRootAccessAllowed(profile);
-}
-
-bool FakeCrostiniFeatures::IsContainerUpgradeUIAllowed(Profile* profile) const {
-  if (container_upgrade_ui_allowed_.has_value()) {
-    return *container_upgrade_ui_allowed_;
-  }
-  return original_features_->IsContainerUpgradeUIAllowed(profile);
 }
 
 void FakeCrostiniFeatures::CanChangeAdbSideloading(

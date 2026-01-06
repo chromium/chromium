@@ -461,9 +461,6 @@ inline constexpr char16_t kChromeUICrostiniCreditsURL16[] =
 inline constexpr char kChromeUICrostiniInstallerHost[] = "crostini-installer";
 inline constexpr char kChromeUICrostiniInstallerUrl[] =
     "chrome://crostini-installer";
-inline constexpr char kChromeUICrostiniUpgraderHost[] = "crostini-upgrader";
-inline constexpr char kChromeUICrostiniUpgraderUrl[] =
-    "chrome://crostini-upgrader";
 inline constexpr char kChromeUICryptohomeHost[] = "cryptohome";
 inline constexpr char kChromeUIDeviceEmulatorHost[] = "device-emulator";
 inline constexpr char kChromeUIEmojiPickerHost[] = "emoji-picker";

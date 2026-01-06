@@ -59,9 +59,6 @@ class CrostiniFeatures {
   // true when advanced access controls feature flag is disabled.
   virtual bool IsRootAccessAllowed(Profile*) const;
 
-  // Returns true if container upgrade ui is allowed by flag.
-  virtual bool IsContainerUpgradeUIAllowed(Profile*) const;
-
   using CanChangeAdbSideloadingCallback =
       base::OnceCallback<void(bool can_change_adb_sideloading)>;
 

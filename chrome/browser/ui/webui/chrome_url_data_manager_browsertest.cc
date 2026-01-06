@@ -475,7 +475,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://connectors-internals",
     "chrome://crashes",
     "chrome://crostini-installer",
-    "chrome://crostini-upgrader",
     "chrome://cryptohome",
     "chrome://diagnostics",
     "chrome://drive-internals",

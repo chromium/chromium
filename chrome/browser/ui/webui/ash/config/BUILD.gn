@@ -75,7 +75,6 @@ static_library("config") {
     "//chrome/browser/ui/webui/ash/cellular_setup",
     "//chrome/browser/ui/webui/ash/cloud_upload",
     "//chrome/browser/ui/webui/ash/crostini_installer",
-    "//chrome/browser/ui/webui/ash/crostini_upgrader",
     "//chrome/browser/ui/webui/ash/cryptohome",
     "//chrome/browser/ui/webui/ash/curtain_ui",
     "//chrome/browser/ui/webui/ash/drive_internals",

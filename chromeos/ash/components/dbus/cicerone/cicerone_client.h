@@ -76,11 +76,6 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
     virtual void OnPendingAppListUpdates(
         const vm_tools::cicerone::PendingAppListUpdatesSignal& signal) {}
 
-    // This is signaled from Cicerone while a container is being upgraded
-    // via UpgradeContainer.
-    virtual void OnUpgradeContainerProgress(
-        const vm_tools::cicerone::UpgradeContainerProgressSignal& signal) {}
-
     // This is signaled from Cicerone while LXD is starting via StartLxd.
     virtual void OnStartLxdProgress(
         const vm_tools::cicerone::StartLxdProgressSignal& signal) {}
@@ -154,9 +149,6 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
   // This should be true before expecting to receive
   // PendingAppListUpdatesSignal.
   virtual bool IsPendingAppListUpdatesSignalConnected() = 0;
-
-  // This should be true prior to calling UpgradeContainer.
-  virtual bool IsUpgradeContainerProgressSignalConnected() = 0;
 
   // This should be true prior to calling StartLxd.
   virtual bool IsStartLxdProgressSignalConnected() = 0;
@@ -269,20 +261,6 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
       const vm_tools::cicerone::ConfigureForArcSideloadRequest& request,
       chromeos::DBusMethodCallback<
           vm_tools::cicerone::ConfigureForArcSideloadResponse> callback) = 0;
-
-  // Upgrades the container.
-  // |callback| is called when the method completes.
-  virtual void UpgradeContainer(
-      const vm_tools::cicerone::UpgradeContainerRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::cicerone::UpgradeContainerResponse>
-          callback) = 0;
-
-  // Cancels the in progress container upgrade.
-  // |callback| is called when the method completes.
-  virtual void CancelUpgradeContainer(
-      const vm_tools::cicerone::CancelUpgradeContainerRequest& request,
-      chromeos::DBusMethodCallback<
-          vm_tools::cicerone::CancelUpgradeContainerResponse> callback) = 0;
 
   // Starts LXD.
   // |callback| is called when the method completes.

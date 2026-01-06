@@ -285,11 +285,6 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
   arc::ArcServiceLauncher::Get()->OnPrimaryUserProfilePrepared(profile);
   guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile);
 
-  crostini::CrostiniManager* crostini_manager =
-      crostini::CrostiniManager::GetForProfile(profile);
-  if (crostini_manager)
-    crostini_manager->MaybeUpdateCrostini();
-
   if (::captions::IsLiveCaptionFeatureSupported()) {
     SystemLiveCaptionServiceFactory::GetInstance()->GetForProfile(profile);
   }

@@ -24,7 +24,6 @@ include_rules = [
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/views/bruschetta",
   "+chrome/browser/ui/views/crostini",
-  "+chrome/browser/ui/webui/ash/crostini_upgrader",
   "+chrome/browser/ui/webui/ash/settings/pages",
   "+chrome/browser/ui/webui/ash/settings/search",
   "+chrome/browser/ui/webui/settings",

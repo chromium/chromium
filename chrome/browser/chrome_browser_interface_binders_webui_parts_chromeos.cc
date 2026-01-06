@@ -92,8 +92,6 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer.mojom.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_ui.h"
-#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader.mojom.h"
-#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_ui.h"
 #include "chrome/browser/ui/webui/ash/curtain_ui/remote_maintenance_curtain_ui.h"
 #include "chrome/browser/ui/webui/ash/dlp_internals/dlp_internals.mojom.h"
 #include "chrome/browser/ui/webui/ash/dlp_internals/dlp_internals_ui.h"
@@ -286,10 +284,6 @@ void PopulateChromeWebUIFrameBindersPartsCros(
   RegisterWebUIControllerInterfaceBinder<
       ash::crostini_installer::mojom::PageHandlerFactory,
       ash::CrostiniInstallerUI>(map);
-
-  RegisterWebUIControllerInterfaceBinder<
-      ash::crostini_upgrader::mojom::PageHandlerFactory,
-      ash::CrostiniUpgraderUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::multidevice_setup::mojom::MultiDeviceSetup, ash::OobeUI,

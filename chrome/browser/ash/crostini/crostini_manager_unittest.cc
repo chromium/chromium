@@ -1376,36 +1376,6 @@ TEST_F(CrostiniManagerRestartTest, InstallHistogramEntries) {
   histogram_tester_.ExpectTotalCount("Crostini.RestarterResult", 0);
 }
 
-TEST_F(CrostiniManagerRestartTest, OsReleaseSetCorrectly) {
-  vm_tools::cicerone::OsRelease os_release;
-  base::HistogramTester histogram_tester{};
-  os_release.set_pretty_name("Debian GNU/Linux 12 (bookworm)");
-  os_release.set_version_id("12");
-  os_release.set_id("debian");
-  fake_cicerone_client_->set_lxd_container_os_release(os_release);
-
-  TestFuture<CrostiniResult> result_future;
-  RestartCrostini(container_id(), result_future.GetCallback(), this);
-  EXPECT_EQ(result_future.Get(), CrostiniResult::SUCCESS);
-
-  const auto* stored_os_release =
-      crostini_manager()->GetContainerOsRelease(container_id());
-  EXPECT_NE(stored_os_release, nullptr);
-  // Sadly, we can't use MessageDifferencer here because we're using the LITE
-  // API in our protos.
-  EXPECT_EQ(os_release.SerializeAsString(),
-            stored_os_release->SerializeAsString());
-  histogram_tester.ExpectUniqueSample("Crostini.ContainerOsVersion",
-                                      ContainerOsVersion::kDebianBookworm, 1);
-
-  // The data for this container should also be stored in prefs.
-  const base::Value* os_release_pref_value = GetContainerPrefValue(
-      profile(), container_id(), guest_os::prefs::kContainerOsVersionKey);
-  EXPECT_NE(os_release_pref_value, nullptr);
-  EXPECT_EQ(os_release_pref_value->GetInt(),
-            static_cast<int>(ContainerOsVersion::kDebianBookworm));
-}
-
 TEST_F(CrostiniManagerRestartTest, RestartThenUninstall) {
   TestFuture<CrostiniResult> restart_future;
   CrostiniManager::RestartId restart_id =
@@ -2273,91 +2243,6 @@ TEST_F(CrostiniManagerTest, StartLxdSuccess) {
   crostini_manager()->StartLxd(kVmName, result_future.GetCallback());
 
   EXPECT_EQ(result_future.Get(), CrostiniResult::SUCCESS);
-}
-
-class CrostiniManagerUpgradeContainerTest
-    : public CrostiniManagerTest,
-      public UpgradeContainerProgressObserver {
- public:
-  void SetUp() override {
-    CrostiniManagerTest::SetUp();
-    progress_signal_.set_owner_id(CryptohomeIdForProfile(profile()));
-    progress_signal_.set_vm_name(kVmName);
-    progress_signal_.set_container_name(kContainerName);
-    progress_run_loop_ = std::make_unique<base::RunLoop>();
-    crostini_manager()->AddUpgradeContainerProgressObserver(this);
-  }
-
-  void TearDown() override {
-    crostini_manager()->RemoveUpgradeContainerProgressObserver(this);
-    CrostiniManagerTest::TearDown();
-  }
-
-  void RunUntilUpgradeDone(UpgradeContainerProgressStatus final_status) {
-    final_status_ = final_status;
-    progress_run_loop_->Run();
-  }
-
-  void SendProgressSignal() {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ash::FakeCiceroneClient::NotifyUpgradeContainerProgress,
-                       base::Unretained(fake_cicerone_client_),
-                       progress_signal_));
-  }
-
- protected:
-  // UpgradeContainerProgressObserver
-  void OnUpgradeContainerProgress(
-      const guest_os::GuestId& container_id,
-      UpgradeContainerProgressStatus status,
-      const std::vector<std::string>& messages) override {
-    if (status == final_status_) {
-      progress_run_loop_->Quit();
-    }
-  }
-
-  guest_os::GuestId container_id_ =
-      guest_os::GuestId(kCrostiniDefaultVmType, kVmName, kContainerName);
-
-  UpgradeContainerProgressStatus final_status_ =
-      UpgradeContainerProgressStatus::FAILED;
-
-  vm_tools::cicerone::UpgradeContainerProgressSignal progress_signal_;
-  // must be created on UI thread
-  std::unique_ptr<base::RunLoop> progress_run_loop_;
-};
-
-TEST_F(CrostiniManagerUpgradeContainerTest, UpgradeContainerSuccess) {
-  TestFuture<CrostiniResult> result_future;
-  crostini_manager()->UpgradeContainer(container_id_, ContainerVersion::BUSTER,
-                                       result_future.GetCallback());
-
-  EXPECT_EQ(CrostiniResult::SUCCESS, result_future.Get());
-
-  progress_signal_.set_status(
-      vm_tools::cicerone::UpgradeContainerProgressSignal::SUCCEEDED);
-
-  SendProgressSignal();
-  RunUntilUpgradeDone(UpgradeContainerProgressStatus::SUCCEEDED);
-}
-
-TEST_F(CrostiniManagerUpgradeContainerTest, CancelUpgradeContainerSuccess) {
-  TestFuture<CrostiniResult> result_future;
-  crostini_manager()->UpgradeContainer(container_id_, ContainerVersion::BUSTER,
-                                       result_future.GetCallback());
-
-  progress_signal_.set_status(
-      vm_tools::cicerone::UpgradeContainerProgressSignal::IN_PROGRESS);
-
-  SendProgressSignal();
-  EXPECT_EQ(CrostiniResult::SUCCESS, result_future.Get());
-
-  TestFuture<CrostiniResult> result_future2;
-  crostini_manager()->CancelUpgradeContainer(container_id_,
-                                             result_future2.GetCallback());
-
-  EXPECT_EQ(CrostiniResult::SUCCESS, result_future2.Get());
 }
 
 }  // namespace crostini

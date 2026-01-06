@@ -314,7 +314,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".crosh"/>
   <variant name=".crostini-credits"/>
   <variant name=".crostini-installer"/>
-  <variant name=".crostini-upgrader"/>
   <variant name=".cryptohome"/>
   <variant name=".customize-chrome-side-panel.top-chrome"/>
   <variant name=".data-sharing"/>

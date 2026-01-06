@@ -67,7 +67,6 @@ suite('<settings-crostini-subpage> for baguette', () => {
       isCrostiniAllowed: true,
       isCrostiniSupported: true,
       showCrostiniExportImport: true,
-      showCrostiniContainerUpgrade: true,
       showCrostiniPortForwarding: true,
       showCrostiniDiskResize: true,
       showCrostiniExtraContainers: false,
@@ -99,8 +98,6 @@ suite('<settings-crostini-subpage> for baguette', () => {
     assertTrue(isVisible(
         subpage.shadowRoot!.querySelector('#crostiniExportImportRow')));
     assertTrue(isVisible(subpage.shadowRoot!.querySelector('#remove')));
-    assertTrue(
-        isVisible(subpage.shadowRoot!.querySelector('#container-upgrade')));
     assertFalse(isVisible(
         subpage.shadowRoot!.querySelector('#crostiniPortForwardingRow')));
     assertTrue(isVisible(
@@ -153,7 +150,6 @@ suite('<settings-crostini-subpage>', () => {
       isCrostiniAllowed: true,
       isCrostiniSupported: true,
       showCrostiniExportImport: true,
-      showCrostiniContainerUpgrade: true,
       showCrostiniPortForwarding: true,
       showCrostiniDiskResize: true,
       showCrostiniExtraContainers: true,
@@ -186,8 +182,6 @@ suite('<settings-crostini-subpage>', () => {
       assertTrue(isVisible(
           subpage.shadowRoot!.querySelector('#crostiniExportImportRow')));
       assertTrue(isVisible(subpage.shadowRoot!.querySelector('#remove')));
-      assertTrue(
-          isVisible(subpage.shadowRoot!.querySelector('#container-upgrade')));
       assertTrue(isVisible(
           subpage.shadowRoot!.querySelector('#crostiniPortForwardingRow')));
       assertTrue(isVisible(subpage.shadowRoot!.querySelector(
@@ -207,51 +201,6 @@ suite('<settings-crostini-subpage>', () => {
 
       assertEquals(
           routes.CROSTINI_SHARED_PATHS, Router.getInstance().currentRoute);
-    });
-
-    test('Container upgrade', () => {
-      const crButton = subpage.shadowRoot!.querySelector<HTMLButtonElement>(
-          '#container-upgrade cr-button');
-      assertTrue(!!crButton);
-      crButton.click();
-      assertEquals(
-          1,
-          crostiniBrowserProxy.getCallCount(
-              'requestCrostiniContainerUpgradeView'));
-    });
-
-    test('Container upgrade button disabled on upgrade dialog', async () => {
-      const button = subpage.shadowRoot!.querySelector<HTMLButtonElement>(
-          '#container-upgrade cr-button');
-      assertTrue(!!button);
-
-      await flushTasks();
-      assertFalse(button.disabled);
-      webUIListenerCallback('crostini-upgrader-status-changed', true);
-
-      await flushTasks();
-      assertTrue(button.disabled);
-      webUIListenerCallback('crostini-upgrader-status-changed', false);
-
-      await flushTasks();
-      assertFalse(button.disabled);
-    });
-
-    test('Container upgrade button disabled on install', async () => {
-      const button = subpage.shadowRoot!.querySelector<HTMLButtonElement>(
-          '#container-upgrade cr-button');
-      assertTrue(!!button);
-
-      await flushTasks();
-      assertFalse(button.disabled);
-      webUIListenerCallback('crostini-installer-status-changed', true);
-
-      await flushTasks();
-      assertTrue(button.disabled);
-      webUIListenerCallback('crostini-installer-status-changed', false);
-
-      await flushTasks();
-      assertFalse(button.disabled);
     });
 
     test('Installer status queried on attach', () => {
