@@ -42,7 +42,6 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_settings_util.h"
 #include "chrome/browser/glic/host/auth_controller.h"
-#include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/context/glic_tab_data_observer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -68,15 +67,12 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/actor/task_id.h"
@@ -100,6 +96,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -114,6 +111,10 @@
 #include "ui/views/widget/widget.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #endif
 
@@ -172,6 +173,7 @@ GlicUnpinTrigger FromMojomUnpinTrigger(mojom::UnpinTrigger trigger) {
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Monitors the panel state and the browser widget state. Emits an event any
 // time the active state changes.
 // inactive = (panel hidden) || (panel attached) && (window not active)
@@ -284,6 +286,24 @@ class ActiveStateCalculator : public PanelStateObserver {
   raw_ptr<BrowserWindowInterface> attached_browser_ = nullptr;
 };
 
+#else
+// TODO(harringtond): Implement for Android.
+class ActiveStateCalculator {
+ public:
+  // Observes changes to active state.
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void ActiveStateChanged(bool is_active) = 0;
+  };
+
+  explicit ActiveStateCalculator(Host* host) {}
+
+  bool IsActive() const { return true; }
+  void AddObserver(Observer* observer) {}
+  void RemoveObserver(Observer* observer) {}
+};
+#endif
+
 class BrowserIsOpenCalculator : public BrowserCollectionObserver {
  public:
   class Observer : public base::CheckedObserver {
@@ -327,8 +347,8 @@ class BrowserIsOpenCalculator : public BrowserCollectionObserver {
       observer_->BrowserIsOpenChanged(is_open);
     }
   }
-  // Profile outlives this class. The glic web contents is torn down along with
-  // GlicKeyedService, which is tied to the profile.
+  // Profile outlives this class. The glic web contents is torn down along
+  // with GlicKeyedService, which is tied to the profile.
   raw_ptr<Profile> profile_;
   raw_ptr<Observer> observer_ = nullptr;
   int open_browser_count_ = 0;
@@ -341,8 +361,8 @@ class BrowserIsOpenCalculator : public BrowserCollectionObserver {
 // updates.
 // TODO(b/424242331): Debouncing & deduping should happen closer to where
 // focused tab updates are generated.
-// TODO(b/424242331): This logic should be moved to a separate file and be made
-// more generic and configurable.
+// TODO(b/424242331): This logic should be moved to a separate file and be
+// made more generic and configurable.
 class DebouncerDeduper {
  public:
   using DataCallback = void(glic::mojom::FocusedTabDataPtr);
@@ -411,8 +431,8 @@ class JournalHandler {
                           int32_t task_id,
                           const std::string& event,
                           const std::string& details) {
-    // If there is a matching ID make sure it terminates before the new event is
-    // created.
+    // If there is a matching ID make sure it terminates before the new event
+    // is created.
     auto it = active_journal_events_.find(event_async_id);
     if (it != active_journal_events_.end()) {
       active_journal_events_.erase(it);
@@ -799,10 +819,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         contextual_cueing::IsZeroStateSuggestionsEnabled();
 
     local_state_pref_change_registrar_.Init(g_browser_process->local_state());
+#if !BUILDFLAG(IS_ANDROID)
     local_state_pref_change_registrar_.Add(
         prefs::kGlicLauncherHotkey,
         base::BindRepeating(&GlicWebClientHandler::OnLocalStatePrefChanged,
                             base::Unretained(this)));
+#endif
     state->hotkey = GetHotkeyString();
     state->enable_default_tab_context_setting_feature =
         base::FeatureList::IsEnabled(features::kGlicDefaultTabContextSetting);
@@ -1869,11 +1891,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void OnLocalStatePrefChanged(const std::string& pref_name) {
+#if !BUILDFLAG(IS_ANDROID)
     if (pref_name == prefs::kGlicLauncherHotkey) {
       web_client_->NotifyOsHotkeyStateChanged(GetHotkeyString());
     } else {
       CHECK(false) << "Unknown local state pref changed: " << pref_name;
     }
+#endif
   }
 
   void OnFocusedTabChanged(const FocusedTabData& focused_tab_data) {

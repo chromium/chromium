@@ -12,7 +12,7 @@
 #include "base/uuid.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 
-class Browser;
+class BrowserWindowInterface;
 namespace views {
 class Widget;
 }  // namespace views
@@ -27,7 +27,7 @@ using InstanceId = base::Uuid;
 
 struct PanelStateContext {
   // Provided only when kGlicMultiInstance is off.
-  raw_ptr<Browser> attached_browser = nullptr;
+  raw_ptr<BrowserWindowInterface> attached_browser = nullptr;
   // Provided only when kGlicMultiInstance is off.
   raw_ptr<views::Widget> glic_widget = nullptr;
 };

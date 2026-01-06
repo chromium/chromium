@@ -124,6 +124,8 @@ class GlicZeroStateSuggestionsManager {
       const std::vector<std::string>& supported_tools,
       glic::mojom::WebClientHandler::GetZeroStateSuggestionsAndSubscribeCallback
           callback);
+
+  void Reset() {}
 };
 
 #endif
