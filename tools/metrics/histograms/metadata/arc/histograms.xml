@@ -308,7 +308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.AndroidBootTime{AndroidBootTypes}" units="ms"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
@@ -1821,7 +1821,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.PlayStoreSearch.QueryTime" units="ms"
-    expires_after="2026-05-01">
+    expires_after="2026-07-05">
   <owner>ypitsishin@chromium.org</owner>
   <owner>chenjih@google.com</owner>
   <owner>chrome-knowledge-eng@google.com</owner>
@@ -2152,7 +2152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.Generic.Jankiness" units="%"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>

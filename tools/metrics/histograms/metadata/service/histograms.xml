@@ -951,7 +951,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.ResponseReceivedToCompleted2{ServiceWorkerResponseSource}{EmbeddedWorkerInitialStatus}"
-    units="ms" expires_after="2026-05-01">
+    units="ms" expires_after="2026-07-05">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>

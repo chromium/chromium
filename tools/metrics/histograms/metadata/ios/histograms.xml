@@ -4700,7 +4700,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PaymentsBottomSheet.ExitReason"
-    enum="PaymentsSuggestionBottomSheetExitReason" expires_after="2026-05-03">
+    enum="PaymentsSuggestionBottomSheetExitReason" expires_after="2026-07-05">
   <owner>sugoi@chromium.org</owner>
   <owner>tmartino@chromium.org</owner>
   <summary>
@@ -4876,7 +4876,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PersistTabContext.StorageDifference" units="difference"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>cloutierc@google.com</owner>
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
@@ -7072,7 +7072,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Variations.FirstRun.SeedFetchResult"
-    enum="VariationsSeedFetchResult" expires_after="2026-05-03">
+    enum="VariationsSeedFetchResult" expires_after="2026-07-05">
   <owner>ginnyhuang@chromium.org</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>

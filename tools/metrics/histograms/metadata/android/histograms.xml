@@ -1112,7 +1112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackPress.TabClosureType" enum="BackPressTabCloseType"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>lazzzis@google.com</owner>
   <owner>src/chrome/browser/back_press/android/OWNERS</owner>
   <summary>
@@ -2831,7 +2831,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Intent.OverrideBrowserAuxiliaryNavigation"
-    enum="Boolean" expires_after="2026-05-03">
+    enum="Boolean" expires_after="2026-07-05">
   <owner>muratori@google.com</owner>
   <owner>mthiesse@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
@@ -3301,7 +3301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultiInstance.NumActivities" units="activities"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>jinsukkim@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -3365,7 +3365,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultiInstance.NumInstances" units="instances"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>jinsukkim@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -5525,7 +5525,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.StrictMode.OverrideUrlLoadingTime" units="ms"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>yfriedman@chromium.org</owner>
   <owner>wnwen@chromium.org</owner>
   <summary>
@@ -7494,7 +7494,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.HttpCacheSizeLimit" units="MiB"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>abhijithnair@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -8639,7 +8639,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.Startup.ChromiumInitTime.LongestUiBlockingTaskTime{StartupMode}"
-    units="ms" expires_after="2026-05-03">
+    units="ms" expires_after="2026-07-05">
   <owner>colibie@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -8659,7 +8659,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Startup.ChromiumInitTime.StartupMode"
-    enum="WebViewChromiumStartupMode" expires_after="2026-05-03">
+    enum="WebViewChromiumStartupMode" expires_after="2026-07-05">
   <owner>colibie@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -8757,7 +8757,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.Startup.CreationTime.FirstInstanceWithGlobalStartup"
-    units="ms" expires_after="2026-05-03">
+    units="ms" expires_after="2026-07-05">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -8860,7 +8860,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.Stage1.FactoryInit"
-    units="ms" expires_after="2026-05-03">
+    units="ms" expires_after="2026-07-05">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -8884,7 +8884,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Cold"
-    units="ms" expires_after="2026-05-03">
+    units="ms" expires_after="2026-07-05">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -8910,7 +8910,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Warm"
-    units="ms" expires_after="2026-05-03">
+    units="ms" expires_after="2026-07-05">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -8968,7 +8968,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.TotalFactoryInitTime"
-    units="ms" expires_after="2026-05-03">
+    units="ms" expires_after="2026-07-05">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <improvement direction="LOWER_IS_BETTER"/>

@@ -2073,7 +2073,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.NavigationCapturing.FinalDisplay.Result"
-    enum="NavigationCapturingDisplayMode" expires_after="2026-05-02">
+    enum="NavigationCapturingDisplayMode" expires_after="2026-07-05">
   <owner>dibyapal@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>

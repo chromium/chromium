@@ -2485,7 +2485,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.PasskeysArrivedAfterAutofillDisplay"
-    enum="Boolean" expires_after="2026-05-03">
+    enum="Boolean" expires_after="2026-07-05">
   <owner>kenrb@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
