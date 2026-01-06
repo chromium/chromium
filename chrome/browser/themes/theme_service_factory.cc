@@ -44,21 +44,12 @@ const ThemeHelper& GetThemeHelper() {
   return **theme_helper;
 }
 
-BASE_FEATURE(kProfileBasedThemeService, base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace
 
 // static
 ThemeService* ThemeServiceFactory::GetForProfile(Profile* profile) {
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("loading"),
               "ThemeServiceFactory::GetForProfile");
-  if (base::FeatureList::IsEnabled(kProfileBasedThemeService)) {
-    if (!profile->theme_service()) {
-      profile->set_theme_service(static_cast<ThemeService*>(
-          GetInstance()->GetServiceForBrowserContext(profile, true)));
-    }
-    return profile->theme_service().value();
-  }
   return static_cast<ThemeService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
