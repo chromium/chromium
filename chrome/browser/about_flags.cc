@@ -1825,7 +1825,7 @@ const FeatureEntry::FeatureParam
 
 const FeatureEntry::FeatureParam
     kNtpFeatureOptimizationModuleRemovalTesting[] = {
-        {"ModuleMinStalenessUpdateTimeInterval", "1m"},
+        {"ModuleMinStalenessUpdateTimeInterval", "1s"},
         {"StaleModulesCountThreshold", "2"},
 };
 
@@ -1847,7 +1847,7 @@ const FeatureEntry::FeatureParam
 
 const FeatureEntry::FeatureParam
     kNtpFeatureOptimizationShortcutsRemovalTesting[] = {
-        {"ShortcutsMinStalenessUpdateTimeInterval", "1m"},
+        {"ShortcutsMinStalenessUpdateTimeInterval", "1s"},
         {"StaleShortcutsCountThreshold", "5"},
 };
 
