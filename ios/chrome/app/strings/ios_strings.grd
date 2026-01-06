@@ -5893,8 +5893,11 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_INSTRUCTIONS_TWO" desc="Instructions view to teach users how to import data from Safari - step 2. [iOS only]">
         Select your Safari export <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>.zip<ph name="END_BOLD">END_BOLD</ph> file
       </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DISCLAIMER" desc="The bottom text displayed on Safari import screen to declare that the data will be saved to the user's Google account. [iOS only]">
+      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DISCLAIMER_ACCOUNT_STORE" desc="The bottom text displayed on Safari import screen to declare that the data will be saved to the user's Google account. Shown to logged-in users. [iOS only]">
         Your data will be saved to your Google Account, <ph name="USER_EMAIL">$1<ex>elisa.g.beckett@gmail.com</ex></ph>
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DISCLAIMER_PROFILE_STORE" desc="The bottom text displayed on Safari import screen to declare that the data will be saved to the user's Google account. Shown to users that are not logged in. [iOS only]">
+        Your info is saved to your device
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_NOT_ALLOWED_MESSAGE" desc="Message body of an alert dialog explaining that the data import is blocked by an organizational policy.">
         Importing this data is not allowed by your organization's policy.

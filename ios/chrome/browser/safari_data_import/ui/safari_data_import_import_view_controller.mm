@@ -69,7 +69,7 @@
       break;
     case SafariDataImportStage::kReadyForImport:
       [self showTableView];
-      [self showDisclaimerForEligibleUser];
+      [self showDisclaimer];
       self.configuration.primaryActionString = l10n_util::GetNSString(
           IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_IMPORT);
       self.configuration.loading = NO;
@@ -157,11 +157,8 @@
 }
 
 /// Displays the disclaimer informing user that the Safari items will be
-/// imported to their account store.
-- (void)showDisclaimerForEligibleUser {
-  if (!self.email) {
-    return;
-  }
+/// imported to their account or profile store.
+- (void)showDisclaimer {
   CHECK(self.itemTableView.superview);
   UITextView* disclaimer = CreateUITextViewWithTextKit1();
   disclaimer.scrollEnabled = NO;
@@ -172,9 +169,14 @@
   disclaimer.textAlignment = NSTextAlignmentCenter;
   disclaimer.adjustsFontForContentSizeCategory = YES;
   disclaimer.translatesAutoresizingMaskIntoConstraints = NO;
-  disclaimer.text = l10n_util::GetNSStringF(
-      IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DISCLAIMER,
-      base::SysNSStringToUTF16(self.email));
+  if (self.email) {
+    disclaimer.text = l10n_util::GetNSStringF(
+        IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DISCLAIMER_ACCOUNT_STORE,
+        base::SysNSStringToUTF16(self.email));
+  } else {
+    disclaimer.text = l10n_util::GetNSString(
+        IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DISCLAIMER_PROFILE_STORE);
+  }
   [self.specificContentView addSubview:disclaimer];
   /// Bottom align the disclaimer view.
   [NSLayoutConstraint activateConstraints:@[
