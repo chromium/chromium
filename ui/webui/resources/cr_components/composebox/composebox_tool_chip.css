@@ -12,7 +12,7 @@
   background-color:
     var(--color-composebox-context-entrypoint-hover-background);
   border: none;
-  color: var(--color-composebox-upload-button);
+  color: var(--color-searchbox-results-foreground);
   display: flex;
   font-size: 13px;
   gap: 2px;
