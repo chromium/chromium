@@ -316,7 +316,10 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
 
     std::unique_ptr<lens::proto::LensOverlaySuggestInputs> inputs =
         bridge->CreateLensOverlaySuggestInputs();
-    if (AreLensSuggestInputsReady(*inputs)) {
+    // Don't set lens params if in "Create Image" mode. This prevents the
+    // contextual client from being used in this tool mode.
+    if (AreLensSuggestInputsReady(*inputs) &&
+        tool_mode != omnibox::TOOL_MODE_IMAGE_GEN_UPLOAD) {
       input_.set_lens_overlay_suggest_inputs(std::move(inputs));
     }
     input_.set_aim_tool_mode(tool_mode);
