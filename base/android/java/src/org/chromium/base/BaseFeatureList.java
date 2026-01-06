@@ -39,7 +39,7 @@ public class BaseFeatureList {
 
     public static final MutableFlagWithSafeDefault sUseIsUnboundCheck =
             new MutableFlagWithSafeDefault(
-                    BaseFeatureMap.getInstance(), BaseFeatures.USE_IS_UNBOUND_CHECK, false);
+                    BaseFeatureMap.getInstance(), BaseFeatures.USE_IS_UNBOUND_CHECK, true);
 
     public static final MutableFlagWithSafeDefault sUseSharedRebindServiceConnection =
             new MutableFlagWithSafeDefault(
