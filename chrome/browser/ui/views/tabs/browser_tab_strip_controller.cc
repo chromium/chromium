@@ -261,8 +261,7 @@ void BrowserTabStripController::SelectTab(int model_index,
   std::optional<split_tabs::SplitTabId> split_id =
       tabstrip_->tab_at(model_index)->split();
   if (split_id.has_value()) {
-    model_index = split_tabs::GetIndexOfLastActiveTab(
-        browser()->tab_strip_model(), split_id.value());
+    model_index = split_tabs::GetIndexOfLastActiveTab(model_, split_id.value());
   }
 
   std::unique_ptr<viz::PeakGpuMemoryTracker> tracker =
@@ -299,8 +298,7 @@ void BrowserTabStripController::RecordMetricsOnTabSelectionChange(
   }
 
   tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser_view_->GetProfile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(GetProfile());
 
   if (!tab_group_service) {
     return;
@@ -591,7 +589,7 @@ void BrowserTabStripController::OnStoppedDragging() {
   // tab strip model is now empty. Since it was non-empty originally and the
   // drag browser can't have any pending downloads. we know that it's about to
   // get destroyed anyways.
-  if (!browser_view_->browser()->tab_strip_model()->empty()) {
+  if (!model_->empty()) {
     browser_view_->GetWidget()->GetNativeWindow()->ClearProperty(
         ash::kIsDraggingTabsKey);
     browser_view_->GetWidget()->GetNativeWindow()->ClearProperty(
@@ -716,7 +714,7 @@ Profile* BrowserTabStripController::GetProfile() const {
 }
 
 BrowserWindowInterface* BrowserTabStripController::GetBrowserWindowInterface() {
-  return browser_view_->browser();
+  return GetBrowser();
 }
 
 Browser* BrowserTabStripController::GetBrowser() {
@@ -725,7 +723,7 @@ Browser* BrowserTabStripController::GetBrowser() {
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool BrowserTabStripController::IsLockedForOnTask() {
-  return browser_view_->browser()->IsLockedForOnTask();
+  return GetBrowser()->IsLockedForOnTask();
 }
 #endif
 
@@ -1058,12 +1056,12 @@ bool BrowserTabStripController::GetContextMenuAccelerator(
     int command_id,
     ui::Accelerator* accelerator) {
 #if BUILDFLAG(IS_CHROMEOS)
-  auto* browser = browser_view_->browser();
+  auto* browser = GetBrowser();
   auto* system_app = browser->app_controller()
                          ? browser->app_controller()->system_app()
                          : nullptr;
-  if (system_app && !system_app->ShouldShowTabContextMenuShortcut(
-                        browser->profile(), command_id)) {
+  if (system_app &&
+      !system_app->ShouldShowTabContextMenuShortcut(GetProfile(), command_id)) {
     return false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

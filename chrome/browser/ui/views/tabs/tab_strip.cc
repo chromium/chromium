@@ -1068,9 +1068,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
   }
 
   const TabStripModel* GetTabStripModel() const {
-    return static_cast<BrowserTabStripController*>(
-               tab_strip_->controller_.get())
-        ->model();
+    return tab_strip_->GetBrowserWindowInterface()->GetTabStripModel();
   }
 
   const raw_ptr<TabStrip, DanglingUntriaged> tab_strip_;

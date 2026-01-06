@@ -53,8 +53,6 @@ class BrowserTabStripController : public TabStripController,
 
   void InitFromModel(TabStrip* tabstrip);
 
-  TabStripModel* model() const { return model_; }
-
   // TabStripController implementation:
   ui::ListSelectionModel GetSelectionModel() const override;
 
