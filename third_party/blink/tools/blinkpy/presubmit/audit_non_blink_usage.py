@@ -374,17 +374,6 @@ _CONFIG = [
             'base::WritableSharedMemoryMapping',
             'base::subtle::SharedAtomic',
 
-            # Std.
-            'std::get',
-            'std::get_if',
-            'std::holds_alternative',
-            'std::in_place',
-            'std::in_place_type',
-            'std::monostate',
-            'std::to_underlying',
-            'std::variant',
-            'std::visit',
-
             # tracing
             'perfetto::.+',
         ]
