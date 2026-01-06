@@ -86,7 +86,8 @@ void StagingBuffer::DestroyGLResources(gpu::raster::RasterInterface* ri,
     query_id = 0;
   }
   if (client_shared_image) {
-    sii->DestroySharedImage(sync_token, std::move(client_shared_image));
+    client_shared_image->UpdateDestructionSyncToken(sync_token);
+    client_shared_image.reset();
   }
 }
 
