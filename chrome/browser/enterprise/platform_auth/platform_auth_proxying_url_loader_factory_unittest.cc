@@ -16,8 +16,14 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/values.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/download/public/common/download_url_parameters.h"
+#include "components/policy/policy_constants.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -247,6 +253,32 @@ TEST_F(PlatformAuthProxyingURLLoaderFactoryTest,
 TEST_F(PlatformAuthProxyingURLLoaderFactoryTest,
        MaybeProxyRequest_PlatformAuthManagerDisabled) {
   PlatformAuthProviderManager::GetInstance().SetEnabled(false, {});
+
+  network::TestURLLoaderFactory terminal_factory;
+  scoped_refptr<network::SharedURLLoaderFactory> terminal_shared_factory =
+      terminal_factory.GetSafeWeakWrapper();
+
+  network::URLLoaderFactoryBuilder factory_builder;
+
+  ProxyingURLLoaderFactory::MaybeProxyRequest(
+      url::Origin::Create(GURL("https://foobar.example.com/")),
+      ChromeContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
+      factory_builder);
+
+  scoped_refptr<network::SharedURLLoaderFactory> resulting_factory =
+      std::move(factory_builder).Finish(terminal_shared_factory);
+
+  EXPECT_FALSE(
+      FactoryHasInterceptors(resulting_factory, terminal_shared_factory));
+}
+
+TEST_F(PlatformAuthProxyingURLLoaderFactoryTest,
+       MaybeProxyRequest_OktaIdpBlocked) {
+  PlatformAuthProviderManager::GetInstance().SetEnabled(true, {});
+
+  base::Value::List enabled_idps;
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetList(
+      prefs::kExtensibleEnterpriseSSOEnabledIdps, std::move(enabled_idps));
 
   network::TestURLLoaderFactory terminal_factory;
   scoped_refptr<network::SharedURLLoaderFactory> terminal_shared_factory =

@@ -8,8 +8,12 @@
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
 #include "chrome/browser/enterprise/platform_auth/url_session_url_loader.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
@@ -52,7 +56,10 @@ void ProxyingURLLoaderFactory::MaybeProxyRequest(
   if (enterprise_auth::PlatformAuthProviderManager::GetInstance().IsEnabled() &&
       request_initiator.scheme() == url::kHttpsScheme &&
       type == ChromeContentBrowserClient::URLLoaderFactoryType::
-                  kDocumentSubResource) {
+                  kDocumentSubResource &&
+      g_browser_process->local_state()
+          ->GetList(prefs::kExtensibleEnterpriseSSOEnabledIdps)
+          .contains(kOktaIdentityProvider)) {
     auto [loader_receiver, target_factory] = factory_builder.Append();
     new ProxyingURLLoaderFactory(std::move(loader_receiver),
                                  std::move(target_factory));
