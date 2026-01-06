@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/actor/ui/mocks/fake_actor_overlay_page.h"
+#include "chrome/browser/actor/ui/test_support/fake_actor_overlay_page.h"
 
 namespace actor::ui {
 

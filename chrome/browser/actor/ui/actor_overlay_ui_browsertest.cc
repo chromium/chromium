@@ -9,7 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/gtest_util.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/actor/ui/mocks/fake_actor_overlay_page.h"
+#include "chrome/browser/actor/ui/test_support/fake_actor_overlay_page.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"

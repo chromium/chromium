@@ -6,8 +6,8 @@
 
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
-#include "chrome/browser/actor/ui/mocks/fake_actor_overlay_page.h"
-#include "chrome/browser/actor/ui/mocks/mock_actor_ui_tab_controller.h"
+#include "chrome/browser/actor/ui/test_support/fake_actor_overlay_page.h"
+#include "chrome/browser/actor/ui/test_support/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"

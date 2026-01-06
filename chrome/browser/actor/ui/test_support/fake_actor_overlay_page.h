@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_UI_MOCKS_FAKE_ACTOR_OVERLAY_PAGE_H_
-#define CHROME_BROWSER_ACTOR_UI_MOCKS_FAKE_ACTOR_OVERLAY_PAGE_H_
+#ifndef CHROME_BROWSER_ACTOR_UI_TEST_SUPPORT_FAKE_ACTOR_OVERLAY_PAGE_H_
+#define CHROME_BROWSER_ACTOR_UI_TEST_SUPPORT_FAKE_ACTOR_OVERLAY_PAGE_H_
 
 #include "chrome/browser/actor/ui/actor_overlay.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -61,4 +61,4 @@ class FakeActorOverlayPage : public mojom::ActorOverlayPage {
 
 }  // namespace actor::ui
 
-#endif  // CHROME_BROWSER_ACTOR_UI_MOCKS_FAKE_ACTOR_OVERLAY_PAGE_H_
+#endif  // CHROME_BROWSER_ACTOR_UI_TEST_SUPPORT_FAKE_ACTOR_OVERLAY_PAGE_H_
