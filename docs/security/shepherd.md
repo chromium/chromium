@@ -26,6 +26,9 @@ for handover; however, the oncoming primary shepherd should operate on the
 premise all new or _under_-triaged issues are your responsibility. Please do not
 leave any unaddressed red cells in the dashboard at the end of your shift.
 
+See also: [shepherding AI reports][shepherding-ai-reports.md], for guidance on
+how to handle reports you think may have been composed with AI assistance.
+
 ## TL;DR Checklist for Primary Shepherding
 (“I’m Primary Shepherd, what do I do???”)
 
