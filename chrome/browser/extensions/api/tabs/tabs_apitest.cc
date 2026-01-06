@@ -75,11 +75,11 @@ INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ::testing::Values(ContextType::kPersistentBackground));
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionApiTabTestWithContextType,
                          ::testing::Values(ContextType::kServiceWorker));
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 class ExtensionApiTabBackForwardCacheTest
     : public ExtensionApiTabTestWithContextType {
  public:
@@ -184,6 +184,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_Tabs2) {
       << message_;
 }
 
+// TODO(https://crbug.com/371432155): Enable these tests.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Duplicate) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/duplicate")) << message_;
 }
@@ -191,9 +194,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Duplicate) {
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Size) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/tab_size")) << message_;
 }
-
-// TODO(https://crbug.com/371432155): Enable these tests.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Update) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/update")) << message_;
@@ -251,8 +251,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, RemoveMultiple) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/remove_multiple")) << message_;
 }
 
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, GetCurrent) {
   ASSERT_TRUE(RunExtensionTest("tabs/get_current")) << message_;
 }
@@ -262,21 +260,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, DISABLED_Connect) {
   ASSERT_TRUE(RunExtensionTest("tabs/connect")) << message_;
 }
 
-// TODO(https://crbug.com/371432155): Enable these tests.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, OnRemoved) {
   ASSERT_TRUE(RunExtensionTest("tabs/on_removed")) << message_;
 }
 
-#endif
-
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Reload) {
   ASSERT_TRUE(RunExtensionTest("tabs/reload")) << message_;
 }
-
-// TODO(https://crbug.com/371432155): Enable these tests.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 class ExtensionApiCaptureTest
     : public ExtensionApiTabTest,
