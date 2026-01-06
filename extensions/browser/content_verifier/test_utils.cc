@@ -5,7 +5,6 @@
 #include "extensions/browser/content_verifier/test_utils.h"
 
 #include "base/base64url.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -264,7 +263,7 @@ VerifierObserver::~VerifierObserver() {
 
 void VerifierObserver::EnsureFetchCompleted(const ExtensionId& extension_id) {
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(creation_thread_));
-  if (base::Contains(completed_fetches_, extension_id))
+  if (completed_fetches_.contains(extension_id))
     return;
   EXPECT_TRUE(id_to_wait_for_.empty());
   EXPECT_EQ(loop_runner_.get(), nullptr);

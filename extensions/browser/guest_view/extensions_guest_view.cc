@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -72,7 +71,7 @@ void ExtensionsGuestView::CanExecuteContentScript(
     std::move(callback).Run(false);
     return;
   }
-  const bool can_execute = base::Contains(info.content_script_ids, script_id);
+  const bool can_execute = info.content_script_ids.contains(script_id);
   std::move(callback).Run(can_execute);
 }
 

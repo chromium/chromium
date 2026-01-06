@@ -307,8 +307,7 @@ void WebRequestInfo::EraseOutprioritizedDNRActions() {
           // Check that the cache contains the action's extension ID
           // to make sure that rule matching was performed for that
           // extension.
-          DCHECK(
-              base::Contains(max_priority_allow_action, action.extension_id));
+          DCHECK(max_priority_allow_action.contains(action.extension_id));
 
           uint64_t allow_rule_priority_for_extension = 0u;
           if (auto& allow_action =

@@ -4,7 +4,6 @@
 
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_embedder.h"
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -52,8 +51,7 @@ void MimeHandlerViewEmbedder::Create(
     const GURL& resource_url,
     const std::string& stream_id,
     const std::string& internal_id) {
-  DCHECK(
-      !base::Contains(*GetMimeHandlerViewEmbeddersMap(), frame_tree_node_id));
+  DCHECK(!GetMimeHandlerViewEmbeddersMap()->contains(frame_tree_node_id));
   GetMimeHandlerViewEmbeddersMap()->insert_or_assign(
       frame_tree_node_id,
       base::WrapUnique(new MimeHandlerViewEmbedder(

@@ -15,7 +15,6 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
@@ -81,7 +80,7 @@ bool ContainsReservedCharacters(const base::FilePath& path) {
   // Extensions are cross-platform.
   // Since FilePath uses backslash '\\' as file path separator on Windows, so we
   // need to check manually.
-  if (base::Contains(path.value(), '\\')) {
+  if (path.value().contains('\\')) {
     return true;
   }
   return !net::IsSafePortableRelativePath(path);
@@ -771,7 +770,7 @@ bool Extension::LoadExtent(const char* key,
 
     // We do not allow authors to put wildcards in their paths. Instead, we
     // imply one at the end.
-    if (base::Contains(pattern.path(), '*')) {
+    if (pattern.path().contains('*')) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           value_error, base::NumberToString(i), errors::kNoWildCardsInPaths);
       return false;

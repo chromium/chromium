@@ -9,7 +9,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
@@ -94,8 +93,8 @@ void SaveDevicePermissionEntry(BrowserContext* context,
   ExtensionPrefs::ScopedListUpdate update(prefs, extension_id, kDevices);
   base::Value::List* devices = update.Ensure();
 
-  base::Value device_entry(entry->ToValue());
-  DCHECK(!base::Contains(*devices, device_entry));
+  base::Value::Dict device_entry(entry->ToValue());
+  DCHECK(!devices->contains(device_entry));
   devices->Append(std::move(device_entry));
 }
 
@@ -523,8 +522,8 @@ void DevicePermissionsManager::AllowUsbDevice(
 
     device_permissions->entries_.insert(device_entry);
     SaveDevicePermissionEntry(context_, extension_id, device_entry);
-  } else if (!base::Contains(device_permissions->ephemeral_usb_devices_,
-                             device_info.guid)) {
+  } else if (!device_permissions->ephemeral_usb_devices_.contains(
+                 device_info.guid)) {
     // Non-persistent devices cannot be reliably identified when they are
     // reconnected so such devices are only remembered until disconnect.
     // Register an observer here so that this set doesn't grow undefinitely.
@@ -560,8 +559,8 @@ void DevicePermissionsManager::AllowHidDevice(
 
     device_permissions->entries_.insert(device_entry);
     SaveDevicePermissionEntry(context_, extension_id, device_entry);
-  } else if (!base::Contains(device_permissions->ephemeral_hid_devices_,
-                             device.guid)) {
+  } else if (!device_permissions->ephemeral_hid_devices_.contains(
+                 device.guid)) {
     // Non-persistent devices cannot be reliably identified when they are
     // reconnected so such devices are only remembered until disconnect.
     // Register an observer here so that this set doesn't grow undefinitely.
@@ -593,7 +592,7 @@ void DevicePermissionsManager::RemoveEntry(
   DCHECK(thread_checker_.CalledOnValidThread());
   DevicePermissions* device_permissions = GetInternal(extension_id);
   DCHECK(device_permissions);
-  DCHECK(base::Contains(device_permissions->entries_, entry));
+  DCHECK(device_permissions->entries_.contains(entry));
   device_permissions->entries_.erase(entry);
   if (entry->IsPersistent()) {
     RemoveDevicePermissionEntry(context_, extension_id, entry);

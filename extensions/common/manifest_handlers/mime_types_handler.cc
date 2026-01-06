@@ -8,7 +8,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -71,7 +70,7 @@ void MimeTypesHandler::AddMIMEType(const std::string& mime_type) {
 }
 
 bool MimeTypesHandler::CanHandleMIMEType(const std::string& mime_type) const {
-  return base::Contains(mime_type_set_, mime_type);
+  return mime_type_set_.contains(mime_type);
 }
 
 bool MimeTypesHandler::HasPlugin() const {

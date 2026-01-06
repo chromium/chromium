@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/i18n/rtl.h"
 #include "base/lazy_instance.h"
 #include "base/strings/string_util.h"
@@ -117,7 +116,7 @@ bool MessageBundle::AppendReservedMessagesForLocale(
   // Add all reserved messages to the dictionary, but check for collisions.
   auto it = append_messages.begin();
   for (; it != append_messages.end(); ++it) {
-    if (base::Contains(dictionary_, it->first)) {
+    if (dictionary_.contains(it->first)) {
       *error = ErrorUtils::FormatErrorMessage(
           errors::kReservedMessageFound, it->first);
       return false;

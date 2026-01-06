@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/event_matcher.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"

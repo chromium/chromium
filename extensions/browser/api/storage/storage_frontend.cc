@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
-#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -521,7 +520,7 @@ ValueStoreCache* StorageFrontend::GetValueStoreCache(
 
 bool StorageFrontend::IsStorageEnabled(
     settings_namespace::Namespace settings_namespace) const {
-  return base::Contains(caches_, settings_namespace);
+  return caches_.contains(settings_namespace);
 }
 
 void StorageFrontend::RunWithStorage(

@@ -4,7 +4,6 @@
 
 #include "extensions/common/extension_set.h"
 
-#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/url_pattern_set.h"
@@ -53,7 +52,7 @@ ExtensionSet::ExtensionSet(ExtensionSet&&) = default;
 ExtensionSet& ExtensionSet::operator=(ExtensionSet&&) noexcept = default;
 
 bool ExtensionSet::Contains(const ExtensionId& extension_id) const {
-  return base::Contains(extensions_, extension_id);
+  return extensions_.contains(extension_id);
 }
 
 bool ExtensionSet::Insert(const scoped_refptr<const Extension>& extension) {

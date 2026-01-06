@@ -9,7 +9,6 @@
 #include <optional>
 
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -217,7 +216,7 @@ TEST_F(ImageSanitizerTest, ValidCase) {
     EXPECT_TRUE(file_size.has_value());
     EXPECT_GT(file_size.value(), 0);
 
-    ASSERT_TRUE(base::Contains(*client()->decoded_images(), path));
+    ASSERT_TRUE(client()->decoded_images()->contains(path));
     EXPECT_FALSE((*client()->decoded_images())[path].drawsNothing());
   }
   // No extra images should have been reported.

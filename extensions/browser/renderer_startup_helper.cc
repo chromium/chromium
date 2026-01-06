@@ -10,7 +10,6 @@
 
 #include "base/check_is_test.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -351,8 +350,8 @@ void RendererStartupHelper::InitializeProcess(
       ExtensionRegistry::Get(browser_context_)->enabled_extensions();
   for (const auto& ext : extensions) {
     // OnExtensionLoaded should have already been called for the extension.
-    DCHECK(base::Contains(extension_process_map_, ext->id()));
-    DCHECK(!base::Contains(extension_process_map_[ext->id()], process));
+    DCHECK(extension_process_map_.contains(ext->id()));
+    DCHECK(!extension_process_map_[ext->id()].contains(process));
 
     if (!util::IsExtensionVisibleToContext(*ext, renderer_context)) {
       continue;
@@ -380,8 +379,8 @@ void RendererStartupHelper::InitializeProcess(
     for (const ExtensionId& id : iter->second) {
       // The extension should be loaded in the process.
       DCHECK(extensions.Contains(id));
-      DCHECK(base::Contains(extension_process_map_, id));
-      DCHECK(base::Contains(extension_process_map_[id], process));
+      DCHECK(extension_process_map_.contains(id));
+      DCHECK(extension_process_map_[id].contains(process));
       renderer->ActivateExtension(id);
     }
   }
@@ -408,7 +407,7 @@ void RendererStartupHelper::ActivateExtensionInProcess(
     content::RenderProcessHost* process) {
   // The extension should have been loaded already. Dump without crashing to
   // debug crbug.com/528026.
-  if (!base::Contains(extension_process_map_, extension.id())) {
+  if (!extension_process_map_.contains(extension.id())) {
     DUMP_WILL_BE_NOTREACHED()
         << "Extension " << extension.id() << " activated before loading";
     return;
@@ -439,7 +438,7 @@ void RendererStartupHelper::ActivateExtensionInProcess(
 
   auto remote = process_mojo_map_.find(process);
   if (remote != process_mojo_map_.end()) {
-    DCHECK(base::Contains(extension_process_map_[extension.id()], process));
+    DCHECK(extension_process_map_[extension.id()].contains(process));
     remote->second->ActivateExtension(extension.id());
   } else {
     pending_active_extensions_[process].insert(extension.id());
@@ -447,7 +446,7 @@ void RendererStartupHelper::ActivateExtensionInProcess(
 }
 
 void RendererStartupHelper::OnExtensionLoaded(const Extension& extension) {
-  DCHECK(!base::Contains(extension_process_map_, extension.id()));
+  DCHECK(!extension_process_map_.contains(extension.id()));
 
   // Mark the extension as loaded.
   std::set<raw_ptr<content::RenderProcessHost, SetExperimental>>&
@@ -483,7 +482,7 @@ void RendererStartupHelper::OnExtensionLoaded(const Extension& extension) {
 }
 
 void RendererStartupHelper::OnExtensionUnloaded(const Extension& extension) {
-  DCHECK(base::Contains(extension_process_map_, extension.id()));
+  DCHECK(extension_process_map_.contains(extension.id()));
 
   const std::set<raw_ptr<content::RenderProcessHost, SetExperimental>>&
       loaded_process_set = extension_process_map_[extension.id()];

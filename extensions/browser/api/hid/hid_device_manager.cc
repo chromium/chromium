@@ -15,7 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
@@ -279,7 +278,7 @@ void HidDeviceManager::DeviceAdded(device::mojom::HidDeviceInfoPtr device) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_LT(next_resource_id_, std::numeric_limits<int>::max());
   int new_id = next_resource_id_++;
-  DCHECK(!base::Contains(resource_ids_, device->guid));
+  DCHECK(!resource_ids_.contains(device->guid));
   resource_ids_[device->guid] = new_id;
   devices_[new_id] = std::move(device);
 
@@ -329,7 +328,7 @@ void HidDeviceManager::DeviceChanged(device::mojom::HidDeviceInfoPtr device) {
   const auto& resource_entry = resource_ids_.find(device->guid);
   CHECK(resource_entry != resource_ids_.end());
   int resource_id = resource_entry->second;
-  DCHECK(base::Contains(devices_, resource_id));
+  DCHECK(devices_.contains(resource_id));
 
   // Update the device information.
   devices_[resource_id] = std::move(device);

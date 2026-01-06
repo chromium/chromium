@@ -15,7 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -593,8 +592,7 @@ MessageBundle* LoadMessageBundle(
   extension_l10n_util::GetAllLocales(&chrome_locales);
 
   base::FilePath default_locale_path = locale_path.AppendASCII(default_locale);
-  if (default_locale.empty() ||
-      !base::Contains(chrome_locales, default_locale) ||
+  if (default_locale.empty() || !chrome_locales.contains(default_locale) ||
       !base::PathExists(default_locale_path)) {
     *error = l10n_util::GetStringUTF8(
         IDS_EXTENSION_LOCALES_NO_DEFAULT_LOCALE_SPECIFIED);

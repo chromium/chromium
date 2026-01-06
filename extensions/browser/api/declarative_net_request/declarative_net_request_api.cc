@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -350,7 +349,7 @@ DeclarativeNetRequestUpdateEnabledRulesetsFunction::Run() {
 
       // |ruleset_ids_to_enable| takes priority over |ruleset_ids_to_disable|.
       RulesetID id = it->second->id;
-      if (base::Contains(ids_to_enable, id)) {
+      if (ids_to_enable.contains(id)) {
         continue;
       }
 

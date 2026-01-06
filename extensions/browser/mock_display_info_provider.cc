@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -38,7 +37,7 @@ void MockDisplayInfoProvider::EnableUnifiedDesktop(bool enable) {
 }
 
 bool MockDisplayInfoProvider::OverscanCalibrationStart(const std::string& id) {
-  if (base::Contains(overscan_started_, id)) {
+  if (overscan_started_.contains(id)) {
     return false;
   }
   overscan_started_.insert(id);
@@ -48,7 +47,7 @@ bool MockDisplayInfoProvider::OverscanCalibrationStart(const std::string& id) {
 bool MockDisplayInfoProvider::OverscanCalibrationAdjust(
     const std::string& id,
     const api::system_display::Insets& delta) {
-  if (!base::Contains(overscan_started_, id)) {
+  if (!overscan_started_.contains(id)) {
     return false;
   }
   overscan_adjusted_.insert(id);
@@ -56,7 +55,7 @@ bool MockDisplayInfoProvider::OverscanCalibrationAdjust(
 }
 
 bool MockDisplayInfoProvider::OverscanCalibrationReset(const std::string& id) {
-  if (!base::Contains(overscan_started_, id)) {
+  if (!overscan_started_.contains(id)) {
     return false;
   }
   overscan_adjusted_.erase(id);
@@ -65,7 +64,7 @@ bool MockDisplayInfoProvider::OverscanCalibrationReset(const std::string& id) {
 
 bool MockDisplayInfoProvider::OverscanCalibrationComplete(
     const std::string& id) {
-  if (!base::Contains(overscan_started_, id)) {
+  if (!overscan_started_.contains(id)) {
     return false;
   }
   overscan_started_.erase(id);
@@ -73,11 +72,11 @@ bool MockDisplayInfoProvider::OverscanCalibrationComplete(
 }
 
 bool MockDisplayInfoProvider::calibration_started(const std::string& id) const {
-  return base::Contains(overscan_started_, id);
+  return overscan_started_.contains(id);
 }
 
 bool MockDisplayInfoProvider::calibration_changed(const std::string& id) const {
-  return base::Contains(overscan_adjusted_, id);
+  return overscan_adjusted_.contains(id);
 }
 
 void MockDisplayInfoProvider::ShowNativeTouchCalibration(

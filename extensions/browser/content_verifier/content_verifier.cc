@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -480,12 +479,11 @@ class ContentVerifier::VerifiedFileTypeHelper {
     if (canonical_path_value == data_->canonical_service_worker_script_path) {
       return ContentVerifier::VerifiedFileType::kServiceWorkerScript;
     }
-    if (base::Contains(data_->canonical_background_scripts_paths,
-                       canonical_path_value)) {
+    if (data_->canonical_background_scripts_paths.contains(
+            canonical_path_value)) {
       return ContentVerifier::VerifiedFileType::kBackgroundScript;
     }
-    if (base::Contains(data_->canonical_content_scripts_paths,
-                       canonical_path_value)) {
+    if (data_->canonical_content_scripts_paths.contains(canonical_path_value)) {
       return ContentVerifier::VerifiedFileType::kContentScript;
     }
 
@@ -505,14 +503,12 @@ class ContentVerifier::VerifiedFileTypeHelper {
 
     // The browser re-writes image files during extension load, so they can't
     // be verified.
-    if (base::Contains(data_->canonical_browser_image_paths,
-                       canonical_path_value)) {
+    if (data_->canonical_browser_image_paths.contains(canonical_path_value)) {
       return ContentVerifier::VerifiedFileType::kNone;
     }
 
     // Skip indexed rulesets since these are generated.
-    if (base::Contains(data_->canonical_indexed_ruleset_paths,
-                       canonical_path_value)) {
+    if (data_->canonical_indexed_ruleset_paths.contains(canonical_path_value)) {
       return ContentVerifier::VerifiedFileType::kNone;
     }
 

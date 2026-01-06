@@ -6,7 +6,6 @@
 
 #include <ostream>
 
-#include "base/containers/contains.h"
 #include "extensions/renderer/bindings/api_signature.h"
 #include "extensions/renderer/bindings/argument_spec.h"
 
@@ -18,7 +17,7 @@ APITypeReferenceMap::~APITypeReferenceMap() = default;
 
 void APITypeReferenceMap::AddSpec(const std::string& name,
                                   std::unique_ptr<ArgumentSpec> spec) {
-  DCHECK(!base::Contains(type_refs_, name));
+  DCHECK(!type_refs_.contains(name));
   type_refs_[name] = std::move(spec);
 }
 
@@ -35,7 +34,7 @@ const ArgumentSpec* APITypeReferenceMap::GetSpec(
 void APITypeReferenceMap::AddAPIMethodSignature(
     const std::string& name,
     std::unique_ptr<APISignature> signature) {
-  DCHECK(!base::Contains(api_methods_, name))
+  DCHECK(!api_methods_.contains(name))
       << "Cannot re-register signature for: " << name;
   api_methods_[name] = std::move(signature);
 }
@@ -53,7 +52,7 @@ const APISignature* APITypeReferenceMap::GetAPIMethodSignature(
 void APITypeReferenceMap::AddTypeMethodSignature(
     const std::string& name,
     std::unique_ptr<APISignature> signature) {
-  DCHECK(!base::Contains(type_methods_, name))
+  DCHECK(!type_methods_.contains(name))
       << "Cannot re-register signature for: " << name;
   type_methods_[name] = std::move(signature);
 }
@@ -75,7 +74,7 @@ const APISignature* APITypeReferenceMap::GetTypeMethodSignature(
 
 bool APITypeReferenceMap::HasTypeMethodSignature(
     const std::string& name) const {
-  return base::Contains(type_methods_, name);
+  return type_methods_.contains(name);
 }
 
 const APISignature* APITypeReferenceMap::GetAsyncResponseSignature(
@@ -87,7 +86,7 @@ const APISignature* APITypeReferenceMap::GetAsyncResponseSignature(
 void APITypeReferenceMap::AddCustomSignature(
     const std::string& name,
     std::unique_ptr<APISignature> signature) {
-  DCHECK(!base::Contains(custom_signatures_, name))
+  DCHECK(!custom_signatures_.contains(name))
       << "Cannot re-register signature for: " << name;
   custom_signatures_[name] = std::move(signature);
 }
@@ -101,7 +100,7 @@ const APISignature* APITypeReferenceMap::GetCustomSignature(
 void APITypeReferenceMap::AddEventSignature(
     const std::string& event_name,
     std::unique_ptr<APISignature> signature) {
-  DCHECK(!base::Contains(event_signatures_, event_name))
+  DCHECK(!event_signatures_.contains(event_name))
       << "Cannot re-register signature for: " << event_name;
   event_signatures_[event_name] = std::move(signature);
 }

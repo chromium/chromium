@@ -11,7 +11,6 @@
 #include <set>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -356,10 +355,9 @@ TEST_F(StorageApiUnittest, StorageAreaOnChanged) {
   RunSetFunction("key", "value");
   EXPECT_EQ(2u, event_observer.events().size());
 
-  EXPECT_TRUE(base::Contains(event_observer.events(),
-                             api::storage::OnChanged::kEventName));
   EXPECT_TRUE(
-      base::Contains(event_observer.events(), "storage.local.onChanged"));
+      event_observer.events().contains(api::storage::OnChanged::kEventName));
+  EXPECT_TRUE(event_observer.events().contains("storage.local.onChanged"));
 }
 
 // Test that no event is dispatched if no listener is added.
@@ -397,8 +395,8 @@ TEST_F(StorageApiUnittest, StorageAreaOnChangedOnlyOneListener) {
   RunSetFunction("key", "value");
   EXPECT_EQ(1u, event_observer.events().size());
 
-  EXPECT_TRUE(base::Contains(event_observer.events(),
-                             api::storage::OnChanged::kEventName));
+  EXPECT_TRUE(
+      event_observer.events().contains(api::storage::OnChanged::kEventName));
 }
 
 // This is a regression test for crbug.com/1483828.
@@ -461,7 +459,7 @@ TEST_F(StorageApiUnittest, GetOperationExceedsSizeLimit) {
       function.get(), "[\"local\", \"kKeyWithLargeValue\"]", browser_context());
 
   const std::string expected_error_substring = "exceeds the maximum limit";
-  EXPECT_TRUE(base::Contains(error, expected_error_substring));
+  EXPECT_TRUE(error.contains(expected_error_substring));
 
   frontend->DisableStorageForTesting(settings_namespace::Namespace::LOCAL);
 }

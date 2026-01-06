@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -102,7 +101,7 @@ TEST(ExtensionL10nUtil, ValidateLocalesWithErroneousLocalizations) {
   std::u16string error;
   EXPECT_FALSE(extension_l10n_util::ValidateExtensionLocales(temp.GetPath(),
                                                              manifest, &error));
-  EXPECT_FALSE(base::Contains(error, sr_messages_file.LossyDisplayName()));
+  EXPECT_FALSE(error.contains(sr_messages_file.LossyDisplayName()));
   EXPECT_THAT(base::UTF16ToUTF8(error),
               testing::HasSubstr(ErrorUtils::FormatErrorMessage(
                   errors::kLocalesInvalidLocale,
@@ -171,8 +170,8 @@ TEST(ExtensionL10nUtil, GetValidLocalesWithUnsupportedLocale) {
   EXPECT_TRUE(extension_l10n_util::GetValidLocales(src_path, &locales, &error));
 
   EXPECT_FALSE(locales.empty());
-  EXPECT_TRUE(base::Contains(locales, "sr"));
-  EXPECT_FALSE(base::Contains(locales, "xxx_yyy"));
+  EXPECT_TRUE(locales.contains("sr"));
+  EXPECT_FALSE(locales.contains("xxx_yyy"));
 }
 
 TEST(ExtensionL10nUtil, GetValidLocalesWithValidLocalesAndMessagesFile) {
@@ -186,9 +185,9 @@ TEST(ExtensionL10nUtil, GetValidLocalesWithValidLocalesAndMessagesFile) {
   EXPECT_TRUE(
       extension_l10n_util::GetValidLocales(install_dir, &locales, &error));
   EXPECT_EQ(3U, locales.size());
-  EXPECT_TRUE(base::Contains(locales, "sr"));
-  EXPECT_TRUE(base::Contains(locales, "en"));
-  EXPECT_TRUE(base::Contains(locales, "en_US"));
+  EXPECT_TRUE(locales.contains("sr"));
+  EXPECT_TRUE(locales.contains("en"));
+  EXPECT_TRUE(locales.contains("en_US"));
 }
 
 TEST(ExtensionL10nUtil, LoadMessageCatalogsValidFallback) {

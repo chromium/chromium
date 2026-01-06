@@ -10,7 +10,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -424,8 +423,8 @@ bool OneTimeMessageHandler::HasPort(ScriptContext* script_context,
           CreatePerContextData::kDontCreateIfMissing);
   if (!data)
     return false;
-  return port_id.is_opener ? base::Contains(data->openers, port_id)
-                           : base::Contains(data->receivers, port_id);
+  return port_id.is_opener ? data->openers.contains(port_id)
+                           : data->receivers.contains(port_id);
 }
 
 v8::Local<v8::Promise> OneTimeMessageHandler::SendMessage(
@@ -523,7 +522,7 @@ void OneTimeMessageHandler::AddReceiver(ScriptContext* script_context,
       GetPerContextData<OneTimeMessageContextData>(
           context, CreatePerContextData::kCreateIfMissing);
   DCHECK(data);
-  DCHECK(!base::Contains(data->receivers, target_port_id));
+  DCHECK(!data->receivers.contains(target_port_id));
   OneTimeReceiver& receiver = data->receivers[target_port_id];
   receiver.sender.Reset(isolate, sender);
   receiver.event_name = event_name;

@@ -9,7 +9,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
@@ -271,7 +270,7 @@ void UsbDeviceManager::OnDeviceAdded(
     device::mojom::UsbDeviceInfoPtr device_info) {
   DCHECK(device_info);
   // Update the device list.
-  DCHECK(!base::Contains(devices_, device_info->guid));
+  DCHECK(!devices_.contains(device_info->guid));
   if (!ShouldExposeDevice(*device_info))
     return;
   std::string guid = device_info->guid;
@@ -291,7 +290,7 @@ void UsbDeviceManager::OnDeviceRemoved(
   DCHECK(device_info);
 
   // Handle if ShouldExposeDevice() returned false when the device was added.
-  if (!base::Contains(devices_, device_info->guid))
+  if (!devices_.contains(device_info->guid))
     return;
 
   // Update the device list.

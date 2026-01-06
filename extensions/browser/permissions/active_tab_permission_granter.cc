@@ -7,7 +7,6 @@
 #include <set>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -85,7 +84,7 @@ void SendRendererMessageToProcesses(
   std::set<content::RenderProcessHost*> sent_to_hosts;
   for (content::RenderFrameHost* frame_host : frame_hosts) {
     content::RenderProcessHost* process_host = frame_host->GetProcess();
-    if (!base::Contains(sent_to_hosts, process_host)) {
+    if (!sent_to_hosts.contains(process_host)) {
       // Extension processes have to update the origin allowlists.
       renderer_message.Run(true, process_host);
       sent_to_hosts.insert(frame_host->GetProcess());
@@ -93,7 +92,7 @@ void SendRendererMessageToProcesses(
   }
   // If the tab wasn't one of those processes already updated (it likely
   // wasn't), update it. Tabs don't need to update the origin allowlist.
-  if (!base::Contains(sent_to_hosts, tab_process)) {
+  if (!sent_to_hosts.contains(tab_process)) {
     renderer_message.Run(false, tab_process);
   }
 }

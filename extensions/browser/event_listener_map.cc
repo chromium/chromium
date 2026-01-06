@@ -8,7 +8,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/event_router.h"
@@ -443,7 +442,7 @@ void EventListenerMap::CleanupListener(EventListener* listener) {
 }
 
 bool EventListenerMap::IsFilteredEvent(const Event& event) const {
-  return base::Contains(filtered_events_, event.event_name);
+  return filtered_events_.contains(event.event_name);
 }
 
 }  // namespace extensions

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler_registry.h"
 #include "extensions/common/permissions/manifest_permission.h"

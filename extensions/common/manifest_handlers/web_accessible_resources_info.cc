@@ -9,7 +9,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -242,7 +241,7 @@ bool IsResourceWebAccessibleImpl(
       if (initiator_url.SchemeIs(extensions::kExtensionScheme) &&
           (entry.allow_all_extensions ||
            extension.id() == initiator_url.GetHost() ||
-           base::Contains(entry.extension_ids, initiator_url.GetHost()))) {
+           entry.extension_ids.contains(initiator_url.GetHost()))) {
         return result;
       }
     }

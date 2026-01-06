@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -298,7 +297,7 @@ PermissionIDSet PermissionIDSet::GetAllPermissionsWithIDs(
     const std::set<APIPermissionID>& permission_ids) const {
   PermissionIDSet subset;
   for (const auto& permission : permissions_) {
-    if (base::Contains(permission_ids, permission.id())) {
+    if (permission_ids.contains(permission.id())) {
       subset.permissions_.insert(permission);
     }
   }

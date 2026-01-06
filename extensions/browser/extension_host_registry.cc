@@ -5,7 +5,6 @@
 #include "extensions/browser/extension_host_registry.h"
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -85,7 +84,7 @@ BrowserContextKeyedServiceFactory* ExtensionHostRegistry::GetFactory() {
 
 void ExtensionHostRegistry::ExtensionHostCreated(
     ExtensionHost* extension_host) {
-  DCHECK(!base::Contains(extension_hosts_, extension_host));
+  DCHECK(!extension_hosts_.contains(extension_host));
   extension_hosts_.insert(extension_host);
 
   // Note: There's not currently any observer method corresponding to host
@@ -96,7 +95,7 @@ void ExtensionHostRegistry::ExtensionHostCreated(
 
 void ExtensionHostRegistry::ExtensionHostRenderProcessReady(
     ExtensionHost* extension_host) {
-  DCHECK(base::Contains(extension_hosts_, extension_host));
+  DCHECK(extension_hosts_.contains(extension_host));
 
   for (Observer& observer : observers_) {
     observer.OnExtensionHostRenderProcessReady(
@@ -106,7 +105,7 @@ void ExtensionHostRegistry::ExtensionHostRenderProcessReady(
 
 void ExtensionHostRegistry::ExtensionHostCompletedFirstLoad(
     ExtensionHost* extension_host) {
-  DCHECK(base::Contains(extension_hosts_, extension_host));
+  DCHECK(extension_hosts_.contains(extension_host));
 
   // TODO(devlin): This can unexpectedly fire when a renderer process is
   // terminating.  When a renderer process is terminated, it causes the
@@ -126,7 +125,7 @@ void ExtensionHostRegistry::ExtensionHostCompletedFirstLoad(
 
 void ExtensionHostRegistry::ExtensionHostDocumentElementAvailable(
     ExtensionHost* extension_host) {
-  DCHECK(base::Contains(extension_hosts_, extension_host));
+  DCHECK(extension_hosts_.contains(extension_host));
 
   for (Observer& observer : observers_) {
     observer.OnExtensionHostDocumentElementAvailable(
@@ -136,7 +135,7 @@ void ExtensionHostRegistry::ExtensionHostDocumentElementAvailable(
 
 void ExtensionHostRegistry::ExtensionHostRenderProcessGone(
     ExtensionHost* extension_host) {
-  DCHECK(base::Contains(extension_hosts_, extension_host));
+  DCHECK(extension_hosts_.contains(extension_host));
 
   for (Observer& observer : observers_) {
     observer.OnExtensionHostRenderProcessGone(extension_host->browser_context(),
@@ -146,7 +145,7 @@ void ExtensionHostRegistry::ExtensionHostRenderProcessGone(
 
 void ExtensionHostRegistry::ExtensionHostDestroyed(
     ExtensionHost* extension_host) {
-  DCHECK(base::Contains(extension_hosts_, extension_host));
+  DCHECK(extension_hosts_.contains(extension_host));
   extension_hosts_.erase(extension_host);
 
   for (Observer& observer : observers_) {

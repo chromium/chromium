@@ -7,7 +7,6 @@
 #include <map>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
@@ -280,7 +279,7 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
     constexpr size_t kMaxActiveUserScriptWorldCount = 10;
     if (active_user_script_worlds &&
         active_user_script_worlds->size() >= kMaxActiveUserScriptWorldCount &&
-        !base::Contains(*active_user_script_worlds, world_id)) {
+        !active_user_script_worlds->contains(world_id)) {
       // If there are 10 or more active user script worlds, we use the default
       // world for future injections.
       // Note: This *can* mean that up to 11 user script worlds for this

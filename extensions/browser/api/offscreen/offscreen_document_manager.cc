@@ -5,7 +5,6 @@
 #include "extensions/browser/api/offscreen/offscreen_document_manager.h"
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -114,8 +113,8 @@ OffscreenDocumentHost* OffscreenDocumentManager::CreateOffscreenDocument(
   DCHECK_EQ(url::Origin::Create(url), extension.origin());
   // Currently only a single offscreen document is supported per extension.
   DCHECK_EQ(nullptr, GetOffscreenDocumentForExtension(extension));
-  DCHECK(!base::Contains(offscreen_documents_, extension.id()));
-  CHECK(!base::Contains(reasons, api::offscreen::Reason::kNone));
+  DCHECK(!offscreen_documents_.contains(extension.id()));
+  CHECK(!reasons.contains(api::offscreen::Reason::kNone));
 #if DCHECK_IS_ON()
   // This should only be for an off-the-record context if the extension is both
   // enabled in incognito *and* runs in split mode. For spanning mode
@@ -173,13 +172,13 @@ void OffscreenDocumentManager::CloseOffscreenDocumentForExtension(
 
 void OffscreenDocumentManager::CloseOffscreenDocumentForExtensionId(
     const ExtensionId& extension_id) {
-  DCHECK(base::Contains(offscreen_documents_, extension_id));
+  DCHECK(offscreen_documents_.contains(extension_id));
   offscreen_documents_.erase(extension_id);
 }
 
 void OffscreenDocumentManager::OnOffscreenDocumentActivityChanged(
     const ExtensionId& extension_id) {
-  DCHECK(base::Contains(offscreen_documents_, extension_id));
+  DCHECK(offscreen_documents_.contains(extension_id));
   OffscreenDocumentData& data = offscreen_documents_[extension_id];
   DCHECK(data.host);
 

@@ -8,7 +8,6 @@
 #include <set>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -49,7 +48,7 @@ TEST(ExtensionFunctionHistogramValueTest, CheckEnums) {
     //   not (yet) worth making it smart enough to deal with that.
     std::string expected_string =
         base::StringPrintf(" %s = %d", entry.second.c_str(), entry.first);
-    EXPECT_TRUE(base::Contains(file_contents, expected_string))
+    EXPECT_TRUE(file_contents.contains(expected_string))
         << "Failed to find entry " << entry.second << " with value "
         << entry.first;
   }

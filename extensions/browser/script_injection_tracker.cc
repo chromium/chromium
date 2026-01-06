@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
@@ -100,7 +99,7 @@ class RenderProcessHostUserData : public base::SupportsUserData::Data {
 
   bool HasScript(ScriptInjectionTracker::ScriptType script_type,
                  const ExtensionId& extension_id) const {
-    return base::Contains(GetScripts(script_type), extension_id);
+    return GetScripts(script_type).contains(extension_id);
   }
 
   void AddScript(ScriptInjectionTracker::ScriptType script_type,

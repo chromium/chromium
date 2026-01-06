@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -572,7 +571,7 @@ void WarningServiceObserver::WaitForWarning() {
 
 void WarningServiceObserver::ExtensionWarningsChanged(
     const ExtensionIdSet& affected_extensions) {
-  if (!base::Contains(affected_extensions, extension_id_)) {
+  if (!affected_extensions.contains(extension_id_)) {
     return;
   }
 

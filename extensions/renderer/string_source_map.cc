@@ -7,7 +7,6 @@
 #include <ostream>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "gin/converter.h"
 #include "third_party/zlib/google/compression_utils.h"
 
@@ -27,7 +26,7 @@ v8::Local<v8::String> StringSourceMap::GetSource(
 }
 
 bool StringSourceMap::Contains(const std::string& name) const {
-  return base::Contains(sources_, name);
+  return sources_.contains(name);
 }
 
 void StringSourceMap::RegisterModule(const std::string& name,

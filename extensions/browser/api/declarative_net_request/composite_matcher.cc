@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -124,7 +123,7 @@ void CompositeMatcher::AddOrUpdateRulesets(MatcherList matchers) {
 void CompositeMatcher::RemoveRulesetsWithIDs(const std::set<RulesetID>& ids) {
   size_t erased_count = std::erase_if(
       matchers_, [&ids](const std::unique_ptr<RulesetMatcher>& matcher) {
-        return base::Contains(ids, matcher->id());
+        return ids.contains(matcher->id());
       });
 
   if (erased_count > 0) {
@@ -221,7 +220,7 @@ std::vector<RequestAction> CompositeMatcher::GetModifyHeadersActions(
   // for a rule, specified in `kMinValidPriority`, is 1.)
   uint64_t max_allow_rule_priority = 0u;
 
-  DCHECK(base::Contains(params.max_priority_allow_action, extension_id_));
+  DCHECK(params.max_priority_allow_action.contains(extension_id_));
   if (auto& allow_action = params.max_priority_allow_action.at(extension_id_)) {
     max_allow_rule_priority = allow_action->index_priority;
   }

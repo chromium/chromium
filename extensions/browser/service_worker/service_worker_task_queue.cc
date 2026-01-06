@@ -12,7 +12,6 @@
 
 #include "base/auto_reset.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -294,7 +293,7 @@ void ServiceWorkerTaskQueue::AddPendingTask(
       lazy_context_id.extension_id(),
       lazy_context_id.browser_context()->UniqueId(), *activation_token};
 
-  if (!base::Contains(worker_registered_, context_id)) {
+  if (!worker_registered_.contains(context_id)) {
     // If the worker hasn't finished registration, wait for it to complete. The
     // worker can't be started until a registration is found for it in the
     // //content layer. `DidRegisterServiceWorker()` will start the worker to
@@ -356,7 +355,7 @@ void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {
   activation_tokens_[extension_id] = activation_token;
   const SequencedContextId context_id = {
       extension_id, browser_context_->UniqueId(), activation_token};
-  DCHECK(!base::Contains(worker_state_map_, context_id));
+  DCHECK(!worker_state_map_.contains(context_id));
 
   content::ServiceWorkerContext* service_worker_context =
       GetServiceWorkerContext(extension->id());
@@ -380,7 +379,7 @@ void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {
                                          !service_worker_already_registered);
   }
 
-  DCHECK(!base::Contains(worker_registered_, context_id));
+  DCHECK(!worker_registered_.contains(context_id));
   if (service_worker_already_registered) {
     worker_registered_.insert(context_id);
     VerifyRegistration(service_worker_context, context_id, extension->url());
@@ -670,9 +669,8 @@ void ServiceWorkerTaskQueue::RetryRegisterServiceWorker(
   // Ensure the activation is still current.
   if (!IsCurrentActivation(context_id.extension_id, context_id.token)) {
     // NOTE: retry state has been cleared when `DeactivateExtension` was called.
-    DCHECK(!base::Contains(worker_registration_retries_, context_id.token));
-    DCHECK(
-        !base::Contains(worker_unregistration_wait_retries_, context_id.token));
+    DCHECK(!worker_registration_retries_.contains(context_id.token));
+    DCHECK(!worker_unregistration_wait_retries_.contains(context_id.token));
     return;
   }
 
@@ -697,7 +695,7 @@ void ServiceWorkerTaskQueue::RetryStartWorker(
   // Ensure the activation is still current.
   if (!IsCurrentActivation(context_id.extension_id, context_id.token)) {
     // NOTE: retry state has been cleared when `DeactivateExtension` was called.
-    DCHECK(!base::Contains(worker_start_retries_, context_id.token));
+    DCHECK(!worker_start_retries_.contains(context_id.token));
     return;
   }
   ServiceWorkerState* worker_state = GetWorkerState(context_id);
@@ -1215,7 +1213,7 @@ bool ServiceWorkerTaskQueue::IsWorkerRegistered(
   }
   const SequencedContextId context_id = {
       extension_id, browser_context_->UniqueId(), *activation_token};
-  return base::Contains(worker_registered_, context_id);
+  return worker_registered_.contains(context_id);
 }
 
 size_t ServiceWorkerTaskQueue::GetNumPendingTasksForTest(

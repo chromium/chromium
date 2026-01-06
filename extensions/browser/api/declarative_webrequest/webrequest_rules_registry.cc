@@ -9,7 +9,6 @@
 #include <limits>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_condition.h"
@@ -124,7 +123,7 @@ WebRequestRulesRegistry::CreateDeltas(PermissionHelper* permission_helper,
     if (!rule->tags().empty() && !ignore_tags[extension_id].empty()) {
       bool ignore_rule = false;
       for (const std::string& tag : rule->tags())
-        ignore_rule |= base::Contains(ignore_tags[extension_id], tag);
+        ignore_rule |= ignore_tags[extension_id].contains(tag);
       if (ignore_rule)
         continue;
     }
@@ -366,7 +365,7 @@ void WebRequestRulesRegistry::AddTriggeredRules(
   for (const auto& url_match : url_matches) {
     auto rule_trigger = rule_triggers_.find(url_match);
     CHECK(rule_trigger != rule_triggers_.end());
-    if (!base::Contains(*result, rule_trigger->second) &&
+    if (!result->contains(rule_trigger->second) &&
         rule_trigger->second->conditions().IsFulfilled(url_match, request_data))
       result->insert(rule_trigger->second);
   }

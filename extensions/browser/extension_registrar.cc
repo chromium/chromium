@@ -6,7 +6,6 @@
 
 #include "base/check_is_test.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -825,8 +824,7 @@ void ExtensionRegistrar::OnBlocklistStateAdded(
   if (blocklist_prefs::HasAcknowledgedBlocklistState(
           extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
           extension_prefs_)) {
-    DCHECK(base::Contains(registry_->blocklisted_extensions().GetIDs(),
-                          extension_id));
+    DCHECK(registry_->blocklisted_extensions().GetIDs().contains(extension_id));
     return;
   }
 
@@ -950,7 +948,7 @@ void ExtensionRegistrar::TerminateExtension(const ExtensionId& extension_id) {
   // even if it's not permanently installed.
   unloaded_extension_paths_[extension->id()] = extension->path();
 
-  DCHECK(!base::Contains(reloading_extensions_, extension->id()))
+  DCHECK(!reloading_extensions_.contains(extension->id()))
       << "Enabled extension shouldn't be marked for reloading";
 
   registry_->AddTerminated(extension);
@@ -1247,8 +1245,7 @@ void ExtensionRegistrar::MaybeSpinUpLazyContext(const Extension* extension,
 
   // For orphaned devtools, we will reconnect devtools to it later in
   // DidCreateMainFrameForBackgroundPage().
-  bool has_orphaned_dev_tools =
-      base::Contains(orphaned_dev_tools_, extension->id());
+  bool has_orphaned_dev_tools = orphaned_dev_tools_.contains(extension->id());
 
   // Reloading component extension does not trigger install, so RuntimeAPI won't
   // be able to detect its loading. Therefore, we need to spin up its lazy

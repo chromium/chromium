@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/callback_list.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted.h"
@@ -297,7 +296,7 @@ void Blocklist::OnBlocklistStateReceived(const ExtensionId& id,
 
     bool have_all_in_cache = true;
     for (const auto& id_str : ids) {
-      if (!base::Contains(blocklist_state_cache_, id_str)) {
+      if (!blocklist_state_cache_.contains(id_str)) {
         have_all_in_cache = false;
         break;
       }

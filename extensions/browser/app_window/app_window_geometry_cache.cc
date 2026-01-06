@@ -8,7 +8,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/observer_list.h"
@@ -58,7 +57,7 @@ void AppWindowGeometryCache::SaveGeometry(
   if (extension_data[window_id].bounds == bounds &&
       extension_data[window_id].window_state == window_state &&
       extension_data[window_id].screen_bounds == screen_bounds &&
-      !base::Contains(unsynced_extensions_, extension_id))
+      !unsynced_extensions_.contains(extension_id))
     return;
 
   base::Time now = base::Time::Now();

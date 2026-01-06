@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
@@ -113,7 +112,7 @@ void APIBindingsSystem::InitializeType(const std::string& type_name) {
   std::string api_name = type_name.substr(0, dot);
   // If we've already instantiated the binding, the type should have been in
   // there.
-  DCHECK(!base::Contains(api_bindings_, api_name)) << api_name;
+  DCHECK(!api_bindings_.contains(api_name)) << api_name;
 
   api_bindings_[api_name] = CreateNewAPIBinding(api_name);
 }
@@ -150,7 +149,7 @@ void APIBindingsSystem::RegisterHooksDelegate(
 
 void APIBindingsSystem::RegisterCustomType(const std::string& type_name,
                                            CustomTypeHandler function) {
-  DCHECK(!base::Contains(custom_types_, type_name))
+  DCHECK(!custom_types_.contains(type_name))
       << "Custom type already registered: " << type_name;
   custom_types_[type_name] = std::move(function);
 }

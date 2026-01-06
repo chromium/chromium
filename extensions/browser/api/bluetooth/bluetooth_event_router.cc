@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
@@ -224,7 +223,7 @@ void BluetoothEventRouter::SetDiscoveryFilter(
 
 BluetoothApiPairingDelegate* BluetoothEventRouter::GetPairingDelegate(
     const ExtensionId& extension_id) {
-  return base::Contains(pairing_delegate_map_, extension_id)
+  return pairing_delegate_map_.contains(extension_id)
              ? pairing_delegate_map_[extension_id]
              : nullptr;
 }
@@ -267,7 +266,7 @@ void BluetoothEventRouter::AddPairingDelegateImpl(
     return;
   }
 
-  if (base::Contains(pairing_delegate_map_, extension_id)) {
+  if (pairing_delegate_map_.contains(extension_id)) {
     // For WebUI there may be more than one page open to the same url
     // (e.g. chrome://settings). These will share the same pairing delegate.
     BLUETOOTH_LOG(EVENT) << "Pairing delegate already exists for extension_id: "
@@ -284,7 +283,7 @@ void BluetoothEventRouter::AddPairingDelegateImpl(
 
 void BluetoothEventRouter::RemovePairingDelegate(
     const ExtensionId& extension_id) {
-  if (base::Contains(pairing_delegate_map_, extension_id)) {
+  if (pairing_delegate_map_.contains(extension_id)) {
     BluetoothApiPairingDelegate* delegate = pairing_delegate_map_[extension_id];
     if (adapter_.get())
       adapter_->RemovePairingDelegate(delegate);

@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -249,7 +248,7 @@ TEST_F(ContentHashFetcherTest, MissingVerifiedContentsAndCorrupt) {
   ASSERT_NE(nullptr, result.get());
   EXPECT_TRUE(result->success);
   EXPECT_FALSE(result->was_cancelled);
-  EXPECT_TRUE(base::Contains(result->mismatch_paths, script_path.BaseName()));
+  EXPECT_TRUE(result->mismatch_paths.contains(script_path.BaseName()));
 
   // Make sure the verified_contents.json file was written into the extension's
   // install dir.

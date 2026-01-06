@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -532,8 +531,8 @@ ParseResult ValidateHeadersForModification(
         header_info.operation == dnr_api::HeaderOperation::kAppend) {
       // Check against the allowlist in lowercase since header names will be
       // stored in lowercase in flatbuffers later on.
-      if (!base::Contains(kDNRRequestHeaderAppendAllowList,
-                          base::ToLowerASCII(header_info.header))) {
+      if (!kDNRRequestHeaderAppendAllowList.contains(
+              base::ToLowerASCII(header_info.header))) {
         return ParseResult::ERROR_APPEND_INVALID_REQUEST_HEADER;
       }
     }
@@ -631,7 +630,7 @@ ParseResult ValidateResponseHeadersForMatching(
     // non-existence of a header.
     if (!header_info.values.has_value() &&
         !header_info.excluded_values.has_value() &&
-        base::Contains(response_header_names, header_info.header)) {
+        response_header_names.contains(header_info.header)) {
       return ParseResult::ERROR_MATCHING_RESPONSE_HEADER_DUPLICATED;
     }
   }
@@ -842,8 +841,7 @@ ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
                 indexed_rule->excluded_tab_ids);
     if (std::ranges::any_of(
             indexed_rule->tab_ids, [indexed_rule](int included_tab_id) {
-              return base::Contains(indexed_rule->excluded_tab_ids,
-                                    included_tab_id);
+              return indexed_rule->excluded_tab_ids.contains(included_tab_id);
             })) {
       return ParseResult::ERROR_TAB_ID_DUPLICATED;
     }
