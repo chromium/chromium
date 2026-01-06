@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_TABS_TABS_EVENT_ROUTER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_TABS_TABS_EVENT_ROUTER_H_
 
+#include <set>
+#include <string>
+
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -14,6 +17,10 @@
 #endif
 
 class Profile;
+
+namespace content {
+class WebContents;
+}
 
 namespace extensions {
 
@@ -32,6 +39,15 @@ class TabsEventRouter {
   ~TabsEventRouter();
 
  private:
+  // The platform delegate is basically a platform-specific addendum to this
+  // class, so we allow it to reach into this class's internal state.
+  friend class TabsEventRouterPlatformDelegate;
+
+  // Packages `changed_property_names` as a tab updated event for the tab
+  // `contents` and dispatches the event to the extension.
+  void DispatchTabUpdatedEvent(content::WebContents* contents,
+                               std::set<std::string> changed_property_names);
+
   TabsEventRouterPlatformDelegate platform_delegate_;
 };
 

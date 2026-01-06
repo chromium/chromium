@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
@@ -27,6 +28,7 @@ class WebContents;
 }
 
 namespace extensions {
+class TabsEventRouter;
 
 // TODO(crbug.com/473593117): This class is a temporary solution to unblock the
 // Tabs API on desktop Android. It can be deleted once TabsEventRouter works on
@@ -34,7 +36,7 @@ namespace extensions {
 class TabsEventRouterPlatformDelegate : public TabModelListObserver,
                                         public TabModelObserver {
  public:
-  explicit TabsEventRouterPlatformDelegate(Profile* profile);
+  TabsEventRouterPlatformDelegate(TabsEventRouter& router, Profile& profile);
   TabsEventRouterPlatformDelegate(const TabsEventRouterPlatformDelegate&) =
       delete;
   TabsEventRouterPlatformDelegate& operator=(
@@ -71,8 +73,6 @@ class TabsEventRouterPlatformDelegate : public TabModelListObserver,
                   std::set<std::string> changed_property_names);
 
   void DispatchTabCreatedEvent(content::WebContents* contents, bool active);
-  void DispatchTabUpdatedEvent(content::WebContents* contents,
-                               std::set<std::string> changed_property_names);
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
                      base::Value::List args,
@@ -84,7 +84,12 @@ class TabsEventRouterPlatformDelegate : public TabModelListObserver,
   // nullptr if not.
   TabEntry* GetTabEntry(content::WebContents* contents);
 
-  raw_ptr<Profile> profile_;
+  // The platform-agnostic TabsEventRouter.
+  // TODO(https://crbug.com/473593117): This should go away; it's just here
+  // while we migrate code.
+  raw_ref<TabsEventRouter> router_;
+
+  raw_ref<Profile> profile_;
 
   base::ScopedMultiSourceObservation<TabModel, TabModelObserver>
       tab_model_observations_{this};

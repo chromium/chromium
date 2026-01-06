@@ -13,6 +13,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
+#include "chrome/browser/extensions/api/tabs/tabs_event_router.h"
 #include "chrome/browser/extensions/api/tabs/tabs_windows_api.h"
 #include "chrome/browser/extensions/api/tabs/windows_event_router.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
@@ -71,38 +72,6 @@ constexpr char kMutedInfoKey[] = "mutedInfo";
 constexpr char kTabIdKey[] = "tabId";
 constexpr char kTabIdsKey[] = "tabIds";
 constexpr char kToIndexKey[] = "toIndex";
-
-bool WillDispatchTabUpdatedEvent(
-    WebContents* contents,
-    const std::set<std::string>& changed_property_names,
-    content::BrowserContext* browser_context,
-    mojom::ContextType target_context,
-    const Extension* extension,
-    const base::Value::Dict* listener_filter,
-    std::optional<base::Value::List>& event_args_out,
-    mojom::EventFilteringInfoPtr& event_filtering_info_out,
-    bool* dispatch_separate_event_out) {
-  ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-      ExtensionTabUtil::GetScrubTabBehavior(extension, target_context,
-                                            contents);
-  api::tabs::Tab tab_object = ExtensionTabUtil::CreateTabObject(
-      contents, scrub_tab_behavior, extension);
-
-  base::Value::Dict tab_value = tab_object.ToValue();
-
-  base::Value::Dict changed_properties;
-  for (const auto& property : changed_property_names) {
-    if (const base::Value* value = tab_value.Find(property)) {
-      changed_properties.Set(property, value->Clone());
-    }
-  }
-
-  event_args_out.emplace();
-  event_args_out->Append(ExtensionTabUtil::GetTabId(contents));
-  event_args_out->Append(std::move(changed_properties));
-  event_args_out->Append(std::move(tab_value));
-  return true;
-}
 
 bool WillDispatchTabCreatedEvent(
     WebContents* contents,
@@ -205,9 +174,12 @@ void TabsEventRouterPlatformDelegate::TabEntry::WebContentsDestroyed() {
 }
 
 TabsEventRouterPlatformDelegate::TabsEventRouterPlatformDelegate(
-    Profile* profile)
-    : profile_(profile), browser_tab_strip_tracker_(this, this) {
-  DCHECK(!profile->IsOffTheRecord());
+    TabsEventRouter& router,
+    Profile& profile)
+    : router_(router),
+      profile_(profile),
+      browser_tab_strip_tracker_(this, this) {
+  DCHECK(!profile.IsOffTheRecord());
 
   BrowserList::AddObserver(this);
   browser_tab_strip_tracker_.Init();
@@ -230,7 +202,7 @@ bool TabsEventRouterPlatformDelegate::ShouldTrackBrowser(
 }
 
 void TabsEventRouterPlatformDelegate::OnBrowserSetLastActive(Browser* browser) {
-  TabsWindowsAPI* tabs_window_api = TabsWindowsAPI::Get(profile_);
+  TabsWindowsAPI* tabs_window_api = TabsWindowsAPI::Get(&(*profile_));
   if (tabs_window_api) {
     tabs_window_api->windows_event_router()->OnActiveWindowChanged(
         browser ? BrowserExtensionWindowController::From(browser) : nullptr);
@@ -310,8 +282,8 @@ void TabsEventRouterPlatformDelegate::OnTabPinnedStateChanged(
     int index) {
   std::set<std::string> changed_property_names;
   changed_property_names.insert(kPinnedKey);
-  DispatchTabUpdatedEvent(tab->GetContents(),
-                          std::move(changed_property_names));
+  router_->DispatchTabUpdatedEvent(tab->GetContents(),
+                                   std::move(changed_property_names));
 }
 
 void TabsEventRouterPlatformDelegate::OnTabGroupChanged(
@@ -327,8 +299,8 @@ void TabsEventRouterPlatformDelegate::OnTabGroupChanged(
          change.GetCreateChange()->GetDetachedTabs()) {
       std::set<std::string> changed_property_names;
       changed_property_names.insert(kGroupIdKey);
-      DispatchTabUpdatedEvent(tab->GetContents(),
-                              std::move(changed_property_names));
+      router_->DispatchTabUpdatedEvent(tab->GetContents(),
+                                       std::move(changed_property_names));
     }
   } else if (change.type == TabGroupChange::kClosed &&
              change.GetCloseChange()->reason() ==
@@ -337,8 +309,8 @@ void TabsEventRouterPlatformDelegate::OnTabGroupChanged(
     for (tabs::TabInterface* tab : change.GetCloseChange()->GetDetachedTabs()) {
       std::set<std::string> changed_property_names;
       changed_property_names.insert(kGroupIdKey);
-      DispatchTabUpdatedEvent(tab->GetContents(),
-                              std::move(changed_property_names));
+      router_->DispatchTabUpdatedEvent(tab->GetContents(),
+                                       std::move(changed_property_names));
     }
   }
 }
@@ -352,8 +324,8 @@ void TabsEventRouterPlatformDelegate::OnSplitTabChanged(
          change.GetAddedChange()->tabs()) {
       std::set<std::string> changed_property_names;
       changed_property_names.insert(kSplitIdKey);
-      DispatchTabUpdatedEvent(tab.first->GetContents(),
-                              std::move(changed_property_names));
+      router_->DispatchTabUpdatedEvent(tab.first->GetContents(),
+                                       std::move(changed_property_names));
     }
   }
   if (change.type == SplitTabChange::Type::kRemoved &&
@@ -363,8 +335,8 @@ void TabsEventRouterPlatformDelegate::OnSplitTabChanged(
          change.GetRemovedChange()->tabs()) {
       std::set<std::string> changed_property_names;
       changed_property_names.insert(kSplitIdKey);
-      DispatchTabUpdatedEvent(tab.first->GetContents(),
-                              std::move(changed_property_names));
+      router_->DispatchTabUpdatedEvent(tab.first->GetContents(),
+                                       std::move(changed_property_names));
     }
   }
 }
@@ -377,8 +349,8 @@ void TabsEventRouterPlatformDelegate::TabGroupedStateChanged(
     int index) {
   std::set<std::string> changed_property_names;
   changed_property_names.insert(kGroupIdKey);
-  DispatchTabUpdatedEvent(tab->GetContents(),
-                          std::move(changed_property_names));
+  router_->DispatchTabUpdatedEvent(tab->GetContents(),
+                                   std::move(changed_property_names));
 }
 
 void TabsEventRouterPlatformDelegate::OnZoomControllerDestroyed(
@@ -452,7 +424,7 @@ void TabsEventRouterPlatformDelegate::OnLifecycleUnitStateChanged(
   }
 
   if (!changed_property_names.empty()) {
-    DispatchTabUpdatedEvent(
+    router_->DispatchTabUpdatedEvent(
         lifecycle_unit->AsTabLifecycleUnitExternal()->GetWebContents(),
         std::move(changed_property_names));
   }
@@ -462,8 +434,8 @@ void TabsEventRouterPlatformDelegate::OnIsAutoDiscardableChanged(
     const performance_manager::PageNode* page_node) {
   std::set<std::string> changed_property_names;
   changed_property_names.insert(kAutoDiscardableKey);
-  DispatchTabUpdatedEvent(page_node->GetWebContents().get(),
-                          std::move(changed_property_names));
+  router_->DispatchTabUpdatedEvent(page_node->GetWebContents().get(),
+                                   std::move(changed_property_names));
 }
 
 void TabsEventRouterPlatformDelegate::DispatchTabInsertedAt(
@@ -696,8 +668,8 @@ void TabsEventRouterPlatformDelegate::TabUpdated(
   }
 
   if (!changed_property_names.empty()) {
-    DispatchTabUpdatedEvent(entry->web_contents(),
-                            std::move(changed_property_names));
+    router_->DispatchTabUpdatedEvent(entry->web_contents(),
+                                     std::move(changed_property_names));
   }
 }
 
@@ -708,7 +680,7 @@ void TabsEventRouterPlatformDelegate::FaviconUrlUpdated(WebContents* contents) {
   }
   std::set<std::string> changed_property_names;
   changed_property_names.insert(tabs_constants::kFaviconUrlKey);
-  DispatchTabUpdatedEvent(contents, std::move(changed_property_names));
+  router_->DispatchTabUpdatedEvent(contents, std::move(changed_property_names));
 }
 
 void TabsEventRouterPlatformDelegate::DispatchEvent(
@@ -726,26 +698,6 @@ void TabsEventRouterPlatformDelegate::DispatchEvent(
                                        std::move(args), profile);
   event->user_gesture = user_gesture;
   event_router->BroadcastEvent(std::move(event));
-}
-
-void TabsEventRouterPlatformDelegate::DispatchTabUpdatedEvent(
-    WebContents* contents,
-    std::set<std::string> changed_property_names) {
-  DCHECK(!changed_property_names.empty());
-  DCHECK(contents);
-
-  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
-
-  auto event = std::make_unique<Event>(
-      events::TABS_ON_UPDATED, api::tabs::OnUpdated::kEventName,
-      // The event arguments depend on the extension's permission. They are set
-      // in WillDispatchTabUpdatedEvent().
-      base::Value::List(), profile);
-  event->user_gesture = EventRouter::UserGestureState::kNotEnabled;
-  event->will_dispatch_callback =
-      base::BindRepeating(&WillDispatchTabUpdatedEvent, contents,
-                          std::move(changed_property_names));
-  EventRouter::Get(profile)->BroadcastEvent(std::move(event));
 }
 
 void TabsEventRouterPlatformDelegate::RegisterForTabNotifications(

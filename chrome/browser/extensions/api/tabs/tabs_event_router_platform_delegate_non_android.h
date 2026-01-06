@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
@@ -34,6 +35,7 @@ class TabLifecycleUnitSource;
 }
 
 namespace extensions {
+class TabsEventRouter;
 
 // A non-android implementation of tabs event routing.
 // TODO(https://crbug.com/473593117): Pull most of this logic into the parent
@@ -47,7 +49,7 @@ class TabsEventRouterPlatformDelegate
       public resource_coordinator::LifecycleUnitObserver,
       public performance_manager::PageLiveStateObserver {
  public:
-  explicit TabsEventRouterPlatformDelegate(Profile* profile);
+  TabsEventRouterPlatformDelegate(TabsEventRouter& router, Profile& profile);
 
   TabsEventRouterPlatformDelegate(const TabsEventRouterPlatformDelegate&) =
       delete;
@@ -147,11 +149,6 @@ class TabsEventRouterPlatformDelegate
                      base::Value::List args,
                      EventRouter::UserGestureState user_gesture);
 
-  // Packages `changed_property_names` as a tab updated event for the tab
-  // `contents` and dispatches the event to the extension.
-  void DispatchTabUpdatedEvent(content::WebContents* contents,
-                               std::set<std::string> changed_property_names);
-
   // Register ourselves to receive the various notifications we are interested
   // in for a tab. Also create tab entry to observe web contents notifications.
   void RegisterForTabNotifications(content::WebContents* contents);
@@ -219,8 +216,13 @@ class TabsEventRouterPlatformDelegate
   using TabEntryMap = std::map<int, std::unique_ptr<TabEntry>>;
   TabEntryMap tab_entries_;
 
+  // The platform-agnostic TabsEventRouter.
+  // TODO(https://crbug.com/473593117): This should go away; it's just here
+  // while we migrate code.
+  raw_ref<TabsEventRouter> router_;
+
   // The main profile that owns this event router.
-  raw_ptr<Profile> profile_;
+  raw_ref<Profile> profile_;
 
   base::ScopedMultiSourceObservation<favicon::FaviconDriver,
                                      favicon::FaviconDriverObserver>
