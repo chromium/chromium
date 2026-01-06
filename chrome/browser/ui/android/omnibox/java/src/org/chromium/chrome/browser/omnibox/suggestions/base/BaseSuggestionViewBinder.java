@@ -170,7 +170,6 @@ public final class BaseSuggestionViewBinder<T extends View>
             actionView.setOnClickListener(v -> action.callback.run());
             actionView.setContentDescription(action.accessibilityDescription);
             actionView.enableShowOnlyOnFocus(action.showOnlyOnFocus);
-            applySelectableBackground(model, actionView);
             updateIcon(
                     model,
                     actionView,
@@ -218,7 +217,6 @@ public final class BaseSuggestionViewBinder<T extends View>
         for (int index = 0; index < actionViews.size(); index++) {
             ImageView actionView = actionViews.get(index);
 
-            applySelectableBackground(model, actionView);
             updateIcon(
                     model,
                     actionView,
