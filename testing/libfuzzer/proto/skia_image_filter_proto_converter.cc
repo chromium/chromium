@@ -48,7 +48,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
@@ -289,7 +288,7 @@ Converter::Converter(const Converter& other) {}
 
 std::string Converter::FieldToFlattenableName(
     const std::string& field_name) const {
-  CHECK(base::Contains(kFieldToFlattenableName, field_name));
+  CHECK(kFieldToFlattenableName.contains(field_name));
 
   return kFieldToFlattenableName.at(field_name);
 }
@@ -2334,7 +2333,7 @@ bool Converter::IsBlacklisted(const std::string& field_name) const {
   // Don't blacklist misbehaving flattenables.
   return false;
 #else
-  return base::Contains(kMisbehavedFlattenableBlacklist, field_name);
+  return kMisbehavedFlattenableBlacklist.contains(field_name);
 #endif  // AVOID_MISBEHAVIOR
 }
 }  // namespace skia_image_filter_proto_converter
