@@ -315,10 +315,6 @@ BASE_FEATURE(kSingleVideoFrameRateThrottling,
 BASE_FEATURE(kShutdownForFailedChannelCreation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, info for quads from the last render pass will be reported as
-// UMAs.
-BASE_FEATURE(kShouldLogFrameQuadInfo, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, ClientResourceProvider will allow for the batching of
 // callbacks. So that the client can perform a series of individual releases,
 // but have ClientResourceProvider coordinate the callbacks. This allows all of
@@ -465,10 +461,6 @@ NumCooldownFramesForAckOnSurfaceActivationDuringInteraction() {
       << "The number of cooldown frames must be non-negative";
   return static_cast<uint64_t>(
       kNumCooldownFramesForAckOnSurfaceActivationDuringInteraction.Get());
-}
-
-bool ShouldLogFrameQuadInfo() {
-  return base::FeatureList::IsEnabled(features::kShouldLogFrameQuadInfo);
 }
 
 #if BUILDFLAG(IS_MAC)

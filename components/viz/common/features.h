@@ -172,7 +172,6 @@ VIZ_COMMON_EXPORT bool UseSurfaceLayerForVideo();
 VIZ_COMMON_EXPORT int MaxOverlaysConsidered();
 VIZ_COMMON_EXPORT bool ShouldOnBeginFrameThrottleVideo();
 VIZ_COMMON_EXPORT bool IsVSyncAlignedPresentEnabled();
-VIZ_COMMON_EXPORT bool ShouldLogFrameQuadInfo();
 VIZ_COMMON_EXPORT std::optional<uint64_t>
 NumCooldownFramesForAckOnSurfaceActivationDuringInteraction();
 VIZ_COMMON_EXPORT extern const base::FeatureParam<int>
