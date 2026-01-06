@@ -4800,11 +4800,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-zram-writeback",
-    "owners": ["bgeffon@google.com", "chromeos-memory@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enforce-management-disclaimer",
     "owners": ["ydago@google.com", "cec-growth-eng@google.com"],
     "expiry_milestone": 145
