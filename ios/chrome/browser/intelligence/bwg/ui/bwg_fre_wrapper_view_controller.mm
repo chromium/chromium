@@ -127,6 +127,9 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
+  if (_currentChildViewController == _promoViewController) {
+    [self.mutator didShowGeminiPromo];
+  }
   // The related WebState can be hidden asynchronously while this animated view
   // is being shown. `BWGTabHelper::WasHidden()` causes the related coordinator
   // to shut down, causing the `mutator` to be nil, and leaves the view in a

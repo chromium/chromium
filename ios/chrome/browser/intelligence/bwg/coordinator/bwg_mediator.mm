@@ -110,8 +110,8 @@
 
 #pragma mark - BWGConsentMutator
 
-// Did consent to BWG.
-- (void)didConsentBWG {
+// Did consent to Gemini.
+- (void)didConsentGemini {
   _prefService->SetBoolean(prefs::kIOSBwgConsent, YES);
   if (IsGeminiNavigationPromoEnabled()) {
     _tracker->NotifyEvent(feature_engagement::events::kIOSGeminiConsentGiven);
@@ -123,12 +123,12 @@
 }
 
 // Did dismisses the Consent UI.
-- (void)didRefuseBWGConsent {
+- (void)didRefuseGeminiConsent {
   [_delegate dismissBWGFlow];
 }
 
-// Did close BWG Promo UI.
-- (void)didCloseBWGPromo {
+// Did close Gemini Promo UI.
+- (void)didCloseGeminiPromo {
   [_delegate dismissBWGFlow];
 }
 
@@ -137,6 +137,11 @@
   [self FREWillBeBackgrounded];
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
   [self.sceneHandler openURLInNewTab:command];
+}
+
+// Promo was shown.
+- (void)didShowGeminiPromo {
+  // No-op.
 }
 
 #pragma mark - Private

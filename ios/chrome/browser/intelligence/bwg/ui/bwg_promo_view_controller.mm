@@ -460,7 +460,7 @@ const CGFloat kBaselineAdjustment = 10.0;
 // Did tap Secondary Button.
 - (void)didTapSecondaryButton:(UIButton*)sender {
   RecordFREPromoAction(IOSGeminiFREAction::kDismiss);
-  [self.mutator didCloseBWGPromo];
+  [self.mutator didCloseGeminiPromo];
 }
 
 @end
