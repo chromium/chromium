@@ -264,7 +264,8 @@ TEST(RegistrationFetcherParamTest, ChallengeAsByteSequence) {
   std::vector<RegistrationFetcherParam> params =
       RegistrationFetcherParam::CreateIfValid(registration_request,
                                               response_headers.get());
-  ASSERT_TRUE(params.empty());
+  ASSERT_EQ(params.size(), 1u);
+  EXPECT_FALSE(params[0].challenge().has_value());
 }
 
 TEST(RegistrationFetcherParamTest, ValidInvalidValid) {
@@ -532,10 +533,6 @@ TEST(RegistrationFetcherParamTest, InvalidInputs) {
       {"https://www.example.com/reg", "start", std::nullopt, "c1"},
       // Missing registration
       {"https://www.example.com/reg", std::nullopt, "(ES256 RS256)", "c1"},
-      // Missing challenge
-      {"https://www.example.com/reg", "start", "(ES256 RS256)", std::nullopt},
-      // Empty challenge
-      {"https://www.example.com/reg", "start", "(ES256 RS256)", ""},
       // Challenge invalid utf8
       {"https://www.example.com/reg", "start", "(ES256 RS256)", "ab\xC0\x80"}};
 
@@ -716,6 +713,37 @@ TEST(RegistrationFetcherParamTest, InvalidProviderUrl) {
   // The provider_url is not secure, so reject the federated registration
   // request.
   EXPECT_TRUE(params.empty());
+}
+
+TEST(RegistrationFetcherParamTest, MissingChallenge) {
+  const GURL registration_request("https://www.example.com/registration");
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      CreateHeaders("https://www.example.com/reg", "(ES256 RS256)",
+                    /*challenge=*/std::nullopt,
+                    /*authorization=*/std::nullopt);
+  SCOPED_TRACE(registration_request.spec() + "; " +
+               response_headers->raw_headers());
+  std::vector<RegistrationFetcherParam> params =
+      RegistrationFetcherParam::CreateIfValid(registration_request,
+                                              response_headers.get());
+  ASSERT_EQ(params.size(), 1u);
+  EXPECT_FALSE(params[0].challenge().has_value());
+  EXPECT_FALSE(params[0].authorization().has_value());
+}
+
+TEST(RegistrationFetcherParamTest, EmptyChallenge) {
+  const GURL registration_request("https://www.example.com/registration");
+  scoped_refptr<net::HttpResponseHeaders> response_headers = CreateHeaders(
+      "https://www.example.com/reg", "(ES256 RS256)", /*challenge=*/"",
+      /*authorization=*/std::nullopt);
+  SCOPED_TRACE(registration_request.spec() + "; " +
+               response_headers->raw_headers());
+  std::vector<RegistrationFetcherParam> params =
+      RegistrationFetcherParam::CreateIfValid(registration_request,
+                                              response_headers.get());
+  ASSERT_EQ(params.size(), 1u);
+  EXPECT_EQ(params[0].challenge(), "");
+  EXPECT_FALSE(params[0].authorization().has_value());
 }
 
 }  // namespace

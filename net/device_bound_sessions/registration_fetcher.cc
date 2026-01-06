@@ -74,7 +74,7 @@ void SignChallengeWithKey(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     unexportable_keys::UnexportableKeyId key_id,
     const GURL& registration_url,
-    std::string_view challenge,
+    std::optional<std::string> challenge,
     std::optional<std::string> authorization,
     std::optional<std::string> session_identifier,
     base::OnceCallback<
@@ -202,7 +202,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     current_challenge_ = std::move(challenge);
     current_authorization_ = std::move(authorization);
 
-    if (current_challenge_.has_value()) {
+    if (current_challenge_.has_value() || current_authorization_.has_value()) {
       number_of_challenges_++;
       if (number_of_challenges_ < kMaxChallenges) {
         AttemptChallengeSigning();
@@ -215,11 +215,6 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
         return;
       }
     }
-
-    // Start a request to get a challenge with the session identifier. The
-    // `RegistrationRequestParam` constructors guarantee `session_identifier_`
-    // is set when `challenge_` is missing.
-    CHECK(IsForRefreshRequest());
 
     url_fetcher_ = std::make_unique<URLFetcher>(context_, fetcher_endpoint_,
                                                 net_log_source_);
@@ -447,7 +442,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
         std::optional<RegistrationFetcher::RegistrationToken>)>
         callback =
             base::BindOnce(&RegistrationFetcherImpl::OnRegistrationTokenCreated,
-                           GetWeakPtr(), *current_challenge_, *key_id_);
+                           GetWeakPtr(), current_challenge_, *key_id_);
 
     if (base::FeatureList::IsEnabled(
             features::kDeviceBoundSessionSigningQuotaAndCaching)) {
@@ -456,8 +451,10 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
         SessionKey session_key{site, Session::Id(*session_identifier_)};
         const SessionService::SignedRefreshChallenge* signed_refresh_challenge =
             session_service_->GetLatestSignedRefreshChallenge(session_key);
-        // If we already have a matching signed refresh challenge, we can skip
-        // past the signing.
+        // If we already have a matching signed refresh challenge, we
+        // can skip past the signing. We know we have a
+        // `current_challenge_` here because this block is behind
+        // `IsForRefreshRequest()`.
         if (signed_refresh_challenge &&
             signed_refresh_challenge->challenge == *current_challenge_ &&
             signed_refresh_challenge->key_id == *key_id_) {
@@ -481,14 +478,14 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     }
 
     SignChallengeWithKey(IsForRefreshRequest(), *key_service_, *key_id_,
-                         fetcher_endpoint_, *current_challenge_,
+                         fetcher_endpoint_, current_challenge_,
                          current_authorization_, session_identifier_,
                          std::move(callback));
     // `this` may be deleted.
   }
 
   void OnRegistrationTokenCreated(
-      std::string challenge,
+      std::optional<std::string> challenge,
       unexportable_keys::UnexportableKeyId key_id,
       std::optional<RegistrationFetcher::RegistrationToken>
           registration_token) {
@@ -510,12 +507,12 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     // attempted next time (e.g. if refresh transiently fails).
     if (base::FeatureList::IsEnabled(
             features::kDeviceBoundSessionSigningQuotaAndCaching) &&
-        IsForRefreshRequest()) {
+        IsForRefreshRequest() && challenge.has_value()) {
       SessionKey session_key{SchemefulSite(fetcher_endpoint_),
                              Session::Id(*session_identifier_)};
       SessionService::SignedRefreshChallenge signed_refresh_challenge = {
           .signed_challenge = std::move(registration_token.value()),
-          .challenge = std::move(challenge),
+          .challenge = std::move(*challenge),
           .key_id = key_id,
       };
       session_service_->SetLatestSignedRefreshChallenge(

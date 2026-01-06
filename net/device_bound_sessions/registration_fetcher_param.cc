@@ -58,7 +58,7 @@ RegistrationFetcherParam::~RegistrationFetcherParam() = default;
 RegistrationFetcherParam::RegistrationFetcherParam(
     GURL registration_endpoint,
     std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos,
-    std::string challenge,
+    std::optional<std::string> challenge,
     std::optional<std::string> authorization,
     std::optional<std::string> provider_key,
     std::optional<GURL> provider_url,
@@ -89,7 +89,7 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
   }
 
   GURL registration_endpoint;
-  std::string challenge;
+  std::optional<std::string> challenge;
   std::optional<std::string> authorization;
   std::optional<std::string> provider_key;
   std::optional<GURL> provider_url;
@@ -133,7 +133,7 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
     // Other params are ignored
   }
 
-  if (!registration_endpoint.is_valid() || challenge.empty()) {
+  if (!registration_endpoint.is_valid()) {
     return std::nullopt;
   }
 
@@ -193,7 +193,7 @@ std::vector<RegistrationFetcherParam> RegistrationFetcherParam::CreateIfValid(
 RegistrationFetcherParam RegistrationFetcherParam::CreateInstanceForTesting(
     GURL registration_endpoint,
     std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos,
-    std::string challenge,
+    std::optional<std::string> challenge,
     std::optional<std::string> authorization,
     std::optional<std::string> provider_key,
     std::optional<GURL> provider_url,

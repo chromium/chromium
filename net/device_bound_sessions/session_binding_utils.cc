@@ -77,7 +77,7 @@ std::optional<std::string> CombineHeaderAndPayload(
 // Helper function for the shared functionality of refresh and
 // registration JWTs.
 std::optional<std::string> CreateHeaderAndPayload(
-    std::string_view challenge,
+    std::optional<std::string> challenge,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     std::optional<base::Value::Dict> jwk,
     const std::optional<std::string>& authorization) {
@@ -88,7 +88,10 @@ std::optional<std::string> CreateHeaderAndPayload(
     header.Set("jwk", std::move(*jwk));
   }
 
-  auto payload = base::Value::Dict().Set("jti", challenge);
+  auto payload = base::Value::Dict();
+  if (challenge.has_value()) {
+    payload.Set("jti", *challenge);
+  }
   if (authorization.has_value()) {
     payload.Set("authorization", authorization.value());
   }
@@ -99,7 +102,7 @@ std::optional<std::string> CreateHeaderAndPayload(
 }  // namespace
 
 std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
-    std::string_view challenge,
+    std::optional<std::string> challenge,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     base::span<const uint8_t> pubkey_spki,
     std::optional<std::string> authorization) {
@@ -114,7 +117,7 @@ std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
 }
 
 std::optional<std::string> CreateKeyRefreshHeaderAndPayload(
-    std::string_view challenge,
+    std::optional<std::string> challenge,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm) {
   return CreateHeaderAndPayload(challenge, algorithm, /*jwk=*/std::nullopt,
                                 /*authorization=*/std::nullopt);
