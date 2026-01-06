@@ -105,7 +105,8 @@
 }
 
 :host([show-simplified-ui_]) .action-chip {
-  background-color: transparent;
+  background-color:
+    var(--simplified-action-chip-bg, transparent);
   height: 32px;
   padding: 0px 20px;
   width: 100%;

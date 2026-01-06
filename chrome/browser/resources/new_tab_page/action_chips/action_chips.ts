@@ -68,12 +68,14 @@ export class ActionChipsElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      themeHasBackgroundImage: {type: Boolean},
     };
   }
 
   private handler: ActionChipsHandlerInterface;
   private callbackRouter: PageCallbackRouter;
   protected accessor actionChips_: ActionChip[] = [];
+  accessor themeHasBackgroundImage: boolean = false;
   protected accessor showSimplifiedUI_: boolean =
       loadTimeData.getBoolean('ntpNextShowSimplificationUIEnabled');
   private onActionChipChangedListenerId_: number|null = null;
@@ -146,6 +148,10 @@ export class ActionChipsElement extends CrLitElement {
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
+
+    if (changedProperties.has('themeHasBackgroundImage')) {
+      this.updateBackgroundColor_();
+    }
 
     // Records only the first load latency after rendering chips.
     if (this.initialLoadStartTime_ !== null && this.actionChips_.length > 0) {
@@ -226,6 +232,19 @@ export class ActionChipsElement extends CrLitElement {
 
   protected getMostRecentTabFaviconUrl_(chip: ActionChip) {
     return chip.tab ? this.getFaviconUrl_(chip.tab.url.url) : '';
+  }
+
+  protected updateBackgroundColor_() {
+    if (!this.showSimplifiedUI_) {
+      return;
+    }
+
+    const simplifiedChipBgColor = this.themeHasBackgroundImage ?
+        'var(--color-new-tab-page-action-chip-background)' :
+        'transparent';
+
+    this.style.setProperty(
+        '--simplified-action-chip-bg', simplifiedChipBgColor);
   }
 
   private onActionChipClick_(
