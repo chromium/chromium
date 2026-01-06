@@ -81,7 +81,6 @@ class TestFontSelector : public FontSelector {
                     const AtomicString& family_name,
                     const FontDataForRangeSet&) override {}
 
-  unsigned Version() const override { return 0; }
   void FontCacheInvalidated() override {}
   void ReportNotDefGlyph() const override {}
   ExecutionContext* GetExecutionContext() const override { return nullptr; }

@@ -64,9 +64,6 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
     return css_connected_font_faces_;
   }
 
-  unsigned Version() const { return version_; }
-  void IncrementVersion();
-
   void Trace(Visitor*) const;
 
  private:
@@ -179,10 +176,6 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
   // StyleEngine, which clears all those faces from the FontCache which are
   // originating from CSS, as opposed to those originating from JS.
   HeapLinkedHashSet<Member<FontFace>> css_connected_font_faces_;
-
-  // FIXME: See if this could be ditched
-  // Used to compare Font instances, and the usage seems suspect.
-  unsigned version_;
 };
 
 }  // namespace blink

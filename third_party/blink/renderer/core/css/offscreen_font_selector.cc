@@ -55,14 +55,6 @@ const FontData* OffscreenFontSelector::GetFontData(
   return FontCache::Get().GetFontData(font_description, settings_family_name);
 }
 
-void OffscreenFontSelector::FontCacheInvalidated() {
-  font_face_cache_->IncrementVersion();
-}
-
-void OffscreenFontSelector::FontFaceInvalidated(FontInvalidationReason) {
-  FontCacheInvalidated();
-}
-
 void OffscreenFontSelector::Trace(Visitor* visitor) const {
   visitor->Trace(worker_);
   CSSFontSelectorBase::Trace(visitor);
