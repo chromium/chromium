@@ -20,6 +20,7 @@
 
 namespace blink {
 class SoftNavigationContext;
+class ResourceTimingContext;
 class WebSchedulingTaskState;
 }  // namespace blink
 
@@ -51,6 +52,7 @@ class CORE_EXPORT TaskAttributionTrackerImpl
   TaskScope SetCurrentTaskState(WebSchedulingTaskState* task_state,
                                 TaskScopeType type) override;
   TaskScope SetTaskStateVariable(SoftNavigationContext*) override;
+  TaskScope SetTaskStateVariable(ResourceTimingContext*) override;
   TaskAttributionInfo* CurrentTaskState() const override;
   std::optional<TaskAttributionId> AsyncSameDocumentNavigationStarted()
       override;
@@ -68,6 +70,10 @@ class CORE_EXPORT TaskAttributionTrackerImpl
 
   TaskScope SetCurrentTaskStateImpl(TaskAttributionTaskState* task_state,
                                     TaskScopeType type);
+  TaskScope SetCurrentTaskStateImpl(
+      TaskAttributionTaskState* task_state,
+      TaskAttributionTaskState* previous_task_state,
+      TaskScopeType type);
   void OnTaskScopeDestroyed(const TaskScope&) override;
 
   TaskAttributionId next_task_id_{1};

@@ -16,32 +16,43 @@
 namespace blink {
 class SchedulerTaskContext;
 class SoftNavigationContext;
+class ResourceTimingContext;
 
 class CORE_EXPORT TaskAttributionInfoImpl final
     : public TaskAttributionTaskState,
       public scheduler::TaskAttributionInfo {
  public:
-  TaskAttributionInfoImpl(scheduler::TaskAttributionId, SoftNavigationContext*);
+  TaskAttributionInfoImpl(scheduler::TaskAttributionId,
+                          SoftNavigationContext*,
+                          ResourceTimingContext*);
 
   // `TaskAttributionTaskState` implementation:
   scheduler::TaskAttributionInfo* GetTaskAttributionInfo() override;
   SchedulerTaskContext* GetSchedulerTaskContext() override;
+  TaskAttributionTaskState* ForkAndSetVariable(
+      const scheduler::TaskAttributionId,
+      ResourceTimingContext*) override;
+  TaskAttributionTaskState* ForkAndSetVariable(
+      const scheduler::TaskAttributionId,
+      SoftNavigationContext*) override;
 
   // `scheduler::TaskAttributionInfo` implementation:
   scheduler::TaskAttributionId Id() const override;
   SoftNavigationContext* GetSoftNavigationContext() override;
+  ResourceTimingContext* GetResourceTimingContext() override;
 
   void Trace(Visitor*) const override;
 
  private:
   const scheduler::TaskAttributionId id_;
   Member<SoftNavigationContext> soft_navigation_context_;
+  Member<ResourceTimingContext> resource_timing_context_;
 };
 
-// `TaskAttributionInfoImpl` is the only implementation of
-// `scheduler::TaskAttributionInfo`, so this cast is always safe.
 template <>
 struct DowncastTraits<TaskAttributionInfoImpl> {
+  // `TaskAttributionInfoImpl` is the only implementation of
+  // `scheduler::TaskAttributionInfo`, so this cast is always safe.
   static bool AllowFrom(const scheduler::TaskAttributionInfo&) { return true; }
 };
 

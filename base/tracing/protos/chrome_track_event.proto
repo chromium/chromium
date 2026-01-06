@@ -42,6 +42,7 @@ message BlinkTaskScope {
     TASK_SCOPE_SOFT_NAVIGATION = 9;
     TASK_SCOPE_MISC_EVENT = 10;
     TASK_SCOPE_MICROTASK = 11;
+    TASK_SCOPE_RESOURCE_TIMING = 12;
   }
   optional TaskScopeType type = 1;
   optional int64 scope_task_id = 2;

@@ -44,26 +44,9 @@
   <script>
     display_paragraph();
 
-    // TODO(crbug.com/40919714): The two elements below are not initiated by html.
-    // They are initiated by script. They should be moved out of this test.
-    // As of 08/2025 the two below are passing for chromium but because of wrong
-    // reasons. They are not recognized to be resources initaited by scripts, so they
-    // are thought to be initiated from main html, for which the url happens to be
-    // correct for inline scripts.
-
-    // Load arbitrary stylesheet with inline script.
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "../../resources/empty_style.css?inline-script";
-    document.head.appendChild(link);
-    // Load arbitrary image with inline script
-    const img = document.createElement("img");
-    img.src = "/images/blue.png?inline-script";
-    document.body.appendChild(img);
-
-    const host_info = get_host_info();
-    const expectedInitiatorUrl = host_info["ORIGIN"] +
-      "/resource-timing/tentative/initiator-url/document-initiated.html";
+    const hostInfo = get_host_info();
+    const expectedInitiatorUrl = hostInfo["ORIGIN"] +
+      "/resource-timing/tentative/initiator-url/static-resource.html";
 
     const resources = [
       "empty.js?blocking",
@@ -75,15 +58,11 @@
       "blue.png?inline-style",
       "Ahem.ttf?initiator-html",
       "blue.png?using-Img-tag",
-        /*        "green.html",
-        TODO(crbug.com/40919714): report initiator for iframe element.
-        */
-      "empty_style.css?inline-script",
-      "blue.png?inline-script",
+      "green.html",
     ];
     for (const resource of resources) {
       initiator_url_test(resource, expectedInitiatorUrl, resource+
-        " initiatorUrl from document-initiated", resource+" timeout");
+        " initiatorUrl from static-resource", resource+" timeout");
     }
 
   </script>

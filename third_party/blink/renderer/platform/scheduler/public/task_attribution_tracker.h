@@ -19,6 +19,7 @@
 
 namespace blink {
 class SoftNavigationContext;
+class ResourceTimingContext;
 class TaskAttributionTaskState;
 class WebSchedulingTaskState;
 }  // namespace blink
@@ -47,6 +48,7 @@ class PLATFORM_EXPORT TaskAttributionTracker {
     kRequestIdleCallback,
     kXMLHttpRequest,
     kSoftNavigation,
+    kResourceTiming,
     kMiscEvent,
     kMicrotask,
   };
@@ -173,6 +175,8 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   // This is used to set an individual `TaskAttributionInfo` variable, forking
   // the existing `CurrentTaskState()` if necessary.
   virtual TaskScope SetTaskStateVariable(SoftNavigationContext*) = 0;
+  // Similarly, initiates propagation of the given `ResourceTimingContext`.
+  virtual TaskScope SetTaskStateVariable(ResourceTimingContext*) = 0;
 
   // Get the `TaskAttributionInfo` for the currently running task.
   virtual TaskAttributionInfo* CurrentTaskState() const = 0;

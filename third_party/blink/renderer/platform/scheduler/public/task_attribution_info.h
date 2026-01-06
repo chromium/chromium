@@ -11,6 +11,7 @@
 
 namespace blink {
 class SoftNavigationContext;
+class ResourceTimingContext;
 }  // namespace blink
 
 namespace blink::scheduler {
@@ -27,6 +28,10 @@ class PLATFORM_EXPORT TaskAttributionInfo : public GarbageCollectedMixin {
   // Returns the `SoftNavigationContext` associated with the task state, which
   // can be null.
   virtual SoftNavigationContext* GetSoftNavigationContext() = 0;
+
+  // Returns the `ResourceTimingContext` associated with the task state, which
+  // can be null.
+  virtual ResourceTimingContext* GetResourceTimingContext() = 0;
 };
 
 }  // namespace blink::scheduler

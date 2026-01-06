@@ -88,6 +88,7 @@ blink_core_sources_timing = [
   "profiler_group.h",
   "background_tracing_helper.cc",
   "background_tracing_helper.h",
+  "resource_timing_context.h",
   "responsiveness_metrics.cc",
   "responsiveness_metrics.h",
   "render_blocking_metrics_reporter.cc",

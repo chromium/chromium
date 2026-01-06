@@ -95,6 +95,7 @@
 #include "third_party/blink/renderer/core/loader/loader_factory_for_frame.h"
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource.h"
+#include "third_party/blink/renderer/core/loader/resource_initiator_helper.h"
 #include "third_party/blink/renderer/core/loader/resource_load_observer_for_frame.h"
 #include "third_party/blink/renderer/core/loader/subresource_filter.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -105,6 +106,7 @@
 #include "third_party/blink/renderer/core/svg/svg_document_resource_tracker.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/core/timing/resource_timing_context.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/core/url/url_search_params.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
@@ -470,9 +472,10 @@ void FrameFetchContext::PrepareRequest(
 // TODO(crbug.com/422626353): Consider consolidating the initiator info
 // calculation for resource timing and dev tools.
 void FrameFetchContext::FillInitiatorInfo(FetchInitiatorInfo& initiator_info) {
+  CHECK(RuntimeEnabledFeatures::ResourceTimingInitiatorEnabled());
   if (initiator_info.is_imported_module && !initiator_info.referrer.empty()) {
     // TODO(crbug.com/40919714): Fill |initiator_url|.
-    // Initiator is a js file.
+    // Initiator is a referrer of an imported js file.
     return;
   }
   bool was_requested_by_stylesheet =
@@ -484,8 +487,16 @@ void FrameFetchContext::FillInitiatorInfo(FetchInitiatorInfo& initiator_info) {
     return;
   }
 
-  // TODO(crbug.com/40919714): Find out if the initiator is a script
-  // resource. If yes, fill |initiator_url| accordingly and return.
+  v8::Isolate* isolate =
+      ResourceInitiatorHelper::GetIsolateIfRunningScriptOnMainThread();
+  if (isolate) {
+    // It is the currently executing JavaScript that is fetching the resource.
+    // The initiator is the JavaScript that originally dispatched currently
+    // executing JavaScript.
+    initiator_info.initiator_url =
+        ResourceInitiatorHelper::GetScriptInitiatorUrl(*isolate);
+    return;
+  }
 
   initiator_info.initiator_url = document_->Url();
 }

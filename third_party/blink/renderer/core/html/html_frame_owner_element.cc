@@ -59,11 +59,13 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
+#include "third_party/blink/renderer/core/loader/resource_initiator_helper.h"
 #include "third_party/blink/renderer/core/loader/url_matcher.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/resource_timing_context.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -73,7 +75,10 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_utils.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
@@ -515,6 +520,8 @@ void HTMLFrameOwnerElement::AddResourceTiming(
     return;
   }
 
+  info->initiator_url = fallback_timing_info_->initiator_url;
+
   DOMWindowPerformance::performance(*GetDocument().domWindow())
       ->AddResourceTiming(std::move(info), localName());
   DidReportResourceTiming();
@@ -690,6 +697,14 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
     fallback_timing_info_ =
         CreateResourceTimingInfo(base::TimeTicks::Now(), url,
                                  /*response=*/nullptr);
+
+    if (RuntimeEnabledFeatures::ResourceTimingInitiatorEnabled()) {
+      v8::Isolate* isolate =
+          ResourceInitiatorHelper::GetIsolateIfRunningScriptOnMainThread();
+      fallback_timing_info_->initiator_url =
+          isolate ? ResourceInitiatorHelper::GetScriptInitiatorUrl(*isolate)
+                  : GetDocument().Url();
+    }
   }
 
   // Update the |should_lazy_load_children_| value according to the "loading"
