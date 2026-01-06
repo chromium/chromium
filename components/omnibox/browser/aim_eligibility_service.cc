@@ -260,8 +260,39 @@ AimEligibilityService::AimEligibilityService(
       url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager),
       is_off_the_record_(is_off_the_record) {
-  if (base::FeatureList::IsEnabled(omnibox::kAimEnabled)) {
-    Initialize();
+  if (!base::FeatureList::IsEnabled(omnibox::kAimEnabled)) {
+    return;
+  }
+
+  if (!template_url_service_) {
+    return;
+  }
+
+  pref_change_registrar_.Init(&pref_service_.get());
+  pref_change_registrar_.Add(
+      kResponsePrefName,
+      base::BindRepeating(&AimEligibilityService::OnEligibilityResponseChanged,
+                          weak_factory_.GetWeakPtr()));
+
+  LoadMostRecentResponse();
+
+  bool startup_request_enabled =
+      base::FeatureList::IsEnabled(omnibox::kAimServerRequestOnStartupEnabled);
+  bool startup_request_delayed_until_network_available_enabled =
+      base::FeatureList::IsEnabled(
+          omnibox::kAimStartupRequestDelayedUntilNetworkAvailableEnabled);
+  bool is_offline = net::NetworkChangeNotifier::IsOffline();
+
+  if (startup_request_enabled &&
+      startup_request_delayed_until_network_available_enabled && is_offline) {
+    net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
+  } else if (startup_request_enabled) {
+    startup_request_sent_ = true;
+    StartServerEligibilityRequest(RequestSource::kStartup);
+  }
+
+  if (identity_manager_) {
+    identity_manager_observation_.Observe(identity_manager_);
   }
 }
 
@@ -359,17 +390,11 @@ AimEligibilityService::GetMostRecentResponseSource() const {
 }
 
 void AimEligibilityService::StartServerEligibilityRequestForDebugging() {
-  if (!initialized_) {
-    return;
-  }
   StartServerEligibilityRequest(RequestSource::kUser);
 }
 
 bool AimEligibilityService::SetEligibilityResponseForDebugging(
     const std::string& base64_encoded_response) {
-  if (!initialized_) {
-    return false;
-  }
   std::string response_string;
   if (!base::Base64Decode(base64_encoded_response, &response_string)) {
     return false;
@@ -410,55 +435,6 @@ bool AimEligibilityService::IsEligibleByServer(bool server_eligibility) const {
   }
 
   return true;
-}
-
-void AimEligibilityService::Initialize() {
-  // The service should not be initialized if AIM is disabled.
-  CHECK(base::FeatureList::IsEnabled(omnibox::kAimEnabled));
-  // The service should not be initialized twice.
-  CHECK(!initialized_);
-
-  // Always load the most recent response from prefs even if the template
-  // URL service is not loaded.
-  LoadMostRecentResponse();
-
-  if (!template_url_service_) {
-    return;
-  }
-
-  if (!template_url_service_->loaded()) {
-    template_url_service_subscription_ =
-        template_url_service_->RegisterOnLoadedCallback(base::BindOnce(
-            &AimEligibilityService::Initialize, weak_factory_.GetWeakPtr()));
-    return;
-  }
-
-  initialized_ = true;
-
-  pref_change_registrar_.Init(&pref_service_.get());
-  pref_change_registrar_.Add(
-      kResponsePrefName,
-      base::BindRepeating(&AimEligibilityService::OnEligibilityResponseChanged,
-                          weak_factory_.GetWeakPtr()));
-
-  bool startup_request_enabled =
-      base::FeatureList::IsEnabled(omnibox::kAimServerRequestOnStartupEnabled);
-  bool startup_request_delayed_until_network_available_enabled =
-      base::FeatureList::IsEnabled(
-          omnibox::kAimStartupRequestDelayedUntilNetworkAvailableEnabled);
-  bool is_offline = net::NetworkChangeNotifier::IsOffline();
-
-  if (startup_request_enabled &&
-      startup_request_delayed_until_network_available_enabled && is_offline) {
-    net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
-  } else if (startup_request_enabled) {
-    startup_request_sent_ = true;
-    StartServerEligibilityRequest(RequestSource::kStartup);
-  }
-
-  if (identity_manager_) {
-    identity_manager_observation_.Observe(identity_manager_);
-  }
 }
 
 void AimEligibilityService::OnPrimaryAccountChanged(
@@ -503,15 +479,12 @@ void AimEligibilityService::OnNetworkChanged(
 }
 
 void AimEligibilityService::OnEligibilityResponseChanged() {
-  CHECK(initialized_);
   eligibility_changed_callbacks_.Notify();
 }
 
 void AimEligibilityService::UpdateMostRecentResponse(
     const omnibox::AimEligibilityResponse& response_proto,
     EligibilityResponseSource response_source) {
-  CHECK(initialized_);
-
   // Read the old response from prefs before updating it to log changes below.
   omnibox::AimEligibilityResponse old_response;
   GetResponseFromPrefs(&pref_service_.get(), &old_response);
@@ -596,8 +569,6 @@ GURL AimEligibilityService::GetRequestUrl(
 
 void AimEligibilityService::StartServerEligibilityRequest(
     RequestSource request_source) {
-  CHECK(initialized_);
-
   // URLLoaderFactory may be null in tests.
   if (!url_loader_factory_) {
     return;
@@ -643,8 +614,6 @@ void AimEligibilityService::OnServerEligibilityResponse(
     std::unique_ptr<network::SimpleURLLoader> loader,
     RequestSource request_source,
     std::optional<std::string> response_string) {
-  CHECK(initialized_);
-
   const int response_code =
       loader->ResponseInfo() && loader->ResponseInfo()->headers
           ? loader->ResponseInfo()->headers->response_code()

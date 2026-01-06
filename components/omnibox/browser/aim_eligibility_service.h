@@ -182,11 +182,6 @@ class AimEligibilityService
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:AimEligibilityRequestStatus)
 
-  // Initializes the service. This isn't inlined in the constructor because
-  // initialization may have to be delayed until after `template_url_service_`
-  // has loaded.
-  void Initialize();
-
   // Returns server eligibility if the feature is AIM eligible.
   bool IsEligibleByServer(bool server_eligibility) const;
 
@@ -281,9 +276,6 @@ class AimEligibilityService
   omnibox::AimEligibilityResponse most_recent_response_;
   EligibilityResponseSource most_recent_response_source_ =
       EligibilityResponseSource::kDefault;
-
-  // Tracks whether the service has been initialized.
-  bool initialized_ = false;
 
   // Tracks whether the startup request has been sent.
   bool startup_request_sent_ = false;
