@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -122,13 +121,13 @@ class MockQuotaEvictionHandler : public QuotaEvictionHandler {
   }
 
   bool HasBucket(const EvictionBucket& bucket) {
-    return base::Contains(buckets_, bucket.locator.id);
+    return buckets_.contains(bucket.locator.id);
   }
 
  private:
   int64_t EnsureBucketRemoved(const BucketLocator& bucket) {
     int64_t bucket_usage;
-    if (!base::Contains(buckets_, bucket.id))
+    if (!buckets_.contains(bucket.id))
       return -1;
     else
       bucket_usage = buckets_[bucket.id];

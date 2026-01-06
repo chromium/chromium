@@ -18,7 +18,6 @@
 #include "base/barrier_closure.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -828,7 +827,7 @@ class QuotaManagerImpl::BucketSetDataDeleter {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(deleter->completed());
 
-    DCHECK(base::Contains(bucket_deleters_, deleter));
+    DCHECK(bucket_deleters_.contains(deleter));
     bucket_deleters_.erase(deleter);
 
     if (!entry.has_value()) {
@@ -2519,7 +2518,7 @@ void QuotaManagerImpl::WithdrawOverridesForHandle(int handle_id) {
 std::optional<int64_t> QuotaManagerImpl::GetQuotaOverrideForStorageKey(
     const StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::Contains(devtools_overrides_, storage_key)) {
+  if (!devtools_overrides_.contains(storage_key)) {
     return std::nullopt;
   }
   return devtools_overrides_[storage_key].quota_size;

@@ -4,29 +4,28 @@
 
 #include "storage/browser/test/mock_special_storage_policy.h"
 
-#include "base/containers/contains.h"
 
 namespace storage {
 
 MockSpecialStoragePolicy::MockSpecialStoragePolicy() : all_unlimited_(false) {}
 
 bool MockSpecialStoragePolicy::IsStorageProtected(const GURL& origin) {
-  return base::Contains(protected_, origin);
+  return protected_.contains(origin);
 }
 
 bool MockSpecialStoragePolicy::IsStorageUnlimited(const GURL& origin) {
   if (all_unlimited_) {
     return true;
   }
-  return base::Contains(unlimited_, origin);
+  return unlimited_.contains(origin);
 }
 
 bool MockSpecialStoragePolicy::IsStorageSessionOnly(const GURL& origin) {
-  return base::Contains(session_only_, origin);
+  return session_only_.contains(origin);
 }
 
 bool MockSpecialStoragePolicy::HasIsolatedStorage(const GURL& origin) {
-  return base::Contains(isolated_, origin);
+  return isolated_.contains(origin);
 }
 
 bool MockSpecialStoragePolicy::HasSessionOnlyOrigins() {
@@ -34,7 +33,7 @@ bool MockSpecialStoragePolicy::HasSessionOnlyOrigins() {
 }
 
 bool MockSpecialStoragePolicy::IsStorageDurable(const GURL& origin) {
-  return base::Contains(durable_, origin);
+  return durable_.contains(origin);
 }
 
 MockSpecialStoragePolicy::~MockSpecialStoragePolicy() = default;

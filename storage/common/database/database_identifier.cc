@@ -108,7 +108,7 @@ DatabaseIdentifier DatabaseIdentifier::CreateFromOrigin(const GURL& origin) {
 DatabaseIdentifier DatabaseIdentifier::Parse(std::string_view identifier) {
   if (!base::IsStringASCII(identifier))
     return DatabaseIdentifier();
-  if (base::Contains(identifier, "..")) {
+  if (identifier.contains("..")) {
     return DatabaseIdentifier();
   }
   static const char kForbidden[] = {'\\', '/', ':', '\0'};

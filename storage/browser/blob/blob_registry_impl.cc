@@ -522,7 +522,7 @@ void BlobRegistryImpl::Register(
   }
 
   if (uuid.empty() || context_->registry().HasEntry(uuid) ||
-      base::Contains(blobs_under_construction_, uuid)) {
+      blobs_under_construction_.contains(uuid)) {
     receivers_.ReportBadMessage(
         "Invalid UUID passed to BlobRegistry::Register");
     return;

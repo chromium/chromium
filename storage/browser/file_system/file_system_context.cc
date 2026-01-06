@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -222,8 +221,8 @@ FileSystemContext::FileSystemContext(
   // Chrome OS the additional backend ash::FileSystemBackend handles these
   // types.
   isolated_backend_ = std::make_unique<IsolatedFileSystemBackend>(
-      !base::Contains(backend_map_, kFileSystemTypeLocal),
-      !base::Contains(backend_map_, kFileSystemTypeLocalForPlatformApp));
+      !backend_map_.contains(kFileSystemTypeLocal),
+      !backend_map_.contains(kFileSystemTypeLocalForPlatformApp));
   RegisterBackend(isolated_backend_.get());
 }
 

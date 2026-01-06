@@ -5,7 +5,6 @@
 #include "storage/browser/blob/blob_url_registry.h"
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -204,13 +203,13 @@ void BlobUrlRegistry::AddTokenMapping(
     const GURL& url,
     mojo::PendingRemote<blink::mojom::Blob> blob) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!base::Contains(token_to_url_and_blob_, token));
+  DCHECK(!token_to_url_and_blob_.contains(token));
   token_to_url_and_blob_.emplace(token, std::make_pair(url, std::move(blob)));
 }
 
 void BlobUrlRegistry::RemoveTokenMapping(const base::UnguessableToken& token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::Contains(token_to_url_and_blob_, token));
+  DCHECK(token_to_url_and_blob_.contains(token));
   token_to_url_and_blob_.erase(token);
 }
 
