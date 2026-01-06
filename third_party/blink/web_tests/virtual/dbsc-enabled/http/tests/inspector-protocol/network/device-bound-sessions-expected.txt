@@ -1,0 +1,22 @@
+Tests device-bound-sessions protocol additions.
+
+Running test: testSessionsAndEvents
+
+--- Checking initial set of sessions is empty ---
+Received deviceBoundSessionsAdded event.
+No sessions when initialized.
+
+Running test: testFetchSchemefulSite
+{
+    schemefulSite : https://google.com
+}
+{
+    schemefulSite : http://localhost
+}
+{
+    schemefulSite : https://192.168.1.1
+}
+{
+    schemefulSite : file://
+}
+

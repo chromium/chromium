@@ -1226,6 +1226,9 @@ NetworkHandler::NetworkHandler(
 #if BUILDFLAG(ENABLE_REPORTING)
       reporting_receiver_(this),
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+      device_bound_session_receiver_(this),
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
       bypass_service_worker_(false),
       cache_disabled_(false),
       update_loader_factories_callback_(
@@ -1513,6 +1516,9 @@ DispatchResponse NetworkHandler::Disable() {
   enable_third_party_cookie_restriction_ = false;
   disable_third_party_cookie_metadata_ = false;
   disable_third_party_cookie_heuristics_ = false;
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  device_bound_session_receiver_.reset();
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   DisableDurableMessages();
   return Response::FallThrough();
 }
@@ -1649,6 +1655,167 @@ Response NetworkHandler::EnableReportingApi(const bool enable) {
   return Response::InternalError();
 }
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
+namespace {
+std::unique_ptr<protocol::Network::DeviceBoundSessionKey>
+BuildProtocolDeviceBoundSessionKey(
+    const net::device_bound_sessions::SessionKey& key) {
+  return protocol::Network::DeviceBoundSessionKey::Create()
+      .SetSite(key.site.Serialize())
+      .SetId(key.id.value())
+      .Build();
+}
+
+String BuildProtocolDeviceBoundSessionUrlRuleType(
+    net::device_bound_sessions::InclusionResult rule_type) {
+  switch (rule_type) {
+    case net::device_bound_sessions::InclusionResult::kExclude:
+      return protocol::Network::DeviceBoundSessionUrlRule::RuleTypeEnum::
+          Exclude;
+    case net::device_bound_sessions::InclusionResult::kInclude:
+      return protocol::Network::DeviceBoundSessionUrlRule::RuleTypeEnum::
+          Include;
+  }
+}
+
+std::unique_ptr<protocol::Network::DeviceBoundSessionUrlRule>
+BuildProtocolDeviceBoundSessionUrlRule(
+    const net::device_bound_sessions::UrlRuleDisplay& rule) {
+  return protocol::Network::DeviceBoundSessionUrlRule::Create()
+      .SetRuleType(BuildProtocolDeviceBoundSessionUrlRuleType(rule.rule_type))
+      .SetHostPattern(rule.host_pattern)
+      .SetPathPrefix(rule.path_prefix)
+      .Build();
+}
+
+std::unique_ptr<protocol::Network::DeviceBoundSessionInclusionRules>
+BuildProtocolDeviceBoundDeviceBoundSessionInclusionRules(
+    const net::device_bound_sessions::SessionInclusionRulesDisplay& rules) {
+  auto protocol_rules = std::make_unique<
+      protocol::Array<protocol::Network::DeviceBoundSessionUrlRule>>();
+  protocol_rules->reserve(rules.url_rules.size());
+  for (const auto& rule : rules.url_rules) {
+    protocol_rules->emplace_back(BuildProtocolDeviceBoundSessionUrlRule(rule));
+  }
+  return protocol::Network::DeviceBoundSessionInclusionRules::Create()
+      .SetOrigin(rules.origin)
+      .SetIncludeSite(rules.include_site)
+      .SetUrlRules(std::move(protocol_rules))
+      .Build();
+}
+
+std::unique_ptr<protocol::Network::DeviceBoundSessionCookieCraving>
+BuildProtocolDeviceBoundDeviceBoundSessionCookieCraving(
+    const net::device_bound_sessions::CookieCravingDisplay& craving) {
+  auto protocol_craving =
+      protocol::Network::DeviceBoundSessionCookieCraving::Create()
+          .SetName(craving.name)
+          .SetDomain(craving.domain)
+          .SetPath(craving.path)
+          .SetSecure(craving.secure)
+          .SetHttpOnly(craving.http_only)
+          .Build();
+  std::optional<Network::CookieSameSite> same_site =
+      BuildCookieSameSite(craving.same_site);
+  if (same_site.has_value()) {
+    protocol_craving->SetSameSite(same_site.value());
+  }
+  return protocol_craving;
+}
+
+std::unique_ptr<protocol::Network::DeviceBoundSession>
+BuildProtocolDeviceBoundSession(
+    const net::device_bound_sessions::SessionDisplay& session) {
+  auto protocol_cravings = std::make_unique<
+      protocol::Array<protocol::Network::DeviceBoundSessionCookieCraving>>();
+  protocol_cravings->reserve(session.cookie_cravings.size());
+  for (const auto& craving : session.cookie_cravings) {
+    protocol_cravings->emplace_back(
+        BuildProtocolDeviceBoundDeviceBoundSessionCookieCraving(craving));
+  }
+  auto protocol_initiators = std::make_unique<protocol::Array<std::string>>();
+  protocol_initiators->reserve(session.allowed_refresh_initiators.size());
+  for (const auto& initiator : session.allowed_refresh_initiators) {
+    protocol_initiators->emplace_back(initiator);
+  }
+
+  auto protocol_session =
+      protocol::Network::DeviceBoundSession::Create()
+          .SetKey(BuildProtocolDeviceBoundSessionKey(session.key))
+          .SetRefreshUrl(session.refresh_url.spec())
+          .SetInclusionRules(
+              BuildProtocolDeviceBoundDeviceBoundSessionInclusionRules(
+                  session.inclusion_rules))
+          .SetCookieCravings(std::move(protocol_cravings))
+          .SetExpiryDate(session.expiry_date.InSecondsFSinceUnixEpoch())
+          .SetAllowedRefreshInitiators(std::move(protocol_initiators))
+          .Build();
+  if (session.cached_challenge) {
+    protocol_session->SetCachedChallenge(session.cached_challenge.value());
+  }
+  return protocol_session;
+}
+
+}  // namespace
+
+void NetworkHandler::AddDeviceBoundSessionDisplays(
+    const std::vector<::net::device_bound_sessions::SessionDisplay>& sessions) {
+  auto protocol_sessions = std::make_unique<
+      protocol::Array<protocol::Network::DeviceBoundSession>>();
+  protocol_sessions->reserve(sessions.size());
+  for (const auto& session : sessions) {
+    protocol_sessions->emplace_back(BuildProtocolDeviceBoundSession(session));
+  }
+  frontend_->DeviceBoundSessionsAdded(std::move(protocol_sessions));
+}
+
+void NetworkHandler::OnDeviceBoundSessionEventReceived(
+    const net::device_bound_sessions::SessionEvent& event) {
+  // TODO(crbug.com/471017387): Send the session events.
+}
+
+Response NetworkHandler::EnableDeviceBoundSessions(bool enable) {
+  if (!storage_partition_ || !host_ ||
+      !base::FeatureList::IsEnabled(features::kDeviceBoundSessionsDevTools)) {
+    return Response::InternalError();
+  }
+
+  if (enable) {
+    if (!device_bound_session_receiver_.is_bound()) {
+      mojo::Remote<network::mojom::DeviceBoundSessionManager> manager;
+      storage_partition_->GetNetworkContext()->GetDeviceBoundSessionManager(
+          manager.BindNewPipeAndPassReceiver());
+      mojo::PendingRemote<network::mojom::DeviceBoundSessionEventObserver>
+          observer;
+      device_bound_session_receiver_.Bind(
+          observer.InitWithNewPipeAndPassReceiver());
+      manager->AddEventObserver(std::move(observer));
+    }
+  } else {
+    device_bound_session_receiver_.reset();
+  }
+
+  return Response::Success();
+}
+
+Response NetworkHandler::FetchSchemefulSite(const std::string& origin,
+                                            std::string* schemeful_site) {
+  *schemeful_site = net::SchemefulSite(GURL(origin)).Serialize();
+  return Response::Success();
+}
+#else
+Response NetworkHandler::EnableDeviceBoundSessions(bool enable) {
+  return Response::MethodNotFound("not implemented");
+}
+
+Response NetworkHandler::FetchSchemefulSite(const std::string& origin,
+                                            std::string* schemeful_site) {
+  return Response::MethodNotFound("not implemented");
+}
+
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 Response NetworkHandler::SetCacheDisabled(bool cache_disabled) {
   cache_disabled_ = cache_disabled;

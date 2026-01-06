@@ -77,6 +77,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/zoom/page_zoom.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -2015,6 +2016,13 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
       base::Value::Dict().Set(
           "enabled", base::FeatureList::IsEnabled(
                          ::features::kDevToolsIndividualRequestThrottling)));
+
+  base::Value::Dict device_bound_sessions_debugging;
+  device_bound_sessions_debugging.Set(
+      "enabled",
+      base::FeatureList::IsEnabled(features::kDeviceBoundSessionsDevTools));
+  response_dict.Set("deviceBoundSessionsDebugging",
+                    std::move(device_bound_sessions_debugging));
 
   base::Value::Dict prompt_api_dict;
   prompt_api_dict.Set("enabled", base::FeatureList::IsEnabled(

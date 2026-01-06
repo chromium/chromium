@@ -594,11 +594,12 @@
       "Linux"
     ],
     "bases": [
-      "external/wpt/device-bound-session-credentials"
+      "external/wpt/device-bound-session-credentials",
+      "http/tests/inspector-protocol/network/device-bound-sessions.js"
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=EnableBoundSessionCredentialsSoftwareKeysForManualTesting,DeviceBoundSessions:RefreshQuota/false/OriginTrialFeedback/true,DeviceBoundSessionsFederatedRegistration",
+      "--enable-features=EnableBoundSessionCredentialsSoftwareKeysForManualTesting,DeviceBoundSessions:RefreshQuota/false/RequireOriginTrialTokens/false,DeviceBoundSessionsFederatedRegistration,DeviceBoundSessionsDevTools",
       "--disable-features=TrackingProtection3pcd"
     ],
     "expires": "never"

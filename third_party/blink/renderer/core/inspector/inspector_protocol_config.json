@@ -114,6 +114,8 @@
                             "getSecurityIsolationStatus",
                             "loadNetworkResource",
                             "enableReportingApi",
+                            "enableDeviceBoundSessions",
+                            "fetchSchemefulSite",
                             "setCookieControls",
                             "configureDurableMessages"
                           ],

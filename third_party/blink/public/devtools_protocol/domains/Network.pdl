@@ -2057,6 +2057,93 @@ domain Network
       string origin
       array of ReportingApiEndpoint endpoints
 
+  # Unique identifier for a device bound session.
+  experimental type DeviceBoundSessionKey extends object
+    properties
+      # The site the session is set up for.
+      string site
+      # The id of the session.
+      string id
+
+  # A device bound session's cookie craving.
+  experimental type DeviceBoundSessionCookieCraving extends object
+    properties
+      # The name of the craving.
+      string name
+      # The domain of the craving.
+      string domain
+      # The path of the craving.
+      string path
+      # The `Secure` attribute of the craving attributes.
+      boolean secure
+      # The `HttpOnly` attribute of the craving attributes.
+      boolean httpOnly
+      # The `SameSite` attribute of the craving attributes.
+      optional CookieSameSite sameSite
+
+  # A device bound session's inclusion URL rule.
+  experimental type DeviceBoundSessionUrlRule extends object
+    properties
+      # See comments on `net::device_bound_sessions::SessionInclusionRules::UrlRule::rule_type`.
+      enum ruleType
+        Exclude
+        Include
+      # See comments on `net::device_bound_sessions::SessionInclusionRules::UrlRule::host_pattern`.
+      string hostPattern
+      # See comments on `net::device_bound_sessions::SessionInclusionRules::UrlRule::path_prefix`.
+      string pathPrefix
+
+  # A device bound session's inclusion rules.
+  experimental type DeviceBoundSessionInclusionRules extends object
+    properties
+      # See comments on `net::device_bound_sessions::SessionInclusionRules::origin_`.
+      string origin
+      # Whether the whole site is included. See comments on
+      # `net::device_bound_sessions::SessionInclusionRules::include_site_` for more
+      # details; this boolean is true if that value is populated.
+      boolean includeSite
+      # See comments on `net::device_bound_sessions::SessionInclusionRules::url_rules_`.
+      array of DeviceBoundSessionUrlRule urlRules
+
+  # A device bound session.
+  experimental type DeviceBoundSession extends object
+    properties
+      # The site and session ID of the session.
+      DeviceBoundSessionKey key
+      # See comments on `net::device_bound_sessions::Session::refresh_url_`.
+      string refreshUrl
+      # See comments on `net::device_bound_sessions::Session::inclusion_rules_`.
+      DeviceBoundSessionInclusionRules inclusionRules
+      # See comments on `net::device_bound_sessions::Session::cookie_cravings_`.
+      array of DeviceBoundSessionCookieCraving cookieCravings
+      # See comments on `net::device_bound_sessions::Session::expiry_date_`.
+      Network.TimeSinceEpoch expiryDate
+      # See comments on `net::device_bound_sessions::Session::cached_challenge__`.
+      optional string cachedChallenge
+      # See comments on `net::device_bound_sessions::Session::allowed_refresh_initiators_`.
+      array of string allowedRefreshInitiators
+
+  # Triggered when the initial set of device bound sessions is added.
+  experimental event deviceBoundSessionsAdded
+    parameters
+      # The device bound sessions.
+      array of DeviceBoundSession sessions
+
+  # Sets up tracking device bound sessions and fetching of initial set of sessions.
+  experimental command enableDeviceBoundSessions
+    parameters
+      # Whether to enable or disable events.
+      boolean enable
+
+  # Fetches the schemeful site for a specific origin.
+  experimental command fetchSchemefulSite
+    parameters
+      # The URL origin.
+      string origin
+    returns
+      # The corresponding schemeful site.
+      string schemefulSite
+
   # An object providing the result of a network resource load.
   experimental type LoadNetworkResourcePageResult extends object
     properties

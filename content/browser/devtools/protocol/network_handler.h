@@ -38,6 +38,10 @@
 #include "services/network/public/mojom/reporting_service.mojom.h"
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
 namespace net {
 class HttpRequestHeaders;
 class SSLInfo;
@@ -75,6 +79,9 @@ class NetworkHandler : public DevToolsDomainHandler,
 #if BUILDFLAG(ENABLE_REPORTING)
                        public network::mojom::ReportingApiObserver,
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+                       public network::mojom::DeviceBoundSessionEventObserver,
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
                        public Network::Backend {
  public:
   NetworkHandler(const std::string& host_id,
@@ -133,6 +140,19 @@ class NetworkHandler : public DevToolsDomainHandler,
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
   Response EnableReportingApi(bool enable) override;
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  void AddDeviceBoundSessionDisplays(
+      const std::vector<::net::device_bound_sessions::SessionDisplay>&
+          session_displays) override;
+  void OnDeviceBoundSessionEventReceived(
+      const ::net::device_bound_sessions::SessionEvent& event) override;
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
+  Response EnableDeviceBoundSessions(bool enable) override;
+
+  Response FetchSchemefulSite(const std::string& origin,
+                              std::string* schemeful_site) override;
 
   void ConfigureDurableMessages(
       std::optional<int> max_total_size,
@@ -427,6 +447,10 @@ class NetworkHandler : public DevToolsDomainHandler,
 #if BUILDFLAG(ENABLE_REPORTING)
   mojo::Receiver<network::mojom::ReportingApiObserver> reporting_receiver_;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  mojo::Receiver<network::mojom::DeviceBoundSessionEventObserver>
+      device_bound_session_receiver_;
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   std::vector<std::pair<std::string, std::string>> extra_headers_;
   std::unique_ptr<DevToolsURLLoaderInterceptor> url_loader_interceptor_;
   bool bypass_service_worker_;
