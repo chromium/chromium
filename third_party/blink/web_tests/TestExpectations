@@ -599,12 +599,6 @@ crbug.com/1007229 external/wpt/intersection-observer/same-origin-grand-child-ifr
 # These fail when device_scale_factor is changed, but only for anti-aliasing:
 crbug.com/968791 [ Mac ] virtual/scalefactor200/css3/filters/effect-blur-hw.html [ Failure Pass ]
 
-# These appear to be actually incorrect at device_scale_factor 2.0:
-crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-feimage-001.html [ Failure ]
-crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-feimage-002.html [ Failure ]
-crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-feimage-003.html [ Failure ]
-crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-feimage-004.html [ Failure ]
-
 crbug.com/1295445 external/wpt/css/filter-effects/filter-function/filter-function-001.html [ Failure ]
 crbug.com/1295445 external/wpt/css/filter-effects/filter-function/filter-function-002.html [ Failure ]
 crbug.com/1295445 external/wpt/css/filter-effects/filter-function/filter-function-003.html [ Failure ]
