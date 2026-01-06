@@ -83,10 +83,7 @@ bool VerticalTabGroupHeaderView::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 void VerticalTabGroupHeaderView::OnMouseReleased(const ui::MouseEvent& event) {
-  bool toggle_collapse =
-      base::FeatureList::IsEnabled(tab_groups::kLeftClickOpensTabGroupBubble)
-          ? event.IsRightMouseButton()
-          : event.IsLeftMouseButton();
+  bool toggle_collapse = event.IsLeftMouseButton();
   if (toggle_collapse) {
     toggle_collapsed_state_callback_.Run(
         ToggleTabGroupCollapsedStateOrigin::kMouse);

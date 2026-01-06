@@ -238,13 +238,8 @@ bool TabGroupHeader::OnMouseDragged(const ui::MouseEvent& event) {
 void TabGroupHeader::OnMouseReleased(const ui::MouseEvent& event) {
   if (!dragging()) {
     bool open_editor_bubble =
-        base::FeatureList::IsEnabled(tab_groups::kLeftClickOpensTabGroupBubble)
-            ? (event.IsLeftMouseButton() && !editor_bubble_tracker_.is_open())
-            : (event.IsRightMouseButton() && !editor_bubble_tracker_.is_open());
-    bool toggle_collapse =
-        base::FeatureList::IsEnabled(tab_groups::kLeftClickOpensTabGroupBubble)
-            ? event.IsRightMouseButton()
-            : event.IsLeftMouseButton();
+        event.IsRightMouseButton() && !editor_bubble_tracker_.is_open();
+    bool toggle_collapse = event.IsLeftMouseButton();
 
     if (open_editor_bubble) {
       editor_bubble_tracker_.Opened(TabGroupEditorBubbleView::Show(
@@ -362,10 +357,7 @@ void TabGroupHeader::ShowContextMenuForViewImpl(
     ui::mojom::MenuSourceType source_type) {
   // Right click toggles ShowContextMenuForViewImpl, which we dont want to occur
   // if the left click should toggle the context menu.
-  if ((source_type == ui::mojom::MenuSourceType::kMouse &&
-       base::FeatureList::IsEnabled(
-           tab_groups::kLeftClickOpensTabGroupBubble)) ||
-      editor_bubble_tracker_.is_open()) {
+  if (editor_bubble_tracker_.is_open()) {
     return;
   }
 

@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/saved_tab_groups/public/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/models/image_model.h"
@@ -57,10 +56,7 @@ class VerticalTabGroupViewTest
     views::View* const tab_group_header =
         BrowserElementsViews::From(browser())->GetView(
             kTabGroupHeaderElementId);
-    auto mouse_button =
-        base::FeatureList::IsEnabled(tab_groups::kLeftClickOpensTabGroupBubble)
-            ? ui::EF_RIGHT_MOUSE_BUTTON
-            : ui::EF_LEFT_MOUSE_BUTTON;
+    auto mouse_button = ui::EF_LEFT_MOUSE_BUTTON;
     ui::MouseEvent mouse_release_event(
         ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
         ui::EventTimeForNow(), mouse_button, mouse_button);
