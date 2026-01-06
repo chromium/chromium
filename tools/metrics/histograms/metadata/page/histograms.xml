@@ -521,7 +521,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="PageActionController.ActionTypeShown2"
-    enum="PageActionIconType" expires_after="2026-06-07">
+    enum="PageActionIconType" expires_after="2026-12-01">
   <owner>emshack@chromium.org</owner>
   <owner>koretadaniel@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
@@ -534,7 +534,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageActionController.ChipTypeShown" enum="PageActionIconType"
-    expires_after="2026-02-15">
+    expires_after="2026-12-01">
   <owner>emshack@chromium.org</owner>
   <owner>koretadaniel@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
@@ -547,7 +547,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageActionController.NumberActionsShown2" units="actions"
-    expires_after="2026-06-21">
+    expires_after="2026-12-01">
   <owner>emshack@chromium.org</owner>
   <owner>koretadaniel@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
@@ -559,7 +559,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageActionController.NumberActionsShown3" units="actions"
-    expires_after="2026-02-15">
+    expires_after="2026-12-01">
   <owner>koretadaniel@chromium.org</owner>
   <owner>alsan@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
@@ -571,7 +571,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageActionController.PagesWithActionsShown2"
-    enum="PageActionPageEvent" expires_after="2026-06-21">
+    enum="PageActionPageEvent" expires_after="2026-12-01">
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -590,7 +590,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageActionController.PagesWithActionsShown3"
-    enum="PageActionPageEvent" expires_after="2026-05-10">
+    enum="PageActionPageEvent" expires_after="2026-12-01">
   <owner>koretadaniel@chromium.org</owner>
   <owner>alsan@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
@@ -610,7 +610,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageActionController.{PageActionType}.{State}.CTR2"
-    enum="PageActionCTREvent" expires_after="2026-06-21">
+    enum="PageActionCTREvent" expires_after="2026-12-01">
   <owner>koretadaniel@chromium.org</owner>
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
@@ -666,7 +666,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageActionController.{State}.CTR2" enum="PageActionCTREvent"
-    expires_after="2026-06-21">
+    expires_after="2026-12-01">
   <owner>emshack@chromium.org</owner>
   <owner>koretadaniel@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
@@ -684,7 +684,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageActionController.{State}.NumberActionsShownWhenClicked"
-    units="actions" expires_after="2026-06-28">
+    units="actions" expires_after="2026-12-01">
   <owner>emshack@chromium.org</owner>
   <owner>koretadaniel@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
