@@ -110,28 +110,40 @@ public class ThemeSettingsFragment extends ChromeBaseSettingsFragment
 
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(ThemeSettingsFragment.class.getName(), 0) {
+                private final Bundle mExtras = new Bundle();
+
+                {
+                    mExtras.putInt(
+                            ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
+                            ThemeSettingsEntry.SETTINGS);
+                }
 
                 @Override
                 public void updateDynamicPreferences(Context context, SettingsIndexData indexData) {
                     String prefFragment = ThemeSettingsFragment.class.getName();
-                    Bundle extras = new Bundle();
-                    extras.putInt(
-                            ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
-                            ThemeSettingsEntry.SETTINGS);
                     String defaultTitle =
                             NightModeUtils.getThemeSettingTitle(context, ThemeType.SYSTEM_DEFAULT);
                     String defaultSummary =
                             context.getString(R.string.themes_system_default_summary);
                     indexData.addEntryForKey(
-                            prefFragment, PREF_UI_THEME_PREF, defaultTitle, defaultSummary, extras);
+                            prefFragment,
+                            PREF_UI_THEME_PREF,
+                            defaultTitle,
+                            defaultSummary,
+                            mExtras);
 
                     String lightTitle =
                             NightModeUtils.getThemeSettingTitle(context, ThemeType.LIGHT);
                     indexData.addEntryForKey(
-                            prefFragment, PREF_UI_THEME_PREF_LIGHT, lightTitle, null, extras);
+                            prefFragment, PREF_UI_THEME_PREF_LIGHT, lightTitle, null, mExtras);
                     String darkTitle = NightModeUtils.getThemeSettingTitle(context, ThemeType.DARK);
                     indexData.addEntryForKey(
-                            prefFragment, PREF_UI_THEME_PREF_DARK, darkTitle, null, extras);
+                            prefFragment, PREF_UI_THEME_PREF_DARK, darkTitle, null, mExtras);
+                }
+
+                @Override
+                public Bundle getExtras() {
+                    return mExtras;
                 }
             };
 }
