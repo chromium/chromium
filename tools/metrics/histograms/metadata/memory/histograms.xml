@@ -2879,6 +2879,53 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds.{PageList}"
+    units="intervals" expires_after="2026-07-13">
+  <owner>spvm@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Recorded on Windows only. Every 100ms, the size of the system memory lists
+    are queried (and if this query fails, the entire process is cancelled and
+    Memory.SystemMemoryLists.QueryFailureStatus is recorded instead). This
+    metric is the number of such calls over the course of 30s that returned that
+    {PageList} were empty. Recorded every 30s in the browser process after main
+    message loop start.
+  </summary>
+  <token key="PageList">
+    <variant name="FreeList" summary="free pages"/>
+    <variant name="ZeroList" summary="zero pages"/>
+  </token>
+</histogram>
+
+<histogram name="Memory.SystemMemoryLists.QueryFailureStatus" enum="NTSTATUS"
+    expires_after="2026-07-13">
+  <owner>spvm@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Recorded on Windows only. The status if unsuccessful of querying for the
+    size of system memory lists. If Recorded at-most once per startup 100ms
+    after browser message loop starts, and only if we never record
+    Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds because of the
+    failed query.
+  </summary>
+</histogram>
+
+<histogram name="Memory.SystemMemoryLists.{PageCount}Count" units="pages"
+    expires_after="2026-07-13">
+  <owner>spvm@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    The size of the system memory list of {PageCount}. Recorded on Windows only.
+    Recorded every 30s, after browser main message loop start.
+  </summary>
+  <token key="PageCount">
+    <variant name="FreePage" summary="free pages"/>
+    <variant name="ModifiedPage" summary="modified pages"/>
+    <variant name="ZeroPage" summary="zero pages"/>
+  </token>
+</histogram>
+
 <histogram name="Memory.Total.GpuMappedMemory" units="MB"
     expires_after="2026-05-24">
   <owner>lizeb@chromium.org</owner>
