@@ -37,7 +37,7 @@ MemoryChunk::MemoryChunk(int32_t shm_id,
                          CommandBufferHelper* helper)
     : shm_id_(shm_id),
       shm_(shm),
-      allocator_(shm->size(), helper, shm->memory()) {}
+      allocator_(shm->size(), helper, shm->as_byte_span()) {}
 
 MemoryChunk::~MemoryChunk() = default;
 
@@ -72,11 +72,11 @@ void* MappedMemoryManager::Alloc(unsigned int size,
       chunk->FreeUnused();
       total_bytes_in_use += chunk->bytes_in_use();
       if (chunk->GetLargestFreeSizeWithoutWaiting() >= size) {
-        void* mem = chunk->Alloc(size);
-        DCHECK(mem);
+        auto span = chunk->Alloc(size);
+        DCHECK(!span.empty());
         *shm_id = chunk->shm_id();
-        *shm_offset = chunk->GetOffset(mem);
-        return mem;
+        *shm_offset = chunk->GetOffset(span.data());
+        return span.data();
       }
     }
 
@@ -88,11 +88,11 @@ void* MappedMemoryManager::Alloc(unsigned int size,
       TRACE_EVENT0("gpu", "MappedMemoryManager::Alloc::wait");
       for (auto& chunk : chunks_) {
         if (chunk->GetLargestFreeSizeWithWaiting() >= size) {
-          void* mem = chunk->Alloc(size);
-          DCHECK(mem);
+          auto span = chunk->Alloc(size);
+          DCHECK(!span.empty());
           *shm_id = chunk->shm_id();
-          *shm_offset = chunk->GetOffset(mem);
-          return mem;
+          *shm_offset = chunk->GetOffset(span.data());
+          return span.data();
         }
       }
     }
@@ -120,11 +120,11 @@ void* MappedMemoryManager::Alloc(unsigned int size,
   MemoryChunk* mc = new MemoryChunk(id, shm, helper_);
   allocated_memory_ += mc->GetSize();
   chunks_.push_back(base::WrapUnique(mc));
-  void* mem = mc->Alloc(size);
-  DCHECK(mem);
+  auto span = mc->Alloc(size);
+  DCHECK(!span.empty());
   *shm_id = mc->shm_id();
-  *shm_offset = mc->GetOffset(mem);
-  return mem;
+  *shm_offset = mc->GetOffset(span.data());
+  return span.data();
 }
 
 void MappedMemoryManager::Free(void* pointer) {

@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -101,26 +102,25 @@ TEST_F(MemoryChunkTest, Basic) {
   EXPECT_EQ(kBufferSize, chunk_->GetLargestFreeSizeWithoutWaiting());
   EXPECT_EQ(kBufferSize, chunk_->GetLargestFreeSizeWithWaiting());
   EXPECT_EQ(kBufferSize, chunk_->GetSize());
-  void *pointer = chunk_->Alloc(kSize);
-  ASSERT_TRUE(pointer);
-  EXPECT_LE(buffer_->memory(), static_cast<uint8_t*>(pointer));
-  EXPECT_GE(kBufferSize,
-            static_cast<uint8_t*>(pointer) - buffer_memory() + kSize);
+  auto span = chunk_->Alloc(kSize);
+  ASSERT_FALSE(span.empty());
+  EXPECT_LE(buffer_->memory(), span.data());
+  EXPECT_GE(kBufferSize, span.data() - buffer_memory() + kSize);
   EXPECT_EQ(kBufferSize - kSize, chunk_->GetLargestFreeSizeWithoutWaiting());
   EXPECT_EQ(kBufferSize - kSize, chunk_->GetLargestFreeSizeWithWaiting());
   EXPECT_EQ(kBufferSize, chunk_->GetSize());
 
-  chunk_->Free(pointer);
+  chunk_->Free(span.data());
   EXPECT_EQ(kBufferSize, chunk_->GetLargestFreeSizeWithoutWaiting());
   EXPECT_EQ(kBufferSize, chunk_->GetLargestFreeSizeWithWaiting());
 
-  uint8_t* pointer_char = static_cast<uint8_t*>(chunk_->Alloc(kSize));
-  ASSERT_TRUE(pointer_char);
-  EXPECT_LE(buffer_memory(), pointer_char);
-  UNSAFE_TODO(EXPECT_GE(buffer_memory() + kBufferSize, pointer_char + kSize));
+  auto span2 = chunk_->Alloc(kSize);
+  ASSERT_FALSE(span2.empty());
+  EXPECT_LE(buffer_memory(), span2.data());
+  EXPECT_GE(kBufferSize, span2.data() - buffer_memory() + kSize);
   EXPECT_EQ(kBufferSize - kSize, chunk_->GetLargestFreeSizeWithoutWaiting());
   EXPECT_EQ(kBufferSize - kSize, chunk_->GetLargestFreeSizeWithWaiting());
-  chunk_->Free(pointer_char);
+  chunk_->Free(span2.data());
   EXPECT_EQ(kBufferSize, chunk_->GetLargestFreeSizeWithoutWaiting());
   EXPECT_EQ(kBufferSize, chunk_->GetLargestFreeSizeWithWaiting());
 }

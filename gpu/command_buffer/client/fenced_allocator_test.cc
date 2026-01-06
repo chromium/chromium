@@ -12,6 +12,8 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/aligned_memory.h"
@@ -382,10 +384,14 @@ class FencedAllocatorWrapperTest : public BaseFencedAllocatorTest {
     // Though allocating this buffer isn't strictly necessary, it makes
     // allocations point to valid addresses, so they could be used for
     // something.
-    buffer_.reset(static_cast<char*>(base::AlignedAlloc(
-        kBufferSize, kAllocAlignment)));
+    // SAFETY: base::AlignedAlloc allocates at least `size` bytes.
+    buffer_ = UNSAFE_BUFFERS(
+        base::HeapArray<uint8_t, base::AlignedFreeDeleter>::FromOwningPointer(
+            static_cast<uint8_t*>(
+                base::AlignedAlloc(kBufferSize, kAllocAlignment)),
+            kBufferSize));
     allocator_ = std::make_unique<FencedAllocatorWrapper>(
-        kBufferSize, helper_.get(), buffer_.get());
+        kBufferSize, helper_.get(), buffer_);
   }
 
   void TearDown() override {
@@ -397,7 +403,7 @@ class FencedAllocatorWrapperTest : public BaseFencedAllocatorTest {
     BaseFencedAllocatorTest::TearDown();
   }
 
-  std::unique_ptr<char, base::AlignedFreeDeleter> buffer_;
+  base::HeapArray<uint8_t, base::AlignedFreeDeleter> buffer_;
   std::unique_ptr<FencedAllocatorWrapper> allocator_;
 };
 
@@ -406,41 +412,41 @@ TEST_F(FencedAllocatorWrapperTest, TestBasic) {
   allocator_->CheckConsistency();
 
   const unsigned int kSize = 16;
-  void* pointer = allocator_->Alloc(kSize);
-  ASSERT_TRUE(pointer);
-  EXPECT_LE(buffer_.get(), static_cast<char *>(pointer));
-  EXPECT_GE(kBufferSize, static_cast<char *>(pointer) - buffer_.get() + kSize);
+  auto span = allocator_->Alloc(kSize);
+  ASSERT_FALSE(span.empty());
+  EXPECT_LE(buffer_.data(), span.data());
+  EXPECT_GE(kBufferSize, span.data() - buffer_.data() + kSize);
   EXPECT_TRUE(allocator_->CheckConsistency());
 
-  allocator_->Free(pointer);
+  allocator_->Free(span.data());
   EXPECT_TRUE(allocator_->CheckConsistency());
 
-  char* pointer_char = allocator_->AllocTyped<char>(kSize);
-  ASSERT_TRUE(pointer_char);
-  EXPECT_LE(buffer_.get(), pointer_char);
-  UNSAFE_TODO(EXPECT_GE(buffer_.get() + kBufferSize, pointer_char + kSize));
-  allocator_->Free(pointer_char);
+  auto span_char = allocator_->Alloc(kSize * sizeof(char));
+  ASSERT_FALSE(span_char.empty());
+  EXPECT_LE(buffer_.data(), span_char.data());
+  EXPECT_GE(kBufferSize, span_char.data() - buffer_.data() + kSize);
+  allocator_->Free(span_char.data());
   EXPECT_TRUE(allocator_->CheckConsistency());
 
-  unsigned int* pointer_uint = allocator_->AllocTyped<unsigned int>(kSize);
-  ASSERT_TRUE(pointer_uint);
-  EXPECT_LE(buffer_.get(), reinterpret_cast<char *>(pointer_uint));
-  UNSAFE_TODO(EXPECT_GE(buffer_.get() + kBufferSize,
-                        reinterpret_cast<char*>(pointer_uint + kSize)));
+  auto span_uint = allocator_->Alloc(kSize * sizeof(unsigned int));
+  ASSERT_FALSE(span_uint.empty());
+  EXPECT_LE(buffer_.data(), span_uint.data());
+  EXPECT_GE(kBufferSize,
+            span_uint.data() - buffer_.data() + kSize * sizeof(unsigned int));
 
   // Check that it did allocate kSize * sizeof(unsigned int). We can't tell
   // directly, except from the remaining size.
-  EXPECT_EQ(kBufferSize - kSize * sizeof(*pointer_uint),
+  EXPECT_EQ(kBufferSize - kSize * sizeof(unsigned int),
             allocator_->GetLargestFreeSize());
-  allocator_->Free(pointer_uint);
+  allocator_->Free(span_uint.data());
 }
 
 // Test alloc 0 fails.
 TEST_F(FencedAllocatorWrapperTest, TestAllocZero) {
   allocator_->CheckConsistency();
 
-  void* pointer = allocator_->Alloc(0);
-  ASSERT_FALSE(pointer);
+  auto span = allocator_->Alloc(0);
+  ASSERT_TRUE(span.empty());
   EXPECT_TRUE(allocator_->CheckConsistency());
 }
 
@@ -449,21 +455,21 @@ TEST_F(FencedAllocatorWrapperTest, TestAlignment) {
   allocator_->CheckConsistency();
 
   const unsigned int kSize1 = 75;
-  void* pointer1 = allocator_->Alloc(kSize1);
-  ASSERT_TRUE(pointer1);
-  EXPECT_TRUE(base::IsAligned(pointer1, kAllocAlignment));
+  auto span1 = allocator_->Alloc(kSize1);
+  ASSERT_FALSE(span1.empty());
+  EXPECT_TRUE(base::IsAligned(span1.data(), kAllocAlignment));
   EXPECT_TRUE(allocator_->CheckConsistency());
 
   const unsigned int kSize2 = 43;
-  void* pointer2 = allocator_->Alloc(kSize2);
-  ASSERT_TRUE(pointer2);
-  EXPECT_TRUE(base::IsAligned(pointer2, kAllocAlignment));
+  auto span2 = allocator_->Alloc(kSize2);
+  ASSERT_FALSE(span2.empty());
+  EXPECT_TRUE(base::IsAligned(span2.data(), kAllocAlignment));
   EXPECT_TRUE(allocator_->CheckConsistency());
 
-  allocator_->Free(pointer2);
+  allocator_->Free(span2.data());
   EXPECT_TRUE(allocator_->CheckConsistency());
 
-  allocator_->Free(pointer1);
+  allocator_->Free(span1.data());
   EXPECT_TRUE(allocator_->CheckConsistency());
 }
 
@@ -476,28 +482,30 @@ TEST_F(FencedAllocatorWrapperTest, TestOutOfMemory) {
   CHECK_EQ(kAllocCount * kSize, kBufferSize);
 
   // Allocate several buffers to fill in the memory.
-  std::array<void*, kAllocCount> pointers;
+  std::array<uint8_t*, kAllocCount> pointers;
   for (unsigned int i = 0; i < kAllocCount; ++i) {
-    pointers[i] = allocator_->Alloc(kSize);
-    EXPECT_TRUE(pointers[i]);
+    auto span = allocator_->Alloc(kSize);
+    EXPECT_FALSE(span.empty());
+    pointers[i] = span.data();
     EXPECT_TRUE(allocator_->CheckConsistency());
   }
 
   // This allocation should fail.
-  void* pointer_failed = allocator_->Alloc(kSize);
-  EXPECT_FALSE(pointer_failed);
+  auto span_failed = allocator_->Alloc(kSize);
+  EXPECT_TRUE(span_failed.empty());
   EXPECT_TRUE(allocator_->CheckConsistency());
 
   // Free one successful allocation, reallocate with half the size
   allocator_->Free(pointers[0]);
   EXPECT_TRUE(allocator_->CheckConsistency());
-  pointers[0] = allocator_->Alloc(kSize/2);
-  EXPECT_TRUE(pointers[0]);
+  auto span0 = allocator_->Alloc(kSize / 2);
+  EXPECT_FALSE(span0.empty());
+  pointers[0] = span0.data();
   EXPECT_TRUE(allocator_->CheckConsistency());
 
   // This allocation should fail as well.
-  pointer_failed = allocator_->Alloc(kSize);
-  EXPECT_FALSE(pointer_failed);
+  span_failed = allocator_->Alloc(kSize);
+  EXPECT_TRUE(span_failed.empty());
   EXPECT_TRUE(allocator_->CheckConsistency());
 
   // Free up everything.
@@ -516,16 +524,17 @@ TEST_F(FencedAllocatorWrapperTest, TestFreePendingToken) {
   CHECK_EQ(kAllocCount * kSize, kBufferSize);
 
   // Allocate several buffers to fill in the memory.
-  std::array<void*, kAllocCount> pointers;
+  std::array<uint8_t*, kAllocCount> pointers;
   for (unsigned int i = 0; i < kAllocCount; ++i) {
-    pointers[i] = allocator_->Alloc(kSize);
-    EXPECT_TRUE(pointers[i]);
+    auto span = allocator_->Alloc(kSize);
+    EXPECT_FALSE(span.empty());
+    pointers[i] = span.data();
     EXPECT_TRUE(allocator_->CheckConsistency());
   }
 
   // This allocation should fail.
-  void* pointer_failed = allocator_->Alloc(kSize);
-  EXPECT_FALSE(pointer_failed);
+  auto span_failed = allocator_->Alloc(kSize);
+  EXPECT_TRUE(span_failed.empty());
   EXPECT_TRUE(allocator_->CheckConsistency());
 
   // Free one successful allocation, pending fence.
@@ -540,8 +549,9 @@ TEST_F(FencedAllocatorWrapperTest, TestFreePendingToken) {
 
   // This allocation will need to reclaim the space freed above, so that should
   // process the commands until the token is passed.
-  pointers[0] = allocator_->Alloc(kSize);
-  EXPECT_TRUE(pointers[0]);
+  auto span0 = allocator_->Alloc(kSize);
+  EXPECT_FALSE(span0.empty());
+  pointers[0] = span0.data();
   EXPECT_TRUE(allocator_->CheckConsistency());
   // Check that the token has indeed passed.
   EXPECT_LE(token, GetToken());
