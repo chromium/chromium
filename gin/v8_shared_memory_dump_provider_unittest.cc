@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "gin/test/v8_test.h"
@@ -31,10 +30,10 @@ TEST_F(V8SharedMemoryDumpProviderTest, DumpStatistics) {
   bool did_dump_read_only_space = false;
   for (const auto& name_dump : allocator_dumps) {
     const std::string& name = name_dump.first;
-    if (base::Contains(name, "v8/shared")) {
+    if (name.contains("v8/shared")) {
       did_dump_shared_memory_stats = true;
     }
-    if (base::Contains(name, "v8/shared/read_only_space")) {
+    if (name.contains("v8/shared/read_only_space")) {
       did_dump_read_only_space = true;
     }
   }
