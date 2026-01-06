@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -100,7 +99,7 @@ bool ExportedObject::ExportMethodAndBlock(
   // Check if the method is already exported.
   const std::string absolute_method_name =
       GetAbsoluteMemberName(interface_name, method_name);
-  if (base::Contains(method_table_, absolute_method_name)) {
+  if (method_table_.contains(absolute_method_name)) {
     LOG(ERROR) << absolute_method_name << " is already exported";
     return false;
   }

@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -555,7 +554,7 @@ bool Bus::RequestOwnershipAndBlock(const std::string& service_name,
   AssertOnDBusThread();
 
   // Check if we already own the service name.
-  if (base::Contains(owned_service_names_, service_name)) {
+  if (owned_service_names_.contains(service_name)) {
     return true;
   }
 
@@ -695,7 +694,7 @@ void Bus::AddFilterFunction(DBusHandleMessageFunction filter_function,
 
   std::pair<DBusHandleMessageFunction, void*> filter_data_pair =
       std::make_pair(filter_function, user_data);
-  if (base::Contains(filter_functions_added_, filter_data_pair)) {
+  if (filter_functions_added_.contains(filter_data_pair)) {
     VLOG(1) << "Filter function already exists: " << filter_function
             << " with associated data: " << user_data;
     return;
@@ -716,7 +715,7 @@ void Bus::RemoveFilterFunction(DBusHandleMessageFunction filter_function,
 
   std::pair<DBusHandleMessageFunction, void*> filter_data_pair =
       std::make_pair(filter_function, user_data);
-  if (!base::Contains(filter_functions_added_, filter_data_pair)) {
+  if (!filter_functions_added_.contains(filter_data_pair)) {
     VLOG(1) << "Requested to remove an unknown filter function: "
             << filter_function
             << " with associated data: " << user_data;
@@ -811,7 +810,7 @@ bool Bus::TryRegisterObjectPathInternal(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  if (base::Contains(registered_object_paths_, object_path)) {
+  if (registered_object_paths_.contains(object_path)) {
     LOG(ERROR) << "Object path already registered: " << object_path.value();
     return false;
   }
@@ -832,7 +831,7 @@ void Bus::UnregisterObjectPath(const ObjectPath& object_path) {
   DCHECK(connection_);
   AssertOnDBusThread();
 
-  if (!base::Contains(registered_object_paths_, object_path)) {
+  if (!registered_object_paths_.contains(object_path)) {
     LOG(ERROR) << "Requested to unregister an unknown object path: "
                << object_path.value();
     return;
