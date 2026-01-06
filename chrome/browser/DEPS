@@ -43,6 +43,7 @@ include_rules = [
   "+components/legion",
   "+components/account_id",
   "+components/account_manager_core",
+  "+components/activity_reporter",
   "+components/affiliations",
   "+components/allocation_recorder",
   "+components/android_autofill/browser",

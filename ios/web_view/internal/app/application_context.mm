@@ -10,6 +10,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "base/path_service.h"
+#import "components/activity_reporter/activity_reporter.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/component_updater/component_updater_service.h"
 #import "components/component_updater/timer_update_scheduler.h"
@@ -216,6 +217,14 @@ const std::string& ApplicationContext::GetApplicationLocale() {
 net::NetLog* ApplicationContext::GetNetLog() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return net::NetLog::Get();
+}
+
+activity_reporter::ActivityReporter* ApplicationContext::GetActivityReporter() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!activity_reporter_) {
+    activity_reporter_ = activity_reporter::CreateActivityReporterDisabled();
+  }
+  return activity_reporter_.get();
 }
 
 component_updater::ComponentUpdateService*

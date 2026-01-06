@@ -10,6 +10,7 @@
 #import "base/notreached.h"
 #import "base/time/default_clock.h"
 #import "base/time/default_tick_clock.h"
+#import "components/activity_reporter/activity_reporter.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/metrics_services_manager/metrics_services_manager.h"
 #import "components/network_time/network_time_tracker.h"
@@ -264,6 +265,15 @@ IOSChromeIOThread* TestingApplicationContext::GetIOSChromeIOThread() {
 gcm::GCMDriver* TestingApplicationContext::GetGCMDriver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return nullptr;
+}
+
+activity_reporter::ActivityReporter*
+TestingApplicationContext::GetActivityReporter() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!activity_reporter_) {
+    activity_reporter_ = activity_reporter::CreateActivityReporter();
+  }
+  return activity_reporter_.get();
 }
 
 component_updater::ComponentUpdateService*

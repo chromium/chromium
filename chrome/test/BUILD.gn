@@ -160,6 +160,7 @@ static_library("test_support") {
     "//chrome/browser/status_icons",
     "//chrome/browser/ui:ui_features",
     "//chrome/test/data/webui:resources",
+    "//components/activity_reporter",
     "//components/affiliations/core/browser:test_support",
     "//components/supervised_user/core/browser:test_support",
     "//ui/base/unowned_user_data",

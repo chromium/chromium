@@ -84,6 +84,10 @@ namespace variations {
 class VariationsService;
 }
 
+namespace activity_reporter {
+class ActivityReporter;
+}
+
 namespace component_updater {
 class ComponentUpdateService;
 }
@@ -274,6 +278,8 @@ class BrowserProcess {
   // |kSwitchesToRemoveOnAutorestart| array in browser_process_impl.cc.
   virtual void StartAutoupdateTimer() = 0;
 #endif
+
+  virtual activity_reporter::ActivityReporter* activity_reporter() = 0;
 
   virtual component_updater::ComponentUpdateService* component_updater() = 0;
 

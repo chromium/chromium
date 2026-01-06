@@ -23,6 +23,7 @@
 #import "base/task/thread_pool.h"
 #import "base/time/default_clock.h"
 #import "base/time/default_tick_clock.h"
+#import "components/activity_reporter/activity_reporter.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
@@ -436,6 +437,15 @@ gcm::GCMDriver* ApplicationContextImpl::GetGCMDriver() {
   }
   DCHECK(gcm_driver_);
   return gcm_driver_.get();
+}
+
+activity_reporter::ActivityReporter*
+ApplicationContextImpl::GetActivityReporter() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!activity_reporter_) {
+    activity_reporter_ = activity_reporter::CreateActivityReporter();
+  }
+  return activity_reporter_.get();
 }
 
 component_updater::ComponentUpdateService*

@@ -15,6 +15,9 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 
+namespace activity_reporter {
+class ActivityReporter;
+}  // namespace activity_reporter
 namespace auto_deletion {
 class AutoDeletionService;
 }  // namespace auto_deletion
@@ -86,6 +89,7 @@ class ApplicationContextImpl : public ApplicationContext {
   network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   IOSChromeIOThread* GetIOSChromeIOThread() override;
   gcm::GCMDriver* GetGCMDriver() override;
+  activity_reporter::ActivityReporter* GetActivityReporter() override;
   component_updater::ComponentUpdateService* GetComponentUpdateService()
       override;
   SafeBrowsingService* GetSafeBrowsingService() override;
@@ -163,6 +167,7 @@ class ApplicationContextImpl : public ApplicationContext {
   std::unique_ptr<metrics_services_manager::MetricsServicesManager>
       metrics_services_manager_;
   std::unique_ptr<gcm::GCMDriver> gcm_driver_;
+  std::unique_ptr<activity_reporter::ActivityReporter> activity_reporter_;
   std::unique_ptr<component_updater::ComponentUpdateService> component_updater_;
 
   std::unique_ptr<ProfileManagerIOS> profile_manager_;

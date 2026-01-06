@@ -12,6 +12,10 @@
 #include "base/sequence_checker.h"
 #include "ios/chrome/browser/shared/model/application_context/application_context.h"
 
+namespace activity_reporter {
+class ActivityReporter;
+}
+
 namespace metrics_services_manager {
 class MetricsServicesManager;
 }  // namespace metrics_services_manager
@@ -103,6 +107,7 @@ class TestingApplicationContext : public ApplicationContext {
   network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   IOSChromeIOThread* GetIOSChromeIOThread() override;
   gcm::GCMDriver* GetGCMDriver() override;
+  activity_reporter::ActivityReporter* GetActivityReporter() override;
   component_updater::ComponentUpdateService* GetComponentUpdateService()
       override;
   SafeBrowsingService* GetSafeBrowsingService() override;
@@ -155,6 +160,7 @@ class TestingApplicationContext : public ApplicationContext {
   std::unique_ptr<optimization_guide::OptimizationGuideGlobalState>
       optimization_guide_global_state_;
   std::unique_ptr<ApplicationLocaleStorage> application_locale_storage_;
+  std::unique_ptr<activity_reporter::ActivityReporter> activity_reporter_;
 };
 
 #endif  // IOS_CHROME_TEST_TESTING_APPLICATION_CONTEXT_H_

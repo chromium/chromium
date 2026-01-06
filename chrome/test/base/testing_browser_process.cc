@@ -36,6 +36,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process_platform_part.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/activity_reporter/activity_reporter.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/metrics/metrics_service.h"
@@ -106,6 +107,18 @@
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
 #include "chrome/browser/notifications/notification_ui_manager.h"
 #endif
+
+namespace {
+
+class TestActivityReporter : public activity_reporter::ActivityReporter {
+ public:
+  TestActivityReporter() = default;
+  void ReportActive() override {
+    // Do nothing.
+  }
+};
+
+}  // namespace
 
 // static
 TestingBrowserProcess* TestingBrowserProcess::GetGlobal() {
@@ -538,6 +551,14 @@ DownloadRequestLimiter* TestingBrowserProcess::download_request_limiter() {
     download_request_limiter_ = base::MakeRefCounted<DownloadRequestLimiter>();
   }
   return download_request_limiter_.get();
+}
+
+activity_reporter::ActivityReporter*
+TestingBrowserProcess::activity_reporter() {
+  if (!activity_reporter_) {
+    activity_reporter_ = std::make_unique<TestActivityReporter>();
+  }
+  return activity_reporter_.get();
 }
 
 component_updater::ComponentUpdateService*

@@ -99,6 +99,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/installer/util/google_update_settings.h"
+#include "components/activity_reporter/activity_reporter.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/breadcrumbs/core/application_breadcrumbs_logger.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_util.h"
@@ -1292,6 +1293,14 @@ void BrowserProcessImpl::StartAutoupdateTimer() {
                           this, &BrowserProcessImpl::OnAutoupdateTimer);
 }
 #endif
+
+activity_reporter::ActivityReporter* BrowserProcessImpl::activity_reporter() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!activity_reporter_) {
+    activity_reporter_ = activity_reporter::CreateActivityReporter();
+  }
+  return activity_reporter_.get();
+}
 
 component_updater::ComponentUpdateService*
 BrowserProcessImpl::component_updater() {

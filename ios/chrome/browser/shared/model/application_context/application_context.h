@@ -15,6 +15,10 @@ namespace auto_deletion {
 class AutoDeletionService;
 }  // namespace auto_deletion
 
+namespace activity_reporter {
+class ActivityReporter;
+}
+
 namespace component_updater {
 class ComponentUpdateService;
 }
@@ -189,6 +193,9 @@ class ApplicationContext {
 
   // Gets the GCMDriver.
   virtual gcm::GCMDriver* GetGCMDriver() = 0;
+
+  // Gets the ActivityReporter.
+  virtual activity_reporter::ActivityReporter* GetActivityReporter() = 0;
 
   // Gets the ComponentUpdateService.
   virtual component_updater::ComponentUpdateService*
