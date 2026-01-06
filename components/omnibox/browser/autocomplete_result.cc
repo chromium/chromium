@@ -96,17 +96,6 @@ constexpr size_t kMaxPedalCount =
 constexpr size_t kMaxPedalMatchIndex =
     is_ios ? 3 : std::numeric_limits<size_t>::max();
 
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-// The entrypoint id associated with aim being invoked from the AIM shortcut of
-// typed state. Used for logging purposes.
-// Do not change without changing the IDs in chrome_aim_entry_point.proto
-omnibox::ChromeAimEntryPoint GetAimActionEntrypointID() {
-  return is_android
-             ? omnibox::ANDROID_CHROME_AIM_SHORTCUT_TYPED_STATE_ENTRY_POINT
-             : omnibox::IOS_CHROME_OMNIBOX_SEARCH_ENTRY_POINT;
-}
-#endif
-
 }  // namespace
 
 // static
@@ -963,40 +952,6 @@ void AutocompleteResult::AttachPedalsToMatches(
     }
   }
 }
-
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-void AutocompleteResult::AttachAimAction(
-    TemplateURLService* template_url_service,
-    AutocompleteProviderClient* client) {
-  if (!OmniboxFieldTrial::IsDeterministicAimActionInTypedStateEnabled(client)) {
-    return;
-  }
-
-  for (AutocompleteMatch& match : matches_) {
-    if (!match.actions.empty()) {
-      continue;
-    }
-    if (match.allowed_to_be_default_match &&
-        AutocompleteMatch::IsSearchType(match.type) &&
-        match.contents.length() >=
-            static_cast<size_t>(
-                OmniboxFieldTrial::kMinimumTypedCharactersToInvokeAimShortcut
-                    .Get())) {
-      omnibox::SuggestTemplateInfo::TemplateAction template_action;
-      template_action.set_action_type(
-          omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM);
-      template_action.set_action_uri(
-          GetUrlForAim(template_url_service, GetAimActionEntrypointID(),
-                       /*query_start_time=*/base::Time::Now(), match.contents)
-              .spec());
-      match.actions.emplace_back(base::MakeRefCounted<OmniboxActionInSuggest>(
-          std::move(template_action), std::nullopt));
-      // Only attach to the first eligible match.
-      return;
-    }
-  }
-}
-#endif
 
 void AutocompleteResult::AttachContextualSearchFulfillmentActionToMatches() {
   for (AutocompleteMatch& match : matches_) {
