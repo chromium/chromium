@@ -40,6 +40,9 @@ class ClickToolRequest : public PageToolRequest {
       content::RenderFrameHost& frame) const override;
   std::unique_ptr<PageToolRequest> Clone() const override;
 
+  void WillSendToRenderer(
+      content::RenderWidgetHost* render_widget_host) override;
+
  private:
   MouseClickType click_type_;
   MouseClickCount click_count_;

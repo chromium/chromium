@@ -15,11 +15,13 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/download_test_observer.h"
 #include "pdf/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -67,6 +69,35 @@ void WaitForCondition(base::RepeatingCallback<bool()> condition,
       << "Timeout waiting for condition: " << description;
 }
 #endif
+
+// This observer detects when WebContents receives notification of a user
+// gesture having occurred, following a user input event targeted to
+// a RenderWidgetHost under that WebContents.
+class UserInteractionObserver : public content::WebContentsObserver {
+ public:
+  explicit UserInteractionObserver(content::WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  UserInteractionObserver(const UserInteractionObserver&) = delete;
+  UserInteractionObserver& operator=(const UserInteractionObserver&) = delete;
+
+  ~UserInteractionObserver() override {}
+
+  // Retrieve the flag. There is no need to wait on a loop since
+  // DidGetUserInteraction() should be called synchronously with the input
+  // event processing in the browser process.
+  bool WasUserInteractionReceived() { return user_interaction_received_; }
+
+  void Reset() { user_interaction_received_ = false; }
+
+ private:
+  // WebContentsObserver
+  void DidGetUserInteraction(const blink::WebInputEvent& event) override {
+    user_interaction_received_ = true;
+  }
+
+  bool user_interaction_received_ = false;
+};
 
 class ActorClickToolBrowserTest : public ActorToolsTest,
                                   public ::testing::WithParamInterface<
@@ -437,6 +468,25 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolBrowserTest, ClickTool_Delay) {
       base::Milliseconds(mouseup_timestamp - mousedown_timestamp);
 
   EXPECT_GE(delta, features::kGlicActorClickDelay.Get());
+}
+
+IN_PROC_BROWSER_TEST_P(ActorClickToolBrowserTest, UserInteractionTriggered) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+
+  UserInteractionObserver observer(web_contents());
+
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*active_tab(), gfx::Point(1, 1));
+
+  ASSERT_FALSE(observer.WasUserInteractionReceived());
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  ASSERT_TRUE(observer.WasUserInteractionReceived());
 }
 
 INSTANTIATE_TEST_SUITE_P(

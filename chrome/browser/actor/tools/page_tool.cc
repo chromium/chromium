@@ -338,6 +338,9 @@ void PageTool::Invoke(ToolCallback callback) {
       FROM_HERE, features::kGlicActorPageToolTimeout.Get(),
       base::BindOnce(&PageTool::OnTimeout, weak_ptr_factory_.GetWeakPtr()));
 
+  if (base::FeatureList::IsEnabled(kActorSendBrowserSignalForAction)) {
+    request_->WillSendToRenderer(frame.GetRenderWidgetHost());
+  }
   chrome_render_frame_->InvokeTool(
       std::move(invocation),
       base::BindOnce(&PageTool::FinishInvoke, weak_ptr_factory_.GetWeakPtr()));

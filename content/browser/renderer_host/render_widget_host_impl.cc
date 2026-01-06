@@ -836,6 +836,12 @@ void RenderWidgetHostImpl::SetIsLoading(bool is_loading) {
   }
 }
 
+void RenderWidgetHostImpl::WillSendInputEventToRenderer(
+    const WebInputEvent& event) {
+  GetRenderInputRouter()->GetDispatchToRendererCallback().Run(
+      event, input::DispatchToRendererResult::kDispatched);
+}
+
 void RenderWidgetHostImpl::WasHidden() {
   if (is_hidden_) {
     return;

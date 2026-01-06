@@ -8,6 +8,8 @@
 
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
+#include "content/public/browser/render_widget_host.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 
 namespace actor {
 
@@ -48,6 +50,15 @@ ClickToolRequest::GetObservationPageStabilityConfig() const {
   return ObservationDelayController::PageStabilityConfig{
       .supports_paint_stability = true,
   };
+}
+
+void ClickToolRequest::WillSendToRenderer(
+    content::RenderWidgetHost* render_widget_host) {
+  blink::WebMouseEvent event = blink::WebMouseEvent();
+  event.SetType(blink::WebInputEvent::Type::kMouseDown);
+
+  // Trigger user interaction notification.
+  render_widget_host->WillSendInputEventToRenderer(event);
 }
 
 }  // namespace actor

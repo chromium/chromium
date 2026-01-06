@@ -131,4 +131,7 @@ BASE_FEATURE(kActorBindCreatedTabToTask, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorRestartObservationDelayControllerOnNavigate,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kActorSendBrowserSignalForAction,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace actor

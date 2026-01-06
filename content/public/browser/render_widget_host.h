@@ -110,6 +110,13 @@ class CONTENT_EXPORT RenderWidgetHost {
 
   virtual ~RenderWidgetHost() {}
 
+  // This is a method to manually notify `InputEventObserver`s that an input
+  // event is about to be sent to the renderer. This is useful for mechanisms
+  // that do not use the normal input stack and thus would not normally send
+  // notifications to observers (e.g. tools in `actor::`).
+  virtual void WillSendInputEventToRenderer(
+      const blink::WebInputEvent& event) = 0;
+
   // Returns the viz::FrameSinkId that this object uses to put things on screen.
   // This value is constant throughout the lifetime of this object. Note that
   // until a RenderWidgetHostView is created, initialized, and assigned to this

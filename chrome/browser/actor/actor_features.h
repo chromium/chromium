@@ -91,6 +91,10 @@ BASE_DECLARE_FEATURE(kActorBindCreatedTabToTask);
 
 BASE_DECLARE_FEATURE(kActorRestartObservationDelayControllerOnNavigate);
 
+// Kill switch to disable sending a browser signal (which is used for user
+// interaction) before sending action to renderer.
+BASE_DECLARE_FEATURE(kActorSendBrowserSignalForAction);
+
 }  // namespace actor
 
 #endif  // CHROME_BROWSER_ACTOR_ACTOR_FEATURES_H_
