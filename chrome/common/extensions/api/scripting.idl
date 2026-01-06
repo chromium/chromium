@@ -190,9 +190,9 @@ namespace scripting {
     // the script evaluates to a promise, the browser will wait for the promise to
     // settle and return the resulting value.
     // |injection|: The details of the script which to inject.
-    // |callback|: Invoked upon completion of the injection. The resulting
-    // array contains the result of execution for each frame where the
-    // injection succeeded.
+    // |callback|: Returns a Promise which resolves upon completion of the
+    // injection. The resulting array contains the result of execution for each
+    // frame where the injection succeeded.
     static void executeScript(
         ScriptInjection injection,
         optional ScriptInjectionCallback callback);
@@ -200,7 +200,8 @@ namespace scripting {
     // Inserts a CSS stylesheet into a target context.
     // If multiple frames are specified, unsuccessful injections are ignored.
     // |injection|: The details of the styles to insert.
-    // |callback|: Invoked upon completion of the insertion.
+    // |callback|: Returns a Promise which resolves upon completion of the
+    // insertion.
     static void insertCSS(
         CSSInjection injection,
         optional CSSInjectionCallback callback);
@@ -211,7 +212,8 @@ namespace scripting {
     // <code>css</code>, <code>files</code>, and <code>origin</code> properties
     // must exactly match the stylesheet inserted through $(ref:insertCSS).
     // Attempting to remove a non-existent stylesheet is a no-op.
-    // |callback|: A callback to be invoked upon the completion of the removal.
+    // |callback|: Returns a Promise which resolves upon the completion of the
+    // removal.
     static void removeCSS(
         CSSInjection injection,
         optional CSSInjectionCallback callback);
@@ -220,8 +222,8 @@ namespace scripting {
     // |scripts|: Contains a list of scripts to be registered. If there are
     // errors during script parsing/file validation, or if the IDs specified
     // already exist, then no scripts are registered.
-    // |callback|: A callback to be invoked once scripts have been fully
-    // registered or if an error has occurred.
+    // |callback|: Returns a Promise which resolves once scripts have been
+    // fully registered or rejects if an error has occurred.
     static void registerContentScripts(
         RegisteredContentScript[] scripts,
         optional RegisterContentScriptsCallback callback);
@@ -238,8 +240,8 @@ namespace scripting {
     // |filter|: If specified, only unregisters dynamic content scripts which
     // match the filter. Otherwise, all of the extension's dynamic content
     // scripts are unregistered.
-    // |callback|: A callback to be invoked once scripts have been unregistered
-    // or if an error has occurred.
+    // |callback|: Returns a Promise which resolves once scripts have been
+    // unregistered or rejects if an error has occurred.
     static void unregisterContentScripts(
         optional ContentScriptFilter filter,
         optional UnregisterContentScriptsCallback callback);
@@ -250,8 +252,8 @@ namespace scripting {
     // there are errors during script parsing/file validation, or if the IDs
     // specified do not correspond to a fully registered script, then no scripts
     // are updated.
-    // |callback|: A callback to be invoked once scripts have been updated or
-    // if an error has occurred.
+    // |callback|: Returns a Promise which resolves once scripts have been
+    // updated or rejects if an error has occurred.
     static void updateContentScripts(
         RegisteredContentScript[] scripts,
         optional RegisterContentScriptsCallback callback);

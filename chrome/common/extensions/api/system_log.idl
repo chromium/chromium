@@ -18,7 +18,8 @@ namespace systemLog {
   interface Functions {
     // Adds a new log record.
     // |options|: The logging options.
-    // |callback|: A callback to invoke once the log has been added.
+    // |callback|: Returns a Promise which resolves once the log has been
+    // added.
     static void add(
         MessageOptions options,
         optional VoidCallback callback);

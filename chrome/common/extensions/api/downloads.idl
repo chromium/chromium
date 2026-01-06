@@ -467,7 +467,8 @@ namespace downloads {
     // a descriptive string. The error strings are not guaranteed to remain
     // backwards compatible between releases. Extensions must not parse it.
     // |options|: What to download and how.
-    // |callback|: Called with the id of the new $(ref:DownloadItem).
+    // |callback|: Returns a Promise which resolves with the id of the new
+    // $(ref:DownloadItem).
     static void download(
         DownloadOptions options,
         optional DownloadCallback callback);
@@ -486,7 +487,8 @@ namespace downloads {
     // paused state. Otherwise $(ref:runtime.lastError) contains an error message.
     // The request will fail if the download is not active.
     // |downloadId|: The id of the download to pause.
-    // |callback|: Called when the pause request is completed.
+    // |callback|: Returns a Promise which resolves when the pause request is
+    // completed.
     static void pause(
         long downloadId,
         optional NullCallback callback);
@@ -495,7 +497,8 @@ namespace downloads {
     // in progress and unpaused. Otherwise $(ref:runtime.lastError) contains an
     // error message. The request will fail if the download is not active.
     // |downloadId|: The id of the download to resume.
-    // |callback|: Called when the resume request is completed.
+    // |callback|: Returns a Promise which resolves when the resume request is
+    // completed.
     static void resume(
         long downloadId,
         optional NullCallback callback);
@@ -503,7 +506,8 @@ namespace downloads {
     // Cancel a download. When <code>callback</code> is run, the download is
     // cancelled, completed, interrupted or doesn't exist anymore.
     // |downloadId|: The id of the download to cancel.
-    // |callback|: Called when the cancel request is completed.
+    // |callback|: Returns a Promise which resolves when the cancel request is
+    // completed.
     static void cancel(
         long downloadId,
         optional NullCallback callback);
@@ -518,7 +522,8 @@ namespace downloads {
     // registered file types and visual theme. If a file icon cannot be
     // determined, $(ref:runtime.lastError) will contain an error message.
     // |downloadId|: The identifier for the download.
-    // |callback|: A URL to an image that represents the download.
+    // |callback|: Returns a Promise which resolves with a URL to an image that
+    // represents the download.
     static void getFileIcon(
         long downloadId,
         optional GetFileIconOptions options,
@@ -564,7 +569,8 @@ namespace downloads {
     // temporary file is renamed to the target filename, the |state| changes to
     // 'complete', and $(ref:onChanged) fires.
     // |downloadId|: The identifier for the $(ref:DownloadItem).
-    // |callback|: Called when the danger prompt dialog closes.
+    // |callback|: Returns a Promise which resolves when the danger prompt
+    // dialog closes.
     static void acceptDanger(
         long downloadId,
         optional NullCallback callback);
@@ -586,7 +592,8 @@ namespace downloads {
     // $(ref:runtime.lastError). Requires the <code>"downloads.ui"</code>
     // permission in addition to the <code>"downloads"</code> permission.
     // |options|: Encapsulate a change to the download UI.
-    // |callback|: Called when the UI update is completed.
+    // |callback|: Returns a Promise which resolves when the UI update is
+    // completed.
     static void setUiOptions(
         UiOptions options,
         optional NullCallback callback);

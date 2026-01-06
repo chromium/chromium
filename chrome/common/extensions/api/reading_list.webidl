@@ -97,23 +97,23 @@ interface OnEntryUpdatedEvent : ExtensionEvent {
 interface ReadingList {
   // Adds an entry to the reading list if it does not exist.
   // |entry|: The entry to add to the reading list.
-  // |Returns|: Invoked once the entry has been added.
+  // |Returns|: Resolves once the entry has been added.
   static Promise<undefined> addEntry(AddEntryOptions entry);
 
   // Removes an entry from the reading list if it exists.
   // |info|: The entry to remove from the reading list.
-  // |Returns|: Invoked once the entry has been removed.
+  // |Returns|: Resolves once the entry has been removed.
   static Promise<undefined> removeEntry(RemoveOptions info);
 
   // Updates a reading list entry if it exists.
   // |info|: The entry to update.
-  // |Returns|: Invoked once the matched entries have been updated.
+  // |Returns|: Resolves once the matched entries have been updated.
   static Promise<undefined> updateEntry(UpdateEntryOptions info);
 
   // Retrieves all entries that match the <code>QueryInfo</code> properties.
   // Properties that are not provided will not be matched.
   // |info|: The properties to search for.
-  // |Returns|: Invoked once the entries have been matched.
+  // |Returns|: Resolves once the entries have been matched.
   // |PromiseValue|: entries
   [requiredCallback] static Promise<sequence<ReadingListEntry>> query(
       QueryInfo info);

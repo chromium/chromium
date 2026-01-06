@@ -26,8 +26,8 @@ namespace enterprise.kioskInput {
   // $(ref:runtime.lastError) will be set with a failure reason.
   // |options|: Object containing the fields defined in
   //            $(ref:SetCurrentInputMethodOptions).
-  // |callback|: Called when the input method is changed or if
-  // there is an error.
+  // |callback|: Returns a Promise which resolves when the input method is
+  // changed, or rejects if there is an error.
   static void setCurrentInputMethod(
       SetCurrentInputMethodOptions options,
       SetCurrentInputMethodCallback callback);
