@@ -138,6 +138,10 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   // Returns a list of all cached side panel WebContents.
   std::vector<content::WebContents*> GetSidePanelWebContentsList() const;
 
+  // Returns the tab handle of the auto suggested tab if the auto suggested tab
+  // chip is shown in the compose box.
+  std::optional<tabs::TabHandle> GetAutoSuggestedTabHandle();
+
  private:
   friend class ContextualTasksSidePanelCoordinatorInteractiveUiTest;
 

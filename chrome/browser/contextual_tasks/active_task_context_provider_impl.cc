@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_tasks/active_task_context_provider_impl.h"
 
+#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
@@ -188,36 +189,18 @@ void ActiveTaskContextProviderImpl::OnGetContextForTask(
   std::set<tabs::TabHandle> tabs_to_underline =
       GetTabsFromContext(*context, browser_window_);
 
-  // Add associated tabs.
-  AddAssociatedTabsToSet(active_task_id_.value(), tabs_to_underline);
+  // Add auto-suggested tab if chip is showing.
+  auto* coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser_window_);
+  if (coordinator && coordinator->IsSidePanelOpenForContextualTask()) {
+    auto maybe_handle = coordinator->GetAutoSuggestedTabHandle();
+    if (maybe_handle) {
+      tabs_to_underline.insert(*maybe_handle);
+    }
+  }
 
   for (auto& obs : observers_) {
     obs.OnContextTabsChanged(tabs_to_underline);
-  }
-}
-
-void ActiveTaskContextProviderImpl::AddAssociatedTabsToSet(
-    const base::Uuid& task_id,
-    std::set<tabs::TabHandle>& tabs_to_underline) {
-  TabStripModel* tab_strip_model = browser_window_->GetTabStripModel();
-
-  // Add all associated tabs.
-  for (const SessionID& tab_session_id :
-       contextual_tasks_service_->GetTabsAssociatedWithTask(task_id)) {
-    for (int i = 0; i < tab_strip_model->count(); ++i) {
-      content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
-      CHECK(web_contents);
-      if (tab_session_id !=
-          sessions::SessionTabHelper::IdForTab(web_contents)) {
-        continue;
-      }
-
-      tabs::TabInterface* tab =
-          tabs::TabInterface::GetFromContents(web_contents);
-      CHECK(tab);
-      tabs_to_underline.insert(tab->GetHandle());
-      break;
-    }
   }
 }
 

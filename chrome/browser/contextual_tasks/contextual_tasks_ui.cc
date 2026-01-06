@@ -15,6 +15,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_search_session_finder.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
@@ -668,6 +669,18 @@ void ContextualTasksUI::OnSidePanelStateChanged() {
 
 void ContextualTasksUI::DisableActiveTabContextSuggestion() {
   ui_service_->set_auto_tab_context_suggestion_enabled(false);
+
+  // Notify the active task context provider that the side panel state has
+  // changed.
+  auto* browser = webui::GetBrowserWindowInterface(web_ui()->GetWebContents());
+  if (!browser) {
+    return;
+  }
+  auto* active_task_context_provider =
+      browser->GetFeatures().contextual_tasks_active_task_context_provider();
+  if (active_task_context_provider) {
+    active_task_context_provider->OnSidePanelStateUpdated();
+  }
 }
 
 void ContextualTasksUI::OnLensOverlayStateChanged(bool is_showing) {
@@ -735,6 +748,11 @@ void ContextualTasksUI::TransferNavigationToEmbeddedPage(
   params.frame_tree_node_id =
       embedded_web_contents_->GetPrimaryMainFrame()->GetFrameTreeNodeId();
   embedded_web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
+}
+
+bool ContextualTasksUI::IsActiveTabContextSuggestionShowing() const {
+  return composebox_handler_ &&
+         composebox_handler_->has_suggested_tab_context();
 }
 
 void ContextualTasksUI::PushTaskDetailsToPage() {
