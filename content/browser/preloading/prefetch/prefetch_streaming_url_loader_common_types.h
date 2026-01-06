@@ -28,6 +28,8 @@ struct ResourceRequest;
 struct URLLoaderCompletionStatus;
 }  // namespace network
 
+namespace content {
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class PrefetchStreamingURLLoaderStatus {
@@ -194,5 +196,7 @@ enum class PrefetchServiceWorkerState {
 
 using OnServiceWorkerStateDeterminedCallback =
     base::OnceCallback<void(PrefetchServiceWorkerState)>;
+
+}  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_STREAMING_URL_LOADER_COMMON_TYPES_H_
