@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #include "components/enterprise/obfuscation/core/utils.h"
@@ -140,6 +141,7 @@ class ObfuscatedFileReaderParamTest
       public testing::WithParamInterface<std::vector<std::string_view>> {};
 
 TEST_P(ObfuscatedFileReaderParamTest, BuildChunkIndex) {
+  base::HistogramTester histogram_tester;
   const auto& chunks = GetParam();
   auto [file, cleartext] = CreateObfuscatedFile(chunks);
   ASSERT_TRUE(file.IsValid());
@@ -151,6 +153,9 @@ TEST_P(ObfuscatedFileReaderParamTest, BuildChunkIndex) {
       std::move(header_data).value(), std::move(file));
   ASSERT_TRUE(reader_result.has_value());
   ObfuscatedFileReader& reader = reader_result.value();
+
+  histogram_tester.ExpectBucketCount("Enterprise.FileReaderObfuscation.Create",
+                                     0, 1);
 
   const auto& chunk_info = ObfuscatedFileReaderPeer::GetChunkInfo(reader);
   ASSERT_EQ(chunk_info.size(), chunks.size());
@@ -169,6 +174,10 @@ TEST_P(ObfuscatedFileReaderParamTest, BuildChunkIndex) {
   EXPECT_EQ(reader.GetSize(), static_cast<int64_t>(total_deobfuscated_size));
 
   RunSeekReadTest(reader, cleartext);
+
+  EXPECT_GT(histogram_tester.GetBucketCount(
+                "Enterprise.FileReaderObfuscation.Read", 0),
+            0);
 }
 
 INSTANTIATE_TEST_SUITE_P(

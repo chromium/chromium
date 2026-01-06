@@ -2433,19 +2433,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.FileDownloadObfuscation.Result"
+<histogram name="Enterprise.File{Operation}Obfuscation.{Action}"
     enum="EnterpriseObfuscationError" expires_after="2026-05-10">
   <owner>haihan@google.com</owner>
   <owner>domfc@chromium.org</owner>
+  <owner>thelex@google.com</owner>
   <summary>
-    Records the result of file download obfuscation attempts, and any exit
-    errors. Errors are recorded during obfuscation on-the-fly, deobfuscation
-    on-the-fly, and in-place deobfuscation operations. Success is only recorded
-    at the end of in-place deobfuscation, the last operation.
-
-    The rest of the operations are aborted once an error exit is encountered, so
-    only the first error exit/success is recorded per obfuscation attempt.
+    Records the result of file obfuscation related operations. {Operation} : The
+    context of the operation. {Action} : The specific action.
   </summary>
+  <token key="Operation">
+    <variant name="Download" summary="Recorded during file download."/>
+    <variant name="Reader" summary="Recorded during Safe Browsing checks."/>
+  </token>
+  <token key="Action">
+    <variant name="Create"
+        summary="Recorded when the obfuscated file reader is initialized."/>
+    <variant name="Read"
+        summary="Recorded when a read operation is performed on the
+                 obfuscated file."/>
+    <variant name="Result"
+        summary="Recorded during download obfuscation/deobfuscation attempts.
+                 Errors are recorded during obfuscation on-the-fly,
+                 deobfuscation on-the-fly, and in-place deobfuscation
+                 operations. Success is only recorded at the end of in-place
+                 deobfuscation, the last operation. The rest of the
+                 operations are aborted once an error exit is encountered, so
+                 only the first error exit/success is recorded per
+                 obfuscation attempt."/>
+  </token>
 </histogram>
 
 <histogram name="Enterprise.IdleTimeoutPolicies.ActionTime.{ActionType}"

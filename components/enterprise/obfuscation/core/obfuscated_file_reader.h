@@ -44,6 +44,8 @@ class COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION) ObfuscatedFileReader {
 
   base::expected<void, Error> Initialize();
 
+  base::expected<int64_t, Error> ReadImpl(base::span<uint8_t> buffer);
+
   bool BuildChunkIndex();
 
   base::File file_;

@@ -5,10 +5,20 @@
 #include "components/enterprise/obfuscation/core/obfuscated_file_reader.h"
 
 #include "base/files/file.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/types/expected.h"
 #include "components/enterprise/obfuscation/core/utils.h"
 
 namespace enterprise_obfuscation {
+
+namespace {
+
+constexpr char kFileReaderCreateHistogram[] =
+    "Enterprise.FileReaderObfuscation.Create";
+constexpr char kFileReaderReadHistogram[] =
+    "Enterprise.FileReaderObfuscation.Read";
+
+}  // namespace
 
 // static
 base::expected<ObfuscatedFileReader, Error> ObfuscatedFileReader::Create(
@@ -16,8 +26,11 @@ base::expected<ObfuscatedFileReader, Error> ObfuscatedFileReader::Create(
     base::File file) {
   ObfuscatedFileReader reader(std::move(header_data), std::move(file));
   if (auto init_result = reader.Initialize(); !init_result.has_value()) {
+    base::UmaHistogramEnumeration(kFileReaderCreateHistogram,
+                                  init_result.error());
     return base::unexpected(init_result.error());
   }
+  base::UmaHistogramEnumeration(kFileReaderCreateHistogram, Error::kSuccess);
   return reader;
 }
 
@@ -62,6 +75,17 @@ base::expected<HeaderData, Error> ObfuscatedFileReader::ReadHeaderData(
 }
 
 int64_t ObfuscatedFileReader::Read(base::span<uint8_t> buffer) {
+  base::expected<int64_t, Error> result = ReadImpl(buffer);
+  if (result.has_value()) {
+    base::UmaHistogramEnumeration(kFileReaderReadHistogram, Error::kSuccess);
+    return result.value();
+  }
+  base::UmaHistogramEnumeration(kFileReaderReadHistogram, result.error());
+  return -1;
+}
+
+base::expected<int64_t, Error> ObfuscatedFileReader::ReadImpl(
+    base::span<uint8_t> buffer) {
   uint64_t bytes_to_read = std::min(static_cast<uint64_t>(buffer.size_bytes()),
                                     deobfuscated_size_ - current_offset_);
   if (bytes_to_read == 0) {
@@ -94,7 +118,7 @@ int64_t ObfuscatedFileReader::Read(base::span<uint8_t> buffer) {
           file_.Read(chunk.obfuscated_offset,
                      base::as_writable_bytes(base::span(obfuscated_data)));
       if (!bytes_read.has_value() || *bytes_read != obfuscated_chunk_size) {
-        return -1;
+        return base::unexpected(Error::kFileOperationError);
       }
 
       size_t chunk_index = std::distance(chunk_info_.begin(), it);
@@ -105,7 +129,7 @@ int64_t ObfuscatedFileReader::Read(base::span<uint8_t> buffer) {
                                chunk_index, is_last_chunk);
 
       if (!deobfuscated_result.has_value()) {
-        return -1;
+        return base::unexpected(deobfuscated_result.error());
       }
 
       const std::vector<uint8_t>& deobfuscated_chunk =
