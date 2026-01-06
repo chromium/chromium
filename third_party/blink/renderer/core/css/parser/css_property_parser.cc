@@ -6,6 +6,7 @@
 
 #include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
+#include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/hash_tools.h"
@@ -153,9 +154,9 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
   // since they start from the same place and we reset both below,
   // so they cannot go out of sync.
   if (is_shorthand) {
-    const auto local_context =
+    auto local_context =
         CSSParserLocalContext()
-            .WithAliasParsing(IsPropertyAlias(unresolved_property))
+            .WithPropertyName(CSSPropertyName(unresolved_property))
             .WithCurrentShorthand(property_id);
     // Variable references will fail to parse here and will fall out to the
     // variable ref parser below.

@@ -2553,7 +2553,7 @@ protocol::Response InspectorCSSAgent::getLonghandProperties(
   const CSSParserContext* parser_context =
       MakeGarbageCollected<CSSParserContext>(kHTMLStandardMode,
                                              SecureContextMode::kSecureContext);
-  const auto local_context =
+  auto local_context =
       CSSParserLocalContext().WithCurrentShorthand(property.PropertyID());
 
   HeapVector<CSSPropertyValue, 64> css_longhand_properties;

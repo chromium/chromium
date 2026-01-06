@@ -3949,10 +3949,14 @@ const CSSValue* ParseLonghand(CSSPropertyID unresolved_property,
     return nullptr;
   }
 
-  const auto local_context =
-      CSSParserLocalContext()
-          .WithAliasParsing(IsPropertyAlias(unresolved_property))
-          .WithCurrentShorthand(current_shorthand);
+  auto local_context =
+      CSSParserLocalContext().WithCurrentShorthand(current_shorthand);
+
+  if (unresolved_property != CSSPropertyID::kInvalid &&
+      unresolved_property != CSSPropertyID::kVariable) {
+    local_context =
+        local_context.WithPropertyName(CSSPropertyName(unresolved_property));
+  }
 
   const CSSValue* result =
       To<Longhand>(CSSProperty::Get(property_id))

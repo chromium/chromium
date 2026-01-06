@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_LOCAL_CONTEXT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -19,18 +20,6 @@ class CORE_EXPORT CSSParserLocalContext {
  public:
   CSSParserLocalContext() = default;
 
-  CSSParserLocalContext WithAliasParsing(bool use_alias_parsing) const {
-    CSSParserLocalContext context = *this;
-    context.use_alias_parsing_ = use_alias_parsing;
-    return context;
-  }
-
-  CSSParserLocalContext WithAnimationTainted(bool is_animation_tainted) const {
-    CSSParserLocalContext context = *this;
-    context.is_animation_tainted_ = is_animation_tainted;
-    return context;
-  }
-
   CSSParserLocalContext WithCurrentShorthand(
       CSSPropertyID current_shorthand) const {
     CSSParserLocalContext context = *this;
@@ -38,21 +27,38 @@ class CORE_EXPORT CSSParserLocalContext {
     return context;
   }
 
-  bool UseAliasParsing() const { return use_alias_parsing_; }
+  // For non custom properties, need to pass CSSPropertyName with unresolved
+  // property id.
+  CSSParserLocalContext WithPropertyName(CSSPropertyName property_name) const {
+    CSSParserLocalContext context = *this;
+    context.property_name_ = property_name;
+    return context;
+  }
 
-  // Any custom property used in a @keyframes rule becomes animation-tainted,
-  // which prevents the custom property from being substituted into the
-  // 'animation' property, or one of its longhands.
-  //
-  // https://drafts.csswg.org/css-variables/#animation-tainted
-  bool IsAnimationTainted() const { return is_animation_tainted_; }
+  void IncrementRandomValueCount() { ++random_value_count_; }
+
+  bool UseAliasParsing() const {
+    if (property_name_.IsCustomProperty()) {
+      return false;
+    }
+    return IsPropertyAlias(property_name_.Id());
+  }
 
   CSSPropertyID CurrentShorthand() const { return current_shorthand_; }
 
+  CSSPropertyName PropertyName() const {
+    if (property_name_.IsCustomProperty()) {
+      return property_name_;
+    }
+    return CSSPropertyName(ResolveCSSPropertyID(property_name_.Id()));
+  }
+
+  wtf_size_t RandomValueCount() const { return random_value_count_; }
+
  private:
-  bool use_alias_parsing_ = false;
-  bool is_animation_tainted_ = false;
   CSSPropertyID current_shorthand_ = CSSPropertyID::kInvalid;
+  CSSPropertyName property_name_ = CSSPropertyName(g_empty_atom);
+  wtf_size_t random_value_count_ = 0;
 };
 
 }  // namespace blink

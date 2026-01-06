@@ -994,7 +994,7 @@ InspectorStyle::LonghandProperties(
   if (!property.IsProperty() || !property.IsShorthand()) {
     return nullptr;
   }
-  const auto local_context =
+  auto local_context =
       CSSParserLocalContext().WithCurrentShorthand(property_id);
   HeapVector<CSSPropertyValue, 64> longhand_properties;
   if (To<Shorthand>(property).ParseShorthand(

@@ -173,21 +173,6 @@ TEST_F(CustomPropertyTest, ParseSingleValueUnregistered) {
   EXPECT_EQ("100px", value->CssText());
 }
 
-TEST_F(CustomPropertyTest, ParseSingleValueAnimationTainted) {
-  CustomProperty property(AtomicString("--x"), GetDocument());
-  const CSSValue* value1 = ParseValue(
-      property, "100px", CSSParserLocalContext().WithAnimationTainted(true));
-  const CSSValue* value2 = ParseValue(
-      property, "100px", CSSParserLocalContext().WithAnimationTainted(false));
-
-  EXPECT_TRUE(To<CSSUnparsedDeclarationValue>(value1)
-                  ->VariableDataValue()
-                  ->IsAnimationTainted());
-  EXPECT_FALSE(To<CSSUnparsedDeclarationValue>(value2)
-                   ->VariableDataValue()
-                   ->IsAnimationTainted());
-}
-
 TEST_F(CustomPropertyTest, ParseSingleValueTyped) {
   RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
   CustomProperty property(AtomicString("--x"), GetDocument());

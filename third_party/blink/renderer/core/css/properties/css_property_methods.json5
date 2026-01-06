@@ -22,12 +22,12 @@
     {
       name: "ParseSingleValue",
       return_type: "const CSSValue*",
-      parameters: "(CSSParserTokenStream&, const CSSParserContext&, const CSSParserLocalContext&)",
+      parameters: "(CSSParserTokenStream&, const CSSParserContext&, CSSParserLocalContext&)",
     },
     {
       name: "ParseShorthand",
       return_type: "bool",
-      parameters: "(bool, CSSParserTokenStream&, const CSSParserContext&, const CSSParserLocalContext&, HeapVector<CSSPropertyValue, 64>&)",
+      parameters: "(bool, CSSParserTokenStream&, const CSSParserContext&, CSSParserLocalContext&, HeapVector<CSSPropertyValue, 64>&)",
     },
     {
       name: "CSSValueFromComputedStyleInternal",

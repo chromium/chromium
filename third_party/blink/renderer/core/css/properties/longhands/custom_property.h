@@ -42,7 +42,7 @@ class CORE_EXPORT CustomProperty : public Variable {
   // Never used.
   const CSSValue* ParseSingleValue(CSSParserTokenStream&,
                                    const CSSParserContext&,
-                                   const CSSParserLocalContext&) const override;
+                                   CSSParserLocalContext&) const override;
 
   // The custom property is parsed according to the registered syntax (if
   // available).
