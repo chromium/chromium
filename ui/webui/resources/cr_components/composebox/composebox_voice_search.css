@@ -9,7 +9,6 @@
  * #include=cr-icons-lit
  * #css_wrapper_metadata_end */
 :host {
-  --color-composebox-voice-search-font: rgba(71, 71, 71, 1);
   /* Set these variables since cr-icons take their margin
   from these; else negative default. */
   --cr-icon-button-margin-end: 0;
@@ -54,7 +53,7 @@
 #input,
 #error-container {
   box-sizing: border-box;
-  color: var(--color-composebox-voice-search-font);
+  color: var(--color-composebox-voice-search-font, rgba(71, 71, 71, 1));
   flex-grow: 1;
   font-family: inherit;
   font-size: 18px;
