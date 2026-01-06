@@ -311,6 +311,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Setup.Install.WinAppRuntime.WaitForStartInstall.TimingMs"
+    units="ms" expires_after="2026-12-16">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    The time taken to wait for the Windows App Runtime installation to start.
+    Recorded once per process.
+  </summary>
+</histogram>
+
 <histogram name="Setup.Install.WinAppRuntime.{Operation}.Result" enum="Hresult"
     expires_after="2026-12-16">
   <owner>reillyg@chromium.org</owner>
@@ -323,6 +333,7 @@ chromium-metrics-reviews@google.com.
     <variant name="ActivateManager"/>
     <variant name="ActivateOptions"/>
     <variant name="StartInstall"/>
+    <variant name="WaitForStartInstall"/>
   </token>
 </histogram>
 

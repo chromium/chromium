@@ -264,8 +264,6 @@ void StartInstallation() {
   CHECK_EQ(hr, S_OK);
 
   Microsoft::WRL::ComPtr<AppInstallAsyncOp> async_op;
-  // This operation runs in the background and continues even after process
-  // termination.
   hr = app_install_manager_3->StartProductInstallAsync(
       base::win::HStringReference(kWinAppRuntimeProductId.c_str()).Get(),
       /*catalogId=*/nullptr, /*flightId=*/nullptr, /*clientId=*/nullptr,
