@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/omnibox/browser/on_device_tail_model_executor.h"
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -11,7 +13,6 @@
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "components/omnibox/browser/on_device_tail_model_executor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
