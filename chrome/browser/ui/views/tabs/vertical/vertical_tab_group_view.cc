@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "components/saved_tab_groups/public/features.h"
-#include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_collection_storage.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
@@ -48,8 +47,10 @@ const TabGroup* GetTabGroupFromNode(TabCollectionNode* node) {
 
 VerticalTabGroupView::VerticalTabGroupView(TabCollectionNode* collection_node)
     : collection_node_(collection_node),
+      tab_group_visual_data_(
+          *GetTabGroupFromNode(collection_node_)->visual_data()),
       group_header_(AddChildView(std::make_unique<VerticalTabGroupHeaderView>(
-          GetTabGroupFromNode(collection_node_)->visual_data(),
+          &tab_group_visual_data_,
           base::BindRepeating(
               &VerticalTabGroupView::ToggleTabGroupCollapsedState,
               base::Unretained(this))))),
@@ -96,7 +97,9 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
   gfx::Rect group_line_bounds = gfx::Rect(
       (kTabLeadingPadding - kGroupLineWidth) / 2, height, kGroupLineWidth, 0);
 
-  const auto children = collection_node_->GetDirectChildren();
+  const std::vector<views::View*> children =
+      collection_node_ ? collection_node_->GetDirectChildren()
+                       : std::vector<views::View*>();
 
   // Layout children in order. Children will have their preferred height and
   // fill available width.
@@ -122,8 +125,7 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
   layouts.child_layouts.emplace_back(
       group_line_.get(), group_line_->GetVisible(), group_line_bounds);
 
-  bool is_collapsed =
-      GetTabGroupFromNode(collection_node_)->visual_data()->is_collapsed();
+  const bool is_collapsed = tab_group_visual_data_.is_collapsed();
   layouts.host_size = gfx::Size(
       width, is_collapsed
                  ? header_bounds.height() + (2 * kGroupHeaderVerticalMargin)
@@ -136,16 +138,16 @@ void VerticalTabGroupView::ResetCollectionNode() {
 }
 
 void VerticalTabGroupView::OnDataChanged() {
-  const tab_groups::TabGroupVisualData* visual_data =
-      GetTabGroupFromNode(collection_node_)->visual_data();
-  group_header_->OnDataChanged(visual_data);
+  tab_group_visual_data_ =
+      *GetTabGroupFromNode(collection_node_)->visual_data();
+  group_header_->OnDataChanged(&tab_group_visual_data_);
   // TODO(crbug.com/459824840): Call UpdateChildVisibilityForCollapseState via
   // some sort of PostOrQueueAction method when collapsing so that children are
   // set to not visible only after the collapse animation has completed.
-  UpdateChildVisibilityForCollapseState(visual_data->is_collapsed());
+  UpdateChildVisibilityForCollapseState(tab_group_visual_data_.is_collapsed());
   if (GetColorProvider()) {
     SkColor color = GetColorProvider()->GetColor(GetTabGroupTabStripColorId(
-        visual_data->color(), GetWidget()->ShouldPaintAsActive()));
+        tab_group_visual_data_.color(), GetWidget()->ShouldPaintAsActive()));
     group_line_->SetBackground(views::CreateRoundedRectBackground(
         color, gfx::RoundedCornersF(0, kGroupLineCornerRadius,
                                     kGroupLineCornerRadius, 0)));

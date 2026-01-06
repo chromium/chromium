@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
@@ -49,6 +50,7 @@ class VerticalTabGroupView : public views::View, public views::LayoutDelegate {
   base::CallbackListSubscription node_destroyed_subscription_;
   base::CallbackListSubscription data_changed_subscription_;
 
+  tab_groups::TabGroupVisualData tab_group_visual_data_;
   const raw_ptr<VerticalTabGroupHeaderView> group_header_ = nullptr;
   const raw_ptr<views::View> group_line_ = nullptr;
 };
