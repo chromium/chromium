@@ -2,18 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
-#include "base/memory/ptr_util.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/values.h"
-#include "components/manta/anchovy/anchovy_provider.h"
-#include "components/manta/manta_status.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "ui/accessibility/accessibility_features.h"
+#include "services/image_annotation/annotator.h"
 
 #include <array>
 #include <cstring>
+#include <memory>
 #include <optional>
 
 #include "base/containers/contains.h"
@@ -21,22 +14,28 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/values.h"
+#include "components/manta/anchovy/anchovy_provider.h"
+#include "components/manta/manta_status.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
-#include "services/image_annotation/annotator.h"
 #include "services/image_annotation/image_annotation_metrics.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 
 namespace image_annotation {
 
