@@ -2911,6 +2911,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.SystemMemoryLists.TotalIntervalsRecorded"
+    units="intervals" expires_after="2026-07-13">
+  <owner>spvm@google.com</owner>
+  <owner>etienneb@google.com</owner>
+  <summary>
+    Recorded on Windows only. The SystemMemoryPressureEvaluator attempts to
+    query the size of the system memory lists 300 times per 30 seconds. This
+    metric records the actual number of times the lists were queried per thirty
+    seconds, in the case that due to contention, the evaluator is unable to run.
+    Recorded every 30s after browser main message loop start.
+  </summary>
+</histogram>
+
 <histogram name="Memory.SystemMemoryLists.{PageCount}Count" units="pages"
     expires_after="2026-07-13">
   <owner>spvm@google.com</owner>

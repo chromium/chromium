@@ -174,6 +174,7 @@ void SystemMemoryPressureEvaluator::CheckSystemMemoryListPageCounts() {
   // since the subset of users which have this permission should still be a
   // representative sample.
   if (NT_SUCCESS(status)) {
+    ++total_intervals_recorded_;
     if (memory_list_information.ZeroPageCount == 0) {
       ++zero_list_exhausted_interval_count_;
     }
@@ -192,6 +193,9 @@ void SystemMemoryPressureEvaluator::CheckSystemMemoryListPageCounts() {
           "Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds."
           "FreeList",
           free_list_exhausted_interval_count_);
+      base::UmaHistogramCounts1000(
+          "Memory.SystemMemoryLists.TotalIntervalsRecorded",
+          total_intervals_recorded_);
       // Record a massively subsampled record of page counts.
       base::UmaHistogramCustomCounts(
           "Memory.SystemMemoryLists.FreePageCount",
@@ -208,6 +212,7 @@ void SystemMemoryPressureEvaluator::CheckSystemMemoryListPageCounts() {
 
       free_list_exhausted_interval_count_ = 0;
       zero_list_exhausted_interval_count_ = 0;
+      total_intervals_recorded_ = 0;
       last_pressured_interval_emission_time_ = now;
     }
   } else {
