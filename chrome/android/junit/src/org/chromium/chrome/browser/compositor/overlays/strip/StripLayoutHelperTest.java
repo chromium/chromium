@@ -177,7 +177,10 @@ import java.util.stream.IntStream;
         qualifiers = "sw600dp",
         shadows = {ShadowAppCompatResources.class})
 @LooperMode(Mode.LEGACY)
-@DisableFeatures(ChromeFeatureList.DATA_SHARING)
+@DisableFeatures({
+    ChromeFeatureList.DATA_SHARING,
+    ChromeFeatureList.TAB_STRIP_CLOSE_REFACTOR_ANDROID
+})
 @EnableFeatures(ChromeFeatureList.TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE)
 public class StripLayoutHelperTest {
     private static final Token TAB_GROUP_ID_1 = new Token(1L, 1L);
@@ -235,6 +238,7 @@ public class StripLayoutHelperTest {
     // TODO(crbug.com/369736293): Verify usages and remove duplicate implementations of
     // `TestTabModel` for tab model.
     private final TestTabModel mModel = spy(new TestTabModel());
+    private final TestTabRemover mTabRemover = spy(new TestTabRemover());
     private StripLayoutHelper mStripLayoutHelper;
     private boolean mIncognito;
     private static final String[] TEST_TAB_TITLES = {"Tab 1", "Tab 2", "Tab 3", "", null};
@@ -276,7 +280,7 @@ public class StripLayoutHelperTest {
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mModel);
         when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
 
-        mModel.setTabRemover(new TestTabRemover());
+        mModel.setTabRemover(mTabRemover);
         mContext =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
@@ -3828,11 +3832,10 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.finishAnimations(); // end the closing animation
 
         // Assert
-        TestTabRemover testTabRemover = (TestTabRemover) mModel.getTabRemover();
-        assertNotNull(testTabRemover.mLastParamsForPrepareCloseTabs);
-        assertEquals(shouldAllowUndo, testTabRemover.mLastParamsForPrepareCloseTabs.allowUndo);
-        assertNotNull(testTabRemover.mLastParamsForForceCloseTabs);
-        assertEquals(shouldAllowUndo, testTabRemover.mLastParamsForForceCloseTabs.allowUndo);
+        assertNotNull(mTabRemover.mLastParamsForPrepareCloseTabs);
+        assertEquals(shouldAllowUndo, mTabRemover.mLastParamsForPrepareCloseTabs.allowUndo);
+        assertNotNull(mTabRemover.mLastParamsForForceCloseTabs);
+        assertEquals(shouldAllowUndo, mTabRemover.mLastParamsForForceCloseTabs.allowUndo);
     }
 
     @Test
@@ -3903,6 +3906,36 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.finishAnimations();
 
         verify(mTabHoverCardView).hide();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_CLOSE_REFACTOR_ANDROID)
+    public void testHandleCloseButtonClick_RefactorDisabled() {
+        initializeTest(/* tabIndex= */ 0);
+
+        // Fake a close button click.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        mStripLayoutHelper.handleCloseButtonClick(
+                tabs[1], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
+
+        // Verify the old event flow.
+        verify(mTabRemover).prepareCloseTabs(any(), anyBoolean(), any(), any());
+        verify(mTabRemover, never()).closeTabs(any(), anyBoolean(), any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_CLOSE_REFACTOR_ANDROID)
+    public void testHandleCloseButtonClick_RefactorEnabled() {
+        initializeTest(/* tabIndex= */ 0);
+
+        // Fake a close button click.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        mStripLayoutHelper.handleCloseButtonClick(
+                tabs[1], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
+
+        // Verify the new event flow.
+        verify(mTabRemover, never()).prepareCloseTabs(any(), anyBoolean(), any(), any());
+        verify(mTabRemover).closeTabs(any(), anyBoolean(), any());
     }
 
     private void verifyPendingMouseTabClosure(boolean expectedPendingMouseTabClosure) {
@@ -7118,7 +7151,7 @@ public class StripLayoutHelperTest {
         TabDragHandlerBase.setDragTrackerTokenForTesting(dragTrackerToken);
     }
 
-    private final class TestTabRemover implements TabRemover {
+    private class TestTabRemover implements TabRemover {
         @Nullable TabClosureParams mLastParamsForPrepareCloseTabs;
         @Nullable TabClosureParams mLastParamsForForceCloseTabs;
 

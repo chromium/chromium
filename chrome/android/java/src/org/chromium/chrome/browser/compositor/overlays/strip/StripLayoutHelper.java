@@ -117,6 +117,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallba
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tasks.tab_management.GroupSharedState;
 import org.chromium.chrome.browser.tasks.tab_management.TabBubbler;
 import org.chromium.chrome.browser.tasks.tab_management.TabCardLabelData;
@@ -354,11 +355,15 @@ public class StripLayoutHelper
                     if (oldTabGroupId == null) return;
 
                     StripLayoutGroupTitle groupTitle = findGroupTitle(oldTabGroupId);
-                    // TODO(crbug.com/443337907) If we're closing for a close button click, we don't
-                    // want to clobber the existing animations. This check can be removed once we
-                    // update the tab strip close button clicks to immediately remove from the
-                    // model.
-                    if (!mCloseAnimationsRequested || groupTitle == null || groupTitle.isDying()) {
+                    boolean closeRefactorEnabled =
+                            ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.TAB_STRIP_CLOSE_REFACTOR_ANDROID);
+                    // If we're closing for a close button click, we don't want to clobber the
+                    // existing animations. This check can be removed once the close refactor
+                    // launches.
+                    if ((!closeRefactorEnabled && !mCloseAnimationsRequested)
+                            || groupTitle == null
+                            || groupTitle.isDying()) {
                         clearClosingGroupTitleState(oldTabGroupId);
                     } else {
                         mClosingGroupTitles.add(groupTitle);
@@ -3434,7 +3439,13 @@ public class StripLayoutHelper
     @VisibleForTesting
     void handleCloseButtonClick(@Nullable StripLayoutTab tab, int motionEventButtonState) {
         // Placeholder tabs are expected to have invalid tab ids.
-        if (tab == null || tab.isDying() || tab.getTabId() == Tab.INVALID_TAB_ID) return;
+        if (tab == null
+                || tab.isDying()
+                || tab.getTabId() == Tab.INVALID_TAB_ID
+                || mModel == null
+                || mTabGroupModelFilter == null) {
+            return;
+        }
         RecordUserAction.record("MobileToolbarCloseTab");
 
         int tabId = tab.getTabId();
@@ -3466,36 +3477,43 @@ public class StripLayoutHelper
                             /* beforeSyncDialogRunnable= */ null,
                             /* onSuccess= */ null);
         }
-        Callback<TabClosureParams> onPreparedCallback =
-                (tabClosureParams) -> {
-                    // Note: the documentation of TabRemover#prepareCloseTabs() says we should use
-                    // the TabClosureParams here to close the tab, but historically this class
-                    // ignores this TabClosureParams and creates a new one later, in
-                    // finishAnimationsAndCloseDyingTabs().
-                    //
-                    // For now, we follow the status quo by passing parameters such as "allowUndo"
-                    // so that the new TabClosureParams created in
-                    // finishAnimationsAndCloseDyingTabs() can get these parameters.
-                    //
-                    // TODO(crbug.com/415079634): check if passing TabClosureParams to
-                    //  finishAnimationsAndCloseDyingTabs() is the right thing to do since this
-                    //  indicates only closing the tab that was clicked instead of all dying tabs.
-                    List<Tab> tabs = tabClosureParams.tabs;
-                    assert tabs != null && tabs.size() == 1 && tabs.get(0) == realTab;
-                    handleCloseTab(tab, tabClosureParams.allowUndo);
-                };
 
         boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(motionEventButtonState);
-        TabClosureParams params =
+        TabClosureParams.CloseTabBuilder paramsBuilder =
                 TabClosureParams.closeTab(realTab)
                         .allowUndo(allowUndo)
-                        .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
-                        .build();
-        if (mTabGroupModelFilter == null) return;
-        mTabGroupModelFilter
-                .getTabModel()
-                .getTabRemover()
-                .prepareCloseTabs(params, /* allowDialog= */ true, listener, onPreparedCallback);
+                        .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP);
+        TabRemover tabRemover = mTabGroupModelFilter.getTabModel().getTabRemover();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_CLOSE_REFACTOR_ANDROID)) {
+            int nextIndex = getNextIndexAfterClose(Collections.singleton(tab));
+            paramsBuilder.recommendedNextTab(mModel.getTabAtChecked(nextIndex));
+            tabRemover.closeTabs(paramsBuilder.build(), /* allowDialog= */ true, listener);
+        } else {
+            tabRemover.prepareCloseTabs(
+                    paramsBuilder.build(),
+                    /* allowDialog= */ true,
+                    listener,
+                    getOnPreparedCallback(realTab, tab));
+        }
+    }
+
+    private Callback<TabClosureParams> getOnPreparedCallback(Tab tab, StripLayoutTab stripTab) {
+        return (tabClosureParams) -> {
+            // Note: the documentation of TabRemover#prepareCloseTabs() says we should use the
+            // TabClosureParams here to close the tab, but historically this class ignores this
+            // TabClosureParams and creates a new one later, in finishAnimationsAndCloseDyingTabs().
+            //
+            // For now, we follow the status quo by passing parameters such as "allowUndo" so that
+            // the new TabClosureParams created in finishAnimationsAndCloseDyingTabs() can get these
+            // parameters.
+            //
+            // TODO(crbug.com/415079634): check if passing TabClosureParams to
+            //  finishAnimationsAndCloseDyingTabs() is the right thing to do since this indicates
+            //  only closing the tab that was clicked instead of all dying tabs.
+            List<Tab> tabs = tabClosureParams.tabs;
+            assert tabs != null && tabs.size() == 1 && tabs.get(0) == tab;
+            handleCloseTab(stripTab, tabClosureParams.allowUndo);
+        };
     }
 
     private void clearPendingMouseTabClosureState() {
@@ -3703,6 +3721,9 @@ public class StripLayoutHelper
 
         // 1. Finish animations.
         finishAnimations();
+
+        // If the refactor is enabled, we no longer delay closures like this.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_CLOSE_REFACTOR_ANDROID)) return;
 
         // 2. Figure out which tabs need to be closed.
         ArrayList<StripLayoutTab> tabsToRemove = new ArrayList<>();

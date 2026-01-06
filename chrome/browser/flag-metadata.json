@@ -9836,6 +9836,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "tab-strip-close-refactor-android",
+    "owners": [ "nemco@google.com", "clank-large-form-factors@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "tab-strip-density-change-android",
     "owners": [ "zheliooo@google.com", "nemco@google.com", "skavuluru@google.com", "clank-large-form-factors@google.com"],
     "expiry_milestone": 150

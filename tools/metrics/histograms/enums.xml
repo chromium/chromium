@@ -14672,6 +14672,7 @@ from previous Chrome versions.
   <int value="103932290" label="show-autofill-type-predictions"/>
   <int value="104175200" label="AccessibilityFaceGaze:enabled"/>
   <int value="104466551" label="AndroidComposeplateLFF:enabled"/>
+  <int value="104544484" label="TabStripCloseRefactorAndroid:disabled"/>
   <int value="105046382" label="ParallelDownloading:disabled"/>
   <int value="105164136" label="EnterpriseReportingUI:enabled"/>
   <int value="105284154" label="PromiseIcons:enabled"/>
@@ -16765,6 +16766,7 @@ from previous Chrome versions.
   <int value="816907702" label="GlobalMediaControlsSeamlessTransfer:disabled"/>
   <int value="817080398" label="PreinstalledWebAppDuplicationFixer:disabled"/>
   <int value="817393533" label="GlobalMediaControlsModernUI:disabled"/>
+  <int value="817420016" label="TabStripCloseRefactorAndroid:enabled"/>
   <int value="818248688" label="WebRtcPqcForDtls:disabled"/>
   <int value="819620541"
       label="AccessibilityManifestV3AccessibilityCommon:enabled"/>

@@ -259,6 +259,7 @@ BASE_DECLARE_FEATURE(kTabFreezingUsesDiscard);
 BASE_DECLARE_FEATURE(kTabModelInitFixes);
 BASE_DECLARE_FEATURE(kTabStorageSqlitePrototype);
 BASE_DECLARE_FEATURE(kTabStripAutoSelectOnCloseChange);
+BASE_DECLARE_FEATURE(kTabStripCloseRefactorAndroid);
 BASE_DECLARE_FEATURE(kTabStripDensityChangeAndroid);
 BASE_DECLARE_FEATURE(kTabStripIncognitoMigration);
 BASE_DECLARE_FEATURE(kTabSwitcherDragDropAndroid);
