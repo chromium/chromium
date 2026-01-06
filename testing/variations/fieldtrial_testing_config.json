@@ -23506,7 +23506,7 @@
                         "has_web_request_api_proxy": "true",
                         "respect_navigation_preload": "true"
                     },
-                    "disable_features": [
+                    "enable_features": [
                         "ServiceWorkerAutoPreload"
                     ]
                 }
