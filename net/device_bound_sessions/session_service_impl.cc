@@ -960,6 +960,24 @@ void SessionServiceImpl::OnAddSessionKeyRestored(
       session_or_error = CreateSessionFromUnexportableKey(
           std::move(params), std::move(key_or_error));
 
+  if (!event_callbacks_.empty()) {
+    bool succeeded = session_or_error.has_value();
+    SessionError::ErrorType result =
+        succeeded ? SessionError::kSuccess : session_or_error.error();
+    std::optional<std::string> session_id;
+    std::optional<SessionDisplay> display_info;
+    if (succeeded) {
+      // TODO(crbug.com/471021582): Some failed creation events could have a
+      // session_id. Can we thread that through?
+      session_id = session_or_error.value()->id().value();
+      display_info = session_or_error.value()->ToDisplay();
+    }
+    SessionEvent event =
+        SessionEvent::MakeCreationEvent(site, std::move(session_id), succeeded,
+                                        result, std::move(display_info));
+    event_callbacks_.Notify(event);
+  }
+
   if (!session_or_error.has_value()) {
     std::move(callback).Run(session_or_error.error());
     return;

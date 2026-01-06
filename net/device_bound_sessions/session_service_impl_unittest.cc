@@ -520,6 +520,44 @@ TEST_F(SessionServiceImplTest, EventObserverOnRegistrationFailure) {
       NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 }
 
+TEST_F(SessionServiceImplTest, EventObserverOnAddSession) {
+  base::MockCallback<SessionService::OnEventCallback> event_callback;
+  base::CallbackListSubscription subscription =
+      service().AddEventObserver(event_callback.Get());
+
+  base::test::TestFuture<
+      unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>>
+      key_future;
+  key_service()->GenerateSigningKeySlowlyAsync(
+      {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      key_future.GetCallback());
+  unexportable_keys::UnexportableKeyId key = *key_future.Take();
+  std::vector<uint8_t> wrapped_key = key_service()->GetWrappedKey(key).value();
+
+  EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
+    EXPECT_EQ(event.event_type, SessionEvent::EventType::kCreation);
+    EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
+    EXPECT_EQ(event.session_id, kSessionId);
+    EXPECT_TRUE(event.succeeded);
+    EXPECT_EQ(event.fetch_error, SessionError::kSuccess);
+    ASSERT_TRUE(event.new_session_display.has_value());
+    EXPECT_EQ(event.new_session_display->key.id.value(), kSessionId);
+  });
+
+  SessionParams::Scope scope;
+  scope.origin = kOrigin;
+  SessionParams params(kSessionId, kTestUrl, kRefreshUrlString,
+                       std::move(scope),
+                       /*creds=*/{}, unexportable_keys::UnexportableKeyId(),
+                       /*allowed_refresh_initiators=*/{});
+
+  base::test::TestFuture<SessionError::ErrorType> add_session_future;
+  service().AddSession(SchemefulSite(kTestUrl), std::move(params), wrapped_key,
+                       add_session_future.GetCallback());
+  EXPECT_EQ(add_session_future.Take(), SessionError::kSuccess);
+}
+
 TEST_F(SessionServiceImplTest, NoCallbackIfEventObserverRemoved) {
   base::MockCallback<SessionService::OnEventCallback> event_callback;
   // Subscription goes out of scope, which should remove the observer.
