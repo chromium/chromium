@@ -140,8 +140,7 @@ public class BidirectionalStreamTest {
                         false,
                         "h2",
                         null,
-                        receivedBytes,
-                        /* isProxied= */ false);
+                        receivedBytes);
         return urlResponseInfo;
     }
 

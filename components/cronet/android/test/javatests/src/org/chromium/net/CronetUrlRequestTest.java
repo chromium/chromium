@@ -257,8 +257,7 @@ public class CronetUrlRequestTest {
                         false,
                         "unknown",
                         ":0",
-                        receivedBytes,
-                        /* isProxied= */ false);
+                        receivedBytes);
         return unknown;
     }
 

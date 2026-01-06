@@ -232,8 +232,7 @@ void CronetURLRequestAdapter::OnResponseStarted(
     bool was_cached,
     const std::string& negotiated_protocol,
     const std::string& proxy_server,
-    int64_t received_byte_count,
-    bool is_proxied) {
+    int64_t received_byte_count) {
   JNIEnv* env = base::android::AttachCurrentThread();
   cronet::Java_CronetUrlRequest_onResponseStarted(
       env, owner_, http_status_code,
@@ -241,8 +240,7 @@ void CronetURLRequestAdapter::OnResponseStarted(
       ConvertResponseHeadersToJava(env, headers),
       was_cached ? JNI_TRUE : JNI_FALSE,
       ConvertUTF8ToJavaString(env, negotiated_protocol),
-      ConvertUTF8ToJavaString(env, proxy_server), received_byte_count,
-      is_proxied);
+      ConvertUTF8ToJavaString(env, proxy_server), received_byte_count);
 }
 
 void CronetURLRequestAdapter::OnReadCompleted(

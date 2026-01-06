@@ -499,8 +499,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
             boolean wasCached,
             String negotiatedProtocol,
             String proxyServer,
-            long receivedByteCount,
-            boolean isProxied) {
+            long receivedByteCount) {
         ArrayList<Map.Entry<String, String>> headersList = new ArrayList<>();
         for (int i = 0; i < headers.length; i += 2) {
             headersList.add(new AbstractMap.SimpleImmutableEntry<>(headers[i], headers[i + 1]));
@@ -513,8 +512,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                 wasCached,
                 negotiatedProtocol,
                 proxyServer,
-                receivedByteCount,
-                isProxied);
+                receivedByteCount);
     }
 
     private void checkNotStarted() {
@@ -623,12 +621,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                         wasCached,
                         negotiatedProtocol,
                         proxyServer,
-                        receivedByteCount,
-                        // It's okay not to populate this value correctly because this is used only
-                        // by Cronet's telemetry. Cronet's telemetry does not depend on the instance
-                        // of UrlResponseInfoImpl created here, but the one created in
-                        // onResponseStarted (where we correctly populate this value).
-                        /* isProxied= */ false);
+                        receivedByteCount);
 
         // Have to do this after creating responseInfo.
         mUrlChain.add(newLocation);
@@ -669,8 +662,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
             boolean wasCached,
             String negotiatedProtocol,
             String proxyServer,
-            long receivedByteCount,
-            boolean isProxied) {
+            long receivedByteCount) {
         mResponseInfo =
                 prepareResponseInfoOnNetworkThread(
                         httpStatusCode,
@@ -679,8 +671,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                         wasCached,
                         negotiatedProtocol,
                         proxyServer,
-                        receivedByteCount,
-                        isProxied);
+                        receivedByteCount);
         Runnable task =
                 new Runnable() {
                     @Override
@@ -1016,7 +1007,6 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
         final String negotiatedProtocol;
         final int httpStatusCode;
         final boolean wasCached;
-        final Boolean isProxied = mResponseInfo != null ? mResponseInfo.isProxied() : null;
         if (mResponseInfo != null) {
             responseHeaders = mResponseInfo.getAllHeaders();
             negotiatedProtocol = mResponseInfo.getNegotiatedProtocol();
@@ -1126,8 +1116,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                 mMetrics.getSSLDurationInMicroseconds(),
                 mMetrics.getConnectDurationInMicroseconds(),
                 mMetrics.getTimeToWriteFirstByteInMicroseconds(),
-                mMetrics.getTimeToReceiveHeaderLastByteMicroseconds(),
-                isProxied);
+                mMetrics.getTimeToReceiveHeaderLastByteMicroseconds());
     }
 
     // Maybe report metrics. This method should only be called on Callback's executor thread and

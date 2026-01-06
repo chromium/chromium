@@ -270,8 +270,7 @@ class Cronet_UrlRequestImpl::NetworkTasks : public CronetURLRequest::Callback {
                          bool was_cached,
                          const std::string& negotiated_protocol,
                          const std::string& proxy_server,
-                         int64_t received_byte_count,
-                         bool is_proxied) override;
+                         int64_t received_byte_count) override;
   void OnReadCompleted(scoped_refptr<net::IOBuffer> buffer,
                        int bytes_read,
                        int64_t received_byte_count) override;
@@ -713,8 +712,7 @@ void Cronet_UrlRequestImpl::NetworkTasks::OnResponseStarted(
     bool was_cached,
     const std::string& negotiated_protocol,
     const std::string& proxy_server,
-    int64_t received_byte_count,
-    bool is_proxied) {
+    int64_t received_byte_count) {
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
   {
     base::AutoLock lock(url_request_->lock_);

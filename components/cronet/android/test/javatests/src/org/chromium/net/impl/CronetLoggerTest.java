@@ -474,7 +474,6 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getTimeToEstablishSSLMicros()).isGreaterThan(0);
         assertThat(trafficInfo.getTimeToConnectMicros()).isGreaterThan(0);
         assertThat(trafficInfo.getTimeToSendFirstByteMicros()).isGreaterThan(0);
-        assertThat(trafficInfo.isProxied()).isFalse();
 
         assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
         assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
@@ -618,11 +617,6 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getNetworkInternalErrorCode()).isEqualTo(0);
         assertThat(trafficInfo.getFailureReason())
                 .isEqualTo(CronetTrafficInfo.RequestFailureReason.UNKNOWN);
-        // The request failed before we received the response headers from the destination. In this
-        // scenario we don't know whether //net would have proxied the request. We report null to
-        // differentiate against the scenario where we received response headers but the request
-        // failed (in which case we definitely do know whether the request has been proxied or not).
-        assertThat(trafficInfo.isProxied()).isNull();
         assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
         assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
     }
@@ -704,7 +698,6 @@ public final class CronetLoggerTest {
             assertThat(trafficInfo.getTimeToEstablishSSLMicros()).isGreaterThan(0);
             assertThat(trafficInfo.getTimeToConnectMicros()).isGreaterThan(0);
             assertThat(trafficInfo.getTimeToSendFirstByteMicros()).isGreaterThan(0);
-            assertThat(trafficInfo.isProxied()).isNull();
             assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
             assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
         } finally {

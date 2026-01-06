@@ -236,7 +236,6 @@ public abstract class CronetLogger {
         private final long mTimeToConnectMicros;
         private final long mTimeToSendFirstByteMicros;
         private final long mTimeToReceiveHeaderLastByteMicros;
-        private final Boolean mIsProxied;
 
         public CronetTrafficInfo(
                 long requestHeaderSizeInBytes,
@@ -266,8 +265,7 @@ public abstract class CronetLogger {
                 long timeToEstablishSSLMicros,
                 long timeToConnectMicros,
                 long timeToSendFirstByteMicros,
-                long timeToReceiveHeaderLastByteMicros,
-                Boolean isProxied) {
+                long timeToReceiveHeaderLastByteMicros) {
             mRequestHeaderSizeInBytes = requestHeaderSizeInBytes;
             mRequestBodySizeInBytes = requestBodySizeInBytes;
             mResponseHeaderSizeInBytes = responseHeaderSizeInBytes;
@@ -296,7 +294,6 @@ public abstract class CronetLogger {
             mTimeToConnectMicros = timeToConnectMicros;
             mTimeToSendFirstByteMicros = timeToSendFirstByteMicros;
             mTimeToReceiveHeaderLastByteMicros = timeToReceiveHeaderLastByteMicros;
-            mIsProxied = isProxied;
         }
 
         /**
@@ -424,10 +421,6 @@ public abstract class CronetLogger {
 
         public long getTimeToReceiveHeaderLastByteMicros() {
             return mTimeToReceiveHeaderLastByteMicros;
-        }
-
-        public Boolean isProxied() {
-            return mIsProxied;
         }
     }
 

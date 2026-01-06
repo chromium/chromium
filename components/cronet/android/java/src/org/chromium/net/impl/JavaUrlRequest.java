@@ -561,8 +561,7 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                                             false,
                                             selectedTransport,
                                             "",
-                                            0,
-                                            /* isProxied= */ false);
+                                            0);
                             // TODO(clm) actual redirect handling? post -> get and whatnot?
                             if (responseCode >= 300 && responseCode < 400) {
                                 List<String> locationFields =
@@ -1050,8 +1049,7 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                     /* timeToEstablishSSLMicros= */ -1,
                     /* timeToConnectMicros= */ -1,
                     /* timeToSendFirstByteMicros= */ -1,
-                    /* timeToReceiveHeaderLastByteMicros= */ -1,
-                    /* isProxied= */ null);
+                    /* timeToReceiveHeaderLastByteMicros= */ -1);
         }
 
         // Maybe report metrics. This method should only be called on Callback's executor thread and

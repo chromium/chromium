@@ -266,8 +266,7 @@ void CronetURLRequest::NetworkTasks::OnResponseStarted(net::URLRequest* request,
       request->response_headers(), request->response_info().was_cached,
       request->response_info().alpn_negotiated_protocol,
       GetProxy(request->response_info()),
-      received_byte_count_from_redirects_ + request->GetTotalReceivedBytes(),
-      request->response_info().WasFetchedViaProxy());
+      received_byte_count_from_redirects_ + request->GetTotalReceivedBytes());
 }
 
 void CronetURLRequest::NetworkTasks::OnReadCompleted(net::URLRequest* request,

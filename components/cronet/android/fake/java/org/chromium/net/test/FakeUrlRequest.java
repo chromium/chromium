@@ -316,8 +316,7 @@ final class FakeUrlRequest extends ExperimentalUrlRequest {
                         mCurrentFakeResponse.getWasCached(),
                         mCurrentFakeResponse.getNegotiatedProtocol(),
                         mCurrentFakeResponse.getProxyServer(),
-                        mCurrentFakeResponse.getResponseBody().length,
-                        /* isProxied= */ false);
+                        mCurrentFakeResponse.getResponseBody().length);
         mResponse = ByteBuffer.wrap(mCurrentFakeResponse.getResponseBody());
         // Check for a redirect.
         if (responseCode >= 300 && responseCode < 400 && responseCode != 304) {
