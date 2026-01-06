@@ -81,6 +81,10 @@ class SessionServiceMock : public SessionService {
               (const GURL& url,
                base::RepeatingCallback<void(const SessionAccess&)> callback),
               (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              AddEventObserver,
+              (base::RepeatingCallback<void(const SessionEvent&)> callback),
+              (override));
   MOCK_METHOD(const Session*,
               GetSession,
               (const SessionKey& session_key),

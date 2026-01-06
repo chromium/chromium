@@ -125,6 +125,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   base::ScopedClosureRunner AddObserver(
       const GURL& url,
       base::RepeatingCallback<void(const SessionAccess&)> callback) override;
+  base::CallbackListSubscription AddEventObserver(
+      OnEventCallback callback) override;
   const Session* GetSession(const SessionKey& session_key) const override;
   void AddSession(
       const SchemefulSite& site,
@@ -356,6 +358,9 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   // All observers of sessions.
   std::map<net::SchemefulSite, ObserverSet> observers_by_site_;
+
+  // Observers for DBSC events. Used for DevTools.
+  base::RepeatingCallbackList<void(const SessionEvent&)> event_callbacks_;
 
   // Per-site session refresh quota. In order to be robust across
   // session parameter changes, we enforce refresh quota for a site.

@@ -1000,6 +1000,11 @@ base::ScopedClosureRunner SessionServiceImpl::AddObserver(
   return subscription;
 }
 
+base::CallbackListSubscription SessionServiceImpl::AddEventObserver(
+    OnEventCallback callback) {
+  return event_callbacks_.Add(std::move(callback));
+}
+
 void SessionServiceImpl::DeleteSessionAndNotifyInternal(
     DeletionReason reason,
     SessionServiceImpl::SessionsMap::iterator it,
