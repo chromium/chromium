@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/callback_list.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/notimplemented.h"
@@ -111,7 +110,7 @@ class FakeDesktopResizer : public DesktopResizer {
  private:
   // Fails the unittest if |screen_id| is not a valid monitor ID.
   void ExpectValidId(webrtc::ScreenId screen_id) {
-    EXPECT_TRUE(base::Contains(*monitors_, screen_id));
+    EXPECT_TRUE(monitors_->contains(screen_id));
   }
 
   bool exact_size_supported_;

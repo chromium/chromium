@@ -8,7 +8,6 @@
 
 #include <limits>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -176,8 +175,7 @@ void RemoteWebAuthnMessageHandler::Cancel(CancelCallback callback) {
 
   uint64_t id = request_cancellers_.current_context();
 
-  if (!base::Contains(create_callbacks_, id) &&
-      !base::Contains(get_callbacks_, id)) {
+  if (!create_callbacks_.contains(id) && !get_callbacks_.contains(id)) {
     LOG(ERROR) << "No ongoing request is associated with message ID " << id;
     std::move(callback).Run(false);
     RemoveRequestCancellerByMessageId(id);
@@ -309,8 +307,8 @@ void RemoteWebAuthnMessageHandler::OnCancelResponse(
     return;
   }
 
-  bool cancelling_create_request = base::Contains(create_callbacks_, id);
-  bool cancelling_get_request = base::Contains(get_callbacks_, id);
+  bool cancelling_create_request = create_callbacks_.contains(id);
+  bool cancelling_get_request = get_callbacks_.contains(id);
 
   if (cancelling_create_request || cancelling_get_request) {
     FindAndRunCallback(cancel_callbacks_, id, /* was_canceled= */ true);

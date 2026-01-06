@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -228,7 +227,7 @@ FakePacketSocketFactory::CreateUdpSocket(
   int port = -1;
   if (min_port > 0 && max_port > 0) {
     for (uint16_t i = min_port; i <= max_port; ++i) {
-      if (!base::Contains(udp_sockets_, i)) {
+      if (!udp_sockets_.contains(i)) {
         port = i;
         break;
       }
@@ -241,7 +240,7 @@ FakePacketSocketFactory::CreateUdpSocket(
       port = next_port_;
       next_port_ =
           (next_port_ >= kPortRangeEnd) ? kPortRangeStart : (next_port_ + 1);
-    } while (base::Contains(udp_sockets_, port));
+    } while (udp_sockets_.contains(port));
   }
 
   CHECK(local_address.ipaddr() == address_);

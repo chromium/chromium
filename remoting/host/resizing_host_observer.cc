@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
@@ -171,7 +170,7 @@ void ResizingHostObserver::SetScreenResolution(
   }
 
   // Drop any request for an invalid screen ID.
-  if (!base::Contains(current_monitor_ids_, screen_id)) {
+  if (!current_monitor_ids_.contains(screen_id)) {
     HOST_LOG << "Ignoring resize request for invalid monitor ID " << screen_id
              << ".";
     return;
@@ -282,7 +281,7 @@ void ResizingHostObserver::RestoreAllScreenResolutions() {
 void ResizingHostObserver::RecordOriginalResolution(
     ScreenResolution resolution,
     webrtc::ScreenId screen_id) {
-  if (!base::Contains(original_resolutions_, screen_id)) {
+  if (!original_resolutions_.contains(screen_id)) {
     original_resolutions_[screen_id] = resolution;
   }
 }

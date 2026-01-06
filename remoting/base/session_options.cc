@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -21,8 +20,7 @@ static constexpr char kKeyValueSeparator = ':';
 
 // Whether |value| is good to be added to SessionOptions as a value.
 bool ValueIsValid(const std::string& value) {
-  return !base::Contains(value, kSeparator) &&
-         !base::Contains(value, kKeyValueSeparator) &&
+  return !value.contains(kSeparator) && !value.contains(kKeyValueSeparator) &&
          base::IsStringASCII(value);
 }
 

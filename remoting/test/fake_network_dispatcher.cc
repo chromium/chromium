@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -42,7 +41,7 @@ void FakeNetworkDispatcher::AddNode(Node* node) {
   DCHECK(node->GetThread()->BelongsToCurrentThread());
 
   base::AutoLock auto_lock(nodes_lock_);
-  DCHECK(!base::Contains(nodes_, node->GetAddress()));
+  DCHECK(!nodes_.contains(node->GetAddress()));
   nodes_[node->GetAddress()] = node;
 }
 

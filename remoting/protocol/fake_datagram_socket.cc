@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -185,7 +184,7 @@ void FakeDatagramChannelFactory::NotifyChannelCreated(
     std::unique_ptr<FakeDatagramSocket> owned_socket,
     const std::string& name,
     ChannelCreatedCallback callback) {
-  if (base::Contains(channels_, name)) {
+  if (channels_.contains(name)) {
     std::move(callback).Run(std::move(owned_socket));
   }
 }
