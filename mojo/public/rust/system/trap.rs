@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -224,7 +224,7 @@ impl Trap {
     //   ever become impossible (e.g., if one end of a pipe is closed, such that the
     //   other end will never again become readable)
     // You can find examples in `core_api_unittests.rs`, e.g. in
-    // `test_safe_trap_multiple_blocking_events`
+    // `test_trap_multiple_blocking_events`
     pub fn add_trigger(
         &self,
         handle_to_trap: &impl Trappable,
