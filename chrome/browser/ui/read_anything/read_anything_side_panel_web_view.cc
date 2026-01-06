@@ -83,6 +83,7 @@ ReadAnythingSidePanelWebView::GetWeakPtr() {
 
 std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
 ReadAnythingSidePanelWebView::TakeContentsWrapper() {
+  SetWebContents(nullptr);
   return std::move(contents_wrapper_);
 }
 

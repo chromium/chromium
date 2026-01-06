@@ -222,7 +222,7 @@ void ReadAnythingController::ShowImmersiveUI(ReadAnythingOpenTrigger trigger) {
     CHECK(side_panel_ui);
     side_panel_ui->Close(SidePanelEntry::PanelType::kContent,
                          SidePanelEntryHideReason::kSidePanelClosed,
-                         /*suppress_animations=*/false);
+                         /*suppress_animations=*/true);
     // Ensure we got the web_ui_wrapper_ back from the Side Panel if one ever
     // existed.
     CHECK(!has_shown_ui_ || web_ui_wrapper_);
