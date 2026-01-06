@@ -64,6 +64,41 @@ class MemoryUsageViewTest(unittest.TestCase):
         expected_json = {'name': 'test_node', 'value': 0, 'delta': 0}
         self.assertEqual(dumped_json, [expected_json])
 
+    def test_from_df(self):
+        df_data = {
+            'callsite_id': [1, 2, 3],
+            'depth': [0, 0, 1],
+            'frame_name': ['root_a', 'root_b', 'child_a_1'],
+            'parent_callsite_id': [None, None, 1],
+            'total_size_bytes': [100, 200, 50],
+        }
+        df = pd.DataFrame(df_data)
+        view = MemoryUsageView.from_df(df, demangler=None)
+        dumped_json = view.to_json()
+        expected_json = """
+[
+  {
+    "name": "root_a",
+    "value": 100,
+    "delta": 0,
+    "children": [
+      {
+        "name": "child_a_1",
+        "value": 50,
+        "delta": 0
+      }
+    ]
+  },
+  {
+    "name": "root_b",
+    "value": 200,
+    "delta": 0
+  }
+]
+"""
+        self.assertEqual(json.loads(expected_json), json.loads(dumped_json))
+        self.assertEqual(['root_a', 'root_b'], sorted(view.toplevel_names()))
+
 
 if __name__ == '__main__':
     unittest.main()
