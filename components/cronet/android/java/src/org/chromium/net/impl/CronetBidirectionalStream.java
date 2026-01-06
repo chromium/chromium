@@ -1057,7 +1057,11 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                 mMetrics.getSSLDurationInMicroseconds(),
                 mMetrics.getConnectDurationInMicroseconds(),
                 mMetrics.getTimeToWriteFirstByteInMicroseconds(),
-                mMetrics.getTimeToReceiveHeaderLastByteMicroseconds());
+                mMetrics.getTimeToReceiveHeaderLastByteMicroseconds(),
+                // TODO(https://crbug.com/460092135): Report this for bidi streams.
+                // TODO(https://crbug.com/460426595): This requires knowing whether a bidi stream is
+                // being proxied or not. Cronet currently does not know.
+                /* isProxied= */ null);
     }
 
     public void setOnDestroyedCallbackForTesting(Runnable onDestroyedCallbackForTesting) {
@@ -1151,7 +1155,8 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                         false,
                         negotiatedProtocol,
                         null,
-                        receivedByteCount);
+                        receivedByteCount,
+                        /* isProxied= */ false);
         return responseInfo;
     }
 

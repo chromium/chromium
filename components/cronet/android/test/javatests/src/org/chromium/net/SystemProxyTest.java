@@ -16,6 +16,7 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Proxy;
+import android.os.Build;
 import android.os.Handler;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -24,11 +25,13 @@ import androidx.test.filters.SmallTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
+import org.chromium.net.impl.TestLogger;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,7 +40,11 @@ import java.util.HashMap;
 @RunWith(AndroidJUnit4.class)
 public final class SystemProxyTest {
     private static final String TAG = "SystemProxyTest";
-    @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
+    private final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
+    private final CronetLoggerTestRule<TestLogger> mLoggerTestRule =
+            new CronetLoggerTestRule<>(TestLogger.class);
+
+    @Rule public final RuleChain chain = RuleChain.outerRule(mLoggerTestRule).around(mTestRule);
 
     // This hostname doesn't need to actually work, because Cronet won't try to connect to it - it
     // expects the proxy to connect to it instead.
@@ -193,6 +200,20 @@ public final class SystemProxyTest {
         // and only passes the path section to the callback. See
         // net::test_server::HttpRequestParser::ParseHeaders().
         assertThat(requestHandler.mReceivedHttpRequest.getRelativeUrl()).isEqualTo("/test-path");
+
+        // CronetTestLogger relies on static global state. This is not available when using
+        // HttpEngine.
+        // CronetTrafficInfo is logged starting from Oreo.
+        if (mTestRule.implementationUnderTest() != CronetImplementation.AOSP_PLATFORM
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // The logging code knows whether a request has been proxied only after receiving the
+            // response headers from the destination. In this case the request failed during the
+            // tunnel establishment, so we expect null.
+            // TODO(https://crbug.com/463331384): stop checking for a isProxied == null once we
+            // successfully send a proxied request via a system proxy.
+            mLoggerTestRule.mTestLogger.waitForLogCronetTrafficInfo();
+            assertThat(mLoggerTestRule.mTestLogger.getLastCronetTrafficInfo().isProxied()).isNull();
+        }
     }
 
     /**
@@ -245,6 +266,20 @@ public final class SystemProxyTest {
         assertThat(requestHandler.mReceivedHttpRequest.getMethod()).isEqualTo("CONNECT");
         assertThat(requestHandler.mReceivedHttpRequest.getRelativeUrl())
                 .isEqualTo(TEST_HOSTNAME + ":443");
+
+        // CronetTestLogger relies on static global state. This is not available when using
+        // HttpEngine.
+        // CronetTrafficInfo is logged starting from Oreo.
+        if (mTestRule.implementationUnderTest() != CronetImplementation.AOSP_PLATFORM
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // The logging code knows whether a request has been proxied only after receiving the
+            // response headers from the destination. In this case the request failed during the
+            // tunnel establishment, so we expect null.
+            // TODO(https://crbug.com/463331384): stop checking for a isProxied == null once we
+            // successfully send a proxied request via a system proxy.
+            mLoggerTestRule.mTestLogger.waitForLogCronetTrafficInfo();
+            assertThat(mLoggerTestRule.mTestLogger.getLastCronetTrafficInfo().isProxied()).isNull();
+        }
     }
 
     /** Tests that Cronet reacts to proxy configuration changes while an engine is running. */

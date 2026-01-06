@@ -115,7 +115,8 @@ class CronetURLRequestAdapter : public CronetURLRequest::Callback {
                          bool was_cached,
                          const std::string& negotiated_protocol,
                          const std::string& proxy_server,
-                         int64_t received_byte_count) override;
+                         int64_t received_byte_count,
+                         bool is_proxied) override;
   void OnReadCompleted(scoped_refptr<net::IOBuffer> buffer,
                        int bytes_read,
                        int64_t received_byte_count) override;

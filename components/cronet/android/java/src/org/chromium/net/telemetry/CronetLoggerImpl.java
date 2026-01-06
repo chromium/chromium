@@ -250,7 +250,8 @@ public class CronetLoggerImpl extends CronetLogger {
                     trafficInfo.getTimeToEstablishSSLMicros(),
                     trafficInfo.getTimeToConnectMicros(),
                     trafficInfo.getTimeToSendFirstByteMicros(),
-                    trafficInfo.getTimeToReceiveHeaderLastByteMicros());
+                    trafficInfo.getTimeToReceiveHeaderLastByteMicros(),
+                    OptionalBoolean.fromBoolean(trafficInfo.isProxied()).getValue());
         } catch (Exception e) {
             // using addAndGet because another thread might have modified samplesRateLimited's value
             mSamplesRateLimited.addAndGet(samplesRateLimitedCount);

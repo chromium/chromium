@@ -53,7 +53,8 @@ public class UrlResponseInfoTest {
                         wasCached,
                         negotiatedProtocol,
                         proxyServer,
-                        receivedByteCount);
+                        receivedByteCount,
+                        /* isProxied= */ false);
 
         assertThat(info).hasUrlChainThat().isEqualTo(urlChain);
         assertThat(info).hasUrlThat().isEqualTo(urlChain.get(urlChain.size() - 1));
