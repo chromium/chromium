@@ -25624,7 +25624,7 @@
             ]
         }
     ],
-    "ThrottleMainFrameTo60HzMacWebView": [
+    "ThrottleMainFrameTo60HzWebView": [
         {
             "platforms": [
                 "android_webview"
