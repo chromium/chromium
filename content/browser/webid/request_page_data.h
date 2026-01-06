@@ -19,6 +19,8 @@ class RequestService;
 
 namespace webid {
 
+using OnFederatedTokenReceivedCallback = base::OnceCallback<void(bool)>;
+
 class CONTENT_EXPORT RequestPageData : public PageUserData<RequestPageData> {
  public:
   ~RequestPageData() override;
@@ -41,6 +43,31 @@ class CONTENT_EXPORT RequestPageData : public PageUserData<RequestPageData> {
   std::optional<base::TimeTicks> ConsumeUserInfoAccountsResponseTime(
       const GURL& idp_url);
 
+  // Represents an embedder login request. The embedder may choose to request
+  // a federated token from a specific account, and request to be notified when
+  // the request is completed.
+  struct EmbedderLoginRequest {
+    EmbedderLoginRequest(const GURL& idp_url,
+                         const std::string& account_id,
+                         OnFederatedTokenReceivedCallback callback);
+    EmbedderLoginRequest(const EmbedderLoginRequest&) = delete;
+    EmbedderLoginRequest& operator=(const EmbedderLoginRequest&) = delete;
+    EmbedderLoginRequest(EmbedderLoginRequest&&);
+    EmbedderLoginRequest& operator=(EmbedderLoginRequest&&) = default;
+    ~EmbedderLoginRequest();
+
+    GURL idp_url;
+    std::string account_id;
+    OnFederatedTokenReceivedCallback on_federated_token_received_callback;
+  };
+
+  // Sets the embedder login request information. This is used to know whether a
+  // current pending web identity request is an embedder login request, which
+  // account to automatically select, and how to notify the embedder.
+  // std::nullopt indicates that there is no active embedder login request.
+  void SetEmbedderLoginRequest(std::optional<EmbedderLoginRequest> request);
+  const std::optional<EmbedderLoginRequest>& GetEmbedderLoginRequest();
+
  private:
   explicit RequestPageData(Page& page);
 
@@ -55,6 +82,9 @@ class CONTENT_EXPORT RequestPageData : public PageUserData<RequestPageData> {
   // Time when the browser receives valid accounts from the IdP via the UserInfo
   // API.
   base::flat_map<GURL, base::TimeTicks> user_info_accounts_response_time_;
+
+  // Information about the embedder login request.
+  std::optional<EmbedderLoginRequest> embedder_login_request_;
 };
 
 }  // namespace webid
