@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -20,7 +21,7 @@ namespace ui {
 // (depending on |direction|) from the given |start_offset| until the
 // given boundary is found, and return the offset of that boundary,
 // using the vector of line break character offsets in |line_breaks|.
-AX_EXPORT size_t FindAccessibleTextBoundary(const std::u16string& text,
+AX_EXPORT size_t FindAccessibleTextBoundary(const std::u16string_view text,
                                             const std::vector<int>& line_breaks,
                                             ax::mojom::TextBoundary boundary,
                                             size_t start_offset,

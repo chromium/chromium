@@ -6,6 +6,7 @@
 #define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ALOUD_TRAVERSAL_UTILS_H_
 
 #include <string>
+#include <string_view>
 
 #include "ui/accessibility/ax_node_position.h"
 
@@ -109,11 +110,11 @@ struct ReadAloudCurrentGranularity {
 
 // Returns the index of the next sentence of the given text, such that the
 // next sentence is equivalent to text.substr(0, <returned_index>).
-int GetNextSentence(const std::u16string& text);
+int GetNextSentence(std::u16string_view text);
 
 // Returns the index of the next word of the given text, such that the
 // next word is equivalent to text.substr(0, <returned_index>).
-int GetNextWord(const std::u16string& text);
+int GetNextWord(std::u16string_view text);
 
 // Returns true if both positions are non-null and equal.
 bool ArePositionsEqual(const ui::AXNodePosition::AXPositionInstance& position,
