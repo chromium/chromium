@@ -34,6 +34,14 @@ struct OverflowMenuActionList: View {
             })
         }
       }
+      .safeAreaInset(edge: .bottom) {
+        // Add a spacer on iPad to make sure there's space below the list.
+        if uiConfiguration.presentingViewControllerHorizontalSizeClass == .regular
+          && uiConfiguration.presentingViewControllerVerticalSizeClass == .regular
+        {
+          Spacer().frame(height: 12)
+        }
+      }
       .matchedGeometryEffect(id: MenuCustomizationAnimationID.actions, in: namespace)
       .simultaneousGesture(
         DragGesture().onChanged({ _ in

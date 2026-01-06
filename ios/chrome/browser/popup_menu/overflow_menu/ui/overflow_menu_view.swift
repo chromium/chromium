@@ -37,12 +37,6 @@ struct OverflowMenuView: View {
         OverflowMenuActionList(
           actionGroups: model.actionGroups, metricsHandler: metricsHandler,
           uiConfiguration: uiConfiguration, namespace: namespace)
-        // Add a spacer on iPad to make sure there's space below the list.
-        if uiConfiguration.presentingViewControllerHorizontalSizeClass == .regular
-          && uiConfiguration.presentingViewControllerVerticalSizeClass == .regular
-        {
-          Spacer()
-        }
       }
       .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
       .onPreferenceChange(OverflowMenuDestinationList.HighlightedDestinationBounds.self) { pref in
