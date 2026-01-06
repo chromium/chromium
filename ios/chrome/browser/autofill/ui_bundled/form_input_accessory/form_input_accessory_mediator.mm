@@ -270,9 +270,9 @@ bool IsStateless() {
     }
     if (personalDataManager) {
       _personalDataManager = personalDataManager;
-      _personalDataManagerObserver.reset(
-          new autofill::PersonalDataManagerObserverBridge(self));
-      personalDataManager->AddObserver(_personalDataManagerObserver.get());
+      _personalDataManagerObserver =
+          std::make_unique<autofill::PersonalDataManagerObserverBridge>(
+              _personalDataManager, self);
 
       // TODO:(crbug.com/845472) Add earl grey test to verify the credit card
       // button is hidden when local cards are saved and then
@@ -326,11 +326,8 @@ bool IsStateless() {
 - (void)disconnect {
   _formActivityObserverBridge.reset();
   _autofillBottomSheetObserverBridge.reset();
-  if (_personalDataManager && _personalDataManagerObserver.get()) {
-    _personalDataManager->RemoveObserver(_personalDataManagerObserver.get());
-    _personalDataManagerObserver.reset();
-    _personalDataManager = nullptr;
-  }
+  _personalDataManagerObserver = nullptr;
+  _personalDataManager = nullptr;
   if (_webState) {
     _webState->RemoveObserver(_webStateObserverBridge.get());
     _webStateObserverBridge.reset();

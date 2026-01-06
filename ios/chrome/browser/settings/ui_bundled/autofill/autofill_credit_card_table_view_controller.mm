@@ -141,8 +141,8 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
     _browser = browser;
     _personalDataManager = autofill::PersonalDataManagerFactory::GetForProfile(
         _browser->GetProfile());
-    _observer.reset(new autofill::PersonalDataManagerObserverBridge(self));
-    _personalDataManager->AddObserver(_observer.get());
+    _observer = std::make_unique<autofill::PersonalDataManagerObserverBridge>(
+        _personalDataManager, self);
   }
   return self;
 }
@@ -395,7 +395,6 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 - (void)settingsWillBeDismissed {
   DCHECK(!_settingsAreDismissed);
 
-  _personalDataManager->RemoveObserver(_observer.get());
   [self stopAutofillAddCreditCardCoordinator];
   [self stopCvcStorageCoordinator];
 

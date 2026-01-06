@@ -147,8 +147,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _browser = browser;
     _personalDataManager = autofill::PersonalDataManagerFactory::GetForProfile(
         _browser->GetProfile());
-    _observer.reset(new autofill::PersonalDataManagerObserverBridge(self));
-    _personalDataManager->AddObserver(_observer.get());
+    _observer = std::make_unique<autofill::PersonalDataManagerObserverBridge>(
+        _personalDataManager, self);
   }
   return self;
 }
@@ -369,7 +369,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self stopAutofillAddProfileCoordinator];
 
   [self stopAutofillProfileEditCoordinator];
-  _personalDataManager->RemoveObserver(_observer.get());
   [self dismissDeletionSheet];
 
   // Remove observer bridges.

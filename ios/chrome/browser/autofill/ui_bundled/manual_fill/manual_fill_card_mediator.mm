@@ -106,9 +106,9 @@ std::vector<CreditCard> FetchCards(
   self = [super init];
   if (self) {
     _personalDataManager = personalDataManager;
-    _personalDataManagerObserver.reset(
-        new autofill::PersonalDataManagerObserverBridge(self));
-    _personalDataManager->AddObserver(_personalDataManagerObserver.get());
+    _personalDataManagerObserver =
+        std::make_unique<autofill::PersonalDataManagerObserverBridge>(
+            _personalDataManager, self);
     _cards = FetchCards(*_personalDataManager);
     _reauthenticationModule = reauthenticationModule;
     _showAutofillFormButton = showAutofillFormButton;
@@ -136,10 +136,8 @@ std::vector<CreditCard> FetchCards(
 }
 
 - (void)disconnect {
-  if (_personalDataManager && _personalDataManagerObserver.get()) {
-    _personalDataManager->RemoveObserver(_personalDataManagerObserver.get());
-    _personalDataManagerObserver.reset();
-  }
+  _personalDataManagerObserver = nullptr;
+  _personalDataManager = nullptr;
 }
 
 #pragma mark - PersonalDataManagerObserver

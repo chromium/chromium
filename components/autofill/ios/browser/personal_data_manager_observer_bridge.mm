@@ -9,9 +9,11 @@
 namespace autofill {
 
 PersonalDataManagerObserverBridge::PersonalDataManagerObserverBridge(
+    PersonalDataManager* personal_data_manager,
     id<PersonalDataManagerObserver> delegate)
     : delegate_(delegate) {
   DCHECK(delegate_);
+  scoped_observation_.Observe(personal_data_manager);
 }
 
 PersonalDataManagerObserverBridge::~PersonalDataManagerObserverBridge() {

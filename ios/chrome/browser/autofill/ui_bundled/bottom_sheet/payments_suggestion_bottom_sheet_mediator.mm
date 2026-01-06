@@ -85,13 +85,6 @@ bool IsV3() {
   std::unique_ptr<autofill::PersonalDataManagerObserverBridge>
       _personalDataManagerObserver;
 
-  // Scoped observer used to track registration of the
-  // PersonalDataManagerObserverBridge.
-  std::unique_ptr<
-      base::ScopedObservation<autofill::PersonalDataManager,
-                              autofill::PersonalDataManagerObserver>>
-      _scopedPersonalDataManagerObservation;
-
   // Information regarding the triggering form for this bottom sheet.
   autofill::FormActivityParams _params;
 
@@ -125,13 +118,9 @@ bool IsV3() {
 
     if (personalDataManager) {
       _personalDataManager = personalDataManager;
-      _personalDataManagerObserver.reset(
-          new autofill::PersonalDataManagerObserverBridge(self));
-      _scopedPersonalDataManagerObservation = std::make_unique<
-          base::ScopedObservation<autofill::PersonalDataManager,
-                                  autofill::PersonalDataManagerObserver>>(
-          _personalDataManagerObserver.get());
-      _scopedPersonalDataManagerObservation->Observe(_personalDataManager);
+      _personalDataManagerObserver =
+          std::make_unique<autofill::PersonalDataManagerObserverBridge>(
+              _personalDataManager, self);
     }
 
     // Create and register the observers.
@@ -157,8 +146,7 @@ bool IsV3() {
 }
 
 - (void)disconnect {
-  _scopedPersonalDataManagerObservation.reset();
-  _personalDataManagerObserver.reset();
+  _personalDataManagerObserver = nullptr;
   _personalDataManager = nullptr;
 
   _webStateListObservation.reset();
