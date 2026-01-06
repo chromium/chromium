@@ -71,4 +71,11 @@ suite('DateDialogElement', () => {
     expect(capturedEvent!.detail.start!.getTime())
         .to.equal(new Date('2025-01-01T00:00').getTime());
   });
+
+  test('focuses start date input on load', async () => {
+    await microtasksFinished();
+    const input = filterDate.shadowRoot.querySelector<HTMLElement>(
+        '.filter-menu-date-inputs input');
+    expect(input).to.equal(filterDate.shadowRoot.activeElement);
+  });
 });

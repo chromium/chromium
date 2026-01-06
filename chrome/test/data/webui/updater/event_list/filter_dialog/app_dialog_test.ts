@@ -99,4 +99,11 @@ suite('AppDialogElement', () => {
 
     expect(closeFired).to.be.true;
   });
+
+  test('focuses input on load', async () => {
+    await microtasksFinished();
+    const input =
+        filterApp.shadowRoot.querySelector<HTMLElement>('.filter-menu-input');
+    expect(input).to.equal(filterApp.shadowRoot.activeElement);
+  });
 });

@@ -46,4 +46,11 @@ suite('TypeDialogElement', () => {
     expect(capturedEvent).to.not.be.null;
     expect(capturedEvent!.detail).to.equal(FilterCategory.APP);
   });
+
+  test('focuses first menu item on load', async () => {
+    await microtasksFinished();
+    const item =
+        filterType.shadowRoot.querySelector<HTMLElement>('.filter-menu-item');
+    expect(item).to.equal(filterType.shadowRoot.activeElement);
+  });
 });

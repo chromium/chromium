@@ -86,4 +86,11 @@ suite('EventDialogElement', () => {
 
     expect(closeFired).to.be.true;
   });
+
+  test('focuses first checkbox on load', async () => {
+    await microtasksFinished();
+    const checkbox =
+        filterEvent.shadowRoot.querySelector<HTMLElement>('.filter-menu-item');
+    expect(checkbox).to.equal(filterEvent.shadowRoot.activeElement);
+  });
 });

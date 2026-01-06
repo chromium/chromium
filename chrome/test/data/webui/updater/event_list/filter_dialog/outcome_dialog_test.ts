@@ -62,4 +62,11 @@ suite('OutcomeDialogElement', () => {
     expect(capturedEvent).to.not.be.null;
     expect(capturedEvent!.detail.has('UPDATED')).to.be.true;
   });
+
+  test('focuses first checkbox on load', async () => {
+    await microtasksFinished();
+    const checkbox = filterOutcome.shadowRoot.querySelector<HTMLElement>(
+        '.filter-menu-item');
+    expect(checkbox).to.equal(filterOutcome.shadowRoot.activeElement);
+  });
 });

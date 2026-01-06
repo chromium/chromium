@@ -52,14 +52,11 @@ export class DateDialogElement extends CrLitElement {
     }
   }
 
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-    if (changedProperties.has('initialStartDate') ||
-        changedProperties.has('initialEndDate')) {
-      const focusTarget = this.shadowRoot.querySelector<HTMLElement>(
-          '.filter-menu-date-inputs input');
-      focusTarget?.focus();
-    }
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    this.shadowRoot
+        .querySelector<HTMLElement>('.filter-menu-date-inputs input')
+        ?.focus();
   }
 
   protected get pendingStartTime(): number {

@@ -57,13 +57,9 @@ export class AppDialogElement extends CrLitElement {
     }
   }
 
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-    if (changedProperties.has('initialSelections')) {
-      const focusTarget =
-          this.shadowRoot.querySelector<HTMLElement>('.filter-menu-input');
-      focusTarget?.focus();
-    }
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    this.shadowRoot.querySelector<HTMLElement>('.filter-menu-input')?.focus();
   }
 
   private computeDisplayedApps(): string[] {

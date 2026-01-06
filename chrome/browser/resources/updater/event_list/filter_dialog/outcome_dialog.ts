@@ -48,13 +48,9 @@ export class OutcomeDialogElement extends CrLitElement {
     }
   }
 
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-    if (changedProperties.has('initialSelections')) {
-      const focusTarget =
-          this.shadowRoot.querySelector<HTMLElement>('.filter-menu-item');
-      focusTarget?.focus();
-    }
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    this.shadowRoot.querySelector<HTMLElement>('.filter-menu-item')?.focus();
   }
 
   protected onCheckedChanged(e: Event) {
