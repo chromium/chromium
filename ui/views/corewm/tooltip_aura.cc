@@ -201,17 +201,10 @@ void TooltipAura::CreateTooltipWidget(const gfx::Rect& bounds,
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_TOOLTIP);
-
-  // Instead of using TYPE_TOOLTIP auto-parenting, explicitly parent to the
-  // browser widget so tooltip inherits the correct ColorProviderKey.
-  if (auto* context_widget = Widget::GetWidgetForNativeView(tooltip_window_)) {
-    params.parent = context_widget->GetNativeView();
-  } else {
-    // Fall back to context-based auto-parenting if no widget is found.
-    params.context = tooltip_window_;
-    DCHECK(params.context);
-  }
-
+  // For aura, since we set the type to TYPE_TOOLTIP, the widget will get
+  // auto-parented to the right container.
+  params.context = tooltip_window_;
+  DCHECK(params.context);
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.accept_events = false;
   params.bounds = bounds;
