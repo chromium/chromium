@@ -685,8 +685,8 @@ void TabStripActionContainer::TriggerGlicActorNudge(
 void TabStripActionContainer::ShowGlicActorNudge(
     const std::u16string nudge_text) {
   CHECK(glic_actor_task_icon_);
-  // Start animation for clearing text on the glic button.
-  glic_button_->SuppressLabel();
+  // Start animation for minimizing the glic button.
+  glic_button_->Collapse();
   ShowGlicActorTaskIcon();
   glic_actor_task_icon_->ShowNudgeLabel(nudge_text);
   glic_actor_task_icon_->HighlightTaskIcon();
@@ -711,7 +711,7 @@ void TabStripActionContainer::ShowGlicActorTaskIcon() {
 
   glic_actor_button_container_->SetVisible(true);
   if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
-    glic_button_->SuppressLabel();
+    glic_button_->Collapse();
   }
   UpdateGlicActorButtonContainerBorders();
 #else
@@ -730,13 +730,13 @@ void TabStripActionContainer::HideGlicActorTaskIcon() {
     // Once we hide the nudge we want to bring the glic button default label
     // back.
     // TODO(mjenn): Remove  when GlicActorUiGlobalTaskIndicator is launched.
-    glic_button_->ShowDefaultLabel();
+    glic_button_->Expand();
   }
   glic_actor_task_icon_->SetTaskIconToDefault();
   glic_button_ = AddChildView(std::move(glic_button_));
   glic_actor_button_container_->SetVisible(false);
   if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
-    glic_button_->ShowDefaultLabel();
+    glic_button_->Expand();
   }
   UpdateGlicActorButtonContainerBorders();
 #if !BUILDFLAG(IS_MAC)

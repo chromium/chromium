@@ -59,14 +59,11 @@ class GlicButton : public TabStripNudgeButton,
 
   // These functions below work together to hide the nudge label on the static
   // button when another nudge occupies the display space.
-  // TODO(crbug.com/460400955): This is a temporary fix for 143, ideally a
-  // third state should be added where the label is hidden for m144 and
-  // these functions should be removed.
   //
   // Suppresses the default label on the glic button with a hide animation.
-  void SuppressLabel();
+  void Collapse();
   // Shows the default label on the glic button with a show animation.
-  void ShowDefaultLabel();
+  void Expand();
 
   void SetNudgeLabel(std::string label);
   void RestoreDefaultLabel();
@@ -102,11 +99,6 @@ class GlicButton : public TabStripNudgeButton,
   // Note that this is an optimization for fetching zero-state suggestions so
   // that we can load the suggestions in the UI as quickly as possible.
   bool OnMousePressed(const ui::MouseEvent& event) override;
-
-  // gfx::AnimationDelegate:
-  void AnimationProgressed(const gfx::Animation* animation) override;
-  void AnimationEnded(const gfx::Animation* animation) override;
-  void AnimationCanceled(const gfx::Animation* animation) override;
 
   bool IsContextMenuShowingForTest();
 
@@ -153,11 +145,6 @@ class GlicButton : public TabStripNudgeButton,
                           base::TimeDelta delay,
                           base::TimeDelta duration);
   void MaybeFadeHighlightOnHover(float final_opacity);
-  void StartExpansionAnimations(bool show,
-                                base::TimeDelta overall_duration,
-                                base::TimeDelta close_button_fade_start,
-                                base::TimeDelta close_button_fade_duration);
-  void StartSlidingTextAnimation(bool show);
   int CalculateExpandedWidth();
 
   bool IsAnimatingTextVisibility() const;
@@ -165,6 +152,11 @@ class GlicButton : public TabStripNudgeButton,
   bool IsHidingNudge() const;
 
   void SetWidthState(WidthState state);
+
+  gfx::Size PreferredSize() const;
+
+  views::View* highlight_view() { return highlight_view_; }
+  WidthState width_state() { return width_state_; }
 
 #if BUILDFLAG(ENABLE_GLIC)
   void PanelStateChanged(bool active);
@@ -208,22 +200,15 @@ class GlicButton : public TabStripNudgeButton,
   // (i.e., the user is very likely to interact with it soon).
   base::RepeatingClosure mouse_down_callback_;
 
-  // Invoked when the button hide animation finishes.
-  base::RepeatingClosure expansion_animation_done_callback_;
-
-  // Cached widths for animating label changes.
-  int initial_width_ = 0;
-  int expanded_width_ = 0;
+  // Start and end values for width animations.
+  int start_width_ = 0;
+  int end_width_ = 0;
 
   // View to be drawn behind the icon and label with a background color.
   raw_ptr<View> highlight_view_ = nullptr;
 
   // Container view for the icon and label, and the highlight drawn behind them.
   raw_ptr<View> icon_label_highlight_view_ = nullptr;
-
-  // If GlicEntrypointVariations is enabled, this animation is responsible for
-  // changing the button width when the nudge is shown.
-  std::unique_ptr<gfx::SlideAnimation> expansion_animation_;
 
   // Holds the incoming nudge text until the point in the animation when it can
   // be applied.
@@ -233,14 +218,14 @@ class GlicButton : public TabStripNudgeButton,
   const ui::ImageModel icon_for_highlight_;
 
   bool glic_panel_is_open_ = false;
-  // If this flag is set, the default label on the static button is in the
-  // process of being shown.
-  // TODO(crbug.com/460400955): This is a temporary fix for 143, this code
-  // should be refactored to use the new solution in 144.
-  int default_label_width_ = 0;
 
+  // Width of the button when in WidthState::kNormal, set in AddedToWidget().
+  int normal_width_ = 0;
   WidthState last_width_state_ = WidthState::kNormal;
   WidthState width_state_ = WidthState::kNormal;
+
+  class WidthAnimationController;
+  std::unique_ptr<WidthAnimationController> width_animation_controller_;
 
   base::WeakPtrFactory<GlicButton> weak_ptr_factory_{this};
 };
