@@ -4121,7 +4121,6 @@ static_library("browser") {
       "resource_coordinator/tab_lifecycle_unit.cc",
       "resource_coordinator/tab_lifecycle_unit.h",
       "resource_coordinator/tab_lifecycle_unit_external.cc",
-      "resource_coordinator/tab_lifecycle_unit_external.h",
       "resource_coordinator/tab_lifecycle_unit_source.cc",
       "resource_coordinator/tab_lifecycle_unit_source.h",
       "resource_coordinator/tab_manager.cc",
@@ -4576,7 +4575,6 @@ static_library("browser") {
 
       # TODO(crbug.com/364501603): Remove this circular dependency when the following files get
       # componentized:
-      # - c/b/resource_coordinator/tab_lifecycle_unit_external.h"
       # - c/b/resource_coordinator/tab_lifecycle_unit_source.h"
       # - c/b/resource_coordinator/tab_manager.h"
       # - c/b/resource_coordinator/time.h"

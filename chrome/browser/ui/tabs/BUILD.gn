@@ -100,6 +100,7 @@ if (!is_android) {
       ":tab_list_interface",
       ":tab_strip",
       "//base",
+      "//chrome/browser/resource_coordinator",
       "//chrome/browser/ui/browser_window",
       "//ui/base/unowned_user_data",
     ]

@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -852,4 +853,34 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, OpenTab) {
   EXPECT_THAT(tab_list_interface->GetAllTabs(),
               testing::ElementsAre(MatchesTab(url2), MatchesTab(url1),
                                    MatchesTab(url3)));
+}
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, DiscardTab) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("http://one.example"),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  TabListInterface* tab_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+  EXPECT_EQ(2, tab_list_interface->GetTabCount());
+  EXPECT_EQ(0, tab_list_interface->GetActiveIndex());
+
+  // Check that the second tab is not discarded (yet).
+  auto* web_contents = tab_list_interface->GetTab(1)->GetContents();
+  EXPECT_NE(mojom::LifecycleUnitState::DISCARDED,
+            resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+                web_contents)
+                ->GetTabState());
+
+  // Discard the second tab.
+  tabs::TabInterface* tab_to_discard = tab_list_interface->GetTab(1);
+  tab_list_interface->DiscardTab(tab_to_discard->GetHandle());
+
+  // The second tab should now be discarded.
+  web_contents = tab_list_interface->GetTab(1)->GetContents();
+  EXPECT_EQ(mojom::LifecycleUnitState::DISCARDED,
+            resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+                web_contents)
+                ->GetTabState());
 }

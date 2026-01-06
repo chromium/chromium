@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/notimplemented.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -103,7 +104,19 @@ tabs::TabInterface* TabListBridge::OpenTab(const GURL& url, int index) {
   return tab_strip_->GetTabAtIndex(index_to_retrieve);
 }
 
-void TabListBridge::DiscardTab(tabs::TabHandle tab) {}
+void TabListBridge::DiscardTab(tabs::TabHandle tab) {
+  content::WebContents* contents = tab.Get()->GetContents();
+  ;
+  if (contents) {
+    resource_coordinator::TabLifecycleUnitExternal*
+        tab_lifecycle_unit_external =
+            resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+                contents);
+    CHECK(tab_lifecycle_unit_external);
+    tab_lifecycle_unit_external->DiscardTab(
+        mojom::LifecycleUnitDiscardReason::EXTERNAL);
+  }
+}
 
 tabs::TabInterface* TabListBridge::DuplicateTab(tabs::TabHandle tab) {
   const int index = GetIndexOfTab(tab);
