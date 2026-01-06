@@ -421,14 +421,6 @@ NavigationEntryScreenshot::CreateTextureLayer() {
   return shared_image_provider_->CreateTextureLayer();
 }
 
-bool NavigationEntryScreenshot::PrepareTransferableResource(
-    viz::TransferableResource* transferable_resource,
-    viz::ReleaseCallback* release_callback) {
-  CHECK(shared_image_provider_);
-  return shared_image_provider_->PrepareTransferableResource(
-      transferable_resource, release_callback);
-}
-
 SkBitmap NavigationEntryScreenshot::GetBitmapForTesting() const {
   return GetBitmap().GetBitmapForTesting();  // IN-TEST
 }

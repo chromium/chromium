@@ -70,8 +70,7 @@ class NavigationEntryScreenshotCache;
 class CONTENT_EXPORT NavigationEntryScreenshot
     : public cc::UIResourceClient,
       public base::SupportsUserData::Data,
-      public performance_scenarios::MatchingScenarioObserver,
-      private cc::TextureLayerClient {
+      public performance_scenarios::MatchingScenarioObserver {
  public:
   class SharedImageProvider : public base::RefCounted<SharedImageProvider>,
                               public cc::TextureLayerClient {
@@ -271,14 +270,6 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   void MaybeResetSharedImageProvider();
 
   const cc::UIResourceBitmap& GetBitmap() const;
-
-  // cc::TextureLayerClient
-  // Prepares a transferable resource for the shared image in this screenshot.
-  // This can only be called after running CreateTextureLayer and before the
-  // returned closure runs.
-  bool PrepareTransferableResource(
-      viz::TransferableResource* transferable_resource,
-      viz::ReleaseCallback* release_callback) override;
 
   // The uncompressed bitmap cached when navigating away from this navigation
   // entry.
