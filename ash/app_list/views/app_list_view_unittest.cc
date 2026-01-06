@@ -221,6 +221,7 @@ class AppListViewTest : public views::ViewsTestBase {
     ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         false);
     view_->GetWidget()->Close();
+    view_ = nullptr;
     zero_duration_mode_.reset();
     views::ViewsTestBase::TearDown();
   }
@@ -500,8 +501,7 @@ class AppListViewTest : public views::ViewsTestBase {
   // Needed by AppsContainerView::ContinueContainer.
   AshColorProvider ash_color_provider_;
 
-  raw_ptr<AppListView, DanglingUntriaged> view_ =
-      nullptr;  // Owned by native widget.
+  raw_ptr<AppListView> view_ = nullptr;  // Owned by native widget.
   std::unique_ptr<AppListTestViewDelegate> delegate_;
   std::unique_ptr<AppsGridViewTestApi> test_api_;
 
