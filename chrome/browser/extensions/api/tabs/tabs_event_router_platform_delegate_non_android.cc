@@ -73,30 +73,6 @@ constexpr char kTabIdKey[] = "tabId";
 constexpr char kTabIdsKey[] = "tabIds";
 constexpr char kToIndexKey[] = "toIndex";
 
-bool WillDispatchTabCreatedEvent(
-    WebContents* contents,
-    bool active,
-    content::BrowserContext* browser_context,
-    mojom::ContextType target_context,
-    const Extension* extension,
-    const base::Value::Dict* listener_filter,
-    std::optional<base::Value::List>& event_args_out,
-    mojom::EventFilteringInfoPtr& event_filtering_info_out,
-    bool* dispatch_separate_event_out) {
-  ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-      ExtensionTabUtil::GetScrubTabBehavior(extension, target_context,
-                                            contents);
-  base::Value::Dict tab_value =
-      ExtensionTabUtil::CreateTabObject(contents, scrub_tab_behavior, extension)
-          .ToValue();
-  tab_value.Set(tabs_constants::kSelectedKey, active);
-  tab_value.Set(tabs_constants::kActiveKey, active);
-
-  event_args_out.emplace();
-  event_args_out->Append(std::move(tab_value));
-  return true;
-}
-
 }  // namespace
 
 TabsEventRouterPlatformDelegate::TabEntry::TabEntry(
@@ -640,14 +616,7 @@ void TabsEventRouterPlatformDelegate::DispatchTabReplacedAt(
 void TabsEventRouterPlatformDelegate::TabCreatedAt(WebContents* contents,
                                                    int index,
                                                    bool active) {
-  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
-  auto event = std::make_unique<Event>(events::TABS_ON_CREATED,
-                                       api::tabs::OnCreated::kEventName,
-                                       base::Value::List(), profile);
-  event->user_gesture = EventRouter::UserGestureState::kNotEnabled;
-  event->will_dispatch_callback =
-      base::BindRepeating(&WillDispatchTabCreatedEvent, contents, active);
-  EventRouter::Get(profile)->BroadcastEvent(std::move(event));
+  router_->DispatchTabCreatedEvent(contents, active);
 
   RegisterForTabNotifications(contents);
 }

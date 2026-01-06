@@ -72,7 +72,6 @@ class TabsEventRouterPlatformDelegate : public TabModelListObserver,
   void TabUpdated(TabEntry* entry,
                   std::set<std::string> changed_property_names);
 
-  void DispatchTabCreatedEvent(content::WebContents* contents, bool active);
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
                      base::Value::List args,

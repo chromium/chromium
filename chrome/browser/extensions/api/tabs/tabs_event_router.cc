@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/values.h"
+#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/tabs.h"
@@ -54,6 +55,31 @@ bool WillDispatchTabUpdatedEvent(
   return true;
 }
 
+// Updates the arguments and appropriately scrubs data for tab creation events.
+bool WillDispatchTabCreatedEvent(
+    content::WebContents* contents,
+    bool active,
+    content::BrowserContext* browser_context,
+    mojom::ContextType target_context,
+    const Extension* extension,
+    const base::Value::Dict* listener_filter,
+    std::optional<base::Value::List>& event_args_out,
+    mojom::EventFilteringInfoPtr& event_filtering_info_out,
+    bool* dispatch_separate_event_out) {
+  ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
+      ExtensionTabUtil::GetScrubTabBehavior(extension, target_context,
+                                            contents);
+  base::Value::Dict tab_value =
+      ExtensionTabUtil::CreateTabObject(contents, scrub_tab_behavior, extension)
+          .ToValue();
+  tab_value.Set(tabs_constants::kSelectedKey, active);
+  tab_value.Set(tabs_constants::kActiveKey, active);
+
+  event_args_out.emplace();
+  event_args_out->Append(std::move(tab_value));
+  return true;
+}
+
 }  // namespace
 
 TabsEventRouter::TabsEventRouter(Profile* profile)
@@ -78,6 +104,19 @@ void TabsEventRouter::DispatchTabUpdatedEvent(
   event->will_dispatch_callback =
       base::BindRepeating(&WillDispatchTabUpdatedEvent, contents,
                           std::move(changed_property_names));
+  EventRouter::Get(profile)->BroadcastEvent(std::move(event));
+}
+
+void TabsEventRouter::DispatchTabCreatedEvent(content::WebContents* contents,
+                                              bool active) {
+  Profile* const profile =
+      Profile::FromBrowserContext(contents->GetBrowserContext());
+  auto event = std::make_unique<Event>(events::TABS_ON_CREATED,
+                                       api::tabs::OnCreated::kEventName,
+                                       base::Value::List(), profile);
+  event->user_gesture = EventRouter::UserGestureState::kNotEnabled;
+  event->will_dispatch_callback =
+      base::BindRepeating(&WillDispatchTabCreatedEvent, contents, active);
   EventRouter::Get(profile)->BroadcastEvent(std::move(event));
 }
 

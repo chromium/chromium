@@ -21,34 +21,6 @@
 // platform implementation in tabs_event_router.h/cc.
 
 namespace extensions {
-namespace {
-
-// Callback for event dispatch system.
-bool WillDispatchTabCreatedEvent(
-    content::WebContents* contents,
-    bool active,
-    content::BrowserContext* browser_context,
-    mojom::ContextType target_context,
-    const Extension* extension,
-    const base::Value::Dict* listener_filter,
-    std::optional<base::Value::List>& event_args_out,
-    mojom::EventFilteringInfoPtr& event_filtering_info_out,
-    bool* dispatch_separate_event_out) {
-  ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-      ExtensionTabUtil::GetScrubTabBehavior(extension, target_context,
-                                            contents);
-  base::Value::Dict tab_value =
-      ExtensionTabUtil::CreateTabObject(contents, scrub_tab_behavior, extension)
-          .ToValue();
-  tab_value.Set(tabs_constants::kSelectedKey, active);
-  tab_value.Set(tabs_constants::kActiveKey, active);
-
-  event_args_out.emplace();
-  event_args_out->Append(std::move(tab_value));
-  return true;
-}
-
-}  // namespace
 
 TabsEventRouterPlatformDelegate::TabEntry::TabEntry(
     TabsEventRouterPlatformDelegate* owner,
@@ -135,7 +107,7 @@ void TabsEventRouterPlatformDelegate::DidAddTab(TabAndroid* tab,
   tab_entries_.emplace(tab_id,
                        std::make_unique<TabEntry>(this, tab->web_contents()));
 
-  DispatchTabCreatedEvent(tab->web_contents(), tab->IsActivated());
+  router_->DispatchTabCreatedEvent(tab->web_contents(), tab->IsActivated());
 }
 
 void TabsEventRouterPlatformDelegate::TabRemoved(TabAndroid* tab) {
@@ -157,20 +129,6 @@ void TabsEventRouterPlatformDelegate::TabUpdated(
   CHECK(!changed_property_names.empty());
   router_->DispatchTabUpdatedEvent(entry->web_contents(),
                                    std::move(changed_property_names));
-}
-
-void TabsEventRouterPlatformDelegate::DispatchTabCreatedEvent(
-    content::WebContents* contents,
-    bool active) {
-  Profile* const profile =
-      Profile::FromBrowserContext(contents->GetBrowserContext());
-  auto event = std::make_unique<Event>(events::TABS_ON_CREATED,
-                                       api::tabs::OnCreated::kEventName,
-                                       base::Value::List(), profile);
-  event->user_gesture = EventRouter::UserGestureState::kNotEnabled;
-  event->will_dispatch_callback =
-      base::BindRepeating(&WillDispatchTabCreatedEvent, contents, active);
-  EventRouter::Get(profile)->BroadcastEvent(std::move(event));
 }
 
 }  // namespace extensions

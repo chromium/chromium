@@ -48,6 +48,10 @@ class TabsEventRouter {
   void DispatchTabUpdatedEvent(content::WebContents* contents,
                                std::set<std::string> changed_property_names);
 
+  // Dispatches the `tabs.onCreated` API event for the given `contents`.
+  // `active` indicates if the tab is active in its tab strip.
+  void DispatchTabCreatedEvent(content::WebContents* contents, bool active);
+
   TabsEventRouterPlatformDelegate platform_delegate_;
 };
 
