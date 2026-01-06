@@ -82,6 +82,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "ios_webauthn_credentials_delegate_factory_unittest.mm",
+    "passkey_request_parser_unittest.mm",
     "passkey_suggestion_utils_unittest.mm",
     "passkey_tab_helper_unittest.mm",
   ]
@@ -95,6 +96,7 @@ source_set("unit_tests") {
     "//components/password_manager/ios",
     "//components/webauthn/core/browser:passkey_model",
     "//components/webauthn/core/browser:test_support",
+    "//device/fido/public",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
