@@ -1,0 +1,83 @@
+[package]
+name = "minijinja"
+version = "2.14.0"
+edition = "2021"
+license = "Apache-2.0"
+authors = ["Armin Ronacher <armin.ronacher@active-4.com>"]
+description = "a powerful template engine for Rust with minimal dependencies"
+homepage = "https://github.com/mitsuhiko/minijinja"
+repository = "https://github.com/mitsuhiko/minijinja"
+keywords = ["jinja", "jinja2", "templates", "template"]
+categories = ["template-engine"]
+readme = "README.md"
+rust-version = "1.70"
+exclude = ["tests"]
+
+[package.metadata.docs.rs]
+features = ["loader", "json", "urlencode", "custom_syntax", "fuel"]
+rustdoc-args = ["--cfg", "docsrs", "--html-in-header", "doc-header.html"]
+
+[features]
+default = [
+    "builtins",
+    "debug",
+    "deserialization",
+    "macros",
+    "multi_template",
+    "adjacent_loop_items",
+    "std_collections",
+    "serde",
+]
+
+# API features
+preserve_order = ["indexmap"]
+deserialization = []
+debug = []
+loader = ["self_cell", "memo-map"]
+unicode = ["unicode-ident", "unicase"]
+custom_syntax = ["dep:aho-corasick"]
+std_collections = []
+serde = []
+
+# Speedups
+speedups = ["v_htmlescape"]
+
+# Engine Features
+builtins = []
+macros = []
+multi_template = []
+adjacent_loop_items = []
+loop_controls = []
+fuel = []
+
+# Extra Filters
+json = ["serde_json"]
+urlencode = ["percent-encoding"]
+
+# Deprecated features
+key_interning = []
+
+# Internal Features that should not be used
+internal_debug = []
+unstable_machinery = ["internal_debug"]
+unstable_machinery_serde = ["unstable_machinery", "serde/derive"]
+internal_safe_search = []
+
+[dependencies]
+aho-corasick = { version = "1.0", default-features = false, optional = true }
+serde = "1.0.130"
+v_htmlescape = { version = "0.15.8", optional = true }
+self_cell = { version = "1.0.4", optional = true }
+serde_json = { version = "1.0.68", optional = true }
+percent-encoding = { version = "2.2.0", optional = true }
+indexmap = { version = "2.2.0", optional = true }
+memo-map = { version = "0.3.1", optional = true }
+unicode-ident = { version = "1.0.5", optional = true }
+unicase = { version = "2.6.0", optional = true }
+stacker = { version = "0.1.15", optional = true }
+
+[dev-dependencies]
+insta = { version = "1.38.0", features = ["glob", "serde"] }
+serde = { version = "1.0.130", features = ["derive"] }
+serde_json = "1.0.68"
+similar-asserts = "1.4.2"

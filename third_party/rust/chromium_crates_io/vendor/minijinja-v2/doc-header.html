@@ -1,0 +1,12 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/night-owl.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/languages/django.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll("pre code").forEach(function(node) {
+      if (node.parentNode.className.match(/jinja|json/)) {
+        hljs.highlightElement(node.parentNode);
+      }
+    });
+  });
+</script>

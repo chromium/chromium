@@ -179,6 +179,7 @@ dependencies = [
  "libc",
  "llguidance",
  "log",
+ "minijinja",
  "png",
  "proc-macro2",
  "prost",
@@ -848,6 +849,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "memchr"
 version = "2.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "minijinja"
+version = "2.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "miniz_oxide"

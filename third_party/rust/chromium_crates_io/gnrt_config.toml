@@ -444,6 +444,9 @@ allow_unsafe = true
 [crate.memchr.extra_kv]
 allow_unsafe = true
 
+[crate.minijinja]
+extra_kv = { allow_unsafe = true }
+
 [crate.miniz_oxide.extra_kv]
 # Web tests (aka WPT tests, also formerly known as Layout Tests) require fast
 # PNG encoding and decoding even in Debug builds.  See

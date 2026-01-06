@@ -1,0 +1,11 @@
+Name: minijinja
+URL: https://crates.io/crates/minijinja
+Version: 2.14.0
+Revision: 135a5f5618ca42037f2d3ebbd0f7a19023eaa958
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/minijinja-v2/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: a powerful template engine for Rust with minimal dependencies
