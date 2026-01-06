@@ -4,8 +4,10 @@
 
 #include "services/network/public/cpp/device_bound_sessions_mojom_traits.h"
 
+#include "base/unguessable_token.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/device_bound_sessions/challenge_result.h"
 #include "net/device_bound_sessions/inclusion_result.h"
@@ -508,6 +510,120 @@ bool EnumTraits<network::mojom::DeviceBoundSessionEventType,
       return true;
   }
   return false;
+}
+
+// static
+const base::UnguessableToken&
+StructTraits<network::mojom::DeviceBoundSessionEventDataView,
+             net::device_bound_sessions::SessionEvent>::
+    event_id(const net::device_bound_sessions::SessionEvent& event) {
+  return event.event_id;
+}
+
+// static
+const net::SchemefulSite&
+StructTraits<network::mojom::DeviceBoundSessionEventDataView,
+             net::device_bound_sessions::SessionEvent>::
+    site(const net::device_bound_sessions::SessionEvent& event) {
+  return event.site;
+}
+
+// static
+const std::optional<std::string>&
+StructTraits<network::mojom::DeviceBoundSessionEventDataView,
+             net::device_bound_sessions::SessionEvent>::
+    session_id(const net::device_bound_sessions::SessionEvent& event) {
+  return event.session_id;
+}
+
+// static
+net::device_bound_sessions::SessionEvent::EventType
+StructTraits<network::mojom::DeviceBoundSessionEventDataView,
+             net::device_bound_sessions::SessionEvent>::
+    event_type(const net::device_bound_sessions::SessionEvent& event) {
+  return event.event_type;
+}
+
+// static
+bool StructTraits<network::mojom::DeviceBoundSessionEventDataView,
+                  net::device_bound_sessions::SessionEvent>::
+    succeeded(const net::device_bound_sessions::SessionEvent& event) {
+  return event.succeeded;
+}
+
+// static
+const std::optional<net::device_bound_sessions::SessionError::ErrorType>&
+StructTraits<network::mojom::DeviceBoundSessionEventDataView,
+             net::device_bound_sessions::SessionEvent>::
+    fetch_error(const net::device_bound_sessions::SessionEvent& event) {
+  return event.fetch_error;
+}
+
+// static
+const std::optional<net::device_bound_sessions::RefreshResult>&
+StructTraits<network::mojom::DeviceBoundSessionEventDataView,
+             net::device_bound_sessions::SessionEvent>::
+    refresh_result(const net::device_bound_sessions::SessionEvent& event) {
+  return event.refresh_result;
+}
+
+// static
+const std::optional<bool>&
+StructTraits<network::mojom::DeviceBoundSessionEventDataView,
+             net::device_bound_sessions::SessionEvent>::
+    was_fully_proactive_refresh(
+        const net::device_bound_sessions::SessionEvent& event) {
+  return event.was_fully_proactive_refresh;
+}
+
+// static
+const std::optional<net::device_bound_sessions::ChallengeResult>&
+StructTraits<network::mojom::DeviceBoundSessionEventDataView,
+             net::device_bound_sessions::SessionEvent>::
+    challenge_result(const net::device_bound_sessions::SessionEvent& event) {
+  return event.challenge_result;
+}
+
+// static
+const std::optional<std::string>&
+StructTraits<network::mojom::DeviceBoundSessionEventDataView,
+             net::device_bound_sessions::SessionEvent>::
+    challenge(const net::device_bound_sessions::SessionEvent& event) {
+  return event.challenge;
+}
+
+// static
+const std::optional<net::device_bound_sessions::DeletionReason>&
+StructTraits<network::mojom::DeviceBoundSessionEventDataView,
+             net::device_bound_sessions::SessionEvent>::
+    deletion_reason(const net::device_bound_sessions::SessionEvent& event) {
+  return event.deletion_reason;
+}
+
+// static
+const std::optional<net::device_bound_sessions::SessionDisplay>&
+StructTraits<network::mojom::DeviceBoundSessionEventDataView,
+             net::device_bound_sessions::SessionEvent>::
+    new_session_display(const net::device_bound_sessions::SessionEvent& obj) {
+  return obj.new_session_display;
+}
+
+// static
+bool StructTraits<network::mojom::DeviceBoundSessionEventDataView,
+                  net::device_bound_sessions::SessionEvent>::
+    Read(network::mojom::DeviceBoundSessionEventDataView data,
+         net::device_bound_sessions::SessionEvent* out) {
+  out->was_fully_proactive_refresh = data.was_fully_proactive_refresh();
+  out->succeeded = data.succeeded();
+  return data.ReadEventId(&out->event_id) && data.ReadSite(&out->site) &&
+         data.ReadSessionId(&out->session_id) &&
+         data.ReadEventType(&out->event_type) &&
+         data.ReadFetchError(&out->fetch_error) &&
+         data.ReadRefreshResult(&out->refresh_result) &&
+         data.ReadChallengeResult(&out->challenge_result) &&
+         data.ReadChallenge(&out->challenge) &&
+         data.ReadNewSessionDisplay(&out->new_session_display) &&
+         data.ReadDeletionReason(&out->deletion_reason);
 }
 
 }  // namespace mojo

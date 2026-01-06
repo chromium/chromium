@@ -17,6 +17,10 @@
 #include "net/device_bound_sessions/url_rule_display.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom-shared.h"
 
+namespace base {
+class UnguessableToken;
+}
+
 namespace net::device_bound_sessions {
 enum class ChallengeResult;
 enum class InclusionResult;
@@ -861,6 +865,49 @@ struct EnumTraits<network::mojom::DeviceBoundSessionEventType,
   static bool FromMojom(
       network::mojom::DeviceBoundSessionEventType input,
       net::device_bound_sessions::SessionEvent::EventType* output);
+};
+
+template <>
+struct StructTraits<network::mojom::DeviceBoundSessionEventDataView,
+                    net::device_bound_sessions::SessionEvent> {
+  static const base::UnguessableToken& event_id(
+      const net::device_bound_sessions::SessionEvent& event);
+
+  static const net::SchemefulSite& site(
+      const net::device_bound_sessions::SessionEvent& event);
+
+  static const std::optional<std::string>& session_id(
+      const net::device_bound_sessions::SessionEvent& event);
+
+  static net::device_bound_sessions::SessionEvent::EventType event_type(
+      const net::device_bound_sessions::SessionEvent& event);
+
+  static bool succeeded(const net::device_bound_sessions::SessionEvent& event);
+
+  static const std::optional<
+      net::device_bound_sessions::SessionError::ErrorType>&
+  fetch_error(const net::device_bound_sessions::SessionEvent& event);
+
+  static const std::optional<net::device_bound_sessions::RefreshResult>&
+  refresh_result(const net::device_bound_sessions::SessionEvent& event);
+
+  static const std::optional<bool>& was_fully_proactive_refresh(
+      const net::device_bound_sessions::SessionEvent& event);
+
+  static const std::optional<net::device_bound_sessions::ChallengeResult>&
+  challenge_result(const net::device_bound_sessions::SessionEvent& event);
+
+  static const std::optional<std::string>& challenge(
+      const net::device_bound_sessions::SessionEvent& event);
+
+  static const std::optional<net::device_bound_sessions::DeletionReason>&
+  deletion_reason(const net::device_bound_sessions::SessionEvent& event);
+
+  static const std::optional<net::device_bound_sessions::SessionDisplay>&
+  new_session_display(const net::device_bound_sessions::SessionEvent& obj);
+
+  static bool Read(network::mojom::DeviceBoundSessionEventDataView data,
+                   net::device_bound_sessions::SessionEvent* out);
 };
 
 }  // namespace mojo
