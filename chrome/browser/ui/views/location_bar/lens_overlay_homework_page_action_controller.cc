@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_controller.h"
 
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
@@ -37,6 +38,10 @@ LensOverlayHomeworkPageActionController::
       tab_(tab_interface),
       page_action_controller_(page_action_controller),
       scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
+  tab_will_detach_subscription_ =
+      tab_interface.RegisterWillDetach(base::BindRepeating(
+          &LensOverlayHomeworkPageActionController::OnTabWillDetach,
+          base::Unretained(this)));
 }
 
 LensOverlayHomeworkPageActionController::
@@ -167,4 +172,10 @@ bool LensOverlayHomeworkPageActionController::ShouldShow() {
   }
 
   return lens_overlay_entry_point_controller->IsUrlEduEligible(entry->GetURL());
+}
+
+void LensOverlayHomeworkPageActionController::OnTabWillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  scoped_window_call_to_action_ptr_.reset();
 }
