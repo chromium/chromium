@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "gpu/command_buffer/service/gpu_service_test.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/command_buffer/service/test_helper.h"

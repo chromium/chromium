@@ -10,7 +10,6 @@
 
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
@@ -69,16 +68,14 @@ TEST_F(GLWebGLMultiDrawTest, MultiDrawLargerThanTransferBuffer) {
 
   // This test is only valid if the multi draw extension is supported
   if (!GLTestHelper::HasExtension("GL_ANGLE_multi_draw")) {
-    if (!base::Contains(requestable_extensions_string,
-                        "GL_ANGLE_multi_draw ")) {
+    if (!requestable_extensions_string.contains("GL_ANGLE_multi_draw ")) {
       return;
     }
     glRequestExtensionCHROMIUM("GL_ANGLE_multi_draw");
   }
 
   if (!GLTestHelper::HasExtension("GL_WEBGL_multi_draw")) {
-    if (!base::Contains(requestable_extensions_string,
-                        "GL_WEBGL_multi_draw ")) {
+    if (!requestable_extensions_string.contains("GL_WEBGL_multi_draw ")) {
       return;
     }
     glRequestExtensionCHROMIUM("GL_WEBGL_multi_draw");

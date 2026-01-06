@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span_writer.h"
 #include "base/hash/hash.h"
@@ -51,7 +50,7 @@ bool ProgramCache::HasSuccessfullyCompiledShader(
     const std::string& shader_signature) const {
   Hash sha;
   ComputeShaderHash(shader_signature, sha);
-  return base::Contains(compiled_shaders_, sha);
+  return compiled_shaders_.contains(sha);
 }
 
 ProgramCache::LinkedProgramStatus ProgramCache::GetLinkedProgramStatus(

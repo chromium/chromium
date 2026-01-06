@@ -16,7 +16,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "base/format_macros.h"
 #include "base/lazy_instance.h"
@@ -275,12 +274,12 @@ class FormatTypeValidator {
                GLenum format,
                GLenum type) const {
     FormatType query = {internal_format, format, type};
-    if (base::Contains(supported_combinations_, query)) {
+    if (supported_combinations_.contains(query)) {
       return true;
     }
     if (context_type == CONTEXT_TYPE_OPENGLES2 ||
         context_type == CONTEXT_TYPE_WEBGL1) {
-      if (base::Contains(supported_combinations_es2_only_, query)) {
+      if (supported_combinations_es2_only_.contains(query)) {
         return true;
       }
     }
@@ -541,7 +540,7 @@ Texture::Texture(GLuint service_id)
 Texture::~Texture() = default;
 
 void Texture::AddTextureRef(TextureRef* ref) {
-  DCHECK(!base::Contains(refs_, ref));
+  DCHECK(!refs_.contains(ref));
   refs_.insert(ref);
   ScopedMemTrackerChange change(this);
   if (!memory_tracking_ref_)

@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
@@ -95,9 +94,9 @@ class TextureStorageTest : public testing::Test {
     std::string_view extensions =
         reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
     ext_texture_storage_available_ =
-        base::Contains(extensions, "GL_EXT_texture_storage");
+        extensions.contains("GL_EXT_texture_storage");
     oes_required_internal_format_available_ =
-        base::Contains(extensions, "GL_OES_required_internalformat");
+        extensions.contains("GL_OES_required_internalformat");
   }
 
   void TearDown() override { gl_.Destroy(); }

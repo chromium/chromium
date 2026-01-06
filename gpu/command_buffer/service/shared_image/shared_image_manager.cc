@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
@@ -290,7 +289,7 @@ SharedImageManager::Register(std::unique_ptr<SharedImageBacking> backing,
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
-  if (base::Contains(images_, backing->mailbox())) {
+  if (images_.contains(backing->mailbox())) {
     LOG(ERROR) << "SharedImageManager::Register: Trying to register an "
                   "already registered mailbox.";
     backing->MarkForDestruction();

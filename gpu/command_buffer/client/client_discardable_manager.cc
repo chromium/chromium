@@ -5,7 +5,6 @@
 #include "gpu/command_buffer/client/client_discardable_manager.h"
 
 #include "base/atomic_sequence_num.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
@@ -179,7 +178,7 @@ void ClientDiscardableManager::FreeHandle(
 
 bool ClientDiscardableManager::HandleIsValid(
     ClientDiscardableHandle::Id handle_id) const {
-  return base::Contains(handles_, handle_id);
+  return handles_.contains(handle_id);
 }
 
 ClientDiscardableHandle ClientDiscardableManager::GetHandle(
