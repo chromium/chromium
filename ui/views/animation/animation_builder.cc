@@ -378,13 +378,13 @@ AnimationSequenceBlock& AnimationBuilder::NewSequence(bool repeating) {
     current_sequence_.reset();
   }
 
-  // The observer needs to outlive the AnimationBuilder and will manage its own
-  // lifetime. GetAttachedToSequence should not return false here. This is
-  // DCHECKed in the observer’s destructor.
-  if (animation_observer_ && animation_observer_->GetAttachedToSequence()) {
-    animation_observer_.release();
-  }
   if (next_animation_observer_) {
+    // The observer needs to outlive the AnimationBuilder and will manage its
+    // own lifetime. GetAttachedToSequence should not return false here. This is
+    // DCHECKed in the observer’s destructor.
+    if (animation_observer_ && animation_observer_->GetAttachedToSequence()) {
+      animation_observer_.release();
+    }
     animation_observer_ = std::move(next_animation_observer_);
     next_animation_observer_.reset();
   }

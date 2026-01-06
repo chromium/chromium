@@ -1089,6 +1089,36 @@ TEST_F(AnimationBuilderTest, AbortHandle) {
     EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.7f);
   }
 
+  // The state change of the previous animation will not affect the
+  // state of the next animation.
+  {
+    delegate->SetBrightnessFromAnimation(
+        1.0f, ui::PropertyChangeReason::NOT_FROM_ANIMATION);
+    delegate->SetOpacityFromAnimation(
+        1.0f, ui::PropertyChangeReason::NOT_FROM_ANIMATION);
+
+    {
+      AnimationBuilder b;
+      abort_handle = b.GetAbortHandle();
+      b.Once().SetDuration(kDuration).SetOpacity(view, 0.4f);
+      b.Once().At(kDuration).SetDuration(kDuration).SetBrightness(view, 0.4f);
+    }
+
+    Step(kDuration);
+    EXPECT_FLOAT_EQ(delegate->GetBrightnessForAnimation(), 1.0f);
+    EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+    Step(kStepSize);
+    EXPECT_TRUE(view->layer()->GetAnimator()->is_animating());
+    // Destroy abort handle should stop all animations.
+    abort_handle.reset();
+    EXPECT_FALSE(view->layer()->GetAnimator()->is_animating());
+    EXPECT_FLOAT_EQ(delegate->GetBrightnessForAnimation(), 0.7f);
+    EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+    Step(kStepSize);
+    EXPECT_FLOAT_EQ(delegate->GetBrightnessForAnimation(), 0.7f);
+    EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+  }
+
   // The builder crashes if the handle is destroyed before animation starts.
   {
     delegate->SetBrightnessFromAnimation(
