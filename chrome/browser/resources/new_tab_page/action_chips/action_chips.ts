@@ -68,7 +68,7 @@ export class ActionChipsElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
-      themeHasBackgroundImage: {type: Boolean},
+      themeHasBackgroundImage: {type: Boolean, reflect: true},
     };
   }
 

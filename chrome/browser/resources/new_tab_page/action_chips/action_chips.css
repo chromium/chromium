@@ -49,8 +49,30 @@
 }
 
 :host([show-simplified-ui_]) .action-chips-container {
+  animation:
+    chips-slide var(--chip-slide-duration) 220ms
+      var(--chip-animation-curve) forwards,
+    chips-fade-in var(--chip-fade-duration) 370ms
+      var(--chip-animation-curve) forwards;
+  background-color:
+    var(--simplified-action-chip-bg, transparent);
+  border-radius: 16px;
+  box-sizing: border-box;
+  display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
   gap: 4px;
+  justify-content: center;
+  min-height: 88px;
+  opacity: 0;
+  padding: 10px;
+  transform: translateY(-56px);
+  width: 100%;
+}
+
+:host([show-simplified-ui_][theme-has-background-image])
+.action-chips-container {
+  overflow: hidden;
 }
 
 .banana {
@@ -107,8 +129,10 @@
 :host([show-simplified-ui_]) .action-chip {
   background-color:
     var(--simplified-action-chip-bg, transparent);
-  height: 32px;
-  padding: 0px 20px;
+  border-radius: 12px;
+  gap: 6px;
+  height: 36px;
+  padding: 0px 8px;
   width: 100%;
 }
 
