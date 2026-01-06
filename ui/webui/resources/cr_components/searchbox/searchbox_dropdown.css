@@ -57,7 +57,7 @@ cr-searchbox-match:-webkit-any(:focus-within, [selected]) {
   outline: none;
   padding-bottom: 6px;
   padding-inline-end: 16px;
-  padding-inline-start: 12px;
+  padding-inline-start: var(--cr-searchbox-dropdown-header-padding-inline-start, 12px);
   padding-top: 6px;
 }
 

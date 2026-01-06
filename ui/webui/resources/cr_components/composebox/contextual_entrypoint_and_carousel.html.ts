@@ -17,7 +17,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         ${
       this.shouldShowRecentTabChip_ ? html`
         <composebox-recent-tab-chip id="recentTabChip"
-            class="upload-button"
+            class="upload-button contextual-chip"
             .recentTab="${this.recentTabForChip_}"
             @add-tab-context="${this.addTabContext_}">
         </composebox-recent-tab-chip>
@@ -25,7 +25,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
                                       ''}
       ${
       this.shouldShowLensSearchChip_ ? html`
-        <cr-composebox-lens-search id="lensSearchChip" class="upload-button">
+        <cr-composebox-lens-search id="lensSearchChip" class="upload-button contextual-chip">
         </cr-composebox-lens-search>
       ` :
                                        ''}
