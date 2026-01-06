@@ -139,7 +139,7 @@ export class InputListElement extends InputListElementBase {
   }
 
   private loadInitialDevices(): Promise<void> {
-    return this.inputDataProvider.getConnectedDevices().then((devices) => {
+    return this.inputDataProvider.getConnectedDevices().then(({devices}) => {
       this.keyboards = devices.keyboards;
       this.touchpads = devices.touchDevices.filter(
           (device: TouchDeviceInfo) =>

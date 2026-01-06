@@ -4,9 +4,8 @@
 
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 
-import type {GetConnectedDevicesResponse} from './diagnostics_types.js';
 import type {KeyboardInfo} from './input.mojom-webui.js';
-import type {ConnectedDevicesObserverRemote, InputDataProviderInterface, InternalDisplayPowerStateObserverRemote, KeyboardObserverRemote, LidStateObserverRemote, TabletModeObserverRemote, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
+import type {ConnectedDevices, ConnectedDevicesObserverRemote, InputDataProviderInterface, InternalDisplayPowerStateObserverRemote, KeyboardObserverRemote, LidStateObserverRemote, TabletModeObserverRemote, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
 
 /**
  * @fileoverview
@@ -51,7 +50,7 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
     this.methods.register('observeLidState');
   }
 
-  getConnectedDevices(): Promise<GetConnectedDevicesResponse> {
+  getConnectedDevices(): Promise<{devices: ConnectedDevices}> {
     return this.methods.resolveMethod('getConnectedDevices');
   }
 
@@ -165,9 +164,9 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
       keyboards: KeyboardInfo[], touchDevices: TouchDeviceInfo[]): void {
     this.keyboards = keyboards;
     this.touchDevices = touchDevices;
-    this.methods.setResult(
-        'getConnectedDevices',
-        {keyboards: [...keyboards], touchDevices: [...touchDevices]});
+    this.methods.setResult('getConnectedDevices', {
+      devices: {keyboards: [...keyboards], touchDevices: [...touchDevices]}
+    });
   }
 
   // Registers an observer for the set of connected devices.
@@ -183,8 +182,10 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
     this.keyboards.push(keyboard);
     this.keyboardObservers[keyboard.id] = [];
     this.methods.setResult('getConnectedDevices', {
-      keyboards: [...this.keyboards],
-      touchDevices: [...this.touchDevices],
+      devices: {
+        keyboards: [...this.keyboards],
+        touchDevices: [...this.touchDevices],
+      }
     });
 
     for (const observer of this.observers) {
@@ -212,9 +213,9 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
    */
   addFakeConnectedTouchDevice(touchDevice: TouchDeviceInfo): void {
     this.touchDevices.push(touchDevice);
-    this.methods.setResult(
-        'getConnectedDevices',
-        {keyboards: this.keyboards, touchDevices: this.touchDevices});
+    this.methods.setResult('getConnectedDevices', {
+      devices: {keyboards: this.keyboards, touchDevices: this.touchDevices}
+    });
 
     for (const observer of this.observers) {
       observer.onTouchDeviceConnected(touchDevice);
