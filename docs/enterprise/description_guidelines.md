@@ -215,6 +215,7 @@ avoid validation errors.
 * Google Cloud Print: `<ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>`
 * Google Drive: `<ph name="GOOGLE_DRIVE_NAME">Google Drive</ph>`
 * Google Gemini: `<ph name="GOOGLE_GEMINI_PRODUCT_NAME">Google Gemini</ph>`
+* Google Lens: `<ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph>`
 * Google Photos: `<ph name="GOOGLE_PHOTOS_PRODUCT_NAME">Google Photos</ph>`
 * Google Search: `<ph name="GOOGLE_SEARCH_PRODUCT_NAME">Google Search</ph>`
 * Google Tasks: `<ph name="GOOGLE_TASKS_NAME">Google Tasks</ph>`
