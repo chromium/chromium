@@ -10,7 +10,8 @@ aidl = [
   "aidl/androidx/pdf/annotation/models/ModifyEditResult.aidl",
   "aidl/androidx/pdf/annotation/models/PaginatedAnnotations.aidl",
   "aidl/androidx/pdf/annotation/models/PdfAnnotationData.aidl",
-  "aidl/androidx/pdf/annotation/models/PdfEdit.aidl"
+  "aidl/androidx/pdf/annotation/models/PdfEdit.aidl",
+  "aidl/androidx/pdf/RenderParams.aidl"
 ]
 assets = []
 has_classes_jar = true
