@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/format_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "net/http/http_request_headers.h"
 
@@ -59,11 +60,11 @@ void HttpServerResponseInfo::SetContentHeaders(
 std::string HttpServerResponseInfo::Serialize() const {
   std::string response = base::StringPrintf(
       "HTTP/1.1 %d %s\r\n", status_code_, GetHttpReasonPhrase(status_code_));
-  Headers::const_iterator header;
-  for (header = headers_.begin(); header != headers_.end(); ++header)
-    response += header->first + ":" + header->second + "\r\n";
+  for (const std::pair<std::string, std::string>& header : headers_) {
+    base::StrAppend(&response, {header.first, ":", header.second, "\r\n"});
+  }
 
-  return response + "\r\n" + body_;
+  return base::StrCat({response, "\r\n", body_});
 }
 
 HttpStatusCode HttpServerResponseInfo::status_code() const {
