@@ -1146,7 +1146,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
     this.bookmarksApi_
         .deleteBookmarks(selectedBookmarksList.map((bookmark) => bookmark.id))
         .then(() => {
-          this.showDeletionToastWithCount_(selectedBookmarksList.length);
+          this.showDeletionToast_(selectedBookmarksList);
           this.selectedBookmarks_ = {};
           this.editing_ = false;
         });
@@ -1168,7 +1168,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
       event: CustomEvent<{bookmarks: BookmarksTreeNode[]}>) {
     event.preventDefault();
     event.stopPropagation();
-    this.showDeletionToastWithCount_(event.detail.bookmarks.length);
+    this.showDeletionToast_(event.detail.bookmarks);
     this.selectedBookmarks_ = {};
     this.editing_ = false;
   }
@@ -1182,9 +1182,25 @@ export class PowerBookmarksListElement extends PolymerElement implements
     }
   }
 
-  private showDeletionToastWithCount_(deletionCount: number) {
+  private countDescendants_(node: BookmarksTreeNode): number {
+    let count = 0;
+    if (node.url) {
+      count++;
+    }
+    if (node.children) {
+      for (const child of node.children) {
+        count += this.countDescendants_(child);
+      }
+    }
+    return count;
+  }
+
+  private showDeletionToast_(bookmarks: BookmarksTreeNode[]) {
+    const totalCount = bookmarks.reduce(
+        (prev, curr) => prev + this.countDescendants_(curr), 0);
+
     PluralStringProxyImpl.getInstance()
-        .getPluralString('bookmarkDeletionCount', deletionCount)
+        .getPluralString('bookmarkDeletionCount', totalCount)
         .then(pluralString => {
           this.deletionDescription_ = pluralString;
           this.$.deletionToast.get().show();
