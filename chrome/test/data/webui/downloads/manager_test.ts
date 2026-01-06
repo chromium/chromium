@@ -6,7 +6,7 @@ import type {CrToastManagerElement, DownloadsManagerElement, PageRemote} from 'c
 import {BrowserProxy, DangerType, loadTimeData, State} from 'chrome://downloads/downloads.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {isMac} from 'chrome://resources/js/platform.js';
-import {assertEquals, assertFalse, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -37,29 +37,6 @@ suite('manager tests', function() {
     toastManager = manager.shadowRoot.querySelector('cr-toast-manager')!;
     assertTrue(!!toastManager);
     return microtasksFinished();
-  });
-
-  test('long URLs don\'t elide', async () => {
-    const url = 'https://' +
-        'a'.repeat(1000) + '.com/document.pdf';
-    const displayUrl = 'https://' +
-        '啊'.repeat(1000) + '.com/document.pdf';
-    callbackRouterRemote.insertItems(0, [createDownload({
-                                       fileName: 'file name',
-                                       state: State.kComplete,
-                                       sinceString: 'Today',
-                                       url: stringToMojoUrl(url),
-                                       displayUrl: displayUrl,
-                                     })]);
-    await callbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
-
-    const item = manager.shadowRoot.querySelector('downloads-item')!;
-    assertLT(item.$.url.offsetWidth, item.offsetWidth);
-    assertEquals(displayUrl, item.$.url.textContent);
-    assertEquals(url, item.$.url.href);
-    assertEquals(url, item.$['file-link'].href);
-    assertEquals(url, item.$.url.href);
   });
 
   test('inserting items at beginning render dates correctly', async () => {

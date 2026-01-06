@@ -45,12 +45,9 @@ export function getHtml(this: DownloadsItemElement) {
       </div>
 
       <div role="gridcell">
-        <div id="initiator-origin" ?hidden="${!this.showInitiatorOrigin_}">
+        <div id="initiator-origin">
           ${this.computeInitiatorOriginText_()}
         </div>
-        <a id="url" ?hidden="${this.showInitiatorOrigin_}" target="_blank"
-          @click="${this.onUrlClick_}" focus-row-control
-          focus-type="url">${this.getDisplayUrlStr_()}</a>
       </div>
 
       <div class="description" role="gridcell"

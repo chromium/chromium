@@ -447,57 +447,9 @@ TEST_F(DownloadsListTrackerTest, GetFirstActiveWarningItem) {
   }
 }
 
-TEST_F(DownloadsListTrackerTest,
-       CreateDownloadData_UrlFormatting_OmitUserPass) {
-  MockDownloadItem* item = CreateNextItem();
-  ON_CALL(*item, GetURL())
-      .WillByDefault(ReturnRefOfCopy(GURL("https://user:pass@example.test")));
-
-  auto tracker = std::make_unique<DownloadsListTracker>(
-      manager(), page_.BindAndGetRemote());
-
-  downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
-  EXPECT_TRUE(data->url);
-  EXPECT_EQ(*data->url, "https://user:pass@example.test/");
-  EXPECT_EQ(data->display_url, u"https://example.test");
-}
-
-TEST_F(DownloadsListTrackerTest, CreateDownloadData_UrlFormatting_Idn) {
-  MockDownloadItem* item = CreateNextItem();
-  ON_CALL(*item, GetURL())
-      .WillByDefault(ReturnRefOfCopy(GURL("https://xn--6qqa088eba.test")));
-
-  auto tracker = std::make_unique<DownloadsListTracker>(
-      manager(), page_.BindAndGetRemote());
-
-  downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
-  EXPECT_TRUE(data->url);
-  EXPECT_EQ(*data->url, "https://xn--6qqa088eba.test/");
-  EXPECT_EQ(data->display_url, u"https://\u4f60\u597d\u4f60\u597d.test");
-}
-
-// URL longer than 16K but less than 2M.
-TEST_F(DownloadsListTrackerTest, CreateDownloadData_UrlFormatting_Long) {
-  std::string url = "https://" + std::string(16 * 1024, 'a') + ".test";
-  // The string should truncate the beginning to 16K.
-  std::u16string expected = std::u16string(16 * 1024 - 5, 'a') + u".test";
-
-  MockDownloadItem* item = CreateNextItem();
-  ON_CALL(*item, GetURL()).WillByDefault(ReturnRefOfCopy(GURL(url)));
-
-  auto tracker = std::make_unique<DownloadsListTracker>(
-      manager(), page_.BindAndGetRemote());
-
-  downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
-  EXPECT_TRUE(data->url);
-  EXPECT_EQ(data->display_url, expected);
-}
-
 // URL longer than 2M.
 TEST_F(DownloadsListTrackerTest, CreateDownloadData_UrlFormatting_VeryLong) {
   std::string url = "https://" + std::string(2 * 1024 * 1024, 'a') + ".test";
-  // The string should truncate the beginning to 16K.
-  std::u16string expected = std::u16string(16 * 1024 - 5, 'a') + u".test";
 
   MockDownloadItem* item = CreateNextItem();
   ON_CALL(*item, GetURL()).WillByDefault(ReturnRefOfCopy(GURL(url)));
@@ -507,7 +459,6 @@ TEST_F(DownloadsListTrackerTest, CreateDownloadData_UrlFormatting_VeryLong) {
 
   downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
   EXPECT_FALSE(data->url);
-  EXPECT_EQ(data->display_url, expected);
 }
 
 TEST_F(DownloadsListTrackerTest, CreateDownloadData_InitiatorOriginPresent) {
@@ -518,7 +469,6 @@ TEST_F(DownloadsListTrackerTest, CreateDownloadData_InitiatorOriginPresent) {
 
   downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
   EXPECT_EQ(*data->url, "https://example.test/");
-  EXPECT_EQ(data->display_url, u"https://example.test");
   EXPECT_EQ(data->display_initiator_origin, u"https://initiatorexample.test");
 }
 

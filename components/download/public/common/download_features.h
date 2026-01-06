@@ -29,11 +29,6 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kShowBlockedSensitiveDownload);
 #endif
 
-// On downloads-related UI surfaces, attribute the download to the initiator
-// origin of the download request in UI displays, rather than the URL of the
-// download itself.
-COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kDisplayInitiatorOrigin);
-
 // Whether download notification service uses new unified API based on offline
 // item and native persistence of notification IDs.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(

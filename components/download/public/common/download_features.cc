@@ -36,10 +36,6 @@ BASE_FEATURE(kSmartSuggestionForLargeDownloads,
 BASE_FEATURE(kShowBlockedSensitiveDownload, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kDisplayInitiatorOrigin,
-             "DownloadsDisplayInitiatorOrigin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDownloadNotificationServiceUnifiedAPI,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT

@@ -44,7 +44,6 @@ export interface DownloadsItemElement {
     'controlled-by': HTMLElement,
     'file-icon': HTMLImageElement,
     'file-link': HTMLAnchorElement,
-    'url': HTMLAnchorElement,
   };
 }
 
@@ -98,7 +97,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       // </if>
 
       useFileIcon_: {type: Boolean},
-      showInitiatorOrigin_: {type: Boolean},
     };
   }
 
@@ -115,8 +113,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   protected accessor showDeepScan_: boolean = false;
   protected accessor showOpenAnyway_: boolean = false;
   protected accessor useFileIcon_: boolean = false;
-  protected accessor showInitiatorOrigin_: boolean =
-      loadTimeData.getBoolean('showInitiatorOrigin');
   private restoreFocusAfterCancel_: boolean = false;
   private accessor displayType_: DisplayType = DisplayType.NORMAL;
   private accessor completelyOnDisk_: boolean = true;
@@ -185,13 +181,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         '#more-actions-menu');
     assert(!!menu);
     return menu;
-  }
-
-  /**
-   * @return A JS string of the display URL.
-   */
-  protected getDisplayUrlStr_(): string {
-    return this.data ? this.data.displayUrl : '';
   }
 
   protected computeClass_(): string {
@@ -1043,7 +1032,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   private updateUiForStateChange_() {
     const removeFileUrlLinks = () => {
-      this.$.url.removeAttribute('href');
       this.$['file-link'].removeAttribute('href');
     };
 
@@ -1066,10 +1054,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       return;
     }
 
-    // The file is not dangerous. Link the url if supplied.
-    if (this.data.url) {
-      this.$.url.href = this.data.url.url;
-    } else {
+    // Remove file url links if a url was not supplied.
+    if (!this.data.url) {
       removeFileUrlLinks();
     }
 

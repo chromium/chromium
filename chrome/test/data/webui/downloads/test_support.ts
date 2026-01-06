@@ -153,7 +153,6 @@ export function createDownload(config?: Partial<MojomData>): MojomData {
             TailoredWarningType.kNoApplicableTailoredWarningType,
         total: -1,
         url: stringToMojoUrl('http://permission.site'),
-        displayUrl: 'http://permission.site',
         displayInitiatorOrigin: 'http://permission.site',
         safeBrowsingState: SafeBrowsingState.kStandardProtection,
         hasSafeBrowsingVerdict: true,

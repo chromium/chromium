@@ -44,46 +44,10 @@ suite('ItemTest', function() {
     await microtasksFinished();
 
     assertFalse(isVisible(item.$['file-link']));
-    assertFalse(item.$.url.hasAttribute('href'));
     assertFalse(item.$['file-link'].hasAttribute('href'));
   });
-
-  test('downloads without original url in data aren\'t linkable', async () => {
-    const displayUrl = 'https://test.test';
-    item.data = createDownload({
-      hideDate: false,
-      state: State.kComplete,
-      url: undefined,
-      displayUrl: displayUrl,
-    });
-    await microtasksFinished();
-
-    assertFalse(item.$.url.hasAttribute('href'));
-    assertFalse(item.$['file-link'].hasAttribute('href'));
-    assertEquals(displayUrl, item.$.url.text);
-  });
-
-  test(
-      'initiator origin is hidden when showInitiatorOrigin disabled',
-      async () => {
-        loadTimeData.overrideValues({showInitiatorOrigin: false});
-        const item = document.createElement('downloads-item');
-        document.body.innerHTML = window.trustedTypes!.emptyHTML;
-        document.body.appendChild(item);
-        item.data = createDownload({
-          hideDate: false,
-          state: State.kComplete,
-          displayInitiatorOrigin: 'https://initiator.test',
-        });
-        await microtasksFinished();
-
-        assertTrue(isVisible(item.$.url));
-        assertFalse(isVisible(
-            item.shadowRoot.querySelector<HTMLElement>('#initiator-origin')));
-      });
 
   test('initiator origin empty string in data isn\'t displayed', async () => {
-    loadTimeData.overrideValues({showInitiatorOrigin: true});
     const item = document.createElement('downloads-item');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(item);
@@ -94,13 +58,11 @@ suite('ItemTest', function() {
     });
     await microtasksFinished();
 
-    assertFalse(isVisible(item.$.url));
     assertFalse(isVisible(
         item.shadowRoot.querySelector<HTMLElement>('#initiator-origin')));
   });
 
   test('initiator origin on dangerous downloads is displayed', async () => {
-    loadTimeData.overrideValues({showInitiatorOrigin: true});
     item.data = createDownload({
       dangerType: DangerType.kDangerousFile,
       fileExternallyRemoved: false,
@@ -110,13 +72,11 @@ suite('ItemTest', function() {
     });
     await microtasksFinished();
 
-    assertFalse(isVisible(item.$.url));
     assertTrue(isVisible(
         item.shadowRoot.querySelector<HTMLElement>('#initiator-origin')));
   });
 
   test('failed deep scans display initiator origin', async () => {
-    loadTimeData.overrideValues({showInitiatorOrigin: true});
     item.data = createDownload({
       dangerType: DangerType.kDeepScannedFailed,
       fileExternallyRemoved: false,
@@ -127,28 +87,10 @@ suite('ItemTest', function() {
     });
     await microtasksFinished();
 
-    assertFalse(isVisible(item.$.url));
     assertTrue(isVisible(
         item.shadowRoot.querySelector<HTMLElement>('#initiator-origin')));
   });
 
-  test('url display string is a link to the original url', async () => {
-    const url = 'https://' +
-        'a'.repeat(1000) + '.com/document.pdf';
-    const displayUrl = 'https://' +
-        '啊'.repeat(1000) + '.com/document.pdf';
-    item.data = createDownload({
-      hideDate: false,
-      state: State.kComplete,
-      url: stringToMojoUrl(url),
-      displayUrl: displayUrl,
-    });
-    await microtasksFinished();
-
-    assertEquals(url, item.$.url.href);
-    assertEquals(url, item.$['file-link'].href);
-    assertEquals(displayUrl, item.$.url.text);
-  });
 
   test('icon loads successfully', async () => {
     testIconLoader.setShouldIconsLoad(true);
