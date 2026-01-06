@@ -516,6 +516,7 @@ static_library("test_support") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/custom_handlers",
     "//chrome/browser/history",
+    "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/permissions",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
     "//chrome/browser/policy/messaging_layer/storage_selector",

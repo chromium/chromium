@@ -50,6 +50,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/ash/extended_updates/test:test_support",
     "//chrome/browser/notifications",
+    "//chrome/browser/notifications:system_notification_helper",
     "//chrome/common",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/concierge",

@@ -45,6 +45,22 @@ source_set("notifications") {
   }
 }
 
+source_set("system_notification_helper") {
+  sources = [ "system_notification_helper.h" ]
+
+  public_deps = [ "//ui/message_center/public/cpp" ]
+}
+
+source_set("system_notification_helper_impl") {
+  sources = [ "system_notification_helper.cc" ]
+
+  deps = [
+    ":system_notification_helper",
+    "//chrome/browser:browser_public_dependencies",
+    "//ui/message_center/public/cpp",
+  ]
+}
+
 group("unit_tests") {
   testonly = true
   deps = [ "//chrome/browser/notifications/scheduler:unit_tests" ]

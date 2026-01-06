@@ -823,8 +823,6 @@ static_library("browser") {
     "notifications/scheduler/notification_background_task_scheduler_impl.h",
     "notifications/scheduler/notification_schedule_service_factory.cc",
     "notifications/scheduler/notification_schedule_service_factory.h",
-    "notifications/system_notification_helper.cc",
-    "notifications/system_notification_helper.h",
     "ntp_tiles/chrome_custom_links_manager_factory.cc",
     "ntp_tiles/chrome_custom_links_manager_factory.h",
     "ntp_tiles/chrome_enterprise_shortcuts_manager_factory.cc",
@@ -1736,6 +1734,7 @@ static_library("browser") {
     # - c/b/notifications/system_notification_helper.h"
     # - c/b/profiles/profile_manager.h"
     "//chrome/browser/usb:impl",
+    "//chrome/browser/notifications:system_notification_helper_impl",
 
     # TODO(crbug.com/353332589): Remove this circular dependencies when the following
     # headers are componentized:
@@ -1883,6 +1882,8 @@ static_library("browser") {
     "//chrome/browser/navigation_predictor",
     "//chrome/browser/navigation_predictor:impl",
     "//chrome/browser/notifications",
+    "//chrome/browser/notifications:system_notification_helper",
+    "//chrome/browser/notifications:system_notification_helper_impl",
     "//chrome/browser/notifications/scheduler:factory",
     "//chrome/browser/notifications/scheduler/public",
     "//chrome/browser/offline_items_collection",

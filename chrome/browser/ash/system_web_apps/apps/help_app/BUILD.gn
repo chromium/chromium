@@ -162,6 +162,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/borealis/testing:test_support",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/system_web_apps/apps/help_app",
+    "//chrome/browser/notifications:system_notification_helper",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//components/account_id",

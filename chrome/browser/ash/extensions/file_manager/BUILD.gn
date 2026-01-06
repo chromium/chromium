@@ -107,6 +107,7 @@ static_library("file_manager") {
     "//chrome/browser/chromeos/upload_office_to_cloud",
     "//chrome/browser/devtools",
     "//chrome/browser/feedback",
+    "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/pdf",
     "//chrome/browser/pdf:pdf_pref_names",
     "//chrome/browser/pdf:pdf_service",

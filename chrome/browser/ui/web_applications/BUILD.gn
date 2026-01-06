@@ -113,6 +113,7 @@ source_set("impl") {
     deps += [
       ":web_applications",
       "//base",
+      "//chrome/browser/notifications:system_notification_helper",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/color:mixers",

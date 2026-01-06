@@ -49,6 +49,7 @@ source_set("impl") {
     ]
 
     deps += [
+      "//chrome/browser/notifications:system_notification_helper",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
       "//content/public/browser",
@@ -97,6 +98,7 @@ source_set("unit_tests") {
       "//chrome/browser",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
+      "//chrome/browser/notifications:system_notification_helper",
       "//chrome/test:test_support",
       "//extensions:test_support",
       "//extensions/common",
