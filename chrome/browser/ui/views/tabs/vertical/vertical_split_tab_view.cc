@@ -68,8 +68,9 @@ views::ProposedLayout VerticalSplitTabView::CalculateProposedLayout(
   // will share it, otherwise they will be stacked vertically.
   if (!size_bounds.width().is_bounded() ||
       size_bounds.width().value() >=
-          static_cast<int>(GetLayoutConstant(VERTICAL_TAB_MIN_WIDTH) *
-                           children.size())) {
+          static_cast<int>(
+              GetLayoutConstant(LayoutConstant::kVerticalTabMinWidth) *
+              children.size())) {
     int x = 0;
     for (auto* child : children) {
       gfx::Rect bounds = gfx::Rect(child->GetPreferredSize());
@@ -116,8 +117,8 @@ void VerticalSplitTabView::UpdateBorder() {
     const bool is_frame_active =
         GetWidget() ? GetWidget()->ShouldPaintAsActive() : true;
     SetBorder(views::CreateRoundedRectBorder(
-        GetLayoutConstant(VERTICAL_TAB_PINNED_BORDER_THICKNESS),
-        GetLayoutConstant(VERTICAL_TAB_CORNER_RADIUS),
+        GetLayoutConstant(LayoutConstant::kVerticalTabPinnedBorderThickness),
+        GetLayoutConstant(LayoutConstant::kVerticalTabCornerRadius),
         is_frame_active ? kColorTabDividerFrameActive
                         : kColorTabDividerFrameInactive));
   } else {

@@ -67,8 +67,10 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
   }
 
   const int region_horizontal_padding = GetLayoutConstant(
-      is_collapsed_ ? VERTICAL_TAB_STRIP_COLLAPSED_HORIZONTAL_PADDING
-                    : VERTICAL_TAB_STRIP_UNCOLLAPSED_HORIZONTAL_PADDING);
+      is_collapsed_
+          ? LayoutConstant::kVerticalTabStripCollapsedHorizontalPadding
+          : LayoutConstant::kVerticalTabStripUncollapsedHorizontalPadding);
+
   int y = 0;
 
   // Allocate the available space between the pinned and unpinned containers so

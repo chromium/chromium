@@ -57,8 +57,8 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
       contains_split = true;
     }
   }
-  int child_width =
-      GetLayoutConstant(VERTICAL_TAB_MIN_WIDTH) * (contains_split ? 2 : 1);
+  int child_width = GetLayoutConstant(LayoutConstant::kVerticalTabMinWidth) *
+                    (contains_split ? 2 : 1);
 
   // If the width is bounded, calculate how many children can fit on a row.
   // Since all children are allocated the same width this will be the same for
@@ -67,8 +67,9 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
     auto* controller = collection_node_->GetController();
     bool is_collapsed = controller && controller->IsCollapsed();
     const int region_horizontal_padding = GetLayoutConstant(
-        is_collapsed ? VERTICAL_TAB_STRIP_COLLAPSED_HORIZONTAL_PADDING
-                     : VERTICAL_TAB_STRIP_UNCOLLAPSED_HORIZONTAL_PADDING);
+        is_collapsed
+            ? LayoutConstant::kVerticalTabStripCollapsedHorizontalPadding
+            : LayoutConstant::kVerticalTabStripUncollapsedHorizontalPadding);
     int available_width =
         size_bounds.width().value() - region_horizontal_padding;
 

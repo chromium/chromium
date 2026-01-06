@@ -129,7 +129,7 @@ void VerticalTabStripBottomContainer::UpdateButtonStyles(
         views::kMarginsKey,
         gfx::Insets::TLBR(
             GetLayoutConstant(
-                VERTICAL_TAB_STRIP_COLLAPSED_BOTTOM_BUTTON_PADDING),
+                LayoutConstant::kVerticalTabStripCollapsedBottomButtonPadding),
             0, 0, 0));
     new_tab_button_->SetFlatEdge(BottomContainerButton::FlatEdge::kTop);
   } else {
@@ -145,8 +145,10 @@ void VerticalTabStripBottomContainer::UpdateButtonStyles(
     new_tab_button_->SetProperty(
         views::kMarginsKey,
         gfx::Insets::TLBR(
-            0, GetLayoutConstant(VERTICAL_TAB_STRIP_BOTTOM_BUTTON_PADDING), 0,
-            0));
+            0,
+            GetLayoutConstant(
+                LayoutConstant::kVerticalTabStripBottomButtonPadding),
+            0, 0));
     new_tab_button_->SetFlatEdge(BottomContainerButton::FlatEdge::kNone);
   }
 }

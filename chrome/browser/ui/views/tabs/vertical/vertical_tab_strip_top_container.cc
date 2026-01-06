@@ -51,10 +51,11 @@ VerticalTabStripTopContainer::~VerticalTabStripTopContainer() = default;
 views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   views::ProposedLayout layout;
-  gfx::Size host_size = gfx::Size(
-      size_bounds.width().is_bounded() ? size_bounds.width().value()
-                                       : parent()->width(),
-      GetLayoutConstant(VERTICAL_TAB_STRIP_TOP_BUTTON_CONTAINER_HEIGHT));
+  gfx::Size host_size =
+      gfx::Size(size_bounds.width().is_bounded() ? size_bounds.width().value()
+                                                 : parent()->width(),
+                GetLayoutConstant(
+                    LayoutConstant::kVerticalTabStripTopButtonContainerHeight));
   std::vector<views::LabelButton*> container_buttons;
 
   CHECK(tab_search_button_);
@@ -123,7 +124,7 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
           current_x - pref_size.width(),
           host_size.height() -
               (GetLayoutConstant(
-                   VERTICAL_TAB_STRIP_TOP_BUTTON_CONTAINER_HEIGHT) +
+                   LayoutConstant::kVerticalTabStripTopButtonContainerHeight) +
                pref_size.height()) /
                   2,
           pref_size.width(), pref_size.height());
