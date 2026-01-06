@@ -212,6 +212,9 @@ class EmbeddedTestServer {
 
   struct OCSPConfig {
     // Enumerates the types of OCSP response that the testserver can produce.
+    //
+    // Below line is for //net/android:net_java_test_support_enums_srcjar
+    // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.net.test
     enum class ResponseType {
       // OCSP will not be enabled for the corresponding config.
       kOff,

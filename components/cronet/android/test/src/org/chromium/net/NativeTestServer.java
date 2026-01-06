@@ -12,6 +12,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.net.test.ResponseType;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.net.test.Type;
 
@@ -63,7 +64,31 @@ public final class NativeTestServer implements AutoCloseable {
      * <p>Must be called before {@link #start}.
      */
     public void setSSLConfig(@ServerCertificate int serverCertificate) {
-        NativeTestServerJni.get().setSSLConfig(mEmbeddedTestServerAdapter, serverCertificate);
+        NativeTestServerJni.get()
+                .setSSLConfigWithServerCertificate(mEmbeddedTestServerAdapter, serverCertificate);
+    }
+
+    /** See native net::test_server::EmbeddedTestServer::OCSPConfig. */
+    public static final class OCSPConfig {
+        /**
+         * Note: if this is set to SUCCESSFUL, NativeTestServer will automatically add a default
+         * SingleResponse for you. This is to avoid having to expose an API for the
+         * `single_responses` field, which would involve quite a lot of JNI boilerplate. We don't
+         * need the extra flexibility (for now).
+         */
+        public @ResponseType int responseType = ResponseType.OFF;
+    }
+
+    /** See native net::test_server::EmbeddedTestServer::ServerCertificateConfig. */
+    public static final class ServerCertificateConfig {
+        public OCSPConfig stapledOCSPConfig = new OCSPConfig();
+    }
+
+    /** Must be called before {@link #start}. */
+    public void setSSLConfig(ServerCertificateConfig serverCertificateConfig) {
+        NativeTestServerJni.get()
+                .setSSLConfigWithServerCertificateConfig(
+                        mEmbeddedTestServerAdapter, serverCertificateConfig);
     }
 
     public void start() {
@@ -262,6 +287,19 @@ public final class NativeTestServer implements AutoCloseable {
         return rawHttpResponse.getContents();
     }
 
+    @CalledByNative
+    private static @JniType("net::EmbeddedTestServer::OCSPConfig::ResponseType") @ResponseType int
+            getOCSPConfigResponseType(OCSPConfig ocspConfig) {
+        return ocspConfig.responseType;
+    }
+
+    @CalledByNative
+    private static @JniType("cronet::NativeTestServerOCSPConfig") OCSPConfig
+            getServerCertificateConfigStapledOCSPConfig(
+                    ServerCertificateConfig serverCertificateConfig) {
+        return serverCertificateConfig.stapledOCSPConfig;
+    }
+
     @NativeMethods("cronet_tests")
     interface Natives {
         @JniType("long")
@@ -270,10 +308,16 @@ public final class NativeTestServer implements AutoCloseable {
                 @JniType("std::string") String testDataDir,
                 @JniType("net::EmbeddedTestServer::Type") int type);
 
-        void setSSLConfig(
+        // Note: using different method names because jni_zero does not support overloading.
+        void setSSLConfigWithServerCertificate(
                 long nativeEmbeddedTestServerAdapter,
                 @JniType("net::EmbeddedTestServer::ServerCertificate") @ServerCertificate
                         int certificate);
+
+        void setSSLConfigWithServerCertificateConfig(
+                long nativeEmbeddedTestServerAdapter,
+                @JniType("cronet::NativeTestServerServerCertificateConfig")
+                        ServerCertificateConfig serverCertificateConfig);
 
         void destroy(long nativeEmbeddedTestServerAdapter);
 

@@ -18,6 +18,7 @@ class FilePath;
 
 namespace cronet {
 
+struct NativeTestServerServerCertificateConfig;
 class NativeTestServerHandleRequestCallback;
 
 class EmbeddedTestServerAdapter {
@@ -25,9 +26,13 @@ class EmbeddedTestServerAdapter {
   EmbeddedTestServerAdapter(const base::FilePath& test_files_root,
                             net::EmbeddedTestServer::Type server_type);
 
-  void SetSSLConfig(
+  void SetSSLConfigWithServerCertificate(
       JNIEnv* env,
       net::EmbeddedTestServer::ServerCertificate server_certificate);
+
+  void SetSSLConfigWithServerCertificateConfig(
+      JNIEnv* env,
+      const NativeTestServerServerCertificateConfig& server_certificate_config);
 
   ~EmbeddedTestServerAdapter();
 

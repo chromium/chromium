@@ -24,6 +24,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
+import org.chromium.net.test.ResponseType;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.net.test.Type;
 
@@ -46,6 +47,20 @@ public class CronetUrlRequestHTTPSTest {
                         && Build.VERSION.SDK_INT < Build.VERSION_CODES.N);
     }
 
+    private void assertCanSendRequests(NativeTestServer nativeTestServer) {
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        mTestRule
+                .getTestFramework()
+                .getEngine()
+                .newUrlRequestBuilder(
+                        nativeTestServer.getEchoMethodURL(), callback, callback.getExecutor())
+                .build()
+                .start();
+        callback.blockForDone();
+        assertThat(callback.mResponseAsString).isEqualTo("GET");
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+    }
+
     @Test
     @SmallTest
     public void testSSL() throws Exception {
@@ -53,17 +68,38 @@ public class CronetUrlRequestHTTPSTest {
                 new NativeTestServer(mTestRule.getTestFramework().getContext(), Type.HTTPS)) {
             nativeTestServer.setSSLConfig(ServerCertificate.CERT_OK);
             nativeTestServer.start();
-            TestUrlRequestCallback callback = new TestUrlRequestCallback();
-            mTestRule
-                    .getTestFramework()
-                    .getEngine()
-                    .newUrlRequestBuilder(
-                            nativeTestServer.getEchoMethodURL(), callback, callback.getExecutor())
-                    .build()
-                    .start();
-            callback.blockForDone();
-            assertThat(callback.mResponseAsString).isEqualTo("GET");
-            assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+            assertCanSendRequests(nativeTestServer);
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testSSLWithDynamicallyGeneratedCertificate() throws Exception {
+        try (var nativeTestServer =
+                new NativeTestServer(mTestRule.getTestFramework().getContext(), Type.HTTPS)) {
+            nativeTestServer.setSSLConfig(new NativeTestServer.ServerCertificateConfig());
+            nativeTestServer.start();
+            assertCanSendRequests(nativeTestServer);
+        }
+    }
+
+    /**
+     * Checks that everything works when we send requests to a host that uses OCSP in its TLS
+     * certificate. The reason why we test for this specifically is because the OCSP code involves
+     * calling into BoringSSL through a C++ API, which can be prone to breakage in some build setups
+     * (e.g. AOSP Cronet, which uses a special setup for BoringSSL). See https://crbug.com/469760313
+     * for an example of breakage that seemed to only affect OCSP-related code paths.
+     */
+    @Test
+    @SmallTest
+    public void testSSLWithOCSPStapling() throws Exception {
+        try (var nativeTestServer =
+                new NativeTestServer(mTestRule.getTestFramework().getContext(), Type.HTTPS)) {
+            var serverCertificateConfig = new NativeTestServer.ServerCertificateConfig();
+            serverCertificateConfig.stapledOCSPConfig.responseType = ResponseType.SUCCESSFUL;
+            nativeTestServer.setSSLConfig(serverCertificateConfig);
+            nativeTestServer.start();
+            assertCanSendRequests(nativeTestServer);
         }
     }
 
