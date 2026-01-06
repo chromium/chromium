@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
-
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -18,6 +16,7 @@
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
+#include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"

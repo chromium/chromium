@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/test/chromedriver/chrome/chrome_finder.h"
+
 #include <stddef.h>
 
 #include <string>
@@ -13,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/test/chromedriver/chrome/chrome_finder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
