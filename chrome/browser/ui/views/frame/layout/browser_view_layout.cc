@@ -130,21 +130,33 @@ std::unique_ptr<BrowserViewLayout> BrowserViewLayout::CreateLayout(
     BrowserViewLayoutViews views) {
   // Browser can be null in unit tests.
   if (browser) {
-    if (browser->is_type_normal() &&
-        base::FeatureList::IsEnabled(features::kTabbedBrowserUseNewLayout)) {
-      return std::make_unique<BrowserViewTabbedLayoutImpl>(
-          std::move(delegate), browser, std::move(views));
-    } else if ((browser->is_type_app() || browser->is_type_app_popup()) &&
-               base::FeatureList::IsEnabled(
+    switch (browser->type()) {
+     case Browser::TYPE_NORMAL:
+      if (base::FeatureList::IsEnabled(features::kTabbedBrowserUseNewLayout)) {
+        return std::make_unique<BrowserViewTabbedLayoutImpl>(
+            std::move(delegate), browser, std::move(views));
+      }
+      break;
+     case Browser::TYPE_APP:
+     case Browser::TYPE_APP_POPUP:
+#if BUILDFLAG(IS_CHROMEOS)
+     case Browser::TYPE_CUSTOM_TAB:
+#endif
+      if (base::FeatureList::IsEnabled(
                    features::kAppBrowserUseNewLayout)) {
-      return std::make_unique<BrowserViewAppLayoutImpl>(
-          std::move(delegate), browser, std::move(views));
-    } else if ((browser->is_type_popup() || browser->is_type_devtools() ||
-                browser->is_type_picture_in_picture()) &&
-               base::FeatureList::IsEnabled(
+        return std::make_unique<BrowserViewAppLayoutImpl>(
+            std::move(delegate), browser, std::move(views));
+      }
+      break;
+     case Browser::TYPE_POPUP:
+     case Browser::TYPE_DEVTOOLS:
+     case Browser::TYPE_PICTURE_IN_PICTURE:
+      if (base::FeatureList::IsEnabled(
                    features::kPopupBrowserUseNewLayout)) {
-      return std::make_unique<BrowserViewPopupLayoutImpl>(
-          std::move(delegate), browser, std::move(views));
+        return std::make_unique<BrowserViewPopupLayoutImpl>(
+            std::move(delegate), browser, std::move(views));
+      }
+      break;
     }
   }
 
