@@ -9,6 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 class BrowserWindowInterface;
@@ -17,19 +18,40 @@ namespace extensions {
 
 // The JNI bridge for the extensions UI.
 // This bridge is created and owned by Java UI code.
-class ExtensionsToolbarBridge {
+class ExtensionsToolbarBridge : public ExtensionsToolbarViewModel::Delegate,
+                                public ExtensionsToolbarViewModel::Observer {
  public:
   ExtensionsToolbarBridge(BrowserWindowInterface* browser,
                           const base::android::JavaRef<jobject>& java_object);
   ExtensionsToolbarBridge(const ExtensionsToolbarBridge&) = delete;
   ExtensionsToolbarBridge& operator=(const ExtensionsToolbarBridge&) = delete;
-  ~ExtensionsToolbarBridge();
+  ~ExtensionsToolbarBridge() override;
+
+  // ExtensionsToolbarViewModel::Delegate:
+  std::unique_ptr<ExtensionActionViewModel> CreateActionViewModel(
+      const ToolbarActionsModel::ActionId& action_id) override;
+
+  // ExtensionsToolbarViewModel::Observer:
+  void OnActionsInitialized() override;
+  void OnActionAdded(const ToolbarActionsModel::ActionId& action_id) override;
+  void OnActionRemoved(const ToolbarActionsModel::ActionId& action_id) override;
+  void OnActionUpdated(const ToolbarActionsModel::ActionId& action_id) override;
+  void OnPinnedActionsChanged() override;
 
   // JNI implementations.
   void Destroy(JNIEnv* env);
 
  private:
   const raw_ptr<BrowserWindowInterface> browser_;
+
+  // The view model for this container.
+  std::unique_ptr<ExtensionsToolbarViewModel> toolbar_view_model_;
+
+  // Observes and listens to changes to the view model.
+  base::ScopedObservation<ExtensionsToolbarViewModel,
+                          ExtensionsToolbarViewModel::Observer>
+      toolbar_view_model_observation_{this};
+
   const base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };
 

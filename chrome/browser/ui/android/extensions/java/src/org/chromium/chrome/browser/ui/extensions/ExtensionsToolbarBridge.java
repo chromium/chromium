@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.ui.extensions;
 
+import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ObserverList;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.build.annotations.NullMarked;
@@ -19,6 +22,7 @@ import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 public class ExtensionsToolbarBridge implements Destroyable {
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
     private long mNativeExtensionsToolbarBridge;
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
 
     public ExtensionsToolbarBridge(ChromeAndroidTask task) {
         mNativeExtensionsToolbarBridge =
@@ -32,6 +36,66 @@ public class ExtensionsToolbarBridge implements Destroyable {
         ExtensionsToolbarBridgeJni.get().destroy(mNativeExtensionsToolbarBridge);
         mNativeExtensionsToolbarBridge = 0;
         LifetimeAssert.destroy(mLifetimeAssert);
+    }
+
+    public void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    public void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
+    }
+
+    @CalledByNative
+    public void onActionsInitialized() {
+        for (Observer observer : mObservers) {
+            observer.onActionsInitialized();
+        }
+    }
+
+    @CalledByNative
+    public void onActionAdded(@JniType("std::string") String actionId) {
+        for (Observer observer : mObservers) {
+            observer.onActionAdded(actionId);
+        }
+    }
+
+    @CalledByNative
+    public void onActionRemoved(@JniType("std::string") String actionId) {
+        for (Observer observer : mObservers) {
+            observer.onActionRemoved(actionId);
+        }
+    }
+
+    @CalledByNative
+    public void onActionUpdated(@JniType("std::string") String actionId) {
+        for (Observer observer : mObservers) {
+            observer.onActionUpdated(actionId);
+        }
+    }
+
+    @CalledByNative
+    public void onPinnedActionsChanged() {
+        for (Observer observer : mObservers) {
+            observer.onPinnedActionsChanged();
+        }
+    }
+
+    public interface Observer {
+        // Called after all actions are added to the model.
+        void onActionsInitialized();
+
+        // Called when an action is added to the model.
+        void onActionAdded(String actionId);
+
+        // Called when an action is removed from the model.
+        void onActionRemoved(String actionId);
+
+        // Called when an action in the model is updated.
+        void onActionUpdated(String actionId);
+
+        // Called when the pinned actions in the model are changed.
+        void onPinnedActionsChanged();
     }
 
     @NativeMethods
