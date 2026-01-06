@@ -88,9 +88,9 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
 
         private static boolean calculateHasAnimation(
                 int startHeight, int targetHeight, boolean applyScrimOverlay) {
-            return !applyScrimOverlay
-                    || (startHeight != 0 && targetHeight != 0)
-                    || startHeight == targetHeight;
+            if (startHeight == targetHeight) return false;
+
+            return applyScrimOverlay && (startHeight == 0 || targetHeight == 0);
         }
 
         /** Returns true only when this method is called the first time. */

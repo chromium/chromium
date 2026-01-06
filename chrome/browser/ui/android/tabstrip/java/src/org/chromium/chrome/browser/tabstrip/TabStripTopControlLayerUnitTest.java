@@ -57,6 +57,7 @@ public class TabStripTopControlLayerUnitTest {
         mTabStripTopControlLayer.onBrowserControlsOffsetUpdate(
                 0, /* reachRestingPosition= */ false);
         verifyHeightTransitionStarted(/* newHeight= */ 100, /* applyScrimOverlay= */ true);
+        verifyLayerUpdateRequest(true);
         verify(mTabStripSceneLayerHolder).onLayerYOffsetChanged(0, 0);
         clearInvocations(mTabStripSceneLayerHolder);
 
@@ -87,6 +88,7 @@ public class TabStripTopControlLayerUnitTest {
         mTabStripTopControlLayer.onBrowserControlsOffsetUpdate(
                 0, /* reachRestingPosition= */ false);
         verifyHeightTransitionStarted(/* newHeight= */ 0, /* applyScrimOverlay= */ true);
+        verifyLayerUpdateRequest(true);
         verify(mTabStripSceneLayerHolder).onLayerYOffsetChanged(0, 100);
         clearInvocations(mTabStripSceneLayerHolder);
 
@@ -107,12 +109,13 @@ public class TabStripTopControlLayerUnitTest {
     }
 
     @Test
-    public void testNoTransitionHeightIncrease() {
+    public void testNoAnimationTransitionHeightIncrease() {
         mTabStripTopControlLayer.set(100);
         requestTransition(120, false);
 
         mTabStripTopControlLayer.onBrowserControlsOffsetUpdate(0, true);
         verifyHeightTransitionStarted(/* newHeight= */ 120, /* applyScrimOverlay= */ false);
+        verifyLayerUpdateRequest(false);
         verify(mTabStripSceneLayerHolder).onHeightTransitionFinished(true);
     }
 
@@ -153,7 +156,10 @@ public class TabStripTopControlLayerUnitTest {
                 mOnTransitionStartedCallback.getCallCount());
         verify(mControlContainer).onHeightChanged(newHeight, applyScrimOverlay);
         verify(mTabStripSceneLayerHolder).onHeightChanged(newHeight, applyScrimOverlay);
-        verify(mTopControlsStacker).requestLayerUpdateSync(!applyScrimOverlay);
+    }
+
+    private void verifyLayerUpdateRequest(boolean animate) {
+        verify(mTopControlsStacker).requestLayerUpdateSync(animate);
     }
 
     private void verifyHeightTransitionNotStarted() {
