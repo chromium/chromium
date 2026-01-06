@@ -7,6 +7,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/android_buildflags.h"
+#include "build/build_config.h"
 
 namespace policy::features {
 
@@ -48,5 +49,11 @@ BASE_FEATURE(kFuturePoliciesOnDesktopAndroid,
 // Used to enable extension install policy support.
 BASE_FEATURE(kEnableExtensionInstallPolicyFetching,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, uses ManagementService to determine whether to honor sensitive
+// policies. When disabled, falls back to the original ShouldHonorPolicies()
+// behavior.
+BASE_FEATURE(kUseManagementServiceForSensitivePolicies,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace policy::features

@@ -4,12 +4,13 @@
 
 #include "components/policy/core/common/policy_loader_mac.h"
 
-#include <utility>
-
 #include <Foundation/Foundation.h>
+
+#include <utility>
 
 #include "base/apple/foundation_util.h"
 #include "base/enterprise_util.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -22,6 +23,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/external_data_fetcher.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/mac_util.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_loader_common.h"
@@ -34,7 +36,6 @@ namespace policy {
 
 namespace {
 
-// Encapsulates logic to determine if enterprise policies should be honored.
 bool ShouldHonorPolicies() {
   // Only honor sensitive policies if the Mac is managed or connected to an
   // enterprise.
@@ -46,19 +47,24 @@ bool ShouldHonorPolicies() {
 
 PolicyLoaderMac::PolicyLoaderMac(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
+    ManagementService* management_service,
     const base::FilePath& managed_policy_path,
     std::unique_ptr<MacPreferences> preferences)
     : PolicyLoaderMac(task_runner,
+                      management_service,
                       managed_policy_path,
                       std::move(preferences),
                       kCFPreferencesCurrentApplication) {}
 
 PolicyLoaderMac::PolicyLoaderMac(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
+    ManagementService* management_service,
     const base::FilePath& managed_policy_path,
     std::unique_ptr<MacPreferences> preferences,
     CFStringRef application_id)
-    : AsyncPolicyLoader(task_runner, /*periodic_updates=*/true),
+    : AsyncPolicyLoader(task_runner,
+                        management_service,
+                        /*periodic_updates=*/true),
       preferences_(std::move(preferences)),
       managed_policy_path_(managed_policy_path),
       application_id_(CFStringCreateCopy(kCFAllocatorDefault, application_id)) {
@@ -137,8 +143,22 @@ PolicyBundle PolicyLoaderMac::Load() {
   // Load policy for the registered components.
   LoadPolicyForDomain(POLICY_DOMAIN_EXTENSIONS, "extensions", &bundle);
 
-  if (!ShouldHonorPolicies())
+  // When the feature flag is enabled, use the new ManagementService-based
+  // mechanism. When disabled, fall back to the original ShouldHonorPolicies()
+  // behavior for safety.
+  // Note: Policy loading can happen before FeatureList is initialized (during
+  // early startup in CreatePrefService). In that case, use the old behavior.
+  bool should_filter;
+  if (base::FeatureList::GetInstance() &&
+      base::FeatureList::IsEnabled(
+          features::kUseManagementServiceForSensitivePolicies)) {
+    should_filter = ShouldFilterSensitivePolicies();
+  } else {
+    should_filter = !ShouldHonorPolicies();
+  }
+  if (should_filter) {
     FilterSensitivePolicies(&chrome_policy);
+  }
 
   return bundle;
 }

@@ -20,6 +20,7 @@
 #include "components/policy/core/common/async_policy_provider.h"
 #include "components/policy/core/common/configuration_policy_provider_test.h"
 #include "components/policy/core/common/external_data_fetcher.h"
+#include "components/policy/core/common/management/platform_management_service.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_test_utils.h"
@@ -79,8 +80,9 @@ ConfigurationPolicyProvider* TestHarness::CreateProvider(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   auto prefs = std::make_unique<MockPreferences>();
   prefs_ = prefs.get();
-  auto loader = std::make_unique<PolicyLoaderMac>(task_runner, base::FilePath(),
-                                                  std::move(prefs));
+  auto loader = std::make_unique<PolicyLoaderMac>(
+      task_runner, PlatformManagementService::GetInstance(), base::FilePath(),
+      std::move(prefs));
   return new AsyncPolicyProvider(registry, std::move(loader));
 }
 
@@ -158,7 +160,8 @@ class PolicyLoaderMacTest : public PolicyTestBase {
     auto prefs = std::make_unique<MockPreferences>();
     prefs_ = prefs.get();
     auto loader = std::make_unique<PolicyLoaderMac>(
-        task_environment_.GetMainThreadTaskRunner(), base::FilePath(),
+        task_environment_.GetMainThreadTaskRunner(),
+        PlatformManagementService::GetInstance(), base::FilePath(),
         std::move(prefs));
     provider_ = std::make_unique<AsyncPolicyProvider>(&schema_registry_,
                                                       std::move(loader));
