@@ -43,8 +43,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/themes/theme_properties.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -1425,48 +1423,6 @@ void TabStrip::OnSplitContentsChanged(const std::vector<int>& split_indices) {
   tab_container_->OnSplitContentsChanged(split_indices);
 }
 
-bool TabStrip::ShouldDrawStrokes() const {
-#if BUILDFLAG(IS_CHROMEOS)
-  return false;
-#else   // BUILDFLAG(IS_CHROMEOS)
-
-  // If the controller says we can't draw strokes, don't.
-  if (!controller_->CanDrawStrokes()) {
-    return false;
-  }
-
-  bool using_system_theme = false;
-  if (auto* profile = controller_->GetProfile()) {
-    auto* theme_service = ThemeServiceFactory::GetForProfile(profile);
-    using_system_theme =
-        theme_service->IsSystemThemeDistinctFromDefaultTheme() &&
-        theme_service->UsingSystemTheme();
-  }
-
-  // The Tabstrip in the refreshed style does not meet the contrast ratio
-  // requirements listed below but does not have strokes for Tabs or the bottom
-  // border.
-  if (!using_system_theme) {
-    return false;
-  }
-
-  // The tabstrip normally avoids strokes and relies on the active tab
-  // contrasting sufficiently with the frame background.  When there isn't
-  // enough contrast, fall back to a stroke.  Always compute the contrast ratio
-  // against the active frame color, to avoid toggling the stroke on and off as
-  // the window activation state changes.
-  constexpr float kMinimumContrastRatioForOutlines = 1.3f;
-  const SkColor background_color = TabStyle::Get()->GetTabBackgroundColor(
-      TabStyle::TabSelectionState::kActive, /*hovered=*/false,
-      /*frame_active=*/true, GetColorProvider());
-  const SkColor frame_color =
-      controller_->GetFrameColor(BrowserFrameActiveState::kActive);
-  const float contrast_ratio =
-      color_utils::GetContrastRatio(background_color, frame_color);
-  return contrast_ratio < kMinimumContrastRatioForOutlines;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
 void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
   // This CHECK ensures there is always an active tab to maintain UI
   // consistency.
@@ -2056,7 +2012,8 @@ void TabStrip::HideHover(Tab* tab, TabStyle::HideHoverStyle style) {
 }
 
 int TabStrip::GetStrokeThickness() const {
-  return ShouldDrawStrokes() ? 1 : 0;
+  Browser* browser = controller_->GetBrowser();
+  return browser && browser->GetBrowserView().ShouldDrawStrokes() ? 1 : 0;
 }
 
 bool TabStrip::CanPaintThrobberToLayer() const {

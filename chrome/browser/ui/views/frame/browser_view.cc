@@ -66,6 +66,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/accelerator_table.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -1245,6 +1246,52 @@ bool BrowserView::GetTabStripVisible() const {
   }
 
   return immersive_mode_controller->IsRevealed();
+}
+
+bool BrowserView::ShouldDrawStrokes() const {
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else   // BUILDFLAG(IS_CHROMEOS)
+
+  if (browser()->app_controller() &&
+      !browser()->app_controller()->has_tab_strip()) {
+    // Web apps only draw strokes when there is a TabStrip.
+    return false;
+  }
+
+  if (ShouldDrawVerticalTabStrip()) {
+    // Strokes are not drawn in VerticalTabs.
+    return false;
+  }
+
+  bool using_system_theme = false;
+  if (GetProfile()) {
+    auto* theme_service = ThemeServiceFactory::GetForProfile(GetProfile());
+    using_system_theme =
+        theme_service->IsSystemThemeDistinctFromDefaultTheme() &&
+        theme_service->UsingSystemTheme();
+  }
+
+  if (!using_system_theme) {
+    // Strokes are only supported for system themes.
+    return false;
+  }
+
+  // The tabstrip normally avoids strokes and relies on the active tab
+  // contrasting sufficiently with the frame background.  When there isn't
+  // enough contrast, fall back to a stroke.  Always compute the contrast ratio
+  // against the active frame color, to avoid toggling the stroke on and off as
+  // the window activation state changes.
+  constexpr float kMinimumContrastRatioForOutlines = 1.3f;
+  const SkColor background_color = TabStyle::Get()->GetTabBackgroundColor(
+      TabStyle::TabSelectionState::kActive, /*hovered=*/false,
+      /*frame_active=*/true, GetColorProvider());
+  const SkColor frame_color =
+      GetFrameView()->GetFrameColor(BrowserFrameActiveState::kActive);
+  const float contrast_ratio =
+      color_utils::GetContrastRatio(background_color, frame_color);
+  return contrast_ratio < kMinimumContrastRatioForOutlines;
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 bool BrowserView::ShouldDrawTabStrip() const {
@@ -6157,7 +6204,7 @@ void BrowserView::ObserveAppBannerManager(
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, ExclusiveAccessContext implementation:
-Profile* BrowserView::GetProfile() {
+Profile* BrowserView::GetProfile() const {
   return browser_->GetProfile();
 }
 

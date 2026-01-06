@@ -181,7 +181,7 @@ class BrowserView : public BrowserWindow,
   Browser* browser() { return browser_; }
   const Browser* browser() const { return browser_; }
 
-  Profile* GetProfile();
+  Profile* GetProfile() const;
 
   const TopControlsSlideController* top_controls_slide_controller() const {
     return top_controls_slide_controller_.get();
@@ -339,6 +339,9 @@ class BrowserView : public BrowserWindow,
 
   // Returns whether a vertical tabstrip should be shown.
   bool ShouldDrawVerticalTabStrip() const;
+
+  // Returns whether or not strokes should be drawn around and under the tabs.
+  bool ShouldDrawStrokes() const;
 
   // Returns whether the vertical tabstrip is collapsed.
   bool IsVerticalTabStripCollapsed() const;

@@ -542,10 +542,6 @@ bool HorizontalTabStripRegionView::IsTabStripCloseable() const {
   return tab_strip_->IsTabStripCloseable();
 }
 
-bool HorizontalTabStripRegionView::ShouldDrawStrokes() const {
-  return tab_strip_->ShouldDrawStrokes();
-}
-
 bool HorizontalTabStripRegionView::IsAnimating() const {
   return tab_strip_->IsAnimatingInTabStrip();
 }

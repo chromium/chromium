@@ -191,9 +191,6 @@ class TabStrip : public views::View,
   // Updates the tab slot view split state and animates to bounds.
   void OnSplitContentsChanged(const std::vector<int>& split_indices);
 
-  // Returns whether or not strokes should be drawn around and under the tabs.
-  bool ShouldDrawStrokes() const;
-
   // Invoked when the selection is updated.
   void SetSelection(const ui::ListSelectionModel& new_selection);
 

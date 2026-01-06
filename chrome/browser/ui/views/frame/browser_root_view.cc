@@ -419,7 +419,7 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
   // offset from the widget by a few DIPs, which is troublesome for computing a
   // subpixel offset when using fractional scale factors.  So we're forced to
   // put this drawing in the BrowserRootView.
-  if (!browser_view_->tab_strip_view()->ShouldDrawStrokes() ||
+  if (!browser_view_->ShouldDrawStrokes() ||
       !browser_view_->IsToolbarVisible() ||
       !browser_view_->ShouldDrawTabStrip() || browser_view_->IsFullscreen()) {
     return;
@@ -427,10 +427,7 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
 
   views::View* tab_strip_view =
       browser_view_->tab_strip_view()->GetViewByElementId(kTabStripElementId);
-  if (!tab_strip_view) {
-    // Do nothing if the TabStrip is not found.
-    return;
-  }
+  CHECK(tab_strip_view);
 
   gfx::RectF tabstrip_bounds(tab_strip_view->GetLocalBounds());
   ConvertRectToTarget(tab_strip_view, this, &tabstrip_bounds);
