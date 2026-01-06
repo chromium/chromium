@@ -7,7 +7,6 @@
 #include <set>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -902,7 +901,7 @@ bool VP9Validator::ValidateSVCStream(const DecoderBuffer& decoder_buffer,
                    << static_cast<int>(ref_frame_index);
         return false;
       }
-      if (base::Contains(used_indices, ref_frame_index)) {
+      if (used_indices.contains(ref_frame_index)) {
         // |header.ref_frame_index| might have the same indices because an
         // encoder fills the same index if the actually used ref frames is less
         // than |kVp9NumRefsPerFrame|.
@@ -1074,7 +1073,7 @@ bool VP9Validator::ValidateSmodeStream(const DecoderBuffer& decoder_buffer,
                    << static_cast<int>(ref_frame_index);
         return false;
       }
-      if (base::Contains(used_indices, ref_frame_index)) {
+      if (used_indices.contains(ref_frame_index)) {
         // |header.ref_frame_index| might have the same indices because an
         // encoder fills the same index if the actually used ref frames is less
         // than |kVp9NumRefsPerFrame|.
@@ -1268,7 +1267,7 @@ bool AV1Validator::ValidateTemporalSVCStream(
                    << static_cast<int>(ref_frame_index);
         return false;
       }
-      if (base::Contains(used_indices, ref_frame_index)) {
+      if (used_indices.contains(ref_frame_index)) {
         // |header.ref_frame_index| might have the same indices because an
         // encoder fills the same index if the actually used ref frames is less
         // than |kNumReferenceFrameTypes|.

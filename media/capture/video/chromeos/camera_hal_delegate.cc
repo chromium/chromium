@@ -989,7 +989,7 @@ int32_t CameraHalDelegate::GetMaskedModuleID(const std::string& module_id) {
     int vid = strtol(module_id.substr(0, 4).c_str(), nullptr, 16);
     int pid = strtol(module_id.substr(5, 8).c_str(), nullptr, 16);
     int decimal_module_id = (vid << 16) + pid;
-    if (base::Contains(module_id_set, decimal_module_id)) {
+    if (module_id_set.contains(decimal_module_id)) {
       return decimal_module_id;
     }
   }

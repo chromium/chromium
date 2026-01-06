@@ -299,7 +299,7 @@ void VaapiVideoDecoderDelegate::OnGetHwKeyData(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // There's a special case here where we are updating usage times/checking on
   // key validity, and in that case the key is already in the map.
-  if (base::Contains(hw_key_data_map_, key_id)) {
+  if (hw_key_data_map_.contains(key_id)) {
     if (status == Decryptor::Status::kSuccess)
       return;
     // This key is no longer valid, decryption will fail, so stop playback

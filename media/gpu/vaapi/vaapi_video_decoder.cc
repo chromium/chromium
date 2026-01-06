@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -72,7 +71,7 @@ std::optional<VideoPixelFormat> GetPixelFormatForBitDepth(uint8_t bit_depth) {
           {8u, viz::MultiPlaneFormat::kNV12},
           {10u, viz::MultiPlaneFormat::kP010},
       });
-  if (!base::Contains(kSupportedBitDepthAndVizFormats, bit_depth)) {
+  if (!kSupportedBitDepthAndVizFormats.contains(bit_depth)) {
     VLOGF(1) << "Unsupported bit depth: " << base::strict_cast<int>(bit_depth);
     return std::nullopt;
   }
