@@ -4,7 +4,6 @@
 
 #include "mojo/public/cpp/bindings/service_factory.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 
 namespace mojo {
@@ -16,7 +15,7 @@ ServiceFactory::~ServiceFactory() = default;
 bool ServiceFactory::CanRunService(
     const GenericPendingReceiver& receiver) const {
   DCHECK(receiver.is_valid());
-  return base::Contains(constructors_, *receiver.interface_name());
+  return constructors_.contains(*receiver.interface_name());
 }
 
 bool ServiceFactory::RunService(GenericPendingReceiver receiver,

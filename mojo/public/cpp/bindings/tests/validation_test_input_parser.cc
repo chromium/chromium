@@ -17,7 +17,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -328,7 +327,7 @@ bool ValidationTestInputParser::ParseBinarySequence(
 
 bool ValidationTestInputParser::ParseDistance(const DataType& type,
                                               std::string_view value_string) {
-  if (base::Contains(pending_distance_items_, value_string)) {
+  if (pending_distance_items_.contains(value_string)) {
     return false;
   }
 

@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
@@ -418,7 +417,7 @@ class PortsTest : public testing::Test, public MessageRouter {
     base::AutoLock global_lock(global_lock_);
     base::AutoLock lock(lock_);
     // Drop messages from nodes that have been removed.
-    if (!base::Contains(nodes_, from_node->name())) {
+    if (!nodes_.contains(from_node->name())) {
       from_node->ClosePortsInEvent(event.get());
       return;
     }
@@ -457,7 +456,7 @@ class PortsTest : public testing::Test, public MessageRouter {
     base::AutoLock lock(lock_);
 
     // Drop messages from nodes that have been removed.
-    if (!base::Contains(nodes_, from_node->name())) {
+    if (!nodes_.contains(from_node->name())) {
       return;
     }
 

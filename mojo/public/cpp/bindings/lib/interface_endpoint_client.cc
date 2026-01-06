@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -722,7 +721,7 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
   }
   // Make sure that this instance hasn't been destroyed.
   if (weak_self) {
-    DCHECK(base::Contains(sync_responses_, request_id));
+    DCHECK(sync_responses_.contains(request_id));
     auto iter = sync_responses_.find(request_id);
     DCHECK_EQ(&response_received, iter->second->response_received);
     if (response_received) {

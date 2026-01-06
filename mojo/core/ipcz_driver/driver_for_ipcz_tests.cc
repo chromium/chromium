@@ -10,7 +10,6 @@
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -272,7 +271,7 @@ class MojoIpczTestDriver : public ipcz::test::TestDriver {
     // clients to spawn other test clients.
     for (const auto& entry :
          base::CommandLine::ForCurrentProcess()->GetSwitches()) {
-      if (!base::Contains(uninherited_args, entry.first)) {
+      if (!uninherited_args.contains(entry.first)) {
         command_line.AppendSwitchNative(entry.first, entry.second);
       }
     }
