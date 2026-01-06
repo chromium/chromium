@@ -18,6 +18,8 @@
 #import "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
+#import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
+#import "ios/chrome/browser/autofill/ui_bundled/ios_chrome_payments_autofill_client.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_list_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/full_card_request_result_delegate_bridge.h"
@@ -32,6 +34,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/web_state.h"
 #import "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -314,7 +317,8 @@ std::vector<CreditCard> FetchCards(
 #pragma mark - FullCardRequestResultDelegateObserving
 
 - (void)onFullCardRequestSucceeded:(const CreditCard&)card
-                         fieldType:(manual_fill::PaymentFieldType)fieldType {
+                         fieldType:(manual_fill::PaymentFieldType)fieldType
+                       forWebState:(web::WebState*)webState {
   // Credit card are not shown as 'Secure'.
   ManualFillCreditCard* manualFillCreditCard = [[ManualFillCreditCard alloc]
       initWithCreditCard:card
@@ -334,7 +338,17 @@ std::vector<CreditCard> FetchCards(
       fillValue = manualFillCreditCard.CVC;
       break;
   }
-
+  // The progress dialog must be dismissed before processing the fill value.
+  // Otherwise, the subsequent focus shift may trigger a month or year
+  // dropdown while the dialog is still active, resulting in multiple
+  // overlapping UI elements and therefore a UI hangs.
+  auto* client = autofill::AutofillClientIOS::FromWebState(webState);
+  CHECK(client);
+  auto* paymentsClient = client->GetPaymentsAutofillClient();
+  CHECK(paymentsClient);
+  paymentsClient->CloseAutofillProgressDialog(
+      /*show_confirmation_before_closing=*/false,
+      /*no_interactive_authentication_callback=*/base::DoNothing());
   // Don't replace the locked card with the unlocked one, so the user will
   // have to unlock it again, if needed.
   [self.contentInjector userDidPickContent:fillValue
