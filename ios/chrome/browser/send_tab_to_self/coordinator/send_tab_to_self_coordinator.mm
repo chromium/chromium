@@ -201,7 +201,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
                     identityManager:IdentityManagerFactory::GetForProfile(
                                         self.profile)];
   _mediator.delegate = self;
-  [self show];
+  [self waitAndShow];
 }
 
 // Do not call directly, use `[self.delegate
@@ -347,12 +347,26 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   [_browserCoordinatorHandler closeCurrentTab];
 }
 
-// Shows the Send Tab To Self UI, either the device list or the sign-in promo.
+// Wait until a UI can be shown to send tab to self, then shows it.
+- (void)waitAndShow {
+  std::optional<send_tab_to_self::EntryPointDisplayReason> displayReason =
+      [self displayReason];
+  if (displayReason == std::nullopt) {
+    [self waitForDeviceList];
+  } else {
+    [self show];
+  }
+}
+
 - (void)show {
   std::optional<send_tab_to_self::EntryPointDisplayReason> displayReason =
       [self displayReason];
-  DCHECK(displayReason);
-
+  if (displayReason == std::nullopt) {
+    // The coordinator should only be started if the view can be shown, so this
+    // case should not occur.
+    [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];
+    return;
+  }
   switch (*displayReason) {
     case send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice:
     case send_tab_to_self::EntryPointDisplayReason::kOfferFeature: {
@@ -433,6 +447,11 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
     [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];
     return;
   }
+  [self waitForDeviceList];
+}
+
+// Waits for the device list to be available and shows it.
+- (void)waitForDeviceList {
   __weak __typeof(self) weakSelf = self;
   _targetDeviceListWaiter = std::make_unique<TargetDeviceListWaiter>(
       SyncServiceFactory::GetForProfile(self.profile),
