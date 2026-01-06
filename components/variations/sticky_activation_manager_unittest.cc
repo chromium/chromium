@@ -4,6 +4,7 @@
 
 #include "components/variations/sticky_activation_manager.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/prefs/testing_pref_service.h"
@@ -172,6 +173,56 @@ TEST(StickyActivationManagerTest, NoActivationRecordingBeforeMonitoring) {
   // the manager started observing.
   histogram_tester.ExpectTotalCount("Variations.StickyAfterQuery.Activation",
                                     0);
+}
+
+// During startup, the feature list is not yet initialized. This verifies that
+// the expected use flow for the sticky activation manager doesn't crash due
+// to that.
+TEST(StickyActivationManagerTest, HandlesNullFeatureList) {
+  std::unique_ptr<base::FeatureList> original_feature_list =
+      base::FeatureList::ClearInstanceForTesting();
+  EXPECT_EQ(nullptr, base::FeatureList::GetInstance());
+  // Note: This matches what the production Chrome startup path does.
+  base::FeatureList::FailOnFeatureAccessWithoutFeatureList();
+
+  TestingPrefServiceSimple local_state;
+  StickyActivationManager::RegisterPrefs(*local_state.registry());
+
+  // Set "Trial1/Foo" and "Trial2/Bar" as sticky trials.
+  local_state.SetString(prefs::kVariationsStickyStudies,
+                        "Trial1/Foo/Trial2/Bar");
+  StickyActivationManager manager(&local_state);
+
+  // Matches pref, so should activate.
+  auto* trial1 = base::FieldTrialList::CreateFieldTrial("Trial1", "Foo");
+  EXPECT_TRUE(manager.ShouldActivate("Trial1", "Foo"));
+  trial1->Activate();
+
+  // Doesn't match pref, so should not activate.
+  auto* trial2 = base::FieldTrialList::CreateFieldTrial("Trial2", "Foo");
+  EXPECT_FALSE(manager.ShouldActivate("Trial2", "Foo"));
+
+  // Not in pref, so should not activate.
+  auto* trial3 = base::FieldTrialList::CreateFieldTrial("Trial3", "Baz");
+  EXPECT_FALSE(manager.ShouldActivate("Trial3", "Baz"));
+
+  // Starting monitoring and activation of trials before feature list init
+  // shouldn't crash. Note: Typically, trials should be activated after the
+  // feature list is initialized, but the below can still happen as we still
+  // run some internal variations code before the feature list is initialized.
+  manager.StartMonitoring();
+  trial2->group_name();
+  EXPECT_EQ("Trial1/Foo/Trial2/Foo",
+            local_state.GetString(prefs::kVariationsStickyStudies));
+  trial3->group_name();
+  EXPECT_EQ("Trial1/Foo/Trial2/Foo/Trial3/Baz",
+            local_state.GetString(prefs::kVariationsStickyStudies));
+
+  // Call ClearInstanceForTesting() to reset the EarlyFeatureAccessTracker to
+  // undo FailOnFeatureAccessWithoutFeatureList() above.
+  base::FeatureList::ClearInstanceForTesting();
+  base::FeatureList::RestoreInstanceForTesting(
+      std::move(original_feature_list));
 }
 
 }  // namespace
