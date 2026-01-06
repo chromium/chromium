@@ -392,9 +392,7 @@ void ContextualCueingHelper::OnCueingDecision(
 // static
 void ContextualCueingHelper::MaybeCreateForWebContents(
     content::WebContents* web_contents) {
-  if (!base::FeatureList::IsEnabled(contextual_cueing::kContextualCueing) &&
-      !base::FeatureList::IsEnabled(
-          contextual_cueing::kGlicZeroStateSuggestions)) {
+  if (!IsContextualCueingEnabled() && !IsZeroStateSuggestionsEnabled()) {
     return;
   }
 

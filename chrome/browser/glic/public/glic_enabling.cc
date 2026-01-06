@@ -354,15 +354,6 @@ bool GlicGlobalEnabling::IsEnabledByFlags() {
   return is_enabled;
 }
 
-// static
-bool GlicEnabling::IsInRolloutLocation() {
-  // TODO(crbug.com/454702721): Getting the location on ChromeOS is done
-  // differently.
-  auto* variations_service = g_browser_process->variations_service();
-  return variations_service->GetStoredPermanentCountry() == "us" &&
-         g_browser_process->GetApplicationLocale() == "en-US";
-}
-
 bool GlicEnabling::IsEnabledByFlags() {
   return g_browser_process->GetFeatures()
       ->glic_global_enabling()

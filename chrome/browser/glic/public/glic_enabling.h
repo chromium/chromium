@@ -227,10 +227,6 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   };
   static ProfileEnablement EnablementForProfile(Profile* profile);
 
-  // Whether the user's country and locale are in a location that Glic is rolled
-  // out to.
-  static bool IsInRolloutLocation();
-
   explicit GlicEnabling(Profile* profile,
                         ProfileAttributesStorage* profile_attributes_storage);
   ~GlicEnabling() override;

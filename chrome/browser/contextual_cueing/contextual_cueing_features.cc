@@ -36,7 +36,7 @@ bool IsContextualCueingEnabled() {
     return base::FeatureList::IsEnabled(kContextualCueing);
   }
 
-  return glic::GlicEnabling::IsInRolloutLocation();
+  return glic::GlicEnabling::IsEnabledByFlags();
 #else
   return base::FeatureList::IsEnabled(kContextualCueing);
 #endif
@@ -56,7 +56,7 @@ bool IsZeroStateSuggestionsEnabled() {
     return base::FeatureList::IsEnabled(kGlicZeroStateSuggestions);
   }
 
-  return glic::GlicEnabling::IsInRolloutLocation();
+  return glic::GlicEnabling::IsEnabledByFlags();
 #else
   return false;
 #endif
