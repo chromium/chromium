@@ -9839,6 +9839,16 @@ bool Element::ShouldStoreComputedStyle(const ComputedStyle& style) const {
     }
   }
 
+  // The base appearance datalist element is display:none by default but also
+  // needs to have a computed appearance value, so it is given the same
+  // treatment as the select element's popover above.
+  if (RuntimeEnabledFeatures::CustomizableComboboxEnabled()) {
+    if (IsA<HTMLDataListElement>(this) &&
+        SupportsBaseAppearance(style.EffectiveAppearance())) {
+      return true;
+    }
+  }
+
   return style.Display() == EDisplay::kContents;
 }
 

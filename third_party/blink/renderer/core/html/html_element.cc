@@ -1280,6 +1280,13 @@ void HTMLElement::UpdatePopoverAttribute(const AtomicString& value) {
                       "Found a 'popover' attribute with an invalid value.");
     UseCounter::Count(GetDocument(), WebFeature::kPopoverTypeInvalid);
   }
+  if (RuntimeEnabledFeatures::CustomizableComboboxEnabled() &&
+      IsA<HTMLDataListElement>(this)) {
+    // Datalist elements implicitly become popovers when they have base
+    // appearance and are invoked by a base appearance text input. Datalist
+    // elements manage their own popover state.
+    return;
+  }
   if (IsPopover()) {
     if (PopoverType() == type)
       return;

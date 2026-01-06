@@ -1784,6 +1784,15 @@
       status: "experimental",
     },
     {
+      // appearance:base for the <datalist> element when it is invoked as a
+      // picker from an <input type=text>.
+      // https://issues.chromium.org/issues/453705243
+      // https://chromestatus.com/feature/5067156794507264
+      name: "CustomizableCombobox",
+      status: "experimental",
+      depends_on: ["AppearanceBase"],
+    },
+    {
       // appearance:base-select for <select multiple> and <select size=n>
       // https://issues.chromium.org/issues/357649033
       name: "CustomizableSelectListbox",

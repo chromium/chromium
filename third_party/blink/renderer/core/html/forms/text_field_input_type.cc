@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/text_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_inner_elements.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
@@ -59,6 +60,22 @@
 
 namespace blink {
 
+namespace {
+
+// TODO(crbug.com/453705243): Disable the autofill popup when this returns true.
+bool IsBaseAppearanceCombobox(HTMLInputElement& input) {
+  if (!RuntimeEnabledFeatures::CustomizableComboboxEnabled()) {
+    return false;
+  }
+  CHECK(input.IsTextField());
+  if (auto* datalist = input.DataList()) {
+    return input.IsAppearanceBase() && datalist->IsAppearanceBase();
+  }
+  return false;
+}
+
+}  // namespace
+
 class DataListIndicatorElement final : public HTMLDivElement {
  private:
   inline HTMLInputElement* HostInput() const {
@@ -70,7 +87,8 @@ class DataListIndicatorElement final : public HTMLDivElement {
     if (event.type() != event_type_names::kClick)
       return;
     HTMLInputElement* host = HostInput();
-    if (host && !host->IsDisabledOrReadOnly()) {
+    if (host && !host->IsDisabledOrReadOnly() &&
+        !IsBaseAppearanceCombobox(*host)) {
       GetDocument().GetPage()->GetChromeClient().OpenTextDataListChooser(*host);
       event.SetDefaultHandled();
     }
@@ -629,8 +647,10 @@ void TextFieldInputType::SubtreeHasChanged() {
 }
 
 void TextFieldInputType::OpenPopupView() {
-  if (GetElement().IsDisabledOrReadOnly())
+  if (GetElement().IsDisabledOrReadOnly() ||
+      IsBaseAppearanceCombobox(GetElement())) {
     return;
+  }
   if (ChromeClient* chrome_client = GetChromeClient())
     chrome_client->OpenTextDataListChooser(GetElement());
 }
@@ -685,6 +705,23 @@ void TextFieldInputType::SpinButtonDidReleaseMouseCapture(
     SpinButtonElement::EventDispatch event_dispatch) {
   if (event_dispatch == SpinButtonElement::kEventDispatchAllowed)
     GetElement().DispatchFormControlChangeEvent();
+}
+
+void TextFieldInputType::HandleFocusInEvent(
+    Element* old_focused_element,
+    mojom::blink::FocusType focus_type) {
+  HTMLInputElement& input = GetElement();
+  if (IsBaseAppearanceCombobox(input)) {
+    if (auto* datalist = input.DataList()) {
+      if (focus_type == mojom::blink::FocusType::kMouse) {
+        // Prevents the datalist from showing on mousedown and then getting
+        // light dismissed on mouseup. Same as the fix in
+        // MenuListSelectType::DefaultEventHandler.
+        GetElement().GetDocument().SetPopoverPointerdownTarget(datalist);
+      }
+      datalist->ShowPopoverInternal(&input, /*exception_state=*/nullptr);
+    }
+  }
 }
 
 }  // namespace blink
