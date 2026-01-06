@@ -60,12 +60,15 @@
     "HKEY_LOCAL_MACHINE\\Software\\Classes\\$CHROME_DIRECT_LAUNCH_SCHEME": {
       "exists": "required",
       "values": {
+        "": {
+          "type": "SZ",
+          "data": "URL:$CHROME_DIRECT_LAUNCH_SCHEME"
+        },
         "URL Protocol": {
           "type": "SZ",
           "data": ""
         }
-      },
-      "wow_key": "KEY_WOW64_32KEY"
+      }
     },
     "HKEY_LOCAL_MACHINE\\Software\\Classes\\$CHROME_DIRECT_LAUNCH_SCHEME\\shell\\open\\command": {
       "exists": "required",
@@ -74,8 +77,7 @@
           "type": "SZ",
           "data": "\"$PROGRAM_FILES\\$CHROME_DIR\\Application\\chrome.exe\" --single-argument %1"
         }
-      },
-      "wow_key": "KEY_WOW64_32KEY"
+      }
     },
     "HKEY_LOCAL_MACHINE\\$CHROME_UPDATE_REGISTRY_SUBKEY\\Commands\\rotate-dtkey": {
       "condition": "'$CHROME_SHORT_NAME' == 'Chrome'",

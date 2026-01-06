@@ -42,6 +42,10 @@
     "HKEY_CURRENT_USER\\Software\\Classes\\$CHROME_DIRECT_LAUNCH_SCHEME": {
       "exists": "required",
       "values": {
+        "": {
+          "type": "SZ",
+          "data": "URL:$CHROME_DIRECT_LAUNCH_SCHEME"
+        },
         "URL Protocol": {
           "type": "SZ",
           "data": ""
