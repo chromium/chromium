@@ -124,7 +124,7 @@ export class SettingsSyncControlsElement extends
       // <if expr="not is_chromeos">
       batchUploadPromoHTML_: {
         type: String,
-        value: window.trustedTypes!.emptyHTML,
+        value: window.trustedTypes!.emptyHTML as unknown as string,
         observer: 'attachOpenBatchUploadLinkClick_',
       },
       // </if>

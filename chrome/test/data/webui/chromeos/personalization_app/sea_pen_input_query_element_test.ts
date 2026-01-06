@@ -13,10 +13,10 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assert} from 'chrome://webui-test/chai.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import type {TestPersonalizationStore} from 'test_personalization_store.js';
-import type {TestSeaPenProvider} from 'test_sea_pen_interface_provider.js';
 
 import {baseSetup, getActiveElement, initElement, teardownElement} from './personalization_app_test_utils.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestSeaPenProvider} from './test_sea_pen_interface_provider.js';
 
 suite('SeaPenInputQueryElementTest', function() {
   let seaPenInputQueryElement: SeaPenInputQueryElement|null;
