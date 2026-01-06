@@ -55,9 +55,6 @@ const char kSafetyCheckAllowSafeBrowsingNotifications[] =
 const char kSafetyCheckAllowUpdateChromeNotifications[] =
     "SafetyCheckAllowUpdateChromeNotifications";
 
-const char kSafetyCheckNotificationsProvisionalEnabled[] =
-    "SafetyCheckNotificationsProvisionalEnabled";
-
 const char kSafetyCheckNotificationsSuppressDelayIfPresent[] =
     "SafetyCheckNotificationsSuppressDelayIfPresent";
 
@@ -86,13 +83,6 @@ bool AreSafetyCheckUpdateChromeNotificationsAllowed() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kSafetyCheckNotifications, kSafetyCheckAllowUpdateChromeNotifications,
       /*default_value=*/true);
-}
-
-bool ProvisionalSafetyCheckNotificationsEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kSafetyCheckNotifications, kSafetyCheckNotificationsProvisionalEnabled,
-      /*default_value=*/
-      true);
 }
 
 const base::TimeDelta SuppressDelayForSafetyCheckNotificationsIfPresent() {

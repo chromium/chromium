@@ -287,21 +287,15 @@ using segmentation_platform::TipIdentifier;
 
   self.authService = AuthenticationServiceFactory::GetForProfile(profile);
 
-  // Conditionally register for provisional Safety Check notifications if the
-  // feature is enabled.
-  //
   // TODO(crbug.com/366182129): Move Safety Check provisional notification
   // enrollment to `SafetyCheckNotificationClient` once
   // `ProvisionalPushNotificationService` circular dependencies are fixed.
-  if (IsSafetyCheckNotificationsEnabled() &&
-      ProvisionalSafetyCheckNotificationsEnabled()) {
     if (ProvisionalPushNotificationService* service =
             ProvisionalPushNotificationServiceFactory::GetForProfile(profile)) {
       service->EnrollUserToProvisionalNotifications(
           ProvisionalPushNotificationService::ClientIdState::kDisabled,
           {PushNotificationClientId::kSafetyCheck});
     }
-  }
 
   favicon::LargeIconService* largeIconService =
       IOSChromeLargeIconServiceFactory::GetForProfile(profile);

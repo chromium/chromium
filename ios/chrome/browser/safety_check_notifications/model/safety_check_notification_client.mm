@@ -67,10 +67,6 @@ bool CanSendProvisionalNotifications(
     Browser* browser) {
   CHECK(local_pref_service);
 
-  if (!ProvisionalSafetyCheckNotificationsEnabled()) {
-    return false;
-  }
-
   if (!browser ||
       ![PushNotificationUtil
           provisionalAllowedByPolicyForProfile:browser->GetProfile()]) {
