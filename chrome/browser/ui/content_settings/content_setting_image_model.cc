@@ -1317,8 +1317,8 @@ bool ContentSettingProtectedMediaIdentifierImageModel::UpdateAndGetVisibility(
 // Base class ------------------------------------------------------------------
 
 gfx::Image ContentSettingImageModel::GetIcon(SkColor icon_color) const {
-  int icon_size =
-      icon_size_.value_or(GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE));
+  int icon_size = icon_size_.value_or(
+      GetLayoutConstant(LayoutConstant::kLocationBarTrailingIconSize));
   return gfx::Image(gfx::CreateVectorIconWithBadge(*icon_, icon_size,
                                                    icon_color, *icon_badge_));
 }

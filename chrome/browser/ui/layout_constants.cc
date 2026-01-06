@@ -33,7 +33,7 @@ int GetLayoutConstant(LayoutConstant constant) {
       // The fixed margin ensures the bookmark buttons appear centered relative
       // to the white space above and below.
       const int bookmark_bar_attached_vertical_margin = 6;
-      return GetLayoutConstant(BOOKMARK_BAR_BUTTON_HEIGHT) +
+      return GetLayoutConstant(kBookmarkBarButtonHeight) +
              bookmark_bar_attached_vertical_margin;
     }
     case BOOKMARK_BAR_BUTTON_HEIGHT:
@@ -41,7 +41,7 @@ int GetLayoutConstant(LayoutConstant constant) {
       return touch_ui ? 36 : 28;
     case BOOKMARK_BAR_BUTTON_PADDING:
     case LayoutConstant::kBookmarkBarButtonPadding:
-      return GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);
+      return GetLayoutConstant(kToolbarElementPadding);
     case BOOKMARK_BAR_BUTTON_IMAGE_LABEL_PADDING:
     case LayoutConstant::kBookmarkBarButtonImageLabelPadding:
       return 6;
@@ -99,7 +99,7 @@ int GetLayoutConstant(LayoutConstant constant) {
       return touch_ui ? 20 : 16;
     case LOCATION_BAR_LEADING_ICON_SIZE:
     case LayoutConstant::kLocationBarLeadingIconSize:
-      return GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
+      return GetLayoutConstant(kLocationBarIconSize);
     case LOCATION_BAR_TRAILING_ICON_SIZE:
     case LayoutConstant::kLocationBarTrailingIconSize:
       return 20;
@@ -123,11 +123,11 @@ int GetLayoutConstant(LayoutConstant constant) {
       return touch_ui ? 24 : 16;
     case TAB_HEIGHT:
     case LayoutConstant::kTabHeight:
-      return 34 + GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
+      return 34 + GetLayoutConstant(kTabstripToolbarOverlap);
     case TAB_STRIP_HEIGHT:
     case LayoutConstant::kTabStripHeight:
-      return GetLayoutConstant(TAB_HEIGHT) +
-             GetLayoutConstant(TAB_STRIP_PADDING);
+      return GetLayoutConstant(kTabHeight) +
+             GetLayoutConstant(kTabStripPadding);
     case TAB_STRIP_PADDING:
     case LayoutConstant::kTabStripPadding:
       return 6;

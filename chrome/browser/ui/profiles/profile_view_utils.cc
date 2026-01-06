@@ -107,7 +107,8 @@ std::u16string GetProfileMenuDisplayName(
     profile_name = profile_attributes->GetLocalProfileName();
   }
   profile_name = ui::EscapeMenuLabelAmpersands(gfx::TruncateString(
-      profile_name, GetLayoutConstant(APP_MENU_MAXIMUM_CHARACTER_LENGTH),
+      profile_name,
+      GetLayoutConstant(LayoutConstant::kAppMenuMaximumCharacterLength),
       gfx::CHARACTER_BREAK));
 
   return profile_name;

@@ -294,8 +294,8 @@ enum LayoutInset {
   DOWNLOAD_ROW,
 
   // The padding used around the icon inside the LocationBar. The full width of
-  // the icon would be LOCATION_BAR_ICON_SIZE + 2 * inset.width(). The full
-  // height of the icon would be LOCATION_BAR_ICON_SIZE + 2 * inset.height().
+  // the icon would be kLocationBarIconSize + 2 * inset.width(). The full
+  // height of the icon would be kLocationBarIconSize + 2 * inset.height().
   // Icons may additionally be spaced horizontally by
   // LOCATION_BAR_ELEMENT_PADDING, but this region is not part of the icon view
   // (e.g. does not highlight on hover).

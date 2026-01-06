@@ -287,15 +287,15 @@ gfx::Image ChromeOmniboxClient::GetSizedIcon(
     const gfx::VectorIcon& vector_icon_type,
     SkColor vector_icon_color) const {
   return gfx::Image(gfx::CreateVectorIcon(
-      vector_icon_type, GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
+      vector_icon_type, GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
       vector_icon_color));
 }
 
 gfx::Image ChromeOmniboxClient::GetSizedIcon(const SkBitmap* bitmap) const {
   CHECK(bitmap);
 
-  // First, resize the bitmap to `LOCATION_BAR_ICON_SIZE`.
-  const int icon_size = GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
+  // First, resize the bitmap to `kLocationBarIconSize`.
+  const int icon_size = GetLayoutConstant(LayoutConstant::kLocationBarIconSize);
   return gfx::Image(gfx::ImageSkiaOperations::CreateResizedImage(
       gfx::ImageSkia::CreateFrom1xBitmap(*bitmap),
       skia::ImageOperations::ResizeMethod::RESIZE_LANCZOS3,
@@ -307,7 +307,7 @@ gfx::Image ChromeOmniboxClient::GetSizedIcon(const gfx::Image& icon) const {
     return icon;
   }
 
-  const int icon_size = GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
+  const int icon_size = GetLayoutConstant(LayoutConstant::kLocationBarIconSize);
   // In touch mode, icons are 20x20. FaviconCache and ExtensionIconManager both
   // guarantee favicons and extension icons will be 16x16, so add extra padding
   // around them to align them vertically with the other vector icons.

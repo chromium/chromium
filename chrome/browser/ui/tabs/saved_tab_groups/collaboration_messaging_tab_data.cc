@@ -192,7 +192,8 @@ ui::ImageModel CollaborationMessagingTabData::GetPageActionImage(
 ui::ImageModel CollaborationMessagingTabData::GetPageActionImage(
     float scale_factor,
     const ui::ColorProvider* color_provider) const {
-  const int icon_width = GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE);
+  const int icon_width =
+      GetLayoutConstant(LayoutConstant::kLocationBarTrailingIconSize);
   return GetImage(scale_factor, color_provider, icon_width,
                   /*add_border=*/true);
 }
@@ -201,7 +202,8 @@ ui::ImageModel CollaborationMessagingTabData::GetHoverCardImage(
     const views::Widget* widget) const {
   auto fallback_params =
       GetCollaborationAvatarFallbackParametersFromWidget(widget);
-  const int icon_width = GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH);
+  const int icon_width =
+      GetLayoutConstant(LayoutConstant::kTabAlertIndicatorIconWidth);
   return GetImage(fallback_params.scale_factor, fallback_params.color_provider,
                   icon_width,
                   /*add_border=*/false);

@@ -121,8 +121,8 @@ ui::ImageModel GetAlertImageModel(TabAlert alert_state,
   // the other tab alert indicator icons.
   const int image_width =
       GetLayoutConstant(alert_state == tabs::TabAlert::kTabCapturing
-                            ? TAB_ALERT_INDICATOR_CAPTURE_ICON_WIDTH
-                            : TAB_ALERT_INDICATOR_ICON_WIDTH);
+                            ? LayoutConstant::kTabAlertIndicatorCaptureIconWidth
+                            : LayoutConstant::kTabAlertIndicatorIconWidth);
 
   return ui::ImageModel::FromVectorIcon(GetAlertIcon(alert_state), icon_color,
                                         image_width);
