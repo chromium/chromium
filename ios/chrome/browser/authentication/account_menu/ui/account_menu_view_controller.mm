@@ -166,12 +166,12 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 #pragma mark - Private
 
 // Sets the activity indicator.
-- (void)setActivityIndicator:(TableViewAccountCell*)cell {
+- (void)setActivityIndicator:(UITableViewCell*)cell {
   UIActivityIndicatorView* activityIndicatorView =
       [[UIActivityIndicatorView alloc] init];
   activityIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
   activityIndicatorView.color = [UIColor colorNamed:kTextSecondaryColor];
-  [cell setStatusView:activityIndicatorView];
+  [cell setAccessoryView:activityIndicatorView];
   [activityIndicatorView startAnimating];
 }
 
@@ -664,10 +664,9 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   if (!_selectedIndexPath) {
     return;
   }
-  TableViewAccountCell* cell =
-      base::apple::ObjCCastStrict<TableViewAccountCell>(
-          [self.tableView cellForRowAtIndexPath:_selectedIndexPath]);
-  [cell setStatusView:nil];
+  UITableViewCell* cell =
+      [self.tableView cellForRowAtIndexPath:_selectedIndexPath];
+  [cell setAccessoryView:nil];
   [self.tableView deselectRowAtIndexPath:_selectedIndexPath animated:YES];
   _selectedIndexPath = nil;
   self.modalInPresentation = NO;

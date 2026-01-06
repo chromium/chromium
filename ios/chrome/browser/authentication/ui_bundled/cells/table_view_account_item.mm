@@ -50,37 +50,28 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
   cell.imageView.image = self.image;
   cell.textLabel.text = self.text;
   cell.detailTextLabel.text = self.detailText;
-  if (self.shouldDisplayError) {
+  if (self.detailImage == TableViewAccountDetailImage::kError) {
     [cell setStatusViewWithImage:DefaultSymbolWithPointSize(
                                      kErrorCircleFillSymbol,
                                      kErrorIconImageSize)];
   } else {
-    [cell setStatusView:nil];
     cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   }
-  [cell showManagementIcon:self.managed];
+  BOOL isManaged = self.detailImage == TableViewAccountDetailImage::kManaged;
+  [cell showManagementIcon:isManaged];
 
   cell.userInteractionEnabled = self.mode == TableViewAccountModeEnabled;
-  if (self.mode != TableViewAccountModeDisabled) {
-    cell.contentView.alpha = 1;
-    UIImageView* accessoryImage =
-        base::apple::ObjCCastStrict<UIImageView>(cell.accessoryView);
-    accessoryImage.tintColor =
-        [accessoryImage.tintColor colorWithAlphaComponent:1];
-  } else {
-    cell.userInteractionEnabled = NO;
-    cell.contentView.alpha = 0.5;
-    UIImageView* accessoryImage =
-        base::apple::ObjCCastStrict<UIImageView>(cell.accessoryView);
-    accessoryImage.tintColor =
-        [accessoryImage.tintColor colorWithAlphaComponent:0.5];
-  }
+  cell.contentView.alpha = 1;
+  UIImageView* accessoryImage =
+      base::apple::ObjCCastStrict<UIImageView>(cell.accessoryView);
+  accessoryImage.tintColor =
+      [accessoryImage.tintColor colorWithAlphaComponent:1];
 
   // When not set, the screen readers will read this cell as "text, detailText".
   // Add a custom accessibility label for managed accounts to append "managed by
   // your organization" so that the screen readers read this cell as "text,
   // detailText, managed by your organization".
-  if (AreSeparateProfilesForManagedAccountsEnabled() && self.managed) {
+  if (AreSeparateProfilesForManagedAccountsEnabled() && isManaged) {
     cell.accessibilityLabel =
         self.text && self.detailText
             ? l10n_util::GetNSStringF(
@@ -325,6 +316,7 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
   self.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   self.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   [self setStatusView:nil];
+  self.accessoryView = nil;
   self.userInteractionEnabled = YES;
   self.contentView.alpha = 1;
   UIImageView* accessoryImage =

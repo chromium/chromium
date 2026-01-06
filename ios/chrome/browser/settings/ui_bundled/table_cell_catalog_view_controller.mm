@@ -660,7 +660,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       @"Syncing to AccountUserNameAccount@example.com";
   accountItemDetailWithError.accessoryType =
       UITableViewCellAccessoryDisclosureIndicator;
-  accountItemDetailWithError.shouldDisplayError = YES;
+  accountItemDetailWithError.detailImage = TableViewAccountDetailImage::kError;
   [model addItem:accountItemDetailWithError
       toSectionWithIdentifier:SectionIdentifierAccount];
 

@@ -303,7 +303,8 @@ TEST_F(SettingsTableViewControllerTest, HoldAccountStorageErrorWhenEligible) {
   // Verify that the account item is in an error state.
   TableViewAccountItem* identityAccountItem =
       base::apple::ObjCCast<TableViewAccountItem>(account_items[0]);
-  EXPECT_TRUE(identityAccountItem.shouldDisplayError);
+  ASSERT_EQ(TableViewAccountDetailImage::kError,
+            identityAccountItem.detailImage);
 }
 
 // Verifies that the error is removed from the model when the Account Storage
@@ -326,7 +327,8 @@ TEST_F(SettingsTableViewControllerTest, ClearAccountStorageErrorWhenResolved) {
   // Verify that the account item is in an error state.
   TableViewAccountItem* identityAccountItem =
       base::apple::ObjCCast<TableViewAccountItem>(account_items[0]);
-  ASSERT_TRUE(identityAccountItem.shouldDisplayError);
+  ASSERT_EQ(TableViewAccountDetailImage::kError,
+            identityAccountItem.detailImage);
 
   // Resolve the account error.
   sync_service_->GetUserSettings()->SetDecryptionPassphrase(kSyncPassphrase);
@@ -341,7 +343,8 @@ TEST_F(SettingsTableViewControllerTest, ClearAccountStorageErrorWhenResolved) {
   identityAccountItem =
       base::apple::ObjCCast<TableViewAccountItem>(account_items[0]);
   ASSERT_TRUE(identityAccountItem != nil);
-  EXPECT_FALSE(identityAccountItem.shouldDisplayError);
+  ASSERT_EQ(TableViewAccountDetailImage::kNone,
+            identityAccountItem.detailImage);
 }
 
 // Verifies that when eligible the account item model doesn't have the Account
@@ -363,7 +366,8 @@ TEST_F(SettingsTableViewControllerTest, DontHoldAccountErrorWhenNoError) {
   TableViewAccountItem* identityAccountItem =
       base::apple::ObjCCast<TableViewAccountItem>(account_items[0]);
   ASSERT_TRUE(identityAccountItem != nil);
-  EXPECT_FALSE(identityAccountItem.shouldDisplayError);
+  ASSERT_EQ(TableViewAccountDetailImage::kNone,
+            identityAccountItem.detailImage);
 }
 
 // Verifies that if the Save to Photos flag is enabled and Save to Photos is

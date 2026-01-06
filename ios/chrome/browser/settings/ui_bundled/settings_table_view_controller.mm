@@ -1746,8 +1746,9 @@ struct EnhancedSafeBrowsingActivePromoData
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForProfile(_profile);
   CHECK(syncService, base::NotFatalUntil::M151);
-  identityAccountItem.shouldDisplayError =
-      GetAccountErrorUIInfo(syncService) != nil;
+  if (GetAccountErrorUIInfo(syncService) != nil) {
+    identityAccountItem.detailImage = TableViewAccountDetailImage::kError;
+  }
 }
 
 - (void)reloadAccountCell {
@@ -1779,9 +1780,11 @@ struct EnhancedSafeBrowsingActivePromoData
   }
 
   UITableViewCell* accountCell = nil;
-  for (UITableViewCell* cell in [self.tableView visibleCells]) {
-    if ([cell isKindOfClass:[TableViewAccountCell class]]) {
-      accountCell = cell;
+  for (NSIndexPath* visibleIndexPath in self.tableView
+           .indexPathsForVisibleRows) {
+    if ([self.tableViewModel itemTypeForIndexPath:visibleIndexPath] ==
+        SettingsItemTypeAccount) {
+      accountCell = [self.tableView cellForRowAtIndexPath:visibleIndexPath];
       break;
     }
   }
