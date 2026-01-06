@@ -10,6 +10,7 @@
 #import <memory>
 #import <utility>
 
+#import "base/auto_reset.h"
 #import "base/containers/span.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
@@ -25,6 +26,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/timer/elapsed_timer.h"
 #import "ios/web/common/features.h"
+#import "ios/web/navigation/back_forward_navigation_type.h"
 #import "ios/web/navigation/crw_navigation_item_holder.h"
 #import "ios/web/navigation/navigation_manager_delegate.h"
 #import "ios/web/navigation/wk_navigation_util.h"
@@ -109,6 +111,64 @@ int ClampLastCommittedItemIndex(int last_committed_item_index, int count) {
 namespace web {
 
 const char kRestoreNavigationItemCount[] = "IOS.RestoreNavigationItemCount";
+
+class NavigationManagerImpl::GoToParams {
+ public:
+  constexpr GoToParams(GoToParams&&) = default;
+  constexpr GoToParams(const GoToParams&) = default;
+
+  GoToParams& operator=(GoToParams&&) = delete;
+  GoToParams& operator=(const GoToParams&) = delete;
+
+  constexpr ~GoToParams() = default;
+
+  constexpr static GoToParams GoBackward() {
+    return GoToParams(BackForwardNavigationType::kBackward, -1);
+  }
+
+  constexpr static GoToParams GoForward() {
+    return GoToParams(BackForwardNavigationType::kForward, -1);
+  }
+
+  constexpr static GoToParams GoToIndex(int index) {
+    return GoToParams(BackForwardNavigationType::kToEntry, index);
+  }
+
+  GoToParams& SetInitiationType(NavigationInitiationType value) {
+    initiation_type_ = value;
+    return *this;
+  }
+
+  GoToParams& SetHasUserGesture(bool value) {
+    has_user_gesture_ = value;
+    return *this;
+  }
+
+  constexpr BackForwardNavigationType navigation_type() const {
+    return navigation_type_;
+  }
+
+  constexpr NavigationInitiationType initiation_type() const {
+    return initiation_type_;
+  }
+
+  constexpr bool has_user_gesture() const { return has_user_gesture_; }
+
+  constexpr int index() const {
+    CHECK_EQ(navigation_type_, BackForwardNavigationType::kToEntry);
+    return index_;
+  }
+
+ private:
+  constexpr GoToParams(BackForwardNavigationType navigation_type, int index)
+      : navigation_type_(navigation_type), index_(index) {}
+
+  const BackForwardNavigationType navigation_type_;
+  const int index_;
+
+  NavigationInitiationType initiation_type_ = NavigationInitiationType::NONE;
+  bool has_user_gesture_ = false;
+};
 
 NavigationManager::WebLoadParams::WebLoadParams(const GURL& url) : url(url) {}
 
@@ -554,9 +614,22 @@ void NavigationManagerImpl::UpdateCurrentItemForReplaceState(
   current_item->SetPostData(nil);
 }
 
-void NavigationManagerImpl::GoToIndex(int index,
-                                      NavigationInitiationType initiation_type,
-                                      bool has_user_gesture) {
+void NavigationManagerImpl::GoTo(GoToParams params) {
+  int index = 0;
+  switch (params.navigation_type()) {
+    case BackForwardNavigationType::kBackward:
+      index = GetIndexForOffset(-1);
+      break;
+
+    case BackForwardNavigationType::kForward:
+      index = GetIndexForOffset(+1);
+      break;
+
+    case BackForwardNavigationType::kToEntry:
+      index = params.index();
+      break;
+  }
+
   if (index < 0 || index >= GetItemCount()) {
     // Button actions are executed asynchronously, so it is possible for the
     // client to call this with an invalid index if the user quickly taps the
@@ -581,10 +654,9 @@ void NavigationManagerImpl::GoToIndex(int index,
       item->GetTransitionType() | ui::PAGE_TRANSITION_FORWARD_BACK));
   WKBackForwardListItem* wk_item = web_view_cache_.GetWKItemAtIndex(index);
   if (wk_item) {
-    going_to_back_forward_list_item_ = true;
-    delegate_->GoToBackForwardListItem(wk_item, item, initiation_type,
-                                       has_user_gesture);
-    going_to_back_forward_list_item_ = false;
+    base::AutoReset<bool> auto_reset(&going_to_back_forward_list_item_, true);
+    delegate_->GoToBackForwardListItem(wk_item, item, params.initiation_type(),
+                                       params.has_user_gesture());
   } else {
     DCHECK(index == 0 && empty_window_open_item_)
         << " wk_item should not be nullptr. index: " << index
@@ -594,8 +666,9 @@ void NavigationManagerImpl::GoToIndex(int index,
 }
 
 void NavigationManagerImpl::GoToIndex(int index) {
-  GoToIndex(index, NavigationInitiationType::BROWSER_INITIATED,
-            /*has_user_gesture=*/true);
+  GoTo(GoToParams::GoToIndex(index)
+           .SetInitiationType(NavigationInitiationType::BROWSER_INITIATED)
+           .SetHasUserGesture(true));
 }
 
 BrowserState* NavigationManagerImpl::GetBrowserState() const {
@@ -847,11 +920,15 @@ bool NavigationManagerImpl::CanGoToOffset(int offset) const {
 }
 
 void NavigationManagerImpl::GoBack() {
-  GoToIndex(GetIndexForOffset(-1));
+  GoTo(GoToParams::GoBackward()
+           .SetInitiationType(NavigationInitiationType::BROWSER_INITIATED)
+           .SetHasUserGesture(true));
 }
 
 void NavigationManagerImpl::GoForward() {
-  GoToIndex(GetIndexForOffset(1));
+  GoTo(GoToParams::GoForward()
+           .SetInitiationType(NavigationInitiationType::BROWSER_INITIATED)
+           .SetHasUserGesture(true));
 }
 
 void NavigationManagerImpl::Reload(ReloadType reload_type,
