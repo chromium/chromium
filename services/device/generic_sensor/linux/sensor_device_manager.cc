@@ -4,7 +4,6 @@
 
 #include "services/device/generic_sensor/linux/sensor_device_manager.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -136,7 +135,7 @@ void SensorDeviceManager::OnDeviceAdded(ScopedUdevDevicePtr dev) {
     }
 
     // Update own cache of known sensor devices.
-    if (!base::Contains(sensors_by_node_, device_node))
+    if (!sensors_by_node_.contains(device_node))
       sensors_by_node_[device_node] = data.type;
 
     std::unique_ptr<SensorInfoLinux> device(new SensorInfoLinux(

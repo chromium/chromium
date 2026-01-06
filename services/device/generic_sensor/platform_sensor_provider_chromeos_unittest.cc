@@ -459,7 +459,7 @@ TEST_F(PlatformSensorProviderChromeOSTest, SensorDeviceDisconnectWithReason) {
   EXPECT_FALSE(sensor_devices_[0]->HasReceivers());
   EXPECT_TRUE(sensor_devices_[2]->HasReceivers());
 
-  EXPECT_FALSE(base::Contains(provider_->sensors_, 2 /* gyro_lid's id */));
+  EXPECT_FALSE(provider_->sensors_.contains(2));
   EXPECT_EQ(provider_->sensor_id_by_type_[mojom::SensorType::ACCELEROMETER],
             3 /* accel_base's id */);
   EXPECT_EQ(provider_->sensor_id_by_type_[mojom::SensorType::GYROSCOPE],

@@ -9,7 +9,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"

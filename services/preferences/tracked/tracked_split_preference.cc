@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/values.h"
@@ -122,18 +121,17 @@ bool TrackedSplitPreference::EnforceAndReport(
       // attempting to reset keys on a non-existent dictionary.
       if (dict_value) {
         for (const std::string& key : invalid_keys) {
-          base::Value new_path(pref_path_ + "." + key);
-          if (!base::Contains(*reset_prefs_list, new_path)) {
-            reset_prefs_list->Append(std::move(new_path));
+          std::string new_path(pref_path_ + "." + key);
+          if (!reset_prefs_list->contains(new_path)) {
+            reset_prefs_list->Append(new_path);
           }
           dict_value->Remove(key);
         }
       }
     } else {
       if (value) {
-        base::Value new_path(pref_path_);
-        if (!base::Contains(*reset_prefs_list, new_path)) {
-          reset_prefs_list->Append(std::move(new_path));
+        if (!reset_prefs_list->contains(pref_path_)) {
+          reset_prefs_list->Append(pref_path_);
         }
       }
       pref_store_contents.RemoveByDottedPath(pref_path_);

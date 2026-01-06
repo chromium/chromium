@@ -5,7 +5,6 @@
 #include "services/network/orb/orb_impl.h"
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -515,7 +514,7 @@ void OpaqueResponseBlockingAnalyzer::StoreAllowedAudioVideoRequest(
 
 bool OpaqueResponseBlockingAnalyzer::IsAllowedAudioVideoRequest(
     const GURL& media_url) {
-  return base::Contains(*per_factory_state_, media_url);
+  return per_factory_state_->contains(media_url);
 }
 
 }  // namespace network::orb

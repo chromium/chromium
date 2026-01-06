@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/uuid.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -200,7 +199,7 @@ void FakeHidManager::Connect(
     bool allow_protected_reports,
     bool allow_fido_reports,
     ConnectCallback callback) {
-  if (!base::Contains(devices_, device_guid)) {
+  if (!devices_.contains(device_guid)) {
     std::move(callback).Run(mojo::NullRemote());
     return;
   }
@@ -270,7 +269,7 @@ mojom::HidDeviceInfoPtr FakeHidManager::CreateAndAddDeviceWithTopLevelUsage(
 
 void FakeHidManager::AddDevice(mojom::HidDeviceInfoPtr device) {
   std::string guid = device->guid;
-  DCHECK(!base::Contains(devices_, guid));
+  DCHECK(!devices_.contains(guid));
   devices_[guid] = std::move(device);
 
   const mojom::HidDeviceInfoPtr& device_info = devices_[guid];
@@ -279,7 +278,7 @@ void FakeHidManager::AddDevice(mojom::HidDeviceInfoPtr device) {
 }
 
 void FakeHidManager::RemoveDevice(const std::string& guid) {
-  if (base::Contains(devices_, guid)) {
+  if (devices_.contains(guid)) {
     const mojom::HidDeviceInfoPtr& device_info = devices_[guid];
     for (auto& client : clients_)
       client->DeviceRemoved(device_info->Clone());
@@ -288,7 +287,7 @@ void FakeHidManager::RemoveDevice(const std::string& guid) {
 }
 
 void FakeHidManager::ChangeDevice(mojom::HidDeviceInfoPtr device) {
-  DCHECK(base::Contains(devices_, device->guid));
+  DCHECK(devices_.contains(device->guid));
   mojom::HidDeviceInfoPtr& device_info = devices_[device->guid];
   device_info = std::move(device);
   for (auto& client : clients_)

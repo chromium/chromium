@@ -5,7 +5,6 @@
 #include "services/screen_ai/proto/main_content_extractor_proto_convertor.h"
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/strings/string_util.h"

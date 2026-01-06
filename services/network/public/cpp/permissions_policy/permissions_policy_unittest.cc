@@ -7,7 +7,6 @@
 #include <optional>
 #include <unordered_set>
 
-#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"

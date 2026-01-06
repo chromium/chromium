@@ -9,7 +9,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -325,7 +324,7 @@ void MediaController::MediaSessionImagesChanged(
       // No image is available from the session so we should clear any image the
       // observers might have.
       holder->ClearImage(std::nullopt);
-    } else if (base::Contains(types_changed, holder->type())) {
+    } else if (types_changed.contains(holder->type())) {
       holder->ImagesChanged(it->second, std::nullopt);
     }
   }

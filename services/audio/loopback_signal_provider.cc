@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/zip.h"

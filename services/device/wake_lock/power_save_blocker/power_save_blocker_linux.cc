@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -180,7 +179,7 @@ class PowerSaveBlocker::Delegate {
   // Makes the Inhibit method call after ensuring the service exists.
   void DoInhibitCall(DBusApi api) {
     const DbusServiceInfo& service_info = kServiceInfos.at(api);
-    if (base::Contains(api_availability_cache_, api)) {
+    if (api_availability_cache_.contains(api)) {
       OnInhibitServiceAvailable(api, api_availability_cache_[api]);
     } else {
       dbus_utils::NameHasOwner(

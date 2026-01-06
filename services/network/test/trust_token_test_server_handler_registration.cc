@@ -10,7 +10,6 @@
 
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/test/bind.h"
 #include "net/http/http_request_headers.h"
@@ -63,9 +62,9 @@ void RegisterTrustTokenTestHandlers(net::EmbeddedTestServer* test_server,
         if (request.relative_url != kIssuanceRelativePath)
           return nullptr;
 
-        if (!base::Contains(request.headers, "Sec-Private-State-Token") ||
-            !base::Contains(request.headers,
-                            "Sec-Private-State-Token-Crypto-Version")) {
+        if (!request.headers.contains("Sec-Private-State-Token") ||
+            !request.headers.contains(
+                "Sec-Private-State-Token-Crypto-Version")) {
           return MakeTrustTokenFailureResponse();
         }
 
@@ -84,9 +83,9 @@ void RegisterTrustTokenTestHandlers(net::EmbeddedTestServer* test_server,
         if (request.relative_url != kRedemptionRelativePath)
           return nullptr;
 
-        if (!base::Contains(request.headers, "Sec-Private-State-Token") ||
-            !base::Contains(request.headers,
-                            "Sec-Private-State-Token-Crypto-Version")) {
+        if (!request.headers.contains("Sec-Private-State-Token") ||
+            !request.headers.contains(
+                "Sec-Private-State-Token-Crypto-Version")) {
           return MakeTrustTokenFailureResponse();
         }
 
@@ -108,7 +107,7 @@ void RegisterTrustTokenTestHandlers(net::EmbeddedTestServer* test_server,
         GURL::Replacements replacements;
         std::string host_and_maybe_port =
             request.headers.at(net::HttpRequestHeaders::kHost);
-        if (base::Contains(host_and_maybe_port, ':'))
+        if (host_and_maybe_port.contains(':'))
           host_and_maybe_port.resize(host_and_maybe_port.find(':'));
         replacements.SetHostStr(host_and_maybe_port);
         GURL destination_url = request.GetURL().ReplaceComponents(replacements);

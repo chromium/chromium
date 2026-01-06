@@ -8,7 +8,6 @@
 #include <iterator>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -77,7 +76,7 @@ void PlatformSensorChromeOS::OnSampleUpdated(
   }
 
   for (auto index : channel_indices_) {
-    if (!base::Contains(sample, index)) {
+    if (!sample.contains(index)) {
       LOG(ERROR) << "Missing channel: " << iio_channel_ids_[index]
                  << " in sample.";
       OnErrorOccurred(chromeos::sensors::mojom::ObserverErrorType::READ_FAILED);

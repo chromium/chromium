@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/integrity_metadata.h"

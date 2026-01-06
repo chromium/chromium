@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
@@ -489,10 +488,9 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
   std::string hash_suffix = TruncateSuffix(sct_hashdance_metadata_->leaf_hash,
                                            kHashdanceHashPrefixLength);
   hash_suffix = base::Base64Encode(base::as_byte_span(hash_suffix));
-  base::Value hash_suffix_value(std::move(hash_suffix));
   // TODO(nsatragno): it would be neat if the backend returned a sorted list and
   // we could binary search it instead.
-  if (base::Contains(*suffix_value, hash_suffix_value)) {
+  if (suffix_value->contains(hash_suffix)) {
     // Found the SCT in the suffix list, all done.
     RecordLookupQueryResult(LookupQueryResult::kSCTSuffixFound);
     std::move(done_callback_).Run(reporter_key_);

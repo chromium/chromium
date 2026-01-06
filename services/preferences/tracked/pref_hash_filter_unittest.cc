@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
@@ -1761,10 +1760,8 @@ TEST_P(PrefHashFilterTest, TrackedSplitPreferenceResetStored) {
       pref_store_contents_.FindList(user_prefs::kTrackedPreferencesReset);
   ASSERT_TRUE(reset_prefs);
   ASSERT_EQ(2u, reset_prefs->size());
-  EXPECT_TRUE(base::Contains(*reset_prefs,
-                             base::Value(std::string(kSplitPref) + ".a")));
-  EXPECT_TRUE(base::Contains(*reset_prefs,
-                             base::Value(std::string(kSplitPref) + ".c")));
+  EXPECT_TRUE(reset_prefs->contains(std::string(kSplitPref) + ".a"));
+  EXPECT_TRUE(reset_prefs->contains(std::string(kSplitPref) + ".c"));
 }
 
 TEST_P(PrefHashFilterTest, CleanupDeprecatedTrackedDictionary) {

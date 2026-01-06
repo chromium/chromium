@@ -15,7 +15,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -1212,7 +1211,7 @@ void UsbDeviceHandleUsbfs::UrbDiscarded(Transfer* transfer) {
 
 bool UsbDeviceHandleUsbfs::IsInterfaceClaimedByThis(
     int interface_number) const {
-  return base::Contains(interfaces_, interface_number);
+  return interfaces_.contains(interface_number);
 }
 
 bool UsbDeviceHandleUsbfs::IsInterfaceClaimedByAny(int interface_number) const {

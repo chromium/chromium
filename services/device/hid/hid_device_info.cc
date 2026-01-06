@@ -4,7 +4,6 @@
 
 #include "services/device/hid/hid_device_info.h"
 
-#include "base/containers/contains.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "services/device/public/cpp/hid/hid_blocklist.h"

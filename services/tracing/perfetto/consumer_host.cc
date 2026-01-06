@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -350,7 +349,7 @@ void ConsumerHost::TracingSession::MaybeSendEnableTracingAck() {
 }
 
 bool ConsumerHost::TracingSession::IsExpectedPid(base::ProcessId pid) const {
-  return filtered_pids_.empty() || base::Contains(filtered_pids_, pid);
+  return filtered_pids_.empty() || filtered_pids_.contains(pid);
 }
 
 void ConsumerHost::TracingSession::ChangeTraceConfig(
