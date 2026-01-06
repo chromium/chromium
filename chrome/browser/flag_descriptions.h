@@ -8272,10 +8272,6 @@ inline constexpr char kElasticOverscrollName[] = "Elastic Overscroll";
 inline constexpr char kElasticOverscrollDescription[] =
     "Enables Elastic Overscrolling on touchscreens and precision touchpads.";
 
-inline constexpr char kElementCaptureName[] = "Element Capture";
-inline constexpr char kElementCaptureDescription[] =
-    "Enables Element Capture - an API allowing the mutation of a tab-capture "
-    "media track into a track capturing just a specific DOM element.";
 
 inline constexpr char kUIDebugToolsName[] = "Debugging tools for UI";
 inline constexpr char kUIDebugToolsDescription[] =

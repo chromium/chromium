@@ -8895,10 +8895,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"element-capture", flag_descriptions::kElementCaptureName,
-     flag_descriptions::kElementCaptureDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(blink::features::kElementCapture)},
-
     {"element-capture-cross-tab",
      flag_descriptions::kCrossTabElementCaptureName,
      flag_descriptions::kCrossTabElementCaptureDescription, kOsDesktop,

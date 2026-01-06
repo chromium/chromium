@@ -2771,15 +2771,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "element-capture",
-    "owners": [
-      "eladalon@chromium.org",
-      "jophba@chromium.org",
-      "mfoltz@chromium.org"
-    ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "element-capture-cross-tab",
     "owners": [
       "eladalon@chromium.org",
