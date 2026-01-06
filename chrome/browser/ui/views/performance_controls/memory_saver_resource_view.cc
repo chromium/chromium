@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/numerics/angle_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/grit/generated_resources.h"
@@ -53,10 +53,10 @@ constexpr int kTickStrokeWidth = 2;
 constexpr int kBucketCount = 4;
 constexpr double kBucketWidthDegrees = 180 / kBucketCount;
 
-constexpr base::ByteCount kMemorySaverChartPmf25Percentile = base::MiB(62);
-constexpr base::ByteCount kMemorySaverChartPmf50Percentile = base::MiB(112);
-constexpr base::ByteCount kMemorySaverChartPmf75Percentile = base::MiB(197);
-constexpr base::ByteCount kMemorySaverChartPmf99Percentile = base::MiB(800);
+constexpr base::ByteSize kMemorySaverChartPmf25Percentile = base::MiBU(62);
+constexpr base::ByteSize kMemorySaverChartPmf50Percentile = base::MiBU(112);
+constexpr base::ByteSize kMemorySaverChartPmf75Percentile = base::MiBU(197);
+constexpr base::ByteSize kMemorySaverChartPmf99Percentile = base::MiBU(800);
 
 // Enum to represent memory savings quartiles.
 enum MemorySavingsQuartile {
@@ -81,7 +81,7 @@ constexpr auto kQuartilesLabels =
 // Returns which of the four quartiles of memory savings this number falls into.
 // The lowest memory usage quartile (0-24th percentile) returns 0 and the
 // highest quartile (75-99 percentile) returns 3.
-int GetMemorySavingsQuartile(base::ByteCount memory_savings) {
+int GetMemorySavingsQuartile(base::ByteSize memory_savings) {
   if (memory_savings < kMemorySaverChartPmf25Percentile) {
     return MemorySavingsQuartile::kLow;
   } else if (memory_savings < kMemorySaverChartPmf50Percentile) {
@@ -99,7 +99,7 @@ class GaugeView : public views::FlexLayoutView {
   METADATA_HEADER(GaugeView, views::FlexLayoutView)
 
  public:
-  explicit GaugeView(base::ByteCount memory_savings)
+  explicit GaugeView(base::ByteSize memory_savings)
       : memory_savings_(memory_savings) {
     SetOrientation(views::LayoutOrientation::kVertical);
     SetMainAxisAlignment(views::LayoutAlignment::kEnd);
@@ -139,7 +139,7 @@ class GaugeView : public views::FlexLayoutView {
   }
 
  private:
-  const base::ByteCount memory_savings_;
+  const base::ByteSize memory_savings_;
 
   // Draws an arc starting at the far left, with the specified center point and
   // angle (in degrees).
@@ -194,14 +194,13 @@ END_METADATA
 }  // namespace
 
 MemorySaverResourceView::MemorySaverResourceView(
-    base::ByteCount memory_savings_bytes) {
+    base::ByteSize memory_savings_bytes) {
   SetOrientation(views::LayoutOrientation::kVertical);
 
   auto* gauge_view =
       AddChildView(std::make_unique<GaugeView>(memory_savings_bytes));
 
-  std::u16string formatted_savings =
-      ui::FormatBytes(base::ByteCount(memory_savings_bytes));
+  std::u16string formatted_savings = ui::FormatBytes(memory_savings_bytes);
   auto* memory_savings = gauge_view->AddChildView(
       std::make_unique<views::Label>(formatted_savings));
   memory_savings->SetProperty(views::kElementIdentifierKey,

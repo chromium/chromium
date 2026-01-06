@@ -7,7 +7,7 @@
 #include <memory>
 #include <string_view>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -458,7 +458,7 @@ TEST_F(BrowserViewTest, UpdateWindowTitle) {
 TEST_F(BrowserViewTest, WindowTitleOmitsLowMemoryUsage) {
   scoped_refptr<TabResourceUsage> tab_resource_usage_ =
       base::MakeRefCounted<TabResourceUsage>();
-  tab_resource_usage_->SetMemoryUsage(base::ByteCount(100));
+  tab_resource_usage_->SetMemoryUsage(base::ByteSize(100));
 
   TabRendererData memory_usage;
   memory_usage.tab_resource_usage = tab_resource_usage_;
@@ -470,8 +470,8 @@ TEST_F(BrowserViewTest, WindowTitleOmitsLowMemoryUsage) {
   // Expect that low memory usage isn't in the window title.
   EXPECT_EQ(SubBrowserName(u"about:blank - ", u""),
             browser_view()->GetAccessibleWindowTitle());
-  base::ByteCount memory_used =
-      TabResourceUsage::kHighMemoryUsageThreshold + base::ByteCount(1);
+  base::ByteSize memory_used =
+      TabResourceUsage::kHighMemoryUsageThreshold + base::ByteSize(1);
   tab_resource_usage_->SetMemoryUsage(memory_used);
 
   // Expect that high memory usage is in the window title.

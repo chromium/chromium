@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "chrome/browser/favicon/favicon_utils.h"
@@ -397,12 +397,12 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, TabLifecycleManagement) {
   EXPECT_TRUE(data_default.discarded_memory_savings.is_zero());
   EXPECT_TRUE(data_default.tab_resource_usage);
   TabResourceUsageTabHelper::From(tab_strip_model->GetTabAtIndex(0))
-      ->SetMemoryUsage(base::ByteCount(1234));
+      ->SetMemoryUsage(base::ByteSize(1234));
   TabRendererData data_usage =
       TabRendererData::FromTabInModel(tab_strip_model, 0);
   ASSERT_TRUE(data_usage.tab_resource_usage);
   EXPECT_EQ(data_usage.tab_resource_usage->memory_usage(),
-            base::ByteCount(1234));
+            base::ByteSize(1234));
 }
 
 IN_PROC_BROWSER_TEST_F(TabRendererDataTest,

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
@@ -28,15 +28,14 @@ std::optional<::mojom::LifecycleUnitDiscardReason> GetDiscardReason(
                    pre_discard_resource_usage->discard_reason());
 }
 
-base::ByteCount GetDiscardedMemorySavings(content::WebContents* contents) {
+base::ByteSize GetDiscardedMemorySavings(content::WebContents* contents) {
   const auto* const pre_discard_resource_usage =
       performance_manager::user_tuning::UserPerformanceTuningManager::
           PreDiscardResourceUsage::FromWebContents(contents);
   if (pre_discard_resource_usage == nullptr) {
-    return base::ByteCount(0);
+    return base::ByteSize(0);
   } else {
-    return pre_discard_resource_usage->memory_footprint_estimate()
-        .AsDeprecatedByteCount();
+    return pre_discard_resource_usage->memory_footprint_estimate();
   }
 }
 

@@ -8,7 +8,7 @@
 #include <optional>
 #include <string>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -44,7 +44,7 @@ class PerformanceControlsHatsService : public KeyedService {
   }
 
   // Overrides the amount of physical memory reported for testing.
-  void SetAmountOfPhysicalMemoryForTesting(base::ByteCount memory) {
+  void SetAmountOfPhysicalMemoryForTesting(base::ByteSize memory) {
     memory_amount_for_testing_ = memory;
   }
 
@@ -64,7 +64,7 @@ class PerformanceControlsHatsService : public KeyedService {
 
   // A value to use instead of calling base::SysInfo::AmountOfPhysicalMemoryMB()
   // in tests.
-  std::optional<base::ByteCount> memory_amount_for_testing_;
+  std::optional<base::ByteSize> memory_amount_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_CONTROLS_HATS_SERVICE_H_

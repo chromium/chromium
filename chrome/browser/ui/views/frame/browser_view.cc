@@ -13,7 +13,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
@@ -3954,7 +3954,7 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
     }
   } else if (tab_data.tab_resource_usage &&
              tab_data.tab_resource_usage->memory_usage().is_positive()) {
-    const base::ByteCount memory_used =
+    const base::ByteSize memory_used =
         tab_data.tab_resource_usage->memory_usage();
     const bool is_high_memory_usage =
         tab_data.tab_resource_usage->is_high_memory_usage();

@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <string>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -107,12 +107,12 @@ bool PerformanceControlsHatsService::MayLaunchPPMSurvey() const {
 }
 
 std::string PerformanceControlsHatsService::GetPPMSurveySegmentName() {
-  base::ByteCount system_ram = memory_amount_for_testing_.value_or(
-      base::SysInfo::AmountOfPhysicalMemory());
-  base::ByteCount max_memory1 =
-      base::GiB(kPerformanceControlsPPMSurveySegmentMaxMemoryGB1.Get());
-  base::ByteCount max_memory2 =
-      base::GiB(kPerformanceControlsPPMSurveySegmentMaxMemoryGB2.Get());
+  base::ByteSize system_ram = memory_amount_for_testing_.value_or(
+      base::SysInfo::AmountOfTotalPhysicalMemory());
+  base::ByteSize max_memory1 =
+      base::GiBU(kPerformanceControlsPPMSurveySegmentMaxMemoryGB1.Get());
+  base::ByteSize max_memory2 =
+      base::GiBU(kPerformanceControlsPPMSurveySegmentMaxMemoryGB2.Get());
   if (max_memory1.is_zero() || system_ram <= max_memory1) {
     // Segment 1 has no upper bound, or the system RAM is in its bounds.
     return kPerformanceControlsPPMSurveySegmentName1.Get();

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "base/component_export.h"
 
@@ -65,21 +64,6 @@ COMPONENT_EXPORT(UI_BASE)
 std::u16string FormatSpeedWithUnits(base::ByteSize bytes,
                                     DataUnits units,
                                     bool show_units);
-
-// START DEPRECATED versions of the above for base::ByteCount.
-// TODO(https://crbug.com/448661443): Remove.
-COMPONENT_EXPORT(UI_BASE) std::u16string FormatBytes(base::ByteCount bytes);
-COMPONENT_EXPORT(UI_BASE) std::u16string FormatSpeed(base::ByteCount bytes);
-COMPONENT_EXPORT(UI_BASE) DataUnits GetByteDisplayUnits(base::ByteCount bytes);
-COMPONENT_EXPORT(UI_BASE)
-std::u16string FormatBytesWithUnits(base::ByteCount bytes,
-                                    DataUnits units,
-                                    bool show_units);
-COMPONENT_EXPORT(UI_BASE)
-std::u16string FormatSpeedWithUnits(base::ByteCount bytes,
-                                    DataUnits units,
-                                    bool show_units);
-// END DEPRECATED versions of the above for base::ByteCount.
 
 }  // namespace ui
 

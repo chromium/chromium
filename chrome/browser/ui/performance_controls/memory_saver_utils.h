@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_UTILS_H_
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_UTILS_H_
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -20,7 +20,7 @@ std::optional<::mojom::LifecycleUnitDiscardReason> GetDiscardReason(
     content::WebContents* contents);
 
 // Returns how much memory was saved through discarding `contents`.
-base::ByteCount GetDiscardedMemorySavings(content::WebContents* contents);
+base::ByteSize GetDiscardedMemorySavings(content::WebContents* contents);
 
 }  // namespace memory_saver
 

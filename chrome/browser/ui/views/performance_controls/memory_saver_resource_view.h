@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_MEMORY_SAVER_RESOURCE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_MEMORY_SAVER_RESOURCE_VIEW_H_
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 
@@ -14,7 +14,7 @@
 // visualization to contextualize those savings.
 class MemorySaverResourceView : public views::FlexLayoutView {
  public:
-  explicit MemorySaverResourceView(base::ByteCount memory_savings);
+  explicit MemorySaverResourceView(base::ByteSize memory_savings);
 
   MemorySaverResourceView(const MemorySaverResourceView&) = delete;
   MemorySaverResourceView& operator=(const MemorySaverResourceView&) = delete;

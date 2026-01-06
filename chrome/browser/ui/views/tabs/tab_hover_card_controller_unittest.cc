@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 
+#include "base/byte_size.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/browser_process.h"
@@ -126,7 +127,7 @@ TEST_F(TabHoverCardControllerTest, DisableMemoryUsageForTab) {
   Tab* const target_tab = browser_view()->tabstrip()->tab_at(1);
   TabRendererData data;
   auto tab_resource_usage = base::MakeRefCounted<TabResourceUsage>();
-  tab_resource_usage->SetMemoryUsage(base::ByteCount(100));
+  tab_resource_usage->SetMemoryUsage(base::ByteSize(100));
   data.tab_resource_usage = std::move(tab_resource_usage);
   target_tab->SetData(std::move(data));
   controller->target_tab_ = target_tab;

@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -1033,7 +1033,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleName) {
   // AccessibleName update with tab resource usage update
   tab_renderer_data = tab_strip()->tab_at(new_index)->data();
   auto tab_resource_usage = base::MakeRefCounted<TabResourceUsage>();
-  tab_resource_usage->SetMemoryUsage(base::ByteCount(100));
+  tab_resource_usage->SetMemoryUsage(base::ByteSize(100));
   tab_renderer_data.tab_resource_usage = std::move(tab_resource_usage);
   tab_strip()->tab_at(new_index)->SetData(tab_renderer_data);
   data = ui::AXNodeData();
@@ -1043,7 +1043,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleName) {
                 IDS_TAB_AX_MEMORY_USAGE,
                 l10n_util::GetStringFUTF16(
                     IDS_TAB_AX_LABEL_AUDIO_PLAYING_FORMAT, title),
-                ui::FormatBytes(base::ByteCount(100))),
+                ui::FormatBytes(base::ByteSize(100))),
             data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 

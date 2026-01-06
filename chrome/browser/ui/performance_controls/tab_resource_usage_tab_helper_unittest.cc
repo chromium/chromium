@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -19,7 +19,7 @@
 #include "url/gurl.h"
 
 namespace {
-constexpr base::ByteCount kTestMemoryUsage = base::ByteCount(100000);
+constexpr base::ByteSize kTestMemoryUsage = base::ByteSize(100000);
 }  // namespace
 
 class TabResourceUsageTabHelperUiTest : public testing::Test {
@@ -61,7 +61,7 @@ TEST_F(TabResourceUsageTabHelperUiTest, HighMemoryUsage) {
   helper_->SetMemoryUsage(TabResourceUsage::kHighMemoryUsageThreshold);
   EXPECT_FALSE(helper_->resource_usage()->is_high_memory_usage());
   helper_->SetMemoryUsage(TabResourceUsage::kHighMemoryUsageThreshold +
-                          base::ByteCount(1));
+                          base::ByteSize(1));
   EXPECT_TRUE(helper_->resource_usage()->is_high_memory_usage());
 }
 

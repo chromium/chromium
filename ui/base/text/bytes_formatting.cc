@@ -108,32 +108,4 @@ std::u16string FormatSpeed(base::ByteSize bytes) {
                               /*show_units=*/true);
 }
 
-// BEGIN DEPRECATED SHIMS
-
-std::u16string FormatBytes(base::ByteCount bytes) {
-  return FormatBytes(base::ByteSize::FromDeprecatedByteCount(bytes));
-}
-std::u16string FormatSpeed(base::ByteCount bytes) {
-  return FormatSpeed(base::ByteSize::FromDeprecatedByteCount(bytes));
-}
-DataUnits GetByteDisplayUnits(base::ByteCount bytes) {
-  return GetByteDisplayUnits(base::ByteSize::FromDeprecatedByteCount(bytes));
-}
-
-std::u16string FormatBytesWithUnits(base::ByteCount bytes,
-                                    DataUnits units,
-                                    bool show_units) {
-  return FormatBytesWithUnits(base::ByteSize::FromDeprecatedByteCount(bytes),
-                              units, show_units);
-}
-
-std::u16string FormatSpeedWithUnits(base::ByteCount bytes,
-                                    DataUnits units,
-                                    bool show_units) {
-  return FormatSpeedWithUnits(base::ByteSize::FromDeprecatedByteCount(bytes),
-                              units, show_units);
-}
-
-// END DEPRECATED SHIMS
-
 }  // namespace ui

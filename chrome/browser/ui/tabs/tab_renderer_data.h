@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/process/kill.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
@@ -70,7 +70,7 @@ struct TabRendererData {
       collaboration_messaging = nullptr;
   bool should_show_discard_status = false;
   // Amount of memory saved through discarding the tab
-  base::ByteCount discarded_memory_savings;
+  base::ByteSize discarded_memory_savings;
   // Contains information about how much resource a tab is using
   scoped_refptr<const TabResourceUsage> tab_resource_usage;
   bool is_monochrome_favicon = false;

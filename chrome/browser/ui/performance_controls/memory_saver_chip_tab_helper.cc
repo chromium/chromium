@@ -6,7 +6,7 @@
 
 #include <cstdint>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check_is_test.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -174,7 +174,7 @@ void MemorySaverChipTabHelper::UpdatePageActionState() {
       break;
 
     case memory_saver::ChipState::EXPANDED_WITH_SAVINGS:
-      const base::ByteCount bytes_saved =
+      const base::ByteSize bytes_saved =
           memory_saver::GetDiscardedMemorySavings(web_contents());
       controller->ShowMemorySavedChip(bytes_saved);
       break;

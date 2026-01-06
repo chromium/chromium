@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TAB_RESOURCE_USAGE_TAB_HELPER_H_
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TAB_RESOURCE_USAGE_TAB_HELPER_H_
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "components/performance_manager/public/features.h"
@@ -19,13 +19,13 @@ class TabInterface;
 class TabResourceUsage : public base::RefCounted<TabResourceUsage> {
  public:
   // Threshold was selected based on the 99th percentile of tab memory usage.
-  static constexpr base::ByteCount kHighMemoryUsageThreshold = base::MiB(800);
+  static constexpr base::ByteSize kHighMemoryUsageThreshold = base::MiBU(800);
 
   TabResourceUsage();
 
-  base::ByteCount memory_usage() const { return memory_usage_; }
+  base::ByteSize memory_usage() const { return memory_usage_; }
 
-  void SetMemoryUsage(base::ByteCount memory_usage);
+  void SetMemoryUsage(base::ByteSize memory_usage);
 
   bool is_high_memory_usage() const { return is_high_memory_usage_; }
 
@@ -33,7 +33,7 @@ class TabResourceUsage : public base::RefCounted<TabResourceUsage> {
   friend class base::RefCounted<TabResourceUsage>;
   ~TabResourceUsage() = default;
 
-  base::ByteCount memory_usage_;
+  base::ByteSize memory_usage_;
   bool is_high_memory_usage_ = false;
 };
 
@@ -49,8 +49,8 @@ class TabResourceUsageTabHelper : public tabs::ContentsObservingTabFeature {
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
 
-  base::ByteCount GetMemoryUsage();
-  void SetMemoryUsage(base::ByteCount memory_usage);
+  base::ByteSize GetMemoryUsage();
+  void SetMemoryUsage(base::ByteSize memory_usage);
 
   scoped_refptr<const TabResourceUsage> resource_usage() const;
 

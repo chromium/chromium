@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/tabs/fade_footer_view.h"
 
-#include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "base/check.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -170,10 +169,9 @@ void FadeAlertFooterRow::SetData(const AlertFooterRowData& data) {
   std::optional<tabs::TabAlert> alert_state = data.alert_state;
   if (data.should_show_discard_status) {
     std::u16string row_text;
-    if (data.memory_savings_in_bytes > base::ByteCount(0)) {
+    if (data.memory_savings.is_positive()) {
       const std::u16string formatted_memory_usage =
-          ui::FormatBytes(base::ByteSize::FromDeprecatedByteCount(
-              data.memory_savings_in_bytes));
+          ui::FormatBytes(data.memory_savings);
       row_text = l10n_util::GetStringFUTF16(
           IDS_HOVERCARD_INACTIVE_TAB_MEMORY_SAVINGS, formatted_memory_usage);
     } else {
@@ -204,7 +202,7 @@ END_METADATA
 void FadePerformanceFooterRow::SetData(const PerformanceRowData& data) {
   if (data.show_memory_usage) {
     const std::u16string formatted_memory_usage =
-        ui::FormatBytes(data.memory_usage_in_bytes);
+        ui::FormatBytes(data.memory_usage);
     const std::u16string row_text = l10n_util::GetStringFUTF16(
         data.is_high_memory_usage ? IDS_HOVERCARD_TAB_HIGH_MEMORY_USAGE
                                   : IDS_HOVERCARD_TAB_MEMORY_USAGE,

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/process/kill.h"
 #include "build/build_config.h"
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
@@ -166,7 +166,7 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
 
   if (contents->WasDiscarded()) {
     data.discarded_memory_savings =
-        base::ByteCount(memory_saver::GetDiscardedMemorySavings(contents));
+        memory_saver::GetDiscardedMemorySavings(contents);
   }
 
   if (const auto* const resource_tab_helper =

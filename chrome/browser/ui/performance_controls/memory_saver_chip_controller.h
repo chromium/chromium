@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_CHIP_CONTROLLER_H_
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_CHIP_CONTROLLER_H_
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ref.h"
 
@@ -28,7 +28,7 @@ class MemorySaverChipController {
   // desired state. Note that chip state is transient.
   void ShowIcon();
   void ShowEducationChip();
-  void ShowMemorySavedChip(base::ByteCount bytes_saved);
+  void ShowMemorySavedChip(base::ByteSize bytes_saved);
   void Hide();
 
  private:

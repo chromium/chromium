@@ -12,7 +12,7 @@
 #include <string>
 #include <string_view>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -592,9 +592,9 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   // tabs.
   const bool show_discard_status =
       !show_collaboration_messaging && tab_data.should_show_discard_status;
-  const base::ByteCount tab_memory_usage =
+  const base::ByteSize tab_memory_usage =
       tab_data.tab_resource_usage ? tab_data.tab_resource_usage->memory_usage()
-                                  : base::ByteCount(0);
+                                  : base::ByteSize(0);
   const bool is_high_memory_usage =
       tab_data.tab_resource_usage
           ? tab_data.tab_resource_usage->is_high_memory_usage()
