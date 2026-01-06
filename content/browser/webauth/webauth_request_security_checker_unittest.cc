@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webauth/remote_validation.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -344,8 +345,8 @@ class WebAuthRequestSecurityCheckerWellKnownJSONTest : public testing::Test {
     GURL caller_origin_url(caller_origin_str);
     CHECK(caller_origin_url.is_valid()) << caller_origin_str;
 
-    return WebAuthRequestSecurityChecker::RemoteValidation::
-        ValidateWellKnownJSON(url::Origin::Create(caller_origin_url), json);
+    return RemoteValidation::ValidateWellKnownJSON(
+        url::Origin::Create(caller_origin_url), json);
   }
 };
 

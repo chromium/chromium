@@ -18174,15 +18174,13 @@ void RenderFrameHostImpl::PerformGetAssertionWebAuthSecurityChecks(
     return;
   }
 
-  std::unique_ptr<WebAuthRequestSecurityChecker::RemoteValidation>
-      remote_validation =
-          GetWebAuthRequestSecurityChecker()->ValidateDomainAndRelyingPartyID(
-              effective_origin, relying_party_id, request_type,
-              remote_desktop_client_override_origin,
-              base::BindOnce(
-                  &RenderFrameHostImpl::OnWebAuthSecurityChecksCompleted,
-                  weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                  is_cross_origin));
+  std::unique_ptr<RemoteValidation> remote_validation =
+      GetWebAuthRequestSecurityChecker()->ValidateDomainAndRelyingPartyID(
+          effective_origin, relying_party_id, request_type,
+          remote_desktop_client_override_origin,
+          base::BindOnce(&RenderFrameHostImpl::OnWebAuthSecurityChecksCompleted,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         is_cross_origin));
 
   // If `remote_validation` is nullptr then this object may already have been
   // destroyed.
@@ -18218,15 +18216,13 @@ void RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
     return;
   }
 
-  std::unique_ptr<WebAuthRequestSecurityChecker::RemoteValidation>
-      remote_validation =
-          GetWebAuthRequestSecurityChecker()->ValidateDomainAndRelyingPartyID(
-              effective_origin, relying_party_id, request_type,
-              remote_desktop_client_override_origin,
-              base::BindOnce(
-                  &RenderFrameHostImpl::OnWebAuthSecurityChecksCompleted,
-                  weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                  is_cross_origin));
+  std::unique_ptr<RemoteValidation> remote_validation =
+      GetWebAuthRequestSecurityChecker()->ValidateDomainAndRelyingPartyID(
+          effective_origin, relying_party_id, request_type,
+          remote_desktop_client_override_origin,
+          base::BindOnce(&RenderFrameHostImpl::OnWebAuthSecurityChecksCompleted,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         is_cross_origin));
 
   // If `remote_validation` is nullptr then this object may already have been
   // destroyed.
@@ -18258,16 +18254,14 @@ void RenderFrameHostImpl::PerformReportWebAuthSecurityChecks(
     return;
   }
 
-  std::unique_ptr<WebAuthRequestSecurityChecker::RemoteValidation>
-      remote_validation =
-          GetWebAuthRequestSecurityChecker()->ValidateDomainAndRelyingPartyID(
-              effective_origin, relying_party_id,
-              WebAuthRequestSecurityChecker::RequestType::kReport,
-              /*remote_desktop_client_override_origin=*/std::nullopt,
-              base::BindOnce(
-                  &RenderFrameHostImpl::OnWebAuthSecurityChecksCompleted,
-                  weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                  is_cross_origin));
+  std::unique_ptr<RemoteValidation> remote_validation =
+      GetWebAuthRequestSecurityChecker()->ValidateDomainAndRelyingPartyID(
+          effective_origin, relying_party_id,
+          WebAuthRequestSecurityChecker::RequestType::kReport,
+          /*remote_desktop_client_override_origin=*/std::nullopt,
+          base::BindOnce(&RenderFrameHostImpl::OnWebAuthSecurityChecksCompleted,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         is_cross_origin));
 
   // If `remote_validation` is nullptr then this object may already have been
   // destroyed.
