@@ -19,6 +19,9 @@ BASE_DECLARE_FEATURE(kContextualTasksContextLibrary);
 BASE_DECLARE_FEATURE(kContextualTasksContextLogging);
 BASE_DECLARE_FEATURE(kContextualTasksShowOnboardingTooltip);
 
+// Overrides the value of EntryPointEligibilitymanager::IsEligible to true.
+BASE_DECLARE_FEATURE(kContextualTasksForceEntryPointEligibility);
+
 // Enables context menu settings for contextual tasks.
 BASE_DECLARE_FEATURE(kContextualTasksContextMenu);
 

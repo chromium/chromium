@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/contextual_tasks/public/account_utils.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/signin/public/base/consent_level.h"
@@ -102,39 +103,36 @@ EntryPointEligibilityManager::RegisterOnEntryPointEligibilityChanged(
   return entry_point_eligibility_change_callback_list_.Add(std::move(callback));
 }
 
-bool EntryPointEligibilityManager::IsSignedInToBrowserWithValidCredentials() {
-  ContextualTasksUiService* const contextual_tasks_ui_service =
-      ContextualTasksUiServiceFactory::GetForBrowserContext(profile_);
-
-  if (!contextual_tasks_ui_service) {
-    return false;
-  }
-  return contextual_tasks_ui_service->IsSignedInToBrowserWithValidCredentials();
-}
-
-bool EntryPointEligibilityManager::CookieJarContainsPrimaryAccount() {
-  ContextualTasksUiService* const contextual_tasks_ui_service =
-      ContextualTasksUiServiceFactory::GetForBrowserContext(profile_);
-
-  if (!contextual_tasks_ui_service) {
-    return false;
-  }
-  return contextual_tasks_ui_service->CookieJarContainsPrimaryAccount();
-}
-
 bool EntryPointEligibilityManager::AreEntryPointsEligible() {
+  return IsEligible(profile_);
+}
+
+// static
+bool EntryPointEligibilityManager::IsEligible(Profile* profile) {
+  // TODO(crbug.com/473082702): Find a robust way to mock the entrypoint
+  // manager to allow tests to pass without needing a feature flag.
+  if (base::FeatureList::IsEnabled(
+          kContextualTasksForceEntryPointEligibility)) {
+    return true;
+  }
+
+  ContextualTasksUiService* const contextual_tasks_ui_service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(profile);
+  if (!contextual_tasks_ui_service) {
+    return false;
+  }
   const bool is_signed_in_to_browser =
-      IsSignedInToBrowserWithValidCredentials();
+      contextual_tasks_ui_service->IsSignedInToBrowserWithValidCredentials();
   const bool cookie_jar_contains_primary_account =
-      CookieJarContainsPrimaryAccount();
+      contextual_tasks_ui_service->CookieJarContainsPrimaryAccount();
 
   ContextualTasksService* const contextual_task_service =
-      ContextualTasksServiceFactory::GetForProfile(profile_);
+      ContextualTasksServiceFactory::GetForProfile(profile);
   CHECK(contextual_task_service);
   const bool is_feature_eligible =
       contextual_task_service->GetFeatureEligibility().IsEligible();
   const bool is_aim_allowed_by_policy =
-      AimEligibilityService::IsAimAllowedByPolicy(profile_->GetPrefs());
+      AimEligibilityService::IsAimAllowedByPolicy(profile->GetPrefs());
 
   return is_signed_in_to_browser && cookie_jar_contains_primary_account &&
          is_feature_eligible && is_aim_allowed_by_policy;

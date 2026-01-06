@@ -53,6 +53,10 @@ class EntryPointEligibilityManager : public signin::IdentityManager::Observer {
   // otherwise.
   bool AreEntryPointsEligible();
 
+  // Returns true if the entry points are eligible to be shown for the given
+  // profile. Returns false otherwise.
+  static bool IsEligible(Profile* profile);
+
   // Runs callback when the entry point eligibility changes
   using EntryPointEligibilityChangeCallbackList =
       base::RepeatingCallbackList<void(bool)>;
@@ -60,8 +64,6 @@ class EntryPointEligibilityManager : public signin::IdentityManager::Observer {
       EntryPointEligibilityChangeCallbackList::CallbackType callback);
 
  private:
-  bool IsSignedInToBrowserWithValidCredentials();
-  bool CookieJarContainsPrimaryAccount();
   void OnAimPolicyChanged();
   void MaybeNotifyEntryPointEligibilityChanged();
 

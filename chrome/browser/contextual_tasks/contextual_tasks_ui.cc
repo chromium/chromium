@@ -25,6 +25,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -502,7 +503,11 @@ void ContextualTasksUI::BindInterface(
 
 bool ContextualTasksUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks);
+  // Check if the user should have landed on the WebUI via an entry point. If
+  // not, refuse to load the WebUI to prevent a broken experience.
+  return base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
+         contextual_tasks::EntryPointEligibilityManager::IsEligible(
+             Profile::FromBrowserContext(browser_context));
 }
 
 std::unique_ptr<content::WebUIController>

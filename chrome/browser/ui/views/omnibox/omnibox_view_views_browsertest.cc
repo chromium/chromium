@@ -1773,8 +1773,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsAIMButtonPreferenceTest,
 class OmniboxViewViewsPlaceholderTest : public InProcessBrowserTest {
  public:
   OmniboxViewViewsPlaceholderTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        contextual_tasks::kContextualTasks);
+    scoped_feature_list_.InitWithFeatures(
+        {contextual_tasks::kContextualTasks,
+         contextual_tasks::kContextualTasksForceEntryPointEligibility},
+        {});
   }
 
  protected:
