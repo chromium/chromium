@@ -25,7 +25,9 @@ class AccountCapabilitiesTestMutator {
   // Exposes setters for the supported capabilities.
   // keep-sorted start sticky_prefixes=#if group_prefixes=#endif
   void set_can_fetch_family_member_info(bool value);
+#if !BUILDFLAG(IS_IOS)
   void set_can_have_email_address_displayed(bool value);
+#endif
 #if !BUILDFLAG(IS_ANDROID)
   void set_can_make_chrome_search_engine_choice_screen_choice(bool value);
 #endif

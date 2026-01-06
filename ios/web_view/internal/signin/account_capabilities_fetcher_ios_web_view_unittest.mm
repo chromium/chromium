@@ -45,7 +45,7 @@ TEST_F(AccountCapabilitiesFetcherIOSWebViewTest, CheckCapabilityFetchDisabled) {
           kTestEmail, signin::ConsentLevel::kSignin);
 
   AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-  mutator.set_can_have_email_address_displayed(true);
+  mutator.set_can_fetch_family_member_info(true);
   identity_test_environment_.UpdateAccountInfoForAccount(account_info);
 
   base::RunLoop run_loop;

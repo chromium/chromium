@@ -78,6 +78,7 @@ TEST_F(AccountCapabilitiesTest, CanFetchFamilyMemberInfo) {
             signin::Tribool::kFalse);
 }
 
+#if !BUILDFLAG(IS_IOS)
 TEST_F(AccountCapabilitiesTest, CanHaveEmailAddressDisplayed) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.can_have_email_address_displayed(),
@@ -92,6 +93,7 @@ TEST_F(AccountCapabilitiesTest, CanHaveEmailAddressDisplayed) {
   EXPECT_EQ(capabilities.can_have_email_address_displayed(),
             signin::Tribool::kFalse);
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(AccountCapabilitiesTest, CanMakeChromeSearchEngineChoiceScreenChoice) {

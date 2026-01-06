@@ -97,9 +97,11 @@ signin::Tribool AccountCapabilities::can_fetch_family_member_info() const {
   return GetCapabilityByName(kCanFetchFamilyMemberInfoCapabilityName);
 }
 
+#if !BUILDFLAG(IS_IOS)
 signin::Tribool AccountCapabilities::can_have_email_address_displayed() const {
   return GetCapabilityByName(kCanHaveEmailAddressDisplayedCapabilityName);
 }
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 signin::Tribool

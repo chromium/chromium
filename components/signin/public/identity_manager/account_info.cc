@@ -266,12 +266,14 @@ bool AccountInfo::IsEduAccount() const {
          IsManaged() == signin::Tribool::kTrue;
 }
 
+#if !BUILDFLAG(IS_IOS)
 bool AccountInfo::CanHaveEmailAddressDisplayed() const {
   return capabilities.can_have_email_address_displayed() ==
              signin::Tribool::kTrue ||
          capabilities.can_have_email_address_displayed() ==
              signin::Tribool::kUnknown;
 }
+#endif
 
 AccountInfo::Builder::Builder(const GaiaId& gaia_id, std::string_view email) {
   CHECK(!gaia_id.empty());

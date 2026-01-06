@@ -30,11 +30,13 @@ void AccountCapabilitiesTestMutator::set_can_fetch_family_member_info(
       value;
 }
 
+#if !BUILDFLAG(IS_IOS)
 void AccountCapabilitiesTestMutator::set_can_have_email_address_displayed(
     bool value) {
   capabilities_
       ->capabilities_map_[kCanHaveEmailAddressDisplayedCapabilityName] = value;
 }
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 void AccountCapabilitiesTestMutator::

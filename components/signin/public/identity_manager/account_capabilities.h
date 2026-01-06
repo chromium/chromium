@@ -62,8 +62,10 @@ class AccountCapabilities {
   // group for accounts with this capability.
   signin::Tribool can_fetch_family_member_info() const;
 
+#if !BUILDFLAG(IS_IOS)
   // Chrome can display the email address for accounts with this capability.
   signin::Tribool can_have_email_address_displayed() const;
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   // The primary account type is suitable for choice screens. Signals that are
