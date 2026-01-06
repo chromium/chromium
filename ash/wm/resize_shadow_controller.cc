@@ -13,7 +13,6 @@
 #include "ash/wm/resize_shadow.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
-#include "base/containers/contains.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"

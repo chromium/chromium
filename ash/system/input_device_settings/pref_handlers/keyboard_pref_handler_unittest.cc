@@ -13,7 +13,6 @@
 #include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler_impl.h"
 #include "ash/system/input_device_settings/settings_updated_metrics_info.h"
 #include "ash/test/ash_test_base.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -721,8 +720,8 @@ TEST_F(KeyboardPrefHandlerTest, InvalidModifierRemappings) {
       CallInitializeKeyboardSettings(kKeyboardKey1, /*is_external=*/true);
 
   ASSERT_EQ(1u, settings->modifier_remappings.size());
-  ASSERT_TRUE(base::Contains(settings->modifier_remappings,
-                             ui::mojom::ModifierKey::kAlt));
+  ASSERT_TRUE(
+      settings->modifier_remappings.contains(ui::mojom::ModifierKey::kAlt));
   EXPECT_EQ(ui::mojom::ModifierKey::kControl,
             settings->modifier_remappings[ui::mojom::ModifierKey::kAlt]);
 }

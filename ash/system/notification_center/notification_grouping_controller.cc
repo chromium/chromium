@@ -13,7 +13,6 @@
 #include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/notification_center/views/notification_center_view.h"
 #include "ash/system/notification_center/views/notification_list_view.h"
-#include "base/containers/contains.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/message_center/message_center_types.h"
@@ -39,7 +38,7 @@ class GroupedNotificationList {
 
   void AddGroupedNotification(const std::string& notification_id,
                               const std::string& parent_id) {
-    if (!base::Contains(notifications_in_parent_map_, parent_id)) {
+    if (!notifications_in_parent_map_.contains(parent_id)) {
       notifications_in_parent_map_[parent_id] = {};
     }
 
@@ -52,7 +51,7 @@ class GroupedNotificationList {
 
   // Remove a single child notification from a grouped notification.
   void RemoveGroupedChildNotification(const std::string& notification_id) {
-    DCHECK(base::Contains(child_parent_map_, notification_id));
+    DCHECK(child_parent_map_.contains(notification_id));
     const std::string& parent_id = child_parent_map_[notification_id];
     notifications_in_parent_map_[parent_id].erase(notification_id);
     child_parent_map_.erase(notification_id);
@@ -82,11 +81,11 @@ class GroupedNotificationList {
   }
 
   bool GroupedChildNotificationExists(const std::string& child_id) {
-    return base::Contains(child_parent_map_, child_id);
+    return child_parent_map_.contains(child_id);
   }
 
   bool ParentNotificationExists(const std::string& parent_id) {
-    return base::Contains(notifications_in_parent_map_, parent_id);
+    return notifications_in_parent_map_.contains(parent_id);
   }
 
   // Replaces all instances of `old_parent_id` with `new_parent_id` in

@@ -8,7 +8,6 @@
 
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "components/cross_device/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -178,7 +177,7 @@ void SavedDeviceRegistry::RemoveDevicesIfRemovedFromDifferentUser(
       pref_service->GetDict(kFastPairSavedDevicesPref);
   for (const auto it : saved_devices) {
     const std::string& mac_address = it.first;
-    if (!base::Contains(paired_devices, mac_address)) {
+    if (!paired_devices.contains(mac_address)) {
       ScopedDictPrefUpdate update(pref_service, kFastPairSavedDevicesPref);
       update->Remove(it.first);
       CD_LOG(VERBOSE, Feature::FP)

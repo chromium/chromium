@@ -13,7 +13,6 @@
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -296,7 +295,7 @@ void HoldingSpaceItemViewsSection::OnHoldingSpaceItemsAdded(
   const bool needs_update =
       std::ranges::any_of(items, [this](const HoldingSpaceItem* item) {
         return item->IsInitialized() &&
-               base::Contains(section_->supported_types, item->type());
+               section_->supported_types.contains(item->type());
       });
   if (needs_update)
     MaybeAnimateOut();
@@ -306,7 +305,7 @@ void HoldingSpaceItemViewsSection::OnHoldingSpaceItemsRemoved(
     const std::vector<const HoldingSpaceItem*>& items) {
   const bool needs_update =
       std::ranges::any_of(items, [this](const HoldingSpaceItem* item) {
-        return base::Contains(views_by_item_id_, item->id());
+        return views_by_item_id_.contains(item->id());
       });
   if (needs_update)
     MaybeAnimateOut();
@@ -314,7 +313,7 @@ void HoldingSpaceItemViewsSection::OnHoldingSpaceItemsRemoved(
 
 void HoldingSpaceItemViewsSection::OnHoldingSpaceItemInitialized(
     const HoldingSpaceItem* item) {
-  if (base::Contains(section_->supported_types, item->type()))
+  if (section_->supported_types.contains(item->type()))
     MaybeAnimateOut();
 }
 
@@ -510,8 +509,8 @@ void HoldingSpaceItemViewsSection::OnAnimateOutCompleted(
 
   for (const auto& item : model->items()) {
     if (item->IsInitialized() &&
-        base::Contains(section_->supported_types, item->type())) {
-      DCHECK(!base::Contains(views_by_item_id_, item->id()));
+        section_->supported_types.contains(item->type())) {
+      DCHECK(!views_by_item_id_.contains(item->id()));
 
       // Remove the last holding space item view if already at max capacity.
       if (max_visible_item_count == container_->children().size()) {

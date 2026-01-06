@@ -17,7 +17,6 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -509,7 +508,7 @@ void MultiUserWindowManager::AddTransientOwnerRecursive(
     return;
 
   // Remember the current visibility.
-  DCHECK(!base::Contains(transient_window_to_visibility_, window));
+  DCHECK(!transient_window_to_visibility_.contains(window));
   transient_window_to_visibility_[window] = window->IsVisible();
 
   // Add observers to track state changes.

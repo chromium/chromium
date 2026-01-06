@@ -23,7 +23,6 @@
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -285,7 +284,7 @@ SnoopingProtectionNotificationBlocker::CreateInfoNotification() const {
   for (const message_center::Notification* notification :
        message_center_->GetPopupNotificationsWithoutBlocker(*this)) {
     const std::string& id = notification->id();
-    if (!base::Contains(blocked_popups_, id)) {
+    if (!blocked_popups_.contains(id)) {
       continue;
     }
 
@@ -294,7 +293,7 @@ SnoopingProtectionNotificationBlocker::CreateInfoNotification() const {
         hps_internal::GetNotifierTitle<apps::AppRegistryCacheWrapper>(
             notification->notifier_id(),
             Shell::Get()->session_controller()->GetActiveAccountId());
-    if (base::Contains(seen_titles, title)) {
+    if (seen_titles.contains(title)) {
       continue;
     }
 

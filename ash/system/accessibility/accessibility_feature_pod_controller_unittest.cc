@@ -203,14 +203,14 @@ TEST_F(AccessibilityFeaturePodControllerTest, WithMultipleFeatureToggled) {
   // Here we only check the "...", which is u"\x2026", and the trailing count
   // are created. We don't check the first specific a11y name, since the a11y
   // names are stored in a map so the order of them is not fixed.
-  EXPECT_TRUE(base::Contains(tile->sub_label()->GetText(), u"\x2026, +1"));
+  EXPECT_TRUE(tile->sub_label()->GetText().contains(u"\x2026, +1"));
 
   GetAccessibilityController()
       ->GetFeature(A11yFeatureType::kVirtualKeyboard)
       .SetEnabled(true);
   EXPECT_TRUE(tile->IsToggled());
   EXPECT_TRUE(tile->sub_label()->GetVisible());
-  EXPECT_TRUE(base::Contains(tile->sub_label()->GetText(), u"\x2026, +2"));
+  EXPECT_TRUE(tile->sub_label()->GetText().contains(u"\x2026, +2"));
 }
 
 // Toggle all accessibility features one by one and make sure the feature tile

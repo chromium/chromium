@@ -357,14 +357,14 @@ bool VerifyFeaturesData() {
   // All feature prefs must be unique.
   std::set<const char*> feature_prefs;
   for (auto feature_data : kFeatures) {
-    if (base::Contains(feature_prefs, feature_data.pref)) {
+    if (feature_prefs.contains(feature_data.pref)) {
       return false;
     }
     feature_prefs.insert(feature_data.pref);
   }
 
   for (auto dialog_data : kFeatureDialogs) {
-    if (base::Contains(feature_prefs, dialog_data.pref)) {
+    if (feature_prefs.contains(dialog_data.pref)) {
       return false;
     }
     feature_prefs.insert(dialog_data.pref);

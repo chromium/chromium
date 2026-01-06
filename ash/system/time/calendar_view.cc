@@ -35,7 +35,6 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -1281,7 +1280,7 @@ void CalendarView::OnMonthChanged() {
 
 void CalendarView::OnEventsFetched(const CalendarModel::FetchingStatus status,
                                    const base::Time start_time) {
-  if (base::Contains(on_screen_month_, start_time)) {
+  if (on_screen_month_.contains(start_time)) {
     on_screen_month_[start_time] = status;
   }
 

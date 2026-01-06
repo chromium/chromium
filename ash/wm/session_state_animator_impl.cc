@@ -13,7 +13,6 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_animations.h"
 #include "base/barrier_closure.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer_animation_observer.h"

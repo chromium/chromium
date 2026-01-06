@@ -31,7 +31,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
@@ -207,8 +206,7 @@ void BackGestureEventHandler::OnDisplayMetricsChanged(
 
 void BackGestureEventHandler::OnGestureEvent(ui::GestureEvent* event) {
   // Do not handle gesture events that are not generated from |first_touch_id_|.
-  if (base::Contains(other_touch_event_ids_list_,
-                     event->unique_touch_event_id())) {
+  if (other_touch_event_ids_list_.contains(event->unique_touch_event_id())) {
     return;
   }
 

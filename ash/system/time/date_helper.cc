@@ -9,7 +9,6 @@
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
-#include "base/containers/contains.h"
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -43,28 +42,28 @@ icu::UnicodeString getHoursPattern(const icu::UnicodeString& unicode_pattern) {
   std::string pattern;
   unicode_pattern.toUTF8String(pattern);
 
-  if (base::Contains(pattern, "hh")) {
+  if (pattern.contains("hh")) {
     return icu::UnicodeString("hh");
   }
-  if (base::Contains(pattern, "h")) {
+  if (pattern.contains("h")) {
     return icu::UnicodeString("h");
   }
-  if (base::Contains(pattern, "HH")) {
+  if (pattern.contains("HH")) {
     return icu::UnicodeString("HH");
   }
-  if (base::Contains(pattern, "H")) {
+  if (pattern.contains("H")) {
     return icu::UnicodeString("H");
   }
-  if (base::Contains(pattern, "KK")) {
+  if (pattern.contains("KK")) {
     return icu::UnicodeString("KK");
   }
-  if (base::Contains(pattern, "K")) {
+  if (pattern.contains("K")) {
     return icu::UnicodeString("K");
   }
-  if (base::Contains(pattern, "kk")) {
+  if (pattern.contains("kk")) {
     return icu::UnicodeString("kk");
   }
-  if (base::Contains(pattern, "k")) {
+  if (pattern.contains("k")) {
     return icu::UnicodeString("k");
   }
 
@@ -133,7 +132,7 @@ icu::SimpleDateFormat DateHelper::CreateHoursFormatter(const char* pattern) {
   // pattern.
   std::string gen_string;
   generated_pattern.toUTF8String(gen_string);
-  if (base::Contains(gen_string, "├")) {
+  if (gen_string.contains("├")) {
     // Fallback to the suggested pattern.
     generated_pattern = icu::UnicodeString(pattern);
   }

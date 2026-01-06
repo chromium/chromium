@@ -6,7 +6,6 @@
 
 #include <map>
 
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 
 namespace ash {
@@ -123,7 +122,7 @@ HoldingSpaceSection::~HoldingSpaceSection() = default;
 
 const HoldingSpaceSection* GetHoldingSpaceSection(HoldingSpaceItem::Type type) {
   for (const auto& [id, section] : GetSectionsById()) {
-    if (base::Contains(section.supported_types, type))
+    if (section.supported_types.contains(type))
       return &section;
   }
   return nullptr;

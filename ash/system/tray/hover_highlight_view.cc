@@ -17,7 +17,6 @@
 #include "ash/system/tray/tri_view.h"
 #include "ash/system/tray/unfocusable_label.h"
 #include "ash/system/tray/view_click_listener.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -322,7 +321,7 @@ void HoverHighlightView::OnEnabledChanged() {
 
 void HoverHighlightView::SetAndUpdateAccessibleDefaultAction() {
   SetDefaultActionVerb((right_view_ && right_view_->GetVisible() &&
-                        base::Contains(right_view_->GetClassName(), "Button"))
+                        right_view_->GetClassName().contains("Button"))
                            ? ax::mojom::DefaultActionVerb::kClick
                            : ax::mojom::DefaultActionVerb::kPress);
   UpdateAccessibleDefaultActionVerb();

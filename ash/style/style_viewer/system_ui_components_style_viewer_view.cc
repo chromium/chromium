@@ -12,7 +12,6 @@
 #include "ash/style/style_viewer/system_ui_components_grid_view.h"
 #include "ash/style/style_viewer/system_ui_components_grid_view_factories.h"
 #include "ash/wm/desks/desks_util.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -225,7 +224,7 @@ void SystemUIComponentsStyleViewerView::AddComponent(
     const std::u16string& name,
     SystemUIComponentsStyleViewerView::ComponentsGridViewFactory
         grid_view_factory) {
-  DCHECK(!base::Contains(components_grid_view_factories_, name));
+  DCHECK(!components_grid_view_factories_.contains(name));
 
   // Add a new component button and components grid view factory.
   auto* button =
@@ -240,7 +239,7 @@ void SystemUIComponentsStyleViewerView::AddComponent(
 
 void SystemUIComponentsStyleViewerView::ShowComponentInstances(
     const std::u16string& name) {
-  DCHECK(base::Contains(components_grid_view_factories_, name));
+  DCHECK(components_grid_view_factories_.contains(name));
 
   // Set the button corresponding to the component indicated by the name active.
   // Set other buttons inactive.

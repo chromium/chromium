@@ -12,7 +12,6 @@
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -73,7 +72,7 @@ AmbientModeTopic CreateTopic(const std::string& url,
 }
 
 MATCHER_P(TopicUrlContainsSize, size, "") {
-  return base::Contains(arg.url, size.ToString());
+  return arg.url.contains(size.ToString());
 }
 
 class AmbientTopicQueueTest : public AmbientAshTestBase {

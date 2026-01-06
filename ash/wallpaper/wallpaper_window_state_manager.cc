@@ -40,7 +40,7 @@ WallpaperWindowStateManager::~WallpaperWindowStateManager() = default;
 
 void WallpaperWindowStateManager::MinimizeInactiveWindows(
     const std::string& user_id_hash) {
-  if (!base::Contains(user_id_hash_window_list_map_, user_id_hash)) {
+  if (!user_id_hash_window_list_map_.contains(user_id_hash)) {
     user_id_hash_window_list_map_[user_id_hash] =
         std::set<raw_ptr<aura::Window, SetExperimental>>();
   }
@@ -97,7 +97,7 @@ void WallpaperWindowStateManager::RemoveObserverIfUnreferenced(
   for (UserIDHashWindowListMap::iterator iter =
            user_id_hash_window_list_map_.begin();
        iter != user_id_hash_window_list_map_.end(); ++iter) {
-    if (base::Contains(iter->second, window))
+    if (iter->second.contains(window))
       return;
   }
   // Remove observer if |window| is not observed by any users.

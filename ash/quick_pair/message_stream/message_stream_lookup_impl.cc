@@ -6,7 +6,6 @@
 
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
-#include "base/containers/contains.h"
 #include "components/cross_device/logging/logging.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -95,7 +94,7 @@ void MessageStreamLookupImpl::DevicePairedChanged(
   }
 
   // Check to see if the device supports Message Streams.
-  if (!device || !base::Contains(device->GetUUIDs(), kMessageStreamUuid)) {
+  if (!device || !device->GetUUIDs().contains(kMessageStreamUuid)) {
     return;
   }
 
@@ -119,7 +118,7 @@ void MessageStreamLookupImpl::DeviceConnectedStateChanged(
     bool is_now_connected) {
   // Check to see if the device supports Message Streams.
   if (!device || !device->IsPaired() ||
-      !base::Contains(device->GetUUIDs(), kMessageStreamUuid)) {
+      !device->GetUUIDs().contains(kMessageStreamUuid)) {
     return;
   }
 
@@ -144,7 +143,7 @@ void MessageStreamLookupImpl::DeviceChanged(device::BluetoothAdapter* adapter,
   // because it is possible for a device to be connected to the adapter but not
   // paired (example: a request for the adapter's SDP records).
   if (!device || !(device->IsConnected() && device->IsPaired()) ||
-      !base::Contains(device->GetUUIDs(), kMessageStreamUuid)) {
+      !device->GetUUIDs().contains(kMessageStreamUuid)) {
     return;
   }
 
@@ -164,7 +163,7 @@ void MessageStreamLookupImpl::DeviceAdded(device::BluetoothAdapter* adapter,
   // because it is possible for a device to be connected to the adapter but not
   // paired (example: a request for the adapter's SDP records).
   if (!device || !(device->IsConnected() && device->IsPaired()) ||
-      !base::Contains(device->GetUUIDs(), kMessageStreamUuid)) {
+      !device->GetUUIDs().contains(kMessageStreamUuid)) {
     return;
   }
 
@@ -201,7 +200,7 @@ void MessageStreamLookupImpl::AttemptEraseMessageStream(
       << __func__ << ": device address = " << device_address;
   // Remove map entry if it exists. It may not exist if it was failed to be
   // created due to a |ConnectToService| error.
-  if (!base::Contains(message_streams_, device_address))
+  if (!message_streams_.contains(device_address))
     return;
 
   // If the MessageStream still exists, we can attempt to gracefully disconnect
@@ -237,13 +236,13 @@ void MessageStreamLookupImpl::AttemptCreateMessageStream(
   // multiple BluetoothAdapter events fire for a device connected event, but
   // we need all of these BluetoothAdapter observation events to handle
   // different connection scenarios, and have coverage for different devices.
-  if (base::Contains(message_streams_, device_address)) {
+  if (message_streams_.contains(device_address)) {
     CD_LOG(INFO, Feature::FP)
         << __func__ << ": Message Stream exists already for device";
     return;
   }
 
-  if (base::Contains(pending_connect_requests_, device_address)) {
+  if (pending_connect_requests_.contains(device_address)) {
     CD_LOG(INFO, Feature::FP)
         << __func__ << ": Ignoring due to matching pending request";
     return;

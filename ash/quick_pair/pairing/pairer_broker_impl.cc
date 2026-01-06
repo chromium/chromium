@@ -17,7 +17,6 @@
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer_impl.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -131,7 +130,7 @@ void PairerBrokerImpl::StopPairing() {
 }
 
 void PairerBrokerImpl::PairFastPairDevice(scoped_refptr<Device> device) {
-  if (base::Contains(fast_pair_pairers_, device->metadata_id())) {
+  if (fast_pair_pairers_.contains(device->metadata_id())) {
     CD_LOG(WARNING, Feature::FP)
         << __func__ << ": Already pairing device" << device;
     RecordFastPairInitializePairingProcessEvent(
@@ -262,7 +261,7 @@ void PairerBrokerImpl::OnHandshakeFailure(scoped_refptr<Device> device,
 }
 
 void PairerBrokerImpl::StartBondingAttempt(scoped_refptr<Device> device) {
-  if (!base::Contains(pair_failure_counts_, device->metadata_id())) {
+  if (!pair_failure_counts_.contains(device->metadata_id())) {
     pair_failure_counts_[device->metadata_id()] = 0;
 
     // `OnPairingStart` is used in metrics to signal the beginning of the

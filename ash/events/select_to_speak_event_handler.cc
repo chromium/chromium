@@ -8,7 +8,6 @@
 #include "ash/accessibility/accessibility_event_handler_manager.h"
 #include "ash/public/cpp/select_to_speak_event_handler_delegate.h"
 #include "ash/shell.h"
-#include "base/containers/contains.h"
 #include "ui/events/types/event_type.h"
 
 namespace ash {
@@ -86,7 +85,7 @@ void SelectToSpeakEventHandler::OnKeyEvent(ui::KeyEvent* event) {
     // a fatal error since std::set::erase will still work properly
     // if it can't find the key, and STS will not have propagating bad
     // behavior if it missed a key press event.
-    DCHECK(base::Contains(keys_currently_down_, key_code));
+    DCHECK(keys_currently_down_.contains(key_code));
     keys_currently_down_.erase(key_code);
   }
 

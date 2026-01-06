@@ -34,7 +34,6 @@
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "ash/wm/window_restore/informed_restore_controller.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -233,7 +232,7 @@ bool IsLanguageSupported(std::string_view language) {
           ash::features::kCoralFeatureMultiLanguage)) {
     return language == "en";
   }
-  return base::Contains(kSupportedLanguages, language);
+  return kSupportedLanguages.contains(language);
 }
 
 // Gets the total number of entities corresponding to the given `identifier`

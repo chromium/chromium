@@ -13,7 +13,6 @@
 #include "ash/wm/window_state.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ui/base/display_util.h"
@@ -138,7 +137,7 @@ void PersistentWindowController::OnDisplayMetricsChanged(
   }
 
   const bool was_landscape_before_rotation =
-      base::Contains(is_landscape_orientation_map_, display.id())
+      is_landscape_orientation_map_.contains(display.id())
           ? is_landscape_orientation_map_[display.id()]
           : false;
   for (aura::Window* window : GetWindowList()) {

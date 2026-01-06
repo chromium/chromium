@@ -11,7 +11,6 @@
 #include "ash/system/power/peripheral_battery_listener.h"
 #include "ash/system/power/peripheral_battery_tests.h"
 #include "ash/test/ash_test_base.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -93,7 +92,7 @@ class StylusMetricsRecorderTest : public AshTestBase {
                            BatteryInfo::PeripheralType::kStylusViaCharger) {
     const BatteryInfo info = ConstructBatteryInfo(
         style, charge_status, battery_report_eligible, type);
-    if (!base::Contains(known_batteries_, info.key)) {
+    if (!known_batteries_.contains(info.key)) {
       stylus_metrics_recorder_->OnAddingBattery(info);
       known_batteries_.insert(info.key);
     }
@@ -107,7 +106,7 @@ class StylusMetricsRecorderTest : public AshTestBase {
                          BatteryInfo::PeripheralType::kStylusViaCharger) {
     const BatteryInfo info = ConstructBatteryInfo(
         style, charge_status, battery_report_eligible, type);
-    if (base::Contains(known_batteries_, info.key)) {
+    if (known_batteries_.contains(info.key)) {
       stylus_metrics_recorder_->OnRemovingBattery(info);
       known_batteries_.erase(info.key);
     }

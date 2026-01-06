@@ -15,7 +15,6 @@
 #include "ash/public/cpp/holding_space/holding_space_section.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 
@@ -202,7 +201,7 @@ void HoldingSpaceModel::RemoveItem(const std::string& id) {
 void HoldingSpaceModel::RemoveItems(const std::set<std::string>& item_ids) {
   RemoveIf(base::BindRepeating(
       [](const std::set<std::string>& item_ids, const HoldingSpaceItem* item) {
-        return base::Contains(item_ids, item->id());
+        return item_ids.contains(item->id());
       },
       std::cref(item_ids)));
 }

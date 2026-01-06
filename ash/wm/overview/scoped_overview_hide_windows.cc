@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 
@@ -36,7 +35,7 @@ ScopedOverviewHideWindows::~ScopedOverviewHideWindows() {
 }
 
 bool ScopedOverviewHideWindows::HasWindow(aura::Window* window) const {
-  return base::Contains(window_visibility_, window);
+  return window_visibility_.contains(window);
 }
 
 void ScopedOverviewHideWindows::AddWindow(aura::Window* window) {

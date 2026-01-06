@@ -107,14 +107,14 @@ TEST_F(InputDeviceSettingsMetadataManagerTest, GenerateImageRequestKey) {
   manager()->GetDeviceImage(test_device_key, account_1,
                             DeviceImageDestination::kNotification,
                             base::DoNothing());
-  EXPECT_TRUE((base::Contains(manager()->GetDeviceCallbackMapForTesting(),
-                              "0000:0001_0")));
+  EXPECT_TRUE(
+      (manager()->GetDeviceCallbackMapForTesting().contains("0000:0001_0")));
   base::RunLoop().RunUntilIdle();
   manager()->GetDeviceImage(test_device_key, account_1,
                             DeviceImageDestination::kSettings,
                             base::DoNothing());
-  EXPECT_TRUE((base::Contains(manager()->GetDeviceCallbackMapForTesting(),
-                              "0000:0001_1")));
+  EXPECT_TRUE(
+      (manager()->GetDeviceCallbackMapForTesting().contains("0000:0001_1")));
   base::RunLoop().RunUntilIdle();
 }
 

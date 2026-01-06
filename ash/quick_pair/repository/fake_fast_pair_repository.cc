@@ -7,7 +7,6 @@
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"
@@ -198,7 +197,7 @@ void FakeFastPairRepository::IsDeviceSavedToAccount(
     return;
   }
 
-  if (base::Contains(saved_mac_addresses_, mac_address)) {
+  if (saved_mac_addresses_.contains(mac_address)) {
     std::move(callback).Run(true);
     return;
   }

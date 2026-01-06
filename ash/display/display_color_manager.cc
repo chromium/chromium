@@ -9,7 +9,6 @@
 #include "ash/constants/ash_paths.h"
 #include "ash/shell.h"
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/path_service.h"

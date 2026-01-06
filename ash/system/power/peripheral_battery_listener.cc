@@ -13,7 +13,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -79,9 +78,8 @@ bool IsStylusDevice(const std::string& path,
   for (const ui::TouchscreenDevice& device :
        ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices()) {
     if (device.has_stylus &&
-        (device.name == model_name ||
-         base::Contains(device.name, model_name)) &&
-        base::Contains(device.sys_path.value(), identifier)) {
+        (device.name == model_name || device.name.contains(model_name)) &&
+        device.sys_path.value().contains(identifier)) {
       *has_garage = device.has_stylus_garage_switch;
       return true;
     }

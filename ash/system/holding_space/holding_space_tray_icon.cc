@@ -19,7 +19,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "base/barrier_closure.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
@@ -286,7 +285,7 @@ void HoldingSpaceTrayIcon::UpdatePreviews(
   // Collect the list of items that should be removed.
   std::vector<std::string> items_to_remove;
   for (const auto& preview_pair : previews_by_id_) {
-    if (!base::Contains(item_ids, preview_pair.first))
+    if (!item_ids.contains(preview_pair.first))
       items_to_remove.push_back(preview_pair.first);
   }
 

@@ -89,13 +89,13 @@ class SensorProviderTest : public testing::Test {
                  std::optional<std::string> location) {
     std::vector<chromeos::sensors::FakeSensorDevice::ChannelData> channels_data;
     int size = 0;
-    if (base::Contains(types, DeviceType::ANGL)) {
+    if (types.contains(DeviceType::ANGL)) {
       channels_data.resize(1);
       channels_data[0].id = "angl";
       channels_data[0].sample_data = 1;
       channels_data[0].attrs["raw"] = "1";
     }
-    if (base::Contains(types, DeviceType::ACCEL)) {
+    if (types.contains(DeviceType::ACCEL)) {
       size += kNumberOfAxes;
       channels_data.resize(size);
       for (uint32_t i = 0; i < kNumberOfAxes; ++i) {
@@ -104,7 +104,7 @@ class SensorProviderTest : public testing::Test {
             kFakeSampleData[i];
       }
     }
-    if (base::Contains(types, DeviceType::ANGLVEL)) {
+    if (types.contains(DeviceType::ANGLVEL)) {
       size += kNumberOfAxes;
       channels_data.resize(size);
       for (uint32_t i = 0; i < kNumberOfAxes; ++i) {
@@ -196,7 +196,7 @@ TEST_F(SensorProviderTest, GetSamplesOfLidAccel) {
   std::vector<bool> expected{false, false, true, false, false};
   EXPECT_EQ(provider_->GetStateForTesting(), expected);
   EXPECT_TRUE(sensor_hal_server_->GetSensorService()->HasReceivers());
-  EXPECT_TRUE(base::Contains(sensor_devices_, kFakeLidAccelerometerId));
+  EXPECT_TRUE(sensor_devices_.contains(kFakeLidAccelerometerId));
   EXPECT_TRUE(sensor_devices_[kFakeLidAccelerometerId]->HasReceivers());
   EXPECT_TRUE(observer_.update_.has(SensorType::kAccelerometerLid));
 }

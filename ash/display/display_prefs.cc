@@ -15,7 +15,6 @@
 #include "ash/shell.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -215,7 +214,7 @@ void LoadDisplayLayouts(PrefService* local_state) {
       continue;
     }
 
-    if (base::Contains(it.first, ",")) {
+    if (it.first.contains(",")) {
       std::vector<std::string> ids_str = base::SplitString(
           it.first, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
       std::vector<int64_t> ids;
@@ -397,7 +396,7 @@ void LoadDisplayTouchAssociations(PrefService* local_state) {
     }
 
     if (calibration_data_to_set) {
-      if (!base::Contains(touch_associations, fallback_identifier)) {
+      if (!touch_associations.contains(fallback_identifier)) {
         touch_associations.emplace(
             fallback_identifier,
             display::TouchDeviceManager::AssociationInfoMap());
@@ -561,8 +560,7 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
   const display::TouchDeviceIdentifier& fallback_identifier =
       display::TouchDeviceIdentifier::GetFallbackTouchDeviceIdentifier();
   display::TouchDeviceManager::AssociationInfoMap legacy_data_map;
-  if (base::Contains(
-          display_manager->touch_device_manager()->touch_associations(),
+  if (display_manager->touch_device_manager()->touch_associations().contains(
           fallback_identifier)) {
     legacy_data_map =
         display_manager->touch_device_manager()->touch_associations().at(
@@ -620,7 +618,7 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
 
     // Store the legacy format touch calibration data. This can be removed after
     // a couple of milestones when every device has migrated to the new format.
-    if (legacy_data_map.size() && base::Contains(legacy_data_map, id)) {
+    if (legacy_data_map.size() && legacy_data_map.contains(id)) {
       TouchDataToValue(legacy_data_map.at(id).calibration_data, property_value);
     }
 
@@ -809,7 +807,7 @@ void ReportToPopularityMetricsAndStore(PrefService* pref_service) {
 
     std::string display_id = base::NumberToString(display.edid_display_id());
     // If we've already reported that display, don't report it again.
-    if (base::Contains(cached_list, display_id)) {
+    if (cached_list.contains(display_id)) {
       continue;
     }
 

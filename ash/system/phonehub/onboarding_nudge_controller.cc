@@ -191,7 +191,7 @@ bool OnboardingNudgeController::IsDeviceStoredInPref(
   PrefService* pref_service = GetPrefService();
   const base::Value::List& devices_in_pref =
       pref_service->GetList(kSyncedDevices);
-  return base::Contains(devices_in_pref, base::Value(device.instance_id()));
+  return devices_in_pref.contains(device.instance_id());
 }
 
 bool OnboardingNudgeController::ShouldShowNudge() {

@@ -10,7 +10,6 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/test/metrics/histogram_tester.h"
 
 namespace ash {
@@ -58,8 +57,8 @@ class FeatureDiscoveryDurationReporterImplTest : public AshTestBase {
   bool IsMockFeatureUnderActiveObservation() {
     const auto& active_time_recordings =
         GetFeatureDiscoveryDurationReporter()->active_time_recordings_;
-    return base::Contains(active_time_recordings,
-                          feature_discovery::TrackableFeature::kMockFeature);
+    return active_time_recordings.contains(
+        feature_discovery::TrackableFeature::kMockFeature);
   }
 
   // AshTestBase:

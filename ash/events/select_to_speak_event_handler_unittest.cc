@@ -38,7 +38,7 @@ class TestDelegate : public SelectToSpeakEventHandlerDelegate {
   virtual ~TestDelegate() = default;
 
   bool CapturedMouseEvent(ui::EventType event_type) {
-    return base::Contains(mouse_events_captured_, event_type);
+    return mouse_events_captured_.contains(event_type);
   }
 
   void Reset() {

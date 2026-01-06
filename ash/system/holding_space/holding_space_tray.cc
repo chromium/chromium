@@ -37,7 +37,6 @@
 #include "ash/user_education/user_education_class_properties.h"
 #include "base/check.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
@@ -770,7 +769,7 @@ void HoldingSpaceTray::UpdatePreviewsIcon() {
     if (!IsPreviewable(item)) {
       continue;
     }
-    if (base::Contains(paths_with_previews, item->file().file_path)) {
+    if (paths_with_previews.contains(item->file().file_path)) {
       continue;
     }
     items_with_previews.push_back(item.get());

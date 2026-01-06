@@ -7,7 +7,6 @@
 #include <sstream>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
@@ -90,7 +89,7 @@ void KeyboardInputLog::CreateLogAndRemoveKeyboard(uint32_t id) {
 }
 
 bool KeyboardInputLog::KeyboardHasBeenAdded(uint32_t id) const {
-  return base::Contains(keyboard_log_data_map_, id);
+  return keyboard_log_data_map_.contains(id);
 }
 
 std::string KeyboardInputLog::GetLogContents() const {

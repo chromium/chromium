@@ -13,7 +13,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/callback_list.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
@@ -36,8 +35,8 @@ crosapi::mojom::ClipboardHistoryDisplayFormat CalculateDisplayFormat(
     case ui::ClipboardInternalFormat::kPng:
       return crosapi::mojom::ClipboardHistoryDisplayFormat::kPng;
     case ui::ClipboardInternalFormat::kHtml:
-      if (!base::Contains(item.data().markup_data(), "<img") &&
-          !base::Contains(item.data().markup_data(), "<table")) {
+      if (!item.data().markup_data().contains("<img") &&
+          !item.data().markup_data().contains("<table")) {
         return crosapi::mojom::ClipboardHistoryDisplayFormat::kText;
       }
       return crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml;

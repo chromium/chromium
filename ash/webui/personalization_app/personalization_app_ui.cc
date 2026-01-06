@@ -27,7 +27,6 @@
 #include "ash/webui/personalization_app/personalization_app_user_provider.h"
 #include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -569,7 +568,7 @@ void PersonalizationAppUI::AddIntegers(content::WebUIDataSource* source) {
 void PersonalizationAppUI::HandleWebUIRequest(
     const std::string& path,
     content::WebUIDataSource::GotDataCallback callback) {
-  DCHECK(base::Contains(path, "?key="))
+  DCHECK(path.contains("?key="))
       << "wallpaper key must be provided to prevent browser cache collisions";
   wallpaper_provider_->GetWallpaperAsJpegBytes(std::move(callback));
 }

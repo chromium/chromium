@@ -54,9 +54,8 @@ void BirchWeatherProvider::RequestBirchDataFetch() {
   const auto* pref_service =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
   if (!pref_service ||
-      !base::Contains(pref_service->GetList(
-                          prefs::kContextualGoogleIntegrationsConfiguration),
-                      prefs::kWeatherIntegrationName)) {
+      !pref_service->GetList(prefs::kContextualGoogleIntegrationsConfiguration)
+           .contains(prefs::kWeatherIntegrationName)) {
     // Weather integration is disabled by policy.
     Shell::Get()->birch_model()->SetWeatherItems({});
     return;

@@ -22,7 +22,6 @@
 #include "ash/shell.h"
 #include "ash/touch/ash_touch_transform_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/device_event_log/device_event_log.h"
@@ -700,7 +699,7 @@ crosapi::mojom::DisplayConfigResult SetDisplayLayouts(
     if (root_id == display::kInvalidDisplayId) {
       // Look for a display with no layout info to use as the root.
       for (int64_t id : display_ids) {
-        if (!base::Contains(layout_ids, id)) {
+        if (!layout_ids.contains(id)) {
           root_id = id;
           break;
         }

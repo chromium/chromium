@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "ash/public/cpp/new_window_delegate.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "dbus/bus.h"
@@ -51,8 +50,7 @@ void UrlHandlerServiceProvider::Start(
 }
 
 bool UrlHandlerServiceProvider::UrlAllowed(const GURL& gurl) const {
-  return gurl.is_valid() &&
-         base::Contains(allowed_url_schemes_, gurl.GetScheme());
+  return gurl.is_valid() && allowed_url_schemes_.contains(gurl.GetScheme());
 }
 
 void UrlHandlerServiceProvider::OpenUrl(

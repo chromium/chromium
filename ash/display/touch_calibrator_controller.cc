@@ -176,7 +176,7 @@ void TouchCalibratorController::CalibrateNextDisplay() {
   const display::Display* next_display_to_map = nullptr;
   for (const auto& display : active_displays) {
     if (display.IsInternal() ||
-        base::Contains(already_mapped_display_ids_, display.id())) {
+        already_mapped_display_ids_.contains(display.id())) {
       continue;
     }
 

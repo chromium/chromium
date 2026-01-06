@@ -19,7 +19,6 @@
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 #include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "components/vector_icons/vector_icons.h"
 #include "privacy_hub_notification_controller.h"
