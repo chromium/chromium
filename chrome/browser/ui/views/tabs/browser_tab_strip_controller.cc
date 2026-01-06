@@ -695,12 +695,6 @@ bool BrowserTabStripController::EverHasVisibleBackgroundTabShapes() const {
              BrowserFrameActiveState::kInactive);
 }
 
-bool BrowserTabStripController::CanDrawStrokes() const {
-  // Web apps should not draw strokes if they don't have a tab strip.
-  return !browser_view_->browser()->app_controller() ||
-         browser_view_->browser()->app_controller()->has_tab_strip();
-}
-
 SkColor BrowserTabStripController::GetFrameColor(
     BrowserFrameActiveState active_state) const {
   return GetFrameView()->GetFrameColor(active_state);

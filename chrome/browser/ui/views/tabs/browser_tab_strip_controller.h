@@ -118,7 +118,6 @@ class BrowserTabStripController : public TabStripController,
   bool IsFrameCondensed() const override;
   bool HasVisibleBackgroundTabShapes() const override;
   bool EverHasVisibleBackgroundTabShapes() const override;
-  bool CanDrawStrokes() const override;
   SkColor GetFrameColor(BrowserFrameActiveState active_state) const override;
   std::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const override;

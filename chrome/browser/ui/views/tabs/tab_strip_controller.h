@@ -228,10 +228,6 @@ class TabStripController {
   // frame for either active or inactive windows.
   virtual bool EverHasVisibleBackgroundTabShapes() const = 0;
 
-  // Returns whether tab strokes can ever be drawn. If true, strokes will only
-  // be drawn if necessary.
-  virtual bool CanDrawStrokes() const = 0;
-
   // Returns the color of the browser frame for the given window activation
   // state.
   virtual SkColor GetFrameColor(BrowserFrameActiveState active_state) const = 0;

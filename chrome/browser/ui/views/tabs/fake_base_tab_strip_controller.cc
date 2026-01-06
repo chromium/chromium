@@ -296,10 +296,6 @@ bool FakeBaseTabStripController::EverHasVisibleBackgroundTabShapes() const {
   return false;
 }
 
-bool FakeBaseTabStripController::CanDrawStrokes() const {
-  return false;
-}
-
 SkColor FakeBaseTabStripController::GetFrameColor(
     BrowserFrameActiveState active_state) const {
   return gfx::kPlaceholderColor;
