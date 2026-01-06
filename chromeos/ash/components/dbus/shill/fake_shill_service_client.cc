@@ -928,7 +928,7 @@ void FakeShillServiceClient::ContinueConnect(const std::string& service_path) {
     return;
   }
 
-  if (base::Contains(connect_behavior_, service_path)) {
+  if (connect_behavior_.contains(service_path)) {
     const base::RepeatingClosure& custom_connect_behavior =
         connect_behavior_[service_path];
     VLOG(1) << "Running custom connect behavior for " << service_path;

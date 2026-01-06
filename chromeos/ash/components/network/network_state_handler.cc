@@ -1412,7 +1412,7 @@ void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
   std::map<std::string, std::unique_ptr<ManagedState>> managed_map;
   for (auto& item : *managed_list) {
     std::string path = item->path();
-    DCHECK(!base::Contains(managed_map, path));
+    DCHECK(!managed_map.contains(path));
     managed_map[path] = std::move(item);
   }
   // Clear the list (objects are temporarily owned by managed_map).

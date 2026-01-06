@@ -1630,7 +1630,7 @@ bool FakeShillManagerClient::TechnologyEnabled(const std::string& type) const {
   const base::Value::List* technologies =
       stub_properties_.FindList(shill::kEnabledTechnologiesProperty);
   if (technologies) {
-    return base::Contains(*technologies, base::Value(type));
+    return technologies->contains(type);
   }
   return false;
 }

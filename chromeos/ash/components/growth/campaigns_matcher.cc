@@ -168,7 +168,7 @@ bool MatchExperimentTags(const base::Value::List* experiment_tags,
 
   // Campaign is matched if the tag from field trail param matches any of the
   // tag in the targeting criteria.
-  const bool exp_tag_matched = base::Contains(*experiment_tags, exp_tag);
+  const bool exp_tag_matched = experiment_tags->contains(exp_tag);
   if (!exp_tag_matched) {
     CAMPAIGNS_LOG(DEBUG) << "ExperimentTags is NOT matched.";
   }
@@ -190,7 +190,7 @@ bool HasOverlapEntries(const base::Value::List& pref_values,
 bool HasOverlapEntries(const base::Value::List& list_values,
                        const std::vector<std::string>& vector_values) {
   for (const auto& value : vector_values) {
-    if (base::Contains(list_values, value)) {
+    if (list_values.contains(value)) {
       return true;
     }
   }
@@ -333,14 +333,14 @@ bool MatchStringList(const StringListTargeting& string_list_targeting,
   const auto* includes = string_list_targeting.GetIncludes();
 
   // If the `includes` is empty, then it will not match.
-  if (includes && !Contains(*includes, value)) {
+  if (includes && !includes->contains(value)) {
     CAMPAIGNS_LOG(DEBUG) << "Value is not in the includes list of "
                          << target_name;
     return false;
   }
 
   const auto* excludes = string_list_targeting.GetExcludes();
-  if (excludes && Contains(*excludes, value)) {
+  if (excludes && excludes->contains(value)) {
     CAMPAIGNS_LOG(DEBUG) << "Value is in the excludes list of " << target_name;
     return false;
   }
@@ -598,12 +598,12 @@ bool CampaignsMatcher::MatchDeviceTargeting(
 
   const auto* targeting_locales = targeting.GetLocales();
   if (targeting_locales &&
-      !Contains(*targeting_locales, client_->GetApplicationLocale())) {
+      !targeting_locales->contains(client_->GetApplicationLocale())) {
     return false;
   }
 
   const auto* user_locales = targeting.GetUserLocales();
-  if (user_locales && !Contains(*user_locales, client_->GetUserLocale())) {
+  if (user_locales && !user_locales->contains(client_->GetUserLocale())) {
     return false;
   }
 
@@ -619,13 +619,13 @@ bool CampaignsMatcher::MatchDeviceTargeting(
 
   const auto* included_countries = targeting.GetIncludedCountries();
   if (included_countries &&
-      !Contains(*included_countries, client_->GetCountryCode())) {
+      !included_countries->contains(client_->GetCountryCode())) {
     return false;
   }
 
   const auto* excluded_countries = targeting.GetExcludedCountries();
   if (excluded_countries &&
-      Contains(*excluded_countries, client_->GetCountryCode())) {
+      excluded_countries->contains(client_->GetCountryCode())) {
     return false;
   }
 

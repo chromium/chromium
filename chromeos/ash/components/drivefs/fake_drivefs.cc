@@ -191,8 +191,7 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
         const base::FilePath path = item_ptr->path;
         const drivefs::mojom::FileMetadata* metadata = item_ptr->metadata.get();
         if (!query.empty()) {
-          if (!base::Contains(base::ToLowerASCII(path.BaseName().value()),
-                              query)) {
+          if (!base::ToLowerASCII(path.BaseName().value()).contains(query)) {
             return true;
           }
         }
