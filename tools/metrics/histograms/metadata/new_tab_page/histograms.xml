@@ -133,6 +133,19 @@ chromium-metrics-reviews@google.com.
   <summary>Logged when any Action Chips was shown to the user.</summary>
 </histogram>
 
+<histogram name="NewTabPage.ActionChips.ToggledVisibility"
+    enum="BooleanVisible" expires_after="2026-05-01">
+  <owner>rtatum@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logged when New Tab Page Action Chips visibility is toggled via Customize
+    Chrome. This toggle is only available in the Customize Chrome Side Panel
+    when the user is currently viewing a 1P NTP, is signed in, and is eligible
+    for AIM features.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.ActionChips.WebUI.InitialLoadLatency" units="ms"
     expires_after="2026-05-01">
   <owner>giannich@chromium.org</owner>
