@@ -48,10 +48,14 @@ ui::ColorId GetRowColor(actor::ActorTask::State state,
   return ui::kColorMenuIcon;
 }
 
-// TODO(crbug.com/470101572): Return correct subtitles for active tasks.
-std::u16string GetRowSubtitle() {
+std::u16string GetRowSubtitle(actor::ActorTask::State state) {
+  if (state == actor::ActorTask::State::kPausedByActor ||
+      state == actor::ActorTask::State::kWaitingOnUser) {
+    return l10n_util::GetStringUTF16(
+        IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE);
+  }
   return l10n_util::GetStringUTF16(
-      IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE);
+      IDR_ACTOR_TASK_LIST_BUBBLE_ROW_ACTING_TASK_SUBTITLE);
 }
 
 }  // namespace
@@ -68,7 +72,7 @@ ActorTaskListBubbleRowButton::ActorTaskListBubbleRowButton(
                           GetRowColor(state, requires_processing),
                           kBubbleRowIconSize),
                       /*title_text=*/title,
-                      /*subtitle_text=*/GetRowSubtitle()) {
+                      /*subtitle_text=*/GetRowSubtitle(state)) {
   SetSubtitleTextStyleAndColor(/*default_style*/ views::style::STYLE_BODY_5,
                                GetRowColor(state, requires_processing));
   if (subtitle()) {

@@ -55,7 +55,6 @@ void ActorTaskListBubbleController::ShowBubble(views::View* anchor_view) {
           browser_->GetProfile())
           ->GetActorTaskListBubbleRows();
   // Do not show bubble if there are no rows to show.
-  // TODO(crbug.com/470101572): Remove when active tasks show in the bubble.
   if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator) &&
       task_id_to_state.empty()) {
     return;

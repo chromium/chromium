@@ -22,6 +22,9 @@
       other {Check your tasks}}
   </message>
   <message name="IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task needs attention." translateable="true">
-    Needs your attention
+    Waiting for your help
+  </message>
+  <message name="IDR_ACTOR_TASK_LIST_BUBBLE_ROW_ACTING_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task is acting." translateable="true">
+   Working on your task…
   </message>
 </grit-part>
