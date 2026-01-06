@@ -89,9 +89,9 @@ gfx::Rect TabGroupStyle::GetEmptyTitleChipBounds(
 
 gfx::Point TabGroupStyle::GetTitleChipOffset(
     std::optional<int> text_height) const {
-  const int total_space = GetLayoutConstant(TAB_STRIP_HEIGHT) -
-                          GetEmptyChipSize() -
-                          GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
+  const int total_space =
+      GetLayoutConstant(LayoutConstant::kTabStripHeight) - GetEmptyChipSize() -
+      GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
   return gfx::Point(TabStyle::Get()->GetTabOverlap() - 2, total_space / 2);
 }
 

@@ -105,9 +105,10 @@ FooterRow<T>::FooterRow(bool is_fade_out_view)
   footer_label_->SetTextStyle(views::style::STYLE_BODY_4);
 
   // Vertically align the icon to the top line of the label
-  const int offset = (footer_label_->GetLineHeight() -
-                      GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH)) /
-                     2;
+  const int offset =
+      (footer_label_->GetLineHeight() -
+       GetLayoutConstant(LayoutConstant::kTabAlertIndicatorIconWidth)) /
+      2;
   icon_->SetProperty(views::kMarginsKey,
                      gfx::Insets::TLBR(offset, 0, 0, kIconLabelSpacing));
 }
@@ -178,11 +179,12 @@ void FadeAlertFooterRow::SetData(const AlertFooterRowData& data) {
     } else {
       row_text = l10n_util::GetStringUTF16(IDS_HOVERCARD_INACTIVE_TAB);
     }
-    SetContent(ui::ImageModel::FromVectorIcon(
-                   kPerformanceSpeedometerIcon,
-                   kColorHoverCardTabAlertAudioPlayingIcon,
-                   GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH)),
-               row_text);
+    SetContent(
+        ui::ImageModel::FromVectorIcon(
+            kPerformanceSpeedometerIcon,
+            kColorHoverCardTabAlertAudioPlayingIcon,
+            GetLayoutConstant(LayoutConstant::kTabAlertIndicatorIconWidth)),
+        row_text);
   } else if (alert_state.has_value()) {
     const tabs::TabAlert alert = alert_state.value();
     SetContent(tabs::GetAlertImageModel(alert, GetTabAlertColor(alert)),
@@ -210,7 +212,7 @@ void FadePerformanceFooterRow::SetData(const PerformanceRowData& data) {
 
     const ui::ImageModel icon_image_model = ui::ImageModel::FromVectorIcon(
         kPerformanceSpeedometerIcon, kColorHoverCardTabAlertAudioPlayingIcon,
-        GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH));
+        GetLayoutConstant(LayoutConstant::kTabAlertIndicatorIconWidth));
     SetContent(icon_image_model, row_text);
   } else {
     SetContent(ui::ImageModel(), std::u16string());

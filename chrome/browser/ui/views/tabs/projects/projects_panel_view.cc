@@ -70,10 +70,11 @@ views::LabelButton* ProjectsPanelView::AddChildButtonFor(
 views::ProposedLayout ProjectsPanelView::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   views::ProposedLayout layout;
-  gfx::Size host_size = gfx::Size(
-      size_bounds.width().is_bounded() ? size_bounds.width().value()
-                                       : parent()->width(),
-      GetLayoutConstant(VERTICAL_TAB_STRIP_TOP_BUTTON_CONTAINER_HEIGHT));
+  gfx::Size host_size =
+      gfx::Size(size_bounds.width().is_bounded() ? size_bounds.width().value()
+                                                 : parent()->width(),
+                GetLayoutConstant(
+                    LayoutConstant::kVerticalTabStripTopButtonContainerHeight));
 
   CHECK(projects_button_);
 
@@ -88,7 +89,8 @@ views::ProposedLayout ProjectsPanelView::CalculateProposedLayout(
   gfx::Rect projects_button_bounds(
       current_x - projects_button_pref_size.width() - kRegionInteriorMargins,
       current_y -
-          (GetLayoutConstant(VERTICAL_TAB_STRIP_TOP_BUTTON_CONTAINER_HEIGHT) +
+          (GetLayoutConstant(
+               LayoutConstant::kVerticalTabStripTopButtonContainerHeight) +
            projects_button_pref_size.height()) /
               2 +
           kRegionInteriorMargins,

@@ -865,7 +865,8 @@ gfx::Size TabContainerImpl::GetMinimumSize() const {
         layout_helper_->CalculateMinimumWidth());
   }
 
-  return gfx::Size(minimum_width.value(), GetLayoutConstant(TAB_STRIP_HEIGHT));
+  return gfx::Size(minimum_width.value(),
+                   GetLayoutConstant(LayoutConstant::kTabStripHeight));
 }
 
 gfx::Size TabContainerImpl::CalculatePreferredSize(
@@ -883,7 +884,7 @@ gfx::Size TabContainerImpl::CalculatePreferredSize(
   }
 
   return gfx::Size(preferred_width.value(),
-                   GetLayoutConstant(TAB_STRIP_HEIGHT));
+                   GetLayoutConstant(LayoutConstant::kTabStripHeight));
 }
 
 views::View* TabContainerImpl::GetTooltipHandlerForPoint(
@@ -1234,7 +1235,7 @@ void TabContainerImpl::StartInsertTabAnimation(int model_index) {
   ExitTabClosingMode();
 
   gfx::Rect bounds = GetTabAtModelIndex(model_index)->bounds();
-  bounds.set_height(GetLayoutConstant(TAB_STRIP_HEIGHT));
+  bounds.set_height(GetLayoutConstant(LayoutConstant::kTabStripHeight));
 
   // Adjust the starting bounds of the new tab.
   const int tab_overlap = TabStyle::Get()->GetTabOverlap();

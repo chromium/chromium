@@ -393,14 +393,15 @@ void Tab::Layout(PassKey) {
   icon_->SetBoundsRect(favicon_bounds);
   icon_->SetVisible(showing_icon_);
 
-  const int after_title_padding = GetLayoutConstant(TAB_AFTER_TITLE_PADDING);
+  const int after_title_padding =
+      GetLayoutConstant(LayoutConstant::kTabAfterTitlePadding);
 
   int close_x = contents_rect.right();
   if (showing_close_button_) {
     // The visible size is the button's hover shape size. The actual size
     // includes the border insets for the button.
     const int close_button_visible_size =
-        GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE);
+        GetLayoutConstant(LayoutConstant::kTabCloseButtonSize);
     const gfx::Size close_button_actual_size =
         close_button_->GetPreferredSize();
 
@@ -464,9 +465,9 @@ void Tab::Layout(PassKey) {
       // icon view width (which will include extra room for the alert
       // indicator), but rather the normal favicon width which is what it will
       // look like.
-      const int after_favicon = favicon_bounds.x() + icon_->GetInsets().left() +
-                                gfx::kFaviconSize +
-                                GetLayoutConstant(TAB_PRE_TITLE_PADDING);
+      const int after_favicon =
+          favicon_bounds.x() + icon_->GetInsets().left() + gfx::kFaviconSize +
+          GetLayoutConstant(LayoutConstant::kTabPreTitlePadding);
       title_left = std::max(title_left, after_favicon);
     }
     int title_right = contents_rect.right();
@@ -803,7 +804,7 @@ void Tab::SetSplit(std::optional<split_tabs::SplitTabId> split) {
 gfx::Size Tab::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   return gfx::Size(GetTabSizeInfo().standard_width,
-                   GetLayoutConstant(TAB_HEIGHT));
+                   GetLayoutConstant(LayoutConstant::kTabHeight));
 }
 
 void Tab::PaintChildren(const views::PaintInfo& info) {
@@ -1125,7 +1126,7 @@ void Tab::UpdateIconVisibility() {
   showing_icon_ = showing_alert_indicator_ = false;
   extra_alert_indicator_padding_ = false;
 
-  if (height() < GetLayoutConstant(TAB_HEIGHT)) {
+  if (height() < GetLayoutConstant(LayoutConstant::kTabHeight)) {
     return;
   }
 
@@ -1172,8 +1173,9 @@ void Tab::UpdateIconVisibility() {
       alert_indicator_button_->GetPreferredSize().width();
   // In case of touch optimized UI, the close button has an extra padding on the
   // left that needs to be considered.
-  const int close_button_width = GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE) +
-                                 GetLayoutConstant(TAB_AFTER_TITLE_PADDING);
+  const int close_button_width =
+      GetLayoutConstant(LayoutConstant::kTabCloseButtonSize) +
+      GetLayoutConstant(LayoutConstant::kTabAfterTitlePadding);
   const bool large_enough_for_close_button =
       available_width >= (touch_ui ? kTouchMinimumContentsWidthForCloseButtons
                                    : kMinimumContentsWidthForCloseButtons);

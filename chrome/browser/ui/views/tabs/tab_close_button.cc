@@ -206,18 +206,18 @@ bool TabCloseButton::GetHitTestMask(SkPath* mask) const {
 void TabCloseButton::UpdateIcon() {
   const auto& icon = kCloseTabChromeRefreshIcon;
 
-  SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(icon, colors_.foreground_color,
-                                     GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE)));
-  SetImageModel(
-      views::Button::STATE_HOVERED,
-      ui::ImageModel::FromVectorIcon(icon, colors_.foreground_color,
-                                     GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE)));
-  SetImageModel(
-      views::Button::STATE_PRESSED,
-      ui::ImageModel::FromVectorIcon(icon, colors_.foreground_color,
-                                     GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE)));
+  SetImageModel(views::Button::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(
+                    icon, colors_.foreground_color,
+                    GetLayoutConstant(LayoutConstant::kTabCloseButtonSize)));
+  SetImageModel(views::Button::STATE_HOVERED,
+                ui::ImageModel::FromVectorIcon(
+                    icon, colors_.foreground_color,
+                    GetLayoutConstant(LayoutConstant::kTabCloseButtonSize)));
+  SetImageModel(views::Button::STATE_PRESSED,
+                ui::ImageModel::FromVectorIcon(
+                    icon, colors_.foreground_color,
+                    GetLayoutConstant(LayoutConstant::kTabCloseButtonSize)));
 }
 
 BEGIN_METADATA(TabCloseButton)

@@ -235,15 +235,16 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
     float top_right_corner_radius = content_corner_radius;
     float bottom_left_corner_radius = content_corner_radius;
     float bottom_right_corner_radius = content_corner_radius;
-    float tab_height = GetLayoutConstant(TAB_HEIGHT) * scale;
+    float tab_height = GetLayoutConstant(LayoutConstant::kTabHeight) * scale;
 
     // The tab displays favicon animations that can emerge from the toolbar. The
     // interior clip needs to extend the entire height of the toolbar to support
     // this. Detached tab shapes do not need to respect this.
     if (path_type != TabStyle::PathType::kInteriorClip &&
         path_type != TabStyle::PathType::kHitTest) {
-      tab_height -= GetLayoutConstant(TAB_STRIP_PADDING) * scale;
-      tab_height -= GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP) * scale;
+      tab_height -= GetLayoutConstant(LayoutConstant::kTabStripPadding) * scale;
+      tab_height -=
+          GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap) * scale;
     }
 
     // Don't round the bottom corners to avoid creating dead space between tabs.
@@ -253,7 +254,8 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
     }
 
     float left = aligned_bounds.x() + extension_corner_radius;
-    int top = aligned_bounds.y() + GetLayoutConstant(TAB_STRIP_PADDING) * scale;
+    int top = aligned_bounds.y() +
+              GetLayoutConstant(LayoutConstant::kTabStripPadding) * scale;
     float right = aligned_bounds.right() - extension_corner_radius;
     const int bottom = top + tab_height;
 
@@ -262,7 +264,7 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
     // tabs by moving the mouse to the top of the screen.
     if (path_type == TabStyle::PathType::kHitTest &&
         tab()->controller()->IsFrameCondensed()) {
-      top -= GetLayoutConstant(TAB_STRIP_PADDING) * scale;
+      top -= GetLayoutConstant(LayoutConstant::kTabStripPadding) * scale;
       // Don't round the top corners to avoid creating dead space between tabs.
       top_left_corner_radius = 0;
       top_right_corner_radius = 0;
@@ -336,8 +338,8 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
   // Calculate the bounds of the actual path.
   const float left = aligned_bounds.x();
   const float right = aligned_bounds.right();
-  float tab_top =
-      aligned_bounds.y() + GetLayoutConstant(TAB_STRIP_PADDING) * scale;
+  float tab_top = aligned_bounds.y() +
+                  GetLayoutConstant(LayoutConstant::kTabStripPadding) * scale;
   float tab_left = left + extension;
   float tab_right = right - extension;
 
@@ -345,7 +347,7 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
   // non-integral display scale factors.
   const float extended_bottom = aligned_bounds.bottom();
   const float bottom_extension =
-      GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP) * scale;
+      GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap) * scale;
   float tab_bottom = extended_bottom - bottom_extension;
 
   // Path-specific adjustments:
@@ -367,9 +369,10 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
 
   float left_extension_corner_radius = extension_corner_radius;
   if (compact_left_to_bottom) {
-    left_extension_corner_radius = (tab_style()->GetBottomCornerRadius() -
-                                    GetLayoutConstant(TOOLBAR_CORNER_RADIUS)) *
-                                   scale;
+    left_extension_corner_radius =
+        (tab_style()->GetBottomCornerRadius() -
+         GetLayoutConstant(LayoutConstant::kToolbarCornerRadius)) *
+        scale;
   }
 
   if (IsLeftSplitTab(tab())) {
@@ -512,8 +515,9 @@ gfx::Insets TabStyleViewsImpl::GetContentsInsets() const {
     split_insets.set_right(total_separator_width / -2);
   }
 
-  return gfx::Insets::TLBR(0, 0, GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP),
-                           0) +
+  return gfx::Insets::TLBR(
+             0, 0, GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap),
+             0) +
          base_style_insets + split_insets;
 }
 
@@ -658,7 +662,8 @@ TabStyle::SeparatorBounds TabStyleViewsImpl::GetSeparatorBounds(
   // Factor out the amount of the tab strip that is overlapped by the toolbar.
   const gfx::Rect visible_bounds = gfx::Rect(
       original_bounds.x(), original_bounds.y(), original_bounds.width(),
-      original_bounds.height() - GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP));
+      original_bounds.height() -
+          GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap));
   const gfx::RectF aligned_bounds =
       ScaleAndAlignBounds(visible_bounds, scale, GetStrokeThickness(false));
   const int corner_radius = tab_style()->GetBottomCornerRadius() * scale;
@@ -1085,9 +1090,10 @@ gfx::RectF TabStyleViewsImpl::ScaleAndAlignBounds(const gfx::Rect& bounds,
   // this way the two tabs' separators will be drawn at the same coordinate.
   gfx::RectF aligned_bounds(bounds);
   const int bottom_corner_radius = tab_style()->GetBottomCornerRadius();
-  // Note: This intentionally doesn't subtract TABSTRIP_TOOLBAR_OVERLAP from the
-  // bottom inset, because we want to pixel-align the bottom of the stroke, not
-  // the bottom of the overlap.
+  // Note: This intentionally doesn't subtract
+  // LayoutConstant::kTabstripToolbarOverlap from the bottom inset, because we
+  // want to pixel-align the bottom of the stroke, not the bottom of the
+  // overlap.
   auto layout_insets = gfx::InsetsF::TLBR(
       stroke_thickness, bottom_corner_radius, stroke_thickness,
       bottom_corner_radius + tab_style()->GetSeparatorSize().width());

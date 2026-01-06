@@ -155,8 +155,8 @@ class TabStripTestBase : public ChromeViewsTestBase {
 
  protected:
   void SetMaxTabStripWidth(int max_width) {
-    tab_strip_parent_->SetBounds(0, 0, max_width,
-                                 GetLayoutConstant(TAB_STRIP_HEIGHT));
+    tab_strip_parent_->SetBounds(
+        0, 0, max_width, GetLayoutConstant(LayoutConstant::kTabStripHeight));
     // Layout is handled from the Widget, so make sure it is also the correct
     // size.
     widget_->SetSize(tab_strip_parent_->bounds().size());

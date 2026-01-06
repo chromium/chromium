@@ -403,7 +403,7 @@ bool TabGroupHeader::DoesIntersectRect(const views::View* target,
 
   gfx::Rect contents_rect = GetLocalBounds();
   contents_rect.Inset(gfx::Insets::TLBR(
-      extend_hittest ? 0 : GetLayoutConstant(TAB_STRIP_PADDING),
+      extend_hittest ? 0 : GetLayoutConstant(LayoutConstant::kTabStripPadding),
       tab_style_->GetTabOverlap() / 2, 0, tab_style_->GetTabOverlap() / 2));
   return contents_rect.Intersects(rect);
 }

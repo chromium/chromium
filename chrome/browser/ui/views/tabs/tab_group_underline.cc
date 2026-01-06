@@ -80,8 +80,8 @@ gfx::Rect TabGroupUnderline::CalculateTabGroupUnderlineBounds(
   gfx::Rect group_bounds = ToEnclosingRect(leading_bounds);
   group_bounds.UnionEvenIfEmpty(ToEnclosingRect(trailing_bounds));
 
-  const int y =
-      group_bounds.bottom() - GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
+  const int y = group_bounds.bottom() -
+                GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
 
   return gfx::Rect(group_bounds.x(), y - kStrokeThickness, group_bounds.width(),
                    kStrokeThickness);

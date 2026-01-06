@@ -182,7 +182,7 @@ gfx::Rect DraggingTabsSession::GetDraggedViewTabStripBounds(
 
   return gfx::Rect(tab_strip_point.x(), tab_strip_point.y(),
                    TabStyle::Get()->GetStandardWidth(/*is_split=*/false),
-                   GetLayoutConstant(TAB_HEIGHT));
+                   GetLayoutConstant(LayoutConstant::kTabHeight));
 }
 
 bool DraggingTabsSession::AreTabsConsecutive() const {
