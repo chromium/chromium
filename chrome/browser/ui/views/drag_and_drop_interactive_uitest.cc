@@ -1203,8 +1203,7 @@ class DragAndDropDragLinksInSameTabBrowserTest : public DragAndDropBrowserTest {
     // Ensure PreserveDropEffect is enabled based on the setting of parent class
     // DragAndDropBrowserTest.
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSideBySide, {}},
-         {features::kSideBySideDropTargetNudge,
+        {{features::kSideBySideDropTargetNudge,
           {{features::kSideBySideDropTargetNudgeMinWidth.name, "0"},
            {features::kSideBySideDropTargetNudgeMaxWidth.name, "0"},
            {features::kSideBySideDropTargetNudgeToFullMinWidth.name, "0"},

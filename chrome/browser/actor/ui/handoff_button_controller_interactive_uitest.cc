@@ -317,17 +317,17 @@ class ActorUiHandoffButtonSplitViewTest
 
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       override {
-    return {{features::kSideBySide, {}},
+    return {
 #if BUILDFLAG(ENABLE_GLIC)
-            {features::kGlicURLConfig,
-             { {features::kGlicGuestURL.name, "about:blank"} }},
-            {features::kGlic, {}},
-            {features::kTabstripComboButton, {}},
+        {features::kGlicURLConfig,
+         { {features::kGlicGuestURL.name, "about:blank"} }},
+        {features::kGlic, {}},
+        {features::kTabstripComboButton, {}},
 #endif
-            {features::kGlicActor, {}},
-            {features::kGlicHandoffButtonHiddenClientControl, {}},
-            {features::kGlicActorUi,
-             {{features::kGlicActorUiHandoffButtonName, "true"}}}};
+        {features::kGlicActor, {}},
+        {features::kGlicHandoffButtonHiddenClientControl, {}},
+        {features::kGlicActorUi,
+         {{features::kGlicActorUiHandoffButtonName, "true"}}}};
   }
 
   void SetUpOnMainThread() override {

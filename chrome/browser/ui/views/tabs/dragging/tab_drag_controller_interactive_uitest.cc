@@ -6029,9 +6029,6 @@ class SideBySideTabDragControllerTest
                                     ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kSideBySide};
 };
 
 // Flaky. https://crbug.com/40748225
