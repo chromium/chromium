@@ -28,6 +28,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/device_bound_sessions/jwk_utils.h"
 #include "net/device_bound_sessions/registration_request_param.h"
+#include "net/device_bound_sessions/session_display.h"
 #include "net/device_bound_sessions/session_store.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
@@ -930,26 +931,37 @@ void SessionServiceImpl::SetLatestSignedRefreshChallenge(
       std::move(signed_refresh_challenge);
 }
 
+base::expected<std::unique_ptr<Session>, SessionError::ErrorType>
+SessionServiceImpl::CreateSessionFromUnexportableKey(
+    SessionParams params,
+    unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
+        key_or_error) {
+  if (!key_or_error.has_value()) {
+    return base::unexpected(SessionError::kFailedToUnwrapKey);
+  }
+  params.key_id = *key_or_error;
+  base::expected<std::unique_ptr<net::device_bound_sessions::Session>,
+                 net::device_bound_sessions::SessionError>
+      session_or_error =
+          net::device_bound_sessions::Session::CreateIfValid(params);
+  if (!session_or_error.has_value()) {
+    return base::unexpected(session_or_error.error().type);
+  }
+  return std::move(session_or_error.value());
+}
+
 void SessionServiceImpl::OnAddSessionKeyRestored(
     const SchemefulSite& site,
     SessionParams params,
     base::OnceCallback<void(SessionError::ErrorType)> callback,
     unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
         key_or_error) {
-  if (!key_or_error.has_value()) {
-    std::move(callback).Run(SessionError::kFailedToUnwrapKey);
-    return;
-  }
-
-  params.key_id = *key_or_error;
-
-  base::expected<std::unique_ptr<net::device_bound_sessions::Session>,
-                 net::device_bound_sessions::SessionError>
-      session_or_error =
-          net::device_bound_sessions::Session::CreateIfValid(params);
+  base::expected<std::unique_ptr<Session>, SessionError::ErrorType>
+      session_or_error = CreateSessionFromUnexportableKey(
+          std::move(params), std::move(key_or_error));
 
   if (!session_or_error.has_value()) {
-    std::move(callback).Run(session_or_error.error().type);
+    std::move(callback).Run(session_or_error.error());
     return;
   }
 
