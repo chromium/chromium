@@ -69,6 +69,11 @@
   -webkit-mask-image: url(chrome://new-tab-page/icons/suggestion.svg);
 }
 
+:host([show-simplified-ui_]) .deep-dive {
+  background-size: 20px;
+  mask-size: 20px;
+}
+
 .deep-search {
   background-color: var(--color-sys-on-surface-subtle);
   background-size: 24px;
