@@ -26,6 +26,7 @@
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
+#include "net/device_bound_sessions/challenge_result.h"
 #include "net/device_bound_sessions/jwk_utils.h"
 #include "net/device_bound_sessions/registration_request_param.h"
 #include "net/device_bound_sessions/session_display.h"
@@ -838,24 +839,39 @@ void SessionServiceImpl::SetChallengeForBoundSession(
     DbscRequest& request,
     const FirstPartySetMetadata& first_party_set_metadata,
     const SessionChallengeParam& param) {
+  ChallengeResult result = SetChallengeForBoundSessionInternal(
+      std::move(on_access_callback), request, first_party_set_metadata, param);
+  if (!event_callbacks_.empty()) {
+    event_callbacks_.Notify(SessionEvent::MakeChallengeEvent(
+        SchemefulSite(request.url()), param.session_id(),
+        result == ChallengeResult::kSuccess, result, param.challenge()));
+  }
+}
+
+ChallengeResult SessionServiceImpl::SetChallengeForBoundSessionInternal(
+    OnAccessCallback on_access_callback,
+    DbscRequest& request,
+    const FirstPartySetMetadata& first_party_set_metadata,
+    const SessionChallengeParam& param) {
   if (!param.session_id()) {
-    return;
+    return ChallengeResult::kNoSessionId;
   }
 
   SessionKey session_key{SchemefulSite(request.url()),
                          Session::Id(*param.session_id())};
   Session* session = GetSession(session_key);
   if (!session) {
-    return;
+    return ChallengeResult::kNoSessionMatch;
   }
 
   if (!session->CanSetBoundCookie(request, first_party_set_metadata)) {
-    return;
+    return ChallengeResult::kCantSetBoundCookie;
   }
 
   NotifySessionAccess(on_access_callback, SessionAccess::AccessType::kUpdate,
                       session_key, *session);
   session->set_cached_challenge(param.challenge());
+  return ChallengeResult::kSuccess;
 }
 
 void SessionServiceImpl::GetAllSessionsAsync(

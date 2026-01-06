@@ -9,6 +9,7 @@
 #include "base/unguessable_token.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
+#include "net/device_bound_sessions/challenge_result.h"
 #include "net/device_bound_sessions/refresh_result.h"
 #include "net/device_bound_sessions/session_display.h"
 #include "net/device_bound_sessions/session_error.h"
@@ -20,6 +21,7 @@ struct NET_EXPORT SessionEvent {
   enum class EventType {
     kCreation,
     kRefresh,
+    kChallenge,
   };
 
   static SessionEvent MakeCreationEvent(
@@ -37,6 +39,12 @@ struct NET_EXPORT SessionEvent {
       std::optional<SessionError::ErrorType> fetch_error,
       std::optional<SessionDisplay> new_session_display,
       bool was_fully_proactive_refresh);
+
+  static SessionEvent MakeChallengeEvent(SchemefulSite site,
+                                         std::optional<std::string> session_id,
+                                         bool succeeded,
+                                         ChallengeResult challenge_result,
+                                         const std::string& challenge);
 
   ~SessionEvent();
   SessionEvent(const SessionEvent&);
@@ -58,6 +66,8 @@ struct NET_EXPORT SessionEvent {
   // fully proactive refresh means the refresh completed before any requests had
   // to be deferred.
   std::optional<bool> was_fully_proactive_refresh;
+  std::optional<ChallengeResult> challenge_result;
+  std::optional<std::string> challenge;
 
  private:
   SessionEvent(EventType event_type,

@@ -30,6 +30,7 @@
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "net/base/features.h"
+#include "net/device_bound_sessions/challenge_result.h"
 #include "net/device_bound_sessions/jwk_utils.h"
 #include "net/device_bound_sessions/mock_session_store.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
@@ -852,6 +853,137 @@ TEST_F(SessionServiceImplTest, EventObserverOnProactiveAndDeferredRefresh) {
       RegistrationResult(RegistrationResult::NoSessionConfigChange(),
                          /*maybe_stored_cookies=*/{}));
   EXPECT_EQ(future.Take(), RefreshResult::kRefreshed);
+}
+
+TEST_F(SessionServiceImplTest, EventObserverOnChallenge) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  headers->AddHeader(kSessionChallengeHeaderName,
+                     R"("challenge";id="SessionId")");
+
+  std::vector<SessionChallengeParam> params =
+      SessionChallengeParam::CreateIfValid(kTestUrl, headers.get());
+  ASSERT_EQ(params.size(), 1u);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+  DbscRequest dbsc_request(request.get());
+
+  base::MockCallback<SessionService::OnEventCallback> event_callback;
+  base::CallbackListSubscription subscription =
+      service().AddEventObserver(event_callback.Get());
+  EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
+    EXPECT_EQ(event.event_type, SessionEvent::EventType::kChallenge);
+    EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
+    EXPECT_EQ(event.session_id, kSessionId);
+    EXPECT_TRUE(event.succeeded);
+    EXPECT_EQ(event.challenge_result, ChallengeResult::kSuccess);
+    EXPECT_EQ(event.challenge, "challenge");
+  });
+
+  service().SetChallengeForBoundSession(base::DoNothing(), dbsc_request,
+                                        FirstPartySetMetadata(), params[0]);
+}
+
+TEST_F(SessionServiceImplTest, EventObserverOnChallenge_NoSessionId) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  headers->AddHeader(kSessionChallengeHeaderName, R"("challenge")");
+
+  std::vector<SessionChallengeParam> params =
+      SessionChallengeParam::CreateIfValid(kTestUrl, headers.get());
+  ASSERT_EQ(params.size(), 1u);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+  DbscRequest dbsc_request(request.get());
+
+  base::MockCallback<SessionService::OnEventCallback> event_callback;
+  base::CallbackListSubscription subscription =
+      service().AddEventObserver(event_callback.Get());
+  EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
+    EXPECT_EQ(event.event_type, SessionEvent::EventType::kChallenge);
+    EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
+    EXPECT_FALSE(event.session_id.has_value());
+    EXPECT_FALSE(event.succeeded);
+    EXPECT_EQ(event.challenge_result, ChallengeResult::kNoSessionId);
+    EXPECT_EQ(event.challenge, "challenge");
+  });
+
+  service().SetChallengeForBoundSession(base::DoNothing(), dbsc_request,
+                                        FirstPartySetMetadata(), params[0]);
+}
+
+TEST_F(SessionServiceImplTest, EventObserverOnChallenge_NoSessionMatch) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  headers->AddHeader(kSessionChallengeHeaderName,
+                     R"("challenge";id="SessionId2")");
+
+  std::vector<SessionChallengeParam> params =
+      SessionChallengeParam::CreateIfValid(kTestUrl, headers.get());
+  ASSERT_EQ(params.size(), 1u);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+  DbscRequest dbsc_request(request.get());
+
+  base::MockCallback<SessionService::OnEventCallback> event_callback;
+  base::CallbackListSubscription subscription =
+      service().AddEventObserver(event_callback.Get());
+  EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
+    EXPECT_EQ(event.event_type, SessionEvent::EventType::kChallenge);
+    EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
+    EXPECT_EQ(event.session_id, "SessionId2");
+    EXPECT_FALSE(event.succeeded);
+    EXPECT_EQ(event.challenge_result, ChallengeResult::kNoSessionMatch);
+    EXPECT_EQ(event.challenge, "challenge");
+  });
+
+  service().SetChallengeForBoundSession(base::DoNothing(), dbsc_request,
+                                        FirstPartySetMetadata(), params[0]);
+}
+
+TEST_F(SessionServiceImplTest, EventObserverOnChallenge_CantSetBoundCookie) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  headers->AddHeader(kSessionChallengeHeaderName,
+                     R"("challenge";id="SessionId")");
+
+  std::vector<SessionChallengeParam> params =
+      SessionChallengeParam::CreateIfValid(kTestUrl, headers.get());
+  ASSERT_EQ(params.size(), 1u);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  network_delegate()->set_cookie_options(TestNetworkDelegate::NO_SET_COOKIE);
+  DbscRequest dbsc_request(request.get());
+
+  base::MockCallback<SessionService::OnEventCallback> event_callback;
+  base::CallbackListSubscription subscription =
+      service().AddEventObserver(event_callback.Get());
+  EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
+    EXPECT_EQ(event.event_type, SessionEvent::EventType::kChallenge);
+    EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
+    EXPECT_EQ(event.session_id, kSessionId);
+    EXPECT_FALSE(event.succeeded);
+    EXPECT_EQ(event.challenge_result, ChallengeResult::kCantSetBoundCookie);
+    EXPECT_EQ(event.challenge, "challenge");
+  });
+
+  service().SetChallengeForBoundSession(base::DoNothing(), dbsc_request,
+                                        FirstPartySetMetadata(), params[0]);
 }
 
 TEST_F(SessionServiceImplTest, GetAllSessions) {

@@ -341,6 +341,12 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       const std::optional<url::Origin>& original_request_initiator,
       base::expected<Session*, SessionError> federated_provider_session);
 
+  ChallengeResult SetChallengeForBoundSessionInternal(
+      OnAccessCallback on_access_callback,
+      DbscRequest& request,
+      const FirstPartySetMetadata& first_party_set_metadata,
+      const SessionChallengeParam& param);
+
   // Whether we are waiting on the initial load of saved sessions to
   // complete.
   bool pending_initialization_ = false;

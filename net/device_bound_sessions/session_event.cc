@@ -52,4 +52,18 @@ SessionEvent SessionEvent::MakeRefreshEvent(
   return event;
 }
 
+// static
+SessionEvent SessionEvent::MakeChallengeEvent(
+    SchemefulSite site,
+    std::optional<std::string> session_id,
+    bool succeeded,
+    ChallengeResult challenge_result,
+    const std::string& challenge) {
+  SessionEvent event(EventType::kChallenge, std::move(site),
+                     std::move(session_id), succeeded);
+  event.challenge_result = challenge_result;
+  event.challenge = challenge;
+  return event;
+}
+
 }  // namespace net::device_bound_sessions
