@@ -154,7 +154,10 @@ void WaapUIMetricsService::OnBrowserWindowFirstPresentation(
 
 void WaapUIMetricsService::OnFirstPaint(base::TimeTicks time) {
   static bool is_first_call = true;
-  CHECK(!time.is_null());
+  // See https://crbug.com/464980749#comment10 for why we skip for null.
+  if (time.is_null()) {
+    return;
+  }
   if (!is_first_call) {
     return;
   }
@@ -168,7 +171,10 @@ void WaapUIMetricsService::OnFirstPaint(base::TimeTicks time) {
 
 void WaapUIMetricsService::OnFirstContentfulPaint(base::TimeTicks time) {
   static bool is_first_call = true;
-  CHECK(!time.is_null());
+  // See https://crbug.com/464980749#comment10 for why we skip for null.
+  if (time.is_null()) {
+    return;
+  }
   if (!is_first_call) {
     return;
   }
