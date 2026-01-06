@@ -788,7 +788,7 @@ void PrefetchContainer::UpdateResourceRequest(
   // prefetch, including browsing topics and client hints.
   // TODO(crbug.com/441612842): Support User-Agent overrides.
   net::HttpRequestHeaders updated_headers;
-  std::vector<std::string> headers_to_remove = {variations::kClientDataHeader};
+  std::vector<std::string> headers_to_remove;
   updated_headers.SetHeader(blink::kSecPurposeHeaderName,
                             GetSecPurposeHeaderValue(redirect_info.new_url));
 
@@ -849,6 +849,23 @@ void PrefetchContainer::UpdateResourceRequest(
   resource_request_->referrer = GURL(redirect_info.new_referrer);
   resource_request_->referrer_policy = redirect_info.new_referrer_policy;
 
+  // Remove `variations::kClientDataHeader` from `resource_request_->headers`,
+  // to keep the existing behavior. While `AddXClientDataHeader()` adds
+  // `variations::kClientDataHeader` to `resource_request->cors_exempt_headers`,
+  // it's also possible that `variations::kClientDataHeader` is added to
+  // `resource_request_->headers` via `request().additional_headers()`.
+  //
+  // TODO(crbug.com/467177773): The processing of
+  // `variations::kClientDataHeader` is separated from other headers, to keep
+  // the behavior of `variations::kClientDataHeader` during the main fixes for
+  // crbug.com/467177773. The behavior of `variations::kClientDataHeader` should
+  // be fixed together with other related bugs, by e.g. restructuring
+  // `variations::AppendVariationsHeader()` and plumbing the
+  // `variations::kClientDataHeader` removal and modification to
+  // `FollowRedirect()`.
+  // TODO(crbug.com/454082776): Remove `variations::kClientDataHeader` from
+  // `resource_request->cors_exempt_headers`.
+  resource_request_->headers.RemoveHeader(variations::kClientDataHeader);
   AddXClientDataHeader(*resource_request_.get());
 }
 
