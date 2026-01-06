@@ -958,10 +958,11 @@ public class UrlBarUnitTest {
      *
      * @param fontActualHeight the desired actual difference between top and the bottom pixel ever
      *     drawn by the font
-     * @param urlBarHeight the usable area of the UrlBar that will accommodate the text
      */
-    private float computeExpectedFontHeight(float fontActualHeight, int urlBarHeight) {
+    private float computeExpectedFontHeight(float fontActualHeight) {
         float lineHeightScaleFactor = LINE_HEIGHT_ELEGANT_FACTOR;
+        int urlBarHeight =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.location_bar_height);
         return FONT_HEIGHT_NOMINAL * (urlBarHeight / (fontActualHeight * lineHeightScaleFactor));
     }
 
@@ -974,7 +975,7 @@ public class UrlBarUnitTest {
         mUrlBar.enforceMaxTextHeight();
 
         assertEquals(
-                computeExpectedFontHeight(FONT_HEIGHT_ACTUAL_TALL, URL_BAR_HEIGHT),
+                computeExpectedFontHeight(FONT_HEIGHT_ACTUAL_TALL),
                 mUrlBar.getTextSize(),
                 MathUtils.EPSILON);
     }
@@ -988,7 +989,7 @@ public class UrlBarUnitTest {
         mUrlBar.enforceMaxTextHeight();
 
         assertEquals(
-                computeExpectedFontHeight(FONT_HEIGHT_ACTUAL_TALL, URL_BAR_HEIGHT - 20),
+                computeExpectedFontHeight(FONT_HEIGHT_ACTUAL_TALL),
                 mUrlBar.getTextSize(),
                 MathUtils.EPSILON);
     }
@@ -1002,7 +1003,7 @@ public class UrlBarUnitTest {
         mUrlBar.enforceMaxTextHeight();
 
         assertEquals(
-                computeExpectedFontHeight(FONT_HEIGHT_ACTUAL_SHORT, URL_BAR_HEIGHT),
+                computeExpectedFontHeight(FONT_HEIGHT_ACTUAL_SHORT),
                 mUrlBar.getTextSize(),
                 MathUtils.EPSILON);
     }
@@ -1016,34 +1017,9 @@ public class UrlBarUnitTest {
         mUrlBar.enforceMaxTextHeight();
 
         assertEquals(
-                computeExpectedFontHeight(FONT_HEIGHT_ACTUAL_SHORT, URL_BAR_HEIGHT - 20),
+                computeExpectedFontHeight(FONT_HEIGHT_ACTUAL_SHORT),
                 mUrlBar.getTextSize(),
                 MathUtils.EPSILON);
-    }
-
-    @Test
-    public void layout_adjustFontSizeWithFixedHeight() {
-        mUrlBar.setLayoutParams(new LayoutParams(123, 123));
-        mUrlBar.layout(0, 0, 123, 123);
-        verify(mUrlBar).post(mUrlBar.mEnforceMaxTextHeight);
-    }
-
-    @Test
-    public void layout_adjustFontSizeLayoutRequested() {
-        mUrlBar.setLayoutParams(new LayoutParams(123, 123));
-        mUrlBar.layout(0, 0, 123, 123);
-        verify(mUrlBar).post(mUrlBar.mEnforceMaxTextHeight);
-
-        mUrlBar.forceLayout();
-        mUrlBar.enforceMaxTextHeight();
-        verify(mUrlBar, times(2)).post(mUrlBar.mEnforceMaxTextHeight);
-    }
-
-    @Test
-    public void layout_fixedFontSizeWithWrappingHeight() {
-        mUrlBar.setLayoutParams(new LayoutParams(123, LayoutParams.WRAP_CONTENT));
-        mUrlBar.layout(0, 0, 123, 123);
-        verify(mUrlBar, never()).post(mUrlBar.mEnforceMaxTextHeight);
     }
 
     @Test

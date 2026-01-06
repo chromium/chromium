@@ -106,7 +106,6 @@ public class UrlBar extends AutocompleteEditText {
     private @Nullable Callback<Boolean> mUrlTextWrappingChangeListener;
 
     private final Rect mClipBounds = new Rect();
-    @VisibleForTesting final Runnable mEnforceMaxTextHeight = this::enforceMaxTextHeight;
 
     private boolean mFocused;
     private boolean mFocusEventEmitted;
@@ -390,6 +389,7 @@ public class UrlBar extends AutocompleteEditText {
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();
+        enforceMaxTextHeight();
         setPrivateImeOptions(IME_OPTION_RESTRICT_STYLUS_WRITING_AREA);
     }
 
@@ -1129,12 +1129,6 @@ public class UrlBar extends AutocompleteEditText {
     @Override
     public void layout(int left, int top, int right, int bottom) {
         super.layout(left, top, right, bottom);
-        // Do not scale the Omnibox font size if our height is set to WRAP_CONTENT.
-        // This ensures we don't trigger the recurring layout/adjust/layout/adjust cycle.
-        if (getLayoutParams().height != LayoutParams.WRAP_CONTENT) {
-            post(mEnforceMaxTextHeight);
-        }
-
         // Note: this must happen after the *entire* layout cycle completes.
         // Running this during onLayout guarantees that isLayoutRequested will remain true,
         // and the text layout will remain unresolved, suppressing resolution of display text
@@ -1289,15 +1283,8 @@ public class UrlBar extends AutocompleteEditText {
     @VisibleForTesting
     void enforceMaxTextHeight() {
         if (mUseSmallTextHeight) return;
-        // Our viewHeight calculation may not be correct if layout is requested, e.g. if our padding
-        // and height change simultaneously. The padding change will be reflected immediately, but
-        // the height change requires a layout cycle to be reflected.
-        if (isLayoutRequested()) {
-            post(mEnforceMaxTextHeight);
-            return;
-        }
 
-        int viewHeight = getHeight() - getPaddingTop() - getPaddingBottom();
+        int viewHeight = getResources().getDimensionPixelSize(R.dimen.location_bar_height);
         // Don't touch the text size if the view has not measured and shown yet, or if it's a
         // subject to custom layout constraints (e.g. CCT) that might result with font size being
         // too small.
