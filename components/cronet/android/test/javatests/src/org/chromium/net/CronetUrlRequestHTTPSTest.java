@@ -25,6 +25,7 @@ import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.test.ServerCertificate;
+import org.chromium.net.test.Type;
 
 /** Test functionality of CronetUrlRequest when SSL is enabled. */
 @DoNotBatch(reason = "crbug/1459563")
@@ -49,8 +50,8 @@ public class CronetUrlRequestHTTPSTest {
     @SmallTest
     public void testSSL() throws Exception {
         try (var nativeTestServer =
-                NativeTestServer.createNativeTestServerWithHTTPS(
-                        mTestRule.getTestFramework().getContext(), ServerCertificate.CERT_OK)) {
+                new NativeTestServer(mTestRule.getTestFramework().getContext(), Type.HTTPS)) {
+            nativeTestServer.setSSLConfig(ServerCertificate.CERT_OK);
             nativeTestServer.start();
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
             mTestRule
@@ -73,9 +74,8 @@ public class CronetUrlRequestHTTPSTest {
             reason = "crbug.com/1495320: Refactor error checking")
     public void testSSLCertificateError() throws Exception {
         try (var nativeTestServer =
-                NativeTestServer.createNativeTestServerWithHTTPS(
-                        mTestRule.getTestFramework().getContext(),
-                        ServerCertificate.CERT_EXPIRED)) {
+                new NativeTestServer(mTestRule.getTestFramework().getContext(), Type.HTTPS)) {
+            nativeTestServer.setSSLConfig(ServerCertificate.CERT_EXPIRED);
             nativeTestServer.start();
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
             mTestRule
@@ -108,9 +108,8 @@ public class CronetUrlRequestHTTPSTest {
             reason = "crbug.com/1495320: Refactor error checking")
     public void testSSLCertificateErrorWithUpload() throws Exception {
         try (var nativeTestServer =
-                NativeTestServer.createNativeTestServerWithHTTPS(
-                        mTestRule.getTestFramework().getContext(),
-                        ServerCertificate.CERT_EXPIRED)) {
+                new NativeTestServer(mTestRule.getTestFramework().getContext(), Type.HTTPS)) {
+            nativeTestServer.setSSLConfig(ServerCertificate.CERT_EXPIRED);
             nativeTestServer.start();
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
             UrlRequest.Builder builder =

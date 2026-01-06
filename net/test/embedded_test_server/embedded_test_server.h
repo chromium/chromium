@@ -132,6 +132,8 @@ class EmbeddedTestServerHandle {
 //
 class EmbeddedTestServer {
  public:
+  // Below line is for //net/android:net_java_test_support_enums_srcjar
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.net.test
   enum Type {
     TYPE_HTTP,
     TYPE_HTTPS,

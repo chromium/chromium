@@ -290,29 +290,28 @@ std::unique_ptr<net::test_server::HttpResponse> CronetTestRequestHandler(
 
 namespace cronet {
 
-static long JNI_NativeTestServer_Create(
-    JNIEnv* env,
-    std::string& test_files_root,
-    std::string& test_data_dir,
-    bool use_https,
-    net::EmbeddedTestServer::ServerCertificate certificate) {
+static long JNI_NativeTestServer_Create(JNIEnv* env,
+                                        std::string& test_files_root,
+                                        std::string& test_data_dir,
+                                        net::EmbeddedTestServer::Type type) {
   base::InitAndroidTestPaths(base::FilePath(test_data_dir));
-  return reinterpret_cast<long>(new EmbeddedTestServerAdapter(
-      base::FilePath(test_files_root),
-      (use_https ? net::test_server::EmbeddedTestServer::TYPE_HTTPS
-                 : net::test_server::EmbeddedTestServer::TYPE_HTTP),
-      certificate));
+  return reinterpret_cast<long>(
+      new EmbeddedTestServerAdapter(base::FilePath(test_files_root), type));
 }
 
 EmbeddedTestServerAdapter::EmbeddedTestServerAdapter(
     const base::FilePath& test_files_root,
-    net::EmbeddedTestServer::Type server_type,
-    net::EmbeddedTestServer::ServerCertificate server_certificate)
+    net::EmbeddedTestServer::Type server_type)
     : test_server(net::EmbeddedTestServer(server_type)) {
   test_server.RegisterRequestHandler(
       base::BindRepeating(&CronetTestRequestHandler, &test_server));
   test_server.ServeFilesFromDirectory(test_files_root);
   net::test_server::RegisterDefaultHandlers(&test_server);
+}
+
+void EmbeddedTestServerAdapter::SetSSLConfig(
+    JNIEnv* env,
+    net::EmbeddedTestServer::ServerCertificate server_certificate) {
   test_server.SetSSLConfig(server_certificate);
 }
 

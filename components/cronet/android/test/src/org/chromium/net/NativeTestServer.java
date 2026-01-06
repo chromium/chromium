@@ -13,6 +13,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.net.test.ServerCertificate;
+import org.chromium.net.test.Type;
 
 import java.util.List;
 import java.util.Map;
@@ -26,25 +27,43 @@ public final class NativeTestServer implements AutoCloseable {
 
     private Long mEmbeddedTestServerAdapter;
 
-    private NativeTestServer(
-            Context context, boolean useHttps, @ServerCertificate int serverCertificate) {
+    public NativeTestServer(Context context, @Type int type) {
         TestFilesInstaller.installIfNeeded(context);
         mEmbeddedTestServerAdapter =
                 NativeTestServerJni.get()
                         .create(
                                 TestFilesInstaller.getInstalledPath(context),
                                 UrlUtils.getIsolatedTestRoot(),
-                                useHttps,
-                                serverCertificate);
+                                type);
     }
 
+    /**
+     * @deprecated Call new NativeTestServer(context, Type.HTTP) instead.
+     */
+    @Deprecated
     public static NativeTestServer createNativeTestServer(Context context) {
-        return new NativeTestServer(context, false /*  useHttps */, ServerCertificate.CERT_OK);
+        return new NativeTestServer(context, Type.HTTP);
     }
 
+    /**
+     * @deprecated Call new NativeTestServer(context, Type.HTTPS) followed by setSSLConfig()
+     *     instead.
+     */
+    @Deprecated
     public static NativeTestServer createNativeTestServerWithHTTPS(
             Context context, @ServerCertificate int serverCertificate) {
-        return new NativeTestServer(context, true /*  useHttps */, serverCertificate);
+        var nativeTestServer = new NativeTestServer(context, Type.HTTPS);
+        nativeTestServer.setSSLConfig(serverCertificate);
+        return nativeTestServer;
+    }
+
+    /**
+     * See native net::test_server::EmbeddedTestServer::SetSSLConfig().
+     *
+     * <p>Must be called before {@link #start}.
+     */
+    public void setSSLConfig(@ServerCertificate int serverCertificate) {
+        NativeTestServerJni.get().setSSLConfig(mEmbeddedTestServerAdapter, serverCertificate);
     }
 
     public void start() {
@@ -249,7 +268,10 @@ public final class NativeTestServer implements AutoCloseable {
         long create(
                 @JniType("std::string") String filePath,
                 @JniType("std::string") String testDataDir,
-                @JniType("bool") boolean useHttps,
+                @JniType("net::EmbeddedTestServer::Type") int type);
+
+        void setSSLConfig(
+                long nativeEmbeddedTestServerAdapter,
                 @JniType("net::EmbeddedTestServer::ServerCertificate") @ServerCertificate
                         int certificate);
 
