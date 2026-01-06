@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, BadToolName) {
       MakeScriptToolRequest(*main_frame(), "invalid", input_arguments);
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kScriptToolNoResponse);
+  ExpectErrorResult(result, mojom::ActionResultCode::kScriptToolInvalidName);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ProvideContext) {
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ClearContext) {
   actor_task().Act(ToRequestList(echo_action_after_clear),
                    echo_result_after_clear.GetCallback());
   ExpectErrorResult(echo_result_after_clear,
-                    mojom::ActionResultCode::kScriptToolNoResponse);
+                    mojom::ActionResultCode::kScriptToolInvalidName);
 }
 
 }  // namespace

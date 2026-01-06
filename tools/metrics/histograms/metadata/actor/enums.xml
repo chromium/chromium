@@ -110,6 +110,9 @@ chromium-metrics-reviews@google.com.
   <int value="1105" label="FormFillingNoLastTabObservation"/>
   <int value="1106" label="FormFillingInvalidSuggestionId"/>
   <int value="1200" label="ScriptToolNoResponse"/>
+  <int value="1201" label="ScriptToolInvalidName"/>
+  <int value="1202" label="ScriptToolInvalidInputArguments"/>
+  <int value="1203" label="ScriptToolInvocationFailed"/>
   <int value="1300" label="ActorUiError"/>
 </enum>
 

@@ -26,7 +26,16 @@ mojom::ActionResultPtr OnToolExecuted(
     base::expected<blink::WebString, blink::WebDocument::ScriptToolError>
         response) {
   if (!response.has_value()) {
-    return MakeResult(mojom::ActionResultCode::kScriptToolNoResponse);
+    switch (response.error()) {
+      case blink::WebDocument::ScriptToolError::kInvalidToolName:
+        return MakeResult(mojom::ActionResultCode::kScriptToolInvalidName);
+      case blink::WebDocument::ScriptToolError::kInvalidInputArguments:
+        return MakeResult(
+            mojom::ActionResultCode::kScriptToolInvalidInputArguments);
+      case blink::WebDocument::ScriptToolError::kToolInvocationFailed:
+        return MakeResult(mojom::ActionResultCode::kScriptToolInvocationFailed);
+    }
+    NOTREACHED();
   }
 
   auto result = MakeOkResult();

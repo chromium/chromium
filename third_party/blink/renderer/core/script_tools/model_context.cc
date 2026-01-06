@@ -77,6 +77,10 @@ class ModelContext::ToolFunctionFinishedCallback
           result.emplace(std::move(temp));
         }
       }
+
+      if (!result) {
+        result = "Operation succeeded";
+      }
     }
 
     model_context_->OnToolExecuted(execution_id_, std::move(result));

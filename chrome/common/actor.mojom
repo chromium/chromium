@@ -477,7 +477,18 @@ enum ActionResultCode {
   // Codes 1200-1299: Errors for script tool.
 
   // The document did not return a response for the script tool.
+  // Generic error for all failures.
   kScriptToolNoResponse = 1200,
+
+  // Tool was not executed due to invalid name.
+  kScriptToolInvalidName = 1201,
+
+  // Tool was not executed due to invalid input arguments.
+  kScriptToolInvalidInputArguments = 1202,
+
+  // Tool was executed but the invocation failed. For example, the script
+  // function threw an error.
+  kScriptToolInvocationFailed = 1203,
 
   // Please see the comment above about adding new values.
 
