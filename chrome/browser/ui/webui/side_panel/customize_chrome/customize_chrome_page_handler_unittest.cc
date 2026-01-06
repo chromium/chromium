@@ -481,6 +481,9 @@ TEST_P(CustomizeChromePageHandlerSetMostVisitedTest, SetMostVisitedSettings) {
                         test_case.initial_enterprise_shortcuts_visible,
                         test_case.initial_shortcuts_visible,
                         test_case.initial_personal_shortcuts_visible);
+  // Ensure auto removal is enabled (pref is false) initially.
+  profile().GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled,
+                                   false);
 
   // Call SetMostVisitedSettings handler.
   handler().SetMostVisitedSettings(test_case.types_to_set,
@@ -493,6 +496,8 @@ TEST_P(CustomizeChromePageHandlerSetMostVisitedTest, SetMostVisitedSettings) {
                         test_case.expected_enterprise_shortcuts_visible,
                         test_case.expected_shortcuts_visible,
                         test_case.expected_personal_shortcuts_visible);
+  EXPECT_TRUE(profile().GetPrefs()->GetBoolean(
+      ntp_prefs::kNtpShortcutsAutoRemovalDisabled));
 
   // Validate histograms.
   CheckHistograms("NewTabPage.CustomizeShortcutAction",

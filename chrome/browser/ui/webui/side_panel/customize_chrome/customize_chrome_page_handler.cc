@@ -479,6 +479,8 @@ void CustomizeChromePageHandler::SetMostVisitedSettings(
   std::set<ntp_tiles::TileType> types_set(types.begin(), types.end());
   std::set<ntp_tiles::TileType> current_tile_types = GetTileTypes();
 
+  // Disable shortcuts auto-removal upon user interaction.
+  DisableShortcutsAutoRemoval(profile_);
   if ((base::Contains(current_tile_types, ntp_tiles::TileType::kCustomLinks) !=
            base::Contains(types_set, ntp_tiles::TileType::kCustomLinks) ||
        (base::Contains(current_tile_types, ntp_tiles::TileType::kTopSites) !=
