@@ -22,6 +22,10 @@
   return [TestArgs readTestArgument:kOutputDirName];
 }
 
++ (NSString*)readModelQueryFromTestArgs {
+  return [TestArgs readTestArgument:kModelQuery];
+}
+
 #pragma mark - Helper
 + (NSString*)readTestArgument:(NSString*)argumentName {
   NSArray<NSString*>* arguments = [[NSProcessInfo processInfo] arguments];

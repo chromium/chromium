@@ -11,6 +11,7 @@ static NSString* const kStorePageContextLocally =
     @"--save_page_context_locally";
 static NSString* const kInputFile = @"--input_urls_file=";
 static NSString* const kOutputDirName = @"--output_dir=";
+static NSString* const kModelQuery = @"--model_query=";
 
 // A helper class for reading test arguments.
 @interface TestArgs : NSObject
@@ -23,6 +24,9 @@ static NSString* const kOutputDirName = @"--output_dir=";
 
 // Output directory name to save PageContext in.
 + (NSString*)readOutputDirNameFromTestArgs;
+
+// Query to send to the model.
++ (NSString*)readModelQueryFromTestArgs;
 
 @end
 

@@ -43,7 +43,9 @@ NSString* kErrorDomain = @"PageContextExtraction";
       initWithShouldStorePageContextLocally:
           [TestArgs shouldStorePageContextLocallyFromTestArgs]
                                   outputDir:[TestArgs
-                                                readOutputDirNameFromTestArgs]];
+                                                readOutputDirNameFromTestArgs]
+                                 modelQuery:[TestArgs
+                                                readModelQueryFromTestArgs]];
   self.results = [NSMutableArray array];
 }
 

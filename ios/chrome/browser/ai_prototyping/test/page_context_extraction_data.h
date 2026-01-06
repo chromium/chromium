@@ -17,8 +17,12 @@
 // Output directory where page context should be saved to.
 @property(nonatomic, copy, readonly) NSString* outputDir;
 
+// Query to send to the model.
+@property(nonatomic, copy, readonly) NSString* modelQuery;
+
 - (instancetype)initWithShouldStorePageContextLocally:(BOOL)shouldStore
-                                            outputDir:(NSString*)outputDir;
+                                            outputDir:(NSString*)outputDir
+                                           modelQuery:(NSString*)modelQuery;
 @end
 
 // Response containing the result of a page context capture.

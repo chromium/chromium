@@ -7,11 +7,13 @@
 @implementation PageContextExtractionConfig
 
 - (instancetype)initWithShouldStorePageContextLocally:(BOOL)shouldStore
-                                            outputDir:(NSString*)outputDir {
+                                            outputDir:(NSString*)outputDir
+                                           modelQuery:(NSString*)modelQuery {
   self = [super init];
   if (self) {
     _shouldStorePageContextLocally = shouldStore;
     _outputDir = outputDir;
+    _modelQuery = modelQuery;
   }
   return self;
 }
@@ -25,7 +27,8 @@
 - (void)encodeWithCoder:(NSCoder*)coder {
   [coder encodeBool:self.shouldStorePageContextLocally
              forKey:@"shouldStorePageContextLocally"];
-  [coder encodeBool:self.outputDir forKey:@"outputDir"];
+  [coder encodeObject:self.outputDir forKey:@"outputDir"];
+  [coder encodeObject:self.modelQuery forKey:@"modelQuery"];
 }
 
 - (instancetype)initWithCoder:(NSCoder*)coder {
@@ -34,7 +37,9 @@
     _shouldStorePageContextLocally =
         [coder decodeBoolForKey:@"shouldStorePageContextLocally"];
     _outputDir = [coder decodeObjectOfClass:[NSString class]
-                                     forKey:@"inputDir"];
+                                     forKey:@"outputDir"];
+    _modelQuery = [coder decodeObjectOfClass:[NSString class]
+                                      forKey:@"modelQuery"];
   }
   return self;
 }
