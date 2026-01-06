@@ -12388,40 +12388,6 @@ TEST_P(LayerTreeHostImplTest, ExternalTransformSetNeedsRedraw) {
   EXPECT_FALSE(last_on_draw_frame_->has_no_damage);
 }
 
-// TODO(crbug.com/458776836): Review memory limit related cc_unittests for
-// TreesInViz Service mode
-TEST_P(ClientModeLayerTreeHostImplTest, OnMemoryPressure) {
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry;
-
-  gfx::Size size(200, 200);
-  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
-  gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
-  ResourcePool::InUsePoolResource resource =
-      host_impl_->resource_pool()->AcquireResource(size, format, color_space);
-  size_t current_memory_usage =
-      host_impl_->resource_pool()->GetTotalMemoryUsageForTesting();
-  EXPECT_EQ(current_memory_usage, 0u);
-
-  resource.set_backing(std::make_unique<ResourcePool::Backing>(
-      resource.size(), resource.format(), resource.color_space()));
-
-  host_impl_->resource_pool()->ReleaseResource(std::move(resource));
-
-  current_memory_usage =
-      host_impl_->resource_pool()->GetTotalMemoryUsageForTesting();
-
-  base::RunLoop run_loop;
-  base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL, run_loop.QuitClosure());
-  run_loop.Run();
-
-  size_t memory_usage_after_memory_pressure =
-      host_impl_->resource_pool()->GetTotalMemoryUsageForTesting();
-
-  // Memory usage after the memory pressure should be less than previous one.
-  EXPECT_LT(memory_usage_after_memory_pressure, current_memory_usage);
-}
-
 TEST_P(LayerTreeHostImplTest, OnDrawConstraintSetNeedsRedraw) {
   const gfx::Size viewport_size(100, 100);
   SetupDefaultRootLayer(viewport_size);

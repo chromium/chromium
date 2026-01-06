@@ -15,7 +15,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
@@ -43,8 +42,7 @@ class RasterContextProvider;
 
 namespace cc {
 
-class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider,
-                               public base::MemoryPressureListener {
+class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   class PoolResource;
 
  public:
@@ -286,8 +284,6 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider,
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-  void OnMemoryPressure(base::MemoryPressureLevel level) override;
-
   size_t GetTotalMemoryUsageForTesting() const {
     return total_memory_usage_bytes_;
   }
@@ -481,9 +477,6 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider,
 
   // Map from the PoolResource |unique_id| to the PoolResource.
   std::map<size_t, std::unique_ptr<PoolResource>> in_use_resources_;
-
-  std::unique_ptr<base::AsyncMemoryPressureListenerRegistration>
-      memory_pressure_listener_registration_;
 
   base::TimeTicks flush_evicted_resources_deadline_;
 

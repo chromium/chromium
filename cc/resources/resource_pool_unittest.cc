@@ -526,60 +526,6 @@ TEST_F(ResourcePoolTest, ReuseResource) {
   CheckAndReturnResource(std::move(resource));
 }
 
-TEST_F(ResourcePoolTest, PurgedMemory) {
-  // Limits high enough to not be hit by this test.
-  size_t bytes_limit = 10 * 1024 * 1024;
-  size_t count_limit = 100;
-  resource_pool_->SetResourceUsageLimits(bytes_limit, count_limit);
-
-  gfx::Size size(100, 100);
-  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
-  gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
-  ResourcePool::InUsePoolResource resource =
-      resource_pool_->AcquireResource(size, format, color_space);
-  SetBackingOnResource(resource);
-  EXPECT_TRUE(resource_pool_->PrepareForExport(
-      resource, viz::TransferableResource::ResourceSource::kTest));
-
-  EXPECT_EQ(1u, resource_pool_->GetTotalResourceCountForTesting());
-  EXPECT_EQ(0u, resource_pool_->GetBusyResourceCountForTesting());
-
-  // Purging and suspending should not impact an in-use resource.
-  resource_pool_->OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  EXPECT_EQ(1u, resource_pool_->GetTotalResourceCountForTesting());
-  EXPECT_EQ(0u, resource_pool_->GetBusyResourceCountForTesting());
-
-  // Export the resource to the display compositor, so it will be busy once
-  // released.
-  std::vector<viz::TransferableResource> transfers;
-
-  CHECK(context_provider_);
-  resource_provider_->PrepareSendToParent(
-      {resource.resource_id_for_export()}, &transfers,
-      context_provider_->SharedImageInterface());
-
-  // Release the resource making it busy.
-  resource_pool_->ReleaseResource(std::move(resource));
-  EXPECT_EQ(1u, resource_pool_->GetTotalResourceCountForTesting());
-  EXPECT_EQ(1u, resource_pool_->GetBusyResourceCountForTesting());
-
-  // Purging and suspending should not impact a busy resource either.
-  resource_pool_->OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  EXPECT_EQ(1u, resource_pool_->GetTotalResourceCountForTesting());
-  EXPECT_EQ(1u, resource_pool_->GetBusyResourceCountForTesting());
-
-  // The resource moves from busy to available.
-  resource_provider_->ReceiveReturnsFromParent(
-      viz::TransferableResource::ReturnResources(transfers));
-  EXPECT_EQ(1u, resource_pool_->GetTotalResourceCountForTesting());
-  EXPECT_EQ(0u, resource_pool_->GetBusyResourceCountForTesting());
-
-  // Purging and suspending should drop unused resources.
-  resource_pool_->OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  EXPECT_EQ(0u, resource_pool_->GetTotalResourceCountForTesting());
-  EXPECT_EQ(0u, resource_pool_->GetBusyResourceCountForTesting());
-}
-
 TEST_F(ResourcePoolTest, InvalidateResources) {
   // Limits high enough to not be hit by this test.
   size_t bytes_limit = 10 * 1024 * 1024;
