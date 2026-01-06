@@ -198,15 +198,23 @@ class GeneratorFixture {
     auto service = std::make_unique<MockRemoteSuggestionsServiceSimple>();
     mock_service_ = service.get();
 
+    // Preferences are read at object initialization and thus must be set up
+    // before the eligibility service is instantiated.
+    AimEligibilityService::RegisterProfilePrefs(pref_service_.registry());
+
+    mock_aim_eligibility_service_ = std::make_unique<MockAimEligibilityService>(
+        pref_service_, nullptr, nullptr, nullptr, false);
+
     generator_ = std::make_unique<ActionChipsGeneratorImpl>(
         FakeTabIdGenerator::Get(), &mock_optimization_guide_,
-        &mock_aim_eligibility_service_, std::move(client), std::move(service));
+        mock_aim_eligibility_service_.get(), std::move(client),
+        std::move(service));
 
     ON_CALL(*fake_client_, IsPersonalizedUrlDataCollectionActive())
         .WillByDefault(Return(true));
-    ON_CALL(mock_aim_eligibility_service_, IsDeepSearchEligible)
+    ON_CALL(*mock_aim_eligibility_service_, IsDeepSearchEligible)
         .WillByDefault(Return(true));
-    ON_CALL(mock_aim_eligibility_service_, IsCreateImagesEligible)
+    ON_CALL(*mock_aim_eligibility_service_, IsCreateImagesEligible)
         .WillByDefault(Return(true));
   }
 
@@ -238,7 +246,7 @@ class GeneratorFixture {
   }
 
   MockAimEligibilityService& mock_aim_eligibility_service() {
-    return mock_aim_eligibility_service_;
+    return *mock_aim_eligibility_service_;
   }
 
   // Makes the optimization guide's mock permissive. i.e., after the call to
@@ -256,14 +264,13 @@ class GeneratorFixture {
  private:
   // generator_ must be declared first so raw_ptr's check does not detect
   // the use-after-free issue.
-  std::unique_ptr<ActionChipsGeneratorImpl> generator_;
-  raw_ptr<FakeAutocompleteProviderClient> fake_client_ = nullptr;
-  raw_ptr<MockRemoteSuggestionsServiceSimple> mock_service_ = nullptr;
   testing::StrictMock<MockOptimizationGuideKeyedService>
       mock_optimization_guide_;
   TestingPrefServiceSyncable pref_service_;
-  MockAimEligibilityService mock_aim_eligibility_service_{
-      pref_service_, nullptr, nullptr, nullptr, false};
+  std::unique_ptr<MockAimEligibilityService> mock_aim_eligibility_service_;
+  std::unique_ptr<ActionChipsGeneratorImpl> generator_;
+  raw_ptr<FakeAutocompleteProviderClient> fake_client_ = nullptr;
+  raw_ptr<MockRemoteSuggestionsServiceSimple> mock_service_ = nullptr;
 };
 
 using ActionChipGeneratorWithNoRecentTabTest = ::testing::TestWithParam<bool>;
