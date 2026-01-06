@@ -4622,6 +4622,8 @@
       status: "test",
       base_feature: "none",
     },
+    // SecurePaymentConfirmationAvailabilityAPI needs to be kept as a runtime
+    // flag in order to disable the API in WebView.
     {
       name: "SecurePaymentConfirmationAvailabilityAPI",
       status: "stable",
