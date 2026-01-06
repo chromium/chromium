@@ -273,6 +273,7 @@ public class ManualFillingIntegrationTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE)
+    @DisabledTest(message = "https://crbug.com/473803610")
     public void testInvokingTabSwitcherHidesAccessory() throws TimeoutException {
         mHelper.startAtTestPage(/* isRtl= */ false);
 
