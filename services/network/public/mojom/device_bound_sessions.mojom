@@ -253,6 +253,9 @@ interface DeviceBoundSessionManager {
   AddObserver(url.mojom.Url url,
               pending_remote<DeviceBoundSessionAccessObserver> observer);
 
+  // Adds an observer that will receive Device Bound Session events.
+  AddEventObserver(pending_remote<DeviceBoundSessionEventObserver> observer);
+
   // Creates a session for each param in `params`, and sets each cookie in
   // `cookies_to_set`. This combined functionality allows callers to
   // prevent sessions from applying to stale cookies and to ensure that
@@ -381,4 +384,12 @@ struct DeviceBoundSessionEvent {
   // The reason for a session being deleted. Populated only for termination
   // events.
   DeviceBoundSessionDeletionReason? deletion_reason;
+};
+
+// An observer that is notified about session events including displays. Used
+// for DevTools.
+interface DeviceBoundSessionEventObserver {
+  // Called when there is a new event. Some examples of this are if a session is
+  // created or refreshed.
+  OnDeviceBoundSessionEventReceived(DeviceBoundSessionEvent event);
 };

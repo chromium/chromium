@@ -35,6 +35,7 @@ using ::net::device_bound_sessions::RegistrationFetcherParam;
 using ::net::device_bound_sessions::ScopedTestRegistrationFetcher;
 using ::net::device_bound_sessions::Session;
 using ::net::device_bound_sessions::SessionAccess;
+using ::net::device_bound_sessions::SessionEvent;
 using ::net::device_bound_sessions::SessionKey;
 using ::net::device_bound_sessions::SessionParams;
 using ::net::device_bound_sessions::SessionServiceImpl;
@@ -82,6 +83,37 @@ class FakeDeviceBoundSessionAccessObserver
   mojo::Receiver<mojom::DeviceBoundSessionAccessObserver> receiver_{this};
   std::vector<SessionAccess> notifications_;
   base::OnceClosure on_access_callback_;
+};
+
+class FakeDeviceBoundSessionEventObserver
+    : public mojom::DeviceBoundSessionEventObserver {
+ public:
+  const std::vector<SessionEvent>& events() const { return events_; }
+
+  mojo::PendingRemote<mojom::DeviceBoundSessionEventObserver>
+  GetPendingRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void WaitForEvent() {
+    base::RunLoop run_loop;
+    on_event_callback_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  // public mojom::DeviceBoundSessionEventObserver
+  void OnDeviceBoundSessionEventReceived(const SessionEvent& event) override {
+    events_.push_back(event);
+
+    if (on_event_callback_) {
+      std::move(on_event_callback_).Run();
+    }
+  }
+
+ private:
+  mojo::Receiver<mojom::DeviceBoundSessionEventObserver> receiver_{this};
+  std::vector<SessionEvent> events_;
+  base::OnceClosure on_event_callback_;
 };
 
 class DeviceBoundSessionManagerTest : public ::testing::Test {
@@ -525,6 +557,37 @@ TEST_F(DeviceBoundSessionManagerTest,
   EXPECT_THAT(sessions_future.Get(),
               ElementsAre(SessionKey(net::SchemefulSite(url),
                                      Session::Id(session_id_1))));
+}
+
+TEST_F(DeviceBoundSessionManagerTest, OnSessionCreatedEvent) {
+  GURL url("https://example.com");
+  const std::string session_id = "new_session";
+
+  FakeDeviceBoundSessionEventObserver event_observer;
+  manager().AddEventObserver(event_observer.GetPendingRemote());
+
+  std::vector<SessionParams> params_list;
+  params_list.push_back(SessionParams(
+      session_id, url, "https://example.com/refresh", SessionParams::Scope(),
+      {}, unexportable_keys::UnexportableKeyId(), {}));
+
+  base::test::TestFuture<
+      const std::vector<net::device_bound_sessions::SessionError::ErrorType>&,
+      std::vector<net::CookieInclusionStatus>>
+      create_future;
+  manager().CreateBoundSessions(std::move(params_list), GetWrappedKey(), {},
+                                net::CookieOptions(),
+                                create_future.GetCallback());
+
+  event_observer.WaitForEvent();
+
+  EXPECT_THAT(
+      event_observer.events(),
+      ElementsAre(AllOf(
+          Field(&SessionEvent::event_type,
+                net::device_bound_sessions::SessionEvent::EventType::kCreation),
+          Field(&SessionEvent::site, net::SchemefulSite(url)),
+          Field(&SessionEvent::session_id, testing::Optional(session_id)))));
 }
 
 }  // namespace

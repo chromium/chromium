@@ -55,6 +55,7 @@ struct NET_EXPORT SessionEvent {
                                            bool succeeded,
                                            DeletionReason deletion_reason);
 
+  SessionEvent();
   ~SessionEvent();
   SessionEvent(const SessionEvent&);
   SessionEvent& operator=(const SessionEvent&);

@@ -97,6 +97,11 @@ DeviceBoundSessionManager::AccessObserverRegistration::
 DeviceBoundSessionManager::AccessObserverRegistration::
     ~AccessObserverRegistration() = default;
 
+DeviceBoundSessionManager::EventObserverRegistration::
+    EventObserverRegistration() = default;
+DeviceBoundSessionManager::EventObserverRegistration::
+    ~EventObserverRegistration() = default;
+
 void DeviceBoundSessionManager::AddObserver(
     const GURL& url,
     mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
@@ -114,6 +119,24 @@ void DeviceBoundSessionManager::AddObserver(
                               OnDeviceBoundSessionAccessed,
                           base::Unretained(registration->remote.get())));
   access_observer_registrations_.push_back(std::move(registration));
+}
+
+void DeviceBoundSessionManager::AddEventObserver(
+    mojo::PendingRemote<mojom::DeviceBoundSessionEventObserver> observer) {
+  auto registration = std::make_unique<EventObserverRegistration>();
+  registration->remote.Bind(std::move(observer));
+  registration->remote.set_disconnect_handler(
+      base::BindOnce(&DeviceBoundSessionManager::RemoveEventObserver,
+                     // base::Unretained is safe because `this` owns
+                     // `registration`, which owns the callback.
+                     base::Unretained(this), registration.get()));
+
+  registration->subscription = service_->AddEventObserver(
+      base::BindRepeating(&network::mojom::DeviceBoundSessionEventObserver::
+                              OnDeviceBoundSessionEventReceived,
+                          base::Unretained(registration->remote.get())));
+
+  event_observer_registrations_.push_back(std::move(registration));
 }
 
 void DeviceBoundSessionManager::CreateBoundSessions(
@@ -176,6 +199,12 @@ void DeviceBoundSessionManager::OnCreateBoundSessionsAdded(
 void DeviceBoundSessionManager::RemoveAccessObserver(
     AccessObserverRegistration* registration) {
   std::erase_if(access_observer_registrations_,
+                base::MatchesUniquePtr(registration));
+}
+
+void DeviceBoundSessionManager::RemoveEventObserver(
+    EventObserverRegistration* registration) {
+  std::erase_if(event_observer_registrations_,
                 base::MatchesUniquePtr(registration));
 }
 

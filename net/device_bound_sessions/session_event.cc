@@ -5,6 +5,8 @@
 
 namespace net::device_bound_sessions {
 
+SessionEvent::SessionEvent() = default;
+
 SessionEvent::SessionEvent(EventType event_type,
                            SchemefulSite site,
                            std::optional<std::string> session_id,
