@@ -263,12 +263,10 @@ namespace blink {
 // static
 bool CanConvertToWebRtcVideoFrameBuffer(const media::VideoFrame* frame) {
   // Currently accept I420, I420A, NV12 formats in a mapped frame,
-  // or a texture or GPU memory buffer frame.
+  // or a SharedImage-backed frame.
   return (frame->IsMappable() &&
           base::Contains(GetPixelFormatsMappableToWebRtcVideoFrameBuffer(),
                          frame->format())) ||
-         frame->storage_type() ==
-             media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE ||
          frame->HasSharedImage();
 }
 
