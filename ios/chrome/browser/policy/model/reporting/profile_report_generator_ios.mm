@@ -26,6 +26,19 @@
 
 namespace enterprise_reporting {
 
+namespace {
+
+std::optional<CoreAccountInfo> GetAccountInfo(ProfileIOS* profile) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  return identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)
+             ? std::make_optional(identity_manager->GetPrimaryAccountInfo(
+                   signin::ConsentLevel::kSignin))
+             : std::nullopt;
+}
+
+}  // namespace
+
 ProfileReportGeneratorIOS::ProfileReportGeneratorIOS() = default;
 
 ProfileReportGeneratorIOS::~ProfileReportGeneratorIOS() = default;
@@ -41,18 +54,13 @@ bool ProfileReportGeneratorIOS::Init(const base::FilePath& path) {
 
 void ProfileReportGeneratorIOS::GetSigninUserInfo(
     enterprise_management::ChromeUserProfileInfo* report) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
-
-  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+  std::optional<CoreAccountInfo> account_info = GetAccountInfo(profile_);
+  if (!account_info.has_value()) {
     return;
   }
-
-  CoreAccountInfo account_info =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   auto* signed_in_user_info = report->mutable_chrome_signed_in_user();
-  signed_in_user_info->set_email(account_info.email);
-  signed_in_user_info->set_obfuscated_gaia_id(account_info.gaia.ToString());
+  signed_in_user_info->set_email(account_info->email);
+  signed_in_user_info->set_obfuscated_gaia_id(account_info->gaia.ToString());
 }
 
 void ProfileReportGeneratorIOS::GetAffiliationInfo(
@@ -98,7 +106,27 @@ void ProfileReportGeneratorIOS::GetProfileId(
 
 void ProfileReportGeneratorIOS::GetProfileName(
     enterprise_management::ChromeUserProfileInfo* report) {
-  report->set_name(profile_->GetProfileName());
+  if (base::FeatureList::IsEnabled(
+          enterprise_reporting::kUseEmailAsProfileName)) {
+    // Unlike other platforms, iOS doesn't have a meaningful profile name: it's
+    // just a randomly-generated UUID.
+    //
+    // Use the name from the GAIA account, since that's more meaningful.
+    std::optional<CoreAccountInfo> account_info = GetAccountInfo(profile_);
+    if (account_info.has_value()) {
+      signin::IdentityManager* identity_manager =
+          IdentityManagerFactory::GetForProfile(profile_);
+      AccountInfo extended_account_info =
+          identity_manager->FindExtendedAccountInfo(*account_info);
+      if (!extended_account_info.full_name.empty()) {
+        report->set_name(extended_account_info.full_name);
+      } else {
+        report->set_name(account_info->email);
+      }
+    }
+  } else {
+    report->set_name(profile_->GetProfileName());
+  }
 }
 
 std::unique_ptr<policy::PolicyConversionsClient>
