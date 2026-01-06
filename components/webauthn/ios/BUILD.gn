@@ -32,10 +32,13 @@ source_set("ios") {
     "//components/password_manager/core/browser:passkey_credential",
     "//components/password_manager/ios",
     "//components/webauthn/core/browser:client_data",
+    "//components/webauthn/core/browser:common_utils",
     "//components/webauthn/core/browser:passkey_model",
     "//device/fido",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
 }
 

@@ -72,9 +72,9 @@ std::unique_ptr<RemoteValidation> RemoteValidation::Create(
     const url::Origin& caller_origin,
     const std::string& relying_party_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::OnceCallback<void(Status)> callback) {
+    base::OnceCallback<void(ValidationStatus)> callback) {
   if (!url_loader_factory) {
-    std::move(callback).Run(Status::kBadRelyingPartyId);
+    std::move(callback).Run(ValidationStatus::kBadRelyingPartyId);
     return nullptr;
   }
 
@@ -91,7 +91,7 @@ std::unique_ptr<RemoteValidation> RemoteValidation::Create(
   if (host_info.family != url::CanonHostInfo::Family::NEUTRAL ||
       !net::IsCanonicalizedHostCompliant(canonicalized_domain)) {
     // The RP ID must look like a hostname, e.g. not an IP address.
-    std::move(callback).Run(Status::kBadRelyingPartyId);
+    std::move(callback).Run(ValidationStatus::kBadRelyingPartyId);
     return nullptr;
   }
 
@@ -128,7 +128,7 @@ std::unique_ptr<RemoteValidation> RemoteValidation::Create(
 }
 
 // static
-RemoteValidation::Status RemoteValidation::ValidateWellKnownJSON(
+ValidationStatus RemoteValidation::ValidateWellKnownJSON(
     const url::Origin& caller_origin,
     const std::string_view json) {
   // This code processes a .well-known/webauthn JSON. See
@@ -137,12 +137,12 @@ RemoteValidation::Status RemoteValidation::ValidateWellKnownJSON(
   auto result = base::JSONReader::ReadDict(json, base::JSON_PARSE_RFC);
 
   if (!result.has_value()) {
-    return Status::kJsonParseError;
+    return ValidationStatus::kJsonParseError;
   }
 
   const base::Value::List* origins = result->FindList("origins");
   if (!origins) {
-    return Status::kJsonParseError;
+    return ValidationStatus::kJsonParseError;
   }
 
   constexpr size_t kMaxLabels = 5;
@@ -150,7 +150,7 @@ RemoteValidation::Status RemoteValidation::ValidateWellKnownJSON(
   base::flat_set<std::string> labels_seen;
   for (const base::Value& origin_str : *origins) {
     if (!origin_str.is_string()) {
-      return Status::kJsonParseError;
+      return ValidationStatus::kJsonParseError;
     }
 
     const GURL url(origin_str.GetString());
@@ -181,30 +181,31 @@ RemoteValidation::Status RemoteValidation::ValidateWellKnownJSON(
 
     const auto origin = url::Origin::Create(url);
     if (origin.IsSameOriginWith(caller_origin)) {
-      return Status::kSuccess;
+      return ValidationStatus::kSuccess;
     }
   }
 
   if (hit_limits) {
-    return Status::kNoJsonMatchHitLimits;
+    return ValidationStatus::kNoJsonMatchHitLimits;
   }
-  return Status::kNoJsonMatch;
+  return ValidationStatus::kNoJsonMatch;
 }
 
-RemoteValidation::RemoteValidation(const url::Origin& caller_origin,
-                                   base::OnceCallback<void(Status)> callback)
+RemoteValidation::RemoteValidation(
+    const url::Origin& caller_origin,
+    base::OnceCallback<void(ValidationStatus)> callback)
     : caller_origin_(caller_origin), callback_(std::move(callback)) {}
 
 // OnFetchComplete is called when the `.well-known/webauthn` for an
 // RP ID has finished downloading.
 void RemoteValidation::OnFetchComplete(std::optional<std::string> body) {
   if (!body) {
-    std::move(callback_).Run(Status::kAttemptedFetch);
+    std::move(callback_).Run(ValidationStatus::kAttemptedFetch);
     return;
   }
 
   if (loader_->ResponseInfo()->mime_type != "application/json") {
-    std::move(callback_).Run(Status::kWrongContentType);
+    std::move(callback_).Run(ValidationStatus::kWrongContentType);
     return;
   }
 

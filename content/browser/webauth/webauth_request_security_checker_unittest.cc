@@ -340,8 +340,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 class WebAuthRequestSecurityCheckerWellKnownJSONTest : public testing::Test {
  protected:
-  webauthn::RemoteValidation::Status Test(std::string_view caller_origin_str,
-                                          std::string_view json) {
+  webauthn::ValidationStatus Test(std::string_view caller_origin_str,
+                                  std::string_view json) {
     GURL caller_origin_url(caller_origin_str);
     CHECK(caller_origin_url.is_valid()) << caller_origin_str;
 
@@ -353,16 +353,16 @@ class WebAuthRequestSecurityCheckerWellKnownJSONTest : public testing::Test {
 TEST_F(WebAuthRequestSecurityCheckerWellKnownJSONTest, Inputs) {
   struct TestCase {
     const char* json;
-    webauthn::RemoteValidation::Status expected;
+    webauthn::ValidationStatus expected;
   };
-  constexpr webauthn::RemoteValidation::Status parse_error =
-      webauthn::RemoteValidation::Status::kJsonParseError;
-  constexpr webauthn::RemoteValidation::Status ok =
-      webauthn::RemoteValidation::Status::kSuccess;
-  constexpr webauthn::RemoteValidation::Status no_match =
-      webauthn::RemoteValidation::Status::kNoJsonMatch;
-  constexpr webauthn::RemoteValidation::Status no_match_hit_limits =
-      webauthn::RemoteValidation::Status::kNoJsonMatchHitLimits;
+  constexpr webauthn::ValidationStatus parse_error =
+      webauthn::ValidationStatus::kJsonParseError;
+  constexpr webauthn::ValidationStatus ok =
+      webauthn::ValidationStatus::kSuccess;
+  constexpr webauthn::ValidationStatus no_match =
+      webauthn::ValidationStatus::kNoJsonMatch;
+  constexpr webauthn::ValidationStatus no_match_hit_limits =
+      webauthn::ValidationStatus::kNoJsonMatchHitLimits;
 
   static const TestCase kTestCases[] = {
       {R"([])", parse_error},

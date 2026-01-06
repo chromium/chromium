@@ -9,7 +9,7 @@
 #include "components/payments/core/features.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
-#include "content/public/browser/webauthn_security_utils.h"
+#include "components/webauthn/core/browser/webauthn_security_utils.h"
 #include "url/origin.h"
 
 namespace payments {
@@ -20,8 +20,8 @@ namespace {
 // RP ID).
 bool RequiresThirdPartyPaymentBit(const url::Origin& caller_origin,
                                   const std::string& relying_party_id) {
-  return !content::OriginIsAllowedToClaimRelyingPartyId(relying_party_id,
-                                                        caller_origin);
+  return !webauthn::OriginIsAllowedToClaimRelyingPartyId(relying_party_id,
+                                                         caller_origin);
 }
 }  // namespace
 

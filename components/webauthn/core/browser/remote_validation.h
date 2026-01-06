@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/webauthn/core/browser/webauthn_security_utils.h"
 #include "url/origin.h"
 
 namespace network {
@@ -24,16 +25,6 @@ namespace webauthn {
 // A RemoteValidation represents a pending remote validation of an RP ID.
 class RemoteValidation {
  public:
-  enum class Status {
-    kSuccess,
-    kBadRelyingPartyId,
-    kJsonParseError,
-    kNoJsonMatchHitLimits,
-    kNoJsonMatch,
-    kAttemptedFetch,
-    kWrongContentType,
-  };
-
   ~RemoteValidation();
 
   // Create and start a remote validation. The `callback` argument may be
@@ -46,22 +37,22 @@ class RemoteValidation {
       const url::Origin& caller_origin,
       const std::string& relying_party_id,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-      base::OnceCallback<void(Status)> callback);
+      base::OnceCallback<void(ValidationStatus)> callback);
 
   // ValidateWellKnownJSON implements the core of remote validation. It isn't
   // intended to be called externally except for testing.
-  [[nodiscard]] static Status ValidateWellKnownJSON(
+  [[nodiscard]] static ValidationStatus ValidateWellKnownJSON(
       const url::Origin& caller_origin,
       std::string_view json);
 
  private:
   RemoteValidation(const url::Origin& caller_origin,
-                   base::OnceCallback<void(Status)> callback);
+                   base::OnceCallback<void(ValidationStatus)> callback);
 
   void OnFetchComplete(std::optional<std::string> body);
 
   const url::Origin caller_origin_;
-  base::OnceCallback<void(Status)> callback_;
+  base::OnceCallback<void(ValidationStatus)> callback_;
   std::unique_ptr<network::SimpleURLLoader> loader_;
 
   base::WeakPtrFactory<RemoteValidation> weak_factory_{this};

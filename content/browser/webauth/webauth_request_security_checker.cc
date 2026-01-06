@@ -13,13 +13,13 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/webauthn/core/browser/remote_validation.h"
+#include "components/webauthn/core/browser/webauthn_security_utils.h"
 #include "content/browser/bad_message.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_authentication_delegate.h"
-#include "content/public/browser/webauthn_security_utils.h"
 #include "content/public/common/content_client.h"
 #include "device/fido/public/fido_transport_protocol.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -43,25 +43,31 @@ namespace content {
 
 namespace {
 blink::mojom::AuthenticatorStatus ToAuthenticatorStatus(
-    webauthn::RemoteValidation::Status status) {
+    webauthn::ValidationStatus status) {
   switch (status) {
-    case webauthn::RemoteValidation::Status::kSuccess:
+    case webauthn::ValidationStatus::kSuccess:
       return blink::mojom::AuthenticatorStatus::SUCCESS;
-    case webauthn::RemoteValidation::Status::kBadRelyingPartyId:
+    case webauthn::ValidationStatus::kOpaqueDomain:
+      return blink::mojom::AuthenticatorStatus::OPAQUE_DOMAIN;
+    case webauthn::ValidationStatus::kInvalidProtocol:
+      return blink::mojom::AuthenticatorStatus::INVALID_PROTOCOL;
+    case webauthn::ValidationStatus::kInvalidDomain:
+      return blink::mojom::AuthenticatorStatus::INVALID_DOMAIN;
+    case webauthn::ValidationStatus::kBadRelyingPartyId:
       return blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID;
-    case webauthn::RemoteValidation::Status::kJsonParseError:
+    case webauthn::ValidationStatus::kJsonParseError:
       return blink::mojom::AuthenticatorStatus::
           BAD_RELYING_PARTY_ID_JSON_PARSE_ERROR;
-    case webauthn::RemoteValidation::Status::kNoJsonMatchHitLimits:
+    case webauthn::ValidationStatus::kNoJsonMatchHitLimits:
       return blink::mojom::AuthenticatorStatus::
           BAD_RELYING_PARTY_ID_NO_JSON_MATCH_HIT_LIMITS;
-    case webauthn::RemoteValidation::Status::kNoJsonMatch:
+    case webauthn::ValidationStatus::kNoJsonMatch:
       return blink::mojom::AuthenticatorStatus::
           BAD_RELYING_PARTY_ID_NO_JSON_MATCH;
-    case webauthn::RemoteValidation::Status::kAttemptedFetch:
+    case webauthn::ValidationStatus::kAttemptedFetch:
       return blink::mojom::AuthenticatorStatus::
           BAD_RELYING_PARTY_ID_ATTEMPTED_FETCH;
-    case webauthn::RemoteValidation::Status::kWrongContentType:
+    case webauthn::ValidationStatus::kWrongContentType:
       return blink::mojom::AuthenticatorStatus::
           BAD_RELYING_PARTY_ID_WRONG_CONTENT_TYPE;
   }
@@ -159,10 +165,10 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  blink::mojom::AuthenticatorStatus domain_validation =
-      OriginAllowedToMakeWebAuthnRequests(caller_origin);
-  if (domain_validation != blink::mojom::AuthenticatorStatus::SUCCESS) {
-    std::move(callback).Run(domain_validation);
+  webauthn::ValidationStatus domain_validation =
+      webauthn::OriginAllowedToMakeWebAuthnRequests(caller_origin);
+  if (domain_validation != webauthn::ValidationStatus::kSuccess) {
+    std::move(callback).Run(ToAuthenticatorStatus(domain_validation));
     return nullptr;
   }
 
@@ -194,8 +200,8 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
     relying_party_origin = remote_desktop_client_override_origin.value();
   }
 
-  if (OriginIsAllowedToClaimRelyingPartyId(relying_party_id,
-                                           relying_party_origin)) {
+  if (webauthn::OriginIsAllowedToClaimRelyingPartyId(relying_party_id,
+                                                     relying_party_origin)) {
     std::move(callback).Run(blink::mojom::AuthenticatorStatus::SUCCESS);
     return nullptr;
   }
@@ -216,7 +222,7 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
       base::BindOnce(
           [](base::OnceCallback<void(blink::mojom::AuthenticatorStatus)>
                  callback,
-             webauthn::RemoteValidation::Status status) {
+             webauthn::ValidationStatus status) {
             std::move(callback).Run(ToAuthenticatorStatus(status));
           },
           std::move(callback)));

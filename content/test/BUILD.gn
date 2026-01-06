@@ -3280,6 +3280,7 @@ test("content_unittests") {
     "//components/viz/host",
     "//components/viz/service",
     "//components/viz/test:test_support",
+    "//components/webauthn/core/browser:common_utils",
     "//content/app:for_content_tests",
     "//content/browser:for_content_tests",
     "//content/browser/attribution_reporting:attribution_reporting_proto",

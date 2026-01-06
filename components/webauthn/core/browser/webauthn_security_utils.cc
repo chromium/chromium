@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/webauthn_security_utils.h"
+#include "components/webauthn/core/browser/webauthn_security_utils.h"
 
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "url/url_util.h"
 
-namespace content {
+namespace webauthn {
 
-blink::mojom::AuthenticatorStatus OriginAllowedToMakeWebAuthnRequests(
+ValidationStatus OriginAllowedToMakeWebAuthnRequests(
     url::Origin caller_origin) {
   if (caller_origin.opaque()) {
-    return blink::mojom::AuthenticatorStatus::OPAQUE_DOMAIN;
+    return ValidationStatus::kOpaqueDomain;
   }
 
   // The scheme is required to be HTTP(S).  Given the
@@ -21,24 +21,24 @@ blink::mojom::AuthenticatorStatus OriginAllowedToMakeWebAuthnRequests(
   // restricted to just "localhost".
   if (caller_origin.scheme() != url::kHttpScheme &&
       caller_origin.scheme() != url::kHttpsScheme) {
-    return blink::mojom::AuthenticatorStatus::INVALID_PROTOCOL;
+    return ValidationStatus::kInvalidProtocol;
   }
 
   // TODO(crbug.com/40161236): Use IsOriginPotentiallyTrustworthy?
   if (url::HostIsIPAddress(caller_origin.host()) ||
       !network::IsUrlPotentiallyTrustworthy(caller_origin.GetURL())) {
-    return blink::mojom::AuthenticatorStatus::INVALID_DOMAIN;
+    return ValidationStatus::kInvalidDomain;
   }
 
-  return blink::mojom::AuthenticatorStatus::SUCCESS;
+  return ValidationStatus::kSuccess;
 }
 
 bool OriginIsAllowedToClaimRelyingPartyId(
     const std::string& claimed_relying_party_id,
     const url::Origin& caller_origin) {
   // `OriginAllowedToMakeWebAuthnRequests()` must have been called before.
-  DCHECK_EQ(OriginAllowedToMakeWebAuthnRequests(caller_origin),
-            blink::mojom::AuthenticatorStatus::SUCCESS);
+  DCHECK(OriginAllowedToMakeWebAuthnRequests(caller_origin) ==
+         ValidationStatus::kSuccess);
 
   if (claimed_relying_party_id.empty()) {
     return false;
@@ -70,4 +70,4 @@ bool OriginIsAllowedToClaimRelyingPartyId(
   return true;
 }
 
-}  // namespace content
+}  // namespace webauthn
