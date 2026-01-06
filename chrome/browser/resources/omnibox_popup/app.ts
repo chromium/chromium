@@ -319,11 +319,18 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       recentTabForChip =
           this.tabSuggestions_.find(tab => tab.showInPreviousTabChip) || null;
     }
+    // When "Always Show Full URL" is enabled the input has protocol etc.
+    // so strip both input and url from the recent tab chip.
     return loadTimeData.getBoolean('composeboxShowRecentTabChip') &&
         (input?.length === 0 ||
-         input ===
-             recentTabForChip?.url.url.replace(/^https?:\/\/(?:www\.)?/, '')
-                 .replace(/\/$/, ''));
+         this.stripUrl_(input) === this.stripUrl_(recentTabForChip?.url.url));
+  }
+
+  private stripUrl_(url: string|undefined): string {
+    if (!url) {
+      return '';
+    }
+    return url.replace(/^https?:\/\/(?:www\.)?/, '').replace(/\/$/, '');
   }
 }
 
