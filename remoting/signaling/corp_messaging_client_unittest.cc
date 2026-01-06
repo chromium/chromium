@@ -37,7 +37,11 @@ using internal::HostSendMessageRequest;
 using internal::HostSendMessageResponse;
 
 constexpr char kFakeUsername[] = "fake_user";
+#if BUILDFLAG(REMOTING_INTERNAL)
+// Only used for validation in REMOTING_INTERNAL builds.
 constexpr char kFakeAuthzToken[] = "fake_authz_token";
+#endif
+constexpr char kFakeAuthzTokenBase64[] = "ZmFrZV9hdXRoel90b2tlbg==";
 constexpr char kFakePublicKey[] = "fake_public_key";
 
 using DoneCallback = MessagingClient::DoneCallback;
@@ -67,19 +71,12 @@ class CorpMessagingClientTest : public testing::Test {
       mock_on_signaling_address_changed_.Get()};
 };
 
-// TODO(crbug.com/473667724): Disabled on ChromeOS due to failures.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TestSendMessage_Unauthenticated \
-  DISABLED_TestSendMessage_Unauthenticated
-#else
-#define MAYBE_TestSendMessage_Unauthenticated TestSendMessage_Unauthenticated
-#endif
-TEST_F(CorpMessagingClientTest, MAYBE_TestSendMessage_Unauthenticated) {
+TEST_F(CorpMessagingClientTest, TestSendMessage_Unauthenticated) {
   base::RunLoop run_loop;
 
   internal::PeerMessageStruct peer_message;
   messaging_client_.SendMessage(
-      SignalingAddress{kFakeAuthzToken},
+      SignalingAddress{kFakeAuthzTokenBase64},
       SignalingMessage(std::move(peer_message)),
       CheckStatusThenQuitRunLoopCallback(
           FROM_HERE, HttpStatus::Code::UNAUTHENTICATED, &run_loop));
@@ -88,18 +85,11 @@ TEST_F(CorpMessagingClientTest, MAYBE_TestSendMessage_Unauthenticated) {
   run_loop.Run();
 }
 
-// TODO(crbug.com/473667724): Disabled on ChromeOS due to failures.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TestSendMessage_SendOneMessage \
-  DISABLED_TestSendMessage_SendOneMessage
-#else
-#define MAYBE_TestSendMessage_SendOneMessage TestSendMessage_SendOneMessage
-#endif
-TEST_F(CorpMessagingClientTest, MAYBE_TestSendMessage_SendOneMessage) {
+TEST_F(CorpMessagingClientTest, TestSendMessage_SendOneMessage) {
   base::RunLoop run_loop;
   internal::PeerMessageStruct peer_message;
   messaging_client_.SendMessage(
-      SignalingAddress{kFakeAuthzToken},
+      SignalingAddress{kFakeAuthzTokenBase64},
       SignalingMessage(std::move(peer_message)),
       CheckStatusThenQuitRunLoopCallback(FROM_HERE, HttpStatus::Code::OK,
                                          &run_loop));
