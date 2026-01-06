@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
@@ -199,6 +200,15 @@ ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
 
 ContextualTasksSidePanelCoordinator::~ContextualTasksSidePanelCoordinator() {
   browser_window_->GetTabStripModel()->RemoveObserver(this);
+
+  SidePanelRegistry* global_registry = SidePanelRegistry::From(browser_window_);
+  if (global_registry) {
+    auto* contextual_tasks_entry = global_registry->GetEntryForKey(
+        SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks));
+    if (contextual_tasks_entry) {
+      contextual_tasks_entry->RemoveObserver(this);
+    }
+  }
 }
 
 // static
@@ -227,6 +237,11 @@ void ContextualTasksSidePanelCoordinator::CreateAndRegisterEntry(
   entry->set_should_show_header(false);
   entry->set_should_show_outline(false);
   global_registry->Register(std::move(entry));
+
+  // Observe the side panel entry.
+  auto* registered_entry = global_registry->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks));
+  registered_entry->AddObserver(this);
 }
 
 void ContextualTasksSidePanelCoordinator::Show(bool transition_from_tab) {
@@ -929,6 +944,14 @@ ContextualTasksSidePanelCoordinator::GetAutoSuggestedTabHandle() {
   return active_tab_interface
              ? std::make_optional(active_tab_interface->GetHandle())
              : std::nullopt;
+}
+
+void ContextualTasksSidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
+  NotifyActiveTaskContextProvider();
+}
+
+void ContextualTasksSidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
+  NotifyActiveTaskContextProvider();
 }
 
 }  // namespace contextual_tasks
