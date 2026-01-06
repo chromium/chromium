@@ -247,10 +247,6 @@ BASE_DECLARE_FEATURE(kEnableLensViewFinderUnifiedExperience);
 // Whether to enable loading AIM in the lens result page.
 BASE_DECLARE_FEATURE(kLensLoadAIMInLensResultPage);
 
-
-// Feature to force allow iPad support of lens overlay.
-BASE_DECLARE_FEATURE(kLensOverlayEnableIPadCompatibility);
-
 // Feature to allow landscape support of lens overlay.
 BASE_DECLARE_FEATURE(kLensOverlayEnableLandscapeCompatibility);
 

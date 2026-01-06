@@ -6655,11 +6655,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "lens-overlay-enable-ipad-compatibility",
-    "owners": ["radunitescu@google.com"],
-    "expiry_milestone": 142
-  },
-  {
     "name": "lens-overlay-enable-landscape-compatibility",
     "owners": ["radunitescu@google.com"],
     "expiry_milestone": 142

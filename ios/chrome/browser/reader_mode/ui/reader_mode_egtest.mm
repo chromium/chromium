@@ -172,8 +172,6 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   if ([self isRunningTest:@selector(testTurnOnReaderModeViaPageActionMenu)] ||
       [self isRunningTest:@selector(testReaderModeChipShowsAIHubIfAvailable)]) {
     config.features_enabled_and_params.push_back({kPageActionMenu, {}});
-    config.features_enabled_and_params.push_back(
-        {kLensOverlayEnableIPadCompatibility, {}});
   } else {
     config.features_disabled.push_back(kPageActionMenu);
   }

@@ -600,9 +600,6 @@ extern const char kLensOverlayCustomBottomSheetDescription[];
 extern const char kLensOverlayDisableIPHPanGestureName[];
 extern const char kLensOverlayDisableIPHPanGestureDescription[];
 
-extern const char kLensOverlayEnableIPadCompatibilityName[];
-extern const char kLensOverlayEnableIPadCompatibilityDescription[];
-
 extern const char kLensOverlayEnableLandscapeCompatibilityName[];
 extern const char kLensOverlayEnableLandscapeCompatibilityDescription[];
 

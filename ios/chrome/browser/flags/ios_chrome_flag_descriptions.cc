@@ -991,11 +991,6 @@ const char kLensOverlayDisableIPHPanGestureDescription[] =
     "Disable the pan gesture that dismisses Lens Overlay IPH. The IPH can "
     "still be dismissed with a tap.";
 
-const char kLensOverlayEnableIPadCompatibilityName[] =
-    "Allow Lens overlay to also run on iPad devices if the feature is enabled";
-const char kLensOverlayEnableIPadCompatibilityDescription[] =
-    "When enabled, it allows Lens Overlay to run on iPad devices";
-
 const char kLensOverlayEnableLandscapeCompatibilityName[] =
     "Allow Lens overlay to also run in landscape if the feature is enabled";
 const char kLensOverlayEnableLandscapeCompatibilityDescription[] =
