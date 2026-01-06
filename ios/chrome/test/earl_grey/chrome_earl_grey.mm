@@ -1515,6 +1515,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface setAppGroupCommandToSearchText:text];
 }
 
+- (void)setAppGroupCommandToIncognitoSearchText:(NSString*)text {
+  return
+      [ChromeEarlGreyAppInterface setAppGroupCommandToIncognitoSearchText:text];
+}
+
 #pragma mark - Pref Utilities (EG2)
 
 - (void)commitPendingUserPrefsWrite {

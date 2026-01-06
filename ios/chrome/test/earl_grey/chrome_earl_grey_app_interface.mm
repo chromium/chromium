@@ -1310,6 +1310,20 @@ NSString* GetIdForWebState(web::WebState* web_state) {
                                 app_group::kChromeAppGroupCommandPreference)];
 }
 
++ (void)setAppGroupCommandToIncognitoSearchText:(NSString*)text {
+  NSMutableDictionary* searchTextCommand =
+      [NSMutableDictionary dictionaryWithDictionary:@{
+        @"CommandTime" : [NSDate date],
+        @"SourceApp" : @"testApp",
+        @"Command" : @"incognitosearchtext",
+        @"Text" : text,
+      }];
+  NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
+  [sharedDefaults setObject:searchTextCommand
+                     forKey:base::SysUTF8ToNSString(
+                                app_group::kChromeAppGroupCommandPreference)];
+}
+
 #pragma mark - Pref Utilities (EG2)
 
 + (NSString*)localStatePrefValue:(NSString*)prefName {

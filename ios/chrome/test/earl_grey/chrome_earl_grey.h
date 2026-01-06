@@ -825,6 +825,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // shared NSUserDefaults.
 - (void)setAppGroupCommandToSearchText:(NSString*)text;
 
+// Creates an incognito `AppGroupCommand` based on the provided text and writes
+// it the shared NSUserDefaults.
+- (void)setAppGroupCommandToIncognitoSearchText:(NSString*)text;
+
 #pragma mark - Pref Utilities (EG2)
 
 // Commit synchronously the pending user prefs write. Waits until the disk write

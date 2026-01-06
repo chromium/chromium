@@ -118,6 +118,30 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [SigninEarlGrey verifySignedInWithFakeIdentity:personalIdentity];
 }
 
+- (void)testIncognitoTextSearchWithoutProfileSwitch {
+  FakeSystemIdentity* const personalIdentity =
+      [FakeSystemIdentity fakeIdentity1];
+
+  // Signin to the personal identity and add a test DSE to its profile.
+  [self addIdentityAndSetDSE:personalIdentity managed:NO];
+
+  // Add a text search command and open chrome with a callback URL with the
+  // personal gaia id.
+  [ChromeEarlGrey setAppGroupCommandToIncognitoSearchText:@"some text"];
+  std::string url_string =
+      "chromium-dev://x-callback-url/app-group-command?gaia_id=";
+  url_string += kPersonalIdentityGaiaID;
+  GURL gurl(url_string);
+  [ChromeEarlGrey sceneOpenURL:gurl];
+
+  [ChromeEarlGrey waitForWebStateContainingText:"Search Result"];
+  [ChromeEarlGrey waitForWebStateContainingText:"some text"];
+  GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
+                 @"Failed to switch to incognito mode");
+
+  [SigninEarlGrey verifySignedInWithFakeIdentity:personalIdentity];
+}
+
 - (void)testTextSearchWithProfileSwitch {
   FakeSystemIdentity* const personalIdentity =
       [FakeSystemIdentity fakeIdentity1];
@@ -145,6 +169,39 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   [ChromeEarlGrey waitForWebStateContainingText:"Search Result"];
   [ChromeEarlGrey waitForWebStateContainingText:"some text"];
+
+  [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
+}
+
+- (void)testIncognitoTextSearchWithProfileSwitch {
+  FakeSystemIdentity* const personalIdentity =
+      [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentity* const managedIdentity =
+      [FakeSystemIdentity fakeManagedIdentity];
+
+  // Signin to the managed identity and add a test DSE to its profile.
+  [self addIdentityAndSetDSE:managedIdentity managed:YES];
+
+  // Signin to the personal identity and add a test DSE to its profile.
+  [self addIdentityAndSetDSE:personalIdentity managed:NO];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Check that the personal identity is signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:personalIdentity];
+
+  // Add a text search command and open chrome with a callback URL with the
+  // managed gaia id.
+  [ChromeEarlGrey setAppGroupCommandToIncognitoSearchText:@"some text"];
+  std::string url_string =
+      "chromium-dev://x-callback-url/app-group-command?gaia_id=";
+  url_string += kManagedIdentityGaiaID;
+  GURL gurl(url_string);
+  [ChromeEarlGrey sceneOpenURL:gurl];
+
+  [ChromeEarlGrey waitForWebStateContainingText:"Search Result"];
+  [ChromeEarlGrey waitForWebStateContainingText:"some text"];
+  GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
+                 @"Failed to switch to incognito mode");
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
 }

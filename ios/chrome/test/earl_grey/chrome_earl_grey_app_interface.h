@@ -601,6 +601,10 @@ enum class TipsNotificationType;
 // shared NSUserDefaults.
 + (void)setAppGroupCommandToSearchText:(NSString*)text;
 
+// Creates an incognito `AppGroupCommand` based on the provided text and writes
+// it the shared NSUserDefaults.
++ (void)setAppGroupCommandToIncognitoSearchText:(NSString*)text;
+
 #pragma mark - Pref Utilities (EG2)
 
 // Gets the value of a local state pref. Returns a
