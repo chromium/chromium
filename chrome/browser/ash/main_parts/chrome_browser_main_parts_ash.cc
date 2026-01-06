@@ -95,7 +95,6 @@
 #include "chrome/browser/ash/dbus/vm/vm_permission_service_provider.h"
 #include "chrome/browser/ash/dbus/vm/vm_sk_forwarding_service_provider.h"
 #include "chrome/browser/ash/dbus/vm/vm_wl_service_provider.h"
-#include "chrome/browser/ash/device_name/device_name_store.h"
 #include "chrome/browser/ash/diagnostics/diagnostics_browser_delegate_impl.h"
 #include "chrome/browser/ash/events/event_rewriter_delegate_impl.h"
 #include "chrome/browser/ash/events/shortcut_mapping_pref_service.h"
@@ -1029,13 +1028,6 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
 
   ambient_client_ = std::make_unique<AmbientClientImpl>();
 
-  if (base::FeatureList::IsEnabled(features::kEnableHostnameSetting)) {
-    DeviceNameStore::Initialize(g_browser_process->local_state(),
-                                g_browser_process->platform_part()
-                                    ->browser_policy_connector_ash()
-                                    ->GetDeviceNamePolicyHandler());
-  }
-
   // Set |local_state| for LocalSearchServiceProxyFactory.
   local_search_service::LocalSearchServiceProxyFactory::GetInstance()
       ->SetLocalState(g_browser_process->local_state());
@@ -1614,10 +1606,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   BootTimesRecorder::Get()->AddLogoutTimeMarker("UIMessageLoopEnded",
                                                 /*send_to_uma=*/false);
-
-  if (base::FeatureList::IsEnabled(features::kEnableHostnameSetting)) {
-    DeviceNameStore::Shutdown();
-  }
 
   // This must be shut down before |arc_service_launcher_|.
   if (pre_profile_init_called_) {
