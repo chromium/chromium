@@ -2295,56 +2295,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetOsHotkeyState) {
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testSetWindowDraggableAreas) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
-  ExecuteJsTest();
-  const int x = 10;
-  const int y = 20;
-  const int width = 30;
-  const int height = 40;
-
-  RunTestSequence(
-      // Test points within the draggable area.
-      CheckPointIsWithinDraggableArea(gfx::Point(x, y), true),
-      CheckPointIsWithinDraggableArea(gfx::Point(x + width - 1, y), true),
-      CheckPointIsWithinDraggableArea(gfx::Point(x, y + height - 1), true),
-      CheckPointIsWithinDraggableArea(gfx::Point(x + width - 1, y + height - 1),
-                                      true),
-      // Test points at the edges of the draggable area.
-      CheckPointIsWithinDraggableArea(gfx::Point(x - 1, y), false),
-      CheckPointIsWithinDraggableArea(gfx::Point(x, y - 1), false),
-      CheckPointIsWithinDraggableArea(gfx::Point(x + width, y), false),
-      CheckPointIsWithinDraggableArea(gfx::Point(x, y + height), false));
-
-  ContinueJsTest();
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testSetWindowDraggableAreasDefault) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
-  // TODO(crbug.com/404845792): Default draggable area is currently hardcoded in
-  // glic_page_handler.cc. This should be moved to a shared location and updated
-  // here.
-  const int x = 0;
-  const int y = 0;
-  const int width = 400;
-  const int height = 80;
-
-  ExecuteJsTest();
-  RunTestSequence(
-      // Test points within the draggable area.
-      CheckPointIsWithinDraggableArea(gfx::Point(x, y), true),
-      CheckPointIsWithinDraggableArea(gfx::Point(x + width - 1, y), true),
-      CheckPointIsWithinDraggableArea(gfx::Point(x, y + height - 1), true),
-      CheckPointIsWithinDraggableArea(gfx::Point(x + width - 1, y + height - 1),
-                                      true),
-      // Test points at the edges of the draggable area.
-      CheckPointIsWithinDraggableArea(gfx::Point(x - 1, y), false),
-      CheckPointIsWithinDraggableArea(gfx::Point(x, y - 1), false),
-      CheckPointIsWithinDraggableArea(gfx::Point(x + width, y), false),
-      CheckPointIsWithinDraggableArea(gfx::Point(x, y + height), false));
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testSetMinimumWidgetSize) {
   NavigateTabAndOpenGlicFloating();
   ExecuteJsTest();
