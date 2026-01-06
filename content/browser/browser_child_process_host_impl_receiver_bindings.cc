@@ -12,6 +12,7 @@
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 #include "content/browser/browser_child_process_host_impl.h"
 #include "content/browser/field_trial_recorder.h"
+#include "content/common/features.h"
 #include "content/common/field_trial_recorder.mojom.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -35,6 +36,10 @@
 #include "content/common/sandbox_support.mojom.h"
 #include "content/public/common/font_cache_dispatcher_win.h"
 #include "content/public/common/font_cache_win.mojom.h"
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#include "components/services/font_data/font_data_service_impl.h"
 #endif
 
 namespace content {
@@ -103,6 +108,17 @@ void BrowserChildProcessHostImpl::BindHostReceiver(
         ->PostTask(FROM_HERE,
                    base::BindOnce(&DWriteFontProxyImpl::Create, std::move(r)));
     return;
+  }
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  if (features::IsFontDataServiceEnabled()) {
+    if (auto font_data_receiver =
+            receiver.As<font_data_service::mojom::FontDataService>()) {
+      font_data_service::FontDataServiceImpl::ConnectToFontService(
+          std::move(font_data_receiver));
+      return;
+    }
   }
 #endif
 

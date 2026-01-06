@@ -21,7 +21,7 @@
 #include "third_party/skia/include/ports/SkFontConfigInterface.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "content/public/child/dwrite_font_proxy_init_win.h"
+#include "content/public/child/font_integration_init.h"
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "components/services/font/public/cpp/font_loader.h"
 #endif
@@ -78,7 +78,7 @@ PaintPreviewCompositorCollectionImpl::PaintPreviewCompositorCollectionImpl(
 
     // Initialize font access for Skia.
 #if BUILDFLAG(IS_WIN)
-  content::InitializeDWriteFontProxy();
+  content::InitializeFontIntegration();
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   mojo::PendingRemote<font_service::mojom::FontService> font_service;
   content::UtilityThread::Get()->BindHostReceiver(
@@ -116,7 +116,7 @@ PaintPreviewCompositorCollectionImpl::PaintPreviewCompositorCollectionImpl(
 PaintPreviewCompositorCollectionImpl::~PaintPreviewCompositorCollectionImpl() {
   g_in_shutdown_key.Set("true");
 #if BUILDFLAG(IS_WIN)
-  content::UninitializeDWriteFontProxy();
+  content::UninitializeFontIntegration();
 #endif
 }
 

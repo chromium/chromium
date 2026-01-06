@@ -36,7 +36,7 @@ static_library("paint_preview_compositor") {
     deps += [ "//components/services/font/public/cpp" ]
   }
 
-  if (is_win) {
+  if (is_win || is_linux) {
     deps += [ "//content/public/child" ]
   }
 
