@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -158,25 +157,25 @@ class FidoGetAssertionHandlerTest : public ::testing::Test {
       GetAssertionRequestHandler* request_handler,
       base::flat_set<FidoTransportProtocol> transports) {
     using Transport = FidoTransportProtocol;
-    if (base::Contains(transports, Transport::kUsbHumanInterfaceDevice))
+    if (transports.contains(Transport::kUsbHumanInterfaceDevice))
       discovery()->WaitForCallToStartAndSimulateSuccess();
-    if (base::Contains(transports, Transport::kHybrid))
+    if (transports.contains(Transport::kHybrid))
       cable_discovery()->WaitForCallToStartAndSimulateSuccess();
-    if (base::Contains(transports, Transport::kNearFieldCommunication))
+    if (transports.contains(Transport::kNearFieldCommunication))
       nfc_discovery()->WaitForCallToStartAndSimulateSuccess();
-    if (base::Contains(transports, Transport::kInternal))
+    if (transports.contains(Transport::kInternal))
       platform_discovery()->WaitForCallToStartAndSimulateSuccess();
 
     task_environment_.FastForwardUntilNoTasksRemain();
     EXPECT_FALSE(get_assertion_future().IsReady());
 
-    if (!base::Contains(transports, Transport::kUsbHumanInterfaceDevice))
+    if (!transports.contains(Transport::kUsbHumanInterfaceDevice))
       EXPECT_FALSE(discovery()->is_start_requested());
-    if (!base::Contains(transports, Transport::kHybrid))
+    if (!transports.contains(Transport::kHybrid))
       EXPECT_FALSE(cable_discovery()->is_start_requested());
-    if (!base::Contains(transports, Transport::kNearFieldCommunication))
+    if (!transports.contains(Transport::kNearFieldCommunication))
       EXPECT_FALSE(nfc_discovery()->is_start_requested());
-    if (!base::Contains(transports, Transport::kInternal))
+    if (!transports.contains(Transport::kInternal))
       EXPECT_FALSE(platform_discovery()->is_start_requested());
 
     EXPECT_THAT(

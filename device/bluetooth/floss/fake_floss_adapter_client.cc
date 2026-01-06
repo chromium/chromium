@@ -161,7 +161,7 @@ void FakeFlossAdapterClient::StartDiscovery(ResponseCallback<Void> callback) {
       FlossDeviceId{kJustWorksAddress, kJustWorksName}};
 
   for (const auto& device : discoverable_devices) {
-    if (base::Contains(connected_addresses_, device.address)) {
+    if (connected_addresses_.contains(device.address)) {
       // Skip connected devices.
       continue;
     }
@@ -352,7 +352,7 @@ void FakeFlossAdapterClient::CancelBondProcess(ResponseCallback<bool> callback,
 
 void FakeFlossAdapterClient::RemoveBond(ResponseCallback<bool> callback,
                                         FlossDeviceId device) {
-  if (!base::Contains(bonded_addresses_, device.address)) {
+  if (!bonded_addresses_.contains(device.address)) {
     PostDelayedTask(base::BindOnce(std::move(callback), false));
     return;
   }
@@ -399,7 +399,7 @@ void FakeFlossAdapterClient::GetConnectionState(
   FlossAdapterClient::ConnectionState conn_state =
       FlossAdapterClient::ConnectionState::kDisconnected;
 
-  if (base::Contains(connected_addresses_, device.address)) {
+  if (connected_addresses_.contains(device.address)) {
     if (device.address == kPairedAddressBrEdr) {
       conn_state = FlossAdapterClient::ConnectionState::kPairedBREDROnly;
     } else if (device.address == kPairedAddressLE) {
@@ -438,7 +438,7 @@ void FakeFlossAdapterClient::GetRemoteAddressType(
 void FakeFlossAdapterClient::GetBondState(ResponseCallback<uint32_t> callback,
                                           const FlossDeviceId& device) {
   FlossAdapterClient::BondState bond_state =
-      base::Contains(bonded_addresses_, device.address)
+      bonded_addresses_.contains(device.address)
           ? floss::FlossAdapterClient::BondState::kBonded
           : floss::FlossAdapterClient::BondState::kNotBonded;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -475,7 +475,7 @@ void FakeFlossAdapterClient::PostDelayedTask(base::OnceClosure callback) {
 
 void FakeFlossAdapterClient::SetConnected(const std::string& address,
                                           bool connected) {
-  if (base::Contains(connected_addresses_, address) == connected) {
+  if (connected_addresses_.contains(address) == connected) {
     return;
   }
   const auto device = ConvertAddressToDevice(address);

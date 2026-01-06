@@ -4,7 +4,6 @@
 
 #include "device/bluetooth/chromeos/bluetooth_connection_logger.h"
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -44,7 +43,7 @@ void BluetoothConnectionLogger::RecordDeviceConnectedMetric(
   base::UmaHistogramEnumeration(
       base::StrCat({kBaseHistogramName, ".AllConnections"}), device_type);
 
-  if (base::Contains(device_ids_logged_this_session_, device_identifier)) {
+  if (device_ids_logged_this_session_.contains(device_identifier)) {
     return;
   }
 

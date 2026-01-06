@@ -9,7 +9,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
@@ -44,11 +43,11 @@ std::optional<std::vector<uint8_t>> ErrorStatus(
 
 // static
 bool VirtualU2fDevice::IsTransportSupported(FidoTransportProtocol transport) {
-  return base::Contains(base::flat_set<FidoTransportProtocol>(
-                            {FidoTransportProtocol::kUsbHumanInterfaceDevice,
-                             FidoTransportProtocol::kBluetoothLowEnergy,
-                             FidoTransportProtocol::kNearFieldCommunication}),
-                        transport);
+  return (base::flat_set<FidoTransportProtocol>(
+              {FidoTransportProtocol::kUsbHumanInterfaceDevice,
+               FidoTransportProtocol::kBluetoothLowEnergy,
+               FidoTransportProtocol::kNearFieldCommunication}))
+      .contains(transport);
 }
 
 VirtualU2fDevice::VirtualU2fDevice() = default;

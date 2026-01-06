@@ -8,7 +8,6 @@
 
 #include <array>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
@@ -509,8 +508,8 @@ TEST_F(BluetoothTest, LowEnergyDeviceProperties) {
   EXPECT_EQ(base::UTF8ToUTF16(kTestDeviceName), device->GetNameForDisplay());
   EXPECT_FALSE(device->IsPaired());
   UUIDSet uuids = device->GetUUIDs();
-  EXPECT_TRUE(base::Contains(uuids, BluetoothUUID(kTestUUIDGenericAccess)));
-  EXPECT_TRUE(base::Contains(uuids, BluetoothUUID(kTestUUIDGenericAttribute)));
+  EXPECT_TRUE(uuids.contains(BluetoothUUID(kTestUUIDGenericAccess)));
+  EXPECT_TRUE(uuids.contains(BluetoothUUID(kTestUUIDGenericAttribute)));
 }
 
 // Verifies that the device name can be populated by later advertisement

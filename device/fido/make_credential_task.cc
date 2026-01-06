@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "device/base/features.h"
 #include "device/fido/ctap2_device_operation.h"
@@ -57,7 +56,7 @@ bool CtapDeviceShouldUseU2fBecauseClientPinIsSet(
       device->device_info()->options.client_pin_availability ==
       AuthenticatorSupportedOptions::ClientPinAvailability::kSupportedAndPinSet;
   bool supports_u2f =
-      base::Contains(device->device_info()->versions, ProtocolVersion::kU2f);
+      device->device_info()->versions.contains(ProtocolVersion::kU2f);
   return client_pin_set && supports_u2f;
 }
 

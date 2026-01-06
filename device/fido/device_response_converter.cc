@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/i18n/streaming_utf8_validator.h"
 #include "base/numerics/safe_conversions.h"
@@ -402,7 +401,7 @@ std::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
   }
 
   if (protocol_versions.empty() ||
-      (base::Contains(protocol_versions, ProtocolVersion::kCtap2) &&
+      (protocol_versions.contains(ProtocolVersion::kCtap2) &&
        ctap2_versions.empty())) {
     return std::nullopt;
   }

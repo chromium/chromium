@@ -7,7 +7,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -253,7 +252,7 @@ void FidoRequestHandlerBase::InitDiscoveries(
   for (auto& discovery : additional_discoveries) {
     // TODO: Make this work better for non-standard discoveries like Windows,
     // which currently pretends to be `kInternal`.
-    if (!base::Contains(available_transports, discovery->transport())) {
+    if (!available_transports.contains(discovery->transport())) {
       continue;
     }
     discovery->set_observer(this);
@@ -312,8 +311,8 @@ void FidoRequestHandlerBase::InitDiscoveries(
   // so we don't need this additional check.
   if (can_call_ble_apis &&
       device::BluetoothAdapterFactory::Get()->IsLowEnergySupported() &&
-      base::Contains(transport_availability_info_.available_transports,
-                     FidoTransportProtocol::kHybrid)) {
+      transport_availability_info_.available_transports.contains(
+          FidoTransportProtocol::kHybrid)) {
     FIDO_LOG(DEBUG) << "Checking for bluetooth availability";
     transport_availability_callback_readiness_->ble_information_pending = true;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -621,7 +620,7 @@ void FidoRequestHandlerBase::OnHavePlatformCredentialStatus(
 
 bool FidoRequestHandlerBase::HasAuthenticator(
     const std::string& authenticator_id) const {
-  return base::Contains(active_authenticators_, authenticator_id);
+  return active_authenticators_.contains(authenticator_id);
 }
 
 void FidoRequestHandlerBase::MaybeSignalTransportsEnumerated() {

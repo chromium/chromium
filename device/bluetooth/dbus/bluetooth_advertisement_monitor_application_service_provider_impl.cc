@@ -4,7 +4,6 @@
 
 #include "device/bluetooth/dbus/bluetooth_advertisement_monitor_application_service_provider_impl.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -79,7 +78,7 @@ void BluetoothAdvertisementMonitorApplicationServiceProviderImpl::AddMonitor(
 
 void BluetoothAdvertisementMonitorApplicationServiceProviderImpl::RemoveMonitor(
     const dbus::ObjectPath& monitor_path) {
-  if (!base::Contains(advertisement_monitor_providers_, monitor_path.value())) {
+  if (!advertisement_monitor_providers_.contains(monitor_path.value())) {
     LOG(WARNING)
         << "Failed to remove Advertisement Monitor because it does not exist "
         << monitor_path.value();

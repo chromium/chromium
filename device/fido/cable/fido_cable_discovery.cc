@@ -10,7 +10,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -207,10 +206,10 @@ const BluetoothUUID& FidoCableDiscovery::FIDOCableUUID() {
 bool FidoCableDiscovery::IsCableDevice(const BluetoothDevice* device) {
   const auto& uuid1 = GoogleCableUUID();
   const auto& uuid2 = FIDOCableUUID();
-  return base::Contains(device->GetServiceData(), uuid1) ||
-         base::Contains(device->GetUUIDs(), uuid1) ||
-         base::Contains(device->GetServiceData(), uuid2) ||
-         base::Contains(device->GetUUIDs(), uuid2);
+  return device->GetServiceData().contains(uuid1) ||
+         device->GetUUIDs().contains(uuid1) ||
+         device->GetServiceData().contains(uuid2) ||
+         device->GetUUIDs().contains(uuid2);
 }
 
 void FidoCableDiscovery::OnGetAdapter(scoped_refptr<BluetoothAdapter> adapter) {
@@ -290,7 +289,7 @@ void FidoCableDiscovery::DeviceRemoved(BluetoothAdapter* adapter,
   if (IsCableDevice(device) &&
       // It only matters if V1 devices are "removed" because V2 devices do not
       // transport data over BLE.
-      base::Contains(active_devices_, device_address)) {
+      active_devices_.contains(device_address)) {
     FIDO_LOG(DEBUG) << "caBLE device removed: " << device_address;
     RemoveDevice(FidoCableDevice::GetIdForAddress(device_address));
   }
@@ -502,7 +501,7 @@ void FidoCableDiscovery::OnAdvertisementRegistered(
 void FidoCableDiscovery::CableDeviceFound(BluetoothAdapter* adapter,
                                           BluetoothDevice* device) {
   const std::string device_address = device->GetAddress();
-  if (base::Contains(active_devices_, device_address)) {
+  if (active_devices_.contains(device_address)) {
     return;
   }
 
@@ -511,7 +510,7 @@ void FidoCableDiscovery::CableDeviceFound(BluetoothAdapter* adapter,
     return;
   }
 
-  if (base::Contains(active_authenticator_eids_, v1_match->second)) {
+  if (active_authenticator_eids_.contains(v1_match->second)) {
     return;
   }
   active_authenticator_eids_.insert(v1_match->second);

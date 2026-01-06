@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/device_response_converter.h"
@@ -61,7 +60,7 @@ void FidoDevice::OnDeviceInfoReceived(
   std::optional<AuthenticatorGetInfoResponse> get_info_response =
       response ? ReadCTAPGetInfoResponse(*response) : std::nullopt;
   if (!get_info_response ||
-      !base::Contains(get_info_response->versions, ProtocolVersion::kCtap2)) {
+      !get_info_response->versions.contains(ProtocolVersion::kCtap2)) {
     supported_protocol_ = ProtocolVersion::kU2f;
     needs_explicit_wink_ = true;
     FIDO_LOG(DEBUG) << "The device only supports the U2F protocol.";

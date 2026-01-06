@@ -4,7 +4,6 @@
 
 #include "device/fido/cable/v2_discovery.h"
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -124,7 +123,7 @@ void Discovery::OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert) {
     return;
   }
 
-  if (base::Contains(observed_adverts_, advert_array)) {
+  if (observed_adverts_.contains(advert_array)) {
     return;
   }
   observed_adverts_.insert(advert_array);

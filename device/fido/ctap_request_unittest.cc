@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/contains.h"
 #include "components/cbor/reader.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
@@ -81,7 +80,7 @@ TEST(CTAPRequestTest, PublicKeyCredentialDescriptorAsCBOR_1270757) {
       {FidoTransportProtocol::kUsbHumanInterfaceDevice});
   cbor::Value value = AsCBOR(descriptor);
   const cbor::Value::MapValue& map = value.GetMap();
-  EXPECT_FALSE(base::Contains(map, cbor::Value("transports")));
+  EXPECT_FALSE(map.contains(cbor::Value("transports")));
 }
 
 // Also for https://crbug.com/1270757: check that

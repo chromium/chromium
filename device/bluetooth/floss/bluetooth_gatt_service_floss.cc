@@ -4,7 +4,6 @@
 
 #include "device/bluetooth/floss/bluetooth_gatt_service_floss.h"
 
-#include "base/containers/contains.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
 #include "device/bluetooth/floss/floss_gatt_manager_client.h"
 
@@ -70,7 +69,7 @@ GattStatus BluetoothGattServiceFloss::GattServiceErrorToStatus(
 void BluetoothGattServiceFloss::AddObserverForHandle(
     int32_t handle,
     FlossGattClientObserver* observer) {
-  DCHECK(!base::Contains(observer_by_handle_, handle));
+  DCHECK(!observer_by_handle_.contains(handle));
   DCHECK(observer);
 
   if (observer)
@@ -80,7 +79,7 @@ void BluetoothGattServiceFloss::AddObserverForHandle(
 void BluetoothGattServiceFloss::AddServerObserverForHandle(
     int32_t handle,
     FlossGattServerObserver* observer) {
-  DCHECK(!base::Contains(server_observer_by_handle_, handle));
+  DCHECK(!server_observer_by_handle_.contains(handle));
   DCHECK(observer);
 
   if (observer) {
@@ -89,13 +88,13 @@ void BluetoothGattServiceFloss::AddServerObserverForHandle(
 }
 
 void BluetoothGattServiceFloss::RemoveObserverForHandle(int32_t handle) {
-  DCHECK(base::Contains(observer_by_handle_, handle));
+  DCHECK(observer_by_handle_.contains(handle));
 
   observer_by_handle_.erase(handle);
 }
 
 void BluetoothGattServiceFloss::RemoveServerObserverForHandle(int32_t handle) {
-  if (!base::Contains(server_observer_by_handle_, handle)) {
+  if (!server_observer_by_handle_.contains(handle)) {
     return;
   }
 
@@ -107,7 +106,7 @@ void BluetoothGattServiceFloss::GattCharacteristicRead(
     GattStatus status,
     int32_t handle,
     const std::vector<uint8_t>& data) {
-  if (base::Contains(observer_by_handle_, handle)) {
+  if (observer_by_handle_.contains(handle)) {
     observer_by_handle_[handle]->GattCharacteristicRead(address, status, handle,
                                                         data);
   }
@@ -116,7 +115,7 @@ void BluetoothGattServiceFloss::GattCharacteristicRead(
 void BluetoothGattServiceFloss::GattCharacteristicWrite(std::string address,
                                                         GattStatus status,
                                                         int32_t handle) {
-  if (base::Contains(observer_by_handle_, handle)) {
+  if (observer_by_handle_.contains(handle)) {
     observer_by_handle_[handle]->GattCharacteristicWrite(address, status,
                                                          handle);
   }
@@ -126,7 +125,7 @@ void BluetoothGattServiceFloss::GattDescriptorRead(
     GattStatus status,
     int32_t handle,
     const std::vector<uint8_t>& data) {
-  if (base::Contains(observer_by_handle_, handle)) {
+  if (observer_by_handle_.contains(handle)) {
     observer_by_handle_[handle]->GattDescriptorRead(address, status, handle,
                                                     data);
   }
@@ -135,7 +134,7 @@ void BluetoothGattServiceFloss::GattDescriptorRead(
 void BluetoothGattServiceFloss::GattDescriptorWrite(std::string address,
                                                     GattStatus status,
                                                     int32_t handle) {
-  if (base::Contains(observer_by_handle_, handle)) {
+  if (observer_by_handle_.contains(handle)) {
     observer_by_handle_[handle]->GattDescriptorWrite(address, status, handle);
   }
 }
@@ -143,7 +142,7 @@ void BluetoothGattServiceFloss::GattDescriptorWrite(std::string address,
 void BluetoothGattServiceFloss::GattNotify(std::string address,
                                            int32_t handle,
                                            const std::vector<uint8_t>& data) {
-  if (base::Contains(observer_by_handle_, handle)) {
+  if (observer_by_handle_.contains(handle)) {
     observer_by_handle_[handle]->GattNotify(address, handle, data);
   }
 }
@@ -154,7 +153,7 @@ void BluetoothGattServiceFloss::GattServerCharacteristicReadRequest(
     int32_t offset,
     bool is_long,
     int32_t handle) {
-  if (base::Contains(server_observer_by_handle_, handle)) {
+  if (server_observer_by_handle_.contains(handle)) {
     server_observer_by_handle_[handle]->GattServerCharacteristicReadRequest(
         address, request_id, offset, is_long, handle);
   }
@@ -166,7 +165,7 @@ void BluetoothGattServiceFloss::GattServerDescriptorReadRequest(
     int32_t offset,
     bool is_long,
     int32_t handle) {
-  if (base::Contains(server_observer_by_handle_, handle)) {
+  if (server_observer_by_handle_.contains(handle)) {
     server_observer_by_handle_[handle]->GattServerDescriptorReadRequest(
         address, request_id, offset, is_long, handle);
   }
@@ -181,7 +180,7 @@ void BluetoothGattServiceFloss::GattServerCharacteristicWriteRequest(
     bool needs_response,
     int32_t handle,
     std::vector<uint8_t> value) {
-  if (base::Contains(server_observer_by_handle_, handle)) {
+  if (server_observer_by_handle_.contains(handle)) {
     server_observer_by_handle_[handle]->GattServerCharacteristicWriteRequest(
         address, request_id, offset, length, is_prepared_write, needs_response,
         handle, value);
@@ -197,7 +196,7 @@ void BluetoothGattServiceFloss::GattServerDescriptorWriteRequest(
     bool needs_response,
     int32_t handle,
     std::vector<uint8_t> value) {
-  if (base::Contains(server_observer_by_handle_, handle)) {
+  if (server_observer_by_handle_.contains(handle)) {
     server_observer_by_handle_[handle]->GattServerDescriptorWriteRequest(
         address, request_id, offset, length, is_prepared_write, needs_response,
         handle, value);

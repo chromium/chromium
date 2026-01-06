@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 #include "device/bluetooth/floss/floss_socket_manager.h"
 
-#include "base/containers/contains.h"
 #include "base/types/expected.h"
 
 namespace floss {
@@ -81,7 +80,7 @@ bool FlossDBusClient::ReadDBusParam(
     std::string key;
     dict.PopString(&key);
 
-    if (base::Contains(required_keys, key)) {
+    if (required_keys.contains(key)) {
       if (key == kListeningPropId) {
         required_keys[key] = ReadDBusParamFromVariant(&dict, &socket->id);
       } else if (key == kListeningPropSockType) {
@@ -160,7 +159,7 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
     std::string key;
     dict.PopString(&key);
 
-    if (base::Contains(required_keys, key)) {
+    if (required_keys.contains(key)) {
       if (key == kConnectingPropId) {
         required_keys[key] = ReadDBusParamFromVariant(&dict, &socket->id);
       } else if (key == kConnectingPropRemoteDevice) {
@@ -245,7 +244,7 @@ bool FlossDBusClient::ReadDBusParam(
     std::string key;
     dict.PopString(&key);
 
-    if (base::Contains(required_keys, key)) {
+    if (required_keys.contains(key)) {
       if (key == kResultPropStatus) {
         required_keys[key] =
             ReadDBusParamFromVariant(&dict, &socket_result->status);

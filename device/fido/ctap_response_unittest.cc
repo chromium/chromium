@@ -6,7 +6,6 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -719,13 +718,11 @@ TEST(CTAPResponseTest, TestReadGetInfoResponse) {
   ASSERT_TRUE(get_info_response);
   ASSERT_TRUE(get_info_response->max_msg_size);
   EXPECT_EQ(*get_info_response->max_msg_size, 1200u);
-  EXPECT_TRUE(
-      base::Contains(get_info_response->versions, ProtocolVersion::kCtap2));
-  EXPECT_TRUE(
-      base::Contains(get_info_response->versions, ProtocolVersion::kU2f));
+  EXPECT_TRUE(get_info_response->versions.contains(ProtocolVersion::kCtap2));
+  EXPECT_TRUE(get_info_response->versions.contains(ProtocolVersion::kU2f));
   EXPECT_EQ(get_info_response->ctap2_versions.size(), 1u);
-  EXPECT_TRUE(base::Contains(get_info_response->ctap2_versions,
-                             Ctap2Version::kCtap2_0));
+  EXPECT_TRUE(
+      get_info_response->ctap2_versions.contains(Ctap2Version::kCtap2_0));
   EXPECT_EQ(get_info_response->options.is_platform_device,
             AuthenticatorSupportedOptions::PlatformDevice::kYes);
   EXPECT_TRUE(get_info_response->options.supports_resident_key);
@@ -769,8 +766,8 @@ TEST(CTAPResponseTest, TestReadGetInfoResponseWithCtap2_1) {
   EXPECT_TRUE(response->versions.contains(ProtocolVersion::kU2f));
   EXPECT_TRUE(response->versions.contains(ProtocolVersion::kCtap2));
   EXPECT_EQ(response->ctap2_versions.size(), 2u);
-  EXPECT_TRUE(base::Contains(response->ctap2_versions, Ctap2Version::kCtap2_0));
-  EXPECT_TRUE(base::Contains(response->ctap2_versions, Ctap2Version::kCtap2_1));
+  EXPECT_TRUE(response->ctap2_versions.contains(Ctap2Version::kCtap2_0));
+  EXPECT_TRUE(response->ctap2_versions.contains(Ctap2Version::kCtap2_1));
 }
 
 // Tests that an authenticator returning only the string "FIDO_2_1" is properly
@@ -782,7 +779,7 @@ TEST(CTAPResponseTest, TestReadGetInfoResponseOnlyCtap2_1) {
   EXPECT_EQ(1u, response->versions.size());
   EXPECT_TRUE(response->versions.contains(ProtocolVersion::kCtap2));
   EXPECT_EQ(response->ctap2_versions.size(), 1u);
-  EXPECT_TRUE(base::Contains(response->ctap2_versions, Ctap2Version::kCtap2_1));
+  EXPECT_TRUE(response->ctap2_versions.contains(Ctap2Version::kCtap2_1));
 }
 
 TEST(CTAPResponseTest, TestReadGetInfoResponseWithIncorrectFormat) {
