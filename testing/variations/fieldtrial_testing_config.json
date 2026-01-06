@@ -16937,7 +16937,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "promo-type": "setuplist"
+                        "promo-type": "simple"
                     },
                     "enable_features": [
                         "EnableNtpBrowserPromos"
