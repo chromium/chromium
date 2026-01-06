@@ -562,6 +562,71 @@ void ParsePageSetupFromDictionary(dbus_xdg::Dictionary& dict,
                                     /*landscape_needs_flip=*/true);
 }
 
+void OnPrintResponse(dbus_xdg::Results results) {
+  if (!results.has_value()) {
+    LOG(ERROR) << "Portal Print failed";
+  }
+}
+
+void StartPrintRequest(const std::string& title,
+                       base::ScopedFD fd,
+                       scoped_refptr<dbus::Bus> bus,
+                       const std::string& parent_handle,
+                       std::optional<uint32_t> token) {
+  CHECK(!bus->GetConnectionName().empty());
+  dbus::ObjectProxy* portal_proxy = bus->GetObjectProxy(
+      kPortalServiceName, dbus::ObjectPath(kPortalObjectPath));
+
+  dbus_xdg::Dictionary options;
+  if (token) {
+    options[kKeyToken] = dbus_utils::Variant::Wrap<"u">(*token);
+  }
+
+  // Print(parent_window, title, fd, options)
+  auto request = std::make_unique<dbus_xdg::Request>(
+      bus, portal_proxy, kPrintInterfaceName, kMethodPrint, std::move(options),
+      base::BindOnce(&OnPrintResponse), parent_handle, title, std::move(fd));
+  // In the OOP print service, the dialog may be destroyed before the print
+  // request completes. Release the request to avoid cancelling it.
+  request->Release();
+}
+
+void OnBusNameAcquired(const std::string& title,
+                       base::ScopedFD fd,
+                       scoped_refptr<dbus::Bus> bus,
+                       const std::string& parent_handle,
+                       std::optional<uint32_t> token,
+                       dbus_utils::CallMethodResultSig<"s"> results) {
+  if (!bus->IsConnected()) {
+    // Failed to connect to D-Bus.
+    return;
+  }
+
+  StartPrintRequest(title, std::move(fd), std::move(bus), parent_handle, token);
+}
+
+void EnsureDBusInitialized(const std::string& title,
+                           base::ScopedFD fd,
+                           scoped_refptr<dbus::Bus> bus,
+                           const std::string& parent_handle,
+                           std::optional<uint32_t> token) {
+  if (bus->IsConnected()) {
+    StartPrintRequest(title, std::move(fd), std::move(bus), parent_handle,
+                      token);
+    return;
+  }
+
+  // In the OOP print service, the D-Bus connection may not be initialized.
+  // Make a no-op call to initialize it and ensure the bus has a name, which
+  // is required for XDG portal requests.
+  auto* object_proxy =
+      bus->GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
+  dbus_utils::CallMethod<"", "s">(
+      object_proxy, kDBusInterfaceName, kMethodGetId,
+      base::BindOnce(&OnBusNameAcquired, title, std::move(fd), std::move(bus),
+                     parent_handle, token));
+}
+
 }  // namespace
 
 PrintDialogLinuxPortal::PrintDialogLinuxPortal(PrintingContextLinux* context,
@@ -602,13 +667,6 @@ void PrintDialogLinuxPortal::UpdateSettings(
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
 void PrintDialogLinuxPortal::LoadPrintSettings(const PrintSettings& settings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // In the OOP print service, the D-Bus connection may not be initialized.
-  // Make a no-op call to initialize it and ensure the bus has a name, which
-  // is required for XDG portal requests.
-  dbus_utils::CallMethod<"", "s">(
-      bus_->GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS)),
-      kDBusInterfaceName, kMethodGetId, base::DoNothing());
 
   if (fallback_dialog_) {
     fallback_dialog_->LoadPrintSettings(settings);
@@ -816,9 +874,9 @@ void PrintDialogLinuxPortal::PrintDocument(
 
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&PrintDialogLinuxPortal::StartPrintRequest,
-                     weak_factory_.GetWeakPtr(),
-                     base::UTF16ToUTF8(document_name), std::move(read_fd)));
+      base::BindOnce(&EnsureDBusInitialized, base::UTF16ToUTF8(document_name),
+                     std::move(read_fd), bus_, parent_handle_,
+                     std::move(token_)));
 
   std::vector<char> data;
   if (metafile.GetDataAsVector(&data)) {
@@ -827,40 +885,6 @@ void PrintDialogLinuxPortal::PrintDocument(
         base::BindOnce(&WriteDataToPipe, std::move(write_fd), std::move(data)));
   } else {
     LOG(ERROR) << "Failed to get data from metafile";
-  }
-}
-
-void PrintDialogLinuxPortal::StartPrintRequest(const std::string& title,
-                                               base::ScopedFD fd) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  dbus::ObjectProxy* portal_proxy = bus_->GetObjectProxy(
-      kPortalServiceName, dbus::ObjectPath(kPortalObjectPath));
-
-  dbus_xdg::Dictionary options;
-  if (token_) {
-    options[kKeyToken] = dbus_utils::Variant::Wrap<"u">(*token_);
-    token_.reset();
-  }
-
-  // Print(parent_window, title, fd, options)
-  request_ = std::make_unique<dbus_xdg::Request>(
-      bus_, portal_proxy, kPrintInterfaceName, kMethodPrint, std::move(options),
-      base::BindOnce(&PrintDialogLinuxPortal::OnPrintResponse,
-                     weak_factory_.GetWeakPtr()),
-      parent_handle_, title, std::move(fd));
-#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-  // In the OOP print service, the dialog may be destroyed before the print
-  // request completes. Release the request to avoid cancelling it on
-  // destruction.
-  request_->Release();
-#endif
-}
-
-void PrintDialogLinuxPortal::OnPrintResponse(dbus_xdg::Results results) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  request_.reset();
-  if (!results.has_value()) {
-    LOG(ERROR) << "Portal Print failed";
   }
 }
 
