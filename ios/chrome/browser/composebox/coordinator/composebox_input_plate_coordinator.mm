@@ -414,7 +414,13 @@ const CGFloat kSnackbarBottomMargin = 10;
 
 - (void)imagePickerController:(UIImagePickerController*)picker
     didFinishPickingMediaWithInfo:(NSDictionary<NSString*, id>*)info {
-  [picker dismissViewControllerAnimated:YES completion:nil];
+  __weak __typeof(self) weakSelf = self;
+
+  [picker dismissViewControllerAnimated:YES
+                             completion:^{
+                               [weakSelf focusComposebox];
+                             }];
+
   UIImage* image = info[UIImagePickerControllerOriginalImage];
   if (!image) {
     return;
@@ -424,7 +430,12 @@ const CGFloat kSnackbarBottomMargin = 10;
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController*)picker {
-  [picker dismissViewControllerAnimated:YES completion:nil];
+  __weak __typeof(self) weakSelf = self;
+
+  [picker dismissViewControllerAnimated:YES
+                             completion:^{
+                               [weakSelf focusComposebox];
+                             }];
 }
 
 #pragma mark - ComposeboxInputPlateMediatorDelegate
@@ -516,6 +527,10 @@ const CGFloat kSnackbarBottomMargin = 10;
 }
 
 #pragma mark - Private helpers
+
+- (void)focusComposebox {
+  [_omniboxCoordinator focusOmnibox];
+}
 
 /// Dismisses the composebox via a command to the browser coordinator.
 - (void)dismissComposebox {
