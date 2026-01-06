@@ -8872,7 +8872,7 @@ CanvasSnapshotProvider* WebGLRenderingContextBase::
     if (!snapshot_provider) {
       break;
     }
-    if (snapshot_provider->Size() != size ||
+    if (!snapshot_provider->IsValid() || snapshot_provider->Size() != size ||
         (snapshot_provider->GetSharedImageFormat() != format &&
          requested_formats_[i] != format) ||
         snapshot_provider->GetAlphaType() != alpha_type ||
