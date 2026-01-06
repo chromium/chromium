@@ -7,7 +7,12 @@
 #include <memory>
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/ui/actor_ui_metrics.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_row_button.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -27,9 +32,12 @@ const int kVerticalMargin = 8;
 
 // static
 views::Widget* ActorTaskListBubble::ShowBubble(
+    Profile* profile,
     views::View* anchor_view,
-    std::vector<ActorTaskListBubbleRowButtonParams> param_list) {
-  auto contents_view = CreateContentsView(std::move(param_list));
+    const absl::flat_hash_map<actor::TaskId, bool>& task_list,
+    base::RepeatingCallback<void(actor::TaskId)> on_row_clicked) {
+  auto contents_view =
+      CreateContentsView(profile, task_list, std::move(on_row_clicked));
 
   auto dialog_model =
       ui::DialogModel::Builder()
@@ -55,15 +63,31 @@ views::Widget* ActorTaskListBubble::ShowBubble(
 }
 
 std::unique_ptr<views::View> ActorTaskListBubble::CreateContentsView(
-    std::vector<ActorTaskListBubbleRowButtonParams> param_list) {
+    Profile* profile,
+    const absl::flat_hash_map<actor::TaskId, bool>& task_list,
+    base::RepeatingCallback<void(actor::TaskId)> on_row_clicked) {
   std::unique_ptr<views::View> contents_view =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .Build();
 
-  for (auto& params : param_list) {
-    contents_view->AddChildView(
-        std::make_unique<ActorTaskListBubbleRowButton>(std::move(params)));
+  auto* actor_ui_state_manager =
+      actor::ActorKeyedService::Get(profile)->GetActorUiStateManager();
+  for (auto [task_id, requires_processing] : task_list) {
+    if (!actor_ui_state_manager->GetActorTaskState(task_id)) {
+      actor::ui::RecordTaskIconError(
+          actor::ui::ActorUiTaskIconError::kBubbleTaskDoesntExist);
+      continue;
+    }
+
+    auto task_state = actor_ui_state_manager->GetActorTaskState(task_id);
+    auto task_title = actor_ui_state_manager->GetActorTaskTitle(task_id);
+    CHECK(task_state.has_value());
+    CHECK(task_title.has_value());
+
+    contents_view->AddChildView(std::make_unique<ActorTaskListBubbleRowButton>(
+        base::BindRepeating(on_row_clicked, task_id), task_state.value(),
+        base::UTF8ToUTF16(task_title.value()), requires_processing));
   }
   return contents_view;
 }

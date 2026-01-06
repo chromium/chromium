@@ -13,8 +13,10 @@ class ActorTaskListBubbleRowButton : public RichHoverButton {
   METADATA_HEADER(ActorTaskListBubbleRowButton, RichHoverButton)
 
  public:
-  explicit ActorTaskListBubbleRowButton(
-      ActorTaskListBubbleRowButtonParams params);
+  ActorTaskListBubbleRowButton(views::Button::PressedCallback on_row_clicked,
+                               actor::ActorTask::State state,
+                               std::u16string title,
+                               bool requires_processing);
   ActorTaskListBubbleRowButton(const ActorTaskListBubbleRowButton&) = delete;
   ActorTaskListBubbleRowButton& operator=(const ActorTaskListBubbleRowButton&) =
       delete;

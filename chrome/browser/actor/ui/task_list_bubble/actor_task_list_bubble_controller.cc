@@ -50,46 +50,26 @@ void ActorTaskListBubbleController::ShowBubble(views::View* anchor_view) {
     // Only show the bubble in the active window.
     return;
   }
-  auto task_id_to_state = tabs::GlicActorTaskIconManagerFactory::GetForProfile(
-                              browser_->GetProfile())
-                              ->GetActorTaskListBubbleRows();
-  std::vector<ActorTaskListBubbleRowButtonParams> param_list;
-  for (const auto& task : task_id_to_state) {
-    param_list.emplace_back(CreateRowButtonParamsForTask(task.first));
-  }
-  const size_t param_list_size = param_list.size();
+  const auto& task_id_to_state =
+      tabs::GlicActorTaskIconManagerFactory::GetForProfile(
+          browser_->GetProfile())
+          ->GetActorTaskListBubbleRows();
   // Do not show bubble if there are no rows to show.
   // TODO(crbug.com/470101572): Remove when active tasks show in the bubble.
   if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator) &&
-      param_list_size < 1) {
+      task_id_to_state.empty()) {
     return;
   }
-  bubble_widget_ =
-      ActorTaskListBubble::ShowBubble(anchor_view, std::move(param_list));
+  bubble_widget_ = ActorTaskListBubble::ShowBubble(
+      browser_->GetProfile(), anchor_view, task_id_to_state,
+      base::BindRepeating(&ActorTaskListBubbleController::OnTaskRowClicked,
+                          weak_ptr_factory_.GetWeakPtr()));
   if (widget_observation_.IsObserving()) {
     widget_observation_.Reset();
   }
   widget_observation_.Observe(bubble_widget_);
 
-  actor::ui::RecordTaskListBubbleRows(param_list_size);
-}
-
-ActorTaskListBubbleRowButtonParams
-ActorTaskListBubbleController::CreateRowButtonParamsForTask(
-    actor::TaskId task_id) {
-  actor::ui::ActorUiStateManagerInterface* manager =
-      actor::ActorKeyedService::Get(browser_->GetProfile())
-          ->GetActorUiStateManager();
-  // TODO(chrstne): refactor the title to check that task id exists instead.
-  return ActorTaskListBubbleRowButtonParams{
-      .title =
-          base::UTF8ToUTF16(manager->GetActorTaskTitle(task_id).value_or("")),
-      .subtitle = l10n_util::GetStringUTF16(
-          IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE),
-      .on_click_callback = base::BindRepeating(
-          &ActorTaskListBubbleController::GetOnTaskRowClickCallback,
-          base::Unretained(this), task_id),
-  };
+  actor::ui::RecordTaskListBubbleRows(task_id_to_state.size());
 }
 
 void ActorTaskListBubbleController::OnStateUpdate() {
@@ -117,8 +97,7 @@ void ActorTaskListBubbleController::OnWidgetDestroyed(views::Widget* widget) {
   widget_observation_.Reset();
 }
 
-void ActorTaskListBubbleController::GetOnTaskRowClickCallback(
-    actor::TaskId task_id) {
+void ActorTaskListBubbleController::OnTaskRowClicked(actor::TaskId task_id) {
 #if BUILDFLAG(ENABLE_GLIC)
   Profile* profile = browser_->GetProfile();
   actor::ui::ActorUiStateManagerInterface* manager =

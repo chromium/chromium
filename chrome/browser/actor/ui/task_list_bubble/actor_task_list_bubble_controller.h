@@ -23,12 +23,6 @@
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
 #endif
 
-struct ActorTaskListBubbleRowButtonParams {
-  std::u16string title;
-  std::u16string subtitle;
-  views::Button::PressedCallback on_click_callback;
-};
-
 // Controller that handles the visibility and display of the
 // ActorTaskListBubble.
 class ActorTaskListBubbleController : public views::WidgetObserver {
@@ -50,14 +44,12 @@ class ActorTaskListBubbleController : public views::WidgetObserver {
   raw_ptr<views::Widget> GetBubbleWidget() { return bubble_widget_; }
 
  private:
-  void GetOnTaskRowClickCallback(actor::TaskId task_id);
+  void OnTaskRowClicked(actor::TaskId task_id);
 
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   raw_ptr<views::Widget> bubble_widget_ = nullptr;
 
 #if BUILDFLAG(ENABLE_GLIC)
-  ActorTaskListBubbleRowButtonParams CreateRowButtonParamsForTask(
-      actor::TaskId task_id);
   void OnStateUpdateImpl();
 
   std::vector<base::CallbackListSubscription>

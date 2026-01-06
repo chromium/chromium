@@ -124,6 +124,14 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/ui/actor_ui_metrics_types.h:ActorUiTabControllerError) -->
 
+<!-- LINT.IfChange(ActorUiTaskIconError) -->
+
+<enum name="ActorUiTaskIconError">
+  <int value="0" label="kBubbleTaskDoesntExist"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/ui/actor_ui_metrics_types.h:ActorUiTaskIconError) -->
+
 <!-- LINT.IfChange(ComputedTargetResult) -->
 
 <enum name="ComputedTargetResult">

@@ -62,6 +62,10 @@ void RecordTaskListBubbleRows(size_t count) {
                               count);
 }
 
+void RecordTaskIconError(ActorUiTaskIconError error) {
+  base::UmaHistogramEnumeration(GetActorUiMetricName("TaskIcon.Error"), error);
+}
+
 void RecordTaskNudgeShown(ActorTaskNudgeState nudge_state) {
   DCHECK_NE(nudge_state.text,
             ActorTaskNudgeState::Text::kMultipleTasksNeedAttention)

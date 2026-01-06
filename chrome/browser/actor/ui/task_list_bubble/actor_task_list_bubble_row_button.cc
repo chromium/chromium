@@ -10,6 +10,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -23,26 +24,53 @@ namespace {
 const int kBubbleRowIconSize = 16;
 const int kRedirectIconSize = 20;
 
-const gfx::VectorIcon& GetRowIcon() {
+const gfx::VectorIcon& GetRowIcon(actor::ActorTask::State state) {
 #if BUILDFLAG(ENABLE_GLIC)
   if (base::FeatureList::IsEnabled(features::kGlicActorUiTaskIconV2)) {
+    if (state == actor::ActorTask::State::kPausedByActor ||
+        state == actor::ActorTask::State::kWaitingOnUser) {
+      return kHourglassIcon;
+    }
     return glic::GlicVectorIconManager::GetVectorIcon(
         IDR_ACTOR_AUTO_BROWSE_ICON);
   }
 #endif
   return kScreensaverAutoIcon;
 }
+
+ui::ColorId GetRowColor(actor::ActorTask::State state,
+                        bool requires_processing) {
+  if (requires_processing &&
+      (state == actor::ActorTask::State::kPausedByActor ||
+       state == actor::ActorTask::State::kWaitingOnUser)) {
+    return ui::kColorSysPrimary;
+  }
+  return ui::kColorMenuIcon;
+}
+
+// TODO(crbug.com/470101572): Return correct subtitles for active tasks.
+std::u16string GetRowSubtitle() {
+  return l10n_util::GetStringUTF16(
+      IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE);
+}
+
 }  // namespace
 
 ActorTaskListBubbleRowButton::ActorTaskListBubbleRowButton(
-    ActorTaskListBubbleRowButtonParams params)
-    : RichHoverButton(std::move(params.on_click_callback),
+    views::Button::PressedCallback on_row_clicked,
+    actor::ActorTask::State state,
+    std::u16string title,
+    bool requires_processing)
+    : RichHoverButton(std::move(on_row_clicked),
                       /*icon=*/
-                      ui::ImageModel::FromVectorIcon(GetRowIcon(),
-                                                     ui::kColorMenuIcon,
-                                                     kBubbleRowIconSize),
-                      /*title_text=*/params.title,
-                      /*subtitle_text=*/params.subtitle) {
+                      ui::ImageModel::FromVectorIcon(
+                          GetRowIcon(state),
+                          GetRowColor(state, requires_processing),
+                          kBubbleRowIconSize),
+                      /*title_text=*/title,
+                      /*subtitle_text=*/GetRowSubtitle()) {
+  SetSubtitleTextStyleAndColor(/*default_style*/ views::style::STYLE_BODY_5,
+                               GetRowColor(state, requires_processing));
   if (subtitle()) {
     // TODO(crbug.com/460121008): Revisit when investigating a custom layout for
     // the row button. Hovering over the subtitle should also hover the row.

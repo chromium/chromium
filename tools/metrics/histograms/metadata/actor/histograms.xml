@@ -682,6 +682,17 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded when an error happens in the ActorUiTabController.</summary>
 </histogram>
 
+<histogram name="Actor.Ui.TaskIcon.Error" enum="ActorUiTaskIconError"
+    expires_after="2026-08-11">
+  <owner>chrstne@google.com</owner>
+  <owner>aashnas@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Recorded when an invalid task is encountered within ActorUiTaskIcon or
+    related component creation.
+  </summary>
+</histogram>
+
 <histogram name="Actor.Ui.TaskListBubble.Rows" units="rows"
     expires_after="2026-08-11">
   <owner>kenok@google.com</owner>

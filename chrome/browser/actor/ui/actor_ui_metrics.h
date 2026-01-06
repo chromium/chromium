@@ -30,6 +30,9 @@ void LogTaskNudgeClick(ActorTaskNudgeState nudge_state);
 // `count` is the number of rows shown in the bubble.
 void RecordTaskListBubbleRows(size_t count);
 
+// Recorded when an error happens in the ActorUiTaskIcon.
+void RecordTaskIconError(ActorUiTaskIconError error);
+
 // Recorded when the task nudge is shown.
 void RecordTaskNudgeShown(ActorTaskNudgeState nudge_state);
 

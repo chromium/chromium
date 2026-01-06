@@ -98,6 +98,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "hardware_smartphone.icon",
     "help_menu.icon",
     "history.icon",
+    "hourglass.icon",
     "incognito.icon",
     "incognito_profile.icon",
     "incognito_refresh_menu.icon",

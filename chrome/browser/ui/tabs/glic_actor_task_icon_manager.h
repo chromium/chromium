@@ -12,6 +12,7 @@
 #include "chrome/browser/actor/ui/states/actor_task_nudge_state.h"
 #include "chrome/common/actor/task_id.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace actor {
 class ActorKeyedService;
@@ -47,7 +48,8 @@ class GlicActorTaskIconManager : public KeyedService {
 
   actor::ui::ActorTaskNudgeState GetCurrentActorTaskNudgeState() const;
 
-  std::map<actor::TaskId, bool> GetActorTaskListBubbleRows() const {
+  const absl::flat_hash_map<actor::TaskId, bool>& GetActorTaskListBubbleRows()
+      const {
     return actor_task_list_bubble_rows_;
   }
 
@@ -86,7 +88,7 @@ class GlicActorTaskIconManager : public KeyedService {
   // row requires processing. A row is only processed when it has been clicked
   // on by the user. If the row does not need user attention it will not require
   // processing.
-  std::map<actor::TaskId, bool /*requires_processing*/>
+  absl::flat_hash_map<actor::TaskId, /* requires_processing */ bool>
       actor_task_list_bubble_rows_;
 };
 

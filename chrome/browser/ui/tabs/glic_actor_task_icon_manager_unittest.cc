@@ -209,10 +209,10 @@ TEST_F(GlicActorTaskIconManagerTest,
   actor_service()->GetTask(task_id_2)->Pause(/*from_actor=*/true);
 
   manager()->UpdateTaskIconComponents(task_id_1);
-  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_1], true);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows().at(task_id_1), true);
 
   manager()->UpdateTaskIconComponents(task_id_2);
-  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_2], true);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows().at(task_id_2), true);
 
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kNeedsAttention);
@@ -221,7 +221,7 @@ TEST_F(GlicActorTaskIconManagerTest,
   // Process one task, the text should remain the same and all bubbles should
   // still exist.
   manager()->ProcessRowInTaskListBubble(task_id_1);
-  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_1], false);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows().at(task_id_1), false);
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kNeedsAttention);
   EXPECT_EQ(manager()->GetActorTaskListBubbleRows().size(), 2u);
@@ -229,7 +229,7 @@ TEST_F(GlicActorTaskIconManagerTest,
   // Process the other task, the text should change to default and all bubbles
   // should still exist.
   manager()->ProcessRowInTaskListBubble(task_id_2);
-  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_2], false);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows().at(task_id_2), false);
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kDefault);
   EXPECT_EQ(manager()->GetActorTaskListBubbleRows().size(), 2u);
@@ -246,7 +246,7 @@ TEST_F(GlicActorTaskIconManagerTest,
   actor_service()->GetTask(task_id_1)->Pause(/*from_actor=*/true);
   manager()->OnActorTaskStateUpdate(task_id_1);
 
-  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_1], true);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows().at(task_id_1), true);
 
   // Stop task.
   actor_service()->StopTask(task_id_1,
@@ -281,9 +281,9 @@ TEST_F(GlicActorTaskIconManagerTest,
       actor::ui::TaskStateChanged(task_id_3, actor::ActorTask::State::kActing));
   manager()->OnActorTaskStateUpdate(task_id_3);
 
-  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_1], false);
-  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_2], false);
-  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_3], false);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows().at(task_id_1), false);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows().at(task_id_2), false);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows().at(task_id_3), false);
 
   actor_service()->StopTask(task_id_1,
                             actor::ActorTask::StoppedReason::kStoppedByUser);
@@ -303,9 +303,9 @@ TEST_F(GlicActorTaskIconManagerTest,
       task_id_3, actor::ActorTask::State::kFailed, "Test Task",
       /*last_acted_on_tab_handle=*/TabHandle()));
   manager()->UpdateTaskIconComponents(task_id_3);
-  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_1], false);
-  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_2], true);
-  EXPECT_EQ(manager()->GetActorTaskListBubbleRows()[task_id_3], true);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows().at(task_id_1), false);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows().at(task_id_2), true);
+  EXPECT_EQ(manager()->GetActorTaskListBubbleRows().at(task_id_3), true);
 }
 
 }  // namespace tabs
