@@ -1765,6 +1765,22 @@ The following C++23 language features are allowed in the Chromium codebase.
 
 The following C++23 library features are allowed in the Chromium codebase.
 
+### std::basic_string::contains <sup>[allowed]</sup>
+
+```c++
+if (str.contains("foo")) ...
+```
+
+**Description:** More concise substring check.
+
+**Documentation:**
+[std::basic_string::contains](https://en.cppreference.com/w/cpp/string/basic_string/contains)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/2RuNgRdeeYg)
+***
+
 ### std::byteswap <sup>[allowed]</sup>
 
 ```c++
@@ -2015,22 +2031,6 @@ std::vector<int> new_way(std::from_range, a_very_long_container_name);
 **Notes:**
 *** promo
 See also std::ranges::to which offers something similar.
-***
-
-### std::basic_string::contains <sup>[tbd]</sup>
-
-```c++
-if (str.contains("foo")) ...
-```
-
-**Description:** More concise substring check.
-
-**Documentation:**
-[std::basic_string::contains](https://en.cppreference.com/w/cpp/string/basic_string/contains)
-
-**Notes:**
-*** promo
-None
 ***
 
 ### Monadic operations for std::optional <sup>[tbd]</sup>

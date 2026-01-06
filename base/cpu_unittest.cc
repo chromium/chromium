@@ -4,7 +4,8 @@
 
 #include "base/cpu.h"
 
-#include "base/containers/contains.h"
+#include <string>
+
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/protected_memory_buildflags.h"
@@ -137,8 +138,8 @@ TEST(CPU, RunExtendedInstructions) {
 // For https://crbug.com/249713
 TEST(CPU, BrandAndVendorContainsNoNUL) {
   base::CPU cpu;
-  EXPECT_FALSE(base::Contains(cpu.cpu_brand(), '\0'));
-  EXPECT_FALSE(base::Contains(cpu.vendor_name(), '\0'));
+  EXPECT_FALSE(cpu.cpu_brand().contains('\0'));
+  EXPECT_FALSE(cpu.vendor_name().contains('\0'));
 }
 
 #if defined(ARCH_CPU_X86_FAMILY)
