@@ -81,15 +81,16 @@ class DrawQuadPerfTest : public testing::Test {
       gfx::Rect rect(0, 0, 100, 100);
       bool needs_blending = false;
       ResourceId resource_id{1};
-      gfx::PointF uv_top_left(0, 0);
-      gfx::PointF uv_bottom_right(1, 1);
+      gfx::PointF tex_coord_top_left(0, 0);
+      gfx::PointF tex_coord_bottom_right(100, 100);
       SkColor4f background_color = SkColors::kRed;
       bool nearest_neighbor = true;
 
-      quad->SetNew(
-          shared_state_, rect, rect, needs_blending, resource_id, uv_top_left,
-          uv_bottom_right, background_color, nearest_neighbor,
-          /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
+      quad->SetNew(shared_state_, rect, rect, needs_blending, resource_id,
+                   tex_coord_top_left, tex_coord_bottom_right, background_color,
+                   nearest_neighbor,
+                   /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
+                   /*is_tex_coords_normalized=*/false);
       quads->push_back(quad);
     }
   }

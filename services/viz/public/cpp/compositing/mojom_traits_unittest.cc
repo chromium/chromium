@@ -1120,8 +1120,8 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   const gfx::Rect rect5(123, 567, 91011, 13141);
   const ResourceId resource_id5(1337);
 
-  const gfx::PointF uv_top_left(12.1f, 34.2f);
-  const gfx::PointF uv_bottom_right(56.3f, 78.4f);
+  const gfx::PointF tex_coord_top_left(12.1f, 34.2f);
+  const gfx::PointF tex_coord_bottom_right(56.3f, 78.4f);
   const SkColor4f background_color = SkColors::kGreen;
   const bool nearest_neighbor = true;
   const bool secure_output_only = true;
@@ -1130,9 +1130,10 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   TextureDrawQuad* texture_draw_quad =
       render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   texture_draw_quad->SetAll(sqs, rect5, rect5, needs_blending, resource_id5,
-                            uv_top_left, uv_bottom_right, background_color,
-                            nearest_neighbor, secure_output_only,
-                            protected_video_type);
+                            tex_coord_top_left, tex_coord_bottom_right,
+                            background_color, nearest_neighbor,
+                            secure_output_only, protected_video_type,
+                            /*is_tex_coords_normalized=*/false);
 
   // Create a TextureDrawQuad with rounded-display masks.
   const gfx::Rect rect7(421, 865, 11109, 151413);
@@ -1144,10 +1145,11 @@ TEST_F(StructTraitsTest, QuadListBasic) {
 
   TextureDrawQuad* rounded_display_mask_quad =
       render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
-  rounded_display_mask_quad->SetAll(sqs, rect7, rect7, needs_blending7,
-                                    resource_id7, uv_top_left, uv_bottom_right,
-                                    SkColors::kTransparent, false, false,
-                                    protected_video_type);
+  rounded_display_mask_quad->SetAll(
+      sqs, rect7, rect7, needs_blending7, resource_id7, tex_coord_top_left,
+      tex_coord_bottom_right, SkColors::kTransparent, false, false,
+      protected_video_type,
+      /*is_tex_coords_normalized=*/false);
   rounded_display_mask_quad->rounded_display_masks_info =
       TextureDrawQuad::RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(
           origin_rounded_display_mask_radius, other_rounded_display_mask_radius,
@@ -1217,7 +1219,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(rect5, out_texture_draw_quad->visible_rect);
   EXPECT_EQ(needs_blending, out_texture_draw_quad->needs_blending);
   EXPECT_EQ(resource_id5, out_texture_draw_quad->resource_id);
-  EXPECT_EQ(gfx::BoundingRect(uv_top_left, uv_bottom_right),
+  EXPECT_EQ(gfx::BoundingRect(tex_coord_top_left, tex_coord_bottom_right),
             out_texture_draw_quad->GetNormalizedTexCoords(gfx::Size(1, 1)));
   EXPECT_EQ(background_color, out_texture_draw_quad->background_color);
   EXPECT_EQ(nearest_neighbor, out_texture_draw_quad->nearest_neighbor);
@@ -1230,7 +1232,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(needs_blending7, out_rounded_display_mask_quad->needs_blending);
   EXPECT_EQ(resource_id7, out_rounded_display_mask_quad->resource_id);
   EXPECT_EQ(
-      gfx::BoundingRect(uv_top_left, uv_bottom_right),
+      gfx::BoundingRect(tex_coord_top_left, tex_coord_bottom_right),
       out_rounded_display_mask_quad->GetNormalizedTexCoords(gfx::Size(1, 1)));
   EXPECT_EQ(origin_rounded_display_mask_radius,
             out_rounded_display_mask_quad->rounded_display_masks_info

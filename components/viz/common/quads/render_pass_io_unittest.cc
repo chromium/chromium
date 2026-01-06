@@ -242,9 +242,10 @@ TEST(RenderPassIOTest, QuadList) {
           render_pass0->CreateAndAppendDrawQuad<TextureDrawQuad>();
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
                    gfx::Rect(0, 0, 100, 50), gfx::Rect(0, 0, 100, 50), false,
-                   ResourceId(9u), gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f),
-                   SkColors::kBlue, true, false,
-                   gfx::ProtectedVideoType::kHardwareProtected);
+                   ResourceId(9u), gfx::PointF(0.f, 0.f),
+                   gfx::PointF(100.f, 50.f), SkColors::kBlue, true, false,
+                   gfx::ProtectedVideoType::kHardwareProtected,
+                   /*is_tex_coords_normalized=*/false);
 
       ++sqs_index;
       ++quad_count;
