@@ -397,11 +397,11 @@ void ToolbarView::Init() {
     toolbar_divider_ =
         container_view_->AddChildView(std::move(toolbar_divider));
     toolbar_divider_->SetPreferredSize(
-        gfx::Size(GetLayoutConstant(TOOLBAR_DIVIDER_WIDTH),
-                  GetLayoutConstant(TOOLBAR_DIVIDER_HEIGHT)));
+        gfx::Size(GetLayoutConstant(LayoutConstant::kToolbarDividerWidth),
+                  GetLayoutConstant(LayoutConstant::kToolbarDividerHeight)));
     toolbar_divider_->SetBackground(views::CreateRoundedRectBackground(
         kColorToolbarExtensionSeparatorEnabled,
-        GetLayoutConstant(TOOLBAR_DIVIDER_CORNER_RADIUS)));
+        GetLayoutConstant(LayoutConstant::kToolbarDividerCornerRadius)));
   }
 
   pinned_toolbar_actions_container_ = container_view_->AddChildView(
@@ -603,7 +603,8 @@ void ToolbarView::UpdateForWebUITabStrip() {
     return;
   }
   if (browser_view_->webui_tab_strip()) {
-    const int button_height = GetLayoutConstant(TOOLBAR_BUTTON_HEIGHT);
+    const int button_height =
+        GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
     new_tab_button_->SetPreferredSize(gfx::Size(button_height, button_height));
     new_tab_button_->SetVisible(true);
     const size_t insertion_index =
@@ -802,7 +803,8 @@ void ToolbarView::Layout(PassKey) {
 
   // The background views should be behind the top-left and top-right corners
   // of the container_view_.
-  const int corner_radius = GetLayoutConstant(TOOLBAR_CORNER_RADIUS);
+  const int corner_radius =
+      GetLayoutConstant(LayoutConstant::kToolbarCornerRadius);
   const auto [leading_corner_style, trailing_corner_style] = GetCornerStyles();
   const int leading_curve_size =
       leading_corner_style == CornerStyle::kTabstripCurve ? corner_radius : 0;
@@ -979,7 +981,8 @@ void ToolbarView::InitLayout() {
   if (toolbar_divider_) {
     toolbar_divider_->SetProperty(
         views::kMarginsKey,
-        gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_DIVIDER_SPACING)));
+        gfx::Insets::VH(
+            0, GetLayoutConstant(LayoutConstant::kToolbarDividerSpacing)));
   }
 
   constexpr int kToolbarFlexOrderStart = 1;
@@ -1081,7 +1084,7 @@ gfx::Size ToolbarView::GetToolbarButtonSize() const {
   const int size =
       display_mode_ == DisplayMode::kLocation
           ? location_bar_->GetPreferredSize().height()
-          : GetLayoutConstant(LayoutConstant::TOOLBAR_BUTTON_HEIGHT);
+          : GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
   return gfx::Size(size, size);
 }
 
@@ -1262,8 +1265,10 @@ void ToolbarView::OnTouchUiChanged() {
     // Update the internal margins for touch layout.
     // TODO(dfried): I think we can do better than this by making the touch UI
     // code cleaner.
-    const int default_margin = GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);
-    const int location_bar_margin = GetLayoutConstant(TOOLBAR_STANDARD_SPACING);
+    const int default_margin =
+        GetLayoutConstant(LayoutConstant::kToolbarElementPadding);
+    const int location_bar_margin =
+        GetLayoutConstant(LayoutConstant::kToolbarStandardSpacing);
     layout_manager_->SetDefault(views::kMarginsKey,
                                 gfx::Insets::VH(0, default_margin));
     location_bar_->SetProperty(views::kMarginsKey,

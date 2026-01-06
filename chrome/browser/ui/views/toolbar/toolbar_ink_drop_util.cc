@@ -61,7 +61,8 @@ gfx::Insets GetToolbarInkDropInsets(const views::View* host_view) {
   // Inset the inkdrop insets so that the end result matches the target inkdrop
   // dimensions.
   const gfx::Size host_size = host_view->size();
-  const int inkdrop_dimensions = GetLayoutConstant(LOCATION_BAR_HEIGHT);
+  const int inkdrop_dimensions =
+      GetLayoutConstant(LayoutConstant::kLocationBarHeight);
   gfx::Insets inkdrop_insets =
       margin_insets +
       gfx::Insets(std::max(0, (host_size.height() - inkdrop_dimensions) / 2));

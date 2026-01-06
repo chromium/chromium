@@ -140,7 +140,7 @@ PinnedToolbarActionsContainerLayout::CalculateProposedLayout(
   int total_width = interior_margin_.width();
   int left = interior_margin_.left();
   index = 0;
-  const int height = GetLayoutConstant(LayoutConstant::TOOLBAR_BUTTON_HEIGHT);
+  const int height = GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
   for (auto view : host_view()->children()) {
     if (visible_child_indices.size() && index == visible_child_indices.back()) {
       const gfx::Size preferred_size = view->GetPreferredSize();

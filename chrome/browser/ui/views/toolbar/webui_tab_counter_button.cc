@@ -551,7 +551,8 @@ void WebUITabCounterButton::Init() {
                                views::MaximumFlexSizeRule::kPreferred)
           .WithOrder(1));
 
-  const int button_height = GetLayoutConstant(TOOLBAR_BUTTON_HEIGHT);
+  const int button_height =
+      GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
   SetPreferredSize(gfx::Size(button_height, button_height));
 
   ink_drop_container_ =
@@ -634,7 +635,8 @@ void WebUITabCounterButton::Layout(PassKey) {
 
   // Position views from the outside in (because it's easier).
   // Start with the throbber.
-  const int throbber_height = GetLayoutConstant(LOCATION_BAR_HEIGHT);
+  const int throbber_height =
+      GetLayoutConstant(LayoutConstant::kLocationBarHeight);
   gfx::Rect throbber_rect = view_bounds;
   throbber_rect.ClampToCenteredSize(
       gfx::Size(throbber_height, throbber_height));

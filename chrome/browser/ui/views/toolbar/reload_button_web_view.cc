@@ -41,7 +41,7 @@ ReloadButtonWebView::ReloadButtonWebView(
   // PLM has to be initialized before loading the URL.
   InitializePageLoadMetricsForWebContents(web_contents);
 
-  const int size = GetLayoutConstant(LayoutConstant::TOOLBAR_BUTTON_HEIGHT);
+  const int size = GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
   web_view->SetPreferredSize(gfx::Size(size, size));
   web_contents->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
   web_view->SetID(VIEW_ID_RELOAD_BUTTON);
