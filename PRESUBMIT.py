@@ -1259,13 +1259,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
     ),
     BanRule(
-        pattern=r'/#elifn?def',
-        explanation=('Use of #elifdef and #elifndef isn`t allowed. If you '
-                     'need it, contact cxx@chromium.org.', ),
-        treat_as_error=True,
-        excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
-    ),
-    BanRule(
         pattern=r'/static.*operator(\(\)|\[\])',
         explanation=('Use of static operators () and [] isn`t allowed. If you '
                      'need it, contact cxx@chromium.org.', ),

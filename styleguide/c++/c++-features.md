@@ -1739,6 +1739,28 @@ See notes on `char8_t` above.
 
 The following C++23 language features are allowed in the Chromium codebase.
 
+### #elifdef, #elifndef <sup>[allowed]</sup>
+
+```c++
+#ifdef FOO
+...
+#elifdef BAR  // New.
+...
+#elifndef BAZ  // New.
+...
+#endif
+```
+
+**Description:** New conditional inclusion preprocessor directives.
+
+**Documentation:**
+[Conditional inclusion](https://en.cppreference.com/w/cpp/preprocessor/conditional.html)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/V6YD6hOjnE8)
+***
+
 ## C++23 Allowed Library Features {#library-allowlist-23}
 
 The following C++23 library features are allowed in the Chromium codebase.
@@ -1777,28 +1799,6 @@ if consteval {
 
 **Documentation:**
 [if statement](https://en.cppreference.com/w/cpp/language/if)
-
-**Notes:**
-*** promo
-None
-***
-
-### #elifdef, #elifndef <sup>[tbd]</sup>
-
-```c++
-#ifdef FOO
-...
-#elifdef BAR  // New.
-...
-#elifndef BAZ  // New.
-...
-#endif
-```
-
-**Description:** New conditional inclusion preprocessor directives.
-
-**Documentation:**
-[Conditional inclusion](https://en.cppreference.com/w/cpp/preprocessor/conditional.html)
 
 **Notes:**
 *** promo
