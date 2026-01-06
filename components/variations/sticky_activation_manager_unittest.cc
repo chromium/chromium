@@ -4,6 +4,8 @@
 
 #include "components/variations/sticky_activation_manager.h"
 
+#include "base/metrics/metrics_hashes.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -80,6 +82,96 @@ TEST(StickyActivationManagerTest, NoCrashAfterManagerDestroyed) {
   // The pref should not have changed, as the manager should have stopped
   // observing.
   EXPECT_EQ("Foo/Bar", local_state.GetString(prefs::kVariationsStickyStudies));
+}
+
+TEST(StickyActivationManagerTest, ParseInvalidPref) {
+  TestingPrefServiceSimple local_state;
+  StickyActivationManager::RegisterPrefs(*local_state.registry());
+
+  local_state.SetString(prefs::kVariationsStickyStudies, "Foo/Bar/Baz");
+  StickyActivationManager manager(&local_state);
+
+  EXPECT_FALSE(manager.ShouldActivate("Foo", "Bar"));
+  EXPECT_FALSE(manager.ShouldActivate("Baz", ""));
+}
+
+TEST(StickyActivationManagerTest, GroupChanged) {
+  TestingPrefServiceSimple local_state;
+  StickyActivationManager::RegisterPrefs(*local_state.registry());
+
+  local_state.SetString(prefs::kVariationsStickyStudies, "Foo/Bar");
+  StickyActivationManager manager(&local_state);
+
+  auto* foo_baz_trial = base::FieldTrialList::CreateFieldTrial("Foo", "Baz");
+
+  // "Foo" is sticky, but for group "Bar". "Baz" should not be sticky.
+  EXPECT_FALSE(manager.ShouldActivate("Foo", "Baz"));
+  manager.StartMonitoring();
+
+  // The pref should be empty now, as nothing was activated.
+  EXPECT_EQ("", local_state.GetString(prefs::kVariationsStickyStudies));
+
+  // Finalize the "Foo" trial with the "Baz" group.
+  foo_baz_trial->group_name();
+
+  // The pref should now contain the new sticky group.
+  EXPECT_EQ("Foo/Baz", local_state.GetString(prefs::kVariationsStickyStudies));
+}
+
+TEST(StickyActivationManagerTest, NullLocalState) {
+  // Verifies that the manager works fine with a null local_state.
+  StickyActivationManager manager(nullptr);
+  EXPECT_FALSE(manager.ShouldActivate("Foo", "Bar"));
+  manager.StartMonitoring();
+  // Should not crash.
+
+  auto* foo_bar_trial = base::FieldTrialList::CreateFieldTrial("Foo", "Bar");
+  foo_bar_trial->group_name();
+  // Should not crash.
+}
+
+TEST(StickyActivationManagerTest, RecordActivation) {
+  base::HistogramTester histogram_tester;
+  TestingPrefServiceSimple local_state;
+  StickyActivationManager::RegisterPrefs(*local_state.registry());
+  StickyActivationManager manager(&local_state);
+
+  auto* trial = base::FieldTrialList::CreateFieldTrial("Foo", "Bar");
+
+  // Mark "Foo" as a sticky trial.
+  EXPECT_FALSE(manager.ShouldActivate("Foo", "Bar"));
+  manager.StartMonitoring();
+
+  // Activate the trial.
+  trial->group_name();
+
+  histogram_tester.ExpectUniqueSample("Variations.StickyAfterQuery.Activation",
+                                      base::HashFieldTrialName("Foo"), 1);
+}
+
+TEST(StickyActivationManagerTest, NoActivationRecordingBeforeMonitoring) {
+  base::HistogramTester histogram_tester;
+  TestingPrefServiceSimple local_state;
+  StickyActivationManager::RegisterPrefs(*local_state.registry());
+
+  // Set "Foo" as a sticky trial with group "Bar".
+  local_state.SetString(prefs::kVariationsStickyStudies, "Foo/Bar");
+  StickyActivationManager manager(&local_state);
+
+  auto* trial = base::FieldTrialList::CreateFieldTrial("Foo", "Bar");
+
+  // ShouldActivate() should return true.
+  EXPECT_TRUE(manager.ShouldActivate("Foo", "Bar"));
+
+  // Activate the trial before monitoring starts.
+  trial->group_name();
+
+  manager.StartMonitoring();
+
+  // No activation should be recorded because the finalization happened before
+  // the manager started observing.
+  histogram_tester.ExpectTotalCount("Variations.StickyAfterQuery.Activation",
+                                    0);
 }
 
 }  // namespace

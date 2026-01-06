@@ -11,6 +11,8 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -166,6 +168,14 @@ void StickyActivationManager::OnFieldTrialGroupFinalized(
     DCHECK_EQ(it->second, kInactiveStickyTrialSentinel);
 
     it->second = group_name;
+
+    // Record a metric for when the study is activated for the first time.
+    // Note: This is not recorded when the study is activated on a subsequent
+    // sessions due to being sticky, because StartMonitoring() is only called
+    // following startup activations of persisted sticky studies.
+    base::UmaHistogramSparse(
+        "Variations.StickyAfterQuery.Activation",
+        static_cast<int>(base::HashFieldTrialName(trial.trial_name())));
     UpdatePref();
   }
 }
