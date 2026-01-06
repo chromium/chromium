@@ -381,13 +381,13 @@ GetCoordinatesNDFromIndex(size_t flat_index,
 
 GraphBuilderTflite::Result::Result(
     flatbuffers::DetachedBuffer buffer,
-    base::flat_map<std::string, int> input_name_to_index,
-    base::flat_map<std::string, int> output_name_to_index,
+    base::flat_map<std::string, TensorDescriptor> input_name_to_descriptor,
+    base::flat_map<std::string, TensorDescriptor> output_name_to_descriptor,
     base::File weights_file,
     bool graph_requires_fp32_precision)
     : buffer(std::move(buffer)),
-      input_name_to_index(std::move(input_name_to_index)),
-      output_name_to_index(std::move(output_name_to_index)),
+      input_name_to_descriptor(std::move(input_name_to_descriptor)),
+      output_name_to_descriptor(std::move(output_name_to_descriptor)),
       weights_file(std::move(weights_file)),
       graph_requires_fp32_precision(graph_requires_fp32_precision) {}
 
@@ -2792,7 +2792,10 @@ auto GraphBuilderTflite::FinishAndTakeResult(
   auto get_name_and_index = [&](OperandId operand_id) {
     const TensorInfo& info = operand_to_tensor_info_map_.at(operand_id);
     CHECK(info.name.has_value() && !info.name.value().empty());
-    return std::make_pair(info.name.value(), info.index);
+    return std::make_pair(
+        info.name.value(),
+        TensorDescriptor{.tensor_index = info.index,
+                         .descriptor = GetOperand(operand_id).descriptor});
   };
 
   TensorIndex* graph_input_ids = nullptr;
@@ -2800,10 +2803,11 @@ auto GraphBuilderTflite::FinishAndTakeResult(
       input_operands.size(), &graph_input_ids);
   std::ranges::transform(input_operands, graph_input_ids, get_index);
 
-  std::vector<std::pair<std::string, int>> input_name_to_index;
-  input_name_to_index.reserve(input_operands.size());
+  std::vector<std::pair<std::string, TensorDescriptor>>
+      input_name_to_descriptor;
+  input_name_to_descriptor.reserve(input_operands.size());
   std::ranges::transform(input_operands,
-                         std::back_inserter(input_name_to_index),
+                         std::back_inserter(input_name_to_descriptor),
                          get_name_and_index);
 
   TensorIndex* graph_output_ids = nullptr;
@@ -2811,10 +2815,11 @@ auto GraphBuilderTflite::FinishAndTakeResult(
       output_operands.size(), &graph_output_ids);
   std::ranges::transform(output_operands, graph_output_ids, get_index);
 
-  std::vector<std::pair<std::string, int>> output_name_to_index;
-  output_name_to_index.reserve(output_operands.size());
+  std::vector<std::pair<std::string, TensorDescriptor>>
+      output_name_to_descriptor;
+  output_name_to_descriptor.reserve(output_operands.size());
   std::ranges::transform(output_operands,
-                         std::back_inserter(output_name_to_index),
+                         std::back_inserter(output_name_to_descriptor),
                          get_name_and_index);
 
   // Insert the cast operator for the graph output operand after the unsupported
@@ -2869,8 +2874,8 @@ auto GraphBuilderTflite::FinishAndTakeResult(
   ::tflite::FinishModelBuffer(builder_, model_buffer);
   is_created_model_ = true;
 
-  return {builder_.Release(), std::move(input_name_to_index),
-          std::move(output_name_to_index), std::move(weights_file_),
+  return {builder_.Release(), std::move(input_name_to_descriptor),
+          std::move(output_name_to_descriptor), std::move(weights_file_),
           graph_requires_fp32_precision};
 }
 
@@ -2904,7 +2909,7 @@ GraphBuilderTflite::BufferIndex GraphBuilderTflite::SerializeBuffer(
 
 template <typename DataType>
   requires internal::IsSupportedTensorType<DataType>
-GraphBuilderTflite::TensorIndex GraphBuilderTflite::SerializeTensorWithBuffer(
+TensorIndex GraphBuilderTflite::SerializeTensorWithBuffer(
     base::span<const DataType> buffer,
     base::span<const int32_t> dimensions) {
   base::span<const uint8_t> buffer_span;
@@ -2927,7 +2932,7 @@ GraphBuilderTflite::TensorIndex GraphBuilderTflite::SerializeTensorWithBuffer(
   return tensor_index;
 }
 
-GraphBuilderTflite::TensorIndex GraphBuilderTflite::SerializeTemporaryTensor(
+TensorIndex GraphBuilderTflite::SerializeTemporaryTensor(
     base::span<const int32_t> dimensions,
     ::tflite::TensorType tensor_type,
     QuantizateParametersOffset quantize_params) {
@@ -2940,7 +2945,7 @@ GraphBuilderTflite::TensorIndex GraphBuilderTflite::SerializeTemporaryTensor(
   return temporary_tensor_index;
 }
 
-base::expected<GraphBuilderTflite::TensorIndex, std::string>
+base::expected<TensorIndex, std::string>
 GraphBuilderTflite::SerializeTemporaryTensorWithByteSizeCheck(
     base::span<const int32_t> dimensions,
     ::tflite::TensorType tensor_type,
@@ -3451,7 +3456,7 @@ auto GraphBuilderTflite::InsertPadOperation(const TensorInfo& input_tensor_info,
   return output_tensor_index;
 }
 
-GraphBuilderTflite::TensorIndex GraphBuilderTflite::InsertTransposeOperation(
+TensorIndex GraphBuilderTflite::InsertTransposeOperation(
     const TensorInfo& input_tensor_info,
     base::span<const uint32_t> permutation) {
   // Create `tflite::Tensor` for the output operand of Transpose operator with
@@ -3472,7 +3477,7 @@ GraphBuilderTflite::TensorIndex GraphBuilderTflite::InsertTransposeOperation(
   return output_tensor_index;
 }
 
-GraphBuilderTflite::TensorIndex GraphBuilderTflite::SerializeSubGraphPowMul(
+TensorIndex GraphBuilderTflite::SerializeSubGraphPowMul(
     base::span<const int32_t> input_dimensions,
     ::tflite::TensorType input_tensor_type,
     TensorIndex input_tensor_index,
@@ -4949,7 +4954,7 @@ auto GraphBuilderTflite::SerializeGemm(const mojom::Gemm& gemm)
 //                 add
 //                  |
 //              [output]
-GraphBuilderTflite::TensorIndex GraphBuilderTflite::SerializeSubGraphMatmulAdd(
+TensorIndex GraphBuilderTflite::SerializeSubGraphMatmulAdd(
     base::span<const int32_t> input_dimensions,
     ::tflite::TensorType input_tensor_type,
     TensorIndex input_tensor_index,
@@ -5319,9 +5324,9 @@ GraphBuilderTflite::LstmCellOperation::LstmCellOperation(
 
 GraphBuilderTflite::LstmCellOperation::~LstmCellOperation() = default;
 
-base::expected<GraphBuilderTflite::TensorIndex, std::string>
-GraphBuilderTflite::SerializeLstmGate(const LstmCellOperation& lstm_cell,
-                                      LstmGateType type) {
+base::expected<TensorIndex, std::string> GraphBuilderTflite::SerializeLstmGate(
+    const LstmCellOperation& lstm_cell,
+    LstmGateType type) {
   CHECK_EQ(lstm_cell.input_dimensions.size(), 2u);
   const int32_t hidden_size = lstm_cell.hidden_size;
   const std::array<int32_t, 2> output_shape = {lstm_cell.input_dimensions[0],
@@ -5960,7 +5965,7 @@ auto GraphBuilderTflite::SerializeHardSwish(const mojom::HardSwish& hard_swish)
                                  input_tensor_info.index, output_tensor_index);
 }
 
-std::tuple<GraphBuilderTflite::TensorIndex, GraphBuilderTflite::TensorIndex>
+std::tuple<TensorIndex, TensorIndex>
 GraphBuilderTflite::ComputeMeanAndVarianceForNormalization(
     base::span<const int32_t> input_dimensions,
     ::tflite::TensorType input_tensor_type,
@@ -5999,8 +6004,7 @@ GraphBuilderTflite::ComputeMeanAndVarianceForNormalization(
   return std::make_tuple(mean_tensor_index, variance_tensor_index);
 }
 
-GraphBuilderTflite::TensorIndex
-GraphBuilderTflite::TransposeAndReshapeLayerNormalizationScaleBias(
+TensorIndex GraphBuilderTflite::TransposeAndReshapeLayerNormalizationScaleBias(
     base::span<const int32_t> input_dimensions,
     const TensorInfo& scale_or_bias_tensor_info,
     base::span<const uint32_t> axes) {
@@ -6351,8 +6355,7 @@ auto GraphBuilderTflite::GetInitialHiddenAndCellState(
   return state_tensor_index;
 }
 
-GraphBuilderTflite::TensorIndex
-GraphBuilderTflite::SerializeSubGraphReshapeConcat(
+TensorIndex GraphBuilderTflite::SerializeSubGraphReshapeConcat(
     ::tflite::TensorType input_tensor_type,
     TensorIndex input_tensor_index,
     base::span<const int32_t> new_shape,
@@ -6804,13 +6807,12 @@ GraphBuilderTflite::BlockwiseExpandConstant(base::span<const DataType> values,
       CreateUninitializedVector<DataType>(block_size * values.size());
   for (size_t i = 0; i < values.size(); ++i) {
     std::ranges::fill(
-        block_wise_span_buffer.subspan(i * block_size, block_size),
-        values[i]);
+        block_wise_span_buffer.subspan(i * block_size, block_size), values[i]);
   }
   return block_wise_offset;
 }
 
-GraphBuilderTflite::TensorIndex GraphBuilderTflite::BlockwiseExpandAlongAxis(
+TensorIndex GraphBuilderTflite::BlockwiseExpandAlongAxis(
     base::span<const int32_t> input_dimensions,
     TensorIndex input_tensor_index,
     uint32_t block_size,
@@ -6854,7 +6856,7 @@ GraphBuilderTflite::TensorIndex GraphBuilderTflite::BlockwiseExpandAlongAxis(
   return output_tensor_index;
 }
 
-std::tuple<GraphBuilderTflite::TensorIndex, GraphBuilderTflite::TensorIndex>
+std::tuple<TensorIndex, TensorIndex>
 GraphBuilderTflite::BlockwiseExpandScaleAndZeroPoint(
     TensorIndex scale_tensor_index,
     TensorIndex zero_point_tensor_index,

@@ -21,6 +21,7 @@
 #include "base/types/fixed_array.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
@@ -36,8 +37,15 @@ class WebNNConstantOperand;
 
 namespace tflite {
 
+using TensorIndex = int32_t;
+
 struct Float16 {
   uint16_t data;
+};
+
+struct TensorDescriptor {
+  TensorIndex tensor_index;
+  OperandDescriptor descriptor;
 };
 
 namespace internal {
@@ -73,11 +81,12 @@ class GraphBuilderTflite final {
 
  public:
   struct Result {
-    Result(flatbuffers::DetachedBuffer buffer,
-           base::flat_map<std::string, int> input_name_to_index,
-           base::flat_map<std::string, int> output_name_to_index,
-           base::File weights_file,
-           bool graph_requires_fp32_precision);
+    Result(
+        flatbuffers::DetachedBuffer buffer,
+        base::flat_map<std::string, TensorDescriptor> input_name_to_descriptor,
+        base::flat_map<std::string, TensorDescriptor> output_name_to_descriptor,
+        base::File weights_file,
+        bool graph_requires_fp32_precision);
     Result(const Result&) = delete;
     Result& operator=(const Result&) = delete;
     Result(Result&&);
@@ -85,8 +94,8 @@ class GraphBuilderTflite final {
     ~Result();
 
     flatbuffers::DetachedBuffer buffer;
-    base::flat_map<std::string, int> input_name_to_index;
-    base::flat_map<std::string, int> output_name_to_index;
+    base::flat_map<std::string, TensorDescriptor> input_name_to_descriptor;
+    base::flat_map<std::string, TensorDescriptor> output_name_to_descriptor;
     base::File weights_file;
     bool graph_requires_fp32_precision;
   };
@@ -120,7 +129,6 @@ class GraphBuilderTflite final {
       flatbuffers::Offset<::tflite::QuantizationParameters>;
   using BufferIndex = uint32_t;
   using OperatorCodeIndex = uint32_t;
-  using TensorIndex = int32_t;
 
   GraphBuilderTflite(
       ContextProperties context_properties,
