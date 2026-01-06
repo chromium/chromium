@@ -1085,6 +1085,11 @@ void SessionServiceImpl::DeleteSessionAndNotifyInternal(
   NotifySessionAccess(per_request_callback,
                       SessionAccess::AccessType::kTermination, it->first,
                       *it->second);
+  if (!event_callbacks_.empty()) {
+    event_callbacks_.Notify(
+        SessionEvent::MakeTerminationEvent(it->first.site, it->first.id.value(),
+                                           /*succeeded=*/true, reason));
+  }
 
   unpartitioned_sessions_.erase(it);
 }

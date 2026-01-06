@@ -66,4 +66,16 @@ SessionEvent SessionEvent::MakeChallengeEvent(
   return event;
 }
 
+// static
+SessionEvent SessionEvent::MakeTerminationEvent(
+    SchemefulSite site,
+    const std::string& session_id,
+    bool succeeded,
+    DeletionReason deletion_reason) {
+  SessionEvent event(EventType::kTermination, std::move(site), session_id,
+                     succeeded);
+  event.deletion_reason = deletion_reason;
+  return event;
+}
+
 }  // namespace net::device_bound_sessions

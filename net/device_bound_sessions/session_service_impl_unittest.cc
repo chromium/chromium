@@ -683,15 +683,23 @@ TEST_F(SessionServiceImplTest, EventObserverOnRefreshTermination) {
   base::MockCallback<SessionService::OnEventCallback> event_callback;
   base::CallbackListSubscription subscription =
       service().AddEventObserver(event_callback.Get());
-  EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
-    EXPECT_EQ(event.event_type, SessionEvent::EventType::kRefresh);
-    EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
-    EXPECT_EQ(event.session_id, kSessionId);
-    EXPECT_FALSE(event.succeeded);
-    EXPECT_EQ(event.fetch_error, SessionError::kServerRequestedTermination);
-    ASSERT_FALSE(event.new_session_display.has_value());
-    EXPECT_FALSE(event.was_fully_proactive_refresh.value());
-  });
+  EXPECT_CALL(event_callback, Run(_))
+      .WillOnce([](const SessionEvent& event) {
+        EXPECT_EQ(event.event_type, SessionEvent::EventType::kTermination);
+        EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
+        EXPECT_EQ(event.session_id, kSessionId);
+        EXPECT_TRUE(event.succeeded);
+        EXPECT_EQ(event.deletion_reason, DeletionReason::kServerRequested);
+      })
+      .WillOnce([](const SessionEvent& event) {
+        EXPECT_EQ(event.event_type, SessionEvent::EventType::kRefresh);
+        EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
+        EXPECT_EQ(event.session_id, kSessionId);
+        EXPECT_FALSE(event.succeeded);
+        EXPECT_EQ(event.fetch_error, SessionError::kServerRequestedTermination);
+        ASSERT_FALSE(event.new_session_display.has_value());
+        EXPECT_FALSE(event.was_fully_proactive_refresh.value());
+      });
 
   base::test::TestFuture<RefreshResult> future;
   auto scoped_fetcher = ScopedTestRegistrationFetcher::CreateWithTermination(

@@ -10,6 +10,7 @@
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
 #include "net/device_bound_sessions/challenge_result.h"
+#include "net/device_bound_sessions/deletion_reason.h"
 #include "net/device_bound_sessions/refresh_result.h"
 #include "net/device_bound_sessions/session_display.h"
 #include "net/device_bound_sessions/session_error.h"
@@ -22,6 +23,7 @@ struct NET_EXPORT SessionEvent {
     kCreation,
     kRefresh,
     kChallenge,
+    kTermination,
   };
 
   static SessionEvent MakeCreationEvent(
@@ -46,6 +48,11 @@ struct NET_EXPORT SessionEvent {
                                          ChallengeResult challenge_result,
                                          const std::string& challenge);
 
+  static SessionEvent MakeTerminationEvent(SchemefulSite site,
+                                           const std::string& session_id,
+                                           bool succeeded,
+                                           DeletionReason deletion_reason);
+
   ~SessionEvent();
   SessionEvent(const SessionEvent&);
   SessionEvent& operator=(const SessionEvent&);
@@ -68,6 +75,7 @@ struct NET_EXPORT SessionEvent {
   std::optional<bool> was_fully_proactive_refresh;
   std::optional<ChallengeResult> challenge_result;
   std::optional<std::string> challenge;
+  std::optional<DeletionReason> deletion_reason;
 
  private:
   SessionEvent(EventType event_type,
