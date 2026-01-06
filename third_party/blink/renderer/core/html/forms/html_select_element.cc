@@ -1205,7 +1205,9 @@ void HTMLSelectElement::ParseMultipleAttribute(const AtomicString& value) {
 }
 
 void HTMLSelectElement::UpdateMutationObserver() {
-  if (UsesMenuList() && isConnected() && IsAppearanceBase()) {
+  if ((UsesMenuList() ||
+       RuntimeEnabledFeatures::CustomizableSelectListboxEnabled()) &&
+      isConnected() && IsAppearanceBase()) {
     if (!descendants_observer_) {
       descendants_observer_ =
           MakeGarbageCollected<SelectMutationObserver>(*this);
