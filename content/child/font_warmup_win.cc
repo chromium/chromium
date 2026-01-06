@@ -7,6 +7,7 @@
 #include <dwrite.h>
 #include <stdint.h>
 
+#include <bit>
 #include <map>
 #include <string>
 #include <utility>
@@ -291,7 +292,7 @@ DWORD WINAPI GetFontDataPatch(HDC dc_handle,
   // the correct answer for emulating GDI. |table_tag| must also have its
   // byte order swapped to counter the swap which occurs in the called method.
   size_t length =
-      typeface->getTableData(base::ByteSwap(uint32_t{table_tag}), table_offset,
+      typeface->getTableData(std::byteswap(uint32_t{table_tag}), table_offset,
                              buffer ? buffer_length : INT32_MAX, buffer);
   // We can't distinguish between an empty table and an error.
   if (length == 0)

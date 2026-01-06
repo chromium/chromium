@@ -1315,13 +1315,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
     ),
     BanRule(
-        pattern=r'std::byteswap',
-        explanation=('Use of std::byteswap isn`t allowed. If you need it, '
-                     'contact cxx@chromium.org.', ),
-        treat_as_error=True,
-        excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
-    ),
-    BanRule(
         pattern=r'std::unreachable',
         explanation=('Use of std::unreachable isn`t allowed. If you need it, '
                      'contact cxx@chromium.org.', ),

@@ -1765,6 +1765,22 @@ The following C++23 language features are allowed in the Chromium codebase.
 
 The following C++23 library features are allowed in the Chromium codebase.
 
+### std::byteswap <sup>[allowed]</sup>
+
+```c++
+auto x = std::byteswap(y);
+```
+
+**Description:** Reverses the bytes of an integer.
+
+**Documentation:**
+[std::byteswap](https://en.cppreference.com/w/cpp/numeric/byteswap)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/U2zUF-xOj6A/m/ZiRRZdr7AwAJ)
+***
+
 ### std::to_underlying <sup>[allowed]</sup>
 
 ```c++
@@ -2203,22 +2219,6 @@ std::move_only_function<void()> f = [x = std::make_unique<int>(1)] {};
 **Notes:**
 *** promo
 Overlaps with `base::OnceCallback`.
-***
-
-### std::byteswap <sup>[tbd]</sup>
-
-```c++
-auto x = std::byteswap(y);
-```
-
-**Description:** Reverses the bytes of an integer.
-
-**Documentation:**
-[std::byteswap](https://en.cppreference.com/w/cpp/numeric/byteswap)
-
-**Notes:**
-*** promo
-Overlaps with `base::ByteSwap`.
 ***
 
 ### std::unreachable <sup>[tbd]</sup>

@@ -25,6 +25,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_OPEN_TYPE_TYPES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_OPEN_TYPE_TYPES_H_
 
+#include <bit>
+
 #include "base/compiler_specific.h"
 #include "base/numerics/byte_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -34,29 +36,29 @@ namespace open_type {
 
 struct Int16 {
   DISALLOW_NEW();
-  Int16(int16_t u) : v(base::ByteSwap(u)) {}
-  operator int16_t() const { return base::ByteSwap(v); }
+  Int16(int16_t u) : v(std::byteswap(u)) {}
+  operator int16_t() const { return std::byteswap(v); }
   int16_t v;  // in BigEndian
 };
 
 struct UInt16 {
   DISALLOW_NEW();
-  UInt16(uint16_t u) : v(base::ByteSwap(u)) {}
-  operator uint16_t() const { return base::ByteSwap(v); }
+  UInt16(uint16_t u) : v(std::byteswap(u)) {}
+  operator uint16_t() const { return std::byteswap(v); }
   uint16_t v;  // in BigEndian
 };
 
 struct Int32 {
   DISALLOW_NEW();
-  Int32(int32_t u) : v(base::ByteSwap(u)) {}
-  operator int32_t() const { return base::ByteSwap(v); }
+  Int32(int32_t u) : v(std::byteswap(u)) {}
+  operator int32_t() const { return std::byteswap(v); }
   int32_t v;  // in BigEndian
 };
 
 struct UInt32 {
   DISALLOW_NEW();
-  UInt32(uint32_t u) : v(base::ByteSwap(u)) {}
-  operator uint32_t() const { return base::ByteSwap(v); }
+  UInt32(uint32_t u) : v(std::byteswap(u)) {}
+  operator uint32_t() const { return std::byteswap(v); }
   uint32_t v;  // in BigEndian
 };
 
