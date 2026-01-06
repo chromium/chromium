@@ -63,3 +63,10 @@ filter-bar {
 .expand-collapse-controls {
   margin: 0;
 }
+
+.event-count {
+  text-align: center;
+  padding: 8px 0;
+  font-style: italic;
+  color: var(--cr-fallback-color-on-surface-subtle);
+}

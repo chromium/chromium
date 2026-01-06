@@ -21,6 +21,9 @@ export function getHtml(this: EventListElement) {
     </cr-button>
   </div>
 </div>
+<div class="event-count">
+  ${this.numDisplayedEventsLabel}
+</div>
 <cr-infinite-list class="event-list" .items="${this.events}" item-size="64"
     chunk-size="25" role="grid" aria-rowcount="${this.events.length}"
     ?hidden="${this.events.length > 0}" .scrollTarget="${this.scrollTarget}"

@@ -86,6 +86,7 @@ UpdaterUI::UpdaterUI(content::WebUI* web_ui)
       {"dateFilterAfter", IDS_UPDATER_DATE_FILTER_AFTER},
       {"dateFilterBefore", IDS_UPDATER_DATE_FILTER_BEFORE},
       {"dateFilterRange", IDS_UPDATER_DATE_FILTER_RANGE},
+      {"displayedEventsCount", IDS_UPDATER_DISPLAYED_EVENTS_COUNT},
       {"endDate", IDS_UPDATER_END_DATE},
       {"errorDetails", IDS_UPDATER_ERROR_DETAILS},
       {"eventType", IDS_UPDATER_EVENT_TYPE},

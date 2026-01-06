@@ -23,6 +23,7 @@ import type {EventListItemElement} from './event_list_item.js';
 import {applyFilterSettings, createDefaultFilterSettings} from './filter_settings.js';
 import type {FilterSettings} from './filter_settings.js';
 
+
 /**
  * Maps a set of events to EventEntry objects, which have all of the necessary
  * information to render an event-list-item. All of the provided events must
@@ -196,6 +197,12 @@ export class EventListElement extends CrLitElement {
   protected onEventItemExpandedChanged() {
     this.expandAllButtonLabel =
         loadTimeData.getString(this.anyExpanded ? 'collapseAll' : 'expandAll');
+  }
+
+  protected get numDisplayedEventsLabel(): string {
+    return loadTimeData.getStringF(
+        'displayedEventsCount', this.events.length,
+        this.sortedEventsWithDates.length);
   }
 }
 

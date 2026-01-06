@@ -19803,6 +19803,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_DATE_FILTER_RANGE" desc="Text displayed in a filter chip indicating logs are shown within a date range.">
         <ph name="START_DATE">$1<ex>Jan 1, 2025</ex></ph> to <ph name="END_DATE">$2<ex>Feb 1, 2025</ex></ph>
       </message>
+      <message name="IDS_UPDATER_DISPLAYED_EVENTS_COUNT" desc="Text displayed above a filtered list of events in the Chrome Updater log indicating how many events match the filter and are displayed. The number of displayed events is greater than or equal to zero. The number of total events is one or more.">
+        Displaying <ph name="NUM_DISPLAYED_EVENTS">$1<ex>17</ex></ph> of <ph name="NUM_TOTAL_EVENTS">$2<ex>1149</ex></ph>
+      </message>
       <message name="IDS_UPDATER_END_DATE" desc="Label for the end date input field.">
         End Date:
       </message>
