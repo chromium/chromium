@@ -53,15 +53,31 @@ class BASE_EXPORT MemoryPressureListenerRegistry {
       OnceClosure on_notification_sent_callback);
 
  private:
-  void DoNotifyMemoryPressure(MemoryPressureLevel memory_pressure_level);
+  // Sets the current memory pressure level, and then notifies listeners, if
+  // notifications are not suppressed.
+  void SetMemoryPressureLevel(MemoryPressureLevel memory_pressure_level);
+
+  // Calls OnMemoryPressure(memory_pressure_level) on all listeners.
+  void SendMemoryPressureNotification(
+      MemoryPressureLevel memory_pressure_level);
 
   bool AreNotificationsSuppressedImpl();
   void IncreaseNotificationSuppressionCountImpl();
   void DecreaseNotificationSuppressionCountImpl();
+  void SimulatePressureNotificationImpl(
+      MemoryPressureLevel memory_pressure_level);
 
-  MemoryPressureLevel last_memory_pressure_level_ = MEMORY_PRESSURE_LEVEL_NONE;
+  MemoryPressureLevel last_memory_pressure_level_
+      GUARDED_BY_CONTEXT(thread_checker_) = MEMORY_PRESSURE_LEVEL_NONE;
 
-  ObserverList<MemoryPressureListenerRegistration>::Unchecked listeners_;
+  // While regular memory pressure notifications are suppressed, it's still
+  // possible to simulate memory pressure using
+  // `SimulatePressureNotification()`.
+  std::optional<MemoryPressureLevel> simulated_memory_pressure_level_
+      GUARDED_BY_CONTEXT(thread_checker_);
+
+  ObserverList<MemoryPressureListenerRegistration>::Unchecked listeners_
+      GUARDED_BY_CONTEXT(thread_checker_);
 
   size_t notification_suppression_count_ GUARDED_BY_CONTEXT(thread_checker_) =
       0u;

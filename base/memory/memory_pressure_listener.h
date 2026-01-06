@@ -21,6 +21,7 @@
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread_checker.h"
+#include "base/types/pass_key.h"
 
 namespace base {
 
@@ -150,12 +151,32 @@ class BASE_EXPORT MemoryPressureListener : public CheckedObserver {
       MemoryPressureLevel memory_pressure_level,
       OnceClosure on_notification_sent_callback);
 
+  MemoryPressureLevel memory_pressure_level() const {
+    return memory_pressure_level_;
+  }
+
+ protected:
   virtual void OnMemoryPressure(MemoryPressureLevel memory_pressure_level) = 0;
+
+ private:
+  friend class MemoryPressureListenerRegistration;
+  friend class AsyncMemoryPressureListenerRegistration;
+
+  // Sets the initial memory pressure level. Does not cause a
+  // `OnMemoryPressure()` notification to avoid re-entrancy issues. Called
+  // during the constructor by the registry.
+  void SetInitialMemoryPressureLevel(MemoryPressureLevel memory_pressure_level);
+
+  // Sets the current memory pressure level and invokes `OnMemoryPressure()`.
+  void UpdateMemoryPressureLevel(MemoryPressureLevel memory_pressure_level);
+
+  // Returns the current memory pressure level. This is initialized upon
+  // registration by the registry.
+  MemoryPressureLevel memory_pressure_level_ = MEMORY_PRESSURE_LEVEL_NONE;
 };
 
 // Used for listeners that live on the main thread and must be called
-// synchronously. Prefer using MemoryPressureListenerRegistration as this will
-// eventually be removed.
+// synchronously.
 class BASE_EXPORT MemoryPressureListenerRegistration {
  public:
   MemoryPressureListenerRegistration(
@@ -180,9 +201,17 @@ class BASE_EXPORT MemoryPressureListenerRegistration {
   // Called by the registry to notify its impending destruction.
   void OnBeforeMemoryPressureListenerRegistryDestroyed();
 
-  void Notify(MemoryPressureLevel memory_pressure_level);
+  MemoryPressureListenerTag tag() const { return tag_; }
 
-  MemoryPressureListenerTag tag() { return tag_; }
+  // Sets the initial memory pressure level. Does not cause a
+  // `OnMemoryPressure()` notification to avoid re-entrancy issues. Called
+  // during the constructor by the registry.
+  void SetInitialMemoryPressureLevel(PassKey<MemoryPressureListenerRegistry>,
+                                     MemoryPressureLevel memory_pressure_level);
+
+  // Sets the current memory pressure level and invokes `OnMemoryPressure()`.
+  void UpdateMemoryPressureLevel(PassKey<MemoryPressureListenerRegistry>,
+                                 MemoryPressureLevel memory_pressure_level);
 
  private:
   MemoryPressureListenerTag tag_;
@@ -215,7 +244,8 @@ class BASE_EXPORT AsyncMemoryPressureListenerRegistration {
  private:
   class MainThread;
 
-  void Notify(MemoryPressureLevel memory_pressure_level);
+  // Sets the current memory pressure level and invokes `OnMemoryPressure()`.
+  void UpdateMemoryPressureLevel(MemoryPressureLevel memory_pressure_level);
 
   raw_ptr<MemoryPressureListener> memory_pressure_listener_
       GUARDED_BY_CONTEXT(sequence_checker_);

@@ -50,6 +50,17 @@ void MemoryPressureListener::SimulatePressureNotificationAsync(
       memory_pressure_level, std::move(on_notification_sent_callback));
 }
 
+void MemoryPressureListener::SetInitialMemoryPressureLevel(
+    MemoryPressureLevel memory_pressure_level) {
+  memory_pressure_level_ = memory_pressure_level;
+}
+
+void MemoryPressureListener::UpdateMemoryPressureLevel(
+    MemoryPressureLevel memory_pressure_level) {
+  memory_pressure_level_ = memory_pressure_level;
+  OnMemoryPressure(memory_pressure_level);
+}
+
 // MemoryPressureListenerRegistration --------------------------------------
 
 MemoryPressureListenerRegistration::MemoryPressureListenerRegistration(
@@ -89,10 +100,19 @@ void MemoryPressureListenerRegistration::
   registry_ = nullptr;
 }
 
-void MemoryPressureListenerRegistration::Notify(
+void MemoryPressureListenerRegistration::SetInitialMemoryPressureLevel(
+    PassKey<MemoryPressureListenerRegistry>,
     MemoryPressureLevel memory_pressure_level) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  memory_pressure_listener_->OnMemoryPressure(memory_pressure_level);
+  memory_pressure_listener_->SetInitialMemoryPressureLevel(
+      memory_pressure_level);
+}
+
+void MemoryPressureListenerRegistration::UpdateMemoryPressureLevel(
+    PassKey<MemoryPressureListenerRegistry>,
+    MemoryPressureLevel memory_pressure_level) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  memory_pressure_listener_->UpdateMemoryPressureLevel(memory_pressure_level);
 }
 
 // AsyncMemoryPressureListenerRegistration::MainThread -------------------------
@@ -109,14 +129,20 @@ class AsyncMemoryPressureListenerRegistration::MainThread
     listener_task_runner_ = std::move(listener_task_runner);
     parent_ = std::move(parent);
     listener_.emplace(tag, this);
+    // If there is already memory pressure at this time, notify the listener.
+    if (memory_pressure_level() != MEMORY_PRESSURE_LEVEL_NONE) {
+      OnMemoryPressure(memory_pressure_level());
+    }
   }
 
  private:
   void OnMemoryPressure(MemoryPressureLevel memory_pressure_level) override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     listener_task_runner_->PostTask(
-        FROM_HERE, BindOnce(&AsyncMemoryPressureListenerRegistration::Notify,
-                            parent_, memory_pressure_level));
+        FROM_HERE,
+        BindOnce(
+            &AsyncMemoryPressureListenerRegistration::UpdateMemoryPressureLevel,
+            parent_, memory_pressure_level));
   }
 
   // The task runner on which the listener lives.
@@ -169,7 +195,7 @@ AsyncMemoryPressureListenerRegistration::
   }
 }
 
-void AsyncMemoryPressureListenerRegistration::Notify(
+void AsyncMemoryPressureListenerRegistration::UpdateMemoryPressureLevel(
     MemoryPressureLevel memory_pressure_level) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT(
@@ -182,7 +208,7 @@ void AsyncMemoryPressureListenerRegistration::Notify(
         data->set_creation_location_iid(
             trace_event::InternedSourceLocation::Get(&ctx, creation_location_));
       });
-  memory_pressure_listener_->OnMemoryPressure(memory_pressure_level);
+  memory_pressure_listener_->UpdateMemoryPressureLevel(memory_pressure_level);
 }
 
 }  // namespace base

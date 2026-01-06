@@ -80,11 +80,7 @@ void MemoryPressureListenerRegistry::NotifyMemoryPressure(
     return;
   }
 
-  if (AreNotificationsSuppressed()) {
-    return;
-  }
-
-  Get().DoNotifyMemoryPressure(memory_pressure_level);
+  Get().SetMemoryPressureLevel(memory_pressure_level);
 }
 
 // static
@@ -112,6 +108,8 @@ void MemoryPressureListenerRegistry::AddObserver(
       !SingleThreadTaskRunner::HasMainThreadDefault() ||
       SingleThreadTaskRunner::GetMainThreadDefault()->BelongsToCurrentThread());
   listeners_.AddObserver(listener);
+  listener->SetInitialMemoryPressureLevel(
+      PassKey<MemoryPressureListenerRegistry>(), last_memory_pressure_level_);
 }
 
 void MemoryPressureListenerRegistry::RemoveObserver(
@@ -138,8 +136,7 @@ void MemoryPressureListenerRegistry::DecreaseNotificationSuppressionCount() {
 // static
 void MemoryPressureListenerRegistry::SimulatePressureNotification(
     MemoryPressureLevel memory_pressure_level) {
-  // Notify all listeners even if regular pressure notifications are suppressed.
-  Get().DoNotifyMemoryPressure(memory_pressure_level);
+  Get().SimulatePressureNotificationImpl(memory_pressure_level);
 }
 
 // static
@@ -153,12 +150,13 @@ void MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
       std::move(on_notification_sent_callback));
 }
 
-void MemoryPressureListenerRegistry::DoNotifyMemoryPressure(
+void MemoryPressureListenerRegistry::SetMemoryPressureLevel(
     MemoryPressureLevel memory_pressure_level) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(
       !SingleThreadTaskRunner::HasMainThreadDefault() ||
       SingleThreadTaskRunner::GetMainThreadDefault()->BelongsToCurrentThread());
+
   // Don't repeat MEMORY_PRESSURE_LEVEL_NONE notifications.
   // TODO(464120006): Turn into a CHECK when this can no longer happen.
   if (memory_pressure_level == MEMORY_PRESSURE_LEVEL_NONE &&
@@ -167,6 +165,19 @@ void MemoryPressureListenerRegistry::DoNotifyMemoryPressure(
   }
 
   last_memory_pressure_level_ = memory_pressure_level;
+
+  // Don't send a notification if they are suppressed.
+  if (AreNotificationsSuppressedImpl()) {
+    return;
+  }
+
+  SendMemoryPressureNotification(last_memory_pressure_level_);
+}
+
+void MemoryPressureListenerRegistry::SendMemoryPressureNotification(
+    MemoryPressureLevel memory_pressure_level) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
   if (FeatureList::IsEnabled(kSuppressMemoryListeners)) {
     auto mask = kSuppressMemoryListenersMask.Get();
     for (auto& listener : listeners_) {
@@ -178,12 +189,14 @@ void MemoryPressureListenerRegistry::DoNotifyMemoryPressure(
       if (tag_index >= mask.size() || mask[tag_index] == '0' ||
           (mask[tag_index] == '1' &&
            memory_pressure_level == MEMORY_PRESSURE_LEVEL_CRITICAL)) {
-        listener.Notify(memory_pressure_level);
+        listener.UpdateMemoryPressureLevel(
+            PassKey<MemoryPressureListenerRegistry>(), memory_pressure_level);
       }
     }
   } else {
-    listeners_.Notify(&MemoryPressureListenerRegistration::Notify,
-                      memory_pressure_level);
+    listeners_.Notify(
+        &MemoryPressureListenerRegistration::UpdateMemoryPressureLevel,
+        PassKey<MemoryPressureListenerRegistry>(), memory_pressure_level);
   }
 }
 
@@ -196,6 +209,12 @@ void MemoryPressureListenerRegistry::
     IncreaseNotificationSuppressionCountImpl() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   ++notification_suppression_count_;
+
+  // If notifications suppression was just enabled, remember the current
+  // pressure level.
+  if (notification_suppression_count_ == 1u) {
+    simulated_memory_pressure_level_ = last_memory_pressure_level_;
+  }
 }
 
 void MemoryPressureListenerRegistry::
@@ -203,6 +222,35 @@ void MemoryPressureListenerRegistry::
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK_GT(notification_suppression_count_, 0u);
   --notification_suppression_count_;
+
+  // If notifications suppression was just disabled, clear the simulated level.
+  if (notification_suppression_count_ == 0u) {
+    if (simulated_memory_pressure_level_.value() !=
+        last_memory_pressure_level_) {
+      SendMemoryPressureNotification(last_memory_pressure_level_);
+    }
+    simulated_memory_pressure_level_ = std::nullopt;
+  }
+}
+
+void MemoryPressureListenerRegistry::SimulatePressureNotificationImpl(
+    MemoryPressureLevel memory_pressure_level) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (AreNotificationsSuppressedImpl()) {
+    // Notifications are currently suppressed. Use the simulated level to drive
+    // notifications.
+    if (simulated_memory_pressure_level_ == memory_pressure_level) {
+      return;
+    }
+
+    simulated_memory_pressure_level_ = memory_pressure_level;
+    SendMemoryPressureNotification(memory_pressure_level);
+    return;
+  }
+
+  // When notifications are not suppressed, this does the same as
+  // `NotifyMemoryPressure()`.
+  SetMemoryPressureLevel(memory_pressure_level);
 }
 
 // MemoryPressureSuppressionToken ----------------------------------------------
