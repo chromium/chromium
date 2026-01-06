@@ -4,10 +4,7 @@
 
 #include "components/variations/sticky_activation_manager.h"
 
-#include <string>
-
 #include "base/debug/dump_without_crashing.h"
-#include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/metrics/field_trial_params.h"
@@ -22,30 +19,7 @@
 namespace variations {
 namespace {
 
-BASE_FEATURE(kVariationsStickyPersistence, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// The type of persistence to use after updating the pref.
-enum class PersistenceType {
-  // No persistence, just update the pref.
-  kSetOnly = 0,
-  // Update the pref and commit the write.
-  kSetAndCommit = 1,
-  // Update the pref and schedule the write.
-  kSetAndSchedule = 2,
-};
-constexpr base::FeatureParam<PersistenceType>::Option kPersistenceTypes[] = {
-    // Note: kSetOnly is not listed here, it's used as the fallback.
-    {PersistenceType::kSetAndCommit, "commit"},
-    {PersistenceType::kSetAndSchedule, "schedule"},
-};
-BASE_FEATURE_ENUM_PARAM(PersistenceType,
-                        kVariationsStickyPersistenceModeParam,
-                        &kVariationsStickyPersistence,
-                        "persistence_type",
-                        PersistenceType::kSetOnly,
-                        &kPersistenceTypes);
-
-// Used as the group name for studies that we know have STICKY_AFTER_QUERY
+// Used as the group names for studies that we know have STICKY_AFTER_QUERY
 // activation, but haven't been made active yet.
 //
 // Note: We intentionally use the same character as the separator for the pref,
@@ -190,20 +164,7 @@ void StickyActivationManager::UpdatePref() {
   }
 
   std::string pref_value = EncodePref(active_sticky_trials_);
-  if (pref_value == local_state_->GetString(prefs::kVariationsStickyStudies)) {
-    return;
-  }
   local_state_->SetString(prefs::kVariationsStickyStudies, pref_value);
-  switch (kVariationsStickyPersistenceModeParam.Get()) {
-    case PersistenceType::kSetOnly:
-      break;
-    case PersistenceType::kSetAndCommit:
-      local_state_->CommitPendingWrite();
-      break;
-    case PersistenceType::kSetAndSchedule:
-      local_state_->SchedulePendingLossyWrites();
-      break;
-  }
 }
 
 }  // namespace variations
