@@ -2227,14 +2227,19 @@ Overlaps with `base::ByteSwap`.
 std::unreachable();
 ```
 
-**Description:** Indicates unreachable code.
+**Description:** Indicates a codepath that is unreachable and invokes undefined
+behavior if executed.
 
 **Documentation:**
 [std::unreachable](https://en.cppreference.com/w/cpp/utility/unreachable)
 
 **Notes:**
 *** promo
-Overlaps with `NOTREACHED()`.
+Standard version of `__builtin_unreachable()`. Unlike `NOTREACHED()`, which
+cleanly aborts, this hints the compiler to optimize assuming this point is
+unreachable, with no bounds on how the program behaves if the annotation was
+wrong. This and `__builtin_unreachable()` should only be used in rare
+circumstances.
 ***
 
 ### std::spanstream <sup>[tbd]</sup>
