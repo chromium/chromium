@@ -2942,7 +2942,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.LibraryLoader.Prefetch.Duration" units="ms"
-    expires_after="2026-06-07">
+    expires_after="2026-12-22">
   <owner>ziadyoussef@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -2953,7 +2953,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.LibraryLoader.Prefetch.ForkDuration"
-    units="microseconds" expires_after="2026-03-01">
+    units="microseconds" expires_after="2026-12-22">
   <owner>ashleynewson@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -2974,7 +2974,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.LibraryLoader.Prefetch.Madvise" enum="Boolean"
-    expires_after="2026-03-01">
+    expires_after="2026-12-22">
   <owner>ashleynewson@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -2990,7 +2990,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.LibraryLoader.Prefetch.Status" enum="PrefetchStatus"
-    expires_after="2026-01-30">
+    expires_after="2026-12-22">
   <owner>ziadyoussef@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
