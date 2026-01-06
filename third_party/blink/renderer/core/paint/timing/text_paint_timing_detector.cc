@@ -267,7 +267,7 @@ void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
   if (!text_element_timing_) {
     if (Document* document = frame_view_->GetFrame().GetDocument()) {
       if (LocalDOMWindow* window = document->domWindow()) {
-        text_element_timing_ = TextElementTiming::From(*window);
+        text_element_timing_ = MakeGarbageCollected<TextElementTiming>(*window);
       }
     }
   }
