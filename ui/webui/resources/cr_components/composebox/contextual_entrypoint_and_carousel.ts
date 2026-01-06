@@ -396,18 +396,19 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     return {file, errorMessage};
   }
 
-  resetContextFiles() {
-    // Only keep files that are not deletable.
+  resetContextFiles(): string[] {
+    // Only keep files that are not deletable. Return remaining files IDs.
     const undeletableFiles =
         Array.from(this.files_.values()).filter(file => !file.isDeletable);
 
     if (undeletableFiles.length === this.files_.size) {
-      return;
+      return [...this.files_.keys()];
     }
 
     this.files_ = new Map(undeletableFiles.map(file => [file.uuid, file]));
     this.addedTabsIds_ = new Map(undeletableFiles.filter(file => file.tabId)
                                      .map(file => [file.tabId!, file.uuid]));
+    return [...this.files_.keys()];
   }
 
   resetModes() {

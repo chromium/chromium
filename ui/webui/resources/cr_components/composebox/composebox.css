@@ -459,6 +459,18 @@ search-animated-glow {
   transition: var(--submit-enabled-transition);
 }
 
+#submitContainer:has(#submitIcon[disabled]) {
+  cursor: not-allowed;
+}
+#submitContainer:has(#submitIcon[disabled]) #submitOverlay {
+  pointer-events: none;
+}
+
+#submitContainer #submitIcon[disabled] {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
 #submitContainer:focus-visible {
   outline: none;
 }

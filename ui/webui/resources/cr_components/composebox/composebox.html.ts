@@ -13,16 +13,17 @@ export function getHtml(this: ComposeboxElement) {
     <div id="submitContainer" class="icon-fade" part="submit"
         slot="${this.searchboxNextEnabled ? 'submit-button' : nothing}"
         tabindex="-1"
-        @click="${this.submitQuery_}"
         @focusin="${this.handleSubmitFocusIn_}">
-      <div id="submitOverlay" part="submit-overlay"></div>
+      <div id="submitOverlay" part="submit-overlay"
+          @click="${this.submitQuery_}">
+      </div>
       <cr-icon-button
         class="action-icon icon-arrow-upward"
         id="submitIcon"
         part="action-icon submit-icon"
         tabindex="0"
         title="${this.i18n('composeboxSubmitButtonTitle')}"
-        ?disabled="${!this.submitEnabled_}">
+        ?disabled="${!this.submitEnabled_ || !this.fileUploadsComplete}">
       </cr-icon-button>
     </div>`;
   // clang-format off
