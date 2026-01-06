@@ -132,11 +132,16 @@ bool NavigationEntryScreenshot::SharedImageProvider::
   if (!shared_image) {
     return false;
   }
-  // By the time the screenshot is created, the shared_image is already
-  // finalized, so no sync token is necessary.
-  gpu::SyncToken sync_token;
+  // We require no sync token when the shared image was created by a
+  // CopyOutputRequest, as the texture is already written to by the time the
+  // CopyOutputResponse is received. In this case, the creation sync token is
+  // empty.
+  // When using a HardwareBuffer, we only wrap it in a SharedImage when Android
+  // has reported that it finished drawing. So in this case, the creation sync
+  // token is sufficient.
   *transferable_resource = viz::TransferableResource::Make(
-      shared_image, viz::TransferableResource::ResourceSource::kUI, sync_token);
+      shared_image, viz::TransferableResource::ResourceSource::kUI,
+      shared_image->creation_sync_token());
   *release_callback =
       base::BindOnce(&NavigationEntryScreenshot::SharedImageProvider::DoRelease,
                      base::WrapRefCounted(this));
