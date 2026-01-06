@@ -788,7 +788,8 @@ suite('GlicSubpage', function() {
     });
   });
 
-  suite('WebActuationToggleVisible', () => {
+
+  suite('WebActuationToggleVisibleForAllowedTier', () => {
     test('assert toggle is visible', () => {
       const webActuationToggle =
           $<SettingsToggleButtonElement>('webActuationToggle')!;
@@ -796,7 +797,7 @@ suite('GlicSubpage', function() {
     });
   });
 
-  suite('WebActuationToggleHidden', () => {
+  suite('WebActuationToggleHiddenForDisallowedTier', () => {
     test('assert toggle is hidden', () => {
       const webActuationToggle =
           $<SettingsToggleButtonElement>('webActuationToggle')!;
