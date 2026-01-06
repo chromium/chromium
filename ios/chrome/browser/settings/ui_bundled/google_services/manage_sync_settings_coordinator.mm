@@ -15,6 +15,8 @@
 #import "components/google/core/common/google_util.h"
 #import "components/regional_capabilities/regional_capabilities_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_switches.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
@@ -28,6 +30,7 @@
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/reauth/signin_reauth_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
@@ -83,6 +86,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     ManageSyncSettingsTableViewControllerPresentationDelegate,
     PersonalizeGoogleServicesCoordinatorDelegate,
     SettingsNavigationControllerDelegate,
+    SigninReauthCoordinatorDelegate,
     SignoutActionSheetCoordinatorDelegate,
     SyncEncryptionPassphraseTableViewControllerPresentationDelegate,
     SyncEncryptionTableViewControllerPresentationDelegate,
@@ -127,6 +131,9 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   DismissViewCallback _accountDetailsControllerDismissCallback;
   // The coordinator for the Personalize Google Services view.
   PersonalizeGoogleServicesCoordinator* _personalizeGoogleServicesCoordinator;
+  SigninReauthCoordinator* _reauthCoordinator;
+  // TODO(crbug.com/471207686): Remove after kIdentityInAuthErrorFollowUps is
+  // launched.
   SigninCoordinator* _addAccountCoordinator;
 }
 
@@ -227,6 +234,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   [self stopAddAccountCoordinator];
   [self stopSignoutActionSheetCoordinator];
   [self stopPersonalizedGoogleServicesCoordinator];
+  [self stopReauthCoordinator];
 
   // The view controller below don’t have coordinator, so they must be stopped
   // with `settingsWillBeDismissed`.
@@ -234,6 +242,12 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   _syncEncryptionPassphraseTableViewController = nil;
   [_syncEncryptionTableViewController settingsWillBeDismissed];
   _syncEncryptionTableViewController = nil;
+}
+
+- (void)stopReauthCoordinator {
+  _reauthCoordinator.delegate = nil;
+  [_reauthCoordinator stop];
+  _reauthCoordinator = nil;
 }
 
 - (void)stopAddAccountCoordinator {
@@ -532,6 +546,13 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   [_accountMenuCoordinator start];
 }
 
+#pragma mark - SigninReauthCoordinatorDelegate
+
+- (void)reauthFinishedWithResult:(ReauthResult)result
+                          gaiaID:(const GaiaId*)gaiaID {
+  [self stopReauthCoordinator];
+}
+
 #pragma mark - SignoutActionSheetCoordinatorDelegate
 
 - (void)signoutActionSheetCoordinatorPreventUserInteraction:
@@ -641,6 +662,34 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 }
 
 - (void)openPrimaryAccountReauthDialog {
+  if (!base::FeatureList::IsEnabled(switches::kIdentityInAuthErrorFollowUps)) {
+    [self openPrimaryAccountReauthDialogLegacy];
+    return;
+  }
+  if (_reauthCoordinator.viewWillPersist) {
+    return;
+  }
+  [self stopReauthCoordinator];
+
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(self.profile);
+  CoreAccountInfo account =
+      identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (account.IsEmpty()) {
+    // A sign-out was triggered in the meantime, don't do anything.
+    return;
+  }
+  _reauthCoordinator = [[SigninReauthCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                         account:account
+               reauthAccessPoint:signin_metrics::ReauthAccessPoint::
+                                     kAccountSettings];
+  _reauthCoordinator.delegate = self;
+  [_reauthCoordinator start];
+}
+
+- (void)openPrimaryAccountReauthDialogLegacy {
   if (_addAccountCoordinator.viewWillPersist) {
     return;
   }

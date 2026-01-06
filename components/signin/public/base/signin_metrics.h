@@ -647,7 +647,8 @@ enum class ReauthFlowEvent : int {
 enum class ReauthAccessPoint : int {
   // Error card in the account menu.
   kAccountMenu = 0,
-  kMaxValue = kAccountMenu,
+  kAccountSettings = 1,
+  kMaxValue = kAccountSettings,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:ReauthAccessPoint)
 #endif  // BUILDFLAG(IS_IOS)

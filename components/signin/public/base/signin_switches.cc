@@ -327,6 +327,10 @@ const base::FeatureParam<int> kHistoryOptInEducationalTipVariation(
     1);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kIdentityInAuthErrorFollowUps, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 // When enabled a new library is used to fetch accounts via
 // AccountManagerAccountManagerDelegate

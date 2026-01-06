@@ -270,6 +270,12 @@ BASE_DECLARE_FEATURE(kHistoryOptInEducationalTip);
 extern const base::FeatureParam<int> kHistoryOptInEducationalTipVariation;
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_IOS)
+// Follow-ups to EnableIdentityInAuthError.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kIdentityInAuthErrorFollowUps);
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kMigrateAccountManagerDelegate);
