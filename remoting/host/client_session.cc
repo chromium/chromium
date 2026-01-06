@@ -716,7 +716,7 @@ void ClientSession::CreatePerMonitorVideoStreams() {
   for (int i = 0; i < desktop_display_info_.NumDisplays(); i++) {
     auto id = desktop_display_info_.GetDisplayInfo(i)->id;
 
-    if (base::Contains(video_streams_, id)) {
+    if (video_streams_.contains(id)) {
       HOST_LOG << "Video stream for id " << id << " already exists.";
       continue;
     }
