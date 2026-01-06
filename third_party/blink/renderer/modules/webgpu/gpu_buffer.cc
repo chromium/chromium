@@ -208,6 +208,21 @@ void GPUBuffer::Trace(Visitor* visitor) const {
   DawnObject<wgpu::Buffer>::Trace(visitor);
 }
 
+void GPUBuffer::mapSync(ScriptState* script_state,
+                        uint32_t mode,
+                        uint64_t offset,
+                        ExceptionState& exception_state) {
+  MapSyncImpl(script_state, mode, offset, std::nullopt, exception_state);
+}
+
+void GPUBuffer::mapSync(ScriptState* script_state,
+                        uint32_t mode,
+                        uint64_t offset,
+                        uint64_t size,
+                        ExceptionState& exception_state) {
+  MapSyncImpl(script_state, mode, offset, size, exception_state);
+}
+
 ScriptPromise<IDLUndefined> GPUBuffer::mapAsync(
     ScriptState* script_state,
     uint32_t mode,
@@ -293,6 +308,55 @@ void GPUBuffer::DissociateMailbox() {
   if (mailbox_buffer_) {
     mailbox_buffer_->Dissociate();
     mailbox_buffer_ = nullptr;
+  }
+}
+
+void GPUBuffer::MapSyncImpl(ScriptState* script_state,
+                            uint32_t mode,
+                            uint64_t offset,
+                            std::optional<uint64_t> size,
+                            ExceptionState& exception_state) {
+  // Compute the defaulted size which is "until the end of the buffer" or 0 if
+  // offset is past the end of the buffer.
+  uint64_t size_defaulted = 0;
+  if (size) {
+    size_defaulted = *size;
+  } else if (offset <= size_) {
+    size_defaulted = size_ - offset;
+  }
+
+  // We need to convert from uint64_t to size_t. Either of these two variables
+  // are bigger or equal to the guaranteed OOM size then mapAsync should be an
+  // error so. That OOM size fits in a size_t so we can clamp size and offset
+  // with it.
+  size_t map_offset =
+      static_cast<size_t>(std::min(offset, kGuaranteedBufferOOMSize));
+  size_t map_size =
+      static_cast<size_t>(std::min(size_defaulted, kGuaranteedBufferOOMSize));
+
+  auto future = GetHandle().MapAsync(
+      static_cast<wgpu::MapMode>(mode), map_offset, map_size,
+      wgpu::CallbackMode::WaitAnyOnly,
+      [&](wgpu::MapAsyncStatus status, wgpu::StringView message) {
+        switch (status) {
+          case wgpu::MapAsyncStatus::Success:
+            break;
+          case wgpu::MapAsyncStatus::CallbackCancelled:
+          case wgpu::MapAsyncStatus::Aborted:
+          case wgpu::MapAsyncStatus::Error:
+            exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                              String::FromUTF8(message));
+            break;
+        }
+      });
+
+  // Flush and wait for the buffer to be mapped.
+  FlushNow();
+  if (GetInstance().WaitAny(future, std::numeric_limits<uint64_t>::max()) !=
+      wgpu::WaitStatus::Success) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "mapSync failed");
+    CHECK(false);
   }
 }
 

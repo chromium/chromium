@@ -701,6 +701,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method destroy
 [Worker]     method getMappedRange
 [Worker]     method mapAsync
+[Worker]     method mapSync
 [Worker]     method unmap
 [Worker]     setter label
 [Worker] interface GPUCanvasContext

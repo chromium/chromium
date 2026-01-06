@@ -5944,11 +5944,18 @@
       implied_by: ["WebGPUExperimentalFeatures"],
     },
     {
+      // Enables GPUBuffer::mapSync for WebGPU.
+      name: "WebGPUMapSyncOnWorkers",
+      status: "experimental",
+      public: true,
+    },
+    {
       // Allows handling of WebGPU related commands from the GPU process to
       // happen on a separate thread. This is a pre-requisite for emulation of
       // serialized asynchronous APIs, i.e. mapSync.
       name: "WebGPUMultithreadDawnWireOnWorkers",
       status: "experimental",
+      implied_by: ["WebGPUMapSyncOnWorkers"],
     },
     {
       name: "WebHID",

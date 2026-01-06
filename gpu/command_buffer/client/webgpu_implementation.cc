@@ -46,8 +46,13 @@ DawnWireServices::DawnWireServices(
       wire_client_(dawn::wire::WireClientDescriptor{
           &serializer_,
           &memory_transfer_service_,
-      }),
-      wgpu_instance_(wire_client_.ReserveInstance().instance) {
+      }) {
+  std::vector<WGPUInstanceFeatureName> instance_features = {
+      WGPUInstanceFeatureName_TimedWaitAny};
+  WGPUInstanceDescriptor instance_desc = WGPU_INSTANCE_DESCRIPTOR_INIT;
+  instance_desc.requiredFeatureCount = instance_features.size();
+  instance_desc.requiredFeatures = instance_features.data();
+  wgpu_instance_ = wire_client_.ReserveInstance(&instance_desc).instance;
   DCHECK(wgpu_instance_);
 }
 
