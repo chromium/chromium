@@ -53,7 +53,7 @@ found in the LICENSE file.
     <color name="dialog_bg_color_dark_baseline">@color/default_bg_color_dark_elev_3_baseline</color>
 
     <!-- Snackbar colors -->
-    <color name="snackbar_background_color_baseline">@color/default_bg_color_baseline</color>
+    <color name="snackbar_background_color_baseline">@color/gm3_baseline_surface_container_high_light</color>
 
     <!-- Infobar colors -->
     <color name="infobar_background_color" tools:ignore="UnusedResources">@color/snackbar_background_color_baseline</color>

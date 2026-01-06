@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.keyboard_accessory.KeyboardAccessoryVisualSta
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -162,11 +161,6 @@ public class BottomAttachedUiObserver
         mBottomControlsStacker = bottomControlsStacker;
 
         mSnackbarStateProvider = snackbarStateProvider;
-        if (!SnackbarManager.isFloatingSnackbarEnabled()) {
-            // The floating snackbar appears to hover and isn't anchored to bottom UI, and thus
-            // should not impact the bottom attached color.
-            mSnackbarStateProvider.addObserver(this);
-        }
 
         mBottomSheetController = bottomSheetController;
         mBottomSheetController.addObserver(this);

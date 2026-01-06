@@ -189,11 +189,6 @@ public class SemanticColorUtils {
         return resolve(R.attr.colorSurface, context);
     }
 
-    /** Returns the surface color value of the conceptual snackbar_background_color. */
-    public static @ColorInt int getSnackbarBackgroundColor(Context context) {
-        return resolve(R.attr.colorSurface, context);
-    }
-
     /** Returns the semantic color value that corresponds to default_text_color_link. */
     public static @ColorInt int getDefaultTextColorLink(Context context) {
         final @ColorInt int fallback = context.getColor(R.color.default_text_color_link_baseline);

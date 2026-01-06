@@ -24,7 +24,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -353,8 +352,7 @@ public class SnackbarManager
                                 mWindowAndroid,
                                 mEdgeToEdgeControllerSupplier != null
                                         ? mEdgeToEdgeControllerSupplier.get()
-                                        : null,
-                                isTablet());
+                                        : null);
                 mView.show();
 
                 // If there is a temporary parent set, reparent accordingly. We override here
@@ -479,17 +477,5 @@ public class SnackbarManager
     /** Returns the currently showing snackbar view. For testing only. */
     public @Nullable SnackbarView getCurrentSnackbarViewForTesting() {
         return mView;
-    }
-
-    // ============================================================================================
-    // Flags
-    // ============================================================================================
-
-    /**
-     * Whether floating snackbar is enabled. When enabled, the snackbar will float on top of the web
-     * content.
-     */
-    public static boolean isFloatingSnackbarEnabled() {
-        return ChromeFeatureList.sFloatingSnackbar.isEnabled();
     }
 }

@@ -21,7 +21,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.base.ApplicationViewportInsetTracker;
 import org.chromium.ui.base.ViewportInsets;
 
@@ -90,20 +89,13 @@ public class BottomContainer extends FrameLayout
                         - mBrowserControlsStateProvider.getBottomControlsHeight();
         offsetFromControls -= assumeNonNull(mViewportInsetSupplier.get()).viewVisibleHeightInset;
 
-        if (SnackbarManager.isFloatingSnackbarEnabled()) {
-            int bottomInset =
-                    mEdgeToEdgeControllerSupplier != null
-                                    && mEdgeToEdgeControllerSupplier.get() != null
-                            ? mEdgeToEdgeControllerSupplier.get().getBottomInsetPx()
-                            : 0;
+        int bottomInset =
+                mEdgeToEdgeControllerSupplier != null && mEdgeToEdgeControllerSupplier.get() != null
+                        ? mEdgeToEdgeControllerSupplier.get().getBottomInsetPx()
+                        : 0;
 
-            // The floating snackbar shouldn't scroll into the bottom inset.
-            super.setTranslationY(Math.min(mBaseYOffset + offsetFromControls + bottomInset, 0));
-        } else {
-            // Sit on top of either the bottom sheet or the bottom toolbar depending on which is
-            // larger (offsets are negative).
-            super.setTranslationY(mBaseYOffset + offsetFromControls);
-        }
+        // The floating snackbar shouldn't scroll into the bottom inset.
+        super.setTranslationY(Math.min(mBaseYOffset + offsetFromControls + bottomInset, 0));
     }
 
     @Override

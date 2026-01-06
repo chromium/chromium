@@ -6327,11 +6327,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kEdgeToEdgeTabletVariations,
                                     "EdgeToEdgeTablet")},
 
-    // Android floating snackbar
-    {"floating-snackbar", flag_descriptions::kFloatingSnackbarName,
-     flag_descriptions::kFloatingSnackbarDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kFloatingSnackbar)},
-
     // Android nav bar color animation
     {"nav-bar-color-animation", flag_descriptions::kNavBarColorAnimationName,
      flag_descriptions::kNavBarColorAnimationDescription, kOsAndroid,

@@ -222,9 +222,7 @@ public class IncognitoReauthPromoMessageService
         // snackbar needs to be revised.
         @ColorInt
         int snackbarBackgroundColor =
-                SnackbarManager.isFloatingSnackbarEnabled()
-                        ? mContext.getColor(R.color.floating_snackbar_background_incognito)
-                        : mContext.getColor(R.color.snackbar_background_color_baseline_dark);
+                mContext.getColor(R.color.floating_snackbar_background_incognito);
         snackbar.setBackgroundColor(snackbarBackgroundColor);
         snackbar.setTextAppearance(R.style.TextAppearance_TextMedium_Secondary_Baseline_Light);
         snackbar.setDefaultLines(false);

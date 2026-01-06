@@ -27,8 +27,6 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.ui.messages.test.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -365,7 +363,6 @@ public class SnackbarTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.FLOATING_SNACKBAR)
     public void testOverrideParent_BeforeShowing_FloatingSnackbar() {
         final Snackbar snackbar =
                 Snackbar.make(
@@ -412,7 +409,6 @@ public class SnackbarTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.FLOATING_SNACKBAR)
     public void testOverrideParent_WhileShowing_FloatingSnackbar() {
         final Snackbar snackbar =
                 Snackbar.make(
