@@ -6,6 +6,7 @@ import './event_list_item.js';
 import './filter_bar.js';
 import './raw_event_details.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
 
 import {assert} from '//resources/js/assert.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -70,7 +71,7 @@ function getRelativeDate(date: Date): string {
   return rtf.format(-Math.floor(diffInDays), 'day');
 }
 
-interface EventEntry {
+export interface EventEntry {
   event: HistoryEvent|MergedHistoryEvent;
   // Whether a list break should be displayed before the entry.
   shouldShowBreak: boolean;
@@ -100,6 +101,7 @@ export class EventListElement extends CrLitElement {
       eventsWithParseErrorsLabel: {type: String},
       expandAllButtonLabel: {type: String},
       events: {type: Array},
+      scrollTarget: {type: Object},
     };
   }
 
@@ -110,6 +112,7 @@ export class EventListElement extends CrLitElement {
   protected accessor expandAllButtonLabel: string =
       loadTimeData.getString('expandAll');
   protected accessor events: EventEntry[] = [];
+  protected accessor scrollTarget: HTMLElement = document.documentElement;
 
   protected processMap: UpdaterProcessMap|undefined = undefined;
   protected eventsWithParseErrors: Array<Record<string, unknown>> = [];

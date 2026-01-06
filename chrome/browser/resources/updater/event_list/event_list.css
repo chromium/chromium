@@ -21,13 +21,8 @@
   }
 }
 
-.event-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 8px 0;
-  list-style: none;
-  padding-inline-start: 0;
+event-list-item {
+  margin: 8px 0;
 }
 
 raw-event-details {
