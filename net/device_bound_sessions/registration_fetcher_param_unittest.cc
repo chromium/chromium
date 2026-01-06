@@ -264,8 +264,7 @@ TEST(RegistrationFetcherParamTest, ChallengeAsByteSequence) {
   std::vector<RegistrationFetcherParam> params =
       RegistrationFetcherParam::CreateIfValid(registration_request,
                                               response_headers.get());
-  ASSERT_EQ(params.size(), 1u);
-  EXPECT_FALSE(params[0].challenge().has_value());
+  ASSERT_TRUE(params.empty());
 }
 
 TEST(RegistrationFetcherParamTest, ValidInvalidValid) {
@@ -567,7 +566,7 @@ TEST(RegistrationFetcherParamTest, ValidAuthorization) {
   EXPECT_EQ(param.authorization(), "authcode");
 }
 
-TEST(RegistrationFetcherParamTest, InvalidAuthorizationIgnored) {
+TEST(RegistrationFetcherParamTest, InvalidAuthorizationPreventsRegistration) {
   const GURL registration_request("https://www.example.com/registration");
   // Testing customized header.
   scoped_refptr<net::HttpResponseHeaders> response_headers =
@@ -578,13 +577,7 @@ TEST(RegistrationFetcherParamTest, InvalidAuthorizationIgnored) {
   std::vector<RegistrationFetcherParam> params =
       RegistrationFetcherParam::CreateIfValid(registration_request,
                                               response_headers.get());
-  ASSERT_EQ(params.size(), 1U);
-  const auto& param = params[0];
-  EXPECT_EQ(param.registration_endpoint(),
-            GURL("https://www.example.com/startsession"));
-  EXPECT_THAT(param.supported_algos(), UnorderedElementsAre(RSA_PKCS1_SHA256));
-  EXPECT_EQ(param.challenge(), "c1");
-  EXPECT_FALSE(param.authorization());
+  ASSERT_TRUE(params.empty());
 }
 
 TEST(RegistrationFetcherParamTest, MultipleAuthorizationHeaders) {

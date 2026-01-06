@@ -100,7 +100,7 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
     // will currently pick the last if there is more than one.
     if (key == kPathParamKey) {
       if (!value.is_string()) {
-        continue;
+        return std::nullopt;
       }
       std::string unescaped_path = base::UnescapeURLComponent(
           value.GetString(),
@@ -118,15 +118,30 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
                                          request_url)) {
         registration_endpoint = std::move(candidate_registration_endpoint);
       }
-    } else if (key == kChallengeParamKey && value.is_string()) {
+    } else if (key == kChallengeParamKey) {
+      if (!value.is_string()) {
+        return std::nullopt;
+      }
       challenge = value.GetString();
-    } else if (key == kAuthCodeParamKey && value.is_string()) {
+    } else if (key == kAuthCodeParamKey) {
+      if (!value.is_string()) {
+        return std::nullopt;
+      }
       authorization = value.GetString();
-    } else if (key == kProviderKeyParamKey && value.is_string()) {
+    } else if (key == kProviderKeyParamKey) {
+      if (!value.is_string()) {
+        return std::nullopt;
+      }
       provider_key = value.GetString();
-    } else if (key == kProviderUrlParamKey && value.is_string()) {
+    } else if (key == kProviderUrlParamKey) {
+      if (!value.is_string()) {
+        return std::nullopt;
+      }
       provider_url = GURL(value.GetString());
-    } else if (key == kProviderSessionIdParamKey && value.is_string()) {
+    } else if (key == kProviderSessionIdParamKey) {
+      if (!value.is_string()) {
+        return std::nullopt;
+      }
       provider_session_id = Session::Id(value.GetString());
     }
 
