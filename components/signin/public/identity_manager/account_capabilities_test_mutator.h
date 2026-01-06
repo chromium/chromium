@@ -51,7 +51,9 @@ class AccountCapabilitiesTestMutator {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void set_can_use_gemini_in_chrome(bool value);
 #endif
+#if BUILDFLAG(IS_CHROMEOS)
   void set_can_use_generative_ai_in_recorder_app(bool value);
+#endif
   void set_can_use_generative_ai_photo_editing(bool value);
   void set_can_use_manta_service(bool value);
   void set_can_use_model_execution_features(bool value);

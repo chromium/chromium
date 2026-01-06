@@ -111,8 +111,10 @@ class AccountCapabilities {
   signin::Tribool can_use_gemini_in_chrome() const;
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
   // The user account is able to use generative AI in recorder app.
   signin::Tribool can_use_generative_ai_in_recorder_app() const;
+#endif
 
   // The user account is able to use generative AI photo editing.
   signin::Tribool can_use_generative_ai_photo_editing() const;

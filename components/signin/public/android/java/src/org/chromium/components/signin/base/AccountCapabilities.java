@@ -117,14 +117,6 @@ public class AccountCapabilities {
     }
 
     /**
-     * @return canUseGenerativeAiInRecorderApp capability value.
-     */
-    public @Tribool int canUseGenerativeAiInRecorderApp() {
-        return getCapabilityByName(
-                AccountCapabilitiesConstants.CAN_USE_GENERATIVE_AI_IN_RECORDER_APP);
-    }
-
-    /**
      * @return canUseGenerativeAiPhotoEditing capability value.
      */
     public @Tribool int canUseGenerativeAiPhotoEditing() {

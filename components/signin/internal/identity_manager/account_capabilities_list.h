@@ -86,9 +86,11 @@ ACCOUNT_CAPABILITY(kCanUseEduFeaturesCapabilityName,
                    "accountcapabilities/gezdsmbnmnqxa")
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
 ACCOUNT_CAPABILITY(kCanUseGenerativeAiInRecorderApp,
                    CAN_USE_GENERATIVE_AI_IN_RECORDER_APP,
                    "accountcapabilities/ge2tkobnmnqxa")
+#endif
 
 ACCOUNT_CAPABILITY(kCanUseGenerativeAiPhotoEditing,
                    CAN_USE_GENERATIVE_AI_PHOTO_EDITING,

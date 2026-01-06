@@ -315,6 +315,7 @@ TEST_F(AccountCapabilitiesTest, CanUseSpeakerLabelInRecorderApp) {
             signin::Tribool::kFalse);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(AccountCapabilitiesTest, CanUseGenerativeAiInRecorderApp) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.can_use_generative_ai_in_recorder_app(),
@@ -329,6 +330,7 @@ TEST_F(AccountCapabilitiesTest, CanUseGenerativeAiInRecorderApp) {
   EXPECT_EQ(capabilities.can_use_generative_ai_in_recorder_app(),
             signin::Tribool::kFalse);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(AccountCapabilitiesTest, CanUseGenerativeAiPhotoEditing) {
   AccountCapabilities capabilities;

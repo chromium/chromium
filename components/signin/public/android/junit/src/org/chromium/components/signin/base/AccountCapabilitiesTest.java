@@ -53,8 +53,6 @@ public final class AccountCapabilitiesTest {
                 return capabilities.canUseDevToolsGenerativeAiFeatures();
             case AccountCapabilitiesConstants.CAN_USE_EDU_FEATURES_CAPABILITY_NAME:
                 return capabilities.canUseEduFeatures();
-            case AccountCapabilitiesConstants.CAN_USE_GENERATIVE_AI_IN_RECORDER_APP:
-                return capabilities.canUseGenerativeAiInRecorderApp();
             case AccountCapabilitiesConstants.CAN_USE_GENERATIVE_AI_PHOTO_EDITING:
                 return capabilities.canUseGenerativeAiPhotoEditing();
             case AccountCapabilitiesConstants.CAN_USE_MANTA_SERVICE_NAME:
@@ -152,11 +150,6 @@ public final class AccountCapabilitiesTest {
                                 .value(
                                         AccountCapabilitiesConstants
                                                 .CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP),
-                        new ParameterSet()
-                                .name("CanUseGenerativeAiInRecorderApp")
-                                .value(
-                                        AccountCapabilitiesConstants
-                                                .CAN_USE_GENERATIVE_AI_IN_RECORDER_APP),
                         new ParameterSet()
                                 .name("CanUseGenerativeAiPhotoEditing")
                                 .value(

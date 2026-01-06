@@ -155,10 +155,12 @@ signin::Tribool AccountCapabilities::can_use_gemini_in_chrome() const {
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
 signin::Tribool AccountCapabilities::can_use_generative_ai_in_recorder_app()
     const {
   return GetCapabilityByName(kCanUseGenerativeAiInRecorderApp);
 }
+#endif
 
 signin::Tribool AccountCapabilities::can_use_generative_ai_photo_editing()
     const {
