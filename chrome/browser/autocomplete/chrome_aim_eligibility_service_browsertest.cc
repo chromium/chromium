@@ -648,8 +648,10 @@ class ChromeAimEligibilityServiceStartupRequestBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/473787329): Flaky on multiple platforms. Re-enable once
+// flakiness has been resolved.
 IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
-                       RequestWhenOfflineAtStartup) {
+                       DISABLED_RequestWhenOfflineAtStartup) {
   base::HistogramTester histogram_tester;
 
   omnibox::AimEligibilityResponse response;
@@ -730,8 +732,10 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
       AimEligibilityServiceFriend::EligibilityRequestStatus::kSuccess, 1);
 }
 
+// TODO(crbug.com/473787329): Flaky on multiple platforms. Re-enable once
+// flakiness has been resolved.
 IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
-                       NoRequestOnSubsequentNetworkChanges) {
+                       DISABLED_NoRequestOnSubsequentNetworkChanges) {
   base::HistogramTester histogram_tester;
 
   omnibox::AimEligibilityResponse response;
