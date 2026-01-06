@@ -160,8 +160,11 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   class NET_EXPORT_PRIVATE Job;
   class NET_EXPORT_PRIVATE JobController;
   class NET_EXPORT_PRIVATE Group;
+  class NET_EXPORT_PRIVATE Attempt;
   class NET_EXPORT_PRIVATE AttemptManager;
   class NET_EXPORT_PRIVATE IPEndPointStateTracker;
+  // TODO(crbug.com/457478038): Remove `TcpBasedAttempt` and
+  // `TcpBasedAttemptSlot` once we complete implementing `Attempt`.
   class NET_EXPORT_PRIVATE TcpBasedAttempt;
   class NET_EXPORT_PRIVATE TcpBasedAttemptSlot;
   class NET_EXPORT_PRIVATE QuicAttempt;
