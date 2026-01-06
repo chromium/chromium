@@ -6,7 +6,6 @@
 
 #import "base/functional/bind.h"
 #import "base/memory/memory_pressure_listener.h"
-#import "base/memory/memory_pressure_listener_registry.h"
 #import "base/test/task_environment.h"
 #import "base/threading/thread.h"
 #import "components/previous_session_info/previous_session_info.h"
@@ -51,7 +50,6 @@ class MemoryWarningHelperTest : public PlatformTest,
   }
 
  private:
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::MemoryPressureLevel memory_pressure_level_;
   std::unique_ptr<base::MemoryPressureListenerRegistration>
