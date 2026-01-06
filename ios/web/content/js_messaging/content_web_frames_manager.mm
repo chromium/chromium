@@ -81,6 +81,15 @@ ContentWebFramesManager::ContentWebFramesManager(
   js_feature_manager_ = std::make_unique<ContentJavaScriptFeatureManager>(
       std::move(java_script_features));
   js_feature_manager_->AddDocumentStartScripts(js_communication_host_.get());
+
+  // Handle frames that may already exist if WebContents was created before
+  // this observer was attached (e.g., when created with an opener).
+  content_web_state->GetWebContents()->ForEachRenderFrameHost(
+      [this](content::RenderFrameHost* render_frame_host) {
+        if (render_frame_host->IsRenderFrameLive()) {
+          RenderFrameCreated(render_frame_host);
+        }
+      });
 }
 
 ContentWebFramesManager::~ContentWebFramesManager() = default;
@@ -121,6 +130,12 @@ WebFrame* ContentWebFramesManager::GetFrameWithId(const std::string& frame_id) {
 
 void ContentWebFramesManager::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
+  // Guard against duplicate registration (e.g., if ForEachRenderFrameHost in
+  // constructor already registered this frame).
+  if (content_to_web_id_map_.contains(render_frame_host->GetGlobalId())) {
+    return;
+  }
+
   std::string web_frame_id = base::UnguessableToken::Create().ToString();
   auto web_frame = std::make_unique<ContentWebFrame>(
       web_frame_id, render_frame_host, content_web_state_);

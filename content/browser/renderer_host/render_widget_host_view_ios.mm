@@ -173,7 +173,12 @@ RenderWidgetHostViewIOS::GetFilteredGestureProviderForTesting() {
   return &gesture_provider_;
 }
 
-void RenderWidgetHostViewIOS::InitAsChild(gfx::NativeView parent_view) {}
+void RenderWidgetHostViewIOS::InitAsChild(gfx::NativeView parent_view) {
+  // Attach to the parent view tree if provided.
+  if (parent_view) {
+    UpdateNativeViewTree(parent_view);
+  }
+}
 void RenderWidgetHostViewIOS::SetSize(const gfx::Size& size) {}
 void RenderWidgetHostViewIOS::SetBounds(const gfx::Rect& rect) {}
 
