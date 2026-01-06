@@ -60,6 +60,7 @@ export class ContextualTasksOnboardingTooltipElement extends CrLitElement {
   show() {
     if (this.tooltip_) {
       this.tooltip_.show();
+      this.updatePosition();
     }
   }
 
