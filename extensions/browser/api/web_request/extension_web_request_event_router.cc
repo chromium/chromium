@@ -2278,8 +2278,8 @@ void WebRequestEventRouter::OnOTRBrowserContextDestroyed(
   // ways that break the expectations we have in production code.
   if (event_router) {
     event_router->OnBrowserContextShutdown(otr_browser_context);
-    DCHECK(!base::Contains(event_router->data_,
-                           GetBrowserContextID(otr_browser_context)));
+    DCHECK(!event_router->data_.contains(
+        GetBrowserContextID(otr_browser_context)));
   }
 }
 

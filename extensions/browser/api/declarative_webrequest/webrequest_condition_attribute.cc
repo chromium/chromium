@@ -426,7 +426,7 @@ bool HeaderMatcher::StringMatchTest::Matches(
                                    CaseInsensitiveCompareASCII<char>())
                    .begin() != str.end();
       } else {
-        return base::Contains(str, data_);
+        return str.contains(data_);
       }
   }
   // We never get past the "switch", but the compiler worries about no return.

@@ -314,7 +314,7 @@ bool RemoveScripts(
     // `existing_script_ids`.
     std::string id_with_prefix =
         scripting::AddPrefixToDynamicScriptId(id, source);
-    if (!base::Contains(existing_script_ids, id_with_prefix)) {
+    if (!existing_script_ids.contains(id_with_prefix)) {
       *error =
           ErrorUtils::FormatErrorMessage(kNonExistentScriptIdError, id.c_str());
       return false;

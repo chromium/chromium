@@ -213,7 +213,7 @@ class Handler : public content::WebContentsObserver {
     ScriptExecutor::FrameResult result;
     result.frame_id = frame_id;
     result.document_id = ExtensionApiFrameIdMap::GetDocumentId(frame);
-    DCHECK(!base::Contains(results_, frame->GetFrameToken()));
+    DCHECK(!results_.contains(frame->GetFrameToken()));
     results_[frame->GetFrameToken()] = std::move(result);
   }
 
@@ -244,7 +244,7 @@ class Handler : public content::WebContentsObserver {
 
   ScriptExecutor::FrameResult& GetFrameResult(
       const blink::LocalFrameToken& frame_token) {
-    DCHECK(base::Contains(results_, frame_token));
+    DCHECK(results_.contains(frame_token));
     return results_[frame_token];
   }
 
