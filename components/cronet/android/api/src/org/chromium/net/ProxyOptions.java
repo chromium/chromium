@@ -41,6 +41,39 @@ public final class ProxyOptions {
     }
 
     /**
+     * Constructs a proxy configuration out of a list of {@link Proxy}.
+     *
+     * <p>Proxies in the list will be used in order. Proxy in position N+1 will be used only if we
+     * failed to use proxy in position N. If proxy in position N fails for any reason (including
+     * cancellations triggered via {@link Proxy.Callback}), but proxy in position N+1 succeeds,
+     * proxies in position N will be temporarily deprioritized. While a proxy is deprioritized it
+     * used only as a last resort.
+     *
+     * <p>A {@code null} list element represents a non-proxied connection, in which case requests
+     * will be sent directly to the destination. It is only allowed as the last element in the list.
+     * This can be used to define fail-open/fail-closed semantics: if the all of the proxies
+     * specified in the list happen to fail, adding (or not adding) a {@code null} element at the
+     * end of the list will control whether non-proxied connections are allowed.
+     *
+     * @param proxyList The list of {@link Proxy} that defines this configuration.
+     * @throws IllegalArgumentException If the proxy list is empty; or, an element, other than the
+     *     last one in the list, is {@code null}.
+     * @deprecated Call {@link fromProxyList} instead.
+     */
+    @Deprecated
+    public ProxyOptions(@NonNull List<Proxy> proxyList) {
+        if (Objects.requireNonNull(proxyList).isEmpty()) {
+            throw new IllegalArgumentException("ProxyList cannot be empty");
+        }
+        int nullElemPos = proxyList.indexOf(null);
+        if (nullElemPos != -1 && nullElemPos != proxyList.size() - 1) {
+            throw new IllegalArgumentException(
+                    "Null is allowed only as the last element in the proxy list");
+        }
+        this.mProxyList = Collections.unmodifiableList(new ArrayList<>(proxyList));
+    }
+
+    /**
      * Returns the list of proxies that are part of this proxy configuration.
      *
      * @deprecated This will be made package private before Cronet proxy APIs are made
@@ -66,18 +99,6 @@ public final class ProxyOptions {
      */
     @RequiresOptIn
     public @interface Experimental {}
-
-    private ProxyOptions(@NonNull List<Proxy> proxyList) {
-        if (Objects.requireNonNull(proxyList).isEmpty()) {
-            throw new IllegalArgumentException("ProxyList cannot be empty");
-        }
-        int nullElemPos = proxyList.indexOf(null);
-        if (nullElemPos != -1 && nullElemPos != proxyList.size() - 1) {
-            throw new IllegalArgumentException(
-                    "Null is allowed only as the last element in the proxy list");
-        }
-        mProxyList = Collections.unmodifiableList(new ArrayList<>(proxyList));
-    }
 
     private final @NonNull List<Proxy> mProxyList;
 }
