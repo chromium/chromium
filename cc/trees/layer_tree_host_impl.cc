@@ -564,7 +564,9 @@ LayerTreeHostImpl::LayerTreeHostImpl(
         std::make_unique<CompositorFrameReportingController>(
             /*should_report_histograms=*/!settings
                 .single_thread_proxy_scheduler,
-            /*should_report_ukm=*/!settings.single_thread_proxy_scheduler, id,
+            /*should_report_ukm=*/!settings.single_thread_proxy_scheduler &&
+                base::FeatureList::IsEnabled(features::kReportUkm),
+            id,
             /*is_trees_in_viz_client=*/
             settings_.TreesInVizInClientProcess());
   }
