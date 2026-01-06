@@ -3258,7 +3258,7 @@
       // Enable sourceCharPosition for the invoke-type resolve-promise
       // https://issues.chromium.org/issues/381529126
       name: "LongAnimationFrameSourceCharPosition",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Enable retrieving sourceLine and sourceColumn in LoAF implementation.
