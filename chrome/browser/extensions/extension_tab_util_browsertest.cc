@@ -544,8 +544,6 @@ class SharedTabGroupExtensionsTabUtilTest : public ExtensionTabUtilBrowserTest {
   SharedTabGroupExtensionsTabUtilTest& operator=(
       const SharedTabGroupExtensionsTabUtilTest&) = delete;
 
-  void SetUp() override { ExtensionTabUtilBrowserTest ::SetUp(); }
-
   // Adds tab navigated to |url| in the given |browser|.
   tabs::TabInterface* AddTab(const GURL& url) {
     return browser()->tab_strip_model()->GetTabForWebContents(
