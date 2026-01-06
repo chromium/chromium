@@ -753,10 +753,9 @@ bool DomainIs(std::string_view canonical_host,
 
   // |host_first_pos| is the start of the compared part of the host name, not
   // start of the whole host name.
-  const char* host_first_pos =
-      UNSAFE_TODO(canonical_host.data() + host_len - canonical_domain.length());
+  size_t host_first_pos = host_len - canonical_domain.length();
 
-  if (std::string_view(host_first_pos, canonical_domain.length()) !=
+  if (canonical_host.substr(host_first_pos, canonical_domain.length()) !=
       canonical_domain) {
     return false;
   }
@@ -766,7 +765,7 @@ bool DomainIs(std::string_view canonical_host,
   // immediately before the compared part should be a dot. For example,
   // www.google.com has domain "google.com", but www.iamnotgoogle.com does not.
   if (canonical_domain[0] != '.' && host_len > canonical_domain.length() &&
-      *(UNSAFE_TODO(host_first_pos - 1)) != '.') {
+      canonical_host[host_first_pos - 1] != '.') {
     return false;
   }
 
