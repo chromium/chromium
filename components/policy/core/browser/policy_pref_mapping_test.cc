@@ -700,8 +700,7 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_dir,
       }
     }
 
-    if (test_filter.has_value() &&
-        !base::Contains(test_filter.value(), policy_name)) {
+    if (test_filter.has_value() && !test_filter.value().contains(policy_name)) {
       // Skip policy based on the filter.
       continue;
     }

@@ -231,7 +231,7 @@ void AccountTrackerService::StartTrackingAccount(
   // TODO(crbug.com/40283610): Change into a CHECK once there are no crash
   // reports for tracking empty account ids.
   DUMP_WILL_BE_CHECK(!account_id.empty());
-  if (!base::Contains(accounts_, account_id)) {
+  if (!accounts_.contains(account_id)) {
     DVLOG(1) << "StartTracking " << account_id;
     AccountInfo account_info;
     account_info.account_id = account_id;
@@ -240,13 +240,13 @@ void AccountTrackerService::StartTrackingAccount(
 }
 
 bool AccountTrackerService::IsTrackingAccount(const CoreAccountId& account_id) {
-  return base::Contains(accounts_, account_id);
+  return accounts_.contains(account_id);
 }
 
 void AccountTrackerService::StopTrackingAccount(
     const CoreAccountId& account_id) {
   DVLOG(1) << "StopTracking " << account_id;
-  if (base::Contains(accounts_, account_id)) {
+  if (accounts_.contains(account_id)) {
     AccountInfo account_info = std::move(accounts_[account_id]);
     RemoveFromPrefs(account_info);
     RemoveAccountImageFromDisk(account_id);
@@ -261,7 +261,7 @@ void AccountTrackerService::StopTrackingAccount(
 void AccountTrackerService::SetAccountInfoFromUserInfo(
     const CoreAccountId& account_id,
     const base::Value::Dict& user_info) {
-  DCHECK(base::Contains(accounts_, account_id));
+  DCHECK(accounts_.contains(account_id));
   AccountInfo& account_info = accounts_[account_id];
 
   AccountInPrefState state = AccountInPrefState::kValid;
@@ -327,7 +327,7 @@ void AccountTrackerService::SetAccountImage(
 void AccountTrackerService::SetAccountCapabilities(
     const CoreAccountId& account_id,
     const AccountCapabilities& account_capabilities) {
-  DCHECK(base::Contains(accounts_, account_id));
+  DCHECK(accounts_.contains(account_id));
   AccountInfo& account_info = accounts_[account_id];
 
   bool modified = account_info.capabilities.UpdateWith(account_capabilities);
@@ -353,7 +353,7 @@ void AccountTrackerService::SetAccountCapabilities(
 
 void AccountTrackerService::SetIsChildAccount(const CoreAccountId& account_id,
                                               bool is_child_account) {
-  DCHECK(base::Contains(accounts_, account_id)) << account_id.ToString();
+  DCHECK(accounts_.contains(account_id)) << account_id.ToString();
   AccountInfo& account_info = accounts_[account_id];
   bool modified = UpdateAccountInfoChildStatus(account_info, is_child_account);
   if (!modified) {
@@ -368,7 +368,7 @@ void AccountTrackerService::SetIsChildAccount(const CoreAccountId& account_id,
 void AccountTrackerService::SetIsAdvancedProtectionAccount(
     const CoreAccountId& account_id,
     bool is_under_advanced_protection) {
-  DCHECK(base::Contains(accounts_, account_id)) << account_id.ToString();
+  DCHECK(accounts_.contains(account_id)) << account_id.ToString();
   AccountInfo& account_info = accounts_[account_id];
   if (account_info.is_under_advanced_protection ==
       is_under_advanced_protection) {
@@ -422,7 +422,7 @@ void AccountTrackerService::MigrateToGaiaId() {
     // If there is already an account keyed to the current account's gaia id,
     // assume this is the result of a partial migration and skip the account
     // that is currently inspected.
-    if (base::Contains(accounts_, new_account_id)) {
+    if (accounts_.contains(new_account_id)) {
       continue;
     }
 
@@ -444,7 +444,7 @@ void AccountTrackerService::MigrateToGaiaId() {
 
   // Remove any obsolete account.
   for (const auto& account_id : to_remove) {
-    DCHECK(base::Contains(accounts_, account_id));
+    DCHECK(accounts_.contains(account_id));
     AccountInfo& account_info = accounts_[account_id];
     RemoveAccountImageFromDisk(account_id);
     RemoveFromPrefs(account_info);
@@ -781,7 +781,7 @@ CoreAccountId AccountTrackerService::SeedAccountInfo(AccountInfo info) {
     return CoreAccountId();
   }
 
-  const bool already_exists = base::Contains(accounts_, info.account_id);
+  const bool already_exists = accounts_.contains(info.account_id);
   StartTrackingAccount(info.account_id);
   AccountInfo& account_info = accounts_[info.account_id];
   DCHECK(!already_exists || account_info.gaia.empty() ||

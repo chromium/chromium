@@ -663,7 +663,7 @@ bool DeskSyncBridge::HasUserTemplateWithName(const std::u16string& name) {
 }
 
 bool DeskSyncBridge::HasUuid(const base::Uuid& uuid) const {
-  return uuid.is_valid() && base::Contains(desk_template_entries_, uuid);
+  return uuid.is_valid() && desk_template_entries_.contains(uuid);
 }
 
 std::string DeskSyncBridge::GetCacheGuid() {

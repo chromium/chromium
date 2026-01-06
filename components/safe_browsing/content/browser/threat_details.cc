@@ -488,7 +488,7 @@ void ThreatDetails::AddDomElement(
     // of our current frame. We can easily lookup our parent.
     const std::string& parent_key =
         GetElementKey(frame_tree_node_id, parent_element_node_id);
-    if (base::Contains(elements_, parent_key)) {
+    if (elements_.contains(parent_key)) {
       parent_element = elements_[parent_key].get();
     }
   }
@@ -692,7 +692,7 @@ void ThreatDetails::FinishCollection(
   for (auto& element_pair : elements_) {
     const std::string& element_key = element_pair.first;
     HTMLElement* element = element_pair.second.get();
-    if (base::Contains(iframe_key_to_frame_tree_id_map_, element_key)) {
+    if (iframe_key_to_frame_tree_id_map_.contains(element_key)) {
       content::FrameTreeNodeId frame_tree_id_of_iframe_renderer =
           iframe_key_to_frame_tree_id_map_[element_key];
       const std::unordered_set<int>& child_ids =
@@ -811,7 +811,7 @@ bool ThreatDetails::ShouldFillReferrerChain() {
       base::MakeFixedFlatSet<ClientSafeBrowsingReportRequest::ReportType>(
           {ClientSafeBrowsingReportRequest::URL_SUSPICIOUS,
            ClientSafeBrowsingReportRequest::APK_DOWNLOAD});
-  return base::Contains(valid_report_types, report_->type());
+  return valid_report_types.contains(report_->type());
 }
 
 void ThreatDetails::FillReferrerChain(
@@ -832,7 +832,7 @@ bool ThreatDetails::ShouldFillInterstitialInteractions() {
       base::MakeFixedFlatSet<ClientSafeBrowsingReportRequest::ReportType>(
           {ClientSafeBrowsingReportRequest::URL_PHISHING,
            ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING});
-  return base::Contains(valid_report_types, report_->type());
+  return valid_report_types.contains(report_->type());
 }
 
 void ThreatDetails::MaybeAttachThreatDetailsAndLaunchSurvey() {

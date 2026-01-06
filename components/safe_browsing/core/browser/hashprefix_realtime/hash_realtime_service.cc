@@ -496,8 +496,7 @@ void HashRealTimeService::RemoveUnmatchedFullHashes(
       std::remove_if(
           mutable_full_hashes->begin(), mutable_full_hashes->end(),
           [requested_hash_prefixes_set](const V5::FullHash& full_hash) {
-            return !base::Contains(
-                requested_hash_prefixes_set,
+            return !requested_hash_prefixes_set.contains(
                 hash_realtime_utils::GetHashPrefix(full_hash.full_hash()));
           }),
       mutable_full_hashes->end());

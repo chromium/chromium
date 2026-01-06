@@ -83,7 +83,7 @@ std::string FindTitleForSimilarProducts(
       if (bottom_label) {
         std::string bottom_label_string = bottom_label.value();
         bottom_labels.insert(bottom_label_string);
-        if (!base::Contains(counted_labels, bottom_label_string)) {
+        if (!counted_labels.contains(bottom_label_string)) {
           counted_labels.insert(bottom_label_string);
           label_count[bottom_label_string]++;
         }
@@ -93,7 +93,7 @@ std::string FindTitleForSimilarProducts(
       if (second_to_bottom_label) {
         std::string second_to_bottom_label_string =
             second_to_bottom_label.value();
-        if (!base::Contains(counted_labels, second_to_bottom_label)) {
+        if (!counted_labels.contains(second_to_bottom_label)) {
           counted_labels.insert(second_to_bottom_label_string);
           label_count[second_to_bottom_label_string]++;
         }

@@ -45,8 +45,8 @@ AutofillOfferManager::GetCardLinkedOffersMap(
   GURL last_committed_primary_main_frame_origin =
       last_committed_primary_main_frame_url.DeprecatedGetOriginAsURL();
 
-  if (!base::Contains(eligible_merchant_domains_,
-                      last_committed_primary_main_frame_origin)) {
+  if (!eligible_merchant_domains_.contains(
+          last_committed_primary_main_frame_origin)) {
     return {};
   }
 
@@ -82,8 +82,7 @@ AutofillOfferManager::GetCardLinkedOffersMap(
 
 bool AutofillOfferManager::IsUrlEligible(
     const GURL& last_committed_primary_main_frame_url) {
-  return base::Contains(
-      eligible_merchant_domains_,
+  return eligible_merchant_domains_.contains(
       last_committed_primary_main_frame_url.DeprecatedGetOriginAsURL());
 }
 

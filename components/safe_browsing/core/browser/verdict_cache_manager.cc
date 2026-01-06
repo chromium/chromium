@@ -788,7 +788,7 @@ ChromeUserPopulation::PageLoadToken VerdictCacheManager::CreatePageLoadToken(
 ChromeUserPopulation::PageLoadToken VerdictCacheManager::GetPageLoadToken(
     const GURL& url) {
   std::string hostname = url.GetHost();
-  if (!base::Contains(page_load_token_map_, hostname)) {
+  if (!page_load_token_map_.contains(hostname)) {
     return ChromeUserPopulation::PageLoadToken();
   }
 

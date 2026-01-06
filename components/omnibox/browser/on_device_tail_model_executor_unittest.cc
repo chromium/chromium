@@ -428,8 +428,8 @@ TEST_F(OnDeviceTailModelExecutorTest,
     OnDeviceTailModelExecutor::ModelInput input("logi", "", 5);
     predictions = executor_->GenerateSuggestionsForPrefix(input);
     for (auto& prediction : predictions) {
-      EXPECT_FALSE(base::Contains(prediction.suggestion, "abc"));
-      EXPECT_FALSE(base::Contains(prediction.suggestion, "ogi"));
+      EXPECT_FALSE(prediction.suggestion.contains("abc"));
+      EXPECT_FALSE(prediction.suggestion.contains("ogi"));
     }
   }
 }

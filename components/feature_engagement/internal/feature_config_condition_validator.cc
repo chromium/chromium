@@ -223,7 +223,7 @@ bool FeatureConfigConditionValidator::IsBlocked(
     case BlockedBy::Type::EXPLICIT:
       for (const std::string& feature_name :
            *config.blocked_by.affected_features) {
-        if (base::Contains(currently_showing_features_, feature_name)) {
+        if (currently_showing_features_.contains(feature_name)) {
           return true;
         }
       }

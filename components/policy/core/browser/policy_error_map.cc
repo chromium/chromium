@@ -138,7 +138,7 @@ void PolicyErrorMap::AddError(const std::string& policy,
 bool PolicyErrorMap::HasError(const std::string& policy) {
   if (IsReady()) {
     CheckReadyAndConvert();
-    return base::Contains(map_, policy);
+    return map_.contains(policy);
   }
   return base::Contains(pending_, policy, &PendingError::policy_name);
 }

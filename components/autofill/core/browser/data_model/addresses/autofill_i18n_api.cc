@@ -55,7 +55,7 @@ std::u16string GetFormattingExpressionOverrides(
            "SG", "LK", "TH", "GB", "US", "VN", "ZA"});
 
   if (field_type == ADDRESS_HOME_STREET_LOCATION) {
-    if (base::Contains(kHouseNumberFirstCountriesSet, country_code.value())) {
+    if (kHouseNumberFirstCountriesSet.contains(country_code.value())) {
       return u"${ADDRESS_HOME_HOUSE_NUMBER;;} ${ADDRESS_HOME_STREET_NAME;;}";
     }
   }
@@ -76,8 +76,7 @@ std::u16string GetFormattingExpressionOverrides(
 
   if (field_type == ADDRESS_HOME_ZIP &&
       base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
-    if (base::Contains(kSpaceZipCodeSeparatorCountriesSet,
-                       country_code.value())) {
+    if (kSpaceZipCodeSeparatorCountriesSet.contains(country_code.value())) {
       return u"${ADDRESS_HOME_ZIP_PREFIX;;} ${ADDRESS_HOME_ZIP_SUFFIX;;}";
     }
   }

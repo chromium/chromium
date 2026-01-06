@@ -678,8 +678,8 @@ TEST_F(NetworkSessionConfiguratorTest, QuicHostAllowlist) {
   ParseFieldTrials();
 
   EXPECT_EQ(2u, params_.quic_host_allowlist.size());
-  EXPECT_TRUE(base::Contains(params_.quic_host_allowlist, "www.example.com"));
-  EXPECT_TRUE(base::Contains(params_.quic_host_allowlist, "www.example.org"));
+  EXPECT_TRUE(params_.quic_host_allowlist.contains("www.example.com"));
+  EXPECT_TRUE(params_.quic_host_allowlist.contains("www.example.org"));
 }
 
 TEST_F(NetworkSessionConfiguratorTest, QuicHostAllowlistEmpty) {

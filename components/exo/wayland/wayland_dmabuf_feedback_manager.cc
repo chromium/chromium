@@ -146,7 +146,7 @@ class WaylandDmabufFeedback {
 
     for (const auto& [format, modifier_entries] :
          default_tranche_->GetFormatsAndModifiers()) {
-      if (base::Contains(display_formats_and_modifiers, format)) {
+      if (display_formats_and_modifiers.contains(format)) {
         base::flat_map<size_t, uint64_t> scanout_modifier_entries;
 
         if (modifier_entries.size() == 1) {
@@ -250,7 +250,7 @@ class WaylandDmabufSurfaceFeedback : public SurfaceObserver {
   }
   void OnSurfaceFeedbackRefDestroyed(
       WaylandDmabufSurfaceFeedbackResourceWrapper* surface_feedback_ref) {
-    DCHECK(base::Contains(surface_feedback_refs_, surface_feedback_ref));
+    DCHECK(surface_feedback_refs_.contains(surface_feedback_ref));
     surface_feedback_refs_.erase(surface_feedback_ref);
     if (surface_feedback_refs_.empty())
       feedback_manager_->RemoveSurfaceFeedback(surface_);
@@ -413,7 +413,7 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
 WaylandDmabufFeedbackManager::~WaylandDmabufFeedbackManager() = default;
 
 bool WaylandDmabufFeedbackManager::IsFormatSupported(uint32_t format) const {
-  return base::Contains(drm_formats_and_modifiers_, format);
+  return drm_formats_and_modifiers_.contains(format);
 }
 
 void WaylandDmabufFeedbackManager::SendFormatsAndModifiers(
@@ -487,14 +487,14 @@ void WaylandDmabufFeedbackManager::GetSurfaceFeedback(
                     std::move(surface_feedback_ref));
 
   auto* feedback = surface_feedback->GetFeedback();
-  if (base::Contains(scanout_candidates_, surface))
+  if (scanout_candidates_.contains(surface))
     feedback->MaybeAddScanoutTranche(surface);
 
   SendFeedback(feedback, feedback_resource);
 }
 
 void WaylandDmabufFeedbackManager::RemoveSurfaceFeedback(Surface* surface) {
-  DCHECK(base::Contains(surface_feedbacks_, surface));
+  DCHECK(surface_feedbacks_.contains(surface));
   surface_feedbacks_.erase(surface);
 }
 
@@ -510,7 +510,7 @@ void WaylandDmabufFeedbackManager::AddSurfaceToScanoutCandidates(
 
   scanout_candidates_.emplace(surface, reason);
 
-  if (!base::Contains(surface_feedbacks_, surface)) {
+  if (!surface_feedbacks_.contains(surface)) {
     return;
   }
 
@@ -548,7 +548,7 @@ void WaylandDmabufFeedbackManager::RemoveSurfaceFromScanoutCandidates(
     return;
   }
 
-  if (!base::Contains(surface_feedbacks_, surface)) {
+  if (!surface_feedbacks_.contains(surface)) {
     return;
   }
 
@@ -566,8 +566,8 @@ void WaylandDmabufFeedbackManager::RemoveSurfaceFromScanoutCandidates(
 }
 
 void WaylandDmabufFeedbackManager::MaybeResendFeedback(Surface* surface) {
-  if (!base::Contains(scanout_candidates_, surface) ||
-      !base::Contains(surface_feedbacks_, surface)) {
+  if (!scanout_candidates_.contains(surface) ||
+      !surface_feedbacks_.contains(surface)) {
     return;
   }
 

@@ -294,7 +294,7 @@ QueryResultMap CPUMeasurementMonitor::UpdateAndGetCPUMeasurements(
     const OriginInBrowsingInstanceContext& origin_context = it->first;
     scoped_refptr<ScopedCPUTimeResult>& result_ptr = it->second;
     CHECK(result_ptr);
-    if (base::Contains(live_origin_contexts, origin_context)) {
+    if (live_origin_contexts.contains(origin_context)) {
       save_result(ResourceContext(origin_context), result_ptr);
       ++it;
     } else {

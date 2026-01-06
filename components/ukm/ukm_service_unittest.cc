@@ -175,7 +175,7 @@ bool WebDXFeaturesStrictlyContains(const HighLevelWebFeatures& actual_features,
   BitSet bitset(kWebDXFeatureNumberOfFeaturesForTesting,
                 actual_features.bit_vector());
   for (size_t i = 0; i < kWebDXFeatureNumberOfFeaturesForTesting; ++i) {
-    if (bitset.Contains(i) != base::Contains(expected_features, i)) {
+    if (bitset.Contains(i) != expected_features.contains(i)) {
       return false;
     }
   }

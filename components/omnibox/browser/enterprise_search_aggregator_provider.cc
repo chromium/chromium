@@ -958,7 +958,7 @@ EnterpriseSearchAggregatorProvider::ParseResultList(
         // Check for existing size parameters (e.g., -s128, =w256, -h64).
         RE2 size_regex("=(?:[swh]\\d+|[^=]*?-[swh]\\d+)");
         if (!RE2::PartialMatch(image_url, size_regex)) {
-          image_url += base::Contains(image_url, "=") ? "-s64" : "=s64";
+          image_url += image_url.contains("=") ? "-s64" : "=s64";
         }
       }
       icon_url = template_url_->favicon_url().spec();

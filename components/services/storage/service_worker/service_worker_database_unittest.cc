@@ -519,10 +519,10 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetStorageKeysWithRegistrations(&keys));
   EXPECT_EQ(4U, keys.size());
-  EXPECT_TRUE(base::Contains(keys, key1));
-  EXPECT_TRUE(base::Contains(keys, key2));
-  EXPECT_TRUE(base::Contains(keys, key3));
-  EXPECT_TRUE(base::Contains(keys, key7));
+  EXPECT_TRUE(keys.contains(key1));
+  EXPECT_TRUE(keys.contains(key2));
+  EXPECT_TRUE(keys.contains(key3));
+  EXPECT_TRUE(keys.contains(key7));
 
   // |key3| has another registration, so should not remove it from the
   // unique origin list.
@@ -535,10 +535,10 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetStorageKeysWithRegistrations(&keys));
   EXPECT_EQ(4U, keys.size());
-  EXPECT_TRUE(base::Contains(keys, key1));
-  EXPECT_TRUE(base::Contains(keys, key2));
-  EXPECT_TRUE(base::Contains(keys, key3));
-  EXPECT_TRUE(base::Contains(keys, key7));
+  EXPECT_TRUE(keys.contains(key1));
+  EXPECT_TRUE(keys.contains(key2));
+  EXPECT_TRUE(keys.contains(key3));
+  EXPECT_TRUE(keys.contains(key7));
 
   // |key3| should be removed from the unique origin list.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -550,9 +550,9 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetStorageKeysWithRegistrations(&keys));
   EXPECT_EQ(3U, keys.size());
-  EXPECT_TRUE(base::Contains(keys, key1));
-  EXPECT_TRUE(base::Contains(keys, key2));
-  EXPECT_TRUE(base::Contains(keys, key7));
+  EXPECT_TRUE(keys.contains(key1));
+  EXPECT_TRUE(keys.contains(key2));
+  EXPECT_TRUE(keys.contains(key7));
 
   // Now re-enable kThirdPartyStoragePartitioning and check for the partitioned
   // keys.
@@ -564,11 +564,11 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetStorageKeysWithRegistrations(&keys));
   EXPECT_EQ(5U, keys.size());
-  EXPECT_TRUE(base::Contains(keys, key1));
-  EXPECT_TRUE(base::Contains(keys, key2));
-  EXPECT_TRUE(base::Contains(keys, key5));
-  EXPECT_TRUE(base::Contains(keys, key6));
-  EXPECT_TRUE(base::Contains(keys, key7));
+  EXPECT_TRUE(keys.contains(key1));
+  EXPECT_TRUE(keys.contains(key2));
+  EXPECT_TRUE(keys.contains(key5));
+  EXPECT_TRUE(keys.contains(key6));
+  EXPECT_TRUE(keys.contains(key7));
 }
 
 TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
@@ -2613,7 +2613,7 @@ void DeleteAllDataForStorageKeyTest::TestDeleteAllDataForStorageKey(
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetStorageKeysWithRegistrations(&unique_keys));
   ASSERT_EQ(2u, unique_keys.size());  // registered_key + existing_key
-  ASSERT_TRUE(base::Contains(unique_keys, registered_key));
+  ASSERT_TRUE(unique_keys.contains(registered_key));
 
   // The registration for `registered_key` should not be removed.
   RegistrationDataPtr data_out;

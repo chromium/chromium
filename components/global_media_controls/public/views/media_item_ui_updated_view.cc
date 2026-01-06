@@ -624,8 +624,8 @@ void MediaItemUIUpdatedView::UpdateMediaActionButtonsVisibility() {
   bool should_invalidate_layout = false;
 
   for (views::Button* button : media_action_buttons_) {
-    bool should_show = base::Contains(
-        media_actions_, static_cast<MediaSessionAction>(button->GetID()));
+    bool should_show = media_actions_.contains(
+        static_cast<MediaSessionAction>(button->GetID()));
     // Do not show the picture-in-picture button for a casting media item.
     if (button == picture_in_picture_button_ && footer_view_) {
       should_show = false;

@@ -201,8 +201,7 @@ void AffiliationServiceImpl::PrefetchChangePasswordURL(
     const GURL& url,
     base::OnceClosure callback) {
   FacetURI facet_uri = ConvertGURLToFacet(url);
-  if (!facet_uri.is_valid() ||
-      base::Contains(change_password_urls_, facet_uri)) {
+  if (!facet_uri.is_valid() || change_password_urls_.contains(facet_uri)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback));
     return;

@@ -1108,8 +1108,8 @@ void BrowserAutofillManager::LogSubmissionMetrics(
     base::TimeDelta time_from_interaction_to_submission =
         base::TimeTicks::Now() - metrics_->initial_interaction_timestamp;
     DenseSet<FormType> form_types = submitted_form->GetFormTypes();
-    bool card_form = base::Contains(form_types, FormType::kCreditCardForm);
-    bool address_form = base::Contains(form_types, FormType::kAddressForm);
+    bool card_form = form_types.contains(FormType::kCreditCardForm);
+    bool address_form = form_types.contains(FormType::kAddressForm);
     if (card_form) {
       metrics_->credit_card_form_event_logger
           .SetTimeFromInteractionToSubmission(
@@ -3190,14 +3190,12 @@ void BrowserAutofillManager::OnDidIdentifyFormForMetrics(
     autofill_metrics::FormEventLoggerBase::FormIdentificationTime
         identification_time) {
   DenseSet<FormType> form_types = form_structure.GetFormTypes();
-  const bool card_form =
-      base::Contains(form_types, FormType::kCreditCardForm) ||
-      base::Contains(form_types, FormType::kStandaloneCvcForm);
-  const bool address_form = base::Contains(form_types, FormType::kAddressForm);
+  const bool card_form = form_types.contains(FormType::kCreditCardForm) ||
+                         form_types.contains(FormType::kStandaloneCvcForm);
+  const bool address_form = form_types.contains(FormType::kAddressForm);
   const bool loyalty_card_form =
-      base::Contains(form_types, FormType::kLoyaltyCardForm);
-  const bool otp_form =
-      base::Contains(form_types, FormType::kOneTimePasswordForm);
+      form_types.contains(FormType::kLoyaltyCardForm);
+  const bool otp_form = form_types.contains(FormType::kOneTimePasswordForm);
   if (card_form) {
     metrics_->credit_card_form_event_logger.OnDidIdentifyForm(
         form_structure, identification_time);

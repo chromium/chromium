@@ -392,7 +392,7 @@ void DbusMenu::OnGetGroupProperties(ScopedMethodResponse* response) {
     struct_writer.OpenArray("{sv}", &property_writer);
     for (const auto& property_pair : item.properties) {
       if (!property_filter.empty() &&
-          !base::Contains(property_filter, property_pair.first)) {
+          !property_filter.contains(property_pair.first)) {
         continue;
       }
       dbus::MessageWriter dict_entry_writer(nullptr);

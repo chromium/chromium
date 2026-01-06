@@ -1349,7 +1349,7 @@ void TabGroupSyncServiceImpl::HandleTabGroupUpdated(
     return;
   }
 
-  if (base::Contains(empty_groups_, group_guid)) {
+  if (empty_groups_.contains(group_guid)) {
     empty_groups_.erase(group_guid);
     // This is the first time we are notifying the observers about the group as
     // it was empty before.

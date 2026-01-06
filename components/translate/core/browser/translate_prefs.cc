@@ -95,8 +95,8 @@ void MigrateObsoleteAlwaysTranslateLanguagesPref(PrefService* prefs) {
     // If the old pair's source language matches any of the never-translate
     // languages, it probably means that this source language was set to never
     // be translated after the old pref was deprecated, so avoid this conflict.
-    if (base::Contains(prefs->GetList(prefs::kBlockedLanguages),
-                       old_language_pair.first)) {
+    if (prefs->GetList(prefs::kBlockedLanguages)
+            .contains(old_language_pair.first)) {
       continue;
     }
 
@@ -243,7 +243,7 @@ bool TranslatePrefs::IsBlockedLanguage(std::string_view input_language) const {
   language::ToTranslateLanguageSynonym(&canonical_lang);
   const base::Value::List& blocked =
       prefs_->GetList(translate::prefs::kBlockedLanguages);
-  return base::Contains(blocked, base::Value(std::move(canonical_lang)));
+  return blocked.contains(canonical_lang);
 }
 
 void TranslatePrefs::BlockLanguage(std::string_view input_language) {

@@ -264,7 +264,7 @@ void PresentationFrame::ConnectToPresentation(
         std::move(receiver_connection_receiver), pid_route_it->second);
   } else {
     MediaRoute::Id route_id = pid_route_it->second.media_route_id();
-    if (base::Contains(browser_connection_proxies_, route_id)) {
+    if (browser_connection_proxies_.contains(route_id)) {
       return;
     }
 
