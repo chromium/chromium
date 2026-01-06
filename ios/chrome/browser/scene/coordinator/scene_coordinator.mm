@@ -4,8 +4,14 @@
 
 #import "ios/chrome/browser/scene/coordinator/scene_coordinator.h"
 
+#import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator.h"
+#import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h"
+#import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator.h"
+
+@interface SceneCoordinator () <AccountMenuCoordinatorDelegate>
+@end
 
 @implementation SceneCoordinator {
   id<SceneCommands> _sceneCommandsEndpoint;
@@ -13,6 +19,8 @@
   base::WeakPtr<Browser> _regularBrowser;
   // Coordinator for the Tab Grid
   TabGridCoordinator* _tabGridCoordinator;
+  // Coordinator for the account menu.
+  AccountMenuCoordinator* _accountMenuCoordinator;
 }
 
 - (instancetype)initWithSceneCommandsEndpoint:
@@ -40,6 +48,7 @@
 }
 
 - (void)stop {
+  [self stopAccountMenu];
   [_tabGridCoordinator stop];
 }
 
@@ -69,6 +78,20 @@
   [_tabGridCoordinator setActiveMode:mode];
 }
 
+- (void)showAccountMenuFromWebWithURL:(const GURL&)url {
+  if (_accountMenuCoordinator) {
+    return;
+  }
+  _accountMenuCoordinator = [[AccountMenuCoordinator alloc]
+      initWithBaseViewController:self.activeViewController
+                         browser:_regularBrowser.get()
+                      anchorView:nil
+                     accessPoint:AccountMenuAccessPoint::kWeb
+                             URL:url];
+  _accountMenuCoordinator.delegate = self;
+  [_accountMenuCoordinator start];
+}
+
 #pragma mark - Properties
 
 - (void)setDelegate:(id<TabGridCoordinatorDelegate>)delegate {
@@ -83,6 +106,23 @@
 
 - (UIViewController*)activeViewController {
   return _tabGridCoordinator.activeViewController;
+}
+
+#pragma mark - AccountMenuCoordinatorDelegate
+
+- (void)accountMenuCoordinatorWantsToBeStopped:
+    (AccountMenuCoordinator*)coordinator {
+  CHECK_EQ(_accountMenuCoordinator, coordinator);
+  [self stopAccountMenu];
+}
+
+#pragma mark - Private
+
+// Stops the account menu coordinator.
+- (void)stopAccountMenu {
+  [_accountMenuCoordinator stop];
+  _accountMenuCoordinator.delegate = nil;
+  _accountMenuCoordinator = nil;
 }
 
 @end

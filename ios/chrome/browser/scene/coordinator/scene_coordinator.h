@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
 
 class Browser;
+class GURL;
 @protocol SceneCommands;
 @protocol TabGridCoordinatorDelegate;
 
@@ -54,6 +55,9 @@ class Browser;
 
 // Sets the `mode` as the active one.
 - (void)setActiveMode:(TabGridMode)mode;
+
+// Shows the account menu.
+- (void)showAccountMenuFromWebWithURL:(const GURL&)url;
 
 @end
 

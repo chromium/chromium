@@ -56,9 +56,6 @@
 #import "ios/chrome/browser/app_store_rating/model/features.h"
 #import "ios/chrome/browser/appearance/ui_bundled/appearance_customization.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_sheet_coordinator.h"
-#import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator.h"
-#import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h"
-#import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/signin/fullscreen_promo/model/fullscreen_signin_promo_scene_agent.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_authentication_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_load_url.h"
@@ -400,8 +397,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 // TODO(crbug.com/429355979): Order and group methods by interface.
 // TODO(crbug.com/429354805): Add method comments(!)
 
-@interface SceneController () <AccountMenuCoordinatorDelegate,
-                               AuthenticationServiceObserving,
+@interface SceneController () <AuthenticationServiceObserving,
                                HistoryCoordinatorDelegate,
                                IncognitoInterstitialCoordinatorDelegate,
                                PasswordCheckupCoordinatorDelegate,
@@ -438,7 +434,6 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   // Fetches the Family Link member role asynchronously from KidsManagement API.
   std::unique_ptr<supervised_user::ListFamilyMembersFetcher>
       _familyMembersFetcher;
-  AccountMenuCoordinator* _accountMenuCoordinator;
 
   // The coordinator that manages the workflow importing data from Safari.
   SafariDataImportMainCoordinator* _safariImportCoordinator;
@@ -962,12 +957,6 @@ void RecordIfNeededSigninFullscreenPromoEvent(
     authenticationService->SignOut(signin_metrics::ProfileSignout::kPrefChanged,
                                    nil);
   }
-}
-
-- (void)stopAccountMenu {
-  [_accountMenuCoordinator stop];
-  _accountMenuCoordinator.delegate = nil;
-  _accountMenuCoordinator = nil;
 }
 
 - (void)handleURLContextsToOpen {
@@ -1504,8 +1493,6 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 
   [_mainCoordinator stop];
   _mainCoordinator = nil;
-
-  [self stopAccountMenu];
 
   [self.assistantSheetCoordinator stop];
   self.assistantSheetCoordinator = nil;
@@ -2298,24 +2285,7 @@ using UserFeedbackDataCallback =
   if (![self isTabAvailableToPresentViewController]) {
     return;
   }
-  if (_accountMenuCoordinator) {
-    // In case the account is already opened, no need to open a second one.
-    // It is not clear how it could occur, but it does according to
-    // crbug.com/443698000.
-    return;
-  }
-  Browser* browser = self.mainInterface.browser;
-  UIViewController* baseViewController = self.mainInterface.viewController;
-  _accountMenuCoordinator = [[AccountMenuCoordinator alloc]
-      initWithBaseViewController:baseViewController
-                         browser:browser
-                      anchorView:nil
-                     accessPoint:AccountMenuAccessPoint::kWeb
-                             URL:url];
-  _accountMenuCoordinator.delegate = self;
-  // TODO(crbug.com/336719423): Record signin metrics based on the
-  // selected action from the account switcher.
-  [_accountMenuCoordinator start];
+  [self.mainCoordinator showAccountMenuFromWebWithURL:url];
 }
 
 - (void)showWebSigninPromoFromViewController:
@@ -4633,16 +4603,6 @@ using UserFeedbackDataCallback =
 
 - (void)closeHistory {
   [self closeHistoryWithCompletion:nil];
-}
-
-#pragma mark - AccountMenuCoordinatorDelegate
-
-// Update the state, to take into account that the account menu coordinator is
-// stopped.
-- (void)accountMenuCoordinatorWantsToBeStopped:
-    (AccountMenuCoordinator*)coordinator {
-  CHECK_EQ(_accountMenuCoordinator, coordinator, base::NotFatalUntil::M140);
-  [self stopAccountMenu];
 }
 
 #pragma mark - SafariImportCoordinatorDelegate

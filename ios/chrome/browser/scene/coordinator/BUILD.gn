@@ -9,6 +9,8 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/authentication/account_menu/coordinator",
+    "//ios/chrome/browser/authentication/account_menu/public",
     "//ios/chrome/browser/shared/coordinator/root_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",

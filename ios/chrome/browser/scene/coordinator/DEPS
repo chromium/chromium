@@ -1,4 +1,5 @@
 include_rules = [
+  "+ios/chrome/browser/authentication/account_menu",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator.h",
 ]
