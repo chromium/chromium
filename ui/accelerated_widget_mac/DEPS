@@ -10,6 +10,6 @@ include_rules = [
   "+ui/gfx",
   "+ui/gfx/geometry",
   "+ui/gfx/mac",
-  "+ui/gfx/native_widget_types.h",
+  "+ui/gfx/native_ui_types.h",
   "+ui/gl",
 ]
