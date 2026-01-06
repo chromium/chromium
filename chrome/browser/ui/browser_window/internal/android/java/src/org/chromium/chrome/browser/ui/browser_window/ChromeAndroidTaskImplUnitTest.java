@@ -181,6 +181,14 @@ public class ChromeAndroidTaskImplUnitTest {
         }
     }
 
+    private static void assertNoPendingActions(ChromeAndroidTaskImpl chromeAndroidTask) {
+        int[] pendingActions =
+                chromeAndroidTask.getPendingActionManagerForTesting().getPendingActionsForTesting();
+        assertEquals(2, pendingActions.length);
+        assertEquals(PendingAction.NONE, pendingActions[0]);
+        assertEquals(PendingAction.NONE, pendingActions[1]);
+    }
+
     @Test
     public void constructor_withActivityScopedObjects_addsActivityScopedObjects() {
         // Arrange.
@@ -1007,6 +1015,28 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    public void maximize_cannotSetBounds_noOp() {
+        // Arrange: Set up ChromeAndroidTask and its mock dependencies.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+
+        // Arrange: Enter non-multi-window mode, where we can't set window bounds.
+        when(chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity
+                        .isInMultiWindowMode())
+                .thenReturn(false);
+
+        // Act.
+        chromeAndroidTask.maximize();
+
+        // Assert.
+        assertNoPendingActions(chromeAndroidTask);
+        verify(apiDelegate, never()).moveTaskToWithPromise(any(), anyInt(), any());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
     public void maximize_whenWindowMinimized_shouldActivateWindow() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
@@ -1212,6 +1242,36 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    public void setBoundsInDp_cannotSetBounds_noOp() {
+        // Arrange: Set up ChromeAndroidTask and its dependencies.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var displayAndroid =
+                chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockDisplayAndroid;
+        float dipScale = 2.0f;
+        when(displayAndroid.getDipScale()).thenReturn(dipScale);
+
+        // Arrange: Enter non-multi-window mode, where we can't set window bounds.
+        when(chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity
+                        .isInMultiWindowMode())
+                .thenReturn(false);
+
+        // Act.
+        Rect newBoundsInDp =
+                DisplayUtil.scaleToEnclosingRect(
+                        DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX, 1.0f / dipScale);
+        newBoundsInDp.offset(/* dx= */ 10, /* dy= */ 10);
+        chromeAndroidTask.setBoundsInDp(newBoundsInDp);
+
+        // Assert.
+        assertNoPendingActions(chromeAndroidTask);
+        verify(apiDelegate, never()).moveTaskToWithPromise(any(), anyInt(), any());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
     public void restore_restoresToPreviousBounds() {
         // Arrange
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
@@ -1294,6 +1354,45 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    public void restore_cannotSetBounds_noOp() {
+        // Arrange: Set up ChromeAndroidTask and its mock dependencies.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+
+        // Check the default test setup.
+        assertFalse("Task shouldn't be minimized", chromeAndroidTask.isMinimized());
+        assertFalse("Task shouldn't be maximized", chromeAndroidTask.isMaximized());
+        assertFalse("Task shouldn't be fullscreen", chromeAndroidTask.isFullscreen());
+
+        // Arrange: Call maximize(). This should set mRestoredBounds to the current bounds.
+        chromeAndroidTask.maximize();
+        assertEquals(
+                "restored bounds should be set to the current bounds",
+                DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX,
+                chromeAndroidTask.getRestoredBoundsInPxForTesting());
+        chromeAndroidTask.getPendingActionManagerForTesting().clearPendingActionsForTesting();
+
+        // Arrange: Enter non-multi-window mode, where we can't set window bounds.
+        when(chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity
+                        .isInMultiWindowMode())
+                .thenReturn(false);
+
+        // Act
+        chromeAndroidTask.restore();
+
+        // Assert:
+        // (1) No pending actions.
+        // (2) moveTaskToWithPromise() should only be called once
+        // (for maximize() during test setup).
+        assertNoPendingActions(chromeAndroidTask);
+        verify(apiDelegate, times(1))
+                .moveTaskToWithPromise(any(), anyInt(), eq(DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX));
+    }
+
+    @Test
     @SuppressLint("NewApi" /* @Config already specifies the required SDK */)
     public void minimize_alreadyMinimized_doesNotMinimizeAgain() {
         // Arrange.
@@ -1323,13 +1422,9 @@ public class ChromeAndroidTaskImplUnitTest {
         // Act.
         task.show();
 
-        // Assert.
-        int[] pendingActions =
-                task.getPendingActionManagerForTesting().getPendingActionsForTesting();
-        assertEquals(
-                "The task defaults to be visible and so show becomes a no-op",
-                PendingAction.NONE,
-                pendingActions[0]);
+        // Assert:
+        // The Task is visible by default, so show() should be a no-op.
+        assertNoPendingActions(task);
     }
 
     @Test
@@ -1449,13 +1544,9 @@ public class ChromeAndroidTaskImplUnitTest {
         // Act.
         task.activate();
 
-        // Assert.
-        int[] pendingActions =
-                task.getPendingActionManagerForTesting().getPendingActionsForTesting();
-        assertEquals(
-                "The task defaults to be active and so activate becomes a no-op",
-                PendingAction.NONE,
-                pendingActions[0]);
+        // Assert:
+        // The Task is active by default, so activate() should be a no-op.
+        assertNoPendingActions(task);
     }
 
     @Test
@@ -1859,12 +1950,11 @@ public class ChromeAndroidTaskImplUnitTest {
         task.setBoundsInDp(new Rect());
 
         // Assert.
-        var pendingActionManager = task.getPendingActionManagerForTesting();
-        assertEquals(PendingAction.NONE, pendingActionManager.getPendingActionsForTesting()[0]);
+        assertNoPendingActions(task);
         assertEquals(
                 "Initial bounds default to empty",
                 new Rect(),
-                pendingActionManager.getFutureBoundsInDp());
+                task.getPendingActionManagerForTesting().getFutureBoundsInDp());
     }
 
     @Test

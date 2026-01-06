@@ -90,7 +90,21 @@ final class ChromeAndroidTaskImpl
         /** The Task is pending and not yet associated with an Activity. */
         int PENDING_CREATE = 1;
 
-        /** The Task has a state being updated but not finished yet. */
+        /**
+         * The Task has a state that's being updated but not finished yet.
+         *
+         * <p>This state should only be set when all preconditions for the state update have been
+         * met and we are confident that the Android OS will successfully complete the update.
+         *
+         * <p>Otherwise:
+         *
+         * <ul>
+         *   <li>If the Android framework doesn't provide an API to listen for failures, the {@link
+         *       ChromeAndroidTask} will be stuck in {@code PENDING_UPDATE}.
+         *   <li>The predicted future state {@link ChromeAndroidTask} provides during {@code
+         *       PENDING_UPDATE} will be wrong.
+         * </ul>
+         */
         int PENDING_UPDATE = 2;
 
         /** The Task is alive without any pending state change. */
@@ -217,14 +231,29 @@ final class ChromeAndroidTaskImpl
         return ((ActivityLifecycleDispatcherProvider) activity).getLifecycleDispatcher();
     }
 
-    /** Check whether the task can be moved to another display. */
-    private static boolean isTaskMoveAllowedOnDisplay(Activity activity) {
-        // If and only if all the following are met, the task can be moved to the target display.
-        // 1. app is in desktop windowing mode.
-        // 2. task is not moved to another display
-        // 3. the new task bound is within the range of minimum and maximum bound
-        // The existing code has already handled 2 & 3, and so this function only checks 1
-        return isDesktopWindowingMode(activity);
+    /**
+     * Returns true if the Task (window) bounds for the given {@code activity} can be changed.
+     *
+     * <p>This method checks all preconditions on changing Task bounds. It should be called before
+     * {@link #mState} is set to {@link State#PENDING_UPDATE}.
+     */
+    private static boolean canSetBounds(Activity activity) {
+        if (!isDesktopWindowingMode(activity)) {
+            return false;
+        }
+
+        var appTask = AndroidTaskUtils.getAppTaskFromId(activity, activity.getTaskId());
+        if (appTask == null) {
+            return false;
+        }
+
+        var aconfigFlaggedApiDelegate = AconfigFlaggedApiDelegate.getInstance();
+        if (aconfigFlaggedApiDelegate == null) {
+            Log.w(TAG, "Unable to set bounds: null AconfigFlaggedApiDelegate");
+            return false;
+        }
+
+        return true;
     }
 
     private static boolean isDesktopWindowingMode(Activity activity) {
@@ -681,13 +710,7 @@ final class ChromeAndroidTaskImpl
             return;
         }
 
-        useActivity(
-                (activity, activityWindowAndroid) -> {
-                    // No maximize action in non desktop window mode.
-                    if (isDesktopWindowingMode(activity)) {
-                        maximizeInternal(activity, activityWindowAndroid);
-                    }
-                });
+        useActivity(this::maximizeInternal);
     }
 
     @Override
@@ -721,12 +744,7 @@ final class ChromeAndroidTaskImpl
             return;
         }
 
-        useActivity(
-                (activity, activityWindowAndroid) -> {
-                    if (isDesktopWindowingMode(activity)) {
-                        restoreInternal(activity, activityWindowAndroid);
-                    }
-                });
+        useActivity(this::restoreInternal);
     }
 
     @Override
@@ -743,17 +761,8 @@ final class ChromeAndroidTaskImpl
         }
 
         useActivity(
-                (activity, activityWindowAndroid) -> {
-                    if (!isDesktopWindowingMode(activity)
-                            || getCurrentBoundsInDp(activity, activityWindowAndroid)
-                                    .equals(boundsInDp)) {
-                        return;
-                    }
-
-                    mPendingActionManager.requestSetBounds(boundsInDp);
-                    mState = State.PENDING_UPDATE;
-                    setBoundsInDpInternal(activity, activityWindowAndroid, boundsInDp);
-                });
+                (activity, activityWindowAndroid) ->
+                        setBoundsInDpInternal(activity, activityWindowAndroid, boundsInDp));
     }
 
     @Override
@@ -1120,17 +1129,9 @@ final class ChromeAndroidTaskImpl
 
     private void setBoundsInPx(Activity activity, DisplayAndroid display, Rect boundsInPx) {
         var aconfigFlaggedApiDelegate = AconfigFlaggedApiDelegate.getInstance();
-        if (aconfigFlaggedApiDelegate == null) {
-            Log.w(TAG, "Unable to set bounds: AconfigFlaggedApiDelegate isn't available");
-            return;
-        }
-
         var appTask = AndroidTaskUtils.getAppTaskFromId(activity, activity.getTaskId());
-        if (appTask == null) return;
-        if (!isTaskMoveAllowedOnDisplay(activity)) {
-            Log.w(TAG, "Unable to set bounds: not allowed on display");
-            return;
-        }
+        assert aconfigFlaggedApiDelegate != null && appTask != null
+                : "use canSetBounds() to prevent null values";
 
         aconfigFlaggedApiDelegate
                 .moveTaskToWithPromise(appTask, display.getDisplayId(), boundsInPx)
@@ -1177,6 +1178,11 @@ final class ChromeAndroidTaskImpl
 
     @RequiresApi(api = VERSION_CODES.R)
     private void maximizeInternal(Activity activity, ActivityWindowAndroid activityWindowAndroid) {
+        // Precondition: the Task (window) allows bounds change.
+        if (!canSetBounds(activity)) {
+            return;
+        }
+
         if (isRestoredInternal(activity)) {
             mRestoredBoundsInPx = getCurrentBoundsInPx(activity);
         }
@@ -1207,11 +1213,19 @@ final class ChromeAndroidTaskImpl
 
     @RequiresApi(api = VERSION_CODES.R)
     private void restoreInternal(Activity activity, ActivityWindowAndroid activityWindowAndroid) {
+        // Precondition 1: "restored" bounds is not null.
         if (mRestoredBoundsInPx == null) return;
+
+        // Precondition 2: "restored" bounds aren't the same as "future bounds".
+        // This is for the case where "restore()" is called when another bounds change is already in
+        // progress.
         var restoredBoundsInDp =
                 convertBoundsInPxToDp(mRestoredBoundsInPx, activityWindowAndroid.getDisplay());
         var futureBounds = mPendingActionManager.getFutureBoundsInDp();
         if (restoredBoundsInDp.equals(futureBounds)) return;
+
+        // Precondition 3: the Task (window) allows bounds change.
+        if (!canSetBounds(activity)) return;
 
         if (isMinimizedInternal(activity)) {
             activateInternal(activity);
@@ -1225,6 +1239,15 @@ final class ChromeAndroidTaskImpl
 
     private void setBoundsInDpInternal(
             Activity activity, ActivityWindowAndroid activityWindowAndroid, Rect boundsInDp) {
+        // Precondition 1: new bounds are not the same as the current bounds.
+        if (getCurrentBoundsInDp(activity, activityWindowAndroid).equals(boundsInDp)) return;
+
+        // Precondition 2: the Task (window) allows bounds change.
+        if (!canSetBounds(activity)) return;
+
+        mPendingActionManager.requestSetBounds(boundsInDp);
+        mState = State.PENDING_UPDATE;
+
         Rect boundsInPx =
                 DisplayUtil.scaleToEnclosingRect(
                         boundsInDp, activityWindowAndroid.getDisplay().getDipScale());
