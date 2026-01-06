@@ -1187,7 +1187,11 @@ ToolbarButton* ToolbarView::GetBackButton() {
 
 ReloadControl* ToolbarView::GetReloadButton() {
   if (features::IsWebUIReloadButtonEnabled()) {
-    return reload_webview_->GetReloadControl();
+    if (reload_webview_) {
+      return reload_webview_->GetReloadControl();
+    } else {
+      return nullptr;
+    }
   }
   return reload_;
 }
