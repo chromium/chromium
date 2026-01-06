@@ -204,7 +204,7 @@ class MixerInput {
   const bool primary_;
   const std::string device_id_;
   const AudioContentType content_type_;
-  int source_read_size_ = 0;
+  size_t source_read_size_ = 0;
   int playout_channel_ = 0;
 
   FilterGroup* filter_group_ = nullptr;
