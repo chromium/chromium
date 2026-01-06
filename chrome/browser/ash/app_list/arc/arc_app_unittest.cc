@@ -2326,9 +2326,7 @@ TEST_P(ArcAppModelBuilderTest, ArcPacakgesIsUpToDate) {
       profile()->GetPrefs()->GetBoolean(arc::prefs::kArcPackagesIsUpToDate));
 }
 
-// Validate that arc model contains expected elements on restart.
-// Flaky. https://crbug.com/1013813
-TEST_P(ArcAppModelBuilderRecreate, DISABLED_AppModelRestart) {
+TEST_P(ArcAppModelBuilderRecreate, AppModelRestart) {
   // No apps on initial start.
   ValidateHaveApps(std::vector<arc::mojom::AppInfoPtr>());
 
