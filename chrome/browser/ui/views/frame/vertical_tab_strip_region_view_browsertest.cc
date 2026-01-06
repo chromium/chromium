@@ -115,14 +115,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeAreaBounds) {
             region_view()->resize_area_for_testing()->bounds().width());
 }
 
-// TODO(crbug.com/470402527): Fix test on non-mac platforms.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ResizeViewSmaller ResizeViewSmaller
-#else
-#define MAYBE_ResizeViewSmaller DISABLED_ResizeViewSmaller
-#endif
-IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
-                       MAYBE_ResizeViewSmaller) {
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewSmaller) {
   const int initial_width = tabs::kVerticalTabStripDefaultUncollapsedWidth;
 
   // Verify the initial state of the region view.
@@ -304,14 +297,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewBigger) {
   }
 }
 
-// TODO(crbug.com/470402527): Fix test on non-mac platforms.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_RestoreUncollapsedWidth RestoreUncollapsedWidth
-#else
-#define MAYBE_RestoreUncollapsedWidth DISABLED_RestoreUncollapsedWidth
-#endif
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
-                       MAYBE_RestoreUncollapsedWidth) {
+                       RestoreUncollapsedWidth) {
   const int initial_width = tabs::kVerticalTabStripDefaultUncollapsedWidth;
 
   // Verify the initial state of the region view.

@@ -413,6 +413,7 @@ void VerticalTabStripRegionView::UpdateCollapseState(
     } else {
       resize_animation_.Show();
     }
+    state_controller_->SetCollapsed(target_collapse_state_.collapsed);
   } else if (!target_collapse_state_.collapsed &&
              !resize_animation_.is_animating()) {
     // If we are still in the expanding animation, resizing to the updated
