@@ -14,9 +14,14 @@ import pathlib
 import string
 import sys
 from dataclasses import dataclass, field
+
+_HAS_IPYTHON = False
 try:
-    from IPython.display import HTML, display
-    _HAS_IPYTHON = True
+    if not 'unittest' in sys.modules:
+        # Do not import IPython when running unit tests to avoid module name
+        # conflicts. There is `import cProfile as profile` in IPython.
+        from IPython.display import HTML, display
+        _HAS_IPYTHON = True
 except ImportError:
     _HAS_IPYTHON = False
 
@@ -114,6 +119,12 @@ class MemoryUsageView:
         if aggregate:
             roots = _aggregate_nodes(roots)
         return cls(roots)
+
+    @classmethod
+    def from_comparison(cls, base: 'MemoryUsageView',
+                        new: 'MemoryUsageView') -> 'MemoryUsageView':
+        """Duplicates the base view with deltas as compared to the new view."""
+        return cls(_compare_node_lists(base.roots, new.roots))
 
     def toplevel_names(self) -> list[str]:
         return [root.name for root in self.roots]
@@ -246,3 +257,53 @@ def _aggregate_nodes(nodes: list[TreeNode]) -> list[TreeNode]:
     return sorted(list(name_to_grouped_node.values()),
                   key=lambda node: node.value,
                   reverse=True)
+
+
+def _zip_by_name(left_nodes: list[TreeNode],
+                 right_nodes: list[TreeNode]) -> list[TreeNode]:
+    """Iterates over two lists of nodes, producing pairs with an item from each.
+
+    Nodes are paired by name. This function assumes that each input list has no
+    nodes with duplicate names. If for an element in either list there is no
+    paired node (i.e. no node with the same name) in the other list, then None
+    takes place of the non-existent node.
+    """
+    name_to_right_node = {n.name: n for n in right_nodes}
+    processed_names = set()
+    for node1 in left_nodes:
+        name = node1.name
+        processed_names.add(name)
+        node2 = name_to_right_node.get(name)
+        yield (node1, node2)
+    for node2 in right_nodes:
+        if node2.name not in processed_names:
+            yield (None, node2)
+
+
+def _compare_node_lists(nodes_base: list[TreeNode],
+                        nodes_new: list[TreeNode]) -> list[TreeNode]:
+    """Recursively creates a copy of base nodes with deltas to the new list.
+
+    Puts value difference (from base list to the new list) as node.delta in the
+    resulting tree(s). Assumes that each list (or list of children of a node
+    does not have duplicated names). This can be achieved by applying
+    _aggregate_nodes() above. Toplevel lists and all lists of children are
+    individually sorted by delta (biggest to smallest) for simplest
+    visualisation to emphasize biggest memory regressions first.
+    """
+    result = []
+    for base, new in _zip_by_name(nodes_base, nodes_new):
+        if not base:
+            result.append(TreeNode(name=new.name, value=0, delta=new.value))
+            continue
+        if not new:
+            zero_new = TreeNode(name=base.name,
+                                value=base.value,
+                                delta=-base.value)
+            result.append(zero_new)
+            continue
+        merged_node = TreeNode(name=base.name, value=base.value)
+        merged_node.delta = new.value - base.value
+        merged_node.children = _compare_node_lists(base.children, new.children)
+        result.append(merged_node)
+    return sorted(result, key=lambda node: node.delta, reverse=True)

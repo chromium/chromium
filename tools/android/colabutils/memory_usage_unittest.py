@@ -13,7 +13,8 @@ import unittest
 _SRC_PATH = pathlib.Path(__file__).resolve().parents[3]
 sys.path.append(str(_SRC_PATH / 'tools/android'))
 from colabutils.memory_usage import (MemoryUsageView, TreeNode,
-                                     _aggregate_nodes)
+                                     _aggregate_nodes, _zip_by_name,
+                                     _compare_node_lists)
 
 _REALISTIC_JSON = """
 [
@@ -210,6 +211,131 @@ class MemoryUsageViewTest(unittest.TestCase):
         self.assertEqual(48 + 8, bar_node.value)
         self.assertEqual('malloc', malloc_node.name)
         self.assertEqual(16, malloc_node.value)
+
+    def test_zip_by_name_both_empty(self):
+        self.assertEqual([], list(_zip_by_name([], [])))
+
+    def test_zip_by_name_one_empty(self):
+        node = TreeNode(name='abc')
+        self.assertEqual([(node, None)], list(_zip_by_name([node], [])))
+        self.assertEqual([(None, node)], list(_zip_by_name([], [node])))
+        node2 = TreeNode(name='def')
+        self.assertEqual([(None, node), (None, node2)],
+                         list(_zip_by_name([], [node, node2])))
+
+    def test_zip_by_name_simple(self):
+        left_node1 = TreeNode(name='l1')
+        left_node2 = TreeNode(name='l2')
+        left_nodes = [left_node1, left_node2]
+        right_node1 = TreeNode(name='r1')
+        right_node2 = TreeNode(name='r2')
+        right_nodes = [right_node1, right_node2]
+
+        result = list(_zip_by_name(left_nodes, right_nodes))
+
+        self.assertEqual(4, len(result))
+        self.assertIn((left_node1, None), result)
+        self.assertIn((left_node2, None), result)
+        self.assertIn((None, right_node1), result)
+        self.assertIn((None, right_node2), result)
+
+    def test_zip_by_name_with_intersection(self):
+        left_node1 = TreeNode(name='l1')
+        left_abc = TreeNode(name='abc')
+        left_nodes = [left_node1, left_abc]
+        right_abc = TreeNode(name='abc')
+        right_node2 = TreeNode(name='r2')
+        right_nodes = [right_abc, right_node2]
+
+        result = list(_zip_by_name(left_nodes, right_nodes))
+
+        self.assertEqual(3, len(result))
+        self.assertIn((left_abc, right_abc), result)
+        self.assertIn((left_node1, None), result)
+        self.assertIn((None, right_node2), result)
+
+    def test_compare_nothing(self):
+        self.assertEqual([], _compare_node_lists([], []))
+
+    def test_compare_one_node_to_nothing(self):
+        node = TreeNode(name='one', value=123)
+        result_node = TreeNode(name='one', value=123, delta=-123)
+
+        self.assertEqual([result_node], _compare_node_lists([node], []))
+
+        node.value = 456
+        result_node.value = 0
+        result_node.delta = 456
+
+        self.assertEqual([result_node], _compare_node_lists([], [node]))
+
+    def test_compare_same_name_nodes(self):
+        node_base = TreeNode(name='pikachu', value=123)
+        node_new = TreeNode(name='pikachu', value=456)
+
+        result = _compare_node_lists([node_base], [node_new])
+        self.assertEqual(1, len(result))
+        result_node = result[0]
+        self.assertEqual(123, result_node.value)
+        self.assertEqual('pikachu', result_node.name)
+        self.assertEqual(456 - 123, result_node.delta)
+
+    def test_compare_children(self):
+        base_root = TreeNode(name='root', value=30)
+        new_root = TreeNode(name='root', value=80)
+        base_root.children = [
+            TreeNode(name='common_child', value=10),
+            TreeNode(name='base_only_child', value=20),
+        ]
+        new_root.children = [
+            TreeNode(name='common_child', value=30),
+            TreeNode(name='new_only_child', value=50),
+        ]
+
+        result_nodes = _compare_node_lists([base_root], [new_root])
+        self.assertEqual(1, len(result_nodes))
+        result_root = result_nodes[0]
+
+        self.assertEqual('root', result_root.name)
+        self.assertEqual(30, result_root.value)
+        self.assertEqual(80 - 30, result_root.delta)
+
+        self.assertEqual(3, len(result_root.children))
+        new_only, common_child, base_only = result_root.children
+
+        self.assertEqual('new_only_child', new_only.name)
+        self.assertEqual(0, new_only.value)
+        self.assertEqual(50, new_only.delta)
+
+        self.assertEqual('common_child', common_child.name)
+        self.assertEqual(10, common_child.value)
+        self.assertEqual(30 - 10, common_child.delta)
+
+        self.assertEqual('base_only_child', base_only.name)
+        self.assertEqual(20, base_only.value)
+        self.assertEqual(-20, base_only.delta)
+
+    def test_compare_children_and_single(self):
+        base_root = TreeNode(name='root', value=30)
+        new_root = TreeNode(name='root', value=80)
+        base_root.children = [
+            TreeNode(name='child10', value=10),
+            TreeNode(name='child20', value=20),
+        ]
+        result_nodes = _compare_node_lists([base_root], [new_root])
+        self.assertEqual(1, len(result_nodes))
+        result_root = result_nodes[0]
+
+        self.assertEqual('root', result_root.name)
+        self.assertEqual(30, result_root.value)
+        self.assertEqual(80 - 30, result_root.delta)
+
+        self.assertEqual(2, len(result_root.children))
+        child_10, child_20 = result_root.children
+        self.assertEqual(10, child_10.value)
+        self.assertEqual(-10, child_10.delta)
+        self.assertEqual(20, child_20.value)
+        self.assertEqual(-20, child_20.delta)
 
 if __name__ == '__main__':
     unittest.main()

@@ -152,3 +152,13 @@ view = memory_usage.MemoryUsageView.from_heap_dump('symbolized-trace')
 view.toplevel_names()
 view.display()
 ```
+
+View a diff between two memory usage views:
+```python
+from colabutils import memory_usage
+
+view1 = memory_usage.MemoryUsageView.from_heap_dump('symbolized-trace1')
+view2 = memory_usage.MemoryUsageView.from_heap_dump('symbolized-trace2')
+diff_view = memory_usage.MemoryUsageView.from_comparison(view, view2)
+diff_view.display()
+```
