@@ -349,9 +349,7 @@ void CanvasResourceProviderSharedImage::OnContextLost() {
   // lost. The call is done in a separate task, so that the owner can delete
   // this resource provider if needed.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CanvasResourceProvider::NotifyGpuContextLostTask,
-                     CreateWeakPtr()));
+      FROM_HERE, base::BindOnce(&NotifyGpuContextLostTask, CreateWeakPtr()));
   notified_context_lost_ = true;
 }
 
@@ -364,9 +362,7 @@ void CanvasResourceProviderSharedImage::OnGpuChannelLost() {
   // lost. The call is done in a separate task, so that the owner can delete
   // this resource provider if needed.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CanvasResourceProvider::NotifyGpuContextLostTask,
-                     CreateWeakPtr()));
+      FROM_HERE, base::BindOnce(&NotifyGpuContextLostTask, CreateWeakPtr()));
   notified_context_lost_ = true;
 }
 
@@ -1663,8 +1659,8 @@ bool CanvasResourceProvider::IsGpuContextLost() const {
          raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
 }
 
-void CanvasResourceProvider::NotifyGpuContextLostTask(
-    base::WeakPtr<CanvasResourceProvider> provider) {
+void CanvasResourceProviderSharedImage::NotifyGpuContextLostTask(
+    base::WeakPtr<CanvasResourceProviderSharedImage> provider) {
   if (provider && provider->delegate_) {
     // Move `provider` as hint that it shouldn't be reused after this point.
     // The `delegate` owns the provider and can delete it in

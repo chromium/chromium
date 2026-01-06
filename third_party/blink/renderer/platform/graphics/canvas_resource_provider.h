@@ -256,8 +256,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
  protected:
   class CanvasImageProvider;
 
-  static void NotifyGpuContextLostTask(base::WeakPtr<CanvasResourceProvider>);
-
   SkSurface* GetSkSurface() const;
   bool UnacceleratedWritePixels(const SkImageInfo& orig_info,
                                 const void* pixels,
@@ -563,6 +561,9 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   // Returns true iff the resource provider is (a) using a GPU channel for
   // software SharedImages and (b) that channel has been lost.
   bool IsSoftwareSharedImageGpuChannelLost() const;
+
+  static void NotifyGpuContextLostTask(
+      base::WeakPtr<CanvasResourceProviderSharedImage>);
 
   // The maximum number of in-flight resources waiting to be used for
   // recycling.
