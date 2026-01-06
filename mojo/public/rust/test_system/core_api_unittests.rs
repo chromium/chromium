@@ -27,7 +27,7 @@ fn test_basic_message_write_and_send() {
     //
     // In the Rust API you should never directly touch an invalid MojoHandle.
     // The MojoHandles are created under the hood here.
-    let (endpoint_a, endpoint_b) = system::mojo_types::create_message_pipe().unwrap();
+    let (endpoint_a, endpoint_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
 
     // In the C API this looks like:
     //   MojoMessageHandle message;
@@ -52,7 +52,7 @@ fn test_basic_message_write_and_send() {
     // * handle_signal_tracker
     // * handle_signals_state
     // * invitation (I think we're ignoring these for now?)
-    // * scope_to_messagE_pipe
+    // * scope_to_message_pipe
     // * simple_watcher
     // * string_data_source
     // * wait_set
@@ -136,7 +136,7 @@ fn test_raw_trap_signal_on_readable() {
     let trap = system::raw_trap::RawTrap::new(test_trap_event_handler).unwrap();
 
     // Make a message pipe pair and add a trigger to both ends of the pipe.
-    let (endpoint_a, endpoint_b) = system::mojo_types::create_message_pipe().unwrap();
+    let (endpoint_a, endpoint_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
     expect_eq!(
         system::mojo_types::MojoResult::Okay,
         trap.add_trigger(
@@ -253,7 +253,7 @@ fn test_raw_trap_signal_on_readable() {
 fn test_raw_trap_signal_on_readable() {
     test_util::init_mojo_if_needed();
 
-    let (endpoint_a, endpoint_b) = system::mojo_types::create_message_pipe().unwrap();
+    let (endpoint_a, endpoint_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
 
     // 1. Create the safe Trap.
     let trap = system::trap::Trap::new().expect("Failed to create safe Trap");
@@ -302,7 +302,7 @@ fn test_close_trap_with_active_trigger() {
     // and the associated callback to return TrapError::Cancelled.
     test_util::init_mojo_if_needed();
     let trap = system::trap::Trap::new().expect("Failed to create safe Trap");
-    let (ep_a, _ep_b) = system::mojo_types::create_message_pipe().unwrap();
+    let (ep_a, _ep_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
 
     trap.add_trigger(
         &ep_a,
@@ -334,7 +334,7 @@ fn test_trap_multiple_blocking_events() {
 
     // 1. Create NUM_TRIGGERS message pipe pairs. For each, add a trigger.
     for i in 0..NUM_TRIGGERS {
-        let (ep_a, ep_b) = system::mojo_types::create_message_pipe().unwrap();
+        let (ep_a, ep_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
         let ep_a_arc = Arc::new(ep_a);
 
         let callback_count_clone = Arc::clone(&callback_count);

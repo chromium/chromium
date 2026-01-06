@@ -33,6 +33,7 @@ rust_static_library("mojo_rust_system_api") {
   sources = [
     "system/data_pipe.rs",
     "system/lib.rs",
+    "system/message_pipe.rs",
     "system/mojo_types.rs",
     "system/raw_trap.rs",
     "system/trap.rs",
