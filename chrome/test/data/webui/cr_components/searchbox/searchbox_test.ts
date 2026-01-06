@@ -697,7 +697,7 @@ suite('NewTabPageRealboxTest', () => {
     // Query zero-prefix matches.
     realbox.$.input.value = '';
     realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
-    let args = await testProxy.handler.whenCalled('queryAutocomplete');
+    const args = await testProxy.handler.whenCalled('queryAutocomplete');
     assertEquals(args.input, realbox.$.input.value);
     assertFalse(args.preventInlineAutocomplete);
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
@@ -733,16 +733,20 @@ suite('NewTabPageRealboxTest', () => {
       relatedTarget: document.body,
     }));
 
-    // Arrow up/down keys query autocomplete.
+    // Arrow up/down keys in multiline input do not query autocomplete.
+    realbox.multiLineEnabled = true;
+    await microtasksFinished();
+    Object.defineProperty(realbox.$.input, 'scrollHeight', {
+      value: 51,
+      configurable: true,
+    });
+
     realbox.$.input.dispatchEvent(new KeyboardEvent('keydown', {
       bubbles: true,
       cancelable: true,
       key: 'ArrowDown',
     }));
-    args = await testProxy.handler.whenCalled('queryAutocomplete');
-    assertEquals(args.input, realbox.$.input.value);
-    assertTrue(args.preventInlineAutocomplete);
-    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
   });
 
   // TODO: Fix before submitting.
