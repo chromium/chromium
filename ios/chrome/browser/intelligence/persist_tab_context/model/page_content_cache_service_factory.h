@@ -17,6 +17,9 @@ class PageContentCacheServiceFactory : public ProfileKeyedServiceFactoryIOS {
   // Returns the PageContentCacheService associated with `profile`.
   static PageContentCacheService* GetForProfile(ProfileIOS* profile);
 
+  // Returns the storage path for the PageContentCacheService for `profile`.
+  static base::FilePath GetStoragePathForProfile(ProfileIOS* profile);
+
   // Returns the factory instance.
   static PageContentCacheServiceFactory* GetInstance();
 

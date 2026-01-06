@@ -140,6 +140,14 @@ class PersistTabContextBrowserAgent
   // which case the last tab's page context should be saved to storage.
   __strong PersistTabContextStateAgent* persist_tab_context_state_agent_;
 
+  // Schedules a background task to delete the legacy directory used for
+  // filesystem storage.
+  void RemoveFilesystemStorage();
+
+  // Schedules a background task to delete the legacy directory used for SQLite
+  // storage.
+  void RemoveSqliteStorage();
+
   // Profile-specific file path to store page contexts at in the app's cache.
   base::FilePath storage_directory_path_;
 

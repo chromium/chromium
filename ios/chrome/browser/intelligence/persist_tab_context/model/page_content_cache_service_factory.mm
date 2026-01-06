@@ -26,6 +26,14 @@ PageContentCacheService* PageContentCacheServiceFactory::GetForProfile(
 }
 
 // static
+base::FilePath PageContentCacheServiceFactory::GetStoragePathForProfile(
+    ProfileIOS* profile) {
+  base::FilePath cache_directory_path;
+  ios::GetUserCacheDirectory(profile->GetStatePath(), &cache_directory_path);
+  return cache_directory_path.Append(kPersistedTabContextsDatabase);
+}
+
+// static
 PageContentCacheServiceFactory* PageContentCacheServiceFactory::GetInstance() {
   static base::NoDestructor<PageContentCacheServiceFactory> instance;
   return instance.get();
@@ -46,10 +54,7 @@ PageContentCacheServiceFactory::BuildServiceInstanceFor(
   PrefService* prefs = profile->GetPrefs();
   base::TimeDelta max_context_age = GetPersistedContextEffectiveTTL(prefs);
 
-  base::FilePath cache_directory_path;
-  ios::GetUserCacheDirectory(profile->GetStatePath(), &cache_directory_path);
-  base::FilePath storage_directory_path =
-      cache_directory_path.Append(kPersistedTabContextsDatabase);
+  base::FilePath storage_directory_path = GetStoragePathForProfile(profile);
 
   return std::make_unique<PageContentCacheService>(
       os_crypt_async, storage_directory_path, max_context_age);

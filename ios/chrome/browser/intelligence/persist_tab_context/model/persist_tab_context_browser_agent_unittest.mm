@@ -318,7 +318,8 @@ TEST_P(PersistTabContextBrowserAgentTest,
   EXPECT_NO_FATAL_FAILURE(agent_->WasHidden(nullptr));
 }
 
-TEST_P(PersistTabContextBrowserAgentTest, TestMigrationDeletesLegacyFiles) {
+TEST_P(PersistTabContextBrowserAgentTest,
+       TestStorageTypeMigrationDeletesLegacyFilesystemFiles) {
   if (GetParam() != PersistTabStorageType::kSQLite) {
     return;
   }
@@ -336,6 +337,27 @@ TEST_P(PersistTabContextBrowserAgentTest, TestMigrationDeletesLegacyFiles) {
   task_environment_.FastForwardBy(kPurgeTaskDelay + base::Milliseconds(100));
 
   EXPECT_FALSE(base::PathExists(legacy_file));
+}
+
+TEST_P(PersistTabContextBrowserAgentTest,
+       TestStorageTypeMigrationDeletesLegacySqliteDBFiles) {
+  if (GetParam() != PersistTabStorageType::kFileSystem) {
+    return;
+  }
+
+  // We explicitly create an old sqlite DB directory here to test
+  // that the Agent deletes it when it is configured for FileSystem storage.
+  base::FilePath legacy_db_dir =
+      PageContentCacheServiceFactory::GetStoragePathForProfile(profile_.get());
+  ASSERT_TRUE(base::CreateDirectory(legacy_db_dir));
+
+  // Ensure the directory is created effectively mimicking a legacy state.
+  ASSERT_TRUE(base::DirectoryExists(legacy_db_dir));
+
+  // Trigger the task runner to execute the cleanup task.
+  task_environment_.FastForwardBy(kPurgeTaskDelay + base::Milliseconds(100));
+
+  EXPECT_FALSE(base::DirectoryExists(legacy_db_dir));
 }
 
 class PersistTabContextBrowserAgentDisabledTest : public PlatformTest {
@@ -375,29 +397,38 @@ class PersistTabContextBrowserAgentDisabledTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(PersistTabContextBrowserAgentDisabledTest, TestDirectoryDeleted) {
-  base::FilePath storage_dir = GetExpectedStorageDir(profile_.get());
+TEST_F(PersistTabContextBrowserAgentDisabledTest, TestDirectoriesDeleted) {
+  base::FilePath storage_dir_fs = GetExpectedStorageDir(profile_.get());
+  base::FilePath storage_dir_sql =
+      PageContentCacheServiceFactory::GetStoragePathForProfile(profile_.get());
 
-  // Create a dummy directory and file.
-  ASSERT_TRUE(base::CreateDirectory(storage_dir));
-  base::FilePath dummy_file =
-      storage_dir.Append(FILE_PATH_LITERAL("dummy.proto"));
-  ASSERT_TRUE(base::WriteFile(dummy_file, "dummy content"));
+  // Create dummy directories and files for both.
+  ASSERT_TRUE(base::CreateDirectory(storage_dir_fs));
+  base::FilePath dummy_file_fs =
+      storage_dir_fs.Append(FILE_PATH_LITERAL("dummy_fs.proto"));
+  ASSERT_TRUE(base::WriteFile(dummy_file_fs, "fs"));
+  ASSERT_TRUE(base::DirectoryExists(storage_dir_fs));
 
-  // Verify the directory exists before the agent is created.
-  ASSERT_TRUE(base::DirectoryExists(storage_dir));
+  ASSERT_TRUE(base::CreateDirectory(storage_dir_sql));
+  base::FilePath dummy_file_sql =
+      storage_dir_sql.Append(FILE_PATH_LITERAL("dummy_sql.proto"));
+  ASSERT_TRUE(base::WriteFile(dummy_file_sql, "sql"));
+  ASSERT_TRUE(base::DirectoryExists(storage_dir_sql));
 
-  // Creating the agent should trigger directory deletion when the feature is
-  // disabled.
+  // Creating the agent should trigger directory deletion for both storage
+  // systems when the feature is disabled.
   PersistTabContextBrowserAgent::CreateForBrowser(browser_.get());
   agent_ = PersistTabContextBrowserAgent::FromBrowser(browser_.get());
 
   // Wait for the deletion to complete.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return !base::DirectoryExists(storage_dir); }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !base::DirectoryExists(storage_dir_fs) &&
+           !base::DirectoryExists(storage_dir_sql);
+  }));
 
-  // Verify the directory is deleted.
-  EXPECT_FALSE(base::DirectoryExists(storage_dir))
-      << "Persisted tab contexts directory was not deleted when feature is "
-         "disabled.";
+  // Verify both directories are deleted.
+  EXPECT_FALSE(base::DirectoryExists(storage_dir_fs))
+      << "Filesystem storage was not deleted when feature is disabled.";
+  EXPECT_FALSE(base::DirectoryExists(storage_dir_sql))
+      << "SQLite storage was not deleted when feature is disabled.";
 }
