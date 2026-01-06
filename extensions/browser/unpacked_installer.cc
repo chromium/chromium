@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/unpacked_installer.h"
+#include "extensions/browser/unpacked_installer.h"
 
 #include <string>
 #include <utility>
@@ -10,14 +10,12 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_management.h"
-#include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "components/crx_file/id_util.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
@@ -28,6 +26,7 @@
 #include "extensions/browser/api/declarative_net_request/install_index_helper.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_file_task_runner.h"
+#include "extensions/browser/extension_management_client.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
@@ -49,11 +48,9 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_l10n_util.h"
-#include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
-#include "extensions/common/manifest_handlers/chrome_url_overrides_handler.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -264,10 +261,11 @@ void UnpackedInstaller::OnInstallChecksComplete(
   }
 
   std::u16string error_message;
-  if (errors.count(PreloadCheck::Error::kDisallowedByPolicy))
+  if (errors.count(PreloadCheck::Error::kDisallowedByPolicy)) {
     error_message = policy_check_->GetErrorMessage();
-  else
+  } else {
     error_message = requirements_check_->GetErrorMessage();
+  }
 
   DCHECK(!error_message.empty());
   ReportExtensionLoadError(error_message);
@@ -286,10 +284,12 @@ int UnpackedInstaller::GetFlags() {
   }
 
   int result = Extension::FOLLOW_SYMLINKS_ANYWHERE;
-  if (allow_file_access)
+  if (allow_file_access) {
     result |= Extension::ALLOW_FILE_ACCESS;
-  if (require_modern_manifest_version_)
+  }
+  if (require_modern_manifest_version_) {
     result |= Extension::REQUIRE_MODERN_MANIFEST_VERSION;
+  }
 
   if (base::FeatureList::IsEnabled(
           extensions_features::
@@ -348,7 +348,8 @@ bool UnpackedInstaller::IsLoadingUnpackedAllowed() const {
   // If there is a "*" in the extension blocklist, then no extensions should be
   // allowed at all except packed extensions that are explicitly listed in the
   // allowlist.
-  return !ExtensionManagementFactory::GetForBrowserContext(browser_context_)
+  return !ExtensionsBrowserClient::Get()
+              ->GetExtensionManagementClient(browser_context_)
               ->BlocklistedByDefault();
 }
 
@@ -404,8 +405,9 @@ void UnpackedInstaller::ReportExtensionLoadError(const std::u16string& error) {
         extension_path_, error, browser_context_, be_noisy_on_failure_);
   }
 
-  if (!callback_.is_null())
+  if (!callback_.is_null()) {
     std::move(callback_).Run(nullptr, extension_path_, error);
+  }
 }
 
 void UnpackedInstaller::InstallExtension() {
@@ -439,74 +441,12 @@ void UnpackedInstaller::InstallExtension() {
                              std::move(ruleset_install_prefs_));
 
   // Record metrics here since the registry would contain the extension by now.
-  RecordCommandLineMetrics();
+  ExtensionsBrowserClient::Get()
+      ->RecordCommandLineMetricsOnUnpackedInstallation(browser_context_,
+                                                       extension());
 
-  if (!callback_.is_null())
+  if (!callback_.is_null()) {
     std::move(callback_).Run(extension(), extension_path_, std::u16string());
-}
-
-void UnpackedInstaller::RecordCommandLineMetrics() {
-  if (!extension()->is_extension() ||
-      extension()->location() != mojom::ManifestLocation::kCommandLine) {
-    return;
-  }
-
-  ExtensionRegistry* extension_registry =
-      ExtensionRegistry::Get(browser_context_);
-  if (!extension_registry->GetInstalledExtension(extension()->id())) {
-    return;
-  }
-
-  // Manifest settings override metrics.
-  base::UmaHistogramCounts100("Extensions.CommandLineInstalled", 1);
-
-  bool new_tab_page_set =
-      URLOverrides::GetChromeURLOverrides(extension()).count("newtab");
-  bool default_search_engine_set = false;
-  // SettingsOverrides are only available on Windows and macOS.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  const SettingsOverrides* settings = SettingsOverrides::Get(extension());
-  default_search_engine_set = settings && settings->search_engine &&
-                              settings->search_engine->is_default;
-#endif
-
-  if (new_tab_page_set && default_search_engine_set) {
-    base::UmaHistogramEnumeration(
-        "Extensions.CommandLineManifestSettingsOverride",
-        kSearchEngineAndNewTabPage);
-  } else if (new_tab_page_set) {
-    base::UmaHistogramEnumeration(
-        "Extensions.CommandLineManifestSettingsOverride", kNewTabPage);
-  } else if (default_search_engine_set) {
-    base::UmaHistogramEnumeration(
-        "Extensions.CommandLineManifestSettingsOverride", kSearchEngine);
-  } else {
-    base::UmaHistogramEnumeration(
-        "Extensions.CommandLineManifestSettingsOverride", kNoOverride);
-  }
-
-  // Developer mode metrics.
-  bool dev_mode_enabled =
-      GetCurrentDeveloperMode(util::GetBrowserContextId(browser_context_));
-
-  if (extension_registry->enabled_extensions().Contains(extension()->id())) {
-    if (dev_mode_enabled) {
-      base::UmaHistogramCounts100(
-          "Extensions.CommandLineWithDeveloperModeOn.Enabled", 1);
-    } else {
-      base::UmaHistogramCounts100(
-          "Extensions.CommandLineWithDeveloperModeOff.Enabled", 1);
-    }
-  }
-
-  if (extension_registry->disabled_extensions().Contains(extension()->id())) {
-    if (dev_mode_enabled) {
-      base::UmaHistogramCounts100(
-          "Extensions.CommandLineWithDeveloperModeOn.Disabled", 1);
-    } else {
-      base::UmaHistogramCounts100(
-          "Extensions.CommandLineWithDeveloperModeOff.Disabled", 1);
-    }
   }
 }
 

@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -99,11 +100,14 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/process_manager_delegate.h"
 #include "extensions/browser/safe_browsing_delegate.h"
+#include "extensions/browser/unpacked_installer.h"
 #include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/features/feature_developer_mode_only.h"
+#include "extensions/common/manifest_handlers/chrome_url_overrides_handler.h"
 #include "extensions/common/mojom/view_type.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "url/gurl.h"
@@ -121,6 +125,10 @@
 #include "components/user_manager/user_manager.h"
 #else
 #include "extensions/browser/updater/null_extension_cache.h"
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #endif
 
 namespace extensions {
@@ -1001,6 +1009,73 @@ void ChromeExtensionsBrowserClient::ShowWarningMessageBox(
   // until the user dismisses the alert, ensuring steps 3 and 4 cannot
   // happen until after the dialog and its observers are gone.
   chrome::ShowWarningMessageBoxSync(gfx::NativeWindow(), title, message);
+}
+
+void ChromeExtensionsBrowserClient::
+    RecordCommandLineMetricsOnUnpackedInstallation(
+        content::BrowserContext* context,
+        const Extension* extension) const {
+  if (!extension->is_extension() ||
+      extension->location() != mojom::ManifestLocation::kCommandLine) {
+    return;
+  }
+
+  ExtensionRegistry* extension_registry = ExtensionRegistry::Get(context);
+  if (!extension_registry->GetInstalledExtension(extension->id())) {
+    return;
+  }
+
+  // Manifest settings override metrics.
+  base::UmaHistogramCounts100("Extensions.CommandLineInstalled", 1);
+
+  bool new_tab_page_set =
+      URLOverrides::GetChromeURLOverrides(extension).count("newtab");
+  bool default_search_engine_set = false;
+  // SettingsOverrides are only available on Windows and macOS.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  const SettingsOverrides* settings = SettingsOverrides::Get(extension);
+  default_search_engine_set = settings && settings->search_engine &&
+                              settings->search_engine->is_default;
+#endif
+
+  if (new_tab_page_set && default_search_engine_set) {
+    base::UmaHistogramEnumeration(
+        "Extensions.CommandLineManifestSettingsOverride",
+        kSearchEngineAndNewTabPage);
+  } else if (new_tab_page_set) {
+    base::UmaHistogramEnumeration(
+        "Extensions.CommandLineManifestSettingsOverride", kNewTabPage);
+  } else if (default_search_engine_set) {
+    base::UmaHistogramEnumeration(
+        "Extensions.CommandLineManifestSettingsOverride", kSearchEngine);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Extensions.CommandLineManifestSettingsOverride", kNoOverride);
+  }
+
+  // Developer mode metrics.
+  bool dev_mode_enabled =
+      GetCurrentDeveloperMode(util::GetBrowserContextId(context));
+
+  if (extension_registry->enabled_extensions().Contains(extension->id())) {
+    if (dev_mode_enabled) {
+      base::UmaHistogramCounts100(
+          "Extensions.CommandLineWithDeveloperModeOn.Enabled", 1);
+    } else {
+      base::UmaHistogramCounts100(
+          "Extensions.CommandLineWithDeveloperModeOff.Enabled", 1);
+    }
+  }
+
+  if (extension_registry->disabled_extensions().Contains(extension->id())) {
+    if (dev_mode_enabled) {
+      base::UmaHistogramCounts100(
+          "Extensions.CommandLineWithDeveloperModeOn.Disabled", 1);
+    } else {
+      base::UmaHistogramCounts100(
+          "Extensions.CommandLineWithDeveloperModeOff.Disabled", 1);
+    }
+  }
 }
 
 // static

@@ -544,6 +544,8 @@ source_set("browser_sources") {
     "ui_util.h",
     "uninstall_reason.h",
     "unloaded_extension_reason.h",
+    "unpacked_installer.cc",
+    "unpacked_installer.h",
     "update_install_gate.cc",
     "update_install_gate.h",
     "update_observer.h",

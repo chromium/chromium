@@ -606,6 +606,12 @@ class ExtensionsBrowserClient {
   virtual void ShowWarningMessageBox(const std::u16string& title,
                                      const std::u16string& message);
 
+  // Records command-line extension metrics, emitted when a command line
+  // extension is installed.
+  virtual void RecordCommandLineMetricsOnUnpackedInstallation(
+      content::BrowserContext* context,
+      const Extension* extension) const;
+
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;
 };

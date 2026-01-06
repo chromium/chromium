@@ -23,6 +23,7 @@
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/service_worker/service_worker_keepalive.h"
 #include "extensions/browser/service_worker/service_worker_task_queue_factory.h"
+#include "extensions/browser/unpacked_installer.h"
 #include "extensions/browser/updater/update_service_factory.h"
 #include "extensions/browser/user_script_world_configuration_manager.h"
 #include "extensions/buildflags/buildflags.h"
@@ -63,6 +64,7 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
   RendererStartupHelperFactory::GetInstance();
   ServiceWorkerKeepalive::EnsureShutdownNotifierFactoryBuilt();
   ServiceWorkerTaskQueueFactory::GetInstance();
+  UnpackedInstaller::EnsureShutdownNotifierFactoryBuilt();
   UpdateServiceFactory::GetInstance();
   UserScriptWorldConfigurationManager::GetFactory();
   WebRequestEventRouterFactory::GetInstance();

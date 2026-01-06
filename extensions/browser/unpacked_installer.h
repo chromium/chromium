@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_UNPACKED_INSTALLER_H_
-#define CHROME_BROWSER_EXTENSIONS_UNPACKED_INSTALLER_H_
+#ifndef EXTENSIONS_BROWSER_UNPACKED_INSTALLER_H_
+#define EXTENSIONS_BROWSER_UNPACKED_INSTALLER_H_
 
 #include <memory>
 #include <optional>
@@ -18,7 +18,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/preload_check.h"
 #include "extensions/buildflags/buildflags.h"
@@ -45,25 +44,6 @@ class UnpackedInstaller : public base::RefCountedThreadSafe<
                               UnpackedInstaller,
                               content::BrowserThread::DeleteOnUIThread> {
  public:
-  // Manifest settings override types.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(ManifestSettingsOverrideType)
-  enum ManifestSettingsOverrideType {
-    // No overrides.
-    kNoOverride = 0,
-    // Overrides the default search engine.
-    kSearchEngine = 1,
-    // Overrides the new tab page.
-    kNewTabPage = 2,
-    // Overrides the default search engine and new tab page.
-    kSearchEngineAndNewTabPage = 3,
-
-    kMaxValue = kSearchEngineAndNewTabPage,
-  };
-  // LINT.ThenChange(/tools/metrics/histograms/metadata/extensions/enums.xml:ManifestSettingsOverrideType)
-
   using CompletionCallback = base::OnceCallback<void(const Extension* extension,
                                                      const base::FilePath&,
                                                      const std::u16string&)>;
@@ -174,10 +154,6 @@ class UnpackedInstaller : public base::RefCountedThreadSafe<
   // file IO is allowed.
   bool IndexAndPersistRulesIfNeeded(std::u16string* error);
 
-  // Records command-line extension metrics, emitted when a command line
-  // extension is installed.
-  void RecordCommandLineMetrics();
-
   // Called on BrowserContext shutdown.
   void Shutdown();
 
@@ -224,9 +200,6 @@ class UnpackedInstaller : public base::RefCountedThreadSafe<
   // Specify an install param.
   std::optional<std::string> install_param_;
 
-  // True if the browser is terminating.
-  bool browser_terminating_ = false;
-
   // Subscription for a callback that runs when the BrowserContext* is
   // destroyed.
   base::CallbackListSubscription browser_context_shutdown_subscription_;
@@ -234,4 +207,4 @@ class UnpackedInstaller : public base::RefCountedThreadSafe<
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_UNPACKED_INSTALLER_H_
+#endif  // EXTENSIONS_BROWSER_UNPACKED_INSTALLER_H_

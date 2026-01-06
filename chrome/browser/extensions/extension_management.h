@@ -93,6 +93,7 @@ class ExtensionManagement : public KeyedService,
   const URLPatternSet& GetPolicyAllowedHosts(
       const Extension* extension) override;
   bool UsesDefaultPolicyHostRestrictions(const Extension* extension) override;
+  bool BlocklistedByDefault() const override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -101,11 +102,6 @@ class ExtensionManagement : public KeyedService,
   // management policy settings.
   const std::vector<std::unique_ptr<ManagementPolicy::Provider>>& GetProviders()
       const;
-
-  // Checks if extensions are blocklisted by default, by policy. When true,
-  // this means that even extensions without an ID should be blocklisted (e.g.
-  // from the command line, or when loaded as an unpacked extension).
-  bool BlocklistedByDefault() const;
 
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   // Checks if extensions are enabled for Desktop Android for the current

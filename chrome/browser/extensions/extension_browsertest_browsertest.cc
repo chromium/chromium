@@ -6,7 +6,6 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/event_router.h"

@@ -59,6 +59,25 @@ class UserScriptListener;
 // browser process (see chrome/common/extensions/chrome_extensions_client.h).
 class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
  public:
+  // Manifest settings override types.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ManifestSettingsOverrideType)
+  enum ManifestSettingsOverrideType {
+    // No overrides.
+    kNoOverride = 0,
+    // Overrides the default search engine.
+    kSearchEngine = 1,
+    // Overrides the new tab page.
+    kNewTabPage = 2,
+    // Overrides the default search engine and new tab page.
+    kSearchEngineAndNewTabPage = 3,
+
+    kMaxValue = kSearchEngineAndNewTabPage,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/extensions/enums.xml:ManifestSettingsOverrideType)
+
   ChromeExtensionsBrowserClient();
 
   ChromeExtensionsBrowserClient(const ChromeExtensionsBrowserClient&) = delete;
@@ -279,6 +298,9 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
                       content::WebContents* web_contents) const override;
   void ShowWarningMessageBox(const std::u16string& title,
                              const std::u16string& message) override;
+  void RecordCommandLineMetricsOnUnpackedInstallation(
+      content::BrowserContext* context,
+      const Extension* extension) const override;
 
   static void set_did_chrome_update_for_testing(bool did_update);
 
