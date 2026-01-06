@@ -9,22 +9,12 @@ source_set("utils") {
     "password_auto_fill_status_manager.h",
     "password_auto_fill_status_manager.mm",
     "password_auto_fill_status_observer.h",
-    "password_utils.h",
-    "password_utils.mm",
   ]
   deps = [
     "//base",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
-    "//components/prefs",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/settings/ui_bundled/password/password_settings:common",
     "//ios/chrome/browser/shared/model/utils",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/common/ui/reauthentication",
-    "//ui/base",
   ]
 }
 

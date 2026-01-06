@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/password/password_exporter.h"
+#import "ios/chrome/browser/passwords/coordinator/password_exporter.h"
 
 #import "base/check.h"
 #import "base/files/file_path.h"

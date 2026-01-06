@@ -19,6 +19,8 @@ source_set("bulk_upload") {
     "//components/sync/base",
     "//components/sync/service",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/passwords/coordinator",
+    "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/settings/ui_bundled/utils",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
