@@ -864,7 +864,7 @@ class JavascriptOptimizerBrowserTest_UseSiteFamiliarityBase
     EXPECT_EQ(expected_verdict, verdict);
   }
 
-  void CheckUnfamiliarSite(bool expect_v8_optimizations_enabled) {
+  void NavigateToUnfamiliarSite(bool expect_v8_optimizations_enabled) {
     const GURL kTestUrl =
         embedded_https_test_server().GetURL("a.com", "/simple.html");
     ASSERT_TRUE(content::NavigateToURL(web_contents(), kTestUrl));
@@ -916,10 +916,7 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
 
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
                        ExpectOptimizationDisabledForUnfamiliarSite) {
-  const GURL kTestUrl =
-      embedded_https_test_server().GetURL("a.com", "/simple.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), kTestUrl));
-  CheckUnfamiliarSite(/*expect_v8_optimizations_enabled=*/false);
+  NavigateToUnfamiliarSite(/*expect_v8_optimizations_enabled=*/false);
 }
 
 // Test that if there is a content-setting-exception to enable v8-optimizers
@@ -1082,10 +1079,7 @@ class JavascriptOptimizerBrowserTest_UseSiteFamiliarity_DisableSiteIsolation
 IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerBrowserTest_UseSiteFamiliarity_DisableSiteIsolation,
     ExpectIgnoreFamiliarityWhenSiteIsolationDisabled) {
-  const GURL kTestUrl =
-      embedded_https_test_server().GetURL("a.com", "/simple.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), kTestUrl));
-  CheckUnfamiliarSite(/*expect_v8_optimizations_enabled=*/true);
+  NavigateToUnfamiliarSite(/*expect_v8_optimizations_enabled=*/true);
   EXPECT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
 }
 
@@ -1106,7 +1100,7 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_DoNotUseSiteFamiliarity,
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                 ContentSetting::CONTENT_SETTING_ALLOW);
-  CheckUnfamiliarSite(/*expect_v8_optimizations_enabled=*/true);
+  NavigateToUnfamiliarSite(/*expect_v8_optimizations_enabled=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_DoNotUseSiteFamiliarity,
@@ -1114,7 +1108,7 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_DoNotUseSiteFamiliarity,
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                 ContentSetting::CONTENT_SETTING_BLOCK);
-  CheckUnfamiliarSite(/*expect_v8_optimizations_enabled=*/false);
+  NavigateToUnfamiliarSite(/*expect_v8_optimizations_enabled=*/false);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
