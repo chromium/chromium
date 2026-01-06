@@ -275,7 +275,7 @@ TEST_F(BrowserViewTest, DISABLED_BrowserViewLayout) {
   EXPECT_EQ(expected_tabstrip_region_origin.y(), tabstrip_region->y());
   EXPECT_EQ(0, toolbar->x());
   EXPECT_EQ(tabstrip_region->bounds().bottom() -
-                GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP),
+                GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap),
             toolbar->y());
   EXPECT_EQ(0, contents_container->x());
   EXPECT_EQ(toolbar->bounds().bottom(), contents_container->y());
@@ -289,7 +289,7 @@ TEST_F(BrowserViewTest, DISABLED_BrowserViewLayout) {
   BookmarkBarView* bookmark_bar = browser_view()->GetBookmarkBarView();
   EXPECT_FALSE(bookmark_bar->GetVisible());
   EXPECT_EQ(devtools_web_view->y(), bookmark_bar->height());
-  EXPECT_EQ(GetLayoutConstant(BOOKMARK_BAR_HEIGHT),
+  EXPECT_EQ(GetLayoutConstant(LayoutConstant::kBookmarkBarHeight),
             bookmark_bar->GetMinimumSize().height());
   chrome::ExecuteCommand(browser, IDC_SHOW_BOOKMARK_BAR);
   EXPECT_TRUE(bookmark_bar->GetVisible());
@@ -312,7 +312,7 @@ TEST_F(BrowserViewTest, DISABLED_BrowserViewLayout) {
   // Bookmark bar layout on NTP.
   EXPECT_EQ(0, bookmark_bar->x());
   EXPECT_EQ(tabstrip_region->bounds().bottom() + toolbar->height() -
-                GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP),
+                GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap),
             bookmark_bar->y());
   EXPECT_EQ(bookmark_bar->height() + bookmark_bar->y(),
             contents_container->y());

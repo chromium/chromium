@@ -1392,10 +1392,10 @@ LocationIconView* PictureInPictureBrowserFrameView::GetLocationIconView() {
 }
 
 void PictureInPictureBrowserFrameView::UpdateContentSettingsIcons() {
-  const auto kButtonContainerViewWithCameraButtonInsets =
-      gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_AFTER_TITLE_PADDING));
-  const auto kButtonContainerViewInsets =
-      gfx::Insets::VH(0, GetLayoutConstant(TAB_AFTER_TITLE_PADDING));
+  const auto kButtonContainerViewWithCameraButtonInsets = gfx::Insets::TLBR(
+      0, 0, 0, GetLayoutConstant(LayoutConstant::kTabAfterTitlePadding));
+  const auto kButtonContainerViewInsets = gfx::Insets::VH(
+      0, GetLayoutConstant(LayoutConstant::kTabAfterTitlePadding));
 
   for (ContentSettingImageView* view : content_setting_views_) {
     view->Update();

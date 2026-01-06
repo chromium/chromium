@@ -407,9 +407,10 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
   // pixels at the end of the top and bottom edges trigger diagonal resizing.
   constexpr int kResizeCornerWidth = 16;
 
-  const int top_border_thickness = GetBrowserView()->GetIsWebAppType()
-                                       ? FrameTopBorderThickness(false)
-                                       : GetLayoutConstant(TAB_STRIP_PADDING);
+  const int top_border_thickness =
+      GetBrowserView()->GetIsWebAppType()
+          ? FrameTopBorderThickness(false)
+          : GetLayoutConstant(LayoutConstant::kTabStripPadding);
 
   const int window_component = GetHTComponentForFrame(
       point, gfx::Insets::TLBR(top_border_thickness, 0, 0, 0),
@@ -695,7 +696,8 @@ int BrowserFrameViewWin::GetFrameHeight() const {
     // TODO(crbug.com/437915973): Account for the vertical tab region when using
     // GetMinimumSize().
     return GetBrowserView()->tab_strip_view()->GetMinimumSize().height() -
-           WindowTopY() - GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
+           WindowTopY() -
+           GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
   }
   return IsMaximized() ? TitlebarMaximizedVisualHeight()
                        : TitlebarHeight(false);

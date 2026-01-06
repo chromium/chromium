@@ -88,7 +88,8 @@ void TopContainerView::OnPaintBackground(gfx::Canvas* canvas) {
 #endif
     gfx::ScopedCanvas scoped(canvas);
     if (use_rounded_corners) {
-      const float radius = GetLayoutConstant(TOOLBAR_CORNER_RADIUS);
+      const float radius =
+          GetLayoutConstant(LayoutConstant::kToolbarCornerRadius);
       const SkVector radii[4] = {
           {radius, radius}, {radius, radius}, {0, 0}, {0, 0}};
       const SkPath path = SkPath::RRect(

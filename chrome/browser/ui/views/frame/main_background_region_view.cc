@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
@@ -55,7 +56,7 @@ void MainBackgroundRegionView::Layout(PassKey) {
   background_view_->SetBoundsRect(GetLocalBounds());
 
   const int corner_radius =
-      GetLayoutConstant(MAIN_BACKGROUND_REGION_CORNER_RADIUS);
+      GetLayoutConstant(LayoutConstant::kMainBackgroundRegionCornerRadius);
 
   const int leading_corner_radius = leading_corner_visible_ ? corner_radius : 0;
   const int trailing_corner_radius =

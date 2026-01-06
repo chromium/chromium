@@ -385,8 +385,9 @@ void BrowserViewLayoutImplOld::LayoutTabStripRegion(
   } else {
     SetViewVisibility(views().tab_strip_region_view, true);
     views().tab_strip_region_view->SetBoundsRect(tab_strip_region_bounds);
-    available_bounds.set_y(tab_strip_region_bounds.bottom() -
-                           GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP));
+    available_bounds.set_y(
+        tab_strip_region_bounds.bottom() -
+        GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap));
   }
 }
 

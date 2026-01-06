@@ -179,8 +179,9 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
 // enabled.
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest, DISABLED_NewTabButtonInkDrop) {
   constexpr int kTabStripRegionViewWidth = 500;
-  tab_strip_region_view()->SetBounds(0, 0, kTabStripRegionViewWidth,
-                                     GetLayoutConstant(TAB_STRIP_HEIGHT));
+  tab_strip_region_view()->SetBounds(
+      0, 0, kTabStripRegionViewWidth,
+      GetLayoutConstant(LayoutConstant::kTabStripHeight));
 
   // Add a few tabs and simulate the new tab button's ink drop animation. This
   // should not cause any crashes since the ink drop layer size as well as the

@@ -388,8 +388,8 @@ void VerticalTabStripRegionView::OnCollapsedStateChanged(
 
   const int horizontal_padding = GetLayoutConstant(
       state_controller_->IsCollapsed()
-          ? VERTICAL_TAB_STRIP_COLLAPSED_HORIZONTAL_PADDING
-          : VERTICAL_TAB_STRIP_UNCOLLAPSED_HORIZONTAL_PADDING);
+          ? LayoutConstant::kVerticalTabStripCollapsedHorizontalPadding
+          : LayoutConstant::kVerticalTabStripUncollapsedHorizontalPadding);
   flex_layout_->SetDefault(
       views::kMarginsKey,
       gfx::Insets::VH(kRegionVerticalPadding, horizontal_padding));

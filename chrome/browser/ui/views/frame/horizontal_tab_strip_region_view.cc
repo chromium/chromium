@@ -315,7 +315,8 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
     tab_search_container_ = AddChildView(std::move(tab_search_container));
     tab_search_container_->SetProperty(
         views::kMarginsKey,
-        gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
+        gfx::Insets::TLBR(0, 0, 0,
+                          GetLayoutConstant(LayoutConstant::kTabStripPadding)));
   }
   if (tab_strip_action_container) {
     tab_strip_action_container_ =
@@ -453,8 +454,8 @@ void HorizontalTabStripRegionView::Layout(PassKey) {
     // padding and button height are removed.
     int x = tab_strip_container_->bounds().right() -
             TabStyle::Get()->GetBottomCornerRadius() +
-            GetLayoutConstant(TAB_STRIP_PADDING) +
-            GetLayoutConstant(NEW_TAB_BUTTON_LEADING_MARGIN);
+            GetLayoutConstant(LayoutConstant::kTabStripPadding) +
+            GetLayoutConstant(LayoutConstant::kNewTabButtonLeadingMargin);
 
     gfx::Point button_new_position = gfx::Point(x, 0);
     gfx::Rect button_new_bounds = gfx::Rect(button_new_position, button_size);
@@ -605,12 +606,14 @@ void HorizontalTabStripRegionView::LogTabSearchPositionForTesting() {
 }
 
 void HorizontalTabStripRegionView::UpdateButtonBorders() {
-  const int extra_vertical_space = GetLayoutConstant(TAB_STRIP_HEIGHT) -
-                                   GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP) -
-                                   NewTabButton::kButtonSize.height();
+  const int extra_vertical_space =
+      GetLayoutConstant(LayoutConstant::kTabStripHeight) -
+      GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap) -
+      NewTabButton::kButtonSize.height();
   const int top_inset = extra_vertical_space / 2;
-  const int bottom_inset = extra_vertical_space - top_inset +
-                           GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
+  const int bottom_inset =
+      extra_vertical_space - top_inset +
+      GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
   // The new tab button is placed vertically exactly in the center of the
   // tabstrip. Extend the border of the button such that it extends to the top
   // of the tabstrip bounds. This is essential to ensure it is targetable on the
@@ -662,7 +665,7 @@ void HorizontalTabStripRegionView::UpdateTabStripMargin() {
 
     tab_strip_right_margin =
         button_to_paint_to_layer->GetPreferredSize().width() +
-        GetLayoutConstant(TAB_STRIP_PADDING);
+        GetLayoutConstant(LayoutConstant::kTabStripPadding);
   }
 
   // If the tab search button is before the tab strip, it also overlaps the
@@ -687,10 +690,11 @@ void HorizontalTabStripRegionView::UpdateTabStripMargin() {
     // The TabSearchContainer should be 6 pixels from the left and the tabstrip
     // should have 6 px of padding between it and the tab_search button (not
     // including the corner radius).
-    tab_strip_left_margin = tab_strip_left_margin.value() +
-                            GetLayoutConstant(TAB_STRIP_PADDING) +
-                            GetLayoutConstant(TAB_STRIP_PADDING) -
-                            TabStyle::Get()->GetBottomCornerRadius();
+    tab_strip_left_margin =
+        tab_strip_left_margin.value() +
+        GetLayoutConstant(LayoutConstant::kTabStripPadding) +
+        GetLayoutConstant(LayoutConstant::kTabStripPadding) -
+        TabStyle::Get()->GetBottomCornerRadius();
   }
 
   UpdateButtonBorders();
@@ -706,9 +710,10 @@ void HorizontalTabStripRegionView::UpdateTabStripMargin() {
 void HorizontalTabStripRegionView::AdjustViewBoundsRect(View* view,
                                                         int offset) {
   const gfx::Size view_size = view->GetPreferredSize();
-  const int x =
-      tab_strip_container_->x() + TabStyle::Get()->GetBottomCornerRadius() -
-      GetLayoutConstant(TAB_STRIP_PADDING) - view_size.width() - offset;
+  const int x = tab_strip_container_->x() +
+                TabStyle::Get()->GetBottomCornerRadius() -
+                GetLayoutConstant(LayoutConstant::kTabStripPadding) -
+                view_size.width() - offset;
   const gfx::Rect new_bounds = gfx::Rect(gfx::Point(x, 0), view_size);
   view->SetBoundsRect(new_bounds);
 }

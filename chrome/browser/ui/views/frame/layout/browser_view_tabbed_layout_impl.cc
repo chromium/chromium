@@ -215,7 +215,7 @@ gfx::Size BrowserViewTabbedLayoutImpl::GetMinimumSize(
   // visible.
   if (!toolbar_height_side_panel_size.IsEmpty()) {
     const auto padding =
-        GetLayoutConstant(LayoutConstant::TOOLBAR_HEIGHT_SIDE_PANEL_INSET);
+        GetLayoutConstant(LayoutConstant::kToolbarHeightSidePanelInset);
     min_height += 2 * padding;
     min_width += padding;
   }
@@ -277,7 +277,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
           GetBoundsWithExclusion(params, views().tab_strip_region_view,
                                  TabStyle::Get()->GetBottomCornerRadius());
       params.SetTop(tabstrip_bounds.bottom() -
-                    GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP));
+                    GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap));
       needs_exclusion = false;
     }
     layout.AddChild(views().tab_strip_region_view, tabstrip_bounds,
@@ -396,7 +396,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   // The insets for main region and its containing views when the
   // toolbar_height_side_panel is visible.
   const int container_inset_padding =
-      GetLayoutConstant(LayoutConstant::TOOLBAR_HEIGHT_SIDE_PANEL_INSET);
+      GetLayoutConstant(LayoutConstant::kToolbarHeightSidePanelInset);
 
   // Lay out toolbar-height side panel.
   bool toolbar_height_side_panel_leading = false;
@@ -689,7 +689,7 @@ gfx::Rect BrowserViewTabbedLayoutImpl::CalculateTopContainerLayout(
           GetBoundsWithExclusion(params, views().tab_strip_region_view,
                                  TabStyle::Get()->GetBottomCornerRadius());
       params.SetTop(tabstrip_bounds.bottom() -
-                    GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP));
+                    GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap));
       needs_exclusion = false;
     }
     layout.AddChild(views().tab_strip_region_view, tabstrip_bounds,

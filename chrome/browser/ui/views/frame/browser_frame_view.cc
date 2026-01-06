@@ -419,7 +419,7 @@ int BrowserFrameView::GetSystemMenuY() const {
   return GetBoundsForTabStripRegion(
              GetBrowserView()->tab_strip_view()->GetMinimumSize())
              .bottom() -
-         GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
+         GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
 }
 #endif  // BUILDFLAG(IS_WIN)
 

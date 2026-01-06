@@ -240,14 +240,14 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewBrowserTest,
     const int tab_search_container_expected_end =
         tab_strip_region_view()->GetTabStripContainerForTesting()->x() +
         TabStyle::Get()->GetBottomCornerRadius() -
-        GetLayoutConstant(TAB_STRIP_PADDING);
+        GetLayoutConstant(LayoutConstant::kTabStripPadding);
 
     EXPECT_EQ(tab_search_container()->bounds().right(),
               tab_search_container_expected_end);
   } else if (!features::HasTabSearchToolbarButton()) {
     const int tab_search_container_expected_end =
         tab_strip_region_view()->GetLocalBounds().right() -
-        GetLayoutConstant(TAB_STRIP_PADDING);
+        GetLayoutConstant(LayoutConstant::kTabStripPadding);
     EXPECT_EQ(tab_search_container()->bounds().right(),
               tab_search_container_expected_end);
   }

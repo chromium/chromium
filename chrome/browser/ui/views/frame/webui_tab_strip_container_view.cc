@@ -816,7 +816,8 @@ TabStripUILayout WebUITabStripContainerView::GetLayout() {
   // changing thumbnail sizes.
   //
   // See: crbug.com/1066652 for more info
-  const int max_bookmark_height = GetLayoutConstant(BOOKMARK_BAR_HEIGHT);
+  const int max_bookmark_height =
+      GetLayoutConstant(LayoutConstant::kBookmarkBarHeight);
   const views::View* bookmarks = browser_view_->bookmark_bar();
   const int bookmark_bar_height =
       (bookmarks && bookmarks->GetVisible()) ? bookmarks->height() : 0;

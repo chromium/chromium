@@ -192,8 +192,8 @@ gfx::Rect BrowserFrameViewMac::GetBoundsForTabStripRegion(
   // caption buttons or the tab search button.
   if (browser_widget()->IsFullscreen()) {
     if (!GetBrowserView()->UsesImmersiveFullscreenMode()) {
-      bounds.Inset(
-          gfx::Insets::TLBR(0, GetLayoutConstant(TOOLBAR_CORNER_RADIUS), 0, 0));
+      bounds.Inset(gfx::Insets::TLBR(
+          0, GetLayoutConstant(LayoutConstant::kToolbarCornerRadius), 0, 0));
     }
   } else {
     // The bottom curve of the first/last tab swoops into the caption button

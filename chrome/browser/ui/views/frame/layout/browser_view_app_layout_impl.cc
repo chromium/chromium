@@ -339,7 +339,9 @@ void BrowserViewAppLayoutImpl::CalculateTitlebarLayout(
     // contents slightly to give the impression that the tabs connect to the
     // contents.
     const int tabstrip_adjustment =
-        tabstrip_enabled ? GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP) : 0;
+        tabstrip_enabled
+            ? GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap)
+            : 0;
     params.SetTop(full_titlebar_bounds.bottom() - tabstrip_adjustment);
     overlay_rect_ = std::nullopt;
   }

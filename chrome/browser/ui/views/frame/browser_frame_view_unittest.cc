@@ -116,9 +116,9 @@ TEST_F(BrowserFrameViewTabbedTest, MAYBE_HitTestTabstrip) {
 #endif
 
   // Hits tab strip and the browser-client area.
-  EXPECT_TRUE(frame_view_->HitTestRect(
-      gfx::Rect(tabstrip_bounds.x() + 1,
-                tabstrip_bounds.bottom() -
-                    GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP) - 1,
-                100, 100)));
+  EXPECT_TRUE(frame_view_->HitTestRect(gfx::Rect(
+      tabstrip_bounds.x() + 1,
+      tabstrip_bounds.bottom() -
+          GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap) - 1,
+      100, 100)));
 }
