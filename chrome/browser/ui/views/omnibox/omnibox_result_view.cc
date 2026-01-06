@@ -431,7 +431,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
       match_.feedback_type == FeedbackType::kThumbsUp
           ? vector_icons::kThumbUpFilledIcon
           : vector_icons::kThumbUpIcon,
-      GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
+      GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
       GetColorProvider()->GetColor(icon_color_id),
       /* omnibox buttons are never disabled */
       gfx::kPlaceholderColor);
@@ -444,7 +444,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
       match_.feedback_type == FeedbackType::kThumbsDown
           ? vector_icons::kThumbDownFilledIcon
           : vector_icons::kThumbDownIcon,
-      GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
+      GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
       GetColorProvider()->GetColor(icon_color_id),
       /* omnibox buttons are never disabled */
       gfx::kPlaceholderColor);
@@ -454,7 +454,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
 
   views::SetImageFromVectorIconWithColor(
       remove_suggestion_button_, vector_icons::kCloseRoundedIcon,
-      GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
+      GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
       GetColorProvider()->GetColor(icon_color_id),
       /* omnibox buttons are never disabled */
       gfx::kPlaceholderColor);

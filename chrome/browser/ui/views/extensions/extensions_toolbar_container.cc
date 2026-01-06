@@ -892,7 +892,8 @@ void ExtensionsToolbarContainer::OnWidgetDestroying(views::Widget* widget) {
 }
 
 size_t ExtensionsToolbarContainer::WidthToIconCount(int x_offset) {
-  const int element_padding = GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);
+  const int element_padding =
+      GetLayoutConstant(LayoutConstant::kToolbarElementPadding);
   size_t unclamped_count =
       std::max((x_offset + element_padding) /
                    (GetToolbarActionSize().width() + element_padding),

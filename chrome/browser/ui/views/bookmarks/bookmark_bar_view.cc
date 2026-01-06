@@ -742,7 +742,7 @@ void BookmarkBarView::Layout(PassKey) {
           : gfx::Size();
 
   const int bookmark_bar_button_padding =
-      GetLayoutConstant(BOOKMARK_BAR_BUTTON_PADDING);
+      GetLayoutConstant(LayoutConstant::kBookmarkBarButtonPadding);
 
   int max_x = GetLeadingMargin() + width - overflow_pref.width() -
               bookmarks_separator_pref.width();

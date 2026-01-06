@@ -69,13 +69,13 @@ std::u16string GetCancelButtonText(
 ui::ImageModel GetSiteSettingsIcon() {
   return ui::ImageModel::FromVectorIcon(
       vector_icons::kSettingsChromeRefreshIcon, ui::kColorIcon,
-      GetLayoutConstant(PAGE_INFO_ICON_SIZE));
+      GetLayoutConstant(LayoutConstant::kPageInfoIconSize));
 }
 
 ui::ImageModel GetLaunchIcon() {
-  return ui::ImageModel::FromVectorIcon(vector_icons::kLaunchChromeRefreshIcon,
-                                        ui::kColorIcon,
-                                        GetLayoutConstant(PAGE_INFO_ICON_SIZE));
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kLaunchChromeRefreshIcon, ui::kColorIcon,
+      GetLayoutConstant(LayoutConstant::kPageInfoIconSize));
 }
 
 bool ShouldShowManageButton(
@@ -151,7 +151,7 @@ void ContentSettingBubbleContents::ListItemContainer::AddItem(
         views::CreateEmptyBorder(kTitleDescriptionListItemInset));
     item_icon->SetImage(ui::ImageModel::FromVectorIcon(
         *item.image, ui::kColorLabelForeground,
-        GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
+        GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
         item.has_blocked_badge ? &vector_icons::kBlockedBadgeIcon
                                : &gfx::VectorIcon::EmptyIcon()));
   }

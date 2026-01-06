@@ -58,7 +58,7 @@ BookmarkButtonBase::BookmarkButtonBase(PressedCallback callback,
   ConfigureInkDropForToolbar(this);
 
   SetImageLabelSpacing(
-      GetLayoutConstant(BOOKMARK_BAR_BUTTON_IMAGE_LABEL_PADDING));
+      GetLayoutConstant(LayoutConstant::kBookmarkBarButtonImageLabelPadding));
 
   views::InstallPillHighlightPathGenerator(this);
 

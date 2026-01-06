@@ -147,7 +147,7 @@ TabSharingInfoBar::TabSharingInfoBar(
         CONTEXT_OMNIBOX_PRIMARY);
     csc_indicator_button_->SetStyle(ui::ButtonStyle::kDefault);
     csc_indicator_button_->SetCornerRadius(
-        GetLayoutConstant(TOOLBAR_CORNER_RADIUS));
+        GetLayoutConstant(LayoutConstant::kToolbarCornerRadius));
     csc_indicator_button_->SetCustomPadding(
         kCapturedSurfaceControlIndicatorButtonInsets);
     csc_indicator_button_->SetTextColor(

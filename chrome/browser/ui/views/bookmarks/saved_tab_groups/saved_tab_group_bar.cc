@@ -614,7 +614,7 @@ void SavedTabGroupBar::MaybePaintDropIndicatorInBar(gfx::Canvas* canvas) {
   const int x =
       indicator_index.value() > 0
           ? children()[indicator_index.value() - 1]->bounds().right() +
-                GetLayoutConstant(BOOKMARK_BAR_BUTTON_PADDING) / 2
+                GetLayoutConstant(LayoutConstant::kBookmarkBarButtonPadding) / 2
           : kDropIndicatorThicknessDips / 2;
 
   const gfx::Rect drop_indicator_bounds =

@@ -54,7 +54,7 @@ RichControlsContainerView::RichControlsContainerView() {
   SetInteriorMargin(button_insets);
 
   icon_ = AddChildView(std::make_unique<views::ImageView>());
-  const int icon_size = GetLayoutConstant(PAGE_INFO_ICON_SIZE);
+  const int icon_size = GetLayoutConstant(LayoutConstant::kPageInfoIconSize);
   icon_->SetImageSize({icon_size, icon_size});
   icon_->SetProperty(views::kElementIdentifierKey, kIcon);
 
@@ -85,7 +85,7 @@ void RichControlsContainerView::SetEnforcedIcon(
   enforced_icon_->SetProperty(views::kElementIdentifierKey, kEnforcedIcon);
   enforced_icon_->SetImage(ui::ImageModel::FromVectorIcon(
       Util::GetEnforcedIcon(enforcement), ui::kColorIcon,
-      GetLayoutConstant(PAGE_INFO_ICON_SIZE)));
+      GetLayoutConstant(LayoutConstant::kPageInfoIconSize)));
   enforced_icon_->SetTooltipText(Util::GetEnforcedTooltip(enforcement));
 }
 

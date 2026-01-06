@@ -65,7 +65,8 @@ class IndicatorDividerBackground : public views::Background {
     // between chips and an extra padding that is drawn under the indicator
     // chip.
     const int arc_width =
-        GetLayoutConstant(LOCATION_BAR_CHIP_PADDING) + kExtraArcPadding;
+        GetLayoutConstant(LayoutConstant::kLocationBarChipPadding) +
+        kExtraArcPadding;
     const SkScalar arc_x = view->width() - arc_width;
 
     const SkPath path =
@@ -152,13 +153,16 @@ void PermissionDashboardView::UpdateDividerViewVisibility() {
     chip_divider_view_->SetProperty(
         views::kMarginsKey,
         gfx::Insets::TLBR(
-            0, GetLayoutConstant(LOCATION_BAR_CHIP_PADDING) - width, 0, 0));
+            0,
+            GetLayoutConstant(LayoutConstant::kLocationBarChipPadding) - width,
+            0, 0));
   }
 
   // The divivder arc's width is needed to offset the request chip and draw it
   // under the arc.
   const int arc_width =
-      GetLayoutConstant(LOCATION_BAR_CHIP_PADDING) + kExtraArcPadding;
+      GetLayoutConstant(LayoutConstant::kLocationBarChipPadding) +
+      kExtraArcPadding;
   secondary_chip_->UpdateForDividerVisibility(is_visible, arc_width);
   chip_divider_view_->SetVisible(is_visible);
 }
@@ -179,7 +183,8 @@ gfx::Size PermissionDashboardView::CalculatePreferredSize(
 
   // Part of the request chip that is drawn under the arc.
   const int secondary_chip_margin =
-      GetLayoutConstant(LOCATION_BAR_CHIP_PADDING) + kExtraArcPadding;
+      GetLayoutConstant(LayoutConstant::kLocationBarChipPadding) +
+      kExtraArcPadding;
 
   // Visible width of the request chip.
   int secondary_chip_visible_width =
@@ -187,7 +192,7 @@ gfx::Size PermissionDashboardView::CalculatePreferredSize(
 
   gfx::Size size = anchored_chip_->GetPreferredSize();
   size.Enlarge(secondary_chip_visible_width +
-                   GetLayoutConstant(LOCATION_BAR_CHIP_PADDING),
+                   GetLayoutConstant(LayoutConstant::kLocationBarChipPadding),
                0);
   return size;
 }

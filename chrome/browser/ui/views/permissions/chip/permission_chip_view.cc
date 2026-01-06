@@ -43,7 +43,8 @@ PermissionChipView::PermissionChipView(PressedCallback callback)
   SetElideBehavior(gfx::ElideBehavior::FADE_TAIL);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   // Equalizing padding on the left, right and between icon and label.
-  SetImageLabelSpacing(GetLayoutConstant(LOCATION_BAR_CHIP_PADDING));
+  SetImageLabelSpacing(
+      GetLayoutConstant(LayoutConstant::kLocationBarChipPadding));
   SetCustomPadding(GetPadding());
   label()->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
   SetCornerRadius(GetCornerRadius());
@@ -316,11 +317,11 @@ void PermissionChipView::OnAnimationValueMaybeChanged() {
 }
 
 int PermissionChipView::GetIconSize() const {
-  return GetLayoutConstant(LOCATION_BAR_CHIP_ICON_SIZE);
+  return GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize);
 }
 
 int PermissionChipView::GetCornerRadius() const {
-  return GetLayoutConstant(LOCATION_BAR_CHILD_CORNER_RADIUS);
+  return GetLayoutConstant(LayoutConstant::kLocationBarChildCornerRadius);
 }
 
 gfx::RoundedCornersF PermissionChipView::GetCornerRadii() const {
@@ -334,7 +335,8 @@ gfx::RoundedCornersF PermissionChipView::GetCornerRadii() const {
 }
 
 gfx::Insets PermissionChipView::GetPadding() const {
-  return gfx::Insets(GetLayoutConstant(LOCATION_BAR_CHIP_PADDING));
+  return gfx::Insets(
+      GetLayoutConstant(LayoutConstant::kLocationBarChipPadding));
 }
 
 void PermissionChipView::SetChipIcon(const gfx::VectorIcon& icon) {
