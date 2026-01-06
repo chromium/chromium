@@ -1154,6 +1154,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/tabmodel/ChromeTabCreator.java",
   "java/src/org/chromium/chrome/browser/tabmodel/HeadlessTabModelSelectorImpl.java",
   "java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelImplCreator.java",
+  "java/src/org/chromium/chrome/browser/tabmodel/LookAheadObservableSupplier.java",
   "java/src/org/chromium/chrome/browser/tabmodel/PendingTabClosureManager.java",
   "java/src/org/chromium/chrome/browser/tabmodel/RedirectTabCreator.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabCollectionTabModelImpl.java",
