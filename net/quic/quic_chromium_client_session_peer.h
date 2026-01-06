@@ -34,6 +34,8 @@ class QuicChromiumClientSessionPeer {
 
   static MigrationCause GetCurrentMigrationCause(
       QuicChromiumClientSession* session);
+
+  static void DisableConnectionMigration(QuicChromiumClientSession* session);
 };
 
 }  // namespace test

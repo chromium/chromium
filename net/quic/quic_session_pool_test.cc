@@ -959,7 +959,9 @@ TEST_P(QuicSessionPoolTest, DefaultInitialRtt) {
   QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
   EXPECT_TRUE(session->require_confirmation());
   EXPECT_EQ(100000u, session->connection()->GetStats().srtt_us);
-  ASSERT_FALSE(session->config()->HasInitialRoundTripTimeUsToSend());
+  ASSERT_FALSE(crypto_client_stream_factory_.last_stream()
+                   ->negotiated_config()
+                   ->HasInitialRoundTripTimeUsToSend());
 }
 
 TEST_P(QuicSessionPoolTest, FactoryDestroyedWhenJobPending) {
@@ -1112,8 +1114,12 @@ TEST_P(QuicSessionPoolTest, CachedInitialRtt) {
 
   QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
   EXPECT_EQ(10000u, session->connection()->GetStats().srtt_us);
-  ASSERT_TRUE(session->config()->HasInitialRoundTripTimeUsToSend());
-  EXPECT_EQ(10000u, session->config()->GetInitialRoundTripTimeUsToSend());
+  ASSERT_TRUE(crypto_client_stream_factory_.last_stream()
+                  ->negotiated_config()
+                  ->HasInitialRoundTripTimeUsToSend());
+  EXPECT_EQ(10000u, crypto_client_stream_factory_.last_stream()
+                        ->negotiated_config()
+                        ->GetInitialRoundTripTimeUsToSend());
 }
 
 // Test that QUIC sessions use the cached RTT from HttpServerProperties for the
@@ -1171,12 +1177,18 @@ TEST_P(QuicSessionPoolTest, CachedInitialRttWithNetworkAnonymizationKey) {
         kDefaultDestination, PRIVACY_MODE_DISABLED, network_anonymization_key);
     if (network_anonymization_key == kNetworkAnonymizationKey1) {
       EXPECT_EQ(10000, session->connection()->GetStats().srtt_us);
-      ASSERT_TRUE(session->config()->HasInitialRoundTripTimeUsToSend());
-      EXPECT_EQ(10000u, session->config()->GetInitialRoundTripTimeUsToSend());
+      ASSERT_TRUE(crypto_client_stream_factory_.last_stream()
+                      ->negotiated_config()
+                      ->HasInitialRoundTripTimeUsToSend());
+      EXPECT_EQ(10000u, crypto_client_stream_factory_.last_stream()
+                            ->negotiated_config()
+                            ->GetInitialRoundTripTimeUsToSend());
     } else {
       EXPECT_EQ(quic::kInitialRttMs * 1000,
                 session->connection()->GetStats().srtt_us);
-      EXPECT_FALSE(session->config()->HasInitialRoundTripTimeUsToSend());
+      ASSERT_FALSE(crypto_client_stream_factory_.last_stream()
+                       ->negotiated_config()
+                       ->HasInitialRoundTripTimeUsToSend());
     }
   }
 }
@@ -1204,8 +1216,12 @@ TEST_P(QuicSessionPoolTest, 2gInitialRtt) {
 
   QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
   EXPECT_EQ(1000000u, session->connection()->GetStats().srtt_us);
-  ASSERT_TRUE(session->config()->HasInitialRoundTripTimeUsToSend());
-  EXPECT_EQ(1200000u, session->config()->GetInitialRoundTripTimeUsToSend());
+  ASSERT_TRUE(crypto_client_stream_factory_.last_stream()
+                  ->negotiated_config()
+                  ->HasInitialRoundTripTimeUsToSend());
+  EXPECT_EQ(1200000u, crypto_client_stream_factory_.last_stream()
+                          ->negotiated_config()
+                          ->GetInitialRoundTripTimeUsToSend());
 }
 
 TEST_P(QuicSessionPoolTest, 3gInitialRtt) {
@@ -1231,8 +1247,12 @@ TEST_P(QuicSessionPoolTest, 3gInitialRtt) {
 
   QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
   EXPECT_EQ(400000u, session->connection()->GetStats().srtt_us);
-  ASSERT_TRUE(session->config()->HasInitialRoundTripTimeUsToSend());
-  EXPECT_EQ(400000u, session->config()->GetInitialRoundTripTimeUsToSend());
+  ASSERT_TRUE(crypto_client_stream_factory_.last_stream()
+                  ->negotiated_config()
+                  ->HasInitialRoundTripTimeUsToSend());
+  EXPECT_EQ(400000u, crypto_client_stream_factory_.last_stream()
+                         ->negotiated_config()
+                         ->GetInitialRoundTripTimeUsToSend());
 }
 
 TEST_P(QuicSessionPoolTest, GoAway) {
@@ -1591,10 +1611,8 @@ TEST_P(QuicSessionPoolTest,
   // Receive NOIP connection option.
   quic::QuicTagVector initial_received_options;
   initial_received_options.push_back(quic::kNOIP);
-  EXPECT_TRUE(
-      GetActiveSession(kDefaultDestination)
-          ->config()
-          ->SetInitialReceivedConnectionOptions(initial_received_options));
+  GetActiveSession(kDefaultDestination)->received_connection_options() =
+      initial_received_options;
 
   // `server2` can pool with the existing session and DNS gets skipped.
   TestCompletionCallback callback;
@@ -3398,10 +3416,7 @@ TEST_P(QuicSessionPoolTest, OnNetworkMadeDefaultConnectionMigrationDisabled) {
   EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
   EXPECT_TRUE(HasActiveSession(kDefaultDestination));
 
-  // Set session config to have connection migration disabled.
-  quic::test::QuicConfigPeer::SetReceivedDisableConnectionMigration(
-      session->config());
-  EXPECT_TRUE(session->config()->DisableConnectionMigration());
+  QuicChromiumClientSessionPeer::DisableConnectionMigration(session);
 
   // Trigger connection migration. Since there is a non-migratable stream,
   // this should cause session to continue but be marked as going away.
@@ -3580,10 +3595,7 @@ TEST_P(QuicSessionPoolTest, OnNetworkDisconnectedConnectionMigrationDisabled) {
   EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
   EXPECT_TRUE(HasActiveSession(kDefaultDestination));
 
-  // Set session config to have connection migration disabled.
-  quic::test::QuicConfigPeer::SetReceivedDisableConnectionMigration(
-      session->config());
-  EXPECT_TRUE(session->config()->DisableConnectionMigration());
+  QuicChromiumClientSessionPeer::DisableConnectionMigration(session);
 
   // Trigger connection migration.
   scoped_mock_network_change_notifier_->mock_network_change_notifier()
@@ -5583,10 +5595,7 @@ TEST_P(QuicSessionPoolTest, PortMigrationDisabledOnPathDegrading) {
   quic::test::QuicConnectionPeer::SetSelfAddress(session->connection(),
                                                  ToQuicSocketAddress(ip));
 
-  // Set session config to have active migration disabled.
-  quic::test::QuicConfigPeer::SetReceivedDisableConnectionMigration(
-      session->config());
-  EXPECT_TRUE(session->config()->DisableConnectionMigration());
+  QuicChromiumClientSessionPeer::DisableConnectionMigration(session);
 
   // Cause the connection to report path degrading to the session.
   // Session will start to probe a different port.
@@ -7655,10 +7664,7 @@ TEST_P(QuicSessionPoolTest, MigrateSessionEarlyConnectionMigrationDisabled) {
   EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
   EXPECT_TRUE(HasActiveSession(kDefaultDestination));
 
-  // Set session config to have connection migration disabled.
-  quic::test::QuicConfigPeer::SetReceivedDisableConnectionMigration(
-      session->config());
-  EXPECT_TRUE(session->config()->DisableConnectionMigration());
+  QuicChromiumClientSessionPeer::DisableConnectionMigration(session);
 
   // Trigger connection migration. Since there is a non-migratable stream,
   // this should cause session to be continue without migrating.
@@ -9340,10 +9346,7 @@ void QuicSessionPoolTest::TestMigrationOnWriteErrorMigrationDisabled(
   EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
   EXPECT_TRUE(HasActiveSession(kDefaultDestination));
 
-  // Set session config to have connection migration disabled.
-  quic::test::QuicConfigPeer::SetReceivedDisableConnectionMigration(
-      session->config());
-  EXPECT_TRUE(session->config()->DisableConnectionMigration());
+  QuicChromiumClientSessionPeer::DisableConnectionMigration(session);
 
   // Send GET request on stream. This should cause a write error, which triggers
   // a connection migration attempt.
@@ -15111,9 +15114,8 @@ TEST_P(QuicSessionPoolTest, DebuggingSniDefaultHost) {
   std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream);
 
-  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
-  ASSERT_TRUE(session);
-  const quic::QuicConfig* config = session->config();
+  const quic::QuicConfig* config =
+      crypto_client_stream_factory_.last_stream()->negotiated_config();
   ASSERT_TRUE(config);
   quic::TransportParameters params;
   EXPECT_TRUE(config->FillTransportParameters(&params));
@@ -15143,9 +15145,8 @@ TEST_P(QuicSessionPoolTest, DebuggingSniGoogleHost) {
   std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream);
 
-  QuicChromiumClientSession* session = GetActiveSession(kGoogleDestination);
-  ASSERT_TRUE(session);
-  const quic::QuicConfig* config = session->config();
+  const quic::QuicConfig* config =
+      crypto_client_stream_factory_.last_stream()->negotiated_config();
   ASSERT_TRUE(config);
   quic::TransportParameters params;
   EXPECT_TRUE(config->FillTransportParameters(&params));

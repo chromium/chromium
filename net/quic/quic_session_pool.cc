@@ -1186,8 +1186,7 @@ bool QuicSessionPool::CanWaiveIpMatching(
   }
 
   if (ignore_ip_matching_when_finding_existing_sessions_ &&
-      session->config()->HasReceivedConnectionOptions() &&
-      quic::ContainsQuicTag(session->config()->ReceivedConnectionOptions(),
+      quic::ContainsQuicTag(session->received_connection_options(),
                             quic::kNOIP)) {
     return true;
   }

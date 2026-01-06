@@ -365,6 +365,10 @@ CryptoHandshakeMessage MockCryptoClientStream::GetDummyCHLOMessage() {
 }
 
 void MockCryptoClientStream::SetConfigNegotiated() {
+  if (config_negotiated_) {
+    return;
+  }
+  config_negotiated_ = true;
   DCHECK(session()->version().IsIetfQuic());
   QuicTagVector cgst;
 // TODO(rtenneti): Enable the following code after BBR code is checked in.
@@ -402,6 +406,7 @@ void MockCryptoClientStream::SetConfigNegotiated() {
   QuicErrorCode error = session()->config()->ProcessTransportParameters(
       params, /*is_resumption=*/false, &error_details);
   ASSERT_EQ(QUIC_NO_ERROR, error);
+  negotiated_config_ = std::make_unique<quic::QuicConfig>(*session()->config());
   ASSERT_TRUE(session()->config()->negotiated());
   session()->OnConfigNegotiated();
 }

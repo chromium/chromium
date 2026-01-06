@@ -2815,8 +2815,6 @@ TEST_P(JobControllerReconsiderProxyAfterErrorQuicProxyTest, Test) {
         CreateJobController(request_info);
     RunUntilIdle();
     // TODO(crbug.com/336318587): Verify the session key.
-    crypto_client_stream_factory_.last_stream()
-        ->NotifySessionOneRttKeyAvailable();
     ASSERT_TRUE(request_delegate_->WaitForHttpStream());
     EXPECT_TRUE(request_delegate_->used_proxy_info().is_direct());
 
@@ -6008,7 +6006,9 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
                            expect_stream_ready);
   }
 
-  void MakeQuicJobSucceed(size_t index, bool expect_stream_ready) {
+  void MakeQuicJobSucceed(size_t index,
+                          bool expect_stream_ready,
+                          bool notify_one_rtt_keys = true) {
     base::RunLoop().RunUntilIdle();
     ASSERT_GT(crypto_client_stream_factory_.streams().size(), index);
     MockCryptoClientStream* stream =
@@ -6020,7 +6020,9 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
       EXPECT_TRUE(request_delegate_->WaitForHttpStream());
     } else {
       bool is_done = request_delegate_->IsDone();
-      stream->NotifySessionOneRttKeyAvailable();
+      if (notify_one_rtt_keys) {
+        stream->NotifySessionOneRttKeyAvailable();
+      }
       base::RunLoop().RunUntilIdle();
       // Done state should not change.
       EXPECT_EQ(is_done, request_delegate_->IsDone());
@@ -7212,7 +7214,8 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   ASSERT_TRUE(job_controller_->main_job());
   EXPECT_EQ(HttpStreamFactory::PRECONNECT_DNS_ALPN_H3,
             job_controller_->main_job()->job_type());
-  MakeQuicJobSucceed(0, /*expect_stream_ready=*/false);
+  MakeQuicJobSucceed(0, /*expect_stream_ready=*/false,
+                     /*notify_one_rtt_keys=*/false);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));

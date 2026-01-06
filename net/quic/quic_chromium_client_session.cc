@@ -1717,6 +1717,14 @@ quic::QuicSSLConfig QuicChromiumClientSession::GetSSLConfig() const {
   return config;
 }
 
+void QuicChromiumClientSession::OnConfigNegotiated() {
+  connection_migration_disabled_ = config()->DisableConnectionMigration();
+  if (config()->HasReceivedConnectionOptions()) {
+    received_connection_options_ = config()->ReceivedConnectionOptions();
+  }
+  QuicSession::OnConfigNegotiated();
+}
+
 void QuicChromiumClientSession::SetDefaultEncryptionLevel(
     quic::EncryptionLevel level) {
   if (!callback_.is_null() &&
@@ -2326,7 +2334,7 @@ void QuicChromiumClientSession::MigrateSessionOnWriteError(
   }
 
   // Do not migrate if connection migration is disabled.
-  if (config()->DisableConnectionMigration()) {
+  if (connection_migration_disabled_) {
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_DISABLED_BY_CONFIG,
                                     connection_id(),
                                     "Migration disabled by config");
@@ -2861,7 +2869,7 @@ void QuicChromiumClientSession::MigrateNetworkImmediately(
   }
 
   // Do not migrate if connection migration is disabled.
-  if (config()->DisableConnectionMigration()) {
+  if (connection_migration_disabled_) {
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_DISABLED_BY_CONFIG,
                                     connection_id(),
                                     "Migration disabled by config");
@@ -3138,7 +3146,7 @@ void QuicChromiumClientSession::MaybeMigrateToDifferentPortOnPathDegrading() {
     return;
   }
 
-  if (config()->DisableConnectionMigration()) {
+  if (connection_migration_disabled_) {
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_DISABLED_BY_CONFIG,
                                     connection_id(),
                                     "Migration disabled by config");
@@ -3245,7 +3253,7 @@ void QuicChromiumClientSession::MaybeStartProbing(
     return;
   }
 
-  if (config()->DisableConnectionMigration()) {
+  if (connection_migration_disabled_) {
     DVLOG(1) << "Client disables probing network with connection migration "
              << "disabled by config";
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_DISABLED_BY_CONFIG,
@@ -4212,6 +4220,7 @@ QuicChromiumClientSession::CreateWebSocketQuicStreamAdapter(
 
   return CreateWebSocketQuicStreamAdapterImpl(delegate);
 }
+
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
 }  // namespace net

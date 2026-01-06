@@ -53,4 +53,10 @@ MigrationCause QuicChromiumClientSessionPeer::GetCurrentMigrationCause(
   return session->current_migration_cause_;
 }
 
+// static
+void QuicChromiumClientSessionPeer::DisableConnectionMigration(
+    QuicChromiumClientSession* session) {
+  session->connection_migration_disabled_ = true;
+}
+
 }  // namespace net::test
