@@ -14,6 +14,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -693,7 +694,7 @@ bool VisitDatabase::GetVisibleVisitsForURL(URLID url_id,
   return FillVisitVectorWithOptions(statement, options, visits);
 }
 
-bool VisitDatabase::GetVisitsForTimes(const std::vector<base::Time>& times,
+bool VisitDatabase::GetVisitsForTimes(base::span<const base::Time> times,
                                       VisitVector* visits) {
   visits->clear();
 
