@@ -7423,6 +7423,44 @@ bool ConsumeGapDecorationsShorthandRepeatFunction(
   return true;
 }
 
+// Consuming the `*-rule-edge-inset` and `*-rule-interior-inset` shorthands
+// with syntax <length-percentage> <length-percentage>?
+bool ConsumeGapDecorationsRuleEdgeInteriorInsetShorthand(
+    bool important,
+    const CSSParserContext& context,
+    CSSParserTokenStream& stream,
+    CSSValue*& rule_start_inset,
+    CSSValue*& rule_end_inset) {
+  CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
+
+  rule_start_inset = nullptr;
+  rule_end_inset = nullptr;
+
+  // Consume the first <length-percentage> value (required).
+  rule_start_inset = ConsumeLengthOrPercent(
+      stream, context, CSSPrimitiveValue::ValueRange::kAll);
+  if (!rule_start_inset) {
+    return false;
+  }
+
+  // If the second value is not present, it defaults to the first value.
+  if (stream.AtEnd() || (stream.Peek().GetType() == kDelimiterToken &&
+                         stream.Peek().Delimiter() == '!')) {
+    rule_end_inset = rule_start_inset;
+    return true;
+  }
+
+  // Consume the optional second <length-percentage> value.
+  rule_end_inset = ConsumeLengthOrPercent(stream, context,
+                                          CSSPrimitiveValue::ValueRange::kAll);
+
+  if (!rule_end_inset) {
+    return false;
+  }
+
+  return true;
+}
+
 // Consuming the `rule-inset`, `column-rule-inset`, `row-rule-inset`
 // shorthands with syntax <length-percentage> <length-percentage>?
 // [ / <length-percentage> <length-percentage>?]?

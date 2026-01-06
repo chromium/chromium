@@ -139,9 +139,11 @@ columnHeight
 columnRule
 columnRuleBreak
 columnRuleColor
+columnRuleEdgeInset
 columnRuleEdgeInsetEnd
 columnRuleEdgeInsetStart
 columnRuleInset
+columnRuleInteriorInset
 columnRuleInteriorInsetEnd
 columnRuleInteriorInsetStart
 columnRuleStyle
@@ -433,9 +435,11 @@ rowGap
 rowRule
 rowRuleBreak
 rowRuleColor
+rowRuleEdgeInset
 rowRuleEdgeInsetEnd
 rowRuleEdgeInsetStart
 rowRuleInset
+rowRuleInteriorInset
 rowRuleInteriorInsetEnd
 rowRuleInteriorInsetStart
 rowRuleStyle
@@ -447,7 +451,9 @@ rubyPosition
 rule
 ruleBreak
 ruleColor
+ruleEdgeInset
 ruleInset
+ruleInteriorInset
 ruleStyle
 ruleWidth
 rx

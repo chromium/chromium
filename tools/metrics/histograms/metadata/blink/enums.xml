@@ -8225,6 +8225,12 @@ Called by update_use_counter_css.py.-->
   <int value="907" label="hash"/>
   <int value="908" label="base-url"/>
   <int value="909" label="pattern"/>
+  <int value="910" label="column-rule-edge-inset"/>
+  <int value="911" label="row-rule-edge-inset"/>
+  <int value="912" label="column-rule-interior-inset"/>
+  <int value="913" label="row-rule-interior-inset"/>
+  <int value="914" label="rule-edge-inset"/>
+  <int value="915" label="rule-interior-inset"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

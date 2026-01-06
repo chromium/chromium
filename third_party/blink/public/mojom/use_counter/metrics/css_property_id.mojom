@@ -973,6 +973,12 @@ enum CSSSampleId {
     kHash = 907,
     kBaseUrl = 908,
     kPattern = 909,
+    kColumnRuleEdgeInset = 910,
+    kRowRuleEdgeInset = 911,
+    kColumnRuleInteriorInset = 912,
+    kRowRuleInteriorInset = 913,
+    kRuleEdgeInset = 914,
+    kRuleInteriorInset = 915,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

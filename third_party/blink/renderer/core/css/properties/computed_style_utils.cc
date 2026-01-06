@@ -4044,6 +4044,51 @@ CSSValueList* ComputedStyleUtils::ValuesForShorthandProperty(
   return list;
 }
 
+CSSValueList*
+ComputedStyleUtils::ValuesForGapDecorationRuleEdgeInteriorInsetShorthand(
+    const StylePropertyShorthand& shorthand,
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    bool is_edge,
+    CSSValuePhase value_phase,
+    CSSGapDecorationPropertyDirection direction) {
+  CHECK_EQ(shorthand.length(), 2u);
+
+  CSSGapDecorationPropertyType start_type =
+      is_edge ? CSSGapDecorationPropertyType::kEdgeInsetStart
+              : CSSGapDecorationPropertyType::kInteriorInsetStart;
+  CSSGapDecorationPropertyType end_type =
+      is_edge ? CSSGapDecorationPropertyType::kEdgeInsetEnd
+              : CSSGapDecorationPropertyType::kInteriorInsetEnd;
+
+  CHECK(shorthand.properties()[0]->IDEquals(
+      CSSGapDecorationUtils::GetLonghandProperty(direction, start_type)));
+  CHECK(shorthand.properties()[1]->IDEquals(
+      CSSGapDecorationUtils::GetLonghandProperty(direction, end_type)));
+
+  const CSSValue* rule_inset_start_value =
+      shorthand.properties()[0]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style, value_phase);
+  const CSSValue* rule_inset_end_value =
+      shorthand.properties()[1]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style, value_phase);
+
+  // Both properties must be specified.
+  if (!rule_inset_start_value || !rule_inset_end_value) {
+    return nullptr;
+  }
+
+  CSSValueList* full_list = CSSValueList::CreateSpaceSeparated();
+
+  full_list->Append(*rule_inset_start_value);
+  if (*rule_inset_start_value != *rule_inset_end_value) {
+    full_list->Append(*rule_inset_end_value);
+  }
+
+  return full_list;
+}
+
 CSSValueList* ComputedStyleUtils::ValuesForGapDecorationRuleInsetShorthand(
     const StylePropertyShorthand& shorthand,
     const ComputedStyle& style,
@@ -4486,6 +4531,46 @@ const CSSValue* ComputedStyleUtils::ValuesForBidirectionalGapRuleInsetShorthand(
   interior_values->Append(*column_rule_interior_end);
   result->Append(*edge_values);
   result->Append(*interior_values);
+
+  return result;
+}
+
+const CSSValue*
+ComputedStyleUtils::ValuesForBidirectionalGapRuleEdgeInteriorInsetShorthand(
+    const StylePropertyShorthand& shorthand,
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) {
+  DCHECK_EQ(shorthand.length(), 4u);
+  const CSSValue* column_rule_edge_start =
+      shorthand.properties()[0]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style, value_phase);
+  const CSSValue* column_rule_edge_end =
+      shorthand.properties()[1]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style, value_phase);
+  const CSSValue* row_rule_edge_start =
+      shorthand.properties()[2]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style, value_phase);
+  const CSSValue* row_rule_edge_end =
+      shorthand.properties()[3]->CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style, value_phase);
+
+  // The `rule-inset` shorthand is bi-directional, so the values should be
+  // equivalent.
+  //
+  // https://drafts.csswg.org/css-gaps-1/#inset
+  if (!base::ValuesEquivalent(column_rule_edge_start, row_rule_edge_start) ||
+      !base::ValuesEquivalent(column_rule_edge_end, row_rule_edge_end)) {
+    return nullptr;
+  }
+
+  CSSValueList* result = CSSValueList::CreateSpaceSeparated();
+
+  result->Append(*column_rule_edge_start);
+  if (*column_rule_edge_start != *column_rule_edge_end) {
+    result->Append(*column_rule_edge_end);
+  }
 
   return result;
 }
