@@ -53,8 +53,6 @@ public final class AccountCapabilitiesTest {
                 return capabilities.canUseDevToolsGenerativeAiFeatures();
             case AccountCapabilitiesConstants.CAN_USE_EDU_FEATURES_CAPABILITY_NAME:
                 return capabilities.canUseEduFeatures();
-            case AccountCapabilitiesConstants.CAN_USE_GENERATIVE_AI_PHOTO_EDITING:
-                return capabilities.canUseGenerativeAiPhotoEditing();
             case AccountCapabilitiesConstants.CAN_USE_MANTA_SERVICE_NAME:
                 return capabilities.canUseMantaService();
             case AccountCapabilitiesConstants.CAN_USE_MODEL_EXECUTION_FEATURES_NAME:
@@ -149,12 +147,7 @@ public final class AccountCapabilitiesTest {
                                 .name("CanUseSpeakerLabelInRecorderApp")
                                 .value(
                                         AccountCapabilitiesConstants
-                                                .CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP),
-                        new ParameterSet()
-                                .name("CanUseGenerativeAiPhotoEditing")
-                                .value(
-                                        AccountCapabilitiesConstants
-                                                .CAN_USE_GENERATIVE_AI_PHOTO_EDITING));
+                                                .CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP));
 
         // Returns String value added from Capabilities ParameterSet.
         static String getCapabilityName(ParameterSet parameterSet) {

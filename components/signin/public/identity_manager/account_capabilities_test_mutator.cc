@@ -104,10 +104,12 @@ void AccountCapabilitiesTestMutator::set_can_use_generative_ai_in_recorder_app(
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
 void AccountCapabilitiesTestMutator::set_can_use_generative_ai_photo_editing(
     bool value) {
   capabilities_->capabilities_map_[kCanUseGenerativeAiPhotoEditing] = value;
 }
+#endif
 
 void AccountCapabilitiesTestMutator::set_can_use_manta_service(bool value) {
   capabilities_->capabilities_map_[kCanUseMantaServiceName] = value;

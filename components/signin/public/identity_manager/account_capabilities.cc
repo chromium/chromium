@@ -162,10 +162,12 @@ signin::Tribool AccountCapabilities::can_use_generative_ai_in_recorder_app()
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
 signin::Tribool AccountCapabilities::can_use_generative_ai_photo_editing()
     const {
   return GetCapabilityByName(kCanUseGenerativeAiPhotoEditing);
 }
+#endif
 
 signin::Tribool AccountCapabilities::can_use_manta_service() const {
   return GetCapabilityByName(kCanUseMantaServiceName);

@@ -332,6 +332,7 @@ TEST_F(AccountCapabilitiesTest, CanUseGenerativeAiInRecorderApp) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(AccountCapabilitiesTest, CanUseGenerativeAiPhotoEditing) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.can_use_generative_ai_photo_editing(),
@@ -346,6 +347,7 @@ TEST_F(AccountCapabilitiesTest, CanUseGenerativeAiPhotoEditing) {
   EXPECT_EQ(capabilities.can_use_generative_ai_photo_editing(),
             signin::Tribool::kFalse);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(AccountCapabilitiesTest, CanUseGenerativeAi) {

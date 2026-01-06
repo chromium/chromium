@@ -54,7 +54,9 @@ class AccountCapabilitiesTestMutator {
 #if BUILDFLAG(IS_CHROMEOS)
   void set_can_use_generative_ai_in_recorder_app(bool value);
 #endif
+#if BUILDFLAG(IS_CHROMEOS)
   void set_can_use_generative_ai_photo_editing(bool value);
+#endif
   void set_can_use_manta_service(bool value);
   void set_can_use_model_execution_features(bool value);
   void set_can_use_speaker_label_in_recorder_app(bool value);

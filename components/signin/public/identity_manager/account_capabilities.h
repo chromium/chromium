@@ -116,8 +116,10 @@ class AccountCapabilities {
   signin::Tribool can_use_generative_ai_in_recorder_app() const;
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
   // The user account is able to use generative AI photo editing.
   signin::Tribool can_use_generative_ai_photo_editing() const;
+#endif
 
   // The user account is able to use manta service.
   signin::Tribool can_use_manta_service() const;

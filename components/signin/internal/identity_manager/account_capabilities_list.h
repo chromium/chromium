@@ -92,9 +92,11 @@ ACCOUNT_CAPABILITY(kCanUseGenerativeAiInRecorderApp,
                    "accountcapabilities/ge2tkobnmnqxa")
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
 ACCOUNT_CAPABILITY(kCanUseGenerativeAiPhotoEditing,
                    CAN_USE_GENERATIVE_AI_PHOTO_EDITING,
                    "accountcapabilities/ge3dgobnmnqxa")
+#endif
 
 ACCOUNT_CAPABILITY(kCanUseMantaServiceName,
                    CAN_USE_MANTA_SERVICE_NAME,

@@ -117,14 +117,6 @@ public class AccountCapabilities {
     }
 
     /**
-     * @return canUseGenerativeAiPhotoEditing capability value.
-     */
-    public @Tribool int canUseGenerativeAiPhotoEditing() {
-        return getCapabilityByName(
-                AccountCapabilitiesConstants.CAN_USE_GENERATIVE_AI_PHOTO_EDITING);
-    }
-
-    /**
      * @return canUseMantaService capability value.
      */
     public @Tribool int canUseMantaService() {
