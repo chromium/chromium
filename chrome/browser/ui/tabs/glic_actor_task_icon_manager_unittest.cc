@@ -303,7 +303,7 @@ TEST_F(GlicActorTaskIconManagerTest,
       task_id_3, actor::ActorTask::State::kFailed, "Test Task",
       /*last_acted_on_tab_handle=*/TabHandle()));
   manager()->UpdateTaskIconComponents(task_id_3);
-  EXPECT_EQ(manager()->GetActorTaskListBubbleRows().at(task_id_1), false);
+  EXPECT_FALSE(manager()->GetActorTaskListBubbleRows().contains(task_id_1));
   EXPECT_EQ(manager()->GetActorTaskListBubbleRows().at(task_id_2), true);
   EXPECT_EQ(manager()->GetActorTaskListBubbleRows().at(task_id_3), true);
 }
