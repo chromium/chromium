@@ -1815,9 +1815,7 @@
 
 - (void)openMIA {
   [self.NTPMetricsRecorder recordMIATapped];
-  if (contextual_search::ContextualSearchService::IsContextSharingEnabled(
-          self.prefService) &&
-      MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kNTPAIMButton)) {
+  if (MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kNTPAIMButton)) {
     return;
   }
 

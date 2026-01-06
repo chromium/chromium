@@ -1145,6 +1145,13 @@ CreateInputDataFromAnnotatedPageContent(
       }));
 }
 
+// Checks whether the user is eligibile to share content (enterprise policy).
+- (BOOL)isContentSharingEnabled {
+  return _prefService && _contextualSearchSession &&
+         _contextualSearchSession->CheckSearchContentSharingSettings(
+             _prefService);
+}
+
 // Checks if the user is eligible for AIM, taking into account experimental
 // settings overrides.
 - (BOOL)isEligibleToAIM {
@@ -1152,11 +1159,6 @@ CreateInputDataFromAnnotatedPageContent(
     return NO;
   }
   if (!_aimEligibilityService) {
-    return NO;
-  }
-  if (!_prefService || !_contextualSearchSession ||
-      !_contextualSearchSession->CheckSearchContentSharingSettings(
-          _prefService)) {
     return NO;
   }
   return _aimEligibilityService->IsAimEligible();
@@ -1180,7 +1182,7 @@ CreateInputDataFromAnnotatedPageContent(
   if (experimental_flags::ShouldForceDisableComposeboxPdfUpload()) {
     return NO;
   }
-  if (!_aimEligibilityService) {
+  if (!_aimEligibilityService || ![self isContentSharingEnabled]) {
     return NO;
   }
   return _aimEligibilityService->IsPdfUploadEligible();
@@ -1349,7 +1351,8 @@ CreateInputDataFromAnnotatedPageContent(
   BOOL alreadyProcessed =
       alreadyProcessedIDs.contains(webState->GetUniqueIdentifier());
 
-  BOOL canAttachTab = !isNTP && !alreadyProcessed;
+  BOOL canAttachTab =
+      !isNTP && !alreadyProcessed && [self isContentSharingEnabled];
   [_consumer hideAttachCurrentTabAction:!canAttachTab];
   return canAttachTab;
 }
@@ -1363,7 +1366,8 @@ CreateInputDataFromAnnotatedPageContent(
   BOOL isImageCreationMode =
       _modeHolder.mode == ComposeboxMode::kImageGeneration;
   BOOL canAddMoreImages = [self maxNumberOfGalleryItemsAllowed] > 0;
-  BOOL attachmentsAvailable = canCreateImage || canSearchWithAI;
+  BOOL attachmentsAvailable =
+      (canCreateImage || canSearchWithAI) && [self isContentSharingEnabled];
   BOOL canAddMoreAttachement = [self canAddMoreAttachments];
 
   // Image generation action.
@@ -1373,12 +1377,13 @@ CreateInputDataFromAnnotatedPageContent(
   // Add tabs action.
   [self.consumer
       disableAttachTabActions:isImageCreationMode || !canAddMoreAttachement];
-  [self.consumer hideAttachTabActions:!canSearchWithAI];
+  [self.consumer hideAttachTabActions:!attachmentsAvailable];
 
   // Add files action.
   [self.consumer
       disableAttachFileActions:isImageCreationMode || !canAddMoreAttachement];
-  [self.consumer hideAttachFileActions:!canUploadFiles || !canSearchWithAI];
+  [self.consumer
+      hideAttachFileActions:!canUploadFiles || !attachmentsAvailable];
 
   // Add pictures from user gallery action.
   [self.consumer
