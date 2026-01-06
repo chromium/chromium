@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -338,18 +337,6 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationPolicyBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SiteIsolationPolicyBrowserTest,
                        NoPolicy_AdvancedProtection_LowRam) {
-  // This test conflicts with SiteIsolationMemoryThresholdsAndroid. Skip if
-  // enabled with a zero threshold.
-  if (base::FeatureList::IsEnabled(
-          site_isolation::features::kSiteIsolationMemoryThresholdsAndroid)) {
-    if (base::GetFieldTrialParamByFeatureAsInt(
-            site_isolation::features::kSiteIsolationMemoryThresholdsAndroid,
-            site_isolation::features::
-                kStrictSiteIsolationMemoryThresholdParamName,
-            0) == 0) {
-       GTEST_SKIP();
-    }
-  }
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   // Skip this test if the --site-per-process switch is present (e.g. on Site
   // Isolation Android chromium.fyi bot).

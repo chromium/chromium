@@ -3796,7 +3796,6 @@ public class SiteSettingsTest {
         ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON,
         "DefaultPassthroughCommandDecoder"
     })
-    @DisableFeatures("SiteIsolationMemoryThresholdsAndroid")
     public void testAddingJavascriptOptimizerExceptionsBlockedIfNotEnoughRam() {
         final SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
