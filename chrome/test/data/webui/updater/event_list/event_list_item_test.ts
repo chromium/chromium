@@ -611,7 +611,7 @@ suite('EventListItemElement', () => {
     };
     item.event = event;
     await microtasksFinished();
-    assertStringContains(item.shadowRoot.textContent, '1h 1m 1ms 2μs');
+    assertStringContains(item.shadowRoot.textContent, '1h 1m');
   });
 
   test('displays app name for known app', async () => {

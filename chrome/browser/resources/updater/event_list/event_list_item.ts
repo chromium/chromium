@@ -163,32 +163,27 @@ export class EventListItemElement extends CrLitElement {
     if (this.event === undefined || !isMergedHistoryEvent(this.event)) {
       return undefined;
     }
-    let remainingUs =
-        this.event.endEvent.deviceUptime - this.event.startEvent.deviceUptime;
-    const microseconds = remainingUs % 1000;
-    remainingUs = Math.floor(remainingUs / 1000);
-    const milliseconds = remainingUs % 1000;
-    remainingUs = Math.floor(remainingUs / 1000);
-    const seconds = remainingUs % 60;
-    remainingUs = Math.floor(remainingUs / 60);
-    const minutes = remainingUs % 60;
-    remainingUs = Math.floor(remainingUs / 60);
-    const hours = remainingUs % 24;
-    remainingUs = Math.floor(remainingUs / 24);
-    const days = remainingUs;
+    let remaining = Math.floor(
+        (this.event.endEvent.deviceUptime -
+         this.event.startEvent.deviceUptime) /
+        1000000);
+    if (remaining === 0) {
+      return undefined;
+    }
+    const seconds = remaining % 60;
+    remaining = Math.floor(remaining / 60);
+    const minutes = remaining % 60;
+    remaining = Math.floor(remaining / 60);
+    const hours = remaining % 24;
+    remaining = Math.floor(remaining / 24);
+    const days = remaining;
 
-    return new Intl
-        .DurationFormat(undefined, {
-          style: 'narrow',
-        })
-        .format({
-          days,
-          hours,
-          minutes,
-          seconds,
-          milliseconds,
-          microseconds,
-        });
+    const durationString = new Intl
+                               .DurationFormat(undefined, {
+                                 style: 'narrow',
+                               })
+                               .format({days, hours, minutes, seconds});
+    return loadTimeData.getStringF('duration', durationString);
   }
 
   private computeErrors(): string[] {

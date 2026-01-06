@@ -43,15 +43,8 @@ export function getHtml(this: EventListItemElement) {
         ${this.eventSummary ?? ''}
       </span>
     </div>
-    <div class="event-timestamp">
-      ${this.formattedDate ? html`
-        <span class="event-date">
-          ${this.formattedDate}
-        </span>
-      ` : ''}
-      ${this.formattedDuration ? html`
-        <span class="event-duration">${this.formattedDuration}</span>
-      ` : ''}
+    <div class="event-date">
+      ${this.formattedDate ?? ''}
     </div>
   </div>
 </cr-expand-button>
@@ -90,6 +83,9 @@ export function getHtml(this: EventListItemElement) {
     <div>
       ${loadTimeData.getStringF('updaterVersion', this.updaterVersion)}
     </div>
+  ` : ''}
+  ${this.formattedDuration ? html`
+    <span class="event-duration">${this.formattedDuration}</span>
   ` : ''}
   <raw-event-details .events="${[this.event]}">
   </raw-event-details>

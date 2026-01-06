@@ -55,12 +55,8 @@ cr-expand-button {
   flex-grow: 1;
 }
 
-.event-timestamp {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+.event-date {
   font-size: 0.8em;
-  flex-shrink: 0;
   color: var(--cr-secondary-text-color);
 }
 
