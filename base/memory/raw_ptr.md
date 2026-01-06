@@ -241,6 +241,7 @@ Therefore in the following cases raw C++ pointers may be used instead of
 
 ``` none
 third_party/blink/renderer/core/
+third_party/blink/renderer/platform/fonts/
 third_party/blink/renderer/platform/heap/
 third_party/blink/renderer/platform/wtf/
 ```

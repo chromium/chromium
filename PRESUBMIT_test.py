@@ -5025,6 +5025,11 @@ class CheckRawPtrUsageTest(unittest.TestCase):
             # Renderer code is generally allowed (except specifically
             # disallowed directories).
             MockAffectedFile('test30/renderer/foo.cc', ['raw_ptr<int>']),
+            # `functional.h` carries shared plumbing and is a special
+            # inclusion (against the rest of `platform/wtf/`).
+            MockAffectedFile(
+                'test31/third_party/blink/renderer/platform/wtf/functional.cc',
+                ['raw_ptr<int>']),
         ]
         mock_output_api = MockOutputApi()
         errors = PRESUBMIT.CheckRawPtrUsage(mock_input_api, mock_output_api)
@@ -5044,14 +5049,37 @@ class CheckRawPtrUsageTest(unittest.TestCase):
             MockAffectedFile(
                 'test4/third_party/blink/renderer/platform/fonts/foo.h',
                 ['raw_ptr<int>']),
+            # As above, but with `raw_ref`.
+            MockAffectedFile('test5/third_party/blink/renderer/core/foo.h',
+                             ['raw_ref<int>']),
+            MockAffectedFile(
+                'test6/third_party/blink/renderer/platform/heap/foo.cc',
+                ['raw_ref<int>']),
+            MockAffectedFile(
+                'test7/third_party/blink/renderer/platform/wtf/foo.cc',
+                ['raw_ref<int>']),
+            MockAffectedFile(
+                'test8/third_party/blink/renderer/platform/fonts/foo.h',
+                ['raw_ref<int>']),
+            # As above, but with `raw_span`.
+            MockAffectedFile('test9/third_party/blink/renderer/core/foo.h',
+                             ['raw_span<int>']),
+            MockAffectedFile(
+                'test10/third_party/blink/renderer/platform/heap/foo.cc',
+                ['raw_span<int>']),
+            MockAffectedFile(
+                'test11/third_party/blink/renderer/platform/wtf/foo.cc',
+                ['raw_span<int>']),
+            MockAffectedFile(
+                'test12/third_party/blink/renderer/platform/fonts/foo.h',
+                ['raw_span<int>']),
         ]
         mock_output_api = MockOutputApi()
         errors = PRESUBMIT.CheckRawPtrUsage(mock_input_api, mock_output_api)
         self.assertEqual(len(mock_input_api.files), len(errors))
         for error in errors:
-            self.assertIn(
-                'raw_ptr<T> should not be used in this renderer code',
-                error.message)
+            self.assertIn('` should not be used in this renderer code',
+                          error.message)
 
 
 class CheckAdvancedMemorySafetyChecksUsageTest(unittest.TestCase):
