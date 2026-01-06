@@ -1160,15 +1160,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Instance.WebClient.MaxPrivateMemoryFootprint" units="MB"
+<histogram name="Glic.Instance.WebClient.MaxPrivateMemoryFootprint2" units="MB"
     expires_after="2026-12-09">
   <owner>birnie@google.com</owner>
   <owner>bryantchandler@google.com</owner>
   <summary>
     Records the maximum observed private memory footprint of the Glic WebClient
-    renderer process. Recorded when the Glic instance is shut down. Note that
-    this is the maximum value observed during the 30-minute sampling intervals,
-    not necessarily the absolute peak memory usage.
+    renderer process. Recorded exactly once per Glic instance lifecycle, when
+    the instance is permanently destroyed or hibernated. This value represents
+    the peak memory usage observed during any 30-minute interval within that
+    session.
   </summary>
 </histogram>
 
@@ -1183,16 +1184,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Instance.WebUI.MaxPrivateMemoryFootprint" units="MB"
+<histogram name="Glic.Instance.WebUI.MaxPrivateMemoryFootprint2" units="MB"
     expires_after="2026-12-09">
   <owner>birnie@google.com</owner>
   <owner>bryantchandler@google.com</owner>
   <summary>
     Records the maximum observed private memory footprint of the Glic WebUI
-    renderer process. Recorded when the Glic instance is shut down. Note that
-    this is the maximum value observed during the 30-minute sampling intervals,
-    not necessarily the absolute peak memory usage. WebUI memory is expected to
-    be significantly lower than WebClient memory.
+    renderer process. Recorded exactly once per Glic instance lifecycle, when
+    the instance is permanently destroyed or hibernated. This value represents
+    the peak memory usage observed during any 30-minute interval within that
+    session. WebUI memory is expected to be significantly lower than WebClient
+    memory.
   </summary>
 </histogram>
 
