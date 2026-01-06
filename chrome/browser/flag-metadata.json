@@ -8815,11 +8815,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "read-anything-read-aloud",
-    "owners": [ "kristislee@google.com", "lwinston@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 147
-  },
-  {
     "name": "read-anything-read-aloud-phrase-highlighting",
     "owners": [
       "lwinston@google.com",
