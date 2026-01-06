@@ -416,3 +416,11 @@
 # TODO(crbug.com/440947113): This test has been failing since
 # https://crrev.com/c/6862660.
 -AccountConsistencyServiceTest.ChromeAddSessionWithEmail
+
+# TODO(crbug.com/473587148): These tests have failed with use_blink due to spinning up on
+# an unknown thread since https://crrev.com/c/7275448.
+-FillJsTest.Stringify
+-FillJsTest.StringifyJSONGlobalOverride
+-FillJsTest.StringifyPrototypeToJSON
+-FillJsTest.StringifyRestoresOwnToJSON
+-FillJsTest.StringifyRestoresPrototypeToJSON
