@@ -152,8 +152,10 @@ void DeveloperPrivateEventRouter::OnExtensionUninstalled(
     extensions::UninstallReason reason) {
   DCHECK(
       profile_->IsSameOrParent(Profile::FromBrowserContext(browser_context)));
-  BroadcastItemStateChanged(developer::EventType::kUninstalled,
-                            extension->id());
+  if (ui_util::ShouldDisplayInExtensionSettings(*extension)) {
+    BroadcastItemStateChanged(developer::EventType::kUninstalled,
+                              extension->id());
+  }
 }
 
 void DeveloperPrivateEventRouter::OnErrorAdded(const ExtensionError* error) {
