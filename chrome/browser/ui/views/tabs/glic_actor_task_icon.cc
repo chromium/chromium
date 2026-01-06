@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -109,6 +110,7 @@ void GlicActorTaskIcon::HighlightTaskIcon() {
 
 void GlicActorTaskIcon::SetTaskIconToDefault() {
   SetText(std::u16string());
+  SetTooltipText(l10n_util::GetStringUTF16(IDS_ACTOR_TASK_INDICATOR_TOOLTIP));
   SetDefaultColors();
 }
 

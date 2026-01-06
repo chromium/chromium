@@ -27,7 +27,10 @@
   <message name="IDR_ACTOR_TASK_LIST_BUBBLE_ROW_ACTING_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task is acting." translateable="true">
    Working on your task…
   </message>
-  <message name="IDS_ACTOR_TASK_LIST_BUBBLE_A11Y_LABEL" desc="Accessibility label for the dialog containing a list of tasks the user is running." translateable="true">
+  <message name="IDS_ACTOR_TASK_LIST_BUBBLE_A11Y_LABEL" desc="Text used by screenreaders for the list of tasks the user is running." translateable="true">
     Task list
+  </message>
+  <message name="IDS_ACTOR_TASK_INDICATOR_TOOLTIP" desc="Tooltip text for the task indicator button. The button will open a bubble containing the list of tasks currently running." translateable="true">
+    Check your tasks
   </message>
 </grit-part>
