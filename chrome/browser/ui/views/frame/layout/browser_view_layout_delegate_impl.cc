@@ -86,8 +86,11 @@ int BrowserViewLayoutDelegateImpl::GetTopInsetInBrowserView() const {
   }
 #endif
 
-  return browser_view_->browser_widget()->GetFrameView()->GetTopInset(false) -
-         browser_view_->y();
+  if (auto* const frame_view = GetFrameView()) {
+    return frame_view->GetTopInset(false) - browser_view_->y();
+  }
+
+  return 0;
 }
 
 void BrowserViewLayoutDelegateImpl::LayoutWebAppWindowTitle(
@@ -214,7 +217,9 @@ int BrowserViewLayoutDelegateImpl::GetExtraInfobarOffset() const {
 }
 
 const BrowserFrameView* BrowserViewLayoutDelegateImpl::GetFrameView() const {
-  return browser_view_->browser_widget()->GetFrameView();
+  return browser_view_->browser_widget()
+             ? browser_view_->browser_widget()->GetFrameView()
+             : nullptr;
 }
 
 gfx::Rect
