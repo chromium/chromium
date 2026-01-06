@@ -4,7 +4,6 @@
 
 #include "printing/print_settings_conversion.h"
 
-#include "base/containers/contains.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -324,7 +323,7 @@ TEST(PrintSettingsConversionTest, FilterNonJobSettings) {
   std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
   ASSERT_TRUE(settings);
   EXPECT_EQ(settings->advanced_settings().size(), 1u);
-  ASSERT_TRUE(base::Contains(settings->advanced_settings(), "Foo"));
+  ASSERT_TRUE(settings->advanced_settings().contains("Foo"));
   EXPECT_EQ(settings->advanced_settings().at("Foo"), base::Value("Bar"));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) &&

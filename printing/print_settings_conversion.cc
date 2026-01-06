@@ -14,7 +14,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/to_value_list.h"
 #include "base/strings/string_number_conversions.h"
@@ -299,7 +298,7 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
       static constexpr auto kNonJobAttributes =
           base::MakeFixedFlatSet<std::string_view>(
               {"printer-info", "printer-make-and-model", "system_driverinfo"});
-      if (!base::Contains(kNonJobAttributes, item.first)) {
+      if (!kNonJobAttributes.contains(item.first)) {
         settings->advanced_settings().emplace(item.first, item.second.Clone());
       }
     }
