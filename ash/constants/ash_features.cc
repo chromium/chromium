@@ -598,6 +598,7 @@ BASE_FEATURE(kEnableExternalKeyboardsInDiagnostics,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables setting the device hostname.
+// TODO(crbug.com/466903206): Remove this.
 BASE_FEATURE(kEnableHostnameSetting, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables OAuth support when printing via the IPP protocol.
