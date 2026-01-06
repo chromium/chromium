@@ -9,7 +9,12 @@
 namespace ui {
 
 BASE_FEATURE(kCompensateGestureDetectorTimeouts,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 const base::FeatureParam<bool>
     kCompensateGestureTimeoutsForLongDelayedSequences{
