@@ -27,4 +27,7 @@
   <message name="IDR_ACTOR_TASK_LIST_BUBBLE_ROW_ACTING_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task is acting." translateable="true">
    Working on your task…
   </message>
+  <message name="IDS_ACTOR_TASK_LIST_BUBBLE_A11Y_LABEL" desc="Accessibility label for the dialog containing a list of tasks the user is running." translateable="true">
+    Task list
+  </message>
 </grit-part>

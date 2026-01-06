@@ -13,7 +13,9 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_row_button.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -41,6 +43,8 @@ views::Widget* ActorTaskListBubble::ShowBubble(
 
   auto dialog_model =
       ui::DialogModel::Builder()
+          .SetAccessibleTitle(
+              l10n_util::GetStringUTF16(IDS_ACTOR_TASK_LIST_BUBBLE_A11Y_LABEL))
           .AddCustomField(
               std::make_unique<views::BubbleDialogModelHost::CustomView>(
                   std::move(contents_view),
