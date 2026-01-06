@@ -25,7 +25,6 @@ group("unit_tests") {
     "//chrome/browser/ui/webui/ash/settings:unit_tests",
     "//chrome/browser/ui/webui/ash/settings/pages:unit_tests",
     "//chrome/browser/ui/webui/ash/settings/pages/a11y:unit_tests",
-    "//chrome/browser/ui/webui/ash/settings/pages/about:unit_tests",
     "//chrome/browser/ui/webui/ash/settings/pages/apps:unit_tests",
     "//chrome/browser/ui/webui/ash/settings/pages/apps/mojom:unit_tests",
     "//chrome/browser/ui/webui/ash/settings/pages/bluetooth:unit_tests",

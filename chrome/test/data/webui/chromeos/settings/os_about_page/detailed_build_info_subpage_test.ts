@@ -6,9 +6,8 @@ import 'chrome://os-settings/lazy_load.js';
 
 import type {SettingsDetailedBuildInfoSubpageElement} from 'chrome://os-settings/lazy_load.js';
 import type {CrPolicyIndicatorElement} from 'chrome://os-settings/os_settings.js';
-import {AboutPageBrowserProxyImpl, DeviceNameBrowserProxyImpl, DeviceNameState, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
+import {AboutPageBrowserProxyImpl, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {CrPolicyIndicatorType} from 'chrome://resources/ash/common/cr_policy_indicator_behavior.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -18,12 +17,10 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 import {clearBody} from '../utils.js';
 
 import {TestAboutPageBrowserProxy} from './test_about_page_browser_proxy.js';
-import {TestDeviceNameBrowserProxy} from './test_device_name_browser_proxy.js';
 
 suite('<detailed-build-info-subpage>', () => {
   let page: SettingsDetailedBuildInfoSubpageElement;
   let browserProxy: TestAboutPageBrowserProxy;
-  let deviceNameBrowserProxy: TestDeviceNameBrowserProxy;
 
   async function createPage(): Promise<void> {
     clearBody();
@@ -50,24 +47,14 @@ suite('<detailed-build-info-subpage>', () => {
         '#changeChannelPolicyIndicator');
   }
 
-  function getEditHostnameButton(): HTMLButtonElement {
-    const button = page.shadowRoot!.querySelector<HTMLButtonElement>(
-        '#editHostnameButton');
-    assertTrue(!!button);
-    return button;
-  }
-
   setup(() => {
     loadTimeData.overrideValues({
       aboutEnterpriseManaged: false,
-      isHostnameSettingEnabled: true,
       isManaged: false,
     });
 
     browserProxy = new TestAboutPageBrowserProxy();
     AboutPageBrowserProxyImpl.setInstanceForTesting(browserProxy);
-    deviceNameBrowserProxy = new TestDeviceNameBrowserProxy();
-    DeviceNameBrowserProxyImpl.setInstanceForTesting(deviceNameBrowserProxy);
 
     Router.getInstance().navigateTo(routes.ABOUT_DETAILED_BUILD_INFO);
   });
@@ -232,98 +219,5 @@ suite('<detailed-build-info-subpage>', () => {
     copyBuildDetailsButton.click();
     clipboardText = await navigator.clipboard.readText();
     assertEquals(expectedClipBoardText, clipboardText);
-  });
-
-  test('Deep link to change device name', async () => {
-    await createPage();
-
-    const setting = settingMojom.Setting.kChangeDeviceName;
-    deepLinkToSetting(setting);
-
-    const deepLinkElement =
-        page.shadowRoot!.querySelector<HTMLElement>('#editHostnameButton');
-    assertTrue(!!deepLinkElement);
-    await waitAfterNextRender(deepLinkElement);
-    assertEquals(
-        deepLinkElement, page.shadowRoot!.activeElement,
-        `Change device name button should be focused for settingId=${
-            setting}.`);
-  });
-
-  /**
-   * Checks whether the "edit device name" button state (enabled/disabled)
-   * correctly reflects whether the user is allowed to edit the name.
-   */
-  async function checkDeviceNameMetadata(
-      expectedDeviceName: string,
-      deviceNameState: DeviceNameState): Promise<void> {
-    webUIListenerCallback(
-        'settings.updateDeviceNameMetadata',
-        {deviceName: expectedDeviceName, deviceNameState});
-    await flushTasks();
-
-    const actualDeviceName =
-        page.shadowRoot!.querySelector<HTMLElement>('#deviceName')!.innerText;
-    assertEquals(expectedDeviceName, actualDeviceName);
-
-    let canEditDeviceName: boolean;
-    switch (deviceNameState) {
-      case (DeviceNameState.CAN_BE_MODIFIED):
-        canEditDeviceName = true;
-        break;
-      default:
-        canEditDeviceName = false;
-    }
-
-    const editHostnameButton = getEditHostnameButton();
-    assertEquals(canEditDeviceName, !editHostnameButton.disabled);
-
-    const policyIndicator =
-        page.shadowRoot!.querySelector<CrPolicyIndicatorElement>(
-            '#editHostnamePolicyIndicator');
-    if (deviceNameState === DeviceNameState.CAN_BE_MODIFIED) {
-      assertFalse(isVisible(policyIndicator));
-    } else if (
-        deviceNameState ===
-        DeviceNameState.CANNOT_BE_MODIFIED_BECAUSE_OF_POLICIES) {
-      assertTrue(!!policyIndicator);
-      assertTrue(isVisible(policyIndicator));
-      assertEquals(
-          CrPolicyIndicatorType.DEVICE_POLICY, policyIndicator.indicatorType);
-    } else if (
-        deviceNameState ===
-        DeviceNameState.CANNOT_BE_MODIFIED_BECAUSE_NOT_DEVICE_OWNER) {
-      assertTrue(!!policyIndicator);
-      assertTrue(isVisible(policyIndicator));
-      assertEquals(CrPolicyIndicatorType.OWNER, policyIndicator.indicatorType);
-    }
-  }
-
-  test('Device name metadata', async () => {
-    createPage();
-    await deviceNameBrowserProxy.whenCalled('notifyReadyForDeviceName');
-
-    checkDeviceNameMetadata('TestDeviceName1', DeviceNameState.CAN_BE_MODIFIED);
-
-    // Verify that we can still make changes to device name metadata even
-    // if notifyReadyForDeviceName() is not called again.
-    checkDeviceNameMetadata(
-        'TestDeviceName2',
-        DeviceNameState.CANNOT_BE_MODIFIED_BECAUSE_OF_POLICIES);
-    checkDeviceNameMetadata(
-        'TestDeviceName3',
-        DeviceNameState.CANNOT_BE_MODIFIED_BECAUSE_NOT_DEVICE_OWNER);
-  });
-
-  test('Edit hostname dialog can be opened', async () => {
-    await createPage();
-    await deviceNameBrowserProxy.whenCalled('notifyReadyForDeviceName');
-
-    getEditHostnameButton().click();
-    await flushTasks();
-
-    const dialog = page.shadowRoot!.querySelector('edit-hostname-dialog');
-    assertTrue(!!dialog);
-    assertTrue(dialog.$.dialog.open);
   });
 });

@@ -173,9 +173,6 @@ export type {TtsVoiceSubpageBrowserProxy} from './os_a11y_page/tts_voice_subpage
 export {TtsVoiceSubpageBrowserProxyImpl} from './os_a11y_page/tts_voice_subpage_browser_proxy.js';
 export type {AboutPageBrowserProxy, ChannelInfo, EndOfLifeInfo, RegulatoryInfo, TpmFirmwareUpdateStatusChangedEvent, VersionInfo} from './os_about_page/about_page_browser_proxy.js';
 export {AboutPageBrowserProxyImpl, BrowserChannel, UpdateStatus} from './os_about_page/about_page_browser_proxy.js';
-export type {DeviceNameBrowserProxy, DeviceNameMetadata} from './os_about_page/device_name_browser_proxy.js';
-export {DeviceNameBrowserProxyImpl} from './os_about_page/device_name_browser_proxy.js';
-export {DeviceNameState, SetDeviceNameResult} from './os_about_page/device_name_util.js';
 export {OsAboutPageElement} from './os_about_page/os_about_page.js';
 export type {AndroidAppsBrowserProxy} from './os_apps_page/android_apps_browser_proxy.js';
 export {AndroidAppsBrowserProxyImpl} from './os_apps_page/android_apps_browser_proxy.js';

@@ -106,9 +106,6 @@
   <message name="IDS_SETTINGS_ABOUT_PAGE_END_OF_LIFE_TITLE" desc="Title used for End of Life section on the About Page.">
     Update schedule
   </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME" desc="Title of the line item on the about page that allows the user to edit the device hostname.">
-    Device name
-  </message>
   <message name="IDS_SETTINGS_UPGRADE_ROLLBACK_IN_PROGRESS" desc="Status label: Rolling back ChromiumOS or ChromeOS.">
     <ph name="MANAGER">$1<ex>google.com</ex></ph> is putting this device on a previous version (<ph name="PROGRESS_PERCENT">$2<ex>90%</ex></ph>)
   </message>
@@ -201,33 +198,6 @@
   </message>
   <message name="IDS_OS_SETTINGS_ABOUT_PAGE_SHOW_RELEASE_NOTES_DESCRIPTION" desc="Sublabel description shown for See What's New button.">
     Automatic updates provide you with the latest features. Explore highlights from recent updates.
-  </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_EDIT_DEVICE_NAME" desc="The title of the dialog that allows the user to edit the device hostname.">
-    Edit device name
-  </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_INFO" desc="Label describing which areas of the ChromeOS system broadcast the device hostname to external networks.">
-    This name is visible to other devices for Bluetooth and network connections
-  </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_CONSTRAINTS" desc="Label describing the requirements for the text of the device hostname.">
-    Name can use letters, numbers, and hyphens (-)
-  </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_CONSTRAINTS_A11Y_DESCRIPTION" desc="Label describing the requirements for the text of the device hostname.">
-    Name can use letters, numbers, and hyphens (-), and must be between 1 and 15 characters inclusive.
-  </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_INPUT_COUNT" desc="Label for the dialog input for the device name, informing the user the number of characters they have inputted compared to the maximum number of characters allowed.">
-    <ph name="CURRENT_CHARACTER_COUNT">$1<ex>10</ex></ph>/<ph name="MAX_CHARACTER_COUNT">$2<ex>15</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_INPUT_A11Y_LABEL" desc="The a11y label for the edit device name dialog input, informing the user that they are currently naming the device">
-    Name device
-  </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_DONE_BTN_A11Y_LABEL" desc="The a11y label for the done button in the edit device name dialog">
-    Name device to <ph name="DEVICE_NAME">$1<ex>MyChromebook</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_EDIT_BTN_A11Y_LABEL" desc="The a11y label for the edit button for device name on the detailed build into page">
-    Change device name
-  </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_EDIT_BTN_A11Y_DESCRIPTION" desc="The a11y description for the edit button for device name on the detailed build into page">
-    Current device name is <ph name="DEVICE_NAME">$1<ex>MyChromebook</ex></ph>
   </message>
   <message name="IDS_SETTINGS_UPGRADE_TRY_AGAIN" desc="Status label: Update check error (ChromiumOS/ChromeOS)">
     Couldn't update your Chromebook. Please try again later.

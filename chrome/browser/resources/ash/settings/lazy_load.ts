@@ -241,7 +241,6 @@ export {SettingsTtsVoiceSubpageElement} from './os_a11y_page/tts_voice_subpage.j
 export {SettingsChannelSwitcherDialogElement} from './os_about_page/channel_switcher_dialog.js';
 export {SettingsConsumerAutoUpdateToggleDialogElement} from './os_about_page/consumer_auto_update_toggle_dialog.js';
 export {SettingsDetailedBuildInfoSubpageElement} from './os_about_page/detailed_build_info_subpage.js';
-export {EditHostnameDialogElement} from './os_about_page/edit_hostname_dialog.js';
 export {SettingsAndroidAppsSubpageElement} from './os_apps_page/android_apps_subpage.js';
 export {AppManagementAppDetailViewElement} from './os_apps_page/app_management_page/app_detail_view.js';
 export {AppManagementAppDetailsItem} from './os_apps_page/app_management_page/app_details_item.js';
