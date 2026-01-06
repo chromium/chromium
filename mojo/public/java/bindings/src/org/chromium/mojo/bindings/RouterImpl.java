@@ -12,8 +12,10 @@ import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.MessagePipeHandle;
 import org.chromium.mojo.system.Watcher;
 
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.Executor;
 
 /** Implementation of {@link Router}. */
@@ -93,6 +95,9 @@ public class RouterImpl implements Router {
 
     /** The map from request ids to {@link MessageReceiver} of request currently in flight. */
     private final Map<Long, MessageReceiver> mResponders = new HashMap<Long, MessageReceiver>();
+
+    /** A list of messages that cannot be dispatched yet. */
+    private final Queue<Message> mEnqueuedMessages = new ArrayDeque<Message>();
 
     /**
      * An Executor that will run on the thread associated with the MessagePipe to which this Router
@@ -207,7 +212,39 @@ public class RouterImpl implements Router {
 
     /** Receive a message from the connector. Returns |true| if the message has been handled. */
     private boolean handleIncomingMessage(Message message) {
+        mEnqueuedMessages.add(message);
+        return dispatchMessages();
+    }
+
+    // TODO(crbug.com/469861566): the boolean here is quite overloaded. A falsey value can
+    // mean:
+    //   1. malformed message (we should close the pipe)
+    //   2. unknown method (we should close the pipe)
+    //   3. unregistered iface.
+    //   (1 & 2) are irrecoverable errors that indicate channel corruption and should
+    //   probably be handled through exceptions (i.e.: any channel closing error should be
+    //   an exception to be handled at an upper layer).
+    //   True/False should indicate the state of the dispatch state of the messages. A
+    //   true value indicates that the messages have all been successfully dispatched and
+    //   the dispatcher is ready for more messages. A false value means that some messages
+    //   may have been blocked and we should not be sending more messages.
+    //
+    //   The current "drop message for unregistered stubs" is also not consistent with other
+    //   language bindings.
+    private boolean dispatchMessages() {
+        if (mEnqueuedMessages.size() != 1) {
+            throw new UnsupportedOperationException(
+                    "Multiple messages in queue not yet supported. Queue must have one and only one"
+                        + " message in it at dispatch.");
+        }
+        Message message = mEnqueuedMessages.element();
+        mEnqueuedMessages.remove();
+        return dispatchMessage(message);
+    }
+
+    private boolean dispatchMessage(Message message) {
         MessageHeader header = message.asServiceMessage().getHeader();
+
         var stub = mStubs.get(header.getInterfaceId());
         if (header.hasFlag(MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG)) {
             if (stub != null) {
