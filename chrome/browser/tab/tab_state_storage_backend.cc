@@ -41,8 +41,10 @@ constexpr base::TaskTraits kDBTaskTraits = {
 }  // namespace
 
 TabStateStorageBackend::TabStateStorageBackend(
-    const base::FilePath& profile_path)
+    const base::FilePath& profile_path,
+    bool support_off_the_record_data)
     : profile_path_(profile_path),
+      support_off_the_record_data_(support_off_the_record_data),
       db_task_runner_(base::ThreadPool::CreateUpdateableSequencedTaskRunner(
           kDBTaskTraits)) {}
 
@@ -53,7 +55,8 @@ TabStateStorageBackend::~TabStateStorageBackend() {
 }
 
 void TabStateStorageBackend::Initialize() {
-  database_ = std::make_unique<TabStateStorageDatabase>(profile_path_);
+  database_ = std::make_unique<TabStateStorageDatabase>(
+      profile_path_, support_off_the_record_data_);
   db_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TabStateStorageDatabase::Initialize,
@@ -110,8 +113,22 @@ void TabStateStorageBackend::ClearAllNodes() {
 void TabStateStorageBackend::ClearWindow(std::string_view window_tag) {
   db_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&TabStateStorageDatabase::ClearWindow,
+                                base::Unretained(database_.get()), window_tag));
+}
+
+void TabStateStorageBackend::SetKey(std::string_view window_tag,
+                                    std::vector<uint8_t> key) {
+  db_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&TabStateStorageDatabase::SetKey,
                                 base::Unretained(database_.get()),
-                                std::string(window_tag)));
+                                std::string(window_tag), std::move(key)));
+}
+
+void TabStateStorageBackend::RemoveKey(std::string_view window_tag) {
+  db_task_runner_->PostTask(FROM_HERE,
+                            base::BindOnce(&TabStateStorageDatabase::RemoveKey,
+                                           base::Unretained(database_.get()),
+                                           std::string(window_tag)));
 }
 
 #if defined(NDEBUG)

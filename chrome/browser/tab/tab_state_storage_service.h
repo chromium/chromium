@@ -57,6 +57,7 @@ class TabStateStorageService : public KeyedService,
   using ScopedBatch = base::ScopedClosureRunner;
 
   TabStateStorageService(const base::FilePath& profile_path,
+                         bool support_off_the_record_data,
                          std::unique_ptr<TabStoragePackager> packager,
                          TabCanonicalizer tab_canonicalizer,
                          RestoreEntityTrackerFactory builder_factory);
@@ -99,6 +100,15 @@ class TabStateStorageService : public KeyedService,
   void ClearState();
 
   void ClearWindow(std::string_view window_tag);
+
+  // Sets the key for encryption.
+  void SetKey(std::string_view window_tag, std::vector<uint8_t> key);
+
+  // Removes the key for encryption.
+  void RemoveKey(std::string_view window_tag);
+
+  // Generates a new key for encryption.
+  std::vector<uint8_t> GenerateKey(std::string_view window_tag);
 
 #if defined(NDEBUG)
   void PrintAll();

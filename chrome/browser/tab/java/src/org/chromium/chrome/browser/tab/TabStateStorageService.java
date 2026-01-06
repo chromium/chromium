@@ -98,6 +98,36 @@ public class TabStateStorageService {
         return new ScopedStorageBatchImpl(batchPtr);
     }
 
+    /**
+     * Sets the encryption key.
+     *
+     * @param windowTag The window tag to set the key for.
+     * @param key The encryption key.
+     */
+    public void setKey(String windowTag, byte[] key) {
+        TabStateStorageServiceJni.get().setKey(mNativeTabStateStorageService, windowTag, key);
+    }
+
+    /**
+     * Removes the encryption key.
+     *
+     * @param windowTag The window tag to remove the key for.
+     */
+    public void removeKey(String windowTag) {
+        TabStateStorageServiceJni.get().removeKey(mNativeTabStateStorageService, windowTag);
+    }
+
+    /**
+     * Generates a new key for encryption.
+     *
+     * @param windowTag The window tag to generate the key for.
+     * @return The generated key.
+     */
+    public byte[] generateKey(String windowTag) {
+        return TabStateStorageServiceJni.get()
+                .generateKey(mNativeTabStateStorageService, windowTag);
+    }
+
     @NativeMethods
     interface Natives {
         void boostPriority(long nativeTabStateStorageServiceAndroid);
@@ -120,5 +150,16 @@ public class TabStateStorageService {
         void printAll(long nativeTabStateStorageServiceAndroid);
 
         void commitBatch(long scopedBatchAndroid);
+
+        void setKey(
+                long nativeTabStateStorageServiceAndroid,
+                @JniType("std::string") String windowTag,
+                @JniType("std::vector<uint8_t>") byte[] key);
+
+        void removeKey(
+                long nativeTabStateStorageServiceAndroid, @JniType("std::string") String windowTag);
+
+        byte[] generateKey(
+                long nativeTabStateStorageServiceAndroid, @JniType("std::string") String windowTag);
     }
 }

@@ -4,11 +4,18 @@
 
 package org.chromium.chrome.browser.crypto;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import android.os.Bundle;
 
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,6 +58,7 @@ public class CipherFactoryTest {
      */
     @Test
     @MediumTest
+    @UiThreadTest
     public void testCipherUse() throws Exception {
         // Check encryption.
         Cipher aEncrypt = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
@@ -61,7 +69,7 @@ public class CipherFactoryTest {
         Cipher aDecrypt = mCipherFactory.getCipher(Cipher.DECRYPT_MODE);
         Cipher bDecrypt = mCipherFactory.getCipher(Cipher.DECRYPT_MODE);
         byte[] decrypted = sameOutputDifferentCiphers(output, aDecrypt, bDecrypt);
-        Assert.assertTrue(Arrays.equals(decrypted, INPUT_DATA));
+        assertTrue(Arrays.equals(decrypted, INPUT_DATA));
     }
 
     /**
@@ -70,6 +78,7 @@ public class CipherFactoryTest {
      */
     @Test
     @MediumTest
+    @UiThreadTest
     public void testSameBundleRestoration() throws Exception {
         // Create two bundles with the same saved state.
         Bundle aBundle = new Bundle();
@@ -84,9 +93,9 @@ public class CipherFactoryTest {
         bBundle.putByteArray(CipherFactory.BUNDLE_KEY, sameKey);
 
         // Restore using the first bundle, then the second. Both should succeed.
-        Assert.assertTrue(mCipherFactory.restoreFromBundle(aBundle));
+        assertTrue(mCipherFactory.restoreFromBundle(aBundle));
         Cipher aCipher = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
-        Assert.assertTrue(mCipherFactory.restoreFromBundle(bBundle));
+        assertTrue(mCipherFactory.restoreFromBundle(bBundle));
         Cipher bCipher = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
 
         // Make sure the CipherFactory instances are using the same key.
@@ -100,6 +109,7 @@ public class CipherFactoryTest {
      */
     @Test
     @MediumTest
+    @UiThreadTest
     public void testDifferentBundleRestoration() throws Exception {
         // Restore one set of parameters.
         Bundle aBundle = new Bundle();
@@ -107,7 +117,7 @@ public class CipherFactoryTest {
         byte[] aKey = getRandomBytes(CipherFactory.NUM_BYTES);
         aBundle.putByteArray(CipherFactory.BUNDLE_IV, aIv);
         aBundle.putByteArray(CipherFactory.BUNDLE_KEY, aKey);
-        Assert.assertTrue(mCipherFactory.restoreFromBundle(aBundle));
+        assertTrue(mCipherFactory.restoreFromBundle(aBundle));
         Cipher aCipher = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
 
         // Restore using a different set of parameters.
@@ -116,7 +126,7 @@ public class CipherFactoryTest {
         byte[] bKey = getRandomBytes(CipherFactory.NUM_BYTES);
         bBundle.putByteArray(CipherFactory.BUNDLE_IV, bIv);
         bBundle.putByteArray(CipherFactory.BUNDLE_KEY, bKey);
-        Assert.assertFalse(mCipherFactory.restoreFromBundle(bBundle));
+        assertFalse(mCipherFactory.restoreFromBundle(bBundle));
         Cipher bCipher = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
 
         // Make sure they're using the same (original) key by encrypting the same data.
@@ -126,21 +136,22 @@ public class CipherFactoryTest {
     /** Restoration from a {@link Bundle} missing data should fail. */
     @Test
     @MediumTest
+    @UiThreadTest
     public void testIncompleteBundleRestoration() {
         // Make sure we handle the null case.
-        Assert.assertFalse(mCipherFactory.restoreFromBundle(null));
+        assertFalse(mCipherFactory.restoreFromBundle(null));
 
         // Try restoring without the key.
         Bundle aBundle = new Bundle();
         byte[] iv = getRandomBytes(CipherFactory.NUM_BYTES);
         aBundle.putByteArray(CipherFactory.BUNDLE_IV, iv);
-        Assert.assertFalse(mCipherFactory.restoreFromBundle(aBundle));
+        assertFalse(mCipherFactory.restoreFromBundle(aBundle));
 
         // Try restoring without the initialization vector.
         Bundle bBundle = new Bundle();
         byte[] key = getRandomBytes(CipherFactory.NUM_BYTES);
         bBundle.putByteArray(CipherFactory.BUNDLE_KEY, key);
-        Assert.assertFalse(mCipherFactory.restoreFromBundle(bBundle));
+        assertFalse(mCipherFactory.restoreFromBundle(bBundle));
     }
 
     /**
@@ -150,6 +161,7 @@ public class CipherFactoryTest {
      */
     @Test
     @MediumTest
+    @UiThreadTest
     public void testRestorationSucceedsBeforeCipherCreated() {
         byte[] iv = getRandomBytes(CipherFactory.NUM_BYTES);
         byte[] key = getRandomBytes(CipherFactory.NUM_BYTES);
@@ -158,9 +170,9 @@ public class CipherFactoryTest {
         bundle.putByteArray(CipherFactory.BUNDLE_KEY, key);
 
         // The keys should be initialized only after restoration.
-        Assert.assertNull(mCipherFactory.getCipherData(false));
-        Assert.assertTrue(mCipherFactory.restoreFromBundle(bundle));
-        Assert.assertNotNull(mCipherFactory.getCipherData(false));
+        assertNull(mCipherFactory.getCipherData(false));
+        assertTrue(mCipherFactory.restoreFromBundle(bundle));
+        assertNotNull(mCipherFactory.getCipherData(false));
     }
 
     /**
@@ -169,6 +181,7 @@ public class CipherFactoryTest {
      */
     @Test
     @MediumTest
+    @UiThreadTest
     public void testRestorationDiscardsAfterOtherCipherAlreadyCreated() throws Exception {
         byte[] iv = getRandomBytes(CipherFactory.NUM_BYTES);
         byte[] key = getRandomBytes(CipherFactory.NUM_BYTES);
@@ -178,7 +191,7 @@ public class CipherFactoryTest {
 
         // The keys should be initialized after creating the cipher, so the keys shouldn't match.
         Cipher aCipher = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
-        Assert.assertFalse(mCipherFactory.restoreFromBundle(bundle));
+        assertFalse(mCipherFactory.restoreFromBundle(bundle));
         Cipher bCipher = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
 
         // B's cipher should use the keys generated for A.
@@ -190,22 +203,84 @@ public class CipherFactoryTest {
      */
     @Test
     @MediumTest
+    @UiThreadTest
     public void testSavingToBundle() {
         // Nothing should get saved out before Cipher data exists.
         Bundle initialBundle = new Bundle();
         mCipherFactory.saveToBundle(initialBundle);
-        Assert.assertFalse(initialBundle.containsKey(CipherFactory.BUNDLE_IV));
-        Assert.assertFalse(initialBundle.containsKey(CipherFactory.BUNDLE_KEY));
+        assertFalse(initialBundle.containsKey(CipherFactory.BUNDLE_IV));
+        assertFalse(initialBundle.containsKey(CipherFactory.BUNDLE_KEY));
 
         // Check that Cipher data gets saved if it exists.
         mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
         Bundle afterBundle = new Bundle();
         mCipherFactory.saveToBundle(afterBundle);
-        Assert.assertTrue(afterBundle.containsKey(CipherFactory.BUNDLE_IV));
-        Assert.assertTrue(afterBundle.containsKey(CipherFactory.BUNDLE_KEY));
+        assertTrue(afterBundle.containsKey(CipherFactory.BUNDLE_IV));
+        assertTrue(afterBundle.containsKey(CipherFactory.BUNDLE_KEY));
 
         // Confirm the saved keys match by restoring it.
-        Assert.assertTrue(mCipherFactory.restoreFromBundle(afterBundle));
+        assertTrue(mCipherFactory.restoreFromBundle(afterBundle));
+    }
+
+    /** Test for setting and getting the tab state storage key. */
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testTabStateStorageKeySetAndGet() {
+        // Initially, the key should be null.
+        assertNull(mCipherFactory.getKeyForTabStateStorage());
+
+        byte[] key = getRandomBytes(CipherFactory.NUM_BYTES);
+        mCipherFactory.setKeyForTabStateStorage(key);
+        assertTrue(Arrays.equals(key, mCipherFactory.getKeyForTabStateStorage()));
+
+        // Attempting to set the key again should fail (assert in CipherFactory).
+        // This test case would cause a CHECK failure.
+        // byte[] anotherKey = getRandomBytes(CipherFactory.NUM_BYTES);
+        // mCipherFactory.setKeyForTabStateStorage(anotherKey);
+    }
+
+    /** Tests saving and restoring the tab state storage key from a bundle. */
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testTabStateStorageKeySaveAndRestore() {
+        // Set a key initially.
+        byte[] originalKey = getRandomBytes(CipherFactory.NUM_BYTES);
+        mCipherFactory.setKeyForTabStateStorage(originalKey);
+
+        // Save to bundle.
+        Bundle bundle = new Bundle();
+        mCipherFactory.saveToBundle(bundle);
+        assertTrue(bundle.containsKey(CipherFactory.BUNDLE_TAB_STATE_STORAGE_KEY));
+        assertTrue(
+                Arrays.equals(
+                        originalKey,
+                        bundle.getByteArray(CipherFactory.BUNDLE_TAB_STATE_STORAGE_KEY)));
+
+        // Create a new factory and restore from bundle.
+        CipherFactory newCipherFactory = new CipherFactory();
+        newCipherFactory.restoreFromBundle(bundle);
+        assertEquals(originalKey, newCipherFactory.getKeyForTabStateStorage());
+
+        // Attempt to restore with a different key when one already exists.
+        byte[] differentKey = getRandomBytes(CipherFactory.NUM_BYTES);
+        Bundle differentBundle = new Bundle();
+        differentBundle.putByteArray(CipherFactory.BUNDLE_TAB_STATE_STORAGE_KEY, differentKey);
+        newCipherFactory.restoreFromBundle(differentBundle);
+        assertEquals(originalKey, newCipherFactory.getKeyForTabStateStorage());
+
+        // Ensure legacy key and tab state storage key are independent.
+        byte[] legacyKey = getRandomBytes(CipherFactory.NUM_BYTES);
+        Bundle legacyBundle = new Bundle();
+        legacyBundle.putByteArray(CipherFactory.BUNDLE_IV, getRandomBytes(CipherFactory.NUM_BYTES));
+        legacyBundle.putByteArray(CipherFactory.BUNDLE_KEY, legacyKey);
+        legacyBundle.putByteArray(CipherFactory.BUNDLE_TAB_STATE_STORAGE_KEY, differentKey);
+
+        CipherFactory anotherCipherFactory = new CipherFactory();
+        assertTrue(anotherCipherFactory.restoreFromBundle(legacyBundle));
+        assertEquals(differentKey, anotherCipherFactory.getKeyForTabStateStorage());
+        assertNotNull(anotherCipherFactory.getCipherData(false));
     }
 
     /**
@@ -215,16 +290,16 @@ public class CipherFactoryTest {
      */
     private byte[] sameOutputDifferentCiphers(byte[] input, Cipher aCipher, Cipher bCipher)
             throws Exception {
-        Assert.assertNotNull(aCipher);
-        Assert.assertNotNull(bCipher);
-        Assert.assertNotSame(aCipher, bCipher);
+        assertNotNull(aCipher);
+        assertNotNull(bCipher);
+        assertNotSame(aCipher, bCipher);
 
         byte[] aOutput = aCipher.doFinal(input);
         byte[] bOutput = bCipher.doFinal(input);
 
-        Assert.assertNotNull(aOutput);
-        Assert.assertNotNull(bOutput);
-        Assert.assertTrue(Arrays.equals(aOutput, bOutput));
+        assertNotNull(aOutput);
+        assertNotNull(bOutput);
+        assertTrue(Arrays.equals(aOutput, bOutput));
 
         return aOutput;
     }

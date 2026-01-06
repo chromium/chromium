@@ -18,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/tab/payload_util.h"
 #include "chrome/browser/tab/protocol/children.pb.h"
 #include "chrome/browser/tab/protocol/token.pb.h"
 #include "chrome/browser/tab/storage_id.h"
@@ -170,9 +171,10 @@ bool TabStateStorageDatabase::OpenTransaction::IsValid(
 }
 
 TabStateStorageDatabase::TabStateStorageDatabase(
-    const base::FilePath& profile_path)
+    const base::FilePath& profile_path,
+    bool support_off_the_record_data)
     : profile_path_(profile_path),
-
+      support_off_the_record_data_(support_off_the_record_data),
       db_(sql::DatabaseOptions().set_preload(true).set_exclusive_locking(true),
           sql::Database::Tag("TabStateStorage")) {}
 
@@ -210,9 +212,8 @@ bool TabStateStorageDatabase::SaveNode(OpenTransaction* transaction,
                                        TabStorageType type,
                                        std::vector<uint8_t> payload,
                                        std::vector<uint8_t> children) {
-  // TODO(crbug.com/451614469): Add support for OTR.
-  if (is_off_the_record) {
-    DLOG(ERROR) << "OTR saves are not supported yet.";
+  if (!support_off_the_record_data_ && is_off_the_record) {
+    DLOG(ERROR) << "OTR saves are not supported by this database.";
     // Pretend we succeeded to avoid rollback.
     return true;
   }
@@ -373,6 +374,19 @@ void TabStateStorageDatabase::ClearWindow(std::string_view window_tag) {
       db_.GetCachedStatement(SQL_FROM_HERE, kDeleteWindowSql));
   delete_statement.BindString(0, window_tag);
   delete_statement.Run();
+}
+
+void TabStateStorageDatabase::SetKey(std::string window_tag,
+                                     std::vector<uint8_t> key) {
+  // TODO(crbug.com/462769977): Duplicate insertions seem to happen in tests
+  // likely due to restarts that somehow don't trigger RemoveKey. This should be
+  // investigated and fixed so this can be changed to a CHECK that insertion
+  // is successful.
+  keys_.insert_or_assign(std::move(window_tag), std::move(key));
+}
+
+void TabStateStorageDatabase::RemoveKey(std::string_view window_tag) {
+  keys_.erase(window_tag);
 }
 
 #if defined(NDEBUG)

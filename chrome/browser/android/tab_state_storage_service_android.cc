@@ -29,14 +29,17 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/tab/jni_headers/TabStateStorageService_jni.h"
 
+using base::android::JavaRef;
+using base::android::ScopedJavaGlobalRef;
+using base::android::ScopedJavaLocalRef;
+
 namespace tabs {
 
 namespace {
 
-void RunJavaCallbackLoadAll(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& j_loaded_data_callback,
-    std::unique_ptr<StorageLoadedData> loaded_data) {
+void RunJavaCallbackLoadAll(JNIEnv* env,
+                            const JavaRef<jobject>& j_loaded_data_callback,
+                            std::unique_ptr<StorageLoadedData> loaded_data) {
   StorageLoadedDataAndroid* data_android =
       new StorageLoadedDataAndroid(env, std::move(loaded_data));
   base::android::RunObjectCallbackAndroid(j_loaded_data_callback,
@@ -108,17 +111,33 @@ jlong TabStateStorageServiceAndroid::CreateBatch(JNIEnv* env) {
       new ScopedBatchAndroid(tab_state_storage_service_->CreateScopedBatch()));
 }
 
-base::android::ScopedJavaLocalRef<jobject>
-TabStateStorageServiceAndroid::GetJavaObject() {
-  return base::android::ScopedJavaLocalRef<jobject>(java_obj_);
+void TabStateStorageServiceAndroid::SetKey(JNIEnv* env,
+                                           const std::string& window_tag,
+                                           std::vector<uint8_t> key) {
+  tab_state_storage_service_->SetKey(window_tag, std::move(key));
+}
+
+void TabStateStorageServiceAndroid::RemoveKey(JNIEnv* env,
+                                              const std::string& window_tag) {
+  tab_state_storage_service_->RemoveKey(window_tag);
+}
+
+ScopedJavaLocalRef<jbyteArray> TabStateStorageServiceAndroid::GenerateKey(
+    JNIEnv* env,
+    const std::string& window_tag) {
+  auto key = tab_state_storage_service_->GenerateKey(window_tag);
+  return base::android::ToJavaByteArray(env, key);
+}
+
+ScopedJavaLocalRef<jobject> TabStateStorageServiceAndroid::GetJavaObject() {
+  return ScopedJavaLocalRef<jobject>(java_obj_);
 }
 
 // This function is declared in tab_state_storage_service.h and
 // should be linked in to any binary using
 // TabStateStorageService::GetJavaObject.
 // static
-base::android::ScopedJavaLocalRef<jobject>
-TabStateStorageService::GetJavaObject(
+ScopedJavaLocalRef<jobject> TabStateStorageService::GetJavaObject(
     TabStateStorageService* tab_state_storage_service) {
   TabStateStorageServiceAndroid* service_android =
       static_cast<TabStateStorageServiceAndroid*>(

@@ -55,7 +55,8 @@ class TabStateStorageDatabase {
     bool mark_failed_ = false;
   };
 
-  explicit TabStateStorageDatabase(const base::FilePath& profile_path);
+  TabStateStorageDatabase(const base::FilePath& profile_path,
+                          bool support_off_the_record_data);
   ~TabStateStorageDatabase();
   TabStateStorageDatabase(const TabStateStorageDatabase&) = delete;
   TabStateStorageDatabase& operator=(const TabStateStorageDatabase&) = delete;
@@ -106,6 +107,14 @@ class TabStateStorageDatabase {
   // Clears all nodes for a given window from the database.
   void ClearWindow(std::string_view window_tag);
 
+  // Sets the key to seal OTR payloads with. The window tag is moved
+  // internally and this is always called in a posted callback hence
+  // the use of std::string.
+  void SetKey(std::string window_tag, std::vector<uint8_t> key);
+
+  // Remove key for OTR sealing from a given window.
+  void RemoveKey(std::string_view window_tag);
+
 #if defined(NDEBUG)
   // Dumps the entire state of the database to the log for debugging. Do not use
   // in production.
@@ -123,10 +132,14 @@ class TabStateStorageDatabase {
 #endif
 
  private:
-  base::FilePath profile_path_;
+  const base::FilePath profile_path_;
+  const bool support_off_the_record_data_;
   sql::Database db_;
   sql::MetaTable meta_table_;
   std::optional<OpenTransaction> open_transaction_;
+
+  // A map of window tags to their associated keys for OTR payloads.
+  absl::flat_hash_map<std::string, std::vector<uint8_t>> keys_;
 };
 
 }  // namespace tabs

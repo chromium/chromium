@@ -307,7 +307,8 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                             mTabModelSelector,
                             mWindowTag,
                             shadowTabCreatorManager,
-                            mTabPersistencePolicy);
+                            mTabPersistencePolicy,
+                            mCipherFactory);
 
             SupplierUtils.waitForAll(
                     this::onBothStateLoaded,
@@ -415,7 +416,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                 () -> mTabModelSelector.getModel(/* incognito= */ false);
         mArchivedTabModelOrchestrator.initializeHistoricalTabModelObserver(
                 mArchivedHistoricalObserverSupplier);
-        // Registering will automatically do an archive pass, and schedule recrurring passes for
+        // Registering will automatically do an archive pass, and schedule recurring passes for
         // long-running instances of Chrome.
         mArchivedTabModelOrchestrator.registerTabModelOrchestrator(this);
     }

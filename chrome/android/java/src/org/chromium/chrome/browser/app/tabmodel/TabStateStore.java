@@ -11,6 +11,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.CombinedTabRestorer.CombinedTabRestorerDelegate;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
 import org.chromium.chrome.browser.tab.Tab;
@@ -117,19 +118,30 @@ public class TabStateStore implements TabPersistentStore {
      * @param windowTag The window tag to use for the window.
      * @param tabCreatorManager Used to create new tabs on initial load. This may return real
      *     creators, or faked out creators if in non-authoritative mode.
+     * @param tabPersistencePolicy The {@link TabPersistencePolicy} to use for the window.
+     * @param cipherFactory The {@link CipherFactory} to use for encryption.
      */
     public TabStateStore(
             TabStateStorageService tabStateStorageService,
             TabModelSelector tabModelSelector,
             String windowTag,
             TabCreatorManager tabCreatorManager,
-            TabPersistencePolicy tabPersistencePolicy) {
+            TabPersistencePolicy tabPersistencePolicy,
+            CipherFactory cipherFactory) {
         mTabStateStorageService = tabStateStorageService;
         mTabModelSelector = tabModelSelector;
         mWindowTag = windowTag;
         mTabCreatorManager = tabCreatorManager;
         mTabPersistencePolicy = tabPersistencePolicy;
         mModelTrackingManager = new ModelTrackingOrchestrator(tabModelSelector);
+
+        byte[] key = cipherFactory.getKeyForTabStateStorage();
+        if (key == null) {
+            key = mTabStateStorageService.generateKey(mWindowTag);
+            cipherFactory.setKeyForTabStateStorage(key);
+        } else {
+            mTabStateStorageService.setKey(mWindowTag, key);
+        }
 
         tabModelSelector.getModel(false).addObserver(mTabModelObserver);
         TabModel incognitoModel = tabModelSelector.getModel(true);
