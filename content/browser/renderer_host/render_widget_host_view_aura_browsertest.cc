@@ -748,7 +748,8 @@ class InputEventWaiter : public RenderWidgetHost::InputEventObserver {
 
   // RenderWidgetHost::InputEventObserver:
   void OnInputEvent(const RenderWidgetHost& host,
-                    const blink::WebInputEvent& event) override {
+                    const blink::WebInputEvent& event,
+                    InputEventSource source) override {
     if (event.GetType() == target_state_) {
       future_->SetValue(event.GetType());
     }

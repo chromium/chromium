@@ -371,7 +371,8 @@ bool OverscrollControllerAndroid::OnTouchEvent(
 
 void OverscrollControllerAndroid::OnInputEvent(
     const RenderWidgetHost& widget,
-    const blink::WebInputEvent& input_event) {
+    const blink::WebInputEvent& input_event,
+    InputEventSource source) {
   if (!blink::WebInputEvent::IsGestureEventType(input_event.GetType())) {
     return;
   }

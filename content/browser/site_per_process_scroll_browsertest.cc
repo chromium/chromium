@@ -324,7 +324,8 @@ class ScrollObserver : public RenderWidgetHost::InputEventObserver {
   ScrollObserver& operator=(const ScrollObserver&) = delete;
 
   void OnInputEvent(const RenderWidgetHost& widget,
-                    const blink::WebInputEvent& event) override {
+                    const blink::WebInputEvent& event,
+                    InputEventSource source) override {
     if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollUpdate) {
       blink::WebGestureEvent received_update =
           *static_cast<const blink::WebGestureEvent*>(&event);
@@ -514,7 +515,8 @@ class ScrollAndNavigateObserver : public RenderWidgetHost::InputEventObserver {
       delete;
 
   void OnInputEvent(const RenderWidgetHost& widget,
-                    const blink::WebInputEvent& event) override {
+                    const blink::WebInputEvent& event,
+                    InputEventSource source) override {
     if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollUpdate &&
         !nav_started_) {
       // Start navigation in middle of scroll.
@@ -1040,7 +1042,8 @@ class TouchMoveInjectingObserver : public RenderWidgetHost::InputEventObserver {
       delete;
 
   void OnInputEvent(const RenderWidgetHost& widget,
-                    const blink::WebInputEvent& event) override {
+                    const blink::WebInputEvent& event,
+                    InputEventSource source) override {
     const RenderWidgetHostViewBase* view =
         static_cast<const RenderWidgetHostViewBase*>(widget.GetView());
     bool is_child_view = view->IsRenderWidgetHostViewChildFrame();

@@ -47,7 +47,8 @@ class FrameInputStateDecorator::InputObserver
 
   // content::RenderWidgetHost::InputEventObserver:
   void OnInputEvent(const content::RenderWidgetHost& rwh,
-                    const blink::WebInputEvent& event) override;
+                    const blink::WebInputEvent& event,
+                    input::InputEventSource source) override;
 
   // content::RenderWidgetHostObserver:
   void RenderWidgetHostDestroyed(content::RenderWidgetHost* rwh) override;
@@ -164,7 +165,8 @@ FrameInputStateDecorator::InputObserver::~InputObserver() = default;
 
 void FrameInputStateDecorator::InputObserver::OnInputEvent(
     const content::RenderWidgetHost& rwh,
-    const blink::WebInputEvent& event) {
+    const blink::WebInputEvent& event,
+    input::InputEventSource source) {
   switch (event.GetType()) {
     case blink::WebInputEvent::Type::kRawKeyDown:
       OnKeyEvent(event);

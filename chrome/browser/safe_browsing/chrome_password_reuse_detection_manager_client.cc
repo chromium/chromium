@@ -381,7 +381,8 @@ void ChromePasswordReuseDetectionManagerClient::OnPaste() {
 
 void ChromePasswordReuseDetectionManagerClient::OnInputEvent(
     const content::RenderWidgetHost& widget,
-    const blink::WebInputEvent& event) {
+    const blink::WebInputEvent& event,
+    input::InputEventSource source) {
   phishy_interaction_tracker_.HandleInputEvent(event);
 #if BUILDFLAG(IS_ANDROID)
   // On Android, key down events are triggered if a user types in through a

@@ -10159,7 +10159,8 @@ class TouchEventObserver : public RenderWidgetHost::InputEventObserver {
   TouchEventObserver& operator=(const TouchEventObserver&) = delete;
 
   void OnInputEvent(const RenderWidgetHost& widget,
-                    const blink::WebInputEvent& event) override {
+                    const blink::WebInputEvent& event,
+                    InputEventSource source) override {
     if (!blink::WebInputEvent::IsTouchEventType(event.GetType()))
       return;
 

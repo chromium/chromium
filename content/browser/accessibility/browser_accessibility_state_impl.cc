@@ -851,7 +851,8 @@ void BrowserAccessibilityStateImpl::OnDisablerDestroyedForWebContents(
 
 void BrowserAccessibilityStateImpl::OnInputEvent(
     const RenderWidgetHost& widget,
-    const blink::WebInputEvent& event) {
+    const blink::WebInputEvent& event,
+    InputEventSource source) {
   // |this| observer cares about user input events (specifically keyboard,
   // mouse & touch events) to decide if the accessibility APIs can be disabled.
   if (event.GetType() == blink::WebInputEvent::Type::kMouseDown ||

@@ -154,7 +154,8 @@ class MockInputObserver : public content::RenderWidgetHost::InputEventObserver {
   MOCK_METHOD(void,
               OnInputEvent,
               (const content::RenderWidgetHost& widget,
-               const blink::WebInputEvent&),
+               const blink::WebInputEvent&,
+               input::InputEventSource),
               (override));
 };
 
@@ -796,7 +797,7 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     auto* rwh = web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
     MockInputObserver input_observer;
     rwh->AddInputEventObserver(&input_observer);
-    EXPECT_CALL(input_observer, OnInputEvent(_, _))
+    EXPECT_CALL(input_observer, OnInputEvent(_, _, _))
         .Times(expect_events ? 4 : 0);
 
     blink::WebMouseEvent mouse_event(

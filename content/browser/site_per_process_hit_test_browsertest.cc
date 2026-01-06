@@ -117,7 +117,8 @@ class TestInputEventObserver : public RenderWidgetHost::InputEventObserver {
   const blink::WebInputEvent& event() const { return *event_; }
 
   void OnInputEvent(const RenderWidgetHost& widget,
-                    const blink::WebInputEvent& event) override {
+                    const blink::WebInputEvent& event,
+                    InputEventSource source) override {
     events_received_.push_back(event.GetType());
     event_ = event.Clone();
   }
@@ -1845,7 +1846,8 @@ class OutgoingEventWaiter : public RenderWidgetHost::InputEventObserver {
   }
 
   void OnInputEvent(const RenderWidgetHost& widget,
-                    const blink::WebInputEvent& event) override {
+                    const blink::WebInputEvent& event,
+                    InputEventSource source) override {
     if (event.GetType() == type_) {
       seen_event_ = true;
       if (quit_closure_)
@@ -1884,7 +1886,8 @@ class BadInputEventObserver : public RenderWidgetHost::InputEventObserver {
   }
 
   void OnInputEvent(const RenderWidgetHost& widget,
-                    const blink::WebInputEvent& event) override {
+                    const blink::WebInputEvent& event,
+                    InputEventSource source) override {
     EXPECT_NE(type_, event.GetType())
         << "Unexpected " << blink::WebInputEvent::GetName(event.GetType());
   }

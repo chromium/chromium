@@ -3118,7 +3118,8 @@ void InputMsgWatcher::OnInputEventAck(
 }
 
 void InputMsgWatcher::OnInputEvent(const RenderWidgetHost& widget,
-                                   const blink::WebInputEvent& event) {
+                                   const blink::WebInputEvent& event,
+                                   InputEventSource source) {
   last_sent_event_type_ = event.GetType();
 }
 
