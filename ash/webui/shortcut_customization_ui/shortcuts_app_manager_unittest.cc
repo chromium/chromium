@@ -10,7 +10,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerator_configuration.h"
-#include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"

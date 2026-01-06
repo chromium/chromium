@@ -15,7 +15,6 @@
 #include "net/base/transport_info.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/mojom/client_security_state.mojom-shared.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/cors.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"

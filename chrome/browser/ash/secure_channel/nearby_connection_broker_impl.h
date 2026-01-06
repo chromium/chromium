@@ -17,7 +17,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/secure_channel/nearby_connection_broker.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
-#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/ash/services/secure_channel/util/histogram_util.h"

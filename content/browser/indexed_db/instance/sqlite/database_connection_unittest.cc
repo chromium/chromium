@@ -27,7 +27,7 @@
 #include "sql/meta_table.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-data-view.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-shared.h"
 
 namespace content::indexed_db::sqlite {
 

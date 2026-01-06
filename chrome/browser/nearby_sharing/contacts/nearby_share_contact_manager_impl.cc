@@ -18,7 +18,6 @@
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
 #include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler.h"
 #include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler_factory.h"
-#include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "components/cross_device/logging/logging.h"
 #include "components/prefs/pref_service.h"

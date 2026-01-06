@@ -229,7 +229,6 @@
 #endif
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
-#include "media/mojo/mojom/remoting.mojom-forward.h"
 #endif
 
 #if BUILDFLAG(ENABLE_VR)

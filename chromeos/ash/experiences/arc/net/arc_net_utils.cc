@@ -14,7 +14,6 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/ash/experiences/arc/mojom/arc_wifi.mojom.h"
-#include "chromeos/ash/experiences/arc/mojom/net.mojom-shared.h"
 #include "chromeos/ash/experiences/arc/mojom/net.mojom.h"
 #include "net/base/ip_address.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"

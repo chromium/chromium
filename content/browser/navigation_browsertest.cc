@@ -49,7 +49,6 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/common/frame_messages.mojom.h"
-#include "content/common/navigation_client.mojom-forward.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"

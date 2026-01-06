@@ -11,8 +11,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "components/paint_preview/common/file_stream.h"
-#include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-data-view.h"
-#include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-forward.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
 #include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "components/paint_preview/renderer/paint_preview_recorder_impl.h"

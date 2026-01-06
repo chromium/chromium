@@ -20,7 +20,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "services/network/first_party_sets/first_party_sets_manager.h"
-#include "services/network/public/mojom/first_party_sets_access_delegate.mojom-forward.h"
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
 
 namespace net {

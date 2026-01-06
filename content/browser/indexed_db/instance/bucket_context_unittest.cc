@@ -12,7 +12,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom-shared.h"
 #include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom.h"
 #include "content/browser/indexed_db/instance/fake_transaction.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"

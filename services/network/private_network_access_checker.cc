@@ -15,7 +15,7 @@
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "services/network/public/mojom/url_loader_network_service_observer.mojom-data-view.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace network {

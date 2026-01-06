@@ -4,7 +4,6 @@
 
 #include "ash/system/input_device_settings/input_device_settings_metadata.h"
 
-#include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"

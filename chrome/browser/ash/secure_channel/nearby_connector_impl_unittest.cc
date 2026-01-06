@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/secure_channel/nearby_connection_broker_impl.h"
 #include "chrome/browser/ash/secure_channel/nearby_endpoint_finder_impl.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_nearby_process_manager.h"
-#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"

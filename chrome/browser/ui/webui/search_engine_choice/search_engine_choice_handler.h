@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_HANDLER_H_
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom-shared.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 

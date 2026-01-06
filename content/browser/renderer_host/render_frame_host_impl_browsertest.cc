@@ -44,7 +44,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
-#include "content/common/frame.mojom-forward.h"
 #include "content/common/frame.mojom-shared.h"
 #include "content/common/frame.mojom-test-utils.h"
 #include "content/common/frame_messages.mojom.h"

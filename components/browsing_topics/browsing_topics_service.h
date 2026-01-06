@@ -6,7 +6,6 @@
 #define COMPONENTS_BROWSING_TOPICS_BROWSING_TOPICS_SERVICE_H_
 
 #include "components/browsing_topics/annotator.h"
-#include "components/browsing_topics/mojom/browsing_topics_internals.mojom-forward.h"
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/privacy_sandbox/canonical_topic.h"

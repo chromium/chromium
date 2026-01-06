@@ -25,7 +25,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/private_network_access_check_result.h"
-#include "services/network/public/mojom/url_loader_network_service_observer.mojom-data-view.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom-shared.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 
 namespace network {

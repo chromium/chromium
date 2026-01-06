@@ -17,7 +17,6 @@
 #include "ash/system/tray/system_tray_observer.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
-#include "ash/webui/eche_app_ui/mojom/eche_app.mojom-shared.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"

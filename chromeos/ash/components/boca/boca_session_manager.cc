@@ -42,7 +42,7 @@
 #include "chromeos/ash/components/boca/student_screen_presenter.h"
 #include "chromeos/ash/components/boca/teacher_screen_presenter.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
-#include "chromeos/services/network_config/public/mojom/network_types.mojom-data-view.h"
+#include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"

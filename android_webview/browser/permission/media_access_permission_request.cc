@@ -11,7 +11,6 @@
 #include "android_webview/browser/permission/aw_permission_request.h"
 #include "android_webview/common/aw_features.h"
 #include "content/public/browser/media_capture_devices.h"
-#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 using blink::MediaStreamDevice;

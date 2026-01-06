@@ -35,7 +35,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/is_required.h"
 #include "components/autofill/core/common/language_code.h"
-#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"

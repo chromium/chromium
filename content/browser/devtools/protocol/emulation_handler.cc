@@ -40,7 +40,7 @@
 #include "services/device/public/mojom/sensor.mojom-shared.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom.h"
-#include "third_party/blink/public/mojom/page/widget.mojom-data-view.h"
+#include "third_party/blink/public/mojom/page/widget.mojom-shared.h"
 #include "ui/display/mojom/screen_orientation.mojom.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 

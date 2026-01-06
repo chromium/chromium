@@ -16,7 +16,6 @@
 #include "services/media_session/audio_focus_request.h"
 #include "services/media_session/public/cpp/chapter_information.h"
 #include "services/media_session/public/cpp/media_image_manager.h"
-#include "services/media_session/public/mojom/media_session.mojom-shared.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
 namespace media_session {

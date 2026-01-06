@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "ash/public/cpp/peripherals_app_delegate.h"
-#include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/functional/callback.h"
 #include "base/types/expected.h"

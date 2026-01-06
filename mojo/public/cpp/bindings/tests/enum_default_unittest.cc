@@ -11,8 +11,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/tests/enum_default_unittest.test-mojom-forward.h"
-#include "mojo/public/cpp/bindings/tests/enum_default_unittest.test-mojom-shared.h"
 #include "mojo/public/cpp/bindings/tests/enum_default_unittest.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

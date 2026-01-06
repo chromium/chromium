@@ -11,7 +11,6 @@
 
 #include "ash/accelerators/keyboard_code_util.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"

@@ -32,7 +32,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "services/network/public/mojom/fetch_api.mojom-data-view.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "skia/ext/image_operations.h"
 #include "ui/gfx/image/image_skia.h"
 

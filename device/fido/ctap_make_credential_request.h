@@ -23,7 +23,7 @@
 #include "device/fido/public/public_key_credential_params.h"
 #include "device/fido/public/public_key_credential_rp_entity.h"
 #include "device/fido/public/public_key_credential_user_entity.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-data-view.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-shared.h"
 
 namespace cbor {
 class Value;

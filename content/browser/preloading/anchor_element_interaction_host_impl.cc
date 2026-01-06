@@ -14,7 +14,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-data-view.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
 
 namespace content {
 

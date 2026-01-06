@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/unguessable_token.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom-shared.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/search_engines/template_url.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

@@ -21,7 +21,6 @@
 #include "chrome/browser/enterprise/platform_auth/url_session_helper.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_version.h"
-#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace enterprise_auth {

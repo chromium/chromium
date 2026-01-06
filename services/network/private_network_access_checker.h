@@ -19,7 +19,7 @@
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
-#include "services/network/public/mojom/url_loader_network_service_observer.mojom-data-view.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom-shared.h"
 #include "url/origin.h"
 
 class GURL;

@@ -7,7 +7,6 @@
 
 #include <cstdint>
 #include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
-#include "ash/webui/eche_app_ui/mojom/eche_app.mojom-shared.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/memory/raw_ptr.h"
 

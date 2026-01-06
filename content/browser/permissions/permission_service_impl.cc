@@ -30,7 +30,7 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-shared.h"
-#include "third_party/blink/public/mojom/permissions/permission_status.mojom-data-view.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 #include "url/origin.h"
 
 using blink::mojom::EmbeddedPermissionControlClient;

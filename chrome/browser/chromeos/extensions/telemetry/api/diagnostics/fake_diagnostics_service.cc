@@ -13,7 +13,6 @@
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
-#include "chromeos/crosapi/mojom/diagnostics_service.mojom-shared.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

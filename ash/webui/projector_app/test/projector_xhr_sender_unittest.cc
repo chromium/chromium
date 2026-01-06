@@ -5,7 +5,6 @@
 #include "ash/webui/projector_app/projector_xhr_sender.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/webui/projector_app/public/mojom/projector_types.mojom-forward.h"
 #include "ash/webui/projector_app/public/mojom/projector_types.mojom-shared.h"
 #include "ash/webui/projector_app/test/mock_app_client.h"
 #include "base/functional/callback.h"

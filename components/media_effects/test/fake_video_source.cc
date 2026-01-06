@@ -4,7 +4,6 @@
 
 #include "components/media_effects/test/fake_video_source.h"
 
-#include "media/capture/mojom/video_capture_buffer.mojom-forward.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/video_capture/public/cpp/mock_push_subscription.h"

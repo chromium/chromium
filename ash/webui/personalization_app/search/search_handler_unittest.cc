@@ -18,7 +18,6 @@
 #include "ash/public/cpp/personalization_app/time_of_day_test_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
-#include "ash/webui/personalization_app/search/search.mojom-shared.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/personalization_app/search/search_concept.h"
 #include "ash/webui/personalization_app/search/search_tag_registry.h"

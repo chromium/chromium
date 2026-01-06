@@ -13,7 +13,7 @@
 #include "content/browser/webid/request_service.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/render_frame_host.h"
-#include "third_party/blink/public/mojom/devtools/console_message.mojom-data-view.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
 using ::blink::mojom::FederatedAuthRequestResult;
 using LoginState = content::IdentityRequestAccount::LoginState;

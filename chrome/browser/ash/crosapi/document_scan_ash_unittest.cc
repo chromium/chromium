@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/scanning/fake_lorgnette_scanner_manager.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/crosapi/mojom/document_scan.mojom-forward.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom-shared.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"

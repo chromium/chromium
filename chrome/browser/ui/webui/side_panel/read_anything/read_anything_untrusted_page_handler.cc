@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/read_anything/read_anything.mojom-forward.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/common/read_anything/read_anything_util.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"

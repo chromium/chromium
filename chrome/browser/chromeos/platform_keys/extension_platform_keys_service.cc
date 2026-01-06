@@ -28,7 +28,6 @@
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
-#include "chromeos/crosapi/mojom/keystore_error.mojom-shared.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "content/public/browser/browser_context.h"

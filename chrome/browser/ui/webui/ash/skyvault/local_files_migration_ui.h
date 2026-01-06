@@ -9,7 +9,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
-#include "chrome/browser/ui/webui/ash/skyvault/local_files_migration.mojom-shared.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration.mojom.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_page_handler.h"
 #include "chrome/common/webui_url_constants.h"

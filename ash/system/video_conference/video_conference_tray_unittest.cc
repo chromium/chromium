@@ -31,7 +31,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom-shared.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/vector2d.h"

@@ -36,7 +36,6 @@
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
-#include "remoting/host/mojom/desktop_session.mojom-shared.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mouse_shape_pump.h"
 #include "remoting/host/remote_input_filter.h"

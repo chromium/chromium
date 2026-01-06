@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-forward.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom-forward.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom-forward.h"

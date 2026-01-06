@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/metrics/public/mojom/ukm_interface.mojom-forward.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "third_party/abseil-cpp/absl/memory/memory.h"
 

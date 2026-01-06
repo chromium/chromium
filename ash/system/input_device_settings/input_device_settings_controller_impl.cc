@@ -17,8 +17,6 @@
 #include "ash/login/login_screen_controller.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
-#include "ash/public/mojom/input_device_settings.mojom-forward.h"
-#include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"

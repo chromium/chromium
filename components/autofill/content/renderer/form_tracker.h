@@ -14,7 +14,6 @@
 #include "base/sequence_checker.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/content/renderer/timing.h"
-#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/renderer/render_frame_observer.h"

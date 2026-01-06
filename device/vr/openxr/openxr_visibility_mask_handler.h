@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "device/vr/public/mojom/visibility_mask_id.h"
-#include "device/vr/public/mojom/vr_service.mojom-forward.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"

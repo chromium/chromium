@@ -23,7 +23,6 @@
 #include "device/udev_linux/fake_udev_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ash/mojom/meta_key.mojom-shared.h"
-#include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
 #include "ui/events/ash/top_row_action_keys.h"
 #include "ui/events/devices/device_data_manager.h"

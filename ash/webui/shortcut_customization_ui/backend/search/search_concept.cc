@@ -4,7 +4,6 @@
 
 #include <vector>
 
-#include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search_concept.h"
 #include "base/strings/strcat.h"

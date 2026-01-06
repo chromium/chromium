@@ -22,7 +22,6 @@
 #include "net/net_buildflags.h"
 #include "services/network/host_resolver_mdns_listener.h"
 #include "services/network/public/cpp/host_resolver_mojom_traits.h"
-#include "services/network/public/mojom/host_resolver.mojom-shared.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/resolve_host_request.h"
 

@@ -11,8 +11,6 @@
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
-#include "chrome/browser/ui/webui/ash/skyvault/local_files_migration.mojom-forward.h"
-#include "chrome/browser/ui/webui/ash/skyvault/local_files_migration.mojom-shared.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration.mojom.h"
 
 namespace policy::local_user_files {

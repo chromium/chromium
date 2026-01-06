@@ -24,7 +24,6 @@
 #include "chromeos/ash/services/cellular_setup/esim_manager.h"
 #include "chromeos/ash/services/cellular_setup/esim_mojo_utils.h"
 #include "chromeos/ash/services/cellular_setup/euicc.h"
-#include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-shared.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/user_manager/user_manager.h"

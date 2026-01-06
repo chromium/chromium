@@ -7,7 +7,6 @@
 #include <string_view>
 
 #include "ash/public/cpp/accelerators_util.h"
-#include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"

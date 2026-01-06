@@ -14,7 +14,6 @@
 #include "base/strings/to_string.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
-#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-shared.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 
 namespace system_logs {

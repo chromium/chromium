@@ -14,7 +14,6 @@
 
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/webui/boca_receiver_app_ui/audio_packet_converter.h"
-#include "ash/webui/boca_receiver_app_ui/mojom/boca_receiver.mojom-data-view.h"
 #include "ash/webui/boca_receiver_app_ui/mojom/boca_receiver.mojom.h"
 #include "ash/webui/boca_receiver_app_ui/url_constants.h"
 #include "base/check.h"
@@ -34,9 +33,8 @@
 #include "chromeos/ash/components/boca/receiver/update_kiosk_receiver_state_request.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_constants.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_remoting_client_manager.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-data-view.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
-#include "chromeos/services/network_config/public/mojom/network_types.mojom-data-view.h"
+#include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
 #include "google_apis/common/base_requests.h"
 #include "google_apis/common/request_sender.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

@@ -15,7 +15,6 @@
 #include "base/thread_annotations.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_client.h"
-#include "chromeos/ash/services/boca/babelorca/mojom/tachyon_parsing_service.mojom-shared.h"
 #include "chromeos/ash/services/boca/babelorca/mojom/tachyon_parsing_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"

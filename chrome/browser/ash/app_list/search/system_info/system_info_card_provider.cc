@@ -34,7 +34,6 @@
 #include "chromeos/ash/components/system_info/cpu_usage_data.h"
 #include "chromeos/ash/components/system_info/system_info_util.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
-#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-shared.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/version_info/version_info.h"

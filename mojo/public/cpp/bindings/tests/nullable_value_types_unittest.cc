@@ -12,7 +12,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/tests/nullable_value_types_enums.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
-#include "mojo/public/interfaces/bindings/tests/nullable_value_types.test-mojom-shared.h"
 #include "mojo/public/interfaces/bindings/tests/nullable_value_types.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

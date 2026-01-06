@@ -32,7 +32,6 @@
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_types.h"
 #include "media/capture/capture_switches.h"
-#include "media/capture/mojom/video_capture_buffer.mojom-forward.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom-forward.h"
 #include "media/capture/video/scoped_buffer_pool_reservation.h"

@@ -44,7 +44,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
-#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-data-view.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 using blink::IndexedDBIndexKeys;

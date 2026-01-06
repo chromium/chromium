@@ -38,7 +38,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/sms/webotp_service_outcome.h"
-#include "third_party/blink/public/mojom/sms/webotp_service.mojom-shared.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom.h"
 
 using base::BindLambdaForTesting;

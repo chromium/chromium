@@ -28,7 +28,6 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_attempt_impl.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_client_channel_observer.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_attempt.h"
-#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"

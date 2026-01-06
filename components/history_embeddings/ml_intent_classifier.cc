@@ -16,7 +16,7 @@
 #include "components/optimization_guide/proto/features/history_query_intent.pb.h"
 #include "components/optimization_guide/proto/history_query_intent_model_metadata.pb.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 
 namespace history_embeddings {
 

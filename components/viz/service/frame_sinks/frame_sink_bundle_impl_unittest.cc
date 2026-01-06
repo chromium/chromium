@@ -39,7 +39,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-params-data.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
-#include "services/viz/public/mojom/compositing/frame_sink_bundle.mojom-forward.h"
 #include "services/viz/public/mojom/compositing/frame_sink_bundle.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
