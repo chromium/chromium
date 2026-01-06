@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "net/device_bound_sessions/session_display.h"
 #include "net/device_bound_sessions/session_error.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
 
@@ -94,6 +95,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DeviceBoundSessionManager
   // Remove an observer by its registration.
   void RemoveAccessObserver(AccessObserverRegistration* registration);
   void RemoveEventObserver(EventObserverRegistration* registration);
+
+  void PopulateSessionDisplays(
+      base::WeakPtr<EventObserverRegistration> registration,
+      const std::vector<net::device_bound_sessions::SessionDisplay>&
+          session_displays);
 
   void OnCreateBoundSessionsAdded(
       const std::vector<net::CanonicalCookie>& cookies_to_set,

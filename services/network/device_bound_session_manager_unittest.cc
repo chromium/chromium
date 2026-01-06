@@ -90,6 +90,11 @@ class FakeDeviceBoundSessionEventObserver
  public:
   const std::vector<SessionEvent>& events() const { return events_; }
 
+  const std::vector<net::device_bound_sessions::SessionDisplay>&
+  session_displays() const {
+    return session_displays_;
+  }
+
   mojo::PendingRemote<mojom::DeviceBoundSessionEventObserver>
   GetPendingRemote() {
     return receiver_.BindNewPipeAndPassRemote();
@@ -101,6 +106,12 @@ class FakeDeviceBoundSessionEventObserver
     run_loop.Run();
   }
 
+  void WaitForDisplayUpdate() {
+    base::RunLoop run_loop;
+    on_display_update_callback_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
   // public mojom::DeviceBoundSessionEventObserver
   void OnDeviceBoundSessionEventReceived(const SessionEvent& event) override {
     events_.push_back(event);
@@ -109,11 +120,21 @@ class FakeDeviceBoundSessionEventObserver
       std::move(on_event_callback_).Run();
     }
   }
+  void AddDeviceBoundSessionDisplays(
+      const std::vector<net::device_bound_sessions::SessionDisplay>&
+          session_displays) override {
+    session_displays_ = session_displays;
+    if (on_display_update_callback_) {
+      std::move(on_display_update_callback_).Run();
+    }
+  }
 
  private:
   mojo::Receiver<mojom::DeviceBoundSessionEventObserver> receiver_{this};
   std::vector<SessionEvent> events_;
+  std::vector<net::device_bound_sessions::SessionDisplay> session_displays_;
   base::OnceClosure on_event_callback_;
+  base::OnceClosure on_display_update_callback_;
 };
 
 class DeviceBoundSessionManagerTest : public ::testing::Test {
@@ -588,6 +609,47 @@ TEST_F(DeviceBoundSessionManagerTest, OnSessionCreatedEvent) {
                 net::device_bound_sessions::SessionEvent::EventType::kCreation),
           Field(&SessionEvent::site, net::SchemefulSite(url)),
           Field(&SessionEvent::session_id, testing::Optional(session_id)))));
+}
+
+TEST_F(DeviceBoundSessionManagerTest, AddEventObserverAndInitialDisplays) {
+  GURL url("https://example.com/path");
+  const std::string session_id_1 = "session123";
+  const std::string session_id_2 = "session456";
+
+  std::vector<SessionParams> params_list;
+  params_list.push_back(SessionParams(
+      session_id_1, url, "https://example.com/refresh1", SessionParams::Scope(),
+      {}, unexportable_keys::UnexportableKeyId(), {}));
+  params_list.push_back(SessionParams(
+      session_id_2, url, "https://example.com/refresh2", SessionParams::Scope(),
+      {}, unexportable_keys::UnexportableKeyId(), {}));
+
+  base::test::TestFuture<
+      const std::vector<net::device_bound_sessions::SessionError::ErrorType>&,
+      std::vector<net::CookieInclusionStatus>>
+      create_future;
+  manager().CreateBoundSessions(std::move(params_list), GetWrappedKey(), {},
+                                net::CookieOptions(),
+                                create_future.GetCallback());
+  ASSERT_TRUE(create_future.Wait());
+
+  FakeDeviceBoundSessionEventObserver event_observer;
+  manager().AddEventObserver(event_observer.GetPendingRemote());
+  event_observer.WaitForDisplayUpdate();
+
+  EXPECT_THAT(
+      event_observer.session_displays(),
+      UnorderedElementsAre(
+          AllOf(Field(&net::device_bound_sessions::SessionDisplay::key,
+                      AllOf(Field(&net::device_bound_sessions::SessionKey::site,
+                                  net::SchemefulSite(url)),
+                            Field(&net::device_bound_sessions::SessionKey::id,
+                                  Session::Id(session_id_1))))),
+          AllOf(Field(&net::device_bound_sessions::SessionDisplay::key,
+                      AllOf(Field(&net::device_bound_sessions::SessionKey::site,
+                                  net::SchemefulSite(url)),
+                            Field(&net::device_bound_sessions::SessionKey::id,
+                                  Session::Id(session_id_2)))))));
 }
 
 }  // namespace

@@ -392,4 +392,9 @@ interface DeviceBoundSessionEventObserver {
   // Called when there is a new event. Some examples of this are if a session is
   // created or refreshed.
   OnDeviceBoundSessionEventReceived(DeviceBoundSessionEvent event);
+
+  // Called with the existing set of session displays once the observer has been
+  // added.
+  AddDeviceBoundSessionDisplays(
+      array<DeviceBoundSessionDisplay> session_displays);
 };

@@ -136,7 +136,20 @@ void DeviceBoundSessionManager::AddEventObserver(
                               OnDeviceBoundSessionEventReceived,
                           base::Unretained(registration->remote.get())));
 
+  service_->GetAllSessionDisplaysAsync(base::BindOnce(
+      &DeviceBoundSessionManager::PopulateSessionDisplays,
+      weak_factory_.GetWeakPtr(), registration->weak_factory.GetWeakPtr()));
   event_observer_registrations_.push_back(std::move(registration));
+}
+
+void DeviceBoundSessionManager::PopulateSessionDisplays(
+    base::WeakPtr<EventObserverRegistration> registration,
+    const std::vector<net::device_bound_sessions::SessionDisplay>&
+        session_displays) {
+  if (!registration) {
+    return;
+  }
+  registration->remote->AddDeviceBoundSessionDisplays(session_displays);
 }
 
 void DeviceBoundSessionManager::CreateBoundSessions(
