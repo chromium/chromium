@@ -297,8 +297,7 @@ webrtc::scoped_refptr<webrtc::VideoFrameBuffer> ConvertToWebRtcVideoFrameBuffer(
         frame.natural_size(), 0u, 0x80, 0x80, frame.timestamp()));
   };
 
-  if (video_frame->storage_type() ==
-      media::VideoFrame::StorageType::STORAGE_MAPPABLE_SHARED_IMAGE) {
+  if (video_frame->HasMappableSharedImage()) {
     auto converted_frame =
         shared_resources
             ? shared_resources->ConstructVideoFrameFromGpu(video_frame)
