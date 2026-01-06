@@ -3393,9 +3393,17 @@ class TabListMediator implements TabListNotificationHandler {
 
     private void showLimitSnackbar() {
         if (mSnackbarManager == null) return;
+
+        int limitCount = mIsSingleContextMode ? 1 : 10;
+        String message =
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.tab_item_picker_limit_reached, limitCount, limitCount);
+
         Snackbar snackbar =
                 Snackbar.make(
-                        mActivity.getString(R.string.tab_item_picker_limit_reached),
+                        message,
                         null,
                         Snackbar.TYPE_NOTIFICATION,
                         Snackbar.UMA_TAB_PICKER_LIMIT_REACHED);

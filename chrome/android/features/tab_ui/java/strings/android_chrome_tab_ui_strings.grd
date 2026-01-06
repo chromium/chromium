@@ -251,7 +251,10 @@
         Multi-select mode
       </message>
       <message name="IDS_TAB_ITEM_PICKER_LIMIT_REACHED" desc="Notification shown on Tab Item Picker when maximum item limit is reached.">
-        Add up to 10 files, tabs, or images
+        {LIMIT_COUNT, plural,
+          =1 {Add up to <ph name="LIMIT_COUNT_ONE">%1$d<ex>1</ex></ph> file, tab, or image}
+          other {Add up to <ph name="LIMIT_COUNT_MANY">%1$d<ex>10</ex></ph> files, tabs, or images}
+        }
       </message>
       <!-- Tab Selection Editor V2 strings -->
       <message name="IDS_TAB_SELECTION_EDITOR_SELECT_ALL" desc="This text button is shown in the Tab Selection Editor Toolbar. When the user taps the button, Chrome selects all the tabs shown in the editor. [CHAR_LIMIT=27]">
