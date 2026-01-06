@@ -43,6 +43,14 @@ namespace gtk {
 
 namespace {
 
+// GTK's internal response IDs use negative integers (eg. GTK_RESPONSE_CANCEL),
+// leaving zero and positive integers for application-defined response IDs. Use
+// zero for the accept response type since GTK will preselect
+// GTK_RESPONSE_ACCEPT as the default button, which should be avoided to prevent
+// an exploit where the user is instructed to hold Enter before the dialog
+// appears.
+constexpr GtkResponseType kResponseTypeAccept = static_cast<GtkResponseType>(0);
+
 // TODO(crbug.com/41469294): These getters will be unnecessary after
 // migrating to GtkFileChooserNative.
 const char* GettextPackage() {
@@ -413,7 +421,7 @@ GtkWidget* SelectFileDialogLinuxGtk::CreateFileOpenHelper(
     gfx::NativeWindow parent) {
   GtkWidget* dialog = GtkFileChooserDialogNew(
       title.c_str(), nullptr, GTK_FILE_CHOOSER_ACTION_OPEN, GetCancelLabel(),
-      GTK_RESPONSE_CANCEL, GetOpenLabel(), GTK_RESPONSE_ACCEPT);
+      GTK_RESPONSE_CANCEL, GetOpenLabel(), kResponseTypeAccept);
   SetGtkTransientForAura(dialog, parent, platform_);
   AddFilters(GTK_FILE_CHOOSER(dialog));
 
@@ -453,7 +461,7 @@ GtkWidget* SelectFileDialogLinuxGtk::CreateSelectFolderDialog(
   GtkWidget* dialog = GtkFileChooserDialogNew(
       title_string.c_str(), nullptr, GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
       GetCancelLabel(), GTK_RESPONSE_CANCEL, accept_button_label.c_str(),
-      GTK_RESPONSE_ACCEPT);
+      kResponseTypeAccept);
   SetGtkTransientForAura(dialog, parent, platform_);
   GtkFileChooser* chooser = GTK_FILE_CHOOSER(dialog);
   if (type == SELECT_UPLOAD_FOLDER || type == SELECT_EXISTING_FOLDER)
@@ -511,7 +519,7 @@ GtkWidget* SelectFileDialogLinuxGtk::CreateSaveAsDialog(
   GtkWidget* dialog = GtkFileChooserDialogNew(
       title_string.c_str(), nullptr, GTK_FILE_CHOOSER_ACTION_SAVE,
       GetCancelLabel(), GTK_RESPONSE_CANCEL, GetSaveLabel(),
-      GTK_RESPONSE_ACCEPT);
+      kResponseTypeAccept);
   SetGtkTransientForAura(dialog, parent, platform_);
 
   AddFilters(GTK_FILE_CHOOSER(dialog));
@@ -548,7 +556,8 @@ bool SelectFileDialogLinuxGtk::IsCancelResponse(gint response_id) {
   if (is_cancel)
     return true;
 
-  DCHECK(response_id == GTK_RESPONSE_ACCEPT);
+  DCHECK(response_id == GTK_RESPONSE_ACCEPT ||
+         response_id == kResponseTypeAccept);
   return false;
 }
 
