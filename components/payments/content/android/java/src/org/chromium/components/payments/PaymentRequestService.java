@@ -761,11 +761,6 @@ public class PaymentRequestService
     @Override
     public void onPaymentResponseReady(PaymentResponse response) {
         assumeNonNull(mBrowserPaymentRequest);
-        if (!mBrowserPaymentRequest.patchPaymentResponseIfNeeded(response)) {
-            disconnectFromClientWithDebugMessage(
-                    ErrorStrings.PAYMENT_APP_INVALID_RESPONSE, PaymentErrorReason.NOT_SUPPORTED);
-            // Intentionally do not early-return.
-        }
         if (response.methodName.equals(MethodStrings.SECURE_PAYMENT_CONFIRMATION)) {
             assumeNonNull(mInvokedPaymentApp);
             assert mInvokedPaymentApp.getInstrumentMethodNames().contains(response.methodName);

@@ -14,7 +14,6 @@ import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequest;
-import org.chromium.payments.mojom.PaymentResponse;
 import org.chromium.payments.mojom.PaymentValidationErrors;
 import org.chromium.url.GURL;
 
@@ -144,15 +143,6 @@ public interface BrowserPaymentRequest {
      */
     default @Nullable String onShowCalledAndAppsQueriedAndDetailsFinalized() {
         return null;
-    }
-
-    /**
-     * Patches the given payment response if needed.
-     * @param response The payment response to be patched in place.
-     * @return Whether the patching is successful.
-     */
-    default boolean patchPaymentResponseIfNeeded(PaymentResponse response) {
-        return true;
     }
 
     /** Called after retrieving payment details. */

@@ -139,9 +139,6 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
                 .when(mBrowserPaymentRequest)
                 .disconnectIfExtraValidationFails(
                         Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-        Mockito.doReturn(true)
-                .when(mBrowserPaymentRequest)
-                .patchPaymentResponseIfNeeded(Mockito.any());
         Mockito.doReturn(null)
                 .when(mBrowserPaymentRequest)
                 .showOrSkipAppSelector(Mockito.anyBoolean(), Mockito.any(), Mockito.anyBoolean());
