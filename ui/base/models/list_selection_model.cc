@@ -9,7 +9,6 @@
 #include <valarray>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 
@@ -146,7 +145,7 @@ void ListSelectionModel::SetSelectedIndex(std::optional<size_t> index) {
 }
 
 bool ListSelectionModel::IsSelected(size_t index) const {
-  return base::Contains(selected_indices_, index);
+  return selected_indices_.contains(index);
 }
 
 void ListSelectionModel::AddIndexToSelection(size_t index) {

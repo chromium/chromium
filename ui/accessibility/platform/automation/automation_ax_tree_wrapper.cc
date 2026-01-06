@@ -7,7 +7,6 @@
 #include <map>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
@@ -119,7 +118,7 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
 
   // Refresh child tree id  mappings.
   for (const AXTreeID& child_tree_id : ax_tree_->GetAllChildTreeIds()) {
-    DCHECK(!base::Contains(child_tree_id_reverse_map, child_tree_id));
+    DCHECK(!child_tree_id_reverse_map.contains(child_tree_id));
     child_tree_id_reverse_map.insert(std::make_pair(child_tree_id, this));
   }
 

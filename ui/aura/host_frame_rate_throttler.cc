@@ -4,7 +4,6 @@
 
 #include "ui/aura/host_frame_rate_throttler.h"
 
-#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -30,14 +29,14 @@ HostFrameRateThrottler::HostFrameRateThrottler() = default;
 HostFrameRateThrottler::~HostFrameRateThrottler() = default;
 
 void HostFrameRateThrottler::AddHost(WindowTreeHost* host) {
-  if (base::Contains(hosts_, host))
+  if (hosts_.contains(host))
     return;
   hosts_.insert(host);
   UpdateHostFrameSinkManager();
 }
 
 void HostFrameRateThrottler::RemoveHost(WindowTreeHost* host) {
-  if (!base::Contains(hosts_, host))
+  if (!hosts_.contains(host))
     return;
   hosts_.erase(host);
   UpdateHostFrameSinkManager();

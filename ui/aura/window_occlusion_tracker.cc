@@ -6,7 +6,6 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRegion.h"
@@ -596,18 +595,17 @@ void WindowOcclusionTracker::SetOccluded(Window* window,
 }
 
 bool WindowOcclusionTracker::WindowIsTracked(Window* window) const {
-  return base::Contains(tracked_windows_, window);
+  return tracked_windows_.contains(window);
 }
 
 bool WindowOcclusionTracker::WindowIsAnimated(Window* window) const {
-  return !ShouldUseTargetValues() &&
-         base::Contains(animated_windows_, window) &&
+  return !ShouldUseTargetValues() && animated_windows_.contains(window) &&
          window->layer()->GetAnimator()->IsAnimatingOnePropertyOf(
              kSkipWindowWhenPropertiesAnimated);
 }
 
 bool WindowOcclusionTracker::WindowIsExcluded(Window* window) const {
-  return base::Contains(excluded_windows_, window);
+  return excluded_windows_.contains(window);
 }
 
 bool WindowOcclusionTracker::WindowIsVisible(Window* window) const {
@@ -917,7 +915,7 @@ void WindowOcclusionTracker::OnWindowHierarchyChanged(
     const HierarchyChangeParams& params) {
   Window* const window = params.target;
   Window* const root_window = window->GetRootWindow();
-  if (root_window && base::Contains(root_windows_, root_window) &&
+  if (root_window && root_windows_.contains(root_window) &&
       !window_observations_.IsObservingSource(window)) {
     AddObserverToWindowAndDescendants(window);
   }

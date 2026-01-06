@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "ui/gl/gl_context.h"

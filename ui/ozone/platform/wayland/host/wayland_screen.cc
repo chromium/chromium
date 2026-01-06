@@ -7,7 +7,6 @@
 #include <set>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "base/observer_list.h"
@@ -388,8 +387,8 @@ gfx::AcceleratedWidget WaylandScreen::GetLocalProcessWidgetAtPoint(
     const gfx::Point& point,
     const std::set<gfx::AcceleratedWidget>& ignore) const {
   auto widget = GetAcceleratedWidgetAtScreenPoint(point);
-  return !widget || base::Contains(ignore, widget) ? gfx::kNullAcceleratedWidget
-                                                   : widget;
+  return !widget || ignore.contains(widget) ? gfx::kNullAcceleratedWidget
+                                            : widget;
 }
 
 display::Display WaylandScreen::GetDisplayNearestPoint(

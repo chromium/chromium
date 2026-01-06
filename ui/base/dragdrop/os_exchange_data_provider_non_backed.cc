@@ -10,7 +10,6 @@
 #include <string_view>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
@@ -201,7 +200,7 @@ bool OSExchangeDataProviderNonBacked::HasFile() const {
 
 bool OSExchangeDataProviderNonBacked::HasCustomFormat(
     const ClipboardFormatType& format) const {
-  return base::Contains(pickle_data_, format);
+  return pickle_data_.contains(format);
 }
 
 void OSExchangeDataProviderNonBacked::SetFileContents(

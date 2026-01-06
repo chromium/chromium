@@ -8,7 +8,6 @@
 
 #include <array>
 
-#include "base/containers/contains.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
@@ -138,8 +137,7 @@ void XGlobalShortcutListener::OnKeyPressEvent(const KeyEvent& event) {
   const bool is_ctrl_down = event.flags() & EF_CONTROL_DOWN;
   const bool is_shift_down = event.flags() & EF_SHIFT_DOWN;
 
-  if (!base::Contains(
-          registered_combinations_,
+  if (!registered_combinations_.contains(
           Accelerator(key_code, is_alt_down, is_ctrl_down, is_shift_down))) {
     return;
   }

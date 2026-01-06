@@ -8,7 +8,6 @@
 #include <sstream>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/time/time.h"
 
@@ -26,19 +25,19 @@ SerialTracker::SerialTracker()
 SerialTracker::~SerialTracker() = default;
 
 void SerialTracker::UpdateSerial(SerialType type, uint32_t serial) {
-  DCHECK(base::Contains(serials_, type));
+  DCHECK(serials_.contains(type));
   serials_.at(type) = {.value = serial,
                        .type = type,
                        .timestamp = base::TimeTicks::Now() - base_time_};
 }
 
 void SerialTracker::ResetSerial(SerialType type) {
-  DCHECK(base::Contains(serials_, type));
+  DCHECK(serials_.contains(type));
   serials_.at(type) = std::nullopt;
 }
 
 std::optional<Serial> SerialTracker::GetSerial(SerialType type) const {
-  DCHECK(base::Contains(serials_, type));
+  DCHECK(serials_.contains(type));
   return serials_.at(type);
 }
 

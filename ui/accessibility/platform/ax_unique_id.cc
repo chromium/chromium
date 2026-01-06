@@ -5,7 +5,6 @@
 #include "ui/accessibility/platform/ax_unique_id.h"
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 

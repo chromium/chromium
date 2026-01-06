@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -335,11 +334,11 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
     // Make sure that the display infos we got have valid connector IDs.
     // If not, we need to remove the display info from the list. This removes
     // any zombie connectors.
-    std::erase_if(
-        display_infos, [&valid_connector_ids](const auto& display_info) {
-          return !base::Contains(valid_connector_ids,
-                                 display_info->connector()->connector_id);
-        });
+    std::erase_if(display_infos,
+                  [&valid_connector_ids](const auto& display_info) {
+                    return !valid_connector_ids.contains(
+                        display_info->connector()->connector_id);
+                  });
 
     // Consolidate all display infos that belong to the same tiled display into
     // one.
