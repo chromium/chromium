@@ -93,20 +93,13 @@ CorpSignalStrategy::Core::Core(
       std::move(client_cert_store_callback).Run(),
       base::BindRepeating(&Core::OnSignalingAddressChanged,
                           weak_factory_.GetWeakPtr()));
-  incoming_message_subscription_ =
-      messaging_client_->RegisterMessageCallback(base::BindRepeating(
-          &Core::OnIncomingMessage, weak_factory_.GetWeakPtr()));
 }
 
 CorpSignalStrategy::Core::Core(
     std::unique_ptr<MessagingClient> messaging_client,
     const SignalingAddress& local_address)
     : messaging_client_(std::move(messaging_client)),
-      local_address_(local_address) {
-  incoming_message_subscription_ =
-      messaging_client_->RegisterMessageCallback(base::BindRepeating(
-          &Core::OnIncomingMessage, weak_factory_.GetWeakPtr()));
-}
+      local_address_(local_address) {}
 
 CorpSignalStrategy::Core::~Core() = default;
 
@@ -114,6 +107,9 @@ void CorpSignalStrategy::Core::Connect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   SetState(CONNECTING);
+  incoming_message_subscription_ =
+      messaging_client_->RegisterMessageCallback(base::BindRepeating(
+          &Core::OnIncomingMessage, weak_factory_.GetWeakPtr()));
   messaging_client_->StartReceivingMessages(
       base::BindOnce(&Core::OnChannelReady, weak_factory_.GetWeakPtr()),
       base::BindOnce(&Core::OnChannelClosed, weak_factory_.GetWeakPtr()));
