@@ -2407,6 +2407,36 @@ TEST_P(TableViewTest, MoveRowsWithMultipleSelectionAndSort) {
   VerifyTableViewAndAXOrder(kViewOrder);
 }
 
+// Regression test for crbug.com/472547108. The model size decreases but the
+// selection model was not updated, causing an out-of-bounds CHECK during
+// layout.
+TEST_P(TableViewTest, OnItemsChangedWithSmallerModel) {
+  // Enable sorting to ensure ModelToView checks bounds.
+  table_->ToggleSortOrder(0);
+  ASSERT_TRUE(table_->GetIsSorted());
+
+  // Select the last row.
+  table_->Select(3);
+  EXPECT_EQ(3u, table_->GetFirstSelectedRow());
+
+  // Shrink the model without notifying the table yet.
+  model_->SetObserver(nullptr);
+  model_->RemoveRows(2, 2);  // Removes row 2 and 3. Size is now 2.
+  model_->SetObserver(table_);
+  EXPECT_EQ(2u, model_->RowCount());
+
+  // Notify the table via OnItemsChanged.
+  // This simulates the behavior of TaskManagerTableModel before the fix.
+  table_->OnItemsChanged(0, 2);
+
+  // Triggering layout should not crash.
+  table_->DeprecatedLayoutImmediately();
+
+  // Verify that the selection is valid to avoid CHECK failure.
+  // Explicitly calling GetActiveCellBounds to trigger the potential CHECK path.
+  helper_->GetActiveCellBounds();
+}
+
 // Verifies we don't crash after removing the selected row when there is
 // sorting and the anchor/active index also match the selected row.
 TEST_P(TableViewTest, FocusAfterRemovingAnchor) {
