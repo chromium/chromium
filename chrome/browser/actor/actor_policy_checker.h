@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/site_policy.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
 #include "chrome/common/actor/task_id.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -35,18 +36,25 @@ class AggregatedJournal;
 
 // The central hub for checking various policies that determine whether Actor is
 // enabled for the profile, or is Actor allowed to act on a given tab or URL.
-class ActorPolicyChecker : public signin::IdentityManager::Observer {
+class ActorPolicyChecker : public signin::IdentityManager::Observer,
+                           public subscription_eligibility::
+                               SubscriptionEligibilityService::Observer {
  public:
   explicit ActorPolicyChecker(ActorKeyedService& service);
   ActorPolicyChecker(const ActorPolicyChecker&) = delete;
   ActorPolicyChecker& operator=(const ActorPolicyChecker&) = delete;
   ~ActorPolicyChecker() override;
 
+  static const base::flat_set<int32_t>& GetActorEligibleTiers();
+
   // `signin::IdentityManager::Observer`:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
+
+  // `subscription_eligibility::SubscriptionEligibilityService::Observer`:
+  void OnAiSubscriptionTierUpdated(int32_t new_subscription_tier) override;
 
   // See site_policy.h.
   void MayActOnTab(const tabs::TabInterface& tab,
@@ -96,6 +104,12 @@ class ActorPolicyChecker : public signin::IdentityManager::Observer {
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
+
+  // Gets notified when the subscription tier changes.
+  base::ScopedObservation<
+      subscription_eligibility::SubscriptionEligibilityService,
+      subscription_eligibility::SubscriptionEligibilityService::Observer>
+      subscription_eligibility_service_observation_{this};
 
   base::WeakPtrFactory<ActorPolicyChecker> weak_ptr_factory_{this};
 };
