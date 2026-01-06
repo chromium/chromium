@@ -4890,6 +4890,9 @@
       status: "experimental",
     },
     {
+      name: "SingleAxisScrollContainers",
+    },
+    {
       name: "SkipAd",
       depends_on: ["MediaSession"],
       status: "stable",
