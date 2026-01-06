@@ -1,10 +1,5 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<title>WebAssembly.instantiateStreaming</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/common/get-host-info.sub.js"></script>
-<script>
+// META: title=WebAssembly.instantiateStreaming
+// META: script=/common/get-host-info.sub.js
   promise_test(async function() {
       const response = await fetch('resources/incrementer.wasm');
       const { instance, module } = await WebAssembly.instantiateStreaming(response);
@@ -112,4 +107,3 @@
       formData.append('blob2', "Hello");
       await promise_rejects_js(t, WebAssembly.CompileError, WebAssembly.instantiateStreaming(new Response(formData, { headers: { "Content-Type" : "application/wasm" }})));
   }, "instantiateStreaming using FormData");
-</script>

@@ -3160,6 +3160,9 @@ crbug.com/462821200 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryService
 crbug.com/440811029 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryServices/gen-disconnect-called-before.https.window.html [ Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/webdriver/tests/classic/new_session/invalid_capabilities.py [ Failure ]
+external/wpt/webdriver/tests/classic/new_session/timeouts.py [ Failure Timeout ]
+virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/continue-001.html [ Failure ]
 crbug.com/473580163 [ Mac ] external/wpt/css/css-scroll-anchoring/contenteditable-insert-line-at-top.tentative.html [ Timeout ]
 crbug.com/473579852 external/wpt/css/css-text/letter-spacing/letter-spacing-cursive-002.html [ Failure ]
 crbug.com/473562220 external/wpt/css/filter-effects/svg-filter-filter-units-user-space.html [ Failure ]
