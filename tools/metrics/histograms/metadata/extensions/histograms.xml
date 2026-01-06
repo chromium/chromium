@@ -4707,7 +4707,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.WebRequest.DeclarativeRequestDependentExtensionCount"
-    units="Extension Count" expires_after="2026-03-08">
+    units="Extension Count" expires_after="2026-12-01">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -4734,18 +4734,21 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.WebRequest.ProxyDecision2"
-    enum="WebRequest.ProxyDecision" expires_after="2025-12-01">
+    enum="WebRequest.ProxyDecision" expires_after="2026-12-01">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     Records the decision of whether to proxy the request for the WebRequest API.
     This is recorded whenever a URLLoaderFactory is created for renderers.
+
+    Warning: this histogram was expired from 2025-12-01 to 2026-01-06; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Extensions.WebRequest.ProxyDecisionDetailsForExtension"
     enum="WebRequest.ProxyDecisionDetailsForExtension"
-    expires_after="2026-04-05">
+    expires_after="2026-12-01">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
