@@ -15,8 +15,7 @@ template("webview_repack_locales") {
     }
 
     # Adding webview specific pak file? You should add it to
-    # webview_repack_locales_source_patterns, so it is also included in
-    # Monochrome.
+    # webview_repack_locales_source_patterns.
 
     source_patterns = [
       "${root_gen_dir}/android_webview/components_strings_",

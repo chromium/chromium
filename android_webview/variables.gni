@@ -7,9 +7,7 @@ import("//build/config/android/config.gni")
 
 declare_args() {
   # Show a launcher icon to open WebView developer UI. This is enabled by
-  # default for all prestable builds. The icon for Monochrome is shown
-  # dynamically at runtime if Monochrome is the current selected system WebView
-  # implementation or hidden otherwise.
+  # default for all prestable builds.
   webview_devui_show_icon = android_channel != "stable"
 }
 
