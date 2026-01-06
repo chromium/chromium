@@ -183,6 +183,10 @@ CGRect UpdateDesiredFrame(CGRect desired_frame,
   CGRect desiredFrame = UpdateDesiredFrame(_framingCoordinates.visibleRect,
                                            orientationMatches, image.size);
 
+  if (CGRectIsEmpty(desiredFrame) || CGRectIsEmpty(self.bounds)) {
+    return;
+  }
+
   // Calculate desired scale factor to size the image view correctly.
   CGFloat imageHeightScale = image.size.height / desiredFrame.size.height;
   CGFloat imageWidthScale = image.size.width / desiredFrame.size.width;
