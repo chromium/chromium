@@ -192,7 +192,7 @@ targets.variant(
         dimensions = {
             "os": "iOS-18",
             "device": "iPhone16,1",
-            "cpu": "x86|arm64",
+            "cpu": "arm64",
         },
     ),
 )
