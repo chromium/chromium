@@ -1310,9 +1310,10 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_UkmResult_Timeout) {
   EXPECT_EQ(ukm_entries[0].source_id, kTestUkmSourceId);
 }
 
-TEST_F(AmountExtractionManagerTest, AiAmountExtraction_UkmLatency_Success) {
+TEST_F(AmountExtractionManagerTest, AiAmountExtraction_LatencyMetrics_Success) {
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillEnableAiBasedAmountExtraction};
+  base::HistogramTester histogram_tester;
   const base::TimeDelta kLatency = base::Milliseconds(150);
 
   ApcFetchCallback fetch_callback;
@@ -1361,11 +1362,14 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_UkmLatency_Success) {
   EXPECT_EQ(ukm_entries[0].source_id, test_api(*amount_extraction_manager_)
                                           .GetMainFrameDriver()
                                           ->GetPageUkmSourceId());
+  histogram_tester.ExpectUniqueTimeSample(
+      "Autofill.AiAmountExtraction.Latency.Success", kLatency, 1);
 }
 
-TEST_F(AmountExtractionManagerTest, AiAmountExtraction_UkmLatency_Failure) {
+TEST_F(AmountExtractionManagerTest, AiAmountExtraction_LatencyMetrics_Failure) {
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillEnableAiBasedAmountExtraction};
+  base::HistogramTester histogram_tester;
   const base::TimeDelta kLatency = base::Milliseconds(150);
 
   ApcFetchCallback fetch_callback;
@@ -1409,12 +1413,15 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_UkmLatency_Failure) {
   EXPECT_EQ(ukm_entries[0].source_id, test_api(*amount_extraction_manager_)
                                           .GetMainFrameDriver()
                                           ->GetPageUkmSourceId());
+  histogram_tester.ExpectUniqueTimeSample(
+      "Autofill.AiAmountExtraction.Latency.Failed", kLatency, 1);
 }
 
 TEST_F(AmountExtractionManagerTest,
-       AiAmountExtraction_UkmLatency_InvalidResponse) {
+       AiAmountExtraction_LatencyMetrics_InvalidResponse) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableAiBasedAmountExtraction};
+  base::HistogramTester histogram_tester;
   const base::TimeDelta kLatency = base::Milliseconds(150);
 
   ApcFetchCallback fetch_callback;
@@ -1465,6 +1472,45 @@ TEST_F(AmountExtractionManagerTest,
   EXPECT_EQ(ukm_entries[0].source_id, test_api(*amount_extraction_manager_)
                                           .GetMainFrameDriver()
                                           ->GetPageUkmSourceId());
+  histogram_tester.ExpectUniqueTimeSample(
+      "Autofill.AiAmountExtraction.Latency.InvalidResponse", kLatency, 1);
+}
+
+TEST_F(AmountExtractionManagerTest, AiAmountExtraction_Timeout_NoLatency) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+  base::HistogramTester histogram_tester;
+
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  task_environment_.FastForwardBy(
+      AmountExtractionManager::kAiBasedAmountExtractionWaitTime +
+      base::Seconds(1));
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::Autofill_AiAmountExtraction_Result::kEntryName,
+      {ukm::builders::Autofill_AiAmountExtraction_Result::kResultName,
+       ukm::builders::Autofill_AiAmountExtraction_Result::
+           kSuccessLatencyInMillisName,
+       ukm::builders::Autofill_AiAmountExtraction_Result::
+           kFailureLatencyInMillisName,
+       ukm::builders::Autofill_AiAmountExtraction_Result::
+           kInvalidResponseLatencyInMillisName});
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("Result"),
+            static_cast<int64_t>(
+                autofill_metrics::AiAmountExtractionResult::kTimeout));
+  EXPECT_FALSE(ukm_entries[0].metrics.count("SuccessLatencyInMillis"));
+  EXPECT_FALSE(ukm_entries[0].metrics.count("FailureLatencyInMillis"));
+  EXPECT_FALSE(ukm_entries[0].metrics.count("InvalidResponseLatencyInMillis"));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AiAmountExtraction.Result",
+      autofill_metrics::AiAmountExtractionResult::kTimeout, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.AiAmountExtraction.Latency.Success", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.AiAmountExtraction.Latency.Failed", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.AiAmountExtraction.Latency.InvalidResponse", 0);
 }
 
 TEST_F(AmountExtractionManagerTest, TimeoutExpiresBeforeResponse) {

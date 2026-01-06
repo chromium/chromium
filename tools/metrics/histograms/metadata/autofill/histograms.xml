@@ -1745,6 +1745,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.AiAmountExtraction.Latency.Result"
+    enum="AiAmountExtractionResult" expires_after="2026-06-01">
+  <owner>jamessun@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the duration from when the AI-based amount extraction is initialized
+    to when a response is received from the model. Recorded once per page load,
+    when the model execution completes (successfully, with failure, or with
+    invalid data).
+  </summary>
+</histogram>
+
 <histogram name="Autofill.AiAmountExtraction.Result"
     enum="AiAmountExtractionResult" expires_after="2026-06-01">
   <owner>jamessun@google.com</owner>
