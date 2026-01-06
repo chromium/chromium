@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/payments/content/icon/icon_size.h"
@@ -399,22 +400,22 @@ bool InstallablePaymentAppCrawler::DownloadAndDecodeWebAppIcon(
     const GURL& web_app_manifest_url,
     std::unique_ptr<std::vector<PaymentManifestParser::WebAppIcon>> icons) {
   if (icons == nullptr || icons->empty()) {
-    log_.Warn(
-        "No valid icon information for installable payment handler found in "
-        "web app manifest \"" +
-        web_app_manifest_url.spec() + "\" for payment handler manifest \"" +
-        method_manifest_url.spec() + "\".");
+    log_.Warn(base::StrCat(
+        {"No valid icon information for installable payment handler found in "
+         "web app manifest \"",
+         web_app_manifest_url.spec(), "\" for payment handler manifest \"",
+         method_manifest_url.spec(), "\"."}));
     return false;
   }
 
   std::vector<blink::Manifest::ImageResource> manifest_icons;
   for (const auto& icon : *icons) {
     if (icon.src.empty() || !base::IsStringUTF8(icon.src)) {
-      log_.Warn(
-          "The installable payment handler's icon src URL is not a non-empty "
-          "UTF8 string in web app manifest \"" +
-          web_app_manifest_url.spec() + "\" for payment handler manifest \"" +
-          method_manifest_url.spec() + "\".");
+      log_.Warn(base::StrCat(
+          {"The installable payment handler's icon src URL is not a non-empty "
+           "UTF8 string in web app manifest \"",
+           web_app_manifest_url.spec(), "\" for payment handler manifest \"",
+           method_manifest_url.spec(), "\"."}));
       continue;
     }
 
@@ -422,12 +423,12 @@ bool InstallablePaymentAppCrawler::DownloadAndDecodeWebAppIcon(
     if (!icon_src.is_valid()) {
       icon_src = web_app_manifest_url.Resolve(icon.src);
       if (!icon_src.is_valid()) {
-        log_.Warn(
-            "Failed to resolve the installable payment handler's icon src url "
-            "\"" +
-            icon.src + "\" in web app manifest \"" +
-            web_app_manifest_url.spec() + "\" for payment handler manifest \"" +
-            method_manifest_url.spec() + "\".");
+        log_.Warn(base::StrCat(
+            {"Failed to resolve the installable payment handler's icon src url "
+             "\"",
+             icon.src, "\" in web app manifest \"", web_app_manifest_url.spec(),
+             "\" for payment handler manifest \"", method_manifest_url.spec(),
+             "\"."}));
         continue;
       }
     }
@@ -443,10 +444,10 @@ bool InstallablePaymentAppCrawler::DownloadAndDecodeWebAppIcon(
   }
 
   if (manifest_icons.empty()) {
-    log_.Warn("No valid icons found in web app manifest \"" +
-              web_app_manifest_url.spec() +
-              "\" for payment handler manifest \"" +
-              method_manifest_url.spec() + "\".");
+    log_.Warn(base::StrCat({"No valid icons found in web app manifest \"" +
+                                web_app_manifest_url.spec(),
+                            "\" for payment handler manifest \"",
+                            method_manifest_url.spec(), "\"."}));
     return false;
   }
 
@@ -459,11 +460,11 @@ bool InstallablePaymentAppCrawler::DownloadAndDecodeWebAppIcon(
                            ? content::WebContents::FromRenderFrameHost(rfh)
                            : nullptr;
   if (!web_contents) {
-    log_.Warn(
-        "Cannot download icons after the webpage has been closed (web app "
-        "manifest \"" +
-        web_app_manifest_url.spec() + "\" for payment handler manifest \"" +
-        method_manifest_url.spec() + "\").");
+    log_.Warn(base::StrCat(
+        {"Cannot download icons after the webpage has been closed (web app "
+         "manifest \"",
+         web_app_manifest_url.spec(), "\" for payment handler manifest \"",
+         method_manifest_url.spec(), "\")."}));
     // Post the result back asynchronously.
     PostTaskToFinishCrawlingPaymentAppsIfReady();
     return false;
@@ -476,10 +477,10 @@ bool InstallablePaymentAppCrawler::DownloadAndDecodeWebAppIcon(
       content::ManifestIconDownloader::kMaxWidthToHeightRatio,
       blink::mojom::ManifestImageResource_Purpose::ANY);
   if (!best_icon_url.is_valid()) {
-    log_.Warn("No suitable icon found in web app manifest \"" +
-              web_app_manifest_url.spec() +
-              "\" for payment handler manifest \"" +
-              method_manifest_url.spec() + "\".");
+    log_.Warn(base::StrCat({"No suitable icon found in web app manifest \"",
+                            web_app_manifest_url.spec(),
+                            "\" for payment handler manifest \"",
+                            method_manifest_url.spec(), "\"."}));
     return false;
   }
 
@@ -515,10 +516,10 @@ void InstallablePaymentAppCrawler::OnPaymentWebAppIconDownloadAndDecoded(
       if (icon.drawsNothing() &&
           !base::FeatureList::IsEnabled(
               features::kAllowJITInstallationWhenAppIconIsMissing)) {
-        log_.Error(
-            "Failed to download or decode the icon from web app manifest \"" +
-            web_app_manifest_url.spec() + "\" for payment handler manifest \"" +
-            method_manifest_url.spec() + "\".");
+        log_.Error(base::StrCat(
+            {"Failed to download or decode the icon from web app manifest \"",
+             web_app_manifest_url.spec(), "\" for payment handler manifest \"",
+             method_manifest_url.spec(), "\"."}));
         std::string error_message = base::ReplaceStringPlaceholders(
             errors::kInvalidWebAppIcon, {web_app_manifest_url.spec()}, nullptr);
         SetFirstError(error_message);
@@ -533,10 +534,10 @@ void InstallablePaymentAppCrawler::OnPaymentWebAppIconDownloadAndDecoded(
           method_manifest_urls_for_metadata_refresh_.find(method_manifest_url);
       CHECK(it != method_manifest_urls_for_metadata_refresh_.end());
       if (icon.drawsNothing()) {
-        log_.Warn("Failed to refetch a valid icon from web app manifest \"" +
-                  web_app_manifest_url.spec() +
-                  "\" for payment handler manifest \"" +
-                  method_manifest_url.spec() + "\".");
+        log_.Warn(base::StrCat(
+            {"Failed to refetch a valid icon from web app manifest \"",
+             web_app_manifest_url.spec(), "\" for payment handler manifest \"",
+             method_manifest_url.spec(), "\"."}));
       } else {
         auto refetched_app_metadata_it =
             refetched_app_metadata_.find(web_app_manifest_url);
