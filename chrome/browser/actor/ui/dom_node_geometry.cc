@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/ui/dom_node_geometry.h"
 
+#include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"

@@ -5,7 +5,7 @@
 #ifndef CHROME_COMMON_ACTOR_MOJOM_TRAITS_H_
 #define CHROME_COMMON_ACTOR_MOJOM_TRAITS_H_
 
-#include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor.mojom-data-view.h"
 #include "chrome/common/actor/task_id.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 

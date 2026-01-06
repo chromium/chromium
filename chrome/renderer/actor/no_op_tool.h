@@ -6,7 +6,7 @@
 #define CHROME_RENDERER_ACTOR_NO_OP_TOOL_H_
 
 #include "base/types/expected.h"
-#include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/renderer/actor/tool_base.h"
 

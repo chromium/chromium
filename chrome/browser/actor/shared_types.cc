@@ -6,6 +6,7 @@
 
 #include <sstream>
 
+#include "chrome/common/actor.mojom.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace actor {

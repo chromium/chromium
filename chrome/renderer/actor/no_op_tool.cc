@@ -5,7 +5,7 @@
 #include "chrome/renderer/actor/no_op_tool.h"
 
 #include "base/notimplemented.h"
-#include "chrome/common/actor.mojom-data-view.h"
+#include "chrome/common/actor.mojom-shared.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/renderer/actor/tool_utils.h"

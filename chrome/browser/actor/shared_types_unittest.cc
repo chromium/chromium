@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/shared_types.h"
 
+#include "chrome/common/actor.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace actor {

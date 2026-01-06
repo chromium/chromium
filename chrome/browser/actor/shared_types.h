@@ -7,11 +7,13 @@
 
 #include <variant>
 
-#include "chrome/common/actor.mojom-data-view.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace actor {
 
+// TODO(crbug.com/469801419) these should be hoisted from the ClickAction struct
+// as these are internal types used in mojom data view processing only.
 using MouseClickType = mojom::ClickAction_Type;
 using MouseClickCount = mojom::ClickAction_Count;
 
