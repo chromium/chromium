@@ -1612,7 +1612,7 @@
 <translation id="8067208048261192356">قهوه‌ای</translation>
 <translation id="8067224607978179455">حذف <ph name="ACTION_NAME" /></translation>
 <translation id="8075838845814659848">شارژ باقی‌مانده</translation>
-<translation id="8076492880354921740">برگه‌ها</translation>
+<translation id="8076492880354921740">زبانه‌ها</translation>
 <translation id="8079860070590459552">دشت گل</translation>
 <translation id="8082366717211101304">‏نمی‌توان ساناد را از برنامه‌های Android حل‌وفصل کرد</translation>
 <translation id="8082644724189923105">منطقه صفحه‌کلید</translation>
@@ -1678,7 +1678,7 @@
 <translation id="8372667721254470022">زیتونی</translation>
 <translation id="8373046809163484087">از مجموعه‌های رنگ مطابق با کاغذدیواری‌تان استفاده کنید</translation>
 <translation id="8380114448424469341">پنجره را از نیمه سمت <ph name="DIRECTION" /> صفحه‌نمایش روی پایه قرار دهید</translation>
-<translation id="8391349326751432483">برای اجرای «آزمایش حافظه»، به حداقل ۵۰۰ مگابایت فضای آزاد نیاز دارید. برای آزاد کردن حافظه، برنامه‌ها و برگه‌ها را ببندید.</translation>
+<translation id="8391349326751432483">برای اجرای «آزمایش حافظه»، به حداقل ۵۰۰ مگابایت فضای آزاد نیاز دارید. برای آزاد کردن حافظه، برنامه‌ها و زبانه‌ها را ببندید.</translation>
 <translation id="8395584934117017006">این <ph name="DEVICE_TYPE" /> تحت‌مدیریت سازمان است</translation>
 <translation id="8398927464629426868">سرعت شارژ یا تخلیه شارژ دستگاه درحال‌حاضر</translation>
 <translation id="8403988360557588704">نقاشی <ph name="ART_FEATURE" /> به‌سبک <ph name="ART_MOVEMENT" /></translation>
@@ -1733,13 +1733,13 @@
 <translation id="8655295600908251630">کانال</translation>
 <translation id="8655828773034788261">نشانی وب هم‌رسانی:</translation>
 <translation id="8660881923941176839">پوند</translation>
-<translation id="8669187096858652220">برای نمایش برگه‌ها، کلیک کنید</translation>
+<translation id="8669187096858652220">برای نمایش زبانه‌ها، کلیک کنید</translation>
 <translation id="8670574982334489519">راست</translation>
 <translation id="8675354002693747642">کلید ازپیش هم‌رسانی‌شده</translation>
 <translation id="8677859815076891398">‏آلبومی وجود ندارد. آلبومی در <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> ایجاد کنید.</translation>
 <translation id="8682949824227998083">رامِن</translation>
 <translation id="8689520252402395106">‏برای ادامه فرایند به‌روزرسانی، کابل USB دستگاه <ph name="DEVICE_NAME" /> را دوباره وصل کنید</translation>
-<translation id="8699053192961439771">برای پنهان کردن خودکار برگه‌ها، کلیک کنید</translation>
+<translation id="8699053192961439771">برای پنهان کردن خودکار زبانه‌ها، کلیک کنید</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> برای مدیریت این ویژگی، از کلیدهای جهت‌نما روبه راست یا روبه چپ استفاده کنید.</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="871560550817059752">انجام نشد - جوهر تمام شده است</translation>
@@ -1877,7 +1877,7 @@
 <translation id="952992212772159698">فعال نشد</translation>
 <translation id="95718197892796296">خاک رس</translation>
 <translation id="959792926760890141">‏«بازنشانی ایمنی» افزونه‌های مرورگر Chrome را خاموش می‌کند و شبکه و تنظیمات دیگر را به پیش‌فرض‌های ایمن بازمی‌گرداند.
-          موتور جستجوی پیش‌فرض شما بازنشانی می‌شود اما برگه‌ها، فایل‌ها، کوکی‌ها، و سابقه‌تان تغییر نخواهد کرد.</translation>
+          موتور جستجوی پیش‌فرض شما بازنشانی می‌شود اما زبانه‌ها، فایل‌ها، کوکی‌ها، و سابقه‌تان تغییر نخواهد کرد.</translation>
 <translation id="960719561871045870">کد اپراتور</translation>
 <translation id="965918541715156800">زرد و سبزآبی</translation>
 <translation id="966787709310836684">منو</translation>
