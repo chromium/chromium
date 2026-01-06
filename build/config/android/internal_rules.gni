@@ -2061,15 +2061,14 @@ if (enable_java_templates) {
   #     If true, make all variables in each generated R.java file non-final,
   #     and provide an onResourcesLoaded() method that can be used to reset
   #     their package index at load time. Useful when the APK corresponds to
-  #     a library that is loaded at runtime, like system_webview_apk or
-  #     monochrome_apk.
+  #     a library that is loaded at runtime, like system_webview_apk.
   #
   #   app_as_shared_lib: (optional)
   #     If true, same effect as shared_resources, but also ensures that the
   #     resources can be used by the APK when it is loaded as a regular
-  #     application as well. Useful for the monochrome_public_apk target
-  #     which is both an application and a shared runtime library that
-  #     implements the system webview feature.
+  #     application as well. Previously used for the monochrome_public_apk
+  #     target (now obsolete) which is both an application and a shared runtime
+  #     library that implements the system webview feature.
   #
   #   shared_resources_allowlist: (optional)
   #     Path to an R.txt file. If provided, acts similar to shared_resources

@@ -2127,10 +2127,11 @@ if (!is_robolectric && enable_java_templates) {
   #   shared_resources: True if this is a runtime shared library APK, like
   #     the system_webview_apk target. Ensures that its resources can be
   #     used by the loading application process.
-  #   app_as_shared_lib: True if this is a regular application apk that can
-  #     also serve as a runtime shared library, like the monochrome_public_apk
-  #     target. Ensures that the resources are usable both by the APK running
-  #     as an application, or by another process that loads it at runtime.
+  #   app_as_shared_lib: This is now obsolete. True if this is a regular
+  #     application apk that can also serve as a runtime shared library, like
+  #     the (obsolete) monochrome_public_apk target. Ensures that the resources
+  #     are usable both by the APK running as an application, or by another
+  #     process that loads it at runtime.
   #   shared_resources_allowlist_target: Optional name of a target specifying
   #     an input R.txt file that lists the resources that can be exported
   #     by the APK when shared_resources or app_as_shared_lib is defined.
