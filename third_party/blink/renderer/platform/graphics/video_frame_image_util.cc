@@ -38,11 +38,13 @@ namespace {
 
 bool ShouldCreateAcceleratedImages(
     viz::RasterContextProvider* raster_context_provider) {
-  if (!SharedGpuContext::IsGpuCompositingEnabled())
+  if (!raster_context_provider) {
     return false;
+  }
 
-  if (!raster_context_provider)
+  if (!SharedGpuContext::IsGpuCompositingEnabled()) {
     return false;
+  }
 
   if (raster_context_provider->GetGpuFeatureInfo().IsWorkaroundEnabled(
           DISABLE_IMAGEBITMAP_FROM_VIDEO_USING_GPU)) {
