@@ -7286,6 +7286,7 @@ test("unit_tests") {
     "//components/safe_browsing/core/browser/db:v4_local_database_manager",
     "//components/safe_browsing/core/browser/sync",
     "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:threat_enums",
     "//components/safe_browsing/core/common/proto:client_model_proto",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_search_api",

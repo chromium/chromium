@@ -40,7 +40,6 @@ source_set("browser") {
     "//components/safe_browsing/core/browser:sync_observer",
     "//components/safe_browsing/core/browser:token_fetcher",
     "//components/safe_browsing/core/browser/db:database_manager",
-    "//components/safe_browsing/core/browser/db:hit_report",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
@@ -282,8 +281,8 @@ source_set("safe_browsing_metrics_collector") {
     "//components/keyed_service/core",
     "//components/password_manager/core/common",
     "//components/prefs",
-    "//components/safe_browsing/core/browser/db:hit_report",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common:threat_enums",
   ]
 }
 

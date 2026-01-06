@@ -12,9 +12,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
-#include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
+#include "components/safe_browsing/core/common/threat_enums.h"
 #include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "url/gurl.h"
 

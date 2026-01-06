@@ -14,7 +14,7 @@
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/safe_browsing/core/browser/db/hit_report.h"
+#include "components/safe_browsing/core/common/threat_enums.h"
 
 class PrefService;
 
