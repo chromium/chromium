@@ -84,12 +84,17 @@ def __step_config(ctx, step_config):
             # it takes long time for input fetch (many files in sysroot etc)
             timeout = "4m"
 
-        step_config["rules"].extend([
+        reproxy_config_inputs = []
+        reproxy_config_inputs.extend(reproxy_config.get("inputs", []))
+        reproxy_config_inputs.extend(reproxy_config.get("toolchain_inputs", []))
+
+        rules = step_config.setdefault("rules", [])
+        rules.extend([
             {
                 "name": "clang-cl/cxx",
                 "action": "(.*_)?cxx",
                 "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\clang-cl.exe",
-                "inputs": [
+                "inputs": reproxy_config_inputs + [
                     "third_party/llvm-build/Release+Asserts/bin/clang-cl.exe",
                 ],
                 "platform_ref": "clang-cl",
@@ -103,7 +108,7 @@ def __step_config(ctx, step_config):
                 "name": "clang-cl/cc",
                 "action": "(.*_)?cc",
                 "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\clang-cl.exe",
-                "inputs": [
+                "inputs": reproxy_config_inputs + [
                     "third_party/llvm-build/Release+Asserts/bin/clang-cl.exe",
                 ],
                 "platform_ref": "clang-cl",
@@ -117,7 +122,7 @@ def __step_config(ctx, step_config):
                 "name": "clang-coverage/cxx",
                 "action": "(.*_)?cxx",
                 "command_prefix": "python3.exe ../../build/toolchain/clang_code_coverage_wrapper.py",
-                "inputs": [
+                "inputs": reproxy_config_inputs + [
                     "third_party/llvm-build/Release+Asserts/bin/clang++",
                 ],
                 "handler": "clang_compile_coverage",
@@ -132,7 +137,7 @@ def __step_config(ctx, step_config):
                 "name": "clang-coverage/cc",
                 "action": "(.*_)?cc",
                 "command_prefix": "python3.exe ../../build/toolchain/clang_code_coverage_wrapper.py",
-                "inputs": [
+                "inputs": reproxy_config_inputs + [
                     "third_party/llvm-build/Release+Asserts/bin/clang",
                 ],
                 "handler": "clang_compile_coverage",
@@ -148,6 +153,7 @@ def __step_config(ctx, step_config):
                 "action": "(.*_)?alink",
                 "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\lld-link.exe /lib",
                 "handler": "lld_thin_archive",
+                "inputs": reproxy_config_inputs,
                 "remote": False,
                 "accumulate": True,
             },
@@ -156,7 +162,7 @@ def __step_config(ctx, step_config):
                 "action": "(.*_)?solink",
                 "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\lld-link.exe",
                 "handler": "lld_link",
-                "inputs": link_inputs,
+                "inputs": reproxy_config_inputs + link_inputs,
                 "exclude_input_patterns": [
                     "*.cc",
                     "*.h",
@@ -176,7 +182,7 @@ def __step_config(ctx, step_config):
                 "action": "(.*_)?solink_module",
                 "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\lld-link.exe",
                 "handler": "lld_link",
-                "inputs": link_inputs,
+                "inputs": reproxy_config_inputs + link_inputs,
                 "exclude_input_patterns": [
                     "*.cc",
                     "*.h",
@@ -196,7 +202,7 @@ def __step_config(ctx, step_config):
                 "action": "(.*_)?link",
                 "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\lld-link.exe",
                 "handler": "lld_link",
-                "inputs": link_inputs,
+                "inputs": reproxy_config_inputs + link_inputs,
                 "exclude_input_patterns": [
                     "*.cc",
                     "*.h",
