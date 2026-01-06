@@ -60,9 +60,15 @@ void TabStripEventRecorder::OnChildrenAdded(
     bool insert_from_detached) {
   for (const auto& handle : handles) {
     if (const auto* tab_handle_ptr = std::get_if<tabs::TabHandle>(&handle)) {
+      if (!tab_handle_ptr->Get()) {
+        continue;
+      }
       Handle(ToEvent(*tab_handle_ptr, position, tab_strip_model_adapter_));
     } else if (const auto* collection_handle_ptr =
                    std::get_if<tabs::TabCollectionHandle>(&handle)) {
+      if (!collection_handle_ptr->Get()) {
+        continue;
+      }
       Handle(ToEvent(*collection_handle_ptr, position, tab_strip_model_adapter_,
                      insert_from_detached));
     }
