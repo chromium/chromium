@@ -10624,11 +10624,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "web-feed-feedback-reroute",
-    "owners": ["zekunjiang@chromium.org", "tinazwang@chromium.org", "chrome-with-friends@google.com"],
-    "expiry_milestone": 122
-  },
-  {
     "name": "web-feed-onboarding",
     "owners": ["//chrome/android/feed/OWNERS", "feed@chromium.org" ],
     "expiry_milestone": 140

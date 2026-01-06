@@ -1015,9 +1015,6 @@ extern const char kWaitThresholdMillisecondsForCapabilitiesApiDescription[];
 extern const char kWalletServiceUseSandboxName[];
 extern const char kWalletServiceUseSandboxDescription[];
 
-extern const char kWebFeedFeedbackRerouteName[];
-extern const char kWebFeedFeedbackRerouteDescription[];
-
 extern const char kWebPageAlternativeTextZoomName[];
 extern const char kWebPageAlternativeTextZoomDescription[];
 

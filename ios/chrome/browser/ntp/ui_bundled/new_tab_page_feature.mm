@@ -22,8 +22,6 @@ BASE_FEATURE(kEnableNTPViewHierarchyRepair,
 
 BASE_FEATURE(kOverrideFeedSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebFeedFeedbackReroute, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFeedSwipeInProductHelp, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseFeedEligibilityService, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -73,10 +71,6 @@ bool IsDiscoverFeedTopSyncPromoEnabled() {
 bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service) {
   return pref_service->GetBoolean(
       prefs::kNTPContentSuggestionsForSupervisedUserEnabled);
-}
-
-bool IsWebFeedFeedbackRerouteEnabled() {
-  return base::FeatureList::IsEnabled(kWebFeedFeedbackReroute);
 }
 
 FeedSwipeIPHVariation GetFeedSwipeIPHVariation() {

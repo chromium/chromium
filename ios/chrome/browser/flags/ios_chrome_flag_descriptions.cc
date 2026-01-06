@@ -1688,12 +1688,6 @@ const char kWalletServiceUseSandboxName[] = "Use Google Payments sandbox";
 const char kWalletServiceUseSandboxDescription[] =
     "Uses the sandbox service for Google Payments API calls.";
 
-const char kWebFeedFeedbackRerouteName[] =
-    "Send discover feed feedback to a updated destination";
-const char kWebFeedFeedbackRerouteDescription[] =
-    "Directs discover feed feedback to a new target for better handling of the"
-    "feedback reports.";
-
 const char kWebPageAlternativeTextZoomName[] =
     "Use different method for zooming web pages";
 const char kWebPageAlternativeTextZoomDescription[] =
