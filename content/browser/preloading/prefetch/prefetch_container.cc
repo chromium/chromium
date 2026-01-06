@@ -792,16 +792,6 @@ void PrefetchContainer::UpdateResourceRequest(
   updated_headers.SetHeader(blink::kSecPurposeHeaderName,
                             GetSecPurposeHeaderValue(redirect_info.new_url));
 
-  // Remove any existing client hints headers (except, below, if we still want
-  // to send this particular hint).
-  if (base::FeatureList::IsEnabled(features::kPrefetchClientHints)) {
-    const auto& client_hints = network::GetClientHintToNameMap();
-    headers_to_remove.reserve(headers_to_remove.size() + client_hints.size());
-    for (const auto& [_, header] : client_hints) {
-      headers_to_remove.push_back(header);
-    }
-  }
-
   // Sec-Speculation-Tags is set only when the prefetch is triggered
   // by speculation rules and it is not cross-site prefetch redirection.
   // To see more details:
@@ -816,9 +806,17 @@ void PrefetchContainer::UpdateResourceRequest(
                               serialized_list.value());
   }
 
-  // Then add the client hints that are appropriate for the redirect.
-  AddClientHintsHeaders(url::Origin::Create(redirect_info.new_url),
-                        &updated_headers);
+  // Remove any existing client hints headers, then (re-)add the new client
+  // hints that are appropriate for the redirect.
+  if (base::FeatureList::IsEnabled(features::kPrefetchClientHints)) {
+    const auto& client_hints = network::GetClientHintToNameMap();
+    headers_to_remove.reserve(headers_to_remove.size() + client_hints.size());
+    for (const auto& [_, header] : client_hints) {
+      headers_to_remove.push_back(header);
+    }
+    AddClientHintsHeaders(url::Origin::Create(redirect_info.new_url),
+                          &updated_headers);
+  }
 
   // To avoid spurious reordering, don't remove headers that will be updated
   // anyway.
