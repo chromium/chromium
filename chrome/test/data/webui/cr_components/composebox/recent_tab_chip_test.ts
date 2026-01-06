@@ -104,7 +104,7 @@ suite('RecentTabChipTest', function() {
     assertTrue(!!buttonText);
     assertEquals(
         'Ask Google about previous tab', buttonText.textContent.trim());
-    assertEquals('Tab 1', button.title);
+    assertEquals('Tab 1 - tab1.com', button.title);
   });
 
   test('becomes visible when tabs are added', async () => {
@@ -119,6 +119,7 @@ suite('RecentTabChipTest', function() {
 
   test('has correct aria-label', () => {
     const button = getButton();
-    assertEquals('Ask Google about previous tab: Tab 1', button.ariaLabel);
+    assertEquals(
+        'Ask Google about previous tab: Tab 1 - tab1.com', button.ariaLabel);
   });
 });

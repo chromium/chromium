@@ -47,6 +47,15 @@ export class RecentTabChipElement extends RecentTabChipBase {
   private composeboxSource_: string =
       loadTimeData.getString('composeboxSource');
 
+  protected get recentTabChipTitle_(): string {
+    if (!this.recentTab) {
+      return '';
+    }
+    const url = new URL(this.recentTab.url.url);
+    const domain = url.hostname.replace(/^www\./, '');
+    return `${this.recentTab.title} - ${domain}`;
+  }
+
   protected addTabContext_(e: Event) {
     e.stopPropagation();
     assert(this.recentTab);
