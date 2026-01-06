@@ -118,7 +118,7 @@ class MemoryUsageViewTest(unittest.TestCase):
             'total_size_bytes': [100, 200, 50],
         }
         df = pd.DataFrame(df_data)
-        view = MemoryUsageView.from_df(df, demangler=None, aggregate=False)
+        view = MemoryUsageView.from_df(df, demangle=False, aggregate=False)
         dumped_json = view.to_json()
         expected_json = """
 [
@@ -153,7 +153,7 @@ class MemoryUsageViewTest(unittest.TestCase):
             'total_size_bytes': [100, 200, 50],
         }
         df = pd.DataFrame(df_data)
-        view = MemoryUsageView.from_df(df, demangler=None, aggregate=True)
+        view = MemoryUsageView.from_df(df, demangle=False, aggregate=True)
         self.assertEqual(2, len(view.roots))
         root_b_node, root_a_node = view.roots
         self.assertEqual('root_a', root_a_node.name)

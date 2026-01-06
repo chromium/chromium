@@ -70,13 +70,13 @@ class MemoryUsageView:
     @classmethod
     def from_heap_dump(cls,
                        trace_file_name: str,
-                       demangler: demangler.Demangler | None = None,
+                       demangle: bool = True,
                        aggregate: bool = True) -> 'MemoryUsageView':
         """Creates a MemoryUsageView from a trace file with a heap dump."""
         abs_path = os.path.abspath(trace_file_name)
         with TraceProcessor(trace=abs_path) as trace_processor:
             df = _extract_heap_dump(trace_processor)
-            return cls.from_df(df, demangler=demangler, aggregate=aggregate)
+            return cls.from_df(df, demangle=demangle, aggregate=aggregate)
         return None
 
     def to_json(self, **kwargs) -> str:
@@ -86,39 +86,15 @@ class MemoryUsageView:
     @classmethod
     def from_df(cls,
                 df: pd.DataFrame,
-                demangler: demangler.Demangler | None,
+                demangle: bool = True,
                 aggregate: bool = True) -> 'MemoryUsageView':
         """Creates a MemoryUsageView from a DataFrame."""
-        # Nodes indexed by callsite_id.
-        nodes: dict[int, TreeNode] = {}
-        roots: list[TreeNode] = []
-
-        for row in df.itertuples():
-            frame_name = row.frame_name
-            if pd.isna(frame_name) or not frame_name:
-                frame_name = 'unknown'
-            elif demangler:
-                frame_name = demangler.demangle(frame_name)
-
-            callsite_id = int(row.callsite_id)
-            assert callsite_id not in nodes, (
-                f'Duplicate callsite id: {row.callsite_id}')
-
-            node = TreeNode(name=frame_name, value=int(row.total_size_bytes))
-            nodes[callsite_id] = node
-
-            if int(row.depth) == 0:
-                assert pd.isna(row.parent_callsite_id), (
-                    f'Row with zero depth and {row.parent_callsite_id=}')
-                roots.append(node)
-                continue
-            parent_id = int(row.parent_callsite_id)
-            assert parent_id in nodes, (
-                f'Missing parent callsite for {callsite_id}: {parent_id}')
-            parent_node = nodes[parent_id]
-            parent_node.children.append(node)
-        if aggregate:
-            roots = _aggregate_nodes(roots)
+        roots = []
+        if demangle:
+            with demangler.Demangler() as d:
+                roots = _load_df(df, d, aggregate)
+        else:
+            roots = _load_df(df, None, aggregate)
         return cls(roots)
 
     @classmethod
@@ -225,6 +201,41 @@ def _extract_heap_dump(trace_processor: TraceProcessor) -> pd.DataFrame:
     """
     df = trace_processor.query(query).as_pandas_dataframe()
     return df
+
+
+def _load_df(df: pd.DataFrame, d: demangler.Demangler,
+             aggregate: bool) -> list[TreeNode]:
+    """Loads a DataFrame into a MemoryUsageView.roots."""
+    # Nodes indexed by callsite_id.
+    nodes: dict[int, TreeNode] = {}
+    roots: list[TreeNode] = []
+    for row in df.itertuples():
+        frame_name = row.frame_name
+        if pd.isna(frame_name) or not frame_name:
+            frame_name = 'unknown'
+        elif d:
+            frame_name = d.demangle(frame_name)
+
+        callsite_id = int(row.callsite_id)
+        assert callsite_id not in nodes, (
+            f'Duplicate callsite id: {row.callsite_id}')
+
+        node = TreeNode(name=frame_name, value=int(row.total_size_bytes))
+        nodes[callsite_id] = node
+
+        if int(row.depth) == 0:
+            assert pd.isna(row.parent_callsite_id), (
+                f'Row with zero depth and {row.parent_callsite_id=}')
+            roots.append(node)
+            continue
+        parent_id = int(row.parent_callsite_id)
+        assert parent_id in nodes, (
+            f'Missing parent callsite for {callsite_id}: {parent_id}')
+        parent_node = nodes[parent_id]
+        parent_node.children.append(node)
+    if aggregate:
+        roots = _aggregate_nodes(roots)
+    return roots
 
 
 def _aggregate_nodes(nodes: list[TreeNode]) -> list[TreeNode]:
