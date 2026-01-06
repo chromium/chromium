@@ -100,7 +100,7 @@ class MockRemoteSuggestionsServiceSimple
   ~MockRemoteSuggestionsServiceSimple() override = default;
 
   MOCK_METHOD(std::unique_ptr<network::SimpleURLLoader>,
-              GetActionChipSuggestionsForTab,
+              GetDeepdiveChipSuggestionsForTab,
               (const std::u16string_view title,
                const GURL& url,
                base::OnceCallback<void(ActionChipSuggestionsResult&&)>),
@@ -524,7 +524,7 @@ TEST_P(ActionChipsGeneratorDeepDiveTest, GenerateChips) {
   TabFixture tab_fixture(page_url, page_title);
   GeneratorFixture generator_fixture;
   EXPECT_CALL(generator_fixture.mock_service(),
-              GetActionChipSuggestionsForTab(Eq(page_title), Eq(page_url), _))
+              GetDeepdiveChipSuggestionsForTab(Eq(page_title), Eq(page_url), _))
       .Times(GetParam().expect_deep_dive ? 1 : 0)
       .WillOnce(WithArg<2>(
           [](base::OnceCallback<void(
@@ -588,7 +588,7 @@ TEST(ActionChipGeneratorTest,
   generator_fixture.MakeOptimizationGuidePermissive();
 
   EXPECT_CALL(generator_fixture.mock_service(),
-              GetActionChipSuggestionsForTab(Eq(page_title), Eq(page_url), _))
+              GetDeepdiveChipSuggestionsForTab(Eq(page_title), Eq(page_url), _))
       .WillOnce(WithArg<2>(
           [](base::OnceCallback<void(
                  RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&)>
@@ -629,7 +629,7 @@ TEST(ActionChipGeneratorTest,
   generator_fixture.MakeOptimizationGuidePermissive();
 
   EXPECT_CALL(generator_fixture.mock_service(),
-              GetActionChipSuggestionsForTab(Eq(page_title), Eq(page_url), _))
+              GetDeepdiveChipSuggestionsForTab(Eq(page_title), Eq(page_url), _))
       .Times(0);
 
   base::test::ScopedFeatureList list;

@@ -30,7 +30,7 @@ class RemoteSuggestionsServiceSimple {
       base::expected<SearchSuggestionParser::SuggestResults, Error>;
 
   virtual std::unique_ptr<network::SimpleURLLoader>
-  GetActionChipSuggestionsForTab(
+  GetDeepdiveChipSuggestionsForTab(
       const std::u16string_view title,
       const GURL& url,
       base::OnceCallback<void(ActionChipSuggestionsResult&&)>) = 0;
@@ -65,7 +65,7 @@ class RemoteSuggestionsServiceSimpleImpl
       AutocompleteProviderClient* client);
   ~RemoteSuggestionsServiceSimpleImpl() override;
 
-  std::unique_ptr<network::SimpleURLLoader> GetActionChipSuggestionsForTab(
+  std::unique_ptr<network::SimpleURLLoader> GetDeepdiveChipSuggestionsForTab(
       const std::u16string_view title,
       const GURL& url,
       base::OnceCallback<

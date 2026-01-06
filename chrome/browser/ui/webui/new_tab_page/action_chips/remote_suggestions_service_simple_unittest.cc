@@ -143,14 +143,14 @@ class EnvironmentFixture {
 class ServiceTestContext {
  public:
   FakeAutocompleteProviderClient& client() { return client_; }
-  void GetActionChipSuggestionsForTab(
+  void GetDeepdiveChipSuggestionsForTab(
       const std::u16string_view title,
       const GURL& url,
       base::OnceCallback<
           void(RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&)>
           callback) {
-    loader_ = service_.GetActionChipSuggestionsForTab(title, url,
-                                                      std::move(callback));
+    loader_ = service_.GetDeepdiveChipSuggestionsForTab(title, url,
+                                                        std::move(callback));
   }
 
   void CancelRequest() { loader_.reset(); }
@@ -185,7 +185,7 @@ TEST_P(RemoteSuggestionsServiceSimpleHappyPathTest,
   RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
   const std::u16string title = u"title with spaces";
   const GURL current_url("https://example.com/");
-  context.GetActionChipSuggestionsForTab(
+  context.GetDeepdiveChipSuggestionsForTab(
       title, current_url,
       base::BindLambdaForTesting(
           [&actual,
@@ -232,7 +232,7 @@ TEST(RemoteSuggestionsServiceSimpleTest, ReturnsTimeoutErrorWhenTimeouts) {
   ServiceTestContext context;
 
   RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
-  context.GetActionChipSuggestionsForTab(
+  context.GetDeepdiveChipSuggestionsForTab(
       u"title", GURL("https://example.com/"),
       base::BindLambdaForTesting(
           [&actual,
@@ -254,7 +254,7 @@ TEST(RemoteSuggestionsServiceSimpleTest, FailsOnNetworkError) {
   ServiceTestContext context;
 
   RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
-  context.GetActionChipSuggestionsForTab(
+  context.GetDeepdiveChipSuggestionsForTab(
       u"title", GURL("https://example.com/"),
       base::BindLambdaForTesting(
           [&actual,
@@ -285,7 +285,7 @@ TEST(RemoteSuggestionsServiceSimpleTest, FailsOnHttpError) {
   ServiceTestContext context;
 
   RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
-  context.GetActionChipSuggestionsForTab(
+  context.GetDeepdiveChipSuggestionsForTab(
       u"title", GURL("https://example.com/"),
       base::BindLambdaForTesting(
           [&actual,
@@ -315,7 +315,7 @@ TEST(RemoteSuggestionsServiceSimpleTest, FailsOnMalformedJson) {
   ServiceTestContext context;
 
   RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
-  context.GetActionChipSuggestionsForTab(
+  context.GetDeepdiveChipSuggestionsForTab(
       u"title", GURL("https://example.com/"),
       base::BindLambdaForTesting(
           [&actual,
@@ -344,7 +344,7 @@ TEST(RemoteSuggestionsServiceSimpleTest, FailsOnParseFailure) {
   ServiceTestContext context;
 
   RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
-  context.GetActionChipSuggestionsForTab(
+  context.GetDeepdiveChipSuggestionsForTab(
       u"title", GURL("https://example.com/"),
       base::BindLambdaForTesting(
           [&actual,
@@ -381,7 +381,7 @@ TEST(RemoteSuggestionsServiceSimpleTest,
   EXPECT_CALL(callback, Run(_)).Times(0);
 
   std::unique_ptr<network::SimpleURLLoader> loader =
-      service->GetActionChipSuggestionsForTab(
+      service->GetDeepdiveChipSuggestionsForTab(
           u"title", GURL("https://example.com/"), callback.Get());
 
   // Destroy the service.

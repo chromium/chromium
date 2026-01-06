@@ -123,7 +123,7 @@ RemoteSuggestionsServiceSimpleImpl::~RemoteSuggestionsServiceSimpleImpl() =
     default;
 
 std::unique_ptr<network::SimpleURLLoader>
-RemoteSuggestionsServiceSimpleImpl::GetActionChipSuggestionsForTab(
+RemoteSuggestionsServiceSimpleImpl::GetDeepdiveChipSuggestionsForTab(
     const std::u16string_view title,
     const GURL& url,
     base::OnceCallback<
