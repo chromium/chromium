@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/browser/service_worker/worker_id_set.h"
+
 #include <memory>
 #include <string>
 
 #include "base/containers/contains.h"
 #include "extensions/browser/extensions_test.h"
-#include "extensions/browser/service_worker/worker_id_set.h"
 #include "extensions/common/extension_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

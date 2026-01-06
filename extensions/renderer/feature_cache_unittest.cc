@@ -16,12 +16,11 @@
 #include "extensions/renderer/scoped_web_frame.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/test/test_context_data.h"
-#include "v8/include/v8.h"
-
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/v8.h"
 
 namespace extensions {
 
