@@ -188,6 +188,7 @@ class TabAndroid : public tabs::TabInterface,
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jweb_contents_delegate,
       const base::android::JavaRef<jobject>& jcontext_menu_populator_factory);
+  void SendActivatedUpdate(JNIEnv* env, jboolean active);
   void DestroyWebContents();
   void ReleaseWebContents();
   bool IsPhysicalBackingSizeEmpty(
@@ -305,6 +306,8 @@ class TabAndroid : public tabs::TabInterface,
 
   base::RepeatingCallbackList<void(TabInterface*, bool)>
       dragging_changed_callback_list_;
+
+  base::RepeatingCallbackList<void(TabInterface*)> did_activate_callback_list_;
 
   const base::WeakPtr<Profile> profile_;
   ui::UnownedUserDataHost unowned_user_data_host_;

@@ -474,6 +474,10 @@ void TabAndroid::UpdateDelegates(
   web_contents()->SetDelegate(web_contents_delegate_.get());
 }
 
+void TabAndroid::SendActivatedUpdate(JNIEnv* env, jboolean active) {
+  did_activate_callback_list_.Notify(this);
+}
+
 namespace {
 void WillRemoveWebContentsFromTab(content::WebContents* contents,
                                   bool clear_delegate) {
@@ -658,11 +662,9 @@ bool TabAndroid::IsActivated() const {
   return Java_TabImpl_isActivated(env, weak_java_tab_.get(env));
 }
 
-// TODO(crbug.com/409366905): Finish TabInterface implementation.
 base::CallbackListSubscription TabAndroid::RegisterDidActivate(
     DidActivateCallback callback) {
-  NOTIMPLEMENTED();
-  return base::CallbackListSubscription();
+  return did_activate_callback_list_.Add(std::move(callback));
 }
 
 // TODO(crbug.com/409366905): Finish TabInterface implementation.

@@ -342,6 +342,20 @@ class TabImpl implements Tab {
 
     private @Nullable Callback<Boolean> mIsDraggingObserver;
 
+    private @Nullable Boolean mWasLastActive;
+
+    private final Callback<@Nullable Tab> mActiveTabObserver =
+            (activeTab) -> {
+                boolean active = activeTab == this;
+
+                if (Objects.equals(mWasLastActive, active)) return;
+
+                mWasLastActive = active;
+
+                if (!active) return;
+                TabImplJni.get().sendActivatedUpdate(mNativeTabAndroid, active);
+            };
+
     /**
      * Notified when the content sensitivity changes, and sets the content sensitivity property on
      * the {@link TabState}.
@@ -2923,6 +2937,8 @@ class TabImpl implements Tab {
 
         mCurrentTabSupplier = currentTabSupplier;
         mSelectionStateSupplier = selectionStateSupplier;
+
+        mCurrentTabSupplier.addObserver(mActiveTabObserver);
     }
 
     @Override
@@ -2932,6 +2948,11 @@ class TabImpl implements Tab {
         // not removed from the original TabModel before being added to the new TabModel. In these
         // cases, mCurrentTabSupplier will be null as a result of the logic in updateAttachment().
         assert mCurrentTabSupplier == null || mCurrentTabSupplier == currentTabSupplier;
+
+        if (mCurrentTabSupplier != null) {
+            mCurrentTabSupplier.removeObserver(mActiveTabObserver);
+        }
+
         mCurrentTabSupplier = null;
         mSelectionStateSupplier = null;
     }
@@ -3020,6 +3041,8 @@ class TabImpl implements Tab {
                 @JniType("std::optional<base::Token>") @Nullable Token tabGroupId);
 
         void onDraggingStateChanged(long nativeTabAndroid, boolean isDragging);
+
+        void sendActivatedUpdate(long nativeTabAndroid, boolean isActivated);
     }
 
     @VisibleForTesting
