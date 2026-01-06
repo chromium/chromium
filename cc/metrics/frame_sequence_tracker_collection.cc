@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
@@ -244,7 +243,7 @@ void FrameSequenceTrackerCollection::StopSequence(
 }
 
 void FrameSequenceTrackerCollection::StartCustomSequence(int sequence_id) {
-  DCHECK(!base::Contains(custom_frame_trackers_, sequence_id));
+  DCHECK(!custom_frame_trackers_.contains(sequence_id));
 
   // base::Unretained() is safe here because |this| owns FrameSequenceTracker
   // and FrameSequenceMetrics.

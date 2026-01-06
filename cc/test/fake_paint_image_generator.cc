@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 
 namespace cc {
 
@@ -65,7 +64,7 @@ bool FakePaintImageGenerator::GetPixels(SkPixmap dst_pixmap,
     image_pixmap_ = SkPixmap(dst_info, image_backing_memory_.data(),
                              dst_info.minRowBytes());
   }
-  if (!base::Contains(frames_decoded_count_, frame_index)) {
+  if (!frames_decoded_count_.contains(frame_index)) {
     frames_decoded_count_[frame_index] = 1;
   } else {
     frames_decoded_count_[frame_index]++;
@@ -112,7 +111,7 @@ bool FakePaintImageGenerator::GetYUVAPlanes(
                        plane_sizes[i]));
     UNSAFE_TODO(src_plane_memory += plane_sizes[i]);
   }
-  if (!base::Contains(frames_decoded_count_, frame_index)) {
+  if (!frames_decoded_count_.contains(frame_index)) {
     frames_decoded_count_[frame_index] = 1;
   } else {
     frames_decoded_count_[frame_index]++;

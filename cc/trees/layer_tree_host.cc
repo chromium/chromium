@@ -15,7 +15,6 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -972,7 +971,7 @@ void LayerTreeHost::AddViewTransitionRequest(
     std::unique_ptr<ViewTransitionRequest> request) {
   // Store the commit callback on LayerTreeHost, so that we can invoke them
   // when the request is finished.
-  DCHECK(!base::Contains(view_transition_callbacks_, request->sequence_id()));
+  DCHECK(!view_transition_callbacks_.contains(request->sequence_id()));
   if (auto callback = request->TakeFinishedCallback()) {
     view_transition_callbacks_[request->sequence_id()] = std::move(callback);
   }

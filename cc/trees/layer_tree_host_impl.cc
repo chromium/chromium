@@ -19,7 +19,6 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/crash_logging.h"
@@ -3449,8 +3448,8 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
         continue;
       }
 
-      DCHECK(!base::Contains(view_transition_element_map,
-                             view_transition_element_resource_id))
+      DCHECK(!view_transition_element_map.contains(
+          view_transition_element_resource_id))
           << "Cannot map " << view_transition_element_resource_id.ToString()
           << " to render pass "
           << render_surface->render_pass_id().GetUnsafeValue()

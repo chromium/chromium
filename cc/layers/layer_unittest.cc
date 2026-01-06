@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/animation/animation_host.h"
@@ -69,28 +68,23 @@ using ::testing::StrictMock;
     layer_tree_host_->VerifyAndClearExpectations();                      \
   } while (false)
 
-#define EXECUTE_AND_VERIFY_SUBTREE_CHANGED(code_to_test)                      \
-  code_to_test;                                                               \
-  root->layer_tree_host()->BuildPropertyTreesForTesting();                    \
-  EXPECT_FALSE(root->subtree_property_changed());                             \
-  EXPECT_TRUE(top->subtree_property_changed());                               \
-  EXPECT_TRUE(                                                                \
-      base::Contains(const_cast<const LayerTreeHost*>(top->layer_tree_host()) \
-                         ->pending_commit_state()                             \
-                         ->layers_that_should_push_properties,                \
-                     top.get()));                                             \
-  EXPECT_TRUE(child->subtree_property_changed());                             \
-  EXPECT_TRUE(base::Contains(                                                 \
-      const_cast<const LayerTreeHost*>(child->layer_tree_host())              \
-          ->pending_commit_state()                                            \
-          ->layers_that_should_push_properties,                               \
-      child.get()));                                                          \
-  EXPECT_TRUE(grand_child->subtree_property_changed());                       \
-  EXPECT_TRUE(base::Contains(                                                 \
-      const_cast<const LayerTreeHost*>(grand_child->layer_tree_host())        \
-          ->pending_commit_state()                                            \
-          ->layers_that_should_push_properties,                               \
-      grand_child.get()));
+#define EXECUTE_AND_VERIFY_SUBTREE_CHANGED(code_to_test)                       \
+  code_to_test;                                                                \
+  root->layer_tree_host()->BuildPropertyTreesForTesting();                     \
+  EXPECT_FALSE(root->subtree_property_changed());                              \
+  EXPECT_TRUE(top->subtree_property_changed());                                \
+  EXPECT_TRUE(const_cast<const LayerTreeHost*>(top->layer_tree_host())         \
+                  ->pending_commit_state()                                     \
+                  ->layers_that_should_push_properties.contains(top.get()));   \
+  EXPECT_TRUE(child->subtree_property_changed());                              \
+  EXPECT_TRUE(const_cast<const LayerTreeHost*>(child->layer_tree_host())       \
+                  ->pending_commit_state()                                     \
+                  ->layers_that_should_push_properties.contains(child.get())); \
+  EXPECT_TRUE(grand_child->subtree_property_changed());                        \
+  EXPECT_TRUE(                                                                 \
+      const_cast<const LayerTreeHost*>(grand_child->layer_tree_host())         \
+          ->pending_commit_state()                                             \
+          ->layers_that_should_push_properties.contains(grand_child.get()));
 
 #define EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET_IN_COMMIT(code_to_test)       \
   do {                                                                         \
@@ -738,9 +732,9 @@ TEST_F(LayerTest, ReorderChildren) {
   EXPECT_EQ(child2, parent->children()[2]);
 
   for (const auto& child : parent->children()) {
-    EXPECT_FALSE(base::Contains(layer_tree_host_->GetPendingCommitState()
-                                    ->layers_that_should_push_properties,
-                                child.get()));
+    EXPECT_FALSE(
+        layer_tree_host_->GetPendingCommitState()
+            ->layers_that_should_push_properties.contains(child.get()));
     EXPECT_TRUE(child->subtree_property_changed());
   }
 }
@@ -1778,9 +1772,9 @@ TEST_F(LayerTest, UpdateMirrorCount) {
   test_layer->IncrementMirrorCount();
   EXPECT_EQ(1, test_layer->mirror_count());
   EXPECT_TRUE(layer_tree_host_->property_trees()->needs_rebuild());
-  EXPECT_TRUE(base::Contains(layer_tree_host_->GetPendingCommitState()
-                                 ->layers_that_should_push_properties,
-                             test_layer.get()));
+  EXPECT_TRUE(
+      layer_tree_host_->GetPendingCommitState()
+          ->layers_that_should_push_properties.contains(test_layer.get()));
 
   layer_tree_host_->ClearPendingLayerCommitStates();
   layer_tree_host_->property_trees()->set_needs_rebuild(false);
@@ -1790,9 +1784,9 @@ TEST_F(LayerTest, UpdateMirrorCount) {
   test_layer->IncrementMirrorCount();
   EXPECT_EQ(2, test_layer->mirror_count());
   EXPECT_FALSE(layer_tree_host_->property_trees()->needs_rebuild());
-  EXPECT_TRUE(base::Contains(layer_tree_host_->GetPendingCommitState()
-                                 ->layers_that_should_push_properties,
-                             test_layer.get()));
+  EXPECT_TRUE(
+      layer_tree_host_->GetPendingCommitState()
+          ->layers_that_should_push_properties.contains(test_layer.get()));
 
   layer_tree_host_->ClearPendingLayerCommitStates();
 
@@ -1801,17 +1795,17 @@ TEST_F(LayerTest, UpdateMirrorCount) {
   test_layer->DecrementMirrorCount();
   EXPECT_EQ(1, test_layer->mirror_count());
   EXPECT_FALSE(layer_tree_host_->property_trees()->needs_rebuild());
-  EXPECT_TRUE(base::Contains(layer_tree_host_->GetPendingCommitState()
-                                 ->layers_that_should_push_properties,
-                             test_layer.get()));
+  EXPECT_TRUE(
+      layer_tree_host_->GetPendingCommitState()
+          ->layers_that_should_push_properties.contains(test_layer.get()));
 
   // Decrementing mirror count to zero should trigger property trees rebuild.
   test_layer->DecrementMirrorCount();
   EXPECT_EQ(0, test_layer->mirror_count());
   EXPECT_TRUE(layer_tree_host_->property_trees()->needs_rebuild());
-  EXPECT_TRUE(base::Contains(layer_tree_host_->GetPendingCommitState()
-                                 ->layers_that_should_push_properties,
-                             test_layer.get()));
+  EXPECT_TRUE(
+      layer_tree_host_->GetPendingCommitState()
+          ->layers_that_should_push_properties.contains(test_layer.get()));
 
   test_layer->SetLayerTreeHost(nullptr);
 }
