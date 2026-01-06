@@ -67,7 +67,14 @@ class CorpMessagingClientTest : public testing::Test {
       mock_on_signaling_address_changed_.Get()};
 };
 
-TEST_F(CorpMessagingClientTest, TestSendMessage_Unauthenticated) {
+// TODO(crbug.com/473667724): Disabled on ChromeOS due to failures.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_TestSendMessage_Unauthenticated \
+  DISABLED_TestSendMessage_Unauthenticated
+#else
+#define MAYBE_TestSendMessage_Unauthenticated TestSendMessage_Unauthenticated
+#endif
+TEST_F(CorpMessagingClientTest, MAYBE_TestSendMessage_Unauthenticated) {
   base::RunLoop run_loop;
 
   internal::PeerMessageStruct peer_message;
@@ -81,7 +88,14 @@ TEST_F(CorpMessagingClientTest, TestSendMessage_Unauthenticated) {
   run_loop.Run();
 }
 
-TEST_F(CorpMessagingClientTest, TestSendMessage_SendOneMessage) {
+// TODO(crbug.com/473667724): Disabled on ChromeOS due to failures.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_TestSendMessage_SendOneMessage \
+  DISABLED_TestSendMessage_SendOneMessage
+#else
+#define MAYBE_TestSendMessage_SendOneMessage TestSendMessage_SendOneMessage
+#endif
+TEST_F(CorpMessagingClientTest, MAYBE_TestSendMessage_SendOneMessage) {
   base::RunLoop run_loop;
   internal::PeerMessageStruct peer_message;
   messaging_client_.SendMessage(
