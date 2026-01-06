@@ -233,7 +233,7 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
         // always be called after device initialization in HidChooserController
         // which always returns after the device list initialization in this
         // class.
-        DCHECK(base::Contains(devices_, guid));
+        DCHECK(devices_.contains(guid));
         objects.push_back(std::make_unique<Object>(
             origin, DeviceInfoToValue(*devices_[guid]),
             content_settings::SettingSource::kUser, IsOffTheRecord()));
@@ -244,7 +244,7 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
   if (CanApplyPolicy()) {
     auto* policy = HidPolicyAllowedDevicesFactory::GetForProfile(profile_);
     for (const auto& entry : policy->device_policy()) {
-      if (!base::Contains(entry.second, origin)) {
+      if (!entry.second.contains(origin)) {
         continue;
       }
 
@@ -255,7 +255,7 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
     }
 
     for (const auto& entry : policy->vendor_policy()) {
-      if (!base::Contains(entry.second, origin)) {
+      if (!entry.second.contains(origin)) {
         continue;
       }
 
@@ -265,7 +265,7 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
     }
 
     for (const auto& entry : policy->usage_policy()) {
-      if (!base::Contains(entry.second, origin)) {
+      if (!entry.second.contains(origin)) {
         continue;
       }
 
@@ -276,7 +276,7 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
     }
 
     for (const auto& entry : policy->usage_page_policy()) {
-      if (!base::Contains(entry.second, origin)) {
+      if (!entry.second.contains(origin)) {
         continue;
       }
 
@@ -285,7 +285,7 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
           origin, std::move(object), SettingSource::kPolicy, IsOffTheRecord()));
     }
 
-    if (base::Contains(policy->all_devices_policy(), origin)) {
+    if (policy->all_devices_policy().contains(origin)) {
       base::Value::Dict object;
       object.Set(
           kHidDeviceNameKey,
@@ -310,7 +310,7 @@ HidChooserContext::GetAllGrantedObjects() {
       continue;
 
     for (const auto& guid : map_entry.second) {
-      DCHECK(base::Contains(devices_, guid));
+      DCHECK(devices_.contains(guid));
       objects.push_back(
           std::make_unique<Object>(origin, DeviceInfoToValue(*devices_[guid]),
                                    SettingSource::kUser, IsOffTheRecord()));
@@ -499,8 +499,7 @@ bool HidChooserContext::HasDevicePermission(
   }
 
   auto it = ephemeral_devices_.find(origin);
-  if (it != ephemeral_devices_.end() &&
-      base::Contains(it->second, device.guid)) {
+  if (it != ephemeral_devices_.end() && it->second.contains(device.guid)) {
     return true;
   }
 
@@ -526,7 +525,7 @@ bool HidChooserContext::HasDevicePermission(
 bool HidChooserContext::IsFidoAllowedForOrigin(const url::Origin& origin) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (origin.scheme() == extensions::kExtensionScheme &&
-      base::Contains(kPrivilegedFidoExtensionIds, origin.host())) {
+      kPrivilegedFidoExtensionIds.contains(origin.host())) {
     return true;
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -621,7 +620,7 @@ void HidChooserContext::DeviceAdded(device::mojom::HidDeviceInfoPtr device) {
   DCHECK(device);
 
   // Update the device list.
-  if (!base::Contains(devices_, device->guid)) {
+  if (!devices_.contains(device->guid)) {
     devices_.insert({device->guid, device->Clone()});
   }
 
@@ -632,7 +631,7 @@ void HidChooserContext::DeviceAdded(device::mojom::HidDeviceInfoPtr device) {
 
 void HidChooserContext::DeviceRemoved(device::mojom::HidDeviceInfoPtr device) {
   DCHECK(device);
-  DCHECK(base::Contains(devices_, device->guid));
+  DCHECK(devices_.contains(device->guid));
 
   // Update the device list.
   devices_.erase(device->guid);
@@ -666,7 +665,7 @@ void HidChooserContext::DeviceRemoved(device::mojom::HidDeviceInfoPtr device) {
 
 void HidChooserContext::DeviceChanged(device::mojom::HidDeviceInfoPtr device) {
   DCHECK(device);
-  DCHECK(base::Contains(devices_, device->guid));
+  DCHECK(devices_.contains(device->guid));
 
   // Update the device list.
   devices_[device->guid] = device->Clone();

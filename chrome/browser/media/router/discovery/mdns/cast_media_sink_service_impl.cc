@@ -771,7 +771,7 @@ void CastMediaSinkServiceImpl::SetCastAllowAllIPs(bool allow_all_ips) {
 }
 
 bool CastMediaSinkServiceImpl::HasSink(const MediaSink::Id& sink_id) {
-  return base::Contains(GetSinks(), sink_id);
+  return GetSinks().contains(sink_id);
 }
 
 void CastMediaSinkServiceImpl::DisconnectAndRemoveSink(

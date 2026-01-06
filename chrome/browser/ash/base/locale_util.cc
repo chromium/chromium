@@ -189,7 +189,7 @@ bool IsAllowedLanguage(const std::string& language, const PrefService* prefs) {
     return true;
 
   // Check if locale is in list of allowed UI locales.
-  return base::Contains(allowed_languages, base::Value(language));
+  return allowed_languages.contains(language);
 }
 
 bool IsAllowedUILanguage(const std::string& language,

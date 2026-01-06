@@ -52,8 +52,7 @@ const ui::AXNode* GetUnignoredParentForSelection(const ui::AXNode* node) {
       // displayed as siblings, to avoid misnumbering.
       const std::string_view display =
           node->GetStringAttribute(ax::mojom::StringAttribute::kDisplay);
-      return base::Contains(display, "inline") ||
-             base::Contains(display, "list-item");
+      return display.contains("inline") || display.contains("list-item");
     };
     if (!should_skip(ancestor)) {
       return ancestor;
@@ -353,7 +352,7 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
         content_node->GetAncestorsCrossingTreeBoundaryAsQueue();
     while (!ancestors.empty()) {
       ui::AXNodeID ancestor_id = ancestors.front()->id();
-      if (base::Contains(display_node_ids_, ancestor_id)) {
+      if (display_node_ids_.contains(ancestor_id)) {
         break;
       }
       ancestors.pop();
@@ -399,7 +398,7 @@ ui::AXSerializableTree* ReadAnythingAppModel::GetTreeFromId(
 }
 
 bool ReadAnythingAppModel::ContainsTree(const ui::AXTreeID& tree_id) const {
-  return base::Contains(tree_infos_, tree_id);
+  return tree_infos_.contains(tree_id);
 }
 
 bool ReadAnythingAppModel::ContainsActiveTree() const {
@@ -671,7 +670,7 @@ void ReadAnythingAppModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
 }
 
 ukm::SourceId ReadAnythingAppModel::GetUkmSourceId() const {
-  if (base::Contains(tree_infos_, active_tree_id_)) {
+  if (tree_infos_.contains(active_tree_id_)) {
     ReadAnythingAppModel::AXTreeInfo* tree_info =
         tree_infos_.at(active_tree_id_).get();
     if (tree_info) {
@@ -688,7 +687,7 @@ void ReadAnythingAppModel::SetUkmSourceIdForTree(const ui::AXTreeID& tree,
   // tree_infos_. When this happens, we should keep track of the ukm_source_id,
   // and later, if the tree is added to tree_infos_ while it's still active,
   // we can try again to set the ukm source.
-  if (!base::Contains(tree_infos_, active_tree_id_)) {
+  if (!tree_infos_.contains(active_tree_id_)) {
     pending_ukm_sources_[tree] = ukm_source_id;
     return;
   }
@@ -697,7 +696,7 @@ void ReadAnythingAppModel::SetUkmSourceIdForTree(const ui::AXTreeID& tree,
 }
 
 void ReadAnythingAppModel::SetUkmSourceId(ukm::SourceId ukm_source_id) {
-  if (!base::Contains(tree_infos_, active_tree_id_)) {
+  if (!tree_infos_.contains(active_tree_id_)) {
     return;
   }
   ReadAnythingAppModel::AXTreeInfo* tree_info =
@@ -713,7 +712,7 @@ void ReadAnythingAppModel::SetUkmSourceId(ukm::SourceId ukm_source_id) {
 }
 
 int ReadAnythingAppModel::GetNumSelections() const {
-  if (base::Contains(tree_infos_, active_tree_id_)) {
+  if (tree_infos_.contains(active_tree_id_)) {
     ReadAnythingAppModel::AXTreeInfo* tree_info =
         tree_infos_.at(active_tree_id_).get();
     if (tree_info) {
@@ -724,7 +723,7 @@ int ReadAnythingAppModel::GetNumSelections() const {
 }
 
 void ReadAnythingAppModel::SetNumSelections(int num_selections) {
-  if (!base::Contains(tree_infos_, active_tree_id_)) {
+  if (!tree_infos_.contains(active_tree_id_)) {
     return;
   }
   ReadAnythingAppModel::AXTreeInfo* tree_info =

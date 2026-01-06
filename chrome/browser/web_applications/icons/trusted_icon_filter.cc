@@ -44,7 +44,7 @@ std::optional<apps::IconInfo> GetTrustedIconsFromManifest(
 
     for (IconPurpose purpose : icon.purpose) {
       if (base::Contains(icon.sizes, gfx::Size()) &&
-          base::Contains(icon.src.spec(), ".svg")) {
+          icon.src.spec().contains(".svg")) {
         svg_icons_no_size[purpose] = icon.src;
       }
 
@@ -96,7 +96,7 @@ std::optional<apps::IconInfo> GetTrustedIconsFromManifest(
   // if the manifest has icons of an empty size specified) with the same
   // behavior applied above.
   if (kPreferMaskableIcons &&
-      base::Contains(svg_icons_no_size, IconPurpose::MASKABLE)) {
+      svg_icons_no_size.contains(IconPurpose::MASKABLE)) {
     apps::IconInfo primary_icon_info;
     primary_icon_info.square_size_px = kIconSizeForSVGNoIntrinsicSize;
     primary_icon_info.purpose = apps::IconInfo::Purpose::kMaskable;
@@ -104,7 +104,7 @@ std::optional<apps::IconInfo> GetTrustedIconsFromManifest(
     return primary_icon_info;
   }
 
-  if (base::Contains(svg_icons_no_size, IconPurpose::ANY)) {
+  if (svg_icons_no_size.contains(IconPurpose::ANY)) {
     apps::IconInfo primary_icon_info;
     primary_icon_info.square_size_px = kIconSizeForSVGNoIntrinsicSize;
     primary_icon_info.purpose = apps::IconInfo::Purpose::kAny;

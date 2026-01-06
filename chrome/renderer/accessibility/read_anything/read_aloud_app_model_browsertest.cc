@@ -335,10 +335,10 @@ TEST_F(ReadAnythingReadAloudAppModelTest, EnabledLanguages) {
 
   const std::string enabled_lang = "fr";
   SetLanguageEnabled(enabled_lang, true);
-  EXPECT_TRUE(base::Contains(EnabledLanguages(), enabled_lang));
+  EXPECT_TRUE(EnabledLanguages().contains(enabled_lang));
 
   SetLanguageEnabled(enabled_lang, false);
-  EXPECT_FALSE(base::Contains(EnabledLanguages(), enabled_lang));
+  EXPECT_FALSE(EnabledLanguages().contains(enabled_lang));
 }
 
 TEST_F(ReadAnythingReadAloudAppModelTest, Voices) {
@@ -350,15 +350,15 @@ TEST_F(ReadAnythingReadAloudAppModelTest, Voices) {
   const char* voice2 = "Shang";
   SetVoice(voice1, lang1);
   SetVoice(voice2, lang2);
-  EXPECT_TRUE(base::Contains(Voices(), lang1));
-  EXPECT_TRUE(base::Contains(Voices(), lang2));
+  EXPECT_TRUE(Voices().contains(lang1));
+  EXPECT_TRUE(Voices().contains(lang2));
   EXPECT_STREQ(Voices().FindString(lang1)->c_str(), voice1);
   EXPECT_STREQ(Voices().FindString(lang2)->c_str(), voice2);
 
   const char* voice3 = "Mushu";
   SetVoice(voice3, lang2);
-  EXPECT_TRUE(base::Contains(Voices(), lang1));
-  EXPECT_TRUE(base::Contains(Voices(), lang2));
+  EXPECT_TRUE(Voices().contains(lang1));
+  EXPECT_TRUE(Voices().contains(lang2));
   EXPECT_STREQ(Voices().FindString(lang2)->c_str(), voice3);
 }
 

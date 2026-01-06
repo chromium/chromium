@@ -123,7 +123,7 @@ void SupervisedUserExtensionsManager::AddExtensionApproval(
   if (!is_active_policy_for_supervised_users_) {
     return;
   }
-  if (!base::Contains(approved_extensions_set_, extension.id())) {
+  if (!approved_extensions_set_.contains(extension.id())) {
     UpdateApprovedExtension(extension.id(), extension.VersionString(),
                             ApprovedExtensionChange::kAdd);
   }
@@ -146,7 +146,7 @@ void SupervisedUserExtensionsManager::RemoveExtensionApproval(
   if (!is_active_policy_for_supervised_users_) {
     return;
   }
-  if (base::Contains(approved_extensions_set_, extension.id())) {
+  if (approved_extensions_set_.contains(extension.id())) {
     UpdateApprovedExtension(extension.id(), extension.VersionString(),
                             ApprovedExtensionChange::kRemove);
   }
@@ -236,7 +236,7 @@ void SupervisedUserExtensionsManager::OnExtensionInstalled(
       return;
     }
     CHECK(extension);
-    if (!base::Contains(approved_extensions_set_, extension->id())) {
+    if (!approved_extensions_set_.contains(extension->id())) {
       AddExtensionApproval(*extension);
     }
   }
@@ -253,7 +253,7 @@ void SupervisedUserExtensionsManager::OnExtensionUninstalled(
   if (!is_active_policy_for_supervised_users_) {
     return;
   }
-  if (base::Contains(approved_extensions_set_, extension->id())) {
+  if (approved_extensions_set_.contains(extension->id())) {
     UpdateApprovedExtension(extension->id(), extension->VersionString(),
                             ApprovedExtensionChange::kRemove);
   }
@@ -296,7 +296,7 @@ SupervisedUserExtensionsManager::GetExtensionState(
     return SupervisedUserExtensionsManager::ExtensionState::kBlocked;
   }
 
-  if (base::Contains(approved_extensions_set_, extension.id())) {
+  if (approved_extensions_set_.contains(extension.id())) {
     return SupervisedUserExtensionsManager::ExtensionState::kAllowed;
   }
   if (IsLocallyParentApprovedExtension(extension.id())) {
@@ -498,7 +498,7 @@ bool SupervisedUserExtensionsManager::IsLocallyParentApprovedExtension(
     const std::string& extension_id) const {
   const base::Value::Dict& current_locally_approved_dict = user_prefs_->GetDict(
       prefs::kSupervisedUserLocallyParentApprovedExtensions);
-  return base::Contains(current_locally_approved_dict, extension_id);
+  return current_locally_approved_dict.contains(extension_id);
 }
 
 void SupervisedUserExtensionsManager::RemoveLocalParentalApproval(

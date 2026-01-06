@@ -1402,7 +1402,7 @@ void ProfileManager::RemoveKeepAlive(Profile* profile,
     return;
   }
 
-  DCHECK(base::Contains(info->keep_alives, origin));
+  DCHECK(info->keep_alives.contains(origin));
 
 #if !BUILDFLAG(IS_ANDROID)
   // When removing the last keep alive of an ephemeral profile, schedule the
@@ -1732,7 +1732,7 @@ Profile* ProfileManager::GetActiveUserOrOffTheRecordProfile() {
 void ProfileManager::UnloadProfile(const base::FilePath& profile_dir) {
   TRACE_EVENT0("browser", "ProfileManager::UnloadProfile");
 
-  DCHECK(base::Contains(profiles_info_, profile_dir));
+  DCHECK(profiles_info_.contains(profile_dir));
 
   bool ephemeral =
       IsRegisteredAsEphemeral(&GetProfileAttributesStorage(), profile_dir);

@@ -154,7 +154,7 @@ TEST(ExtensionSimpleOverridesTest,
   // Verify that all disallowed features are recognized and that none are in
   // both the disallowed and allowed feature sets.
   for (const auto& feature : disallowed_features) {
-    EXPECT_TRUE(base::Contains(known_features, feature))
+    EXPECT_TRUE(known_features.contains(feature))
         << "Unknown feature: " << feature;
     EXPECT_FALSE(base::Contains(allowlisted_features, feature))
         << "Feature in both allowed and disallowed: " << feature;
@@ -163,7 +163,7 @@ TEST(ExtensionSimpleOverridesTest,
   // Verify that all allowed features are recognized and that none are in
   // both the disallowed and allowed feature sets.
   for (const auto& feature : allowlisted_features) {
-    EXPECT_TRUE(base::Contains(known_features, feature))
+    EXPECT_TRUE(known_features.contains(feature))
         << "Unknown feature: " << feature;
     EXPECT_FALSE(base::Contains(disallowed_features, feature))
         << "Feature in both allowed and disallowed: " << feature;

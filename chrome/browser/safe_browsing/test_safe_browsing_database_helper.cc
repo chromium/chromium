@@ -62,7 +62,7 @@ class InsertingDatabaseFactory : public safe_browsing::TestV4DatabaseFactory {
       std::unique_ptr<safe_browsing::StoreMap> store_map) override {
     const base::FilePath base_store_path(FILE_PATH_LITERAL("UrlDb.store"));
     for (const auto& id : lists_to_insert_) {
-      if (!base::Contains(*store_map, id)) {
+      if (!store_map->contains(id)) {
         const base::FilePath store_path = base::GetUniquePath(base_store_path);
         store_map->insert(
             {id, store_factory_->CreateV4Store(

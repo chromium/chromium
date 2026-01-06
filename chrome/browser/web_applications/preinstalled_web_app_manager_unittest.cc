@@ -759,7 +759,7 @@ TEST_F(PreinstalledWebAppManagerBasicTest, PreinstallWorks) {
   base::test::TestFuture<WebAppIconManager::WebAppBitmaps> icons;
   provider().icon_manager().ReadAllIcons(app_id_, icons.GetCallback());
   ASSERT_TRUE(icons.Wait());
-  ASSERT_TRUE(base::Contains(icons.Get().trusted_icons.any, 144));
+  ASSERT_TRUE(icons.Get().trusted_icons.any.contains(144));
   EXPECT_THAT(
       icons.Get().trusted_icons.any.at(144),
       gfx::test::EqualsBitmap(gfx::test::CreateBitmap(144, SK_ColorGREEN)));

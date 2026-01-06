@@ -2357,11 +2357,11 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   std::string inner_html = content::EvalJs(GetActiveWebContents(),
                                            "document.documentElement.innerHTML")
                                .ExtractString();
-  EXPECT_TRUE(base::Contains(inner_html, "PREFETCH"));
+  EXPECT_TRUE(inner_html.contains("PREFETCH"));
   std::string prefetch_inner_html =
       content::EvalJs(new_prefetch_tab, "document.documentElement.innerHTML")
           .ExtractString();
-  EXPECT_TRUE(base::Contains(prefetch_inner_html, "PREFETCH"));
+  EXPECT_TRUE(prefetch_inner_html.contains("PREFETCH"));
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
   EXPECT_EQ(2, prerender_helper().GetRequestCount(expected_prefetch_url));
 

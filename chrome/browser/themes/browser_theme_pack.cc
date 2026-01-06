@@ -1037,7 +1037,7 @@ bool BrowserThemePack::GetColor(int id, SkColor* color) const {
     for (size_t i = 0; i < kColorsArrayLength; ++i) {
       if (UNSAFE_TODO(colors_[i]).id == id) {
         *color = UNSAFE_TODO(colors_[i]).color;
-        if (base::Contains(kOpaqueColors, id)) {
+        if (kOpaqueColors.contains(id)) {
           *color = SkColorSetA(*color, SK_AlphaOPAQUE);
         }
         return true;

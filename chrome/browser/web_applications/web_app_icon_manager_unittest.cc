@@ -1115,7 +1115,7 @@ TEST_P(WebAppIconManagerTest, TrustedIconsOfSizeNotFoundNoFallback) {
   EXPECT_EQ(1u, bitmaps_from_disk.size());
   EXPECT_THAT(bitmaps_from_disk[icon_size::k64],
               gfx::test::EqualsBitmap(any_bitmap2));
-  EXPECT_FALSE(base::Contains(bitmaps_from_disk, icon_size::k256));
+  EXPECT_FALSE(bitmaps_from_disk.contains(icon_size::k256));
   EXPECT_EQ(icon_metadata.purpose, IconPurpose::ANY);
 }
 

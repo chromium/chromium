@@ -3005,7 +3005,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
     content::WebContents* web_contents;
     if (app_id && !app_id->empty()) {
-      CHECK(base::Contains(swa_web_contents_, *app_id))
+      CHECK(swa_web_contents_.contains(*app_id))
           << "Couldn't find the SWA WebContents for appId: " << *app_id
           << " command data: " << *data;
       web_contents = swa_web_contents_[*app_id];
@@ -3699,7 +3699,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     ASSERT_TRUE(app_id);
 
     content::WebContents* web_contents;
-    CHECK(base::Contains(swa_web_contents_, *app_id))
+    CHECK(swa_web_contents_.contains(*app_id))
         << "Couldn't find the SWA WebContents for appId: " << *app_id;
     web_contents = swa_web_contents_[*app_id];
 
@@ -4057,7 +4057,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     ASSERT_TRUE(app_id);
 
     content::WebContents* web_contents;
-    CHECK(base::Contains(swa_web_contents_, *app_id))
+    CHECK(swa_web_contents_.contains(*app_id))
         << "Couldn't find the SWA WebContents for appId: " << *app_id;
     web_contents = swa_web_contents_[*app_id];
     web_contents->Focus();

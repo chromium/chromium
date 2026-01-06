@@ -348,7 +348,7 @@ void PopulateTrustedIconsFromDownloadedBitmapsAndMetadata(
   SizeToBitmap sizes_to_icons = ConstrainBitmapsToSizes(
       square_icons_matching_infos, web_app::SizesToGenerate());
   for (auto& [size, icon] : sizes_to_icons) {
-    if (!base::Contains(output_size_to_bitmaps, size)) {
+    if (!output_size_to_bitmaps.contains(size)) {
       output_size_to_bitmaps[size] = std::move(icon);
     }
   }
@@ -466,13 +466,13 @@ void PopulateProductIcons(WebAppInstallInfo* web_app_info,
 
   // Retain any bitmaps provided as input to the installation.
   for (auto& icon : square_icons_maskable) {
-    if (!base::Contains(web_app_info->icon_bitmaps.maskable, icon.width())) {
+    if (!web_app_info->icon_bitmaps.maskable.contains(icon.width())) {
       web_app_info->icon_bitmaps.maskable[icon.width()] = std::move(icon);
     }
   }
 
   for (auto& icon : square_icons_monochrome) {
-    if (!base::Contains(web_app_info->icon_bitmaps.monochrome, icon.width())) {
+    if (!web_app_info->icon_bitmaps.monochrome.contains(icon.width())) {
       web_app_info->icon_bitmaps.monochrome[icon.width()] = std::move(icon);
     }
   }

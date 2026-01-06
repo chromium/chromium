@@ -121,8 +121,7 @@ void CreateTabGroupIfNotPresent(
     sessions::tab_restore::Tab* tab,
     std::set<tab_groups::TabGroupId>& tab_group_ids,
     std::vector<tab_search::mojom::TabGroupPtr>& tab_groups) {
-  if (tab->group.has_value() &&
-      !base::Contains(tab_group_ids, tab->group.value())) {
+  if (tab->group.has_value() && !tab_group_ids.contains(tab->group.value())) {
     tab_groups::TabGroupId tab_group_id = tab->group.value();
     const tab_groups::TabGroupVisualData* tab_group_visual_data =
         &tab->group_visual_data.value();
@@ -367,7 +366,7 @@ void TabSearchPageHandler::AcceptTabOrganization(
   std::vector<TabData::TabID> tab_ids_to_remove;
   for (const auto& tab_data : organization->tab_datas()) {
     if (!tab_data->tab()->GetContents() ||
-        !base::Contains(tabs_tab_ids, tab_data->tab_id())) {
+        !tabs_tab_ids.contains(tab_data->tab_id())) {
       tab_ids_to_remove.emplace_back(tab_data->tab_id());
     }
   }
@@ -1387,7 +1386,7 @@ bool TabSearchPageHandler::AddRecentlyClosedTab(
   DedupKey dedup_id(recently_closed_tab->url, recently_closed_tab->group_id);
   // Ignore NTP entries, duplicate entries and tabs with invalid URLs such as
   // empty URLs.
-  if (base::Contains(tab_dedup_keys, dedup_id) ||
+  if (tab_dedup_keys.contains(dedup_id) ||
       recently_closed_tab->url == GURL(chrome::kChromeUINewTabPageURL) ||
       !recently_closed_tab->url.is_valid()) {
     return false;
@@ -1553,7 +1552,7 @@ void TabSearchPageHandler::OnTabStripModelChanged(
       // Recently closed entries appear first in the list.
       for (auto& entry : tab_restore_service->entries()) {
         if (entry->type == sessions::tab_restore::Type::TAB &&
-            base::Contains(tab_restore_ids, entry->id)) {
+            tab_restore_ids.contains(entry->id)) {
           // The associated tab group visual data for the recently closed tab is
           // already present at the client side from the initial GetProfileData
           // call.

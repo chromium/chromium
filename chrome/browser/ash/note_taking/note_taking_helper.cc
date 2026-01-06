@@ -96,7 +96,7 @@ bool LooksLikeAndroidPackageName(const std::string& app_id) {
   // Android package names are required to contain at least one period (see
   // validateName() in PackageParser.java), while Chrome extension IDs and web
   // app IDs contain only characters in [a-p].
-  return base::Contains(app_id, '.');
+  return app_id.contains('.');
 }
 
 bool IsInstalledApp(const std::string& app_id, Profile* profile) {

@@ -292,8 +292,7 @@ TEST_F(MediaRouterViewsUITest, NotifyObserver) {
         EXPECT_EQ(sink.id(), ui_sink.id);
         EXPECT_EQ(base::UTF8ToUTF16(sink.name()), ui_sink.friendly_name);
         EXPECT_EQ(UIMediaSinkState::AVAILABLE, ui_sink.state);
-        EXPECT_TRUE(
-            base::Contains(ui_sink.cast_modes, MediaCastMode::TAB_MIRROR));
+        EXPECT_TRUE(ui_sink.cast_modes.contains(MediaCastMode::TAB_MIRROR));
         EXPECT_EQ(sink.icon_type(), ui_sink.icon_type);
       }));
   NotifyUiOnSinksUpdated({sink_with_cast_modes});

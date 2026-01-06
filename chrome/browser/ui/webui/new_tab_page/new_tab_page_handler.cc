@@ -156,7 +156,7 @@ bool ShouldForceDarkForegroundColorsForLogo(const ThemeService* theme_service) {
       });
 
   const std::string& extension_id = theme_supplier->extension_id();
-  return base::Contains(kPrideThemeExtensionIdsDarkForeground, extension_id);
+  return kPrideThemeExtensionIdsDarkForeground.contains(extension_id);
 }
 
 new_tab_page::mojom::ThemePtr MakeTheme(
@@ -688,13 +688,12 @@ void NewTabPageHandler::SetModuleDisabled(const std::string& module_id,
                                           bool disabled) {
   ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
   base::Value::List& list = update.Get();
-  base::Value module_id_value(module_id);
   if (disabled) {
-    if (!base::Contains(list, module_id_value)) {
-      list.Append(std::move(module_id_value));
+    if (!list.contains(module_id)) {
+      list.Append(module_id);
     }
   } else {
-    list.EraseValue(module_id_value);
+    list.EraseValue(base::Value(module_id));
   }
 
   RecordModuleInteraction(module_id);
@@ -720,14 +719,13 @@ void NewTabPageHandler::SetModulesDisabled(
       disabled ? kModuleAutoRemovalModuleIdHistogram
                : kModuleAutoRemovalUndoneModuleIdHistogram;
   for (const auto& module_id : module_ids) {
-    base::Value module_id_value(module_id);
     if (disabled) {
-      if (!base::Contains(list, module_id_value)) {
-        list.Append(std::move(module_id_value));
+      if (!list.contains(module_id)) {
+        list.Append(module_id);
         DisableModuleAutoRemoval(profile_, module_id);
       }
     } else {
-      list.EraseValue(module_id_value);
+      list.EraseValue(base::Value(module_id));
     }
     base::UmaHistogramSparse(sparse_histogram, base::PersistentHash(module_id));
   }
@@ -1447,13 +1445,12 @@ void NewTabPageHandler::SetModuleHidden(const std::string& module_id,
                                         bool hidden) {
   ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpHiddenModules);
   base::Value::List& list = update.Get();
-  base::Value module_id_value(module_id);
   if (hidden) {
-    if (!base::Contains(list, module_id_value)) {
-      list.Append(std::move(module_id_value));
+    if (!list.contains(module_id)) {
+      list.Append(module_id);
     }
   } else {
-    list.EraseValue(module_id_value);
+    list.EraseValue(base::Value(module_id));
   }
 }
 

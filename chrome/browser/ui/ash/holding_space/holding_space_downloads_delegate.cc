@@ -634,7 +634,7 @@ void HoldingSpaceDownloadsDelegate::OnDownloadFailed(
     // NOTE: Removing `item` from the `model()` will result in the
     // `in_progress_download` being erased.
     model()->RemoveItem(item->id());
-    DCHECK(!base::Contains(in_progress_downloads_, in_progress_download));
+    DCHECK(!in_progress_downloads_.contains(in_progress_download));
     return;
   }
   EraseDownload(in_progress_download);

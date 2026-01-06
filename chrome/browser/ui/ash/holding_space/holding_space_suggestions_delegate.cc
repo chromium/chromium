@@ -127,7 +127,7 @@ void HoldingSpaceSuggestionsDelegate::MaybeFetchSuggestions(
     FileSuggestionType type) {
   // A data query on `type` has been sent so it is unnecessary to send a request
   // again. Return early.
-  if (base::Contains(pending_fetches_, type)) {
+  if (pending_fetches_.contains(type)) {
     return;
   }
 

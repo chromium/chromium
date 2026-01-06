@@ -52,7 +52,7 @@ std::vector<std::string> GetOrderedShelfItems(
     const std::set<std::string>& filter) {
   std::vector<std::string> result;
   for (const auto& item : ash::ShelfModel::Get()->items()) {
-    if (base::Contains(filter, item.id.app_id)) {
+    if (filter.contains(item.id.app_id)) {
       result.push_back(item.id.app_id);
     }
   }
@@ -460,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterTest,
       app_list_test_api_.GetTopLevelViewIdList();
   std::vector<std::string> filtered_top_level_id_list;
   for (const auto& item : top_level_id_list) {
-    if (base::Contains(app_filter, item)) {
+    if (app_filter.contains(item)) {
       filtered_top_level_id_list.push_back(item);
     }
   }

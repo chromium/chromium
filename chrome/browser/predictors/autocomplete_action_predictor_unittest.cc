@@ -504,8 +504,8 @@ TEST_P(AutocompleteActionPredictorTest,
 
     DBCacheKey deleted_key = {TestUrlConfidenceDb()[i].user_text,
                               TestUrlConfidenceDb()[i].url};
-    EXPECT_FALSE(base::Contains(*db_cache(), deleted_key));
-    EXPECT_FALSE(base::Contains(*db_id_cache(), deleted_key));
+    EXPECT_FALSE(db_cache()->contains(deleted_key));
+    EXPECT_FALSE(db_id_cache()->contains(deleted_key));
   }
 }
 
@@ -530,8 +530,8 @@ TEST_P(AutocompleteActionPredictorTest,
   for (size_t i = 0; i < count_to_remove; ++i) {
     DBCacheKey deleted_key = {TestUrlConfidenceDb()[i].user_text,
                               TestUrlConfidenceDb()[i].url};
-    EXPECT_FALSE(base::Contains(*db_cache(), deleted_key));
-    EXPECT_FALSE(base::Contains(*db_id_cache(), deleted_key));
+    EXPECT_FALSE(db_cache()->contains(deleted_key));
+    EXPECT_FALSE(db_id_cache()->contains(deleted_key));
   }
 }
 

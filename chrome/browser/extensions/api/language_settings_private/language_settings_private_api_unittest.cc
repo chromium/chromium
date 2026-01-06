@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -549,7 +550,7 @@ TEST_F(LanguageSettingsPrivateApiTest, GetInputMethodListsTest) {
           language_code.GetString(), "en", true);
       if (!language_display_name.empty()) {
         EXPECT_TRUE(
-            base::Contains(*ime_tags_ptr, base::Value(language_display_name)));
+            ime_tags_ptr->contains(base::UTF16ToUTF8(language_display_name)));
       }
     }
   }

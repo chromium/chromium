@@ -1158,7 +1158,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
 
   for (const auto& [app_type, app_delegate] : app_map) {
     if (app_delegate->IsAppEnabled() && app_delegate->ShouldShowInLauncher() &&
-        !base::Contains(kLauncherPositionExemptTypes, app_type)) {
+        !kLauncherPositionExemptTypes.contains(app_type)) {
       EXPECT_TRUE(base::Contains(app_order,
                                  GetManager().GetAppIdForSystemApp(app_type)))
           << "System app '" << app_delegate->GetInternalName()

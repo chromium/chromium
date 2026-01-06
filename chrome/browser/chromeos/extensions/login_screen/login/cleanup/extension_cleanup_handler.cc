@@ -72,7 +72,7 @@ void ExtensionCleanupHandler::UninstallExtensions() {
     }
 
     // Skip extensions exempt by policy.
-    if (base::Contains(policy_exempt_extensions, extension_id)) {
+    if (policy_exempt_extensions.contains(extension_id)) {
       continue;
     }
 

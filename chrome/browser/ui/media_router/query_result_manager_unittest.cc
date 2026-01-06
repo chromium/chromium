@@ -127,7 +127,7 @@ TEST_F(QueryResultManagerTest, StartStopSinksQuery) {
 
   cast_modes = query_result_manager_.GetSupportedCastModes();
   EXPECT_EQ(1u, cast_modes.size());
-  EXPECT_TRUE(base::Contains(cast_modes, MediaCastMode::PRESENTATION));
+  EXPECT_TRUE(cast_modes.contains(MediaCastMode::PRESENTATION));
   actual_sources =
       query_result_manager_.GetSourcesForCastMode(MediaCastMode::PRESENTATION);
   EXPECT_EQ(1u, actual_sources.size());
@@ -145,7 +145,7 @@ TEST_F(QueryResultManagerTest, StartStopSinksQuery) {
 
   cast_modes = query_result_manager_.GetSupportedCastModes();
   EXPECT_EQ(1u, cast_modes.size());
-  EXPECT_TRUE(base::Contains(cast_modes, MediaCastMode::PRESENTATION));
+  EXPECT_TRUE(cast_modes.contains(MediaCastMode::PRESENTATION));
   actual_sources =
       query_result_manager_.GetSourcesForCastMode(MediaCastMode::PRESENTATION);
   EXPECT_EQ(1u, actual_sources.size());
@@ -383,10 +383,10 @@ TEST_F(QueryResultManagerTest, AddInvalidSource) {
   const auto& cast_mode_sources = query_result_manager_.cast_mode_sources_;
   const auto& presentation_sources =
       cast_mode_sources.at(MediaCastMode::PRESENTATION);
-  EXPECT_TRUE(base::Contains(cast_mode_sources, MediaCastMode::PRESENTATION));
+  EXPECT_TRUE(cast_mode_sources.contains(MediaCastMode::PRESENTATION));
   EXPECT_EQ(presentation_sources.size(), 1u);
   EXPECT_EQ(presentation_sources.at(0), source);
-  EXPECT_FALSE(base::Contains(cast_mode_sources, MediaCastMode::TAB_MIRROR));
+  EXPECT_FALSE(cast_mode_sources.contains(MediaCastMode::TAB_MIRROR));
 }
 
 }  // namespace media_router

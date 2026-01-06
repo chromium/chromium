@@ -109,7 +109,7 @@ bool IsWebAuthnRPIDListedInSecurityKeyPermitAttestationPolicy(
   const PrefService* prefs = profile->GetPrefs();
   const base::Value::List& permit_attestation =
       prefs->GetList(prefs::kSecurityKeyPermitAttestation);
-  return base::Contains(permit_attestation, relying_party_id);
+  return permit_attestation.contains(relying_party_id);
 }
 
 bool IsOriginListedInEnterpriseAttestationSwitch(

@@ -414,7 +414,7 @@ TEST_F(WebAppRegistrarTest, GetApps) {
   int not_in_sync_install_count = 0;
   for (const WebApp& web_app : registrar().GetApps()) {
     ++not_in_sync_install_count;
-    EXPECT_TRUE(base::Contains(ids, web_app.app_id()));
+    EXPECT_TRUE(ids.contains(web_app.app_id()));
   }
   EXPECT_EQ(10, not_in_sync_install_count);
 

@@ -214,7 +214,7 @@ void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
         // The PageNode remained in |page_nodes_loading_| when it transitioned
         // from |kLoading| to |kLoadedBusy|, so no change is necessary when it
         // transitions back to |kLoading|.
-        DCHECK(base::Contains(page_nodes_loading_, page_node));
+        DCHECK(page_nodes_loading_.contains(page_node));
         DCHECK(!base::Contains(page_nodes_load_initiated_, page_node));
         DCHECK(!FindPageNodeToLoadData(page_node));
         return;
@@ -232,7 +232,7 @@ void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
 
       // Keep track of all PageNodes that are loading, even when the load isn't
       // initiated by this policy.
-      DCHECK(!base::Contains(page_nodes_loading_, page_node));
+      DCHECK(!page_nodes_loading_.contains(page_node));
       page_nodes_loading_.emplace(page_node, erased);
 
       if (erased_page_node_to_load) {
@@ -248,7 +248,7 @@ void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
     case PageNode::LoadingState::kLoadedBusy: {
       // The PageNode should have been added to |page_nodes_loading_| when it
       // transitioned to |kLoading|.
-      DCHECK(base::Contains(page_nodes_loading_, page_node));
+      DCHECK(page_nodes_loading_.contains(page_node));
       DCHECK(!base::Contains(page_nodes_load_initiated_, page_node));
       DCHECK(!FindPageNodeToLoadData(page_node));
       return;
@@ -290,7 +290,7 @@ void BackgroundTabLoadingPolicy::ScheduleLoadForRestoredTabs(
         page_node_data.notification_permission_status);
 
     // No need to schedule a load if the page is already loading.
-    if (base::Contains(page_nodes_loading_, page_node)) {
+    if (page_nodes_loading_.contains(page_node)) {
       // Track that this policy was responsible for scheduling the load.
       page_nodes_loading_[page_node] = true;
       continue;
@@ -377,7 +377,7 @@ base::Value::Dict BackgroundTabLoadingPolicy::DescribePageNodeData(
     // shouldn't be sticking around for long.
     dict.Set("page_load_initiated", true);
   }
-  if (base::Contains(page_nodes_loading_, node)) {
+  if (page_nodes_loading_.contains(node)) {
     dict.Set("page_loading", true);
   }
   return !dict.empty() ? std::move(dict) : base::Value::Dict();
@@ -547,7 +547,7 @@ void BackgroundTabLoadingPolicy::InitiateLoad(const PageNode* page_node) {
   for (const PageNode* to_load : page_loader_->GetPageNodesToLoad(page_node)) {
     // Extra page nodes that weren't passed to ScheduleLoadForRestoredTabs() may
     // already be loading.
-    if (to_load != page_node && base::Contains(page_nodes_loading_, to_load)) {
+    if (to_load != page_node && page_nodes_loading_.contains(to_load)) {
       DCHECK(!base::Contains(page_nodes_load_initiated_, to_load));
       continue;
     }
@@ -559,7 +559,7 @@ void BackgroundTabLoadingPolicy::InitiateSinglePageLoad(
     const PageNode* page_node) {
   // The page shouldn't already be loading.
   DCHECK(!base::Contains(page_nodes_load_initiated_, page_node));
-  DCHECK(!base::Contains(page_nodes_loading_, page_node));
+  DCHECK(!page_nodes_loading_.contains(page_node));
   DCHECK_EQ(tabs_scored_, page_nodes_to_load_.size());
 
   // Mark |page_node| as load initiated. Ensure that InitiateLoad is only called

@@ -185,7 +185,7 @@ void DialMediaSinkServiceImpl::OnDiscoveryComplete() {
   std::vector<MediaSinkInternal> sinks_to_update;
   std::vector<MediaSinkInternal> sinks_to_remove;
   for (const auto& sink : GetSinks()) {
-    if (!base::Contains(latest_sinks_, sink.first)) {
+    if (!latest_sinks_.contains(sink.first)) {
       sinks_to_remove.push_back(sink.second);
     }
   }

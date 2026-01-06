@@ -845,7 +845,7 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
   for (const AppUpdateExpectation& app : apps) {
     if ((app.should_update || app.always_serve_crx) &&
         (app.from_version != app.to_version) &&
-        !base::Contains(downloaded_crxes, app.crx_relative_path)) {
+        !downloaded_crxes.contains(app.crx_relative_path)) {
       // Download requests for apps that install/update
       const base::FilePath crx_path = exe_path.Append(app.crx_relative_path);
       ASSERT_TRUE(base::PathExists(crx_path));

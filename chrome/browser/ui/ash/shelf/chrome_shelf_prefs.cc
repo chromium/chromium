@@ -770,9 +770,9 @@ void ChromeShelfPrefs::EnsureChromePinned() {
 }
 
 bool ChromeShelfPrefs::DidAddDefaultApps() const {
-  return base::Contains(
-      profile_->GetPrefs()->GetList(GetShelfDefaultPinLayoutPref()),
-      kDefaultPinnedAppsKey);
+  return profile_->GetPrefs()
+      ->GetList(GetShelfDefaultPinLayoutPref())
+      .contains(kDefaultPinnedAppsKey);
 }
 
 bool ChromeShelfPrefs::ShouldAddDefaultApps() const {
@@ -806,9 +806,9 @@ void ChromeShelfPrefs::AddDefaultApps() {
 }
 
 bool ChromeShelfPrefs::DidAddPreloadApps() const {
-  return base::Contains(
-      profile_->GetPrefs()->GetList(GetShelfDefaultPinLayoutPref()),
-      kPreloadPinnedAppsKey);
+  return profile_->GetPrefs()
+      ->GetList(GetShelfDefaultPinLayoutPref())
+      .contains(kPreloadPinnedAppsKey);
 }
 
 void ChromeShelfPrefs::PinPreloadApps() {

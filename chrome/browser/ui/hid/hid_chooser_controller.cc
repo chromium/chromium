@@ -140,7 +140,7 @@ size_t HidChooserController::NumOptions() const {
 
 std::u16string HidChooserController::GetOption(size_t index) const {
   DCHECK_LT(index, items_.size());
-  DCHECK(base::Contains(device_map_, items_[index]));
+  DCHECK(device_map_.contains(items_[index]));
   const auto& devices = device_map_.find(items_[index])->second;
   auto device = std::ranges::find_if(
       devices, [](const auto& d) { return !d->product_name.empty(); });
@@ -157,7 +157,7 @@ bool HidChooserController::IsPaired(size_t index) const {
     return false;
   }
 
-  DCHECK(base::Contains(device_map_, items_[index]));
+  DCHECK(device_map_.contains(items_[index]));
   const auto& device_infos = device_map_.find(items_[index])->second;
   DCHECK_GT(device_infos.size(), 0u);
   for (const auto& device : device_infos) {
@@ -179,7 +179,7 @@ void HidChooserController::Select(const std::vector<size_t>& indices) {
     return;
   }
 
-  DCHECK(base::Contains(device_map_, items_[index]));
+  DCHECK(device_map_.contains(items_[index]));
   auto& device_infos = device_map_.find(items_[index])->second;
   DCHECK_GT(device_infos.size(), 0u);
   std::vector<device::mojom::HidDeviceInfoPtr> devices;

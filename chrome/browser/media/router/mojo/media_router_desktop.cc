@@ -524,7 +524,7 @@ void MediaRouterDesktop::RegisterMediaRouteProvider(
     mojo::PendingRemote<mojom::MediaRouteProvider>
         media_route_provider_remote) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!base::Contains(media_route_providers_, provider_id));
+  DCHECK(!media_route_providers_.contains(provider_id));
   mojo::Remote<mojom::MediaRouteProvider> bound_remote(
       std::move(media_route_provider_remote));
   bound_remote.set_disconnect_handler(

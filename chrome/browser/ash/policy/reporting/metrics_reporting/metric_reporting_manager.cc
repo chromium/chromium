@@ -228,7 +228,7 @@ MetricReportingManager::GetTelemetryCollectors(MetricEventType event_type) {
           ::ash::kReportDeviceSignalStrengthEventDrivenTelemetry);
     case USB_ADDED:
     case USB_REMOVED:
-      if (base::Contains(telemetry_collectors_, kDelayedPeripheralTelemetry)) {
+      if (telemetry_collectors_.contains(kDelayedPeripheralTelemetry)) {
         return {telemetry_collectors_.at(kDelayedPeripheralTelemetry).get()};
       }
       // Return statement or `ABSL_FALLTHROUGH_INTENDED` is necessary to silence
@@ -433,7 +433,7 @@ void MetricReportingManager::InitOneShotTelemetryCollector(
     bool enable_default_value,
     base::TimeDelta init_delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!base::Contains(telemetry_collectors_, collector_name));
+  CHECK(!telemetry_collectors_.contains(collector_name));
   if (!metric_report_queue) {
     return;
   }
@@ -451,7 +451,7 @@ void MetricReportingManager::InitManualTelemetryCollector(
     const std::string& enable_setting_path,
     bool enable_default_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!base::Contains(telemetry_collectors_, collector_name));
+  CHECK(!telemetry_collectors_.contains(collector_name));
   if (!metric_report_queue) {
     return;
   }
@@ -473,7 +473,7 @@ void MetricReportingManager::InitPeriodicTelemetryCollector(
     int rate_unit_to_ms,
     base::TimeDelta init_delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!base::Contains(telemetry_collectors_, collector_name));
+  CHECK(!telemetry_collectors_.contains(collector_name));
   if (!metric_report_queue) {
     return;
   }
@@ -598,7 +598,7 @@ void MetricReportingManager::InitNetworkPeriodicCollector(
 
 void MetricReportingManager::InitAppCollectors(Profile* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (base::Contains(telemetry_collectors_, kAppTelemetry) ||
+  if (telemetry_collectors_.contains(kAppTelemetry) ||
       !user_event_report_queue_ || !user_reporting_settings_ ||
       !user_telemetry_report_queue_) {
     return;
@@ -863,8 +863,7 @@ MetricReportingManager::GetTelemetryCollectorsFromSetting(
     }
 
     const std::string* telemetry_name = telemetry.GetIfString();
-    if (telemetry_name &&
-        base::Contains(telemetry_collectors_, *telemetry_name) &&
+    if (telemetry_name && telemetry_collectors_.contains(*telemetry_name) &&
         !base::Contains(samplers,
                         telemetry_collectors_.at(*telemetry_name).get())) {
       samplers.push_back(telemetry_collectors_.at(*telemetry_name).get());

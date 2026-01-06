@@ -805,7 +805,7 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
       apps::FileHandler::AcceptEntry accept_entry;
       accept_entry.mime_type = accept_entry_proto.mimetype();
       for (const auto& file_extension : accept_entry_proto.file_extensions()) {
-        if (base::Contains(accept_entry.file_extensions, file_extension)) {
+        if (accept_entry.file_extensions.contains(file_extension)) {
           // We intentionally don't return a nullptr here; instead, duplicate
           // entries are absorbed.
           DLOG(ERROR) << "apps::FileHandler::AcceptEntry parsing encountered "

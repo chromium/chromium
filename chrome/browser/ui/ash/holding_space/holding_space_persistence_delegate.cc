@@ -180,7 +180,7 @@ void HoldingSpacePersistenceDelegate::MaybeRemoveItemsFromPersistence() {
   ScopedListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
   update->EraseIf([&](const base::Value& persisted_item) {
     auto type = HoldingSpaceItem::DeserializeType(persisted_item.GetDict());
-    return !base::Contains(known_types, type);
+    return !known_types.contains(type);
   });
 }
 
