@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
+
 #include <string>
 #include <utility>
 #include <vector>
@@ -15,7 +17,6 @@
 #include "base/test/task_environment.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 
 namespace blink {
 
