@@ -1663,10 +1663,6 @@ bool CanvasResourceProvider::IsGpuContextLost() const {
          raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
 }
 
-bool CanvasResourceProvider::IsSoftwareSharedImageGpuChannelLost() const {
-  return false;
-}
-
 void CanvasResourceProvider::NotifyGpuContextLostTask(
     base::WeakPtr<CanvasResourceProvider> provider) {
   if (provider && provider->delegate_) {

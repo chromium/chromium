@@ -256,9 +256,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
  protected:
   class CanvasImageProvider;
 
-  // Returns true iff the resource provider is (a) using a GPU channel for
-  // software SharedImages and (b) that channel has been lost.
-  virtual bool IsSoftwareSharedImageGpuChannelLost() const;
   static void NotifyGpuContextLostTask(base::WeakPtr<CanvasResourceProvider>);
 
   SkSurface* GetSkSurface() const;
@@ -514,7 +511,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   virtual scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason);
 
   bool IsValid() const override;
-  bool IsSoftwareSharedImageGpuChannelLost() const final;
 
   // ExternalCanvasDrawHelper() is used by clients that require the invocation
   // of WillDrawIfNeeded() before obtaining a canvas and drawing on it.
@@ -563,6 +559,10 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
  private:
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
+
+  // Returns true iff the resource provider is (a) using a GPU channel for
+  // software SharedImages and (b) that channel has been lost.
+  bool IsSoftwareSharedImageGpuChannelLost() const;
 
   // The maximum number of in-flight resources waiting to be used for
   // recycling.
