@@ -381,10 +381,20 @@ void ContainerNode::InsertNodeVector(
       Node& child = *target_node;
       mutator(*this, child, next);
       ChildListMutationScope(*this).ChildAdded(child);
-      if (GetDocument().MayContainShadowRoots())
-        child.CheckSlotChangeAfterInserted();
-      probe::DidInsertDOMNode(&child);
-      NotifyNodeInsertedInternal(child, post_insertion_notification_targets);
+      if (RuntimeEnabledFeatures::
+              SendSlotChangeSignalAfterNodeInsertedEnabled()) {
+        probe::DidInsertDOMNode(&child);
+        NotifyNodeInsertedInternal(child, post_insertion_notification_targets);
+        if (GetDocument().MayContainShadowRoots()) {
+          child.CheckSlotChangeAfterInserted();
+        }
+      } else {
+        if (GetDocument().MayContainShadowRoots()) {
+          child.CheckSlotChangeAfterInserted();
+        }
+        probe::DidInsertDOMNode(&child);
+        NotifyNodeInsertedInternal(child, post_insertion_notification_targets);
+      }
     }
   }
 }

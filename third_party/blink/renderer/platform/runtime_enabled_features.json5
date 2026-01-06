@@ -4750,6 +4750,14 @@
       base_feature: "none",
     },
     {
+      // SlotChange signal is sent after node insertion is complete,
+      // ensuring that slot fallback content is handled correctly.
+      // This was added in M145 and can be removed after M147.
+      // https://issues.chromium.org/issues/40150299
+      name: "SendSlotChangeSignalAfterNodeInserted",
+      status: "stable",
+    },
+    {
       name: "SensorExtraClasses",
       public: true,
       status: "experimental",
