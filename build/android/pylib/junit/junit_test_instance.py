@@ -28,6 +28,7 @@ class JunitTestInstance(test_instance.TestInstance):
       self._shard_filter = {int(x) for x in args.shard_filter.split(',')}
     self._test_filters = test_filter.InitializeFiltersFromArgs(args)
     self._test_suite = args.test_suite
+    self._quiet = args.quiet
 
   #override
   def TestType(self):
@@ -92,6 +93,10 @@ class JunitTestInstance(test_instance.TestInstance):
   @property
   def shard_filter(self):
     return self._shard_filter
+
+  @property
+  def quiet(self):
+    return self._quiet
 
   @property
   def suite(self):

@@ -152,6 +152,10 @@ def AddTracingOptions(parser):
 
 def AddCommonOptions(parser):
   """Adds all common options to |parser|."""
+  parser.add_argument("-q",
+                      "--quiet",
+                      action="store_true",
+                      help="Minimize output.")
 
   default_build_type = os.environ.get('BUILDTYPE', 'Debug')
 
@@ -1414,17 +1418,17 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
         for r in iteration_results.GetAll():
           result_counts[r.GetName()][r.GetType()] += 1
 
-        report_results.LogFull(
-            results=iteration_results,
-            test_type=test_instance.TestType(),
-            test_package=test_run.TestPackage(),
-            annotation=getattr(args, 'annotations', None),
-            flakiness_server=getattr(args, 'flakiness_dashboard_server',
-                                     None))
+        report_results.LogFull(results=iteration_results,
+                               test_type=test_instance.TestType(),
+                               test_package=test_run.TestPackage(),
+                               annotation=getattr(args, 'annotations', None),
+                               flakiness_server=getattr(
+                                   args, 'flakiness_dashboard_server', None),
+                               quiet=args.quiet)
 
         failed_tests = (iteration_results.GetNotPass() -
                         iteration_results.GetSkip())
-        if failed_tests:
+        if failed_tests and not args.quiet:
           _LogRerunStatement(failed_tests, args.wrapper_script_args)
 
         if args.break_on_failure and not iteration_results.DidRunPass():
@@ -1560,6 +1564,11 @@ def DumpThreadStacks(_signal, _frame):
 
 def main():
   signal.signal(signal.SIGUSR1, DumpThreadStacks)
+  if os.environ.get('GEMINI_CLI') == '1':
+    if not any(arg in ('--quiet', '-q') for arg in sys.argv):
+      print('Adding --quiet because we\'re running under gemini-cli ('
+            'GEMINI_CLI=1)')
+      sys.argv.append('--quiet')
 
   parser = argparse.ArgumentParser()
   command_parsers = parser.add_subparsers(
