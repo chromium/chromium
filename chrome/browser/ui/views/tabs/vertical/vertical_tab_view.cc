@@ -465,12 +465,12 @@ void VerticalTabView::UpdateBorder() {
   if (pinned_) {
     if (split_) {
       // Insets for border handled by the `VerticalSplitTabView`.
-      SetBorder(views::CreateEmptyBorder(gfx::Insets(
-          GetLayoutConstant(VERTICAL_TAB_PINNED_BORDER_THICKNESS))));
+      SetBorder(views::CreateEmptyBorder(gfx::Insets(GetLayoutConstant(
+          LayoutConstant::kVerticalTabPinnedBorderThickness))));
     } else {
       SetBorder(views::CreateRoundedRectBorder(
-          GetLayoutConstant(VERTICAL_TAB_PINNED_BORDER_THICKNESS),
-          GetLayoutConstant(VERTICAL_TAB_CORNER_RADIUS),
+          GetLayoutConstant(LayoutConstant::kVerticalTabPinnedBorderThickness),
+          GetLayoutConstant(LayoutConstant::kVerticalTabCornerRadius),
           IsFrameActive() ? kColorTabDividerFrameActive
                           : kColorTabDividerFrameInactive));
     }
@@ -556,9 +556,9 @@ float VerticalTabView::GetHoverOpacity() const {
 }
 
 SkPath VerticalTabView::GetPath() const {
-  const SkScalar corner_radius =
-      SkIntToScalar(GetLayoutConstant(VERTICAL_TAB_CORNER_RADIUS) +
-                    (split_ ? GetInsets().height() : 0));
+  const SkScalar corner_radius = SkIntToScalar(
+      GetLayoutConstant(LayoutConstant::kVerticalTabCornerRadius) +
+      (split_ ? GetInsets().height() : 0));
   return SkPath::RRect(SkRRect::MakeRectXY(gfx::RectToSkRect(GetLocalBounds()),
                                            corner_radius, corner_radius));
 }

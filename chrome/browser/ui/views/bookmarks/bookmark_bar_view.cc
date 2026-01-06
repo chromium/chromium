@@ -225,7 +225,7 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
     views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
 
     SetImageLabelSpacing(
-        GetLayoutConstant(BOOKMARK_BAR_BUTTON_IMAGE_LABEL_PADDING));
+        GetLayoutConstant(LayoutConstant::kBookmarkBarButtonImageLabelPadding));
 
     // ui::EF_MIDDLE_MOUSE_BUTTON opens all bookmarked links in separate tabs.
     SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
@@ -645,7 +645,7 @@ std::u16string BookmarkBarView::CreateToolTipForURLAndTitle(
 gfx::Size BookmarkBarView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   gfx::Size prefsize;
-  int preferred_height = GetLayoutConstant(BOOKMARK_BAR_HEIGHT);
+  int preferred_height = GetLayoutConstant(LayoutConstant::kBookmarkBarHeight);
   prefsize.set_height(
       static_cast<int>(preferred_height * size_animation_.GetCurrentValue()));
   return prefsize;
@@ -657,10 +657,10 @@ gfx::Size BookmarkBarView::GetMinimumSize() const {
   // Bookmarks" folder, along with appropriate margins and button padding.
   // It should also contain the Managed Bookmarks folder, if it is visible.
   int width = GetLeadingMargin();
-  int height = GetLayoutConstant(BOOKMARK_BAR_HEIGHT);
+  int height = GetLayoutConstant(LayoutConstant::kBookmarkBarHeight);
 
   const int bookmark_bar_button_padding =
-      GetLayoutConstant(BOOKMARK_BAR_BUTTON_PADDING);
+      GetLayoutConstant(LayoutConstant::kBookmarkBarButtonPadding);
 
   if (managed_bookmarks_button_->GetVisible()) {
     gfx::Size size = managed_bookmarks_button_->GetPreferredSize();
@@ -706,7 +706,8 @@ void BookmarkBarView::Layout(PassKey) {
   static constexpr int kBookmarkBarTrailingMargin = 8;
   int width = View::width() - x - kBookmarkBarTrailingMargin;
 
-  const int button_height = GetLayoutConstant(BOOKMARK_BAR_BUTTON_HEIGHT);
+  const int button_height =
+      GetLayoutConstant(LayoutConstant::kBookmarkBarButtonHeight);
 
   // Bookmark bar buttons should be centered between the bottom of the location
   // bar and the bottom of the bookmarks bar, which requires factoring in the
@@ -1370,7 +1371,8 @@ void BookmarkBarView::WriteDragDataForView(View* sender,
 
   button_drag_utils::SetDragImage(
       node->url(), node->GetTitle(), icon.Rasterize(GetColorProvider()),
-      &press_pt, data, BOOKMARK_BAR_BUTTON_IMAGE_LABEL_PADDING);
+      &press_pt, data,
+      GetLayoutConstant(LayoutConstant::kBookmarkBarButtonImageLabelPadding));
   WriteBookmarkDragData(node, data);
 }
 
