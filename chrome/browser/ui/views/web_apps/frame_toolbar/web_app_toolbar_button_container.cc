@@ -149,7 +149,7 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
     }
 
     const int page_action_icon_size =
-        GetLayoutConstant(WEB_APP_PAGE_ACTION_ICON_SIZE);
+        GetLayoutConstant(LayoutConstant::kWebAppPageActionIconSize);
     const page_actions::PageActionViewParams page_action_params{
         .icon_size = page_action_icon_size,
         .icon_insets = PageActionIconInsetsFromSize(page_action_icon_size),
@@ -336,7 +336,7 @@ void WebAppToolbarButtonContainer::AddPageActionIcon(
 }
 
 int WebAppToolbarButtonContainer::GetPageActionIconSize() const {
-  return GetLayoutConstant(WEB_APP_PAGE_ACTION_ICON_SIZE);
+  return GetLayoutConstant(LayoutConstant::kWebAppPageActionIconSize);
 }
 
 gfx::Insets WebAppToolbarButtonContainer::GetPageActionIconInsets(

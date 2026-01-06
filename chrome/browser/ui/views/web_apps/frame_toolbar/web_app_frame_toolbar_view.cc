@@ -274,7 +274,7 @@ WebAppFrameToolbarView::GetPinnedToolbarActionsContainer() {
 }
 
 gfx::Size WebAppFrameToolbarView::GetToolbarButtonSize() const {
-  const int size = GetLayoutConstant(WEB_APP_MENU_BUTTON_SIZE);
+  const int size = GetLayoutConstant(LayoutConstant::kWebAppMenuButtonSize);
   return gfx::Size(size, size);
 }
 

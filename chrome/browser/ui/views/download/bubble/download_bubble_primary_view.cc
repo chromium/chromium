@@ -94,7 +94,7 @@ void DownloadBubblePrimaryView::MaybeAddOtrInfoRow(Browser* browser) {
       views::CreateEmptyBorder(GetLayoutInsets(DOWNLOAD_ICON)));
   info_icon->SetImage(ui::ImageModel::FromVectorIcon(
       views::kInfoIcon, kColorDownloadBubbleInfoIcon,
-      GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
+      GetLayoutConstant(LayoutConstant::kDownloadIconSize)));
 
   auto* info_label =
       header_info_row->AddChildView(std::make_unique<views::Label>(
@@ -113,7 +113,8 @@ void DownloadBubblePrimaryView::MaybeAddOtrInfoRow(Browser* browser) {
   const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
   const int min_label_width =
-      bubble_width - side_margin - GetLayoutConstant(DOWNLOAD_ICON_SIZE) -
+      bubble_width - side_margin -
+      GetLayoutConstant(LayoutConstant::kDownloadIconSize) -
       GetLayoutInsets(DOWNLOAD_ICON).width() - icon_label_spacing;
   info_label->SizeToFit(min_label_width);
 }

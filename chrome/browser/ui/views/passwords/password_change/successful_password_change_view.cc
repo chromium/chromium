@@ -88,7 +88,7 @@ std::unique_ptr<views::View> CreateUsernamePasswordWithEyeIcon(
   // Add favicon.
   views::ImageView* favicon_view =
       parent_view->AddChildView(std::make_unique<views::ImageView>());
-  const int icon_size = GetLayoutConstant(PAGE_INFO_ICON_SIZE);
+  const int icon_size = GetLayoutConstant(LayoutConstant::kPageInfoIconSize);
   favicon_view->SetImageSize({icon_size, icon_size});
   favicon_view->SetImage(ui::ImageModel::FromVectorIcon(
       vector_icons::kGlobeIcon, ui::kColorIcon, gfx::kFaviconSize));
@@ -166,9 +166,9 @@ std::unique_ptr<views::View> CreateManagePasswordsView(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON),
       /*subtitle_text=*/std::u16string(),
       /*action_image_icon=*/
-      ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
-                                     ui::kColorIconSecondary,
-                                     GetLayoutConstant(PAGE_INFO_ICON_SIZE)));
+      ui::ImageModel::FromVectorIcon(
+          vector_icons::kLaunchIcon, ui::kColorIconSecondary,
+          GetLayoutConstant(LayoutConstant::kPageInfoIconSize)));
   manage_passwords_button->SetID(
       SuccessfulPasswordChangeView::kManagePasswordsButtonId);
   manage_passwords_button->SetTooltipText(

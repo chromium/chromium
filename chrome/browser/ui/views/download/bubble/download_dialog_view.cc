@@ -65,7 +65,7 @@ class ShowAllDownloadsButton : public RichHoverButton {
             ui::ImageModel::FromVectorIcon(
                 vector_icons::kLaunchChromeRefreshIcon,
                 kColorDownloadBubbleShowAllDownloadsIcon,
-                GetLayoutConstant(DOWNLOAD_ICON_SIZE))) {
+                GetLayoutConstant(LayoutConstant::kDownloadIconSize))) {
     // Override the table layout from RichHoverButton, in order to control the
     // spacing/padding. Code below is copied from rich_hover_button.cc but with
     // padding columns rearranged.
@@ -84,7 +84,7 @@ class ShowAllDownloadsButton : public RichHoverButton {
                    views::LayoutAlignment::kCenter,
                    views::TableLayout::kFixedSize,
                    views::TableLayout::ColumnSize::kFixed,
-                   GetLayoutConstant(DOWNLOAD_ICON_SIZE), 0)
+                   GetLayoutConstant(LayoutConstant::kDownloadIconSize), 0)
         // TODO(chlily): Look into whether the is necessary to have the empty
         // padding column.
         .AddPaddingColumn(views::TableLayout::kFixedSize, 0)
@@ -150,7 +150,7 @@ void DownloadDialogView::AddHeader() {
           base::BindRepeating(&DownloadDialogView::CloseBubble,
                               base::Unretained(this)),
           vector_icons::kCloseChromeRefreshIcon,
-          GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
+          GetLayoutConstant(LayoutConstant::kDownloadIconSize)));
   InstallCircleHighlightPathGenerator(close_button_);
   close_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   close_button_->SetProperty(views::kCrossAxisAlignmentKey,

@@ -484,9 +484,9 @@ std::unique_ptr<RichHoverButton> CreateManagePasswordRow(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORD_BUTTON),
       /*subtitle_text=*/std::u16string(),
       /*action_image_icon=*/
-      ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
-                                     ui::kColorIconSecondary,
-                                     GetLayoutConstant(PAGE_INFO_ICON_SIZE)));
+      ui::ImageModel::FromVectorIcon(
+          vector_icons::kLaunchIcon, ui::kColorIconSecondary,
+          GetLayoutConstant(LayoutConstant::kPageInfoIconSize)));
   manage_password_row->SetID(static_cast<int>(
       password_manager::ManagePasswordsViewIDs::kManagePasswordButton));
   manage_password_row->SetTooltipText(

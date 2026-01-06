@@ -45,7 +45,7 @@ float PageActionIconView::Delegate::GetPageActionInkDropVisibleOpacity() const {
 }
 
 int PageActionIconView::Delegate::GetPageActionIconSize() const {
-  return GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE);
+  return GetLayoutConstant(LayoutConstant::kLocationBarTrailingIconSize);
 }
 
 gfx::Insets PageActionIconView::Delegate::GetPageActionIconInsets(
