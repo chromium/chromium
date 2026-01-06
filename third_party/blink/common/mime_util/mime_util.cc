@@ -154,12 +154,9 @@ bool IsJSONMimeType(std::string_view mime_type) {
       net::MatchesMimeType("text/json", mime_type)) {
     return true;
   }
-  const net::MimeTypeValidationLevel level =
-      base::FeatureList::IsEnabled(
-          blink::features::kStrictJsonMimeTypeTokenValidation)
-          ? net::MimeTypeValidationLevel::kWildcardSlashAndTokens
-          : net::MimeTypeValidationLevel::kWildcardSlashOnly;
-  return net::MatchesMimeType("*+json", mime_type, level);
+  return net::MatchesMimeType(
+      "*+json", mime_type,
+      net::MimeTypeValidationLevel::kWildcardSlashAndTokens);
 }
 
 // TODO(crbug.com/362282752): Allow other `*/*+xml` MIME types.
