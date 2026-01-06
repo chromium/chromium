@@ -77,7 +77,7 @@ TEST_F(TerminationTargetPolicyTest, Basic) {
   auto page1 = CreateNode<PageNodeImpl>();
   auto frame1 = CreateFrameNodeAutoId(process1.get(), page1.get());
   testing::MakePageNodeDiscardable(page1.get(), task_env());
-  process1->set_private_footprint(base::MiB(2));
+  process1->set_private_footprint(base::MiBU(2));
   page1->SetIsAudible(true);
 
   // Old, small, discardable, same process as `page1`
@@ -92,7 +92,7 @@ TEST_F(TerminationTargetPolicyTest, Basic) {
   auto page3 = CreateNode<PageNodeImpl>();
   auto frame3 = CreateFrameNodeAutoId(process3.get(), page3.get());
   testing::MakePageNodeDiscardable(page3.get(), task_env());
-  process3->set_private_footprint(base::MiB(600));
+  process3->set_private_footprint(base::MiBU(600));
   AdvanceClock(base::Milliseconds(1));
 
   // Recent, small, discardable
@@ -101,7 +101,7 @@ TEST_F(TerminationTargetPolicyTest, Basic) {
   auto page4 = CreateNode<PageNodeImpl>();
   auto frame4 = CreateFrameNodeAutoId(process4.get(), page4.get());
   testing::MakePageNodeDiscardable(page4.get(), task_env());
-  process4->set_private_footprint(base::MiB(80));
+  process4->set_private_footprint(base::MiBU(80));
   AdvanceClock(base::Milliseconds(1));
 
   // Not a renderer

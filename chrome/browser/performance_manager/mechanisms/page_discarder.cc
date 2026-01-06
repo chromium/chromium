@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
@@ -40,7 +40,7 @@ enum class DiscardPageOnUIThreadOutcome {
 
 }  // namespace
 
-std::optional<base::ByteCount> PageDiscarder::DiscardPageNode(
+std::optional<base::ByteSize> PageDiscarder::DiscardPageNode(
     const PageNode* page_node,
     ::mojom::LifecycleUnitDiscardReason discard_reason) {
   base::WeakPtr<content::WebContents> contents = page_node->GetWebContents();
@@ -58,7 +58,7 @@ std::optional<base::ByteCount> PageDiscarder::DiscardPageNode(
     return std::nullopt;
   }
 
-  base::ByteCount memory_footprint_estimate =
+  base::ByteSize memory_footprint_estimate =
       user_tuning::GetDiscardedMemoryEstimateForPage(page_node);
 
 #if BUILDFLAG(IS_ANDROID)

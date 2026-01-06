@@ -8,7 +8,7 @@
 #include <compare>
 #include <optional>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/containers/variant_map.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -92,11 +92,11 @@ struct CPUTimeResult {
 // Results of a kMemorySummary query.
 struct MemorySummaryResult {
   ResultMetadata metadata;
-  base::ByteCount resident_set_size;
-  base::ByteCount private_footprint;
+  base::ByteSize resident_set_size;
+  base::ByteSize private_footprint;
 
   // The private swapped memory. Only reported on Linux, ChromeOS and Android.
-  base::ByteCount private_swap;
+  base::ByteSize private_swap;
 
   friend constexpr auto operator<=>(const MemorySummaryResult&,
                                     const MemorySummaryResult&) = default;

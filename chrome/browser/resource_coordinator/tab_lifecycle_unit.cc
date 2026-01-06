@@ -400,11 +400,11 @@ void TabLifecycleUnitSource::TabLifecycleUnit::UpdatePreDiscardResourceUsage(
   if (pre_discard_resource_usage == nullptr) {
     performance_manager::user_tuning::UserPerformanceTuningManager::
         PreDiscardResourceUsage::CreateForWebContents(
-            web_contents, base::KiB(tab_memory_footprint_estimate),
+            web_contents, base::KiBU(tab_memory_footprint_estimate),
             discard_reason);
   } else {
     pre_discard_resource_usage->UpdateDiscardInfo(
-        base::KiB(tab_memory_footprint_estimate), discard_reason);
+        base::KiBU(tab_memory_footprint_estimate), discard_reason);
   }
 }
 

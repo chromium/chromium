@@ -43,7 +43,7 @@ class UserPerformanceTuningNotifier : public performance_manager::GraphOwned,
   };
 
   UserPerformanceTuningNotifier(std::unique_ptr<Receiver> delegate,
-                                base::ByteCount resident_set_threshold,
+                                base::ByteSize resident_set_threshold,
                                 int tab_count_threshold);
   ~UserPerformanceTuningNotifier() override;
 
@@ -68,8 +68,8 @@ class UserPerformanceTuningNotifier : public performance_manager::GraphOwned,
   std::unique_ptr<
       performance_manager::ProcessMetricsDecorator::ScopedMetricsInterestToken>
       metrics_interest_token_;
-  const base::ByteCount resident_set_threshold_;
-  base::ByteCount previous_total_rss_;
+  const base::ByteSize resident_set_threshold_;
+  base::ByteSize previous_total_rss_;
 
   const int tab_count_threshold_ = 0;
   int tab_count_ = 0;

@@ -85,7 +85,8 @@ void TabResourceUsageCollector::OnResourceUsageUpdated(
         if (auto* tab =
                 tabs::TabInterface::MaybeGetFromContents(web_contents)) {
           if (auto* const helper = TabResourceUsageTabHelper::From(tab)) {
-            helper->SetMemoryUsage(memory_result->private_footprint);
+            helper->SetMemoryUsage(
+                memory_result->private_footprint.AsDeprecatedByteCount());
             did_resource_update = true;
           }
         }

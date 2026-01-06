@@ -35,9 +35,8 @@ base::ByteCount GetDiscardedMemorySavings(content::WebContents* contents) {
   if (pre_discard_resource_usage == nullptr) {
     return base::ByteCount(0);
   } else {
-    CHECK(
-        !pre_discard_resource_usage->memory_footprint_estimate().is_negative());
-    return pre_discard_resource_usage->memory_footprint_estimate();
+    return pre_discard_resource_usage->memory_footprint_estimate()
+        .AsDeprecatedByteCount();
   }
 }
 

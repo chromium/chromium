@@ -8,7 +8,7 @@
 #include <utility>
 #include <variant>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -274,17 +274,17 @@ bool ProcessNodeImpl::GetMainThreadTaskLoadIsLow() const {
   return main_thread_task_load_is_low_.value();
 }
 
-base::ByteCount ProcessNodeImpl::GetPrivateFootprint() const {
+base::ByteSize ProcessNodeImpl::GetPrivateFootprint() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return private_footprint_;
 }
 
-base::ByteCount ProcessNodeImpl::GetResidentSet() const {
+base::ByteSize ProcessNodeImpl::GetResidentSet() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return resident_set_;
 }
 
-base::ByteCount ProcessNodeImpl::GetPrivateSwap() const {
+base::ByteSize ProcessNodeImpl::GetPrivateSwap() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return private_swap_;
 }
@@ -425,9 +425,9 @@ void ProcessNodeImpl::SetProcessImpl(base::Process process,
 
   // Also clear the measurement data (if any), as it references the previous
   // process.
-  private_footprint_ = base::ByteCount(0);
-  resident_set_ = base::ByteCount(0);
-  private_swap_ = base::ByteCount(0);
+  private_footprint_ = base::ByteSize(0);
+  resident_set_ = base::ByteSize(0);
+  private_swap_ = base::ByteSize(0);
 
   process_id_ = new_pid;
   launch_time_ = launch_time;

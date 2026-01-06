@@ -73,12 +73,12 @@ const PriorityAndReason& WorkerNodeImpl::GetPriorityAndReason() const {
   return priority_and_reason_.value();
 }
 
-base::ByteCount WorkerNodeImpl::GetResidentSetEstimate() const {
+base::ByteSize WorkerNodeImpl::GetResidentSetEstimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return resident_set_estimate_;
 }
 
-base::ByteCount WorkerNodeImpl::GetPrivateFootprintEstimate() const {
+base::ByteSize WorkerNodeImpl::GetPrivateFootprintEstimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return private_footprint_estimate_;
 }
@@ -173,12 +173,12 @@ void WorkerNodeImpl::SetPriorityAndReason(
   priority_and_reason_.SetAndMaybeNotify(this, priority_and_reason);
 }
 
-void WorkerNodeImpl::SetResidentSetEstimate(base::ByteCount rss_estimate) {
+void WorkerNodeImpl::SetResidentSetEstimate(base::ByteSize rss_estimate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   resident_set_estimate_ = rss_estimate;
 }
 
-void WorkerNodeImpl::SetPrivateFootprintEstimate(base::ByteCount pmf_estimate) {
+void WorkerNodeImpl::SetPrivateFootprintEstimate(base::ByteSize pmf_estimate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   private_footprint_estimate_ = pmf_estimate;
 }

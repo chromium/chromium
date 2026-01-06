@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/byte_size.h"
 #include "base/containers/enum_set.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -66,9 +67,9 @@ constexpr auto kWorkerContextTypeId =
     ResourceContextTypeId::ForType<WorkerContext>();
 
 // Fake memory results.
-constexpr base::ByteCount kFakeResidentSetSize = base::KiB(123);
-constexpr base::ByteCount kFakePrivateFootprint = base::KiB(456);
-constexpr base::ByteCount kFakePrivateSwap = base::KiB(789);
+constexpr base::ByteSize kFakeResidentSetSize = base::KiBU(123);
+constexpr base::ByteSize kFakePrivateFootprint = base::KiBU(456);
+constexpr base::ByteSize kFakePrivateSwap = base::KiBU(789);
 
 class LenientMockQueryResultObserver : public QueryResultObserver {
  public:

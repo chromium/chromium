@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -76,11 +77,11 @@ class MemoryMeasurementDelegateWithSwap final
 
  private:
   static MemorySummaryMap ModifyMemorySummary(MemorySummaryMap summary) {
-    base::ByteCount fake_swap = base::KiB(1);
+    base::ByteSize fake_swap = base::KiBU(1);
     for (auto& [context, measurement] : summary) {
       if (measurement.private_swap.is_zero()) {
         measurement.private_swap = fake_swap;
-        fake_swap += base::KiB(1);
+        fake_swap += base::KiBU(1);
       }
     }
     return summary;
@@ -134,15 +135,15 @@ auto MemorySummaryResultIsPositive(MeasurementAlgorithm expected_algorithm) {
       // TODO(crbug.com/40947218): iOS doesn't support private_memory_footprint,
       // so it's always 0.
       Field("private_footprint", &MemorySummaryResult::private_footprint,
-            Eq(base::ByteCount(0))),
+            Eq(base::ByteSize(0))),
 #else
       Field("private_footprint", &MemorySummaryResult::private_footprint,
-            Gt(base::ByteCount(0))),
+            Gt(base::ByteSize(0))),
 #endif
       Field("resident_set_size", &MemorySummaryResult::resident_set_size,
-            Gt(base::ByteCount(0))),
+            Gt(base::ByteSize(0))),
       Field("private_swap", &MemorySummaryResult::private_swap,
-            Gt(base::ByteCount(0))),
+            Gt(base::ByteSize(0))),
       ResultMetadataMatches<MemorySummaryResult>(
           expected_measurement_time_matcher, expected_algorithm)));
 }

@@ -103,12 +103,12 @@ void GraphTestHarnessWithDiscardablePage::RecreateNodes() {
 LenientMockPageDiscarder::LenientMockPageDiscarder() = default;
 LenientMockPageDiscarder::~LenientMockPageDiscarder() = default;
 
-std::optional<base::ByteCount> LenientMockPageDiscarder::DiscardPageNode(
+std::optional<base::ByteSize> LenientMockPageDiscarder::DiscardPageNode(
     const PageNode* page_node,
     ::mojom::LifecycleUnitDiscardReason discard_reason) {
   if (DiscardPageNodeImpl(page_node)) {
     // Discard success: Return a non-nullopt estimated memory freed.
-    return base::ByteCount(0);
+    return base::ByteSize(0);
   }
   // Discard failure: return nullopt;
   return std::nullopt;

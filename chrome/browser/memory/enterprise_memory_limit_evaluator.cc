@@ -114,7 +114,7 @@ void EnterpriseMemoryLimitEvaluator::GraphObserver::
   base::ByteCount total_rss;
   for (const performance_manager::ProcessNode* process_node :
        system_node->GetGraph()->GetAllProcessNodes()) {
-    total_rss += process_node->GetResidentSet();
+    total_rss += process_node->GetResidentSet().AsDeprecatedByteCount();
   }
   task_runner_->PostTask(
       FROM_HERE,

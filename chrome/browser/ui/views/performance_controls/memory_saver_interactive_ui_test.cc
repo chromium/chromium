@@ -421,7 +421,8 @@ class MemorySaverChipInteractiveTest
           performance_manager::user_tuning::UserPerformanceTuningManager::
               PreDiscardResourceUsage::FromWebContents(web_contents);
       pre_discard_resource_usage->UpdateDiscardInfo(
-          usage, ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+          base::ByteSize::FromDeprecatedByteCount(usage),
+          ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
     }));
   }
 

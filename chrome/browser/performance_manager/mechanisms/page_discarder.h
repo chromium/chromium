@@ -9,7 +9,7 @@
 #include <optional>
 #include <vector>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-forward.h"
 
 namespace performance_manager {
@@ -31,7 +31,7 @@ class PageDiscarder {
 
   // Discards `page_node`. On success, returns the estimated amount of memory
   // freed. On failure, returns nullopt.
-  virtual std::optional<base::ByteCount> DiscardPageNode(
+  virtual std::optional<base::ByteSize> DiscardPageNode(
       const PageNode* page_node,
       ::mojom::LifecycleUnitDiscardReason discard_reason);
 };

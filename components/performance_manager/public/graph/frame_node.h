@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/containers/flat_set.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -264,12 +264,12 @@ class FrameNode : public TypedNode<FrameNode> {
   // Returns the most recently estimated resident set of the frame. This is an
   // estimate because RSS is computed by process, and a process can host
   // multiple frames.
-  virtual base::ByteCount GetResidentSetEstimate() const = 0;
+  virtual base::ByteSize GetResidentSetEstimate() const = 0;
 
   // Returns the most recently estimated private footprint of the frame. This is
   // an estimate because it is computed by process, and a process can host
   // multiple frames.
-  virtual base::ByteCount GetPrivateFootprintEstimate() const = 0;
+  virtual base::ByteSize GetPrivateFootprintEstimate() const = 0;
 
   // Called when the process of a cross-process subframe has gone.
   virtual void CrossProcessSubframeRenderProcessGone() = 0;

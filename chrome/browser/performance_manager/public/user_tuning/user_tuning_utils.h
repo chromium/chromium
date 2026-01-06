@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-forward.h"
 
 namespace performance_manager {
@@ -26,7 +26,7 @@ bool IsRefreshRateThrottled();
 bool IsBatterySaverModeManagedByOS();
 
 // Helper for logic to get the memory footprint estimate for a discarded page.
-base::ByteCount GetDiscardedMemoryEstimateForPage(
+base::ByteSize GetDiscardedMemoryEstimateForPage(
     const performance_manager::PageNode* node);
 
 // Returns a list of human-readable reasons why a page can't be discarded, or an
