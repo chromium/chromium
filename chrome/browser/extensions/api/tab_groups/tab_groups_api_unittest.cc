@@ -181,45 +181,6 @@ void TabGroupsApiUnitTest::TearDown() {
   ExtensionServiceTestBase::TearDown();
 }
 
-// tests querying on a TabStripModel that doesnt support tab groups
-TEST_F(TabGroupsApiUnitTest, TabStripModelWithNoTabGroupFails) {
-  // Create a new window that doesnt support groups and add a few tabs.
-  auto window2 = std::make_unique<TestBrowserWindow>();
-
-  // App windows don't allow tab groups.
-  Browser::CreateParams params = Browser::CreateParams::CreateForApp(
-      "some app", /*trusted_source=*/false, gfx::Rect(), profile(),
-      /*user_gesture=*/true);
-  params.window = window2.release();
-
-  auto browser2 = Browser::DeprecatedCreateOwnedForTesting(params);
-  BrowserList::SetLastActive(browser2.get());
-
-  ASSERT_FALSE(browser2->tab_strip_model()->SupportsTabGroups());
-
-  TabStripModel* tab_strip_model2 = browser2->tab_strip_model();
-  constexpr int kNumTabs2 = 3;
-  for (int i = 0; i < kNumTabs2; ++i) {
-    std::unique_ptr<content::WebContents> contents(
-        content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
-    CreateSessionServiceTabHelper(contents.get());
-    tab_strip_model2->AppendWebContents(std::move(contents),
-                                        /* foreground */ true);
-  }
-
-  // Create an extension and test that the tab group query method skips the
-  // unsupported tab strip without throwing an error.
-  scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
-
-  const char* kTitleQueryInfo = R"([{"title": "Sample title"}])";
-  base::Value::List groups_list =
-      RunTabGroupsQueryFunction(profile(), extension.get(), kTitleQueryInfo);
-
-  ASSERT_EQ(0u, groups_list.size());
-
-  tab_strip_model2->CloseAllTabs();
-}
-
 // Test that querying groups by title returns the correct groups.
 TEST_F(TabGroupsApiUnitTest, TabGroupsQueryTitle) {
   scoped_refptr<const Extension> extension = CreateTabGroupsExtension();

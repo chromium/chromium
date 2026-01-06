@@ -4717,6 +4717,7 @@ if (!is_android) {
         "../browser/extensions/api/tab_capture/tab_capture_performance_test_base.cc",
         "../browser/extensions/api/tab_capture/tab_capture_performance_test_base.h",
         "../browser/extensions/api/tab_capture/tab_capture_performancetest.cc",
+        "../browser/extensions/api/tab_groups/tab_groups_api_browsertest.cc",
         "../browser/extensions/api/tabs/execute_script_apitest.cc",
         "../browser/extensions/api/usb/chrome_usb_apitest.cc",
         "../browser/extensions/api/usb/usb_manual_apitest.cc",
