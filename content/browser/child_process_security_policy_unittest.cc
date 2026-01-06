@@ -153,7 +153,7 @@ class ChildProcessSecurityPolicyTest
     auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
     {
       base::AutoLock lock(policy->lock_);
-      EXPECT_EQ(0u, policy->security_state_.size())
+      EXPECT_EQ(0u, policy->security_states_.GetSizeForTesting())
           << "ChildProcessSecurityPolicy should not be tracking any processes "
           << "at test startup.  Some other test probably forgot to call "
           << "Remove() at the end.";
@@ -164,7 +164,7 @@ class ChildProcessSecurityPolicyTest
     auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
     {
       base::AutoLock lock(policy->lock_);
-      EXPECT_EQ(0u, policy->security_state_.size())
+      EXPECT_EQ(0u, policy->security_states_.GetSizeForTesting())
           << "ChildProcessSecurityPolicy should not be tracking any processes "
           << "at test shutdown.  Did you forget to call Remove() at the end of "
           << "a test?";

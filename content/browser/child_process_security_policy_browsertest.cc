@@ -28,7 +28,7 @@ class ChildProcessSecurityPolicyInProcessBrowserTest
     auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
     {
       base::AutoLock lock(policy->lock_);
-      EXPECT_EQ(0u, policy->security_state_.size());
+      EXPECT_EQ(0u, policy->security_states_.GetSizeForTesting());
     }
     ContentBrowserTest::SetUp();
   }
@@ -37,7 +37,7 @@ class ChildProcessSecurityPolicyInProcessBrowserTest
     auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
     {
       base::AutoLock lock(policy->lock_);
-      EXPECT_EQ(0u, policy->security_state_.size());
+      EXPECT_EQ(0u, policy->security_states_.GetSizeForTesting());
     }
     ContentBrowserTest::TearDown();
   }
@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(ChildProcessSecurityPolicyInProcessBrowserTest,
     base::AutoLock lock(policy->lock_);
     size_t spare_count =
         content::SpareRenderProcessHostManager::Get().GetSpares().size();
-    EXPECT_EQ(1u + spare_count, policy->security_state_.size());
+    EXPECT_EQ(1u + spare_count, policy->security_states_.GetSizeForTesting());
   }
 
   WebContents* web_contents = shell()->web_contents();
@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(ChildProcessSecurityPolicyInProcessBrowserTest,
     base::AutoLock lock(policy->lock_);
     size_t spare_count =
         content::SpareRenderProcessHostManager::Get().GetSpares().size();
-    EXPECT_EQ(1u + spare_count, policy->security_state_.size());
+    EXPECT_EQ(1u + spare_count, policy->security_states_.GetSizeForTesting());
   }
 }
 
