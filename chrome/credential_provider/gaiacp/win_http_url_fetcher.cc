@@ -395,21 +395,42 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
   // buffer than 256k.
   constexpr size_t kMaxResponseSize = 256 * 1024 * 1024;
   // Read the response.
-  auto buffer = std::make_unique<char[]>(length);
   DWORD actual = 0;
   do {
-    if (!::WinHttpReadData(request_.Get(), buffer.get(), length, &actual)) {
+    DWORD available_to_read = 0;
+    if (!::WinHttpQueryDataAvailable(request_.Get(), &available_to_read)) {
+      HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+      LOGFN(ERROR) << "WinHttpQueryDataAvailable hr=" << putHR(hr);
+      return hr;
+    }
+
+    if (available_to_read == 0) {
+      break;
+    }
+
+    size_t current_size = response->size();
+    // Check for overflow before resizing
+    if (current_size + available_to_read > kMaxResponseSize) {
+      LOGFN(ERROR) << "Response has exceeded max size=" << kMaxResponseSize;
+      return E_OUTOFMEMORY;
+    }
+
+    response->resize(current_size + available_to_read);
+
+    // Create a span of the newly allocated space in the vector.
+    // We use UNSAFE_BUFFERS only where we interface with the raw Win32 API.
+    auto dest_span = base::span(*response).subspan(current_size);
+
+    if (!::WinHttpReadData(request_.Get(), dest_span.data(),
+                           static_cast<DWORD>(dest_span.size()), &actual)) {
       HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
       LOGFN(ERROR) << "WinHttpReadData hr=" << putHR(hr);
       return hr;
     }
 
-    size_t current_size = response->size();
-    response->resize(response->size() + actual);
-    UNSAFE_TODO(memcpy(response->data() + current_size, buffer.get(), actual));
-    if (response->size() >= kMaxResponseSize) {
-      LOGFN(ERROR) << "Response has exceeded max size=" << kMaxResponseSize;
-      return E_OUTOFMEMORY;
+    // Shrink vector if actual read was less than available.
+    if (actual < available_to_read) {
+      response->resize(current_size + actual);
     }
   } while (actual);
 
