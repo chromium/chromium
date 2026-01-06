@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.safety_hub.SafetyHubBaseFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleDelegateImpl;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
+import org.chromium.chrome.browser.settings.search.SettingsSearchCoordinator;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -49,6 +50,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.FragmentSettingsNavigation;
+import org.chromium.components.browser_ui.settings.SearchViewProvider;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -68,18 +70,21 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
     private final OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
     private final OneshotSupplier<BottomSheetController> mBottomSheetControllerSupplier;
     private final ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<SettingsSearchCoordinator> mSearchCoordinator;
 
     public FragmentDependencyProvider(
             Context context,
             Profile profile,
             OneshotSupplier<SnackbarManager> snackbarManagerSupplier,
             OneshotSupplier<BottomSheetController> bottomSheetControllerSupplier,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<SettingsSearchCoordinator> searchCoordinator) {
         mContext = context;
         mProfile = profile;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mSearchCoordinator = searchCoordinator;
     }
 
     @Override
@@ -98,6 +103,15 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
         if (fragment instanceof SettingsCustomTabLauncher.SettingsCustomTabLauncherClient) {
             ((SettingsCustomTabLauncher.SettingsCustomTabLauncherClient) fragment)
                     .setCustomTabLauncher(new SettingsCustomTabLauncherImpl());
+        }
+
+        if (fragment instanceof SearchViewProvider f) {
+            f.setSearchViewObserver(
+                    (open) -> {
+                        if (mSearchCoordinator != null && mSearchCoordinator.get() != null) {
+                            mSearchCoordinator.get().showSearchBar(!open);
+                        }
+                    });
         }
 
         // Settings screen specific attachments.

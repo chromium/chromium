@@ -36,15 +36,18 @@ public class SearchUtils {
     /**
      * Initializes an Android default search item by setting listeners and default states of the
      * search icon, box and close icon.
+     *
      * @param searchItem The existing item that can trigger the search action view.
      * @param initialQuery The query that the search field should be opened with.
      * @param activity Optional. If set, overflow icons in the activity's action bar will be hidden.
+     * @param searchViewObserver The observer listening to the {@link SearchView} visibility.
      * @param changeListener The listener to be notified when the user changes the query.
      */
     public static void initializeSearchView(
             MenuItem searchItem,
             @Nullable String initialQuery,
             @Nullable Activity activity,
+            SearchViewProvider.Observer searchViewObserver,
             QueryChangeListener changeListener) {
         SearchView searchView = (SearchView) searchItem.getActionView();
         assumeNonNull(searchView);
@@ -88,6 +91,12 @@ public class SearchUtils {
                 view -> {
                     updateActionBarButtons(searchItem, "", activity);
                     changeListener.onQueryTextChange("");
+                    searchViewObserver.onUpdated(true);
+                });
+        searchView.setOnCloseListener(
+                () -> {
+                    searchViewObserver.onUpdated(false);
+                    return false;
                 });
         searchView.setOnQueryTextListener(
                 new SearchView.OnQueryTextListener() {

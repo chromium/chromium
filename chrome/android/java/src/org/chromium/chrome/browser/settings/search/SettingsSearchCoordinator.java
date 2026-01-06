@@ -565,6 +565,12 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         view.setLayoutParams(lp);
     }
 
+    /** Show/hide search bar UI. */
+    public void showSearchBar(boolean show) {
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        searchBox.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
     /**
      * Updates the UI layout for the changes in column mode/window width.
      *

@@ -50,6 +50,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableObservableSupplier;
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
@@ -65,6 +66,7 @@ import org.chromium.components.browser_ui.settings.LearnMorePreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.settings.SearchUtils;
+import org.chromium.components.browser_ui.settings.SearchViewProvider;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -130,6 +132,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 FragmentSettingsNavigation,
                 TriStateCookieSettingsPreference.OnCookiesDetailsRequested,
                 CustomDividerFragment,
+                SearchViewProvider,
                 WebsitePreference.OnStorageAccessWebsiteDetailsRequested {
     @IntDef({
         GlobalToggleLayout.BINARY_TOGGLE,
@@ -202,6 +205,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
     private final SettableObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
+    private @MonotonicNonNull SearchViewProvider.Observer mSearchViewObserver;
 
     @Override
     public void onCookiesDetailsRequested(@CookieControlsMode int cookieSettingsState) {
@@ -572,6 +576,11 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     }
 
     @Override
+    public void setSearchViewObserver(SearchViewProvider.Observer observer) {
+        mSearchViewObserver = observer;
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
         inflater.inflate(R.menu.website_preferences_menu, menu);
@@ -581,6 +590,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 mSearchItem,
                 mSearch,
                 getActivity(),
+                assumeNonNull(mSearchViewObserver),
                 (query) -> {
                     boolean queryHasChanged =
                             mSearch == null
@@ -2008,6 +2018,12 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     @Override
     public @SettingsFragment.AnimationType int getAnimationType() {
         return SettingsFragment.AnimationType.PROPERTY;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mSearchViewObserver != null) mSearchViewObserver.onUpdated(false);
     }
 
     // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.

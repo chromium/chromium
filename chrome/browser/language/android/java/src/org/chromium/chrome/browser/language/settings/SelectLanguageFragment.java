@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
+import org.chromium.components.browser_ui.settings.SearchViewProvider;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
@@ -48,7 +49,10 @@ import java.util.Locale;
  */
 @NullMarked
 public class SelectLanguageFragment extends Fragment
-        implements ProfileDependentSetting, SettingsFragment, EmbeddableSettingsPage {
+        implements ProfileDependentSetting,
+                SettingsFragment,
+                EmbeddableSettingsPage,
+                SearchViewProvider {
     // Intent key to pass selected language code from SelectLanguageFragment.
     static final String KEY_SELECTED_LANGUAGE = "SelectLanguageFragment.SelectedLanguage";
     // Intent key to receive type of languages to populate fragment with.
@@ -110,6 +114,7 @@ public class SelectLanguageFragment extends Fragment
     private @MonotonicNonNull List<LanguageItem> mFilteredLanguages;
     private LanguageListBaseAdapter.ItemClickListener mItemClickListener;
     private @MonotonicNonNull Profile mProfile;
+    private @MonotonicNonNull SearchViewProvider.Observer mSearchViewObserver;
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
@@ -191,10 +196,15 @@ public class SelectLanguageFragment extends Fragment
         assumeNonNull(mSearchView);
         mSearchView.setImeOptions(EditorInfo.IME_FLAG_NO_FULLSCREEN);
 
+        mSearchView.setOnSearchClickListener(
+                view -> {
+                    if (mSearchViewObserver != null) mSearchViewObserver.onUpdated(true);
+                });
         mSearchView.setOnCloseListener(
                 () -> {
                     mSearch = "";
                     mAdapter.setDisplayedLanguages(assumeNonNull(mFilteredLanguages));
+                    if (mSearchViewObserver != null) mSearchViewObserver.onUpdated(false);
                     return false;
                 });
 
@@ -216,6 +226,17 @@ public class SelectLanguageFragment extends Fragment
                         return true;
                     }
                 });
+    }
+
+    @Override
+    public void setSearchViewObserver(SearchViewProvider.Observer observer) {
+        mSearchViewObserver = observer;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mSearchViewObserver != null) mSearchViewObserver.onUpdated(false);
     }
 
     @Override
