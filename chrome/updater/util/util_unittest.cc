@@ -27,6 +27,7 @@
 #include "base/test/task_environment.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "chrome/updater/branded_constants.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/tag.h"
 #include "chrome/updater/test/test_scope.h"
