@@ -418,6 +418,10 @@ void AimEligibilityService::Initialize() {
   // The service should not be initialized twice.
   CHECK(!initialized_);
 
+  // Always load the most recent response from prefs even if the template
+  // URL service is not loaded.
+  LoadMostRecentResponse();
+
   if (!template_url_service_) {
     return;
   }
@@ -436,8 +440,6 @@ void AimEligibilityService::Initialize() {
       kResponsePrefName,
       base::BindRepeating(&AimEligibilityService::OnEligibilityResponseChanged,
                           weak_factory_.GetWeakPtr()));
-
-  LoadMostRecentResponse();
 
   bool startup_request_enabled =
       base::FeatureList::IsEnabled(omnibox::kAimServerRequestOnStartupEnabled);
@@ -531,8 +533,6 @@ void AimEligibilityService::UpdateMostRecentResponse(
 }
 
 void AimEligibilityService::LoadMostRecentResponse() {
-  CHECK(initialized_);
-
   omnibox::AimEligibilityResponse prefs_response;
   if (!GetResponseFromPrefs(&pref_service_.get(), &prefs_response)) {
     return;
@@ -540,10 +540,6 @@ void AimEligibilityService::LoadMostRecentResponse() {
 
   most_recent_response_ = prefs_response;
   most_recent_response_source_ = EligibilityResponseSource::kPrefs;
-
-  // Calling this is necessary because this function can be called
-  // asynchronously instead of from the constructor.
-  OnEligibilityResponseChanged();
 }
 
 GURL AimEligibilityService::GetRequestUrl(
