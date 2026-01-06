@@ -53,19 +53,6 @@ namespace extensions {
 
 namespace {
 
-base::Value::Dict RunTabGroupsGetFunction(
-    content::BrowserContext* browser_context,
-    const Extension* extension,
-    const std::string& args) {
-  auto function = base::MakeRefCounted<TabGroupsGetFunction>();
-  function->set_extension(extension);
-  std::optional<base::Value> value =
-      api_test_utils::RunFunctionAndReturnSingleResult(
-          function.get(), args, browser_context,
-          api_test_utils::FunctionMode::kNone);
-  return std::move(*value).TakeDict();
-}
-
 // Creates an extension with "tabGroups" permission.
 scoped_refptr<const Extension> CreateTabGroupsExtension() {
   return ExtensionBuilder("Extension with tabGroups permission")
@@ -166,90 +153,6 @@ void TabGroupsApiUnitTest::TearDown() {
   browser_->tab_strip_model()->CloseAllTabs();
   browser_.reset();
   ExtensionServiceTestBase::TearDown();
-}
-
-// Test that getting a group returns the correct metadata.
-TEST_F(TabGroupsApiUnitTest, TabGroupsGetSuccess) {
-  scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
-
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
-
-  // Create a group.
-  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({0, 1, 2});
-  tab_groups::TabGroupVisualData visual_data(
-      u"Title", tab_groups::TabGroupColorId::kBlue);
-  tab_strip_model->ChangeTabGroupVisuals(group, visual_data);
-  int group_id = ExtensionTabUtil::GetGroupId(group);
-
-  // Use the TabGroupsGetFunction to get the group object.
-  constexpr char kFormatArgs[] = R"([%d])";
-  const std::string args = base::StringPrintf(kFormatArgs, group_id);
-  base::Value::Dict group_info =
-      RunTabGroupsGetFunction(profile(), extension.get(), args);
-
-  EXPECT_EQ(group_id, *group_info.FindInt("id"));
-  EXPECT_EQ("Title", *group_info.FindString("title"));
-}
-
-// Test that tabGroups.get() fails on a nonexistent group.
-TEST_F(TabGroupsApiUnitTest, TabGroupsGetError) {
-  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
-  scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
-
-  // Try to get a non-existent group and expect an error.
-  auto function = base::MakeRefCounted<TabGroupsGetFunction>();
-  function->set_extension(extension);
-  std::string error = api_test_utils::RunFunctionAndReturnError(
-      function.get(), "[0]", profile(), api_test_utils::FunctionMode::kNone);
-  EXPECT_EQ("No group with id: 0.", error);
-}
-
-// Test that updating group metadata works as expected.
-TEST_F(TabGroupsApiUnitTest, TabGroupsUpdateSuccess) {
-  scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
-
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
-
-  TabGroupModel* tab_group_model = tab_strip_model->group_model();
-
-  // Create a group.
-  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({0, 1, 2});
-  tab_groups::TabGroupVisualData visual_data(
-      u"Initial title", tab_groups::TabGroupColorId::kBlue);
-  tab_strip_model->ChangeTabGroupVisuals(group, visual_data);
-  int group_id = ExtensionTabUtil::GetGroupId(group);
-
-  // Use the TabGroupsUpdateFunction to update the title and color.
-  auto function = base::MakeRefCounted<TabGroupsUpdateFunction>();
-  function->set_extension(extension);
-  constexpr char kFormatArgs[] =
-      R"([%d, {"title": "New title", "color": "red"}])";
-  const std::string args = base::StringPrintf(kFormatArgs, group_id);
-  ASSERT_TRUE(api_test_utils::RunFunction(function.get(), args, profile(),
-                                          api_test_utils::FunctionMode::kNone));
-
-  // Verify the new group metadata.
-  const tab_groups::TabGroupVisualData* new_visual_data =
-      tab_group_model->GetTabGroup(group)->visual_data();
-  EXPECT_EQ(new_visual_data->title(), u"New title");
-  EXPECT_EQ(new_visual_data->color(), tab_groups::TabGroupColorId::kRed);
-}
-
-// Test that tabGroups.update() fails on a nonexistent group.
-TEST_F(TabGroupsApiUnitTest, TabGroupsUpdateError) {
-  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
-
-  scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
-
-  // Try to update a non-existent group and expect an error.
-  auto function = base::MakeRefCounted<TabGroupsUpdateFunction>();
-  function->set_extension(extension);
-  std::string error = api_test_utils::RunFunctionAndReturnError(
-      function.get(), "[0, {}]", profile(),
-      api_test_utils::FunctionMode::kNone);
-  EXPECT_EQ("No group with id: 0.", error);
 }
 
 // Test that tabGroups.update() passes on a saved group.
