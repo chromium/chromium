@@ -20,11 +20,6 @@ extern COMPONENT_EXPORT(STORAGE_MONITOR) const
     char kVendorModelVolumeStoragePrefix[];
 #endif
 
-#if BUILDFLAG(IS_WIN)
-// Windows portable device interface GUID constant.
-extern COMPONENT_EXPORT(STORAGE_MONITOR) const wchar_t kWPDDevInterfaceGUID[];
-#endif
-
 extern COMPONENT_EXPORT(STORAGE_MONITOR) const base::FilePath::CharType
     kDCIMDirectoryName[];
 

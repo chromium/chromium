@@ -21,7 +21,9 @@
 
 namespace {
 
+#if BUILDFLAG(IS_MAC)
 const char kImageCaptureDeviceId[] = "ic:xyz";
+#endif
 
 }  // namespace
 
@@ -102,6 +104,7 @@ TEST_F(MediaStorageUtilTest, NonMediaDeviceAttached) {
   RunUntilIdle();
 }
 
+#if BUILDFLAG(IS_MAC)
 TEST_F(MediaStorageUtilTest, CanCreateFileSystemForImageCapture) {
   EXPECT_TRUE(MediaStorageUtil::CanCreateFileSystem(kImageCaptureDeviceId,
                                                     base::FilePath()));
@@ -128,5 +131,6 @@ TEST_F(MediaStorageUtilTest, DetectDeviceFiltered) {
 
   EXPECT_TRUE(devices.find(kImageCaptureDeviceId) != devices.end());
 }
+#endif
 
 }  // namespace storage_monitor

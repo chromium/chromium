@@ -275,8 +275,6 @@ void StorageMonitorLinux::EjectDevice(
     return;
   }
 
-  DCHECK_NE(type, StorageInfo::MTP_OR_PTP);
-
   // Find the mount point for the given device ID.
   base::FilePath path;
   base::FilePath device;

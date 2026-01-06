@@ -23,7 +23,7 @@ namespace storage_monitor {
 
 namespace {
 
-#if !BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC)
 const char kRootPath[] = "/";
 #endif
 
@@ -88,11 +88,15 @@ bool MediaStorageUtil::HasDcim(const base::FilePath& mount_point) {
 bool MediaStorageUtil::CanCreateFileSystem(const std::string& device_id,
                                            const base::FilePath& path) {
   StorageInfo::Type type;
-  if (!StorageInfo::CrackDeviceId(device_id, &type, nullptr))
+  if (!StorageInfo::CrackDeviceId(device_id, &type, nullptr)) {
     return false;
+  }
 
-  if (type == StorageInfo::MAC_IMAGE_CAPTURE)
+#if BUILDFLAG(IS_MAC)
+  if (type == StorageInfo::MAC_IMAGE_CAPTURE) {
     return true;
+  }
+#endif
 
   return !path.empty() && path.IsAbsolute() && !path.ReferencesParent();
 }
@@ -173,15 +177,18 @@ base::FilePath MediaStorageUtil::FindDevicePathById(
 
   // For ImageCapture, the synthetic filesystem will be rooted at a fake
   // top-level directory which is the device_id.
+#if BUILDFLAG(IS_MAC)
   if (type == StorageInfo::MAC_IMAGE_CAPTURE) {
-#if !BUILDFLAG(IS_WIN)
     return base::FilePath(kRootPath + device_id);
-#endif
   }
+#endif
 
-  DCHECK(type == StorageInfo::MTP_OR_PTP ||
-         type == StorageInfo::REMOVABLE_MASS_STORAGE_WITH_DCIM ||
-         type == StorageInfo::REMOVABLE_MASS_STORAGE_NO_DCIM);
+  DCHECK(
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+      type == StorageInfo::MTP_OR_PTP ||
+#endif
+      type == StorageInfo::REMOVABLE_MASS_STORAGE_WITH_DCIM ||
+      type == StorageInfo::REMOVABLE_MASS_STORAGE_NO_DCIM);
   return base::FilePath(FindRemovableStorageLocationById(device_id));
 }
 

@@ -8,22 +8,17 @@
 
 #include <utility>
 
-#include "components/storage_monitor/test_portable_device_watcher_win.h"
 #include "components/storage_monitor/test_volume_mount_watcher_win.h"
 
 namespace storage_monitor {
 
 TestStorageMonitorWin::TestStorageMonitorWin(
-    std::unique_ptr<TestVolumeMountWatcherWin> volume_mount_watcher,
-    std::unique_ptr<TestPortableDeviceWatcherWin> portable_device_watcher)
-    : StorageMonitorWin(std::move(volume_mount_watcher),
-                        std::move(portable_device_watcher)) {
+    std::unique_ptr<TestVolumeMountWatcherWin> volume_mount_watcher)
+    : StorageMonitorWin(std::move(volume_mount_watcher)) {
   DCHECK(volume_mount_watcher_);
-  DCHECK(portable_device_watcher_);
 }
 
-TestStorageMonitorWin::~TestStorageMonitorWin() {
-}
+TestStorageMonitorWin::~TestStorageMonitorWin() = default;
 
 void TestStorageMonitorWin::InjectDeviceChange(UINT event_type, LPARAM data) {
   OnDeviceChange(event_type, data);

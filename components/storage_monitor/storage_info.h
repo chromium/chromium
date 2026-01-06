@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "build/build_config.h"
 
 namespace storage_monitor {
 
@@ -23,10 +24,14 @@ class COMPONENT_EXPORT(STORAGE_MONITOR) StorageInfo {
     REMOVABLE_MASS_STORAGE_NO_DCIM,
     // A fixed mass storage device.
     FIXED_MASS_STORAGE,
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
     // A MTP or PTP device.
     MTP_OR_PTP,
+#endif
+#if BUILDFLAG(IS_MAC)
     // A Mac ImageCapture device.
     MAC_IMAGE_CAPTURE,
+#endif
   };
 
   StorageInfo();

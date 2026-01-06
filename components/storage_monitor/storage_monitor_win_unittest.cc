@@ -14,18 +14,14 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/memory/free_deleter.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "components/storage_monitor/mock_removable_storage_observer.h"
-#include "components/storage_monitor/portable_device_watcher_win.h"
 #include "components/storage_monitor/removable_device_constants.h"
 #include "components/storage_monitor/storage_info.h"
-#include "components/storage_monitor/test_portable_device_watcher_win.h"
 #include "components/storage_monitor/test_storage_monitor.h"
 #include "components/storage_monitor/test_storage_monitor_win.h"
 #include "components/storage_monitor/test_volume_mount_watcher_win.h"
@@ -61,17 +57,6 @@ class StorageMonitorWinTest : public testing::Test {
   void DoMassStorageDeviceAttachedTest(const DeviceIndices& device_indices);
   void DoMassStorageDevicesDetachedTest(const DeviceIndices& device_indices);
 
-  // Injects a device attach or detach change (depending on the value of
-  // |test_attach|) and tests that the appropriate handler is called.
-  void DoMTPDeviceTest(const std::wstring& pnp_device_id, bool test_attach);
-
-  // Gets the MTP details of the storage specified by the |storage_device_id|.
-  // On success, returns true and fills in |pnp_device_id| and
-  // |storage_object_id|.
-  bool GetMTPStorageInfo(const std::string& storage_device_id,
-                         std::wstring* pnp_device_id,
-                         std::wstring* storage_object_id);
-
   std::unique_ptr<TestStorageMonitorWin> monitor_;
 
   // Weak pointer; owned by the device notifications class.
@@ -92,9 +77,8 @@ StorageMonitorWinTest::~StorageMonitorWinTest() {
 void StorageMonitorWinTest::SetUp() {
   auto volume_mount_watcher = std::make_unique<TestVolumeMountWatcherWin>();
   volume_mount_watcher_ = volume_mount_watcher.get();
-  monitor_ = std::make_unique<TestStorageMonitorWin>(
-      std::move(volume_mount_watcher),
-      std::make_unique<TestPortableDeviceWatcherWin>());
+  monitor_ =
+      std::make_unique<TestStorageMonitorWin>(std::move(volume_mount_watcher));
 
   monitor_->Init();
   content::RunAllTasksUntilIdle();
@@ -129,9 +113,8 @@ void StorageMonitorWinTest::PreAttachDevices() {
       expect_attach_calls++;
   }
 
-  monitor_ = std::make_unique<TestStorageMonitorWin>(
-      std::move(volume_mount_watcher),
-      std::make_unique<TestPortableDeviceWatcherWin>());
+  monitor_ =
+      std::make_unique<TestStorageMonitorWin>(std::move(volume_mount_watcher));
 
   monitor_->AddObserver(&observer_);
   monitor_->Init();
@@ -199,61 +182,6 @@ void StorageMonitorWinTest::DoMassStorageDevicesDetachedTest(
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(pre_attach_calls, observer_.attach_calls());
   EXPECT_EQ(expect_detach_calls, observer_.detach_calls());
-}
-
-void StorageMonitorWinTest::DoMTPDeviceTest(const std::wstring& pnp_device_id,
-                                            bool test_attach) {
-  GUID guidDevInterface = GUID_NULL;
-  HRESULT hr = CLSIDFromString(kWPDDevInterfaceGUID, &guidDevInterface);
-  if (FAILED(hr))
-    return;
-
-  size_t device_id_size = pnp_device_id.size() * sizeof(wchar_t);
-  size_t size = sizeof(DEV_BROADCAST_DEVICEINTERFACE) + device_id_size;
-  std::unique_ptr<DEV_BROADCAST_DEVICEINTERFACE, base::FreeDeleter>
-      dev_interface_broadcast(
-          static_cast<DEV_BROADCAST_DEVICEINTERFACE*>(malloc(size)));
-  DCHECK(dev_interface_broadcast);
-  UNSAFE_TODO(ZeroMemory(dev_interface_broadcast.get(), size));
-  dev_interface_broadcast->dbcc_size = size;
-  dev_interface_broadcast->dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
-  dev_interface_broadcast->dbcc_classguid = guidDevInterface;
-  UNSAFE_TODO(memcpy(dev_interface_broadcast->dbcc_name, pnp_device_id.data(),
-                     device_id_size));
-
-  int expect_attach_calls = observer_.attach_calls();
-  int expect_detach_calls = observer_.detach_calls();
-  PortableDeviceWatcherWin::StorageObjectIDs storage_object_ids =
-      TestPortableDeviceWatcherWin::GetMTPStorageObjectIds(pnp_device_id);
-  for (PortableDeviceWatcherWin::StorageObjectIDs::const_iterator it =
-       storage_object_ids.begin(); it != storage_object_ids.end(); ++it) {
-    std::string unique_id;
-    std::wstring name;
-    std::wstring location;
-    TestPortableDeviceWatcherWin::GetMTPStorageDetails(pnp_device_id, *it,
-                                                       &location, &unique_id,
-                                                       &name);
-    if (test_attach && !name.empty() && !unique_id.empty())
-      expect_attach_calls++;
-    else if (!name.empty() && !unique_id.empty())
-      expect_detach_calls++;
-  }
-
-  monitor_->InjectDeviceChange(
-      test_attach ? DBT_DEVICEARRIVAL : DBT_DEVICEREMOVECOMPLETE,
-      reinterpret_cast<LPARAM>(dev_interface_broadcast.get()));
-
-  content::RunAllTasksUntilIdle();
-  EXPECT_EQ(expect_attach_calls, observer_.attach_calls());
-  EXPECT_EQ(expect_detach_calls, observer_.detach_calls());
-}
-
-bool StorageMonitorWinTest::GetMTPStorageInfo(
-    const std::string& storage_device_id,
-    std::wstring* pnp_device_id,
-    std::wstring* storage_object_id) {
-  return monitor_->GetMTPStorageInfoFromDeviceId(
-      storage_device_id, pnp_device_id, storage_object_id);
 }
 
 TEST_F(StorageMonitorWinTest, RandomMessage) {
@@ -486,60 +414,11 @@ TEST_F(StorageMonitorWinTest, DeviceInfoForPath) {
   EXPECT_EQ(info.location(), device_info.location());
 }
 
-// Test to verify basic MTP storage attach and detach notifications.
-TEST_F(StorageMonitorWinTest, MTPDeviceBasicAttachDetach) {
-  DoMTPDeviceTest(TestPortableDeviceWatcherWin::kMTPDeviceWithValidInfo, true);
-  DoMTPDeviceTest(TestPortableDeviceWatcherWin::kMTPDeviceWithValidInfo, false);
-}
-
-// When a MTP storage device with invalid storage label and id is
-// attached/detached, there should not be any device attach/detach
-// notifications.
-TEST_F(StorageMonitorWinTest, MTPDeviceWithInvalidInfo) {
-  DoMTPDeviceTest(TestPortableDeviceWatcherWin::kMTPDeviceWithInvalidInfo,
-                  true);
-  DoMTPDeviceTest(TestPortableDeviceWatcherWin::kMTPDeviceWithInvalidInfo,
-                  false);
-}
-
-// Attach a device with two data partitions. Verify that attach/detach
-// notifications are sent out for each removable storage.
-TEST_F(StorageMonitorWinTest, MTPDeviceWithMultipleStorageObjects) {
-  DoMTPDeviceTest(TestPortableDeviceWatcherWin::kMTPDeviceWithMultipleStorages,
-                  true);
-  DoMTPDeviceTest(TestPortableDeviceWatcherWin::kMTPDeviceWithMultipleStorages,
-                  false);
-}
-
 TEST_F(StorageMonitorWinTest, DriveNumberToFilePath) {
   EXPECT_EQ(L"A:\\", VolumeMountWatcherWin::DriveNumberToFilePath(0).value());
   EXPECT_EQ(L"Y:\\", VolumeMountWatcherWin::DriveNumberToFilePath(24).value());
   EXPECT_EQ(L"", VolumeMountWatcherWin::DriveNumberToFilePath(-1).value());
   EXPECT_EQ(L"", VolumeMountWatcherWin::DriveNumberToFilePath(199).value());
-}
-
-// Given a MTP storage persistent id, GetMTPStorageInfo() should fetch the
-// device interface path and local storage object identifier.
-TEST_F(StorageMonitorWinTest, GetMTPStorageInfoFromDeviceId) {
-  DoMTPDeviceTest(TestPortableDeviceWatcherWin::kMTPDeviceWithValidInfo, true);
-  PortableDeviceWatcherWin::StorageObjects storage_objects =
-      TestPortableDeviceWatcherWin::GetDeviceStorageObjects(
-          TestPortableDeviceWatcherWin::kMTPDeviceWithValidInfo);
-  for (PortableDeviceWatcherWin::StorageObjects::const_iterator it =
-           storage_objects.begin();
-       it != storage_objects.end(); ++it) {
-    std::wstring pnp_device_id;
-    std::wstring storage_object_id;
-    ASSERT_TRUE(GetMTPStorageInfo(it->object_persistent_id, &pnp_device_id,
-                                  &storage_object_id));
-    std::wstring expected(
-        TestPortableDeviceWatcherWin::kMTPDeviceWithValidInfo);
-    EXPECT_EQ(expected, pnp_device_id);
-    EXPECT_EQ(it->object_persistent_id,
-              TestPortableDeviceWatcherWin::GetMTPStorageUniqueId(
-                  pnp_device_id, storage_object_id));
-  }
-  DoMTPDeviceTest(TestPortableDeviceWatcherWin::kMTPDeviceWithValidInfo, false);
 }
 
 }  // namespace storage_monitor

@@ -18,7 +18,6 @@ class FilePath;
 
 namespace storage_monitor {
 
-class PortableDeviceWatcherWin;
 class TestStorageMonitorWin;
 class VolumeMountWatcherWin;
 
@@ -27,12 +26,11 @@ class COMPONENT_EXPORT(STORAGE_MONITOR) StorageMonitorWin
  public:
   // Should only be called by browser start up code.
   // Use StorageMonitor::GetInstance() instead.
-  // To support unit tests, this constructor takes |volume_mount_watcher| and
-  // |portable_device_watcher| objects. These params are either constructed in
-  // unit tests or in StorageMonitorWin CreateInternal() function.
-  StorageMonitorWin(
-      std::unique_ptr<VolumeMountWatcherWin> volume_mount_watcher,
-      std::unique_ptr<PortableDeviceWatcherWin> portable_device_watcher);
+  // To support unit tests, this constructor takes a `volume_mount_watcher`
+  // object. This parameter is either constructed in unit tests or in
+  // StorageMonitorWin CreateInternal().
+  explicit StorageMonitorWin(
+      std::unique_ptr<VolumeMountWatcherWin> volume_mount_watcher);
 
   StorageMonitorWin(const StorageMonitorWin&) = delete;
   StorageMonitorWin& operator=(const StorageMonitorWin&) = delete;
@@ -45,15 +43,10 @@ class COMPONENT_EXPORT(STORAGE_MONITOR) StorageMonitorWin
   // StorageMonitor:
   bool GetStorageInfoForPath(const base::FilePath& path,
                              StorageInfo* device_info) const override;
-  bool GetMTPStorageInfoFromDeviceId(
-      const std::string& storage_device_id,
-      std::wstring* device_location,
-      std::wstring* storage_object_id) const override;
   void EjectDevice(const std::string& device_id,
                    base::OnceCallback<void(EjectStatus)> callback) override;
 
  private:
-  class PortableDeviceNotifications;
   friend class TestStorageMonitorWin;
 
   void MediaChangeNotificationRegister();
@@ -84,10 +77,6 @@ class COMPONENT_EXPORT(STORAGE_MONITOR) StorageMonitorWin
 
   // The volume mount point watcher, used to manage the mounted devices.
   const std::unique_ptr<VolumeMountWatcherWin> volume_mount_watcher_;
-
-  // The portable device watcher, used to manage media transfer protocol
-  // devices.
-  const std::unique_ptr<PortableDeviceWatcherWin> portable_device_watcher_;
 };
 
 }  // namespace storage_monitor

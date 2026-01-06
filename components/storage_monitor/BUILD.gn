@@ -31,8 +31,6 @@ component("storage_monitor") {
 
   if (is_win) {
     sources += [
-      "portable_device_watcher_win.cc",
-      "portable_device_watcher_win.h",
       "storage_monitor_win.cc",
       "storage_monitor_win.h",
       "volume_mount_watcher_win.cc",
@@ -129,8 +127,6 @@ static_library("test_support") {
 
   if (is_win) {
     sources += [
-      "test_portable_device_watcher_win.cc",
-      "test_portable_device_watcher_win.h",
       "test_storage_monitor_win.cc",
       "test_storage_monitor_win.h",
       "test_volume_mount_watcher_win.cc",

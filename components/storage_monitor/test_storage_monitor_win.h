@@ -16,14 +16,12 @@
 
 namespace storage_monitor {
 
-class TestPortableDeviceWatcherWin;
 class TestVolumeMountWatcherWin;
 
 class TestStorageMonitorWin: public StorageMonitorWin {
  public:
-  TestStorageMonitorWin(
-      std::unique_ptr<TestVolumeMountWatcherWin> volume_mount_watcher,
-      std::unique_ptr<TestPortableDeviceWatcherWin> portable_device_watcher);
+  explicit TestStorageMonitorWin(
+      std::unique_ptr<TestVolumeMountWatcherWin> volume_mount_watcher);
 
   TestStorageMonitorWin(const TestStorageMonitorWin&) = delete;
   TestStorageMonitorWin& operator=(const TestStorageMonitorWin&) = delete;

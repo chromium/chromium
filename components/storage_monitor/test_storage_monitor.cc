@@ -105,15 +105,6 @@ bool TestStorageMonitor::GetStorageInfoForPath(
   return true;
 }
 
-#if BUILDFLAG(IS_WIN)
-bool TestStorageMonitor::GetMTPStorageInfoFromDeviceId(
-    const std::string& storage_device_id,
-    std::wstring* device_location,
-    std::wstring* storage_object_id) const {
-  return false;
-}
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 device::mojom::MtpManager*
 TestStorageMonitor::media_transfer_protocol_manager() {

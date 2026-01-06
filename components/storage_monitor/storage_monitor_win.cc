@@ -17,7 +17,6 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/wrapped_window_proc.h"
-#include "components/storage_monitor/portable_device_watcher_win.h"
 #include "components/storage_monitor/removable_device_constants.h"
 #include "components/storage_monitor/storage_info.h"
 #include "components/storage_monitor/volume_mount_watcher_win.h"
@@ -29,21 +28,16 @@
 namespace storage_monitor {
 
 StorageMonitorWin::StorageMonitorWin(
-    std::unique_ptr<VolumeMountWatcherWin> volume_mount_watcher,
-    std::unique_ptr<PortableDeviceWatcherWin> portable_device_watcher)
-    : volume_mount_watcher_(std::move(volume_mount_watcher)),
-      portable_device_watcher_(std::move(portable_device_watcher)) {
+    std::unique_ptr<VolumeMountWatcherWin> volume_mount_watcher)
+    : volume_mount_watcher_(std::move(volume_mount_watcher)) {
   DCHECK(volume_mount_watcher_);
-  DCHECK(portable_device_watcher_);
   volume_mount_watcher_->SetNotifications(receiver());
-  portable_device_watcher_->SetNotifications(receiver());
 }
 
 StorageMonitorWin::~StorageMonitorWin() {
   if (shell_change_notify_id_)
     SHChangeNotifyDeregister(shell_change_notify_id_);
   volume_mount_watcher_->SetNotifications(nullptr);
-  portable_device_watcher_->SetNotifications(nullptr);
 
   if (window_)
     DestroyWindow(window_);
@@ -66,7 +60,6 @@ void StorageMonitorWin::Init() {
                          nullptr, nullptr, instance_, nullptr);
   SetWindowLongPtr(window_, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
   volume_mount_watcher_->Init();
-  portable_device_watcher_->Init(window_);
   MediaChangeNotificationRegister();
 }
 
@@ -76,7 +69,6 @@ bool StorageMonitorWin::GetStorageInfoForPath(const base::FilePath& path,
 
   // TODO(gbillock): Move this logic up to StorageMonitor.
   // If we already know the StorageInfo for the path, just return it.
-  // This will account for portable devices as well.
   std::vector<StorageInfo> attached_devices = GetAllAvailableStorages();
   size_t best_parent = attached_devices.size();
   size_t best_length = 0;
@@ -112,24 +104,11 @@ void StorageMonitorWin::EjectDevice(
     return;
   }
 
-  if (type == StorageInfo::MTP_OR_PTP)
-    portable_device_watcher_->EjectDevice(device_id, std::move(callback));
-  else if (StorageInfo::IsRemovableDevice(device_id))
+  if (StorageInfo::IsRemovableDevice(device_id)) {
     volume_mount_watcher_->EjectDevice(device_id, std::move(callback));
-  else
+  } else {
     std::move(callback).Run(EJECT_FAILURE);
-}
-
-bool StorageMonitorWin::GetMTPStorageInfoFromDeviceId(
-    const std::string& storage_device_id,
-    std::wstring* device_location,
-    std::wstring* storage_object_id) const {
-  StorageInfo::Type type;
-  StorageInfo::CrackDeviceId(storage_device_id, &type, nullptr);
-  if (type != StorageInfo::MTP_OR_PTP)
-    return false;
-  return portable_device_watcher_->GetMTPStorageInfoFromDeviceId(
-      storage_device_id, device_location, storage_object_id);
+  }
 }
 
 // static
@@ -187,7 +166,6 @@ bool StorageMonitorWin::GetDeviceInfo(const base::FilePath& device_path,
 void StorageMonitorWin::OnDeviceChange(UINT event_type, LPARAM data) {
   DVLOG(1) << "OnDeviceChange " << event_type << " " << data;
   volume_mount_watcher_->OnWindowMessage(event_type, data);
-  portable_device_watcher_->OnWindowMessage(event_type, data);
 }
 
 void StorageMonitorWin::OnMediaChange(WPARAM wparam, LPARAM lparam) {
@@ -195,8 +173,7 @@ void StorageMonitorWin::OnMediaChange(WPARAM wparam, LPARAM lparam) {
 }
 
 StorageMonitor* StorageMonitor::CreateInternal() {
-  return new StorageMonitorWin(std::make_unique<VolumeMountWatcherWin>(),
-                               std::make_unique<PortableDeviceWatcherWin>());
+  return new StorageMonitorWin(std::make_unique<VolumeMountWatcherWin>());
 }
 
 }  // namespace storage_monitor
