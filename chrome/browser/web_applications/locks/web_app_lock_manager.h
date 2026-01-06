@@ -143,12 +143,21 @@ class WebAppLockManager {
   base::WeakPtr<WebAppLockManager> GetWeakPtr();
 
  private:
-  // Method used to call `GrantLock` function on the lock, after the
-  // `lock_manager_` has granted the locks.
-  // Note: `lock` is guaranteed to be populated, as otherwise the 'holder' for
-  // the lock will be destroyed, and then this callback is never called.
+  // Invokes `GrantLockWithCallback` on the lock after `lock_manager_` has
+  // granted the underlying locks.
+  //
+  // Note: The `lock` parameter is guaranteed to be valid because the lock's
+  // holder keeps it alive. If the holder is destroyed, this callback won't be
+  // invoked.
+  //
+  // Callback behavior:
+  // - For locks without web contents: `on_lock_acquired` is always called once
+  //   the lock is granted.
+  // - For locks with web contents: `on_lock_acquired` won't be called if
+  //   profile shutdown has started.
   template <class LockType>
-  void GrantLock(base::WeakPtr<LockType> lock);
+  void GrantLockWithCallback(base::WeakPtr<LockType> lock,
+                             base::OnceClosure on_lock_acquired);
 
   // Acquires the lock for the given `lock`, calling `on_lock_acquired` when
   // complete.
