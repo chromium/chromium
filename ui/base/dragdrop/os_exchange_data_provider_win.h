@@ -155,11 +155,14 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderWin
   void SetFilenames(const std::vector<FileInfo>& filenames) override;
   // Test only method for adding virtual file content to the data store. The
   // first value in the pair is the file display name, the second is a string
-  // providing the file content.
+  // providing the file content. If `show_cfhdrop_without_data` is true,
+  // CF_HDROP will be advertised via QueryGetData but GetData will fail -
+  // simulating ZIP Shell Folder behavior.
   void SetVirtualFileContentsForTesting(
       const std::vector<std::pair<base::FilePath, std::string>>&
           filenames_and_contents,
-      DWORD tymed) override;
+      DWORD tymed,
+      bool show_cfhdrop_without_data = false) override;
   void SetPickledData(const ClipboardFormatType& format,
                       const base::Pickle& data) override;
   void SetFileContents(const base::FilePath& filename,

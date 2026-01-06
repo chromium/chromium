@@ -428,7 +428,8 @@ std::optional<GURL> OSExchangeDataProviderWin::GetPlainTextURL() const {
 void OSExchangeDataProviderWin::SetVirtualFileContentsForTesting(
     const std::vector<std::pair<base::FilePath, std::string>>&
         filenames_and_contents,
-    DWORD tymed) {
+    DWORD tymed,
+    bool show_cfhdrop_without_data) {
   size_t num_files = filenames_and_contents.size();
   if (!num_files)
     return;
@@ -468,6 +469,18 @@ void OSExchangeDataProviderWin::SetVirtualFileContentsForTesting(
                    filenames_and_contents[i].second.length());
     SetVirtualFileContentAtIndexForTesting(data_buffer, tymed,  // IN-TEST
                                            static_cast<LONG>(i));
+  }
+
+  // This simulates ZIP Shell Folder behavior where data is available via format
+  // FileContentAtIndexType(0)
+  if (show_cfhdrop_without_data) {
+    FORMATETC cf_hdrop_format =
+        ClipboardFormatType::CFHDropType().ToFormatEtc();
+    cf_hdrop_format.tymed = TYMED_NULL;
+    STGMEDIUM null_medium = kNullStorageMedium;
+    data_->contents_.push_back(
+        DataObjectImpl::StoredDataInfo::TakeStorageMedium(cf_hdrop_format,
+                                                          null_medium));
   }
 }
 

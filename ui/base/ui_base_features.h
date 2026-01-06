@@ -270,6 +270,12 @@ BASE_DECLARE_FEATURE(kUseSystemDefaultAccentColors);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kStringWidthCache);
 
+// Fix for ZIP Shell Folder virtual file detection. When enabled,
+// HasVirtualFilenames() checks if CF_HDROP actually returns data
+// (not just advertises it) before treating files as real.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kUseClipboardStrictVirtualFileCheck);
+
 }  // namespace features
 
 #endif  // UI_BASE_UI_BASE_FEATURES_H_

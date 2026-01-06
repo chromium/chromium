@@ -33,6 +33,7 @@ namespace clipboard_util {
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
 bool HasUrl(IDataObject* data_object, bool convert_filenames);
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD) bool HasFilenames(IDataObject* data_object);
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD) bool HasRealFiles(IDataObject* data_object);
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
 bool HasVirtualFilenames(IDataObject* data_object);
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD) bool HasPlainText(IDataObject* data_object);

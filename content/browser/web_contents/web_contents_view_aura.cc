@@ -732,7 +732,21 @@ void WebContentsViewAura::PrepareDropData(
   if (std::optional<std::vector<ui::FileInfo>> filenames = data.GetFilenames();
       filenames.has_value()) {
     drop_data->filenames = filenames.value();
-  } else {
+  }
+#if BUILDFLAG(IS_WIN)
+  // Get a list of virtual files for later retrieval when a drop is performed.
+  // Returns empty vector if there are any non-virtual files in the data store.
+  if (ShouldIncludeVirtualFiles(*drop_data)) {
+    if (std::optional<std::vector<ui::FileInfo>> virtual_filenames =
+            data.GetVirtualFilenames();
+        virtual_filenames.has_value()) {
+      std::ranges::move(virtual_filenames.value(),
+                        std::back_inserter(drop_data->filenames));
+    }
+  }
+#endif
+
+  if (drop_data->filenames.empty()) {
     // Only add FileContents if Filenames is empty to avoid duplicates
     // (https://crbug.com/1251482). We prefer filenames since it supports
     // multiple files and does not send all file data upfront. Do not add
@@ -758,20 +772,6 @@ void WebContentsViewAura::PrepareDropData(
       }
     }
   }
-
-#if BUILDFLAG(IS_WIN)
-  // Get a list of virtual files for later retrieval when a drop is performed
-  // (will return empty vector if there are any non-virtual files in the data
-  // store).
-  if (ShouldIncludeVirtualFiles(*drop_data)) {
-    if (std::optional<std::vector<ui::FileInfo>> virtual_filenames =
-            data.GetVirtualFilenames();
-        virtual_filenames.has_value()) {
-      std::ranges::move(virtual_filenames.value(),
-                        std::back_inserter(drop_data->filenames));
-    }
-  }
-#endif
 
   if (std::optional<base::Pickle> pickle =
           data.GetPickledData(GetFileSystemFileFormatType());

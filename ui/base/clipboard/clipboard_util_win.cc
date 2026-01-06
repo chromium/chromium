@@ -19,6 +19,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
@@ -34,6 +35,7 @@
 #include "net/base/filename_util.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
 namespace ui {
@@ -478,10 +480,30 @@ bool HasFilenames(IDataObject* data_object) {
          HasData(data_object, ClipboardFormatType::FilenameAType());
 }
 
+// Some virtual file providers like Windows ZIP Shell Folder
+// advertise these formats (CF_HDROP, CFSTR_FILENAME) in QueryGetData but fail
+// on GetData, so it must be checked if those formats can provide data to
+// correctly identify real files.
+bool HasRealFiles(IDataObject* data_object) {
+  DCHECK(data_object);
+  STGMEDIUM medium;
+  if (GetData(data_object, ClipboardFormatType::CFHDropType(), &medium) ||
+      GetData(data_object, ClipboardFormatType::FilenameType(), &medium) ||
+      GetData(data_object, ClipboardFormatType::FilenameAType(), &medium)) {
+    ReleaseStgMedium(&medium);
+    return true;
+  }
+  return false;
+}
+
 bool HasVirtualFilenames(IDataObject* data_object) {
   DCHECK(data_object);
+  const bool has_real_files = base::FeatureList::IsEnabled(
+                                  features::kUseClipboardStrictVirtualFileCheck)
+                                  ? HasRealFiles(data_object)
+                                  : HasFilenames(data_object);
   // Favor real files on the file system over virtual files.
-  return !HasFilenames(data_object) &&
+  return !has_real_files &&
          HasData(data_object, ClipboardFormatType::FileContentAtIndexType(0)) &&
          (HasData(data_object, ClipboardFormatType::FileDescriptorType()) ||
           HasData(data_object, ClipboardFormatType::FileDescriptorAType()));
@@ -790,11 +812,6 @@ bool GetFileContents(IDataObject* data_object,
               &content)) {
     if (TYMED_HGLOBAL == content.tymed) {
       base::win::ScopedHGlobal<char*> data(content.hGlobal);
-      file_contents->assign(data.data(), data.size());
-    } else if (TYMED_ISTREAM == content.tymed) {
-      // For example, files dragged out of a ZIP Folder.
-      HGLOBAL hdata = CopyFileContentsToHGlobal(data_object, 0);
-      base::win::ScopedHGlobal<char*> data(hdata);
       file_contents->assign(data.data(), data.size());
     }
     ReleaseStgMedium(&content);
