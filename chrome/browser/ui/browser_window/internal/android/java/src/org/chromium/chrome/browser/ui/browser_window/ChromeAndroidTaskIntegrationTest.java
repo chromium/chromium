@@ -855,7 +855,9 @@ public class ChromeAndroidTaskIntegrationTest {
                     Criteria.checkThat(
                             assumeNonNull(newActivity.getWindowAndroid()).isTopResumedActivity(),
                             Matchers.is(false));
-                });
+                },
+                /* maxTimeoutMs= */ 15_000L,
+                /* checkIntervalMs= */ 1000L);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertTrue(chromeAndroidTask.isMaximized());
