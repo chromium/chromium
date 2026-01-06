@@ -186,10 +186,16 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset([
 ])
 
 PUBLIC_PERF_BUILDERS = [
-    'linux-perf',  # ChromiumPerf
-    'linux-perf-fyi',  # ChromiumPerfFyi
-    'linux-r350-perf',  # ChromiumPerf
-    'win-10-perf',  # ChromiumPerf
+    # ChromiumPerf
+    'android-pixel9-perf',
+    'android-pixel9-pro-perf',
+    'android-pixel9-pro-xl-perf',
+    'linux-perf',
+    'linux-r350-perf',
+    'win-10-perf',
+
+    # ChromiumPerfFyi
+    'linux-perf-fyi',
 ]
 
 # This is an opt-in list for builders which uses dynamic sharding.
