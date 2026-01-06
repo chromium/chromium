@@ -344,14 +344,15 @@ void GroupDataModel::OnBatchOfGroupsFetchedFromSDK(
       continue;
     }
 
-    if (!requested_groups_and_versions.contains(group_id)) {
+    auto it = requested_groups_and_versions.find(group_id);
+    if (it == requested_groups_and_versions.end()) {
       // Guard against protocol violation (this group hasn't been requested).
       continue;
     }
 
     const auto old_group_data_opt = group_data_store_.GetGroupData(group_id);
-    group_data_store_.StoreGroupData(requested_groups_and_versions.at(group_id),
-                                     requested_at_timestamp, group_data_proto);
+    group_data_store_.StoreGroupData(it->second, requested_at_timestamp,
+                                     group_data_proto);
     for (auto& observer : observers_) {
       // TODO(crbug.com/377215683): pass the actual event time (at least derived
       // from CollaborationGroupSpecifics).
