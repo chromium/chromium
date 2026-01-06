@@ -121,6 +121,16 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
+<histogram name="ContextualSearch.ErrorPageShown.{ContextualSearchSource}"
+    enum="ContextualSearchErrorPage" expires_after="2026-06-21">
+  <owner>nguyenbryan@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded when the error page is shown, with the reason it was shown.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
 <histogram
     name="ContextualSearch.File.Size.{ContextualSearchFileTypes}.{ContextualSearchSource}"
     units="bytes" expires_after="2026-03-29">

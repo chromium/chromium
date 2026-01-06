@@ -8,6 +8,7 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/uuid.h"
 #include "build/branding_buildflags.h"
@@ -755,6 +756,13 @@ void ContextualTasksUI::OnPageContextEligibilityChecked(
     page_->HideErrorPage();
   } else {
     page_->ShowErrorPage();
+    base::UmaHistogramEnumeration(
+        base::StrCat({"ContextualSearch.ErrorPageShown", ".",
+                      contextual_search::ContextualSearchMetricsRecorder::
+                          ContextualSearchSourceToString(
+                              contextual_search::ContextualSearchSource::
+                                  kContextualTasks)}),
+        contextual_search::ContextualSearchErrorPage::kPageContextNotEligible);
   }
 }
 
