@@ -2281,7 +2281,13 @@ bool ApplyViewportClippingAndOffsets(gfx::RectF& rect,
                                      VisualRectFlags visual_rect_flags,
                                      bool& intersects) {
   PhysicalRect physical_rect = PhysicalRect::EnclosingRect(rect);
+  // When requested, skip all ancestor + viewport clipping even for the
+  // GeometryMapper viewport fast path. This keeps the fast path consistent with
+  // the slow path (LayoutBox::ApplyBoxClips and LayoutView's viewport clip) so
+  // callers can compute both unclipped and clipped rectangles using the same
+  // mapping pipeline.
   const bool apply_local_root_clip =
+      !(visual_rect_flags & VisualRectFlags::kSkipAncestorAndViewportClips) &&
       !(visual_rect_flags & kDontApplyMainFrameOverflowClip);
 
   if (apply_local_root_clip) {

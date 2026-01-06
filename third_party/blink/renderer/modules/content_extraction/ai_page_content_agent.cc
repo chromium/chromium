@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
 #include "third_party/blink/renderer/core/layout/layout_iframe.h"
@@ -61,6 +62,8 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_debug_utils.h"
+#include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -105,7 +108,14 @@ ListBasedHitTestBehavior CollectHitTestNodes(std::vector<DOMNodeId>& hit_nodes,
 //
 // The returned rectangle is in viewport coordinates (relative to the top-left
 // of the visible area), which is why coordinates are always >= 0.
-gfx::Rect ComputeVisibleBoundingBox(const LayoutObject& object) {
+//
+// When |local_bounding_box_out| is provided, populate it with the local-space
+// bounding box used as input to the visual-rect mapping. This lets callers
+// reuse the same local geometry for unclipped mapping without duplicating the
+// clip-path/LocalBoundingBoxRectForAccessibility selection logic.
+gfx::Rect ComputeVisibleBoundingBox(
+    const LayoutObject& object,
+    gfx::RectF* local_bounding_box_out = nullptr) {
   // Layout must be complete before computing bounding boxes.
   DCHECK(object.GetDocument().Lifecycle().GetState() >=
          DocumentLifecycle::kLayoutClean)
@@ -116,6 +126,9 @@ gfx::Rect ComputeVisibleBoundingBox(const LayoutObject& object) {
       ClipPathClipper::LocalClipPathBoundingBox(object).value_or(
           object.LocalBoundingBoxRectForAccessibility(
               LayoutObject::IncludeDescendants(false)));
+  if (local_bounding_box_out) {
+    *local_bounding_box_out = object_rect;
+  }
 
   // Transform the local bounding box to viewport coordinates, applying:
   // 1. All CSS transforms (translate, scale, rotate, etc.)
@@ -165,6 +178,52 @@ gfx::Rect ComputeOuterBoundingBox(const LayoutObject& object) {
   return absolute_box.IsEmpty() ? gfx::Rect() : absolute_box;
 }
 
+bool IsUnboundedOrSaturatedViewportRect(const gfx::Rect& rect) {
+  // `InfiniteIntRect()` is a sentinel used for "unknown/unbounded" clip rects.
+  if (rect == InfiniteIntRect()) {
+    return true;
+  }
+
+  // When geometry is too large to represent in LayoutUnits, mapping paths that
+  // go through PhysicalRect/LayoutUnit can clamp/saturate. Those saturated
+  // rects are also "unknown/unbounded" for APC purposes.
+  //
+  // LayoutUnit uses a fixed-point int32 representation with 6 fractional bits.
+  // Its maximum integer component is LayoutUnit::Max().ToInt().
+  constexpr int kMaxLayoutInt = LayoutUnit::Max().ToInt();
+  return rect.width() > kMaxLayoutInt || rect.height() > kMaxLayoutInt;
+}
+
+// Maps a local bounding box to an unclipped outer bounding box in viewport
+// coordinates using the GeometryMapper pipeline.
+gfx::Rect LocalToOuterBoundingBox(const LayoutObject& object,
+                                  const gfx::RectF& local_bounding_box) {
+  // This mapping intentionally skips ancestor and viewport clips while still
+  // applying transforms, scroll offsets, and filters. It keeps the math aligned
+  // with ComputeVisibleBoundingBox() without re-deriving local geometry.
+  gfx::RectF unclipped_box = local_bounding_box;
+  const bool mapped_outer = object.MapToVisualRectInAncestorSpace(
+      nullptr, unclipped_box,
+      static_cast<VisualRectFlags>(kVisualRectFlags |
+                                   kSkipAncestorAndViewportClips));
+  if (!mapped_outer || unclipped_box.IsEmpty()) {
+    return gfx::Rect();
+  }
+  gfx::Rect outer_box = gfx::ToEnclosingRect(unclipped_box);
+
+  // Under extreme transforms, MapToVisualRectInAncestorSpace() may saturate
+  // and return blink::InfiniteIntRect() as a sentinel "unknown/unbounded"
+  // rectangle. This is intentional and used by crash/fuzz-style tests (e.g.
+  // WPT cases with scale(1e38)). The sentinel is not a meaningful "outer"
+  // bounding box, and it may not contain the (clipped-to-viewport) visible
+  // box because it ends at (0,0). Treat it as empty so callers can decide how
+  // to fall back (e.g. clamp to the visible box in APC).
+  if (IsUnboundedOrSaturatedViewportRect(outer_box)) {
+    return gfx::Rect();
+  }
+  return outer_box;
+}
+
 // Processes fragment bounding boxes for layout objects that can be split.
 //
 // Uses QuadsInAncestor() to retrieve quads for each object, then converts them
@@ -206,49 +265,27 @@ void ComputeFragmentBoundingBoxes(
   }
 }
 
-// Validates the relationship between outer and visible bounding boxes.
-//
-// The visible bounding box should generally be contained within or equal to
-// the outer bounding box, since it represents the visible portion of the
-// object. However, there are some exceptions:
-// 1. Inline elements can have different calculation methods that cause slight
-// differences
-// 2. Floating-point to integer conversions can introduce small rounding errors
-// 3. CSS transforms can cause complex geometric relationships
 #if DCHECK_IS_ON()
-void ValidateBoundingBoxes(const gfx::Rect& outer_box_in_absolute_coords,
+// Validates the relationship between the viewport, outer box and visible
+// bounding boxes.
+void ValidateBoundingBoxes(const gfx::Rect& outer_box_in_viewport_coords,
                            const gfx::Rect& visible_box_in_viewport_coords,
                            const LayoutObject& object) {
-  // Visible box coordinates should always be viewport-relative (>= 0)
-  DCHECK_GE(visible_box_in_viewport_coords.x(), 0)
-      << "Visible box should have x >= 0, got: "
-      << visible_box_in_viewport_coords.ToString() << " for object: " << object;
-  DCHECK_GE(visible_box_in_viewport_coords.y(), 0)
-      << "Visible box should have y >= 0, got: "
-      << visible_box_in_viewport_coords.ToString() << " for object: " << object;
-
-  // For block-level elements, the visible box should generally be no larger
-  // than the outer box (with some tolerance for rounding errors).
-  // Inline elements are exempt because they can have different calculation
-  // methods that cause the visible box to be larger.
-  // TODO(crbug.com/422588784): Fixinline element box sizing  and enable check.
-  if (!object.IsInline()) {
-    const int kTolerancePixels = 1;
-    DCHECK_LE(visible_box_in_viewport_coords.width(),
-              outer_box_in_absolute_coords.width() + kTolerancePixels)
-        << "Visible box width should not exceed outer box width by more than "
-        << kTolerancePixels
-        << "px. Visible: " << visible_box_in_viewport_coords.ToString()
-        << ", Outer: " << outer_box_in_absolute_coords.ToString()
-        << " for object: " << object;
-    DCHECK_LE(visible_box_in_viewport_coords.height(),
-              outer_box_in_absolute_coords.height() + kTolerancePixels)
-        << "Visible box height should not exceed outer box height by more than "
-        << kTolerancePixels
-        << "px. Visible: " << visible_box_in_viewport_coords.ToString()
-        << ", Outer: " << outer_box_in_absolute_coords.ToString()
-        << " for object: " << object;
+  if (visible_box_in_viewport_coords.IsEmpty()) {
+    return;
   }
+
+  // Skip validation when outer bounds are "unknown/unbounded" sentinels due to
+  // extreme transforms or saturation. Containment is not meaningful then.
+  if (IsUnboundedOrSaturatedViewportRect(outer_box_in_viewport_coords)) {
+    return;
+  }
+
+  DCHECK(outer_box_in_viewport_coords.Contains(visible_box_in_viewport_coords))
+      << "Visible box must lie within outer box. Visible: "
+      << visible_box_in_viewport_coords.ToString()
+      << ", Outer: " << outer_box_in_viewport_coords.ToString()
+      << "\nFor: " << object;
 }
 #endif  // DCHECK_IS_ON()
 
@@ -1753,11 +1790,31 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
   //
   // These boxes serve different purposes:
   // - outer_bounding_box: Used for hit-testing semantics and determining the
-  //   object’s overall size and position relative to the viewport.
+  //   object’s overall size and position relative to the viewport once scrolled
+  //   into view (ignoring ancestor clips).
   // - visible_bounding_box: Used for determining what is actually visible to
   //   users and immediately hit-testable without scrolling.
-  geometry.outer_bounding_box = ComputeOuterBoundingBox(object);
-  geometry.visible_bounding_box = ComputeVisibleBoundingBox(object);
+  // Compute the visible bounding box and capture the local box so the outer
+  // box can reuse identical geometry inputs when the feature flag is enabled.
+  gfx::RectF local_bounding_box;
+  geometry.visible_bounding_box =
+      ComputeVisibleBoundingBox(object, &local_bounding_box);
+  const bool map_to_outer =
+      RuntimeEnabledFeatures::AIPageContentOuterBoxMapToAncestorSpaceEnabled();
+  geometry.outer_bounding_box =
+      map_to_outer ? LocalToOuterBoundingBox(object, local_bounding_box)
+                   : ComputeOuterBoundingBox(object);
+
+  // For APC, the most useful fallback is to clamp the outer box to the visible
+  // box when the mapping fails or saturates:
+  // - It preserves the key invariant checked by ValidateBoundingBoxes().
+  // - It avoids emitting enormous/sentinel geometry to consumers.
+  // - It does not change visible_bounding_box semantics.
+  if (map_to_outer && geometry.outer_bounding_box.IsEmpty() &&
+      !geometry.visible_bounding_box.IsEmpty()) {
+    geometry.outer_bounding_box = geometry.visible_bounding_box;
+  }
+
   TrackPasswordRedactionIfNeeded(object, attributes,
                                  geometry.visible_bounding_box);
 

@@ -321,11 +321,11 @@
       base_feature: "none",
     },
     // Whether to automatically build an APC content_extraction tree on load.
-    // Only supported for DCHECK-enabled builds.
     {
       name: "AIPageContentBuildOnLoadForTesting",
     },
     // Whether to enforce geometry invariants in AIPageContentAgent.
+    // Only supported for DCHECK-enabled builds.
     {
       name: "AIPageContentCheckGeometry",
       status: "test"
@@ -333,6 +333,11 @@
     {
       name: "AIPageContentIncludeSVGSubtree",
       status: "test"
+    },
+    // Use MapToVisualRectInAncestorSpace for outer bounding boxes, for
+    // math consistent with visual bounding boxes.
+    {
+      name: "AIPageContentOuterBoxMapToAncestorSpace",
     },
     {
       name: "AIPageContentPaidContentAnnotation",

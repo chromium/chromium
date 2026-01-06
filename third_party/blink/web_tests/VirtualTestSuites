@@ -171,17 +171,33 @@
       "Win"
     ],
     "bases": [
+      "clipboard/copy-null-image.html",
       "compositing/geometry/layer-due-to-layer-children-deep.html",
+      "compositing/geometry/fixed-position-composited-page-scale-scroll.html",
+      "compositing/geometry/fixed-position-composited-page-scale.html",
+      "compositing/geometry/fixed-position-iframe-composited-page-scale.html",
+      "compositing/geometry/fixed-position-transform-composited-page-scale.html",
+      "compositing/gestures/gesture-tapHighlight-block-in-multicol.html",
       "compositing/iframes/content-visibility-hidden-frame.html",
       "compositing/overflow/nested-render-surfaces-with-rotation.html",
+      "compositing/scaling/tiled-layer-recursion.html",
       "compositing/squashing/squash-transform-repainting-transformed-child.html",
       "css3/filters/nested-filter.html",
+      "css3/viewport-percentage-lengths/viewport-percentage-lengths-scaled-normal-scrollbars.html",
+      "css3/viewport-percentage-lengths/viewport-percentage-lengths-scaled-overlay-scrollbars.html",
+      "external/wpt/css/css-break/grid/grid-item-fragmentation-023.html",
+      "fast/dom/Element/scale-page-bounding-client-rect.html",
+      "fast/dom/Element/scale-page-client-rects.html",
       "fast/dom/HTMLObjectElement/update-data.html",
       "fast/dynamic/position-change-to-absolute-with-positioned-child-crash.html",
       "fast/events/touch/touch-rect-assert-first-layer-special.html",
       "fast/forms/datalist/input-appearance-range-with-transform.html",
+      "fast/multicol/client-rects.html",
+      "fast/scrolling/keyboard-scroll-page-scale.html",
       "fast/sub-pixel/sub-pixel-accumulates-to-layers.html",
       "fast/sub-pixel/transformed-iframe-copy-on-scroll.html",
+      "http/tests/html/scaled-oopif-scrollbar-horizontal.html",
+      "http/tests/html/scaled-oopif-scrollbar-vertical.html",
       "paint/invalidation/compositing/subpixel-offset-scaled-will-change-transform.html",
       "paint/invalidation/transform/subpixel-offset-scaled-transform.html",
       "transforms/3d/hit-testing/hover-rotated-with-children-negative-z.html",
@@ -189,7 +205,7 @@
       "transforms/rotate.html"
     ],
     "args": [
-      "--enable-blink-features=AIPageContentBuildOnLoadForTesting"
+      "--enable-blink-features=AIPageContentBuildOnLoadForTesting,AIPageContentOuterBoxMapToAncestorSpace"
     ],
     "owners": [
       "aleventhal@chromium.org"

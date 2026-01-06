@@ -1924,16 +1924,18 @@ bool LayoutBox::ApplyBoxClips(
     TransformState::TransformAccumulation accumulation,
     VisualRectFlags visual_rect_flags) const {
   NOT_DESTROYED();
-  // This won't work fully correctly for fixed-position elements, who should
-  // receive CSS clip but for whom the current object is not in the containing
-  // block chain.
-  PhysicalRect clip_rect = ClippingRect(PhysicalOffset());
-
+  if (visual_rect_flags & VisualRectFlags::kSkipAncestorAndViewportClips) {
+    return true;
+  }
   transform_state.Flatten();
   PhysicalRect rect = PhysicalRect::EnclosingRect(
       transform_state.LastPlanarQuad().BoundingBox());
 
   bool does_intersect;
+  // This won't work fully correctly for fixed-position elements, who should
+  // receive CSS clip but for whom the current object is not in the containing
+  // block chain.
+  PhysicalRect clip_rect = ClippingRect(PhysicalOffset());
   if (visual_rect_flags & kEdgeInclusive) {
     does_intersect = rect.InclusiveIntersect(clip_rect);
   } else {

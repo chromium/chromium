@@ -732,9 +732,13 @@ class CORE_EXPORT LocalFrameView final
 
   String MainThreadScrollingReasonsAsText();
 
+  // Maps |rect| from the local root into the remote root frame. The
+  // |apply_viewport_clip| flag controls whether we intersect with the remote
+  // viewport before applying transforms.
   bool MapToVisualRectInRemoteRootFrame(PhysicalRect& rect,
                                         bool apply_overflow_clip = true,
-                                        bool apply_viewport_transform = false);
+                                        bool apply_viewport_transform = false,
+                                        bool apply_viewport_clip = true);
 
   void MapLocalToRemoteMainFrame(TransformState&,
                                  bool apply_remote_main_frame_scroll_offset);

@@ -281,6 +281,10 @@ bool GeometryMapper::LocalToAncestorVisualRectInternal(
     rect_to_map.Map(projection);
   }
 
+  if (flags & VisualRectFlags::kSkipAncestorAndViewportClips) {
+    return true;
+  }
+
   FloatClipRect clip_rect =
       LocalToAncestorClipRectInternal<for_compositing_overlap>(
           local_state.Clip(), ancestor_state.Clip(), ancestor_state.Transform(),
