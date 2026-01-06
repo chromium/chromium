@@ -29,12 +29,6 @@ public class UiAndroidFeatureList {
             newMutableFlagWithSafeDefault(
                     UiAndroidFeatures.REQUIRE_LEADING_IN_TEXT_VIEW_WITH_LEADING, false);
 
-    public static final CachedFlag sAndroidUseCorrectWindowBounds =
-            newCachedFlag(
-                    UiAndroidFeatures.ANDROID_USE_CORRECT_WINDOW_BOUNDS,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
-
     public static final CachedFlag sAndroidUseDisplayTopology =
             newCachedFlag(
                     UiAndroidFeatures.ANDROID_USE_DISPLAY_TOPOLOGY,
@@ -72,7 +66,6 @@ public class UiAndroidFeatureList {
 
     public static final List<CachedFlag> sFlagsCachedUiAndroid =
             List.of(
-                    sAndroidUseCorrectWindowBounds,
                     sAndroidUseDisplayTopology,
                     sAndroidWindowOcclusion,
                     sRefactorMinWidthContextOverride);

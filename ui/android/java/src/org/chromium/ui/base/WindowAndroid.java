@@ -247,9 +247,7 @@ public class WindowAndroid
         mIntentRequestTracker = (IntentRequestTrackerImpl) tracker;
         mInsetObserver = insetObserver;
         mApplicationBottomInsetSupplier.setInsetObserver(mInsetObserver);
-        if (mInsetObserver != null
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                && UiAndroidFeatureList.sAndroidUseCorrectWindowBounds.isEnabled()) {
+        if (mInsetObserver != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             mWindowInsetObserver =
                     new WindowInsetObserver() {
                         @Override

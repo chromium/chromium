@@ -309,4 +309,7 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // Deemed that performance benefit is not worth the stability cost.
   // See crbug.com/1309151.
   aw_feature_overrides.DisableFeature(::features::kGpuShaderDiskCache);
+
+  // Don't pass the data about browser window position on screen to WebView.
+  aw_feature_overrides.DisableFeature(ui::kAndroidUseCorrectWindowBounds);
 }
