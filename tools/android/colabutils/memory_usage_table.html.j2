@@ -1,0 +1,220 @@
+<style>
+    .metrics-wrapper {
+        --bg-color: #f9fafb;
+        --surface-color: #ffffff;
+        --border-color: #e5e7eb;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --hover-color: #f3f4f6;
+        --accent-color: #3b82f6;
+        --row-height: 36px;
+
+        font-family: "Menlo", "Monaco", "Courier New", monospace;
+        font-weight: bold;
+        background-color: var(--bg-color);
+        color: var(--text-primary);
+        padding: 2rem;
+        display: flex;
+        justify-content: center;
+        border-radius: 8px;
+    }
+
+    .metrics-wrapper .table-container {
+        width: 100%;
+        max-width: 100%;
+        background: var(--surface-color);
+        border-radius: 8px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+    }
+
+    .metrics-wrapper .grid-row {
+        display: grid;
+        grid-template-columns: 1fr 120px 100px;
+        border-bottom: 1px solid var(--border-color);
+        align-items: center;
+    }
+
+    .metrics-wrapper .header {
+        background-color: #f8fafc;
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-secondary);
+        height: var(--row-height);
+    }
+
+    .metrics-wrapper .header .cell {
+        padding: 0 1rem;
+    }
+
+    .metrics-wrapper .row {
+        min-height: var(--row-height);
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+        user-select: none;
+    }
+
+    .metrics-wrapper .row:hover {
+        background-color: var(--hover-color);
+    }
+
+    .metrics-wrapper .cell-name {
+        display: flex;
+        align-items: center;
+        padding-right: 1rem;
+        min-width: 0; /* Allows shrinking in grid. */
+    }
+
+    /* Truncation class */
+    .metrics-wrapper .name-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .metrics-wrapper .cell-value,
+    .metrics-wrapper .cell-delta {
+        padding: 0 1rem;
+        font-family: "Menlo", "Monaco", "Courier New", monospace;
+        color: var(--text-primary);
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .metrics-wrapper .chevron {
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
+        transition: transform 0.2s ease;
+        fill: var(--text-secondary);
+        flex-shrink: 0;
+    }
+
+    .metrics-wrapper .row.expanded .chevron {
+        transform: rotate(90deg);
+        fill: var(--accent-color);
+    }
+
+    .metrics-wrapper .spacer {
+        width: 20px;
+        margin-right: 8px;
+        flex-shrink: 0;
+    }
+
+    .metrics-wrapper .children-container {
+        display: none;
+        background-color: #fff;
+        grid-column: 1 / -1;
+    }
+
+    .metrics-wrapper .children-container.open {
+        display: block;
+        animation: slideDown 0.2s ease-out;
+    }
+
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<!-- Define SVG symbol -->
+<svg style="display: none;">
+    <symbol id="icon-chevron" viewBox="0 0 24 24">
+        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+    </symbol>
+</svg>
+
+<div class="metrics-wrapper">
+    <div class="table-container">
+        <div class="grid-row header">
+            <div class="cell">Name</div>
+            <div class="cell" style="text-align: right;">Value</div>
+            <div class="cell" style="text-align: right;">Delta</div>
+        </div>
+        <div id="{{ root_id }}"></div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const metricsData = {{ json_data | tojson }};
+        const rootId = "{{ root_id }}";
+        const rootElement = document.getElementById(rootId);
+
+        const chevronIcon = `
+            <svg class="chevron">
+                <use href="#icon-chevron"></use>
+            </svg>
+        `;
+
+        function renderTree(container, data, depth = 0) {
+            data.forEach(metric => {
+                const hasChildren = metric.children &&
+                    metric.children.length > 0;
+
+                const row = document.createElement('div');
+                row.className = 'grid-row row';
+
+                // 1. Name Cell
+                const nameCell = document.createElement('div');
+                nameCell.className = 'cell-name';
+
+                const paddingLeft = 16 + (depth * 24);
+                nameCell.style.paddingLeft = paddingLeft + "px";
+
+                if (hasChildren) {
+                    nameCell.innerHTML = chevronIcon;
+                } else {
+                    nameCell.innerHTML = `<div class="spacer"></div>`;
+                }
+
+                // Text Span with truncation and tooltip
+                const textSpan = document.createElement('span');
+                textSpan.className = 'name-text';
+                textSpan.textContent = metric.name;
+                textSpan.title = metric.name;
+                nameCell.appendChild(textSpan);
+
+                const valueCell = document.createElement('div');
+                valueCell.className = 'cell-value';
+                valueCell.textContent = metric.value;
+
+                const deltaCell = document.createElement('div');
+                deltaCell.className = 'cell-delta';
+                deltaCell.textContent = metric.delta || "";
+
+                row.appendChild(nameCell);
+                row.appendChild(valueCell);
+                row.appendChild(deltaCell);
+                container.appendChild(row);
+
+                if (hasChildren) {
+                    const childrenContainer = document.createElement('div');
+                    childrenContainer.className = 'children-container';
+
+                    renderTree(childrenContainer, metric.children, depth + 1);
+
+                    container.appendChild(childrenContainer);
+
+                    row.addEventListener('click', () => {
+                        row.classList.toggle('expanded');
+                        if (childrenContainer.classList.contains('open')) {
+                            childrenContainer.classList.remove('open');
+                        } else {
+                            childrenContainer.classList.add('open');
+                        }
+                    });
+                }
+            });
+        }
+        if (rootElement) {
+            renderTree(rootElement, metricsData);
+        }
+    })();
+</script>

@@ -6,16 +6,24 @@
 # TODO(crbug.com/73768497): Move this file and other files related to memory
 # usage into a separate subdirectory.
 
+import jinja2
 import json
 import os
 import pandas as pd
 import pathlib
+import string
 import sys
 from dataclasses import dataclass, field
+try:
+    from IPython.display import HTML, display
+    _HAS_IPYTHON = True
+except ImportError:
+    _HAS_IPYTHON = False
 
 from . import demangler
 
-_SRC_PATH = pathlib.Path(__file__).resolve().parents[3]
+_MEMORY_USAGE_DIR = pathlib.Path(__file__).resolve().parent
+_SRC_PATH = _MEMORY_USAGE_DIR.parents[2]
 sys.path.append(str(_SRC_PATH / 'third_party/perfetto/python'))
 from perfetto.trace_processor import TraceProcessor
 
@@ -54,24 +62,26 @@ class MemoryUsageView:
         return cls(roots)
 
     @classmethod
-    def from_heap_dump(
-            cls,
-            trace_file_name: str,
-            demangler: demangler.Demangler | None = None) -> 'MemoryUsageView':
+    def from_heap_dump(cls,
+                       trace_file_name: str,
+                       demangler: demangler.Demangler | None = None,
+                       aggregate: bool = True) -> 'MemoryUsageView':
         """Creates a MemoryUsageView from a trace file with a heap dump."""
         abs_path = os.path.abspath(trace_file_name)
         with TraceProcessor(trace=abs_path) as trace_processor:
             df = _extract_heap_dump(trace_processor)
-            return cls.from_df(df, demangler=demangler)
+            return cls.from_df(df, demangler=demangler, aggregate=aggregate)
         return None
 
-    def to_json(self) -> str:
+    def to_json(self, **kwargs) -> str:
         """Converts the MemoryUsageView to a JSON string."""
-        return json.dumps(self.roots, cls=TreeNodeEncoder, indent=0)
+        return json.dumps(self.roots, cls=TreeNodeEncoder, indent=0, **kwargs)
 
     @classmethod
-    def from_df(cls, df: pd.DataFrame,
-                demangler: demangler.Demangler | None) -> 'MemoryUsageView':
+    def from_df(cls,
+                df: pd.DataFrame,
+                demangler: demangler.Demangler | None,
+                aggregate: bool = True) -> 'MemoryUsageView':
         """Creates a MemoryUsageView from a DataFrame."""
         # Nodes indexed by callsite_id.
         nodes: dict[int, TreeNode] = {}
@@ -101,10 +111,31 @@ class MemoryUsageView:
                 f'Missing parent callsite for {callsite_id}: {parent_id}')
             parent_node = nodes[parent_id]
             parent_node.children.append(node)
+        if aggregate:
+            roots = _aggregate_nodes(roots)
         return cls(roots)
 
     def toplevel_names(self) -> list[str]:
         return [root.name for root in self.roots]
+
+    def display(self):
+        if not _HAS_IPYTHON:
+            print('Error: Could not import IPython module')
+            return
+        unique_root_id = f'metrics-root-{id(self)}'
+        env = jinja2.Environment(
+            loader=jinja2.FileSystemLoader(_MEMORY_USAGE_DIR))
+        try:
+            # Common heap profiles are a too deep for the default recursion
+            # limit.
+            previous_recursion_limit = sys.getrecursionlimit()
+            sys.setrecursionlimit(10000)
+            env.policies['json.dumps_function'] = MemoryUsageView.to_json
+            template = env.get_template('memory_usage_table.html.j2')
+            html_str = template.render(json_data=self, root_id=unique_root_id)
+        finally:
+            sys.setrecursionlimit(previous_recursion_limit)
+        display(HTML(html_str))
 
 
 class TreeNodeEncoder(json.JSONEncoder):
@@ -170,3 +201,48 @@ def _extract_heap_dump(trace_processor: TraceProcessor) -> pd.DataFrame:
     """
     df = trace_processor.query(query).as_pandas_dataframe()
     return df
+
+
+def _aggregate_nodes(nodes: list[TreeNode]) -> list[TreeNode]:
+    """Recursively aggregates values the list of TreeNodes for viewing.
+
+    Replaces same-level nodes with the same name by a single node. Sorts
+    all children by value, largest first.
+
+    Note: This function is not idempotent. Applying the aggregation twice will
+    lead to wrong results.
+    """
+    # Group nodes by name, non-recursively.
+    grouped_by_name = {}
+    for node in nodes:
+        name = node.name
+        grouped_by_name.setdefault(name, [])
+        grouped_by_name[name].append(node)
+
+    # Replace each group of nodes with a single occurrence.
+    name_to_grouped_node = {}
+    for name, group_list in grouped_by_name.items():
+        all_children = []
+
+        # Sum up all individual node values.
+        list_total_value = 0
+        for node in group_list:
+            list_total_value += node.value
+            all_children.extend(node.children)
+
+        # Recursively replace children with grouped ones.
+        grouped_node = TreeNode(name=name, value=0, delta=0)
+        new_children = []
+        if all_children:
+            new_children = _aggregate_nodes(all_children)
+            grouped_node.children = new_children
+            for child in new_children:
+                grouped_node.value += child.value
+
+        grouped_node.value += list_total_value
+        name_to_grouped_node[name] = grouped_node
+
+    # Sort the nodes by their cumulative value.
+    return sorted(list(name_to_grouped_node.values()),
+                  key=lambda node: node.value,
+                  reverse=True)

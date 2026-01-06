@@ -150,4 +150,5 @@ from colabutils import memory_usage
 
 view = memory_usage.MemoryUsageView.from_heap_dump('symbolized-trace')
 view.toplevel_names()
+view.display()
 ```
