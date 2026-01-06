@@ -1822,6 +1822,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="221297410904507041">Exclua o histórico, os cookies, o cache e muito mais</translation>
 <translation id="2213410656650624348">Moderada</translation>
 <translation id="2214018885812055163">Pastas compartilhadas</translation>
+<translation id="2214453882118345682">Compre, traduza e identifique o que você quiser usando a câmera.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 linha não mostrada&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> linha não mostrada&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> linhas não mostradas&gt;}}</translation>
 <translation id="2215070081105889450">Para compartilhar áudio, compartilhe uma guia ou tela</translation>
 <translation id="2217208085547223783">Confiança</translation>
@@ -5734,6 +5735,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4864805589453749318">Selecione o familiar responsável que está autorizando adicionar a conta escolar.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (sensor bloqueado)</translation>
 <translation id="486505726797718946">Memória economizada</translation>
+<translation id="4865063548323785458">Salve e preencha automaticamente suas senhas para fazer login em sites e apps com facilidade</translation>
 <translation id="486635084936119914">Abrir alguns tipos de arquivo automaticamente depois do download</translation>
 <translation id="4867272607148176509">O familiar responsável pode aprovar ou bloquear apps, definir limites de tempo e controlar a navegação na Web. Uma conta escolar pode ser adicionada mais tarde para acessar a maioria dos recursos escolares.</translation>
 <translation id="4867433544163083783">Conferir agora se as guias podem ser organizadas</translation>
@@ -7633,7 +7635,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6194333736420234626">Formas de pagamento</translation>
 <translation id="6195005504600220730">Ler informações sobre seu navegador, SO e dispositivo</translation>
 <translation id="6195155925303302899">Centralizar</translation>
-<translation id="6195163219142236913">Cookies de terceiros limitados</translation>
 <translation id="6195693561221576702">Não é possível configurar este dispositivo no modo de demonstração off-line.</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6196854373336333322">A extensão "<ph name="EXTENSION_NAME" />" assumiu o controle das suas configurações de proxy, o que significa que ela pode alterar, invadir ou escutar qualquer coisa que você fizer on-line. Se você não tiver certeza do motivo dessa alteração, provavelmente não a deseja.</translation>
@@ -8402,7 +8403,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6731320427842222405">Pode levar alguns minutos.</translation>
 <translation id="6732956960067639542">Abra uma nova sessão do navegador Chrome.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Mostrar cookies e outros dados do site...</translation>
 <translation id="6736243959894955139">Endereço</translation>
 <translation id="6737663862851963468">Remover tíquete do Kerberos</translation>
 <translation id="6738180164164974883">Permitir cookies de terceiros</translation>
@@ -11497,6 +11497,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="881799181680267069">Ocultar outros</translation>
 <translation id="8818152010000655963">Plano de fundo</translation>
 <translation id="8818988764764862764">Janela movida para a esquerda</translation>
+<translation id="8819155700324279105">Adicione mais uma camada de proteção contra ameaças on-line</translation>
 <translation id="8819510664278523111">O EID do dispositivo é <ph name="EID_NUMBER" />, o IMEI é <ph name="IMEI_NUMBER" /> e o número de série é <ph name="SERIAL_NUMBER" />. Esses números podem ser usados para ativar o serviço.</translation>
 <translation id="8820817407110198400">Favoritos</translation>
 <translation id="8821045908425223359">Configurar endereço IP automaticamente</translation>
@@ -12144,7 +12145,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="947329552760389097">&amp;Inspecionar elementos</translation>
 <translation id="947526284350604411">Sua resposta</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> não pode abrir arquivos nesta pasta porque ela contém arquivos do sistema</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{O Chrome vai limitar os cookies de novo hoje}=1{O Chrome vai limitar os cookies de novo amanhã}one{# dia até que o Chrome limite os cookies de novo}other{# dias até que o Chrome limite os cookies de novo}}</translation>
 <translation id="949807244219288032">Esta guia está conectada a um dispositivo HID</translation>
 <translation id="950079950995628542">De "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Guia de configuração</translation>

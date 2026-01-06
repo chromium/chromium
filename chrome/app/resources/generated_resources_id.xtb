@@ -1821,6 +1821,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="221297410904507041">Hapus histori, cookie, cache, dan lainnya</translation>
 <translation id="2213410656650624348">Sedang</translation>
 <translation id="2214018885812055163">Folder bersama</translation>
+<translation id="2214453882118345682">Belanja, terjemahkan, dan identifikasi hal yang Anda lihat dengan kamera.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 baris tidak ditampilkan&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> baris tidak ditampilkan&gt;}}</translation>
 <translation id="2215070081105889450">Untuk berbagi audio, bagikan tab atau layar sebagai gantinya</translation>
 <translation id="2217208085547223783">Status Kepercayaan</translation>
@@ -2662,6 +2663,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2757338480560142065">Pastikan sandi yang Anda simpan cocok dengan sandi untuk <ph name="WEBSITE" /></translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Tidak ada hasil penelusuran yang ditampilkan untuk <ph name="SEARCH_QUERY" /></translation>
 <translation id="2762441749940182211">Kamera diblokir</translation>
+<translation id="2763165257813209348"><ph name="FILE_NAME" /> berisi data sensitif atau berbahaya. Organisasi Anda akan mengizinkan Anda menyimpannya ke penyimpanan cloud atau menghapusnya</translation>
 <translation id="2764786626780673772">Detail VPN</translation>
 <translation id="2764920001292228569">Masukkan nama profil</translation>
 <translation id="2765100602267695013">Hubungi penyedia layanan seluler Anda</translation>
@@ -5733,6 +5735,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4864805589453749318">Pilih orang tua yang memberikan izin untuk menambahkan akun sekolah.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (diblokir)</translation>
 <translation id="486505726797718946">Memori Dihemat</translation>
+<translation id="4865063548323785458">Simpan dan isi otomatis sandi Anda untuk memudahkan proses login ke situs dan aplikasi</translation>
 <translation id="486635084936119914">Buka jenis file tertentu secara otomatis setelah didownload</translation>
 <translation id="4867272607148176509">Orang tua dapat menyetujui atau memblokir aplikasi, menyetel batas waktu, dan mengontrol penjelajahan web. Akun sekolah dapat ditambahkan nanti untuk mengakses sebagian besar materi sekolah.</translation>
 <translation id="4867433544163083783">Periksa sekarang apakah tab dapat diatur</translation>
@@ -7631,7 +7634,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6194333736420234626">&amp;Metode pembayaran</translation>
 <translation id="6195005504600220730">Membaca informasi tentang browser, OS, dan perangkat Anda</translation>
 <translation id="6195155925303302899">Rata tengah</translation>
-<translation id="6195163219142236913">Cookie pihak ketiga dibatasi</translation>
 <translation id="6195693561221576702">Perangkat ini tidak dapat disiapkan dalam mode demo offline.</translation>
 <translation id="6196640612572343990">Blokir cookie pihak ketiga</translation>
 <translation id="6196854373336333322">Ekstensi "<ph name="EXTENSION_NAME" />" telah mengambil alih kontrol setelan proxy Anda, yang berarti ekstensi dapat mengubah, merusak, atau menyadap apa pun yang Anda lakukan secara online. Jika tidak yakin mengapa perubahan ini terjadi, mungkin Anda tidak menginginkannya.</translation>
@@ -8398,7 +8400,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6731320427842222405">Proses ini mungkin perlu waktu beberapa menit</translation>
 <translation id="6732956960067639542">Sebagai gantinya, buka sesi browser Chrome baru.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Tampilkan cookie dan data situs lainnya...</translation>
 <translation id="6736243959894955139">Alamat</translation>
 <translation id="6737663862851963468">Hapus tiket Kerberos</translation>
 <translation id="6738180164164974883">Izinkan untuk menyetel cookie pihak ketiga</translation>
@@ -11491,6 +11492,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="881799181680267069">Sembunyikan Lainnya</translation>
 <translation id="8818152010000655963">Wallpaper</translation>
 <translation id="8818988764764862764">Jendela dipindahkan ke kiri</translation>
+<translation id="8819155700324279105">Berikan lapisan perlindungan tambahan terhadap ancaman online</translation>
 <translation id="8819510664278523111">EID perangkat Anda adalah <ph name="EID_NUMBER" />, IMEI perangkat adalah <ph name="IMEI_NUMBER" />, dan nomor seri perangkat adalah <ph name="SERIAL_NUMBER" />. Nomor ini dapat digunakan untuk membantu mengaktifkan layanan.</translation>
 <translation id="8820817407110198400">Bookmark</translation>
 <translation id="8821045908425223359">Konfigurasi alamat IP secara otomatis</translation>
@@ -12138,7 +12140,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="947329552760389097">&amp;Periksa Elemen</translation>
 <translation id="947526284350604411">Jawaban Anda</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> tidak dapat membuka file dalam folder ini karena berisi file sistem</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome akan membatasi cookie lagi hari ini}=1{Chrome akan membatasi cookie lagi besok}other{# hari sebelum Chrome membatasi cookie lagi}}</translation>
 <translation id="949807244219288032">Tab ini terhubung ke perangkat HID</translation>
 <translation id="950079950995628542">Dari "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Panduan penyiapan</translation>

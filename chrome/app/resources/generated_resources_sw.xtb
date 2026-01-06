@@ -1817,6 +1817,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="221297410904507041">Futa historia, vidakuzi, akiba na zaidi</translation>
 <translation id="2213410656650624348">Wastani</translation>
 <translation id="2214018885812055163">Folda zinazoshirikiwa</translation>
+<translation id="2214453882118345682">Nunua, tafsiri na utambue unachokiona ukitumia kamera yako.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;Haijaonyesha mstari wa 1&gt;}other{&lt;Haijaonyesha mistari <ph name="NUMBER_OF_LINES" />&gt;}}</translation>
 <translation id="2215070081105889450">Ili ushiriki sauti, shiriki kichupo au skrini badala yake</translation>
 <translation id="2217208085547223783">Hali ya Kuaminiwa</translation>
@@ -5728,6 +5729,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4864805589453749318">Chagua mzazi anayetoa ruhusa ya kuweka akaunti ya shuleni.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (imezuiwa)</translation>
 <translation id="486505726797718946">Kumbukumbu Imehifadhiwa</translation>
+<translation id="4865063548323785458">Hifadhi na ujaze manenosiri yako kiotomatiki ili uingie katika tovuti na programu kwa urahisi</translation>
 <translation id="486635084936119914">Fungua baadhi ya aina za faili kiotomatiki baada ya kupakua</translation>
 <translation id="4867272607148176509">Wazazi wanaweza kuidhinisha au kuzuia programu, kuweka vidhibiti vya muda na kudhibiti kuvinjari kwenye wavuti. Akaunti ya shule inaweza kuongezwa baadaye ili kufikia nyenzo nyingi za shule.</translation>
 <translation id="4867433544163083783">Angalia sasa ikiwa vichupo vinaweza kupangwa</translation>
@@ -7626,7 +7628,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6194333736420234626">Njia za kulipa</translation>
 <translation id="6195005504600220730">Kusoma maelezo kuhusu kivinjari, mfumo wa uendeshaji na kifaa chako</translation>
 <translation id="6195155925303302899">Pangilia katikati</translation>
-<translation id="6195163219142236913">Vidakuzi vya washirika wengine vinadhibitiwa</translation>
 <translation id="6195693561221576702">Kifaa hiki hakiwezi kuwekewa mipangilio katika hali ya onyesho la nje ya mtandao.</translation>
 <translation id="6196640612572343990">Zuia vidakuzi vya tovuti nyingine</translation>
 <translation id="6196854373336333322">Kiendelezi hiki "<ph name="EXTENSION_NAME" />" kinadhibiti mipangilio yako ya seva mbadala, kumaanisha kuwa kinaweza kubadilisha, kuvunja, au kufuatilia chochote unachokifanya mtandaoni. Ikiwa huna uhakika kwa nini mabadiliko haya yamefanyika, huenda huyahitaji.</translation>
@@ -8393,7 +8394,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6731320427842222405">Huenda hii ikachukua dakika kadhaa</translation>
 <translation id="6732956960067639542">Fungua kipindi kipya cha kivinjari cha Chrome badala yake.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (Kitambulisho: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Onyesha vidakuzi na data ya tovuti zingine...</translation>
 <translation id="6736243959894955139">Anwani</translation>
 <translation id="6737663862851963468">Ondoa tiketi ya Kerberos</translation>
 <translation id="6738180164164974883">Ruhusu tovuti ziweke mipangilio ya vidakuzi vya mshirika mwingine</translation>
@@ -11487,6 +11487,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 <translation id="881799181680267069">Ficha Zinginezo</translation>
 <translation id="8818152010000655963">Mandhari</translation>
 <translation id="8818988764764862764">Dirisha limesogezwa kushoto</translation>
+<translation id="8819155700324279105">Weka safu ya ziada ya ulinzi dhidi ya vitisho vya mtandaoni</translation>
 <translation id="8819510664278523111">Nambari ya EID ya kifaa chako ni <ph name="EID_NUMBER" /> , IMEI ya kifaa ni <ph name="IMEI_NUMBER" /> na namba ya ufuatiliaji ya kifaa ni <ph name="SERIAL_NUMBER" />. Nambari hizi zinaweza kutumika ili kusaidia kuanzisha huduma.</translation>
 <translation id="8820817407110198400">Alamisho</translation>
 <translation id="8821045908425223359">Weka mipagilio ya anwani ya IP kiotomatiki</translation>
@@ -12134,7 +12135,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 <translation id="947329552760389097">&amp;Kagua Vipengee</translation>
 <translation id="947526284350604411">Jibu lako</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> haiwezi kufungua faili kwenye folda hii kwa sababu ina faili za mfumo</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome itadhibiti vidakuzi tena leo}=1{Chrome itadhibiti vidakuzi tena kesho}other{Zimesalia siku # kabla Chrome idhibiti vidakuzi tena}}</translation>
 <translation id="949807244219288032">Kichupo hiki kimeunganishwa kwenye kifaa cha HID</translation>
 <translation id="950079950995628542">Kwenye "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Mwongozo wa mipangilio</translation>

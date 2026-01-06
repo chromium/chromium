@@ -114,7 +114,6 @@
 <translation id="1178581264944972037">Паузирај</translation>
 <translation id="1178821169867863726">12×16 in</translation>
 <translation id="1181037720776840403">Уклони</translation>
-<translation id="1181381397492575884">Chrome блокира сајтове да користе колачиће треће стране да би вас пратили док прегледате. Посетите Подешавања да бисте <ph name="LINK" />.</translation>
 <translation id="1185331130467528132"><ph name="URL" /> жели да приступа другим уређајима на локалној мрежи</translation>
 <translation id="1185343831726846924">Потврђивање виртуелне картице не може да се укључи</translation>
 <translation id="1186201132766001848">Провери лозинке</translation>
@@ -227,7 +226,6 @@
 <translation id="1343830902827845050">Пријавите се у Chrome</translation>
 <translation id="1346748346194534595">Удесно</translation>
 <translation id="1348779747280417563">Потврдите име</translation>
-<translation id="1352798470428594123">Chrome спречава већину сајтова да користе колачиће треће стране да би вас пратили док прегледате. Посетите Подешавања да бисте <ph name="LINK" />.</translation>
 <translation id="1355158069018170842">Приказуј снижења на картицама</translation>
 <translation id="1355301061807280185">Послови</translation>
 <translation id="1357195169723583938">Ко је недавно користио уређај и када</translation>
@@ -1110,7 +1108,6 @@
 <translation id="2768397283109119044">Покушали сте да дођете до домена <ph name="DOMAIN" />, али је сервер послао неважећи сертификат издат на то име. Назив је резервисана IP адреса или интерно име хоста.</translation>
 <translation id="2770159525358613612">Пробајте да поново отпремите фајлове</translation>
 <translation id="277133753123645258">Начин слања</translation>
-<translation id="2773388851563527404">Chrome спречава већину сајтова да користе колачиће треће стране. Међутим, колачићи треће стране су дозвољени на овом сајту зато што се Chrome ослања на њих да би пружао основне услуге. Посетите Подешавања да бисте <ph name="LINK" />.</translation>
 <translation id="277499241957683684">Недостаје евиденција уређаја</translation>
 <translation id="2775884851269838147">Прва страница за штампање</translation>
 <translation id="2781185443919227679">Плаже и острва</translation>
@@ -1714,7 +1711,6 @@
 <translation id="3727309136762649052">Именски простор</translation>
 <translation id="3727850735097852673">Да бисте користили Google менаџер лозинки са macOS Keychain-ом, поново покрените Chrome и дозволите приступ Keychain-у. Картице ће се поново отворити после поновног покретања.</translation>
 <translation id="3728173127485570463">Chrome прегледач више неће захтевати отисак прста за аутоматско попуњавање лозинки</translation>
-<translation id="3736739313435669994">Блокирали сте сајтове да користе колачиће треће стране да би вас пратили док прегледате. Посетите Подешавања да бисте <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Администратор управља прегледачем.</translation>
 <translation id="3739842843727261045">Опција Свиђа ми се шаље повратне информације да вам се свиђају ови резултати</translation>
 <translation id="3740447166056383374">Потребан је преглед пре копирања</translation>
@@ -2148,7 +2144,6 @@
 <translation id="4406883609789734330">Титл уживо</translation>
 <translation id="4406896451731180161">резултати претраге</translation>
 <translation id="4407758156081352648">Организација не дозвољава поновно коришћење лозинки у Chrome-у из безбедносних разлога. Лозинке у Chrome-у се шифрују да би се заштитила приватност корисника.</translation>
-<translation id="4408413947728134509">Колачићи (<ph name="NUM_COOKIES" />)</translation>
 <translation id="4409556632583862731">Нова конверзација</translation>
 <translation id="4412074349188076601">Ова конфигурација је означена као да може да се инсталира, али за ову архитектуру није наведена слика, па не може да се инсталира.</translation>
 <translation id="4412377069090572315">Шта кажу људи</translation>
@@ -2536,7 +2531,6 @@
 <translation id="5061227663725596739">Да ли сте мислили <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Историја штампања</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(користи се 1)}one{(користи се #)}few{(користе се #)}other{(користи се #)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />да проверите адресу проксија<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Десети котур</translation>
 <translation id="507130231501693183">4. поштанско сандуче</translation>
@@ -3045,7 +3039,6 @@
 <translation id="5918373444239520146">Гаџети и преносиви електронски уређаји</translation>
 <translation id="5918847752193018339">Плаћајте брже када сачувате CVC бројеве. <ph name="LINK_BEGIN" />Избришите сачуване безбедносне кодове<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{Користи се 1}one{Користи се #}few{Користе се #}other{Користи се #}}</translation>
 <translation id="5921185718311485855">Укључено</translation>
 <translation id="5921639886840618607">Желите ли да сачувате картицу на Google налогу?</translation>
 <translation id="5921952831792678223">Камионети</translation>
@@ -3225,7 +3218,6 @@
 <translation id="6194209731893739467">Погледајте све производе које пратите овде</translation>
 <translation id="6195371403461054755">Геологија</translation>
 <translation id="6195418151868446719">Апарати за домаћинство</translation>
-<translation id="6196640612572343990">Блокирај колачиће треће стране</translation>
 <translation id="6197648101609735209">89×89 mm</translation>
 <translation id="6198480336395236519">Потпуно изрезане картице</translation>
 <translation id="6203231073485539293">Проверите интернет везу</translation>
@@ -3721,7 +3713,6 @@
 <translation id="6978121630131642226">Претраживачи</translation>
 <translation id="6978236010531171013">Ипак дели</translation>
 <translation id="6979158407327259162">Google диск</translation>
-<translation id="6979302985396162258">управљали приступом колачићима треће стране</translation>
 <translation id="6979440798594660689">Искључен (подразумевано)</translation>
 <translation id="6987806006823772670">Коверта (обложена)</translation>
 <translation id="6989256887001961296">Овај садржај је блокиран.</translation>
@@ -4736,7 +4727,6 @@
 <translation id="8622864575115813231">Обраћамо се финансијској институцији…</translation>
 <translation id="8624354461147303341">Остварите попусте</translation>
 <translation id="8634957317623797170">54×86 mm</translation>
-<translation id="8635822281281406185">Додајте највише 10 фајлова, картица или слика</translation>
 <translation id="8637362707224133343">Chrome има уграђене безбедносне функције које вас штите током прегледања – као што је Google безбедно прегледање, које је <ph name="BEGIN_LINK" />недавно пронашло „пецање“<ph name="END_LINK" /> на сајту који сте пробали да посетите. Сајтови са „пецањем“ се претварају да су други сајтови да би вас преварили.<ph name="NEW_LINE" />Нападачи понекад угрожавају чак и сајтове који су обично безбедни. <ph name="BEGIN_ERROR_LINK" />Обавестите нас<ph name="END_ERROR_LINK" /> ако мислите да је дошло до грешке и да овај сајт не представља опасност.</translation>
 <translation id="8640996933372643759">Да бисте делили картице и сарађивали са другима, неопходно је да имате могућност да се пријавите у Chrome</translation>
 <translation id="8641131559425911240">Коверта (издржљива)</translation>
@@ -5117,7 +5107,6 @@
 <translation id="945673208656386843">Аутоматски попуњавајте ову картицу за куповине у Chromium-у када је сачувана на овом уређају</translation>
 <translation id="94613679163347541">Желите да упоредите у категорији <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте брзо направили нов сајт у Google сајтовима</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome ће данас поново ограничити колачиће}=1{Chrome ће сутра поново ограничити колачиће}one{# дан док Chrome поново не ограничи колачиће}few{# дана док Chrome поново не ограничи колачиће}other{# дана док Chrome поново не ограничи колачиће}}</translation>
 <translation id="949026252328034572">Чланови (<ph name="MEMBER_COUNT" />) су се придружили групи картица <ph name="GROUP_NAME" /></translation>
 <translation id="949314938206378263">Затражили сте да посетите овај сајт. Родитељ може да одговори у Family Link-у.</translation>
 <translation id="950736567201356821">Троструко бушење на врху</translation>

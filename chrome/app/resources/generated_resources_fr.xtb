@@ -1812,6 +1812,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="221297410904507041">Supprimez l'historique et les cookies, videz le cache, etc.</translation>
 <translation id="2213410656650624348">Modéré</translation>
 <translation id="2214018885812055163">Dossiers partagés</translation>
+<translation id="2214453882118345682">Achetez, traduisez et identifiez ce que vous voyez avec votre appareil photo.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 ligne non affichée&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> ligne non affichée&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> lignes non affichées&gt;}}</translation>
 <translation id="2215070081105889450">Pour partager l'audio, partagez plutôt un onglet ou un écran</translation>
 <translation id="2217208085547223783">État d'approbation</translation>
@@ -5718,6 +5719,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4864805589453749318">Sélectionne le parent qui t'autorise à ajouter un compte scolaire.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (bloqué)</translation>
 <translation id="486505726797718946">Mémoire économisée</translation>
+<translation id="4865063548323785458">Enregistrez et saisissez automatiquement vos mots de passe pour vous connecter facilement à des sites et applis</translation>
 <translation id="486635084936119914">Ouvrir automatiquement certains types de fichiers après leur téléchargement</translation>
 <translation id="4867272607148176509">Les parents peuvent approuver ou bloquer des applis, définir des limites de temps d'utilisation et contrôler la navigation sur le Web. Un compte scolaire peut être ajouté plus tard pour accéder à la plupart des ressources scolaires.</translation>
 <translation id="4867433544163083783">Vérifier si les onglets peuvent être organisés</translation>
@@ -7616,7 +7618,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6194333736420234626">Modes de paiement</translation>
 <translation id="6195005504600220730">Lire les infos sur vos navigateur, OS et appareil</translation>
 <translation id="6195155925303302899">Centrer</translation>
-<translation id="6195163219142236913">Cookies tiers limités</translation>
 <translation id="6195693561221576702">Impossible de configurer cet appareil en mode de démonstration hors connexion.</translation>
 <translation id="6196640612572343990">Bloquer les cookies tiers</translation>
 <translation id="6196854373336333322">L'extension <ph name="EXTENSION_NAME" /> a pris le contrôle de vos paramètres de proxy, ce qui signifie que toutes vos activités en ligne peuvent être modifiées, interrompues ou espionnées. Si vous ne savez pas pourquoi cette modification s'est produite, c'est qu'elle est probablement indésirable.</translation>
@@ -8385,7 +8386,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6731320427842222405">Cette opération peut prendre quelques minutes.</translation>
 <translation id="6732956960067639542">Ouvrez une nouvelle session du navigateur Chrome à la place.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID : <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Afficher les cookies et autres données des sites...</translation>
 <translation id="6736243959894955139">Adresse</translation>
 <translation id="6737663862851963468">Supprimer un ticket Kerberos</translation>
 <translation id="6738180164164974883">Autoriser à placer des cookies tiers</translation>
@@ -10940,7 +10940,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8458627787104127436">Tout ouvrir (<ph name="URL_COUNT" />) dans une nouvelle fenêtre</translation>
 <translation id="8459023460357294721">Ouvrir <ph name="FILE_NAME" /> quand même</translation>
 <translation id="8459333762072051247">État de connexion</translation>
-<translation id="8460448946170646641">Examinez les paramètres clés de confidentialité et de sécurité</translation>
+<translation id="8460448946170646641">Passez en revue les principaux paramètres de confidentialité et de sécurité</translation>
 <translation id="8460490661223303637">Chrome a supprimé certains contenus afin de libérer de la mémoire</translation>
 <translation id="8460932807646981183">Gérer les moteurs de recherche et la recherche sur les sites</translation>
 <translation id="84613761564611563">Demande d'interface utilisateur en cours pour la configuration réseau. Merci de patienter…</translation>
@@ -11480,6 +11480,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="881799181680267069">Masquer les autres</translation>
 <translation id="8818152010000655963">Fond d'écran</translation>
 <translation id="8818988764764862764">Fenêtre déplacée vers la gauche</translation>
+<translation id="8819155700324279105">Ajoutez un niveau de sécurité supplémentaire contre les menaces en ligne</translation>
 <translation id="8819510664278523111">L'EID de votre appareil est <ph name="EID_NUMBER" />, son code IMEI est <ph name="IMEI_NUMBER" /> et son numéro de série est <ph name="SERIAL_NUMBER" />. Ces numéros peuvent servir à activer le service.</translation>
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="8821045908425223359">Configurer l'adresse IP automatiquement</translation>
@@ -12127,7 +12128,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="947329552760389097">&amp;Examiner les éléments</translation>
 <translation id="947526284350604411">Votre réponse</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> ne peut pas ouvrir les fichiers de ce dossier, car il contient des fichiers système</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome limitera de nouveau les cookies aujourd'hui}=1{Chrome limitera de nouveau les cookies demain}one{Chrome limitera de nouveau les cookies dans # jour}other{Chrome limitera de nouveau les cookies dans # jours}}</translation>
 <translation id="949807244219288032">Cet onglet est associé à un appareil HID</translation>
 <translation id="950079950995628542">Provenant de <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Guide de configuration</translation>

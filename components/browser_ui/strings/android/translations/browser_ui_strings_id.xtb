@@ -188,11 +188,9 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="2903493209154104877">Alamat</translation>
 <translation id="2910701580606108292">Tanyakan sebelum mengizinkan situs untuk memutar konten yang dilindungi</translation>
 <translation id="2918484639460781603">Buka setelan</translation>
-<translation id="293060180538644702">Dapatkan notifikasi Tips Chrome</translation>
 <translation id="2932883381142163287">Laporkan penyalahgunaan</translation>
 <translation id="2939338015096024043">Jika diaktifkan, situs dapat meminta untuk melacak posisi kamera dan mempelajari lingkungan sekitar Anda. Jika dinonaktifkan, situs tidak dapat melacak posisi kamera Anda atau mempelajari lingkungan sekitar Anda.</translation>
 <translation id="2968755619301702150">Penampil sertifikat</translation>
-<translation id="2979365474350987274">Cookie pihak ketiga dibatasi</translation>
 <translation id="2990583317361835189">Jangan izinkan situs menggunakan sensor gerakan</translation>
 <translation id="3004438526346162184">Situs dapat menggunakan fitur ini untuk mengelola jendela di semua layar Anda</translation>
 <translation id="3008272652534848354">Reset izin</translation>
@@ -631,7 +629,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="7835852323729233924">Media yang sedang diputar</translation>
 <translation id="783819812427904514">Bunyikan video</translation>
 <translation id="7846076177841592234">Batalkan pilihan</translation>
-<translation id="7881140103901777395">Chrome membatasi sebagian besar situs agar tidak menggunakan cookie pihak ketiga. Namun, cookie pihak ketiga diizinkan di situs ini karena situs mengandalkan cookie tersebut untuk memberikan layanan dasar.\n\nBuka setelan untuk <ph name="BEGIN_LINK" />mengelola akses ke cookie pihak ketiga<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Izinkan suara untuk situs tertentu.</translation>
 <translation id="7891547341794213004">Sembunyikan kartu lanjutkan dengan tab ini</translation>
 <translation id="789722939441020330">Jangan izinkan situs mendownload beberapa file secara otomatis</translation>

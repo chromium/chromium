@@ -486,6 +486,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6180522807229584611">Šī cilne izmanto papildu resursus. Lai uzlabotu veiktspēju, ļaujiet pārlūkā Chrome padarīt to neaktīvu.</translation>
 <translation id="6182736845697986886">Instalēšana neizdevās, jo radās atjauninājumu servera iekšēja kļūda.</translation>
 <translation id="6183773856988300112">Gemini pārlūkā Chrome izmanto automātisko pārlūkošanu, lai darbotos jūsu cilnēs un veiktu jūsu dotos uzdevumus. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
+<translation id="6187085551300363958">Chrome padoms: paroļu saglabāšana</translation>
 <translation id="6192058120268468905">Jūsu konts pārlūkā Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> pievienoja paplašinājumu, kas var ietekmēt pārlūka Chrome darbību.
 
@@ -624,6 +625,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="7627609214560473136">Lai aizsargātu savus datus, ļaujiet pārlūkā Chrome noņemt atļaujas vietnēm, ko pēdējā laikā neesat apmeklējis.</translation>
 <translation id="7629695634924605473">Ja jūsu paroles kādreiz tiks apdraudētas, pārlūkā Chrome saņemsiet paziņojumu</translation>
 <translation id="7641148173327520642">Jūsu sistēmas administrators ir konfigurējis Google Chrome atvērt <ph name="ALTERNATIVE_BROWSER_NAME" />, lai piekļūtu <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7641448682796883218">Chrome padoms: funkcija “Droša pārlūkošana ar papildu aizsardzību”</translation>
 <translation id="7649070708921625228">Palīdzība</translation>
 <translation id="7651907282515937834">Chrome Enterprise logotips</translation>
 <translation id="76531479118467370">Pārlūkā Chrome šī lejupielāde tika bloķēta, jo jūs izslēdzāt drošu pārlūkošanu un failu nevar verificēt.</translation>

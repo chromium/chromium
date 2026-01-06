@@ -5000,17 +5000,6 @@ A remoção foi feita na versão M112.</translation>
 <translation id="4408428864159735559">Lista de compartilhamentos de arquivos de rede pré-configurados.</translation>
 <translation id="4410236409016356088">Ativar o acelerador de largura de banda da rede</translation>
 <translation id="4410361389637971319">Permitir que origens de Apps Isolados da Web usem a API Direct Sockets</translation>
-<translation id="4410792459434637140">Esta política pode ser usada para permitir o <ph name="CHROME_DEVTOOLS_NAME" /> em URLs específicos.
-
-Os padrões de URL são comparados com o URL da página que está sendo inspecionada. Se uma correspondência for encontrada, o <ph name="CHROME_DEVTOOLS_NAME" /> será permitido. Isso também se aplica se o URL corresponder à política <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, mesmo que a política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> esteja definida como não permitida (valor 2). Para informações sobre o formato do URL, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Se a política não for definida, a lista de permissões não terá efeito. Como o <ph name="CHROME_DEVTOOLS_NAME" /> está disponível por padrão, ele só será bloqueado se for especificado na política <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.
-
-Os URLs sem correspondência vão seguir a política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Esta política também se aplica ao <ph name="CHROME_DEVTOOLS_NAME" /> aberto para extensões e aplicativos da Web.
-
-Esta política tem um limite de 1.000 entradas.</translation>
 <translation id="4411734231900934213">A diferença permitida entre o relógio dos dispositivos do familiar responsável e da criança (em segundos).</translation>
 <translation id="441217499641439905">Desativar o Google Drive em conexões celulares no app Arquivos do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4412885120239670573">Se a política for ativada, o visualizador de PDF interno será desativado no <ph name="PRODUCT_NAME" />, os arquivos PDF serão tratados como downloads e os usuários poderão abrir PDFs com o aplicativo padrão.
@@ -7606,17 +7595,6 @@ Se a política for definida como <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VA
 <translation id="5958746038080720143">Permitir otimizações de descoberta automática de proxies da Web (WPAD, na sigla em inglês)</translation>
 <translation id="5961137303188584693">Endereço MAC da placa de rede integrada do dispositivo</translation>
 <translation id="5962271004971310788">Extensões que precisam ser executadas pelo usuário no modo de navegação anônima para navegar nesse modo</translation>
-<translation id="5962401339101255719">Se a política for definida como 0 (o padrão), você poderá acessar as ferramentas para desenvolvedores e o Console JavaScript, mas não no contexto de extensões instaladas por uma política da empresa ou (da versão 114 em diante), se for um usuário gerenciado, extensões integradas no navegador. Se ela for definida como 1, você poderá acessar as ferramentas para desenvolvedores e o Console JavaScript em todos os contextos, inclusive o das extensões instaladas pela política da empresa. Se ela for definida como 2, não será possível acessar as ferramentas para desenvolvedores nem inspecionar elementos de sites.
-
-Essa definição também desativa atalhos de teclado e entradas do menu de contexto ou do menu para abrir as ferramentas para desenvolvedores e o Console JavaScript.
-
-Da versão 99 em diante do <ph name="PRODUCT_NAME" />, essa configuração também vai controlar pontos de entrada para o recurso "Ver código-fonte da página". Se a política foi definida como "DeveloperToolsDisallowed" (valor 2), os usuários não poderão acessar a visualização do código-fonte pelo atalho do teclado nem pelo menu de contexto. Para bloquear totalmente a visualização do código-fonte, também é preciso adicionar "view-source:*" à política <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-Da versão 119 em diante do <ph name="PRODUCT_NAME" />, essa configuração também controla se o modo de desenvolvedor para Apps Isolados da Web pode ser ativado e usado.
-
-Da versão 128 em diante do <ph name="PRODUCT_NAME" />, essa configuração não vai controlar o modo de desenvolvedor na página de extensões se a política <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> estiver definida.
-
-Se você quiser restringir o acesso às ferramentas para desenvolvedores com base no URL da página, use as políticas <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> e <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="5963752574792883406">porta 990 (pode ser desbloqueada até 01/02/2022)</translation>
 <translation id="596523880465577341">Essa política foi descontinuada e parou de ter suporte. Use a <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="5966615072639944554">Extensões que podem usar a API de declaração remota</translation>
@@ -8407,15 +8385,6 @@ pode ser usada para evitar que determinados nomes de host ou padrões de nome de
 atualizados para HTTPS por esse recurso.
 
 Consulte também a política <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
-<translation id="6439002087726312326">Os padrões de URL são comparados com o URL da página que está sendo inspecionada. Se uma correspondência for encontrada, o <ph name="CHROME_DEVTOOLS_NAME" /> será bloqueado. Para informações sobre o formato do URL, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-A política <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> tem precedência sobre a <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.
-
-Os URLs sem correspondência vão seguir a política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Esta política também se aplica ao <ph name="CHROME_DEVTOOLS_NAME" /> aberto para extensões e aplicativos da Web.
-
-Esta política tem um limite de 1.000 entradas.</translation>
 <translation id="6440051664870270040">Permitir que sites naveguem e abram pop-ups simultaneamente</translation>
 <translation id="6441781723322254041">Permitir cookies truncados</translation>
 <translation id="6446366416439249472">Desativar a sincronização do Google Drive em conexões de celular</translation>

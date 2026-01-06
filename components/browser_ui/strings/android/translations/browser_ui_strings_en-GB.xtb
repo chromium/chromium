@@ -188,11 +188,9 @@ Advanced Protection controls these Chrome settings:
 <translation id="2903493209154104877">Addresses</translation>
 <translation id="2910701580606108292">Ask before allowing sites to play protected content</translation>
 <translation id="2918484639460781603">Go to settings</translation>
-<translation id="293060180538644702">Get Chrome tips notifications</translation>
 <translation id="2932883381142163287">Report abuse</translation>
 <translation id="2939338015096024043">When on, sites can ask to track your camera position and learn about your surroundings. When off, sites can't track your camera position or learn about your surroundings.</translation>
 <translation id="2968755619301702150">Certificate viewer</translation>
-<translation id="2979365474350987274">Third-party cookies are limited</translation>
 <translation id="2990583317361835189">Don't allow sites to use motion sensors</translation>
 <translation id="3004438526346162184">Sites can use this feature to manage windows on all your displays</translation>
 <translation id="3008272652534848354">Reset permissions</translation>
@@ -631,7 +629,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="7835852323729233924">Playing media</translation>
 <translation id="783819812427904514">Unmute video</translation>
 <translation id="7846076177841592234">Cancel selection</translation>
-<translation id="7881140103901777395">Chrome limits most sites from using third-party cookies. However, third-party cookies are allowed on this site because it relies on them to provide basic services.\n\nVisit settings to <ph name="BEGIN_LINK" />manage access to third-party cookies<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Allow sound for a specific site.</translation>
 <translation id="7891547341794213004">Hide continue with this tab card</translation>
 <translation id="789722939441020330">Don't allow sites to automatically download multiple files</translation>

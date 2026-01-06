@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1183189057400844278">Da uvijek možete koristiti lozinke na Google računu, potvrdite identitet</translation>
 <translation id="1187810343066461819">Izbriši i oznake, historiju i drugo iz automobila</translation>
-<translation id="1193589902336218259">Uključi obavještenja o savjetima</translation>
 <translation id="1193729455103054076">Koristiti jaku lozinku?</translation>
 <translation id="11947597112837849">adresu e-pošte</translation>
 <translation id="1197267115302279827">Premjesti oznake</translation>
@@ -995,7 +994,6 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5267572070504076962">Uključite Sigurno pregledanje da dobijete zaštitu od opasnih web lokacija</translation>
 <translation id="5271967389191913893">Uređaj ne može otvoriti sadržaj za preuzimanje.</translation>
 <translation id="5273031377282080577">Ovom postavkom upravlja administrator.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Otkazali ste pretplatu na jednu web lokaciju koju ne koristite}one{Otkazali ste pretplatu na # web lokaciju koju ne koristite}few{Otkazali ste pretplatu na # web lokacije koje ne koristite}other{Otkazali ste pretplatu na # web lokacija koje ne koristite}}</translation>
 <translation id="5292796745632149097">Pošalji na</translation>
 <translation id="5301876394151419436">Prijavljeni ste kao <ph name="EMAIL" />. Sinhronizaciju možete zaustaviti bilo kada u postavkama. Google može personalizirati Pretraživanje i druge usluge na osnovu vaše historije.</translation>
 <translation id="5304593522240415983">Ovo polje ne može biti prazno</translation>
@@ -1586,7 +1584,6 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7612619742409846846">Prijavljeni ste na Google kao</translation>
 <translation id="7612989789287281429">Prijavljivanje…</translation>
 <translation id="7619072057915878432">Preuzimanje fajla <ph name="FILE_NAME" /> nije uspjelo zbog grešaka na mreži.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Otkazali ste pretplatu na jednu web lokaciju}one{Otkazali ste pretplatu na # web lokaciju}few{Otkazali ste pretplatu na # web lokacije}other{Otkazali ste pretplatu na # web lokacija}}</translation>
 <translation id="7626032353295482388">Dobro došli u Chrome</translation>
 <translation id="7628417132421583481">Idite na Upravitelj lozinki</translation>
 <translation id="7630202231528827509">URL pružaoca</translation>

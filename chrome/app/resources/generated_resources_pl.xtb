@@ -1812,6 +1812,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="221297410904507041">Usuń historię, pliki cookie, pamięć podręczną i inne dane</translation>
 <translation id="2213410656650624348">Umiarkowane</translation>
 <translation id="2214018885812055163">Foldery udostępnione</translation>
+<translation id="2214453882118345682">Kupuj, tłumacz i rozpoznawaj to, co widzisz, za pomocą aparatu.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 wiersz jest niewidoczny&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> wiersze są niewidoczne&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> wierszy jest niewidocznych&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> wiersza jest niewidoczne&gt;}}</translation>
 <translation id="2215070081105889450">Aby udostępnić dźwięk, udostępnij kartę lub ekran</translation>
 <translation id="2217208085547223783">Stan zaufania</translation>
@@ -5699,6 +5700,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4864805589453749318">Wybierz rodzica, który zezwala na dodanie konta szkolnego.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (zablokowano)</translation>
 <translation id="486505726797718946">Zaoszczędzona pamięć</translation>
+<translation id="4865063548323785458">Zapisuj i automatycznie uzupełniaj hasła, aby łatwo logować się na stronach i w aplikacjach</translation>
 <translation id="486635084936119914">Automatycznie otwieraj określone typy plików po pobraniu</translation>
 <translation id="4867272607148176509">Rodzice mogą zatwierdzać i blokować aplikacje, ustawiać limity czasu oraz kontrolować przeglądanie internetu. Później można dodać konto szkolne, aby uzyskać dostęp do większości zasobów szkolnych.</translation>
 <translation id="4867433544163083783">Sprawdź, czy można już uporządkować karty</translation>
@@ -7595,7 +7597,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6194333736420234626">&amp;Formy płatności</translation>
 <translation id="6195005504600220730">Odczytywanie informacji o przeglądarce, systemie operacyjnym i urządzeniu</translation>
 <translation id="6195155925303302899">Wyrównaj do środka</translation>
-<translation id="6195163219142236913">Używanie plików cookie innych firm jest ograniczone</translation>
 <translation id="6195693561221576702">Na tym urządzeniu nie można skonfigurować trybu demonstracyjnego offline.</translation>
 <translation id="6196640612572343990">Blokuj pliki cookie innych firm</translation>
 <translation id="6196854373336333322">Rozszerzenie „<ph name="EXTENSION_NAME" />” przejęło kontrolę nad ustawieniami serwera proxy, co oznacza, że może zmieniać, przerywać lub podglądać wszystko, co robisz online. Jeśli nie masz pewności, skąd wzięła się ta zmiana, prawdopodobnie jej nie chcesz.</translation>
@@ -8366,7 +8367,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6731320427842222405">Może to potrwać kilka minut</translation>
 <translation id="6732956960067639542">Otwórz nową sesję przeglądarki Chrome.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Pokaż pliki cookie i inne dane witryn...</translation>
 <translation id="6736243959894955139">Adres</translation>
 <translation id="6737663862851963468">Usuwanie zgłoszenia Kerberos</translation>
 <translation id="6738180164164974883">Zezwalaj na przechowywanie plików cookie innych firm</translation>
@@ -11455,6 +11455,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="881799181680267069">Ukryj pozostałe</translation>
 <translation id="8818152010000655963">Tapeta</translation>
 <translation id="8818988764764862764">Okno zostało przeniesione w lewo</translation>
+<translation id="8819155700324279105">Wprowadź dodatkową warstwę ochrony przed zagrożeniami online</translation>
 <translation id="8819510664278523111">EID urządzenia to <ph name="EID_NUMBER" />, jego IMEI to <ph name="IMEI_NUMBER" />, a numer seryjny to <ph name="SERIAL_NUMBER" />. Tych numerów można użyć do aktywowania usługi.</translation>
 <translation id="8820817407110198400">Zakładki</translation>
 <translation id="8821045908425223359">Skonfiguruj adres IP automatycznie</translation>
@@ -12099,7 +12100,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="947329552760389097">&amp;Sprawdź elementy</translation>
 <translation id="947526284350604411">Twoja odpowiedź</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> nie może otwierać plików z tego folderu, bo zawiera on pliki systemowe</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome ponownie ograniczy pliki cookie dzisiaj}=1{Chrome ponownie ograniczy pliki cookie jutro}few{Chrome ponownie ograniczy pliki cookie za # dni}many{Chrome ponownie ograniczy pliki cookie za # dni}other{Chrome ponownie ograniczy pliki cookie za # dnia}}</translation>
 <translation id="949807244219288032">Ta karta jest połączona z urządzeniem HID</translation>
 <translation id="950079950995628542">Z telefonu „<ph name="PHONE_NAME" />”</translation>
 <translation id="950307215746360464">Przewodnik po konfiguracji</translation>

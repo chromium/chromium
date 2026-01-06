@@ -114,7 +114,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1178581264944972037">Paus</translation>
 <translation id="1178821169867863726">12 x 16 tum</translation>
 <translation id="1181037720776840403">Ta bort</translation>
-<translation id="1181381397492575884">Chrome blockerar webbplatser från att spåra dig med hjälp av tredjepartscookies när du surfar. Öppna inställningarna för att <ph name="LINK" />.</translation>
 <translation id="1185331130467528132"><ph name="URL" /> vill ha åtkomst till andra enheter i det lokala nätverket</translation>
 <translation id="1185343831726846924">Det går inte att aktivera virtuella kort</translation>
 <translation id="1186201132766001848">Kontrollera lösenord</translation>
@@ -227,7 +226,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1343830902827845050">Logga in i Chrome</translation>
 <translation id="1346748346194534595">Höger</translation>
 <translation id="1348779747280417563">Bekräfta namn</translation>
-<translation id="1352798470428594123">Chrome begränsar de flesta webbplatser från att använda tredjepartscookies för att spåra dig när du surfar. Öppna inställningarna för att <ph name="LINK" />.</translation>
 <translation id="1355158069018170842">Visa sänkta priser på flikar</translation>
 <translation id="1355301061807280185">Jobb</translation>
 <translation id="1357195169723583938">Vem har använt enheten nyligen och när</translation>
@@ -1110,7 +1108,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2768397283109119044">Du försökte nå <ph name="DOMAIN" /> men servern angav ett ogiltigt certifikat som har utfärdats till detta namn. Namnet är en reserverad IP-adress eller ett internt värdnamn.</translation>
 <translation id="2770159525358613612">Testa att ladda upp filerna igen</translation>
 <translation id="277133753123645258">Fraktalternativ</translation>
-<translation id="2773388851563527404">Chrome begränsar de flesta webbplatser från att använda tredjepartscookies. Tredjepartscookies är dock tillåtna på den här webbplatsen eftersom den förlitar sig på dem för att tillhandahålla grundläggande tjänster. Öppna inställningarna för att <ph name="LINK" />.</translation>
 <translation id="277499241957683684">Enhetsregister saknas</translation>
 <translation id="2775884851269838147">Första utskriftssidan</translation>
 <translation id="2781185443919227679">Stränder och öar</translation>
@@ -1714,7 +1711,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3727309136762649052">Namnrymd</translation>
 <translation id="3727850735097852673">Om du vill använda Google Lösenordshantering med en macOS-nyckelring ska du starta om Chrome och tillåta åtkomst till nyckelringen. Flikarna öppnas igen när du har startat om enheten.</translation>
 <translation id="3728173127485570463">Du behöver inte längre registrera ditt fingeravtryck för att Chrome-webbläsaren ska fylla i lösenord automatiskt</translation>
-<translation id="3736739313435669994">Du blockerade webbplatser från att använda tredjepartscookies för att spåra dig när du surfar. Öppna inställningarna för att <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Webbläsaren hanteras av administratören.</translation>
 <translation id="3739842843727261045">Gilla-markera för att visa att du gillar dessa resultat</translation>
 <translation id="3740447166056383374">Granskning krävs innan du kopierar</translation>
@@ -2148,7 +2144,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4406896451731180161">sökresultat</translation>
 <translation id="4407758156081352648">För att upprätthålla säkerheten tillåter inte organisationen att lösenord återanvänds i Chrome. Lösenord i Chrome är krypterade för att skydda användarnas integritet.</translation>
-<translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4409556632583862731">Ny tråd</translation>
 <translation id="4412074349188076601">Denna konfiguration har markerats som installerbar, men ingen avbildning tillhandahålls för denna arkitektur och kan därför inte installeras.</translation>
 <translation id="4412377069090572315">Så tycker andra</translation>
@@ -2536,7 +2531,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5061227663725596739">Menade du <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Utskriftshistorik</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 används)}other{(# används)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />kontrollera proxyadressen<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Tionde rullen</translation>
 <translation id="507130231501693183">Postfack 4</translation>
@@ -3045,7 +3039,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5918373444239520146">Prylar och bärbar elektronik</translation>
 <translation id="5918847752193018339">Betala snabbare när du har dina CVC-koder sparade. <ph name="LINK_BEGIN" />Radera sparade säkerhetskoder<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 används}other{# används}}</translation>
 <translation id="5921185718311485855">På</translation>
 <translation id="5921639886840618607">Vill du spara kortet i Google-kontot?</translation>
 <translation id="5921952831792678223">Pickuper</translation>
@@ -3226,7 +3219,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6194209731893739467">Se alla bevakade produkter här</translation>
 <translation id="6195371403461054755">Geologi</translation>
 <translation id="6195418151868446719">Hemelektronik</translation>
-<translation id="6196640612572343990">Blockera tredjepartscookies</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Helt avskurna flikar</translation>
 <translation id="6203231073485539293">Kontrollera internetanslutningen</translation>
@@ -3722,7 +3714,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6978121630131642226">Sökmotorer</translation>
 <translation id="6978236010531171013">Dela ändå</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979302985396162258">hantera åtkomst till tredjepartscookies</translation>
 <translation id="6979440798594660689">Ljud av (standard)</translation>
 <translation id="6987806006823772670">Kuvert (gummerat)</translation>
 <translation id="6989256887001961296">Det här innehållet har blockerats.</translation>
@@ -4737,7 +4728,6 @@ Mer information:
 <translation id="8622864575115813231">Kontaktar ditt finansinstitut …</translation>
 <translation id="8624354461147303341">Få erbjudanden</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
-<translation id="8635822281281406185">Lägg till upp till tio filer, flikar eller bilder</translation>
 <translation id="8637362707224133343">Chrome har inbyggda säkerhetsfunktioner som skyddar dig när du surfar, till exempel Google Säker webbsökning, som <ph name="BEGIN_LINK" />nyligen hittade nätfiske<ph name="END_LINK" /> på webbplatsen du försökte besöka. Webbplatser för nätfiske imiterar andra webbplatser i syfte att lura dig.<ph name="NEW_LINE" />Även webbplatser som vanligtvis är säkra utsätts ibland för angripare. <ph name="BEGIN_ERROR_LINK" />Kontakta oss<ph name="END_ERROR_LINK" /> om du anser att detta är ett misstag och att webbplatsen inte utgör en fara.</translation>
 <translation id="8640996933372643759">Om du vill dela flikar och samarbeta med andra måste du kunna logga in i Chrome</translation>
 <translation id="8641131559425911240">Kuvert (bond)</translation>
@@ -5118,7 +5108,6 @@ Mer information:
 <translation id="945673208656386843">Fyll i det här kortet automatiskt vid köp i Chromium när det har sparats på den här enheten</translation>
 <translation id="94613679163347541">Vill du jämföra <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du snabbt vill skapa en ny webbplats i Google Sites</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome begränsar cookies igen i dag}=1{Chrome begränsar cookies igen i morgon}other{# dagar tills Chrome begränsar cookies igen}}</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> medlemmar har gått med i flikgruppen <ph name="GROUP_NAME" /></translation>
 <translation id="949314938206378263">Du har bett att få besöka den här webbplatsen. Din förälder kan svara via Family Link.</translation>
 <translation id="950736567201356821">Tre hål högst upp</translation>

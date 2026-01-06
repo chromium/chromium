@@ -1808,6 +1808,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="221297410904507041">Verlauf, Cookies und andere Daten löschen sowie Cache leeren</translation>
 <translation id="2213410656650624348">Mäßig</translation>
 <translation id="2214018885812055163">Freigegebene Ordner</translation>
+<translation id="2214453882118345682">Nutze deine Kamera zum Einkaufen, Übersetzen und um mehr über Dinge zu erfahren, die du siehst.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 Zeile wird nicht angezeigt&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> Zeilen werden nicht angezeigt&gt;}}</translation>
 <translation id="2215070081105889450">Zum Teilen von Audio, musst du stattdessen einen Tab oder Bildschirm teilen</translation>
 <translation id="2217208085547223783">Vertrauensstatus</translation>
@@ -5714,6 +5715,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4864805589453749318">Es muss ein Elternteil ausgewählt werden, das seine Zustimmung gibt, damit das Konto einer Bildungseinrichtung hinzugefügt werden kann.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blockiert)</translation>
 <translation id="486505726797718946">Arbeitsspeicher gespart</translation>
+<translation id="4865063548323785458">Du kannst deine Passwörter speichern und automatisch ausfüllen lassen, um dich einfacher auf Websites und in Apps anzumelden</translation>
 <translation id="486635084936119914">Bestimmte Dateitypen nach dem Herunterladen automatisch öffnen</translation>
 <translation id="4867272607148176509">Eltern können Apps genehmigen oder blockieren, Zeitlimits festlegen und das Surfen im Web kontrollieren. Das Konto einer Bildungseinrichtung kann später hinzugefügt werden, um auf die meisten Ressourcen der Bildungseinrichtung zuzugreifen.</translation>
 <translation id="4867433544163083783">Prüfen, ob Tabs organisiert werden können</translation>
@@ -7608,7 +7610,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6194333736420234626">&amp;Zahlungsmethoden</translation>
 <translation id="6195005504600220730">Informationen zu deinem Browser, Betriebssystem und Gerät abrufen</translation>
 <translation id="6195155925303302899">Zentriert</translation>
-<translation id="6195163219142236913">Drittanbieter-Cookies eingeschränkt</translation>
 <translation id="6195693561221576702">Dieses Gerät kann nicht im Offlinedemomodus eingerichtet werden.</translation>
 <translation id="6196640612572343990">Drittanbieter-Cookies blockieren</translation>
 <translation id="6196854373336333322">Die Erweiterung <ph name="EXTENSION_NAME" /> hat die Kontrolle über deine Proxyeinstellungen übernommen. Das bedeutet, dass sie sämtliche Onlineaktivitäten ändern, abbrechen oder überwachen kann. Wenn du nicht sicher bist, wie es zu dieser Änderung gekommen ist, war sie wahrscheinlich nicht beabsichtigt.</translation>
@@ -8375,7 +8376,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6731320427842222405">Dies kann einige Minuten dauern.</translation>
 <translation id="6732956960067639542">Öffne stattdessen eine neue Chrome-Browsersitzung.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Cookies und andere Websitedaten anzeigen...</translation>
 <translation id="6736243959894955139">Adresse</translation>
 <translation id="6737663862851963468">Kerberos-Ticket entfernen</translation>
 <translation id="6738180164164974883">Drittanbieter-Cookies zulassen</translation>
@@ -11469,6 +11469,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="881799181680267069">Andere ausblenden</translation>
 <translation id="8818152010000655963">Hintergrund</translation>
 <translation id="8818988764764862764">Fenster nach links verschoben</translation>
+<translation id="8819155700324279105">Du kannst dich durch zusätzliche Schutzmaßnahmen besser vor Onlinebedrohungen schützen lassen</translation>
 <translation id="8819510664278523111">Die Geräte-EID lautet <ph name="EID_NUMBER" />, die Geräte-IMEI <ph name="IMEI_NUMBER" /> und die Geräte-Seriennummer <ph name="SERIAL_NUMBER" />. Diese Nummern können zur Aktivierung des Diensts verwendet werden.</translation>
 <translation id="8820817407110198400">Lesezeichen</translation>
 <translation id="8821045908425223359">IP-Adresse automatisch konfigurieren</translation>
@@ -12116,7 +12117,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="947329552760389097">&amp;Elemente untersuchen</translation>
 <translation id="947526284350604411">Meine Antwort</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> kann Dateien in diesem Ordner nicht öffnen, weil er Systemdateien enthält</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome schränkt heute wieder Cookies ein}=1{Chrome schränkt morgen wieder Cookies ein}other{Noch # Tage, bis Chrome wieder Cookies einschränkt}}</translation>
 <translation id="949807244219288032">Dieser Tab ist mit einem HID-Gerät verbunden</translation>
 <translation id="950079950995628542">Von „<ph name="PHONE_NAME" />“</translation>
 <translation id="950307215746360464">Einrichtungsassistent</translation>

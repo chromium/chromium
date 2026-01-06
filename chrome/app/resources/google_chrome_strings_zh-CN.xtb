@@ -482,6 +482,7 @@
 <translation id="6180522807229584611">此标签页正在占用额外的资源。请通过 Chrome 将其设为非活跃状态，以便提升性能。</translation>
 <translation id="6182736845697986886">更新服务器出现内部错误，因此安装失败。</translation>
 <translation id="6183773856988300112">Chrome 中的 Gemini 会使用自动浏览功能在标签页中运行，完成您交代的各种任务。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
+<translation id="6187085551300363958">Chrome 提示：保存密码</translation>
 <translation id="6192058120268468905">设置 Chrome 账号</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" />添加了一个扩展程序，可能会改变 Chrome 的工作方式。
 
@@ -620,6 +621,7 @@
 <translation id="7627609214560473136">为保护您的数据，对于您近期未访问的网站，请允许 Chrome 移除网站权限。</translation>
 <translation id="7629695634924605473">Chrome 会让您知道您的密码是否曾被泄露</translation>
 <translation id="7641148173327520642">您的系统管理员已将 Google Chrome 配置为使用<ph name="ALTERNATIVE_BROWSER_NAME" />访问 <ph name="TARGET_URL_HOSTNAME" />。</translation>
+<translation id="7641448682796883218">Chrome 提示：增强型安全浏览</translation>
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7651907282515937834">Chrome 企业版徽标</translation>
 <translation id="76531479118467370">Chrome 阻止了此项下载操作，因为您关闭了安全浏览功能，系统无法验证该文件</translation>

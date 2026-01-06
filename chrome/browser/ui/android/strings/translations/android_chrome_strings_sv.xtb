@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Ta bort</translation>
 <translation id="1183189057400844278">Verifiera din identitet för att se till att du alltid kan använda lösenorden i Google-kontot</translation>
 <translation id="1187810343066461819">Radera även bokmärken, historik med mera från den här bilen</translation>
-<translation id="1193589902336218259">Aktivera tipsaviseringar</translation>
 <translation id="1193729455103054076">Vill du använda ett starkt lösenord?</translation>
 <translation id="11947597112837849">din e-postadress</translation>
 <translation id="1197267115302279827">Flytta bokmärken</translation>
@@ -996,7 +995,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5267572070504076962">Aktivera Säker webbsökning för skydd mot farliga webbplatser</translation>
 <translation id="5271967389191913893">Innehållet som skulle laddas ned gick inte att öppna på enheten.</translation>
 <translation id="5273031377282080577">Administratören hanterar den här inställningen.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Prenumerationen på en webbplats som du inte använder har sagts upp}other{Prenumerationerna på # webbplatser som du inte använder har sagts upp}}</translation>
 <translation id="5292796745632149097">Skicka till</translation>
 <translation id="5301876394151419436">Du är inloggad som <ph name="EMAIL" />. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="5304593522240415983">Fältet får inte vara tomt</translation>
@@ -1587,7 +1585,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7612619742409846846">Inloggad i Google som</translation>
 <translation id="7612989789287281429">Du loggas in …</translation>
 <translation id="7619072057915878432">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av nätverksfel.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Prenumerationen har sagts upp för en webbplats}other{Prenumerationen har sagts upp för # webbplatser}}</translation>
 <translation id="7626032353295482388">Välkommen till Chrome</translation>
 <translation id="7628417132421583481">Öppna Lösenordshantering</translation>
 <translation id="7630202231528827509">Leverantörens webbadress</translation>

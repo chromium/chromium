@@ -966,6 +966,7 @@
 <translation id="472259426228234149">価格 $100～$180</translation>
 <translation id="4735849923335729414"><ph name="EMAIL" /> としてログインします、組織によって管理されています。</translation>
 <translation id="473775607612524610">更新</translation>
+<translation id="4738968082443868320">Google ドライブ</translation>
 <translation id="474209246745757965">カメラで撮影したアイテムを購入、翻訳</translation>
 <translation id="4742407542027196863">パスワードを管理…</translation>
 <translation id="4744428388659507035">お使いのすべてのデバイスで同じブックマークを使用するには、設定で [ブックマーク] をオンにします。</translation>
@@ -1055,6 +1056,7 @@
 <translation id="5021500396464456616">このリンクを送信したユーザーにお問い合わせください</translation>
 <translation id="5039804452771397117">許可する</translation>
 <translation id="5050810143224996149">パスワードの共有</translation>
+<translation id="5052499409147950210">サイトの編集</translation>
 <translation id="5055015094595227120">正確な位置情報</translation>
 <translation id="5055551113846164633">このデバイスに保存されている住所が削除されます。Google アカウント（<ph name="USER_EMAIL" />）に保存されている住所も削除されます。</translation>
 <translation id="5056446788882570708"><ph name="TIME" />に問題が見つかりました。</translation>
@@ -1133,6 +1135,7 @@
 <translation id="5295239312320826323">アカウント（<ph name="USER_EMAIL" />）を削除しますか？</translation>
 <translation id="5300589172476337783">表示</translation>
 <translation id="5311061401280561833">カメラとマイクへのアクセスが許可されています</translation>
+<translation id="5313967007315987356">サイトを追加</translation>
 <translation id="5315870524563628285">インポートするアイテムはありません</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">保存</translation>

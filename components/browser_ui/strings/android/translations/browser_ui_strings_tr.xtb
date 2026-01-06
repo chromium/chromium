@@ -188,11 +188,9 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="2903493209154104877">Adresler</translation>
 <translation id="2910701580606108292">Sitelerin korumalı içeriği oynatmasına izin verilmeden önce size sorulur</translation>
 <translation id="2918484639460781603">Ayarlara git</translation>
-<translation id="293060180538644702">Chrome İpuçları bildirimlerini alın</translation>
 <translation id="2932883381142163287">Kötüye kullanım bildir</translation>
 <translation id="2939338015096024043">Bu düğme açıkken siteler kameranızın konumunu izlemek ve çevreniz hakkında bilgi edinmek isteyebilir. Düğme kapalıyken siteler kameranızın konumunu izleyemez veya çevreniz hakkında bilgi edinemez.</translation>
 <translation id="2968755619301702150">Sertifika görüntüleyici</translation>
-<translation id="2979365474350987274">Üçüncü taraf çerezleri sınırlı</translation>
 <translation id="2990583317361835189">Sitelerin hareket sensörlerini kullanmasına izin verme</translation>
 <translation id="3004438526346162184">Siteler, tüm ekranlarınızda pencereleri yönetmek için bu özelliği kullanabilir</translation>
 <translation id="3008272652534848354">İzinleri sıfırla</translation>
@@ -631,7 +629,6 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="7835852323729233924">Medya oynatma/çalma</translation>
 <translation id="783819812427904514">Videonun sesini aç</translation>
 <translation id="7846076177841592234">Seçimi iptal et</translation>
-<translation id="7881140103901777395">Chrome, çoğu sitenin, üçüncü taraf çerezlerini kullanmasını sınırlandırır. Ancak temel hizmetleri sağlamadaki rolünden dolayı bu sitede üçüncü taraf çerezlerine izin verilir.\n\n<ph name="BEGIN_LINK" />Üçüncü taraf çerezlerine erişimi yönetmek<ph name="END_LINK" /> için ayarlara gidin.</translation>
 <translation id="7882806643839505685">Belirli bir site için sese izin verin.</translation>
 <translation id="7891547341794213004">Bu sekmeyle devam et kartını gizle</translation>
 <translation id="789722939441020330">Sitelerin birden fazla dosyayı otomatik olarak indirmesine izin verme</translation>

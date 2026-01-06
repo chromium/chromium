@@ -4926,17 +4926,6 @@ Bu politika, M112 sürümünde kaldırılmıştır.</translation>
 <translation id="4408428864159735559">Önceden yapılandırılmış ağ dosyası paylaşımlarının listesi.</translation>
 <translation id="4410236409016356088">Ağ bant genişliğini daraltmayı etkinleştir</translation>
 <translation id="4410361389637971319">Yalıtılmış web uygulaması kaynaklarının Direct Sockets'ı kullanmasına izin ver</translation>
-<translation id="4410792459434637140">Bu politika, belirli URL'lerde <ph name="CHROME_DEVTOOLS_NAME" /> kullanmaya izin vermek için kullanılabilir.
-
-URL kalıpları, incelenen sayfanın URL'siyle eşleştirilir. Eşleşme bulunursa <ph name="CHROME_DEVTOOLS_NAME" /> kullanmaya izin verilir. URL, <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> politikasıyla eşleşse ve <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> politikası izin vermeyecek şekilde (2 değeri) ayarlanmış olsa bile bu geçerlidir. URL biçimi hakkında bilgi için https://support.google.com/chrome/a?p=url_blocklist_filter_format adresine bakın.
-
-Politika ayarlanmadan bırakılırsa bu izin verilenler listesinin hiçbir etkisi olmaz. <ph name="CHROME_DEVTOOLS_NAME" /> varsayılan olarak kullanılabildiğinden yalnızca <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> politikasında belirtilmesi durumunda engellenir.
-
-Eşleşmeyen URL'ler <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> politikasına uyar.
-
-Bu politika, uzantılar ve web uygulamalarında açılan <ph name="CHROME_DEVTOOLS_NAME" /> için de geçerlidir.
-
-Bu politika 1.000 giriş ile sınırlıdır.</translation>
 <translation id="4411734231900934213">Çocuğun ve ebeveynin cihazlarındaki saatler arasında olmasına izin verilen fark (saniye olarak).</translation>
 <translation id="441217499641439905"><ph name="PRODUCT_OS_NAME" />, Dosyalar uygulamasında hücresel bağlantılar üzerinden Google Drive erişimini devre dışı bırak</translation>
 <translation id="4412885120239670573">Politika, Etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" /> içinde dahili PDF görüntüleyicisi kapatılır, PDF dosyaları indirme olarak ele alınır ve kullanıcının PDF'leri varsayılan uygulamayla açmasına izin verilir.
@@ -7468,17 +7457,6 @@ Politika, <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" /> (1 değeri) ola
 <translation id="5958746038080720143">Otomatik Web Proxy Keşfi (WPAD) optimizasyonunu etkinleştir</translation>
 <translation id="5961137303188584693">Cihazın dahili NIC MAC adresi</translation>
 <translation id="5962271004971310788">Gizli modda gezinmek için kullanıcının Gizli modda çalıştırılmasına izin vermesi gereken uzantılar</translation>
-<translation id="5962401339101255719">Politika 0 (varsayılan) değerine ayarlanırsa geliştirici araçlarına ve JavaScript konsoluna erişebilirsiniz. Ancak kurumsal politikaya göre ya da 114 sürümünden itibaren yüklenen uzantılar, yönetilen bir kullanıcı hesabı olması durumunda da tarayıcıda yerleşik olarak bulunan uzantıların bağlamında bu erişimi sağlayamazsınız. Politika 1 değerine ayarlanırsa kurumsal politikaya göre yüklenen uzantıların bağlamı dahil tüm bağlamlarda geliştirici araçlarına ve JavaScript konsoluna erişebilirsiniz. Politika 2 değerine ayarlanırsa geliştirici araçlarına erişemezsiniz ve web sitesi öğelerini inceleyemezsiniz.
-
-Bu ayar, geliştirici araçlarını veya JavaScript konsolunu açmak için klavye kısayollarını ve menü veya bağlam menüsü girişlerini de kapatır.
-
-Bu ayar, <ph name="PRODUCT_NAME" /> sürüm 99'dan itibaren "Sayfa kaynağını görüntüle" özelliği için giriş noktalarını da kontrol eder. Bu politikayı "DeveloperToolsDisallowed" (2 değeri) olarak ayarlarsanız kullanıcılar klavye kısayollarını veya bağlam menüsünü kullanarak kaynak görüntülemeye erişemez. Kaynak görüntülemeyi tamamen engellemek için <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasına "view-source:*" ifadesini de eklemeniz gerekir.
-
-Bu ayar, <ph name="PRODUCT_NAME" /> sürüm 119'dan itibaren Yalıtılmış web uygulamaları için geliştirici modunun etkinleştirilip kullanılmasını da kontrol eder.
-
-Bu ayar, <ph name="PRODUCT_NAME" /> sürüm 128'den itibaren <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> politikası ayarlanırsa uzantılar sayfasında geliştirici modunu kontrol etmez.
-
-Sayfa URL'sine göre Geliştirici Araçları erişimini kısıtlamak istiyorsanız <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ve <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> politikalarını kullanın.</translation>
 <translation id="5963752574792883406">bağlantı noktası 990 (01.02.2022'ye kadar engellemesi kaldırılabilir)</translation>
 <translation id="596523880465577341">Bu politikanın desteği sonlandırıldığı için lütfen bunun yerine "<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />" politikasını kullanın.</translation>
 <translation id="5966615072639944554">Uzaktan doğrulama API'sını kullanmasına izin verilen uzantılar</translation>
@@ -8214,15 +8192,6 @@ bu özellik varsayılan olarak etkinleştirilir.
 Belirli ana makine adlarının veya ana makine adı kalıplarının bu özellik tarafından HTTPS'ye yükseltilmesini engellemek için ayrı <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> politikası kullanılabilir.
 
 <ph name="HTTPS_ONLY_MODE_POLICY_NAME" /> politikasına da göz atın.</translation>
-<translation id="6439002087726312326">URL kalıpları, incelenen sayfanın URL'siyle eşleştirilir. Eşleşme bulunursa <ph name="CHROME_DEVTOOLS_NAME" /> engellenir. URL biçimi hakkında bilgi için https://support.google.com/chrome/a?p=url_blocklist_filter_format adresine bakın.
-
-<ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> politikası, <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> politikasına göre daha önceliklidir.
-
-Eşleşmeyen URL'ler <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> politikasına uyar.
-
-Bu politika, uzantılar ve web uygulamalarında açılan <ph name="CHROME_DEVTOOLS_NAME" /> için de geçerlidir.
-
-Bu politika 1.000 giriş ile sınırlıdır.</translation>
 <translation id="6440051664870270040">Sitelerin eşzamanlı olarak gezinmesine ve pop-up açmasına için izin ver</translation>
 <translation id="6441781723322254041">Kısaltılmış çerezlere izin ver</translation>
 <translation id="6446366416439249472">Hücresel bağlantılar üzerinden Google Drive senkronizasyonunu devre dışı bırak</translation>

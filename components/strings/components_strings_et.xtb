@@ -114,7 +114,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1178581264944972037">Peata</translation>
 <translation id="1178821169867863726">12 × 16 tolli</translation>
 <translation id="1181037720776840403">Eemalda</translation>
-<translation id="1181381397492575884">Chrome blokeerib saitide puhul kolmanda osapoole küpsisefailide kasutamise teie jälgimiseks sirvimise ajal. Avage seaded, et <ph name="LINK" />.</translation>
 <translation id="1185331130467528132"><ph name="URL" /> soovib juurdepääsu teie kohaliku võrgu teistele seadmetele.</translation>
 <translation id="1185343831726846924">Kinnitamine, et virtuaalkaarti ei saa sisse lülitada</translation>
 <translation id="1186201132766001848">Kontrolli paroole</translation>
@@ -227,7 +226,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1343830902827845050">Chrome'i sisselogimine</translation>
 <translation id="1346748346194534595">Paremale</translation>
 <translation id="1348779747280417563">Kinnitage nimi</translation>
-<translation id="1352798470428594123">Chrome piirab enamiku saitide jaoks kolmanda osapoole küpsisefailide kasutamist sirvimisel teie jälgimiseks. Avage seaded, et <ph name="LINK" />.</translation>
 <translation id="1355158069018170842">Vahelehtedel hinnaalanduste kuvamine</translation>
 <translation id="1355301061807280185">Töökohad</translation>
 <translation id="1357195169723583938">Näitab seadme hiljutisi kasutajaid ja kasutamise aega</translation>
@@ -1110,7 +1108,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2768397283109119044">Proovisite jõuda domeenile <ph name="DOMAIN" />, kuid server esitas sellele nimele väljastatud kehtetu sertifikaadi. Nimi on reserveeritud IP-aadress või sisemine hostinimi.</translation>
 <translation id="2770159525358613612">Proovige oma failid uuesti üles laadida</translation>
 <translation id="277133753123645258">Tarneviis</translation>
-<translation id="2773388851563527404">Chrome piirab enamikul saitidel kolmanda osapoole küpsisefailide kasutamist. Kolmanda osapoole küpsisefailid on sellel saidil siiski lubatud, kuna need sõltuvad nende pakutavatest põhiteenustest. Avage seaded, et <ph name="LINK" />.</translation>
 <translation id="277499241957683684">Seadme kirje puudub</translation>
 <translation id="2775884851269838147">Esimesena prinditav leht</translation>
 <translation id="2781185443919227679">Rannad ja saared</translation>
@@ -1714,7 +1711,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3727309136762649052">Nimeruum</translation>
 <translation id="3727850735097852673">Google'i paroolihalduri kasutamiseks koos macOS Keychainiga taaskäivitage Chrome ja lubage Keychainile juurdepääs. Teie vahelehed avanevad pärast taaskäivitamist uuesti.</translation>
 <translation id="3728173127485570463">Chrome'i brauser ei nõua enam paroolide automaatseks täitmiseks teie sõrmejälge</translation>
-<translation id="3736739313435669994">Blokeerisite saitide jaoks kolmanda osapoole küpsisefailide kasutamise sirvimisel teie jälgimiseks. Avage seaded, et <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Teie brauserit haldab teie administraator.</translation>
 <translation id="3739842843727261045">Meeldivaks märkimine saadab tagasisidet, et need tulemused meeldivad teile</translation>
 <translation id="3740447166056383374">Enne kopeerimist on ülevaatus nõutav</translation>
@@ -2148,7 +2144,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4406883609789734330">Reaalajas subtiitrid</translation>
 <translation id="4406896451731180161">otsingutulemused</translation>
 <translation id="4407758156081352648">Turvalisuse tagamiseks ei luba teie organisatsioon Chrome’is paroole korduvalt kasutada. Paroolid on Chrome’is kasutaja privaatsuse kaitsmiseks krüpteeritud.</translation>
-<translation id="4408413947728134509">Küpsisefailid: <ph name="NUM_COOKIES" /></translation>
 <translation id="4409556632583862731">Uus lõim</translation>
 <translation id="4412074349188076601">See seadistus on märgitud installitavaks, kuid selle arhitektuuri jaoks pole esitatud ühtegi kujutist, seega ei saa seda installida.</translation>
 <translation id="4412377069090572315">Mida inimesed räägivad</translation>
@@ -2536,7 +2531,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5061227663725596739">Kas mõtlesite domeeni <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Printimisajalugu</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 on kasutusel)}other{(# on kasutusel)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Kontrollige puhverserveri aadressi<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Kümnes rull</translation>
 <translation id="507130231501693183">Postkast 4</translation>
@@ -3045,7 +3039,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5918373444239520146">Vidinad ja kaasaskantav elektroonika</translation>
 <translation id="5918847752193018339">CVC-de salvestamise korral tasute kassas kiiremini. <ph name="LINK_BEGIN" />Salvestatud turvakoodide kustutamine<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 on kasutusel}other{# on kasutusel}}</translation>
 <translation id="5921185718311485855">Sees</translation>
 <translation id="5921639886840618607">Kas salvestada kaart Google'i kontole?</translation>
 <translation id="5921952831792678223">Pikapid</translation>
@@ -3226,7 +3219,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6194209731893739467">Vaadake kõiki oma jälgitavaid tooteid siin</translation>
 <translation id="6195371403461054755">Geoloogia</translation>
 <translation id="6195418151868446719">Tarbeelektroonika</translation>
-<translation id="6196640612572343990">Blokeeri kolmanda osapoole küpsisefailid</translation>
 <translation id="6197648101609735209">89 × 89 mm</translation>
 <translation id="6198480336395236519">Täispikkuses sakiga registrileht</translation>
 <translation id="6203231073485539293">Kontrollige Interneti-ühendust</translation>
@@ -3722,7 +3714,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6978121630131642226">Otsingumootorid</translation>
 <translation id="6978236010531171013">Jaga ikkagi</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979302985396162258">hallata juurdepääsu kolmanda osapoole küpsisefailidele</translation>
 <translation id="6979440798594660689">Vaigista (vaikeseade)</translation>
 <translation id="6987806006823772670">Ümbrik (kaetud)</translation>
 <translation id="6989256887001961296">See sisu on blokeeritud.</translation>
@@ -4736,7 +4727,6 @@ Lisateave:
 <translation id="8622864575115813231">Teie finantsasutusega ühenduse võtmine …</translation>
 <translation id="8624354461147303341">Hangi allahindlusi</translation>
 <translation id="8634957317623797170">54 × 86 mm</translation>
-<translation id="8635822281281406185">Lisage kuni kümme faili, vahelehte või pilti.</translation>
 <translation id="8637362707224133343">Chrome’il on sisseehitatud ohutusfunktsioonid, mis kaitsevad teid sirvimise ajal, näiteks Google’i ohutu sirvimine, mis <ph name="BEGIN_LINK" />tuvastas hiljuti andmepüügi<ph name="END_LINK" /> saidil, mida proovisite külastada. Andmepüügisaidid esinevad teie petmiseks teiste saitidena.<ph name="NEW_LINE" />Mõnikord ohustavad ründajad isegi tavaliselt turvalisi saite. <ph name="BEGIN_ERROR_LINK" />Andke meile teada<ph name="END_ERROR_LINK" />, kui arvate, et tegemist on veaga ja see sait ei kujuta endast ohtu.</translation>
 <translation id="8640996933372643759">Vahelehtede jagamiseks ja koostööfunktsioonide kasutamiseks peate Chrome'is sisse logima</translation>
 <translation id="8641131559425911240">Ümbrik (võlakirjapaber)</translation>
@@ -5117,7 +5107,6 @@ Lisateave:
 <translation id="945673208656386843">Täitke see kaart automaatselt Chromiumis tehtud ostude puhul, kui see on sellesse seadmesse salvestatud</translation>
 <translation id="94613679163347541"><ph name="CATEGORY" /> – kas soovite võrrelda?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, rakenduses Google Sites kiirelt uue saidi loomiseks vajutage tabulaatorit ja seejärel sisestusklahvi</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome piirab täna küpsisefaile uuesti}=1{Chrome piirab homme küpsisefaile uuesti}other{Chrome piirab # päeva pärast küpsisefaile uuesti}}</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> liiget on vahelehegrupiga „<ph name="GROUP_NAME" />“ liitunud</translation>
 <translation id="949314938206378263">Küsisid selle saidi külastamiseks luba. Sinu vanem saab Family Linkis vastata.</translation>
 <translation id="950736567201356821">Kolm auku ülal</translation>

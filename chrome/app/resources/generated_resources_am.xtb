@@ -1819,6 +1819,7 @@
 <translation id="221297410904507041">ታሪክን፣ ኩኪዎችን፣ መሸጎጫውን እና ሌሎችንም ይሰርዙ</translation>
 <translation id="2213410656650624348">መካከለኛ</translation>
 <translation id="2214018885812055163">የተጋሩ አቃፊዎች</translation>
+<translation id="2214453882118345682">በካሜራዎ የሚያዩትን ይሸምቱ፣ ይተርጉሙ እና ይለዩ</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 መስመር አይታይም&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> መስመሮች አይታዩም&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> መስመሮች አይታዩም&gt;}}</translation>
 <translation id="2215070081105889450">ኦዲዮን ለማጋራት በምትኩ አንድን ትር ወይም ማያ ገጽ ያጋሩ</translation>
 <translation id="2217208085547223783">የእምነት ሁኔታ</translation>
@@ -5727,6 +5728,7 @@
 <translation id="4864805589453749318">የትምህርት ቤት መለያ ለማከል ፈቃድ እየሰጠ ያለውን ወላጅ ይምረጡ።</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (ታግዷል)</translation>
 <translation id="486505726797718946">ማህደረ ትውስታ ተቀምጧል</translation>
+<translation id="4865063548323785458">በቀላሉ ወደ ጣቢያዎች እና መተግበሪያዎች በቀላሉ ለመግባት የእርስዎን የይለፍ ቃላት ያስቀምጡ እና በራስ ይሙሉ</translation>
 <translation id="486635084936119914">ካወረዱ በኋላ የተወሰኑ የፋይል አይነቶችን ክፈት</translation>
 <translation id="4867272607148176509">ወላጆች መተግበሪያዎችን ማጽደቅ ወይም ማገድ፣ የጊዜ ገደቦችን ማቀናበር እና የድር አሰሳን መቆጣጠር ይችላሉ። አብዛኛዎቹን የትምህርት ግብዓቶች ለመድረስ የትምህርት ቤት መለያ በኋላ ላይ መታከል ይችላል።</translation>
 <translation id="4867433544163083783">ትሮችን ማደራጀት ይቻል እንደሆነ ይፈትሹ</translation>
@@ -7625,7 +7627,6 @@
 <translation id="6194333736420234626">&amp;የመክፈያ ዘዴዎች</translation>
 <translation id="6195005504600220730">ስለእርስዎ አሳሽ፣ ስርዓተ ክወና እና መሣሪያ መረጃውን ያንብቡ</translation>
 <translation id="6195155925303302899">ወደ መሃል አሰልፍ</translation>
-<translation id="6195163219142236913">የሦስተኛ ወገን ኩኪ ተገድቧል</translation>
 <translation id="6195693561221576702">ይህ መሣሪያ በመስመር ውጭ የቅንጭብ ማሳያ ሁነታ ላይ ሊቀናበር አይችልም።</translation>
 <translation id="6196640612572343990">የሦስተኛ ወገን ኩኪዎችን አግድ</translation>
 <translation id="6196854373336333322">ይህ «<ph name="EXTENSION_NAME" />» ቅጥያ የተኪ ቅንብሮችዎን ተቆጣጥሯል፣ ይሄ ማለት መስመር ላይ የሚያደርጉት ማንኛውም ነገር ሊቀይር፣ ሊሰብር ወይም በድብቅ ሊከታተል ይችላል። ይሄ ለውጥ ለምን እንደተከሰተ እርግጠኛ ካልሆኑ የማይፈልጉት ነገር ሳይሆን አይቀርም።</translation>
@@ -8394,7 +8395,6 @@
 <translation id="6731320427842222405">ይሄ ጥቂት ደቂቃዎችን ሊወስደ ይችላል</translation>
 <translation id="6732956960067639542">በምትኩ አዲስ የChrome አሳሽ ክፍለ ጊዜ ይክፈቱ።</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (መታወቂያ፦ <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">ኩኪዎችንና የሌላ ጣቢያ ውሂብ አሳይ…</translation>
 <translation id="6736243959894955139">አድራሻ</translation>
 <translation id="6737663862851963468">የKerberos ቲኬትን ያስወግዱ</translation>
 <translation id="6738180164164974883">የሦስተኛ ወገን ኩኪዎችን ለማቀናበር ፍቀድ</translation>
@@ -11494,6 +11494,7 @@ nil</translation>
 <translation id="881799181680267069">ሌሎቹን ደብቅ</translation>
 <translation id="8818152010000655963">ልጣፍ</translation>
 <translation id="8818988764764862764">መስኮት ወደ ግራ ተንቀሳቅሷል</translation>
+<translation id="8819155700324279105">ከመስመር ላይ ዛቻዎች ለመጠበቅ ተጨማሪ የጥበቃ ንብርብር ያክሉ</translation>
 <translation id="8819510664278523111">የእርስዎ የመሣሪያ EID <ph name="EID_NUMBER" /> ነው፣ የመሣሪያ IMEI <ph name="IMEI_NUMBER" /> እና የመሣሪያ የመለያ ቁጥር <ph name="SERIAL_NUMBER" /> ነው። እነዚህ ቁጥሮች አገልግሎትን ለማግበር እንዲያግዙ ጥቅም ላይ መዋል ይችላሉ።</translation>
 <translation id="8820817407110198400">ዕልባቶች</translation>
 <translation id="8821045908425223359">የአይፒ አድራሻ በራስ-ሰር አዋቅር</translation>
@@ -12141,7 +12142,6 @@ nil</translation>
 <translation id="947329552760389097">&amp;አባለ ነገሮችን መርምር</translation>
 <translation id="947526284350604411">የእርስዎ መልስ</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> የስርዓት ፋይሎችን ስለያዘ ፋይሎችን በዚህ አቃፊ ውስጥ መክፈት አይችልም</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome ዛሬ እንደገና ኩኪዎችን ያግዳል}=1{Chrome ነገ እንደገና ኩኪዎችን ያግዳል}one{Chrome ኩኪዎችን እንደገና እስኪገድብ ድረስ # ቀን}other{Chrome ኩኪዎችን እንደገና እስኪገድብ ድረስ # ቀናት}}</translation>
 <translation id="949807244219288032">ይህ ትር ከኤችአይዲ መሣሪያ ጋር የተገናኘ ነው</translation>
 <translation id="950079950995628542">ከ«<ph name="PHONE_NAME" />»</translation>
 <translation id="950307215746360464">የማዋቀሪያ መመሪያ</translation>

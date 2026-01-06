@@ -966,6 +966,7 @@
 <translation id="472259426228234149">Precio USD 100-180</translation>
 <translation id="4735849923335729414">Accede como <ph name="EMAIL" />, administrada por tu organización.</translation>
 <translation id="473775607612524610">Actualizar</translation>
+<translation id="4738968082443868320">Google Drive</translation>
 <translation id="474209246745757965">Compra y traduce con la cámara</translation>
 <translation id="4742407542027196863">Administrar contraseñas…</translation>
 <translation id="4744428388659507035">Para ver tus favoritos en todos tus dispositivos, activa "Favoritos" en la configuración.</translation>
@@ -1055,6 +1056,7 @@
 <translation id="5021500396464456616">Comunícate con la persona que envió este vínculo</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5050810143224996149">Compartir contraseña</translation>
+<translation id="5052499409147950210">Editar sitio</translation>
 <translation id="5055015094595227120">Ubicación precisa</translation>
 <translation id="5055551113846164633">Se borrarán las direcciones guardadas en este dispositivo. También se borrarán las direcciones guardadas en tu Cuenta de Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Se encontraron problemas <ph name="TIME" />.</translation>
@@ -1133,6 +1135,7 @@
 <translation id="5295239312320826323">¿Quieres quitar la cuenta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5311061401280561833">Acceso a la cámara y al micrófono permitido</translation>
+<translation id="5313967007315987356">Agregar sitio</translation>
 <translation id="5315870524563628285">Nada para importar</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Guardar</translation>

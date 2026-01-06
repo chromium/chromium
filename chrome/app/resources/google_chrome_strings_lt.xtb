@@ -491,6 +491,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6180522807229584611">Šiam skirtukui naudojami papildomi šaltiniai. Kad padidintumėte našumą, leiskite „Chrome“ jį padaryti neaktyvų.</translation>
 <translation id="6182736845697986886">Įdiegti nepavyko dėl vidinės atnaujinimo serverio klaidos.</translation>
 <translation id="6183773856988300112">„Gemini“ naršyklėje „Chrome“ naudoja automatinį naršymą, kad veiktų jūsų skirtukuose ir atliktų jūsų pateiktas užduotis. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
+<translation id="6187085551300363958">„Chrome“ patarimas: išsaugokite slaptažodžius</translation>
 <translation id="6192058120268468905">Jūsų paskyra naršyklėje „Chrome“</translation>
 <translation id="6220551899604141979">„<ph name="PARTNER_NAME" />“ pridėjo plėtinį, kuris gali pakeisti, kaip veikia „Chrome“.
 
@@ -629,6 +630,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7627609214560473136">Kad apsaugotumėte duomenis, leiskite „Chrome“ pašalinti svetainių, kuriose pastaruoju metu nesilankėte, leidimus.</translation>
 <translation id="7629695634924605473">„Chrome“ praneš, jei slaptažodžiai bus pažeisti</translation>
 <translation id="7641148173327520642">Sistemos administratorius sukonfigūravo „Google Chrome“ atidaryti alternatyvią naršyklę <ph name="ALTERNATIVE_BROWSER_NAME" />, norint pasiekti <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7641448682796883218">„Chrome“ patarimas: Sustiprintas saugus naršymas</translation>
 <translation id="7649070708921625228">Pagalba</translation>
 <translation id="7651907282515937834">„Chrome Enterprise“ logotipas</translation>
 <translation id="76531479118467370">„Chrome“ užblokavo šį atsisiuntimą, nes išjungėte Saugaus naršymo funkciją ir failo nepavyko patvirtinti</translation>

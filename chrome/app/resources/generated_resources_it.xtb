@@ -1811,6 +1811,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="221297410904507041">Elimina la cronologia, i cookie e altri dati e svuota la cache</translation>
 <translation id="2213410656650624348">Moderato</translation>
 <translation id="2214018885812055163">Cartelle condivise</translation>
+<translation id="2214453882118345682">Acquista, traduci e identifica ciò che vedi con la fotocamera.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 riga non mostrata&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> righe non mostrate&gt;}}</translation>
 <translation id="2215070081105889450">Per condividere l'audio, condividi una scheda o uno schermo</translation>
 <translation id="2217208085547223783">Stato attendibilità</translation>
@@ -2331,6 +2332,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2545743249923338554">Nuove schede</translation>
 <translation id="2546302722632337735">Non consentire ai siti di usare identificatori per riprodurre contenuti protetti</translation>
 <translation id="2546991196809436099">Aumenta lo zoom per ingrandire gli elementi sullo schermo. Premi il tasto per la ricerca + Ctrl + M per attivare e disattivare l'ingrandimento.</translation>
+<translation id="2547602044908040111">Se sei un attivista, un giornalista, un personaggio pubblico, un addetto alle elezioni o una persona che ricopre un ruolo con un rischio particolarmente elevato, potrebbe interessarti il <ph name="BEGIN_LINK" />programma di protezione avanzata<ph name="END_LINK" /> di Google.</translation>
 <translation id="2548347166720081527">Autorizzazione <ph name="PERMISSION" /> consentita</translation>
 <translation id="2548545707296594436">Reimposta la cache del profilo eSIM</translation>
 <translation id="2549985041256363841">Avvia registrazione</translation>
@@ -5718,6 +5720,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4864805589453749318">Seleziona il genitore che sta concedendo l'autorizzazione per aggiungere un account della scuola.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (bloccato)</translation>
 <translation id="486505726797718946">Ricordo salvato</translation>
+<translation id="4865063548323785458">Salva e compila automaticamente le password per accedere facilmente a siti e app</translation>
 <translation id="486635084936119914">Apri automaticamente determinati tipi di file dopo il download</translation>
 <translation id="4867272607148176509">I genitori possono approvare o bloccare le app, impostare limiti di tempo e controllare la navigazione sul web. Un account della scuola può essere aggiunto in un secondo momento per accedere alla maggior parte delle risorse scolastiche.</translation>
 <translation id="4867433544163083783">Controlla se le schede possono essere organizzate</translation>
@@ -7613,7 +7616,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6194333736420234626">&amp;Metodi di pagamento</translation>
 <translation id="6195005504600220730">Lettura di informazioni sul browser, sul sistema operativo e sul dispositivo in uso</translation>
 <translation id="6195155925303302899">Allinea al centro</translation>
-<translation id="6195163219142236913">Cookie di terze parti limitati</translation>
 <translation id="6195693561221576702">Impossibile configurare il dispositivo in modalità demo offline.</translation>
 <translation id="6196640612572343990">Blocca cookie di terze parti</translation>
 <translation id="6196854373336333322">L'estensione "<ph name="EXTENSION_NAME" />" ha assunto il controllo delle tue impostazioni proxy, il che significa che può3 cambiare, interrompere o intercettare tutto ciò che fai online. Se non sei sicuro del motivo per cui si sia verificato questo cambiamento, è probabile che sia indesiderato.</translation>
@@ -8380,7 +8382,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6731320427842222405">L'operazione potrebbe richiedere alcuni minuti</translation>
 <translation id="6732956960067639542">Apri una nuova sessione del browser Chrome.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Mostra cookie e altri dati dei siti...</translation>
 <translation id="6736243959894955139">Indirizzo</translation>
 <translation id="6737663862851963468">Rimuovere richiesta di Kerberos</translation>
 <translation id="6738180164164974883">Consenti l'impostazione di cookie di terze parti</translation>
@@ -11118,6 +11119,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="859246725979739260">A questo sito è stato impedito l'accesso alla tua posizione.</translation>
 <translation id="8593450223647418235">Non potrai aprire i file in Microsoft 365 finché la configurazione non sarà stata completata.</translation>
 <translation id="8593686980889923154">L'app <ph name="APP_NAME" /> è bloccata sul tuo <ph name="DEVICE_TYPE" /></translation>
+<translation id="8593938084085018349">È stato eseguito l'upgrade delle impostazioni di sicurezza</translation>
 <translation id="8594912907680633924">Apri link in visualizzazione divisa</translation>
 <translation id="8596400097994526901">Altre azioni per <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="8596540852772265699">File personalizzati</translation>
@@ -11473,6 +11475,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="881799181680267069">Nascondi altre</translation>
 <translation id="8818152010000655963">Sfondo</translation>
 <translation id="8818988764764862764">Finestra spostata a sinistra</translation>
+<translation id="8819155700324279105">Aggiungi un ulteriore livello di protezione dalle minacce online</translation>
 <translation id="8819510664278523111">Il numero EID del tuo dispositivo è <ph name="EID_NUMBER" />, il codice IMEI è <ph name="IMEI_NUMBER" /> e il numero di serie del dispositivo è <ph name="SERIAL_NUMBER" />. Questi numeri possono essere utilizzati per attivare il servizio.</translation>
 <translation id="8820817407110198400">Preferiti</translation>
 <translation id="8821045908425223359">Configura automaticamente indirizzo IP</translation>
@@ -12120,7 +12123,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="947329552760389097">&amp;Ispeziona elementi</translation>
 <translation id="947526284350604411">La tua risposta</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> non può aprire i file in questa cartella perché contiene file di sistema</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome limiterà nuovamente i cookie oggi}=1{Chrome limiterà nuovamente i cookie domani}other{# giorni al nuovo limite dei cookie in Chrome}}</translation>
 <translation id="949807244219288032">La scheda è connessa a un dispositivo HID</translation>
 <translation id="950079950995628542">Di "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Guida alla configurazione</translation>

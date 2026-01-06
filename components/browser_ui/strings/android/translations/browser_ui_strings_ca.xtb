@@ -188,11 +188,9 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="2903493209154104877">Adreces</translation>
 <translation id="2910701580606108292">Pregunta abans de permetre que els llocs web reprodueixin contingut protegit</translation>
 <translation id="2918484639460781603">Ves a la configuració</translation>
-<translation id="293060180538644702">Rep notificacions de Consells de Chrome</translation>
 <translation id="2932883381142163287">Informa d'un ús abusiu</translation>
 <translation id="2939338015096024043">Quan aquesta opció està activada, els llocs web poden demanar permís per fer un seguiment de la posició de la càmera i obtenir informació sobre el teu entorn. Quan aquesta opció està desactivada, els llocs web no poden fer un seguiment de la posició de la càmera ni obtenir informació sobre el teu entorn.</translation>
 <translation id="2968755619301702150">Lector de certificats</translation>
-<translation id="2979365474350987274">Les galetes de tercers estan limitades</translation>
 <translation id="2990583317361835189">No permetis que els llocs web utilitzin sensors de moviment</translation>
 <translation id="3004438526346162184">Els llocs web poden utilitzar aquesta funció per gestionar finestres en totes les pantalles</translation>
 <translation id="3008272652534848354">Restableix els permisos</translation>
@@ -631,7 +629,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="7835852323729233924">Reproduint contingut multimèdia</translation>
 <translation id="783819812427904514">Deixa de silenciar el vídeo</translation>
 <translation id="7846076177841592234">Cancel·la la selecció</translation>
-<translation id="7881140103901777395">Chrome limita la majoria de llocs web perquè no utilitzin galetes de tercers. Tanmateix, les galetes de tercers es permeten en aquest lloc web perquè en depèn per proporcionar serveis bàsics.\n\nVes a la configuració per <ph name="BEGIN_LINK" />gestionar l'accés a les galetes de tercers<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Permet el so d'un lloc web concret.</translation>
 <translation id="7891547341794213004">Amaga la targeta Continua amb aquesta pestanya</translation>
 <translation id="789722939441020330">No permetis que els llocs web baixin automàticament diversos fitxers</translation>

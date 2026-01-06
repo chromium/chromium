@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Usuń</translation>
 <translation id="1183189057400844278">Potwierdź swoją tożsamość, aby móc zawsze używać haseł na koncie Google</translation>
 <translation id="1187810343066461819">Usuń też zakładki, historię i inne dane z tego samochodu</translation>
-<translation id="1193589902336218259">Włącz powiadomienia o wskazówkach</translation>
 <translation id="1193729455103054076">Użyć silnego hasła?</translation>
 <translation id="11947597112837849">adres e-mail</translation>
 <translation id="1197267115302279827">Przenieś zakładki</translation>
@@ -995,7 +994,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5267572070504076962">Włącz Bezpieczne przeglądanie, aby korzystać z ochrony przed niebezpiecznymi stronami</translation>
 <translation id="5271967389191913893">Na tym urządzeniu nie można otworzyć treści, które chcesz pobrać.</translation>
 <translation id="5273031377282080577">Tym ustawieniem zarządza administrator.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Anulowano subskrypcję 1 nieużywanej witryny}few{Anulowano subskrypcje # nieużywanych witryn}many{Anulowano subskrypcje # nieużywanych witryn}other{Anulowano subskrypcje # nieużywanej witryny}}</translation>
 <translation id="5292796745632149097">Wyślij na</translation>
 <translation id="5301876394151419436">W tej chwili korzystasz z konta <ph name="EMAIL" />. Synchronizację możesz wyłączyć w każdej chwili w ustawieniach. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
 <translation id="5304593522240415983">To pole nie może być puste</translation>
@@ -1586,7 +1584,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7612619742409846846">Jesteś zalogowany w Google jako</translation>
 <translation id="7612989789287281429">Loguję Cię…</translation>
 <translation id="7619072057915878432">Nie udało się pobrać pliku <ph name="FILE_NAME" /> z powodu problemów z siecią.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Anulowano subskrypcję 1 witryny}few{Anulowano subskrypcję # witryn}many{Anulowano subskrypcję # witryn}other{Anulowano subskrypcję # witryny}}</translation>
 <translation id="7626032353295482388">Witamy w Chrome</translation>
 <translation id="7628417132421583481">Otwórz Menedżera haseł</translation>
 <translation id="7630202231528827509">Adres URL dostawcy</translation>

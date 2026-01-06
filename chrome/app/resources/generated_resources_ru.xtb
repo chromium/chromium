@@ -1813,6 +1813,7 @@
 <translation id="221297410904507041">Удаление истории браузера, файлов cookie, кеша и других данных</translation>
 <translation id="2213410656650624348">Умеренная</translation>
 <translation id="2214018885812055163">Общие папки</translation>
+<translation id="2214453882118345682">Покупайте товары, переводите тексты и выполняйте поиск с помощью камеры.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 строка скрыта&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> строка скрыта&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> строки скрыто&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> строк скрыто&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> строки скрыто&gt;}}</translation>
 <translation id="2215070081105889450">Чтобы поделиться аудио, предоставьте доступ к вкладке или экрану</translation>
 <translation id="2217208085547223783">Статус сертификата</translation>
@@ -5721,6 +5722,7 @@
 <translation id="4864805589453749318">Выбери, кто из родителей разрешает добавить учебный аккаунт.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (доступ заблокирован)</translation>
 <translation id="486505726797718946">Освобождены ресурсы памяти</translation>
+<translation id="4865063548323785458">Сохраняйте пароли, чтобы они автоматически вводились при входе в аккаунты на сайтах и в приложениях.</translation>
 <translation id="486635084936119914">Автоматически открывать некоторые типы файлов после скачивания</translation>
 <translation id="4867272607148176509">Родители смогут одобрять или блокировать приложения, ограничивать время использования и контролировать просмотр сайтов. Позже можно добавить учебный аккаунт с доступом к большинству школьных материалов.</translation>
 <translation id="4867433544163083783">Проверить, можно ли объединять вкладки</translation>
@@ -7619,7 +7621,6 @@
 <translation id="6194333736420234626">Способы оплаты</translation>
 <translation id="6195005504600220730">Доступ к информации о вашем браузере, ОС и устройстве</translation>
 <translation id="6195155925303302899">Выровнять по центру</translation>
-<translation id="6195163219142236913">Использование сторонних файлов cookie ограничено</translation>
 <translation id="6195693561221576702">Демонстрационный офлайн-режим на этом устройстве недоступен.</translation>
 <translation id="6196640612572343990">Блокировать сторонние файлы cookie</translation>
 <translation id="6196854373336333322">Расширение "<ph name="EXTENSION_NAME" />" контролирует настройки прокси-сервера. Это значит, что оно может отследить или изменить передаваемые вами данные, а также оборвать интернет-соединение. Если вы не знали об этом, вам следует отключить расширение.</translation>
@@ -8392,7 +8393,6 @@
 <translation id="6731320427842222405">Это может занять несколько минут</translation>
 <translation id="6732956960067639542">Запустите новый сеанс браузера Chrome.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (идентификатор: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Показать cookie и другие данные...</translation>
 <translation id="6736243959894955139">Адрес</translation>
 <translation id="6737663862851963468">Удалить билет Kerberos</translation>
 <translation id="6738180164164974883">Разрешить использование сторонних файлов cookie</translation>
@@ -11488,6 +11488,7 @@
 <translation id="881799181680267069">Скрыть остальные</translation>
 <translation id="8818152010000655963">Обои</translation>
 <translation id="8818988764764862764">Окно перемещено влево</translation>
+<translation id="8819155700324279105">Добавьте дополнительный уровень защиты от онлайн-угроз.</translation>
 <translation id="8819510664278523111">Идентификаторы вашего устройства: EID-код – <ph name="EID_NUMBER" />, IMEI-код – <ph name="IMEI_NUMBER" /> и серийный номер – <ph name="SERIAL_NUMBER" />. Их можно использовать для активации сервиса.</translation>
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="8821045908425223359">Настраивать IP-адрес автоматически</translation>
@@ -12135,7 +12136,6 @@
 <translation id="947329552760389097">&amp;Проверить элементы</translation>
 <translation id="947526284350604411">Ответ</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> не может открыть файлы в этой папке, поскольку она содержит системные файлы.</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Сегодня Chrome снова ограничит использование файлов cookie}=1{Завтра Chrome снова ограничит использование файлов cookie}one{Chrome снова ограничит использование файлов cookie через # день}few{Chrome снова ограничит использование файлов cookie через # дня}many{Chrome снова ограничит использование файлов cookie через # дней}other{Chrome снова ограничит использование файлов cookie через # дня}}</translation>
 <translation id="949807244219288032">Эта вкладка подключена к HID-устройству</translation>
 <translation id="950079950995628542">На телефоне <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Мастер настройки</translation>

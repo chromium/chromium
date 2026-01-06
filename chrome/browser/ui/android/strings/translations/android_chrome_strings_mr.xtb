@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">काढून टाका</translation>
 <translation id="1183189057400844278">तुम्ही तुमच्या Google खाते मधील पासवर्ड कधीही वापरू शकता याची खात्री करण्यासाठी, हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="1187810343066461819">या कारमधून बुकमार्क, इतिहास आणि आणखी बरेच काही हटवा</translation>
-<translation id="1193589902336218259">टिपा यांसाठी नोटिफिकेशन सुरू करा</translation>
 <translation id="1193729455103054076">क्लिष्ट पासवर्ड वापरायचा का?</translation>
 <translation id="11947597112837849">ईमेल अ‍ॅड्रेस</translation>
 <translation id="1197267115302279827">बुकर्माक हलवा</translation>
@@ -995,7 +994,6 @@
 <translation id="5267572070504076962">धोकादायक साइटपासून संरक्षण मिळवण्यासाठी सुरक्षित ब्राउझिंग सुरू करा</translation>
 <translation id="5271967389191913893">डाउनलोड केली जाण्यासाठी डिव्हाइस आशय उघडू शकत नाही.</translation>
 <translation id="5273031377282080577">तुमचा अ‍ॅडमिनिस्ट्रेटर हे सेटिंग व्यवस्थापित करत आहे.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{न वापरलेल्या एका साइटवरून सदस्यत्व रद्द केले आहे}other{न वापरलेल्या # साइटवरून सदस्यत्व रद्द केले आहे}}</translation>
 <translation id="5292796745632149097">यांना पाठवा</translation>
 <translation id="5301876394151419436">तुम्ही <ph name="EMAIL" /> म्हणून साइन इन केले आहे. तुम्ही सेटिंग्जमध्ये सिंक करणे कधीही थांबवू शकता. Google तुमच्या इतिहासाच्या आधारे Search आणि इतर सेवा पर्सनलाइझ करू शकते.</translation>
 <translation id="5304593522240415983">हे फील्ड रिक्त ठेवता येणार नाही</translation>
@@ -1586,7 +1584,6 @@
 <translation id="7612619742409846846">Google मध्ये हे म्हणून साइन इन केले</translation>
 <translation id="7612989789287281429">तुम्हाला साइन इन करत आहे…</translation>
 <translation id="7619072057915878432">नेटवर्क बिघाडामुळे <ph name="FILE_NAME" /> डाउनलोड अयशस्वी झाले.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{एका साइटमधून सदस्यत्व रद्द केले आहे}other{# साइटमधून सदस्यत्व रद्द केले आहे}}</translation>
 <translation id="7626032353295482388">Chrome मध्ये स्वागत आहे</translation>
 <translation id="7628417132421583481">Password Manager वर जा</translation>
 <translation id="7630202231528827509">पुरवठादाराची URL</translation>

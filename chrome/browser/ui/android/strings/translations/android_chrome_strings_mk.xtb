@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Отстрани</translation>
 <translation id="1183189057400844278">За да се погрижите секогаш да може да ги користите лозинките во вашата сметка на Google, потврдете го вашиот идентитет</translation>
 <translation id="1187810343066461819">Избришете ги и обележувачите, историјата и друго од автомобилов</translation>
-<translation id="1193589902336218259">Вклучете „Известувања за совети“</translation>
 <translation id="1193729455103054076">Да се користи силна лозинка?</translation>
 <translation id="11947597112837849">адреса на е-пошта</translation>
 <translation id="1197267115302279827">Премести обележувачи</translation>
@@ -995,7 +994,6 @@
 <translation id="5267572070504076962">Вклучете го „Безбедното прелистување“ за да се заштитите од опасни сајтови</translation>
 <translation id="5271967389191913893">Уредот не може да ја отвори содржината за да се преземе.</translation>
 <translation id="5273031377282080577">Администраторот управува со поставкава.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Се отпишавте од еден некористен сајт}one{Се отпишавте од # некористен сајт}other{Се отпишавте од # некористени сајта}}</translation>
 <translation id="5292796745632149097">Испрати до</translation>
 <translation id="5301876394151419436">Најавени сте како <ph name="EMAIL" />. Може да ја сопрете синхронизацијата кога сакате во поставките. Google може да ги персонализира „Пребарување“ и другите услуги според вашата историја.</translation>
 <translation id="5304593522240415983">Ова поле не може да биде празно</translation>
@@ -1586,7 +1584,6 @@
 <translation id="7612619742409846846">Најавени на Google како</translation>
 <translation id="7612989789287281429">Ве најавуваме…</translation>
 <translation id="7619072057915878432">Преземањето на <ph name="FILE_NAME" /> не успеа поради прекини на мрежата.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Се отпишавте од еден сајт}one{Се отпишавте од # сајт}other{Се отпишавте од # сајта}}</translation>
 <translation id="7626032353295482388">Добре дојдовте на Chrome</translation>
 <translation id="7628417132421583481">Одете во Password Manager</translation>
 <translation id="7630202231528827509">URL на операторот</translation>

@@ -1812,6 +1812,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="221297410904507041">Supprimer l'historique, les témoins, le cache et plus encore</translation>
 <translation id="2213410656650624348">Modéré</translation>
 <translation id="2214018885812055163">Dossiers partagés</translation>
+<translation id="2214453882118345682">Magasinez, traduisez et identifiez ce que vous voyez avec votre appareil photo.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 ligne non affichée&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> ligne non affichée&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> lignes non affichées&gt;}}</translation>
 <translation id="2215070081105889450">Pour partager l'audio, partagez plutôt un onglet ou un écran</translation>
 <translation id="2217208085547223783">État de confiance</translation>
@@ -2651,6 +2652,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2757338480560142065">Assurez-vous que le mot de passe que vous enregistrez correspond à celui pour <ph name="WEBSITE" /></translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Aucun résultat de recherche n'a été renvoyé pour <ph name="SEARCH_QUERY" /></translation>
 <translation id="2762441749940182211">La caméra est bloquée</translation>
+<translation id="2763165257813209348">Le fichier <ph name="FILE_NAME" /> comporte des données sensibles ou dangereuses. Votre organisation vous permettra de l'enregistrer dans l'espace de stockage infonuagique ou de le supprimer</translation>
 <translation id="2764786626780673772">Renseignements sur la connexion RPV</translation>
 <translation id="2764920001292228569">Entrez un nom de profil</translation>
 <translation id="2765100602267695013">Veuillez communiquer avec votre fournisseur de services mobiles</translation>
@@ -5722,6 +5724,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4864805589453749318">Sélectionne le parent qui t'accorde l'autorisation d'ajouter un compte scolaire.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (bloqué)</translation>
 <translation id="486505726797718946">Mémoire enregistrée</translation>
+<translation id="4865063548323785458">Enregistrez et remplissez automatiquement vos mots de passe pour vous connecter facilement aux sites et aux applis</translation>
 <translation id="486635084936119914">Ouvrir automatiquement certains types de fichiers après le téléchargement</translation>
 <translation id="4867272607148176509">Les parents peuvent approuver ou bloquer des applications, définir des limites de temps et contrôler la navigation sur le Web. Un compte scolaire peut être ajouté ultérieurement pour accéder à la plupart des ressources de l'école.</translation>
 <translation id="4867433544163083783">Vérifier si les onglets peuvent être organisés</translation>
@@ -7619,7 +7622,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6194333736420234626">Méthodes de paiement</translation>
 <translation id="6195005504600220730">Lire de l'information à propos de votre navigateur, votre appareil et son SE</translation>
 <translation id="6195155925303302899">Centrer</translation>
-<translation id="6195163219142236913">Témoins tiers limités</translation>
 <translation id="6195693561221576702">Cet appareil ne peut pas être configuré en mode Démo hors ligne.</translation>
 <translation id="6196640612572343990">Bloquer les témoins de tiers</translation>
 <translation id="6196854373336333322">L'extension « <ph name="EXTENSION_NAME" /> » a pris le contrôle de vos paramètres de mandataire, ce qui signifie qu'elle peut modifier ou espionner tout ce que vous faites en ligne. Si vous ne savez pas pourquoi ce changement s'est produit, vous ne voulez probablement pas l'accepter.</translation>
@@ -8388,7 +8390,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6731320427842222405">Cette opération peut prendre quelques minutes</translation>
 <translation id="6732956960067639542">Ouvrez plutôt une nouvelle session dans le navigateur Chrome.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (Identifiant : <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Afficher les témoins et les autres données de sites...</translation>
 <translation id="6736243959894955139">Adresse</translation>
 <translation id="6737663862851963468">Supprimer le ticket Kerberos</translation>
 <translation id="6738180164164974883">Autoriser l'activation de témoins tiers</translation>
@@ -11480,6 +11481,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="881799181680267069">Masquer les autres</translation>
 <translation id="8818152010000655963">Fond d'écran</translation>
 <translation id="8818988764764862764">Fenêtre déplacée vers la gauche</translation>
+<translation id="8819155700324279105">Ajoutez une couche de protection supplémentaire contre les menaces en ligne</translation>
 <translation id="8819510664278523111">L'EID de votre appareil est <ph name="EID_NUMBER" />, l'IIEM de votre appareil est <ph name="IMEI_NUMBER" /> et le numéro de série de votre appareil est <ph name="SERIAL_NUMBER" />. Ces numéros peuvent être utilisés pour aider à activer le service.</translation>
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="8821045908425223359">Configurer automatiquement une adresse IP</translation>
@@ -12127,7 +12129,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="947329552760389097">&amp;Inspecter des éléments</translation>
 <translation id="947526284350604411">Votre réponse</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> ne peut pas ouvrir les fichiers dans ce dossier parce qu'il contient des fichiers système</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome limitera à nouveau les témoins aujourd'hui}=1{Chrome limitera à nouveau les témoins demain}one{# jours jusqu'à ce que Chrome limite à nouveau les témoins}other{# jours jusqu'à ce que Chrome limite à nouveau les témoins}}</translation>
 <translation id="949807244219288032">Cet onglet est connecté à un appareil HID</translation>
 <translation id="950079950995628542">De « <ph name="PHONE_NAME" /> »</translation>
 <translation id="950307215746360464">Guide de configuration</translation>

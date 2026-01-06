@@ -1824,6 +1824,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="221297410904507041">Dileu hanes, cwcis, storfa dros dro, a rhagor</translation>
 <translation id="2213410656650624348">Cymedrol</translation>
 <translation id="2214018885812055163">Ffolderi sydd wedi'u rhannu</translation>
+<translation id="2214453882118345682">Siopa, cyfieithu, a nodi'r hyn a welwch gyda'ch camera.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 llinell heb ei dangos&gt;}zero{&lt;<ph name="NUMBER_OF_LINES" /> llinell heb eu dangos&gt;}two{&lt;<ph name="NUMBER_OF_LINES" /> linell heb eu dangos&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> llinell heb eu dangos&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> llinell heb eu dangos&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> llinell heb eu dangos&gt;}}</translation>
 <translation id="2215070081105889450">I rannu sain, rhannwch dab neu sgrîn yn lle hynny</translation>
 <translation id="2217208085547223783">Cyflwr Ymddiriedolaeth</translation>
@@ -5736,6 +5737,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4864805589453749318">Dewiswch y rhiant sy'n rhoi caniatâd i ychwanegu at gyfrif ysgol.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (rhwystrwyd</translation>
 <translation id="486505726797718946">Cof a Arbedwyd</translation>
+<translation id="4865063548323785458">Cadwch ac awtolenwi'ch cyfrineiriau i fewngofnodi'n hawdd i wefannau ac apiau</translation>
 <translation id="486635084936119914">Agorwch rai mathau o ffeiliau yn awtomatig ar ôl eu lawrlwytho</translation>
 <translation id="4867272607148176509">Gall rhieni gymeradwyo neu rwystro apiau, gosod terfynau amser, a rheoli pori gwe. Gellir ychwanegu cyfrif ysgol yn ddiweddarach i gael mynediad at y rhan fwyaf o adnoddau ysgol.</translation>
 <translation id="4867433544163083783">Gwiriwch nawr a ellir trefnu tabiau</translation>
@@ -7634,7 +7636,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="6194333736420234626">&amp;Dulliau talu</translation>
 <translation id="6195005504600220730">Darllen gwybodaeth am eich porwr, eich OS a'ch dyfais</translation>
 <translation id="6195155925303302899">Alinio i’r canol</translation>
-<translation id="6195163219142236913">Mae cwcis trydydd parti yn gyfyngedig</translation>
 <translation id="6195693561221576702">Ni ellir gosod y ddyfais hon yn y modd demo all-lein.</translation>
 <translation id="6196640612572343990">Rhwystro cwcis trydydd parti</translation>
 <translation id="6196854373336333322">Mae'r estyniad "<ph name="EXTENSION_NAME" />" wedi cymryd rheolaeth o'ch gosodiadau dirprwyol, sy'n golygu y gall newid, torri neu glustfeinio ar unrhyw beth a wnewch ar-lein. Os nad ydych yn siŵr pam y digwyddodd y newid hwn, mae'n debyg nad ydych ei eisiau.</translation>
@@ -8409,7 +8410,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6731320427842222405">Gallai hyn gymryd ychydig funudau</translation>
 <translation id="6732956960067639542">Agorwch sesiwn porwr Chrome newydd yn lle hynny.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (Rhif adnabod: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Dangos cwcis a data gwefan eraill…</translation>
 <translation id="6736243959894955139">Cyfeiriad</translation>
 <translation id="6737663862851963468">Tynnu tocyn Kerberos</translation>
 <translation id="6738180164164974883">Caniatáu gosod cwcis trydydd parti</translation>
@@ -11505,6 +11505,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="881799181680267069">Cuddio'r Lleill</translation>
 <translation id="8818152010000655963">Papur wal</translation>
 <translation id="8818988764764862764">Symudodd y ffenestr i'r chwith</translation>
+<translation id="8819155700324279105">Ychwanegu haen ychwanegol o amddiffyniad rhag bygythiadau ar-lein</translation>
 <translation id="8819510664278523111">EID eich dyfais yw <ph name="EID_NUMBER" />, IMEI dyfais yw <ph name="IMEI_NUMBER" /> a rhif cyfresol dyfais yw <ph name="SERIAL_NUMBER" />. Gellir defnyddio'r rhifau hyn i helpu i weithredu gwasanaeth.</translation>
 <translation id="8820817407110198400">Nodau tudalen</translation>
 <translation id="8821045908425223359">Ffurfweddu'r cyfeiriad IP yn awtomatig</translation>
@@ -12152,7 +12153,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="947329552760389097">&amp;Archwilio Elfennau</translation>
 <translation id="947526284350604411">Eich ateb</translation>
 <translation id="947667444780368238">Ni all <ph name="ORIGIN" /> agor ffeiliau yn y ffolder hon oherwydd ei bod yn cynnwys ffeiliau system</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Bydd Chrome yn cyfyngu ar gwcis eto heddiw}=1{Bydd Chrome yn cyfyngu ar gwcis eto heddiw}two{# ddiwrnod nes bydd Chrome yn cyfyngu ar gwcis eto}few{# diwrnod nes bydd Chrome yn cyfyngu ar gwcis eto}many{# diwrnod nes bydd Chrome yn cyfyngu ar gwcis eto}other{# diwrnod nes bydd Chrome yn cyfyngu ar gwcis eto}}</translation>
 <translation id="949807244219288032">Mae'r tab hwn wedi'i gysylltu â dyfais HID</translation>
 <translation id="950079950995628542">O "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Canllaw gosod</translation>

@@ -83,6 +83,7 @@
 <translation id="193439633299369377">É necessário reiniciar o ChromiumOS para que a atualização seja aplicada.</translation>
 <translation id="1951406923938785464">O Chromium bloqueou o download porque o tipo de arquivo não é transferido com frequência e pode ser perigoso</translation>
 <translation id="1953553007165777902">Fazendo o download… <ph name="MINUTE" /> minuto(s) restante(s)</translation>
+<translation id="1965068424387304464">Dica do Chromium: salve senhas</translation>
 <translation id="1966382378801805537">O Chromium não pode determinar ou definir o navegador padrão</translation>
 <translation id="1990262977744080398">Saiba por que o Chromium bloqueia alguns arquivos (abre em uma nova guia)</translation>
 <translation id="1999715455684970349">Mantém o software do Chromium atualizado. Se este serviço for desativado ou interrompido, o software do Chromium não será atualizado. Isso significa que as vulnerabilidades de segurança que surgirem não serão corrigidas e talvez recursos não funcionem. O serviço é desinstalado automaticamente quando não está sendo usado por nenhum software do Chromium.</translation>
@@ -251,6 +252,7 @@
 <translation id="3802055581630249637">O Chromium pré-carrega páginas que você provavelmente vai visitar para que elas sejam carregadas mais rapidamente ao serem acessadas</translation>
 <translation id="3810973564298564668">Gerenciar</translation>
 <translation id="3823384748599722168">Para usar as senhas salvas, leia o QR code, baixe o Chromium para iOS e faça login na sua Conta do Google.</translation>
+<translation id="3837584850181228767">Dica do Chromium: Navegação Segura com Maior Proteção</translation>
 <translation id="3846683726093018685">**Resuma**: em uma única frase com menos de 30 palavras, descreva o assunto principal e a finalidade do conteúdo na captura de tela.
 
           **Sugira perguntas**: gere uma lista com marcadores contendo de 3 a 5 perguntas instigantes que um usuário poderia fazer para entender melhor a captura de tela. Essas perguntas precisam incluir pelo menos uma que seja especificamente sobre um objeto visual, o design ou a posição dele.</translation>

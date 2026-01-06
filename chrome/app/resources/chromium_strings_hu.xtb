@@ -83,6 +83,7 @@
 <translation id="193439633299369377">A frissítés alkalmazásához újra kell indítani a Chromium OS-t.</translation>
 <translation id="1951406923938785464">A Chromium letiltotta ezt a letöltést, mert ezt a fájltípust nem töltik le gyakran, és veszélyes lehet</translation>
 <translation id="1953553007165777902">Letöltés… <ph name="MINUTE" /> perc van hátra</translation>
+<translation id="1965068424387304464">Chromium-tipp: Jelszavak mentése</translation>
 <translation id="1966382378801805537">A Chromium problémába ütközött az alapértelmezett böngésző megállapításakor vagy beállításakor</translation>
 <translation id="1990262977744080398">További információ arról, hogy miért tilt le bizonyos fájlokat a Chromium (új lapon nyílik meg)</translation>
 <translation id="1999715455684970349">Naprakészen tartja a Chromium szoftvert. Ha ez a szolgáltatás le van tiltva vagy le van állítva, a Chromium szoftver nem lesz naprakészen tartva, ami azt jelenti, hogy az esetlegesen felmerülő biztonsági rések nem lesznek kijavítva, és előfordulhat, egyes funkciók nem fognak működni. Ez a szolgáltatás automatikusan eltávolítja magát, ha nincs olyan Chromium szoftver, amely használja.</translation>
@@ -253,6 +254,7 @@
 <translation id="3802055581630249637">A Chromium előtölt olyan oldalakat, amelyeket Ön valószínűsíthetően fel fog keresni, így amikor valóban felkeresi őket, gyorsabban töltődnek be</translation>
 <translation id="3810973564298564668">Kezelés</translation>
 <translation id="3823384748599722168">Ha szeretné használni a mentett jelszavait, kövesse a QR-kódot, töltse le a Chromium iOS-verzióját, és jelentkezzen be Google-fiókjába</translation>
+<translation id="3837584850181228767">Chromium-tipp: Biztonságos Böngészés fokozott védelemmel</translation>
 <translation id="3846683726093018685">**Összefoglalás:** Egyetlen, 30 szónál rövidebb mondatban írd le a képernyőképen látható tartalom elsődleges tárgyát és célját.
 
           **Kérdések javaslása:** Generálj egy pontokba szedett listát 3–5 olyan elgondolkodtató kérdéssel, amelyet a felhasználó feltehet a képernyőkép jobb megértése érdekében. E kérdések közül legalább egynek kifejezetten egy vizuális objektumra, illetve annak dizájnjára vagy elhelyezésére kell vonatkoznia.</translation>

@@ -114,7 +114,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1178581264944972037">I-pause</translation>
 <translation id="1178821169867863726">12 x 16 in</translation>
 <translation id="1181037720776840403">Alisin</translation>
-<translation id="1181381397492575884">Bina-block ng Chrome ang mga site para hindi makagamit ng third-party na cookies para ma-track ka habang nagba-browse ka. Bisitahin ang mga setting para <ph name="LINK" />.</translation>
 <translation id="1185331130467528132">Gustong i-access ng <ph name="URL" /> ang iba pang device sa iyong lokal na network</translation>
 <translation id="1185343831726846924">Kinukumpirmang hindi ma-on ang virtual card</translation>
 <translation id="1186201132766001848">Suriin ang mga Password</translation>
@@ -227,7 +226,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1343830902827845050">Mag-sign in sa Chrome</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1348779747280417563">Kumpirmahin ang pangalan</translation>
-<translation id="1352798470428594123">Nililimitahan ng Chrome ang karamihan sa mga site sa paggamit ng mga third-party na cookies para ma-track ka habang nagba-browse ka. Bisitahin ang mga setting para <ph name="LINK" />.</translation>
 <translation id="1355158069018170842">Ipakita ang mga pagbaba ng presyo sa mga tab</translation>
 <translation id="1355301061807280185">Mga trabaho</translation>
 <translation id="1357195169723583938">Sino ang gumamit sa device kamakailan at kailan</translation>
@@ -1110,7 +1108,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2768397283109119044">Sinubukan mong pumunta sa <ph name="DOMAIN" />, pero nagpakita ang server ng invalid na certificate na ibinigay sa pangalang iyon. Nakareserbang IP address o internal na hostname ang pangalan.</translation>
 <translation id="2770159525358613612">Subukang i-upload ulit ang iyong mga file</translation>
 <translation id="277133753123645258">Paraan ng pagpapadala</translation>
-<translation id="2773388851563527404">Nililimitahan ng Chrome ang karamihan ng mga site sa paggamit ng third-party na cookies. Pero pinapayagan ang third-party na cookies sa site na ito dahil umaasa ito sa mga ito para makapagbigay ng mga pangunahing serbisyo. Bisitahin ang mga setting para <ph name="LINK" />.</translation>
 <translation id="277499241957683684">Nawawalang tala ng device</translation>
 <translation id="2775884851269838147">Unang page ng pag-print</translation>
 <translation id="2781185443919227679">Mga Beach at Isla</translation>
@@ -1714,7 +1711,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3727309136762649052">Namespace</translation>
 <translation id="3727850735097852673">Para magamit ang Google Password Manager sa macOS Keychain, ilunsad ulit ang Chrome at payagan ang access sa Keychain. Bubukas ulit ang iyong mga tab pagkatapos malunsad ulit.</translation>
 <translation id="3728173127485570463">Hindi na ire-require ng Chrome browser ang iyong fingerprint para i-autofill ang mga password</translation>
-<translation id="3736739313435669994">Na-block mo ang mga site sa paggamit ng mga third-party na cookies para ma-track ka habang nagba-browse ka. Bisitahin ang mga setting para <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Pinapamahalaan ng iyong administrator ang browser mo.</translation>
 <translation id="3739842843727261045">Nagsusumite ang thumbs up ng feedback na gusto mo ang mga resultang ito</translation>
 <translation id="3740447166056383374">Kinakailangan ang pagsusuri bago kopyahin</translation>
@@ -2148,7 +2144,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4406883609789734330">Instant Caption</translation>
 <translation id="4406896451731180161">mga resulta ng paghahanap</translation>
 <translation id="4407758156081352648">Para mapanatili ang seguridad, hindi pinapayagan ng iyong organisasyon na magamit ulit ang mga password sa Chrome. Naka-encrypt ang mga password sa Chrome para protektahan ang privacy ng user.</translation>
-<translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4409556632583862731">Bagong thread</translation>
 <translation id="4412074349188076601">Minarkahan ang configuration na ito bilang nai-install, pero walang larawang ibinigay para sa arkitekturang ito, kaya hindi ito ma-install.</translation>
 <translation id="4412377069090572315">Ang sinasabi ng mga tao</translation>
@@ -2536,7 +2531,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5061227663725596739">Ang ibig mo bang sabihin ay <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">History ng pag-print</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 ang ginagamit)}one{(# ang ginagamit)}other{(# ang ginagamit)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Suriin ang proxy address<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Ikasampung Rolyo</translation>
 <translation id="507130231501693183">Mailbox 4</translation>
@@ -3045,7 +3039,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5918373444239520146">Mga Gadget at Portable na Electronic</translation>
 <translation id="5918847752193018339">Mas mabilis na mag-check out kapag naka-save ang iyong mga CVC. <ph name="LINK_BEGIN" />I-delete ang mga naka-save na panseguridad na code<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 ang ginagamit}one{# ang ginagamit}other{# ang ginagamit}}</translation>
 <translation id="5921185718311485855">Naka-on</translation>
 <translation id="5921639886840618607">I-save ang card sa Google Account?</translation>
 <translation id="5921952831792678223">Mga Pickup Truck</translation>
@@ -3226,7 +3219,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6194209731893739467">Tingnan ang lahat ng iyong sinusubaybayang produkto rito</translation>
 <translation id="6195371403461054755">Geology</translation>
 <translation id="6195418151868446719">Consumer Electronics</translation>
-<translation id="6196640612572343990">I-block ang mga third-party na cookie</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Mga Full Cut Tab</translation>
 <translation id="6203231073485539293">Suriin ang iyong koneksyon sa Internet</translation>
@@ -3722,7 +3714,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6978121630131642226">Mga Search Engine</translation>
 <translation id="6978236010531171013">Ibahagi pa rin</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979302985396162258">pamahalaan ang access sa third-party na cookies</translation>
 <translation id="6979440798594660689">I-mute (default)</translation>
 <translation id="6987806006823772670">Envelope (Coated)</translation>
 <translation id="6989256887001961296">Naka-block ang content na ito.</translation>
@@ -4736,7 +4727,6 @@ Mga karagdagang detalye:
 <translation id="8622864575115813231">Nakikipag-ugnayan sa iyong pinansyal na institusyon...</translation>
 <translation id="8624354461147303341">Makakuha ng mga diskwento</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
-<translation id="8635822281281406185">Magdagdag ng hanggang 10 file, tab, o larawan</translation>
 <translation id="8637362707224133343">May mga built-in na pangkaligtasang feature ang Chrome para maprotektahan ka habang nagba-browse ka — tulad ng Ligtas na Pag-browse sa Google na <ph name="BEGIN_LINK" />nakakita kamakailan ng phishing<ph name="END_LINK" /> sa site na sinubukan mong bisitahin. Nagpapanggap ang mga phishing site na ibang mga site para linlangin ka.<ph name="NEW_LINE" />Kung minsan, nakokompromiso rin ng mga attacker ang mga site na karaniwang ligtas. <ph name="BEGIN_ERROR_LINK" />Ipaalam sa amin<ph name="END_ERROR_LINK" /> kung sa palagay mo ay isa itong pagkakamali at hindi mapanganib ang site na ito.</translation>
 <translation id="8640996933372643759">Para mag-share ng mga tab at makipag-collaborate sa iba, dapat ay nakakapag-sign in ka sa Chrome</translation>
 <translation id="8641131559425911240">Envelope (Bond)</translation>
@@ -5117,7 +5107,6 @@ Mga karagdagang detalye:
 <translation id="945673208656386843">I-autofill ang card na ito para sa mga pagbiling ginawa sa Chromium kapag na-save ito sa device na ito</translation>
 <translation id="94613679163347541">Paghambingin ang <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para gumawa ng bagong site sa Google Sites nang mabilis</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Maglilimita ulit ang Chrome ng cookies ngayong araw}=1{Maglilimita ulit ang Chrome ng cookies bukas}one{# araw bago maglimita ulit ang Chrome ng cookies}other{# na araw bago maglimita ulit ang Chrome ng cookies}}</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> (na) miyembro ang sumali sa grupo ng tab na "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Hiniling mong bisitahin ang site na ito. Puwedeng sumagot ang iyong magulang sa Family Link.</translation>
 <translation id="950736567201356821">Triple punch top</translation>

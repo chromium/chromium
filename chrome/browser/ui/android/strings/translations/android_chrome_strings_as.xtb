@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">আঁতৰাওক</translation>
 <translation id="1183189057400844278">আপোনাৰ Google একাউণ্টত আপুনি সদায়ে পাছৱৰ্ডসমূহ ব্যৱহাৰ কৰিব পৰাটো নিশ্চিত কৰিবলৈ, এয়া আপুনিয়েই বুলি সত্যাপন কৰক</translation>
 <translation id="1187810343066461819">এই গাড়ীখনৰ পৰা বুকমাৰ্ক, ইতিহাস আৰু অধিক তথ্যও মচক</translation>
-<translation id="1193589902336218259">পৰামৰ্শৰ জাননী অন কৰক</translation>
 <translation id="1193729455103054076">বিশ্বস্ত পাছৱৰ্ড ব্যৱহাৰ কৰিবনে?</translation>
 <translation id="11947597112837849">ইমেইল ঠিকনা</translation>
 <translation id="1197267115302279827">বুকমার্কসমূহ আঁতৰাওক</translation>
@@ -995,7 +994,6 @@
 <translation id="5267572070504076962">বিপজ্জনক ছাইটসমূহৰ পৰা সুৰক্ষা লাভ কৰিবলৈ সুৰক্ষিত ব্ৰাউজিং অন কৰক</translation>
 <translation id="5271967389191913893">ডাউনল'ড কৰিবলগীয়া সমল ডিভাইচে খুলিব নোৱাৰে।</translation>
 <translation id="5273031377282080577">আপোনাৰ প্ৰশাসকে এই ছেটিংটো পৰিচালনা কৰে।</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{এটা অব্যৱহৃত ছাইটৰ পৰা আনছাবস্ক্ৰাইব কৰা হৈছে}one{# টা অব্যৱহৃত ছাইটৰ পৰা আনছাবস্ক্ৰাইব কৰা হৈছে}other{# টা অব্যৱহৃত ছাইটৰ পৰা আনছাবস্ক্ৰাইব কৰা হৈছে}}</translation>
 <translation id="5292796745632149097">এইটোলৈ পঠিয়াওক</translation>
 <translation id="5301876394151419436">আপুনি <ph name="EMAIL" /> ৰূপে ছাইন ইন কৰিছে। আপুনি যিকোনো সময়তে ছেটিঙত ছিংক কৰাটো বন্ধ কৰিব পাৰে। Googleএ আপোনাৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি Search আৰু অন্য সেৱা ব্যক্তিগতকৰণ কৰিব পাৰে।</translation>
 <translation id="5304593522240415983">এই ঠাই খালী ৰাখিব নোৱাৰি</translation>
@@ -1586,7 +1584,6 @@
 <translation id="7612619742409846846">এই হিচাপে Googleত ছাইন ইন কৰক</translation>
 <translation id="7612989789287281429">আপোনাক ছাইন ইন কৰাই থকা হৈছে…</translation>
 <translation id="7619072057915878432">নেটৱর্কৰ সমস্যাৰ বাবে <ph name="FILE_NAME" /> ডাউনল'ড কৰিব পৰা নগ'ল।</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{এটা ছাইটৰ পৰা আনছাবস্ক্ৰাইব কৰা হৈছে}one{# টা ছাইটৰ পৰা আনছাবস্ক্ৰাইব কৰা হৈছে}other{# টা ছাইটৰ পৰা আনছাবস্ক্ৰাইব কৰা হৈছে}}</translation>
 <translation id="7626032353295482388">Chromeলৈ স্বাগতম</translation>
 <translation id="7628417132421583481">Password Managerলৈ যাওক</translation>
 <translation id="7630202231528827509">প্ৰদানকাৰীৰ URL</translation>

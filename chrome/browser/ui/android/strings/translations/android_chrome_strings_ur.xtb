@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">ہٹائیں</translation>
 <translation id="1183189057400844278">‏یہ یقینی بنانے کیلئے کہ آپ ہمیشہ اپنے Google اکاؤنٹ میں پاس ورڈز استعمال کر سکتے ہیں، تصدیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="1187810343066461819">اس کار سے بُک مارکس اور سرگزشت وغیرہ کو حذف کريں</translation>
-<translation id="1193589902336218259">تجاویز کی اطلاعات کو آن کریں</translation>
 <translation id="1193729455103054076">مضبوط پاس ورڈ استعمال کریں؟</translation>
 <translation id="11947597112837849">ای میل پتہ</translation>
 <translation id="1197267115302279827">بُک مارکس منتقل کریں</translation>
@@ -995,7 +994,6 @@
 <translation id="5267572070504076962">خطرناک سائٹس سے تحفظ حاصل کرنے کے لیے محفوظ براؤزنگ کو آن کریں</translation>
 <translation id="5271967389191913893">آلہ ڈاؤن لوڈ کیے جانے والے مواد کو نہیں کھول سکتا۔</translation>
 <translation id="5273031377282080577">آپ کا منتظم اس ترتیب کا نظم کرتا ہے۔</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{ایک غیر استعمال شدہ سائٹ سے اَن سبسکرائب کر دیا گیا}other{‫# غیر استعمال شدہ سائٹس سے اَن سبسکرائب کر دیا گیا}}</translation>
 <translation id="5292796745632149097">اس پر بھیجیں</translation>
 <translation id="5301876394151419436">‏آپ <ph name="EMAIL" /> کے طور پر سائن ان ہیں۔ آپ ترتیبات میں کسی بھی وقت مطابقت پذیری کو روک سکتے ہیں۔ ‫Google آپ کی سرگزشت کی بنیاد پر تلاش اور دیگر سروسز کو ذاتی نوعیت کا بنا سکتا ہے۔</translation>
 <translation id="5304593522240415983">یہ فیلڈ خالی نہیں رہ سکتی ہے</translation>
@@ -1586,7 +1584,6 @@
 <translation id="7612619742409846846">‏Google میں سائن ان ہے بطور</translation>
 <translation id="7612989789287281429">آپ کو سائن ان کیا جا رہا ہے…</translation>
 <translation id="7619072057915878432">نیٹ ورک کی ناکامی کی وجہ سے <ph name="FILE_NAME" /> کو ڈاؤن لوڈ کرنا ناکام ہوگیا۔</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{ایک سائٹ سے اَن سبسکرائب کر دیا گیا}other{‫# سائٹس سے اَن سبسکرائب کر دیا گیا}}</translation>
 <translation id="7626032353295482388">‏Chrome میں خوش آمدید</translation>
 <translation id="7628417132421583481">پاس ورڈ مینیجر پر جائیں</translation>
 <translation id="7630202231528827509">‏URL فراہم کنندہ</translation>

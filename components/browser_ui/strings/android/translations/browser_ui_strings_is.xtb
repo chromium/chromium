@@ -188,11 +188,9 @@
 <translation id="2903493209154104877">Heimilisföng</translation>
 <translation id="2910701580606108292">Spyrja áður en vefsvæðum er veitt heimild til að spila varið efni</translation>
 <translation id="2918484639460781603">Opna stillingar</translation>
-<translation id="293060180538644702">Fá tilkynningar um ráð fyrir Chrome</translation>
 <translation id="2932883381142163287">Tilkynna misnotkun</translation>
 <translation id="2939338015096024043">Þegar kveikt er á þessu geta vefsvæði beðið um að rekja stöðu myndavélarinnar og kynnt sér umhverfi þitt. Þegar slökkt er á þessu geta vefsvæði hvorki rakið stöðu myndavélarinnar né kynnt sér umhverfi þitt.</translation>
 <translation id="2968755619301702150">Vottorðaskoðari</translation>
-<translation id="2979365474350987274">Fótspor þriðju aðila eru takmörkuð</translation>
 <translation id="2990583317361835189">Ekki leyfa vefsvæðum að nota hreyfiskynjara</translation>
 <translation id="3004438526346162184">Vefsvæði geta notað þennan eiginleika til að stjórna gluggum á öllum skjáunum þínum</translation>
 <translation id="3008272652534848354">Endurstilla heimildir</translation>
@@ -631,7 +629,6 @@
 <translation id="7835852323729233924">Spilar efni</translation>
 <translation id="783819812427904514">Kveikja á mynd</translation>
 <translation id="7846076177841592234">Hætta við val</translation>
-<translation id="7881140103901777395">Chrome takmarkar getu flestra vefsvæða til að nota fótspor þriðju aðila. Fótspor þriðju aðila eru þó leyfð á þessu vefsvæði vegna þess að það reiðir sig á þau til að veita grunnþjónustu.\n\nFarðu í stillingarnar til að <ph name="BEGIN_LINK" />stjórna aðgangi að fótsporum þriðju aðila<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Leyfa hljóð á tilteknu vefsvæði.</translation>
 <translation id="7891547341794213004">Fela spjaldið „Halda áfram á þessum flipa“</translation>
 <translation id="789722939441020330">Ekki leyfa vefsvæðum að hlaða mörgum skrám niður sjálfkrafa</translation>

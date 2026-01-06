@@ -188,11 +188,9 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="2903493209154104877">Adrese</translation>
 <translation id="2910701580606108292">Web lokacije moraju tražiti dozvolu za reprodukciju zaštićenog sadržaja</translation>
 <translation id="2918484639460781603">Idi u postavke</translation>
-<translation id="293060180538644702">Dobijajte obavještenja sa savjetima za Chrome</translation>
 <translation id="2932883381142163287">Prijavite zloupotrebu</translation>
 <translation id="2939338015096024043">Kada je postavka uključena, web lokacije mogu zatražiti da prate položaj vaše kamere i saznaju više o vašem okruženju. Kada je postavka isključena, web lokacije ne mogu pratiti položaj vaše kamere niti saznati više o vašem okruženju.</translation>
 <translation id="2968755619301702150">Preglednik certifikata</translation>
-<translation id="2979365474350987274">Kolačići trećih strana su ograničeni</translation>
 <translation id="2990583317361835189">Nemoj dozvoliti web lokacijama korištenje senzora kretanja</translation>
 <translation id="3004438526346162184">Web lokacije mogu koristiti ovu funkciju da upravljaju prozorima na svim vašim ekranima</translation>
 <translation id="3008272652534848354">Poništi odobrenja</translation>
@@ -631,7 +629,6 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="7835852323729233924">Reproduciranje medija</translation>
 <translation id="783819812427904514">Uključi zvuk videozapisa</translation>
 <translation id="7846076177841592234">Otkazivanje odabira</translation>
-<translation id="7881140103901777395">Chrome ograničava većini web lokacija da koriste kolačiće trećih strana. Međutim, kolačići trećih strana su dozvoljeni na ovoj web lokaciji jer se ona oslanja na njih radi pružanja osnovnih usluga.\n\nIdite u postavke da <ph name="BEGIN_LINK" />upravljate pristupom kolačićima trećih strana<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Omogućavanje zvuka za određenu web lokaciju.</translation>
 <translation id="7891547341794213004">Sakrij karticu Nastavi s ovom karticom</translation>
 <translation id="789722939441020330">Nemoj dozvoliti web lokacijama automatsko preuzimanje više fajlova</translation>

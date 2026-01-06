@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Xoá</translation>
 <translation id="1183189057400844278">Xác minh danh tính của bạn để đảm bảo bạn luôn dùng được mật khẩu trong Tài khoản Google</translation>
 <translation id="1187810343066461819">Xoá cả dấu trang, nhật ký và các dữ liệu khác khỏi ô tô này</translation>
-<translation id="1193589902336218259">Bật thông báo mẹo hay</translation>
 <translation id="1193729455103054076">Dùng mật khẩu mạnh?</translation>
 <translation id="11947597112837849">địa chỉ email</translation>
 <translation id="1197267115302279827">Di chuyển dấu trang</translation>
@@ -995,7 +994,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5267572070504076962">Bật tính năng Duyệt web an toàn để được bảo vệ khỏi các trang web nguy hiểm</translation>
 <translation id="5271967389191913893">Thiết bị không thể mở nội dung được tải xuống.</translation>
 <translation id="5273031377282080577">Quản trị viên của bạn quản lý chế độ cài đặt này.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Đã huỷ đăng ký nhận thông báo từ một trang web không dùng đến}other{Đã huỷ đăng ký nhận thông báo từ # trang web không dùng đến}}</translation>
 <translation id="5292796745632149097">Gửi đến</translation>
 <translation id="5301876394151419436">Bạn đã đăng nhập bằng <ph name="EMAIL" />. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="5304593522240415983">Không được để trống trường này</translation>
@@ -1586,7 +1584,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7612619742409846846">Đã đăng nhập vào Google bằng</translation>
 <translation id="7612989789287281429">Đang đăng nhập…</translation>
 <translation id="7619072057915878432">Tải xuống không thành công <ph name="FILE_NAME" /> do lỗi mạng.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Đã huỷ đăng ký nhận thông báo từ một trang web}other{Đã huỷ đăng ký nhận thông báo từ # trang web}}</translation>
 <translation id="7626032353295482388">Chào mừng bạn đến với Chrome</translation>
 <translation id="7628417132421583481">Chuyển đến Trình quản lý mật khẩu</translation>
 <translation id="7630202231528827509">URL của nhà cung cấp</translation>

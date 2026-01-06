@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1183189057400844278">Da biste uvijek mogli upotrebljavati zaporke spremljene na vašem Google računu, potvrdite svoj identitet</translation>
 <translation id="1187810343066461819">Izbrišite i oznake, povijest i druge podatke s ovog automobila</translation>
-<translation id="1193589902336218259">Uključite obavijesti o savjetima</translation>
 <translation id="1193729455103054076">Upotrijebiti snažnu zaporku?</translation>
 <translation id="11947597112837849">e-adresu</translation>
 <translation id="1197267115302279827">Premjesti oznake</translation>
@@ -995,7 +994,6 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5267572070504076962">Uključite sigurno pregledavanje da biste se zaštitili od opasnih web-lokacija</translation>
 <translation id="5271967389191913893">Uređaj ne može otvoriti sadržaj za preuzimanje.</translation>
 <translation id="5273031377282080577">Ovom postavkom upravlja vaš administrator.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Otkazana je pretplata na jednu web-lokaciju koja se ne upotrebljava}one{Otkazana je pretplata na # web-lokaciju koja se ne upotrebljava}few{Otkazana je pretplata na # web-lokacije koje se ne upotrebljavaju}other{Otkazana je pretplata na # web-lokacija koje se ne upotrebljavaju}}</translation>
 <translation id="5292796745632149097">Pošalji na uređaj</translation>
 <translation id="5301876394151419436">Prijavljeni ste kao <ph name="EMAIL" />. Sinkronizaciju možete uvijek zaustaviti u postavkama. Google može personalizirati Pretraživanje i druge usluge na temelju vaše povijesti.</translation>
 <translation id="5304593522240415983">To polje ne može biti prazno</translation>
@@ -1586,7 +1584,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7612619742409846846">Prijavljeni ste na Google kao</translation>
 <translation id="7612989789287281429">Prijavljivanje…</translation>
 <translation id="7619072057915878432">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspjelo zbog kvarova na mreži.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Otkazana je pretplata na jednu web-lokaciju}one{Otkazana je pretplata na # web-lokaciju}few{Otkazana je pretplata na # web-lokacije}other{Otkazana je pretplata na # web-lokacija}}</translation>
 <translation id="7626032353295482388">Dobro došli u Chrome</translation>
 <translation id="7628417132421583481">Otvorite Upravitelj zaporki</translation>
 <translation id="7630202231528827509">URL davatelja usluga</translation>

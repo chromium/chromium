@@ -188,11 +188,9 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="2903493209154104877">Adresai</translation>
 <translation id="2910701580606108292">Paklausti prieš leidžiant svetainėms leisti saugomą turinį</translation>
 <translation id="2918484639460781603">Eiti į nustatymus</translation>
-<translation id="293060180538644702">Gaukite „Chrome“ patarimų pranešimus</translation>
 <translation id="2932883381142163287">Pranešti apie piktnaudžiavimą</translation>
 <translation id="2939338015096024043">Įjungus svetainėse gali būti prašoma stebėti fotoaparato padėtį ir sužinoti apie jūsų aplinką. Išjungus svetainės negali stebėti fotoaparato padėties ar sužinoti apie jūsų aplinką.</translation>
 <translation id="2968755619301702150">Sertifikato peržiūros priemonė</translation>
-<translation id="2979365474350987274">Trečiųjų šalių slapukai ribojami</translation>
 <translation id="2990583317361835189">Neleisti svetainėms naudoti judesio jutiklių</translation>
 <translation id="3004438526346162184">Svetainės gali naudoti šią funkciją, kad galėtų tvarkyti langus visuose ekranuose</translation>
 <translation id="3008272652534848354">Iš naujo nustatyti leidimus</translation>
@@ -631,7 +629,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="7835852323729233924">Leidžiama medija</translation>
 <translation id="783819812427904514">Įjungti vaizdo įrašo garsą</translation>
 <translation id="7846076177841592234">Atšaukti pasirinkimą</translation>
-<translation id="7881140103901777395">„Chrome“ daugelyje svetainių riboja trečiųjų šalių slapukų naudojimą. Tačiau trečiųjų šalių slapukai leidžiami šioje svetainėje, nes jie priklauso nuo jų teikiamų pagrindinių paslaugų.\n\nApsilankykite nustatymuose, kad galėtumėte <ph name="BEGIN_LINK" />tvarkyti prieigą prie trečiųjų šalių slapukų<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Konkrečios svetainės garso leidimas.</translation>
 <translation id="7891547341794213004">Slėpti kortelę „Tęsti naudojant šį skirtuką“</translation>
 <translation id="789722939441020330">Neleisti svetainėms automatiškai atsisiųsti kelių failų</translation>

@@ -1824,6 +1824,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="221297410904507041">Brisanje zgodovine, piškotkov, predpomnilnika in drugega</translation>
 <translation id="2213410656650624348">Zmerno</translation>
 <translation id="2214018885812055163">Mape v skupni rabi</translation>
+<translation id="2214453882118345682">Uporabite fotoaparat za nakupovanje, prevajanje in prepoznavanje, kar vidite.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 vrstica ni prikazana&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> vrstica ni prikazana&gt;}two{&lt;<ph name="NUMBER_OF_LINES" /> vrstici nista prikazani&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> vrstice niso prikazane&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> vrstic ni prikazanih&gt;}}</translation>
 <translation id="2215070081105889450">Če želite deliti zvok, namesto tega delite zavihek ali zaslon</translation>
 <translation id="2217208085547223783">Stanje zaupanja</translation>
@@ -2665,6 +2666,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2757338480560142065">Geslo, ki ga želite shraniti, se mora ujemati z geslom za storitev <ph name="WEBSITE" /></translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Ni rezultatov iskanja za »<ph name="SEARCH_QUERY" />«.</translation>
 <translation id="2762441749940182211">Kamera je blokirana</translation>
+<translation id="2763165257813209348">V datoteki <ph name="FILE_NAME" /> so občutljivi ali nevarni podatki. Vaša organizacija vam bo omogočila, da jih shranite v shrambo v oblaku ali zavržete.</translation>
 <translation id="2764786626780673772">Podrobnosti o navideznem zasebnem omrežju</translation>
 <translation id="2764920001292228569">Vnesite ime profila</translation>
 <translation id="2765100602267695013">Obrnite se na ponudnika mobilnih storitev.</translation>
@@ -5736,6 +5738,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4864805589453749318">Izberite starša, ki odobrava dovoljenje za dodajanje šolskega računa.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blokirano)</translation>
 <translation id="486505726797718946">Prihranjeno pomnilnika</translation>
+<translation id="4865063548323785458">Shranite in samodejno izpolnite gesla, da se boste lahko preprosto prijavili na spletnih mestih in v aplikacijah</translation>
 <translation id="486635084936119914">Samodejno odpiranje nekaterih vrst datotek po prenosu</translation>
 <translation id="4867272607148176509">Starši lahko odobrijo ali blokirajo aplikacije, nastavijo časovne omejitve in upravljajo brskanje po spletu. Če želite dostopati do večine šolskih virov, lahko pozneje dodate šolski račun.</translation>
 <translation id="4867433544163083783">Preverjanje, ali je zavihke mogoče organizirati</translation>
@@ -7636,7 +7639,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6194333736420234626">&amp;Plačilna sredstva</translation>
 <translation id="6195005504600220730">Branje podatkov o brskalniku, operacijskem sistemu in napravi</translation>
 <translation id="6195155925303302899">Poravnaj na sredino</translation>
-<translation id="6195163219142236913">Piškotki tretjih oseb so omejeni</translation>
 <translation id="6195693561221576702">Te naprave ni mogoče nastaviti v predstavitvenem načinu brez povezave.</translation>
 <translation id="6196640612572343990">Blokiraj piškotke tretjih oseb</translation>
 <translation id="6196854373336333322">Razširitev »<ph name="EXTENSION_NAME" />« je prevzela nadzor nad nastavitvami strežnika proxy, kar pomeni, da lahko spremeni, prekine ali nadzoruje vse, kar počnete v spletu. Če ne veste, zakaj je prišlo do te spremembe, je verjetno nezaželena.</translation>
@@ -8409,7 +8411,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6731320427842222405">To lahko traja nekaj minut</translation>
 <translation id="6732956960067639542">Odprite novo sejo brskalnika Chrome.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Prikaz piškotkov in drugih podatkov mesta ...</translation>
 <translation id="6736243959894955139">Naslov</translation>
 <translation id="6737663862851963468">Odstranitev kartončka za Kerberos</translation>
 <translation id="6738180164164974883">Dovoli nastavljanje piškotkov tretjih oseb</translation>
@@ -11506,6 +11507,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="881799181680267069">Skrij druge</translation>
 <translation id="8818152010000655963">Ozadje</translation>
 <translation id="8818988764764862764">Okno je premaknjeno levo</translation>
+<translation id="8819155700324279105">Dodajte še eno raven zaščite pred spletnimi grožnjami</translation>
 <translation id="8819510664278523111">EID naprave je <ph name="EID_NUMBER" />, IMEI naprave je <ph name="IMEI_NUMBER" />, serijska številka naprave pa <ph name="SERIAL_NUMBER" />. Te številke je mogoče uporabiti pri aktiviranju storitve.</translation>
 <translation id="8820817407110198400">Zaznamki</translation>
 <translation id="8821045908425223359">Samodejno konfiguriraj naslov IP</translation>
@@ -12153,7 +12155,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="947329552760389097">&amp;Pregled elementov</translation>
 <translation id="947526284350604411">Vaš odgovor</translation>
 <translation id="947667444780368238">Spletno mesto <ph name="ORIGIN" /> ne more odpreti datotek v tej mapi, ker so v njej sistemske datoteke.</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome bo danes znova omejil piškotke}=1{Chrome bo jutri znova omejil piškotke}one{Še # dan in Chrome bo znova omejil piškotke}two{Še # dneva in Chrome bo znova omejil piškotke}few{Še # dni in Chrome bo znova omejil piškotke}other{Še # dni in Chrome bo znova omejil piškotke}}</translation>
 <translation id="949807244219288032">Ta zavihek je povezan z napravo HID</translation>
 <translation id="950079950995628542">Iz telefona »<ph name="PHONE_NAME" />«</translation>
 <translation id="950307215746360464">Vodnik za nastavitev</translation>

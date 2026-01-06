@@ -114,7 +114,6 @@
 <translation id="1178581264944972037">暂停</translation>
 <translation id="1178821169867863726">12 x 16 英寸</translation>
 <translation id="1181037720776840403">移除</translation>
-<translation id="1181381397492575884">Chrome 会阻止网站使用第三方 Cookie 跟踪您在浏览时的活动。访问“设置”可<ph name="LINK" />。</translation>
 <translation id="1185331130467528132"><ph name="URL" /> 想要访问本地网络中的其他设备</translation>
 <translation id="1185343831726846924">确认无法开启虚拟卡</translation>
 <translation id="1186201132766001848">检查密码</translation>
@@ -227,7 +226,6 @@
 <translation id="1343830902827845050">登录 Chrome</translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1348779747280417563">确认姓名</translation>
-<translation id="1352798470428594123">Chrome 会限制大多数网站使用第三方 Cookie 跟踪您在浏览时的活动。访问“设置”可<ph name="LINK" />。</translation>
 <translation id="1355158069018170842">在标签页中显示降价信息</translation>
 <translation id="1355301061807280185">工作机会</translation>
 <translation id="1357195169723583938">最近使用过这部设备的用户和使用时间</translation>
@@ -1110,7 +1108,6 @@
 <translation id="2768397283109119044">您试图访问 <ph name="DOMAIN" />，但服务器提供的为该名称颁发的证书无效。该名称是预留的 IP 地址或内部主机名。</translation>
 <translation id="2770159525358613612">尝试重新上传文件</translation>
 <translation id="277133753123645258">送货方式</translation>
-<translation id="2773388851563527404">Chrome 会限制大多数网站使用第三方 Cookie。不过，该网站允许使用第三方 Cookie，因为它依赖这些 Cookie 来提供基本服务。访问“设置”可<ph name="LINK" />。</translation>
 <translation id="277499241957683684">缺少设备记录</translation>
 <translation id="2775884851269838147">最先打印的页面</translation>
 <translation id="2781185443919227679">海滩与岛屿</translation>
@@ -1710,7 +1707,6 @@
 <translation id="3727309136762649052">命名空间</translation>
 <translation id="3727850735097852673">若要将 Google 密码管理工具与 macOS 钥匙串搭配使用，请重新启动 Chrome 并允许访问钥匙串。您的标签页会在重新启动后重新打开。</translation>
 <translation id="3728173127485570463">Chrome 浏览器将不再需要您的指纹来自动填充密码</translation>
-<translation id="3736739313435669994">您已禁止网站使用第三方 Cookie 跟踪您在浏览时的活动。访问“设置”可<ph name="LINK" />。</translation>
 <translation id="3738166223076830879">您的浏览器由管理员管理。</translation>
 <translation id="3739842843727261045">选择“我喜欢”可对这些结果给予正面反馈</translation>
 <translation id="3740447166056383374">复制前需要检查</translation>
@@ -2144,7 +2140,6 @@
 <translation id="4406883609789734330">实时字幕</translation>
 <translation id="4406896451731180161">搜索结果</translation>
 <translation id="4407758156081352648">为确保安全，您的组织不允许在 Chrome 中重复使用密码。Chrome 中的密码会加密，以保护用户隐私。</translation>
-<translation id="4408413947728134509"><ph name="NUM_COOKIES" />Cookie</translation>
 <translation id="4409556632583862731">新建会话</translation>
 <translation id="4412074349188076601">该配置已被标记为可安装，但系统未为此架构提供任何映像，所以无法安装该配置。</translation>
 <translation id="4412377069090572315">其他用户的评价</translation>
@@ -2532,7 +2527,6 @@
 <translation id="5061227663725596739">您是不是要前往 <ph name="LOOKALIKE_DOMAIN" />？</translation>
 <translation id="5066056036849835175">打印记录</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{（使用了 1 个）}other{（使用了 # 个）}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />检查代理服务器地址<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">第 10 卷</translation>
 <translation id="507130231501693183">信箱 4</translation>
@@ -3041,7 +3035,6 @@
 <translation id="5918373444239520146">小工具和便携式电子产品</translation>
 <translation id="5918847752193018339">保存银行卡验证码 (CVC) 后，结账速度更快。<ph name="LINK_BEGIN" />删除已保存的安全码<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{正在使用 1 个}other{正在使用 # 个}}</translation>
 <translation id="5921185718311485855">已开启</translation>
 <translation id="5921639886840618607">要将银行卡保存到 Google 账号吗？</translation>
 <translation id="5921952831792678223">皮卡车</translation>
@@ -3221,7 +3214,6 @@
 <translation id="6194209731893739467">您跟踪的所有商品都会显示在此处</translation>
 <translation id="6195371403461054755">地质学</translation>
 <translation id="6195418151868446719">消费类电子产品</translation>
-<translation id="6196640612572343990">阻止第三方 Cookie</translation>
 <translation id="6197648101609735209">89 x 89 毫米</translation>
 <translation id="6198480336395236519">全剪切标签</translation>
 <translation id="6203231073485539293">请检查您的互联网连接是否正常</translation>
@@ -3717,7 +3709,6 @@
 <translation id="6978121630131642226">搜索引擎</translation>
 <translation id="6978236010531171013">仍然共享</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
-<translation id="6979302985396162258">管理对第三方 Cookie 的使用权限</translation>
 <translation id="6979440798594660689">静音（默认）</translation>
 <translation id="6987806006823772670">信封（涂布纸）</translation>
 <translation id="6989256887001961296">该内容被屏蔽了。</translation>
@@ -4732,7 +4723,6 @@
 <translation id="8622864575115813231">正在联系金融机构…</translation>
 <translation id="8624354461147303341">获取折扣信息</translation>
 <translation id="8634957317623797170">54 x 86 毫米</translation>
-<translation id="8635822281281406185">最多可添加 10 个文件、标签页或图片</translation>
 <translation id="8637362707224133343">Chrome 内置的安全功能可在您浏览网页时为您提供保护，例如 Google 安全浏览功能近期在您尝试访问的网站上<ph name="BEGIN_LINK" />发现了钓鱼式攻击<ph name="END_LINK" />。钓鱼式攻击网站会假冒其他网站来诱骗您。<ph name="NEW_LINE" />即使是通常很安全的网站，有时也会遭到攻击者的入侵。如果您认为我们的判定有误，并认为此网站不会构成危险，请<ph name="BEGIN_ERROR_LINK" />告知我们<ph name="END_ERROR_LINK" />。</translation>
 <translation id="8640996933372643759">若要分享标签页并与他人协作，您必须能够登录 Chrome</translation>
 <translation id="8641131559425911240">信封（证券纸）</translation>
@@ -5112,7 +5102,6 @@
 <translation id="945673208656386843">如果将此卡保存到该设备上，那么在 Chromium 中购物时可以自动填充此卡的信息</translation>
 <translation id="94613679163347541">要比较<ph name="CATEGORY" />吗？</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google 协作平台中快速创建新网站</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome 将于今天再次限制 Cookie}=1{Chrome 将于明天再次限制 Cookie}other{Chrome 将于 # 天后再次限制 Cookie}}</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> 位成员加入了“<ph name="GROUP_NAME" />”标签页分组</translation>
 <translation id="949314938206378263">你已请求访问此网站。你的家长可在 Family Link 内回复。</translation>
 <translation id="950736567201356821">三孔（顶部）</translation>

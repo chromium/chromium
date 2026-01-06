@@ -1808,6 +1808,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="221297410904507041">Borra el historial, las cookies, la memoria caché y más</translation>
 <translation id="2213410656650624348">Moderado</translation>
 <translation id="2214018885812055163">Carpetas compartidas</translation>
+<translation id="2214453882118345682">Compra, identifica y traduce lo que ves con la cámara.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;No se muestra una línea&gt;}other{&lt;No se muestran <ph name="NUMBER_OF_LINES" /> líneas&gt;}}</translation>
 <translation id="2215070081105889450">Para compartir audio, comparte una pestaña o pantalla</translation>
 <translation id="2217208085547223783">Estado de confianza</translation>
@@ -5717,6 +5718,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4864805589453749318">Selecciona el padre o madre que otorga permiso para agregar una cuenta de una institución educativa.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (acceso bloqueado)</translation>
 <translation id="486505726797718946">Memoria ahorrada</translation>
+<translation id="4865063548323785458">Guarda y autocompleta tus contraseñas para acceder fácilmente a sitios y apps</translation>
 <translation id="486635084936119914">Abre determinados tipos de archivo después de descargarlos</translation>
 <translation id="4867272607148176509">Los padres pueden aprobar o bloquear apps, establecer límites de tiempo y controlar la navegación web. Puedes agregar una cuenta de institución educativa para acceder a la mayoría de los recursos de la institución en otro momento.</translation>
 <translation id="4867433544163083783">Comprueba ahora si se pueden organizar las pestañas</translation>
@@ -7615,7 +7617,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6194333736420234626">&amp;Formas de pago</translation>
 <translation id="6195005504600220730">Leer información acerca de tu navegador, SO y dispositivo</translation>
 <translation id="6195155925303302899">Centrar</translation>
-<translation id="6195163219142236913">Se limitaron las cookies de terceros</translation>
 <translation id="6195693561221576702">Este dispositivo no puede configurarse en el modo de demostración sin conexión.</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
 <translation id="6196854373336333322">La extensión "<ph name="EXTENSION_NAME" />" tomó el control de la configuración de proxy, lo que significa que puede modificar, dañar o espiar cualquier actividad que lleves a cabo en línea. Si no sabes con certeza por qué se produjo este cambio, probablemente no lo desees.</translation>
@@ -8382,7 +8383,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6731320427842222405">Esto puede demorar unos minutos</translation>
 <translation id="6732956960067639542">Abre una nueva sesión del navegador Chrome.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Mostrar cookies y otros datos de sitio...</translation>
 <translation id="6736243959894955139">Dirección</translation>
 <translation id="6737663862851963468">Quitar el ticket de Kerberos</translation>
 <translation id="6738180164164974883">Permitir la configuración de cookies de terceros</translation>
@@ -11476,6 +11476,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="881799181680267069">Ocultar otros</translation>
 <translation id="8818152010000655963">Fondo de pantalla</translation>
 <translation id="8818988764764862764">La ventana se movió hacia la izquierda</translation>
+<translation id="8819155700324279105">Agrega una capa adicional de protección contra las amenazas en línea</translation>
 <translation id="8819510664278523111">El EID de tu dispositivo es <ph name="EID_NUMBER" />, el IMEI es <ph name="IMEI_NUMBER" /> y el número de serie es <ph name="SERIAL_NUMBER" />. Estos números se pueden usar para activar el servicio.</translation>
 <translation id="8820817407110198400">Favoritos</translation>
 <translation id="8821045908425223359">Configurar una dirección IP de forma automática</translation>
@@ -12123,7 +12124,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="947329552760389097">Analizar elementos</translation>
 <translation id="947526284350604411">Tu respuesta</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> no puede abrir los archivos de esta carpeta porque contiene archivos del sistema.</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome volverá a limitar las cookies hoy}=1{Chrome volverá a limitar las cookies mañana}other{Faltan # días para que Chrome vuelva a limitar las cookies}}</translation>
 <translation id="949807244219288032">Esta pestaña está conectada a un dispositivo HID</translation>
 <translation id="950079950995628542">De "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Guía de configuración</translation>

@@ -1808,6 +1808,7 @@
 <translation id="221297410904507041">履歴、Cookie、キャッシュなどを削除します</translation>
 <translation id="2213410656650624348">適度</translation>
 <translation id="2214018885812055163">共有フォルダ</translation>
+<translation id="2214453882118345682">カメラを使って、見たものを購入、翻訳、特定できます。</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 行が非表示です&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> 行が非表示です&gt;}}</translation>
 <translation id="2215070081105889450">音声を共有するには、タブまたは画面を共有してください</translation>
 <translation id="2217208085547223783">信頼状態</translation>
@@ -5709,6 +5710,7 @@
 <translation id="4864805589453749318">学校用アカウントを追加する権限を付与している保護者を選択してください。</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" />（ブロック中）</translation>
 <translation id="486505726797718946">思い出を保存しました</translation>
+<translation id="4865063548323785458">パスワードを保存し、サイトやアプリに自動入力して簡単にログインできます</translation>
 <translation id="486635084936119914">ダウンロード後に特定の種類のファイルを自動的に開きます</translation>
 <translation id="4867272607148176509">保護者はアプリの承認とブロック、利用時間の上限の設定、ウェブ ブラウジングの制御を行えます。学校のリソースのほとんどにアクセスするための学校用アカウントは、後で追加できます。</translation>
 <translation id="4867433544163083783">タブを整理できるかどうかを今すぐ確認</translation>
@@ -7603,7 +7605,6 @@
 <translation id="6194333736420234626">お支払い方法(&amp;P)</translation>
 <translation id="6195005504600220730">ブラウザ、OS、デバイスに関する情報の読み取り</translation>
 <translation id="6195155925303302899">中央揃え</translation>
-<translation id="6195163219142236913">サードパーティ Cookie が制限されています</translation>
 <translation id="6195693561221576702">このデバイスはオフライン デモモードで設定できません。</translation>
 <translation id="6196640612572343990">サードパーティの Cookie をブロックする</translation>
 <translation id="6196854373336333322">拡張機能「<ph name="EXTENSION_NAME" />」によってプロキシ設定が制御されています。オンラインで行う操作は、この拡張機能によって変更、遮断、傍受される可能性があります。この変更が行われた理由に心当たりがない場合、これは不正な変更と考えられます。</translation>
@@ -8369,7 +8370,6 @@
 <translation id="6731320427842222405">数分かかることがあります</translation>
 <translation id="6732956960067639542">代わりに新しい Chrome ブラウザ セッションを開きます。</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" />（ID: <ph name="EXTENSION_OR_APP_ID" />）</translation>
-<translation id="6735304988756581115">Cookie と他のサイトのデータを表示...</translation>
 <translation id="6736243959894955139">アドレス</translation>
 <translation id="6737663862851963468">Kerberos チケットの削除</translation>
 <translation id="6738180164164974883">サードパーティ Cookie の設定を許可する</translation>
@@ -11461,6 +11461,7 @@
 <translation id="881799181680267069">ほかを隠す</translation>
 <translation id="8818152010000655963">壁紙</translation>
 <translation id="8818988764764862764">ウィンドウを左に移動しました</translation>
+<translation id="8819155700324279105">オンラインの脅威に対する保護を強化</translation>
 <translation id="8819510664278523111">デバイスの EID は <ph name="EID_NUMBER" />、デバイスの IMEI は <ph name="IMEI_NUMBER" />、デバイスのシリアル番号は <ph name="SERIAL_NUMBER" /> です。これらの番号を使用して、サービスを有効にできます。</translation>
 <translation id="8820817407110198400">ブックマーク</translation>
 <translation id="8821045908425223359">IP アドレスを自動的に設定</translation>
@@ -12108,7 +12109,6 @@
 <translation id="947329552760389097">要素の検証(&amp;I)</translation>
 <translation id="947526284350604411">ご回答欄</translation>
 <translation id="947667444780368238">システム ファイルが含まれているため、<ph name="ORIGIN" /> はこのフォルダのファイルを開くことができません</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{今日、Chrome で Cookie を再び制限します}=1{明日、Chrome で Cookie を再び制限します}other{Chrome で Cookie を再び制限するまであと # 日です}}</translation>
 <translation id="949807244219288032">このタブは HID デバイスに接続されています</translation>
 <translation id="950079950995628542">「<ph name="PHONE_NAME" />」から</translation>
 <translation id="950307215746360464">セットアップ ガイド</translation>

@@ -1824,6 +1824,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="221297410904507041">Ištrinti istoriją, slapukus, talpyklos duomenis ir kt.</translation>
 <translation id="2213410656650624348">Vidutinė</translation>
 <translation id="2214018885812055163">Bendrinami aplankai</translation>
+<translation id="2214453882118345682">Pirkite, verskite ir nustatykite, ką matote, naudodami fotoaparatą.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 nerodoma eilutė&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> nerodoma eilutė&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> nerodomos eilutės&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> nerodomos eilutės&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> nerodomų eilučių&gt;}}</translation>
 <translation id="2215070081105889450">Jei norite bendrinti garso įrašą, bendrinkite skirtuką ar ekrano vaizdą</translation>
 <translation id="2217208085547223783">Patikimumo būsena</translation>
@@ -2665,6 +2666,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2757338480560142065">Įsitikinkite, kad išsaugomas slaptažodis atitinka <ph name="WEBSITE" /> slaptažodį</translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Nepateikta jokių paieškos rezultatų pagal užklausą „<ph name="SEARCH_QUERY" />“</translation>
 <translation id="2762441749940182211">Fotoaparatas užblokuotas</translation>
+<translation id="2763165257813209348">Faile <ph name="FILE_NAME" /> yra neskelbtinų ar pavojingų duomenų. Organizacija leis išsaugoti jį saugykloje debesyje arba atmesti</translation>
 <translation id="2764786626780673772">Išsami VPN informacija</translation>
 <translation id="2764920001292228569">Įveskite profilio pavadinimą</translation>
 <translation id="2765100602267695013">Susisiekite su mobiliojo ryšio tiekėju</translation>
@@ -5736,6 +5738,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4864805589453749318">Pasirinkite vieną iš tėvų, kuris suteikia leidimą pridėti mokyklos paskyrą.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (užblokuota)</translation>
 <translation id="486505726797718946">Atmintis išsaugota</translation>
+<translation id="4865063548323785458">Išsaugokite ir automatiškai pildykite slaptažodžius, kad galėtumėte lengvai prisijungti prie svetainių ir programų</translation>
 <translation id="486635084936119914">Automatiškai atidaryti tam tikrų tipų failus, kai jie atsisiunčiami</translation>
 <translation id="4867272607148176509">Tėvai gali patvirtinti arba blokuoti programas, nustatyti laiko apribojimus ir valdyti žiniatinklio naršymą. Mokyklos paskyrą galima pridėti vėliau, kad būtų galima pasiekti daugumą mokyklos šaltinių.</translation>
 <translation id="4867433544163083783">Dabar patikrinti, ar galima tvarkyti skirtukus</translation>
@@ -7635,7 +7638,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6194333736420234626">&amp;Mokėjimo metodai</translation>
 <translation id="6195005504600220730">Skaityti informaciją apie jūsų naršyklę, OS ir įrenginį</translation>
 <translation id="6195155925303302899">Lygiuoti centre</translation>
-<translation id="6195163219142236913">Trečiųjų šalių slapukai apriboti</translation>
 <translation id="6195693561221576702">Šis įrenginys negali būti nustatytas, kai įjungtas neprisijungus pasiekiamas demonstracinis režimas.</translation>
 <translation id="6196640612572343990">Blokuoti trečiosios šalies slapukus</translation>
 <translation id="6196854373336333322">Plėtinys „<ph name="EXTENSION_NAME" />“ perėmė tarpinio serverio valdymą. Tai reiškia, kad jis gali keisti, nutraukti ar stebėti visus prisijungus atliekamus veiksmus. Jei nesate tikri, kodėl įvyko šis pakeitimas, tikriausiai jūs jo nenorite.</translation>
@@ -8408,7 +8410,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6731320427842222405">Tai gali užtrukti kelias minutes</translation>
 <translation id="6732956960067639542">Verčiau atidarykite naują „Chrome“ naršyklės seansą.</translation>
 <translation id="6734178081670810314">„<ph name="EXTENSION_OR_APP_NAME" />“ (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Rodyti slapukus ir kitus svetainės duomenis...</translation>
 <translation id="6736243959894955139">Adresas</translation>
 <translation id="6737663862851963468">„Kerberos“ bilieto pašalinimas</translation>
 <translation id="6738180164164974883">Leisti nustatyti trečiųjų šalių slapukus</translation>
@@ -11505,6 +11506,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="881799181680267069">Slėpti kitus</translation>
 <translation id="8818152010000655963">Ekrano fonas</translation>
 <translation id="8818988764764862764">Langas perkeltas į kairę</translation>
+<translation id="8819155700324279105">Papildomai apsaugokite nuo grėsmių internete</translation>
 <translation id="8819510664278523111">Jūsų įrenginio EID yra <ph name="EID_NUMBER" />, įrenginio IMEI – <ph name="IMEI_NUMBER" />, o įrenginio serijos numeris – <ph name="SERIAL_NUMBER" />. Šiuos numerius galima naudoti suaktyvinant paslaugą.</translation>
 <translation id="8820817407110198400">Žymės</translation>
 <translation id="8821045908425223359">Automatiškai konfigūruoti IP adresą</translation>
@@ -12152,7 +12154,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="947329552760389097">&amp;Tikrinti elementus</translation>
 <translation id="947526284350604411">Jūsų atsakymas</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> negali atidaryti šiame aplanke esančių failų, nes aplanke yra sistemos failų</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{„Chrome“ šiandien vėl apribos slapukus}=1{„Chrome“ rytoj vėl apribos slapukus}one{Liko # diena, kol „Chrome“ vėl apribos slapukus}few{Liko # dienos, kol „Chrome“ vėl apribos slapukus}many{Liko # dienos, kol „Chrome“ vėl apribos slapukus}other{Liko # dienų, kol „Chrome“ vėl apribos slapukus}}</translation>
 <translation id="949807244219288032">Šis skirtukas susietas su HID įrenginiu</translation>
 <translation id="950079950995628542">Iš „<ph name="PHONE_NAME" />“</translation>
 <translation id="950307215746360464">Sąrankos vadovas</translation>

@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Alih keluar</translation>
 <translation id="1183189057400844278">Untuk memastikan anda dapat menggunakan kata laluan pada bila-bila masa dalam Google Account anda, sahkan identiti anda</translation>
 <translation id="1187810343066461819">Padamkan juga penanda halaman, sejarah dan pelbagai lagi daripada kereta ini</translation>
-<translation id="1193589902336218259">Hidupkan pemberitahuan Petua</translation>
 <translation id="1193729455103054076">Gunakan kata laluan kukuh?</translation>
 <translation id="11947597112837849">alamat e-mel</translation>
 <translation id="1197267115302279827">Alihkan penanda halaman</translation>
@@ -995,7 +994,6 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5267572070504076962">Hidupkan Penyemakan Imbas Selamat untuk mendapatkan perlindungan terhadap laman berbahaya</translation>
 <translation id="5271967389191913893">Peranti tidak dapat membuka kandungan yang hendak dimuat turun.</translation>
 <translation id="5273031377282080577">Pentadbir anda mengurus tetapan ini.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Nyahlanggan daripada satu laman yang tidak digunakan}other{Nyahlanggan daripada # laman yang tidak digunakan}}</translation>
 <translation id="5292796745632149097">Hantar ke</translation>
 <translation id="5301876394151419436">Anda log masuk sebagai <ph name="EMAIL" />. Anda boleh menghentikan penyegerakan pada bila-bila masa dalam tetapan ini. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
 <translation id="5304593522240415983">Medan ini tidak boleh kosong</translation>
@@ -1586,7 +1584,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7612619742409846846">Dilog masuk ke Google sebagai</translation>
 <translation id="7612989789287281429">Anda sedang log masuk…</translation>
 <translation id="7619072057915878432">Muat turun <ph name="FILE_NAME" /> gagal kerana kegagalan rangkaian.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Telah menyahlanggan daripada satu laman}other{Telah menyahlanggan daripada # laman}}</translation>
 <translation id="7626032353295482388">Selamat Datang ke Chrome</translation>
 <translation id="7628417132421583481">Akses Password Manager</translation>
 <translation id="7630202231528827509">URL penyedia</translation>

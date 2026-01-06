@@ -1811,6 +1811,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="221297410904507041">Ezabatu historia, cookieak, cachea eta beste</translation>
 <translation id="2213410656650624348">Ertaina</translation>
 <translation id="2214018885812055163">Karpeta partekatuak</translation>
+<translation id="2214453882118345682">Erosi, itzuli eta identifikatu ikusten duzuna kameraren bidez.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 lerro ez dago ikusgai&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> lerro ez daude ikusgai&gt;}}</translation>
 <translation id="2215070081105889450">Audioa partekatzeko, partekatu fitxa bat edo pantaila</translation>
 <translation id="2217208085547223783">Fidagarritasun-egoera</translation>
@@ -5717,6 +5718,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4864805589453749318">Hautatu zer gurasok emango duen baimena ikastetxeko kontu bat gehitzeko.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blokeatuta)</translation>
 <translation id="486505726797718946">Aurreztutako memoria</translation>
+<translation id="4865063548323785458">Gorde pasahitzak eta bete itzazu automatikoki webgune eta aplikazioetan saioa erraz hasteko</translation>
 <translation id="486635084936119914">Ireki fitxategi mota jakin batzuk deskargatu bezain laster</translation>
 <translation id="4867272607148176509">Gurasoek aplikazioak onartu edo blokeatzeko, denbora-mugak ezartzeko eta sarea arakatzeko modua kontrolatzeko aukera dute. Ikastetxeko kontu bat gehi daiteke gero, ikastetxeko baliabide gehienak erabiltzeko.</translation>
 <translation id="4867433544163083783">Egiaztatu ea fitxak antola daitezkeen</translation>
@@ -7611,7 +7613,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6194333736420234626">Ordainketa-metodoak</translation>
 <translation id="6195005504600220730">Arakatzaileari, sistema eragileari eta gailuari buruzko informazioa irakurri.</translation>
 <translation id="6195155925303302899">Lerrokatu erdian</translation>
-<translation id="6195163219142236913">Hirugarrenen cookieak mugatuta</translation>
 <translation id="6195693561221576702">Ezin da konfiguratu gailua konexiorik gabeko demo moduan.</translation>
 <translation id="6196640612572343990">Blokeatu hirugarrenen cookieak</translation>
 <translation id="6196854373336333322"><ph name="EXTENSION_NAME" /> luzapenak zure proxy-ezarpenen kontrola hartu du; alegia, sarean egiten duzun edozer alda, honda edo zelata dezake. Aldaketa zergatik gertatu den ziur ez badakizu, baliteke aldaketa nahi ez izatea.</translation>
@@ -8378,7 +8379,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6731320427842222405">Minutu batzuk har ditzake</translation>
 <translation id="6732956960067639542">Horren ordez, ireki saio berria Chrome arakatzailean.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (identifikatzailea: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Erakutsi cookieak eta webguneko beste datu batzuk…</translation>
 <translation id="6736243959894955139">Helbidea</translation>
 <translation id="6737663862851963468">Kendu Kerberos-eko txartel bat</translation>
 <translation id="6738180164164974883">Eman hirugarrenen cookieak ezartzeko baimena</translation>
@@ -11469,6 +11469,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="881799181680267069">Ezkutatu besteak</translation>
 <translation id="8818152010000655963">Horma-papera</translation>
 <translation id="8818988764764862764">Leihoa ezkerrera eraman da</translation>
+<translation id="8819155700324279105">Gehitu beste babes-geruza bat sareko mehatxuen aurka</translation>
 <translation id="8819510664278523111">Gailuaren EIDa <ph name="EID_NUMBER" /> da; IMEIa <ph name="IMEI_NUMBER" /> da, eta serie-zenbakia, <ph name="SERIAL_NUMBER" />. Zerbitzua aktibatzeko erabil daitezke zenbakiok.</translation>
 <translation id="8820817407110198400">Laster-markak</translation>
 <translation id="8821045908425223359">Konfiguratu automatikoki IP helbidea</translation>
@@ -12116,7 +12117,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="947329552760389097">&amp;Aztertu elementuak</translation>
 <translation id="947526284350604411">Zure erantzuna</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> webguneak ezin ditu ireki karpeta honetako fitxategiak, sistemaren fitxategiak daudelako bertan</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Gaur mugatuko ditu cookieak berriro Chrome-k}=1{Bihar mugatuko ditu cookieak berriro Chrome-k}other{# egun barru mugatuko ditu cookieak berriro Chrome-k}}</translation>
 <translation id="949807244219288032">Fitxa hau giza interfazeko gailu batekin konektatuta dago</translation>
 <translation id="950079950995628542">"<ph name="PHONE_NAME" />" telefonokoak</translation>
 <translation id="950307215746360464">Konfigurazio-gida</translation>

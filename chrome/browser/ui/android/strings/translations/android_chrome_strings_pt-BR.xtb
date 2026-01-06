@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1183189057400844278">Confirme sua identidade para sempre poder usar as senhas na sua Conta do Google</translation>
 <translation id="1187810343066461819">Excluir também favoritos, histórico e muito mais deste carro</translation>
-<translation id="1193589902336218259">Ativar notificações de dicas</translation>
 <translation id="1193729455103054076">Usar uma senha forte?</translation>
 <translation id="11947597112837849">e-mail</translation>
 <translation id="1197267115302279827">Mover favoritos</translation>
@@ -996,7 +995,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5267572070504076962">Ative a Navegação Segura para ter proteção contra sites perigosos</translation>
 <translation id="5271967389191913893">Não é possível abrir no dispositivo o conteúdo a ser baixado.</translation>
 <translation id="5273031377282080577">O administrador gerencia essa configuração.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{A inscrição foi cancelada em um site não usado}one{A inscrição foi cancelada em # site não usado}other{A inscrição foi cancelada em # sites não usados}}</translation>
 <translation id="5292796745632149097">Enviar para</translation>
 <translation id="5301876394151419436">Você fez login como <ph name="EMAIL" /> e pode interromper a sincronização a qualquer momento nas configurações. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="5304593522240415983">Este campo não pode ficar em branco</translation>
@@ -1587,7 +1585,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7612619742409846846">Conta conectada ao Google como</translation>
 <translation id="7612989789287281429">Fazendo login…</translation>
 <translation id="7619072057915878432">Falha no download do arquivo <ph name="FILE_NAME" /> devido a falhas na rede.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{A inscrição foi cancelada em um site}one{A inscrição foi cancelada em # site}other{A inscrição foi cancelada em # sites}}</translation>
 <translation id="7626032353295482388">Este é o Google Chrome</translation>
 <translation id="7628417132421583481">Acessar o Gerenciador de Senhas</translation>
 <translation id="7630202231528827509">URL do provedor</translation>

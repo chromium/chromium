@@ -1823,6 +1823,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="221297410904507041">Slet historik, cookies, cache m.m.</translation>
 <translation id="2213410656650624348">Moderat</translation>
 <translation id="2214018885812055163">Delte mapper</translation>
+<translation id="2214453882118345682">Køb, oversæt og identificer det, du ser, ved hjælp af dit kamera.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 linje vises ikke&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> linje vise ikke&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> linjer vises ikke&gt;}}</translation>
 <translation id="2215070081105889450">Hvis du vil dele lyd, skal du dele en fane eller skærm i stedet</translation>
 <translation id="2217208085547223783">Tilstand af pålidelighed</translation>
@@ -5735,6 +5736,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4864805589453749318">Vælg den forælder, der giver tilladelse til at tilføje en skolekonto.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blokeret)</translation>
 <translation id="486505726797718946">Mindet er gemt</translation>
+<translation id="4865063548323785458">Gem og autofyld dine adgangskoder for nemt at logge ind på websites og i apps</translation>
 <translation id="486635084936119914">Åbn bestemte filtyper automatisk efter download</translation>
 <translation id="4867272607148176509">Forældre kan godkende eller blokere apps, angive tidsgrænser og styre webbrowsing. En skolekonto kan tilføjes senere for at få adgang til de fleste skoleressourcer.</translation>
 <translation id="4867433544163083783">Tjek nu, om fanerne kan organiseres</translation>
@@ -7633,7 +7635,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6194333736420234626">Betalingsmetoder</translation>
 <translation id="6195005504600220730">Læs oplysninger om din browser, dit operativsystem og din enhed</translation>
 <translation id="6195155925303302899">Centreret</translation>
-<translation id="6195163219142236913">Tredjepartscookies er begrænset</translation>
 <translation id="6195693561221576702">Enheden kan ikke konfigureres i offlinedemotilstand.</translation>
 <translation id="6196640612572343990">Bloker cookies fra tredjeparter</translation>
 <translation id="6196854373336333322">Udvidelsen <ph name="EXTENSION_NAME" /> har taget kontrol over dine proxyindstillinger, hvilket betyder, at den kan ændre, ødelægge eller aflytte alt, hvad du foretager dig på nettet. Hvis du ikke er sikker på, hvorfor denne ændring er sket, er den sandsynligvis uønsket.</translation>
@@ -8402,7 +8403,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6731320427842222405">Dette kan tage et par minutter</translation>
 <translation id="6732956960067639542">Åbn en ny Chrome-browsersession i stedet.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (id: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Vis cookies og andre websitedata...</translation>
 <translation id="6736243959894955139">Adresse</translation>
 <translation id="6737663862851963468">Fjern Kerberos-billet</translation>
 <translation id="6738180164164974883">Giv tilladelse til at gemme tredjepartscookies</translation>
@@ -11498,6 +11498,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="881799181680267069">Skjul andre</translation>
 <translation id="8818152010000655963">Baggrund</translation>
 <translation id="8818988764764862764">Vinduet blev flyttet til venstre</translation>
+<translation id="8819155700324279105">Tilføj ekstra beskyttelse mod onlinetrusler</translation>
 <translation id="8819510664278523111">Din enheds EID-nummer er <ph name="EID_NUMBER" />, enhedens IMEI-nummer er <ph name="IMEI_NUMBER" />, og enhedens serienummer er <ph name="SERIAL_NUMBER" />. Disse numre kan bruges til at aktivere tjenesten.</translation>
 <translation id="8820817407110198400">Bogmærker</translation>
 <translation id="8821045908425223359">Konfigurer automatisk IP-adressen</translation>
@@ -12145,7 +12146,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="947329552760389097">&amp;Inspect Elements (Undersøg elementer)</translation>
 <translation id="947526284350604411">Dit svar</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> kan ikke åbne filer i denne mappe, da den indeholder systemfiler</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome begrænser cookies igen fra i dag}=1{Chrome begrænser cookies igen fra i morgen}one{Chrome begrænser cookies igen om # dag}other{Chrome begrænser cookies igen om # dage}}</translation>
 <translation id="949807244219288032">Denne fane er tilsluttet en HID-enhed</translation>
 <translation id="950079950995628542">Fra "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Konfigurationsvejledning</translation>

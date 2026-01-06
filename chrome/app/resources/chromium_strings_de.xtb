@@ -82,6 +82,7 @@
 <translation id="193439633299369377">Chromium OS muss neu gestartet werden, um das Update zu installieren.</translation>
 <translation id="1951406923938785464">Chromium hat diesen Download blockiert, weil der Dateityp normalerweise nicht heruntergeladen wird und gefährlich sein könnte</translation>
 <translation id="1953553007165777902">Wird heruntergeladen… Noch <ph name="MINUTE" /> Minute(n)</translation>
+<translation id="1965068424387304464">Chromium-Tipp: Passwörter speichern</translation>
 <translation id="1966382378801805537">Chromium kann den Standardbrowser nicht bestimmen oder festlegen</translation>
 <translation id="1990262977744080398">Gründe, warum Chromium einige Dateien blockiert (wird in neuem Tab geöffnet)</translation>
 <translation id="1999715455684970349">Hält deine Chromium-Software auf dem neuesten Stand. Wenn dieser Dienst deaktiviert oder angehalten wurde, wird deine Chromium-Software nicht mehr aktualisiert. Das bedeutet, dass eventuelle neue Sicherheitslücken nicht behoben werden können und einige Funktionen möglicherweise nicht funktionieren. Dieser Dienst deinstalliert sich automatisch, wenn er nicht von einer Chromium-Software verwendet wird.</translation>
@@ -252,6 +253,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="3802055581630249637">Chromium lädt Seiten vorab, die du wahrscheinlich besuchen wirst, sodass sie dann schneller zur Verfügung stehen</translation>
 <translation id="3810973564298564668">Verwalten</translation>
 <translation id="3823384748599722168">Wenn du deine gespeicherten Passwörter verwenden möchtest, scanne den QR-Code, lade Chromium für iOS herunter und melde dich in deinem Google-Konto an</translation>
+<translation id="3837584850181228767">Chromium-Tipp: erweitertes Safe Browsing</translation>
 <translation id="3846683726093018685">**Zusammenfassen:** Beschreibe in einem einzigen Satz mit weniger als 30 Wörtern das Hauptthema und den Zweck des Inhalts im Screenshot.
 
           **Fragen vorschlagen:** Erstelle eine Aufzählungsliste mit 3–5 Fragen, die ein Nutzer stellen könnte, um den Screenshot besser zu verstehen. Mindestens eine der Fragen sollte sich konkret auf ein visuelles Objekt, sein Design oder seine Platzierung beziehen.</translation>

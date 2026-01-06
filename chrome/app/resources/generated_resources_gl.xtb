@@ -1810,6 +1810,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="221297410904507041">Eliminar o historial de navegación, as cookies, a memoria caché e moito máis</translation>
 <translation id="2213410656650624348">Moderado</translation>
 <translation id="2214018885812055163">Cartafoles compartidos</translation>
+<translation id="2214453882118345682">Compra, traduce e identifica o que vexas mediante a cámara.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;Non se mostra 1 liña&gt;}other{&lt;Non se mostran <ph name="NUMBER_OF_LINES" /> liñas&gt;}}</translation>
 <translation id="2215070081105889450">Para compartir o audio, comparte unha pestana ou pantalla</translation>
 <translation id="2217208085547223783">Grao de fiabilidade</translation>
@@ -5722,6 +5723,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4864805589453749318">Indica se será o teu pai ou a túa nai quen che dará permiso para engadir unha conta de centro educativo.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (elemento bloqueado)</translation>
 <translation id="486505726797718946">Memoria aforrada</translation>
+<translation id="4865063548323785458">Garda e autocompleta os contrasinais para poder iniciar sesión facilmente nos sitios e nas aplicacións</translation>
 <translation id="486635084936119914">Abre determinados tipos de ficheiro automaticamente despois da descarga</translation>
 <translation id="4867272607148176509">Os pais poden aprobar ou bloquear as aplicación, establecer límites de tempo e controlar a navegación web. Máis tarde pódese engadir unha conta escolar para acceder á maioría dos recursos da escola.</translation>
 <translation id="4867433544163083783">Consultar agora se se poden organizar as pestanas</translation>
@@ -7617,7 +7619,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6194333736420234626">Métodos de pago</translation>
 <translation id="6195005504600220730">Consultar información sobre o teu navegador, sistema operativo e dispositivo</translation>
 <translation id="6195155925303302899">Centrar</translation>
-<translation id="6195163219142236913">Cookies de terceiros limitadas</translation>
 <translation id="6195693561221576702">Este dispositivo non se pode configurar no modo de demostración sen conexión.</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6196854373336333322">A extensión "<ph name="EXTENSION_NAME" />" asumiu o control da túa configuración de proxy, o que significa que pode cambiar, anular ou espiar todo o que fagas en liña. Se non estás seguro de por que se produciu este cambio, é probable que non che interese conservalo.</translation>
@@ -8384,7 +8385,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6731320427842222405">É posible que isto tarde uns minutos</translation>
 <translation id="6732956960067639542">Abre unha nova sesión do navegador Chrome.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (código: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Mostrar cookies e datos doutros sitios...</translation>
 <translation id="6736243959894955139">Enderezo</translation>
 <translation id="6737663862851963468">Quitar tícket de Kerberos</translation>
 <translation id="6738180164164974883">Permitir definir cookies de terceiros</translation>
@@ -11476,6 +11476,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="881799181680267069">Ocultar outras</translation>
 <translation id="8818152010000655963">Fondo de pantalla</translation>
 <translation id="8818988764764862764">A ventá moveuse cara á esquerda</translation>
+<translation id="8819155700324279105">Engade unha capa máis de protección contra as ameazas en liña</translation>
 <translation id="8819510664278523111">O EID do teu dispositivo é <ph name="EID_NUMBER" />, o IMEI é <ph name="IMEI_NUMBER" /> e o número de serie é <ph name="SERIAL_NUMBER" />. Estes números poden usarse para axudar a activar o servizo.</translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="8821045908425223359">Configurar enderezo IP automaticamente</translation>
@@ -12123,7 +12124,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="947329552760389097">&amp;Inspeccionar elementos</translation>
 <translation id="947526284350604411">A túa resposta</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> non pode abrir os ficheiros deste cartafol porque contén ficheiros do sistema</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome volverá limitar as cookies hoxe}=1{Chrome volverá limitar as cookies mañá}other{Faltan # días para que Chrome volva limitar as cookies}}</translation>
 <translation id="949807244219288032">Esta pestana está conectada a un dispositivo de interface humana</translation>
 <translation id="950079950995628542">De <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Guía de configuración</translation>

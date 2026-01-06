@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1183189057400844278">Pour toujours pouvoir utiliser les mots de passe de votre compte Google, confirmez votre identité</translation>
 <translation id="1187810343066461819">Supprimer aussi de cette voiture les favoris, l'historique et plus</translation>
-<translation id="1193589902336218259">Activer les notifications de conseils</translation>
 <translation id="1193729455103054076">Utiliser un mot de passe sécurisé ?</translation>
 <translation id="11947597112837849">adresse e-mail</translation>
 <translation id="1197267115302279827">Déplacer les favoris</translation>
@@ -995,7 +994,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5267572070504076962">Activez la navigation sécurisée pour vous protéger contre les sites dangereux</translation>
 <translation id="5271967389191913893">Impossible d'ouvrir le contenu à télécharger sur l'appareil.</translation>
 <translation id="5273031377282080577">Votre administrateur gère ce paramètre.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Désabonné d'un site inutilisé}one{Désabonné de # site inutilisé}other{Désabonné de # sites inutilisés}}</translation>
 <translation id="5292796745632149097">Envoyer sur</translation>
 <translation id="5301876394151419436">Vous êtes connecté en tant que <ph name="EMAIL" />. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="5304593522240415983">Champ obligatoire.</translation>
@@ -1586,7 +1584,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7612619742409846846">Connecté à Google en tant que</translation>
 <translation id="7612989789287281429">Connexion…</translation>
 <translation id="7619072057915878432">Échec du téléchargement du fichier "<ph name="FILE_NAME" />" en raison de l'échec du réseau.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Désabonné d'un site}one{Désabonné de # site}other{Désabonné de # sites}}</translation>
 <translation id="7626032353295482388">Bienvenue dans Chrome</translation>
 <translation id="7628417132421583481">Accéder au Gestionnaire de mots de passe</translation>
 <translation id="7630202231528827509">URL du fournisseur</translation>
@@ -1799,7 +1796,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8455675988389029454">Accédez à vos favoris, à vos mots de passe et plus encore sur tous vos appareils</translation>
 <translation id="8458413889418591446">Pour revenir rapidement aux sites que vous avez consultés, synchronisez votre historique et vos onglets</translation>
 <translation id="84594714173170813">Continuez d'utiliser les données Chrome de votre compte Google</translation>
-<translation id="8460448946170646641">Examinez les paramètres clés de confidentialité et de sécurité</translation>
+<translation id="8460448946170646641">Passez en revue les principaux paramètres de confidentialité et de sécurité</translation>
 <translation id="8473863474539038330">Adresses et autres</translation>
 <translation id="847433688444405067">Naviguez sur tous vos appareils</translation>
 <translation id="8477178913400731244">Supprimer les données</translation>

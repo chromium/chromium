@@ -1809,6 +1809,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="221297410904507041">Izbrišite istoriju, kolačiće, keš i drugo</translation>
 <translation id="2213410656650624348">Umereno</translation>
 <translation id="2214018885812055163">Deljeni direktorijumi</translation>
+<translation id="2214453882118345682">Kupujte, prevodite i identifikujte ono što vidite pomoću kamere.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 red nije prikazan&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> red nije prikazan&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> reda nisu prikazana&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> redova nije prikazano&gt;}}</translation>
 <translation id="2215070081105889450">Da biste delili zvuk, delite karticu ili ekran</translation>
 <translation id="2217208085547223783">Stepen pouzdanosti</translation>
@@ -5718,6 +5719,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4864805589453749318">Izaberite roditelja koji dodeljuje dozvolu za dodavanje školskog naloga.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blokirano)</translation>
 <translation id="486505726797718946">Memorija koju ste uštedeli</translation>
+<translation id="4865063548323785458">Čuvajte i automatski popunjavajte lozinke da biste se lako prijavljivali na sajtove i u aplikacije</translation>
 <translation id="486635084936119914">Automatski otvarajte određene tipove datoteka posle preuzimanja</translation>
 <translation id="4867272607148176509">Roditelji mogu da odobravaju ili blokiraju aplikacije, podešavaju vremenska ograničenja i kontrolišu pregledanje veba. Kasnije može da se doda i školski nalog za pristup većini školskih resursa.</translation>
 <translation id="4867433544163083783">Proverite da li kartice mogu da se organizuju</translation>
@@ -7615,7 +7617,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6194333736420234626">Načini plaćanja</translation>
 <translation id="6195005504600220730">Čitanje informacija o pregledaču, OS-u i uređaju</translation>
 <translation id="6195155925303302899">Centriraj</translation>
-<translation id="6195163219142236913">Kolačići treće strane su ograničeni</translation>
 <translation id="6195693561221576702">Ovaj uređaj ne može da se podesi u oflajn režimu demonstracije.</translation>
 <translation id="6196640612572343990">Blokiraj kolačiće treće strane</translation>
 <translation id="6196854373336333322">Dodatak „<ph name="EXTENSION_NAME" />“ je preuzeo kontrolu nad podešavanjima proksija, što znači da može da menja, prekida ili špijunira sve što radite onlajn. Ako niste sigurni zašto je došlo do ove promene, verovatno vam nije potrebna.</translation>
@@ -8386,7 +8387,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6731320427842222405">Ovo može da potraje par minuta</translation>
 <translation id="6732956960067639542">Otvorite novu sesiju Chrome pregledača.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Prikaži kolačiće i ostale podatke sa sajta...</translation>
 <translation id="6736243959894955139">Adresa</translation>
 <translation id="6737663862851963468">Uklonite Kerberos tiket</translation>
 <translation id="6738180164164974883">Dozvoli podešavanje kolačića treće strane</translation>
@@ -11482,6 +11482,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="881799181680267069">Sakrij druge</translation>
 <translation id="8818152010000655963">Pozadina</translation>
 <translation id="8818988764764862764">Prozor je pomeren ulevo</translation>
+<translation id="8819155700324279105">Dodajte još jedan nivo zaštite od onlajn pretnji</translation>
 <translation id="8819510664278523111">EID uređaja je <ph name="EID_NUMBER" />, IMEI uređaja je <ph name="IMEI_NUMBER" />, a serijski broj uređaja je <ph name="SERIAL_NUMBER" />. Ove brojeve možete da koristite da biste aktivirali uslugu.</translation>
 <translation id="8820817407110198400">Obeleživači</translation>
 <translation id="8821045908425223359">Automatski konfiguriši IP adresu</translation>
@@ -12129,7 +12130,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="947329552760389097">&amp;Proveri elemente</translation>
 <translation id="947526284350604411">Odgovor</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> ne može da otvori fajlove u ovom folderu jer on sadrži sistemske fajlove</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome će danas ponovo ograničiti kolačiće}=1{Chrome će sutra ponovo ograničiti kolačiće}one{# dan dok Chrome ponovo ne ograniči kolačiće}few{# dana dok Chrome ponovo ne ograniči kolačiće}other{# dana dok Chrome ponovo ne ograniči kolačiće}}</translation>
 <translation id="949807244219288032">Ova kartica je povezana sa HID uređajem</translation>
 <translation id="950079950995628542">Sa telefona <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Vodič za podešavanje</translation>

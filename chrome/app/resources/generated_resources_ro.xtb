@@ -1812,6 +1812,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="221297410904507041">Șterge istoricul, cookie-urile, memoria cache și altele</translation>
 <translation id="2213410656650624348">Moderată</translation>
 <translation id="2214018885812055163">Dosare comune</translation>
+<translation id="2214453882118345682">Cumpără, tradu și identifică ceea ce vezi cu camera foto.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;O linie nu este afișată&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> linii nu sunt afișate&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> de linii nu sunt afișate&gt;}}</translation>
 <translation id="2215070081105889450">Pentru a trimite conținut audio, permite accesul la o filă sau la un ecran</translation>
 <translation id="2217208085547223783">Starea de încredere</translation>
@@ -5719,6 +5720,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4864805589453749318">Selectează părintele care îți acordă permisiunea de a adăuga un cont de la școală.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blocat)</translation>
 <translation id="486505726797718946">Amintirea a fost salvată</translation>
+<translation id="4865063548323785458">Salvează și completează automat parolele pentru a te conecta cu ușurință la site-uri și aplicații</translation>
 <translation id="486635084936119914">Deschide automat anumite tipuri de fișiere după descărcare</translation>
 <translation id="4867272607148176509">Părinții pot să aprobe sau să blocheze aplicații, să seteze limite privind durata de folosire și să controleze navigarea pe web. Mai târziu se poate adăuga un cont de la școală pentru a accesa majoritatea resurselor de la școală.</translation>
 <translation id="4867433544163083783">Verifică dacă filele pot fi organizate</translation>
@@ -7616,7 +7618,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6194333736420234626">&amp;Metode de plată</translation>
 <translation id="6195005504600220730">Citește informații despre browserul, sistemul de operare și dispozitivul tău</translation>
 <translation id="6195155925303302899">Aliniază la centru</translation>
-<translation id="6195163219142236913">Cookie-uri terță parte limitate</translation>
 <translation id="6195693561221576702">Acest dispozitiv nu poate fi configurat în modul demo offline.</translation>
 <translation id="6196640612572343990">Blochează cookie-urile terță parte</translation>
 <translation id="6196854373336333322">Extensia „<ph name="EXTENSION_NAME" />” a preluat controlul asupra setărilor de proxy, ceea ce înseamnă că poate modifica, întrerupe sau intercepta tot ceea ce faci online. Dacă nu știi sigur de ce a apărut această modificare, probabil că nu ai aprobat-o.</translation>
@@ -8385,7 +8386,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6731320427842222405">Aceasta poate dura câteva minute</translation>
 <translation id="6732956960067639542">Deschide o nouă sesiune în browserul Chrome.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Afișează cookie-uri și alte date privind site-ul...</translation>
 <translation id="6736243959894955139">Adresă</translation>
 <translation id="6737663862851963468">Elimină un tichet Kerberos</translation>
 <translation id="6738180164164974883">Permite setarea cookie-urilor terță parte</translation>
@@ -11480,6 +11480,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="881799181680267069">Ascunde-le pe celelalte</translation>
 <translation id="8818152010000655963">Imaginea de fundal</translation>
 <translation id="8818988764764862764">Fereastra a fost mutată spre stânga</translation>
+<translation id="8819155700324279105">Adaugă un nivel suplimentar de protecție împotriva amenințărilor online</translation>
 <translation id="8819510664278523111">Numărul EID al dispozitivului este <ph name="EID_NUMBER" />, numărul IMEI al dispozitivului este <ph name="IMEI_NUMBER" />, iar numărul de serie al dispozitivului este <ph name="SERIAL_NUMBER" />. Aceste numere se pot folosi pentru activarea serviciului.</translation>
 <translation id="8820817407110198400">Marcaje</translation>
 <translation id="8821045908425223359">Configurează automat adresa IP</translation>
@@ -12127,7 +12128,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="947329552760389097">&amp;Inspectează elementele</translation>
 <translation id="947526284350604411">Răspunsul tău</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> nu poate deschide fișiere din acest dosar, deoarece conține fișiere de sistem</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome va limita din nou cookie-urile astăzi}=1{Chrome va limita din nou cookie-urile mâine}few{# zile până când Chrome va limita din nou cookie-urile}other{# de zile până când Chrome va limita din nou cookie-urile}}</translation>
 <translation id="949807244219288032">Această filă este conectată la un dispozitiv HID</translation>
 <translation id="950079950995628542">De pe <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Ghid de configurare</translation>

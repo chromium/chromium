@@ -188,11 +188,9 @@
 <translation id="2903493209154104877">住所</translation>
 <translation id="2910701580606108292">保護されたコンテンツの再生をサイトに許可する前に確認する</translation>
 <translation id="2918484639460781603">設定に移動</translation>
-<translation id="293060180538644702">Chrome のヒントの通知を受け取る</translation>
 <translation id="2932883381142163287">不正行為を報告</translation>
 <translation id="2939338015096024043">オンにすると、サイトはカメラ位置の追跡と周囲の状況の検出を要求できます。オフにすると、サイトはカメラ位置の追跡や周囲の状況の検出を行えません。</translation>
 <translation id="2968755619301702150">証明書ビューア</translation>
-<translation id="2979365474350987274">サードパーティ Cookie が制限されています</translation>
 <translation id="2990583317361835189">サイトにモーション センサーの使用を許可しない</translation>
 <translation id="3004438526346162184">サイトはこの機能を使用して、全ディスプレイのウィンドウを管理できます</translation>
 <translation id="3008272652534848354">権限をリセット</translation>
@@ -631,7 +629,6 @@
 <translation id="7835852323729233924">再生中のメディア</translation>
 <translation id="783819812427904514">動画のミュートを解除</translation>
 <translation id="7846076177841592234">選択解除</translation>
-<translation id="7881140103901777395">Chrome ではほとんどのサイトに対してサードパーティ Cookie の使用を制限しています。しかしこのサイトでは、基本的なサービスの提供に使用されているため、サードパーティ Cookie が許可されています。\n\n<ph name="BEGIN_LINK" />サードパーティ Cookie へのアクセスを管理する<ph name="END_LINK" />には、設定に移動してください。</translation>
 <translation id="7882806643839505685">特定のサイトに対して音声の再生を許可します。</translation>
 <translation id="7891547341794213004">[このタブを続行] カードを非表示にする</translation>
 <translation id="789722939441020330">サイトに複数のファイルの自動ダウンロードを許可しない</translation>

@@ -114,7 +114,6 @@
 <translation id="1178581264944972037">Түр зогсоох</translation>
 <translation id="1178821169867863726">12 x 16 инч</translation>
 <translation id="1181037720776840403">Хасах</translation>
-<translation id="1181381397492575884">Chrome сайтуудыг таныг үзэхэд хянах гуравдагч талын күүкинүүдийг ашиглахыг блоклоно. <ph name="LINK" />-н тохиргоонд зочилно уу.</translation>
 <translation id="1185331130467528132"><ph name="URL" /> таны дотоод сүлжээн дээрх бусад төхөөрөмжид хандахыг хүсэж байна</translation>
 <translation id="1185343831726846924">Виртуал картыг асаах боломжгүйг баталгаажуулж байна</translation>
 <translation id="1186201132766001848">Нууц үгийг шалгах</translation>
@@ -227,7 +226,6 @@
 <translation id="1343830902827845050">Chrome-д нэвтрэх</translation>
 <translation id="1346748346194534595">Баруун</translation>
 <translation id="1348779747280417563">Нэрийг баталгаажуулах</translation>
-<translation id="1352798470428594123">Chrome таныг үзэх үед хянахын тулд ихэнх сайтыг гуравдагч талын күүкиг ашиглахыг хязгаарлана. <ph name="LINK" />-н тохиргоонд зочилно уу.</translation>
 <translation id="1355158069018170842">Үнэ хямдарсан мэдээллийг таб дээр харуулах</translation>
 <translation id="1355301061807280185">Ажил</translation>
 <translation id="1357195169723583938">Энэ төхөөрөмжийг саяхан хэн, хэзээ ашигласан бэ?</translation>
@@ -1110,7 +1108,6 @@
 <translation id="2768397283109119044">Та <ph name="DOMAIN" />-д холбогдохоор оролдсон хэдий ч сервер тухайн нэрд өгсөн хүчингүй сертификатыг үзүүлсэн. Нэр нь хадгалсан IP хаяг эсвэл дотоод хостын нэр байна.</translation>
 <translation id="2770159525358613612">Файлуудаа дахин байршуулж үзнэ үү</translation>
 <translation id="277133753123645258">Хүргэлтийн арга</translation>
-<translation id="2773388851563527404">Chrome ихэнх сайтыг гуравдагч талын күүкинүүдийг ашиглахыг хязгаарлана. Гэхдээ энэ сайт үндсэн үйлчилгээнүүдээр хангахад гуравдагч талын күүкинүүдэд тулгуурладаг тул түүнд эдгээрийг зөвшөөрдөг. <ph name="LINK" />-н тохиргоонд зочилно уу.</translation>
 <translation id="277499241957683684">Орхигдсон төхөөрөмж нь бичлэг</translation>
 <translation id="2775884851269838147">Эхний хуудсыг хэвлэх</translation>
 <translation id="2781185443919227679">Далайн эрэг, арлууд</translation>
@@ -1715,7 +1712,6 @@
 <translation id="3727309136762649052">Нэршил</translation>
 <translation id="3727850735097852673">Google Password Manager-г macOS Keychain-тэй ашиглахын тулд Chrome-г дахин ачаалж, Keychain-н хандалтыг зөвшөөрнө үү. Дахин ачаалсны дараа таны табуудыг дахин нээнэ.</translation>
 <translation id="3728173127485570463">Chrome хөтөч цаашид нууц үгнүүдийг автоматаар бөглөхөд хурууны хээг тань шаардахгүй</translation>
-<translation id="3736739313435669994">Таныг үзэх үед хянахын тулд гуравдагч талын күүкиг ашиглахыг сайтуудаас блоклосон. <ph name="LINK" />-н тохиргоонд зочилно уу.</translation>
 <translation id="3738166223076830879">Танай администратор хөтчийг тань удирддаг.</translation>
 <translation id="3739842843727261045">Сайн тэмдэглэгээ нь танд эдгээр илэрц таалагдсан талаарх санал хүсэлтийг илгээнэ</translation>
 <translation id="3740447166056383374">Хуулахаас өмнө шалгах шаардлагатай</translation>
@@ -2149,7 +2145,6 @@
 <translation id="4406883609789734330">Шууд тайлбар</translation>
 <translation id="4406896451731180161">Хайлтын үр дүн</translation>
 <translation id="4407758156081352648">Танай байгууллага аюулгүй байдлыг хадгалахын тулд нууц үгийг Chrome-д дахин ашиглахыг зөвшөөрдөггүй. Chrome дахь нууц үгийг хэрэглэгчийн нууцлалыг хамгаалахын тулд шифрлэдэг.</translation>
-<translation id="4408413947728134509"><ph name="NUM_COOKIES" /> күүки</translation>
 <translation id="4409556632583862731">Шинэ уялдаат</translation>
 <translation id="4412074349188076601">Энэ тохируулгыг суулгах боломжтой гэж тэмдэглэсэн хэдий ч энэ архитектурт ямар ч системийн хуулбар олгоогүй тул үүнийг суулгах боломжгүй.</translation>
 <translation id="4412377069090572315">Хүмүүс юу гэж байна вэ?</translation>
@@ -2537,7 +2532,6 @@
 <translation id="5061227663725596739">Та <ph name="LOOKALIKE_DOMAIN" />-г хайсан уу?</translation>
 <translation id="5066056036849835175">Хэвлэлийн түүх</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1-г ашиглаж байгаа)}other{(#-г ашиглаж байгаа)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Прокси хаягийг шалгаж байна<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Арав дахь хуйлмал</translation>
 <translation id="507130231501693183">Шуудангийн хайрцаг 4</translation>
@@ -3046,7 +3040,6 @@
 <translation id="5918373444239520146">Гаджет болон зөөврийн цахилгаан багаж</translation>
 <translation id="5918847752193018339">Таны карт баталгаажуулалтын кодыг хадгалсан үед тооцоог илүү хурдан хийнэ үү. <ph name="LINK_BEGIN" />Хадгалсан аюулгүй байдлын кодуудыг устгах<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1-г ашиглаж байгаа}other{# ашиглаж байгаа}}</translation>
 <translation id="5921185718311485855">Асаалттай</translation>
 <translation id="5921639886840618607">Картыг Google Account-д хадгалах уу?</translation>
 <translation id="5921952831792678223">Пикап ачааны машинууд</translation>
@@ -3226,7 +3219,6 @@
 <translation id="6194209731893739467">Хянаж буй бүх бүтээгдэхүүнээ эндээс харна уу</translation>
 <translation id="6195371403461054755">Геологи</translation>
 <translation id="6195418151868446719">Гэр ахуйн цахилгаан бараанууд</translation>
-<translation id="6196640612572343990">Гуравдагч талын күүкиг блоклох</translation>
 <translation id="6197648101609735209">89 x 89 мм</translation>
 <translation id="6198480336395236519">Бүрэн нээлттэй хавтас</translation>
 <translation id="6203231073485539293">Та интернэтийн холболтоо шалгана уу</translation>
@@ -3722,7 +3714,6 @@
 <translation id="6978121630131642226">Хайлтын систем</translation>
 <translation id="6978236010531171013">Ямартай ч хуваалцах</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979302985396162258">гуравдагч талын күүкинүүдийн хандалтыг удирдах</translation>
 <translation id="6979440798594660689">Дууг хаах (өгөгдмөл)</translation>
 <translation id="6987806006823772670">Дугтуй (бүрсэн)</translation>
 <translation id="6989256887001961296">Энэ контентыг блоклосон байна.</translation>
@@ -4735,7 +4726,6 @@
 <translation id="8622864575115813231">Таны санхүүгийн байгууллагатай холбогдож байна...</translation>
 <translation id="8624354461147303341">Хөнгөлөлт авах</translation>
 <translation id="8634957317623797170">54 x 86 мм</translation>
-<translation id="8635822281281406185">10 хүртэлх файл, таб, зураг нэмнэ үү</translation>
 <translation id="8637362707224133343">Chrome-д Google-н аюулгүй хөтөч зэрэг таныг үзэж байхад хамгаалах аюулгүй байдлын бүрэлдэхүүн онцлогууд байдаг бөгөөд эдгээр онцлог таны зочлохоор оролдсон сайт дээрээс <ph name="BEGIN_LINK" />саяхан фишинг олсон<ph name="END_LINK" />. Фишингийн сайтууд таныг хуурахын тулд өөр сайт болж дүр эсгэдэг.<ph name="NEW_LINE" />Ихэвчлэн аюулгүй байдаг сайт хүртэл зарим тохиолдолд халдагчдын халдлагад өртдөг. Хэрэв та алдаа гарсан бөгөөд энэ сайт аюулгүй гэж үзэж байвал <ph name="BEGIN_ERROR_LINK" />бидэнд мэдэгдэнэ үү<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">Та бусад хүнтэй таб хуваалцах, хамтран ажиллахын тулд Chrome-д нэвтрэх боломжтой байх ёстой</translation>
 <translation id="8641131559425911240">Дугтуй (бонд)</translation>
@@ -5116,7 +5106,6 @@
 <translation id="945673208656386843">Энэ картыг уг төхөөрөмж дээр хадгалсан үед Chromium-д хийсэн худалдан авалтад зориулж автоматаар бөглөнө үү</translation>
 <translation id="94613679163347541"><ph name="CATEGORY" />-г харьцуулах уу?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Сайтад шинэ сайт шуурхай үүсгэхийн тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome күүкинүүдийг өнөөдөр дахин хязгаарлана}=1{Chrome күүкинүүдийг өнөөдөр дахин хязгаарлана}other{Chrome күүкинүүдийг дахин хязгаарлах хүртэл # хоног үлдсэн}}</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> гишүүн "<ph name="GROUP_NAME" />" табын бүлэгт нэгдсэн</translation>
 <translation id="949314938206378263">Та энэ сайтад зочлохыг хүссэн. Таны эцэг эх Family Link-д хариу бичих боломжтой.</translation>
 <translation id="950736567201356821">Баруун дээд буланд гурван нүх цоолох</translation>

@@ -114,7 +114,6 @@
 <translation id="1178581264944972037">થોભો</translation>
 <translation id="1178821169867863726">12 x 16 ઇંચ</translation>
 <translation id="1181037720776840403">કાઢી નાખો</translation>
-<translation id="1181381397492575884">Chrome વિવિધ સાઇટને તમે બ્રાઉઝ કરો ત્યારે તમને ટ્રૅક કરવા માટે ત્રીજા પક્ષની કુકીનો ઉપયોગ કરવાથી બ્લૉક કરે છે. <ph name="LINK" /> માટે સેટિંગની મુલાકાત લો.</translation>
 <translation id="1185331130467528132"><ph name="URL" /> તમારા સ્થાનિક નેટવર્ક પરના અન્ય ડિવાઇસ ઍક્સેસ કરવા માગે છે</translation>
 <translation id="1185343831726846924">વર્ચ્યુઅલ કાર્ડ ચાલુ કરી શકાતું નથી તે કન્ફર્મ કરી રહ્યાં છીએ</translation>
 <translation id="1186201132766001848">પાસવર્ડ ચેક કરો</translation>
@@ -227,7 +226,6 @@
 <translation id="1343830902827845050">Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="1346748346194534595">જમણે</translation>
 <translation id="1348779747280417563">નામ કન્ફર્મ કરો</translation>
-<translation id="1352798470428594123">તમે બ્રાઉઝ કરો ત્યારે તમને ટ્રૅક કરવા માટે Chrome મોટાભાગની સાઇટને ત્રીજા પક્ષની કુકીનો ઉપયોગ કરવાથી મર્યાદિત કરે છે. <ph name="LINK" /> માટે સેટિંગની મુલાકાત લો.</translation>
 <translation id="1355158069018170842">કિંમતમાં ઘટાડા ટૅબ પર બતાવો</translation>
 <translation id="1355301061807280185">નોકરીઓ</translation>
 <translation id="1357195169723583938">તાજેતરમાં ડિવાઇસનો ઉપયોગ કોણે કર્યો છે અને ક્યારે</translation>
@@ -1110,7 +1108,6 @@
 <translation id="2768397283109119044">તમે <ph name="DOMAIN" /> પર પહોંચવાનો પ્રયાસ કર્યો, પરંતુ સર્વરે એ નામ પર જારી કરાયેલું અમાન્ય સર્ટિફિકેટ પ્રસ્તુત કર્યું. આ નામ આરક્ષિત IP ઍડ્રેસ કે આંતરિક હોસ્ટનું નામ છે.</translation>
 <translation id="2770159525358613612">તમારી ફાઇલોને ફરીથી અપલોડ કરવાનો પ્રયાસ કરો</translation>
 <translation id="277133753123645258">વિતરણ પદ્ધતિ</translation>
-<translation id="2773388851563527404">Chrome, મોટા ભાગની સાઇટને ત્રીજા પક્ષની કુકીનો ઉપયોગ કરી શકવાથી પ્રતિબંધિત કરે છે. પરંતુ આ સાઇટ પર ત્રીજા પક્ષની કુકીને મંજૂરી આપવામાં આવે છે કારણ કે મૂળભૂત સેવાઓ પ્રદાન કરવા માટે તે સાઇટ આના પર આધાર રાખે છે. <ph name="LINK" /> માટે સેટિંગની મુલાકાત લો.</translation>
 <translation id="277499241957683684">ઉપકરણ રેકોર્ડ ખૂટે છે</translation>
 <translation id="2775884851269838147">પહેલાં પેજ પ્રિન્ટ કરો</translation>
 <translation id="2781185443919227679">દરિયાકાંઠા અને ટાપુઓ</translation>
@@ -1714,7 +1711,6 @@
 <translation id="3727309136762649052">Namespace</translation>
 <translation id="3727850735097852673">macOS કીચેન સાથે Google Password Managerનો ઉપયોગ કરવા માટે, Chromeને ફરીથી લૉન્ચ કરો અને કીચેનના ઍક્સેસની મંજૂરી આપો. ફરીથી લૉન્ચ થયા પછી, તમારા ટૅબ ફરીથી ખૂલશે.</translation>
 <translation id="3728173127485570463">પાસવર્ડ ઑટોમૅટિક રીતે ભરવા માટે Chrome બ્રાઉઝરને હવેથી તમારી ફિંગરપ્રિન્ટની જરૂર નથી</translation>
-<translation id="3736739313435669994">તમે બ્રાઉઝ કરો ત્યારે તમને ટ્રૅક કરવા માટે ત્રીજા પક્ષની કુકીનો ઉપયોગ કરવાથી તમે સાઇટને બ્લૉક કરી છે. <ph name="LINK" /> માટે સેટિંગની મુલાકાત લો.</translation>
 <translation id="3738166223076830879">તમારા વ્યવસ્થાપક દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે.</translation>
 <translation id="3739842843727261045">થમ્બ્સ અપ, આ પરિણામો તમને પસંદ આવ્યા એવો પ્રતિસાદ સબમિટ કરે છે</translation>
 <translation id="3740447166056383374">કૉપિ કરતા પહેલાં રિવ્યૂ કરવો આવશ્યક છે</translation>
@@ -2148,7 +2144,6 @@
 <translation id="4406883609789734330">લાઇવ કૅપ્શન</translation>
 <translation id="4406896451731180161">શોધ પરિણામો</translation>
 <translation id="4407758156081352648">સુરક્ષા જાળવવા માટે, તમારી સંસ્થા Chromeમાં પાસવર્ડનો ફરીથી ઉપયોગ કરવાની મંજૂરી આપતી નથી. વપરાશકર્તાની પ્રાઇવસીની સુરક્ષા માટે Chromeમાં પાસવર્ડ એન્ક્રિપ્ટ કરવામાં આવે છે.</translation>
-<translation id="4408413947728134509">કુકી <ph name="NUM_COOKIES" /></translation>
 <translation id="4409556632583862731">નવો થ્રેડ</translation>
 <translation id="4412074349188076601">આ કન્ફિગ્યુરેશન ઇન્સ્ટૉલ કરવા યોગ્ય તરીકે માર્ક કરેલું છે, પરંતુ આ આર્કિટેક્ચર માટે કોઈ છબી પ્રદાન કરવામાં આવી નથી, તેથી તેને ઇન્સ્ટૉલ કરી શકાશે નહીં.</translation>
 <translation id="4412377069090572315">લોકો શું કહી રહ્યાં છે</translation>
@@ -2536,7 +2531,6 @@
 <translation id="5061227663725596739">શું તમારો અર્થ <ph name="LOOKALIKE_DOMAIN" /> હતો?</translation>
 <translation id="5066056036849835175">પ્રિન્ટનો ઇતિહાસ</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 ઉપયોગમાં છે)}one{(# ઉપયોગમાં છે)}other{(# ઉપયોગમાં છે)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />પ્રૉક્સી ઍડ્રેસ ચેક કરવાનો પ્રયાસ કરો<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">દસમો રોલ</translation>
 <translation id="507130231501693183">મેઇલબૉક્સ 4</translation>
@@ -3045,7 +3039,6 @@
 <translation id="5918373444239520146">ગૅજેટ અને નાના ઇલેક્ટ્રોનિક ડિવાઇસ</translation>
 <translation id="5918847752193018339">તમારા CVCs સાચવેલા હોય ત્યારે ઝડપથી ચેકઆઉટ કરી શકાય છે. <ph name="LINK_BEGIN" />સાચવેલા સુરક્ષા કોડ ડિલીટ કરો<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 ઉપયોગમાં છે}one{# ઉપયોગમાં છે}other{# ઉપયોગમાં છે}}</translation>
 <translation id="5921185718311485855">ચાલુ</translation>
 <translation id="5921639886840618607">Google એકાઉન્ટમાં કાર્ડ સાચવીએ?</translation>
 <translation id="5921952831792678223">પિકઅપ ટ્રક</translation>
@@ -3226,7 +3219,6 @@
 <translation id="6194209731893739467">તમારી ટ્રૅક કરેલી બધી પ્રોડક્ટ અહીં જુઓ</translation>
 <translation id="6195371403461054755">ભૂસ્તરશાસ્ત્ર</translation>
 <translation id="6195418151868446719">કન્ઝ્યુમર ઇલેક્ટ્રોનિક</translation>
-<translation id="6196640612572343990">ત્રીજા પક્ષની કુકીને બ્લૉક કરો</translation>
 <translation id="6197648101609735209">89 x 89 મિમી</translation>
 <translation id="6198480336395236519">પૂર્ણ કટ ટૅબ</translation>
 <translation id="6203231073485539293">તમારું ઇન્ટરનેટ કનેક્શન તપાસો</translation>
@@ -3722,7 +3714,6 @@
 <translation id="6978121630131642226">શોધ એન્જિન</translation>
 <translation id="6978236010531171013">કોઈપણ રીતે શેર કરો</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979302985396162258">ત્રીજા પક્ષની કુકીના ઍક્સેસને મેનેજ કરો</translation>
 <translation id="6979440798594660689">મ્યૂટ કરો (ડિફૉલ્ટ)</translation>
 <translation id="6987806006823772670">એન્વેલોપ (કોટેડ)</translation>
 <translation id="6989256887001961296">આ કન્ટેન્ટ બ્લૉક કરવામાં આવ્યું છે.</translation>
@@ -4736,7 +4727,6 @@
 <translation id="8622864575115813231">તમારી નાણાકીય સંસ્થાનો સંપર્ક કરી રહ્યાં છીએ...</translation>
 <translation id="8624354461147303341">છૂટ મેળવો</translation>
 <translation id="8634957317623797170">54 x 86 મિમી</translation>
-<translation id="8635822281281406185">વધુમાં વધુ 10 ફાઇલ, ટૅબ અથવા છબી ઉમેરો</translation>
 <translation id="8637362707224133343">તમે બ્રાઉઝ કરી રહ્યાં હો એ દરમિયાન તમને સુરક્ષિત રાખવા માટે Chrome બિલ્ટ ઇન સલામતી સંબંધી સુવિધાઓ ધરાવે છે — જેમ કે Google Safe Browsing, જે સુવિધાએ તમે જેની મુલાકાત લેવાનો પ્રયાસ કર્યો હતો તે સાઇટ પર <ph name="BEGIN_LINK" />તાજેતરમાં ફિશિંગ શોધ્યું<ph name="END_LINK" /> હતું. ફિશિંગ સાઇટ તમને ફસાવવા માટે કોઈ અન્ય સાઇટ હોવાનો ઢોંગ કરે છે.<ph name="NEW_LINE" />ઘણીવાર સામાન્ય રીતે સુરક્ષિત ગણાતી સાઇટ પર પણ અટૅક કરનારા લોકો દ્વારા ચેડાં કરવામાં આવી શકે છે. જો તમે માનતા હો કે આ કોઈ ભૂલ છે અને આ સાઇટ કોઈ રીતે જોખમી નથી, તો <ph name="BEGIN_ERROR_LINK" />અમને જણાવો<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">અન્ય લોકો સાથે ટૅબ શેર કરવા અને સહયોગ કરવા માટે, તમારે Chromeમાં સાઇન ઇન કરવું જરૂરી છે</translation>
 <translation id="8641131559425911240">એન્વેલોપ (બોન્ડ)</translation>
@@ -5117,7 +5107,6 @@
 <translation id="945673208656386843">જ્યારે આ ડિવાઇસ પર આ કાર્ડની માહિતી સાચવેલી હોય, ત્યારે Chromiumમાં કરેલી ખરીદીઓ માટે તેને ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="94613679163347541"><ph name="CATEGORY" />ની સરખામણી કરીએ?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sitesમાં ઝડપથી કોઈ નવી સાઇટ બનાવવા માટે, પહેલાં Tab પછી Enter કી દબાવો</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome આજે ફરી કુકીને મર્યાદિત કરશે}=1{Chrome આવતીકાલે ફરી કુકીને મર્યાદિત કરશે}one{Chrome # દિવસમાં કુકીને ફરીથી મર્યાદિત કરશે}other{Chrome # દિવસમાં કુકીને ફરીથી મર્યાદિત કરશે}}</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> સભ્યો "<ph name="GROUP_NAME" />" ટૅબના ગ્રૂપમાં જોડાયા</translation>
 <translation id="949314938206378263">તમે આ સાઇટની મુલાકાત લેવા કહ્યું. તમારા માતાપિતા Family Linkમાં જવાબ આપી શકે છે.</translation>
 <translation id="950736567201356821">ઉપરની બાજુએ ત્રણ કાણાં પાડો</translation>

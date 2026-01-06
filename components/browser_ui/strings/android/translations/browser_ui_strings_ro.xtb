@@ -188,11 +188,9 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="2903493209154104877">Adrese</translation>
 <translation id="2910701580606108292">Întreabă înainte de a permite site-urilor să redea conținut protejat</translation>
 <translation id="2918484639460781603">Accesați setările</translation>
-<translation id="293060180538644702">Primește notificări cu sfaturi pentru Chrome</translation>
 <translation id="2932883381142163287">Raportează un abuz</translation>
 <translation id="2939338015096024043">Când opțiunea este activată, site-urile pot solicita permisiunea de a urmări poziția camerei și de a afla informații despre împrejurimile tale. Când opțiunea este dezactivată, site-urile nu pot să urmărească poziția camerei sau să afle informații despre împrejurimile tale.</translation>
 <translation id="2968755619301702150">Vizualizator de certificate</translation>
-<translation id="2979365474350987274">Cookie-urile terță parte sunt limitate</translation>
 <translation id="2990583317361835189">Nu permite site-urilor să folosească senzori de mișcare</translation>
 <translation id="3004438526346162184">Site-urile pot folosi această funcție pentru a gestiona ferestre pe toate ecranele</translation>
 <translation id="3008272652534848354">Resetează permisiunile</translation>
@@ -631,7 +629,6 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="7835852323729233924">Se redă conținutul media</translation>
 <translation id="783819812427904514">Activează sunetul videoclipului</translation>
 <translation id="7846076177841592234">Anulează selecția</translation>
-<translation id="7881140103901777395">Chrome restricționează folosirea cookie-urilor terță parte pentru majoritatea site-urilor. Totuși, cookie-urile terță parte sunt permise pe acest site, deoarece se bazează pe ele ca să ofere servicii de bază.\n\nAccesează setările pentru a <ph name="BEGIN_LINK" />gestiona accesul la cookie-urile terță parte<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Permite sunetul pentru un anumit site.</translation>
 <translation id="7891547341794213004">Ascunde cardul Continuă cu această filă</translation>
 <translation id="789722939441020330">Nu permite site-urilor să descarce automat mai multe fișiere</translation>

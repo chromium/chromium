@@ -114,7 +114,6 @@
 <translation id="1178581264944972037">השהיה</translation>
 <translation id="1178821169867863726">‏12x16 אינץ'</translation>
 <translation id="1181037720776840403">הסרה</translation>
-<translation id="1181381397492575884">‏Chrome מונע מאתרים לעשות שימוש בקובצי Cookie של צד שלישי כדי לעקוב אחריך במהלך הגלישה. אפשר <ph name="LINK" /> בהגדרות.</translation>
 <translation id="1185331130467528132">האתר <ph name="URL" /> רוצה להתחבר למכשירים אחרים ברשת המקומית</translation>
 <translation id="1185343831726846924">לא ניתן להפעיל את אישור הכרטיס הווירטואלי</translation>
 <translation id="1186201132766001848">בדיקת הסיסמאות</translation>
@@ -227,7 +226,6 @@
 <translation id="1343830902827845050">‏כניסה ל-Chrome</translation>
 <translation id="1346748346194534595">ימינה</translation>
 <translation id="1348779747280417563">אישור השם</translation>
-<translation id="1352798470428594123">‏ב-Chrome יש הגבלה על השימוש של רוב האתרים בקובצי cookie של צד שלישי לצורך מעקב אחריך במהלך הגלישה. אפשר <ph name="LINK" /> בהגדרות.</translation>
 <translation id="1355158069018170842">הצגת הנחות בכרטיסיות</translation>
 <translation id="1355301061807280185">משרות</translation>
 <translation id="1357195169723583938">מי השתמש במכשיר לאחרונה ומתי</translation>
@@ -1110,7 +1108,6 @@
 <translation id="2768397283109119044">‏ניסית להגיע אל <ph name="DOMAIN" />, אך השרת הציג אישור לא תקין שהונפק לשם הזה. השם הוא כתובת IP שמורה או שם מארח פנימי.</translation>
 <translation id="2770159525358613612">רוצה לנסות שוב להעלות את הקבצים?</translation>
 <translation id="277133753123645258">שיטת משלוח</translation>
-<translation id="2773388851563527404">‏Chrome מגביל את השימוש בקובצי Cookie של צד שלישי ברוב האתרים. עם זאת, קובצי Cookie של צד שלישי מותרים באתר הזה כי הוא מסתמך עליהם לאספקת שירותים בסיסיים. אפשר <ph name="LINK" /> בהגדרות.</translation>
 <translation id="277499241957683684">חסרה רשומת מכשיר</translation>
 <translation id="2775884851269838147">דף מודפס ראשון</translation>
 <translation id="2781185443919227679">חופים ואיים</translation>
@@ -1714,7 +1711,6 @@
 <translation id="3727309136762649052">מרחב שמות</translation>
 <translation id="3727850735097852673">‏כדי להשתמש במנהל הסיסמאות של Google עם מערכת 'צרור מפתחות של macOS', צריך להפעיל מחדש את Chrome ולהתיר גישה אל 'צרור מפתחות'. הכרטיסיות ייפתחו מחדש אחרי ההפעלה.</translation>
 <translation id="3728173127485570463">‏דפדפן Chrome לא ידרוש יותר את טביעת האצבע שלך כדי למלא אוטומטית סיסמאות</translation>
-<translation id="3736739313435669994">‏חסמת אתרים כך שלא יוכלו להשתמש בקובצי cookie של צד שלישי כדי לעקוב אחריך במהלך הגלישה. אפשר <ph name="LINK" /> בהגדרות.</translation>
 <translation id="3738166223076830879">הדפדפן מנוהל על ידי מנהל המערכת</translation>
 <translation id="3739842843727261045">בסימון לייק, נשלח משוב שאהבת את התוצאות האלה</translation>
 <translation id="3740447166056383374">נדרשת בדיקה לפני ההעתקה</translation>
@@ -2148,7 +2144,6 @@
 <translation id="4406883609789734330">כתוביות מיידיות</translation>
 <translation id="4406896451731180161">תוצאות חיפוש</translation>
 <translation id="4407758156081352648">‏מטעמי אבטחה, הארגון שלך לא מאפשר שימוש חוזר בסיסמאות ב-Chrome. הסיסמאות ב-Chrome מוצפנות כדי להגן על פרטיות המשתמשים.</translation>
-<translation id="4408413947728134509">‏קובצי Cookie <ph name="NUM_COOKIES" /></translation>
 <translation id="4409556632583862731">שרשור חדש</translation>
 <translation id="4412074349188076601">ההגדרה הזו מסומנת כניתנת להתקנה, אבל אין תמונה לארכיטקטורה הזו, לכן לא ניתן להתקין אותה.</translation>
 <translation id="4412377069090572315">מה אנשים אומרים</translation>
@@ -2540,7 +2535,6 @@ Del</translation>
 <translation id="5061227663725596739">האם התכוונת ל-<ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">היסטוריית הדפסות</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(אחד נמצא בשימוש)}one{(# נמצאים בשימוש)}two{(# נמצאים בשימוש)}other{(# נמצאים בשימוש)}}</translation>
 <translation id="5070335125961472645">‏<ph name="BEGIN_LINK" />לבדוק את כתובת שרת ה-Proxy<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">גליל עשירי</translation>
 <translation id="507130231501693183">תיבת דואר 4</translation>
@@ -3050,7 +3044,6 @@ Del</translation>
 <translation id="5918373444239520146">גאדג'טים ומכשירים נישאים</translation>
 <translation id="5918847752193018339">‏התשלום מהיר יותר כשקודי האימות (CVC) שמורים. <ph name="LINK_BEGIN" />מחיקת קודי האבטחה שנשמרו<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{אחד נמצא בשימוש}one{# נמצאים בשימוש}two{שניים נמצאים בשימוש}other{# נמצאים בשימוש}}</translation>
 <translation id="5921185718311485855">מופעל</translation>
 <translation id="5921639886840618607">‏לשמור את הכרטיס בחשבון Google?</translation>
 <translation id="5921952831792678223">טנדרים</translation>
@@ -3231,7 +3224,6 @@ Del</translation>
 <translation id="6194209731893739467">כאן יופיעו כל המוצרים שבמעקב</translation>
 <translation id="6195371403461054755">גיאולוגיה</translation>
 <translation id="6195418151868446719">מוצרי חשמל</translation>
-<translation id="6196640612572343990">‏חסימת קובצי Cookie של צד שלישי</translation>
 <translation id="6197648101609735209">‏89x89 מ"מ</translation>
 <translation id="6198480336395236519">Full Cut Tabs</translation>
 <translation id="6203231073485539293">בדיקת חיבור האינטרנט</translation>
@@ -3727,7 +3719,6 @@ Del</translation>
 <translation id="6978121630131642226">מנועי חיפוש</translation>
 <translation id="6978236010531171013">אני רוצה לשתף בכל זאת</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979302985396162258">‏ניהול הגישה לקובצי Cookie של צד שלישי</translation>
 <translation id="6979440798594660689">השתקה (ברירת מחדל)</translation>
 <translation id="6987806006823772670">Envelope (Coated)</translation>
 <translation id="6989256887001961296">התוכן הזה חסום.</translation>
@@ -4741,7 +4732,6 @@ Del</translation>
 <translation id="8622864575115813231">המערכת יוצרת קשר עם המוסד הפיננסי שלך…</translation>
 <translation id="8624354461147303341">לקבלת הנחות</translation>
 <translation id="8634957317623797170">‏54x86 מ"מ</translation>
-<translation id="8635822281281406185">אפשר להוסיף עד 10 קבצים, כרטיסיות או תמונות</translation>
 <translation id="8637362707224133343">‏ב-Chrome יש תכונות בטיחות מובנות שנועדו להגן עליך במהלך הגלישה, למשל הגלישה הבטוחה של Google, ש<ph name="BEGIN_LINK" />מצאה לאחרונה פישינג<ph name="END_LINK" /> באתר שבו ניסית לבקר. אתרי פישינג מתחזים לאתרים אחרים כדי להטעות אותך.<ph name="NEW_LINE" />גם אתרים שבדרך כלל נחשבים לבטוחים נפרצים לפעמים על ידי תוקפים. <ph name="BEGIN_ERROR_LINK" />חשוב לנו לדעת<ph name="END_ERROR_LINK" /> אם לדעתך מדובר בטעות והאתר לא מהווה סכנה.</translation>
 <translation id="8640996933372643759">‏כדי לשתף כרטיסיות ולעבוד עם אנשים אחרים, צריכה להיות לך הרשאה להיכנס ל-Chrome</translation>
 <translation id="8641131559425911240">Envelope (Bond)</translation>
@@ -5122,7 +5112,6 @@ Del</translation>
 <translation id="945673208656386843">‏אפשר למלא באופן אוטומטי את פרטי הכרטיס הזה לביצוע רכישות ב-Chromium כששומרים אותו במכשיר הזה</translation>
 <translation id="94613679163347541">להשוות את הקטגוריה <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940">‏<ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי ליצור במהירות אתר חדש ב-Google Sites</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{‏קובצי cookie יוגבלו היום שוב ב-Chrome}=1{‏קובצי cookie יוגבלו מחר שוב ב-Chrome}one{‏יש עוד # ימים עד שקובצי cookie יוגבלו שוב ב-Chrome}two{‏יש עוד יומיים עד שקובצי cookie יוגבלו שוב ב-Chrome}other{‏יש עוד # ימים עד שקובצי cookie יוגבלו שוב ב-Chrome}}</translation>
 <translation id="949026252328034572">‫<ph name="MEMBER_COUNT" /> משתמשים הצטרפו לקבוצת הכרטיסיות "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">‏ביקשת לבקר באתר הזה. להורה שלך יש אפשרות לענות ב-Family Link.</translation>
 <translation id="950736567201356821">3 ניקובים בחלק העליון</translation>

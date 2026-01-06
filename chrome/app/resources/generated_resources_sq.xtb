@@ -1808,6 +1808,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="221297410904507041">Fshi historikun, kukit, memorien specifike etj.</translation>
 <translation id="2213410656650624348">Mesatar</translation>
 <translation id="2214018885812055163">Dosjet e ndara</translation>
+<translation id="2214453882118345682">Bli, përkthe dhe identifiko ato që shikon me kamerën tënde.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 rresht nuk shfaqet&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> rreshta nuk shfaqen&gt;}}</translation>
 <translation id="2215070081105889450">Për të ndarë audion, ndaj një skedë ose ekranin më mirë</translation>
 <translation id="2217208085547223783">Gjendja e besimit</translation>
@@ -5717,6 +5718,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4864805589453749318">Zgjidh prindin që po jep lejen për shtimin e një llogarie shkolle.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (bllokuar)</translation>
 <translation id="486505726797718946">Memoria e kursyer</translation>
+<translation id="4865063548323785458">Ruaj dhe plotëso automatikisht fjalëkalimet për t'u identifikuar me lehtësi në sajte dhe aplikacione</translation>
 <translation id="486635084936119914">Hap automatikisht lloje të caktuara të skedarëve pas shkarkimit</translation>
 <translation id="4867272607148176509">Prindërit mund të miratojnë ose të bllokojnë aplikacionet, të caktojnë kufijtë kohorë dhe të kontrollojnë shfletimin në ueb. Mund të shtohet më vonë një llogari shkolle për t'u qasur në shumicën e burimeve të shkollës.</translation>
 <translation id="4867433544163083783">Kontrollo tani nëse skedat mund të organizohen</translation>
@@ -7614,7 +7616,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6194333736420234626">&amp;Mënyrat e pagesës</translation>
 <translation id="6195005504600220730">Të lexojë informacionet për shfletuesin, sistemin operativ dhe pajisjen tënde</translation>
 <translation id="6195155925303302899">Drejtvendos në qendër</translation>
-<translation id="6195163219142236913">Kukit e palëve të treta janë të kufizuara</translation>
 <translation id="6195693561221576702">Kjo pajisje nuk mund të konfigurohet në modalitetin e demonstrimit offline.</translation>
 <translation id="6196640612572343990">Blloko kukit e palëve të treta</translation>
 <translation id="6196854373336333322">Shtesa <ph name="EXTENSION_NAME" /> ka marrë nën kontroll cilësimet e përfaqësuesit, që do të thotë se mund të ndryshojë, shkelë ose përgjojë çdo gjë që ti bën online. Nëse s'je i sigurt se pse ndodhi ky ndryshim, ndoshta nuk e do.</translation>
@@ -8381,7 +8382,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6731320427842222405">Kjo mund të zgjasë disa minuta</translation>
 <translation id="6732956960067639542">Hap më mirë një seancë të re të shfletuesit të Chrome.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Shfaq kukit dhe të dhëna të tjera të faqes...</translation>
 <translation id="6736243959894955139">Adresa</translation>
 <translation id="6737663862851963468">Hiq biletën e Kerberos</translation>
 <translation id="6738180164164974883">Lejo që të caktohen kuki të palëve të treta</translation>
@@ -11473,6 +11473,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="881799181680267069">Fshihi të tjerat</translation>
 <translation id="8818152010000655963">Imazhi i sfondit</translation>
 <translation id="8818988764764862764">Dritarja u zhvendos në të majtë</translation>
+<translation id="8819155700324279105">Shto një shtresë shtesë mbrojtjeje ndaj kërcënimeve online</translation>
 <translation id="8819510664278523111">Numri EID i pajisjes sate është <ph name="EID_NUMBER" /> , numri IMEI është <ph name="IMEI_NUMBER" />, ndërsa numri i serisë së pajisjes është <ph name="SERIAL_NUMBER" />. Këta numra mund të përdoren për të ndihmuar në aktivizimin e shërbimit.</translation>
 <translation id="8820817407110198400">Faqeshënuesit</translation>
 <translation id="8821045908425223359">Konfiguro automatikisht adresën IP</translation>
@@ -12120,7 +12121,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="947329552760389097">&amp;Inspekto elementet</translation>
 <translation id="947526284350604411">Përgjigjja jote</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> nuk mund t'i hapë skedarët në këtë dosje sepse ajo përmban skedarë sistemi</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome do t'i kufizojë kukit përsëri sot}=1{Chrome do t'i kufizojë kukit përsëri nesër}other{# ditë derisa Chrome t'i kufizojë përsëri kukit}}</translation>
 <translation id="949807244219288032">Kjo skedë është e lidhur me një pajisje HID</translation>
 <translation id="950079950995628542">Nga "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Udhëzuesi i konfigurimit</translation>

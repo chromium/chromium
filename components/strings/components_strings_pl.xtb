@@ -114,7 +114,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="1178821169867863726">12 x 16 cali</translation>
 <translation id="1181037720776840403">Usuń</translation>
-<translation id="1181381397492575884">Chrome blokuje witrynom możliwość używania plików cookie innych firm do śledzenia Twoich czynności związanych z przeglądaniem internetu. Otwórz ustawienia, aby <ph name="LINK" />.</translation>
 <translation id="1185331130467528132"><ph name="URL" /> chce uzyskać dostęp do innych urządzeń w sieci lokalnej</translation>
 <translation id="1185343831726846924">Potwierdzanie, że karty wirtualnej nie można włączyć</translation>
 <translation id="1186201132766001848">Sprawdź hasła</translation>
@@ -227,7 +226,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1343830902827845050">Zaloguj się w Chrome</translation>
 <translation id="1346748346194534595">W prawo</translation>
 <translation id="1348779747280417563">Potwierdź nazwę</translation>
-<translation id="1352798470428594123">Chrome ogranicza większości witryn możliwość uzyskiwania informacji na temat przeglądania przez Ciebie internetu za pomocą plików cookie innych firm. Otwórz ustawienia, aby <ph name="LINK" />.</translation>
 <translation id="1355158069018170842">Pokazuj obniżki cen na kartach</translation>
 <translation id="1355301061807280185">Praca</translation>
 <translation id="1357195169723583938">Kto i kiedy ostatnio używał urządzenia</translation>
@@ -1110,7 +1108,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2768397283109119044">Próbujesz połączyć się z <ph name="DOMAIN" />, ale serwer przedstawił nieprawidłowy certyfikat wystawiony dla tej nazwy. Nazwa to zarezerwowany adres IP lub wewnętrzna nazwa hosta.</translation>
 <translation id="2770159525358613612">Spróbuj ponownie przesłać pliki</translation>
 <translation id="277133753123645258">Metoda wysyłki</translation>
-<translation id="2773388851563527404">Chrome ogranicza większości witryn możliwość używania plików cookie innych firm. Pliki cookie innych firm są jednak dozwolone w tej witrynie, ponieważ są one w niej niezbędne do świadczenia podstawowych usług. Otwórz ustawienia, aby <ph name="LINK" />.</translation>
 <translation id="277499241957683684">Brak rekordu urządzenia</translation>
 <translation id="2775884851269838147">Pierwsza strona wydruku</translation>
 <translation id="2781185443919227679">Plaże i wyspy</translation>
@@ -1714,7 +1711,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3727309136762649052">Przestrzeń nazw</translation>
 <translation id="3727850735097852673">Aby używać Menedżera haseł Google z pękiem kluczy macOS, uruchom ponownie Chrome i zezwól na dostęp do pęku kluczy. Po ponownym uruchomieniu karty zostaną otwarte.</translation>
 <translation id="3728173127485570463">Przeglądarka Chrome nie będzie już wymagać odcisku palca do autouzupełniania haseł</translation>
-<translation id="3736739313435669994">Witryny nie mogą używać plików cookie innych firm, aby uzyskiwać informacje na temat przeglądania przez Ciebie internetu. Otwórz ustawienia, aby <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Przeglądarką zarządza administrator.</translation>
 <translation id="3739842843727261045">Opcja Lubię powoduje przesłanie opinii z informacją, że te wyniki Ci się podobają</translation>
 <translation id="3740447166056383374">Wymagane jest sprawdzenie plików przed skopiowaniem</translation>
@@ -2148,7 +2144,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4406883609789734330">Napisy na żywo</translation>
 <translation id="4406896451731180161">wyniki wyszukiwania</translation>
 <translation id="4407758156081352648">Aby zapewnić bezpieczeństwo, Twoja organizacja nie zezwala na ponowne używanie haseł w Chrome. Hasła w Chrome są szyfrowane, aby chronić prywatność użytkowników.</translation>
-<translation id="4408413947728134509">Pliki cookie (<ph name="NUM_COOKIES" />)</translation>
 <translation id="4409556632583862731">Nowy wątek</translation>
 <translation id="4412074349188076601">Ta konfiguracja jest oznaczona jako możliwa do zainstalowania, ale nie można jej zainstalować, bo nie udostępniono obrazu dla tej architektury.</translation>
 <translation id="4412377069090572315">Opinie użytkowników</translation>
@@ -2536,7 +2531,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5061227663725596739">Czy chodziło Ci o <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Historia drukowania</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(w użyciu: 1)}few{(w użyciu: #)}many{(w użyciu: #)}other{(w użyciu: #)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Sprawdź adres serwera proxy<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Rolka 10</translation>
 <translation id="507130231501693183">Zestaw tac odbiorczych 4</translation>
@@ -3045,7 +3039,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5918373444239520146">Gadżety i przenośna elektronika</translation>
 <translation id="5918847752193018339">Realizuj płatności szybciej dzięki zapisanym kodom CVC. <ph name="LINK_BEGIN" />Usuń zapisane kody zabezpieczające<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{W użyciu: 1}few{W użyciu: #}many{W użyciu: #}other{W użyciu: #}}</translation>
 <translation id="5921185718311485855">włączono</translation>
 <translation id="5921639886840618607">Zapisać kartę na koncie Google?</translation>
 <translation id="5921952831792678223">Pick-upy</translation>
@@ -3226,7 +3219,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6194209731893739467">Tu zobaczysz wszystkie obserwowane produkty</translation>
 <translation id="6195371403461054755">Geologia</translation>
 <translation id="6195418151868446719">Elektronika użytkowa</translation>
-<translation id="6196640612572343990">Blokuj pliki cookie innych firm</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Pełne wycięte zakładki</translation>
 <translation id="6203231073485539293">Sprawdź połączenie z internetem</translation>
@@ -3722,7 +3714,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6978121630131642226">Wyszukiwarki</translation>
 <translation id="6978236010531171013">Udostępnij mimo to</translation>
 <translation id="6979158407327259162">Dysk Google</translation>
-<translation id="6979302985396162258">zarządzać dostępem do plików cookie innych firm</translation>
 <translation id="6979440798594660689">Wycisz (domyślnie)</translation>
 <translation id="6987806006823772670">Koperta (powlekana)</translation>
 <translation id="6989256887001961296">Ta zawartość jest zablokowana.</translation>
@@ -4736,7 +4727,6 @@ Dodatkowe informacje:
 <translation id="8622864575115813231">Łączę z instytucją finansową…</translation>
 <translation id="8624354461147303341">Otrzymaj zniżki</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
-<translation id="8635822281281406185">Dodaj maksymalnie 10 plików, kart lub obrazów</translation>
 <translation id="8637362707224133343">Chrome ma wbudowane zabezpieczenia, które chronią Cię podczas korzystania z przeglądarki, takie jak Bezpieczne przeglądanie Google. Niedawno ta funkcja <ph name="BEGIN_LINK" />wykryła próbę wyłudzenia informacji<ph name="END_LINK" /> na odwiedzonej przez Ciebie stronie. Strony wyłudzające informacje udają inne strony, aby Cię oszukać.<ph name="NEW_LINE" />Osoby przeprowadzające ataki czasem przejmują nawet strony, które zwykle są bezpieczne. <ph name="BEGIN_ERROR_LINK" />Daj nam znać<ph name="END_ERROR_LINK" />, jeśli uważasz, że zaszła pomyłka i że ta witryna nie stanowi zagrożenia.</translation>
 <translation id="8640996933372643759">Aby udostępniać karty i współpracować z innymi, musisz mieć możliwość logowania się w Chrome</translation>
 <translation id="8641131559425911240">Koperta (Bond)</translation>
@@ -5116,7 +5106,6 @@ Dodatkowe informacje:
 <translation id="945673208656386843">Automatycznie uzupełniaj dane tej karty podczas zakupów w Chromium, jeśli jest ona zapisana na tym urządzeniu</translation>
 <translation id="94613679163347541">Porównać <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby szybko utworzyć nową witrynę w Witrynach Google</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome ponownie ograniczy pliki cookie dzisiaj}=1{Chrome ponownie ograniczy pliki cookie jutro}few{Chrome ponownie ograniczy pliki cookie za # dni}many{Chrome ponownie ograniczy pliki cookie za # dni}other{Chrome ponownie ograniczy pliki cookie za # dnia}}</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> użytkowników dołączyło do grupy kart „<ph name="GROUP_NAME" />”</translation>
 <translation id="949314938206378263">Prosisz o zgodę na odwiedzenie tej strony. Twój rodzic może odpowiedzieć w Family Link.</translation>
 <translation id="950736567201356821">Trzy otwory u góry</translation>

@@ -84,6 +84,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="193439633299369377">ChromiumOS ka nevojë të riniset për të zbatuar përditësimin.</translation>
 <translation id="1951406923938785464">Chromium e bllokoi këtë shkarkim sepse lloji i skedarit nuk është shkarkuar zakonisht dhe mund të jetë i rrezikshëm</translation>
 <translation id="1953553007165777902">Po shkarkohet... Kanë mbetur edhe <ph name="MINUTE" /> minuta</translation>
+<translation id="1965068424387304464">Këshillë për Chromium: Ruaj fjalëkalimet</translation>
 <translation id="1966382378801805537">Chromium nuk mund të përcaktojë ose caktojë shfletuesin e parazgjedhur</translation>
 <translation id="1990262977744080398">Mëso se pse Chromium i bllokon disa skedarë, hapet në një skedë të re</translation>
 <translation id="1999715455684970349">E mban të përditësuar softuerin e Chromium. Nëse ky shërbim çaktivizohet ose ndalohet, softueri yt i Chromium nuk do të mbahet i përditësuar, që do të thotë se dobësitë e sigurisë që mund të lindin nuk mund të rregullohen dhe veçoritë mund të mos funksionojnë. Ky shërbim çinstalohet vetë kur nuk ka një softuer të Chromium që e përdor atë.</translation>
@@ -254,6 +255,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3802055581630249637">Chromium ngarkon paraprakisht faqet që mund t'i vizitosh që ato të ngarkohen më shpejt kur t'i vizitosh</translation>
 <translation id="3810973564298564668">Menaxho</translation>
 <translation id="3823384748599722168">Për të përdorur fjalëkalimet e ruajtura, ndiq kodin QR, shkarko Chromium për iOS dhe identifikohu në "Llogarinë tënde të Google"</translation>
+<translation id="3837584850181228767">Këshillë për Chromium: "Shfletimi i sigurt i përmirësuar"</translation>
 <translation id="3846683726093018685">**Përmblidh:** Në një fjali të vetme deri në 30 fjalë, përshkruaj subjektin kryesor dhe qëllimin e përmbajtjes në pamjen e ekranit.
 
           **Sugjero pyetje:** Gjenero një listë me pika prej 3 deri në 5 pyetje që nxisin të menduarit dhe që mund të bëhen nga një përdorues për të kuptuar më mirë pamjen e ekranit. Këto pyetje duhet të përfshijnë të paktën një pyetje që ka të bëjë në mënyrë specifike me një objekt vizual, dizajnin ose vendosjen e tij.</translation>

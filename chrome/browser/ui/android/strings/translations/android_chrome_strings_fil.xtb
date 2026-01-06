@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Alisin</translation>
 <translation id="1183189057400844278">Para matiyak na magagamit mo sa anumang oras ang mga password sa iyong Google Account, i-verify na ikaw ito</translation>
 <translation id="1187810343066461819">Mag-delete din ng mga bookmark, history, at higit pa sa kotseng ito</translation>
-<translation id="1193589902336218259">I-on ang mga notification sa Mga Tip</translation>
 <translation id="1193729455103054076">Gumamit ng malakas na password?</translation>
 <translation id="11947597112837849">email address</translation>
 <translation id="1197267115302279827">Ilipat ang mga bookmark</translation>
@@ -995,7 +994,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5267572070504076962">I-on ang Ligtas na Pag-browse para magkaroon ng proteksyon laban sa mga mapanganib na site</translation>
 <translation id="5271967389191913893">Hindi mabuksan ng device ang content na ida-download.</translation>
 <translation id="5273031377282080577">Pinapamahalaan ng iyong administrator ang setting na ito.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Nag-unsubscribe mula sa isang hindi ginagamit na site}one{Nag-unsubscribe mula sa # hindi ginagamit na site}other{Nag-unsubscribe mula sa # na hindi ginagamit na site}}</translation>
 <translation id="5292796745632149097">Ipadala kay</translation>
 <translation id="5301876394151419436">Naka-sign in ka bilang si <ph name="EMAIL" /> Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="5304593522240415983">Hindi maaaring maging blangko ang field na ito</translation>
@@ -1586,7 +1584,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7612619742409846846">Naka-sign in sa Google bilang</translation>
 <translation id="7612989789287281429">Sina-sign in ka…</translation>
 <translation id="7619072057915878432">Hindi na-download ang <ph name="FILE_NAME" /> dahil sa mga problema sa network.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Nag-unsubscribe sa isang site}one{Nag-unsubscribe sa # site}other{Nag-unsubscribe sa # na site}}</translation>
 <translation id="7626032353295482388">Welcome sa Chrome</translation>
 <translation id="7628417132421583481">Pumunta sa Password Manager</translation>
 <translation id="7630202231528827509">URL ng provider</translation>

@@ -966,6 +966,7 @@
 <translation id="472259426228234149">Hinta 100–180 $</translation>
 <translation id="4735849923335729414">Kirjaudu sisään tilillä <ph name="EMAIL" />, jota organisaatiosi hallinnoi.</translation>
 <translation id="473775607612524610">Päivitä</translation>
+<translation id="4738968082443868320">Google Drive</translation>
 <translation id="474209246745757965">Osta ja käännä kameran avulla</translation>
 <translation id="4742407542027196863">Ylläpidä salasanoja…</translation>
 <translation id="4744428388659507035">Jos haluat käyttää kirjanmerkkejäsi kaikilla laitteilla, laita "Kirjanmerkit" päälle asetuksista.</translation>
@@ -1055,6 +1056,7 @@
 <translation id="5021500396464456616">Ota yhteyttä linkin lähettäjään</translation>
 <translation id="5039804452771397117">Salli</translation>
 <translation id="5050810143224996149">Salasanan jakaminen</translation>
+<translation id="5052499409147950210">Muokkaa sivustoa</translation>
 <translation id="5055015094595227120">Tarkka sijainti</translation>
 <translation id="5055551113846164633">Tämä poistaa tälle laitteelle tallennetut osoitteet. Se poistaa myös Google-tilille (<ph name="USER_EMAIL" />) tallennetut osoitteet.</translation>
 <translation id="5056446788882570708">Ongelmia havaittiin <ph name="TIME" />.</translation>
@@ -1133,6 +1135,7 @@
 <translation id="5295239312320826323">Poistetaanko tili <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Näytä</translation>
 <translation id="5311061401280561833">Pääsy kameraan ja mikrofoniin myönnetty</translation>
+<translation id="5313967007315987356">Lisää sivusto</translation>
 <translation id="5315870524563628285">Ei tuotavia tietoja</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Tallenna</translation>

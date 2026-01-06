@@ -188,11 +188,9 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="2903493209154104877">Adresy</translation>
 <translation id="2910701580606108292">Pýtať sa, či chcete povoliť webu prehrávať chránený obsah</translation>
 <translation id="2918484639460781603">Prejsť na nastavenia</translation>
-<translation id="293060180538644702">Dostávajte upozornenia na tipy pre Chrome</translation>
 <translation id="2932883381142163287">Nahlásiť zneužitie</translation>
 <translation id="2939338015096024043">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie sledovať polohu vašej kamery a získať informácie o vašom okolí. Keď je táto možnosť vypnutá, weby nemôžu sledovať polohu vašej kamery ani získať informácie o vašom okolí.</translation>
 <translation id="2968755619301702150">Zobrazovač certifikátov</translation>
-<translation id="2979365474350987274">Súbory cookie tretích strán sú obmedzené</translation>
 <translation id="2990583317361835189">Nepovoliť webom používať senzory pohybu</translation>
 <translation id="3004438526346162184">Weby môžu pomocou tejto funkcie spravovať okná na všetkých obrazovkách</translation>
 <translation id="3008272652534848354">Obnoviť povolenia</translation>
@@ -631,7 +629,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="7835852323729233924">Prehrávanie médií</translation>
 <translation id="783819812427904514">Zapnúť zvuk videa</translation>
 <translation id="7846076177841592234">Zrušiť výber</translation>
-<translation id="7881140103901777395">Chrome obmedzuje väčšine webom používanie súborov cookie tretích strán. Súbory cookie tretích strán sú však na tomto webe povolené, pretože sú preň nevyhnutné na poskytovanie základných služieb.\n\nPrejdite do nastavení a <ph name="BEGIN_LINK" />spravujte prístup k súborom cookie tretej strany<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Povoliť zvuk na konkrétnom webe.</translation>
 <translation id="7891547341794213004">Skryť kartu Pokračovať s touto kartou</translation>
 <translation id="789722939441020330">Nepovoliť webom automaticky sťahovať viacero súborov</translation>

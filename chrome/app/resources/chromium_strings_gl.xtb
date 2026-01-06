@@ -85,6 +85,7 @@
 <translation id="193439633299369377">É necesario reiniciar Chromium OS para aplicar a actualización.</translation>
 <translation id="1951406923938785464">Chromium bloqueou esta descarga porque este tipo de ficheiro non se descarga con frecuencia e pode ser perigoso</translation>
 <translation id="1953553007165777902">Descargando… Tempo restante: <ph name="MINUTE" /> min</translation>
+<translation id="1965068424387304464">Consello de Chromium: Garda os contrasinais</translation>
 <translation id="1966382378801805537">Chromium non pode determinar nin establecer o navegador predeterminado</translation>
 <translation id="1990262977744080398">Descubre por que Chromium bloquea algúns ficheiros (abrirase nunha pestana nova)</translation>
 <translation id="1999715455684970349">Mantén actualizado o software de Chromium. Se este servizo se desactiva ou se detén, o software de Chromium non se actualizará, o que quere dicir que non se poderán solucionar as vulnerabilidades de seguranza que poidan xurdir e que poderían afectar a marcha das funcións. Este servizo desinstalarase se ningún software de Chromium o usa.</translation>
@@ -255,6 +256,7 @@
 <translation id="3802055581630249637">Chromium precargará as páxinas que é probable que visites para que carguen máis rapidamente cando accedas a elas</translation>
 <translation id="3810973564298564668">Xestionar</translation>
 <translation id="3823384748599722168">Para usar os contrasinais gardados, escanea o código QR, descarga Chromium para iOS e inicia sesión na túa Conta de Google</translation>
+<translation id="3837584850181228767">Consello de Chromium: Utiliza Navegación segura mellorada</translation>
 <translation id="3846683726093018685">**Resumir:** Nunha frase de menos de 30 palabras, describe o tema e o propósito principais do contido da captura de pantalla.
 
           **Suxerir preguntas:** Crea unha lista con viñetas de 3 a 5 preguntas que fagan pensar e que un usuario podería facer para comprender mellor a captura de pantalla. Entre as preguntas débese incluír, polo menos, unha que sexa específica sobre un obxecto visual, o seu deseño ou a súa posición.</translation>

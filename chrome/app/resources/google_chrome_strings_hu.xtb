@@ -483,6 +483,7 @@
 <translation id="6180522807229584611">Ez a lap plusz erőforrásokat használ. A teljesítmény javítása érdekében engedélyezze, hogy a Chrome inaktiválhassa.</translation>
 <translation id="6182736845697986886">A telepítés a frissítési szerver belső hibája miatt nem sikerült.</translation>
 <translation id="6183773856988300112">A Gemini a Chrome-ban az automatikus böngészés funkciót használja az Ön lapjain való munkavégzéshez és az Ön által adott feladatok elvégzéséhez. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
+<translation id="6187085551300363958">Chrome-tipp: Jelszavak mentése</translation>
 <translation id="6192058120268468905">Az Ön fiókja a Chrome-ban</translation>
 <translation id="6220551899604141979">A(z) <ph name="PARTNER_NAME" /> olyan bővítményt adott hozzá, amely módosíthatja a Chrome működését.
 
@@ -621,6 +622,7 @@
 <translation id="7627609214560473136">Adatainak védelme érdekében engedélyezze, hogy a Chrome eltávolítsa azoknak a webhelyeknek az engedélyeit, amelyeket Ön nem keresett fel mostanában.</translation>
 <translation id="7629695634924605473">A Chrome tájékoztatja arról, ha jelszavai illetéktelen kezekbe kerülnek</translation>
 <translation id="7641148173327520642">Rendszergazdája úgy állította be a Google Chrome-ot, hogy a(z) <ph name="ALTERNATIVE_BROWSER_NAME" /> böngészőt nyissa meg a(z) <ph name="TARGET_URL_HOSTNAME" /> eléréséhez.</translation>
+<translation id="7641448682796883218">Chrome-tipp: Biztonságos Böngészés fokozott védelemmel</translation>
 <translation id="7649070708921625228">Súgó</translation>
 <translation id="7651907282515937834">Chrome Enterprise-embléma</translation>
 <translation id="76531479118467370">A Chrome letiltotta ezt a letöltést, mert Ön kikapcsolta a Biztonságos Böngészést, és a fájl nem ellenőrizhető</translation>

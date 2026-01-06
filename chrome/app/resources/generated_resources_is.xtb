@@ -1822,6 +1822,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="221297410904507041">Eyddu ferli, fótsporum, skyndiminni og fleiru</translation>
 <translation id="2213410656650624348">Í meðallagi</translation>
 <translation id="2214018885812055163">Samnýttar möppur</translation>
+<translation id="2214453882118345682">Notaðu myndavélina þína til að versla, þýða og bera kennsl á það sem þú sérð.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 lína er ekki sýnd&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> lína er ekki sýnd&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> línur eru ekki sýndar&gt;}}</translation>
 <translation id="2215070081105889450">Til að deila hljóði skaltu deila flipa eða skjá í staðinn</translation>
 <translation id="2217208085547223783">Staða trausts</translation>
@@ -5734,6 +5735,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4864805589453749318">Veldu foreldrið sem gefur heimild til að bæta við skólareikningi.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (lokað fyrir)</translation>
 <translation id="486505726797718946">Minning vistuð</translation>
+<translation id="4865063548323785458">Vistaðu og fylltu aðgangsorð sjálfkrafa út til að skrá þig inn á vefsvæði og forrit á einfaldan hátt</translation>
 <translation id="486635084936119914">Opna tilteknar tegundir skráa sjálfkrafa að niðurhali loknu</translation>
 <translation id="4867272607148176509">Foreldrar geta samþykkt eða lokað á forrit, stillt tímamörk og stjórnað vefskoðun. Hægt er að bæta skólareikningi við síðar til að fá aðgang að flestum skólagögnum.</translation>
 <translation id="4867433544163083783">Athugaðu núna hvort hægt sé að flokka flipa</translation>
@@ -7632,7 +7634,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6194333736420234626">Greiðslumátar</translation>
 <translation id="6195005504600220730">Lestu upplýsingar um vafrann, stýrikerfið og tækið</translation>
 <translation id="6195155925303302899">Miðjujöfnun</translation>
-<translation id="6195163219142236913">Fótspor þriðja aðila takmörkuð</translation>
 <translation id="6195693561221576702">Ekki er hægt að setja þetta tæki upp í ótengdri prufustillingu.</translation>
 <translation id="6196640612572343990">Loka á fótspor frá þriðja aðila</translation>
 <translation id="6196854373336333322">Viðbótin „<ph name="EXTENSION_NAME" />“ hefur tekið að sér stjórn yfir staðgengilsþjónsstillingunum þínum, sem þýðir að hún getur breytt, slitið eða hlerað allt sem þú gerir á netinu. Ef þú veist ekki hvernig þetta gerðist er þetta líklega eitthvað sem þú vilt ekki.</translation>
@@ -8401,7 +8402,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6731320427842222405">Þetta getur tekið nokkrar mínútur</translation>
 <translation id="6732956960067639542">Opnaðu nýja Chrome-vafralotu í staðinn.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (auðkenni: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Sýna fótspor og önnur gögn vefsvæðis...</translation>
 <translation id="6736243959894955139">Vistfang</translation>
 <translation id="6737663862851963468">Fjarlægja Kerberos miða</translation>
 <translation id="6738180164164974883">Leyfa notkun fótspora þriðja aðila</translation>
@@ -11494,6 +11494,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="881799181680267069">Fela aðra</translation>
 <translation id="8818152010000655963">Veggfóður</translation>
 <translation id="8818988764764862764">Gluggi færðist til vinstri</translation>
+<translation id="8819155700324279105">Auktu vörn gegn netógnum</translation>
 <translation id="8819510664278523111">EID-númer tækis er <ph name="EID_NUMBER" /> , IMEI-númer tækis er <ph name="IMEI_NUMBER" /> og raðnúmer tækis er <ph name="SERIAL_NUMBER" />. Hægt er að nota þessi númer til að hjálpa til við virkjun þjónustu.</translation>
 <translation id="8820817407110198400">Bókamerki</translation>
 <translation id="8821045908425223359">Stilla IP-tölu sjálfkrafa</translation>
@@ -12141,7 +12142,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="947329552760389097">&amp;Kanna einingar</translation>
 <translation id="947526284350604411">Svar þitt</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> getur ekki opnað skrár í þessari möppu vegna þess að hún inniheldur kerfisskrár</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome mun aftur takmarka fótspor í dag}=1{Chrome mun aftur takmarka fótspor á morgun}one{Chrome takmarkar fótspor aftur eftir # dag}other{Chrome takmarkar fótspor aftur eftir # daga}}</translation>
 <translation id="949807244219288032">Þessi flipi er tengdur við HID-tæki</translation>
 <translation id="950079950995628542">Úr „<ph name="PHONE_NAME" />“</translation>
 <translation id="950307215746360464">Uppsetningarleiðbeiningar</translation>

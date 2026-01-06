@@ -1812,6 +1812,7 @@
 <translation id="221297410904507041">‏سرگزشت، کوکیز، cache وغیرہ کو حذف کریں</translation>
 <translation id="2213410656650624348">معتدل</translation>
 <translation id="2214018885812055163">اشتراک کردہ فولڈرز</translation>
+<translation id="2214453882118345682">خریداری کریں، ترجمہ کریں اور جو آپ اپنے کیمرا سے کیا دیکھتے ہیں اس کی شناخت کریں۔</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 لائن نہیں دکھائی گئی&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> لائنز نہیں دکھائی گئیں&gt;}}</translation>
 <translation id="2215070081105889450">آڈیو کا اشتراک کرنے کے لیے، اس کے بجائے ایک ٹیب یا اسکرین کا اشتراک کریں</translation>
 <translation id="2217208085547223783">ٹرسٹ کی صورتحال</translation>
@@ -5719,6 +5720,7 @@
 <translation id="4864805589453749318">والدین کو منتخب کریں جو اسکول اکاؤنٹ شامل کرنے کی اجازت دے رہے ہیں۔</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (مسدود کردہ)</translation>
 <translation id="486505726797718946">میموری محفوظ ہو گئی</translation>
+<translation id="4865063548323785458">سائٹس اور ایپس میں آسانی سے سائن ان کرنے کیلئے اپنے پاس ورڈز محفوظ اور انہیں آٹو فل کریں</translation>
 <translation id="486635084936119914">ڈاؤن لوڈ کرنے کے بعد مخصوص فائل کی قسموں کو کھولیں</translation>
 <translation id="4867272607148176509">والدین ایپس کو منظور یا مسدود کر سکتے ہیں، وقت کی حدود سیٹ کر سکتے ہیں اور ویب براؤزنگ کو کنٹرول کر سکتے ہیں۔ اسکول کے زیادہ تر وسائل تک رسائی کے لیے بعد میں اسکول اکاؤنٹ شامل کیا جا سکتا ہے۔</translation>
 <translation id="4867433544163083783">ابھی چیک کریں کہ آیا ٹیبز کو منظم کیا جا سکتا ہے</translation>
@@ -7615,7 +7617,6 @@
 <translation id="6194333736420234626">&amp;ادائیگی کے طریقے</translation>
 <translation id="6195005504600220730">‏اپنے براؤزر، OS اور آلے کے متعلق معلومات پڑھیں</translation>
 <translation id="6195155925303302899">بیچ میں موافق بنائیں</translation>
-<translation id="6195163219142236913">فریق ثالث کوکیز محدود ہیں</translation>
 <translation id="6195693561221576702">اس آلہ کو آف لائن ڈیمو موڈ میں سیٹ نہیں کیا جا سکتا ہے۔</translation>
 <translation id="6196640612572343990">فریق ثالث کوکیز کو مسدود کریں</translation>
 <translation id="6196854373336333322">ایکسٹینشن "<ph name="EXTENSION_NAME" />" نے آپ کی پراکسی ترتیبات کو کنٹرول میں لے لیا ہے، جس کا مطلب ہے کہ آپ آن لائن جو بھی کرتے ہیں وہ اسے تبدیل کر سکتی، بریک کر سکتی یا اس کی جاسوسی کر سکتی ہے۔ اگر آپ کو اس تبدیلی کی وجہ ٹھیک سے معلوم نہیں تو غالباً آپ کو اس کی ضرورت نہیں ہے۔</translation>
@@ -8382,7 +8383,6 @@
 <translation id="6731320427842222405">اس میں چند منٹ لگ سکتے ہیں</translation>
 <translation id="6732956960067639542">‏اس کے بجائے ایک نیا Chrome براؤزر سیشن کھولیں۔</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">کوکیز اور دیگر سائٹ ڈیٹا کو دکھائیں…</translation>
 <translation id="6736243959894955139">پتہ</translation>
 <translation id="6737663862851963468">‏Kerberos ٹکٹ ہٹائیں</translation>
 <translation id="6738180164164974883">فریق ثالث کی کوکیز سیٹ کرنے کی اجازت دیں</translation>
@@ -11474,6 +11474,7 @@
 <translation id="881799181680267069">دوسروں کو چھپائیں</translation>
 <translation id="8818152010000655963">وال پیپر</translation>
 <translation id="8818988764764862764">ونڈو بائیں طرف منتقل ہو گئی</translation>
+<translation id="8819155700324279105">آن لائن خطرات سے تحفظ کی ایک اضافی پرت شامل کریں</translation>
 <translation id="8819510664278523111">‏آپ کے آلے کی EID <ph name="EID_NUMBER" /> ہے، آلے کی IMEI <ph name="IMEI_NUMBER" /> ہے اور آلے کا سیریل نمبر <ph name="SERIAL_NUMBER" /> ہے۔ سروس کو فعال کرنے میں مدد کیلئے ان نمبرز کا استعمال کیا جا سکتا ہے۔</translation>
 <translation id="8820817407110198400">بُک مارکس</translation>
 <translation id="8821045908425223359">‏خودکار طور پر IP پتہ کو کنفیگر کریں</translation>
@@ -12121,7 +12122,6 @@
 <translation id="947329552760389097">&amp;عناصر کا معائنہ کریں</translation>
 <translation id="947526284350604411">آپ کا جواب</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> اس فولڈر میں فائلیں نہیں کھول سکتا کیونکہ اس میں سسٹم کی فائلیں ہیں</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{‏Chrome آج دوبارہ کوکیز کو محدود کر دے گا}=1{‏Chrome کل دوبارہ کوکیز کو محدود کر دے گا}other{‏# دنوں میں Chrome کوکیز کو دوبارہ محدود کر دے گا}}</translation>
 <translation id="949807244219288032">‏یہ ٹیب ایک HID آلہ سے منسلک ہے</translation>
 <translation id="950079950995628542">منجانب "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">سیٹ اپ کی گائیڈ</translation>

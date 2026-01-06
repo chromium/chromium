@@ -1813,6 +1813,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="221297410904507041">Odstraňujte históriu prehliadania, súbory cookie, vyrovnávaciu pamäť a ďalšie položky</translation>
 <translation id="2213410656650624348">Priemerná</translation>
 <translation id="2214018885812055163">Zdieľané priečinky</translation>
+<translation id="2214453882118345682">Nakupujte, prekladajte a identifikujte, čo vidíte, pomocou kamery.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;nie je zobrazený 1 riadok&gt;}few{&lt;nie sú zobrazené <ph name="NUMBER_OF_LINES" /> riadky&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> lines not shown&gt;}other{&lt;nie je zobrazených <ph name="NUMBER_OF_LINES" /> riadkov&gt;}}</translation>
 <translation id="2215070081105889450">Ak chcete zdieľať zvuk, zdieľajte kartu alebo obrazovku</translation>
 <translation id="2217208085547223783">Stav dôveryhodnosti</translation>
@@ -5721,6 +5722,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4864805589453749318">Vyberte rodiča, ktorý udeľuje povolenie pridať školský účet.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blokované)</translation>
 <translation id="486505726797718946">Bola uvoľnená pamäť</translation>
+<translation id="4865063548323785458">Ukladajte a automaticky dopĺňajte heslá, aby ste sa mohli ľahko prihlasovať na weboch a v aplikáciách</translation>
 <translation id="486635084936119914">Automaticky otvoriť určité typy súborov po ich stiahnutí</translation>
 <translation id="4867272607148176509">Rodičia môžu schvaľovať alebo blokovať aplikácie, nastavovať časové limity a ovládať webové prehliadanie. Školský účet na prístup k väčšine školských zdrojov sa dá pridať neskôr.</translation>
 <translation id="4867433544163083783">Skontrolovať, či je karty možné usporiadať</translation>
@@ -7618,7 +7620,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6194333736420234626">&amp;Spôsoby platby</translation>
 <translation id="6195005504600220730">Čítanie informácií o prehliadači, operačnom systéme a zariadení</translation>
 <translation id="6195155925303302899">Zarovnať na stred</translation>
-<translation id="6195163219142236913">Súbory cookie tretích strán sú obmedzené</translation>
 <translation id="6195693561221576702">Toto zariadenie nie je možné nastaviť v režime offline ukážky.</translation>
 <translation id="6196640612572343990">Blokovať súbory cookie tretích strán</translation>
 <translation id="6196854373336333322">Toto rozšírenie „<ph name="EXTENSION_NAME" />“ prevzalo kontrolu nad vašimi nastaveniami servera proxy, čo znamená, že môže zmeniť, prerušiť alebo zachytiť všetku vašu činnosť online. Ak neviete, prečo k tomu došlo, pravdepodobne si to neželáte.</translation>
@@ -8389,7 +8390,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6731320427842222405">Môže to trvať niekoľko minút</translation>
 <translation id="6732956960067639542">Otvorte v prehliadači Chrome novú reláciu.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (Identifikátor: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Zobraziť súbory cookie a ďalšie dáta webov…</translation>
 <translation id="6736243959894955139">Adresa</translation>
 <translation id="6737663862851963468">Odstrániť lístok Kerberos</translation>
 <translation id="6738180164164974883">Povoliť nastavovať súbory cookie tretích strán</translation>
@@ -11484,6 +11484,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="881799181680267069">Skryť ostatné</translation>
 <translation id="8818152010000655963">Tapeta</translation>
 <translation id="8818988764764862764">Okno bolo presunuté doľava</translation>
+<translation id="8819155700324279105">Pridajte ďalšiu úroveň ochrany pred hrozbami na internete</translation>
 <translation id="8819510664278523111">EID zariadenia je <ph name="EID_NUMBER" />, jeho IMEI je <ph name="IMEI_NUMBER" /> a jeho sériové číslo je <ph name="SERIAL_NUMBER" />. Pomocou týchto čísel je možné aktivovať službu.</translation>
 <translation id="8820817407110198400">Záložky</translation>
 <translation id="8821045908425223359">Automaticky konfigurovať adresu IP</translation>
@@ -12131,7 +12132,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="947329552760389097">&amp;Skontrolovať prvky</translation>
 <translation id="947526284350604411">Vaša odpoveď</translation>
 <translation id="947667444780368238">Web <ph name="ORIGIN" /> nemôže otvoriť súbory v tomto priečinku, pretože obsahuje súbory systému</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome dnes znova obmedzí súbory cookie}=1{Chrome zajtra znova obmedzí súbory cookie}few{Do opätovného blokovania súborov cookie Chromom zostávajú # dni}many{Do opätovného blokovania súborov cookie Chromom zostáva # dňa}other{Do opätovného blokovania súborov cookie Chromom zostáva # dní}}</translation>
 <translation id="949807244219288032">Táto karta je pripojená k zariadeniu s ľudským rozhraním</translation>
 <translation id="950079950995628542">Z telefónu <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Sprievodca nastavením</translation>

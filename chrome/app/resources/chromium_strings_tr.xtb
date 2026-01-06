@@ -82,6 +82,7 @@
 <translation id="193439633299369377">Güncellemenin uygulanması için ChromiumOS yeniden başlatılmalıdır.</translation>
 <translation id="1951406923938785464">Dosya türü çok indirilmediği ve tehlikeli olabileceği için Chromium bu indirme işlemini engelledi</translation>
 <translation id="1953553007165777902">İndiriliyor... <ph name="MINUTE" /> dakika kaldı</translation>
+<translation id="1965068424387304464">Chromium İpucu: Şifreleri Kaydedin</translation>
 <translation id="1966382378801805537">Chromium, varsayılan tarayıcıyı tespit edemiyor veya ayarlayamıyor</translation>
 <translation id="1990262977744080398">Chromium'un bazı dosyaları neden engellediğini öğrenin, yeni sekmede açılır</translation>
 <translation id="1999715455684970349">Chromium yazılımınızı güncel tutar. Bu hizmet devre dışı bırakılır veya durdurulursa Chromium yazılımınız güncel tutulmaz. Bu durumda, ortaya çıkabilecek güvenlik açıkları düzeltilemez ve özellikler çalışmayabilir. Bu hizmet, onu kullanan Chromium yazılımı olmadığında kendini kaldırır.</translation>
@@ -250,6 +251,7 @@
 <translation id="3802055581630249637">Chromium, ziyaret etme olasılığınızın yüksek olduğu sayfaları önceden yükleyerek bu sayfaları ziyaret ettiğinizde daha hızlı yüklenmelerini sağlar.</translation>
 <translation id="3810973564298564668">Yönet</translation>
 <translation id="3823384748599722168">Kayıtlı şifrelerinizi kullanmak için QR kodunu tarayın, iOS için Chromium'u indirin ve Google Hesabınızda oturum açın</translation>
+<translation id="3837584850181228767">Chromium İpucu: Gelişmiş Güvenli Tarama</translation>
 <translation id="3846683726093018685">**Özetle:** Ekran görüntüsündeki içeriğin temel konusunu ve amacını 30 kelimeden kısa olacak şekilde tek bir cümleyle açıkla.
 
           **Soru Öner:** Kullanıcının ekran görüntüsünü daha iyi anlamak için sorabileceği 3-5 düşündürücü sorudan oluşan bir madde işaretli liste oluştur. Bu sorulardan en az biri görsel bir nesne, tasarımı veya yerleşimiyle ilgili olmalı.</translation>

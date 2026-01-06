@@ -1813,6 +1813,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="221297410904507041">Dzēst vēsturi, sīkfailus, kešatmiņu un citus datus</translation>
 <translation id="2213410656650624348">Vidēji</translation>
 <translation id="2214018885812055163">Kopīgotās mapes</translation>
+<translation id="2214453882118345682">Iepērcieties, tulkojiet un identificējiet redzamo saturu, izmantojot kameru.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 rinda netiek rādīta&gt;}zero{&lt;<ph name="NUMBER_OF_LINES" /> rindas netiek rādītas&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> rinda netiek rādīta&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> rindas netiek rādītas&gt;}}</translation>
 <translation id="2215070081105889450">Lai kopīgotu audio, kopīgojiet cilni vai ekrānu</translation>
 <translation id="2217208085547223783">Uzticamības statuss</translation>
@@ -2651,6 +2652,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2757338480560142065">Parolei, kuru vēlaties saglabāt, ir jāatbilst vietnē <ph name="WEBSITE" /> izmantotajai parolei.</translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Netika atgriezts neviens meklēšanas rezultāts vaicājumam “<ph name="SEARCH_QUERY" />”.</translation>
 <translation id="2762441749940182211">Kameras lietošana ir bloķēta</translation>
+<translation id="2763165257813209348">Fails “<ph name="FILE_NAME" />” ietver sensitīvus vai bīstamus datus. Jūsu organizācija ļaus jums to saglabāt mākoņa krātuvē vai atmest.</translation>
 <translation id="2764786626780673772">VPN dati</translation>
 <translation id="2764920001292228569">Ievadiet profila nosaukumu</translation>
 <translation id="2765100602267695013">Lūdzu, sazinieties ar mobilo sakaru operatoru</translation>
@@ -5720,6 +5722,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4864805589453749318">Atlasiet vienu no vecākiem, kurš piešķir atļauju pievienot mācību iestādes kontu.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (bloķēts)</translation>
 <translation id="486505726797718946">Ietaupītā atmiņa</translation>
+<translation id="4865063548323785458">Saglabājiet un automātiski aizpildiet paroles, lai varētu ērti pierakstīties vietnēs un lietotnēs.</translation>
 <translation id="486635084936119914">Automātiski atvērt noteikta veida failus pēc to lejupielādes</translation>
 <translation id="4867272607148176509">Vecāki var apstiprināt vai bloķēt lietotnes, iestatīt laika ierobežojumus un kontrolēt tīmekļa pārlūkošanu. Vēlāk varēs pievienot mācību iestādes kontu, lai piekļūtu lielākajai daļai mācību resursu.</translation>
 <translation id="4867433544163083783">Tagad pārbaudiet, vai var kārtot cilnes</translation>
@@ -7614,7 +7617,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6194333736420234626">&amp;Maksājumu veidi</translation>
 <translation id="6195005504600220730">Lasīt informāciju par jūsu pārlūku, OS un ierīci</translation>
 <translation id="6195155925303302899">Izlīdzināt centrā</translation>
-<translation id="6195163219142236913">Trešo pušu sīkfaili ir ierobežoti</translation>
 <translation id="6195693561221576702">Šo ierīci nevar iestatīt bezsaistes demonstrēšanas režīmā.</translation>
 <translation id="6196640612572343990">Bloķēt trešo pušu sīkfailus</translation>
 <translation id="6196854373336333322">Paplašinājums “<ph name="EXTENSION_NAME" />” pārvalda jūsu starpniekservera iestatījumus. Tas nozīmē, ka tas var mainīt, pārtraukt vai izsekot visas jūsu darbības tiešsaistē. Ja neesat pārliecināts, kāpēc notika šīs izmaiņas, visticamāk, jūs tās nevēlaties.</translation>
@@ -8385,7 +8387,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6731320427842222405">Var paiet dažas minūtes.</translation>
 <translation id="6732956960067639542">Varat atvērt jaunu pārlūka Chrome sesiju.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Rādīt sīkfailus un citus vietņu datus...</translation>
 <translation id="6736243959894955139">Adrese</translation>
 <translation id="6737663862851963468">Kerberos biļetes noņemšana</translation>
 <translation id="6738180164164974883">Atļaut iestatīt trešo pušu sīkfailus</translation>
@@ -11481,6 +11482,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="881799181680267069">Paslēpt citus</translation>
 <translation id="8818152010000655963">Fona tapete</translation>
 <translation id="8818988764764862764">Logs ir pārvietots pa kreisi</translation>
+<translation id="8819155700324279105">Pievienojiet papildu aizsardzības līmeni pret draudiem tiešsaistē</translation>
 <translation id="8819510664278523111">Jūsu ierīces EID ir <ph name="EID_NUMBER" />, ierīces IMEI ir <ph name="IMEI_NUMBER" />, un ierīces sērijas numurs ir <ph name="SERIAL_NUMBER" />. Šos numurus var izmantot, lai aktivizētu pakalpojumu.</translation>
 <translation id="8820817407110198400">Grāmatzīmes</translation>
 <translation id="8821045908425223359">Konfigurējiet IP adresi automātiski</translation>
@@ -12128,7 +12130,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="947329552760389097">&amp;Pārbaudīt elementus</translation>
 <translation id="947526284350604411">Jūsu atbilde</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> nevar atvērt šajā mapē esošos failus, jo tajā ir arī sistēmas faili</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Šodien pārlūkā Chrome atkal tiks ierobežoti sīkfaili}=1{Rīt pārlūkā Chrome atkal tiks ierobežoti sīkfaili}zero{Pēc # dienām pārlūkā Chrome atkal tiks ierobežoti sīkfaili}one{Pēc # dienas pārlūkā Chrome atkal tiks ierobežoti sīkfaili}other{Pēc # dienām pārlūkā Chrome atkal tiks ierobežoti sīkfaili}}</translation>
 <translation id="949807244219288032">Šī cilne ir saistīta ar HID ierīci</translation>
 <translation id="950079950995628542">No “<ph name="PHONE_NAME" />”</translation>
 <translation id="950307215746360464">Iestatīšanas ceļvedis</translation>

@@ -114,7 +114,6 @@
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1178821169867863726">12 x 16 дюймов</translation>
 <translation id="1181037720776840403">Удалить</translation>
-<translation id="1181381397492575884">Chrome запрещает сайтам использовать сторонние файлы cookie для отслеживания ваших действий в интернете. Чтобы <ph name="LINK" />, перейдите в настройки.</translation>
 <translation id="1185331130467528132"><ph name="URL" /> запрашивает доступ к другим устройствам в локальной сети</translation>
 <translation id="1185343831726846924">Я понимаю, что подключить виртуальную карту нельзя</translation>
 <translation id="1186201132766001848">Проверить пароли</translation>
@@ -227,7 +226,6 @@
 <translation id="1343830902827845050">Войдите в Chrome</translation>
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1348779747280417563">Подтверждение</translation>
-<translation id="1352798470428594123">Chrome ограничивает большинству сайтов возможность использовать сторонние файлы cookie для отслеживания ваших действий в интернете. Чтобы <ph name="LINK" />, перейдите в настройки.</translation>
 <translation id="1355158069018170842">Показывать скидки на вкладках</translation>
 <translation id="1355301061807280185">Вакансии</translation>
 <translation id="1357195169723583938">кто и когда использовал устройство;</translation>
@@ -1110,7 +1108,6 @@
 <translation id="2768397283109119044">Вы попытались обратиться к серверу в домене <ph name="DOMAIN" />, но предоставленный сертификат оказался недействительным. Он был выдан на имя зарезервированного IP-адреса или внутреннее имя хоста.</translation>
 <translation id="2770159525358613612">Попробуйте загрузить файлы ещё раз.</translation>
 <translation id="277133753123645258">Способ доставки</translation>
-<translation id="2773388851563527404">В Chrome большинству сайтов запрещено использовать сторонние файлы cookie. Запрет не действует для этого сайта, потому что такие файлы требуются ему для предоставления базовых функций. Чтобы <ph name="LINK" />, перейдите в настройки.</translation>
 <translation id="277499241957683684">Устройство не зарегистрировано</translation>
 <translation id="2775884851269838147">Первая страница печати</translation>
 <translation id="2781185443919227679">Пляжи и острова</translation>
@@ -1713,7 +1710,6 @@
 <translation id="3727309136762649052">Пространство имен</translation>
 <translation id="3727850735097852673">Чтобы использовать Google Менеджер паролей со Связкой ключей macOS, перезапустите Chrome и предоставьте доступ к Связке ключей. После перезапуска вкладки будут снова открыты.</translation>
 <translation id="3728173127485570463">Chrome перестанет требовать ваш отпечаток пальца для автозаполнения паролей.</translation>
-<translation id="3736739313435669994">Вы запретили сайтам использовать сторонние файлы cookie для отслеживания ваших действий в интернете. Чтобы <ph name="LINK" />, перейдите в настройки.</translation>
 <translation id="3738166223076830879">Этим браузером управляет администратор.</translation>
 <translation id="3739842843727261045">Поставить результатам отметку "Нравится".</translation>
 <translation id="3740447166056383374">Проверьте файлы, перед тем как копировать их</translation>
@@ -2147,7 +2143,6 @@
 <translation id="4406883609789734330">Автоматические субтитры</translation>
 <translation id="4406896451731180161">Результаты поиска</translation>
 <translation id="4407758156081352648">В целях безопасности ваша организация запретила повторно использовать пароли в Chrome. Мы шифруем пароли, чтобы защищать конфиденциальность пользователей.</translation>
-<translation id="4408413947728134509">Настройки файлов cookie <ph name="NUM_COOKIES" /></translation>
 <translation id="4409556632583862731">Новая цепочка</translation>
 <translation id="4412074349188076601">Установка ВМ в этой конфигурации допустима, однако это невозможно сделать, так как для данной архитектуры отсутствует необходимый образ.</translation>
 <translation id="4412377069090572315">Отзывы</translation>
@@ -2535,7 +2530,6 @@
 <translation id="5061227663725596739">Вам нужен домен <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Историю печати.</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(используется 1 файл cookie)}one{(используется # файл cookie)}few{(используется # файла cookie)}many{(используется # файлов cookie)}other{(используется # файла cookie)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Проверьте адрес прокси-сервера<ph name="END_LINK" />.</translation>
 <translation id="5070838744279127212">Десятый рулон</translation>
 <translation id="507130231501693183">Почтовый ящик 4</translation>
@@ -3044,7 +3038,6 @@
 <translation id="5918373444239520146">Гаджеты и портативные электронные устройства</translation>
 <translation id="5918847752193018339">Сохраняя CVC-коды, вы сможете быстрее оплачивать покупки. <ph name="LINK_BEGIN" />Удалить сохраненные защитные коды<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{Используется 1 файл cookie}one{Используется # файл cookie}few{Используется # файла cookie}many{Используется # файлов cookie}other{Используется # файла cookie}}</translation>
 <translation id="5921185718311485855">Включено</translation>
 <translation id="5921639886840618607">Сохранить карту в аккаунте Google?</translation>
 <translation id="5921952831792678223">Пикапы</translation>
@@ -3225,7 +3218,6 @@
 <translation id="6194209731893739467">Здесь вы найдете все отслеживаемые товары</translation>
 <translation id="6195371403461054755">Геология</translation>
 <translation id="6195418151868446719">Бытовая электроника</translation>
-<translation id="6196640612572343990">Блокировать сторонние файлы cookie</translation>
 <translation id="6197648101609735209">89 x 89 мм</translation>
 <translation id="6198480336395236519">Разделители по всей длине</translation>
 <translation id="6203231073485539293">Проверьте подключение к интернету.</translation>
@@ -3721,7 +3713,6 @@
 <translation id="6978121630131642226">Поисковые системы</translation>
 <translation id="6978236010531171013">Все равно поделиться</translation>
 <translation id="6979158407327259162">Google Диск</translation>
-<translation id="6979302985396162258">настроить доступ к сторонним файлам cookie</translation>
 <translation id="6979440798594660689">Без звука (по умолчанию)</translation>
 <translation id="6987806006823772670">Конверт (с покрытием)</translation>
 <translation id="6989256887001961296">Этот контент заблокирован.</translation>
@@ -4735,7 +4726,6 @@
 <translation id="8622864575115813231">Устанавливаем связь с вашим финансовым учреждением…</translation>
 <translation id="8624354461147303341">Разрешить</translation>
 <translation id="8634957317623797170">54 x 86 мм</translation>
-<translation id="8635822281281406185">Добавьте до 10 файлов, вкладок или изображений.</translation>
 <translation id="8637362707224133343">В Chrome есть функции, защищающие вас при работе в браузере. К ним относится Google Безопасный просмотр. Недавно он обнаружил, что сайт, который вы попытались открыть, <ph name="BEGIN_LINK" />является фишинговым<ph name="END_LINK" />. Такие сайты похожи на знакомые вам страницы, но создаются с целью обмана.<ph name="NEW_LINE" />Помните, что злоумышленники могут взламывать даже защищенные ресурсы. Если вы считаете, что переход заблокирован по ошибке и сайт не представляет опасности, <ph name="BEGIN_ERROR_LINK" />сообщите нам об этом<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">Чтобы взаимодействовать с другими пользователями и делиться с ними вкладками, нужно войти в Chrome.</translation>
 <translation id="8641131559425911240">Конверт (высокосортный)</translation>
@@ -5116,7 +5106,6 @@
 <translation id="945673208656386843">После того как вы сохраните эту карту на своем устройстве, ее реквизиты будут заполняться автоматически при покупках в Chromium.</translation>
 <translation id="94613679163347541">Сравнить товары из категории "<ph name="CATEGORY" />"?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать сайт в Google Сайтах, нажмите Tab, а затем Ввод.</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Сегодня Chrome снова ограничит использование файлов cookie}=1{Завтра Chrome снова ограничит использование файлов cookie}one{Chrome снова ограничит использование файлов cookie через # день}few{Chrome снова ограничит использование файлов cookie через # дня}many{Chrome снова ограничит использование файлов cookie через # дней}other{Chrome снова ограничит использование файлов cookie через # дня}}</translation>
 <translation id="949026252328034572">К группе вкладок "<ph name="GROUP_NAME" />" присоединилось несколько человек (<ph name="MEMBER_COUNT" />).</translation>
 <translation id="949314938206378263">Чтобы смотреть этот сайт, нужно получить разрешение родителя через Family Link.</translation>
 <translation id="950736567201356821">Три отверстия сверху</translation>

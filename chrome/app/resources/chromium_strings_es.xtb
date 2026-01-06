@@ -85,6 +85,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="193439633299369377">ChromiumOS se debe reiniciar para que se aplique la actualización.</translation>
 <translation id="1951406923938785464">Chromium ha bloqueado esta descarga porque el tipo de archivo no se descarga habitualmente y podría ser peligroso</translation>
 <translation id="1953553007165777902">Descargando... Minutos restantes: <ph name="MINUTE" />.</translation>
+<translation id="1965068424387304464">Consejo de Chromium: guarda contraseñas</translation>
 <translation id="1966382378801805537">Chromium no puede determinar ni establecer el navegador predeterminado</translation>
 <translation id="1990262977744080398">Averigua por qué Chromium bloquea algunos archivos (se abre en una nueva pestaña)</translation>
 <translation id="1999715455684970349">Mantiene tu software de Chromium actualizado. Si este servicio se inhabilita o se detiene, tu software de Chromium no se mantendrá actualizado, por lo que las vulnerabilidades de seguridad que puedan surgir no se podrán corregir y es posible que algunas funciones no estén operativas. Este servicio se desinstala automáticamente cuando no lo usa ningún software de Chromium.</translation>
@@ -255,6 +256,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3802055581630249637">Chromium precarga páginas que probablemente visites para que se carguen más rápido cuando accedas a ellas</translation>
 <translation id="3810973564298564668">Gestionar</translation>
 <translation id="3823384748599722168">Para usar tus contraseñas guardadas, escanea el código QR, descarga Chromium para iOS e inicia sesión en tu cuenta de Google</translation>
+<translation id="3837584850181228767">Consejo de Chromium: Navegación segura mejorada</translation>
 <translation id="3846683726093018685">**Resumir:** en una sola frase de menos de 30 palabras, describe el tema principal y la finalidad del contenido de la captura de pantalla.
 
           **Sugerir preguntas:** genera una lista con viñetas de entre 3 y 5 preguntas que inviten a la reflexión y que un usuario podría hacer para entender mejor la captura de pantalla. Al menos una de estas preguntas debe referirse específicamente a un objeto visual, su diseño o su ubicación.</translation>

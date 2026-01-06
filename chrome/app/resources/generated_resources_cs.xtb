@@ -1813,6 +1813,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="221297410904507041">Vymažte historii, soubory cookie, mezipaměť a další obsah</translation>
 <translation id="2213410656650624348">Mírné</translation>
 <translation id="2214018885812055163">Sdílené složky</translation>
+<translation id="2214453882118345682">Nakupujte, překládejte a identifikujte různé věci pomocí fotoaparátu.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 řádek není zobrazen&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> řádky nejsou zobrazeny&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> řádku není zobrazeno&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> řádků není zobrazeno&gt;}}</translation>
 <translation id="2215070081105889450">Pokud chcete sdílet zvuk, sdílejte místo toho kartu nebo obrazovku</translation>
 <translation id="2217208085547223783">Stav důvěryhodnosti</translation>
@@ -5718,6 +5719,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4864805589453749318">Vyberte, který rodič uděluje oprávnění k přidání školního účtu.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blokováno)</translation>
 <translation id="486505726797718946">Úspora paměti</translation>
+<translation id="4865063548323785458">Ukládejte a automaticky vyplňujte hesla, abyste se mohli snadno přihlašovat na weby a do aplikací</translation>
 <translation id="486635084936119914">Určité typy souborů po stažení automaticky otevírat</translation>
 <translation id="4867272607148176509">Rodiče mohou schvalovat nebo blokovat aplikace, nastavovat časové limity a ovládat procházení webu. Později lze přidat školní účet a získat tak přístup k většině školních zdrojů.</translation>
 <translation id="4867433544163083783">Zkontrolovat, zda lze karty uspořádat</translation>
@@ -6925,7 +6927,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="571222594670061844">Weby mohou zobrazovat výzvy k přihlášení od služeb ověření identity</translation>
 <translation id="5713033452812927234">Otevírání oken z předchozího zařízení</translation>
 <translation id="5713158217420111469">Připojeno k síti <ph name="DEVICE" /></translation>
-<translation id="5714095002162155866">Zobrazit záložky po straně</translation>
+<translation id="5714095002162155866">Zobrazit karty po straně</translation>
 <translation id="5714100381896040477">Omezit pohyb na obrazovce</translation>
 <translation id="5719854774000914513">Weby mohou žádat o připojení k zařízením HID</translation>
 <translation id="572155275267014074">Nastavení zařízení Android</translation>
@@ -7612,7 +7614,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6194333736420234626">&amp;Platební metody</translation>
 <translation id="6195005504600220730">Přečtěte si informace o svém prohlížeči, operačním systému a zařízení</translation>
 <translation id="6195155925303302899">Zarovnat na střed</translation>
-<translation id="6195163219142236913">Soubory cookie třetích stran jsou omezeny</translation>
 <translation id="6195693561221576702">Toto zařízení nelze nastavit v offline ukázkovém režimu.</translation>
 <translation id="6196640612572343990">Blokovat soubory cookie třetích stran</translation>
 <translation id="6196854373336333322">Rozšíření <ph name="EXTENSION_NAME" /> převzalo kontrolu nad nastavením proxy serveru, což znamená, že může změnit, narušit nebo sledovat vše, co děláte na internetu. Pokud si nejste jisti, proč k tomu došlo, zřejmě se jedná o nežádoucí změnu.</translation>
@@ -8383,7 +8384,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6731320427842222405">Tato operace může několik minut trvat</translation>
 <translation id="6732956960067639542">Místo toho otevřete novou relaci prohlížeče Chrome.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Zobrazit soubory cookie a jiná data webů...</translation>
 <translation id="6736243959894955139">Adresa</translation>
 <translation id="6737663862851963468">Odstranit lístek Kerberos</translation>
 <translation id="6738180164164974883">Povolit nastavení souborů cookie třetích stran</translation>
@@ -11477,6 +11477,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="881799181680267069">Skrýt ostatní</translation>
 <translation id="8818152010000655963">Tapeta</translation>
 <translation id="8818988764764862764">Okno se posunulo doleva</translation>
+<translation id="8819155700324279105">Využijte další vrstvu ochrany proti online hrozbám</translation>
 <translation id="8819510664278523111">EID vašeho zařízení je <ph name="EID_NUMBER" />, jeho IMEI je <ph name="IMEI_NUMBER" /> a jeho sériové číslo je <ph name="SERIAL_NUMBER" />. Tato čísla lze použít k aktivaci služby.</translation>
 <translation id="8820817407110198400">Záložky</translation>
 <translation id="8821045908425223359">Nakonfigurovat IP adresu automaticky</translation>
@@ -12124,7 +12125,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="947329552760389097">&amp;Prozkoumat prvky</translation>
 <translation id="947526284350604411">Vaše odpověď</translation>
 <translation id="947667444780368238">Web <ph name="ORIGIN" /> soubory v této složce nemůže otevřít, protože tato složka obsahuje systémové soubory</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome dnes soubory cookie opět omezí}=1{Chrome zítra soubory cookie opět omezí}few{Za # dny Chrome soubory cookie opět omezí}many{Za # dne Chrome soubory cookie opět omezí}other{Za # dní Chrome soubory cookie opět omezí}}</translation>
 <translation id="949807244219288032">Tato karta je připojena k zařízení HID</translation>
 <translation id="950079950995628542">Z telefonu <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Průvodce nastavením</translation>

@@ -1821,6 +1821,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="221297410904507041">Padamkan sejarah, kuki, cache dan pelbagai lagi</translation>
 <translation id="2213410656650624348">Sederhana</translation>
 <translation id="2214018885812055163">Folder kongsi</translation>
+<translation id="2214453882118345682">Beli, terjemahkan dan kenal pasti perkara yang anda lihat menggunakan kamera anda.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 garisan tidak ditunjukkan&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> garisan tidak ditunjukkan&gt;}}</translation>
 <translation id="2215070081105889450">Kongsi tab atau skrin untuk berkongsi audio</translation>
 <translation id="2217208085547223783">Keadaan Amanah</translation>
@@ -5733,6 +5734,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4864805589453749318">Pilih ibu/bapa yang memberikan kebenaran untuk menambah akaun sekolah.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (disekat)</translation>
 <translation id="486505726797718946">Kenangan Disimpan</translation>
+<translation id="4865063548323785458">Simpan dan autolengkap kata laluan anda supaya anda boleh log masuk ke laman dan apl dengan mudah</translation>
 <translation id="486635084936119914">Buka jenis fail tertentu secara automatik selepas memuat turun</translation>
 <translation id="4867272607148176509">Ibu bapa boleh meluluskan atau menyekat apl, menetapkan had masa dan mengawal penyemakan imbas web. Akaun sekolah boleh ditambahkan kemudian untuk mengakses kebanyakan sumber sekolah.</translation>
 <translation id="4867433544163083783">Semak sekarang jika tab boleh disusun</translation>
@@ -7631,7 +7633,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6194333736420234626">&amp;Kaedah pembayaran</translation>
 <translation id="6195005504600220730">Baca maklumat tentang penyemak imbas, OS dan peranti anda</translation>
 <translation id="6195155925303302899">Jajarkan ke tengah</translation>
-<translation id="6195163219142236913">Kuki pihak ketiga terhad</translation>
 <translation id="6195693561221576702">Peranti ini tidak boleh disediakan dalam mod tunjuk cara luar talian.</translation>
 <translation id="6196640612572343990">Sekat kuki pihak ketiga</translation>
 <translation id="6196854373336333322">Sambungan "<ph name="EXTENSION_NAME" />" telah mengambil alih kawalan tetapan proksi anda, yang bermakna sambungan ini boleh mengubah, menghentikan atau mencuri dengar apa-apa sahaja yang anda lakukan dalam talian. Jika anda tidak pasti mengapa perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
@@ -8398,7 +8399,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6731320427842222405">Ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="6732956960067639542">Buka sesi penyemak imbas Chrome baharu.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Tunjukkan kuki dan data tapak yang lain...</translation>
 <translation id="6736243959894955139">Alamat</translation>
 <translation id="6737663862851963468">Alih keluar tiket Kerberos</translation>
 <translation id="6738180164164974883">Benarkan penetapkan kuki pihak ketiga</translation>
@@ -11493,6 +11493,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="881799181680267069">Sembunyikan Yang Lain</translation>
 <translation id="8818152010000655963">Kertas dinding</translation>
 <translation id="8818988764764862764">Tetingkap dialihkan ke kiri</translation>
+<translation id="8819155700324279105">Tambahkan lapisan perlindungan tambahan terhadap ancaman dalam talian</translation>
 <translation id="8819510664278523111">EID peranti anda ialah <ph name="EID_NUMBER" /> dan IMEI peranti ialah <ph name="IMEI_NUMBER" /> dan nombor siri peranti ialah <ph name="SERIAL_NUMBER" />. Nombor ini boleh digunakan untuk mengaktifkan perkhidmatan.</translation>
 <translation id="8820817407110198400">Penanda buku</translation>
 <translation id="8821045908425223359">Konfigurasikan alamat IP secara automatik</translation>
@@ -12140,7 +12141,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="947329552760389097">&amp;Periksa Unsur</translation>
 <translation id="947526284350604411">Jawapan anda</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> tidak dapat membuka fail dalam folder ini kerana folder ini mengandungi fail sistem</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome akan mengehadkan kuki lagi hari ini}=1{Chrome akan mengehadkan kuki lagi esok}other{# hari sehingga Chrome mengehadkan kuki lagi}}</translation>
 <translation id="949807244219288032">Tab ini disambungkan kepada peranti HID</translation>
 <translation id="950079950995628542">Daripada "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Panduan persediaan</translation>

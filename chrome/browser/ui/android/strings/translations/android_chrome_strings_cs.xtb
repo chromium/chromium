@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Odebrat</translation>
 <translation id="1183189057400844278">Pokud chcete mít vždy možnost použít hesla ve svém účtu Google, ověřte svou totožnost</translation>
 <translation id="1187810343066461819">Také z tohoto auta vymazat záložky, historii a další položky</translation>
-<translation id="1193589902336218259">Zapnout oznámení s tipy</translation>
 <translation id="1193729455103054076">Použít silné heslo?</translation>
 <translation id="11947597112837849">e‑mailová adresa</translation>
 <translation id="1197267115302279827">Přesunutí záložek</translation>
@@ -995,7 +994,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5267572070504076962">Zapněte Bezpečné prohlížení, abyste získali ochranu před nebezpečnými weby</translation>
 <translation id="5271967389191913893">Zařízení obsah ke stažení nemůže otevřít.</translation>
 <translation id="5273031377282080577">Toto nastavení spravuje váš administrátor.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Byla odhlášena oznámení z jednoho nepoužívaného webu}few{Byla odhlášena oznámení ze # nepoužívaných webů}many{Byla odhlášena oznámení z # nepoužívaného webu}other{Byla odhlášena oznámení z # nepoužívaných webů}}</translation>
 <translation id="5292796745632149097">Odeslat do zařízení</translation>
 <translation id="5301876394151419436">Jste přihlášeni jako <ph name="EMAIL" />. Synchronizaci můžete v nastavení kdykoli zastavit. Google může personalizovat Vyhledávání a další služby na základě vaší historie.</translation>
 <translation id="5304593522240415983">Toto pole nesmí být prázdné</translation>
@@ -1586,7 +1584,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7612619742409846846">Jste přihlášeni do Googlu jako</translation>
 <translation id="7612989789287281429">Přihlašování…</translation>
 <translation id="7619072057915878432">Stahování souboru <ph name="FILE_NAME" /> se nezdařilo z důvodu selhání sítě.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Byl odhlášen odběr oznámení z jednoho webu}few{Byl odhlášen odběr oznámení ze # webů}many{Byl odhlášen odběr oznámení z # webu}other{Byl odhlášen odběr oznámení z # webů}}</translation>
 <translation id="7626032353295482388">Vítá vás Chrome</translation>
 <translation id="7628417132421583481">Přejít do Správce hesel</translation>
 <translation id="7630202231528827509">Adresa URL poskytovatele</translation>

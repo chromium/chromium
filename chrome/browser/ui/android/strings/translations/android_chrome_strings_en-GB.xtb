@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1183189057400844278">To make sure that you can always use the passwords in your Google Account, verify that it's you</translation>
 <translation id="1187810343066461819">Also delete bookmarks, history and more from this car</translation>
-<translation id="1193589902336218259">Turn on tips notifications</translation>
 <translation id="1193729455103054076">Use strong password?</translation>
 <translation id="11947597112837849">email address</translation>
 <translation id="1197267115302279827">Move bookmarks</translation>
@@ -995,7 +994,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5267572070504076962">Turn on Safe Browsing to get protection against dangerous sites</translation>
 <translation id="5271967389191913893">Device cannot open the content to be downloaded.</translation>
 <translation id="5273031377282080577">Your administrator manages this setting.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Unsubscribed from one unused site}other{Unsubscribed from # unused sites}}</translation>
 <translation id="5292796745632149097">Send to</translation>
 <translation id="5301876394151419436">You are signed in as <ph name="EMAIL" />. You can stop syncing at any time in settings. Google may personalise Search and other services based on your history.</translation>
 <translation id="5304593522240415983">This field cannot be blank</translation>
@@ -1586,7 +1584,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7612619742409846846">Signed in to Google as</translation>
 <translation id="7612989789287281429">Signing you in…</translation>
 <translation id="7619072057915878432"><ph name="FILE_NAME" /> download failed due to network failures.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Unsubscribed from 1 site}other{Unsubscribed from # sites}}</translation>
 <translation id="7626032353295482388">Welcome to Chrome</translation>
 <translation id="7628417132421583481">Go to Password Manager</translation>
 <translation id="7630202231528827509">Provider URL</translation>

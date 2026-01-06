@@ -4880,15 +4880,6 @@ Chính sách này đã bị loại bỏ ở M112.</translation>
 <translation id="4408428864159735559">Danh sách các mục chia sẻ tệp trong mạng đã định cấu hình sẵn.</translation>
 <translation id="4410236409016356088">Cho phép điều chỉnh băng thông mạng</translation>
 <translation id="4410361389637971319">Cho phép các nguồn gốc của Ứng dụng web tách biệt sử dụng Direct Sockets</translation>
-<translation id="4410792459434637140">Bạn có thể dùng chính sách này để cho phép <ph name="CHROME_DEVTOOLS_NAME" /> trên các URL cụ thể. Các mẫu URL sẽ được so khớp với URL của trang đang được kiểm tra. Nếu tìm thấy kết quả trùng khớp thì <ph name="CHROME_DEVTOOLS_NAME" /> sẽ được cho phép. Quy tắc này áp dụng ngay cả khi URL đó cũng khớp với chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> và chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> được đặt thành không cho phép (giá trị 2). Để biết thông tin về định dạng URL, hãy truy cập https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Nếu bạn không đặt chính sách thì danh sách cho phép này sẽ không có hiệu lực. Vì được cung cấp theo mặc định nên <ph name="CHROME_DEVTOOLS_NAME" /> sẽ chỉ bị chặn nếu được chỉ định trong chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.
-
-Các URL không khớp sẽ tuân theo chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Chính sách này cũng áp dụng cho <ph name="CHROME_DEVTOOLS_NAME" /> được mở cho các tiện ích và ứng dụng web.
-
-Chính sách này giới hạn ở 1.000 URL.</translation>
 <translation id="4411734231900934213">Mức chênh lệch được phép giữa đồng hồ trên thiết bị của con và thiết bị của cha mẹ (tính bằng giây).</translation>
 <translation id="441217499641439905">Tắt Google Drive qua các kết nối di động trong ứng dụng Tệp dành cho <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4412885120239670573">Nếu bạn đặt chính sách này thành Enabled (Bật), thì trình xem PDF nội bộ trong <ph name="PRODUCT_NAME" /> sẽ tắt, tệp PDF sẽ được xem là tệp tải xuống và người dùng sẽ mở tệp PDF bằng ứng dụng mặc định.
@@ -7459,17 +7450,6 @@ Nếu bạn đặt chính sách này thành <ph name="DISPLAY_MANAGEMENT_LABEL_T
 <translation id="5958746038080720143">Bật tính năng tối ưu hóa Web Proxy Auto-Discovery (WPAD) (Tự động phát hiện proxy web)</translation>
 <translation id="5961137303188584693">Địa chỉ MAC trên NIC tích hợp của thiết bị</translation>
 <translation id="5962271004971310788">Để điều hướng ở Chế độ ẩn danh, người dùng phải cho phép các tiện ích chạy ở Chế độ ẩn danh</translation>
-<translation id="5962401339101255719">Nếu đặt chính sách này thành 0 (giá trị mặc định) thì bạn có thể truy cập vào công cụ cho nhà phát triển và Bảng điều khiển JavaScript, ngoại trừ trường hợp tiện ích được cài đặt theo chính sách doanh nghiệp hoặc (từ phiên bản 114 trở đi và nếu người dùng là người dùng được quản lý) tiện ích được tích hợp vào trình duyệt. Nếu đặt giá trị chính sách này thành 1 thì bạn có thể truy cập vào các công cụ cho nhà phát triển và Bảng điều khiển JavaScript trong mọi trường hợp, bao gồm cả trường hợp tiện ích được cài đặt theo chính sách doanh nghiệp. Nếu đặt giá trị chính sách này thành 2 thì bạn không thể truy cập vào các công cụ cho nhà phát triển và không thể kiểm tra các thành phần của trang web.
-
-Chế độ cài đặt này cũng tắt các phím tắt và mục truy cập trên trình đơn hoặc trình đơn theo bối cảnh dùng để mở các công cụ cho nhà phát triển hoặc Bảng điều khiển JavaScript.
-
-Kể từ phiên bản <ph name="PRODUCT_NAME" /> 99, chế độ cài đặt này cũng kiểm soát điểm truy cập cho tính năng "Xem nguồn trang". Nếu bạn đặt giá trị chính sách này thành "DeveloperToolsDisallowed" (giá trị 2) thì người dùng sẽ không truy cập được chế độ xem nguồn thông qua phím tắt hay trình đơn theo bối cảnh. Để chặn hoàn toàn chế độ xem nguồn, bạn cũng phải thêm "view-source:*" vào chính sách <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-Kể từ phiên bản <ph name="PRODUCT_NAME" /> 119, chế độ cài đặt này cũng kiểm soát việc có thể kích hoạt và sử dụng chế độ nhà phát triển dành cho các Ứng dụng web tách biệt hay không.
-
-Kể từ phiên bản <ph name="PRODUCT_NAME" /> 128, nếu bạn đặt chính sách <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> thì chế độ cài đặt này sẽ không kiểm soát chế độ nhà phát triển trên trang tiện ích.
-
-Nếu bạn muốn hạn chế quyền truy cập vào Công cụ cho nhà phát triển dựa trên URL của trang, hãy sử dụng các chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> và <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="5963752574792883406">cổng 990 (có thể được bỏ chặn cho đến ngày 1/2/2022)</translation>
 <translation id="596523880465577341">Chính sách này không còn được dùng nữa và không được hỗ trợ, vui lòng dùng chính sách "<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />".</translation>
 <translation id="5966615072639944554">Tiện ích được phép sử dụng API chứng thực từ xa</translation>
@@ -8229,15 +8209,6 @@ Bạn có thể sử dụng chính sách <ph name="HTTP_ALLOWLIST_POLICY_NAME" /
 cho các tên máy chủ hoặc mẫu tên máy chủ cụ thể.
 
 Ngoài ra, hãy xem chính sách <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
-<translation id="6439002087726312326">Các mẫu URL sẽ được so khớp với URL của trang đang được kiểm tra. Nếu tìm thấy kết quả trùng khớp thì <ph name="CHROME_DEVTOOLS_NAME" /> sẽ bị chặn. Để biết thông tin về định dạng URL, hãy truy cập https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> sẽ được ưu tiên hơn chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.
-
-Các URL không khớp sẽ tuân theo chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Chính sách này cũng áp dụng cho <ph name="CHROME_DEVTOOLS_NAME" /> được mở cho các tiện ích và ứng dụng web.
-
-Chính sách này giới hạn ở 1.000 URL.</translation>
 <translation id="6440051664870270040">Cho phép các trang web chuyển tới và mở các cửa sổ bật lên cùng một lúc</translation>
 <translation id="6441781723322254041">Cho phép cookie bị cắt bớt</translation>
 <translation id="6446366416439249472">Tắt tính năng đồng bộ hoá Google Drive qua kết nối di động</translation>

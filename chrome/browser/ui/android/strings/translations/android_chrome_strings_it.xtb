@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Rimuovi</translation>
 <translation id="1183189057400844278">Verifica la tua identità per assicurarti di poter usare sempre le password nel tuo Account Google</translation>
 <translation id="1187810343066461819">Elimina anche preferiti, cronologia e altri dati da questa auto</translation>
-<translation id="1193589902336218259">Attiva le notifiche dei suggerimenti</translation>
 <translation id="1193729455103054076">Vuoi usare una password efficace?</translation>
 <translation id="11947597112837849">indirizzo email</translation>
 <translation id="1197267115302279827">Sposta i Preferiti</translation>
@@ -995,7 +994,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5267572070504076962">Attiva Navigazione sicura per proteggerti da siti pericolosi</translation>
 <translation id="5271967389191913893">Non è possibile aprire i contenuti da scaricare sul dispositivo.</translation>
 <translation id="5273031377282080577">Questa impostazione è gestita dall'amministratore.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Iscrizione a un sito inutilizzato annullata}other{Iscrizione a # siti inutilizzati annullata}}</translation>
 <translation id="5292796745632149097">Invia a</translation>
 <translation id="5301876394151419436">Hai eseguito l'accesso come <ph name="EMAIL" />. Puoi interrompere la sincronizzazione in qualsiasi momento nelle Impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="5304593522240415983">Questo campo non può essere vuoto</translation>
@@ -1586,7 +1584,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7612619742409846846">Accesso effettuato a Google come</translation>
 <translation id="7612989789287281429">Accesso in corso…</translation>
 <translation id="7619072057915878432">Download di <ph name="FILE_NAME" /> non riuscito a causa di errori di rete.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Iscrizione a un sito annullata}other{Iscrizione a # siti annullata}}</translation>
 <translation id="7626032353295482388">Ti diamo il benvenuto in Chrome</translation>
 <translation id="7628417132421583481">Vai a Gestore delle password</translation>
 <translation id="7630202231528827509">URL del fornitore</translation>

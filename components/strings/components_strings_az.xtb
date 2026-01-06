@@ -114,7 +114,6 @@
 <translation id="1178581264944972037">Durdurun</translation>
 <translation id="1178821169867863726">12 x 16 düym</translation>
 <translation id="1181037720776840403">Silin</translation>
-<translation id="1181381397492575884">Chrome saytların baxış zamanı sizi izləmək üçün üçüncü tərəf kukilərindən istifadəsini bloklayır. <ph name="LINK" /> üçün ayarlara daxil olun.</translation>
 <translation id="1185331130467528132"><ph name="URL" /> lokal şəbəkənizdəki digər cihazlara daxil olmaq istəyir</translation>
 <translation id="1185343831726846924">Virtual kart təsdiqini aktiv etmək olmur</translation>
 <translation id="1186201132766001848">Parolları yoxlayın</translation>
@@ -227,7 +226,6 @@
 <translation id="1343830902827845050">Chrome-a daxil olun</translation>
 <translation id="1346748346194534595">Sağ</translation>
 <translation id="1348779747280417563">Adı təsdiq edin</translation>
-<translation id="1352798470428594123">Chrome əksər saytların baxış zamanı sizi izləmək üçün üçüncü tərəf kukilərindən istifadəsini məhdudlaşdırır. <ph name="LINK" /> üçün ayarlara daxil olun.</translation>
 <translation id="1355158069018170842">Tablarda qiymət endirimlərini göstərin</translation>
 <translation id="1355301061807280185">İşlər</translation>
 <translation id="1357195169723583938">Cihazı ən son kim və nə vaxt istifadə edib</translation>
@@ -1110,7 +1108,6 @@
 <translation id="2768397283109119044"><ph name="DOMAIN" /> domeninə giriş cəhdi etdiniz, amma server həmin ada təyin edilmiş yanlış sertifikat təqdim etdi. Ad qorunan IP ünvanı və ya daxili host adıdır.</translation>
 <translation id="2770159525358613612">Faylları yenidən yükləyin</translation>
 <translation id="277133753123645258">Göndərmə üsulu</translation>
-<translation id="2773388851563527404">Chrome əksər saytların üçüncü tərəf kukilərindən istifadəsini məhdudlaşdırır. Lakin bu sayt kukilər vasitəsilə əsas xidmətləri təmin etdiyi üçün onlara icazə verir. <ph name="LINK" /> üçün ayarlara daxil olun.</translation>
 <translation id="277499241957683684">Çatmayan cihaz qeydi</translation>
 <translation id="2775884851269838147">İlk çap səhifəsi</translation>
 <translation id="2781185443919227679">Çimərlik və Adalar</translation>
@@ -1710,7 +1707,6 @@
 <translation id="3727309136762649052">Ad sahəsi</translation>
 <translation id="3727850735097852673">MacOS Keychain ilə Google Parol Meneceri istifadəsi üçün Chrome-u yenidən başladın və Keychain-ə giriş imkanı verin. Yenidən başladıldıqdan sonra tablar təkrar açılacaq.</translation>
 <translation id="3728173127485570463">Chrome brauzeri parolları avtomatik doldurmaq üçün barmaq izi tələb etməyəcək</translation>
-<translation id="3736739313435669994">Saytların baxış zamanı sizi izləmək üçün üçüncü tərəf kukilərindən istifadəsini blokladınız. <ph name="LINK" /> üçün ayarlara daxil olun.</translation>
 <translation id="3738166223076830879">Brauzeriniz administratorunuz tərəfindən idarə edilir.</translation>
 <translation id="3739842843727261045">"Baş barmaq yuxarı" bu nəticələri bəyəndiyinizi göstərir</translation>
 <translation id="3740447166056383374">Kopyalamazdan əvvəl nəzərdən keçirilməlidir</translation>
@@ -2144,7 +2140,6 @@
 <translation id="4406883609789734330">Avtomatik subtitrlər</translation>
 <translation id="4406896451731180161">axtarış nəticələri</translation>
 <translation id="4407758156081352648">Təhlükəsizliyi qorumaq üçün təşkilatınız parolların Chrome-da təkrar istifadəsinə icazə vermir. Chrome-dakı parollar istifadəçi məxfiliyini qorumaq üçün şifrələnir.</translation>
-<translation id="4408413947728134509">Kukilər <ph name="NUM_COOKIES" /></translation>
 <translation id="4409556632583862731">Yeni mövzu</translation>
 <translation id="4412074349188076601">Bu konfiqurasiya quraşdırıla bilən kimi qeyd olunub, lakin bu arxitektura üçün heç bir şəkil təqdim edilməyib, ona görə də onu quraşdırmaq mümkün deyil.</translation>
 <translation id="4412377069090572315">İnsanların fikirləri</translation>
@@ -2532,7 +2527,6 @@
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> nəzərdə tuturdunuz?</translation>
 <translation id="5066056036849835175">Çap tarixçəsi</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 kuki istifadə edilir)}other{(# kuki istifadə edilir)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Proksi ünvanı yoxlanılır<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Onuncu Rulon</translation>
 <translation id="507130231501693183">Poçt qutusu 4</translation>
@@ -3041,7 +3035,6 @@
 <translation id="5918373444239520146">Qadcet və daşınabilən elektronika</translation>
 <translation id="5918847752193018339">CVC-ni yadda saxlayaraq cəld ödəniş edin. <ph name="LINK_BEGIN" />Yadda saxlanmış güvənlik kodlarını silin<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 istifadə edilir}other{# istifadə edilir}}</translation>
 <translation id="5921185718311485855">Aktiv</translation>
 <translation id="5921639886840618607">Kart Google Hesabında yadda saxlanılsın?</translation>
 <translation id="5921952831792678223">Pikaplar</translation>
@@ -3222,7 +3215,6 @@
 <translation id="6194209731893739467">Bütün izlənən məhsulları burada görə bilərsiniz</translation>
 <translation id="6195371403461054755">Geologiya</translation>
 <translation id="6195418151868446719">İstehlakçı Elektronikası</translation>
-<translation id="6196640612572343990">Üçüncü tərəf kukiləri blok edin</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Tam kəsilmiş tablar</translation>
 <translation id="6203231073485539293">İnternet bağlantısını yoxlayın</translation>
@@ -3718,7 +3710,6 @@
 <translation id="6978121630131642226">Axtarış Sistemləri</translation>
 <translation id="6978236010531171013">İstənilən halda paylaşın</translation>
 <translation id="6979158407327259162">Google Disk</translation>
-<translation id="6979302985396162258">üçüncü tərəf kukilərinə girişi idarə edin</translation>
 <translation id="6979440798594660689">Səssiz edin (defolt)</translation>
 <translation id="6987806006823772670">Zərf (örtüklü)</translation>
 <translation id="6989256887001961296">Bu kontent bloklanıb.</translation>
@@ -4731,7 +4722,6 @@
 <translation id="8622864575115813231">Maliyyə qurumunuzla əlaqə saxlanılır...</translation>
 <translation id="8624354461147303341">Endirim əldə edin</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
-<translation id="8635822281281406185">10-a qədər fayl, tab və ya şəkil əlavə edin</translation>
 <translation id="8637362707224133343">Chrome axtarış zamanı sizi qoruyan daxili güvənlik funksiyalarına malikdir. Daxil olmağa cəhd etdiyiniz saytda <ph name="BEGIN_LINK" />bu yaxınlarda fişinq tapan<ph name="END_LINK" /> Google güvənli baxış buna misaldır. Fişinq saytları sizi aldatmaq üçün özlərini digər saytlar kimi təqdim edir.<ph name="NEW_LINE" />Bəzən hücumçular təhlükəsiz saytları da ələ keçirir. Yanlışlıq olduğunu və saytın təhlükəli olmadığını düşünürsünüzsə, <ph name="BEGIN_ERROR_LINK" />bizə bildirin<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">Tabları paylaşmaq və başqaları ilə əməkdaşlıq etmək üçün Chrome-a daxil ola bilməlisiniz</translation>
 <translation id="8641131559425911240">Zərf (yüksəkkeyfiyyətli)</translation>
@@ -5112,7 +5102,6 @@
 <translation id="945673208656386843">Bu cihazda yadda saxlanıldıqda Chromium-da edilən satınalmalar üçün bu kartı avtomatik doldurun</translation>
 <translation id="94613679163347541"><ph name="CATEGORY" /> müqayisə edilsin?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Google Sayt'da cəld yeni sayt yaradın</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome bu gün kukiləri yenidən məhdudlaşdıracaq}=1{Chrome sabah kukiləri yenidən məhdudlaşdıracaq}other{Chrome-un kukiləri yenidən məhdudlaşdırmasına # gün qaldı}}</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> üzv "<ph name="GROUP_NAME" />" tab qrupuna qoşuldu</translation>
 <translation id="949314938206378263">Bu saytı ziyarət etməyi istəmisiniz. Valideyniniz Family Link'də cavab verə bilər.</translation>
 <translation id="950736567201356821">Yuxarıdan üçlü deşik açın</translation>

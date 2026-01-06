@@ -83,6 +83,7 @@
 <translation id="193439633299369377">ChromiumOS må startes på nytt for at oppdateringen skal tas i bruk.</translation>
 <translation id="1951406923938785464">Chromium har blokkert denne nedlastingen fordi filtypen ikke lastes ned ofte, så den kan være farlig</translation>
 <translation id="1953553007165777902">Laster ned … <ph name="MINUTE" /> minutt(er) igjen</translation>
+<translation id="1965068424387304464">Chromium-tips: Lagre passord</translation>
 <translation id="1966382378801805537">Chromium kan ikke fastslå eller angi standardnettleseren</translation>
 <translation id="1990262977744080398">Finn ut hvorfor Chromium blokkerer enkelte filer (åpnes i en ny fane)</translation>
 <translation id="1999715455684970349">Holder Chromium-programvaren oppdatert. Hvis denne tjenesten deaktiveres eller stoppes, blir ikke Chromium-programvaren din holdt oppdatert. Det betyr at eventuelle sikkerhetsproblemer som oppstår, ikke kan utbedres, og at noen funksjoner kanskje ikke fungerer. Denne tjenesten avinstallerer seg selv når det ikke finnes noen Chromium-programvare som bruker den.</translation>
@@ -253,6 +254,7 @@
 <translation id="3802055581630249637">Chromium forhåndslaster sider du sannsynligvis kommer til å besøke, slik at de lastes inn raskere når du faktisk besøker dem</translation>
 <translation id="3810973564298564668">Administrer</translation>
 <translation id="3823384748599722168">For å bruke de lagrede passordene dine, følg QR-koden, last ned Chromium for iOS, og logg på Google-kontoen din</translation>
+<translation id="3837584850181228767">Chromium-tips: Safe Browsing med økt beskyttelse</translation>
 <translation id="3846683726093018685">**Sammendrag:** Beskriv hovedemnet og formålet med innholdet i skjermbildet i én setning på under 30 ord.
 
           **Foreslå spørsmål:** Generer en punktliste med tre til fem tankevekkende spørsmål en bruker kan stille for å forstå skjermbildet bedre. Disse spørsmålene må inneholde minst ett som handler spesifikt om et visuelt objekt, utformingen av det eller plasseringen av det.</translation>

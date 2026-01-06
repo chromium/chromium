@@ -966,6 +966,7 @@
 <translation id="472259426228234149">ဈေးနှုန်း $100 - $180</translation>
 <translation id="4735849923335729414">သင့်အဖွဲ့အစည်းက စီမံခန့်ခွဲသည့် <ph name="EMAIL" /> အနေဖြင့် လက်မှတ်ထိုးဝင်ရန်။</translation>
 <translation id="473775607612524610">အပ်ဒိတ်လုပ်ရန်</translation>
+<translation id="4738968082443868320">Google Drive</translation>
 <translation id="474209246745757965">သင့်ကင်မရာဖြင့် ဈေးဝယ်ရန်နှင့် ဘာသာပြန်ရန်</translation>
 <translation id="4742407542027196863">စကားဝှက်များ စီမံရန်…</translation>
 <translation id="4744428388659507035">သင်၏လိပ်စာများကို စက်အားလုံးတွင် ရယူနိုင်ရန် ဆက်တင်များတွင် “လိပ်စာများ” ကိုဖွင့်ပါ။</translation>
@@ -1055,6 +1056,7 @@
 <translation id="5021500396464456616">ဤလင့်ခ်ပို့သူကို ဆက်သွယ်ပါ</translation>
 <translation id="5039804452771397117">ခွင့်ပြုရန်</translation>
 <translation id="5050810143224996149">စကားဝှက် မျှဝေရန်</translation>
+<translation id="5052499409147950210">ဝဘ်ဆိုက်ကို တည်းဖြတ်ရန်</translation>
 <translation id="5055015094595227120">နေရာအတိအကျ</translation>
 <translation id="5055551113846164633">၎င်းသည် ဤစက်တွင်သိမ်းထားသော လိပ်စာများကို ဖျက်သည်။ ၎င်းသည် သင်၏ Google Account <ph name="USER_EMAIL" /> တွင် သိမ်းထားသော လိပ်စာများကိုလည်း ဖျက်သည်။</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> တွင် ပြဿနာတွေ့သည်။</translation>
@@ -1133,6 +1135,7 @@
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> အကောင့်ကို ဖယ်ရှားလိုပါသလား။</translation>
 <translation id="5300589172476337783">ပြရန်</translation>
 <translation id="5311061401280561833">ကင်မရာနှင့် မိုက်ခရိုဖုန်း သုံးခွင့်ပြုထားသည်</translation>
+<translation id="5313967007315987356">ဆိုက်အား ထည့်ရန်</translation>
 <translation id="5315870524563628285">ထည့်သွင်းစရာ မရှိပါ</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> အနက် <ph name="INDEX" /></translation>
 <translation id="5317780077021120954">သိမ်းရန်</translation>

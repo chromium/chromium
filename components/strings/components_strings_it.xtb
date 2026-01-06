@@ -114,7 +114,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1178821169867863726">12 x 16 in</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
-<translation id="1181381397492575884">Chrome impedisce ai siti di utilizzare i cookie di terze parti per monitorare la tua navigazione. Vai alle impostazioni per <ph name="LINK" />.</translation>
 <translation id="1185331130467528132"><ph name="URL" /> vuole accedere ad altri dispositivi connessi alla rete locale</translation>
 <translation id="1185343831726846924">Conferma che la carta virtuale non può essere attivata</translation>
 <translation id="1186201132766001848">Controlla password</translation>
@@ -227,7 +226,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1343830902827845050">Accedi a Chrome</translation>
 <translation id="1346748346194534595">Destra</translation>
 <translation id="1348779747280417563">Confermare il nome</translation>
-<translation id="1352798470428594123">Chrome impedisce alla maggior parte dei siti di usare i cookie di terze parti per monitorare la tua navigazione. Vai alle impostazioni per <ph name="LINK" />.</translation>
 <translation id="1355158069018170842">Mostra cali di prezzo nelle schede</translation>
 <translation id="1355301061807280185">Lavoro</translation>
 <translation id="1357195169723583938">Utenti che hanno usato il dispositivo di recente e quando</translation>
@@ -1110,7 +1108,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2768397283109119044">Hai tentato di connetterti a <ph name="DOMAIN" />, ma il server ha presentato un certificato non valido emesso per il nome specificato. Il nome è un indirizzo IP riservato o un nome host interno.</translation>
 <translation id="2770159525358613612">Prova a caricare di nuovo i file</translation>
 <translation id="277133753123645258">Metodo di spedizione</translation>
-<translation id="2773388851563527404">Chrome limita l'utilizzo dei cookie di terze parti per la maggior parte dei siti. Tuttavia, i cookie di terze parti sono consentiti su questo sito perché si basa su questi cookie per fornire servizi di base. Vai alle impostazioni per <ph name="LINK" />.</translation>
 <translation id="277499241957683684">Record del dispositivo mancante</translation>
 <translation id="2775884851269838147">Prima pagina di stampa</translation>
 <translation id="2781185443919227679">Spiagge e isole</translation>
@@ -1711,7 +1708,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3727309136762649052">Spazio dei nomi</translation>
 <translation id="3727850735097852673">Per usare Gestore delle password di Google con il Portachiavi di macOS, riavvia Chrome e consenti l'accesso al Portachiavi. Le schede verranno riaperte dopo il riavvio.</translation>
 <translation id="3728173127485570463">Il browser Chrome non richiederà più la tua impronta per compilare automaticamente le password</translation>
-<translation id="3736739313435669994">Hai impedito ai siti di utilizzare i cookie di terze parti per monitorare la tua navigazione. Vai alle impostazioni per <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Il tuo browser è gestito dal tuo amministratore.</translation>
 <translation id="3739842843727261045">Mi piace invia un feedback positivo relativo a questi risultati</translation>
 <translation id="3740447166056383374">La revisione è obbligatoria prima della copia</translation>
@@ -2145,7 +2141,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4406883609789734330">Sottotitoli in tempo reale</translation>
 <translation id="4406896451731180161">risultati di ricerca</translation>
 <translation id="4407758156081352648">Per motivi di sicurezza, la tua organizzazione non consente di riutilizzare le password in Chrome. Le password in Chrome sono criptate per proteggere la privacy degli utenti.</translation>
-<translation id="4408413947728134509">Cookie: <ph name="NUM_COOKIES" /></translation>
 <translation id="4409556632583862731">Nuovo thread</translation>
 <translation id="4412074349188076601">Questa configurazione è contrassegnata come installabile, ma non è stata fornita alcuna immagine per questa architettura, quindi non può essere installata.</translation>
 <translation id="4412377069090572315">Cosa dicono le persone</translation>
@@ -2533,7 +2528,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5061227663725596739">Forse cercavi: <ph name="LOOKALIKE_DOMAIN" /></translation>
 <translation id="5066056036849835175">Cronologia di stampa</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 in uso)}other{(# in uso)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Controllare l'indirizzo proxy<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Decimo rullo</translation>
 <translation id="507130231501693183">Mailbox 4</translation>
@@ -3042,7 +3036,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5918373444239520146">Gadget e dispositivi elettronici portatili</translation>
 <translation id="5918847752193018339">Puoi pagare più velocemente se salvi i CVC. <ph name="LINK_BEGIN" />Elimina i codici di sicurezza salvati<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 in uso}other{# in uso}}</translation>
 <translation id="5921185718311485855">On</translation>
 <translation id="5921639886840618607">Vuoi salvare la carta nell'Account Google?</translation>
 <translation id="5921952831792678223">Furgoni pick-up</translation>
@@ -3222,7 +3215,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6194209731893739467">Visualizza tutti i tuoi prodotti monitorati qui</translation>
 <translation id="6195371403461054755">Geologia</translation>
 <translation id="6195418151868446719">Elettronica di consumo</translation>
-<translation id="6196640612572343990">Blocca cookie di terze parti</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Schede a taglio completo</translation>
 <translation id="6203231073485539293">Controlla la connessione a internet</translation>
@@ -3718,7 +3710,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6978121630131642226">Motori di ricerca</translation>
 <translation id="6978236010531171013">Condividi comunque</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979302985396162258">gestire l'accesso ai cookie di terze parti</translation>
 <translation id="6979440798594660689">Disattivazione audio (impostazione predefinita)</translation>
 <translation id="6987806006823772670">Busta (patinata)</translation>
 <translation id="6989256887001961296">Questi contenuti sono bloccati.</translation>
@@ -4732,7 +4723,6 @@ Ulteriori dettagli:
 <translation id="8622864575115813231">Contatto dell'istituto finanziario in corso…</translation>
 <translation id="8624354461147303341">Ricevi sconti</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
-<translation id="8635822281281406185">Aggiungi fino a 10 file, schede o immagini</translation>
 <translation id="8637362707224133343">Chrome è dotato di funzionalità di sicurezza integrate che ti proteggono durante la navigazione, come Google Navigazione sicura, che <ph name="BEGIN_LINK" />di recente ha rilevato phishing<ph name="END_LINK" /> sul sito che hai cercato di visitare. I siti di phishing si spacciano per altri siti per ingannarti.<ph name="NEW_LINE" />Anche i siti che in genere sono sicuri possono essere compromessi da utenti malintenzionati. <ph name="BEGIN_ERROR_LINK" />Contattaci<ph name="END_ERROR_LINK" /> se ritieni che sia stato commesso un errore e che questo sito non rappresenti un pericolo.</translation>
 <translation id="8640996933372643759">Per condividere le schede e collaborare con altri utenti, devi poter accedere a Chrome</translation>
 <translation id="8641131559425911240">Busta (da lettera)</translation>
@@ -5112,7 +5102,6 @@ Ulteriori dettagli:
 <translation id="945673208656386843">Compila automaticamente i dati di questa carta per gli acquisti effettuati in Chromium quando la salvi su questo dispositivo</translation>
 <translation id="94613679163347541">Confrontare <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per creare rapidamente un nuovo sito in Google Sites</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome limiterà nuovamente i cookie oggi}=1{Chrome limiterà nuovamente i cookie domani}other{# giorni al nuovo limite dei cookie in Chrome}}</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> membri fanno ora parte del gruppo di schede "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Hai chiesto di poter visitare questo sito. Uno dei tuoi genitori può rispondere in Family Link.</translation>
 <translation id="950736567201356821">Tripla perforatura in alto</translation>

@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">ამოშლა</translation>
 <translation id="1183189057400844278">თქვენს Google ანგარიშში არსებული პაროლები დაუბრკოლებლად რომ გამოიყენოთ, დაადასტურეთ ვინაობა</translation>
 <translation id="1187810343066461819">ასევე, გასუფთავდეს სანიშნეები, ისტორია და სხვა კონტენტი ამ მანქანიდან</translation>
-<translation id="1193589902336218259">რჩევების შესახებ შეტყობინებების ჩართვა</translation>
 <translation id="1193729455103054076">გსურთ, გამოიყენოთ ძლიერი პაროლი?</translation>
 <translation id="11947597112837849">ელფოსტის მისამართი</translation>
 <translation id="1197267115302279827">სანიშნეების გადატანა</translation>
@@ -995,7 +994,6 @@
 <translation id="5267572070504076962">ჩართეთ Safe Browsing, სახიფათო საიტებისგან დაცვით რომ ისარგებლოთ</translation>
 <translation id="5271967389191913893">მოწყობილობა ვერ ხსნის შინაარსს ჩამოსატვირთად.</translation>
 <translation id="5273031377282080577">ამ პარამეტრს მართავს თქვენი ადმინისტრატორი.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{გამოწერა გაუქმდა ერთი გამოუყენებელი საიტიდან}other{გამოწერა გაუქმდა # გამოუყენებელი საიტიდან}}</translation>
 <translation id="5292796745632149097">გაგზავნა აქ:</translation>
 <translation id="5301876394151419436">შესული ხართ, როგორც <ph name="EMAIL" /> სინქრონიზაციის გაჩერება ნებისმიერ დროს შეგიძლიათ პარამეტრებიდან. თქვენი ისტორიის მეშვეობით Google შეძლებს Search-ისა და სხვა სერვისების პერსონალიზებას.</translation>
 <translation id="5304593522240415983">ეს ველი არ შეიძლება იყოს ცარიელი</translation>
@@ -1586,7 +1584,6 @@
 <translation id="7612619742409846846">Google-ში შესულია:</translation>
 <translation id="7612989789287281429">მიმდინარეობს შესვლა…</translation>
 <translation id="7619072057915878432"><ph name="FILE_NAME" /> ვერ ჩამოიტვირთა ქსელთან დაკავშირებული პრობლემების გამო.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{ერთი საიტის გამოწერა გაუქმდა}other{# საიტის გამოწერა გაუქმდა}}</translation>
 <translation id="7626032353295482388">მოგესალმებათ Chrome!</translation>
 <translation id="7628417132421583481">პაროლების მმართველზე გადასვლა</translation>
 <translation id="7630202231528827509">მიუთითეთ URL</translation>

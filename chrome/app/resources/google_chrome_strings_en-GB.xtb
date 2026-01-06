@@ -491,6 +491,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6180522807229584611">This tab is using extra resources. To improve your performance, let Chrome make it inactive.</translation>
 <translation id="6182736845697986886">Installation failed because of an update server internal error.</translation>
 <translation id="6183773856988300112">Gemini in Chrome uses auto-browse to work in your tabs and complete tasks that you give it. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
+<translation id="6187085551300363958">Chrome tip: Save passwords</translation>
 <translation id="6192058120268468905">Your account in Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> has added an extension that may change the way that Chrome works.
 
@@ -629,6 +630,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7627609214560473136">To protect your data, let Chrome remove permissions from sites that you haven't visited recently.</translation>
 <translation id="7629695634924605473">Chrome lets you know if your passwords are ever compromised</translation>
 <translation id="7641148173327520642">Your system administrator has configured Google Chrome to open <ph name="ALTERNATIVE_BROWSER_NAME" /> to access <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7641448682796883218">Chrome tip: Enhanced Safe Browsing</translation>
 <translation id="7649070708921625228">Help</translation>
 <translation id="7651907282515937834">Chrome Enterprise logo</translation>
 <translation id="76531479118467370">Chrome blocked this download because you turned Safe Browsing off and the file can't be verified</translation>

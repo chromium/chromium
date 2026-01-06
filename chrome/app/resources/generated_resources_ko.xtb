@@ -1822,6 +1822,7 @@
 <translation id="221297410904507041">방문 기록, 쿠키, 캐시 등 삭제</translation>
 <translation id="2213410656650624348">보통</translation>
 <translation id="2214018885812055163">공유 폴더</translation>
+<translation id="2214453882118345682">카메라를 사용해 지금 보고 있는 항목을 쇼핑하고, 번역하고, 알아보세요</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1줄이 표시되지 않음&gt;}other{&lt;<ph name="NUMBER_OF_LINES" />줄이 표시되지 않음&gt;}}</translation>
 <translation id="2215070081105889450">오디오를 공유하려면 탭이나 화면을 대신 공유하세요.</translation>
 <translation id="2217208085547223783">신뢰 상태</translation>
@@ -5734,6 +5735,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4864805589453749318">학교 계정을 추가할 수 있도록 권한을 부여할 부모님을 선택하세요.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" />(차단됨)</translation>
 <translation id="486505726797718946">메모리 저장됨</translation>
+<translation id="4865063548323785458">비밀번호를 저장하고 자동 완성하여 사이트 및 앱에 간편하게 로그인하세요</translation>
 <translation id="486635084936119914">다운로드 후에 특정 파일 형식을 자동으로 열기</translation>
 <translation id="4867272607148176509">부모님은 앱을 승인 또는 차단하고, 시간제한을 설정하고, 웹 탐색을 제어할 수 있습니다. 나중에 학교 계정을 추가하여 대부분의 학교 리소스에 액세스할 수 있습니다.</translation>
 <translation id="4867433544163083783">탭을 정리할 수 있는지 확인</translation>
@@ -7632,7 +7634,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6194333736420234626">결제 수단</translation>
 <translation id="6195005504600220730">브라우저, OS, 기기에 관한 정보를 확인합니다.</translation>
 <translation id="6195155925303302899">가운데 정렬</translation>
-<translation id="6195163219142236913">서드 파티 쿠키 제한됨</translation>
 <translation id="6195693561221576702">이 기기는 오프라인 데모 모드에서 설정할 수 없습니다.</translation>
 <translation id="6196640612572343990">서드 파티 쿠키 차단</translation>
 <translation id="6196854373336333322">'<ph name="EXTENSION_NAME" />' 확장 프로그램이 프록시 설정을 제어할 수 있게 되었으며, 따라서 사용자가 온라인에서 수행하는 모든 작업을 변경, 중단하거나 엿볼 수 있게 되었습니다. 이와 같이 변경된 이유를 잘 모른다면 이 설정을 사용하지 않는 것이 좋습니다.</translation>
@@ -8399,7 +8400,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6731320427842222405">몇 분이 걸릴 수 있습니다.</translation>
 <translation id="6732956960067639542">대신 새 Chrome 브라우저 세션을 엽니다.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" />(ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">쿠키 및 기타 사이트 데이터 표시...</translation>
 <translation id="6736243959894955139">주소</translation>
 <translation id="6737663862851963468">Kerberos 티켓 삭제</translation>
 <translation id="6738180164164974883">서드 파티 쿠키 설정 허용</translation>
@@ -11493,6 +11493,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="881799181680267069">기타 숨기기</translation>
 <translation id="8818152010000655963">배경화면</translation>
 <translation id="8818988764764862764">창이 왼쪽으로 이동함</translation>
+<translation id="8819155700324279105">온라인 위협에 대비한 보호 단계 추가</translation>
 <translation id="8819510664278523111">기기 EID는 <ph name="EID_NUMBER" />, 기기 IMEI는 <ph name="IMEI_NUMBER" />, 기기 일련번호는 <ph name="SERIAL_NUMBER" />입니다. 이 번호를 사용하여 서비스를 활성화할 수 있습니다.</translation>
 <translation id="8820817407110198400">북마크</translation>
 <translation id="8821045908425223359">자동으로 IP 주소 설정</translation>
@@ -12140,7 +12141,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="947329552760389097">요소 검사(&amp;I)</translation>
 <translation id="947526284350604411">답변</translation>
 <translation id="947667444780368238">이 폴더에는 시스템 파일이 포함되어 있으므로 <ph name="ORIGIN" />에서 폴더의 파일을 열 수 없습니다.</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{오늘 Chrome에서 다시 쿠키를 제한합니다.}=1{내일 Chrome에서 다시 쿠키를 제한합니다}other{#일 후 Chrome에서 다시 쿠키를 제한합니다.}}</translation>
 <translation id="949807244219288032">이 탭이 HID 기기에 연결되었습니다</translation>
 <translation id="950079950995628542">출처: '<ph name="PHONE_NAME" />'</translation>
 <translation id="950307215746360464">설정 가이드</translation>

@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1183189057400844278">Para asegurarte de que siempre puedas usar las contraseñas en tu cuenta de Google, verifica tu identidad</translation>
 <translation id="1187810343066461819">Eliminar también de este coche los marcadores, el historial y otros datos</translation>
-<translation id="1193589902336218259">Activar notificaciones de consejos</translation>
 <translation id="1193729455103054076">¿Usar contraseña segura?</translation>
 <translation id="11947597112837849">dirección de correo electrónico</translation>
 <translation id="1197267115302279827">Mover marcadores</translation>
@@ -995,7 +994,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="5267572070504076962">Activa Navegación segura para aumentar la protección contra sitios peligrosos</translation>
 <translation id="5271967389191913893">El dispositivo no puede abrir el contenido para descargarlo.</translation>
 <translation id="5273031377282080577">Tu administrador gestiona este ajuste.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Suscripción a un sitio no usado anulada}other{Suscripción a # sitios no usados anulada}}</translation>
 <translation id="5292796745632149097">Enviar a</translation>
 <translation id="5301876394151419436">Has iniciado sesión como <ph name="EMAIL" />. Puedes detener la sincronización en cualquier momento desde la configuración. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="5304593522240415983">Este campo no puede estar vacío</translation>
@@ -1586,7 +1584,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7612619742409846846">Has iniciado sesión en Google como</translation>
 <translation id="7612989789287281429">Iniciando sesión…</translation>
 <translation id="7619072057915878432">No se ha podido descargar <ph name="FILE_NAME" /> debido a problemas de la red.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Suscripción a un sitio anulada}other{Suscripción a # sitios anulada}}</translation>
 <translation id="7626032353295482388">Te damos la bienvenida a Chrome</translation>
 <translation id="7628417132421583481">Ir al Gestor de contraseñas</translation>
 <translation id="7630202231528827509">URL del proveedor</translation>

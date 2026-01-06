@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Dileu</translation>
 <translation id="1183189057400844278">I wneud yn siŵr y gallwch bob amser ddefnyddio'r cyfrineiriau yn eich Cyfrif Google, cadarnhewch mai chi sydd yno</translation>
 <translation id="1187810343066461819">Hefyd dileu nodau tudalen, yr hanes, a rhagor o'r car hwn</translation>
-<translation id="1193589902336218259">Troi Hysbysiadau awgrymiadau ymlaen</translation>
 <translation id="1193729455103054076">Defnyddio cyfrinair cryf?</translation>
 <translation id="11947597112837849">cyfeiriad ebost</translation>
 <translation id="1197267115302279827">Symud nodau tudalen</translation>
@@ -996,7 +995,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5267572070504076962">Trowch Bori'n Ddiogel ymlaen i gael amddiffyniad rhag gwefannau peryglus</translation>
 <translation id="5271967389191913893">Ni all y ddyfais agor y cynnwys i'w lawrlwytho.</translation>
 <translation id="5273031377282080577">Eich gweinyddwr sy'n rheoli'r gosodiad hwn.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Wedi dad-danysgrifio o un wefan heb ei defnyddio}zero{Wedi dad-danysgrifio o # gwefannau heb eu defnyddio}two{Wedi dad-danysgrifio o # wefan heb eu defnyddio}few{Wedi dad-danysgrifio o # gwefan heb eu defnyddio}many{Wedi dad-danysgrifio o # gwefan heb eu defnyddio}other{Wedi dad-danysgrifio o # gwefan heb eu defnyddio}}</translation>
 <translation id="5292796745632149097">Anfon at</translation>
 <translation id="5301876394151419436">Rydych wedi'ch mewngofnodi fel <ph name="EMAIL" />. Gallwch stopio cysoni unrhyw bryd yn y gosodiadau. Gall Google bersonoleiddio Search a gwasanaethau eraill yn seiliedig ar eich hanes.</translation>
 <translation id="5304593522240415983">Ni all y maes hwn fod yn wag</translation>
@@ -1587,7 +1585,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7612619742409846846">Wedi mewngofnodi i Google fel</translation>
 <translation id="7612989789287281429">Wrthi'n mewngofnodi…</translation>
 <translation id="7619072057915878432">Wedi methu â lawrlwytho <ph name="FILE_NAME" /> oherwydd methiannau rhwydwaith.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Wedi dad-danysgrifio o un wefan}zero{Wedi dad-danysgrifio o # gwefan}two{Wedi dad-danysgrifio o # wefan}few{Wedi dad-danysgrifio o # gwefan}many{Wedi dad-danysgrifio o # gwefan}other{Wedi dad-danysgrifio o # gwefan}}</translation>
 <translation id="7626032353295482388">Croeso i Chrome</translation>
 <translation id="7628417132421583481">Ewch i'r Rheolwr Cyfrineiriau</translation>
 <translation id="7630202231528827509">Darparwr URL</translation>

@@ -114,7 +114,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1178581264944972037">Detener</translation>
 <translation id="1178821169867863726">30.5 × 40.6 cm (12 × 16 in)</translation>
 <translation id="1181037720776840403">Quitar</translation>
-<translation id="1181381397492575884">Chrome impide que los sitios usen cookies de terceros para seguirte mientras navegas. Ve a la configuración para <ph name="LINK" />.</translation>
 <translation id="1185331130467528132"><ph name="URL" /> quiere acceder a otros dispositivos de tu red local</translation>
 <translation id="1185343831726846924">Confirmando que no se puede activar la tarjeta virtual</translation>
 <translation id="1186201132766001848">Revisar contraseñas</translation>
@@ -227,7 +226,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1343830902827845050">Accede a Chrome</translation>
 <translation id="1346748346194534595">Derecha</translation>
 <translation id="1348779747280417563">Confirmar el nombre</translation>
-<translation id="1352798470428594123">Chrome impide que la mayoría de los sitios usen cookies de terceros para seguirte mientras navegas. Ve a la configuración para <ph name="LINK" />.</translation>
 <translation id="1355158069018170842">Mostrar descuentos en pestañas</translation>
 <translation id="1355301061807280185">Empleos</translation>
 <translation id="1357195169723583938">Quién usó el dispositivo recientemente y cuándo</translation>
@@ -1110,7 +1108,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2768397283109119044">Intentaste acceder a <ph name="DOMAIN" />, pero el servidor presentó un certificado no válido emitido con ese nombre. El nombre es una dirección IP reservada o un nombre de host interno.</translation>
 <translation id="2770159525358613612">Intenta volver a subir tus archivos</translation>
 <translation id="277133753123645258">Método de envío</translation>
-<translation id="2773388851563527404">Chrome limita el uso de cookies de terceros en la mayoría de los sitios. Sin embargo, se permiten cookies de terceros en este sitio porque depende de ellas para proporcionar servicios básicos. Ve a la configuración para <ph name="LINK" />.</translation>
 <translation id="277499241957683684">Falta un registro de dispositivo.</translation>
 <translation id="2775884851269838147">Primera página de impresión</translation>
 <translation id="2781185443919227679">Islas y playas</translation>
@@ -1715,7 +1712,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3727309136762649052">Espacio de nombres</translation>
 <translation id="3727850735097852673">Para usar el Administrador de contraseñas de Google con el llavero de macOS, reinicia Chrome y permite el acceso al llavero. Las pestañas se volverán a abrir después de que lo reinicies.</translation>
 <translation id="3728173127485570463">El navegador Chrome ya no requerirá tu huella dactilar para autocompletar contraseñas</translation>
-<translation id="3736739313435669994">Impediste que los sitios usen cookies de terceros para seguirte mientras navegas. Ve a la configuración para <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Tu administrador gestiona el navegador.</translation>
 <translation id="3739842843727261045">La opción Me gusta envía comentarios que indican que te gustan estos resultados.</translation>
 <translation id="3740447166056383374">Se debe revisar antes de copiar los archivos</translation>
@@ -2149,7 +2145,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4406883609789734330">Subtitulado instantáneo</translation>
 <translation id="4406896451731180161">resultados de búsqueda</translation>
 <translation id="4407758156081352648">Para mantener la seguridad, tu organización no permite que se reutilicen las contraseñas en Chrome. Las contraseñas en Chrome se encriptan para proteger la privacidad del usuario.</translation>
-<translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4409556632583862731">Nueva conversación</translation>
 <translation id="4412074349188076601">Esta configuración está marcada como instalable, pero no se proporciona ninguna imagen para esta arquitectura, por lo que no se puede instalar.</translation>
 <translation id="4412377069090572315">Qué dicen las personas</translation>
@@ -2537,7 +2532,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5061227663725596739">¿Quisiste decir <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Historial de impresión</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 en uso)}other{(# en uso)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Comprobar la dirección de proxy<ph name="END_LINK" />.</translation>
 <translation id="5070838744279127212">Décimo rollo</translation>
 <translation id="507130231501693183">Buzón 4</translation>
@@ -3046,7 +3040,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5918373444239520146">Gadgets y dispositivos electrónicos portátiles</translation>
 <translation id="5918847752193018339">Guarda tus CVCs para finalizar tus compras más rápido. <ph name="LINK_BEGIN" />Borrar los códigos de seguridad guardados<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 en uso}other{# en uso}}</translation>
 <translation id="5921185718311485855">Sí</translation>
 <translation id="5921639886840618607">¿Quieres guardar la tarjeta en la Cuenta de Google?</translation>
 <translation id="5921952831792678223">Camionetas</translation>
@@ -3227,7 +3220,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6194209731893739467">Encuentra todos tus productos con seguimiento aquí</translation>
 <translation id="6195371403461054755">Geología</translation>
 <translation id="6195418151868446719">Electrónica de consumo</translation>
-<translation id="6196640612572343990">Bloquear cookies de terceros</translation>
 <translation id="6197648101609735209">89 × 89 mm</translation>
 <translation id="6198480336395236519">Tiras de corte completo</translation>
 <translation id="6203231073485539293">Comprueba tu conexión a Internet.</translation>
@@ -3723,7 +3715,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6978121630131642226">Motores de búsqueda</translation>
 <translation id="6978236010531171013">Compartir de todos modos</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979302985396162258">administrar el acceso a cookies de terceros</translation>
 <translation id="6979440798594660689">Silenciar (predeterminado)</translation>
 <translation id="6987806006823772670">Sobre (recubierto)</translation>
 <translation id="6989256887001961296">Este contenido está bloqueado.</translation>
@@ -4738,7 +4729,6 @@ Detalles adicionales:
 <translation id="8622864575115813231">Comunicándonos con tu institución financiera…</translation>
 <translation id="8624354461147303341">Obtener descuentos</translation>
 <translation id="8634957317623797170">54 × 86 mm</translation>
-<translation id="8635822281281406185">Agrega hasta 10 archivos, pestañas o imágenes</translation>
 <translation id="8637362707224133343">Chrome tiene funciones de seguridad integradas para protegerte mientras navegas, como la Navegación segura de Google, que <ph name="BEGIN_LINK" />recientemente encontró un caso de phishing<ph name="END_LINK" /> en el sitio que intentaste visitar. Los sitios de phishing imitan a otros sitios para engañarte.<ph name="NEW_LINE" />A veces, incluso los sitios que suelen ser seguros son hackeados por atacantes. <ph name="BEGIN_ERROR_LINK" />Cuéntanos<ph name="END_ERROR_LINK" /> si crees que hubo un error y que este sitio no representa un peligro.</translation>
 <translation id="8640996933372643759">Para compartir pestañas y colaborar con otras personas, debes poder acceder a Chrome</translation>
 <translation id="8641131559425911240">Sobre (bond)</translation>
@@ -5119,7 +5109,6 @@ Detalles adicionales:
 <translation id="945673208656386843">Autocompleta esta tarjeta para las compras realizadas en Chromium cuando se guarde en este dispositivo</translation>
 <translation id="94613679163347541">¿Quieres comparar <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para crear un sitio nuevo en Google Sites rápidamente</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome volverá a limitar las cookies hoy}=1{Chrome volverá a limitar las cookies mañana}other{Faltan # días para que Chrome vuelva a limitar las cookies}}</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> miembros se unieron al grupo de pestañas "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Solicitaste visitar este sitio. Tu madre o padre puede responder en Family Link.</translation>
 <translation id="950736567201356821">Perforación triple en la parte superior</translation>

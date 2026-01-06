@@ -83,6 +83,7 @@
 <translation id="193439633299369377">Chromium OS debe reiniciarse para que se aplique la actualización.</translation>
 <translation id="1951406923938785464">Chromium bloqueó esta descarga porque el tipo de archivo no se descarga con frecuencia y puede ser peligroso</translation>
 <translation id="1953553007165777902">Descargando… Minutos restantes: <ph name="MINUTE" /></translation>
+<translation id="1965068424387304464">Sugerencia de Chromium: Guardar contraseñas</translation>
 <translation id="1966382378801805537">Chromium no puede determinar ni establecer el navegador predeterminado</translation>
 <translation id="1990262977744080398">Descubre por qué Chromium bloquea algunos archivos (se abre en una pestaña nueva)</translation>
 <translation id="1999715455684970349">Mantiene actualizado tu software de Chromium. Si este servicio se desactiva o se detiene, tu software de Chromium no se mantendrá actualizado, lo que implica que las vulnerabilidades de seguridad que puedan aparecer no podrán solucionarse y es posible que no se puedan usar algunas funciones. Este servicio se desinstalará automáticamente si ningún software de Chromium lo utiliza.</translation>
@@ -251,6 +252,7 @@
 <translation id="3802055581630249637">Chromium precarga las páginas que probablemente visites para que se carguen más rápido cuando lo hagas</translation>
 <translation id="3810973564298564668">Administrar</translation>
 <translation id="3823384748599722168">Para usar tus contraseñas guardadas, sigue el código QR, descarga Chromium para iOS y accede a tu Cuenta de Google</translation>
+<translation id="3837584850181228767">Sugerencia de Chromium: Navegación segura mejorada</translation>
 <translation id="3846683726093018685">**Resumir:** Describe el tema y el propósito principales del contenido de la captura de pantalla en una oración de menos de 30 palabras.
 
           **Sugerir preguntas:** Genera una lista con viñetas de 3 a 5 preguntas que inviten a la reflexión que un usuario podría hacer para comprender mejor la captura de pantalla. Estas preguntas deben incluir al menos una que sea específicamente sobre un objeto visual, su diseño o su ubicación.</translation>

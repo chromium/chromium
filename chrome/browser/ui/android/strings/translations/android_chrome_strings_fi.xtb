@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Poista</translation>
 <translation id="1183189057400844278">Vahvista henkilöllisyytesi, jotta voit aina käyttää Google-tilisi salasanoja</translation>
 <translation id="1187810343066461819">Poista myös kirjanmerkit, historia ja muuta dataa autosta</translation>
-<translation id="1193589902336218259">Laita vinkki-ilmoitukset päälle</translation>
 <translation id="1193729455103054076">Käytetäänkö vahvaa salasanaa?</translation>
 <translation id="11947597112837849">sähköpostiosoitteesi</translation>
 <translation id="1197267115302279827">Siirrä kirjanmerkkejä</translation>
@@ -995,7 +994,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5267572070504076962">Suojaudu haitallisilta sivustoilta laittamalla Selaussuoja päälle</translation>
 <translation id="5271967389191913893">Laite ei voi avata ladattavaa sisältöä.</translation>
 <translation id="5273031377282080577">Järjestelmänvalvoja ylläpitää tätä asetusta.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Yhden käyttämättömän sivuston tilaus peruttu}other{# käyttämättömän sivuston tilaus peruttu}}</translation>
 <translation id="5292796745632149097">Lähetä:</translation>
 <translation id="5301876394151419436">Olet kirjautunut sisään tilillä <ph name="EMAIL" />. Voit lopettaa synkronoinnin milloin tahansa asetuksista. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
 <translation id="5304593522240415983">Kenttä ei voi olla tyhjä.</translation>
@@ -1586,7 +1584,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7612619742409846846">Olet kirjautunut Googleen käyttäjänä</translation>
 <translation id="7612989789287281429">Kirjaudutaan sisään…</translation>
 <translation id="7619072057915878432">Tiedoston <ph name="FILE_NAME" /> lataus epäonnistui verkkovirheen vuoksi.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Yhden sivuston tilaus peruttu}other{# sivuston tilaus peruttu}}</translation>
 <translation id="7626032353295482388">Tervetuloa Chromeen</translation>
 <translation id="7628417132421583481">Avaa Salasanat</translation>
 <translation id="7630202231528827509">Palvelun URL-osoite</translation>

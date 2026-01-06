@@ -188,11 +188,9 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="2903493209154104877">Indirizzi</translation>
 <translation id="2910701580606108292">Chiedi prima di consentire ai siti di riprodurre contenuti protetti</translation>
 <translation id="2918484639460781603">Passa alle impostazioni</translation>
-<translation id="293060180538644702">Ricevi notifiche sui suggerimenti di Chrome</translation>
 <translation id="2932883381142163287">Segnala abuso</translation>
 <translation id="2939338015096024043">Quando l'opzione è attiva, i siti possono chiedere di monitorare la posizione della fotocamera e scoprire di più sull'ambiente circostante. Quando l'opzione è disattivata, i siti non possono monitorare la posizione della fotocamera o scoprire l'ambiente circostante.</translation>
 <translation id="2968755619301702150">Visualizzatore certificati</translation>
-<translation id="2979365474350987274">I cookie di terze parti sono limitati</translation>
 <translation id="2990583317361835189">Non consentire ai siti di usare i sensori di movimento</translation>
 <translation id="3004438526346162184">I siti possono usare questa funzionalità per gestire le finestre su tutti i tuoi schermi</translation>
 <translation id="3008272652534848354">Reimposta le autorizzazioni</translation>
@@ -631,7 +629,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="7835852323729233924">Contenuti in riproduzione</translation>
 <translation id="783819812427904514">Riattiva audio video</translation>
 <translation id="7846076177841592234">Annulla selezione</translation>
-<translation id="7881140103901777395">Chrome limita l'utilizzo dei cookie di terze parti per la maggior parte dei siti. Tuttavia, i cookie di terze parti sono consentiti su questo sito perché si basa su di questi cookie per fornire servizi di base.\n\nVai alle impostazioni per <ph name="BEGIN_LINK" />gestire l'accesso ai cookie di terze parti<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Consenti l'audio per un sito specifico.</translation>
 <translation id="7891547341794213004">Nascondi scheda Continua con questa scheda</translation>
 <translation id="789722939441020330">Non consentire ai siti di scaricare automaticamente più file</translation>

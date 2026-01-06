@@ -483,6 +483,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6180522807229584611">Ця вкладка використовує додаткові ресурси. Щоб підвищити продуктивність, дозвольте Chrome зробити її неактивною.</translation>
 <translation id="6182736845697986886">Не вдалося встановити через внутрішню помилку сервера оновлень.</translation>
 <translation id="6183773856988300112">Gemini у Chrome використовує функцію автоматичного перегляду, щоб шукати інформацію на ваших вкладках і виконувати для вас завдання. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
+<translation id="6187085551300363958">Порада щодо Chrome: зберігайте паролі</translation>
 <translation id="6192058120268468905">Ваш обліковий запис у Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> додає розширення, яке може вплинути на роботу Chrome.
 
@@ -621,6 +622,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="7627609214560473136">Щоб захистити ваші дані, дозвольте Chrome скасовувати дозволи для сайтів, які ви останнім часом не відвідували.</translation>
 <translation id="7629695634924605473">Якщо ваші паролі колись викрадуть, Chrome повідомить вас про це</translation>
 <translation id="7641148173327520642">Ваш системний адміністратор налаштував Google Chrome відкривати сторінку <ph name="TARGET_URL_HOSTNAME" /> в <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
+<translation id="7641448682796883218">Порада щодо Chrome: увімкніть Безпечний перегляд із розширеним захистом</translation>
 <translation id="7649070708921625228">Довідка</translation>
 <translation id="7651907282515937834">Логотип Chrome Enterprise</translation>
 <translation id="76531479118467370">Веб-переглядач Chrome заблокував завантаження, оскільки ви вимкнули Безпечний перегляд і файл не вдалося підтвердити</translation>

@@ -1821,6 +1821,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="221297410904507041">Radera historik, cookies, cacheminne med mera</translation>
 <translation id="2213410656650624348">Måttligt</translation>
 <translation id="2214018885812055163">Delade mappar</translation>
+<translation id="2214453882118345682">Köp, översätt och identifiera det du ser med kameran.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 rad visas inte&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> rader visas inte&gt;}}</translation>
 <translation id="2215070081105889450">Dela en flik eller skärm i stället om du vill dela ljud</translation>
 <translation id="2217208085547223783">Förtroendestatus</translation>
@@ -2662,6 +2663,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2757338480560142065">Kontrollera att lösenordet som du sparar överensstämmer med lösenordet för <ph name="WEBSITE" /></translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Inga sökresultat returnerades för <ph name="SEARCH_QUERY" /></translation>
 <translation id="2762441749940182211">Kamera är blockerad</translation>
+<translation id="2763165257813209348"><ph name="FILE_NAME" /> har känsligt eller skadligt innehåll. Organisationen låter dig spara den i molnlagringen eller ignorera den</translation>
 <translation id="2764786626780673772">VPN-information</translation>
 <translation id="2764920001292228569">Ange ett profilnamn</translation>
 <translation id="2765100602267695013">Kontakta mobilleverantören</translation>
@@ -5733,6 +5735,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4864805589453749318">Välj den förälder som ger sitt tillstånd att lägga till ett skolkonto.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blockerad)</translation>
 <translation id="486505726797718946">Minnet har sparats</translation>
+<translation id="4865063548323785458">Spara och autofyll dina lösenord för att enkelt logga in på webbplatser och i appar</translation>
 <translation id="486635084936119914">Öppna vissa filtyper automatiskt efter att de har laddats ned</translation>
 <translation id="4867272607148176509">Föräldrar kan godkänna eller blockera appar, ställa in tidsgränser och styra webbsökningar. Ett skolkonto kan läggas till senare för att få åtkomst till de flesta skolresurserna.</translation>
 <translation id="4867433544163083783">Kontrollera nu om det går att ordna dina flikar</translation>
@@ -7631,7 +7634,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6194333736420234626">Betalningsmetoder</translation>
 <translation id="6195005504600220730">Läsa information om webbläsaren, operativsystemet och enheten</translation>
 <translation id="6195155925303302899">Centrera</translation>
-<translation id="6195163219142236913">Tredjepartscookies är begränsade</translation>
 <translation id="6195693561221576702">Den här enheten kan inte konfigureras i offlinedemoläge.</translation>
 <translation id="6196640612572343990">Blockera tredjepartscookies</translation>
 <translation id="6196854373336333322">Tillägget <ph name="EXTENSION_NAME" /> har tagit kontroll över dina proxyinställningar, vilket innebär att det kan ändra, knäcka eller tjuvlyssna på allt du gör på webben. Om du inte vet varför den här ändringen inträffade är den troligen inte önskvärd.</translation>
@@ -8398,7 +8400,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6731320427842222405">Det kan ta några minuter</translation>
 <translation id="6732956960067639542">Öppna en ny session i webbläsaren Chrome i stället.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (id: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Visa cookies och andra webbplatsdata...</translation>
 <translation id="6736243959894955139">Adress</translation>
 <translation id="6737663862851963468">Ta bort Kerberos-biljett</translation>
 <translation id="6738180164164974883">Tillåt att cookies från tredje part sparas</translation>
@@ -11492,6 +11493,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="881799181680267069">Dölj andra</translation>
 <translation id="8818152010000655963">Bakgrund</translation>
 <translation id="8818988764764862764">Fönstret har flyttats åt vänster</translation>
+<translation id="8819155700324279105">Lägg till ett extra skydd mot hot online</translation>
 <translation id="8819510664278523111">Enhetens EID är <ph name="EID_NUMBER" />, IMEI-koden är <ph name="IMEI_NUMBER" /> och enhetens serienummer är <ph name="SERIAL_NUMBER" />. Dessa nummer kan användas för att aktivera tjänsten.</translation>
 <translation id="8820817407110198400">Bokmärken</translation>
 <translation id="8821045908425223359">Konfigurera IP-adress automatiskt</translation>
@@ -12139,7 +12141,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="947329552760389097">&amp;Inspektera element</translation>
 <translation id="947526284350604411">Ditt svar</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> kan inte öppna filer i den här mappen eftersom den innehåller systemfiler</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome begränsar cookies igen i dag}=1{Chrome begränsar cookies igen i morgon}other{# dagar tills Chrome begränsar cookies igen}}</translation>
 <translation id="949807244219288032">Den här fliken är ansluten till en HID-enhet</translation>
 <translation id="950079950995628542">Från <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Konfigureringsguide</translation>

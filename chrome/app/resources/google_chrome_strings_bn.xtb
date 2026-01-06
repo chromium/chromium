@@ -487,6 +487,7 @@
 <translation id="6180522807229584611">এই ট্যাব অতিরিক্ত রিসোর্ট ব্যবহার করছে। আপনার পারফর্ম্যান্স উন্নত করতে, Chrome-কে এটি নিষ্ক্রিয় করতে দিন।</translation>
 <translation id="6182736845697986886">ইনস্টলেশন করা যায়নি, কারণ আপডেট সার্ভারের ইন্টার্নাল সমস্যা আছে।</translation>
 <translation id="6183773856988300112">Gemini in Chrome আপনার ট্যাবে কাজ করতে ও আপনি যে টাস্ক দেন সেটি সম্পূর্ণ করতে অটোমেটিক ব্রাউজ ব্যবহার করে। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
+<translation id="6187085551300363958">Chrome সম্পর্কিত পরামর্শ: পাসওয়ার্ড সেভ করুন</translation>
 <translation id="6192058120268468905">Chrome-এ আপনার অ্যাকাউন্ট</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> এমন একটি এক্সটেনশন যোগ করেছে যেটি Chrome কাজ করার পদ্ধতি পরিবর্তন করতে পারে।
 
@@ -625,6 +626,7 @@
 <translation id="7627609214560473136">আপনার ডেটা সুরক্ষিত রাখতে, আপনি সম্প্রতি ভিজিট করেননি এমন সাইট থেকে Chrome-কে অনুমতি সরাতে দিন।</translation>
 <translation id="7629695634924605473">আপনার পাসওয়ার্ড কখনও চুরি হলে তা Chrome আপনাকে জানিয়ে দেবে</translation>
 <translation id="7641148173327520642"><ph name="TARGET_URL_HOSTNAME" /> অ্যাক্সেস করতে <ph name="ALTERNATIVE_BROWSER_NAME" /> ব্যবহার করার জন্য আপনার সিস্টেম অ্যাডমিনিস্ট্রেটর Google Chrome কনফিগার করেছে।</translation>
+<translation id="7641448682796883218">Chrome সম্পর্কিত পরামর্শ: উন্নত Safe Browsing</translation>
 <translation id="7649070708921625228">সহায়তা</translation>
 <translation id="7651907282515937834">Chrome এন্টারপ্রাইজ লোগো</translation>
 <translation id="76531479118467370">আপনি Safe Browsing ফিচারটি বন্ধ করে দেওয়ার ফলে ফাইলটি যাচাই করা যাচ্ছে না, তাই Chrome এই ডাউনলোডটি ব্লক করে দিয়েছে</translation>

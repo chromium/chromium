@@ -188,11 +188,9 @@
 <translation id="2903493209154104877">Adresat</translation>
 <translation id="2910701580606108292">Pyet përpara se sajtet të lejohen të luajnë përmbajtje të mbrojtura</translation>
 <translation id="2918484639460781603">Shko te cilësimet</translation>
-<translation id="293060180538644702">Merr njoftime për "Këshillat për Chrome"</translation>
 <translation id="2932883381142163287">Raporto abuzim</translation>
 <translation id="2939338015096024043">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të gjurmojnë pozicionin e kamerës dhe të mësojnë për ambientin tënd rrethues. Kur cilësimi është joaktiv, sajtet nuk mund të gjurmojnë pozicionin e kamerës apo të mësojnë për ambientin tënd rrethues.</translation>
 <translation id="2968755619301702150">Shikuesi i certifikatave</translation>
-<translation id="2979365474350987274">Kukit e palëve të treta janë të kufizuara</translation>
 <translation id="2990583317361835189">Mos lejo që sajtet të përdorin sensorët e lëvizjes</translation>
 <translation id="3004438526346162184">Sajtet mund ta përdorin këtë veçori për të menaxhuar dritaret në të gjitha ekranet e tua</translation>
 <translation id="3008272652534848354">Rivendos autorizimet</translation>
@@ -631,7 +629,6 @@
 <translation id="7835852323729233924">Po luan media</translation>
 <translation id="783819812427904514">Aktivizo zërin e videos</translation>
 <translation id="7846076177841592234">Anulo zgjedhjen</translation>
-<translation id="7881140103901777395">Chrome e kufizon shumicën e sajteve që të mos përdorin kuki të palëve të treta. Por kukit e palëve të treta lejohen në këtë sajt sepse ai mbështetet tek ato për të ofruar shërbimet bazë.\n\nVizito cilësimet <ph name="BEGIN_LINK" />për të menaxhuar qasjen te kukit e palëve të treta<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Lejo tingullin për një sajt specifik.</translation>
 <translation id="7891547341794213004">Fshi kartën "Vazhdo me këtë skedë"</translation>
 <translation id="789722939441020330">Mos lejo që sajtet të shkarkojnë automatikisht disa skedarë</translation>

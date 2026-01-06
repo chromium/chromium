@@ -114,7 +114,6 @@
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="1178821169867863726">12x16 インチ</translation>
 <translation id="1181037720776840403">削除</translation>
-<translation id="1181381397492575884">Chrome では、サードパーティ Cookie の使用を制限し、ブラウジング中のユーザーをトラッキングできないようにしています。<ph name="LINK" />するには、設定にアクセスしてください。</translation>
 <translation id="1185331130467528132"><ph name="URL" /> はローカル ネットワーク上の他のデバイスへのアクセスを要求しています</translation>
 <translation id="1185343831726846924">仮想カードを有効にできないことの確認</translation>
 <translation id="1186201132766001848">パスワードを確認</translation>
@@ -227,7 +226,6 @@
 <translation id="1343830902827845050">Chrome にログイン</translation>
 <translation id="1346748346194534595">右</translation>
 <translation id="1348779747280417563">名前を確認</translation>
-<translation id="1352798470428594123">Chrome はほとんどのサイトに対してサードパーティ Cookie の使用を制限し、ブラウジング中のユーザーをトラッキングできないようにしています。<ph name="LINK" />するには、設定にアクセスしてください。</translation>
 <translation id="1355158069018170842">タブに値下げ情報を表示する</translation>
 <translation id="1355301061807280185">仕事</translation>
 <translation id="1357195169723583938">最近デバイスを使用したユーザーとその日時</translation>
@@ -1110,7 +1108,6 @@
 <translation id="2768397283109119044"><ph name="DOMAIN" /> にアクセスしようとしましたが、サーバーからこの名前に対して無効な証明書が発行されました。この名前は予約されている IP アドレスまたは内部ホスト名です。</translation>
 <translation id="2770159525358613612">ファイルをもう一度アップロードしてみてください</translation>
 <translation id="277133753123645258">配送方法</translation>
-<translation id="2773388851563527404">Chrome ではほとんどのサイトに対してサードパーティ Cookie の使用を制限しています。しかしこのサイトでは、基本的なサービスの提供にサードパーティ Cookie を使用しているため許可されています。<ph name="LINK" />するには、設定にアクセスしてください。</translation>
 <translation id="277499241957683684">デバイス レコードがありません</translation>
 <translation id="2775884851269838147">最初の印刷ページ</translation>
 <translation id="2781185443919227679">ビーチ、島</translation>
@@ -1714,7 +1711,6 @@
 <translation id="3727309136762649052">名前空間</translation>
 <translation id="3727850735097852673">macOS キーチェーンで Google パスワード マネージャーを使用するには、Chrome を再起動してキーチェーンへのアクセスを許可してください。再起動すると、タブが再度開きます。</translation>
 <translation id="3728173127485570463">Chrome ブラウザでパスワードを自動入力する際に指紋認証が不要になります</translation>
-<translation id="3736739313435669994">ブラウジング中にトラッキングされないように、サイトによるサードパーティ Cookie の使用をブロックしました。<ph name="LINK" />するには、設定にアクセスしてください。</translation>
 <translation id="3738166223076830879">お使いのブラウザは管理者によって管理されています。</translation>
 <translation id="3739842843727261045">高く評価すると、この結果が気に入ったというフィードバックが送信されます</translation>
 <translation id="3740447166056383374">コピーする前に確認が必要です</translation>
@@ -2148,7 +2144,6 @@
 <translation id="4406883609789734330">自動字幕起こし</translation>
 <translation id="4406896451731180161">検索結果</translation>
 <translation id="4407758156081352648">セキュリティを維持するため、Chrome でのパスワードの再利用は組織で禁止されています。Chrome のパスワードは、ユーザーのプライバシーを保護するために暗号化されています。</translation>
-<translation id="4408413947728134509">Cookie <ph name="NUM_COOKIES" /></translation>
 <translation id="4409556632583862731">新しいスレッド</translation>
 <translation id="4412074349188076601">この構成はインストール可能と指定されていますが、このアーキテクチャのイメージが提供されていないため、インストールできません。</translation>
 <translation id="4412377069090572315">レビュー</translation>
@@ -2536,7 +2531,6 @@
 <translation id="5061227663725596739">もしかして: <ph name="LOOKALIKE_DOMAIN" /></translation>
 <translation id="5066056036849835175">印刷履歴</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{（1 個が使用中）}other{（# 個が使用中）}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />プロキシ アドレスを確認する<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">ロール 10</translation>
 <translation id="507130231501693183">用紙受け 4</translation>
@@ -3045,7 +3039,6 @@
 <translation id="5918373444239520146">ガジェット、携帯用電子機器</translation>
 <translation id="5918847752193018339">CVC を保存するとすばやくお支払いできます。<ph name="LINK_BEGIN" />保存したセキュリティ コードを削除する<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 個が使用中}other{# 個が使用中}}</translation>
 <translation id="5921185718311485855">オン</translation>
 <translation id="5921639886840618607">カードを Google アカウントに保存しますか？</translation>
 <translation id="5921952831792678223">ピックアップ トラック</translation>
@@ -3226,7 +3219,6 @@
 <translation id="6194209731893739467">トラッキングしている商品がすべてここに表示されます</translation>
 <translation id="6195371403461054755">地質学</translation>
 <translation id="6195418151868446719">家電</translation>
-<translation id="6196640612572343990">サードパーティの Cookie をブロックする</translation>
 <translation id="6197648101609735209">89x89 mm</translation>
 <translation id="6198480336395236519">フルカットタブ</translation>
 <translation id="6203231073485539293">インターネット接続を確認してください</translation>
@@ -3722,7 +3714,6 @@
 <translation id="6978121630131642226">検索エンジン</translation>
 <translation id="6978236010531171013">このまま共有</translation>
 <translation id="6979158407327259162">Google ドライブ</translation>
-<translation id="6979302985396162258">サードパーティ Cookie へのアクセスを管理</translation>
 <translation id="6979440798594660689">ミュート（デフォルト）</translation>
 <translation id="6987806006823772670">封筒（コーティング）</translation>
 <translation id="6989256887001961296">このコンテンツはブロックされました。</translation>
@@ -4738,7 +4729,6 @@
 <translation id="8622864575115813231">金融機関に問い合わせています...</translation>
 <translation id="8624354461147303341">割引情報を取得</translation>
 <translation id="8634957317623797170">54x86 mm</translation>
-<translation id="8635822281281406185">追加できるファイル、タブ、または画像は最大 10 個です</translation>
 <translation id="8637362707224133343">Chrome には、ブラウジング中のユーザーを保護する安全機能が組み込まれています。その一部である Google セーフ ブラウジングにより、アクセスしようとしたサイトで<ph name="BEGIN_LINK" />最近フィッシングが検出<ph name="END_LINK" />されました。フィッシング サイトは、他のサイトになりすましてユーザーを騙そうとするサイトです。<ph name="NEW_LINE" />通常は安全なサイトであっても、攻撃者によって侵害されることがあります。この情報が間違いで、このサイトに危険がないと思われる場合は、<ph name="BEGIN_ERROR_LINK" />Google までお知らせください<ph name="END_ERROR_LINK" />。</translation>
 <translation id="8640996933372643759">他のユーザーとタブを共有して共同作業を行うには、Chrome にログインする必要があります</translation>
 <translation id="8641131559425911240">封筒（ボンド）</translation>
@@ -5118,7 +5108,6 @@
 <translation id="945673208656386843">このカードをこのデバイスに保存すると、Chromium で購入する際に自動入力されます</translation>
 <translation id="94613679163347541">「<ph name="CATEGORY" />」を比較しますか？</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google サイトで新しいサイトをすばやく作成します</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{今日、Chrome で Cookie を再び制限します}=1{明日、Chrome で Cookie を再び制限します}other{Chrome で Cookie を再び制限するまであと # 日です}}</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> 人が「<ph name="GROUP_NAME" />」タブグループに参加しました</translation>
 <translation id="949314938206378263">このサイトを開いてもよいかの問い合わせを送信しました。保護者の方は、ファミリー リンクで返信できます。</translation>
 <translation id="950736567201356821">3 穴パンチ（上）</translation>

@@ -114,7 +114,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1178821169867863726">12 x 16 tommer</translation>
 <translation id="1181037720776840403">Fjern</translation>
-<translation id="1181381397492575884">Chrome blokerer websites, så de ikke kan bruge tredjepartscookies til at spore dig, mens du browser. Gå til indstillingerne for at <ph name="LINK" />.</translation>
 <translation id="1185331130467528132"><ph name="URL" /> anmoder om adgang til andre enheder på dit lokale netværk</translation>
 <translation id="1185343831726846924">Bekræftelse af, at det virtuelle kort ikke kan aktiveres</translation>
 <translation id="1186201132766001848">Tjek adgangskoder</translation>
@@ -227,7 +226,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1343830902827845050">Log ind i Chrome</translation>
 <translation id="1346748346194534595">Højre</translation>
 <translation id="1348779747280417563">Bekræft navn</translation>
-<translation id="1352798470428594123">Chrome begrænser de fleste websites fra at bruge tredjepartscookies til at spore din aktivitet, mens du browser. Gå til indstillingerne for at <ph name="LINK" />.</translation>
 <translation id="1355158069018170842">Vis prisfald på faner</translation>
 <translation id="1355301061807280185">Job</translation>
 <translation id="1357195169723583938">Hvem der senest har brugt enheden og hvornår</translation>
@@ -1110,7 +1108,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2768397283109119044">Du har forsøgt at oprette forbindelse til <ph name="DOMAIN" />, men serveren præsenterede et ugyldigt certifikat, som er givet til det pågældende navn. Navnet er en reserveret IP-adresse eller et internt hostname.</translation>
 <translation id="2770159525358613612">Prøv at uploade dine filer igen</translation>
 <translation id="277133753123645258">Forsendelsesmetode</translation>
-<translation id="2773388851563527404">Chrome begrænser de fleste websites fra at bruge tredjepartscookies. Tredjepartscookies er dog tilladt på dette website, fordi det er afhængigt af, at de leverer grundlæggende tjenester. Gå til indstillingerne for <ph name="LINK" />.</translation>
 <translation id="277499241957683684">Manglende enhedsregistrering</translation>
 <translation id="2775884851269838147">Første udskriftsside</translation>
 <translation id="2781185443919227679">Strande og øer</translation>
@@ -1714,7 +1711,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3727309136762649052">Navneområde</translation>
 <translation id="3727850735097852673">Hvis du vil bruge Google Adgangs­kode­admin­istrator med macOS-nøgleringen, skal du genstarte Chrome og give adgang til nøgleringen. Dine faner åbnes igen, når du har genstartet.</translation>
 <translation id="3728173127485570463">Chrome-browseren kræver ikke længere dit fingeraftryk for at udfylde adgangskoder automatisk</translation>
-<translation id="3736739313435669994">Du har blokeret websites, så de ikke kan bruge tredjepartscookies til at spore din aktivitet, mens du browser. Gå til indstillingerne for <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Din browser administreres af din administrator.</translation>
 <translation id="3739842843727261045">Hvis du giver et like, indsendes der feedback om, at du kan lide disse resultater</translation>
 <translation id="3740447166056383374">Gennemgang er påkrævet før kopiering</translation>
@@ -2148,7 +2144,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4406883609789734330">Livetekstning</translation>
 <translation id="4406896451731180161">søgeresultater</translation>
 <translation id="4407758156081352648">Af hensyn til sikkerheden tillader din organisation ikke, at adgangskoder genbruges i Chrome. Adgangskoder i Chrome er krypteret for at beskytte brugernes privatliv.</translation>
-<translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4409556632583862731">Ny tråd</translation>
 <translation id="4412074349188076601">Denne konfiguration er markeret som installerbar, men der er ikke angivet noget billede til denne arkitektur, så den kan ikke installeres.</translation>
 <translation id="4412377069090572315">Dette mener andre</translation>
@@ -2536,7 +2531,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5061227663725596739">Mente du <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Udskrivningshistorik</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 i brug)}one{(# i brug)}other{(# i brug)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Tjekke proxy-adressen<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Tiende papirrulle</translation>
 <translation id="507130231501693183">Postkasse 4</translation>
@@ -3045,7 +3039,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5918373444239520146">Gadgets og bærbare elektroniske enheder</translation>
 <translation id="5918847752193018339">Betal hurtigere, når du har gemt dine CVC'er. <ph name="LINK_BEGIN" />Slet gemte sikkerhedskoder<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 i brug}one{# i brug}other{# i brug}}</translation>
 <translation id="5921185718311485855">Til</translation>
 <translation id="5921639886840618607">Vil du gemme kortet på din Google-konto?</translation>
 <translation id="5921952831792678223">Pickuptrucks</translation>
@@ -3226,7 +3219,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6194209731893739467">Se alle de produkter, du holder øje med, her</translation>
 <translation id="6195371403461054755">Geologi</translation>
 <translation id="6195418151868446719">Forbrugerelektronik</translation>
-<translation id="6196640612572343990">Bloker cookies fra tredjeparter</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Faner i fuld længde</translation>
 <translation id="6203231073485539293">Kontrollér din internetforbindelse</translation>
@@ -3722,7 +3714,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6978121630131642226">Søgemaskiner</translation>
 <translation id="6978236010531171013">Del alligevel</translation>
 <translation id="6979158407327259162">Google Drev</translation>
-<translation id="6979302985396162258">administrere adgang til tredjepartscookies</translation>
 <translation id="6979440798594660689">Slå lyden fra (standard)</translation>
 <translation id="6987806006823772670">Kuvert (bestrøget)</translation>
 <translation id="6989256887001961296">Dette indhold er blokeret.</translation>
@@ -4737,7 +4728,6 @@ Yderligere oplysninger:
 <translation id="8622864575115813231">Kontakter dit pengeinstitut…</translation>
 <translation id="8624354461147303341">Få rabatter</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
-<translation id="8635822281281406185">Tilføj op til 10 filer, faner eller billeder</translation>
 <translation id="8637362707224133343">Chrome har indbyggede sikkerhedsfunktioner, der beskytter dig, når du browser, f.eks. Google Beskyttet browsing. Denne funktion har <ph name="BEGIN_LINK" />for nylig fundet phishing<ph name="END_LINK" /> på det website, du har forsøgt at besøge. Phishingwebsites udgiver sig for at være andre websites med det formål at narre dig.<ph name="NEW_LINE" />Selv websites, der normalt er sikre, kan nogle gange blive kompromitteret af hackere. <ph name="BEGIN_ERROR_LINK" />Giv os besked<ph name="END_ERROR_LINK" />, hvis du mener, at der er sket en fejl, og at websitet ikke udgør en fare.</translation>
 <translation id="8640996933372643759">Hvis du vil dele faner og samarbejde med andre, skal du kunne logge ind i Chrome</translation>
 <translation id="8641131559425911240">Kuvert (bankpost)</translation>
@@ -5118,7 +5108,6 @@ Yderligere oplysninger:
 <translation id="945673208656386843">Udfyld automatisk disse kortoplysninger ved køb i Chromium, når kortet er gemt på denne enhed</translation>
 <translation id="94613679163347541">Vil du sammenligne <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for hurtigt at oprette et nyt website i Google Sites</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome begrænser cookies igen fra i dag}=1{Chrome begrænser cookies igen fra i morgen}one{Chrome begrænser cookies igen om # dag}other{Chrome begrænser cookies igen om # dage}}</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> medlemmer deltager i fanegruppen "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Du har anmodet om at besøge dette website. Din forælder kan besvare anmodningen i Family Link.</translation>
 <translation id="950736567201356821">Tre huller øverst</translation>

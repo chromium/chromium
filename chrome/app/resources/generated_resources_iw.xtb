@@ -1820,6 +1820,7 @@
 <translation id="221297410904507041">‏מחיקת ההיסטוריה, קובצי ה-Cookie, המטמון ועוד</translation>
 <translation id="2213410656650624348">בינוני</translation>
 <translation id="2214018885812055163">תיקיות משותפות</translation>
+<translation id="2214453882118345682">קונים, מתרגמים ומזהים את מה שרואים באמצעות המצלמה.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;שורה אחת לא מוצגת&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> שורות לא מוצגות&gt;}two{&lt;<ph name="NUMBER_OF_LINES" /> שורות לא מוצגות&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> שורות לא מוצגות&gt;}}</translation>
 <translation id="2215070081105889450">כדי לשתף אודיו צריך לשתף כרטיסיה או מסך ולא חלון</translation>
 <translation id="2217208085547223783">מצב אמינות</translation>
@@ -2343,6 +2344,7 @@
 <translation id="2545743249923338554">כרטיסיות חדשות</translation>
 <translation id="2546302722632337735">אין להתיר לאתרים להשתמש במזהים כדי להפעיל תוכן מוגן</translation>
 <translation id="2546991196809436099">‏הגדלת התצוגה כדי להגדיל את הפריטים שמופיעים במסך. כדי להפעיל או להשבית את תכונת ההגדלה, מקישים על מקש החיפוש + Ctrl‏ + M.</translation>
+<translation id="2547602044908040111">‏אם את/ה פעיל/ה חברתי/ת, עיתונאי/ת, דמות ציבורית, עובד/ת בחירות או בתפקיד אחר שיש בו סיכון גבוה במיוחד, כדאי לך להירשם ל<ph name="BEGIN_LINK" />תוכנית ההגנה המתקדמת<ph name="END_LINK" /> של Google.</translation>
 <translation id="2548347166720081527">ההרשאה <ph name="PERMISSION" /> הוענקה</translation>
 <translation id="2548545707296594436">‏איפוס המטמון של פרופיל ה-eSIM</translation>
 <translation id="2549985041256363841">צילום סרטון</translation>
@@ -5732,6 +5734,7 @@
 <translation id="4864805589453749318">יש לבחור את ההורה שאישר את ההוספה של חשבון בית ספרי</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (הגישה חסומה)</translation>
 <translation id="486505726797718946">הזיכרון נשמר</translation>
+<translation id="4865063548323785458">אפשר לשמור את הסיסמאות ולמלא אותן באופן אוטומטי כדי להיכנס בקלות לאתרים ולאפליקציות</translation>
 <translation id="486635084936119914">פתיחת סוגי קבצים מסוימים באופן אוטומטי לאחר הורדתם</translation>
 <translation id="4867272607148176509">ההורים יכולים לאשר או לחסום אפליקציות, להגדיר מגבלות זמן ולשלוט בגלישה באינטרנט. אפשר להוסיף חשבון בית ספרי בשלב מאוחר יותר כדי לגשת לרוב משאבי בית הספר.</translation>
 <translation id="4867433544163083783">רוצה לבדוק עכשיו אם אפשר לארגן את הכרטיסיות?</translation>
@@ -7630,7 +7633,6 @@
 <translation id="6194333736420234626">אמצעי תשלום</translation>
 <translation id="6195005504600220730">קריאת מידע על הדפדפן, מערכת ההפעלה והמכשיר שלך</translation>
 <translation id="6195155925303302899">יישור למרכז</translation>
-<translation id="6195163219142236913">‏יש הגבלה על קובצי Cookie של צד שלישי</translation>
 <translation id="6195693561221576702">אי אפשר להגדיר את המכשיר הזה במצב הדגמה אופליין.</translation>
 <translation id="6196640612572343990">‏חסימת קובצי Cookie של צד שלישי</translation>
 <translation id="6196854373336333322">‏התוסף "<ph name="EXTENSION_NAME" />" השתלט על הגדרות שרת ה-Proxy. פירוש הדבר שהוא יכול לשנות ולקטוע לכל פעולה שביצעת באינטרנט או לצותת לה. אם לא ידוע לך בוודאות מדוע שינוי זה התרחש, סביר להניח שזהו שינוי לא רצוי.</translation>
@@ -8401,7 +8403,6 @@
 <translation id="6731320427842222405">זה יכול לקחת כמה דקות</translation>
 <translation id="6732956960067639542">‏אפשר גם לפתוח סשן חדש בדפדפן Chrome.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (מזהה: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">‏הצגת קובצי Cookie ונתוני אתר אחרים...</translation>
 <translation id="6736243959894955139">כתובת</translation>
 <translation id="6737663862851963468">‏הסרה של כרטיס Kerberos</translation>
 <translation id="6738180164164974883">‏אישור להגדיר קובצי cookie של צד שלישי</translation>
@@ -11141,6 +11142,7 @@
 <translation id="859246725979739260">נחסמה הגישה של האתר הזה למיקום שלך.</translation>
 <translation id="8593450223647418235">‏לא תהיה לך אפשרות לפתוח קבצים ב-Microsoft 365 עד השלמת ההגדרה.</translation>
 <translation id="8593686980889923154">האפליקציה <ph name="APP_NAME" /> חסומה במכשיר <ph name="DEVICE_TYPE" /></translation>
+<translation id="8593938084085018349">הגדרות האבטחה שלך שודרגו</translation>
 <translation id="8594912907680633924">פתיחת הקישור בתצוגה מפוצלת</translation>
 <translation id="8596400097994526901">עוד פעולות לגבי <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="8596540852772265699">קבצים מותאמים אישית</translation>
@@ -11498,6 +11500,7 @@
 <translation id="881799181680267069">הסתרת אחרים</translation>
 <translation id="8818152010000655963">טפט</translation>
 <translation id="8818988764764862764">החלון הועבר שמאלה</translation>
+<translation id="8819155700324279105">מוסיפים שכבה נוספת של הגנה מפני איומים באינטרנט</translation>
 <translation id="8819510664278523111">‏ה-EID של המכשיר הוא <ph name="EID_NUMBER" />, ה-IMEI של המכשיר הוא <ph name="IMEI_NUMBER" /> והמספר הסידורי של המכשיר הוא <ph name="SERIAL_NUMBER" />. המספרים האלה יכולים לשמש להפעלת השירות.</translation>
 <translation id="8820817407110198400">סימניות</translation>
 <translation id="8821045908425223359">‏הגדרת כתובת IP באופן אוטומטי</translation>
@@ -12145,7 +12148,6 @@
 <translation id="947329552760389097">&amp;בדיקת רכיבים</translation>
 <translation id="947526284350604411">התשובה שלך</translation>
 <translation id="947667444780368238">ל-<ph name="ORIGIN" /> אין הרשאה לפתוח קבצים בתיקייה הזו כי היא מכילה קובצי מערכת</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{‏קובצי cookie יוגבלו היום שוב ב-Chrome}=1{‏קובצי cookie יוגבלו מחר שוב ב-Chrome}one{‏יש עוד # ימים עד שקובצי cookie יוגבלו שוב ב-Chrome}two{‏יש עוד יומיים עד שקובצי cookie יוגבלו שוב ב-Chrome}other{‏יש עוד # ימים עד שקובצי cookie יוגבלו שוב ב-Chrome}}</translation>
 <translation id="949807244219288032">‏הכרטיסייה הזו מחוברת להתקן HID</translation>
 <translation id="950079950995628542">מהטלפון <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">מדריך ההגדרה</translation>

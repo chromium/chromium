@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Entfernen</translation>
 <translation id="1183189057400844278">Bestätige deine Identität, damit du jederzeit die Passwörter in deinem Google-Konto verwenden kannst</translation>
 <translation id="1187810343066461819">Auch Lesezeichen, Verlauf und mehr aus diesem Auto löschen</translation>
-<translation id="1193589902336218259">Benachrichtigungen mit Tipps aktivieren</translation>
 <translation id="1193729455103054076">Starkes Passwort verwenden?</translation>
 <translation id="11947597112837849">deine E‑Mail-Adresse</translation>
 <translation id="1197267115302279827">Lesezeichen verschieben</translation>
@@ -995,7 +994,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5267572070504076962">Du kannst Safe Browsing aktivieren, um den Schutz vor gefährlichen Websites zu verbessern</translation>
 <translation id="5271967389191913893">Das Gerät kann den Inhalt, der heruntergeladen werden soll, nicht öffnen.</translation>
 <translation id="5273031377282080577">Diese Einstellung wird von deinem Administrator verwaltet.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Benachrichtigungen von einer nicht verwendeten Website deaktiviert}other{Benachrichtigungen von # nicht verwendeten Websites deaktiviert}}</translation>
 <translation id="5292796745632149097">Senden an</translation>
 <translation id="5301876394151419436">Du bist als <ph name="EMAIL" /> angemeldet. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="5304593522240415983">Dieses Feld darf nicht leer sein.</translation>
@@ -1586,7 +1584,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7612619742409846846">Bei Google angemeldet als</translation>
 <translation id="7612989789287281429">Du wirst angemeldet…</translation>
 <translation id="7619072057915878432"><ph name="FILE_NAME" /> konnte aufgrund von Netzwerkfehlern nicht heruntergeladen werden.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Von einer Website abgemeldet}other{Von # Websites abgemeldet}}</translation>
 <translation id="7626032353295482388">Willkommen bei Chrome</translation>
 <translation id="7628417132421583481">Passwortmanager aufrufen</translation>
 <translation id="7630202231528827509">Anbieter-URL</translation>

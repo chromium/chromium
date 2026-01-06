@@ -188,11 +188,9 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="2903493209154104877">Adresy</translation>
 <translation id="2910701580606108292">Pytaj, zanim zezwolisz stronom na odtwarzanie treści chronionej</translation>
 <translation id="2918484639460781603">Przejdź do ustawień</translation>
-<translation id="293060180538644702">Otrzymuj powiadomienia z wskazówkami dotyczącymi Chrome</translation>
 <translation id="2932883381142163287">Zgłoś nadużycie</translation>
 <translation id="2939338015096024043">Gdy ta opcja jest włączona, strony internetowe mogą prosić o możliwość śledzenia pozycji kamery i uzyskiwania informacji o otoczeniu. Gdy jest wyłączona, strony nie mogą śledzić pozycji kamery ani poznawać otoczenia.</translation>
 <translation id="2968755619301702150">Przeglądarka certyfikatów</translation>
-<translation id="2979365474350987274">Pliki cookie innych firm są ograniczone</translation>
 <translation id="2990583317361835189">Nie zezwalaj witrynom na używanie czujników ruchu</translation>
 <translation id="3004438526346162184">Strony mogą używać tej funkcji do zarządzania oknami na wszystkich wyświetlaczach</translation>
 <translation id="3008272652534848354">Zresetuj uprawnienia</translation>
@@ -631,7 +629,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="7835852323729233924">Odtwarzanie multimediów</translation>
 <translation id="783819812427904514">Wyłącz wyciszenie filmu</translation>
 <translation id="7846076177841592234">Anuluj wybór</translation>
-<translation id="7881140103901777395">Chrome ogranicza większości witryn możliwość używania plików cookie innych firm. Takie pliki są jednak dozwolone w tej witrynie, ponieważ są w niej niezbędne do świadczenia podstawowych usług.\n\nAby <ph name="BEGIN_LINK" />zarządzać dostępem do plików cookie innych firm<ph name="END_LINK" />, otwórz ustawienia.</translation>
 <translation id="7882806643839505685">Zezwalaj na dźwięk na określonej stronie.</translation>
 <translation id="7891547341794213004">Ukryj kartę Kontynuuj na tej karcie</translation>
 <translation id="789722939441020330">Nie zezwalaj witrynom na automatyczne pobieranie wielu plików</translation>

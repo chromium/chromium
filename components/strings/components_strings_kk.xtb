@@ -114,7 +114,6 @@
 <translation id="1178581264944972037">Кідірту</translation>
 <translation id="1178821169867863726">12 x 16 дюйм</translation>
 <translation id="1181037720776840403">Өшіру</translation>
-<translation id="1181381397492575884">Chrome сайттарды браузер пайдаланғаныңызды бақылайтын үшінші тарап cookie файлдарын қолданудан блоктайды. <ph name="LINK" /> үшін параметрлерге өтіңіз.</translation>
 <translation id="1185331130467528132"><ph name="URL" /> қолданбасы жергілікті желідегі басқа құрылғыларды пайдаланғысы келеді.</translation>
 <translation id="1185343831726846924">Виртуалдық картаны қосу мүмкін еместігін растау</translation>
 <translation id="1186201132766001848">Құпия сөздерді тексеру</translation>
@@ -227,7 +226,6 @@
 <translation id="1343830902827845050">Chrome аккаунтына кіріңіз</translation>
 <translation id="1346748346194534595">Оңға</translation>
 <translation id="1348779747280417563">Атты растау</translation>
-<translation id="1352798470428594123">Chrome браузері сайттардың көпшілігіне браузерді пайдаланғаныңызды бақылайтын үшінші тарап cookie файлдарын пайдалануға шектеу қояды. <ph name="LINK" /> үшін параметрлерге өтіңіз.</translation>
 <translation id="1355158069018170842">Бағаның түсуін қойындыларда көрсету</translation>
 <translation id="1355301061807280185">Жұмыс</translation>
 <translation id="1357195169723583938">Құрылғыны жақында пайдаланғандар және пайдаланылған уақыты</translation>
@@ -1110,7 +1108,6 @@
 <translation id="2768397283109119044"><ph name="DOMAIN" /> доменіне қол жеткізуге әрекет еттіңіз, бірақ сервер сол атқа жарамсыз сертификат ұсынды. Бұл ат — резервтелген IP мекенжайы немесе ішкі хост атауы.</translation>
 <translation id="2770159525358613612">Файлдарды қайта жүктеп салып көріңіз</translation>
 <translation id="277133753123645258">Жөнелту әдісі</translation>
-<translation id="2773388851563527404">Chrome браузері сайттардың көпшілігіне үшінші тарап cookie файлдарын пайдалануға шектеу қояды. Бірақ бұл сайтта үшінші тарап cookie файлдарына рұқсат берілді, себебі оның негізгі қызметтері осы файлдарға тәуелді. <ph name="LINK" /> үшін параметрлерге өтіңіз.</translation>
 <translation id="277499241957683684">Құрылғы жазбасы жоқ</translation>
 <translation id="2775884851269838147">Бірінші басып шығарылатын бет</translation>
 <translation id="2781185443919227679">Жағажайлар мен аралдар</translation>
@@ -1713,7 +1710,6 @@
 <translation id="3727309136762649052">Атау кеңістігі</translation>
 <translation id="3727850735097852673">Google Password Manager қызметін macOS кілттер тізбегімен бірге пайдалану үшін Chrome-ды қайта іске қосып, кілттер тізбегін пайдалануға рұқсат беріңіз. Қайта іске қосқаннан кейін, қойындылар қайта ашылады.</translation>
 <translation id="3728173127485570463">Chrome браузері құпия сөздерді автоматты түрде толтыру үшін енді саусақ ізін сұрамайды.</translation>
-<translation id="3736739313435669994">Сіз сайттарды браузерді пайдаланғаныңызды бақылайтын үшінші тарап cookie файлдарын пайдаланудан блоктадыңыз. <ph name="LINK" /> үшін параметрлерге өтіңіз.</translation>
 <translation id="3738166223076830879">Браузеріңізді әкімші басқарады.</translation>
 <translation id="3739842843727261045">"Ұнайды" белгішесін бассаңыз, бұл нәтижелер сізге ұнағанын білдіресіз</translation>
 <translation id="3740447166056383374">Көшіру алдында қарап шығу қажет</translation>
@@ -2147,7 +2143,6 @@
 <translation id="4406883609789734330">Автоматты субтитр</translation>
 <translation id="4406896451731180161">іздеу нәтижелері</translation>
 <translation id="4407758156081352648">Қауіпсіздікті сақтау мақсатында ұйымыңыз Chrome-да құпия сөздерді қайта пайдалануға рұқсат бермейді. Chrome-дағы құпия сөздер пайдаланушының құпиялығын қорғау үшін шифрланған.</translation>
-<translation id="4408413947728134509">Cookie файлдары: <ph name="NUM_COOKIES" /></translation>
 <translation id="4409556632583862731">Жаңа тізбек</translation>
 <translation id="4412074349188076601">Бұл конфигурация орнатуға болады деп белгіленген, бірақ бұл архитектура үшін образ берілмеген, сондықтан оны орнату мүмкін емес.</translation>
 <translation id="4412377069090572315">Адамдардың пікірі</translation>
@@ -2535,7 +2530,6 @@
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> деп жазғыңыз келді ме?</translation>
 <translation id="5066056036849835175">Басып шығару тарихы</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(қолданыста: 1)}other{(қолданыста: #)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Прокси мекенжайын тексеру<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Оныншы орам</translation>
 <translation id="507130231501693183">4-ші пошта жәшігі</translation>
@@ -3044,7 +3038,6 @@
 <translation id="5918373444239520146">Гаджеттер және портативті электроника</translation>
 <translation id="5918847752193018339">CVC кодтарыңыз сақталған кезде, жылдамырақ төлеңіз. <ph name="LINK_BEGIN" />Сақталған қауіпсіздік кодтарын жою<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 пайдаланылуда}other{# пайдаланылуда}}</translation>
 <translation id="5921185718311485855">Қосулы</translation>
 <translation id="5921639886840618607">Картаны Google аккаунтына сақтау қажет пе?</translation>
 <translation id="5921952831792678223">Пикаптар</translation>
@@ -3225,7 +3218,6 @@
 <translation id="6194209731893739467">Бақылайтын барлық өнімді осы жерден көре аласыз.</translation>
 <translation id="6195371403461054755">Геология</translation>
 <translation id="6195418151868446719">Тұрмыстық электроника</translation>
-<translation id="6196640612572343990">Үшінші тарап cookie файлдарын бөгеу</translation>
 <translation id="6197648101609735209">89 x 89 мм</translation>
 <translation id="6198480336395236519">Толық қиып алынған қойындылар</translation>
 <translation id="6203231073485539293">Интернет байланысын тексеріңіз</translation>
@@ -3721,7 +3713,6 @@
 <translation id="6978121630131642226">Іздеу жүйелері</translation>
 <translation id="6978236010531171013">Бәрібір бөлісу</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979302985396162258">үшінші тарап cookie файлдарын пайдалану рұқсатын басқару</translation>
 <translation id="6979440798594660689">Дыбысын өшіру (әдепкі)</translation>
 <translation id="6987806006823772670">Хатқалта (жылтыратылған)</translation>
 <translation id="6989256887001961296">Бұл контент блокталған.</translation>
@@ -4734,7 +4725,6 @@
 <translation id="8622864575115813231">Қаржылық мекемеңізбен байланыс орнатылуда...</translation>
 <translation id="8624354461147303341">Жеңілдіктер алу</translation>
 <translation id="8634957317623797170">54 x 86 мм</translation>
-<translation id="8635822281281406185">Көп дегенде 10 файл, қойынды немесе сурет қосуға болады</translation>
 <translation id="8637362707224133343">Chrome-ның браузерді пайдалану кезінде қорғайтын ендірілген қауіпсіздік мүмкіндіктері бар. Солардың бірі — Google Safe Browsing. Ол сіз кіргіңіз келген сайтта <ph name="BEGIN_LINK" />жақында бір фишинг әрекетін анықтады<ph name="END_LINK" />. Фишинг сайттары сізді басқа сайтпыз деп алдайды.<ph name="NEW_LINE" />Әдетте қауіпсіз болатын сайттардың өзінде кейде шабуылдаушылар болуы мүмкін. Бұл қате болса және осы сайт қауіпті болмаса, <ph name="BEGIN_ERROR_LINK" />бізге хабарлаңыз<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">Қойындыларды бөлісіп, басқалармен бірлесіп жұмыс істеу үшін Chrome-ға кіре алатын болуыңыз қажет.</translation>
 <translation id="8641131559425911240">Хатқалта (бонд)</translation>
@@ -5114,7 +5104,6 @@
 <translation id="945673208656386843">Бұл карта осы құрылғыда сақталған кезде, оны Chromium-мен орындалатын сатып алу транзакцияларында автоматты түрде толтырыңыз</translation>
 <translation id="94613679163347541"><ph name="CATEGORY" /> санатын салыстыру қажет пе?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sites-та жылдам жаңа сайт жасау үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome бүгін cookie файлдарына қайта шектеу қояды.}=1{Chrome ертең cookie файлдарына қайта шектеу қояды.}other{Chrome # күннен кейін cookie файлдарына қайта шектеу қояды.}}</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> қатысушы "<ph name="GROUP_NAME" />" қойындылар тобына қосылды.</translation>
 <translation id="949314938206378263">Осы сайтқа кіруді сұрадыңыз. Ата-анаңыз Family Link-те жауап бере алады.</translation>
 <translation id="950736567201356821">Жоғарғы жағын үш рет тесу</translation>

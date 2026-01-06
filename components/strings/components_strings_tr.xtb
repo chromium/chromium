@@ -114,7 +114,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1178581264944972037">Duraklat</translation>
 <translation id="1178821169867863726">12 x 16 inç</translation>
 <translation id="1181037720776840403">Kaldır</translation>
-<translation id="1181381397492575884">Chrome, sitelerin internette gezinirken sizi izlemek için üçüncü taraf çerezlerini kullanmasını engeller. <ph name="LINK" /> için ayarlara gidin.</translation>
 <translation id="1185331130467528132"><ph name="URL" />, yerel ağınızdaki diğer cihazlara erişmek istiyor</translation>
 <translation id="1185343831726846924">Sanal kartın etkinleştirilemediği onaylanıyor</translation>
 <translation id="1186201132766001848">Şifreleri Kontrol Et</translation>
@@ -227,7 +226,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1343830902827845050">Chrome'da oturum açın</translation>
 <translation id="1346748346194534595">Sağa</translation>
 <translation id="1348779747280417563">Adı onaylayın</translation>
-<translation id="1352798470428594123">Chrome, internette gezinirken çoğu sitenin, üçüncü taraf çerezlerini kullanarak sizi izlemesini sınırlandırır. <ph name="LINK" /> için ayarlara gidin.</translation>
 <translation id="1355158069018170842">Fiyat düşüşlerini sekmelerde göster</translation>
 <translation id="1355301061807280185">İş fırsatları</translation>
 <translation id="1357195169723583938">Cihazı son zamanlarda kimin ne zaman kullandığı</translation>
@@ -1110,7 +1108,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2768397283109119044"><ph name="DOMAIN" /> alanına erişmeye çalıştınız ancak sunucu, bu ada verilmiş geçersiz bir sertifika sağladı. Ad, ayrılmış bir IP adresi veya dahili ana makine adıdır.</translation>
 <translation id="2770159525358613612">Dosyalarınızı tekrar yüklemeyi deneyin</translation>
 <translation id="277133753123645258">Gönderim yöntemi</translation>
-<translation id="2773388851563527404">Chrome, çoğu sitenin, üçüncü taraf çerezlerini kullanmasını sınırlandırır. Ancak temel hizmetleri sağlamadaki rolünden dolayı bu sitede üçüncü taraf çerezlerine izin verilir. <ph name="LINK" /> için ayarlara gidin.</translation>
 <translation id="277499241957683684">Eksik cihaz kaydı</translation>
 <translation id="2775884851269838147">İlk basılacak sayfa</translation>
 <translation id="2781185443919227679">Plaj ve Adalar</translation>
@@ -1714,7 +1711,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3727309136762649052">Ad alanı</translation>
 <translation id="3727850735097852673">Google Şifre Yöneticisi'ni macOS Anahtar Zinciri ile kullanmak için Chrome'u yeniden başlatıp Anahtar Zinciri'ne erişim izni verin. Chrome yeniden başlatıldıktan sonra sekmeleriniz tekrar açılır.</translation>
 <translation id="3728173127485570463">Chrome tarayıcının şifreleri otomatik olarak doldurması için artık parmak iziniz gerekmeyecek</translation>
-<translation id="3736739313435669994">İnternette gezinirken sitelerin, üçüncü taraf çerezlerini kullanarak sizi izlemesini engellediniz. <ph name="LINK" /> için ayarlara gidin.</translation>
 <translation id="3738166223076830879">Tarayıcınız, kuruluşunuz tarafından yönetilmektedir.</translation>
 <translation id="3739842843727261045">Beğenme düğmesini tıkladığınızda bu sonuçların hoşunuza gittiğine dair geri bildirim gönderilir.</translation>
 <translation id="3740447166056383374">Kopyalamadan önce dosyaların incelenmesi gerekir</translation>
@@ -2148,7 +2144,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4406883609789734330">Canlı Altyazı</translation>
 <translation id="4406896451731180161">arama sonuçları</translation>
 <translation id="4407758156081352648">Kuruluşunuz, güvenliği korumak için Chrome'da şifrelerin yeniden kullanılmasına izin vermiyor. Chrome'daki şifreler, kullanıcı gizliliğini korumak için şifrelenir.</translation>
-<translation id="4408413947728134509"><ph name="NUM_COOKIES" /> çerez</translation>
 <translation id="4409556632583862731">Yeni ileti dizisi</translation>
 <translation id="4412074349188076601">Bu yapılandırma yüklenebilir olarak işaretlenmiş olsa da bu mimariyle ilgili resim sağlanmadığı için yüklenemez.</translation>
 <translation id="4412377069090572315">Kullanıcılar ne diyor?</translation>
@@ -2536,7 +2531,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5061227663725596739">Şunu mu demek istediniz: <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Yazdırma geçmişi</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 çerez kullanımda)}other{(# çerez kullanımda)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Proxy adresini kontrol etme<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Onuncu Rulo</translation>
 <translation id="507130231501693183">Posta kutusu 4</translation>
@@ -3045,7 +3039,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5918373444239520146">Taşınabilir Elektronik Cihazlar</translation>
 <translation id="5918847752193018339">CVC'leriniz kaydedildiğinde daha hızlı ödeme yapabilirsiniz. <ph name="LINK_BEGIN" />Kayıtlı güvenlik kodlarını silme<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 çerez kullanımda}other{# çerez kullanımda}}</translation>
 <translation id="5921185718311485855">Açık</translation>
 <translation id="5921639886840618607">Kart Google Hesabı'na kaydedilsin mi?</translation>
 <translation id="5921952831792678223">Pikap Kamyonetler</translation>
@@ -3226,7 +3219,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6194209731893739467">Takip edilen ürünlerinizin tamamını burada görün</translation>
 <translation id="6195371403461054755">Jeoloji</translation>
 <translation id="6195418151868446719">Tüketici Elektroniği</translation>
-<translation id="6196640612572343990">Üçüncü taraf çerezlerini engelle</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Tam Kesi Tablar</translation>
 <translation id="6203231073485539293">İnternet bağlantınızı kontrol edin</translation>
@@ -3722,7 +3714,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6978121630131642226">Arama Motorları</translation>
 <translation id="6978236010531171013">Yine de paylaş</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979302985396162258">üçüncü taraf çerezlerine erişimi yönetmek</translation>
 <translation id="6979440798594660689">Sesi kapat (varsayılan)</translation>
 <translation id="6987806006823772670">Zarf (Kaplanmış)</translation>
 <translation id="6989256887001961296">Bu içerik engellendi.</translation>
@@ -4737,7 +4728,6 @@ Ek ayrıntılar:
 <translation id="8622864575115813231">Finans kuruluşunuzla iletişim kuruluyor...</translation>
 <translation id="8624354461147303341">İndirim alın</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
-<translation id="8635822281281406185">10 adede kadar dosya, sekme veya resim ekleyin</translation>
 <translation id="8637362707224133343">Chrome, internette gezinirken sizi koruyacak yerleşik güvenlik özelliklerine sahiptir. Örneğin Google Güvenli Tarama, ziyaret etmeye çalıştığınız sitede <ph name="BEGIN_LINK" />kısa süre önce kimlik avı tespit etti<ph name="END_LINK" />. Kimlik avı siteleri sizi kandırmak için başka bir siteymiş gibi davranır.<ph name="NEW_LINE" />Normalde güvenli olan siteler bile bazen saldırganlar tarafından ele geçirilebilir. Bir hata olduğunu ve bu sitenin tehlike arz etmediğini düşünüyorsanız <ph name="BEGIN_ERROR_LINK" />bize bildirin<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">Sekmeleri paylaşmak ve diğer kullanıcılarla ortak çalışma yapmak için Chrome'da oturum açabilmeniz gerekir</translation>
 <translation id="8641131559425911240">Zarf (Bond)</translation>
@@ -5117,7 +5107,6 @@ Ek ayrıntılar:
 <translation id="945673208656386843">Bu kart bu cihaza kaydedildiğinde Chromium'da yapılan satın alma işlemleri için otomatik olarak doldurulur</translation>
 <translation id="94613679163347541"><ph name="CATEGORY" /> karşılaştırılsın mı?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sites'ta hızlıca yeni bir site oluşturmak için Sekme'ye, ardından Enter'a basın</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome bugün çerezleri tekrar sınırlandıracak}=1{Chrome yarın çerezleri tekrar sınırlandıracak}other{Chrome'un çerezleri tekrar sınırlandırmasına # gün kaldı}}</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> üye "<ph name="GROUP_NAME" />" sekme grubuna katıldı</translation>
 <translation id="949314938206378263">Bu siteyi ziyaret etme isteğinde bulundunuz. Anne veya babanız bu isteğe Family Link'te yanıt verebilir.</translation>
 <translation id="950736567201356821">Üstte üçlü delik</translation>

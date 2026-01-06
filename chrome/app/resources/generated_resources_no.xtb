@@ -1084,6 +1084,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1709085899471866534">Se enkelt når faner er inaktive. Du kan når som helst slå av det nye utseendet i innstillingene.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (innebygd)</translation>
 <translation id="1709217939274742847">Velg en sak som skal brukes til autentisering. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
+<translation id="1709509436926747582">Vis faner øverst</translation>
 <translation id="1709762881904163296">Nettverksinnstillinger</translation>
 <translation id="1709916727352927457">Slett sikkerhetsnøkkel</translation>
 <translation id="1709972045049031556">Kan ikke dele</translation>
@@ -1814,6 +1815,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="221297410904507041">Slett loggen, informasjonskapsler, bufferen med mer</translation>
 <translation id="2213410656650624348">Middels</translation>
 <translation id="2214018885812055163">Delte mapper</translation>
+<translation id="2214453882118345682">Handle, oversett og identifiser det du ser, med kameraet.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 linje vises ikke&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> linjer vises ikke&gt;}}</translation>
 <translation id="2215070081105889450">For å dele lyd, del en fane eller skjerm i stedet</translation>
 <translation id="2217208085547223783">Klareringsstatus</translation>
@@ -2337,6 +2339,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2545743249923338554">Nye faner</translation>
 <translation id="2546302722632337735">Ikke la nettsteder bruke identifikatorer til å spille av beskyttet innhold</translation>
 <translation id="2546991196809436099">Zoom inn for å gjøre elementer på skjermen større. Bruk søketasten + Ctrl + M for å slå på og av lupen.</translation>
+<translation id="2547602044908040111">Hvis du er aktivist, journalist, offentlig person, valgmedarbeider eller har en annen rolle med høy risiko, kan du være interessert i Googles <ph name="BEGIN_LINK" />Avansert beskyttelse-program<ph name="END_LINK" />.</translation>
 <translation id="2548347166720081527">Tillatt <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Tilbakestill eSIM-profilbufferen</translation>
 <translation id="2549985041256363841">Start opptak</translation>
@@ -4886,6 +4889,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4281844954008187215">Vilkår for bruk</translation>
 <translation id="4281849573951338030">Tilpass pennknapper</translation>
 <translation id="4282196459431406533">Smart Lock er slått på</translation>
+<translation id="4283635301190260296">Skjul vertikale faner</translation>
 <translation id="4284903252249997120">ChromeVox-skjermleser og tekstopplesing</translation>
 <translation id="4285418559658561636">Oppdater passord</translation>
 <translation id="4285498937028063278">Løsne</translation>
@@ -5721,6 +5725,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4864805589453749318">Velg den forelderen som gir tillatelse til å legge til en skolekonto.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blokkert)</translation>
 <translation id="486505726797718946">Spart minne</translation>
+<translation id="4865063548323785458">Lagre og autofyll passordene dine for å logge på nettsteder og apper enkelt</translation>
 <translation id="486635084936119914">Åpne visse filtyper automatisk når de lastes ned</translation>
 <translation id="4867272607148176509">Foreldre kan godkjenne eller blokkere apper, angi tidsgrenser og kontrollere nettsurfing. Du kan legge til en skolekonto senere for å få tilgang til de fleste skoleressurser.</translation>
 <translation id="4867433544163083783">Sjekk om fanene kan organiseres, nå</translation>
@@ -7617,7 +7622,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6194333736420234626">&amp;Betalingsmåter</translation>
 <translation id="6195005504600220730">lese informasjon om nettleseren din, OS-et ditt og enheten din</translation>
 <translation id="6195155925303302899">Midtstill</translation>
-<translation id="6195163219142236913">Informasjonskapsler fra tredjeparter er begrenset</translation>
 <translation id="6195693561221576702">Denne enheten kan ikke konfigureres i demomodus uten nett.</translation>
 <translation id="6196640612572343990">Blokkér informasjonskapsler fra tredjeparter</translation>
 <translation id="6196854373336333322">Utvidelsen «<ph name="EXTENSION_NAME" />» har tatt kontroll over proxy-tjenerinnstillingene dine, noe som betyr at den kan endre, ødelegge eller spionere på alt du foretar deg på nettet. Hvis du ikke er sikker på hvorfor denne endringen fant sted, vil du mest sannsynlig ikke ha den.</translation>
@@ -8384,7 +8388,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6731320427842222405">Dette kan ta noen minutter</translation>
 <translation id="6732956960067639542">Åpne en ny økt i Chrome-nettleseren i stedet.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Vis informasjonskapsler og andre nettsteddata</translation>
 <translation id="6736243959894955139">Adresse</translation>
 <translation id="6737663862851963468">Fjern Kerberos-sak</translation>
 <translation id="6738180164164974883">Tillat nettstedet å angi informasjonskapsler fra tredjeparter</translation>
@@ -8546,6 +8549,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6833753236242482566">Balansert (anbefales)</translation>
 <translation id="6835624277262316125">Jobbadressen din kan hjelpe deg med å få ting gjort i Google-tjenester, for eksempel mer relevante søkeresultater og veibeskrivelser i Google Maps. Du kan endre eller slette adressen i <ph name="BEGIN_LINK" />Google-kontoen din <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="6835762382653651563">Koble til Internett for å oppdatere <ph name="DEVICE_TYPE" />.</translation>
+<translation id="6836441935577925845">Vis faner på siden</translation>
 <translation id="6838992358006915573">Forstørrelsesglasset følger ChromeVox-fokuset</translation>
 <translation id="6839916869147598086">Påloggingen er endret</translation>
 <translation id="6840155290835956714">Spør før noe sendes</translation>
@@ -11121,6 +11125,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="859246725979739260">Dette nettstedet er blokkert fra å få tilgang til posisjonen din.</translation>
 <translation id="8593450223647418235">Du kan ikke åpne filer i Microsoft 365 før konfigureringen er fullført.</translation>
 <translation id="8593686980889923154"><ph name="APP_NAME" /> er blokkert på <ph name="DEVICE_TYPE" /></translation>
+<translation id="8593938084085018349">Sikkerhetsinnstillingene dine er oppgradert</translation>
 <translation id="8594912907680633924">Åpne linken i delt visning</translation>
 <translation id="8596400097994526901">Flere handlinger for <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="8596540852772265699">Egendefinerte filer</translation>
@@ -11476,6 +11481,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="881799181680267069">Skjul andre</translation>
 <translation id="8818152010000655963">Bakgrunn</translation>
 <translation id="8818988764764862764">Vinduet ble flyttet til venstre</translation>
+<translation id="8819155700324279105">Legg til et ekstra lag med beskyttelse mot trusler på nettet</translation>
 <translation id="8819510664278523111">Enhetens EID er <ph name="EID_NUMBER" />, enhetens IMEI-nummeret er <ph name="IMEI_NUMBER" />, og enhetens serienummer er <ph name="SERIAL_NUMBER" />. Disse numrene kan brukes til å aktivere tjenesten.</translation>
 <translation id="8820817407110198400">Bokmerker</translation>
 <translation id="8821045908425223359">Konfigurer IP-adressen automatisk</translation>
@@ -12123,7 +12129,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="947329552760389097">&amp;Undersøk elementer</translation>
 <translation id="947526284350604411">Svaret ditt</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> kan ikke åpne filer i denne mappen, fordi den inneholder systemfiler</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome begynner å begrense informasjonskapsler igjen i dag}=1{Chrome begynner å begrense informasjonskapsler igjen i morgen}other{# dager til Chrome begynner å begrense informasjonskapsler igjen}}</translation>
 <translation id="949807244219288032">Denne fanen er koblet til en HID-enhet</translation>
 <translation id="950079950995628542">Fra «<ph name="PHONE_NAME" />»</translation>
 <translation id="950307215746360464">Konfigureringsveiledning</translation>

@@ -114,7 +114,6 @@
 <translation id="1178581264944972037">ຢຸດຊົ່ວຄາວ</translation>
 <translation id="1178821169867863726">12 x 16 ນິ້ວ</translation>
 <translation id="1181037720776840403">ລຶບອອກ</translation>
-<translation id="1181381397492575884">Chrome ບລັອກເວັບໄຊບໍ່ໃຫ້ໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມເພື່ອຕິດຕາມທ່ານໃນຂະນະທີ່ທ່ານທ່ອງເວັບ. ເຂົ້າເບິ່ງການຕັ້ງຄ່າເພື່ອ <ph name="LINK" />.</translation>
 <translation id="1185331130467528132"><ph name="URL" /> ຕ້ອງການເຂົ້າເຖິງອຸປະກອນອື່ນໆໃນເຄືອຂ່າຍທ້ອງຖິ່ນຂອງທ່ານ</translation>
 <translation id="1185343831726846924">ກຳລັງຢືນຢັນວ່າບໍ່ສາມາດເປີດໃຊ້ບັດສະເໝືອນໄດ້</translation>
 <translation id="1186201132766001848">ກວດເບິ່ງລະຫັດຜ່ານ</translation>
@@ -227,7 +226,6 @@
 <translation id="1343830902827845050">ເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="1346748346194534595">ເບື້ອງຂວາ</translation>
 <translation id="1348779747280417563">ຢືນຢັນຊື່</translation>
-<translation id="1352798470428594123">Chrome ຈຳກັດບໍ່ໃຫ້ເວັບໄຊສ່ວນໃຫຍ່ໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມເພື່ອຕິດຕາມທ່ານໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບ. ເຂົ້າເບິ່ງການຕັ້ງຄ່າເພື່ອ <ph name="LINK" />.</translation>
 <translation id="1355158069018170842">ສະແດງການຫຼຸດລາຄາຢູ່ແຖບ</translation>
 <translation id="1355301061807280185">ວຽກ</translation>
 <translation id="1357195169723583938">ໃຜໃຊ້ອຸປະກອນເມື່ອບໍ່ດົນມານີ້ ແລະ ເວລາໃດ</translation>
@@ -1110,7 +1108,6 @@
 <translation id="2768397283109119044">ທ່ານພະຍາຍາມເຂົ້າເຖິງ <ph name="DOMAIN" />, ແຕ່ເຊີບເວີໄດ້ນຳສະເໜີໃບຮັບຮອງທີ່ບໍ່ຖືກຕ້ອງທີ່ອອກໃຫ້ກັບຊື່ນັ້ນ. ຊື່ເປັນທີ່ຢູ່ IP ທີ່ສະຫງວນໄວ້ ຫຼື ຊື່ໂຮສພາຍໃນ.</translation>
 <translation id="2770159525358613612">ລອງອັບໂຫຼດໄຟລ໌ຂອງທ່ານອີກຄັ້ງ</translation>
 <translation id="277133753123645258">ວິທີການຈັດສົ່ງ</translation>
-<translation id="2773388851563527404">Chrome ຈໍາກັດເວັບໄຊສ່ວນໃຫຍ່ຈາກການໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມໄວ້. ແຕ່ຄຸກກີ້ພາກສ່ວນທີສາມຖືກອະນຸຍາດໃຫ້ຢູ່ເວັບໄຊນີ້ເພາະວ່າຕ້ອງອາໄສພວກມັນເພື່ອໃຫ້ບໍລິການພື້ນຖານ. ເຂົ້າເບິ່ງການຕັ້ງຄ່າເພື່ອ <ph name="LINK" />.</translation>
 <translation id="277499241957683684">ບັນທຶກອຸປະກອນຫາຍໄປ</translation>
 <translation id="2775884851269838147">ໜ້າທີ່ພິມທຳອິດ</translation>
 <translation id="2781185443919227679">ຊາຍຫາດ ແລະ ໝູ່ເກາະ</translation>
@@ -1714,7 +1711,6 @@
 <translation id="3727309136762649052">Namespace</translation>
 <translation id="3727850735097852673">ເພື່ອໃຊ້ຕົວຈັດການລະຫັດຜ່ານ Google ດ້ວຍ Keychain ຂອງ macOS, ໃຫ້ເລີ່ມເປີດໃຊ້ Chrome ຄືນໃໝ່ ແລະ ອະນຸຍາດໃຫ້ມີການເຂົ້າເຖິງ Keychain. ແຖບຂອງທ່ານຈະເປີດຄືນໃໝ່ຫຼັງຈາກທີ່ເລີ່ມເປີດໃຊ້ໃໝ່.</translation>
 <translation id="3728173127485570463">ໂປຣແກຣມທ່ອງເວັບ Chrome ຈະບໍ່ຕ້ອງໃຊ້ລາຍນິ້ວມືຂອງທ່ານໃນການຕື່ມຂໍ້ມູນລະຫັດຜ່ານອັດຕະໂນມັດອີກຕໍ່ໄປ</translation>
-<translation id="3736739313435669994">ທ່ານໄດ້ບລັອກເວັບໄຊບໍ່ໃຫ້ໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມເພື່ອຕິດຕາມທ່ານໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບ. ເຂົ້າເບິ່ງການຕັ້ງຄ່າເພື່ອ <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານຖືກຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="3739842843727261045">ປຸ່ມຍົກໂປ້ຈະສົ່ງຄຳຕິຊົມວ່າທ່ານຖືກໃຈຜົນການຊອກຫາເຫຼົ່ານີ້</translation>
 <translation id="3740447166056383374">ຕ້ອງກວດສອບກ່ອນທີ່ຈະສຳເນົາ</translation>
@@ -2148,7 +2144,6 @@
 <translation id="4406883609789734330">ຄຳບັນຍາຍສົດ</translation>
 <translation id="4406896451731180161">ຜົນ​ການ​ຄົ້ນ​ຫາ</translation>
 <translation id="4407758156081352648">ອົງກອນຂອງທ່ານບໍ່ອະນຸຍາດໃຫ້ໃຊ້ລະຫັດຜ່ານຊ້ຳໃນ Chrome ເພື່ອຮັກສາຄວາມປອດໄພ. ລະຫັດຜ່ານໃນ Chrome ໄດ້ຖືກເຂົ້າລະຫັດເພື່ອປົກປ້ອງຄວາມເປັນສ່ວນຕົວຂອງຜູ້ໃຊ້.</translation>
-<translation id="4408413947728134509">ຄຸກກີ້ <ph name="NUM_COOKIES" /></translation>
 <translation id="4409556632583862731">ຫົວຂໍ້ໃໝ່</translation>
 <translation id="4412074349188076601">ການຕັ້ງຄ່ານີ້ຖືກໝາຍວ່າສາມາດຕິດຕັ້ງໄດ້, ແຕ່ບໍ່ມີຮູບໃຫ້ສຳລັບສະຖາປັດຕະຍະກຳນີ້, ດັ່ງນັ້ນຈຶ່ງບໍ່ສາມາດຕິດຕັ້ງມັນໄດ້.</translation>
 <translation id="4412377069090572315">ຄຳເຫັນຈາກຜູ້ອື່ນ</translation>
@@ -2536,7 +2531,6 @@
 <translation id="5061227663725596739">ທ່ານໝາຍເຖິງ <ph name="LOOKALIKE_DOMAIN" /> ບໍ?</translation>
 <translation id="5066056036849835175">ປະຫວັດການພິມ</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(ນຳໃຊ້ຢູ່ 1 ລາຍການ)}other{(ນຳໃຊ້ຢູ່ # ລາຍການ)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />ກຳລັງກວດເບິ່ງທີ່ຢູ່ພຣັອກຊີ<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">ມ້ວນທີສິບ</translation>
 <translation id="507130231501693183">ກ່ອງຈົດໝາຍ 4</translation>
@@ -3045,7 +3039,6 @@
 <translation id="5918373444239520146">ແກດເຈັດ ແລະ ອຸປະກອນອີເລັກໂທຣນິກພົກພາ</translation>
 <translation id="5918847752193018339">ຈ່າຍເງິນໄດ້ໄວຂຶ້ນເມື່ອບັນທຶກ CVC ຂອງທ່ານໄວ້. <ph name="LINK_BEGIN" />ລຶບລະຫັດຄວາມປອດໄພທີ່ບັນທຶກໄວ້<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 ໃຊ້ຢູ່}other{# ໃຊ້ຢູ່}}</translation>
 <translation id="5921185718311485855">ເປີດ</translation>
 <translation id="5921639886840618607">ບັນທຶກບັດໄວ້ໃນບັນຊີ Google ບໍ?</translation>
 <translation id="5921952831792678223">ລົດກະບະ</translation>
@@ -3226,7 +3219,6 @@
 <translation id="6194209731893739467">ເບິ່ງສິນຄ້າທີ່ທ່ານຕິດຕາມທັງໝົດຢູ່ບ່ອນນີ້</translation>
 <translation id="6195371403461054755">ທໍ​ລະ​ນີ​ສາດ</translation>
 <translation id="6195418151868446719">ເຄື່ອງໃຊ້ໄຟຟ້າທົ່ວໄປ</translation>
-<translation id="6196640612572343990">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="6197648101609735209">89 x 89 ມມ</translation>
 <translation id="6198480336395236519">ແຖບແບບເຕັມ</translation>
 <translation id="6203231073485539293">ກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ.</translation>
@@ -3722,7 +3714,6 @@
 <translation id="6978121630131642226">ເຄື່ອງ​ຈັກ​ຄົ້ນ​ຫາ</translation>
 <translation id="6978236010531171013">ຢືນຢັນການແບ່ງປັນ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979302985396162258">ຈັດການສິດເຂົ້າເຖິງຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="6979440798594660689">ປິດສຽງ (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="6987806006823772670">ຊອງ (ເຄືອບ)</translation>
 <translation id="6989256887001961296">ເນື້ອຫານີ້ຖືກບລັອກ.</translation>
@@ -4735,7 +4726,6 @@
 <translation id="8622864575115813231">ກຳລັງຕິດຕໍ່ຫາສະຖາບັນການເງິນຂອງທ່ານ...</translation>
 <translation id="8624354461147303341">ຮັບສ່ວນຫຼຸດ</translation>
 <translation id="8634957317623797170">54 x 86 ມມ</translation>
-<translation id="8635822281281406185">ເພີ່ມໄຟລ໌, ແຖບ ຫຼື ຮູບໄດ້ສູງສຸດ 10 ລາຍການ</translation>
 <translation id="8637362707224133343">Chrome ມີຄຸນສົມບັດຄວາມປອດໄພໃນຕົວເພື່ອປົກປ້ອງທ່ານໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບ — ເຊັ່ນ: Google Safe Browsing, ເຊິ່ງ <ph name="BEGIN_LINK" />ພົບການຫຼອກເອົາຂໍ້ມູນເມື່ອບໍ່ດົນມານີ້ <ph name="END_LINK" /> ຢູ່ເວັບໄຊທີ່ທ່ານພະຍາຍາມເຂົ້າເບິ່ງ. ເວັບໄຊການຫຼອກເອົາຂໍ້ມູນຈະແອບອ້າງເປັນເວັບໄຊອື່ນໆເພື່ອຫຼອກທ່ານ.<ph name="NEW_LINE" />ບາງເທື່ອເວັບໄຊທີ່ໂດຍປົກກະຕິຈະປອດໄພກໍອາດຕົກຢູ່ໃນອັນຕະລາຍຈາກຜູ້ໂຈມຕີໄດ້. <ph name="BEGIN_ERROR_LINK" />ແຈ້ງໃຫ້ພວກເຮົາຮູ້<ph name="END_ERROR_LINK" /> ຫາກທ່ານຄິດວ່າມີຂໍ້ຜິດພາດເກີດຂຶ້ນ ແລະ ເວັບໄຊນີ້ບໍ່ເປັນອັນຕະລາຍ.</translation>
 <translation id="8640996933372643759">ເພື່ອແບ່ງປັນແຖບ ແລະ ຮ່ວມມືກັບຜູ້ອື່ນ, ທ່ານຕ້ອງສາມາດເຂົ້າສູ່ລະບົບ Chrome ໄດ້</translation>
 <translation id="8641131559425911240">ຊອງ (ບອນດ໌)</translation>
@@ -5116,7 +5106,6 @@
 <translation id="945673208656386843">ຕື່ມຂໍ້ມູນບັດນີ້ອັດຕະໂນມັດສຳລັບການຊື້ທີ່ດຳເນີນການໃນ Chromium ເມື່ອບັນທຶກໄວ້ໃນອຸປະກອນນີ້</translation>
 <translation id="94613679163347541">ປຽບທຽບ <ph name="CATEGORY" /> ບໍ?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອສ້າງເວັບໄຊໃໝ່ໃນ Google Sites ໄດ້ຢ່າງວ່ອງໄວ</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome ຈະຈຳກັດຄຸກກີ້ອີກເທື່ອໜຶ່ງໃນມື້ນີ້}=1{Chrome ຈະຈຳກັດຄຸກກີ້ອີກເທື່ອໜຶ່ງໃນມື້ອື່ນ}other{ອີກ # ມື້ຈົນກວ່າ Chrome ຈະຈຳກັດຄຸກກີ້ອີກເທື່ອໜຶ່ງ}}</translation>
 <translation id="949026252328034572">ສະມາຊິກ <ph name="MEMBER_COUNT" /> ຄົນໄດ້ເຂົ້າຮ່ວມກຸ່ມແຖບ "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">ທ່ານໄດ້ຂໍເຂົ້າເບິ່ງເວັບໄຊນີ້. ຜູ້ປົກຄອງຂອງທ່ານສາມາດຕອບກັບໃນ Family Link.</translation>
 <translation id="950736567201356821">ເຈາະຮູຢູ່ເທິງສຸດສາມຮູ</translation>

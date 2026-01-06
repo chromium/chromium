@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">นำออก</translation>
 <translation id="1183189057400844278">โปรดยืนยันว่าเป็นคุณเพื่อให้ใช้รหัสผ่านในบัญชี Google ได้เสมอ</translation>
 <translation id="1187810343066461819">ลบบุ๊กมาร์ก ประวัติการเข้าชม และอื่นๆ จากรถคันนี้ด้วย</translation>
-<translation id="1193589902336218259">เปิดการแจ้งเตือนเคล็ดลับ</translation>
 <translation id="1193729455103054076">หากต้องการใช้รหัสผ่านที่รัดกุม</translation>
 <translation id="11947597112837849">อีเมล</translation>
 <translation id="1197267115302279827">ย้ายบุ๊กมาร์ก</translation>
@@ -995,7 +994,6 @@
 <translation id="5267572070504076962">เปิด Google Safe Browsing เพื่อปกป้องคุณจากเว็บไซต์ที่เป็นอันตราย</translation>
 <translation id="5271967389191913893">อุปกรณ์ไม่สามารถเปิดเนื้อหาที่จะดาวน์โหลดได้</translation>
 <translation id="5273031377282080577">ผู้ดูแลระบบจัดการการตั้งค่านี้</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{ยกเลิกการสมัครรับข้อมูลจากเว็บไซต์ที่ไม่ได้ใช้แล้ว 1 รายการ}other{ยกเลิกการสมัครรับข้อมูลจากเว็บไซต์ที่ไม่ได้ใช้แล้ว # รายการ}}</translation>
 <translation id="5292796745632149097">ส่งไปที่</translation>
 <translation id="5301876394151419436">คุณลงชื่อเข้าใช้ด้วย <ph name="EMAIL" /> คุณหยุดการซิงค์ได้ทุกเมื่อในการตั้งค่า Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
 <translation id="5304593522240415983">ต้องกรอกข้อมูลในช่องนี้</translation>
@@ -1586,7 +1584,6 @@
 <translation id="7612619742409846846">ลงชื่อเข้าใช้ Google ด้วย</translation>
 <translation id="7612989789287281429">กำลังลงชื่อเข้าใช้…</translation>
 <translation id="7619072057915878432">การดาวน์โหลด <ph name="FILE_NAME" /> ล้มเหลวเพราะเครือข่ายขัดข้อง</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{ยกเลิกการสมัครรับข้อมูลจากเว็บไซต์ 1 แห่ง}other{ยกเลิกการสมัครรับข้อมูลจากเว็บไซต์ # แห่ง}}</translation>
 <translation id="7626032353295482388">ยินดีต้อนรับสู่ Chrome</translation>
 <translation id="7628417132421583481">ไปที่เครื่องมือจัดการรหัสผ่าน</translation>
 <translation id="7630202231528827509">URL ผู้ให้บริการ</translation>

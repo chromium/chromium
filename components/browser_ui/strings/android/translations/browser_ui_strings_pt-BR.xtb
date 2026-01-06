@@ -188,11 +188,9 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="2903493209154104877">Endereços</translation>
 <translation id="2910701580606108292">Perguntar antes de permitir que sites mostrem conteúdo protegido</translation>
 <translation id="2918484639460781603">Ir a configurações</translation>
-<translation id="293060180538644702">Ative as notificações das dicas do Chrome</translation>
 <translation id="2932883381142163287">Denunciar abuso</translation>
 <translation id="2939338015096024043">Quando essa configuração está ativada, os sites podem pedir para rastrear a posição da câmera e saber mais sobre o ambiente à sua volta. Quando está desativada, os sites não podem rastrear a posição da câmera nem saber mais sobre o ambiente à sua volta.</translation>
 <translation id="2968755619301702150">Leitor de certificados</translation>
-<translation id="2979365474350987274">Cookies de terceiros são limitados</translation>
 <translation id="2990583317361835189">Não permitir que os sites usem sensores de movimento</translation>
 <translation id="3004438526346162184">Os sites podem usar esse recurso para gerenciar janelas em todas as telas</translation>
 <translation id="3008272652534848354">Redefinir permissões</translation>
@@ -631,7 +629,6 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="7835852323729233924">Tocando mídia</translation>
 <translation id="783819812427904514">Ativar som do vídeo</translation>
 <translation id="7846076177841592234">Cancelar seleção</translation>
-<translation id="7881140103901777395">O Chrome impede que a maioria dos sites use cookies de terceiros. No entanto, cookies de terceiros são permitidos neste site porque eles são necessários para o fornecimento de serviços básicos.\n\nAcesse as configurações para <ph name="BEGIN_LINK" />gerenciar o acesso a cookies de terceiros<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Permitir o som de um site específico.</translation>
 <translation id="7891547341794213004">Ocultar o card "Continuar nesta guia"</translation>
 <translation id="789722939441020330">Não permitir que os sites baixem automaticamente vários arquivos</translation>

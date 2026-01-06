@@ -114,7 +114,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1178821169867863726">12 x 16 pol.</translation>
 <translation id="1181037720776840403">Remover</translation>
-<translation id="1181381397492575884">O Chrome impede que os sites usem cookies de terceiros para acompanhar o seu perfil enquanto navega. Aceda às definições para <ph name="LINK" />.</translation>
 <translation id="1185331130467528132">O site <ph name="URL" /> quer aceder a outros dispositivos na sua rede local</translation>
 <translation id="1185343831726846924">Não é possível ativar a confirmação do cartão virtual</translation>
 <translation id="1186201132766001848">Rever palavras-passe</translation>
@@ -227,7 +226,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1343830902827845050">Inicie sessão no Chrome</translation>
 <translation id="1346748346194534595">Direita</translation>
 <translation id="1348779747280417563">Confirmar nome</translation>
-<translation id="1352798470428594123">Na maioria dos sites, o Chrome limita a utilização de cookies de terceiros para monitorização do seu perfil enquanto navega. Aceda às definições para <ph name="LINK" />.</translation>
 <translation id="1355158069018170842">Mostrar descidas do preço nos separadores</translation>
 <translation id="1355301061807280185">Empregos</translation>
 <translation id="1357195169723583938">Quem utilizou o dispositivo recentemente e quando</translation>
@@ -1110,7 +1108,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2768397283109119044">Tentou aceder a <ph name="DOMAIN" />, mas o servidor apresentou um certificado inválido emitido para esse nome. O nome é um endereço IP reservado ou um nome de anfitrião interno.</translation>
 <translation id="2770159525358613612">Tente carregar os ficheiros novamente</translation>
 <translation id="277133753123645258">Método de envio</translation>
-<translation id="2773388851563527404">Na maioria dos sites, o Chrome limita a utilização de cookies de terceiros. Porém, os cookies de terceiros são permitidos neste site porque dependem deles para disponibilizar serviços básicos. Aceda às definições para <ph name="LINK" />.</translation>
 <translation id="277499241957683684">Registo do dispositivo em falta</translation>
 <translation id="2775884851269838147">Primeira página de impressão</translation>
 <translation id="2781185443919227679">Praias e ilhas</translation>
@@ -1714,7 +1711,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3727309136762649052">Espaço de nomes</translation>
 <translation id="3727850735097852673">Para usar o Gestor de Palavras-passe da Google com o Porta-chaves macOS, reinicie o Chrome e permita o acesso ao Porta-chaves. Os separadores reabrem depois de serem reiniciados.</translation>
 <translation id="3728173127485570463">O navegador Chrome vai deixar de exigir a sua impressão digital para o preenchimento automático de palavras-passe</translation>
-<translation id="3736739313435669994">Impediu os sites de usarem cookies de terceiros para monitorização do seu perfil enquanto navega. Aceda às definições para <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">O seu navegador é gerido pelo seu administrador.</translation>
 <translation id="3739842843727261045">A opção Gosto envia feedback a indicar que gosta destes resultados</translation>
 <translation id="3740447166056383374">É necessária uma revisão antes de copiar</translation>
@@ -2148,7 +2144,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4406883609789734330">Legendas instantâneas</translation>
 <translation id="4406896451731180161">resultados da pesquisa</translation>
 <translation id="4407758156081352648">Para manter a segurança, a sua organização não permite que as palavras-passe voltem a ser usadas no Chrome. As palavras-passe no Chrome são encriptadas para proteger a privacidade do utilizador.</translation>
-<translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4409556632583862731">Nova discussão</translation>
 <translation id="4412074349188076601">Esta configuração está marcada como instalável, mas não é fornecida nenhuma imagem para esta arquitetura e, por isso, não pode ser instalada.</translation>
 <translation id="4412377069090572315">Opinião das pessoas</translation>
@@ -2536,7 +2531,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5061227663725596739">Será que quis dizer <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Histórico de impressão</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 em utilização)}other{(# em utilização)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Rever o endereço proxy<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Décimo rolo</translation>
 <translation id="507130231501693183">Caixa de correio 4</translation>
@@ -3045,7 +3039,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5918373444239520146">Gadgets e dispositivos eletrónicos portáteis</translation>
 <translation id="5918847752193018339">Pague mais rapidamente quando os seus Códigos de Segurança/CVCs forem guardados. <ph name="LINK_BEGIN" />Elimine os códigos de segurança guardados<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 em utilização}other{# em utilização}}</translation>
 <translation id="5921185718311485855">Ativado</translation>
 <translation id="5921639886840618607">Quer guardar o cartão na Conta Google?</translation>
 <translation id="5921952831792678223">Carrinhas de caixa aberta</translation>
@@ -3226,7 +3219,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6194209731893739467">Veja todos os produtos monitorizados aqui</translation>
 <translation id="6195371403461054755">Geologia</translation>
 <translation id="6195418151868446719">Eletrónica de consumo</translation>
-<translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Separadores completos</translation>
 <translation id="6203231073485539293">Rever a ligação à Internet</translation>
@@ -3722,7 +3714,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6978121630131642226">Motores de pesquisa</translation>
 <translation id="6978236010531171013">Partilhar mesmo assim</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979302985396162258">gerir o acesso a cookies de terceiros</translation>
 <translation id="6979440798594660689">Desativar som (predefinição)</translation>
 <translation id="6987806006823772670">Envelope (revestido)</translation>
 <translation id="6989256887001961296">Este conteúdo está bloqueado.</translation>
@@ -4736,7 +4727,6 @@ Detalhes adicionais:
 <translation id="8622864575115813231">A contactar a sua instituição financeira…</translation>
 <translation id="8624354461147303341">Obter descontos</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
-<translation id="8635822281281406185">Adicione até 10 ficheiros, separadores ou imagens</translation>
 <translation id="8637362707224133343">O Chrome tem funcionalidades de segurança integradas para proteger o utilizador enquanto navega, como a Navegação Segura do Google, que <ph name="BEGIN_LINK" />encontrou recentemente phishing<ph name="END_LINK" /> no site que tentou visitar. Os sites de phishing simulam ser outros sites para enganar os utilizadores.<ph name="NEW_LINE" />Por vezes, até os sites normalmente seguros são comprometidos por atacantes. <ph name="BEGIN_ERROR_LINK" />Informe-nos<ph name="END_ERROR_LINK" /> se considerar que houve um erro e que este site não representa um perigo.</translation>
 <translation id="8640996933372643759">Para partilhar separadores e colaborar com outras pessoas, tem de poder iniciar sessão no Chrome</translation>
 <translation id="8641131559425911240">Envelope (bond)</translation>
@@ -5117,7 +5107,6 @@ Detalhes adicionais:
 <translation id="945673208656386843">Preencha automaticamente este cartão para compras feitas no Chromium quando este estiver guardado neste dispositivo</translation>
 <translation id="94613679163347541">Comparar <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para criar rapidamente um novo site no Google Sites</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{O Chrome vai limitar os cookies novamente hoje}=1{O Chrome vai limitar os cookies novamente amanhã}other{# dias até o Chrome limitar os cookies novamente}}</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> membros aderiram ao grupo de separadores "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Pediste para visitar este site. O teu adulto responsável pode responder no Family Link.</translation>
 <translation id="950736567201356821">Perfuração tripla na parte superior</translation>

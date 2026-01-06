@@ -485,6 +485,7 @@
 <translation id="6180522807229584611">Този раздел използва допълнителни ресурси. За да подобрите ефективността, разрешете на Chrome да го деактивира.</translation>
 <translation id="6182736845697986886">Инсталирането не бе успешно поради вътрешна грешка в сървъра за актуализиране.</translation>
 <translation id="6183773856988300112">Gemini в Chrome използва функцията за автоматично сърфиране, за да работи в разделите си и да изпълнява задачите, които му възлагате. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
+<translation id="6187085551300363958">Съвет за Chrome: Запазване на паролите</translation>
 <translation id="6192058120268468905">Профилът ви в Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> добави разширение, което може да промени начина на работа на Chrome.
 
@@ -623,6 +624,7 @@
 <translation id="7627609214560473136">За да защитите данните си, разрешете на Chrome да премахва разрешенията от сайтовете, които не сте посещавали наскоро.</translation>
 <translation id="7629695634924605473">Chrome ви уведомява, ако паролите ви бъдат компрометирани</translation>
 <translation id="7641148173327520642">Системният ви администратор е конфигурирал Google Chrome да отваря <ph name="ALTERNATIVE_BROWSER_NAME" /> за достъп до <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7641448682796883218">Съвет за Chrome: Подобрена защита от Безопасно сърфиране</translation>
 <translation id="7649070708921625228">Помощ</translation>
 <translation id="7651907282515937834">Лого на Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome блокира това изтегляне, защото сте изключили Безопасно сърфиране и файлът не може да бъде потвърден</translation>

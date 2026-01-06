@@ -1824,6 +1824,7 @@
 <translation id="221297410904507041">Видалити історію, файли cookie, кеш і інші дані</translation>
 <translation id="2213410656650624348">Помірне</translation>
 <translation id="2214018885812055163">Спільні папки</translation>
+<translation id="2214453882118345682">Здійснюйте покупки, перекладайте тексти й визначайте об’єкти навколо за допомогою камери.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;Не показано 1 рядок&gt;}one{&lt;Не показано <ph name="NUMBER_OF_LINES" /> рядок&gt;}few{&lt;Не показано <ph name="NUMBER_OF_LINES" /> рядки&gt;}many{&lt;Не показано <ph name="NUMBER_OF_LINES" /> рядків&gt;}other{&lt;Не показано <ph name="NUMBER_OF_LINES" /> рядка&gt;}}</translation>
 <translation id="2215070081105889450">Щоб надати доступ до аудіо, поділіться вкладкою або екраном</translation>
 <translation id="2217208085547223783">Статус надійності</translation>
@@ -2665,6 +2666,7 @@
 <translation id="2757338480560142065">Переконайтеся, що новий пароль збігається з паролем для веб-сайту <ph name="WEBSITE" /></translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> За пошуковим запитом "<ph name="SEARCH_QUERY" />" не знайдено результатів</translation>
 <translation id="2762441749940182211">Заборонено використовувати камеру</translation>
+<translation id="2763165257813209348">Файл "<ph name="FILE_NAME" />" містить чутливі або небезпечні дані. Згідно з правилами вашої організації, ви можете зберегти його в хмарному сховищі або видалити цей файл.</translation>
 <translation id="2764786626780673772">Дані про VPN</translation>
 <translation id="2764920001292228569">Введіть назву профілю</translation>
 <translation id="2765100602267695013">Зв’яжіться з оператором мобільного зв’язку</translation>
@@ -5735,6 +5737,7 @@
 <translation id="4864805589453749318">Вибери, хто з батьків дозволяє додати обліковий запис навчального закладу.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (заблоковано)</translation>
 <translation id="486505726797718946">Спогад збережено</translation>
+<translation id="4865063548323785458">Зберігайте паролі й використовуйте автозаповнення, щоб легко входити в облікові записи на сайтах і в додатках</translation>
 <translation id="486635084936119914">Автоматично відкривати певні типи файлів після завантаження</translation>
 <translation id="4867272607148176509">Батьки зможуть схвалювати й блокувати додатки, обмежувати час користування пристроєм і контролювати перегляд веб-сторінок. Пізніше можна додати обліковий запис закладу освіти, щоб отримати доступ до більшості шкільних ресурсів.</translation>
 <translation id="4867433544163083783">Перевірити, чи можна впорядкувати вкладки</translation>
@@ -7629,7 +7632,6 @@
 <translation id="6194333736420234626">Способи оплати</translation>
 <translation id="6195005504600220730">Перегляд інформації про ваш веб-переглядач, ОС і пристрій</translation>
 <translation id="6195155925303302899">Вирівняти по центру</translation>
-<translation id="6195163219142236913">Сторонні файли cookie обмежено</translation>
 <translation id="6195693561221576702">Не вдається налаштувати пристрій у демо-режимі офлайн.</translation>
 <translation id="6196640612572343990">Блокувати сторонні файли cookie</translation>
 <translation id="6196854373336333322">Розширення "<ph name="EXTENSION_NAME" />" керує налаштуваннями проксі-сервера, тобто може змінювати та переривати будь-які ваші дії онлайн, а також стежити за ними. Якщо ви не знаєте причини такої зміни, імовірно, вона небажана.</translation>
@@ -8402,7 +8404,6 @@
 <translation id="6731320427842222405">Це може тривати декілька хвилин</translation>
 <translation id="6732956960067639542">Натомість почніть новий сеанс веб-переглядача Chrome.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ідентифікатор: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Показати файли cookie та інші дані із сайтів...</translation>
 <translation id="6736243959894955139">Адреса</translation>
 <translation id="6737663862851963468">Видалити квиток Kerberos</translation>
 <translation id="6738180164164974883">Дозволити налаштовувати сторонні файли cookie</translation>
@@ -11498,6 +11499,7 @@
 <translation id="881799181680267069">Сховати інші</translation>
 <translation id="8818152010000655963">Фоновий малюнок</translation>
 <translation id="8818988764764862764">Вікно переміщено ліворуч</translation>
+<translation id="8819155700324279105">Додайте ще один рівень захисту від загроз в Інтернеті</translation>
 <translation id="8819510664278523111">EID пристрою: <ph name="EID_NUMBER" />, IMEI пристрою: <ph name="IMEI_NUMBER" />, серійний номер пристрою: <ph name="SERIAL_NUMBER" />. За допомогою цих номерів можна активувати сервіс.</translation>
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="8821045908425223359">Автоматично налаштовувати ІР-адресу</translation>
@@ -12145,7 +12147,6 @@
 <translation id="947329552760389097">&amp;Перевірити елементи</translation>
 <translation id="947526284350604411">Ваша відповідь</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> не може відкрити файли в цій папці, оскільки вона містить системні файли</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Сьогодні Chrome знов обмежить використання файлів cookie}=1{Завтра Chrome знов обмежить використання файлів cookie}one{Через # день Chrome знов обмежить використання файлів cookie}few{Через # дні Chrome знов обмежить використання файлів cookie}many{Через # днів Chrome знов обмежить використання файлів cookie}other{Через # дня Chrome знов обмежить використання файлів cookie}}</translation>
 <translation id="949807244219288032">Цю вкладку підключено до пристрою HID</translation>
 <translation id="950079950995628542">З телефона "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Посібник із налаштування</translation>

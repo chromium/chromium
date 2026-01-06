@@ -1821,6 +1821,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="221297410904507041">Xoá nhật ký, cookie, bộ nhớ đệm và các dữ liệu khác</translation>
 <translation id="2213410656650624348">Trung bình</translation>
 <translation id="2214018885812055163">Thư mục dùng chung</translation>
+<translation id="2214453882118345682">Mua sản phẩm, dịch văn bản và nhận dạng đối tượng mà bạn nhìn thấy bằng camera.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 dòng không hiển thị&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> dòng không hiển thị&gt;}}</translation>
 <translation id="2215070081105889450">Để chia sẻ âm thanh, hãy chia sẻ một thẻ hoặc màn hình</translation>
 <translation id="2217208085547223783">Trạng thái đáng tin cậy</translation>
@@ -5733,6 +5734,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4864805589453749318">Chọn cha mẹ sẽ cấp quyền thêm tài khoản trường học.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (bị chặn)</translation>
 <translation id="486505726797718946">Bộ nhớ tiết kiệm được</translation>
+<translation id="4865063548323785458">Lưu và tự động điền mật khẩu để dễ dàng đăng nhập vào các trang web và ứng dụng</translation>
 <translation id="486635084936119914">Tự động mở một số loại tệp nhất định sau khi tải xuống</translation>
 <translation id="4867272607148176509">Cha mẹ có thể phê duyệt hoặc chặn ứng dụng, đặt giới hạn về thời gian và kiểm soát hoạt động duyệt web. Bạn có thể thêm một tài khoản trường học vào lúc khác để truy cập hầu hết các tài nguyên của trường học.</translation>
 <translation id="4867433544163083783">Kiểm tra ngay xem có thể sắp xếp thẻ không</translation>
@@ -7631,7 +7633,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6194333736420234626">&amp;Phương thức thanh toán</translation>
 <translation id="6195005504600220730">Đọc thông tin về trình duyệt, hệ điều hành và thiết bị của bạn</translation>
 <translation id="6195155925303302899">Căn giữa</translation>
-<translation id="6195163219142236913">Đã hạn chế cookie của bên thứ ba</translation>
 <translation id="6195693561221576702">Không thể thiết lập thiết bị này ở chế độ minh họa ngoại tuyến.</translation>
 <translation id="6196640612572343990">Chặn cookie của bên thứ ba</translation>
 <translation id="6196854373336333322">Tiện ích "<ph name="EXTENSION_NAME" />" đã chiếm quyền kiểm soát cài đặt proxy của bạn, điều đó có nghĩa là tiện ích này có thể thay đổi, làm gián đoạn hoặc nghe trộm bất kỳ điều gì bạn thực hiện trực tuyến. Nếu bạn không chắc chắn về lý do thay đổi này diễn ra, bạn có thể không cần tiện ích này.</translation>
@@ -8398,7 +8399,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6731320427842222405">Việc này có thể mất vài phút</translation>
 <translation id="6732956960067639542">Mở phiên trình duyệt Chrome mới.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (Mã nhận dạng: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Hiển thị cookie và các dữ liệu khác của trang web...</translation>
 <translation id="6736243959894955139">Địa chỉ</translation>
 <translation id="6737663862851963468">Xóa vé Kerberos</translation>
 <translation id="6738180164164974883">Cho phép đặt cookie của bên thứ ba</translation>
@@ -11494,6 +11494,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="881799181680267069">Ẩn Cửa sổ khác</translation>
 <translation id="8818152010000655963">Hình nền</translation>
 <translation id="8818988764764862764">Đã di chuyển cửa sổ sang bên trái</translation>
+<translation id="8819155700324279105">Bổ sung một lớp bảo vệ trước các mối đe doạ trên mạng</translation>
 <translation id="8819510664278523111">Số EID (mã định danh dành cho eSIM) thiết bị của bạn là <ph name="EID_NUMBER" />, số IMEI thiết bị là <ph name="IMEI_NUMBER" /> và số sê-ri thiết bị là <ph name="SERIAL_NUMBER" />. Những số này có thể được dùng để giúp kích hoạt dịch vụ.</translation>
 <translation id="8820817407110198400">Dấu trang</translation>
 <translation id="8821045908425223359">Tự động định cấu hình địa chỉ IP</translation>
@@ -12141,7 +12142,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="947329552760389097">&amp;Kiểm tra các yếu tố</translation>
 <translation id="947526284350604411">Câu trả lời của bạn</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> không thể mở các tệp trong thư mục này vì thư mục này chứa tệp hệ thống</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Hôm nay, Chrome sẽ hạn chế cookie trở lại}=1{Chrome sẽ hạn chế cookie trở lại vào ngày mai}other{Chrome sẽ hạn chế cookie trở lại sau # ngày nữa}}</translation>
 <translation id="949807244219288032">Thẻ này đã kết nối với một thiết bị HID</translation>
 <translation id="950079950995628542">Từ "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Hướng dẫn thiết lập</translation>

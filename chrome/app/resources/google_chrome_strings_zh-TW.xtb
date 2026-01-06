@@ -484,6 +484,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6180522807229584611">這個分頁使用的資源過多。為提升效能，請讓 Chrome 將其設為閒置分頁。</translation>
 <translation id="6182736845697986886">更新伺服器發生內部錯誤，因此安裝失敗。</translation>
 <translation id="6183773856988300112">Chrome 內建 Gemini 使用自動瀏覽功能，能在分頁中完成你交辦的工作。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="6187085551300363958">Chrome 提示：儲存密碼</translation>
 <translation id="6192058120268468905">你在 Chrome 中的帳戶</translation>
 <translation id="6220551899604141979">「<ph name="PARTNER_NAME" />」新增了一個擴充功能，可能會改變 Chrome 的運作方式。
 
@@ -622,6 +623,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7627609214560473136">如果有最近未造訪的網站，可以允許 Chrome 移除權限，保護你的資料。</translation>
 <translation id="7629695634924605473">Chrome 會通知你密碼是否曾遭外洩</translation>
 <translation id="7641148173327520642">你的系統管理員已設定由 Google Chrome 開啟 <ph name="ALTERNATIVE_BROWSER_NAME" /> 以存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
+<translation id="7641448682796883218">Chrome 提示：安全瀏覽強化防護功能</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7651907282515937834">Chrome Enterprise 標誌</translation>
 <translation id="76531479118467370">安全瀏覽功能已關閉，系統無法驗證這個檔案，因此 Chrome 已禁止下載</translation>

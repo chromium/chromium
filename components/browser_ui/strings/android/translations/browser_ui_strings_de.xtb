@@ -188,11 +188,9 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="2903493209154104877">Adressen</translation>
 <translation id="2910701580606108292">Fragen, bevor die Wiedergabe geschützter Inhalte auf Websites zugelassen wird</translation>
 <translation id="2918484639460781603">Zu den Einstellungen wechseln</translation>
-<translation id="293060180538644702">Benachrichtigungen mit Chrome-Tipps erhalten</translation>
 <translation id="2932883381142163287">Missbrauch melden</translation>
 <translation id="2939338015096024043">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie deine Kameraposition erfassen und mehr über deine Umgebung ermitteln dürfen. Wenn er deaktiviert ist, können Websites deine Kameraposition nicht erfassen und nichts über deine Umgebung ermitteln.</translation>
 <translation id="2968755619301702150">Zertifikats-Viewer</translation>
-<translation id="2979365474350987274">Drittanbieter-Cookies sind eingeschränkt</translation>
 <translation id="2990583317361835189">Websites dürfen keine Bewegungssensoren verwenden</translation>
 <translation id="3004438526346162184">Websites können diese Funktion verwenden, um Fenster auf allen deinen Bildschirmen zu verwalten</translation>
 <translation id="3008272652534848354">Berechtigungen zurücksetzen</translation>
@@ -631,7 +629,6 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="7835852323729233924">Medien werden wiedergegeben</translation>
 <translation id="783819812427904514">Stummschaltung des Videos aufheben</translation>
 <translation id="7846076177841592234">Auswahl aufheben</translation>
-<translation id="7881140103901777395">In Chrome ist die Verwendung von Drittanbieter-Cookies für die meisten Websites eingeschränkt. Drittanbieter-Cookies sind jedoch auf dieser Website erlaubt, weil sie für die Bereitstellung grundlegender Dienste erforderlich sind.\n\nRufe die Einstellungen auf, um den <ph name="BEGIN_LINK" />Zugriff auf Drittanbieter-Cookies zu verwalten<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Wiedergabe von Ton auf einer bestimmten Website zulassen.</translation>
 <translation id="7891547341794213004">Karte „Mit diesem Tab fortfahren“ ausblenden</translation>
 <translation id="789722939441020330">Websites dürfen nicht automatisch mehrere Dateien herunterladen</translation>

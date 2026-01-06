@@ -188,11 +188,9 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="2903493209154104877">Naslovi</translation>
 <translation id="2910701580606108292">Prikaži poziv, preden se spletnim mestom dovoli predvajanje zaščitene vsebine</translation>
 <translation id="2918484639460781603">Pojdi v nastavitve</translation>
-<translation id="293060180538644702">Prejemanje obvestil z nasveti za Chrome</translation>
 <translation id="2932883381142163287">Prijavite zlorabo</translation>
 <translation id="2939338015096024043">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo spremljanje položaja kamere in pridobivanje informacij o vaši okolici. Če je ta možnost izklopljena, spletna mesta ne smejo spremljati položaja kamere ali pridobivati informacij o vaši okolici.</translation>
 <translation id="2968755619301702150">Pregledovalnik potrdil</translation>
-<translation id="2979365474350987274">Piškotki tretjih oseb so omejeni</translation>
 <translation id="2990583317361835189">Spletnim mestom ni dovoljena uporaba tipal gibanja.</translation>
 <translation id="3004438526346162184">Spletna mesta lahko s to funkcijo upravljajo okna na vseh prikazih</translation>
 <translation id="3008272652534848354">Ponastavi dovoljenja</translation>
@@ -631,7 +629,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="7835852323729233924">Predvajanje predstavnosti</translation>
 <translation id="783819812427904514">Vklop videa</translation>
 <translation id="7846076177841592234">Prekliči izbor</translation>
-<translation id="7881140103901777395">Chrome večini spletnih mest omejuje uporabo piškotkov tretjih oseb. Vendar so piškotki tretjih oseb dovoljeni na tem spletnem mestu, ker z njimi zagotavlja osnovne storitve.\n\nObiščite nastavitve, če želite <ph name="BEGIN_LINK" />upravljati dostop do piškotkov tretjih oseb<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Dovolitev zvoka za določeno spletno mesto.</translation>
 <translation id="7891547341794213004">Skrij kartico za nadaljevanje s tem zavihkom</translation>
 <translation id="789722939441020330">Spletnim mestom ni dovoljeno samodejno prenašanje več datotek.</translation>

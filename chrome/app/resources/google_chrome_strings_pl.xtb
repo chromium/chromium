@@ -482,6 +482,7 @@
 <translation id="6180522807229584611">Ta karta wykorzystuje dodatkowe zasoby. Aby zwiększyć wydajność, pozwól Chrome ją dezaktywować.</translation>
 <translation id="6182736845697986886">Instalacja się nie udała z powodu wewnętrznego błędu serwera aktualizacji.</translation>
 <translation id="6183773856988300112">Gemini w Chrome używa automatycznego przeglądania, aby działać na kartach i realizować zadania, o których wykonanie poprosisz. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
+<translation id="6187085551300363958">Wskazówka od Chrome: zapisuj hasła</translation>
 <translation id="6192058120268468905">Twoje konto w Chrome</translation>
 <translation id="6220551899604141979">Rozszerzenie dodane przez: <ph name="PARTNER_NAME" /> może zmienić sposób działania Chrome.
 
@@ -620,6 +621,7 @@
 <translation id="7627609214560473136">Aby chronić swoje dane, zezwól Chrome na usunięcie uprawnień witryn, których ostatnio nie odwiedzasz.</translation>
 <translation id="7629695634924605473">Chrome poinformuje Cię, jeśli Twoje hasła dostaną się w niepowołane ręce</translation>
 <translation id="7641148173327520642">Administrator systemu skonfigurował Google Chrome tak, by strona <ph name="TARGET_URL_HOSTNAME" /> otwierała się w przeglądarce <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
+<translation id="7641448682796883218">Wskazówka od Chrome: Ulepszone bezpieczne przeglądanie</translation>
 <translation id="7649070708921625228">Pomoc</translation>
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
 <translation id="76531479118467370">Pobieranie zostało zablokowane przez Chrome, ponieważ masz wyłączone Bezpieczne przeglądanie i nie można zweryfikować pliku</translation>

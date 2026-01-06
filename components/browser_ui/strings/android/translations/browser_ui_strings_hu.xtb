@@ -188,11 +188,9 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="2903493209154104877">Címek</translation>
 <translation id="2910701580606108292">Kérdezzen rá, mielőtt engedélyezné a webhelyek számára védett tartalmak lejátszását</translation>
 <translation id="2918484639460781603">Ugrás a beállításokhoz</translation>
-<translation id="293060180538644702">Chrome-tippekről szóló értesítések fogadása</translation>
 <translation id="2932883381142163287">Visszaélés bejelentése</translation>
 <translation id="2939338015096024043">Ha be van kapcsolva, a webhelyek kérhetik a kamera pozíciójának nyomon követését, és információhoz juthatnak az Ön környezetéről. Ha ki van kapcsolva, a webhelyek nem tudják követni a kamera pozícióját, és nem tudnak információhoz jutni az Ön környezetéről.</translation>
 <translation id="2968755619301702150">Tanúsítványmegtekintő</translation>
-<translation id="2979365474350987274">A harmadik féltől származó cookie-k korlátozva vannak</translation>
 <translation id="2990583317361835189">A webhelyek nem használhatnak mozgásérzékelőket</translation>
 <translation id="3004438526346162184">A webhelyek ezt a funkciót használhatják az ablakok kezelésére az összes kijelzőn</translation>
 <translation id="3008272652534848354">Engedélyek visszavonása</translation>
@@ -631,7 +629,6 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="7835852323729233924">Médiatartalom lejátszása…</translation>
 <translation id="783819812427904514">Videó némításának feloldása</translation>
 <translation id="7846076177841592234">Kijelölés törlése</translation>
-<translation id="7881140103901777395">A Chrome a legtöbb webhely számára korlátozza, hogy harmadik féltől származó cookie-kat használjanak. A harmadik féltől származó cookie-k azonban engedélyezettek ezen a webhelyen, mivel az alapvető szolgáltatások nyújtásához szüksége van rájuk.\n\nA beállítások között <ph name="BEGIN_LINK" />kezelheti a harmadik féltől származó cookie-khoz való hozzáférést<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Egy adott webhely hangjának engedélyezése.</translation>
 <translation id="7891547341794213004">A Folytatás ezen a lapon kártya elrejtése</translation>
 <translation id="789722939441020330">A webhelyek nem kérhetnek engedélyt több fájl automatikus letöltésére</translation>

@@ -114,7 +114,6 @@
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1178821169867863726">12 x 16 инчи</translation>
 <translation id="1181037720776840403">Отстрани</translation>
-<translation id="1181381397492575884">Chrome блокира сајтовите да користат колачиња од трети страни за да ве следат додека прелистувате. Одете во поставките за <ph name="LINK" />.</translation>
 <translation id="1185331130467528132"><ph name="URL" /> сака да пристапува до други уреди во вашата локална мрежа</translation>
 <translation id="1185343831726846924">Потврда дека виртуелната картичка не може да се вклучи</translation>
 <translation id="1186201132766001848">Провери ги лозинките</translation>
@@ -227,7 +226,6 @@
 <translation id="1343830902827845050">Најавете се на Chrome</translation>
 <translation id="1346748346194534595">Надесно</translation>
 <translation id="1348779747280417563">Потврдете го името</translation>
-<translation id="1352798470428594123">Chrome ограничува повеќето сајтови да користат колачиња од трети страни за да ве следат додека прелистувате. Одете во поставките за <ph name="LINK" />.</translation>
 <translation id="1355158069018170842">Прикажувај намалувања на цените на картички</translation>
 <translation id="1355301061807280185">Работни места</translation>
 <translation id="1357195169723583938">Кој го користел уредот неодамна и кога</translation>
@@ -1110,7 +1108,6 @@
 <translation id="2768397283109119044">Се обидовте да пристапите до <ph name="DOMAIN" />, но серверот прикажа неважечки сертификат издаден на тоа име. Името е резервирана IP-адреса или внатрешно име на хост.</translation>
 <translation id="2770159525358613612">Обидете се да ги прикачите датотеките повторно</translation>
 <translation id="277133753123645258">Метод на испорака</translation>
-<translation id="2773388851563527404">Chrome ограничува повеќето сајтови да користат колачиња од трети страни. Сепак, колачињата од трети страни се дозволени на сајтов бидејќи обезбедувањето основни услуги зависи од нив. Одете во поставките на <ph name="LINK" />.</translation>
 <translation id="277499241957683684">Недостасува снимка од уред</translation>
 <translation id="2775884851269838147">Прво испечати ја страницата</translation>
 <translation id="2781185443919227679">Плажи и острови</translation>
@@ -1714,7 +1711,6 @@
 <translation id="3727309136762649052">Поле за име</translation>
 <translation id="3727850735097852673">За да користите Google Password Manager со macOS Keychain, рестартирајте го Chrome и дозволете пристап до Keychain. Вашите картички ќе се отворат повторно по рестартирањето.</translation>
 <translation id="3728173127485570463">Прелистувачот Chrome веќе нема да го бара вашиот отпечаток за да ги пополнува лозинките автоматски</translation>
-<translation id="3736739313435669994">Блокиравте сајтовите да користат колачиња од трети страни за да ве следат додека прелистувате. Одете во поставките за <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Администраторот управува со прелистувачот.</translation>
 <translation id="3739842843727261045">„Ми се допаѓа“ испраќа повратни информации дека ви се допаѓаат резултативе</translation>
 <translation id="3740447166056383374">Потребен е преглед пред копирањето</translation>
@@ -2148,7 +2144,6 @@
 <translation id="4406883609789734330">Автоматски титлови</translation>
 <translation id="4406896451731180161">резултати од пребарувањето</translation>
 <translation id="4407758156081352648">За да се заштити, вашата организација не дозволува лозинките да се користат повторно во Chrome. Лозинките во Chrome се шифрирани за да ја заштитат приватноста на корисниците.</translation>
-<translation id="4408413947728134509">Колачиња <ph name="NUM_COOKIES" /></translation>
 <translation id="4409556632583862731">Нова низа</translation>
 <translation id="4412074349188076601">Конфигурацијава е означена дека може да се инсталира, но не е дадена слика за архитектурава и затоа не може да се инсталира.</translation>
 <translation id="4412377069090572315">Што велат луѓето</translation>
@@ -2536,7 +2531,6 @@
 <translation id="5061227663725596739">Дали мислевте на <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Историја на печатење</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(Се користи 1)}one{(Се користи #)}other{(Се користат #)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Да ја проверите адресата на проксито<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Десетта ролна</translation>
 <translation id="507130231501693183">Поштенско сандаче 4</translation>
@@ -3045,7 +3039,6 @@
 <translation id="5918373444239520146">Гаџети и преносливи електронски уреди</translation>
 <translation id="5918847752193018339">Плаќајте побрзо кога се зачувани вашите CVC. <ph name="LINK_BEGIN" />Избришете ги зачуваните безбедносни кодови<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 е во употреба}one{# е во употреба}other{# се во употреба}}</translation>
 <translation id="5921185718311485855">Вклучено</translation>
 <translation id="5921639886840618607">Да се зачува картичката на сметката на Google?</translation>
 <translation id="5921952831792678223">Пикапи</translation>
@@ -3226,7 +3219,6 @@
 <translation id="6194209731893739467">Видете ги сите ваши следени производи тука</translation>
 <translation id="6195371403461054755">Геологија</translation>
 <translation id="6195418151868446719">Електронски уреди</translation>
-<translation id="6196640612572343990">Блокирај колачиња од трети лица</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Целосно исечени јазичиња</translation>
 <translation id="6203231073485539293">Проверете го поврзувањето на интернет</translation>
@@ -3722,7 +3714,6 @@
 <translation id="6978121630131642226">Пребарувачи</translation>
 <translation id="6978236010531171013">Сепак сподели</translation>
 <translation id="6979158407327259162">Google Диск</translation>
-<translation id="6979302985396162258">управувате со пристапот до колачињата од трети страни</translation>
 <translation id="6979440798594660689">Исклучи звук (стандардно)</translation>
 <translation id="6987806006823772670">Коверт (обложен)</translation>
 <translation id="6989256887001961296">Содржиниве се блокирани.</translation>
@@ -4735,7 +4726,6 @@
 <translation id="8622864575115813231">Се контактира со вашата финансиска институција…</translation>
 <translation id="8624354461147303341">Сакам попусти</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
-<translation id="8635822281281406185">Додајте најмногу 10 датотеки, картички или слики</translation>
 <translation id="8637362707224133343">Chrome има вградени безбедносни функции за да ве штитат додека прелистувате, како „Безбедно прелистување со Google“, што <ph name="BEGIN_LINK" />неодамна најде фишинг<ph name="END_LINK" /> на сајтот што се обидовте да го отворите. Сајтовите за фишинг се преправаат дека се други сајтови за да ве измамат.<ph name="NEW_LINE" />Дури и сајтовите што се обично безбедни понекогаш се компромитирани од напаѓачи. <ph name="BEGIN_ERROR_LINK" />Известете нѐ<ph name="END_ERROR_LINK" /> ако сметате дека сме погрешиле и дека сајтов не е опасен.</translation>
 <translation id="8640996933372643759">За да споделувате картички и да соработувате со други, мора да може да се најавите на Chrome</translation>
 <translation id="8641131559425911240">Коверт (цврст)</translation>
@@ -5116,7 +5106,6 @@
 <translation id="945673208656386843">Автоматско пополнување на картичкава за купувањата извршени во Chromium кога е зачувана на уредов</translation>
 <translation id="94613679163347541">Да се споредат <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да набрзина создадете нов сајт во Google Sites</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome пак ќе ограничи колачиња денес}=1{Chrome пак ќе ограничи колачиња утре}one{Chrome пак ќе ограничи колачиња по # ден}other{Chrome пак ќе ограничи колачиња по # дена}}</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> члена се придружија во групата картички „<ph name="GROUP_NAME" />“</translation>
 <translation id="949314938206378263">Побара да го посетиш сајтов. Твојот родител може да одговори во Family Link.</translation>
 <translation id="950736567201356821">Три дупки горе</translation>

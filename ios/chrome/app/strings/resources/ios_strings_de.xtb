@@ -966,6 +966,7 @@
 <translation id="472259426228234149">Preis: 100–180 $</translation>
 <translation id="4735849923335729414">Mit dem Konto „<ph name="EMAIL" />, von deiner Organisation verwaltet“ anmelden.</translation>
 <translation id="473775607612524610">Aktualisieren</translation>
+<translation id="4738968082443868320">Google Drive</translation>
 <translation id="474209246745757965">Mithilfe der Kamera einkaufen und Text übersetzen</translation>
 <translation id="4742407542027196863">Passwörter verwalten…</translation>
 <translation id="4744428388659507035">Um auf all deinen Geräten auf deine Lesezeichen zugreifen zu können, musst du in den Einstellungen die Option „Lesezeichen“ aktivieren.</translation>
@@ -1055,6 +1056,7 @@
 <translation id="5021500396464456616">Kontaktiere die Person, die diesen Link gesendet hat</translation>
 <translation id="5039804452771397117">Zulassen</translation>
 <translation id="5050810143224996149">Passwort teilen</translation>
+<translation id="5052499409147950210">Website bearbeiten</translation>
 <translation id="5055015094595227120">Genauer Standort</translation>
 <translation id="5055551113846164633">Dadurch werden auf diesem Gerät gespeicherte Adressen gelöscht. Außerdem werden Adressen gelöscht, die in deinem Google-Konto <ph name="USER_EMAIL" /> gespeichert sind.</translation>
 <translation id="5056446788882570708">Probleme <ph name="TIME" /> gefunden.</translation>
@@ -1133,6 +1135,7 @@
 <translation id="5295239312320826323">Konto <ph name="USER_EMAIL" /> entfernen?</translation>
 <translation id="5300589172476337783">Anzeigen</translation>
 <translation id="5311061401280561833">Kamera- und Mikrofonzugriff gewährt</translation>
+<translation id="5313967007315987356">Website hinzufügen</translation>
 <translation id="5315870524563628285">Keine Daten zum Importieren vorhanden</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> von <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Speichern</translation>
@@ -1794,7 +1797,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7679915578945954324">Webadressen kopiert</translation>
 <translation id="7695953765525234038">Suchleiste</translation>
 <translation id="7696316012653762532">Optionen zum Übersetzen der Seite</translation>
-<translation id="7700527812567437847">Bildschirminhalt mit Google Lens durchsuchen</translation>
+<translation id="7700527812567437847">Mit Google Lens anhand von Bildschirminhalt suchen</translation>
 <translation id="7701040980221191251">Keine</translation>
 <translation id="7708668404222666001">Einstellungen für die Seite „Neuer Tab“ wurden übernommen</translation>
 <translation id="7708994397325774423">Auf alle deine Passwörter zugreifen</translation>

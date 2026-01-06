@@ -483,6 +483,7 @@
 <translation id="6180522807229584611">Esta pestaña está usando recursos adicionales. Para mejorar el rendimiento, permite que Chrome la desactive.</translation>
 <translation id="6182736845697986886">No se pudo completar la instalación debido a un error interno del servidor de actualización.</translation>
 <translation id="6183773856988300112">Gemini en Chrome usa la navegación automática para trabajar en tus pestañas y completar las tareas que le asignes. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
+<translation id="6187085551300363958">Sugerencia de Chrome: Guardar contraseñas</translation>
 <translation id="6192058120268468905">Tu cuenta en Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> agregó una extensión que puede cambiar el funcionamiento de Chrome.
 
@@ -621,6 +622,7 @@
 <translation id="7627609214560473136">Para proteger tus datos, permite que Chrome quite permisos de los sitios que no visitaste recientemente.</translation>
 <translation id="7629695634924605473">Chrome te informará si tus contraseñas se ven comprometidas</translation>
 <translation id="7641148173327520642">El administrador del sistema configuró Google Chrome de manera que se abriera <ph name="ALTERNATIVE_BROWSER_NAME" /> para acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7641448682796883218">Sugerencia de Chrome: Navegación segura mejorada</translation>
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7651907282515937834">Logotipo de Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome bloqueó esta descarga porque desactivaste la Navegación segura y no se puede verificar el archivo</translation>

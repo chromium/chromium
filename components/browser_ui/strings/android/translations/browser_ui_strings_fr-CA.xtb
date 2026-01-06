@@ -188,11 +188,9 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="2903493209154104877">Adresses</translation>
 <translation id="2910701580606108292">Demander avant d'autoriser les sites à lire du contenu protégé</translation>
 <translation id="2918484639460781603">Accéder aux paramètres</translation>
-<translation id="293060180538644702">Recevez des notifications de conseils Chrome</translation>
 <translation id="2932883381142163287">Signaler un abus</translation>
 <translation id="2939338015096024043">Lorsque cette option est activée, les sites peuvent demander à suivre la position de votre appareil photo et à en savoir plus sur votre environnement. Lorsqu'elle est désactivée, les sites ne peuvent pas suivre la position de votre appareil photo ni en savoir plus sur votre environnement.</translation>
 <translation id="2968755619301702150">Lecteur de certificats</translation>
-<translation id="2979365474350987274">Les témoins tiers sont limités</translation>
 <translation id="2990583317361835189">Ne pas autoriser les sites à utiliser les capteurs de mouvement</translation>
 <translation id="3004438526346162184">Les sites peuvent utiliser cette fonctionnalité pour gérer les fenêtres sur tous vos écrans</translation>
 <translation id="3008272652534848354">Réinitialiser les autorisations</translation>
@@ -631,7 +629,6 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="7835852323729233924">Élém. multim. en cours de lecture</translation>
 <translation id="783819812427904514">Réactiver le son de la vidéo</translation>
 <translation id="7846076177841592234">Annuler la sélection</translation>
-<translation id="7881140103901777395">Chrome empêche la plupart des sites d'utiliser des témoins tiers. Toutefois, les témoins tiers sont autorisés sur ce site parce qu'il en dépend pour fournir des services de base.\n\nAccédez aux paramètres pour <ph name="BEGIN_LINK" />gérer l'accès aux témoins tiers<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Autorisez le son sur un site précis.</translation>
 <translation id="7891547341794213004">Masquer la carte Continuer avec cet onglet</translation>
 <translation id="789722939441020330">Ne pas autoriser les sites à télécharger automatiquement plusieurs fichiers</translation>

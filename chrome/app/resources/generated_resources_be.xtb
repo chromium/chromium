@@ -1812,6 +1812,7 @@
 <translation id="221297410904507041">Выдаліць гісторыю прагляду сайтаў, файлы cookie, кэш і іншыя даныя</translation>
 <translation id="2213410656650624348">Умераны рэжым</translation>
 <translation id="2214018885812055163">Абагуленыя папкі</translation>
+<translation id="2214453882118345682">Знаходзьце тавары, перакладайце тэксты і распазнавайце навакольныя аб’екты з дапамогай камеры.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 радок не паказваецца&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> радок не паказваецца&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> радкі не паказваецца&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> радкоў не паказваецца&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> радка не паказваецца&gt;}}</translation>
 <translation id="2215070081105889450">Каб абагуліць аўдыя, абагульце ўкладку ці экран</translation>
 <translation id="2217208085547223783">Статус даверу</translation>
@@ -5719,6 +5720,7 @@
 <translation id="4864805589453749318">Выберыце, хто з бацькоў дае дазвол дадаць навучальны ўліковы запіс.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (заблакіравана)</translation>
 <translation id="486505726797718946">Захавана ў памяці</translation>
+<translation id="4865063548323785458">Захоўвайце і аўтаматычна запаўняйце паролі, каб з лёгкасцю ўваходзіць ва ўліковыя запісы на сайтах і ў праграмах</translation>
 <translation id="486635084936119914">Аўтаматычна адкрываць пэўныя тыпы файлаў пасля спампоўвання</translation>
 <translation id="4867272607148176509">Бацькі могуць ухваляць і блакіраваць праграмы, усталёўваць абмежаванні па часе і кантраляваць прагляд вэб-старонак. Для доступу да большасці навучальных рэсурсаў пазней можна дадаць вучэбны ўліковы запіс.</translation>
 <translation id="4867433544163083783">Праверыць, ці можна ўпарадкаваць укладкі</translation>
@@ -7616,7 +7618,6 @@
 <translation id="6194333736420234626">&amp;Спосабы аплаты</translation>
 <translation id="6195005504600220730">Счытваць інфармацыю пра браўзер, АС і прыладу</translation>
 <translation id="6195155925303302899">Выраўнаваць па цэнтры</translation>
-<translation id="6195163219142236913">Староннія файлы cookie абмежаваны</translation>
 <translation id="6195693561221576702">Гэту прыладу нельга наладзіць у пазасеткавым дэманстрацыйным рэжыме.</translation>
 <translation id="6196640612572343990">Блакіраваць староннія файлы cookie</translation>
 <translation id="6196854373336333322">Пашырэнне "<ph name="EXTENSION_NAME" />" узяло пад кантроль налады проксі-сервера: яно можа змяняць, пашкоджваць і праслухоўваць усе даныя падчас вашай працы ў інтэрнэце. Калі вы не ведаеце, чаму гэта адбылося, хутчэй за ўсё, гэта непатрэбная вам змена.</translation>
@@ -8389,7 +8390,6 @@
 <translation id="6731320427842222405">Гэта можа заняць некалькі хвілін</translation>
 <translation id="6732956960067639542">Замест гэтага запусціце новы сеанс браўзера Chrome.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ідэнтыфікатар: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Паказаць файлы cookie і іншыя даныя сайта...</translation>
 <translation id="6736243959894955139">Адрас</translation>
 <translation id="6737663862851963468">Выдаліць білет Kerberos</translation>
 <translation id="6738180164164974883">Дазволіць усталёўваць староннія файлы cookie</translation>
@@ -11484,6 +11484,7 @@
 <translation id="881799181680267069">Схаваць іншыя</translation>
 <translation id="8818152010000655963">Шпалеры</translation>
 <translation id="8818988764764862764">Акно перамешчана ўлева</translation>
+<translation id="8819155700324279105">Задайце дадатковы ўзровень бяспекі ад пагроз у інтэрнэце</translation>
 <translation id="8819510664278523111">EID прылады: <ph name="EID_NUMBER" />; IMEI прылады: <ph name="IMEI_NUMBER" />; серыйны нумар: <ph name="SERIAL_NUMBER" />. Гэтыя нумары можна выкарыстаць для актывацыі сэрвісу.</translation>
 <translation id="8820817407110198400">Закладкі</translation>
 <translation id="8821045908425223359">Задаваць IP-адрас аўтаматычна</translation>
@@ -12128,7 +12129,6 @@
 <translation id="947329552760389097">&amp;Праверыць элементы</translation>
 <translation id="947526284350604411">Ваш адказ</translation>
 <translation id="947667444780368238">Сайт <ph name="ORIGIN" /> не можа адкрываць файлы ў гэтай папцы, бо ў ёй знаходзяцца сістэмныя файлы</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Сягоння Chrome зноў абмяжуе выкарыстанне файлаў cookie}=1{Заўтра Chrome зноў абмяжуе выкарыстанне файлаў cookie}one{Chrome зноў абмяжуе выкарыстанне файлаў cookie праз # дзень}few{Chrome зноў абмяжуе выкарыстанне файлаў cookie праз # дні}many{Chrome зноў абмяжуе выкарыстанне файлаў cookie праз # дзён}other{Chrome зноў абмяжуе выкарыстанне файлаў cookie праз # дня}}</translation>
 <translation id="949807244219288032">Гэта ўкладка падключана да прылады HID</translation>
 <translation id="950079950995628542">З тэлефона "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Дапаможнік па наладжванні</translation>

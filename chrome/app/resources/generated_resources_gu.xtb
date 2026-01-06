@@ -1809,6 +1809,7 @@
 <translation id="221297410904507041">બ્રાઉઝિંગ ઇતિહાસ, કુકી, કૅશ મેમરી અને બીજું ઘણું ડિલીટ કરો</translation>
 <translation id="2213410656650624348">મધ્યમ</translation>
 <translation id="2214018885812055163">શેર કરેલા ફોલ્ડરો</translation>
+<translation id="2214453882118345682">તમારા કૅમેરા વડે જે જુઓ, તેને ખરીદો, અનુવાદ કરો અને તેની ઓળખ કરો.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 પંક્તિ બતાવેલ નથી&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> પંક્તિ બતાવેલ નથી&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> પંક્તિ બતાવેલ નથી&gt;}}</translation>
 <translation id="2215070081105889450">ઑડિયો શેર કરવા માટે, વિન્ડોના બદલે ટૅબ અથવા સ્ક્રીન શેર કરો</translation>
 <translation id="2217208085547223783">વિશ્વાસનું સ્ટેટસ</translation>
@@ -5719,6 +5720,7 @@
 <translation id="4864805589453749318">સ્કૂલ એકાઉન્ટ ઉમેરવાની પરવાનગી આપી રહ્યાં છે તે માતાપિતાને પસંદ કરો.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (બ્લૉક કરેલો છે)</translation>
 <translation id="486505726797718946">મેમરી સાચવી</translation>
+<translation id="4865063548323785458">સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરવા માટે તમારા પાસવર્ડ સાચવો અને તેને ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="486635084936119914">ડાઉનલોડ કર્યા પછી કેટલાક ફાઇલ પ્રકારોને ઑટોમૅટિક રીતે ખોલો</translation>
 <translation id="4867272607148176509">માતાપિતા ઍપને મંજૂરી આપી શકે છે કે તેને બ્લૉક કરી શકે છે, સમય મર્યાદા સેટ કરી શકે છે તેમજ વેબ બ્રાઉઝિંગ પર નિયંત્રણ મૂકી શકે છે. સ્કૂલના મોટા ભાગના સંસાધનો ઍક્સેસ કરવા માટે પછીથી સ્કૂલનું એકાઉન્ટ ઉમેરી શકાશે.</translation>
 <translation id="4867433544163083783">ટૅબની ગોઠવણી કરી શકાય કે નહીં તે ચેક કરો</translation>
@@ -7619,7 +7621,6 @@ USB ડિવાઇસ</translation>
 <translation id="6194333736420234626">ચુકવણી પદ્ધતિઓ</translation>
 <translation id="6195005504600220730">તમારા બ્રાઉઝર OS અને ડિવાઇસ વિશે માહિતી વાંચો</translation>
 <translation id="6195155925303302899">મધ્યમાં સંરેખિત કરો</translation>
-<translation id="6195163219142236913">ત્રીજા પક્ષની કુકી મર્યાદિત છે</translation>
 <translation id="6195693561221576702">આ ડિવાઇસ ઇન્ટરનેટ વગર ડેમો મોડમાં સેટઅપ કરી શકાતું નથી.</translation>
 <translation id="6196640612572343990">ત્રીજા પક્ષની કુકીને બ્લૉક કરો</translation>
 <translation id="6196854373336333322">"<ph name="EXTENSION_NAME" />" એક્સ્ટેન્શને તમારા પ્રૉક્સી સેટિંગનું નિયંત્રણ લઈ લીધું છે, એનો અર્થ છે કે તમે જે કંઈ પણ ઓનલાઇન કરો છો એને એ બદલી, ભંગ કરી કે છુપાઈને પારકી વાતો સાંભળી શકે છે. આ ફેરફાર કેમ થયો એ અંગે જો તમને ખાતરી નથી, તો સંભવિત રૂપે એ તમને જોઈતું નહિ હોય.</translation>
@@ -8388,7 +8389,6 @@ USB ડિવાઇસ</translation>
 <translation id="6731320427842222405">આમાં થોડો સમય લાગી શકે છે</translation>
 <translation id="6732956960067639542">તેના બદલે નવું Chrome બ્રાઉઝર સત્ર ખોલો.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">કૂકીઝ અને અન્ય સાઇટનો ડેટા બતાવો...</translation>
 <translation id="6736243959894955139">સરનામું</translation>
 <translation id="6737663862851963468">Kerberos ટિકિટ કાઢી નાખો</translation>
 <translation id="6738180164164974883">ત્રીજા પક્ષની કુકી સેટ કરવાની મંજૂરી આપો</translation>
@@ -11478,6 +11478,7 @@ USB ડિવાઇસ</translation>
 <translation id="881799181680267069">અન્યને છુપાવો</translation>
 <translation id="8818152010000655963">વૉલપેપર</translation>
 <translation id="8818988764764862764">વિન્ડોને ડાબી બાજુ ખસેડવામાં આવી</translation>
+<translation id="8819155700324279105">ઑનલાઇન જોખમો સામે સુરક્ષાનું વધારાનું સ્તર ઉમેરો</translation>
 <translation id="8819510664278523111">તમારા ડિવાઇસનો EID <ph name="EID_NUMBER" />, ડિવાઇસનો IMEI <ph name="IMEI_NUMBER" /> અને ડિવાઇસનો અનુક્રમ નંબર <ph name="SERIAL_NUMBER" /> છે. સેવા સક્રિય કરવામાં સહાય માટે આ નંબરનો ઉપયોગ કરી શકાય છે.</translation>
 <translation id="8820817407110198400">બુકમાર્ક</translation>
 <translation id="8821045908425223359">IP સરનામું ઑટોમૅટિક રીતે ગોઠવો</translation>
@@ -12125,7 +12126,6 @@ USB ડિવાઇસ</translation>
 <translation id="947329552760389097">&amp;ઘટકોની તપાસ કરો</translation>
 <translation id="947526284350604411">તમારો જવાબ</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> આ ફોલ્ડરમાં ફાઇલો ખોલી શકતું નથી, કારણ કે તેમાં સિસ્ટમ ફાઇલો શામેલ છે</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome આજે ફરી કુકીને મર્યાદિત કરશે}=1{Chrome આવતીકાલે ફરી કુકીને મર્યાદિત કરશે}one{Chrome # દિવસમાં કુકીને ફરીથી મર્યાદિત કરશે}other{Chrome # દિવસમાં કુકીને ફરીથી મર્યાદિત કરશે}}</translation>
 <translation id="949807244219288032">આ ટૅબ કોઈ HID ડિવાઇસ સાથે કનેક્ટ કરેલું છે</translation>
 <translation id="950079950995628542">"<ph name="PHONE_NAME" />"માંથી</translation>
 <translation id="950307215746360464">સેટઅપની માર્ગદર્શિકા</translation>

@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Өшіру</translation>
 <translation id="1183189057400844278">Google аккаунтыңыздағы құпия сөздерді пайдалана алу үшін жеке басыңызды растаңыз.</translation>
 <translation id="1187810343066461819">Бұл көліктен бетбелгілерді, тарих пен т.б. мәліметтерді де жою</translation>
-<translation id="1193589902336218259">Кеңестер хабарландыруларын қосу</translation>
 <translation id="1193729455103054076">Күрделі құпия сөз пайдаланылсын ба?</translation>
 <translation id="11947597112837849">электрондық пошта мекенжайы</translation>
 <translation id="1197267115302279827">Бетбелгілерді жылжыту</translation>
@@ -995,7 +994,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5267572070504076962">Қауіпті сайттардан қорғау үшін Safe Browsing функциясын қосыңыз.</translation>
 <translation id="5271967389191913893">Құрылғы жүктелетін контентті аша алмайды.</translation>
 <translation id="5273031377282080577">Бұл параметрді әкімшіңіз басқарады.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Қолданылмаған бір сайт жазылымы тоқтатылды}other{Қолданылмаған # сайт жазылымы тоқтатылды}}</translation>
 <translation id="5292796745632149097">Қойынды жіберілетін құрылғы:</translation>
 <translation id="5301876394151419436"><ph name="EMAIL" /> ретінде кірдіңіз. Синхрондауды кез келген уақытта параметрлерде тоқтатуға болады. Google жүйесі Search және басқа да қызметтерді тарихыңызға негіздеп жекелендіре алады.</translation>
 <translation id="5304593522240415983">Бұл өріс бос болмауы керек</translation>
@@ -1586,7 +1584,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7612619742409846846">Google жүйесіне келесі пайдаланушы атымен кірген:</translation>
 <translation id="7612989789287281429">Аккаунтқа кіруде…</translation>
 <translation id="7619072057915878432">Желідегі ақаулықтар себебінен <ph name="FILE_NAME" /> жүктелмеді.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Бір сайт жазылымын тоқтаттыңыз}other{# сайт жазылымын тоқтаттыңыз}}</translation>
 <translation id="7626032353295482388">Chrome жүйесіне қош келдіңіз</translation>
 <translation id="7628417132421583481">Password Manager қызметіне өту</translation>
 <translation id="7630202231528827509">Провайдердің URL мекенжайы</translation>

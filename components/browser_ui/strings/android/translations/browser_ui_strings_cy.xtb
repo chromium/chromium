@@ -188,11 +188,9 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="2903493209154104877">Cyfeiriadau</translation>
 <translation id="2910701580606108292">Gofyn cyn caniatáu i wefannau chwarae cynnwys gwarchodedig</translation>
 <translation id="2918484639460781603">Mynd i'r gosodiadau</translation>
-<translation id="293060180538644702">Cael hysbysiadau Awgrymiadau Chrome</translation>
 <translation id="2932883381142163287">Rhoi gwybod am gamddefnydd</translation>
 <translation id="2939338015096024043">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am olrhain lleoliad eich camera a dysgu am eich amgylchoedd. Pan fydd wedi'i ddiffodd, ni all gwefannau olrhain lleoliad eich camera na dysgu am eich amgylchoedd.</translation>
 <translation id="2968755619301702150">Gwyliwr tystysgrifau</translation>
-<translation id="2979365474350987274">Mae cwcis trydydd parti yn gyfyngedig</translation>
 <translation id="2990583317361835189">Peidio â chaniatáu i wefannau ddefnyddio synwyryddion symudiad</translation>
 <translation id="3004438526346162184">Gall gwefannau ddefnyddio'r nodwedd hon i reoli ffenestri ar eich holl sgriniau</translation>
 <translation id="3008272652534848354">Ailosod caniatadau</translation>
@@ -631,7 +629,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="7835852323729233924">Chwarae cyfryngau</translation>
 <translation id="783819812427904514">Dad-ddistewi'r fideo</translation>
 <translation id="7846076177841592234">Canslo dewis</translation>
-<translation id="7881140103901777395">Mae Chrome yn cyfyngu ar y rhan fwyaf o wefannau rhag defnyddio cwcis trydydd parti. Ond caniateir cwcis trydydd parti ar y wefan hon oherwydd ei bod yn dibynnu arnynt i ddarparu gwasanaethau sylfaenol.\n\nEwch i'r gosodiadau i <ph name="BEGIN_LINK" />reoli mynediad at gwcis trydydd parti<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Caniatáu sain ar gyfer gwefan benodol.</translation>
 <translation id="7891547341794213004">Cuddio cerdyn parhau â'r tab hwn</translation>
 <translation id="789722939441020330">Peidio â chaniatáu i wefannau lawrlwytho mwy nag un ffeil yn awtomatig</translation>

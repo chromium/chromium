@@ -83,6 +83,7 @@
 <translation id="193439633299369377">Pentru a se aplica actualizarea, sistemul de operare Chromium trebuie să fie repornit.</translation>
 <translation id="1951406923938785464">Chromium a blocat descărcarea, deoarece tipul de fișier nu este descărcat frecvent și ar putea fi periculos</translation>
 <translation id="1953553007165777902">Se descarcă… Timp rămas: <ph name="MINUTE" /> minute</translation>
+<translation id="1965068424387304464">Sfat pentru Chromium: salvează parolele</translation>
 <translation id="1966382378801805537">Chromium nu poate determina sau seta browserul prestabilit</translation>
 <translation id="1990262977744080398">Află de ce Chromium blochează unele fișiere și se deschide într-o filă nouă</translation>
 <translation id="1999715455684970349">Menține software-ul Chromium actualizat. Dacă serviciul este dezactivat sau oprit, software-ul Chromium nu va fi actualizat, ceea ce înseamnă că vulnerabilitățile de securitate care pot apărea nu pot fi remediate și este posibil ca unele funcții să nu fie disponibile. Serviciul se dezinstalează singur când nu este folosit de software-ul Chromium.</translation>
@@ -253,6 +254,7 @@
 <translation id="3802055581630249637">Chromium preîncarcă paginile pe care este posibil să le accesezi, astfel încât să se încarce mai rapid când le accesezi</translation>
 <translation id="3810973564298564668">Gestionează</translation>
 <translation id="3823384748599722168">Ca să folosești parolele salvate, urmează codul QR, descarcă browserul Chromium pentru iOS și conectează-te la Contul Google.</translation>
+<translation id="3837584850181228767">Sfat pentru Chromium: Navigarea sigură îmbunătățită</translation>
 <translation id="3846683726093018685">**Rezumă:** într-o propoziție cu mai puțin de 30 de cuvinte, descrie subiectul principal și scopul conținutului din captura de ecran.
 
           **Sugerează întrebări:** generează o listă cu marcatori cu 3 – 5 întrebări care dau de gândit pe care un utilizator le-ar putea pune pentru a înțelege mai bine captura de ecran. Aceste întrebări trebuie să includă cel puțin una care să se refere în mod specific la un obiect vizual, la designul sau plasarea acestuia.</translation>

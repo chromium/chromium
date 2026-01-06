@@ -1821,6 +1821,7 @@
 <translation id="221297410904507041">इतिहास, कुकी, कॅशे आणि आणखी बरेच काही हटवा</translation>
 <translation id="2213410656650624348">मध्यम</translation>
 <translation id="2214018885812055163">शेअर केलेली फोल्डर</translation>
+<translation id="2214453882118345682">तुमचा कॅमेरा वापरून, तुम्ही जे पाहता ते खरेदी करा, त्याचे भाषांतर करा आणि ते ओळखा.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;एक ओळ दाखवलेली नाही&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> ओळी दाखवलेल्या नाहीत&gt;}}</translation>
 <translation id="2215070081105889450">ऑडिओ शेअर करण्यासाठी, त्याऐवजी टॅब किंवा स्क्रीन शेअर करा</translation>
 <translation id="2217208085547223783">विश्वासाची स्थिती</translation>
@@ -5731,6 +5732,7 @@
 <translation id="4864805589453749318">शाळा खाते जोडण्याची परवानगी देणार असलेले पालक निवडा.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (ब्लॉक केलेले)</translation>
 <translation id="486505726797718946">मेमरी सेव्ह केली आहे</translation>
+<translation id="4865063548323785458">साइट आणि ॲप्समध्ये सहजपणे साइन इन करण्यासाठी तुमचे पासवर्ड सहजपणे सेव्ह करा आणि ऑटोफिल करा</translation>
 <translation id="486635084936119914">डाउनलोड केल्यानंतर काही फाईल प्रकार स्वयंचलितपणे उघडा</translation>
 <translation id="4867272607148176509">पालक ॲप्स मंजूर किंवा ब्लॉक करू शकतात, वेळ मर्यादा सेट करू शकतात आणि वेब ब्राउझिंग नियंत्रित करू शकतात. बहुतेक शालेय स्रोत अ‍ॅक्सेस करण्यासाठी शाळेचे खाते नंतर जोडले जाऊ शकते.</translation>
 <translation id="4867433544163083783">टॅब संगतवार लावले जाऊ शकतात की नाही हे आता तपासा</translation>
@@ -7632,7 +7634,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6194333736420234626">&amp;पेमेंट पद्धती</translation>
 <translation id="6195005504600220730">तुमचे ब्राउझर, OS आणि डिव्हाइस यांबद्दल माहिती वाचा</translation>
 <translation id="6195155925303302899">मध्यभागी अलाइन करा</translation>
-<translation id="6195163219142236913">तृतीय पक्ष कुकी मर्यादित आहेत</translation>
 <translation id="6195693561221576702">हे डिव्हाइस ऑफलाइन डेमो मोडमध्ये सेट केले जाऊ शकत नाही.</translation>
 <translation id="6196640612572343990">तृतीय पक्ष कुकी ब्लॉक करा</translation>
 <translation id="6196854373336333322">"<ph name="EXTENSION_NAME" />" एक्स्टेंशनने तुमच्या प्रॉक्सी सेटिंग्जचे नियंत्रण घेतले आहे, याचा अर्थ हे तुम्ही ऑनलाइन करता ती कोणतीही गोष्ट बदलू शकते, खंडित करू शकते किंवा चोरून ऐकू शकते. हा बदल का झाला, याबद्दल तुम्ही खात्री नसल्यास, तुम्हाला कदाचित तो नको आहे.</translation>
@@ -8399,7 +8400,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6731320427842222405">यास काही मिनिटे लागतील</translation>
 <translation id="6732956960067639542">त्याऐवजी नवीन Chrome ब्राउझर सेशन उघडा.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (आयडी: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">कुकीज आणि इतर साइट डेटा दर्शवा...</translation>
 <translation id="6736243959894955139">पत्ता</translation>
 <translation id="6737663862851963468">Kerberos तिकीट काढा</translation>
 <translation id="6738180164164974883">तृतीय पक्ष कुकी सेट करण्याची अनुमती द्या</translation>
@@ -11493,6 +11493,7 @@ I feel - विटांची इमारत</translation>
 <translation id="881799181680267069">अन्य लपवा</translation>
 <translation id="8818152010000655963">वॉलपेपर</translation>
 <translation id="8818988764764862764">विंडो डावीकडे हलवली</translation>
+<translation id="8819155700324279105">ऑनलाइन धोक्यांपासून वाचण्यासाठी संरक्षणाचा अतिरिक्त स्तर जोडा</translation>
 <translation id="8819510664278523111">तुमच्या डिव्हाइसचे EID <ph name="EID_NUMBER" /> आहे, डिव्हाइसचा IMEI <ph name="IMEI_NUMBER" /> आहे आणि डिव्हाइसचा सिरीअल नंबर <ph name="SERIAL_NUMBER" /> आहे. हे नंबर सेवा ॲक्टिव्हेट करण्यात मदत करण्यासाठी वापरले जाऊ शकतात.</translation>
 <translation id="8820817407110198400">बुकमार्क</translation>
 <translation id="8821045908425223359">IP अ‍ॅड्रेस आपोआप कॉन्फिगर करा</translation>
@@ -12141,7 +12142,6 @@ I feel - विटांची इमारत</translation>
 <translation id="947329552760389097">&amp;तपासणी घटक</translation>
 <translation id="947526284350604411">तुमचे उत्तर</translation>
 <translation id="947667444780368238">या फोल्डरमध्ये सिस्टीम फाइलचा समावेश असल्यामुळे <ph name="ORIGIN" /> त्यामधील फाइल उघडू शकत नाही</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome आज पुन्हा कुकी मर्यादित करेल}=1{Chrome उद्या पुन्हा कुकी मर्यादित करेल}other{Chrome पुन्हा # दिवसांनी कुकी मर्यादित करेल}}</translation>
 <translation id="949807244219288032">हा टॅब HID डिव्हाइसशी कनेक्ट केलेला आहे</translation>
 <translation id="950079950995628542">"<ph name="PHONE_NAME" />" कडील</translation>
 <translation id="950307215746360464">सेटअप मार्गदर्शक</translation>

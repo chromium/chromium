@@ -483,6 +483,7 @@
 <translation id="6180522807229584611">Este separador está a usar recursos adicionais. Para melhorar o seu desempenho, permita que o Chrome o torne inativo.</translation>
 <translation id="6182736845697986886">A instalação falhou devido a um erro interno do servidor de atualização.</translation>
 <translation id="6183773856988300112">O Gemini no Chrome usa a procura automática para trabalhar nos seus separadores e concluir as tarefas que lhe atribuir. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="6187085551300363958">Dica do Chrome: guarde palavras-passe</translation>
 <translation id="6192058120268468905">A sua conta no Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> adicionou uma extensão que pode alterar o funcionamento do Chrome.
 
@@ -621,6 +622,7 @@
 <translation id="7627609214560473136">Para proteger os seus dados, permita que o Chrome remova as autorizações de sites que não visitou recentemente.</translation>
 <translation id="7629695634924605473">O Chrome indica-lhe se as suas palavras-passe forem comprometidas.</translation>
 <translation id="7641148173327520642">O administrador do sistema configurou o Google Chrome para abrir o <ph name="ALTERNATIVE_BROWSER_NAME" /> e aceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7641448682796883218">Dica do Chrome: Navegação segura melhorada</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7651907282515937834">Logótipo do Chrome Enterprise</translation>
 <translation id="76531479118467370">O Chrome bloqueou esta transferência porque desativou a Navegação Segura e não é possível validar o ficheiro</translation>

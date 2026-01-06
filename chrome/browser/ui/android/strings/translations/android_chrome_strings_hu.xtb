@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Eltávolítás</translation>
 <translation id="1183189057400844278">Annak érdekében, hogy mindig használhassa a Google-fiókjában lévő jelszavakat, igazolja személyazonosságát</translation>
 <translation id="1187810343066461819">A könyvjelzők, előzmények és egyebek is törlődjenek erről az autóról</translation>
-<translation id="1193589902336218259">Tippekkel kapcsolatos értesítések bekapcsolása</translation>
 <translation id="1193729455103054076">Erős jelszót kíván használni?</translation>
 <translation id="11947597112837849">e-mail-cím</translation>
 <translation id="1197267115302279827">Könyvjelzők áthelyezése</translation>
@@ -995,7 +994,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5267572070504076962">Kapcsolja be a Biztonságos Böngészést a veszélyes webhelyekkel szembeni védelem érdekében</translation>
 <translation id="5271967389191913893">Az eszköz nem tudja megnyitni a letölteni kívánt tartalmat.</translation>
 <translation id="5273031377282080577">Ezt a beállítást a rendszergazda kezeli.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Leiratkozott 1 nem használt webhely értesítéseiről}other{Leiratkozott # nem használt webhely értesítéseiről}}</translation>
 <translation id="5292796745632149097">Küldés a következőre:</translation>
 <translation id="5301876394151419436">Ezzel a fiókkal van bejelentkezve: <ph name="EMAIL" />. A beállítások között bármikor leállíthatja a szinkronizálást. A Google az Ön előzményei alapján személyre szabhatja a Keresőt és más szolgáltatásokat.</translation>
 <translation id="5304593522240415983">Ez a mező nem lehet üres</translation>
@@ -1586,7 +1584,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7612619742409846846">Bejelentkezve a Google rendszerébe mint</translation>
 <translation id="7612989789287281429">Bejelentkezés…</translation>
 <translation id="7619072057915878432">A következő fájl letöltése hálózati hibák miatt nem sikerült: <ph name="FILE_NAME" />.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Leiratkozott 1 webhelyről}other{Leiratkozott # webhelyről}}</translation>
 <translation id="7626032353295482388">A Chrome üdvözli Önt!</translation>
 <translation id="7628417132421583481">A Jelszókezelő megnyitása</translation>
 <translation id="7630202231528827509">Szolgáltatói URL</translation>

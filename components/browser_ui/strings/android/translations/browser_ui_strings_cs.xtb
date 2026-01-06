@@ -188,11 +188,9 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="2903493209154104877">Adresy</translation>
 <translation id="2910701580606108292">Před povolením spuštění chráněného obsahu na webu se zeptat</translation>
 <translation id="2918484639460781603">Přejít na nastavení</translation>
-<translation id="293060180538644702">Nechte si posílat oznámení s tipy pro Chrome</translation>
 <translation id="2932883381142163287">Nahlásit zneužití</translation>
 <translation id="2939338015096024043">Když je tato možnost zapnutá, weby mohou žádat o sledování polohy kamery a o informace o okolí. Když je vypnutá, weby nemohou sledovat polohu kamery ani získat informace o okolí.</translation>
 <translation id="2968755619301702150">Prohlížeč certifikátů</translation>
-<translation id="2979365474350987274">Soubory cookie třetích stran jsou omezovány</translation>
 <translation id="2990583317361835189">Nepovolovat webům používat senzory pohybu</translation>
 <translation id="3004438526346162184">Webové stránky mohou pomocí této funkce spravovat okna na všech vašich displejích</translation>
 <translation id="3008272652534848354">Resetovat oprávnění</translation>
@@ -631,7 +629,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="7835852323729233924">Přehrávání médií</translation>
 <translation id="783819812427904514">Zapnout zvuk videa</translation>
 <translation id="7846076177841592234">Zrušit výběr</translation>
-<translation id="7881140103901777395">Chrome většině webů omezuje používání souborů cookie třetích stran. Na tomto webu jsou však soubory cookie třetích stran povoleny, protože je potřebuje k poskytování základních služeb.\n\nPokud chcete <ph name="BEGIN_LINK" />spravovat přístup k souborům cookie třetích stran<ph name="END_LINK" />, přejděte do nastavení.</translation>
 <translation id="7882806643839505685">Zapne zvuk na konkrétním webu.</translation>
 <translation id="7891547341794213004">Skrýt kartu Pokračovat s touto kartou</translation>
 <translation id="789722939441020330">Nepovolovat webům stahovat automaticky několik souborů</translation>

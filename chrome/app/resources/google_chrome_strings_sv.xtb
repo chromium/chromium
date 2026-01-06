@@ -491,6 +491,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6180522807229584611">Den här fliken använder extra resurser. Du kan förbättra prestandan genom att låta Chrome inaktivera den.</translation>
 <translation id="6182736845697986886">Installationen misslyckades på grund av ett internt fel på uppdateringsservern.</translation>
 <translation id="6183773856988300112">Gemini i Chrome använder automatisk surfning för att arbeta i dina flikar och utföra uppgifter du ger den. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
+<translation id="6187085551300363958">Tips för Chrome: Spara lösenord</translation>
 <translation id="6192058120268468905">Ditt konto i Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> har lagt till ett tillägg som kan ändra hur Chrome fungerar.
 
@@ -629,6 +630,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7627609214560473136">Låt Chrome ta bort behörigheter från webbplatser som du inte har besökt nyligen för att skydda din data.</translation>
 <translation id="7629695634924605473">Om dina lösenord någonsin skulle läcka ut får du veta det i Chrome</translation>
 <translation id="7641148173327520642">Systemadministratören har konfigurerat Google Chrome så att <ph name="TARGET_URL_HOSTNAME" /> öppnas i <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
+<translation id="7641448682796883218">Tips för Chrome: Förbättrad säker webbsökning</translation>
 <translation id="7649070708921625228">Hjälp</translation>
 <translation id="7651907282515937834">Logotyp för Chrome Enterprise</translation>
 <translation id="76531479118467370">Den här nedladdningen blockerades av Chrome eftersom du har inaktiverat Säker webbsökning och filen inte kan verifieras</translation>

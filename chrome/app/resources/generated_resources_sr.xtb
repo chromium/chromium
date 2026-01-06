@@ -1809,6 +1809,7 @@
 <translation id="221297410904507041">Избришите историју, колачиће, кеш и друго</translation>
 <translation id="2213410656650624348">Умерено</translation>
 <translation id="2214018885812055163">Дељени директоријуми</translation>
+<translation id="2214453882118345682">Купујте, преводите и идентификујте оно што видите помоћу камере.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 ред није приказан&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> ред није приказан&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> реда нису приказана&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> редова није приказано&gt;}}</translation>
 <translation id="2215070081105889450">Да бисте делили звук, делите картицу или екран</translation>
 <translation id="2217208085547223783">Степен поузданости</translation>
@@ -5718,6 +5719,7 @@
 <translation id="4864805589453749318">Изаберите родитеља који додељује дозволу за додавање школског налога.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (блокирано)</translation>
 <translation id="486505726797718946">Меморија коју сте уштедели</translation>
+<translation id="4865063548323785458">Чувајте и аутоматски попуњавајте лозинке да бисте се лако пријављивали на сајтове и у апликације</translation>
 <translation id="486635084936119914">Аутоматски отварајте одређене типове датотека после преузимања</translation>
 <translation id="4867272607148176509">Родитељи могу да одобравају или блокирају апликације, подешавају временска ограничења и контролишу прегледање веба. Касније може да се дода и школски налог за приступ већини школских ресурса.</translation>
 <translation id="4867433544163083783">Проверите да ли картице могу да се организују</translation>
@@ -7615,7 +7617,6 @@
 <translation id="6194333736420234626">Начини плаћања</translation>
 <translation id="6195005504600220730">Читање информација о прегледачу, ОС-у и уређају</translation>
 <translation id="6195155925303302899">Центрирај</translation>
-<translation id="6195163219142236913">Колачићи треће стране су ограничени</translation>
 <translation id="6195693561221576702">Овај уређај не може да се подеси у офлајн режиму демонстрације.</translation>
 <translation id="6196640612572343990">Блокирај колачиће треће стране</translation>
 <translation id="6196854373336333322">Додатак „<ph name="EXTENSION_NAME" />“ је преузео контролу над подешавањима проксија, што значи да може да мења, прекида или шпијунира све што радите онлајн. Ако нисте сигурни зашто је дошло до ове промене, вероватно вам није потребна.</translation>
@@ -8386,7 +8387,6 @@
 <translation id="6731320427842222405">Ово може да потраје пар минута</translation>
 <translation id="6732956960067639542">Отворите нову сесију Chrome прегледача.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ИД: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Прикажи колачиће и остале податке са сајта...</translation>
 <translation id="6736243959894955139">Адреса</translation>
 <translation id="6737663862851963468">Уклоните Kerberos тикет</translation>
 <translation id="6738180164164974883">Дозволи подешавање колачића треће стране</translation>
@@ -11482,6 +11482,7 @@
 <translation id="881799181680267069">Сакриј друге</translation>
 <translation id="8818152010000655963">Позадина</translation>
 <translation id="8818988764764862764">Прозор је померен улево</translation>
+<translation id="8819155700324279105">Додајте још један ниво заштите од онлајн претњи</translation>
 <translation id="8819510664278523111">EID уређаја је <ph name="EID_NUMBER" />, IMEI уређаја је <ph name="IMEI_NUMBER" />, а серијски број уређаја је <ph name="SERIAL_NUMBER" />. Ове бројеве можете да користите да бисте активирали услугу.</translation>
 <translation id="8820817407110198400">Обележивачи</translation>
 <translation id="8821045908425223359">Аутоматски конфигуриши IP адресу</translation>
@@ -12129,7 +12130,6 @@
 <translation id="947329552760389097">&amp;Провери елементе</translation>
 <translation id="947526284350604411">Одговор</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> не може да отвори фајлове у овом фолдеру јер он садржи системске фајлове</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome ће данас поново ограничити колачиће}=1{Chrome ће сутра поново ограничити колачиће}one{# дан док Chrome поново не ограничи колачиће}few{# дана док Chrome поново не ограничи колачиће}other{# дана док Chrome поново не ограничи колачиће}}</translation>
 <translation id="949807244219288032">Ова картица је повезана са HID уређајем</translation>
 <translation id="950079950995628542">Са телефона <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Водич за подешавање</translation>

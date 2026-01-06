@@ -483,6 +483,7 @@
 <translation id="6180522807229584611">Esta guia está usando recursos extras. Para melhorar o desempenho, permita que o Chrome a deixe inativa.</translation>
 <translation id="6182736845697986886">A instalação falhou devido a um erro interno do servidor de atualização.</translation>
 <translation id="6183773856988300112">O Gemini no Chrome usa a navegação automática para acessar suas guias e realizar as tarefas que você pedir. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="6187085551300363958">Dica do Chrome: salve senhas</translation>
 <translation id="6192058120268468905">Sua conta no Chrome</translation>
 <translation id="6220551899604141979">O parceiro <ph name="PARTNER_NAME" /> adicionou uma extensão que pode mudar a forma como o Chrome funciona.
 
@@ -621,6 +622,7 @@
 <translation id="7627609214560473136">Para proteger seus dados, permita que o Chrome remova permissões de sites que você não visitou recentemente.</translation>
 <translation id="7629695634924605473">O Chrome avisa se suas senhas forem comprometidas</translation>
 <translation id="7641148173327520642">O administrador do seu sistema configurou o Google Chrome para abrir o <ph name="ALTERNATIVE_BROWSER_NAME" /> ao acessar <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7641448682796883218">Dica do Chrome: Navegação Segura com Maior Proteção</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7651907282515937834">Logotipo do Chrome Enterprise</translation>
 <translation id="76531479118467370">O Chrome bloqueou o download porque você desativou o recurso Navegação segura, e não é possível verificar o arquivo</translation>

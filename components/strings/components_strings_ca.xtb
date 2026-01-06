@@ -114,7 +114,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1178581264944972037">Posa en pausa</translation>
 <translation id="1178821169867863726">12 x 16 polzades</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
-<translation id="1181381397492575884">Chrome bloqueja els llocs web perquè no utilitzin galetes de tercers per fer un seguiment de la teva activitat mentre navegues. Ves a la configuració per <ph name="LINK" />.</translation>
 <translation id="1185331130467528132"><ph name="URL" /> vol accedir a altres dispositius de la teva xarxa local</translation>
 <translation id="1185343831726846924">Confirma que la targeta virtual no es pot activar</translation>
 <translation id="1186201132766001848">Comprova les contrasenyes</translation>
@@ -227,7 +226,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1343830902827845050">Inicia la sessió a Chrome</translation>
 <translation id="1346748346194534595">Dreta</translation>
 <translation id="1348779747280417563">Confirma el nom</translation>
-<translation id="1352798470428594123">Chrome limita la majoria de llocs web perquè no utilitzin galetes de tercers per fer un seguiment de la teva activitat mentre navegues. Ves a la configuració per <ph name="LINK" />.</translation>
 <translation id="1355158069018170842">Mostra les baixades de preu a les pestanyes</translation>
 <translation id="1355301061807280185">Ofertes de feina</translation>
 <translation id="1357195169723583938">Qui ha utilitzat el dispositiu recentment i quan</translation>
@@ -1110,7 +1108,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2768397283109119044">Has provat d'accedir a <ph name="DOMAIN" />, però el servidor ha presentat un certificat no vàlid emès a aquest nom. El nom és una adreça IP reservada o un nom d'amfitrió intern.</translation>
 <translation id="2770159525358613612">Prova de tornar a penjar els fitxers</translation>
 <translation id="277133753123645258">Mètode d'enviament</translation>
-<translation id="2773388851563527404">Chrome limita la majoria de llocs web perquè no utilitzin galetes de tercers. Tanmateix, les galetes de tercers es permeten en aquest lloc web perquè en depèn per proporcionar serveis bàsics. Ves a la configuració per <ph name="LINK" />.</translation>
 <translation id="277499241957683684">Falta el registre del dispositiu</translation>
 <translation id="2775884851269838147">Primera pàgina d'impressió</translation>
 <translation id="2781185443919227679">Platges i illes</translation>
@@ -1714,7 +1711,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3727309136762649052">Espai de noms</translation>
 <translation id="3727850735097852673">Per utilitzar el gestor de contrasenyes de Google amb el clauer de macOS, reinicia Chrome i permet l'accés al clauer. Les pestanyes es tornaran a obrir després de reiniciar.</translation>
 <translation id="3728173127485570463">El navegador Chrome ja no necessitarà la teva empremta digital per emplenar automàticament les contrasenyes</translation>
-<translation id="3736739313435669994">Has bloquejat els llocs web perquè no utilitzin galetes de tercers per fer un seguiment de la teva activitat mentre navegues. Ves a la configuració per <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">El teu administrador gestiona el navegador.</translation>
 <translation id="3739842843727261045">El botó M'agrada indica que aquests resultats t'agraden</translation>
 <translation id="3740447166056383374">Abans de copiar-los, cal dur a terme una revisió</translation>
@@ -2148,7 +2144,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4406883609789734330">Subtítols instantanis</translation>
 <translation id="4406896451731180161">resultats de la cerca</translation>
 <translation id="4407758156081352648">Per motius de seguretat, la teva organització no permet reutilitzar contrasenyes a Chrome. Les contrasenyes a Chrome estan encriptades per protegir la privadesa de l'usuari.</translation>
-<translation id="4408413947728134509">Galetes <ph name="NUM_COOKIES" /></translation>
 <translation id="4409556632583862731">Fil de discussió nou</translation>
 <translation id="4412074349188076601">Aquesta configuració està marcada com a instal·lable, però no s'ha proporcionat cap imatge per a aquesta arquitectura, de manera que no es pot instal·lar.</translation>
 <translation id="4412377069090572315">Què en diuen altres persones</translation>
@@ -2536,7 +2531,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5061227663725596739">Volies dir <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Historial d'impressions</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 en ús)}other{(# en ús)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Comproveu l'adreça del servidor intermediari<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Desè corró</translation>
 <translation id="507130231501693183">Bústia de correu 4</translation>
@@ -3045,7 +3039,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5918373444239520146">Gadgets i dispositius electrònics portàtils</translation>
 <translation id="5918847752193018339">Desa els CVC per tramitar les compres més ràpidament. <ph name="LINK_BEGIN" />Suprimeix els codis de seguretat desats<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 en ús}other{# en ús}}</translation>
 <translation id="5921185718311485855">Activat</translation>
 <translation id="5921639886840618607">Vols desar la targeta al Compte de Google?</translation>
 <translation id="5921952831792678223">Camionetes descobertes</translation>
@@ -3226,7 +3219,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6194209731893739467">Consulta aquí tots els productes que segueixes</translation>
 <translation id="6195371403461054755">Geologia</translation>
 <translation id="6195418151868446719">Electrònica de consum</translation>
-<translation id="6196640612572343990">Bloqueja les galetes de tercers</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Pestanyes de tall complet</translation>
 <translation id="6203231073485539293">Comprovació de la connexió a Internet</translation>
@@ -3722,7 +3714,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6978121630131642226">Motors de cerca</translation>
 <translation id="6978236010531171013">Comparteix igualment</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979302985396162258">gestionar l'accés a les galetes de tercers</translation>
 <translation id="6979440798594660689">Silencia (opció predeterminada)</translation>
 <translation id="6987806006823772670">Sobre (estucat)</translation>
 <translation id="6989256887001961296">Aquest contingut està bloquejat.</translation>
@@ -4736,7 +4727,6 @@ Detalls addicionals:
 <translation id="8622864575115813231">S'està contactant amb la teva entitat financera...</translation>
 <translation id="8624354461147303341">Obtén descomptes</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
-<translation id="8635822281281406185">Afegeix fins a 10 fitxers, pestanyes o imatges</translation>
 <translation id="8637362707224133343">Per protegir-te mentre navegues, Chrome té funcions de seguretat integrades, com ara Navegació segura de Google, que <ph name="BEGIN_LINK" />recentment ha detectat pesca de credencials<ph name="END_LINK" /> al lloc web que has provat de visitar. Els llocs web de pesca de credencials es fan passar per altres llocs web per enganyar-te.<ph name="NEW_LINE" />De vegades, alguns atacants poden posar en perill llocs web que acostumen a ser segurs. Si creus que hi ha hagut un error i que aquest lloc web no suposa cap perill, <ph name="BEGIN_ERROR_LINK" />fes-nos-ho saber<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">Per compartir pestanyes i col·laborar amb altres persones, has de poder iniciar la sessió a Chrome</translation>
 <translation id="8641131559425911240">Sobre (valors)</translation>
@@ -5116,7 +5106,6 @@ Detalls addicionals:
 <translation id="945673208656386843">Emplena automàticament aquesta targeta per a les compres fetes a Chromium quan s'hagi desat en aquest dispositiu</translation>
 <translation id="94613679163347541">Vols comparar <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per crear un lloc web a Google Sites ràpidament</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome tornarà a limitar les galetes avui}=1{Chrome tornarà a limitar les galetes demà}other{# dies perquè Chrome torni a limitar les galetes}}</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> membres s'han unit al grup de pestanyes "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Has demanat visitar aquest lloc web. El teu pare o mare pot respondre a Family Link.</translation>
 <translation id="950736567201356821">Encunyació triple a la part superior</translation>

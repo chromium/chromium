@@ -966,6 +966,7 @@
 <translation id="472259426228234149">ราคา $100 - $180</translation>
 <translation id="4735849923335729414">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL" /> ที่จัดการโดยองค์กรของคุณ</translation>
 <translation id="473775607612524610">อัปเดต</translation>
+<translation id="4738968082443868320">Google ไดรฟ์</translation>
 <translation id="474209246745757965">เลือกซื้อและแปลภาษาด้วยกล้อง</translation>
 <translation id="4742407542027196863">จัดการรหัสผ่าน…</translation>
 <translation id="4744428388659507035">หากต้องการรับบุ๊กมาร์กในอุปกรณ์ทุกเครื่อง ให้เปิด "บุ๊กมาร์ก" ในการตั้งค่า</translation>
@@ -1055,6 +1056,7 @@
 <translation id="5021500396464456616">ติดต่อผู้ที่ส่งลิงก์นี้</translation>
 <translation id="5039804452771397117">อนุญาต</translation>
 <translation id="5050810143224996149">แชร์รหัสผ่าน</translation>
+<translation id="5052499409147950210">แก้ไขเว็บไซต์</translation>
 <translation id="5055015094595227120">ตำแหน่งที่แน่นอน</translation>
 <translation id="5055551113846164633">การดำเนินการนี้จะลบที่อยู่ที่บันทึกไว้ในอุปกรณ์นี้ นอกจากนี้ยังจะลบที่อยู่ที่บันทึกไว้ในบัญชี Google <ph name="USER_EMAIL" /> ด้วย</translation>
 <translation id="5056446788882570708">พบปัญหาเมื่อ <ph name="TIME" /></translation>
@@ -1133,6 +1135,7 @@
 <translation id="5295239312320826323">นำบัญชี <ph name="USER_EMAIL" /> ออกใช่ไหม</translation>
 <translation id="5300589172476337783">แสดง</translation>
 <translation id="5311061401280561833">อนุญาตให้เข้าถึงกล้องและไมโครโฟน</translation>
+<translation id="5313967007315987356">เพิ่มเว็บไซต์</translation>
 <translation id="5315870524563628285">ไม่มีรายการที่จะนำเข้า</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> จาก <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">บันทึก</translation>

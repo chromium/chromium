@@ -82,6 +82,7 @@
 <translation id="193439633299369377">Per applicare l'aggiornamento è necessario riavviare Chromium OS.</translation>
 <translation id="1951406923938785464">Chromium ha bloccato questo download perché il tipo di file non viene scaricato comunemente e potrebbe essere pericoloso</translation>
 <translation id="1953553007165777902">Download in corso… Minuti rimanenti: <ph name="MINUTE" /></translation>
+<translation id="1965068424387304464">Suggerimento per Chromium: salva le password</translation>
 <translation id="1966382378801805537">Chromium non è in grado di determinare o impostare il browser predefinito</translation>
 <translation id="1990262977744080398">Scopri perché Chromium blocca alcuni file (si apre in una nuova scheda)</translation>
 <translation id="1999715455684970349">Mantiene aggiornato il software di Chromium. Se questo servizio viene disattivato o interrotto, il software di Chromium non verrà aggiornato, il che significa che le vulnerabilità di sicurezza che potrebbero verificarsi non potranno essere corrette e le funzionalità potrebbero non essere eseguite correttamente. Questo servizio si disinstalla autonomamente quando non viene utilizzato da nessun software di Chromium.</translation>
@@ -252,6 +253,7 @@
 <translation id="3802055581630249637">Chromium precarica le pagine che è probabile che visiterai, in modo che vengano caricate più rapidamente quando lo farai</translation>
 <translation id="3810973564298564668">Gestisci</translation>
 <translation id="3823384748599722168">Per usare le password salvate, segui il codice QR, scarica Chromium per iOS e accedi al tuo Account Google</translation>
+<translation id="3837584850181228767">Suggerimento per Chromium: Navigazione sicura avanzata</translation>
 <translation id="3846683726093018685">**Riassumi:** usa una sola frase sotto le 30 parole per descrivere l'argomento e lo scopo principali dei contenuti nello screenshot.
 
           **Suggerisci domande:** genera un elenco puntato di 3-5 domande stimolanti che un utente potrebbe porre per comprendere meglio lo screenshot. Queste domande devono includerne almeno una che riguardi specificamente un oggetto visivo, il suo design o il suo posizionamento.</translation>

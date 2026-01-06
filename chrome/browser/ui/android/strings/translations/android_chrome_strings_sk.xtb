@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="1183189057400844278">Ak sa chcete uistiť, že vo svojom účte Google môžete kedykoľvek použiť heslá, overte svoju totožnosť</translation>
 <translation id="1187810343066461819">Odstrániť aj záložky, históriu a ďalší obsah z tohto auta</translation>
-<translation id="1193589902336218259">Zapnúť upozornenia na tipy</translation>
 <translation id="1193729455103054076">Chcete použiť silné heslo?</translation>
 <translation id="11947597112837849">e‑mailovú adresu</translation>
 <translation id="1197267115302279827">Presunúť záložky</translation>
@@ -995,7 +994,6 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5267572070504076962">Ak chcete získať ochranu pred nebezpečnými webmi, zapnite Bezpečné prehliadanie</translation>
 <translation id="5271967389191913893">Zariadenie nemôže otvoriť obsah na stiahnutie</translation>
 <translation id="5273031377282080577">Toto nastavenie ovláda váš správca.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Bol zrušený odber z jedného nepoužívaného webu}few{Bol zrušený odber z # nepoužívaných webov}many{Unsubscribed from # unused sites}other{Bol zrušený odber z # nepoužívaných webov}}</translation>
 <translation id="5292796745632149097">Odoslanie do zariadení</translation>
 <translation id="5301876394151419436">Máte prihlásený účet <ph name="EMAIL" />. Synchronizáciu môžete kedykoľvek zastaviť v nastaveniach. Google môže prispôsobovať Vyhľadávanie a ďalšie služby na základe vašej histórie.</translation>
 <translation id="5304593522240415983">Toto pole nesmie byť prázdne</translation>
@@ -1586,7 +1584,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7612619742409846846">Prihlásený účet Google</translation>
 <translation id="7612989789287281429">Prihlasuje sa…</translation>
 <translation id="7619072057915878432">Súbor <ph name="FILE_NAME" /> sa nepodarilo stiahnuť z dôvodu problémov so sieťou.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Bol zrušený odber z jedného webu}few{Bol zrušený odber z # webov}many{Unsubscribed from # sites}other{Bol zrušený odber z # webov}}</translation>
 <translation id="7626032353295482388">Víta vás prehliadač Chrome</translation>
 <translation id="7628417132421583481">Prejsť do Správcu hesiel</translation>
 <translation id="7630202231528827509">Webová adresa poskytovateľa</translation>

@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Elimină</translation>
 <translation id="1183189057400844278">Pentru a te asigura că poți folosi oricând parolele din Contul Google, confirmă-ți identitatea</translation>
 <translation id="1187810343066461819">Șterge și marcajele, istoricul și alte date din mașină</translation>
-<translation id="1193589902336218259">Activează notificările cu sfaturi</translation>
 <translation id="1193729455103054076">Folosești o parolă puternică?</translation>
 <translation id="11947597112837849">adresa de e-mail</translation>
 <translation id="1197267115302279827">Mută marcaje</translation>
@@ -995,7 +994,6 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5267572070504076962">Activează opțiunea Navigare sigură ca să beneficiezi de protecție împotriva site-urilor periculoase</translation>
 <translation id="5271967389191913893">Dispozitivul nu poate deschide conținutul de descărcat.</translation>
 <translation id="5273031377282080577">Administratorul gestionează această setare.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Te-ai dezabonat de la un site nefolosit}few{Te-ai dezabonat de la # site-uri nefolosite}other{Te-ai dezabonat de la # de site-uri nefolosite}}</translation>
 <translation id="5292796745632149097">Trimite la</translation>
 <translation id="5301876394151419436">Te-ai conectat ca <ph name="EMAIL" />. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="5304593522240415983">Acest câmp trebuie completat</translation>
@@ -1586,7 +1584,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7612619742409846846">Conectat(ă) la Google ca</translation>
 <translation id="7612989789287281429">Se conectează…</translation>
 <translation id="7619072057915878432">Descărcarea fișierului <ph name="FILE_NAME" /> nu a reușit din cauza erorilor de rețea.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Te-ai dezabonat de la un site}few{Te-ai dezabonat de la # site-uri}other{Te-ai dezabonat de la # de site-uri}}</translation>
 <translation id="7626032353295482388">Bun venit la Chrome</translation>
 <translation id="7628417132421583481">Accesează Managerul de parole</translation>
 <translation id="7630202231528827509">Adresa URL a furnizorului</translation>

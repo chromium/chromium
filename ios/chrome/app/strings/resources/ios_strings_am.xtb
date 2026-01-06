@@ -966,6 +966,7 @@
 <translation id="472259426228234149">ዋጋ $100 - $180</translation>
 <translation id="4735849923335729414">እንደ <ph name="EMAIL" /> ይግቡ፣ በድርጅትዎ የሚተዳደር።</translation>
 <translation id="473775607612524610">አዘምን</translation>
+<translation id="4738968082443868320">Google Drive</translation>
 <translation id="474209246745757965">በካሜራዎ ይሸምቱ እና ይተርጉሙ</translation>
 <translation id="4742407542027196863">የይለፍ ቃላትን ያስተዳድሩ...</translation>
 <translation id="4744428388659507035">እልባቶችዎን በሁሉም መሣሪያዎችዎ ላይ ለማግኘት፣ ቅንብሮች ውስጥ "እልባቶች"ን ያብሩ።</translation>
@@ -1055,6 +1056,7 @@
 <translation id="5021500396464456616">ይህን አገናኝ የላከውን ሰው ያነጋግሩ</translation>
 <translation id="5039804452771397117">ፍቀድ</translation>
 <translation id="5050810143224996149">የይለፍ ቃል ያጋሩ</translation>
+<translation id="5052499409147950210">ጣቢያን አርትዕ ያድርጉ</translation>
 <translation id="5055015094595227120">ትክክለኛ አካባቢ</translation>
 <translation id="5055551113846164633">ይህ በዚህ መሣሪያ ላይ የተቀመጡ አድራሻዎችን ይሰርዛል። እንዲሁም በGoogle መለያዎ <ph name="USER_EMAIL" /> ውስጥ የተቀመጡ አድራሻዎችን ይሰርዛል።</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> ችግሮች ተገኝተዋል።</translation>
@@ -1133,6 +1135,7 @@
 <translation id="5295239312320826323">የ<ph name="USER_EMAIL" /> መለያ ይወገድ?</translation>
 <translation id="5300589172476337783">አሳይ</translation>
 <translation id="5311061401280561833">የካሜራ እና የማይክሮፎን መዳረሻ ተፈቅዷል</translation>
+<translation id="5313967007315987356">ጣቢያ አክል</translation>
 <translation id="5315870524563628285">ለማምጣት ምንም የለም</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> ከ<ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">አስቀምጥ</translation>

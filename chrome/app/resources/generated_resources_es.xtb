@@ -1811,6 +1811,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="221297410904507041">Elimina el historial, las cookies, la caché y más</translation>
 <translation id="2213410656650624348">Moderado</translation>
 <translation id="2214018885812055163">Carpetas compartidas</translation>
+<translation id="2214453882118345682">Compra, traduce e identifica lo que ves con tu cámara.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;no se muestra 1 línea&gt;}other{&lt;no se muestran <ph name="NUMBER_OF_LINES" /> líneas&gt;}}</translation>
 <translation id="2215070081105889450">Para compartir audio, comparte una pestaña o una pantalla</translation>
 <translation id="2217208085547223783">Estado de confianza</translation>
@@ -2650,6 +2651,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2757338480560142065">La contraseña que guardes debe coincidir con tu contraseña de <ph name="WEBSITE" />.</translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> No se han devuelto resultados de búsqueda de <ph name="SEARCH_QUERY" /></translation>
 <translation id="2762441749940182211">Cámara bloqueada</translation>
+<translation id="2763165257813209348"><ph name="FILE_NAME" /> contiene datos sensibles o peligrosos. Tu organización te permitirá guardarlo en almacenamiento en la nube o descartarlo.</translation>
 <translation id="2764786626780673772">Detalles de la red VPN</translation>
 <translation id="2764920001292228569">Introduce un nombre de perfil</translation>
 <translation id="2765100602267695013">Ponte en contacto con tu proveedor de telefonía móvil</translation>
@@ -5719,6 +5721,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4864805589453749318">Indica si es el padre o la madre quien otorga permiso para añadir una cuenta de centro educativo.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (bloqueado)</translation>
 <translation id="486505726797718946">Memoria ahorrada</translation>
+<translation id="4865063548323785458">Guarda y autocompleta tus contraseñas para iniciar sesión fácilmente en sitios y aplicaciones</translation>
 <translation id="486635084936119914">Abre determinados tipos de archivo automáticamente después de la descarga</translation>
 <translation id="4867272607148176509">Los padres pueden aprobar o bloquear aplicaciones, establecer límites de tiempo y controlar la navegación por Internet. Se puede añadir una cuenta de centro educativo más adelante para acceder a la mayoría de los recursos del centro.</translation>
 <translation id="4867433544163083783">Comprobar ahora si se pueden organizar las pestañas</translation>
@@ -7616,7 +7619,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6194333736420234626">&amp;Métodos de pago</translation>
 <translation id="6195005504600220730">Leer información sobre tu navegador, tu sistema operativo y tu dispositivo</translation>
 <translation id="6195155925303302899">Centrar</translation>
-<translation id="6195163219142236913">Cookies de terceros limitadas</translation>
 <translation id="6195693561221576702">Este dispositivo no se puede configurar en el modo Demo sin conexión.</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
 <translation id="6196854373336333322">La extensión <ph name="EXTENSION_NAME" /> ahora controla la configuración del proxy, lo que significa que puede cambiar, deshacer o espiar cualquier acción que hagas online. Si no estás seguro de los motivos por los que se ha producido este cambio, probablemente no haya sido intencionado.</translation>
@@ -8383,7 +8385,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6731320427842222405">Esta tarea puede tardar algunos minutos.</translation>
 <translation id="6732956960067639542">Abre una nueva sesión del navegador Chrome.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Mostrar cookies y datos de otros sitios...</translation>
 <translation id="6736243959894955139">Dirección</translation>
 <translation id="6737663862851963468">Quitar ticket de Kerberos</translation>
 <translation id="6738180164164974883">Permitir establecer cookies de terceros</translation>
@@ -11477,6 +11478,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="881799181680267069">Ocultar otras</translation>
 <translation id="8818152010000655963">Fondo de pantalla</translation>
 <translation id="8818988764764862764">Ventana movida hacia la izquierda</translation>
+<translation id="8819155700324279105">Añade una capa adicional de protección frente a las amenazas online</translation>
 <translation id="8819510664278523111">El EID de tu dispositivo es <ph name="EID_NUMBER" />, su IMEI es <ph name="IMEI_NUMBER" /> y su número de serie es <ph name="SERIAL_NUMBER" />. Estos números se pueden usar para ayudar a activar el servicio.</translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="8821045908425223359">Configurar la dirección IP automáticamente</translation>
@@ -12124,7 +12126,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="947329552760389097">&amp;Inspeccionar elementos</translation>
 <translation id="947526284350604411">Tu respuesta</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> no puede abrir los archivos de esta carpeta porque son archivos del sistema</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome volverá a limitar las cookies hoy}=1{Chrome volverá a limitar las cookies mañana}other{Chrome volverá a limitar las cookies dentro de # días}}</translation>
 <translation id="949807244219288032">Esta pestaña está conectada a un dispositivo HID</translation>
 <translation id="950079950995628542">De <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Guía de configuración</translation>

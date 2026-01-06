@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1183189057400844278">Para asegurarte de que siempre puedas usar las contraseñas en tu Cuenta de Google, verifica tu identidad</translation>
 <translation id="1187810343066461819">Borrar también los favoritos, el historial y otros datos de este automóvil</translation>
-<translation id="1193589902336218259">Activar las notificaciones de sugerencias</translation>
 <translation id="1193729455103054076">¿Quieres usar una contraseña segura?</translation>
 <translation id="11947597112837849">dirección de correo electrónico</translation>
 <translation id="1197267115302279827">Mover favoritos</translation>
@@ -995,7 +994,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5267572070504076962">Activa la Navegación segura para obtener protección contra sitios peligrosos</translation>
 <translation id="5271967389191913893">El dispositivo no puede abrir el contenido que se descargará.</translation>
 <translation id="5273031377282080577">El administrador gestiona este parámetro de configuración.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Se anuló la suscripción a un sitio sin usar}other{Se anuló la suscripción a # sitios sin usar}}</translation>
 <translation id="5292796745632149097">Enviar a</translation>
 <translation id="5301876394151419436">Accediste como <ph name="EMAIL" />. Puedes detener la sincronización en cualquier momento desde la configuración. Es posible que Google personalice la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="5304593522240415983">Este campo no puede quedar en blanco.</translation>
@@ -1586,7 +1584,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7612619742409846846">Accediste a Google como</translation>
 <translation id="7612989789287281429">Accediendo…</translation>
 <translation id="7619072057915878432"><ph name="FILE_NAME" /> no se pudo descargar debido a fallas en la red.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Se anuló la suscripción a un sitio}other{Se anuló la suscripción a # sitios}}</translation>
 <translation id="7626032353295482388">Te damos la bienvenida a Chrome</translation>
 <translation id="7628417132421583481">Ir al Administrador de contraseñas</translation>
 <translation id="7630202231528827509">URL del proveedor</translation>

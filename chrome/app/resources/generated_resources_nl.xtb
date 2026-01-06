@@ -1811,6 +1811,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="221297410904507041">Verwijder de geschiedenis, cookies, het cachegeheugen en andere items</translation>
 <translation id="2213410656650624348">Gemiddeld</translation>
 <translation id="2214018885812055163">Gedeelde mappen</translation>
+<translation id="2214453882118345682">Winkel, vertaal en identificeer wat je ziet met je camera.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 regel niet getoond&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> regels niet getoond&gt;}}</translation>
 <translation id="2215070081105889450">Als je audio wilt delen, moet je in plaats daarvan een tabblad of scherm delen</translation>
 <translation id="2217208085547223783">Vertrouwensstatus</translation>
@@ -5716,6 +5717,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4864805589453749318">Selecteer de ouder die toestemming geeft om een schoolaccount toe te voegen.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (geblokkeerd)</translation>
 <translation id="486505726797718946">Herinnering opgeslagen</translation>
+<translation id="4865063548323785458">Sla je wachtwoorden op en laat ze automatisch invullen om makkelijk in te loggen bij sites en apps</translation>
 <translation id="486635084936119914">Bepaalde bestandstypen na downloaden automatisch openen</translation>
 <translation id="4867272607148176509">Ouders kunnen apps goedkeuren of blokkeren, tijdlimieten instellen en browsen op internet beheren. Je kunt later een schoolaccount toevoegen om toegang te krijgen tot de meeste schoolbronnen.</translation>
 <translation id="4867433544163083783">Check nu of tabbladen kunnen worden geordend</translation>
@@ -7610,7 +7612,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6194333736420234626">&amp;Betaalmethoden</translation>
 <translation id="6195005504600220730">Informatie over je browser, OS en apparaat lezen</translation>
 <translation id="6195155925303302899">Centreren</translation>
-<translation id="6195163219142236913">Cookies van derden beperkt</translation>
 <translation id="6195693561221576702">Dit apparaat kan niet worden ingesteld in de offline demomodus.</translation>
 <translation id="6196640612572343990">Cookies van derden blokkeren</translation>
 <translation id="6196854373336333322">De extensie '<ph name="EXTENSION_NAME" />' heeft het beheer van je proxyinstellingen overgenomen. Dit betekent dat de extensie alles wat je online doet, kan wijzigen, beschadigen of bekijken. Als je niet zeker weet waarom deze wijziging heeft plaatsgevonden, is het waarschijnlijk een ongewenste wijziging.</translation>
@@ -8377,7 +8378,6 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6731320427842222405">Dit kan enkele minuten duren</translation>
 <translation id="6732956960067639542">Open in plaats daarvan een nieuwe Chrome-browsersessie.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Cookies en andere sitegegevens bekijken...</translation>
 <translation id="6736243959894955139">Adres</translation>
 <translation id="6737663862851963468">Kerberos-ticket verwijderen</translation>
 <translation id="6738180164164974883">Toestaan dat cookies van derden worden ingesteld</translation>
@@ -11471,6 +11471,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="881799181680267069">Verberg andere</translation>
 <translation id="8818152010000655963">Achtergrond</translation>
 <translation id="8818988764764862764">Venster naar links verplaatst</translation>
+<translation id="8819155700324279105">Voeg een extra beveiligingslaag toe tegen online dreigingen</translation>
 <translation id="8819510664278523111">Je apparaat-EID is <ph name="EID_NUMBER" />, de IMEI van je apparaat is <ph name="IMEI_NUMBER" /> en het serienummer van je apparaat is <ph name="SERIAL_NUMBER" />. Met deze nummers kun je de service activeren.</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8821045908425223359">IP-adres automatisch configureren</translation>
@@ -12118,7 +12119,6 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="947329552760389097">Elementen &amp;inspecteren</translation>
 <translation id="947526284350604411">Jouw antwoord</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> kan geen bestanden openen in deze map omdat deze systeembestanden bevat</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome beperkt vandaag weer cookies}=1{Chrome beperkt morgen weer cookies}other{# dagen tot Chrome weer cookies beperkt}}</translation>
 <translation id="949807244219288032">Dit tabblad is gekoppeld aan een HID-apparaat</translation>
 <translation id="950079950995628542">Van <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Instelgids</translation>

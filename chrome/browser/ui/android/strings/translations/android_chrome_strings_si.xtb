@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">ඉවත් කරන්න</translation>
 <translation id="1183189057400844278">ඔබට සැම විටම ඔබේ Google ගිණුමේ ඇති මුරපද භාවිත කළ හැකි බව සහතික කර ගැනීමට, ඒ ඔබ බව සත්‍යාපනය කරන්න.</translation>
 <translation id="1187810343066461819">මෙම මෝටර් රථයෙන් පිටුසන්, ඉතිහාසය, සහ තවත් දේ ද මකන්න</translation>
-<translation id="1193589902336218259">ඉඟි දැනුම්දීම් ක්‍රියාත්මක කරන්න</translation>
 <translation id="1193729455103054076">ප්‍රබල මුරපදයක් භාවිත කරන්නද?</translation>
 <translation id="11947597112837849">ඉ-තැපැල් ලිපිනය</translation>
 <translation id="1197267115302279827">පිටුසන් ගෙන යන්න</translation>
@@ -995,7 +994,6 @@
 <translation id="5267572070504076962">භයානක අඩවිවලට එරෙහිව ආරක්ෂාව ලබා ගැනීමට සුරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාත්මක කරන්න</translation>
 <translation id="5271967389191913893">බාගැනීමට අවශ්‍ය අන්තර්ගතය උපාංගයට විවෘත කළ නොහැක.</translation>
 <translation id="5273031377282080577">ඔබේ පරිපාලක මෙම සැකසීම කළමනාකරණය කරයි.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{භාවිතයට නොගත් එක් අඩවියකින් ග්‍රාහක නොවන ලදි}one{භාවිතයට නොගත් අඩවි #කින් ග්‍රාහක නොවන ලදි}other{භාවිතයට නොගත් අඩවි #කින් ග්‍රාහක නොවන ලදි}}</translation>
 <translation id="5292796745632149097">වෙත යවන්න</translation>
 <translation id="5301876394151419436">ඔබ <ph name="EMAIL" /> ලෙස පුරනය වී ඇත. ඔබට සැකසීම් තුළ ඕනෑම වේලාවකට සමමුහූර්ත කිරීම නැවැත්විය හැක. Google ඔබේ ඉතිහාසය මත පදනම්ව සෙවීම් සහ අනෙකුත් සේවාවන් පෞද්ගලීකරණය කිරීමට ඉඩ ඇත.</translation>
 <translation id="5304593522240415983">මෙම ඉඩ හිස්ව තැබිය නොහැක</translation>
@@ -1586,7 +1584,6 @@
 <translation id="7612619742409846846">Google වෙත පුරනය වූයේ</translation>
 <translation id="7612989789287281429">ඔබව පුරමින්…</translation>
 <translation id="7619072057915878432">ජාල දෝෂ නිසා <ph name="FILE_NAME" /> බාගැනීම අසාර්ථක විය.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{එක් වෙබ් අඩවියකින් දායක නොවන ලදී}one{වෙබ් අඩවි #කින් දායක නොවන ලදී}other{වෙබ් අඩවි #කින් දායක නොවන ලදී}}</translation>
 <translation id="7626032353295482388">Chrome වෙත පිළිගනිමු</translation>
 <translation id="7628417132421583481">මුරපද කළමනාකරු වෙත යන්න</translation>
 <translation id="7630202231528827509">සැපයුම්කරු URL</translation>

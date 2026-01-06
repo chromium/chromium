@@ -966,6 +966,7 @@
 <translation id="472259426228234149">가격 100~180달러</translation>
 <translation id="4735849923335729414">조직에서 관리하는 <ph name="EMAIL" /> 계정으로 로그인합니다.</translation>
 <translation id="473775607612524610">업데이트</translation>
+<translation id="4738968082443868320">Google Drive</translation>
 <translation id="474209246745757965">카메라를 사용해 쇼핑하고 번역해 보세요.</translation>
 <translation id="4742407542027196863">비밀번호 관리...</translation>
 <translation id="4744428388659507035">어느 기기에서나 내 북마크를 사용하려면 설정에서 ‘북마크’를 사용 설정하세요.</translation>
@@ -1055,6 +1056,7 @@
 <translation id="5021500396464456616">이 링크를 보낸 사용자에게 문의하세요.</translation>
 <translation id="5039804452771397117">허용</translation>
 <translation id="5050810143224996149">비밀번호 공유</translation>
+<translation id="5052499409147950210">사이트 수정</translation>
 <translation id="5055015094595227120">정확한 위치</translation>
 <translation id="5055551113846164633">이 기기에 저장된 주소가 삭제됩니다. 또한 Google 계정 <ph name="USER_EMAIL" />에 저장된 주소도 삭제됩니다</translation>
 <translation id="5056446788882570708">문제 발견 시간: <ph name="TIME" /></translation>
@@ -1133,6 +1135,7 @@
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> 계정을 삭제하시겠습니까?</translation>
 <translation id="5300589172476337783">표시</translation>
 <translation id="5311061401280561833">카메라 및 마이크 액세스 허용됨</translation>
+<translation id="5313967007315987356">사이트 추가</translation>
 <translation id="5315870524563628285">가져올 항목이 없습니다.</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">저장</translation>

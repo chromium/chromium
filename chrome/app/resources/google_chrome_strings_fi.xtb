@@ -483,6 +483,7 @@
 <translation id="6180522807229584611">Tämä välilehti käyttää ylimääräisiä resursseja. Jos haluat parantaa suorituskykyä, anna Chromen tehdä siitä ei-aktiivisen.</translation>
 <translation id="6182736845697986886">Asennus epäonnistui päivityspalvelimen sisäisen virheen takia.</translation>
 <translation id="6183773856988300112">Gemini in Chrome käyttää automaattista selausta, jotta se voi toimia välilehdilläsi ja hoitaa sille antamiasi tehtäviä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
+<translation id="6187085551300363958">Chrome-vinkki: Tallenna salasanat</translation>
 <translation id="6192058120268468905">Tilisi Chromessa</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> on lisännyt laajennuksen, joka voi muuttaa Chromen toimintaa.
 
@@ -621,6 +622,7 @@
 <translation id="7627609214560473136">Datasi suojaamiseksi salli Chromen poistaa luvat sivustoilta, joilla et ole käynyt viime aikoina.</translation>
 <translation id="7629695634924605473">Chrome ilmoittaa sinulle, jos salasanasi ovat vaarantuneet</translation>
 <translation id="7641148173327520642">Järjestelmänvalvojasi on määrittänyt Chromen avaamaan osoitteen <ph name="TARGET_URL_HOSTNAME" /> selaimella <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
+<translation id="7641448682796883218">Chrome-vinkki: Parannettu selaussuoja</translation>
 <translation id="7649070708921625228">Ohje</translation>
 <translation id="7651907282515937834">Chrome Enterprise ‑logo</translation>
 <translation id="76531479118467370">Chrome on estänyt tämän latauksen, koska laitoit Selaussuojan pois päältä eikä tiedostoa voi vahvistaa</translation>

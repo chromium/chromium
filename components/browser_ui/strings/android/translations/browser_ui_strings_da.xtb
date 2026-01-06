@@ -188,11 +188,9 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="2903493209154104877">Adresser</translation>
 <translation id="2910701580606108292">Spørg, før websites begynder at afspille beskyttet indhold</translation>
 <translation id="2918484639460781603">Gå til indstillinger</translation>
-<translation id="293060180538644702">Få notifikationer med tips til Chrome</translation>
 <translation id="2932883381142163287">Rapportér misbrug</translation>
 <translation id="2939338015096024043">Når dette er slået til, kan websites anmode om tilladelse til at registrere din kameraposition og få oplysninger om dine omgivelser. Når dette er slået fra, kan websites ikke registrere din kameraposition eller få oplysninger om dine omgivelser.</translation>
 <translation id="2968755619301702150">Certifikatfremviser</translation>
-<translation id="2979365474350987274">Tredjepartscookies er begrænsede</translation>
 <translation id="2990583317361835189">Tillad ikke, at websites anvender bevægelsessensorer</translation>
 <translation id="3004438526346162184">Websites kan bruge denne funktion til at administrere vinduer på alle dine skærme</translation>
 <translation id="3008272652534848354">Nulstil tilladelser</translation>
@@ -631,7 +629,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="7835852323729233924">Afspilning af medier</translation>
 <translation id="783819812427904514">Slå lyden i videoen til</translation>
 <translation id="7846076177841592234">Annuller valg</translation>
-<translation id="7881140103901777395">Chrome begrænser de fleste websites fra at bruge tredjepartscookies. Tredjepartscookies er dog tilladt på dette website, fordi det er afhængigt af, at de leverer grundlæggende tjenester.\n\nGå til indstillingerne for at <ph name="BEGIN_LINK" />administrere adgangen til tredjepartscookies<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Tillad, at et bestemt website afspiller lyd.</translation>
 <translation id="7891547341794213004">Skjul kortet Fortsæt med denne fane</translation>
 <translation id="789722939441020330">Tillad ikke, at websites automatisk downloader flere filer</translation>

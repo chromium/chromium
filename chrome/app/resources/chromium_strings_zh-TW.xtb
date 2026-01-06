@@ -82,6 +82,7 @@
 <translation id="193439633299369377">Chromium OS 必須重新啟動，才能套用更新。</translation>
 <translation id="1951406923938785464">這不是常有人下載的檔案類型，可能有危險，因此 Chromium 已禁止下載</translation>
 <translation id="1953553007165777902">下載中… 還剩 <ph name="MINUTE" /> 分鐘</translation>
+<translation id="1965068424387304464">Chromium 提示：儲存密碼</translation>
 <translation id="1966382378801805537">Chromium 無法偵測或設定預設瀏覽器</translation>
 <translation id="1990262977744080398">瞭解 Chromium 封鎖某些檔案的原因 (在新分頁中開啟)</translation>
 <translation id="1999715455684970349">讓 Chromium 軟體保持最新狀態。如果停用或停止這項服務，Chromium 軟體就無法保持最新狀態。這樣一來，假如有安全漏洞，可能無法修正。Chromium 的功能也可能無法正常運作。如果這項服務沒有用於任何 Chromium 軟體，就會自行解除安裝。</translation>
@@ -252,6 +253,7 @@
 <translation id="3802055581630249637">Chromium 會預先載入你可能會造訪的網頁，以便在你造訪時更快載入</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="3823384748599722168">如要使用儲存的密碼，請掃描 QR code 下載 Chromium iOS 版，並登入 Google 帳戶</translation>
+<translation id="3837584850181228767">Chromium 提示：安全瀏覽強化防護功能</translation>
 <translation id="3846683726093018685">**摘要：** 請用一句話 (不超過 30 個字) 說明螢幕截圖內容的主要主題和目的。
 
           **建議問題：** 生成項目符號清單，列出使用者可以提出的 3 至 5 個問題，方便他們深入瞭解螢幕截圖內容。其中至少應有一個問題與某個視覺物件、其設計或位置相關。</translation>

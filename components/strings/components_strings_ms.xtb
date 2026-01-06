@@ -114,7 +114,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1178821169867863726">12 x 16 in</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
-<translation id="1181381397492575884">Chrome menyekat laman daripada menggunakan kuki pihak ketiga untuk menjejaki anda ketika anda menyemak imbas. Lawati tetapan untuk <ph name="LINK" />.</translation>
 <translation id="1185331130467528132"><ph name="URL" /> mahu mengakses peranti lain pada rangkaian setempat anda</translation>
 <translation id="1185343831726846924">Mengesahkan bahawa kad maya tidak boleh dihidupkan</translation>
 <translation id="1186201132766001848">Semak Kata Laluan</translation>
@@ -227,7 +226,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1343830902827845050">Log masuk ke Chrome</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1348779747280417563">Sahkan nama</translation>
-<translation id="1352798470428594123">Chrome mengehadkan kebanyakan laman daripada menggunakan kuki pihak ketiga untuk menjejaki anda semasa anda menyemak imbas. Lawati tetapan untuk <ph name="LINK" />.</translation>
 <translation id="1355158069018170842">Tunjukkan penurunan harga pada tab</translation>
 <translation id="1355301061807280185">Pekerjaan</translation>
 <translation id="1357195169723583938">Orang yang menggunakan peranti ini baru-baru ini dan masa penggunaan</translation>
@@ -1110,7 +1108,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2768397283109119044">Anda cuba mencapai <ph name="DOMAIN" /> tetapi pelayan memberikan sijil yang tidak sah kepada nama itu. Nama tersebut ialah alamat IP yang dikhaskan atau nama hos dalaman.</translation>
 <translation id="2770159525358613612">Cuba muat naik semula fail anda</translation>
 <translation id="277133753123645258">Kaedah penghantaran</translation>
-<translation id="2773388851563527404">Chrome mengehadkan kebanyakan laman daripada menggunakan kuki pihak ketiga. Namun, kuki pihak ketiga dibenarkan pada laman ini kerana kuki tersebut bergantung pada Chrome untuk memberikan perkhidmatan asas. Lawati tetapan untuk <ph name="LINK" />.</translation>
 <translation id="277499241957683684">Tiada rekod peranti</translation>
 <translation id="2775884851269838147">Cetakan halaman pertama</translation>
 <translation id="2781185443919227679">Pantai &amp; Pulau</translation>
@@ -1715,7 +1712,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3727309136762649052">Ruang nama</translation>
 <translation id="3727850735097852673">Untuk menggunakan Google Password Manager dengan macOS Keychain, lancarkan semula Chrome dan benarkan akses Keychain. Tab anda akan dibuka semula selepas pelancaran semula.</translation>
 <translation id="3728173127485570463">Penyemak Imbas Chrome tidak memerlukan cap jari anda untuk membuat autolengkap kata laluan</translation>
-<translation id="3736739313435669994">Anda menyekat laman daripada menggunakan kuki pihak ketiga untuk menjejaki anda semasa anda menyemak imbas. Lawati tetapan untuk <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Penyemak imbas anda diurus oleh pentadbir anda.</translation>
 <translation id="3739842843727261045">Isyarat menyukai menyerahkan maklum balas yang menunjukkan bahawa anda menyukai hasil ini</translation>
 <translation id="3740447166056383374">Semakan diperlukan sebelum menyalin</translation>
@@ -2149,7 +2145,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4406883609789734330">Sari Kata Langsung</translation>
 <translation id="4406896451731180161">hasil carian</translation>
 <translation id="4407758156081352648">Untuk mengekalkan keselamatan, organisasi anda tidak membenarkan kata laluan untuk digunakan semula dalam Chrome. Kata laluan dalam Chrome disulitkan untuk melindungi privasi pengguna.</translation>
-<translation id="4408413947728134509">Kuki <ph name="NUM_COOKIES" /></translation>
 <translation id="4409556632583862731">Urutan baharu</translation>
 <translation id="4412074349188076601">Konfigurasi ini ditandai sebagai boleh dipasang, tetapi tiada imej disediakan untuk seni bina ini, maka tidak boleh dipasang.</translation>
 <translation id="4412377069090572315">Perkara yang orang lain katakan</translation>
@@ -2537,7 +2532,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5061227663725596739">Adakah anda maksudkan <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Sejarah pencetakan</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 sedang digunakan)}other{(# sedang digunakan)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Menyemak alamat proksi<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Gulungan Kesepuluh</translation>
 <translation id="507130231501693183">Peti mel 4</translation>
@@ -3046,7 +3040,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5918373444239520146">Alat &amp; Elektronik Mudah Alih</translation>
 <translation id="5918847752193018339">Semak keluar lebih pantas apabila CVC anda disimpan. <ph name="LINK_BEGIN" />Padamkan kod keselamatan yang disimpan<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 sedang digunakan}other{# sedang digunakan}}</translation>
 <translation id="5921185718311485855">Hidup</translation>
 <translation id="5921639886840618607">Simpan kad ke Google Account?</translation>
 <translation id="5921952831792678223">Trak Pikap</translation>
@@ -3227,7 +3220,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6194209731893739467">Lihat semua produk yang dijejaki di sini</translation>
 <translation id="6195371403461054755">Geologi</translation>
 <translation id="6195418151868446719">Elektronik Pengguna</translation>
-<translation id="6196640612572343990">Sekat kuki pihak ketiga</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Tab Potongan Penuh</translation>
 <translation id="6203231073485539293">Semak sambungan Internet anda</translation>
@@ -3723,7 +3715,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6978121630131642226">Enjin Carian</translation>
 <translation id="6978236010531171013">Kongsi juga</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979302985396162258">urus akses kepada kuki pihak ketiga</translation>
 <translation id="6979440798594660689">Redam (lalai)</translation>
 <translation id="6987806006823772670">Sampul (Bersalut)</translation>
 <translation id="6989256887001961296">Kandungan ini disekat.</translation>
@@ -4738,7 +4729,6 @@ Butiran tambahan:
 <translation id="8622864575115813231">Menghubungi institusi kewangan anda...</translation>
 <translation id="8624354461147303341">Dapatkan diskaun</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
-<translation id="8635822281281406185">Tambahkan hingga 10 fail, tab atau imej</translation>
 <translation id="8637362707224133343">Chrome mengandungi ciri keselamatan terbina dalam untuk melindungi anda semasa menyemak imbas – seperti Penyemakan Imbas Selamat Google yang <ph name="BEGIN_LINK" />baru-baru ini menemukan pancingan data<ph name="END_LINK" /> pada laman yang cuba anda lawati. Laman pancingan data berpura-pura menjadi laman lain untuk memperdaya anda.<ph name="NEW_LINE" />Kadangkala, laman yang biasanya selamat juga terjejas disebabkan oleh penyerang. <ph name="BEGIN_ERROR_LINK" />Beritahu kami<ph name="END_ERROR_LINK" /> jika anda fikir terdapat kesilapan dan laman ini tidak mendatangkan bahaya.</translation>
 <translation id="8640996933372643759">Untuk berkongsi tab dan bekerjasama dengan orang lain, anda mestilah boleh log masuk ke Chrome</translation>
 <translation id="8641131559425911240">Sampul (Bond)</translation>
@@ -5119,7 +5109,6 @@ Butiran tambahan:
 <translation id="945673208656386843">Autolengkap kad ini untuk pembelian yang dibuat dalam Chromium apabila kad tersebut disimpan pada peranti ini</translation>
 <translation id="94613679163347541">Bandingkan <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan kekunci Tab kemudian Enter untuk membuat laman baharu dalam Google Sites dengan pantas</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome akan mengehadkan kuki lagi hari ini}=1{Chrome akan mengehadkan kuki lagi esok}other{# hari sehingga Chrome mengehadkan kuki lagi}}</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> ahli menyertai kumpulan tab "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Anda meminta untuk melawat laman ini. Ibu bapa anda boleh membalas dalam Family Link.</translation>
 <translation id="950736567201356821">Tiga tebukan atas</translation>

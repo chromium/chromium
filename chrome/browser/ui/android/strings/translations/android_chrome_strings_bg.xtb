@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Премахване</translation>
 <translation id="1183189057400844278">Потвърдете, че това сте вие, така че винаги да можете да използвате паролите в профила си в Google</translation>
 <translation id="1187810343066461819">Изтриване и на отметките, историята и др. от този автомобил</translation>
-<translation id="1193589902336218259">Включване на известията със съвети</translation>
 <translation id="1193729455103054076">Да се използва ли надеждна парола?</translation>
 <translation id="11947597112837849">имейл адрес</translation>
 <translation id="1197267115302279827">Преместване на отметки</translation>
@@ -995,7 +994,6 @@
 <translation id="5267572070504076962">Включете Безопасно сърфиране, за да получите защита срещу опасни сайтове</translation>
 <translation id="5271967389191913893">Устройството не може да отвори съдържанието за изтегляне.</translation>
 <translation id="5273031377282080577">Тази настройка се управлява от администратора ви.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Отписахте се от един неизползван сайт}other{Отписахте се от # неизползвани сайта}}</translation>
 <translation id="5292796745632149097">Изпращане до</translation>
 <translation id="5301876394151419436">Влезли сте като <ph name="EMAIL" />. Можете да спрете синхронизирането по всяко време от настройките. Google може да персонализира Търсене и други услуги въз основа на историята ви.</translation>
 <translation id="5304593522240415983">Това поле трябва да се попълни</translation>
@@ -1586,7 +1584,6 @@
 <translation id="7612619742409846846">Влезли сте в Google като</translation>
 <translation id="7612989789287281429">Влизате в профила си…</translation>
 <translation id="7619072057915878432">Изтеглянето на „<ph name="FILE_NAME" />“ не бе успешно поради грешки в мрежата.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Отписахте се от един сайт}other{Отписахте се от # сайта}}</translation>
 <translation id="7626032353295482388">Добре дошли в Chrome</translation>
 <translation id="7628417132421583481">Към Мениджър на пароли</translation>
 <translation id="7630202231528827509">URL адрес на доставчика</translation>

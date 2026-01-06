@@ -188,11 +188,9 @@
 <translation id="2903493209154104877">地址</translation>
 <translation id="2910701580606108292">網站播放受保護內容前先詢問您</translation>
 <translation id="2918484639460781603">前往設定</translation>
-<translation id="293060180538644702">接收 Chrome 提示通知</translation>
 <translation id="2932883381142163287">舉報濫用</translation>
 <translation id="2939338015096024043">開咗之後，網站可以要求追蹤你嘅攝錄機位置同收集周圍環境嘅資料。閂咗之後，網站唔可以追蹤你嘅攝錄機位置或者收集周圍環境嘅資料。</translation>
 <translation id="2968755619301702150">憑證檢視器</translation>
-<translation id="2979365474350987274">限制使用第三方 Cookie</translation>
 <translation id="2990583317361835189">不允許網站使用動作感應器</translation>
 <translation id="3004438526346162184">網站可使用此功能管理你所有顯示屏上的視窗</translation>
 <translation id="3008272652534848354">重設權限</translation>
@@ -631,7 +629,6 @@
 <translation id="7835852323729233924">正在播放媒體</translation>
 <translation id="783819812427904514">將影片取消靜音</translation>
 <translation id="7846076177841592234">取消選取</translation>
-<translation id="7881140103901777395">Chrome 會限制大部分網站使用第三方 Cookie。不過，由於此網站需要使用 Cookie 才能提供基本服務，因此獲允許使用第三方 Cookie。\n\n你可前往設定<ph name="BEGIN_LINK" />管理第三方 Cookie 存取權<ph name="END_LINK" />。</translation>
 <translation id="7882806643839505685">允許特定網站播放音效。</translation>
 <translation id="7891547341794213004">隱藏「繼續使用此分頁」資訊卡</translation>
 <translation id="789722939441020330">不允許網站自動下載多個檔案</translation>

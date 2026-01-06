@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Suprimeix</translation>
 <translation id="1183189057400844278">Per assegurar-te que puguis fer servir sempre les contrasenyes del teu Compte de Google, verifica la teva identitat</translation>
 <translation id="1187810343066461819">Suprimeix també les adreces d'interès, l'historial i altres dades d'aquest cotxe</translation>
-<translation id="1193589902336218259">Activa les notificacions de consells</translation>
 <translation id="1193729455103054076">Vols utilitzar una contrasenya segura?</translation>
 <translation id="11947597112837849">adreça electrònica</translation>
 <translation id="1197267115302279827">Mou les adreces d'interès</translation>
@@ -995,7 +994,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5267572070504076962">Activa Navegació segura per obtenir protecció contra llocs web perillosos</translation>
 <translation id="5271967389191913893">El dispositiu no pot obrir el contingut que s'ha de baixar.</translation>
 <translation id="5273031377282080577">El teu administrador gestiona aquesta opció de configuració.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{S'ha cancel·lat la subscripció en un lloc web no utilitzat}other{S'ha cancel·lat la subscripció en # llocs web no utilitzats}}</translation>
 <translation id="5292796745632149097">Envia a</translation>
 <translation id="5301876394151419436">Has iniciat la sessió com a <ph name="EMAIL" />. Pots aturar la sincronització en qualsevol moment a la configuració. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
 <translation id="5304593522240415983">Aquest camp no pot estar en blanc</translation>
@@ -1586,7 +1584,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7612619742409846846">Has iniciat la sessió a Google com a</translation>
 <translation id="7612989789287281429">S'està iniciant la sessió…</translation>
 <translation id="7619072057915878432">No s'ha pogut baixar <ph name="FILE_NAME" /> a causa d'errors a la xarxa.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{S'ha cancel·lat la subscripció a un lloc web}other{S'ha cancel·lat la subscripció a # llocs web}}</translation>
 <translation id="7626032353295482388">Et donem la benvinguda a Chrome</translation>
 <translation id="7628417132421583481">Ves al gestor de contrasenyes</translation>
 <translation id="7630202231528827509">URL del proveïdor</translation>

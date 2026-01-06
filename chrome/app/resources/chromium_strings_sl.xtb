@@ -85,6 +85,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="193439633299369377">Če želite uveljaviti posodobitev, morate znova zagnati Chromium OS.</translation>
 <translation id="1951406923938785464">Chromium je blokiral ta prenos, ker se vrsta datoteke ne prenaša pogosto in je morda nevarna</translation>
 <translation id="1953553007165777902">Prenašanje … Še <ph name="MINUTE" /> min.</translation>
+<translation id="1965068424387304464">Nasvet za Chromium: Shranite gesla</translation>
 <translation id="1966382378801805537">Chromium ne more določiti ali nastaviti privzetega brskalnika</translation>
 <translation id="1990262977744080398">Preberite, zakaj Chromium blokira nekatere datoteke, odpre se na novem zavihku</translation>
 <translation id="1999715455684970349">Poskrbi, da je programska oprema Chromiuma posodobljena. Če je ta storitev onemogočena ali ustavljena, programska oprema Chromiuma ne bo posodobljena, kar pomeni, da varnostnih ranljivosti, ki se lahko pojavijo, ni mogoče odpraviti in funkcije morda ne delujejo. Ta storitev se samodejno odstrani, če ni programske opreme Chromiuma, ki bi jo uporabljala.</translation>
@@ -255,6 +256,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3802055581630249637">Chromium vnaprej naloži strani, ki jih boste verjetno obiskali, da se ob obisku naložijo še hitreje</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
 <translation id="3823384748599722168">Če želite uporabljati shranjena gesla, uporabite kodo QR, prenesite Chromium za iOS in se prijavite v račun Google</translation>
+<translation id="3837584850181228767">Nasvet za Chromium: Izboljšano varno brskanje</translation>
 <translation id="3846683726093018685">**Povzemi:** V enem stavku z največ 30 besedami opiši glavni predmet in namen vsebine na posnetku zaslona.
 
           **Predlagaj vprašanja:** Generiraj označen seznam s 3–5 vprašanji, ki spodbujajo razmišljanje in jih lahko uporabnik zastavi za boljše razumevanje posnetka zaslona. Ta vprašanja morajo vključevati vsaj eno, ki se nanaša posebej na vizualni predmet, njegovo obliko ali njegovo umestitev.</translation>

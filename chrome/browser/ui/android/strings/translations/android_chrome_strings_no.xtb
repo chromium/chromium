@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1183189057400844278">For å sikre at du alltid kan bruke passordene i Google-kontoen din, må du bekrefte at det er deg</translation>
 <translation id="1187810343066461819">Slett også bokmerker, logg og annet fra denne bilen</translation>
-<translation id="1193589902336218259">Slå på varsler for tips</translation>
 <translation id="1193729455103054076">Vil du bruke det sterke passordet?</translation>
 <translation id="11947597112837849">e-postadressen din</translation>
 <translation id="1197267115302279827">Flytt bokmerker</translation>
@@ -995,7 +994,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5267572070504076962">Slå på Safe Browsing for å beskytte deg mot farlige nettsteder</translation>
 <translation id="5271967389191913893">Enheten kan ikke åpne innholdet som skal lastes ned.</translation>
 <translation id="5273031377282080577">Administratoren din administrerer denne innstillingen.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Sluttet å abonnere på ett ubrukt nettsted}other{Sluttet å abonnere på # ubrukte nettsteder}}</translation>
 <translation id="5292796745632149097">Send til</translation>
 <translation id="5301876394151419436">Du er pålogget som <ph name="EMAIL" />. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
 <translation id="5304593522240415983">Dette feltet må fylles ut</translation>
@@ -1586,7 +1584,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7612619742409846846">Logget på Google som</translation>
 <translation id="7612989789287281429">Logger på …</translation>
 <translation id="7619072057915878432">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt på grunn av nettverksproblemer.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Sluttet å abonnere på ett nettsted}other{Sluttet å abonnere på # nettsteder}}</translation>
 <translation id="7626032353295482388">Velkommen til Chrome</translation>
 <translation id="7628417132421583481">Gå til Passordlagring</translation>
 <translation id="7630202231528827509">Leverandørens nettadresse</translation>

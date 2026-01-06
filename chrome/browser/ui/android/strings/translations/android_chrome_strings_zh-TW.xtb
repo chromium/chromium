@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">移除</translation>
 <translation id="1183189057400844278">為確保你隨時可以使用 Google 帳戶中的密碼，請驗證身分</translation>
 <translation id="1187810343066461819">一併刪除這部車上的書籤、歷史記錄和其他資料</translation>
-<translation id="1193589902336218259">開啟提示通知</translation>
 <translation id="1193729455103054076">要使用高強度密碼嗎？</translation>
 <translation id="11947597112837849">電子郵件地址</translation>
 <translation id="1197267115302279827">移動書籤</translation>
@@ -995,7 +994,6 @@
 <translation id="5267572070504076962">開啟安全瀏覽功能即可防範危險網站</translation>
 <translation id="5271967389191913893">裝置無法開啟您要下載的這項內容。</translation>
 <translation id="5273031377282080577">系統管理員會管理這項設定。</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{已取消訂閱一個未使用的網站}other{已取消訂閱 # 個未使用的網站}}</translation>
 <translation id="5292796745632149097">傳送到</translation>
 <translation id="5301876394151419436">目前登入的帳戶是 <ph name="EMAIL" />。你隨時可以前往設定停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="5304593522240415983">這個欄位不能留空</translation>
@@ -1586,7 +1584,6 @@
 <translation id="7612619742409846846">已使用下列帳戶登入 Google：</translation>
 <translation id="7612989789287281429">正在登入…</translation>
 <translation id="7619072057915878432">無法連上網路，因此無法下載 <ph name="FILE_NAME" />。</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{已取消訂閱 1 個網站}other{已取消訂閱 # 個網站}}</translation>
 <translation id="7626032353295482388">歡迎使用 Chrome</translation>
 <translation id="7628417132421583481">前往密碼管理工具</translation>
 <translation id="7630202231528827509">供應商網址</translation>

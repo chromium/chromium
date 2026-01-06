@@ -188,11 +188,9 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="2903493209154104877">Direcciones</translation>
 <translation id="2910701580606108292">Preguntar antes de permitir que los sitios reproduzcan contenido protegido</translation>
 <translation id="2918484639460781603">Ir a Configuración</translation>
-<translation id="293060180538644702">Recibir notificaciones de consejos de Chrome</translation>
 <translation id="2932883381142163287">Denunciar abuso</translation>
 <translation id="2939338015096024043">Cuando esta opción está activada, los sitios pueden solicitar permiso para monitorizar la posición de tu cámara y obtener información sobre tu entorno. Si está desactivada, los sitios no pueden monitorizar la posición de tu cámara ni obtener información sobre tu entorno.</translation>
 <translation id="2968755619301702150">Visor de certificados</translation>
-<translation id="2979365474350987274">Las cookies de terceros están limitadas</translation>
 <translation id="2990583317361835189">No permitir que los sitios usen sensores de movimiento</translation>
 <translation id="3004438526346162184">Los sitios pueden usar esta función para gestionar las ventanas en todas tus pantallas</translation>
 <translation id="3008272652534848354">Restablecer permisos</translation>
@@ -631,7 +629,6 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="7835852323729233924">Reproduciendo contenido multimedia</translation>
 <translation id="783819812427904514">Dejar de silenciar vídeo</translation>
 <translation id="7846076177841592234">Cancelar selección</translation>
-<translation id="7881140103901777395">Chrome impide que la mayoría de los sitios usen cookies de terceros. Sin embargo, las cookies de terceros están permitidas en este sitio porque depende de ellas para prestar servicios básicos.\n\nVe a la configuración para <ph name="BEGIN_LINK" />gestionar el acceso a las cookies de terceros<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Permite que se reproduzcan sonidos en un sitio específico.</translation>
 <translation id="7891547341794213004">Ocultar tarjeta Continuar con esta pestaña</translation>
 <translation id="789722939441020330">No permitir que los sitios descarguen varios archivos automáticamente</translation>

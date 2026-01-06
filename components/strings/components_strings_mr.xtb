@@ -114,7 +114,6 @@
 <translation id="1178581264944972037">विराम द्या</translation>
 <translation id="1178821169867863726">१२ x १६ इं</translation>
 <translation id="1181037720776840403">काढून टाका</translation>
-<translation id="1181381397492575884">तुम्ही ब्राउझ करत असताना तुम्हाला ट्रॅक करण्यासाठी Chrome साइटला तृतीय पक्ष कुकी वापरण्यापासून ब्लॉक करते. <ph name="LINK" /> साठी सेटिंग्जना भेट द्या.</translation>
 <translation id="1185331130467528132"><ph name="URL" /> ला तुमच्या स्थानिक नेटवर्कवरील इतर डिव्हाइस ॲक्सेस करायची आहेत</translation>
 <translation id="1185343831726846924">व्हर्च्युअल कार्ड सुरू करता येणार नाही हे कन्फर्म करत आहे</translation>
 <translation id="1186201132766001848">पासवर्ड तपासा</translation>
@@ -227,7 +226,6 @@
 <translation id="1343830902827845050">Chrome मध्ये साइन इन करा</translation>
 <translation id="1346748346194534595">उजवे</translation>
 <translation id="1348779747280417563">नावाची खात्री करा</translation>
-<translation id="1352798470428594123">Chrome हे तुम्ही ब्राउझ करत असताना तुम्हाला ट्रॅक करण्यासाठी तृतीय पक्ष कुकी वापरण्यापासून अनेक साइटना मर्यादित करते. <ph name="LINK" /> साठी सेटिंग्जना भेट द्या.</translation>
 <translation id="1355158069018170842">टॅबवर किमतीमध्ये घट झाल्याच्या सूचना</translation>
 <translation id="1355301061807280185">नोकऱ्या</translation>
 <translation id="1357195169723583938">डिव्हाइस अलीकडे कोणी आणि केव्हा वापरले</translation>
@@ -1110,7 +1108,6 @@
 <translation id="2768397283109119044">तुम्ही <ph name="DOMAIN" /> पर्यंत पोहोचण्याचा प्रयत्न केला, पण सर्व्हरने त्या नावासाठी जारी केलेले अवैध सर्टिफिकेट सादर केले आहे. नाव हा एक राखीव आयपी अ‍ॅड्रेस किंवा अंतर्गत होस्ट नाव आहे.</translation>
 <translation id="2770159525358613612">तुमच्या फाइल अपलोड करण्याचा पुन्हा प्रयत्न करा</translation>
 <translation id="277133753123645258">शिपिंग पद्धत</translation>
-<translation id="2773388851563527404">Chrome तृतीय पक्ष कुकी वापरण्यापासून अनेक साइटना मर्यादित करते. पण तृतीय पक्ष कुकीना या साइटवर अनुमती आहे, कारण मूलभूत सेवा पुरवण्यासाठी ती त्यांच्यावर अवलंबून असते. <ph name="LINK" /> साठी सेटिंग्जना भेट द्या.</translation>
 <translation id="277499241957683684">डिव्हाइस रेकॉर्ड गहाळ</translation>
 <translation id="2775884851269838147">प्रिंट केलेले पहिले पेज</translation>
 <translation id="2781185443919227679">समुद्रकिनारे आणि बेटे</translation>
@@ -1713,7 +1710,6 @@
 <translation id="3727309136762649052">नेमस्पेस</translation>
 <translation id="3727850735097852673">macOS Keychain सह Google Password Manager वापरण्यासाठी, Chrome पुन्हा लाँच करा आणि Keychain च्या अ‍ॅक्सेसची अनुमती द्या. पुन्हा लाँच केल्यानंतर तुमचे टॅब पुन्हा उघडतील.</translation>
 <translation id="3728173127485570463">पासवर्ड ऑटोफिल करण्यासाठी Chrome ब्राउझरला यापुढे तुमच्या फिंगरप्रिंटची आवश्यकता असणार नाही</translation>
-<translation id="3736739313435669994">तुम्ही ब्राउझ करत असताना तुम्हाला ट्रॅक करण्यासाठी तृतीय पक्ष कुकी वापरण्यापासून साइटना ब्लॉक करता. <ph name="LINK" /> साठी सेटिंग्जना भेट द्या.</translation>
 <translation id="3738166223076830879">तुमचा ब्राउझर तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केला जातो.</translation>
 <translation id="3739842843727261045">थंब्स अपवर क्लिक केल्यावर तुम्हाला हे परिणाम आवडले आहेत असा फीडबॅक सबमिट केला जातो</translation>
 <translation id="3740447166056383374">कॉपी करण्यापूर्वी पुनरावलोकन करणे आवश्यक आहे</translation>
@@ -2147,7 +2143,6 @@
 <translation id="4406883609789734330">लाइव्ह कॅप्शन</translation>
 <translation id="4406896451731180161">शोध परिणाम</translation>
 <translation id="4407758156081352648">सुरक्षा राखण्यासाठी, तुमची संस्था Chrome मध्ये पासवर्ड पुन्हा वापरण्याची अनुमती देत ​​नाही. वापरकर्त्याच्या गोपनीयतेचे संरक्षण करण्यासाठी Chrome मधील पासवर्ड एन्क्रिप्ट केलेले आहेत.</translation>
-<translation id="4408413947728134509">कुकीज <ph name="NUM_COOKIES" /></translation>
 <translation id="4409556632583862731">नवीन थ्रेड</translation>
 <translation id="4412074349188076601">हे कॉन्फिगरेशन इंस्टॉल करण्यायोग्य म्हणून मार्क केले आहे, पण या आर्किटेक्चरसाठी कोणतीही इमेज पुरवलेली नाही, म्हणून ते इंस्टॉल केली जाऊ शकत नाही.</translation>
 <translation id="4412377069090572315">लोक काय म्हणत आहेत</translation>
@@ -2535,7 +2530,6 @@
 <translation id="5061227663725596739">तुम्हाला <ph name="LOOKALIKE_DOMAIN" />असे म्हणायचे होते का?</translation>
 <translation id="5066056036849835175">प्रिंटिंग इतिहास</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(एक वापरली जात आहे)}other{(# वापरल्या जात आहेत)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />प्रॉक्सी पत्ता तपासणे<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">दहावा रोल</translation>
 <translation id="507130231501693183">मेलबॉक्स ४</translation>
@@ -3044,7 +3038,6 @@
 <translation id="5918373444239520146">गॅजेट आणि पोर्टेबल इलेक्ट्रॉनिक वस्तू</translation>
 <translation id="5918847752193018339">तुमचे CVCs सेव्ह करून आणखी जलद चेक आउट करा. <ph name="LINK_BEGIN" />सेव्ह केलेले सुरक्षा कोड हटवणे<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 वापरात आहे}other{# वापरात आहेत}}</translation>
 <translation id="5921185718311485855">सुरू करा</translation>
 <translation id="5921639886840618607">Google खात्यात कार्ड सेव्ह करायचे?</translation>
 <translation id="5921952831792678223">पिकअप ट्रक</translation>
@@ -3226,7 +3219,6 @@
 <translation id="6194209731893739467">तुमची सर्व माग ठेवलेली उत्पादने येथे पहा</translation>
 <translation id="6195371403461054755">भूशास्त्र</translation>
 <translation id="6195418151868446719">ग्राहकांशी संबंधित इलेक्‍ट्रॉनिक उपकरणे</translation>
-<translation id="6196640612572343990">तृतीय पक्ष कुकी ब्लॉक करा</translation>
 <translation id="6197648101609735209">८९ x ८९ मिमी</translation>
 <translation id="6198480336395236519">फूट कट टॅब</translation>
 <translation id="6203231073485539293">तुमचे इंटरनेट कनेक्शन तपासा</translation>
@@ -3722,7 +3714,6 @@
 <translation id="6978121630131642226">शोध इंजिने</translation>
 <translation id="6978236010531171013">तरीही शेअर करा</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979302985396162258">तृतीय पक्ष कुकीना असलेला अ‍ॅक्सेस व्यवस्थापित करा</translation>
 <translation id="6979440798594660689">निःशब्द करा (डीफॉल्ट)</translation>
 <translation id="6987806006823772670">एन्व्हलप (कोटेड)</translation>
 <translation id="6989256887001961296">हा आशय ब्लॉक केला गेला आहे.</translation>
@@ -4736,7 +4727,6 @@
 <translation id="8622864575115813231">तुमच्या आर्थिक संस्थेशी संपर्क साधत आहे...</translation>
 <translation id="8624354461147303341">सवलती मिळवा</translation>
 <translation id="8634957317623797170">५४ x ८६ मिमी</translation>
-<translation id="8635822281281406185">कमाल १० फाइल, टॅब किंवा इमेज जोडा</translation>
 <translation id="8637362707224133343">तुम्ही ब्राउझ करत असताना तुमचे संरक्षण करण्यासाठी Chrome मध्ये बिल्ट-इन सुरक्षितता वैशिष्‍ट्ये आहेत — जसे की Google सुरक्षित ब्राउझिंग, ज्याला तुम्ही भेट देण्याचा प्रयत्न केलेल्या साइटवर <ph name="BEGIN_LINK" />अलीकडे फिशिंग आढळले आहे<ph name="END_LINK" />. फिशिंग साइट तुमची फसवणूक करण्यासाठी इतर साइट असल्याचे भासवतात. <ph name="NEW_LINE" />साधारणपणे सुरक्षित असलेल्या साइटदेखील काहीवेळा हल्लेखोरांमुळे धोक्यात येऊ शकतात. एखादी चूक झाली आहे आणि या साइटला धोका नाही असे तुम्हाला वाटत असल्यास, <ph name="BEGIN_ERROR_LINK" />आम्हाला कळवा<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">टॅब शेअर करण्यासाठी आणि इतरांसोबत सहयोग करण्यासाठी, तुम्हाला Chrome मध्ये साइन इन करता येणे आवश्यक आहे</translation>
 <translation id="8641131559425911240">एन्व्हलप (बॉंड)</translation>
@@ -5117,7 +5107,6 @@
 <translation id="945673208656386843">हे कार्ड या डिव्हाइसवर सेव्ह केलेले असते, तेव्हा Chromium मध्ये केलेल्या खरेदीसाठी ते ऑटोफिल करा</translation>
 <translation id="94613679163347541"><ph name="CATEGORY" /> ची तुलना करायची आहे का?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sites मध्ये नवीन साइट झटपट तयार करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome आज पुन्हा कुकी मर्यादित करेल}=1{Chrome उद्या पुन्हा कुकी मर्यादित करेल}other{Chrome पुन्हा # दिवसांनी कुकी मर्यादित करेल}}</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> सदस्य "<ph name="GROUP_NAME" />" टॅग गटामध्ये सामील झाले आहेत</translation>
 <translation id="949314938206378263">तुम्हाला या साइटला भेट देण्यास सांगितले आहे. तुमचे पालक Family Link मध्ये उत्तर देऊ शकतात.</translation>
 <translation id="950736567201356821">ट्रिपल पंच टॉप</translation>

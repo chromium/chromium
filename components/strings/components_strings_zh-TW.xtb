@@ -114,7 +114,6 @@
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1178821169867863726">12 x 16 吋</translation>
 <translation id="1181037720776840403">移除</translation>
-<translation id="1181381397492575884">Chrome 會禁止網站使用第三方 Cookie 追蹤瀏覽網站的使用者。前往「<ph name="LINK" />」設定頁面。</translation>
 <translation id="1185331130467528132"><ph name="URL" /> 想存取區域網路上的其他裝置</translation>
 <translation id="1185343831726846924">確認無法啟用虛擬卡片</translation>
 <translation id="1186201132766001848">檢查密碼</translation>
@@ -227,7 +226,6 @@
 <translation id="1343830902827845050">登入 Chrome</translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1348779747280417563">確認姓名</translation>
-<translation id="1352798470428594123">Chrome 會限制大多數網站使用第三方 Cookie 追蹤瀏覽網站的使用者。前往「<ph name="LINK" />」設定頁面。</translation>
 <translation id="1355158069018170842">在分頁顯示降價資訊</translation>
 <translation id="1355301061807280185">工作機會</translation>
 <translation id="1357195169723583938">最近使用過裝置的使用者及其使用時間</translation>
@@ -1109,7 +1107,6 @@
 <translation id="2768397283109119044">你嘗試連線至 <ph name="DOMAIN" />，但伺服器提供的憑證核發名稱無效。該名稱是系統保留的 IP 位址或內部主機名稱。</translation>
 <translation id="2770159525358613612">再次嘗試上傳檔案</translation>
 <translation id="277133753123645258">運送方式</translation>
-<translation id="2773388851563527404">Chrome 會限制大多數網站使用第三方 Cookie，但允許這個網站使用第三方 Cookie，因為這個網站需要使用 Cookie 才能提供基本服務。前往「<ph name="LINK" />」設定頁面。</translation>
 <translation id="277499241957683684">沒有裝置記錄</translation>
 <translation id="2775884851269838147">首刷頁面</translation>
 <translation id="2781185443919227679">海灘與島嶼</translation>
@@ -1712,7 +1709,6 @@
 <translation id="3727309136762649052">命名空間</translation>
 <translation id="3727850735097852673">如要搭配 macOS 鑰匙圈使用 Google 密碼管理工具，請重新啟動 Chrome 並允許存取鑰匙圈。重新啟動之後，會重新開啟所有分頁。</translation>
 <translation id="3728173127485570463">Chrome 瀏覽器不再需要指紋才能自動填入密碼</translation>
-<translation id="3736739313435669994">你已禁止網站使用第三方 Cookie 追蹤瀏覽網站的使用者。前往「<ph name="LINK" />」設定頁面。</translation>
 <translation id="3738166223076830879">你的瀏覽器是由系統管理員管理。</translation>
 <translation id="3739842843727261045">按讚可對這些結果給予正面評價</translation>
 <translation id="3740447166056383374">複製檔案前請務必確認</translation>
@@ -2146,7 +2142,6 @@
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4406896451731180161">搜尋結果</translation>
 <translation id="4407758156081352648">為維護安全性，貴機構不允許在 Chrome 中重複使用密碼。Chrome 會將密碼加密處理，以保護使用者隱私。</translation>
-<translation id="4408413947728134509"><ph name="NUM_COOKIES" /> 個 Cookie</translation>
 <translation id="4409556632583862731">發起討論串</translation>
 <translation id="4412074349188076601">這項設定標示為可安裝，但沒有映像檔可供這個架構使用，因此無法安裝。</translation>
 <translation id="4412377069090572315">使用者評論</translation>
@@ -2534,7 +2529,6 @@
 <translation id="5061227663725596739">你是不是要前往 <ph name="LOOKALIKE_DOMAIN" />？</translation>
 <translation id="5066056036849835175">列印記錄</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(目前使用 1 個 Cookie)}other{(目前使用 # 個 Cookie)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />檢查 Proxy 位址<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">第十卷</translation>
 <translation id="507130231501693183">出紙槽 4</translation>
@@ -3043,7 +3037,6 @@
 <translation id="5918373444239520146">小型裝置與隨身電子設備</translation>
 <translation id="5918847752193018339">儲存信用卡驗證碼可加快結帳速度。<ph name="LINK_BEGIN" />刪除已儲存的安全碼<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{目前使用 1 個 Cookie}other{目前使用 # 個 Cookie}}</translation>
 <translation id="5921185718311485855">開啟</translation>
 <translation id="5921639886840618607">要將這張卡片儲存到 Google 帳戶嗎？</translation>
 <translation id="5921952831792678223">小貨車</translation>
@@ -3224,7 +3217,6 @@
 <translation id="6194209731893739467">在這裡查看所有追蹤的產品</translation>
 <translation id="6195371403461054755">地質學</translation>
 <translation id="6195418151868446719">消費性電子產品</translation>
-<translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6197648101609735209">89 x 89 公釐</translation>
 <translation id="6198480336395236519">全頁隔頁紙</translation>
 <translation id="6203231073485539293">檢查網際網路連線</translation>
@@ -3720,7 +3712,6 @@
 <translation id="6978121630131642226">搜尋引擎</translation>
 <translation id="6978236010531171013">一律分享</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
-<translation id="6979302985396162258">管理第三方 Cookie 存取權</translation>
 <translation id="6979440798594660689">靜音 (預設)</translation>
 <translation id="6987806006823772670">信封 (塗布紙)</translation>
 <translation id="6989256887001961296">這項內容遭到封鎖。</translation>
@@ -4734,7 +4725,6 @@
 <translation id="8622864575115813231">正在與金融機構聯絡...</translation>
 <translation id="8624354461147303341">取得折扣</translation>
 <translation id="8634957317623797170">54 x 86 公釐</translation>
-<translation id="8635822281281406185">最多可新增 10 個檔案、分頁或圖片</translation>
 <translation id="8637362707224133343">Chrome 內建安全性功能，可在你瀏覽網站時提供保護，Google 安全瀏覽功能就是其中之一。這項功能最近曾在你嘗試造訪的網站上<ph name="BEGIN_LINK" />發現網路釣魚內容<ph name="END_LINK" />。網路釣魚網站會偽裝成其他網站來欺騙你。<ph name="NEW_LINE" />即使是平常可以安心造訪的網站，有時也會遭到攻擊者入侵。如果你認為我們的判斷有誤，而且這個網站沒有危險，請<ph name="BEGIN_ERROR_LINK" />告訴我們<ph name="END_ERROR_LINK" />。</translation>
 <translation id="8640996933372643759">必須能夠登入 Chrome，才能共用分頁、與他人協作</translation>
 <translation id="8641131559425911240">信封 (證券紙)</translation>
@@ -5114,7 +5104,6 @@
 <translation id="945673208656386843">只要將這張卡片儲存到這部裝置，在 Chromium 中購物時就能自動填入卡片資訊</translation>
 <translation id="94613679163347541">要比較「<ph name="CATEGORY" />」嗎？</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Google 協作平台中快速建立新網站</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome 將於今天再次限制 Cookie}=1{Chrome 將於明天再次限制 Cookie}other{Chrome 將於 # 天後再次限制 Cookie}}</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> 位成員已加入「<ph name="GROUP_NAME" />」分頁群組</translation>
 <translation id="949314938206378263">你已要求造訪這個網站，家長可以透過 Family Link 回覆要求。</translation>
 <translation id="950736567201356821">三孔 (頂端)</translation>

@@ -188,11 +188,9 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="2903493209154104877">Enderezos</translation>
 <translation id="2910701580606108292">Preguntar antes de permitir que os sitios reproduzan contido protexido</translation>
 <translation id="2918484639460781603">Ir a Configuración</translation>
-<translation id="293060180538644702">Recibe notificacións de Consellos de Chrome</translation>
 <translation id="2932883381142163287">Informar de uso inadecuado</translation>
 <translation id="2939338015096024043">Cando esta opción está activada, os sitios poden pedirche permiso para facer un seguimento da posición da cámara e obter información do que te rodea. Cando esta opción está desactivada, os sitios non poden facer o seguimento da posición da cámara nin obter información do que te rodea.</translation>
 <translation id="2968755619301702150">Visor de certificados</translation>
-<translation id="2979365474350987274">As cookies de terceiros están limitadas</translation>
 <translation id="2990583317361835189">Non permitir que os sitios utilicen sensores de movemento</translation>
 <translation id="3004438526346162184">Os sitios poden usar esta función para xestionar as ventás en todas as pantallas</translation>
 <translation id="3008272652534848354">Restablecer permisos</translation>
@@ -631,7 +629,6 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="7835852323729233924">Reproducindo contido multimedia</translation>
 <translation id="783819812427904514">Activar o son do vídeo</translation>
 <translation id="7846076177841592234">Cancelar selección</translation>
-<translation id="7881140103901777395">Chrome evita que a maioría dos sitios usen cookies de terceiros. Así e todo, neste sitio permítese o seu uso porque son necesarias para fornecer servizos básicos.\n\nVai á configuración para <ph name="BEGIN_LINK" />xestionar o acceso ás cookies de terceiros<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Permite o son dun sitio específico.</translation>
 <translation id="7891547341794213004">Ocultar tarxeta Continuar con esta pestana</translation>
 <translation id="789722939441020330">Non permitir que os sitios descarguen varios ficheiros de forma automática</translation>

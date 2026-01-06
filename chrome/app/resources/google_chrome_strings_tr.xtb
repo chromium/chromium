@@ -484,6 +484,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6180522807229584611">Bu sekme ekstra kaynak kullanıyor. Performansınızı artırmak için Chrome'un bu sekmeleri devre dışı bırakmasına izin verin.</translation>
 <translation id="6182736845697986886">Güncelleme sunucusundaki dahili hata nedeniyle yükleme işlemi başarısız oldu.</translation>
 <translation id="6183773856988300112">Chrome'da Gemini, sekmelerinizde çalışmak ve verdiğiniz görevleri tamamlamak için otomatik göz atma özelliğini kullanır. <ph name="LINK_BEGIN" />Daha fazla bilgi edinin<ph name="LINK_END" />.</translation>
+<translation id="6187085551300363958">Chrome İpucu: Şifreleri Kaydedin</translation>
 <translation id="6192058120268468905">Chrome'daki Hesabınız</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" />, Chrome'un çalışma şeklini değiştirebilecek bir uzantı ekledi.
 
@@ -622,6 +623,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7627609214560473136">Verilerinizin korunması için Chrome'un, yakın zamanda ziyaret etmediğiniz sitelerin izinlerini kaldırmasına izin verin.</translation>
 <translation id="7629695634924605473">Chrome, şifrelerinizin güvenliğinin ihlal edilip edilmediğini size bildirir</translation>
 <translation id="7641148173327520642">Sistem yöneticiniz Google Chrome'u <ph name="TARGET_URL_HOSTNAME" /> adresine erişmek için <ph name="ALTERNATIVE_BROWSER_NAME" /> tarayıcısını açacak şekilde yapılandırmış.</translation>
+<translation id="7641448682796883218">Chrome İpucu: Gelişmiş Güvenli Tarama</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7651907282515937834">Chrome Enterprise logosu</translation>
 <translation id="76531479118467370">Güvenli Tarama'yı devre dışı bıraktığınız ve dosya doğrulanamadığı için Chrome bu indirme işlemini engelledi</translation>

@@ -1804,6 +1804,7 @@
 <translation id="221297410904507041">删除历史记录、Cookie、缓存内容及其他数据</translation>
 <translation id="2213410656650624348">适中</translation>
 <translation id="2214018885812055163">共享的文件夹</translation>
+<translation id="2214453882118345682">使用相机购买、翻译和识别所见内容。</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;有 1 行代码未显示出来&gt;}other{&lt;有 <ph name="NUMBER_OF_LINES" /> 行代码未显示出来&gt;}}</translation>
 <translation id="2215070081105889450">若要分享音频，请改为分享标签页或屏幕</translation>
 <translation id="2217208085547223783">信任状态</translation>
@@ -5708,6 +5709,7 @@
 <translation id="4864805589453749318">请选择让哪位家长授权您添加学校账号。</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" />（已屏蔽）</translation>
 <translation id="486505726797718946">节省的内存</translation>
+<translation id="4865063548323785458">保存并自动填充密码，轻松登录网站和应用</translation>
 <translation id="486635084936119914">下载特定类型的文件后自动将其打开</translation>
 <translation id="4867272607148176509">家长可以批准或屏蔽应用、设置使用时限，以及控制网络浏览。日后需要时，您还可添加学校账号以用于访问大多数学校资源。</translation>
 <translation id="4867433544163083783">现在看看是否可以整理标签页了</translation>
@@ -7602,7 +7604,6 @@
 <translation id="6194333736420234626">付款方式(&amp;P)</translation>
 <translation id="6195005504600220730">读取您的浏览器、操作系统和设备的相关信息</translation>
 <translation id="6195155925303302899">居中对齐</translation>
-<translation id="6195163219142236913">已限制第三方 Cookie</translation>
 <translation id="6195693561221576702">无法在此设备上设置离线演示模式。</translation>
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
 <translation id="6196854373336333322">“<ph name="EXTENSION_NAME" />”扩展程序控制了您的代理设置，也就是说，它可以更改、中断或窃听您在网上执行的任何操作。如果您不确定出现这种变化的原因，那么这种变化可能并不是您所希望的。</translation>
@@ -8369,7 +8370,6 @@
 <translation id="6731320427842222405">这可能需要几分钟时间</translation>
 <translation id="6732956960067639542">请改为打开新的 Chrome 浏览器会话。</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" />（ID：<ph name="EXTENSION_OR_APP_ID" />）</translation>
-<translation id="6735304988756581115">显示 Cookie 和其他网站数据…</translation>
 <translation id="6736243959894955139">地址</translation>
 <translation id="6737663862851963468">移除 Kerberos 票据</translation>
 <translation id="6738180164164974883">允许设置第三方 Cookie</translation>
@@ -11463,6 +11463,7 @@
 <translation id="881799181680267069">隐藏其他应用</translation>
 <translation id="8818152010000655963">壁纸</translation>
 <translation id="8818988764764862764">窗口已向左移动</translation>
+<translation id="8819155700324279105">增添一层额外的安全保障，防范在线威胁</translation>
 <translation id="8819510664278523111">您的设备 EID 为 <ph name="EID_NUMBER" />，设备 IMEI 为 <ph name="IMEI_NUMBER" />，设备序列号为 <ph name="SERIAL_NUMBER" />。这些号码可用于帮助激活服务。</translation>
 <translation id="8820817407110198400">书签</translation>
 <translation id="8821045908425223359">自动配置 IP 地址</translation>
@@ -12110,7 +12111,6 @@
 <translation id="947329552760389097">检查元素(&amp;I)</translation>
 <translation id="947526284350604411">您的回答</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> 无法打开此文件夹内的文件，因为此文件夹含有系统文件</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome 将于今天再次限制 Cookie}=1{Chrome 将于明天再次限制 Cookie}other{Chrome 将于 # 天后再次限制 Cookie}}</translation>
 <translation id="949807244219288032">此标签页已连接到 HID 设备</translation>
 <translation id="950079950995628542">来自“<ph name="PHONE_NAME" />”</translation>
 <translation id="950307215746360464">设置指南</translation>

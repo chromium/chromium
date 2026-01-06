@@ -1821,6 +1821,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="221297410904507041">Vee geskiedenis, webkoekies, kasgeheue en meer uit</translation>
 <translation id="2213410656650624348">Matig</translation>
 <translation id="2214018885812055163">Gedeelde vouers</translation>
+<translation id="2214453882118345682">Koop, vertaal en identifiseer wat jy sien met jou kamera.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 reël word nie gewys nie&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> reëls word nie gewys nie&gt;}}</translation>
 <translation id="2215070081105889450">Deel eerder ’n oortjie of skerm as jy oudio wil deel</translation>
 <translation id="2217208085547223783">Vertroude staat</translation>
@@ -5733,6 +5734,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4864805589453749318">Kies die ouer wat toestemming gee om 'n skoolrekening by te voeg.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (geblokkeer)</translation>
 <translation id="486505726797718946">Geheue gestoor</translation>
+<translation id="4865063548323785458">Stoor en outovul jou wagwoorde om maklik by werwe en apps aan te meld</translation>
 <translation id="486635084936119914">Maak sekere lêertipes outomaties oop nadat dit afgelaai is</translation>
 <translation id="4867272607148176509">Ouers kan apps goedkeur of blokkeer, tydsbeperkings stel en webblaaier beheer. ’n Skoolrekening kan later bygevoeg word om toegang tot die meeste skoolhulpbronne te verkry.</translation>
 <translation id="4867433544163083783">Kyk of oortjies georganiseer kan word</translation>
@@ -7632,7 +7634,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6194333736420234626">&amp;Betaalmetodes</translation>
 <translation id="6195005504600220730">Lees inligting oor jou blaaier, bedryfstelsel en toestel</translation>
 <translation id="6195155925303302899">Belyn middel</translation>
-<translation id="6195163219142236913">Derdepartywebkoekies is beperk</translation>
 <translation id="6195693561221576702">Hierdie toestel kan nie in vanlyn demonstrasiemodus opgestel word nie.</translation>
 <translation id="6196640612572343990">Blokkeer derdeparty-webkoekies</translation>
 <translation id="6196854373336333322">Die uitbreiding "<ph name="EXTENSION_NAME" />" het beheer oor jou instaanbedienerinstellings oorgeneem, wat beteken dat dit enigiets wat jy aanlyn doen, kan verander of breek of daarop kan inluister. As jy nie seker is hoekom hierdie verandering plaasgevind het nie, wil jy dit waarskynlik nie hê nie.</translation>
@@ -8399,7 +8400,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6731320427842222405">Dit kan 'n paar minute neem</translation>
 <translation id="6732956960067639542">Maak eerder ’n nuwe Chrome-blaaiersessie oop.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Wys webkoekies en ander werfdata …</translation>
 <translation id="6736243959894955139">Adres</translation>
 <translation id="6737663862851963468">Verwyder Kerberos-kaartjie</translation>
 <translation id="6738180164164974883">Laat toe dat derdepartywebkoekies gestel word</translation>
@@ -11491,6 +11491,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="881799181680267069">Versteek ander</translation>
 <translation id="8818152010000655963">Muurpapier</translation>
 <translation id="8818988764764862764">Venster het na links beweeg</translation>
+<translation id="8819155700324279105">Voeg ’n ekstra laag beskerming teen aanlynbedreigings by</translation>
 <translation id="8819510664278523111">Jou toestel se EID is <ph name="EID_NUMBER" />, jou toestel se IMEI is <ph name="IMEI_NUMBER" /> en jou toestel se reeksnommer is <ph name="SERIAL_NUMBER" />. Hierdie nommers kan gebruik word om diens te help aktiveer.</translation>
 <translation id="8820817407110198400">Boekmerke</translation>
 <translation id="8821045908425223359">Stel IP-adres outomaties op</translation>
@@ -12138,7 +12139,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="947329552760389097">&amp;Ondersoek elemente</translation>
 <translation id="947526284350604411">Jou antwoord</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> kan nie lêers in hierdie vouer oopmaak nie omdat dit stelsellêers bevat</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome sal vandag weer webkoekies beperk}=1{Chrome sal môre weer webkoekies beperk}other{# dae totdat Chrome weer webkoekies beperk}}</translation>
 <translation id="949807244219288032">Hierdie oortjie is aan ’n HID-toestel gekoppel</translation>
 <translation id="950079950995628542">Van “<ph name="PHONE_NAME" />”</translation>
 <translation id="950307215746360464">Opstellinggids</translation>

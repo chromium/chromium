@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">移除</translation>
 <translation id="1183189057400844278">为了确保您可以一直使用 Google 账号中的密码，请验证是您本人在操作</translation>
 <translation id="1187810343066461819">同时从此车载系统中删除书签、历史记录等信息</translation>
-<translation id="1193589902336218259">开启“提示”通知</translation>
 <translation id="1193729455103054076">使用安全系数高的密码？</translation>
 <translation id="11947597112837849">邮箱</translation>
 <translation id="1197267115302279827">移动书签</translation>
@@ -995,7 +994,6 @@
 <translation id="5267572070504076962">开启“安全浏览”功能，防范危险网站</translation>
 <translation id="5271967389191913893">设备无法打开要下载的内容。</translation>
 <translation id="5273031377282080577">此设置由您的管理员管理。</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{已退订 1 个未使用网站的通知}other{已退订 # 个未使用网站的通知}}</translation>
 <translation id="5292796745632149097">发送到</translation>
 <translation id="5301876394151419436">您目前登录的账号是 <ph name="EMAIL" />。您可以随时在设置中停止同步。Google 可能会根据您的历史记录，在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="5304593522240415983">此字段不能为空</translation>
@@ -1584,7 +1582,6 @@
 <translation id="7612619742409846846">已使用以下账号登录 Google：</translation>
 <translation id="7612989789287281429">正在登录…</translation>
 <translation id="7619072057915878432">未能成功下载 <ph name="FILE_NAME" />，因为出现了网络故障。</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{已退订 1 个网站}other{已退订 # 个网站}}</translation>
 <translation id="7626032353295482388">欢迎使用 Chrome</translation>
 <translation id="7628417132421583481">前往密码管理工具</translation>
 <translation id="7630202231528827509">提供商网址</translation>

@@ -83,6 +83,7 @@
 <translation id="193439633299369377">ChromiumOS harus dimulai ulang untuk menerapkan update.</translation>
 <translation id="1951406923938785464">Chromium memblokir download ini karena jenis file tersebut tidak biasa didownload dan mungkin berbahaya</translation>
 <translation id="1953553007165777902">Mendownload... <ph name="MINUTE" /> menit lagi</translation>
+<translation id="1965068424387304464">Tips Chromium: Simpan Sandi</translation>
 <translation id="1966382378801805537">Chromium tidak dapat menentukan atau menyetel browser default</translation>
 <translation id="1990262977744080398">Pelajari alasan Chromium memblokir beberapa file, terbuka di tab baru</translation>
 <translation id="1999715455684970349">Menjaga software Google Anda tetap update. Jika layanan ini dinonaktifkan atau dihentikan, software Chromium Anda tidak akan terus diupdate, yang berarti kerentanan keamanan yang mungkin terjadi tidak dapat diperbaiki dan fitur mungkin tidak berfungsi. Layanan ini akan otomatis di-uninstal jika tidak ada software Chromium yang menggunakannya.</translation>
@@ -253,6 +254,7 @@
 <translation id="3802055581630249637">Chromium melakukan pramuat halaman yang mungkin akan Anda buka, agar halaman tersebut dimuat lebih cepat saat Anda membukanya</translation>
 <translation id="3810973564298564668">Kelola</translation>
 <translation id="3823384748599722168">Untuk menggunakan sandi yang telah disimpan, ikuti kode QR, download Chromium untuk iOS, dan login ke Akun Google Anda</translation>
+<translation id="3837584850181228767">Tips Chromium: Safe Browsing yang Disempurnakan</translation>
 <translation id="3846683726093018685">**Ringkas:** Dalam satu kalimat kurang dari 30 kata, deskripsikan subjek utama dan tujuan konten dalam screenshot.
 
           **Sarankan Pertanyaan:** Buat daftar berbutir berisi 3-5 pertanyaan yang dapat diajukan pengguna untuk lebih memahami screenshot. Pertanyaan ini harus mencakup setidaknya satu pertanyaan yang secara khusus membahas objek visual, desain, atau penempatannya.</translation>

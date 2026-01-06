@@ -4879,17 +4879,6 @@ Chrome Root Store를 공개 신뢰의 소스로 사용하는 내장된
 <translation id="4408428864159735559">미리 구성된 네트워크 파일 공유 목록입니다.</translation>
 <translation id="4410236409016356088">네트워크 대역폭 조절 사용</translation>
 <translation id="4410361389637971319">분리형 웹 앱 출처에서 Direct Sockets를 사용하도록 허용</translation>
-<translation id="4410792459434637140">이 정책을 사용하여 특정 URL에서 <ph name="CHROME_DEVTOOLS_NAME" />을(를) 허용할 수 있습니다.
-
-URL 패턴이 검사 중인 페이지의 URL과 일치합니다. 일치하는 항목을 찾으면 <ph name="CHROME_DEVTOOLS_NAME" />이(가) 허용됩니다. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책이 허용 안함(값 2)으로 설정되어 있더라도 URL이 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책과 일치하는 경우에도 적용됩니다. URL 형식에 대한 정보는 https://support.google.com/chrome/a?p=url_blocklist_filter_format를 참고하세요.
-
-정책을 설정하지 않으면 이 허용 목록이 적용되지 않습니다. <ph name="CHROME_DEVTOOLS_NAME" />은(는) 기본적으로 사용 가능하므로 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책에 지정된 경우에만 차단됩니다.
-
-일치하지 않는 URL에는 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책이 적용됩니다.
-
-이 정책은 확장 프로그램 및 웹 애플리케이션에 대해 열린 <ph name="CHROME_DEVTOOLS_NAME" />에도 적용됩니다.
-
-정책의 항목은 1,000개로 제한됩니다.</translation>
 <translation id="4411734231900934213">자녀와 부모 기기의 시계 간에 허용되는 차이(초)입니다.</translation>
 <translation id="441217499641439905"><ph name="PRODUCT_OS_NAME" /> 파일 앱에서 모바일 데이터로 연결 시 Google Drive 사용 중지</translation>
 <translation id="4412885120239670573">정책을 Enabled로 설정하면 <ph name="PRODUCT_NAME" />의 내부 PDF 뷰어를 사용 중지하고, PDF 파일을 다운로드 파일로 처리하며, 사용자가 기본 애플리케이션으로 PDF를 열 수 있습니다.
@@ -7459,17 +7448,6 @@ Microsoft SharePoint 및 OneDrive 카드에는 추가 관리자 구성이 필요
 <translation id="5958746038080720143">WPAD(웹 프록시 자동 검색) 최적화 사용 설정</translation>
 <translation id="5961137303188584693">기기의 내장 NIC MAC 주소</translation>
 <translation id="5962271004971310788">시크릿 모드에서 탐색하려면 사용자가 시크릿 모드에서 실행하도록 허용해야 하는 확장 프로그램</translation>
-<translation id="5962401339101255719">정책을 0(기본값)으로 설정하면 개발자 도구와 JavaScript 콘솔에 액세스할 수 있지만 기업 정책으로 설치한 확장 프로그램의 컨텍스트나 버전 114 이상을 사용 중이며 관리 사용자인 경우 브라우저에 내장된 확장 프로그램의 컨텍스트에서는 액세스할 수 없습니다. 정책을 1로 설정하면 기업 정책으로 설치한 확장 프로그램을 비롯한 모든 컨텍스트에서 개발자 도구 및 JavaScript 콘솔에 액세스할 수 있습니다. 정책을 2로 설정하면 개발자 도구에 액세스할 수 없으며 웹사이트 요소를 검사할 수 없습니다.
-
-또한 이 설정은 개발자 도구 또는 JavaScript 콘솔을 여는 단축키, 메뉴 항목, 컨텍스트 메뉴 항목의 사용을 중지합니다.
-
-<ph name="PRODUCT_NAME" /> 버전 99부터는 '페이지 소스 보기' 기능의 진입점도 제어합니다. 이 정책을 'DeveloperToolsDisallowed'(값 2)로 설정하면 사용자가 단축키 또는 컨텍스트 메뉴를 통해 소스 보기에 액세스할 수 없습니다. 소스 보기를 완전히 차단하려면 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 정책에 'view-source:*'를 추가도 해야 합니다.
-
-<ph name="PRODUCT_NAME" /> 버전 119부터 이 설정으로 분리형 웹 앱의 개발자 모드 활성화 및 사용 여부도 제어할 수 있습니다.
-
-<ph name="PRODUCT_NAME" /> 버전 128부터는 <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> 정책이 설정된 경우 이 설정으로 확장 프로그램 페이지의 개발자 모드를 제어할 수 없습니다.
-
-페이지 URL을 기준으로 개발자 도구 액세스를 제한하려면 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 및 <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 정책을 사용하세요.</translation>
 <translation id="5963752574792883406">포트 990(2022년 2월 1일까지 차단 해제될 수 있음)</translation>
 <translation id="596523880465577341">이 정책은 지원 중단되었으며 지원되지 않습니다. 대신 '<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />' 정책을 사용하세요.</translation>
 <translation id="5966615072639944554">원격 인증 API를 사용하도록 허용된 확장 프로그램입니다.</translation>
@@ -8193,15 +8171,6 @@ Origin-Agent-Cluster: 헤더가 설정되지 않았을 때 M111의 기본값은 
 별도의 <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> 정책을 사용하여 이 기능을 통해 특정 호스트 이름 또는 호스트 이름 패턴이 HTTPS로 업그레이드되지 않도록 제외할 수 있습니다.
 
 <ph name="HTTPS_ONLY_MODE_POLICY_NAME" /> 정책도 참고하세요.</translation>
-<translation id="6439002087726312326">URL 패턴이 검사 중인 페이지의 URL과 일치합니다. 일치하는 항목을 찾으면 <ph name="CHROME_DEVTOOLS_NAME" />이(가) 차단됩니다. URL 형식에 대한 정보는 https://support.google.com/chrome/a?p=url_blocklist_filter_format를 참고하세요.
-
-<ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 정책은 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />보다 우선 적용됩니다.
-
-일치하지 않는 URL에는 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책이 적용됩니다.
-
-이 정책은 확장 프로그램 및 웹 애플리케이션에 대해 열린 <ph name="CHROME_DEVTOOLS_NAME" />에도 적용됩니다.
-
-정책의 항목은 1,000개로 제한됩니다.</translation>
 <translation id="6440051664870270040">사이트에서 동시에 팝업을 탐색하고 열도록 허용</translation>
 <translation id="6441781723322254041">잘린 쿠키 허용</translation>
 <translation id="6446366416439249472">모바일 데이터 연결을 통한 Google Drive 동기화 사용 중지</translation>

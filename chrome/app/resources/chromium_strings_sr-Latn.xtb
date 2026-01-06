@@ -85,6 +85,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="193439633299369377">Treba da restartujete Chromium OS da biste primenili ažuriranje.</translation>
 <translation id="1951406923938785464">Chromium je blokirao ovo preuzimanje jer se ovaj tip fajl ne preuzima često i može da bude opasan</translation>
 <translation id="1953553007165777902">Preuzima se... Još <ph name="MINUTE" /> min</translation>
+<translation id="1965068424387304464">Napomena za Chromium: Sačuvajte lozinke</translation>
 <translation id="1966382378801805537">Chromium ne može da odredi ni da podesi podrazumevani pregledač</translation>
 <translation id="1990262977744080398">Saznajte zašto Chromium blokira neke fajlove, otvara se na novoj kartici</translation>
 <translation id="1999715455684970349">Ažurira Chromium softver. Ako je ova usluga onemogućena ili zaustavljena, Chromium softver neće biti ažuriran, što znači da neće biti moguće otkloniti bezbednosne propuste koji mogu da nastanu i da funkcije možda neće raditi. Ova usluga se deinstalira kada je ne koristi nijedan Chromium softver.</translation>
@@ -255,6 +256,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="3802055581630249637">Chromium predučitava stranice koje ćete verovatno posetiti, kako bi se brže učitavale kada ih posetite</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
 <translation id="3823384748599722168">Da biste koristili sačuvane lozinke, pratite QR kôd, preuzmite Chromium za iOS i prijavite se na Google nalog</translation>
+<translation id="3837584850181228767">Napomena za Chromium: Poboljšano bezbedno pregledanje</translation>
 <translation id="3846683726093018685">**Rezimirajte:** U jednoj rečenici sa manje od 30 reči opišite primarni predmet i svrhu sadržaja na snimku ekrana.
 
           **Predložite pitanja:** Generišite listu sa 3 do 5 pitanja koja podstiču na razmišljanje i koja korisnik može da postavi da bi bolje razumeo snimak ekrana. Ova pitanja treba da obuhvataju bar jedno koje se konkretno odnosi na vizuelni objekat, njegov dizajn ili položaj.</translation>

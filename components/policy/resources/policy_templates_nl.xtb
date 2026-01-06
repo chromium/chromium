@@ -4806,17 +4806,6 @@ Dit is verwijderd in M112.</translation>
 <translation id="4408428864159735559">Lijst met vooraf geconfigureerde netwerkfileshares.</translation>
 <translation id="4410236409016356088">Netwerkbandbreedte beperken</translation>
 <translation id="4410361389637971319">Toestaan dat geïsoleerde web-app-oorsprongen Direct Sockets gebruiken</translation>
-<translation id="4410792459434637140">Je kunt dit beleid gebruiken om <ph name="CHROME_DEVTOOLS_NAME" /> toe te staan voor specifieke URL's.
-
-URL-patronen worden vergeleken met de URL van de pagina die wordt geïnspecteerd. Als er een overeenkomst wordt gevonden, zijn de <ph name="CHROME_DEVTOOLS_NAME" /> toegestaan. Dit geldt ook als de URL overeenkomt met het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, zelfs als het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> is ingesteld op Niet toestaan (waarde 2). Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor informatie over de URL-indeling.
-
-Als je het beleid niet instelt, heeft deze toelatingslijst geen effect. Omdat <ph name="CHROME_DEVTOOLS_NAME" /> standaard beschikbaar zijn, worden ze alleen geblokkeerd als dit is aangegeven in het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.
-
-Niet-overeenkomende URL's vallen onder het beleid voor <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Dit beleid is ook van toepassing op <ph name="CHROME_DEVTOOLS_NAME" /> die worden geopend voor extensies en web-apps.
-
-Dit beleid is beperkt tot 1000 items.</translation>
 <translation id="4411734231900934213">Het toegestane verschil tussen de klok op het apparaat van het kind en het apparaat van de ouder (in seconden).</translation>
 <translation id="441217499641439905">Google Drive in de app Bestanden van <ph name="PRODUCT_OS_NAME" /> uitzetten bij mobiele verbindingen</translation>
 <translation id="4412885120239670573">Als je het beleid toepast, wordt de interne pdf-viewer in <ph name="PRODUCT_NAME" /> uitgezet, worden pdf-bestanden als downloads behandeld en kunnen gebruikers pdf's openen met de standaard-app.
@@ -7313,17 +7302,6 @@ Als je dit beleid instelt op <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE"
 <translation id="5958746038080720143">WPAD-optimalisaties (Web Proxy Auto-Discovery) aanzetten</translation>
 <translation id="5961137303188584693">MAC-adres van ingebouwde NIC van apparaat</translation>
 <translation id="5962271004971310788">Extensies die de gebruiker in de incognitomodus moet toestaan om te kunnen navigeren in de incognitomodus</translation>
-<translation id="5962401339101255719">Als je het beleid instelt op 0 (standaardinstelling), heb je toegang tot de tools voor ontwikkelaars en de JavaScript-console, maar niet in de context van extensies die via het organisatiebeleid zijn geïnstalleerd of, sinds versie 114 en als dit een beheerde gebruiker is, extensies die in de browser zijn ingebouwd. Als je het beleid instelt op 1, heb je toegang tot de tools voor ontwikkelaars en de JavaScript-console in alle contexten, waaronder die van extensies die via het organisatiebeleid zijn geïnstalleerd. Als je het beleid instelt op 2, heb je geen toegang tot de tools voor ontwikkelaars en kun je website-elementen niet inspecteren.
-
-Met deze instelling worden sneltoetsen en menu- en contextmenu-opties uitgezet waarmee tools voor ontwikkelaars of de JavaScript-console kunnen worden geopend.
-
-Vanaf <ph name="PRODUCT_NAME" /> versie 99 beheert deze instelling ook de startpunten voor de functie Paginabron bekijken. Als je dit beleid instelt op 'DeveloperToolsDisallowed' (waarde 2), kunnen gebruikers de bron niet bekijken via een sneltoets of het contextmenu. Als je het bekijken van de bron helemaal wilt blokkeren, moet je ook 'view-source:*' toevoegen aan het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-Vanaf <ph name="PRODUCT_NAME" /> versie 119 bepaalt deze instelling ook of de ontwikkelaarsmodus voor geïsoleerde web-apps kan worden geactiveerd en gebruikt.
-
-Vanaf <ph name="PRODUCT_NAME" /> versie 128 bepaalt deze instelling niet de ontwikkelaarsmodus op de pagina Extensies als het beleid <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> is ingesteld.
-
-Als je de toegang tot Ontwikkelaarstools wilt beperken op basis van de pagina-URL, gebruik je het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> en <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="5963752574792883406">poort 990 (blokkering kan worden opgeheven tot 01-02-2022)</translation>
 <translation id="596523880465577341">Dit beleid is beëindigd en wordt niet ondersteund. Gebruik in plaats daarvan het beleid <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="5966615072639944554">Extensies die toestemming hebben de API voor externe bevestiging te gebruiken</translation>
@@ -8029,15 +8007,6 @@ Als je het beleid niet toepast of niet instelt, bepaalt CNAME-lookup de canoniek
 Het afzonderlijke beleid <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> kan worden gebruikt om te voorkomen dat specifieke hostnamen of hostnaampatronen door deze functie worden geüpgraded naar HTTPS.
 
 Zie ook het beleid <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
-<translation id="6439002087726312326">URL-patronen worden vergeleken met de URL van de pagina die wordt geïnspecteerd. Als er een overeenkomst wordt gevonden, worden de <ph name="CHROME_DEVTOOLS_NAME" /> geblokkeerd. Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor informatie over de URL-indeling.
-
-Het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> krijgt voorrang op <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.
-
-Niet-overeenkomende URL's vallen onder het beleid voor <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Dit beleid is ook van toepassing op <ph name="CHROME_DEVTOOLS_NAME" /> die worden geopend voor extensies en web-apps.
-
-Dit beleid is beperkt tot 1000 items.</translation>
 <translation id="6440051664870270040">Toestaan dat sites tegelijkertijd kunnen navigeren en pop-ups kunnen openen</translation>
 <translation id="6441781723322254041">Afgekapte cookies toestaan</translation>
 <translation id="6446366416439249472">Google Drive-synchronisatie via mobiele verbindingen uitzetten</translation>

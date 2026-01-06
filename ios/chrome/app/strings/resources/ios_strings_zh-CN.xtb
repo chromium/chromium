@@ -966,6 +966,7 @@
 <translation id="472259426228234149">价格：100 美元 - 180 美元</translation>
 <translation id="4735849923335729414">以 <ph name="EMAIL" /> 的身份登录，该账号由组织管理。</translation>
 <translation id="473775607612524610">更新</translation>
+<translation id="4738968082443868320">Google 云端硬盘</translation>
 <translation id="474209246745757965">使用摄像头拍照购物和进行翻译</translation>
 <translation id="4742407542027196863">管理密码…</translation>
 <translation id="4744428388659507035">若要将书签同步到所有设备上，请在设置中开启“书签”。</translation>
@@ -1055,6 +1056,7 @@
 <translation id="5021500396464456616">请与发送此链接的人联系</translation>
 <translation id="5039804452771397117">允许</translation>
 <translation id="5050810143224996149">分享密码</translation>
+<translation id="5052499409147950210">修改网站</translation>
 <translation id="5055015094595227120">精确位置信息</translation>
 <translation id="5055551113846164633">此操作会删除保存在此设备上的地址，还会删除 Google 账号 <ph name="USER_EMAIL" /> 中保存的地址。</translation>
 <translation id="5056446788882570708"><ph name="TIME" />发现了问题。</translation>
@@ -1133,6 +1135,7 @@
 <translation id="5295239312320826323">移除账号 <ph name="USER_EMAIL" />？</translation>
 <translation id="5300589172476337783">显示</translation>
 <translation id="5311061401280561833">已授予摄像头和麦克风使用权</translation>
+<translation id="5313967007315987356">添加网站</translation>
 <translation id="5315870524563628285">没有可导入的对象</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">保存</translation>

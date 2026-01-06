@@ -114,7 +114,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1178581264944972037">Pozastavit</translation>
 <translation id="1178821169867863726">12 × 16″</translation>
 <translation id="1181037720776840403">Odebrat</translation>
-<translation id="1181381397492575884">Chrome brání webům v používání souborů cookie třetích stran ke sledování vašeho procházení. Pokud chcete <ph name="LINK" />, přejděte do nastavení.</translation>
 <translation id="1185331130467528132">Web <ph name="URL" /> chce získat přístup k dalším zařízením v místní síti</translation>
 <translation id="1185343831726846924">Potvrzení virtuální karty nelze zapnout</translation>
 <translation id="1186201132766001848">Zkontrolovat hesla</translation>
@@ -227,7 +226,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1343830902827845050">Přihlášení do Chromu</translation>
 <translation id="1346748346194534595">Doprava</translation>
 <translation id="1348779747280417563">Potvrdit jméno</translation>
-<translation id="1352798470428594123">Chrome většině webů brání v používání souborů cookie třetích stran ke sledování vašeho procházení. Pokud chcete <ph name="LINK" />, přejděte do nastavení.</translation>
 <translation id="1355158069018170842">Zobrazovat na kartách poklesy cen</translation>
 <translation id="1355301061807280185">Práce</translation>
 <translation id="1357195169723583938">Kdo zařízení v poslední době používal a kdy</translation>
@@ -1110,7 +1108,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2768397283109119044">Pokusili jste se přejít do domény <ph name="DOMAIN" />, ale server předložil neplatný certifikát vydaný na toto jméno. Jméno je vyhrazená IP adresa nebo interní název hostitele.</translation>
 <translation id="2770159525358613612">Zkuste soubory nahrát znovu</translation>
 <translation id="277133753123645258">Způsob dopravy</translation>
-<translation id="2773388851563527404">Chrome většině webů omezuje používání souborů cookie třetích stran. Na tomto webu jsou však soubory cookie třetích stran povoleny, protože je potřebuje k poskytování základních služeb. Pokud chcete <ph name="LINK" />, přejděte do nastavení.</translation>
 <translation id="277499241957683684">Chybějící záznam zařízení</translation>
 <translation id="2775884851269838147">První tisková stránka</translation>
 <translation id="2781185443919227679">Pláže a ostrovy</translation>
@@ -1710,7 +1707,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3727309136762649052">Jmenný prostor</translation>
 <translation id="3727850735097852673">Pokud Správce hesel Google chcete používat s Klíčenkou systému macOS, restartujte Chrome a povolte přístup ke Klíčence. Karty se po opětovném spuštění znovu otevřou.</translation>
 <translation id="3728173127485570463">Prohlížeč Chrome už nebude k automatickému vyplňování hesel vyžadovat váš otisk prstu</translation>
-<translation id="3736739313435669994">Zablokovali jste webům používání souborů cookie třetích stran ke sledování vašeho procházení. Pokud chcete <ph name="LINK" />, přejděte do nastavení.</translation>
 <translation id="3738166223076830879">Váš prohlížeč spravuje administrátor.</translation>
 <translation id="3739842843727261045">Palec nahoru odešle zpětnou vazbu, že se vám tyto výsledky líbí</translation>
 <translation id="3740447166056383374">Před zkopírováním je vyžadována kontrola</translation>
@@ -2144,7 +2140,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4406883609789734330">Okamžité titulky</translation>
 <translation id="4406896451731180161">výsledky vyhledávání</translation>
 <translation id="4407758156081352648">Vaše organizace kvůli zajištění bezpečnosti nepovoluje používat v Chromu hesla opakovaně. Hesla se v prohlížeči Chrome kvůli ochraně soukromí uživatelů šifrují.</translation>
-<translation id="4408413947728134509">Soubory cookie <ph name="NUM_COOKIES" /></translation>
 <translation id="4409556632583862731">Nové vlákno</translation>
 <translation id="4412074349188076601">Tato konfigurace je označena jako instalovatelná, ale pro tuto architekturu není k dispozici žádný obraz, takže ji nelze nainstalovat.</translation>
 <translation id="4412377069090572315">Co říkají ostatní</translation>
@@ -2532,7 +2527,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5061227663725596739">Měli jste na mysli <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Historie tisku</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(používá se 1)}few{(používají se #)}many{(používá se #)}other{(používá se #)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Zkontrolovat adresu proxy serveru<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Desátá role</translation>
 <translation id="507130231501693183">Schránka 4</translation>
@@ -3041,7 +3035,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5918373444239520146">Technické hračky a přenosná elektronika</translation>
 <translation id="5918847752193018339">S uloženými kódy CVC můžete platit rychleji. <ph name="LINK_BEGIN" />Vymazat uložené bezpečnostní kódy<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{Používá se 1}few{Používají se #}many{Používá se #}other{Používá se #}}</translation>
 <translation id="5921185718311485855">Zapnuto</translation>
 <translation id="5921639886840618607">Uložit kartu do účtu Google?</translation>
 <translation id="5921952831792678223">Pickupy</translation>
@@ -3221,7 +3214,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6194209731893739467">Tady zobrazíte všechny sledované produkty</translation>
 <translation id="6195371403461054755">Geologie</translation>
 <translation id="6195418151868446719">Spotřební elektronika</translation>
-<translation id="6196640612572343990">Blokovat soubory cookie třetích stran</translation>
 <translation id="6197648101609735209">89 × 89 mm</translation>
 <translation id="6198480336395236519">Celookrajové záložky</translation>
 <translation id="6203231073485539293">Zkontrolujte připojení k internetu</translation>
@@ -3717,7 +3709,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6978121630131642226">Vyhledávače</translation>
 <translation id="6978236010531171013">Přesto sdílet</translation>
 <translation id="6979158407327259162">Disk Google</translation>
-<translation id="6979302985396162258">spravovat přístup k souborům cookie třetích stran</translation>
 <translation id="6979440798594660689">Ztlumit (výchozí)</translation>
 <translation id="6987806006823772670">Obálka (potahovaná)</translation>
 <translation id="6989256887001961296">Tento obsah je blokován.</translation>
@@ -4731,7 +4722,6 @@ Další podrobnosti:
 <translation id="8622864575115813231">Kontaktování vaší finanční instituce…</translation>
 <translation id="8624354461147303341">Získat slevy</translation>
 <translation id="8634957317623797170">54 × 86 mm</translation>
-<translation id="8635822281281406185">Přidejte až 10 souborů, karet nebo obrázků</translation>
 <translation id="8637362707224133343">V Chromu jsou vestavěné bezpečnostní funkce, které vás při procházení chrání – například Bezpečné prohlížení Google, které <ph name="BEGIN_LINK" />nedávno odhalilo phishing<ph name="END_LINK" /> na webu, který jste se pokusili navštívit. Phishingové weby se vydávají za jiné weby, aby vás oklamaly.<ph name="NEW_LINE" />Někdy mohou útočníci číhat dokonce i na webech, které jsou běžně bezpečné. Pokud se domníváte, že došlo k chybě a že tento web nepředstavuje nebezpečí, <ph name="BEGIN_ERROR_LINK" />dejte nám vědět<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">Ke sdílení karet a spolupráci s ostatními musíte mít možnost se do Chromu přihlásit</translation>
 <translation id="8641131559425911240">Obálka (dluhopisová)</translation>
@@ -5111,7 +5101,6 @@ Další podrobnosti:
 <translation id="945673208656386843">Při nákupech v Chromiu automaticky vyplňovat tuhle kartu, když je uložená na tomhle zařízení</translation>
 <translation id="94613679163347541">Porovnat položky <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter rychle vytvoříte nový web ve Webech Google</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome dnes soubory cookie opět omezí}=1{Chrome zítra soubory cookie opět omezí}few{Za # dny Chrome soubory cookie opět omezí}many{Za # dne Chrome soubory cookie opět omezí}other{Za # dní Chrome soubory cookie opět omezí}}</translation>
 <translation id="949026252328034572">Ke skupině karet „<ph name="GROUP_NAME" />“ se připojil tento počet členů: <ph name="MEMBER_COUNT" /></translation>
 <translation id="949314938206378263">Chceš navštívit web, ale je třeba povolení. Rodič může odpovědět v aplikaci Family Link.</translation>
 <translation id="950736567201356821">Tři díry nahoře</translation>

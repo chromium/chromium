@@ -1820,6 +1820,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="221297410904507041">Előzmények, cookie-k, gyorsítótár és egyebek törlése</translation>
 <translation id="2213410656650624348">Mérsékelt</translation>
 <translation id="2214018885812055163">Megosztott mappák</translation>
+<translation id="2214453882118345682">Vásárlás, fordítás és a látott dolgok azonosítása a kamera segítségével.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 sor nincs megjelenítve&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> sor nincs megjelenítve&gt;}}</translation>
 <translation id="2215070081105889450">Hang megosztásához használjon inkább lapot vagy képernyőt</translation>
 <translation id="2217208085547223783">Megbízhatósági állapot</translation>
@@ -5731,6 +5732,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4864805589453749318">Válaszd ki a szülőt, aki engedélyezi az iskolai fiók hozzáadását.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (letiltva)</translation>
 <translation id="486505726797718946">Megtakarított memória</translation>
+<translation id="4865063548323785458">Jelszavai mentésével és automatikus kitöltésével egyszerűen bejelentkezhet a webhelyekre és az alkalmazásokba.</translation>
 <translation id="486635084936119914">Bizonyos fájltípusok automatikus megnyitása letöltés után</translation>
 <translation id="4867272607148176509">A szülők jóváhagyhatják vagy letilthatják az alkalmazásokat, időkorlátot állíthatnak be, és ellenőrizhetik a webböngészést. Iskolai fiók később is hozzáadható, hogy hozzá lehessen férni a legtöbb iskolai erőforráshoz.</translation>
 <translation id="4867433544163083783">A lapok rendszerezhetőségének ellenőrzése most</translation>
@@ -7630,7 +7632,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6194333736420234626">&amp;Fizetési módok</translation>
 <translation id="6195005504600220730">A böngészővel, az operációs rendszerrel és az eszközzel kapcsolatos információk olvasása</translation>
 <translation id="6195155925303302899">Középre igazítás</translation>
-<translation id="6195163219142236913">A harmadik féltől származó cookie-k korlátozva vannak</translation>
 <translation id="6195693561221576702">Ezt az eszközt nem lehet offline demó módban beállítani.</translation>
 <translation id="6196640612572343990">Harmadik féltől származó cookie-k letiltása</translation>
 <translation id="6196854373336333322">A(z) <ph name="EXTENSION_NAME" /> bővítmény átvette az irányítást proxybeállításai felett, ami azt jelenti, hogy a bővítmény minden internetes tevékenységét módosíthatja, feltörheti vagy lehallgathatja. Ha nem biztos benne, hogy miért történt a változás, akkor valószínűleg nem is akarja azt.</translation>
@@ -8397,7 +8398,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6731320427842222405">Ez eltarthat pár percig</translation>
 <translation id="6732956960067639542">Nyisson meg inkább egy új Chrome-munkamenetet.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (azonosító: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Cookie-k és egyéb webhelyadatok megjelenítése...</translation>
 <translation id="6736243959894955139">Cím</translation>
 <translation id="6737663862851963468">Kerberos-jegy eltávolítása</translation>
 <translation id="6738180164164974883">Harmadik féltől származó cookie-k használatának engedélyezése</translation>
@@ -11490,6 +11490,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="881799181680267069">Többi elrejtése</translation>
 <translation id="8818152010000655963">Háttérkép</translation>
 <translation id="8818988764764862764">Ablak balra mozgatva</translation>
+<translation id="8819155700324279105">Plusz biztonsági réteg hozzáadása az internetes fenyegetések elleni védekezés érdekében</translation>
 <translation id="8819510664278523111">Eszköze EID-azonosítója <ph name="EID_NUMBER" />, IMEI-azonosítója <ph name="IMEI_NUMBER" />, sorozatszáma pedig <ph name="SERIAL_NUMBER" />. Ezek a számok a szolgáltatás aktiválására használhatók.</translation>
 <translation id="8820817407110198400">Könyvjelzők</translation>
 <translation id="8821045908425223359">IP-cím automatikus konfigurálása</translation>
@@ -12137,7 +12138,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="947329552760389097">&amp;Elemek vizsgálata</translation>
 <translation id="947526284350604411">Saját válasz</translation>
 <translation id="947667444780368238">A(z) <ph name="ORIGIN" /> nem nyithatja meg az ebben a mappában lévő fájlokat, mert rendszerfájlok találhatók benne.</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{A Chrome ma ismét korlátozza a cookie-kat}=1{A Chrome holnap ismét korlátozza a cookie-kat}other{# nap múlva a Chrome ismét korlátozza a cookie-kat}}</translation>
 <translation id="949807244219288032">Ez a lap HID-eszközhöz csatlakozik</translation>
 <translation id="950079950995628542">Forrás: „<ph name="PHONE_NAME" />”</translation>
 <translation id="950307215746360464">Beállítási útmutató</translation>

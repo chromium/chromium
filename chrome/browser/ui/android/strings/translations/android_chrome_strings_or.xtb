@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="1183189057400844278">ଆପଣ ସର୍ବଦା ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବେ ବୋଲି ସୁନିଶ୍ଚିତ କରିବାକୁ ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="1187810343066461819">ଏହି କାରରୁ ବୁକମାର୍କ, ଇତିହାସ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ମଧ୍ୟ ଡିଲିଟ କରନ୍ତୁ</translation>
-<translation id="1193589902336218259">ଟିପ୍ସ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="1193729455103054076">ଜଟିଳ ପାସୱାର୍ଡ ବ୍ୟବହାର କରିବେ?</translation>
 <translation id="11947597112837849">ଇମେଲ ଠିକଣା</translation>
 <translation id="1197267115302279827">ବୁକ୍‍ମାର୍କଗୁଡ଼ିକ ଘୁଞ୍ଚାନ୍ତୁ</translation>
@@ -995,7 +994,6 @@
 <translation id="5267572070504076962">ବିପଦଜନକ ସାଇଟଗୁଡ଼ିକଠାରୁ ସୁରକ୍ଷା ପାଇବା ପାଇଁ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂକୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="5271967389191913893">ଡାଉନ୍‌ଲୋଡ୍‍ ହେବାକୁ ଥିବା ବିଷୟବସ୍ତୁକୁ ଡିଭାଇସ୍‌ ଖୋଲିପାରିବ ନାହିଁ।</translation>
 <translation id="5273031377282080577">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଏହି ସେଟିଂକୁ ପରିଚାଳନା କରନ୍ତି।</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{ଗୋଟିଏ ଅବ୍ୟବହୃତ ସାଇଟରୁ ସଦସ୍ୟତା ତ୍ୟାଗ କରାଯାଇଛି}other{# ଅବ୍ୟବହୃତ ସାଇଟରୁ ସଦସ୍ୟତା ତ୍ୟାଗ କରାଯାଇଛି}}</translation>
 <translation id="5292796745632149097">ଏହାକୁ ପଠାନ୍ତୁ</translation>
 <translation id="5301876394151419436">ଆପଣ <ph name="EMAIL" /> ଭାବରେ ସାଇନ ଇନ କରିଛନ୍ତି। ଆପଣ ଯେ କୌଣସି ସମୟରେ ସେଟିଂସରେ ସିଙ୍କ କରିବା ବନ୍ଦ କରିପାରିବେ। Google ଆପଣଙ୍କ ଇତିହାସ ଆଧାରରେ Search ଏବଂ ଅନ୍ୟ ସେବାଗୁଡ଼ିକୁ ପର୍ସନାଲାଇଜ କରିପାରେ।</translation>
 <translation id="5304593522240415983">ଏହି କ୍ଷେତ୍ରକୁ ଖାଲି ଛଡ଼ାଯାଇପାରିବ ନାହିଁ</translation>
@@ -1586,7 +1584,6 @@
 <translation id="7612619742409846846">ଏପରି Googleରେ ସାଇନ୍ ଇନ୍ ହୋଇଛି</translation>
 <translation id="7612989789287281429">ଆପଣଙ୍କୁ ସାଇନ ଇନ କରାଯାଉଛି…</translation>
 <translation id="7619072057915878432">ନେଟ୍‌ୱାର୍କ ନଥିବା ଯୋଗୁଁ <ph name="FILE_NAME" /> ଡାଉନ୍‌ଲୋଡ୍ ହୋଇପାରିଲା ନାହିଁ।</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{ଗୋଟିଏ ସାଇଟରୁ ସଦସ୍ୟତା ତ୍ୟାଗ କରାଯାଇଛି}other{# ସାଇଟରୁ ସଦସ୍ୟତା ତ୍ୟାଗ କରାଯାଇଛି}}</translation>
 <translation id="7626032353295482388">Chromeକୁ ସ୍ୱାଗତ୍‌</translation>
 <translation id="7628417132421583481">Password Managerକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="7630202231528827509">ପ୍ରଦାନକାରୀ URL</translation>

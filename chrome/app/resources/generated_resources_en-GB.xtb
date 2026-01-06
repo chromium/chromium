@@ -1821,6 +1821,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="221297410904507041">Delete history, cookies, cache and more</translation>
 <translation id="2213410656650624348">Moderate</translation>
 <translation id="2214018885812055163">Shared folders</translation>
+<translation id="2214453882118345682">Shop, translate and identify what you see with your camera.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 line not shown&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> lines not shown&gt;}}</translation>
 <translation id="2215070081105889450">To share audio, share a tab or screen instead</translation>
 <translation id="2217208085547223783">Trust state</translation>
@@ -5733,6 +5734,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4864805589453749318">Select the parent who is granting permission to add a school account.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blocked)</translation>
 <translation id="486505726797718946">Memory saved</translation>
+<translation id="4865063548323785458">Save and autofill your passwords to easily sign in to sites and apps</translation>
 <translation id="486635084936119914">Open certain file types automatically after downloading</translation>
 <translation id="4867272607148176509">Parents can approve or block apps, set time limits and control web browsing. A school account can be added later to access most school resources.</translation>
 <translation id="4867433544163083783">Check now if tabs can be organised</translation>
@@ -7631,7 +7633,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6194333736420234626">Payment methods</translation>
 <translation id="6195005504600220730">Read information about your browser, OS and device</translation>
 <translation id="6195155925303302899">Align centre</translation>
-<translation id="6195163219142236913">Third-party cookies limited</translation>
 <translation id="6195693561221576702">This device cannot be set up in offline demo mode.</translation>
 <translation id="6196640612572343990">Block third-party cookies</translation>
 <translation id="6196854373336333322">The extension "<ph name="EXTENSION_NAME" />" has taken control of your proxy settings, which means it can change, break or eavesdrop on anything you do online. If you aren't sure why this change happened, you probably don't want it.</translation>
@@ -8398,7 +8399,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6731320427842222405">This may take a few minutes</translation>
 <translation id="6732956960067639542">Open a new Chrome browser session instead.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Show cookies and other site data...</translation>
 <translation id="6736243959894955139">Address</translation>
 <translation id="6737663862851963468">Remove Kerberos ticket</translation>
 <translation id="6738180164164974883">Allow to set third-party cookies</translation>
@@ -11492,6 +11492,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="881799181680267069">Hide Others</translation>
 <translation id="8818152010000655963">Wallpaper</translation>
 <translation id="8818988764764862764">Window moved to the left</translation>
+<translation id="8819155700324279105">Add an extra layer of protection against online threats</translation>
 <translation id="8819510664278523111">Your device EID is <ph name="EID_NUMBER" /> , device IMEI is <ph name="IMEI_NUMBER" /> and device serial number is <ph name="SERIAL_NUMBER" />. These numbers can be used to help activate service.</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8821045908425223359">Configure IP address automatically</translation>
@@ -12139,7 +12140,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="947329552760389097">&amp;Inspect Elements</translation>
 <translation id="947526284350604411">Your answer</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> can't open files in this folder because it contains system files</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome will limit cookies again today}=1{Chrome will limit cookies again tomorrow}other{# days until Chrome limits cookies again}}</translation>
 <translation id="949807244219288032">This tab is connected to a HID</translation>
 <translation id="950079950995628542">From '<ph name="PHONE_NAME" />'</translation>
 <translation id="950307215746360464">Setup guide</translation>

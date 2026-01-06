@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">አስወግድ</translation>
 <translation id="1183189057400844278">በGoogle መለያዎ ውስጥ ያሉትን የይለፍ ቃላት ሁልጊዜ መጠቀም መቻልዎን ለማረጋገጥ እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="1187810343066461819">እንዲሁም እልባቶችን፣ ታሪኮችን እና ሌሎችንም ከዚህ መኪና ይሰርዙ</translation>
-<translation id="1193589902336218259">የጠቃሚ ምክሮች ማሳወቂያዎችን አብራ</translation>
 <translation id="1193729455103054076">ጠንካራ የይለፍ ቃል ይጠቀማሉ?</translation>
 <translation id="11947597112837849">የኢሜይል አድራሻ</translation>
 <translation id="1197267115302279827">ዕልባቶችን ውሰድ</translation>
@@ -995,7 +994,6 @@
 <translation id="5267572070504076962">ከአደገኛ ጣቢያዎች ጥበቃ ለማግኘት ደህንነቱ የተጠበቀ አሰሳን ያብሩ</translation>
 <translation id="5271967389191913893">መሣሪያ የሚወርደውን ይዘት መክፈት አይችልም።</translation>
 <translation id="5273031377282080577">አስተዳዳሪዎ ይህን ቅንብር ያስተዳድራሉ።</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{ከአንድ ጥቅም ላይ ያልዋለ ጣቢያ የደንበኝነት ምዝገባ ወጥተዋል}one{ከ# ጥቅም ላይ ያልዋለ ጣቢያ የደንበኝነት ምዝገባ ወጥተዋል}other{ከ# ጥቅም ላይ ያልዋሉ ጣቢያዎች የደንበኝነት ምዝገባ ወጥተዋል}}</translation>
 <translation id="5292796745632149097">ላክ ወደ</translation>
 <translation id="5301876394151419436">እንደ <ph name="EMAIL" /> ሆነው በመለያ ገብተዋል። በማንኛውም ጊዜ በቅንብሮች ውስጥ ማስመር ማቆም ይችላሉ። Google በእርስዎ ታሪክ ላይ ተመስርቶ ፍለጋን እና ሌሎች አገልግሎቶችን ግላዊነት ሊያላብስ ይችላል።</translation>
 <translation id="5304593522240415983">ይህ መስክ ባዶ ሊሆን አይችልም</translation>
@@ -1586,7 +1584,6 @@
 <translation id="7612619742409846846">እንደሚከተለው ሆነው ወደ Google ይግቡ፦</translation>
 <translation id="7612989789287281429">እርስዎን በመለያ በማስገባት ላይ…</translation>
 <translation id="7619072057915878432">በአውታረ መረብ ችግሮች ምክንያት <ph name="FILE_NAME" />ን ማውረድ አልተሳካም።</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{ከአንድ ጣቢያ የደንበኝነት ምዝገባ ወጥተዋል}one{ከ# ጣቢያ የደንበኝነት ምዝገባ ወጥተዋል}other{ከ# ጣቢያዎች የደንበኝነት ምዝገባ ወጥተዋል}}</translation>
 <translation id="7626032353295482388">ወደ Chrome እንኳን ደህና መጡ</translation>
 <translation id="7628417132421583481">ወደ የሚስጥር ቁልፍ አስተዳዳሪ ሂድ</translation>
 <translation id="7630202231528827509">የአቅራቢ ዩአርኤል</translation>

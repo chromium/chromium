@@ -1810,6 +1810,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="221297410904507041">Tarix, cookie fayllari, kesh va boshqa maʼlumotlarni oʻchirish</translation>
 <translation id="2213410656650624348">Oʻrtacha</translation>
 <translation id="2214018885812055163">Umumiy jildlar</translation>
+<translation id="2214453882118345682">Kamera orqali mahsulot toping, matn tarjima qiling va atrofdagi obyektlar axborotini oling.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 qator kod berkitilgan&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> qator kod berkitilgan&gt;}}</translation>
 <translation id="2215070081105889450">Ovozni ulashish uchun varaq yoki ekranni ulashing</translation>
 <translation id="2217208085547223783">Sertifikat holati</translation>
@@ -2651,6 +2652,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2757338480560142065">Saqlayotgan parolingiz <ph name="WEBSITE" /> uchun mos kelishini tekshiring</translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> <ph name="SEARCH_QUERY" /> qidiruvi hech qanday natija bermadi</translation>
 <translation id="2762441749940182211">Kamera bloklandi</translation>
+<translation id="2763165257813209348"><ph name="FILE_NAME" /> faylida maxfiy yoki xavfli axborot bor. Tashkilotingiz bunday maʼlumotlarni bulutli xotiraga saqlashni taqiqlagan yoki rad etgan.</translation>
 <translation id="2764786626780673772">VPN axboroti</translation>
 <translation id="2764920001292228569">Profil nomini kiriting</translation>
 <translation id="2765100602267695013">Mobil provayderingizga murojaat qiling</translation>
@@ -5719,6 +5721,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4864805589453749318">Maktab hisobini kiritishga ruxsat berayotgan ota-onani tanlang.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (bloklandi)</translation>
 <translation id="486505726797718946">Xotira saqlandi</translation>
+<translation id="4865063548323785458">Sayt va ilovalarga oson kirish uchun parollarni saqlang va avtomatik kiriting</translation>
 <translation id="486635084936119914">Ba’zi turdagi fayllar yuklab olinishi bilan avtomatik ochilsin</translation>
 <translation id="4867272607148176509">Ota-onalar ilovalarni tasdiqlashi yoki bloklashi, vaqt chegaralarini belgilashi va brauzerlarni koʻrishni boshqarishi mumkin. Koʻplab maktab resurslariga kirish uchun maktab hisobini keyinroq qoʻshish mumkin.</translation>
 <translation id="4867433544163083783">Varaqlarni tartiblash mumkinligini tekshirish</translation>
@@ -7617,7 +7620,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6194333736420234626">&amp;Toʻlov usullari</translation>
 <translation id="6195005504600220730">Brauzer, OT va qurilmangiz haqidagi axborotni oʻqish</translation>
 <translation id="6195155925303302899">Markazga tekislash</translation>
-<translation id="6195163219142236913">Tashqi cookie fayllar cheklangan</translation>
 <translation id="6195693561221576702">Bu qurilmani oflayn demo rejimda sozlab boʻlmaydi.</translation>
 <translation id="6196640612572343990">Tashqi cookie-fayllarni bloklash.</translation>
 <translation id="6196854373336333322">“<ph name="EXTENSION_NAME" />” kengaytmasi proksi-server sozlamalarini nazorat qiladi. U internetda bajargan ishlaringizni o‘zgartirishi, buzishi yoki bildirmasdan eshitishi mumkin. Agar bu haqda eshitmagan bo‘lsangiz, uni o‘chirib qo‘yganingiz yaxshi.</translation>
@@ -8384,7 +8386,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6731320427842222405">Bunga bir necha daqiqa ketishi mumkin</translation>
 <translation id="6732956960067639542">Buning oʻrniga Chrome brauzerida yangi seans oching.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Cookie fayllari va boshqa sayt ma‘lumotlarini ko‘rsatish...</translation>
 <translation id="6736243959894955139">Manzil</translation>
 <translation id="6737663862851963468">Kerberos chiptasini olib tashlash</translation>
 <translation id="6738180164164974883">Tashqi cookielarni sozlashga ruxsat berish</translation>
@@ -11476,6 +11477,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="881799181680267069">Boshqalarini yashirish</translation>
 <translation id="8818152010000655963">Fon rasmi</translation>
 <translation id="8818988764764862764">Oyna chapga olindi</translation>
+<translation id="8819155700324279105">Onlayn tahdidlarga qarshi qoʻshimcha himoya darajasini kiriting</translation>
 <translation id="8819510664278523111">Qurilmaning EID raqami: <ph name="EID_NUMBER" />, IMEI raqami: <ph name="IMEI_NUMBER" /> va qurilma serial raqami: <ph name="SERIAL_NUMBER" />. Bu raqamlar xizmatni faollashtirishga yordam beradi.</translation>
 <translation id="8820817407110198400">Bukmarklar</translation>
 <translation id="8821045908425223359">IP manzil avtomatik sozlansin</translation>
@@ -12123,7 +12125,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="947329552760389097">Elementlarni &amp;tekshirish</translation>
 <translation id="947526284350604411">Javobingiz</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> bu jilddagi fayllarni ocha olmaydi, chunki unda tizim fayllari mavjud</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome cookie fayllarni bugun yana cheklaydi}=1{Chrome cookie fayllarni ertaga yana cheklaydi}other{Chrome cookie fayllarni # kundan keyin yana cheklaydi}}</translation>
 <translation id="949807244219288032">Bu varaq HID qurilmaga ulangan</translation>
 <translation id="950079950995628542">“<ph name="PHONE_NAME" />” telefonidan</translation>
 <translation id="950307215746360464">Sozlash qoʻllanmasi</translation>

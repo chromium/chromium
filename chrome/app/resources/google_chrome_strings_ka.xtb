@@ -491,6 +491,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6180522807229584611">ეს ჩანართი დამატებით რესურსებს იყენებს. ეფექტურობის გაზრდის მიზნით, ნება დართეთ Chrome-ს, ჩანართი უმოქმედო რეჟიმში გადაიტანოს.</translation>
 <translation id="6182736845697986886">ინსტალაცია ვერ მოხერხდა განახლების სერვერის შიდა შეცდომის გამო.</translation>
 <translation id="6183773856988300112">Gemini Chrome-ში იყენებს ავტომატურ დათვალიერებას, რათა იმუშაოს თქვენს ჩანართებში და შეასრულოს თქვენ მიერ დაკისრებული მიცემული დავალებები. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
+<translation id="6187085551300363958">Chrome მინიშნება: პაროლების შენახვა</translation>
 <translation id="6192058120268468905">თქვენი ანგარიში Chrome-ში</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" />-მა დაამატა გაფართოება, რომელმაც შეიძლება შეცვალოს Chrome-ის მუშაობის პრინციპი.
 
@@ -629,6 +630,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="7627609214560473136">თქვენი მონაცემების დაცვის მიზნით, მიეცით საშუალება Chrome-ს გაუუქმოს ნებართვები საიტებს, რომლებზეც ბოლო დროს არ გადასულხართ.</translation>
 <translation id="7629695634924605473">Chrome გაცნობებთ, თუ თქვენს პაროლებს ვინმე გატეხავს</translation>
 <translation id="7641148173327520642">თქვენი სისტემის ადმინისტრატორმა მოახდინა Google Chrome-ის კონფიგურაცია იმგვარად, რომ <ph name="TARGET_URL_HOSTNAME" />-ზე წვდომისთვის საჭიროა <ph name="ALTERNATIVE_BROWSER_NAME" />-ის გახსნა.</translation>
+<translation id="7641448682796883218">Chrome მინიშნება: გაძლიერებული Safe Browsing</translation>
 <translation id="7649070708921625228">დახმარება</translation>
 <translation id="7651907282515937834">Chrome Enterprise-ის ლოგო</translation>
 <translation id="76531479118467370">Chrome-მა დაბლოკა ეს ჩამოტვირთვა, რადგან Safe Browsing გამორთეთ და ფაილის შემოწმება ვერ ხერხდება</translation>

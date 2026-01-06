@@ -1821,6 +1821,7 @@
 <translation id="221297410904507041">刪除記錄、Cookie、快取等資料</translation>
 <translation id="2213410656650624348">中等</translation>
 <translation id="2214018885812055163">共用的資料夾</translation>
+<translation id="2214453882118345682">使用相機購物、翻譯及識別所見內容。</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;有 1 行代碼未有顯示&gt;}other{&lt;有 <ph name="NUMBER_OF_LINES" /> 行代碼未顯示&gt;}}</translation>
 <translation id="2215070081105889450">如要分享音訊，請改為分享分頁或畫面</translation>
 <translation id="2217208085547223783">信任狀態</translation>
@@ -5726,6 +5727,7 @@
 <translation id="4864805589453749318">請選取要授予新增學校帳戶權限的家長。</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (已封鎖)</translation>
 <translation id="486505726797718946">已釋出記憶體</translation>
+<translation id="4865063548323785458">儲存及自動填入密碼，輕鬆登入網站和應用程式</translation>
 <translation id="486635084936119914">下載特定類型的檔案後自動開啟</translation>
 <translation id="4867272607148176509">家長可核准或封鎖應用程式、設定使用時間限制，以及控制網絡瀏覽內容。你可稍後新增學校帳戶，以便存取大部分學校資源。</translation>
 <translation id="4867433544163083783">即刻檢查係咪可以整理分頁</translation>
@@ -7620,7 +7622,6 @@
 <translation id="6194333736420234626">付款方法(&amp;P)</translation>
 <translation id="6195005504600220730">讀取您的瀏覽器、作業系統和裝置相關資料</translation>
 <translation id="6195155925303302899">置中對齊</translation>
-<translation id="6195163219142236913">已限制第三方 Cookie</translation>
 <translation id="6195693561221576702">無法在此裝置上設定離線示範模式。</translation>
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6196854373336333322">您的 Proxy 設定已受到擴充功能「<ph name="EXTENSION_NAME" />」控制，該擴充功能可變更、中斷、或監視您在網上的行為。如果您不確定這項變更為何發生，建議您停用該擴充功能。</translation>
@@ -8387,7 +8388,6 @@
 <translation id="6731320427842222405">這可能需要幾分鐘的時間</translation>
 <translation id="6732956960067639542">請改為開啟新的 Chrome 瀏覽器工作階段。</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID：<ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">顯示 Cookie 和其他網站數據…</translation>
 <translation id="6736243959894955139">位址</translation>
 <translation id="6737663862851963468">移除 Kerberos 票證</translation>
 <translation id="6738180164164974883">允許設定第三方 Cookie</translation>
@@ -11474,6 +11474,7 @@
 <translation id="881799181680267069">隱藏其他</translation>
 <translation id="8818152010000655963">桌布</translation>
 <translation id="8818988764764862764">視窗移咗去左邊</translation>
+<translation id="8819155700324279105">為對抗網上威脅增添多一重安全保障</translation>
 <translation id="8819510664278523111">你嘅裝置 EID 係 <ph name="EID_NUMBER" />，裝置 IMEI 係 <ph name="IMEI_NUMBER" />，而裝置序號係 <ph name="SERIAL_NUMBER" />。呢啲數字可以用嚟啟用服務。</translation>
 <translation id="8820817407110198400">書籤</translation>
 <translation id="8821045908425223359">自動設定 IP 位址</translation>
@@ -12121,7 +12122,6 @@
 <translation id="947329552760389097">檢查元素 (&amp;I)</translation>
 <translation id="947526284350604411">您的答案</translation>
 <translation id="947667444780368238">由於資料夾中包含系統檔案，<ph name="ORIGIN" /> 無法開啟此資料夾中的檔案</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome 將於今天再次限制 Cookie}=1{Chrome 將於明天再次限制 Cookie}other{Chrome 將於 # 天後再次限制 Cookie}}</translation>
 <translation id="949807244219288032">此分頁已連接至 HID 裝置</translation>
 <translation id="950079950995628542">來自「<ph name="PHONE_NAME" />」</translation>
 <translation id="950307215746360464">設定指南</translation>

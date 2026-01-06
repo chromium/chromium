@@ -1819,6 +1819,7 @@
 <translation id="221297410904507041">ইতিহাস, কুকি, কেশ্ব আৰু বহুতো মচক</translation>
 <translation id="2213410656650624348">মধ্যমীয়া</translation>
 <translation id="2214018885812055163">শ্বেয়াৰ কৰা ফ’ল্ডাৰসমূহ</translation>
+<translation id="2214453882118345682">আপোনাৰ কেমেৰাৰ জৰিয়তে আপুনি দেখা পোৱা বস্তু ক্ৰয়, অনুবাদ আৰু চিনাক্ত কৰক।</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;১টা শাৰী দেখুওৱা হোৱা নাই&gt;}one{&lt;<ph name="NUMBER_OF_LINES" />টা শাৰী দেখুওৱা হোৱা নাই&gt;}other{&lt;<ph name="NUMBER_OF_LINES" />টা শাৰী দেখুওৱা হোৱা নাই&gt;}}</translation>
 <translation id="2215070081105889450">অডিঅ’ শ্বেয়াৰ কৰিবলৈ, ইয়াৰ সলনি এটা টেব অথবা স্ক্ৰীন এখন শ্বেয়াৰ কৰক</translation>
 <translation id="2217208085547223783">বিশ্বাসৰ স্থিতি</translation>
@@ -5730,6 +5731,7 @@
 <translation id="4864805589453749318">এটা বিদ্যালয়ৰ একাউণ্ট যোগ দিয়াৰ অনুমতি দি থকা অভিভাৱকগৰাকীক বাছনি কৰক।</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (অৱৰোধ কৰা হৈছে)</translation>
 <translation id="486505726797718946">মেম’ৰী ছেভ কৰা হৈছে</translation>
+<translation id="4865063548323785458">ছাইট আৰু এপ্‌সমূহত সহজতে ছাইন ইন কৰিবলৈ আপোনাৰ পাছৱৰ্ডসমূহ ছেভ আৰু স্বয়ংক্ৰিয়ভাৱে পূৰ কৰক</translation>
 <translation id="486635084936119914">ডাউনল’ড কৰাৰ পাছত নিৰ্দিষ্ট ফাইলৰ প্ৰকাৰসমূহ স্বয়ংক্ৰিয়ভাৱে খোলক</translation>
 <translation id="4867272607148176509">অভিভাৱকসকলে এপ্‌সমূহৰ অনুমোদন জনাব অথবা অৱৰোধ কৰিব পাৰে, সময়ৰ সীমা ছেট কৰিব পাৰে আৰু ৱেব ব্ৰাউজিং নিয়ন্ত্ৰণ কৰিব পাৰে। বিদ্যালয়ৰ বেছিভাগ সম্পদ এক্সেছ কৰিবলৈ পাছত এটা বিদ্যালয়ৰ একাউণ্ট যোগ দিব পৰা যায়।</translation>
 <translation id="4867433544163083783">এতিয়া টেবসমূহ শৃংখলাবদ্ধ কৰিব পাৰি নেকি পৰীক্ষা কৰক</translation>
@@ -7628,7 +7630,6 @@
 <translation id="6194333736420234626">পৰিশোধ পদ্ধতিসমূহ</translation>
 <translation id="6195005504600220730">আপোনাৰ ব্ৰাউজাৰ, OS আৰু ডিভাইচৰ বিষয়ে তথ্য পঢ়ক</translation>
 <translation id="6195155925303302899">সোঁমাজলৈ শাৰীবিন্যাস কৰক</translation>
-<translation id="6195163219142236913">তৃতীয় পক্ষৰ কুকি সীমিত কৰা হৈছে</translation>
 <translation id="6195693561221576702">এই ডিভাইচটো অফলাইন ডেম' ম'ডত ছেট আপ কৰিব নোৱাৰি।</translation>
 <translation id="6196640612572343990">তৃতীয়-পক্ষৰ কুকিসমূহ অৱৰোধ কৰক</translation>
 <translation id="6196854373336333322">"<ph name="EXTENSION_NAME" />" এক্সটেনশ্বনটোৱে আপোনাৰ প্ৰক্সিৰ ছেটিংসমূহৰ নিয়ন্ত্ৰণ লৈছে যাৰ অৰ্থ হৈছে ই আপুনি অনলাইনত কৰা যিকোনো কাৰ্য সলনি কৰিব পাৰে, ভাঙিব পাৰে বা গোপনে নজৰ ৰাখিব পাৰে। আপুনি যদি এই সালসলনিখিনি কিয় হৈছে সেয়া নিশ্চিতকৈ নাজানে, আপুনি চাগে সেইখিনি নিবিচাৰে।</translation>
@@ -8397,7 +8398,6 @@
 <translation id="6731320427842222405">এই কামটোৰ বাবে কেইমিনিটমান সময় লাগিব পাৰে</translation>
 <translation id="6732956960067639542">ইয়াৰ পৰিৱৰ্তে Chrome ব্ৰাউজাৰৰ এটা নতুন ছেশ্বন খোলক।</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (আইডি: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">কুকি আৰু অন্য ছাইট ডেটা দেখুৱাওক...</translation>
 <translation id="6736243959894955139">ঠিকনা</translation>
 <translation id="6737663862851963468">Kerberosৰ টিকেটটো আঁতৰাওক</translation>
 <translation id="6738180164164974883">তৃতীয় পক্ষৰ কুকি ছেট কৰাৰ অনুমতি দিয়ক</translation>
@@ -11490,6 +11490,7 @@
 <translation id="881799181680267069">অন্যবোৰ লুকুৱাওক</translation>
 <translation id="8818152010000655963">ৱালপেপাৰ</translation>
 <translation id="8818988764764862764">ৱিণ্ড’খন বাওঁফাললৈ স্থানান্তৰ কৰা হৈছে</translation>
+<translation id="8819155700324279105">অনলাইন ভাবুকিসমূহ বিৰুদ্ধে এটা অতিৰিক্ত সুৰক্ষাৰ স্তৰ যোগ দিয়ক</translation>
 <translation id="8819510664278523111">আপোনাৰ ডিভাইচৰ EID <ph name="EID_NUMBER" /> , ডিভাইচৰ IMEI <ph name="IMEI_NUMBER" /> আৰু ডিভাইচৰ ক্ৰমিক নম্বৰটো <ph name="SERIAL_NUMBER" />. সেৱা সক্ৰিয় কৰিবলৈ এই সংখ্যাকেইটা ব্যৱহাৰ কৰিব পৰা যায়।</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8821045908425223359">আইপি ঠিকনা স্বয়ংক্ৰিয়ভৱে কনফিগাৰ কৰক</translation>
@@ -12137,7 +12138,6 @@
 <translation id="947329552760389097">উপাদানসমূহ  &amp;পৰীক্ষা কৰক</translation>
 <translation id="947526284350604411">আপোনাৰ উত্তৰ</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" />এ এই ফ’ল্ডাৰটোত থকা ফাইলসমূহ খুলিব নোৱাৰে কাৰণ ইয়াত ছিষ্টেমৰ ফাইল আছে</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chromeএ আজি পুনৰ কুকি সীমিত কৰিব}=1{Chromeএ কাইলৈ পুনৰ কুকি সীমিত কৰিব}one{# দিনত Chromeএ পুনৰ কুকি অৱৰোধ কৰিব}other{# দিনত Chromeএ পুনৰ কুকি অৱৰোধ কৰিব}}</translation>
 <translation id="949807244219288032">এই টেবটো এটা HID ডিভাইচৰ সৈতে সংযোগ কৰা হৈছে</translation>
 <translation id="950079950995628542">"<ph name="PHONE_NAME" />"ৰ পৰা</translation>
 <translation id="950307215746360464">ছেটআপ গাইড</translation>

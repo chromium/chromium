@@ -83,6 +83,7 @@
 <translation id="193439633299369377">Chromium-käyttöjärjestelmä täytyy käynnistää uudelleen, jotta päivitys voidaan ottaa käyttöön.</translation>
 <translation id="1951406923938785464">Chromium on estänyt tämän latauksen, koska tiedostotyyppiä ei ladata usein, ja se saattaa olla haitallinen</translation>
 <translation id="1953553007165777902">Ladataan… <ph name="MINUTE" /> minuuttia jäljellä</translation>
+<translation id="1965068424387304464">Chromium-vinkki: Tallenna salasanat</translation>
 <translation id="1966382378801805537">Chromium ei voi tunnistaa tai asettaa oletusselainta.</translation>
 <translation id="1990262977744080398">Lue lisää siitä, miksi Chromium estää joitakin tiedostoja ja avautuu uudelle välilehdelle</translation>
 <translation id="1999715455684970349">Pitää Chromium-ohjelmiston ajan tasalla. Jos palvelu on poistettu käytöstä tai lopetettu, Chromium-ohjelmistoa ei pidetä ajan tasalla. Tämä tarkoittaa, että mahdollisia tietoturvahaavoittuvuuksia ei voida korjata ja ominaisuudet eivät välttämättä toimi. Tämän palvelun asennus poistetaan automaattisesti, kun sitä ei käytä mikään Chromium-ohjelmisto.</translation>
@@ -253,6 +254,7 @@
 <translation id="3802055581630249637">Chromium esilataa sivut, joilla todennäköisesti käyt, jotta ne latautuisivat avatessa nopeammin</translation>
 <translation id="3810973564298564668">Hallinnoi</translation>
 <translation id="3823384748599722168">Jos haluat käyttää tallennettuja salasanoja, seuraa QR-koodia, lataa Chromium iOS:lle ja kirjaudu sisään Google-tilille</translation>
+<translation id="3837584850181228767">Chromium-vinkki: Parannettu selaussuoja</translation>
 <translation id="3846683726093018685">**Tee yhteenveto:** Kuvaile kuvakaappauksen sisällön ensisijaista aihetta ja tarkoitusta yhdellä alle 30 sanan lauseella.
 
           **Ehdota kysymyksiä:** Luo ranskalaisilla viivoilla lista, jossa on 3–5 ajatuksia herättävää kysymystä kuvakaappauksen ymmärtämisen tueksi. Ainakin yhden kysymyksen tulee koskea nimenomaan visuaalista kohdetta, sen asettelua tai sijoittelua.</translation>

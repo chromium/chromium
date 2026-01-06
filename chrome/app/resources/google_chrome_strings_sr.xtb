@@ -491,6 +491,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6180522807229584611">Ова картица користи додатне ресурсе. Да бисте побољшали перформансе, дозволите Chrome-у да је учини неактивном.</translation>
 <translation id="6182736845697986886">Инсталација није успела због интерне грешке сервера за ажурирање.</translation>
 <translation id="6183773856988300112">Gemini у Chrome-у користи аутоматско прегледање за рад на картицама и обављање задатака које му доделите. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
+<translation id="6187085551300363958">Напомена за Chrome: Сачувајте лозинке</translation>
 <translation id="6192058120268468905">Ваш налог у Chrome-у</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> је додао додатак који може да промени начин на који Chrome функционише.
 
@@ -629,6 +630,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7627609214560473136">Да бисте заштитили податке, дозволите да Chrome уклања дозволе са сајтова које дуже нисте посећивали.</translation>
 <translation id="7629695634924605473">Chrome вас обавештава ако су лозинке угрожене</translation>
 <translation id="7641148173327520642">Администратор система је конфигурисао Google Chrome да отвара прегледач <ph name="ALTERNATIVE_BROWSER_NAME" /> да би приступао <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7641448682796883218">Напомена за Chrome: Побољшано безбедно прегледање</translation>
 <translation id="7649070708921625228">Помоћ</translation>
 <translation id="7651907282515937834">Chrome Enterprise логотип</translation>
 <translation id="76531479118467370">Chrome је блокирао ово преузимање јер сте искључили Безбедно прегледање, па фајл не може да се верификује</translation>

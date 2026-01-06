@@ -1811,6 +1811,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="221297410904507041">Suprimeix l'historial, les galetes, la memòria cau i altres dades</translation>
 <translation id="2213410656650624348">Moderat</translation>
 <translation id="2214018885812055163">Carpetes compartides</translation>
+<translation id="2214453882118345682">Compra, tradueix i identifica el que veus amb la càmera.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;Hi ha 1 línia que no es mostra&gt;}other{&lt;Hi ha <ph name="NUMBER_OF_LINES" /> línies que no es mostren&gt;}}</translation>
 <translation id="2215070081105889450">Per compartir l'àudio, comparteix una pestanya o una pantalla</translation>
 <translation id="2217208085547223783">Estat de confiança</translation>
@@ -5716,6 +5717,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="4864805589453749318">Selecciona quin dels teus pares concedeix el permís per afegir un compte de centre educatiu.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (s'ha bloquejat)</translation>
 <translation id="486505726797718946">Memòria estalviada</translation>
+<translation id="4865063548323785458">Desa les contrasenyes i emplena-les automàticament per iniciar la sessió fàcilment en llocs web i aplicacions</translation>
 <translation id="486635084936119914">Obre alguns tipus de fitxer automàticament després de baixar-los</translation>
 <translation id="4867272607148176509">Els pares poden aprovar o bloquejar aplicacions, establir límits de temps i controlar la navegació web. Més endavant, es pot afegir un compte de centre educatiu per accedir a la majoria de recursos educatius.</translation>
 <translation id="4867433544163083783">Comprova ara si es poden organitzar les pestanyes</translation>
@@ -7612,7 +7614,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6194333736420234626">Formes de pagament</translation>
 <translation id="6195005504600220730">Llegeix informació sobre el navegador, el SO i el dispositiu</translation>
 <translation id="6195155925303302899">Alinea al centre</translation>
-<translation id="6195163219142236913">Galetes de tercers limitades</translation>
 <translation id="6195693561221576702">Aquest dispositiu no es pot configurar en mode de demostració sense connexió.</translation>
 <translation id="6196640612572343990">Bloqueja les galetes de tercers</translation>
 <translation id="6196854373336333322">L'extensió <ph name="EXTENSION_NAME" /> ha passat a controlar la configuració del servidor intermediari. Això vol dir que pot modificar, desfer o espiar qualsevol acció que feu en línia. Si no esteu segur del motiu d'aquest canvi, és possible que no el vulgueu aplicar.</translation>
@@ -8379,7 +8380,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6731320427842222405">Això pot trigar una estona</translation>
 <translation id="6732956960067639542">Obre una sessió nova al navegador Chrome.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (identificador: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Mostra galetes i altres dades dels llocs web...</translation>
 <translation id="6736243959894955139">Adreça</translation>
 <translation id="6737663862851963468">Suprimeix el tiquet de Kerberos</translation>
 <translation id="6738180164164974883">Permet configurar les galetes de tercers</translation>
@@ -11473,6 +11473,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="881799181680267069">Ocultar la resta</translation>
 <translation id="8818152010000655963">Fons de pantalla</translation>
 <translation id="8818988764764862764">La finestra s'ha mogut cap a l'esquerra</translation>
+<translation id="8819155700324279105">Afegeix una capa addicional de protecció contra les amenaces en línia</translation>
 <translation id="8819510664278523111">L'EID del dispositiu és <ph name="EID_NUMBER" />, l'IMEI és <ph name="IMEI_NUMBER" /> i el número de sèrie, <ph name="SERIAL_NUMBER" />. Aquests números es poden utilitzar per activar el servei.</translation>
 <translation id="8820817407110198400">Adreces d'interès</translation>
 <translation id="8821045908425223359">Configura l'adreça IP automàticament</translation>
@@ -12120,7 +12121,6 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="947329552760389097">&amp;Inspecciona els elements</translation>
 <translation id="947526284350604411">La teva resposta</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> no pot obrir els fitxers que es troben en aquesta carpeta perquè conté fitxers del sistema</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome tornarà a limitar les galetes avui}=1{Chrome tornarà a limitar les galetes demà}other{# dies perquè Chrome torni a limitar les galetes}}</translation>
 <translation id="949807244219288032">Aquesta pestanya està connectada a un dispositiu d'interfície humana</translation>
 <translation id="950079950995628542">De <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Guia de configuració</translation>

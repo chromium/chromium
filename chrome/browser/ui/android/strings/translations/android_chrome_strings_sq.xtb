@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Hiq</translation>
 <translation id="1183189057400844278">Për t'u siguruar që mund t'i përdorësh gjithmonë fjalëkalimet në "Llogarinë tënde të Google", verifiko që je ti</translation>
 <translation id="1187810343066461819">Gjithashtu, fshi faqeshënuesit, historikun dhe të tjera nga kjo makinë</translation>
-<translation id="1193589902336218259">Aktivizo njoftimet e këshillave</translation>
 <translation id="1193729455103054076">Të përdoret fjalëkalim i fortë?</translation>
 <translation id="11947597112837849">adresën tënde të email-it</translation>
 <translation id="1197267115302279827">Zhvendos faqeshënuesit</translation>
@@ -995,7 +994,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5267572070504076962">Aktivizo "Shfletimin e sigurt" për të marrë mbrojtjen ndaj sajteve të rrezikshme</translation>
 <translation id="5271967389191913893">Pajisja nuk mund të hapë përmbajtjen që do të shkarkohet.</translation>
 <translation id="5273031377282080577">Administratori yt e menaxhon këtë cilësim.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{U çabonove nga një sajt i papërdorur}other{U çregjistrove nga # sajte të papërdorura}}</translation>
 <translation id="5292796745632149097">Dërgo te</translation>
 <translation id="5301876394151419436">Je i identifikuar si <ph name="EMAIL" />. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="5304593522240415983">Kjo fushë nuk mund të jetë bosh</translation>
@@ -1586,7 +1584,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7612619742409846846">U identifikove te Google si</translation>
 <translation id="7612989789287281429">Po identifikohesh…</translation>
 <translation id="7619072057915878432">Shkarkimi i <ph name="FILE_NAME" /> dështoi për shkak të problemeve të rrjetit.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{U çabonove nga një sajt}other{U çabonove nga # sajte}}</translation>
 <translation id="7626032353295482388">Mirë se vjen në Chrome</translation>
 <translation id="7628417132421583481">Shko te "Menaxheri i fjalëkalimeve"</translation>
 <translation id="7630202231528827509">URL-ja e ofruesit</translation>

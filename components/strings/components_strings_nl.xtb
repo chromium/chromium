@@ -114,7 +114,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1178581264944972037">Onderbreken</translation>
 <translation id="1178821169867863726">12 x 16 inch</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
-<translation id="1181381397492575884">Chrome voorkomt dat sites cookies van derden gebruiken om je te volgen terwijl je browst. Ga naar Instellingen om <ph name="LINK" />.</translation>
 <translation id="1185331130467528132"><ph name="URL" /> wil toegang tot andere apparaten in je lokale netwerk</translation>
 <translation id="1185343831726846924">Bevestigen dat de virtuele kaart niet kan worden aangezet</translation>
 <translation id="1186201132766001848">Wachtwoorden controleren</translation>
@@ -227,7 +226,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1343830902827845050">Inloggen bij Chrome</translation>
 <translation id="1346748346194534595">Rechts</translation>
 <translation id="1348779747280417563">Naam bevestigen</translation>
-<translation id="1352798470428594123">Chrome beperkt het gebruik van cookies van derden voor de meeste sites om je te volgen terwijl je browst. Ga naar Instellingen om <ph name="LINK" />.</translation>
 <translation id="1355158069018170842">Prijsdalingen bekijken op tabbladen</translation>
 <translation id="1355301061807280185">Vacatures</translation>
 <translation id="1357195169723583938">Wie het apparaat recent heeft gebruikt en wanneer</translation>
@@ -1110,7 +1108,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2768397283109119044">Je probeert <ph name="DOMAIN" /> te bereiken, maar de server heeft een ongeldig certificaat geretourneerd dat aan die naam is uitgegeven. De naam is een gereserveerd IP-adres of interne hostnaam.</translation>
 <translation id="2770159525358613612">Probeer je bestanden opnieuw te uploaden</translation>
 <translation id="277133753123645258">Verzendmethode</translation>
-<translation id="2773388851563527404">Chrome beperkt het gebruik van cookies van derden voor de meeste sites. Cookies van derden zijn wel toegestaan op deze site omdat ze nodig zijn om basisservices te kunnen leveren. Ga naar Instellingen om <ph name="LINK" />.</translation>
 <translation id="277499241957683684">Apparaatrecord ontbreekt</translation>
 <translation id="2775884851269838147">Eerste afdrukpagina</translation>
 <translation id="2781185443919227679">Stranden en eilanden</translation>
@@ -1709,7 +1706,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3727309136762649052">Naamruimte</translation>
 <translation id="3727850735097852673">Als je Google Wachtwoordmanager wilt gebruiken met macOS-sleutelhanger, herstart je Chrome en sta je sleutelhangertoegang toe. Je tabbladen worden opnieuw geopend na de herstart.</translation>
 <translation id="3728173127485570463">De Chrome-browser heeft je vingerafdruk niet meer nodig om wachtwoorden automatisch in te vullen</translation>
-<translation id="3736739313435669994">Je hebt sites geblokkeerd voor het gebruik van cookies van derden om je te volgen terwijl je browst. Ga naar Instellingen om <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Je browser wordt beheerd door je beheerder.</translation>
 <translation id="3739842843727261045">Met Leuk stuur je feedback dat je deze resultaten leuk vindt</translation>
 <translation id="3740447166056383374">Check bestanden voordat je ze kopieert</translation>
@@ -2142,7 +2138,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4406883609789734330">Live ondertiteling</translation>
 <translation id="4406896451731180161">zoekresultaten</translation>
 <translation id="4407758156081352648">Je organisatie staat niet toe dat wachtwoorden worden hergebruikt in Chrome om de beveiliging te behouden. Wachtwoorden in Chrome worden versleuteld om de privacy van gebruikers te beschermen.</translation>
-<translation id="4408413947728134509"><ph name="NUM_COOKIES" /> cookies</translation>
 <translation id="4409556632583862731">Nieuwe contextuele taak</translation>
 <translation id="4412074349188076601">Deze configuratie is gemarkeerd als installeerbaar, maar er is geen image opgegeven voor deze architectuur, dus deze kan niet worden geïnstalleerd.</translation>
 <translation id="4412377069090572315">Wat mensen zeggen</translation>
@@ -2530,7 +2525,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5061227663725596739">Bedoelde je <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Afdrukgeschiedenis</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 in gebruik)}other{(# in gebruik)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Het proxy-adres controleren<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">10e rol</translation>
 <translation id="507130231501693183">Mailbox 4</translation>
@@ -3039,7 +3033,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5918373444239520146">Gadgets en draagbare elektronica</translation>
 <translation id="5918847752193018339">Betaal sneller als je CVC's zijn opgeslagen. <ph name="LINK_BEGIN" />Opgeslagen beveiligingscodes verwijderen<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 in gebruik}other{# in gebruik}}</translation>
 <translation id="5921185718311485855">Aan</translation>
 <translation id="5921639886840618607">Kaart opslaan in Google-account?</translation>
 <translation id="5921952831792678223">Pick-ups</translation>
@@ -3219,7 +3212,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6194209731893739467">Bekijk hier al je gevolgde producten</translation>
 <translation id="6195371403461054755">Geologie</translation>
 <translation id="6195418151868446719">Consumentenelektronica</translation>
-<translation id="6196640612572343990">Cookies van derden blokkeren</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Volledig gesneden tabbladen</translation>
 <translation id="6203231073485539293">Controleer je internetverbinding</translation>
@@ -3715,7 +3707,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6978121630131642226">Zoekmachines</translation>
 <translation id="6978236010531171013">Toch delen</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979302985396162258">de toegang tot cookies van derden te beheren</translation>
 <translation id="6979440798594660689">Geluid uitzetten (standaard)</translation>
 <translation id="6987806006823772670">Envelop (gecoat)</translation>
 <translation id="6989256887001961296">Deze content is geblokkeerd.</translation>
@@ -4729,7 +4720,6 @@ Aanvullende informatie:
 <translation id="8622864575115813231">Contact opnemen met je financiële instelling…</translation>
 <translation id="8624354461147303341">Kortingen zoeken</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
-<translation id="8635822281281406185">Voeg maximaal 10 bestanden, tabbladen of afbeeldingen toe</translation>
 <translation id="8637362707224133343">Chrome bevat ingebouwde veiligheidsfuncties die je beschermen terwijl je browst, zoals Google Safe Browsing, dat <ph name="BEGIN_LINK" />recent phishing heeft gevonden<ph name="END_LINK" /> op de site die je probeerde te bezoeken. Phishingsites doen zich voor als een andere site om je te misleiden.<ph name="NEW_LINE" />Ook sites die normaal gesproken veilig zijn, worden soms gehackt door aanvallers. <ph name="BEGIN_ERROR_LINK" />Laat het ons weten<ph name="END_ERROR_LINK" /> als je denkt dat er een fout is gemaakt en dat deze site geen gevaar vormt.</translation>
 <translation id="8640996933372643759">Als je tabbladen wilt delen en met anderen wilt samenwerken, moet je kunnen inloggen bij Chrome</translation>
 <translation id="8641131559425911240">Envelop (bond)</translation>
@@ -5109,7 +5099,6 @@ Aanvullende informatie:
 <translation id="945673208656386843">Deze kaart automatisch invullen voor aankopen die je doet in Chromium als de kaart is opgeslagen op dit apparaat</translation>
 <translation id="94613679163347541"><ph name="CATEGORY" /> vergelijken?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om snel een nieuwe site in Google Sites te maken</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome beperkt vandaag weer cookies}=1{Chrome beperkt morgen weer cookies}other{# dagen tot Chrome weer cookies beperkt}}</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> leden zijn lid geworden van de tabbladgroep <ph name="GROUP_NAME" /></translation>
 <translation id="949314938206378263">Je hebt gevraagd of je deze site mag bezoeken. Je ouder kan reageren in Family Link.</translation>
 <translation id="950736567201356821">Drie perforaties boven</translation>

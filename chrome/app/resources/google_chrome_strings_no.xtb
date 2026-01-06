@@ -483,6 +483,7 @@
 <translation id="6180522807229584611">Denne fanen bruker ekstra ressurser. For å få bedre ytelse kan du la Chrome gjøre den inaktiv.</translation>
 <translation id="6182736845697986886">Installasjonen mislyktes på grunn av en intern feil i oppdateringstjeneren.</translation>
 <translation id="6183773856988300112">Gemini i Chrome bruker automatisk surfing for å jobbe i fanene dine og fullføre oppgaver du gir den. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
+<translation id="6187085551300363958">Chrome-tips: Lagre passord</translation>
 <translation id="6192058120268468905">Kontoen din i Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> har lagt til en utvidelse som kan endre måten Chrome fungerer på.
 
@@ -621,6 +622,7 @@
 <translation id="7627609214560473136">Du kan beskytte dataene dine ved å la Chrome fjerne tillatelser fra nettsteder du ikke har besøkt nylig.</translation>
 <translation id="7629695634924605473">Med Chrome får du beskjed hvis passordene dine noensinne utsettes for sikkerhetsbrudd</translation>
 <translation id="7641148173327520642">Systemadministratoren din har konfigurert Google Chrome til å åpne <ph name="ALTERNATIVE_BROWSER_NAME" /> for å få tilgang til <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7641448682796883218">Chrome-tips: Safe Browsing med økt beskyttelse</translation>
 <translation id="7649070708921625228">Hjelp</translation>
 <translation id="7651907282515937834">Chrome Enterprise-logo</translation>
 <translation id="76531479118467370">Chrome har blokkert denne nedlastingen fordi du har slått av Safe Browsing, så filen kan ikke bekreftes</translation>

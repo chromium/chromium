@@ -491,6 +491,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6180522807229584611">Ta zavihek uporablja dodatna sredstva. Če želite izboljšati učinkovitost delovanja, pustite Chromu, da ga spremeni v neaktivnega.</translation>
 <translation id="6182736845697986886">Namestitev ni uspela zaradi notranje napake strežnika za posodobitve.</translation>
 <translation id="6183773856988300112">Gemini v Chromu uporablja samodejno brskanje za delo na vaših zavihkih in dokončanje opravil, ki mu jih dodelite. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
+<translation id="6187085551300363958">Nasvet za Chrome: Shranite gesla</translation>
 <translation id="6192058120268468905">Vaš račun v Chromu</translation>
 <translation id="6220551899604141979">Partner <ph name="PARTNER_NAME" /> je dodal razširitev, ki lahko morda spremeni način delovanja Chroma.
 
@@ -629,6 +630,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="7627609214560473136">Zaradi zaščite podatkov dovolite Chromu, da odstrani dovoljenja za spletna mesta, ki jih nedavno niste obiskali.</translation>
 <translation id="7629695634924605473">Chrome vam sporoči, ali so gesla ogrožena</translation>
 <translation id="7641148173327520642">Skrbnik sistema je Google Chrome nastavil tako, da za dostop do <ph name="TARGET_URL_HOSTNAME" /> odpre brskalnik <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
+<translation id="7641448682796883218">Nasvet za Chrome: Izboljšano varno brskanje</translation>
 <translation id="7649070708921625228">Pomoč</translation>
 <translation id="7651907282515937834">Logotip za Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome je blokiral ta prenos, ker ste izklopili Varno brskanje in datoteke ni mogoče preveriti</translation>

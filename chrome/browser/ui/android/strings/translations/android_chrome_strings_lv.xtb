@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Noņemt</translation>
 <translation id="1183189057400844278">Lai vienmēr varētu izmantot Google kontā saglabātās paroles, apstipriniet savu identitāti</translation>
 <translation id="1187810343066461819">Arī izdzēst grāmatzīmes, vēsturi un citu informāciju šajā automašīnas profilā</translation>
-<translation id="1193589902336218259">Ieslēgt padomu paziņojumus</translation>
 <translation id="1193729455103054076">Vai izmantot drošu paroli?</translation>
 <translation id="11947597112837849">e-pasta adrese</translation>
 <translation id="1197267115302279827">Pārvietot grāmatzīmes</translation>
@@ -995,7 +994,6 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5267572070504076962">Ieslēdziet funkciju Droša pārlūkošana, lai iegūtu aizsardzību pret bīstamām vietnēm.</translation>
 <translation id="5271967389191913893">Ierīcē nevar atvērt lejupielādējamo saturu.</translation>
 <translation id="5273031377282080577">Šo iestatījumu pārvalda jūsu administrators.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Anulēts abonements vienai neizmantotai vietnei}zero{Anulēts abonements # neizmantotām vietnēm}one{Anulēts abonements # neizmantotai vietnei}other{Anulēts abonements # neizmantotām vietnēm}}</translation>
 <translation id="5292796745632149097">Sūtīt uz:</translation>
 <translation id="5301876394151419436">Jūs esat pierakstījies ar kontu <ph name="EMAIL" />. Jebkurā brīdī iestatījumos varat apturēt sinhronizēšanu. Google var personalizēt pakalpojumu Meklēšana un citus pakalpojumus, ņemot vērā jūsu vēsturi.</translation>
 <translation id="5304593522240415983">Šis lauks nevar būt tukšs.</translation>
@@ -1586,7 +1584,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7612619742409846846">Pierakstījies Google kontā kā</translation>
 <translation id="7612989789287281429">Notiek pierakstīšanās…</translation>
 <translation id="7619072057915878432">Neizdevās lejupielādēt failu <ph name="FILE_NAME" />, jo radās tīkla kļūdas.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Vienas vietnes abonements ir anulēts}zero{# vietņu abonementi ir anulēti}one{# vietnes abonements ir anulēts}other{# vietņu abonementi ir anulēti}}</translation>
 <translation id="7626032353295482388">Laipni lūdzam pārlūkā Chrome</translation>
 <translation id="7628417132421583481">Pāriet uz Paroļu pārvaldnieku</translation>
 <translation id="7630202231528827509">Piegādātāja URL</translation>

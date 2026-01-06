@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Olib tashlash</translation>
 <translation id="1183189057400844278">Google hisobingizdagi parollardan istalgan vaqt foydalanish uchun shaxsingizni tasdiqlang</translation>
 <translation id="1187810343066461819">Bukmarklar, tarix va boshqa maʼlumotlar ham avtomobildan oʻchirib tashlanadi</translation>
-<translation id="1193589902336218259">Maslahatlar bildirishnomalarini yoqish</translation>
 <translation id="1193729455103054076">Kuchli parol ishlatilsinmi?</translation>
 <translation id="11947597112837849">email manzil</translation>
 <translation id="1197267115302279827">Xatcho‘plarni ko‘chirib o‘tkazish</translation>
@@ -995,7 +994,6 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5267572070504076962">Xavfli saytlardan himoyalanish uchun xavfsiz kezish funksiyasini yoqing</translation>
 <translation id="5271967389191913893">Yuklab olingan kontent ma’lumotlarini ochib bo‘lmadi.</translation>
 <translation id="5273031377282080577">Bu sozlamani administrator boshqaradi.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Nofaol saytda bildirishnoma chiqishi bekor qilindi}other{Nofaol saytlarda (#) bildirishnoma chiqishi bekor qilindi}}</translation>
 <translation id="5292796745632149097">Bunga yuborish:</translation>
 <translation id="5301876394151419436"><ph name="EMAIL" /> nomidan kirgansiz. Sinxronlashni istalgan vaqt sozlamalar orqali toʻxtatish mumkin. Brauzer tarixi asosida Google Qidiruv va boshqa xizmatlarni moslashtirishi mumkin.</translation>
 <translation id="5304593522240415983">Bu maydon kiritilishi shart</translation>
@@ -1586,7 +1584,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="7612619742409846846">Siz bu hisobdan kirgansiz</translation>
 <translation id="7612989789287281429">Hisobingizga kirmoqdasiz…</translation>
 <translation id="7619072057915878432">Tarmoqdagi nosozliklar tufayli “<ph name="FILE_NAME" />” fayli yuklab olinmadi.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Bitta sayt obunasi bekor qilindi}other{# ta sayt obunasi bekor qilindi}}</translation>
 <translation id="7626032353295482388">Chrome brauzeriga xush kelibsiz!</translation>
 <translation id="7628417132421583481">Parollar menejerini ochish</translation>
 <translation id="7630202231528827509">Provayder URL manzili</translation>

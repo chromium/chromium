@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Verwijderen</translation>
 <translation id="1183189057400844278">Bevestig dat jij het bent zodat je de wachtwoorden in je Google-account altijd kunt gebruiken</translation>
 <translation id="1187810343066461819">Ook bookmarks, geschiedenis en meer verwijderen uit deze auto</translation>
-<translation id="1193589902336218259">Meldingen met tips aanzetten</translation>
 <translation id="1193729455103054076">Sterk wachtwoord gebruiken?</translation>
 <translation id="11947597112837849">e-mailadres</translation>
 <translation id="1197267115302279827">Bookmarks verplaatsen</translation>
@@ -995,7 +994,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5267572070504076962">Zet Safe Browsing aan om bescherming tegen gevaarlijke sites te krijgen</translation>
 <translation id="5271967389191913893">Het apparaat kan de content niet openen die moet worden gedownload.</translation>
 <translation id="5273031377282080577">Je beheerder beheert deze instelling.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Afgemeld voor 1 ongebruikte site}other{Afgemeld voor # ongebruikte sites}}</translation>
 <translation id="5292796745632149097">Verzenden naar</translation>
 <translation id="5301876394151419436">Je bent ingelogd als <ph name="EMAIL" />. Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
 <translation id="5304593522240415983">Dit veld mag niet leeg zijn</translation>
@@ -1586,7 +1584,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7612619742409846846">Ingelogd bij Google als</translation>
 <translation id="7612989789287281429">Inloggen…</translation>
 <translation id="7619072057915878432">Downloaden van <ph name="FILE_NAME" /> is mislukt door netwerkfouten.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Afgemeld voor 1 site}other{Afgemeld voor # sites}}</translation>
 <translation id="7626032353295482388">Welkom bij Chrome</translation>
 <translation id="7628417132421583481">Naar Wachtwoordmanager</translation>
 <translation id="7630202231528827509">Provider-URL</translation>

@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Hapus</translation>
 <translation id="1183189057400844278">Untuk memastikan Anda selalu dapat menggunakan sandi yang tersimpan di Akun Google Anda, verifikasi diri Anda</translation>
 <translation id="1187810343066461819">Hapus juga bookmark, histori, dan data lainnya dari mobil ini</translation>
-<translation id="1193589902336218259">Aktifkan notifikasi Tips</translation>
 <translation id="1193729455103054076">Gunakan sandi kuat?</translation>
 <translation id="11947597112837849">alamat email</translation>
 <translation id="1197267115302279827">Pindahkan bookmark</translation>
@@ -995,7 +994,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="5267572070504076962">Aktifkan Safe Browsing untuk mendapatkan perlindungan terhadap situs berbahaya</translation>
 <translation id="5271967389191913893">Perangkat tidak dapat membuka konten untuk didownload.</translation>
 <translation id="5273031377282080577">Administrator Anda mengelola setelan ini.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Berhenti berlangganan dari satu situs yang tidak digunakan}other{Berhenti berlangganan dari # situs yang tidak digunakan}}</translation>
 <translation id="5292796745632149097">Kirim ke</translation>
 <translation id="5301876394151419436">Anda login sebagai <ph name="EMAIL" />. Anda dapat berhenti menyinkronkan kapan saja di setelan. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="5304593522240415983">Bidang ini tidak boleh kosong</translation>
@@ -1586,7 +1584,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7612619742409846846">Login ke Google sebagai</translation>
 <translation id="7612989789287281429">Memproses login Anda…</translation>
 <translation id="7619072057915878432">Download <ph name="FILE_NAME" /> gagal karena kesalahan jaringan.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Berhenti berlangganan dari satu situs}other{Berhenti berlangganan dari # situs}}</translation>
 <translation id="7626032353295482388">Selamat Datang di Chrome</translation>
 <translation id="7628417132421583481">Buka Pengelola Sandi</translation>
 <translation id="7630202231528827509">URL Penyedia</translation>

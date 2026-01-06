@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1183189057400844278">Para se certificar de que pode sempre usar as palavras-passe na sua Conta Google, valide a sua identidade</translation>
 <translation id="1187810343066461819">Eliminar também os marcadores, o histórico e mais dados deste carro</translation>
-<translation id="1193589902336218259">Ativar notificações de dicas</translation>
 <translation id="1193729455103054076">Usar uma palavra-passe forte?</translation>
 <translation id="11947597112837849">endereço de email</translation>
 <translation id="1197267115302279827">Mover marcadores</translation>
@@ -995,7 +994,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5267572070504076962">Ative a Navegação Segura para se proteger contra sites perigosos</translation>
 <translation id="5271967389191913893">O dispositivo não consegue abrir o conteúdo a transferir.</translation>
 <translation id="5273031377282080577">O seu administrador gere esta definição.</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Anulou a subscrição de um site não usado}other{Anulou a subscrição de # sites não usados}}</translation>
 <translation id="5292796745632149097">Enviar para</translation>
 <translation id="5301876394151419436">Tem sessão iniciada como <ph name="EMAIL" />. Pode parar a sincronização em qualquer altura nas definições. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="5304593522240415983">Este campo não pode estar em branco</translation>
@@ -1586,7 +1584,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7612619742409846846">Iniciou sessão no Google como</translation>
 <translation id="7612989789287281429">A iniciar sessão…</translation>
 <translation id="7619072057915878432">A transferência de <ph name="FILE_NAME" /> falhou devido a falhas de rede.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Anulou a subscrição de um site}other{Anulou a subscrição de # sites}}</translation>
 <translation id="7626032353295482388">Damos-lhe as boas-vindas ao Chrome</translation>
 <translation id="7628417132421583481">Aceder ao Gestor de Palavras-passe</translation>
 <translation id="7630202231528827509">URL do fornecedor</translation>

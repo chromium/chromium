@@ -1811,6 +1811,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="221297410904507041">Tarixçə, kuki, keş və s. datanı silin</translation>
 <translation id="2213410656650624348">Orta</translation>
 <translation id="2214018885812055163">Paylaşılmış qovluqlar</translation>
+<translation id="2214453882118345682">Kamera ilə alış-veriş edin, tərcümə edin və gördüklərinizi müəyyənləşdirin.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 sətir göstərilmir&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> sətir görünmür&gt;}}</translation>
 <translation id="2215070081105889450">Audio paylaşmaq üçün tab və ya ekran paylaşın</translation>
 <translation id="2217208085547223783">Güvən statusu</translation>
@@ -5721,6 +5722,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4864805589453749318">Məktəb hesabı əlavə etmək üçün icazəni verən valideyni seçin.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (bloklanıb)</translation>
 <translation id="486505726797718946">Yaddaş qənaəti</translation>
+<translation id="4865063548323785458">Sayt və tətbiqlərə asanlıqla daxil olmaq üçün parollarınızı yadda saxlayın və avtomatik doldurun</translation>
 <translation id="486635084936119914">Endirdikdən sonra müəyyən fayl növlərini avtomatik açın</translation>
 <translation id="4867272607148176509">Valideynlər tətbiqi təsdiqləyə və ya bloklaya, vaxt limiti ayarlaya, veb-baxışı idarə edə bilər. Əksər məktəb resurslarına giriş üçün məktəb hesabı əlavə etmək olar.</translation>
 <translation id="4867433544163083783">Tabları nizamlamağın mümkünlüyünü yoxlayın</translation>
@@ -7617,7 +7619,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6194333736420234626">&amp;Ödəniş metodları</translation>
 <translation id="6195005504600220730">Brauzer, ƏS və cihazınız haqqında məlumatları oxuyun</translation>
 <translation id="6195155925303302899">Mərkəzə düzləndirin</translation>
-<translation id="6195163219142236913">Üçüncü tərəf kukiləri məhdudlaşdırılıb</translation>
 <translation id="6195693561221576702">Bu cihazı oflayn demo rejimində quraşdırmaq mümkün deyil.</translation>
 <translation id="6196640612572343990">Üçüncü tərəf kukiləri blok edin</translation>
 <translation id="6196854373336333322">"<ph name="EXTENSION_NAME" />" artırması proksi ayarlarınıza nəzarət edir, bu o dəməkdir ki, onlayn etdiyiniz hər bir şey üzərində dəyişdirə, poza və gizli izləyə bilər. Bu dəyişikliyin niyə baş verdiyinə əmin deyilsinizsə, yəqin Siz bunu istəməmisiniz.</translation>
@@ -8384,7 +8385,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6731320427842222405">Bir neçə dəqiqə vaxt apara bilər</translation>
 <translation id="6732956960067639542">Əvəzinə yeni Chrome brauzeri sessiyası açın.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
-<translation id="6735304988756581115">Kukilər və sayt datasını göstərin</translation>
 <translation id="6736243959894955139">Ünvan:</translation>
 <translation id="6737663862851963468">Kerberos biletini silin</translation>
 <translation id="6738180164164974883">Üçüncü tərəf kukilərini təyin etməyə icazə verin</translation>
@@ -11474,6 +11474,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="881799181680267069">Digərlərini Gizlədin</translation>
 <translation id="8818152010000655963">Divar kağızı</translation>
 <translation id="8818988764764862764">Pəncərə sola köçürüldü</translation>
+<translation id="8819155700324279105">Onlayn təhlükələrə qarşı əlavə qoruma səviyyəsi əlavə edin</translation>
 <translation id="8819510664278523111">Cihazın EID nömrəsi: <ph name="EID_NUMBER" />. Cihazın IMEI nömrəsi: <ph name="IMEI_NUMBER" />. Cihazın seriya nömrəsi: <ph name="SERIAL_NUMBER" />. Bu nömrələr xidməti aktivləşdirmək üçün istifadə edilə bilər.</translation>
 <translation id="8820817407110198400">Əlfəcinlər</translation>
 <translation id="8821045908425223359">IP ünvanını avtomatik konfiqurasiya edin</translation>
@@ -12121,7 +12122,6 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="947329552760389097">&amp;Elementləri Yoxlayın</translation>
 <translation id="947526284350604411">Cavabınız</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> sistem faylları ehtiva etdiyinə görə bu qovluqdakı faylları aça bilmir</translation>
-<translation id="947974362755924771">{COUNT,plural, =0{Chrome bu gün kukiləri yenidən məhdudlaşdıracaq}=1{Chrome sabah kukiləri yenidən məhdudlaşdıracaq}other{Chrome-un kukiləri yenidən məhdudlaşdırmasına # gün qaldı}}</translation>
 <translation id="949807244219288032">Bu tab HID cihazına qoşuludur</translation>
 <translation id="950079950995628542">Buradan: "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Ayarlama bələdçisi</translation>

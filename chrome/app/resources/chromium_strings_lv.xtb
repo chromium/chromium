@@ -82,6 +82,7 @@
 <translation id="193439633299369377">Chromium OS ir jārestartē, lai lietotu atjauninājumu.</translation>
 <translation id="1951406923938785464">Pārlūkā Chromium šī lejupielāde tika bloķēta, jo šī tipa faili parasti netiek lejupielādēti un var būt bīstami.</translation>
 <translation id="1953553007165777902">Notiek lejupielāde... Atlikušais laiks: <ph name="MINUTE" /> minūte(-es).</translation>
+<translation id="1965068424387304464">Chromium padoms: paroļu saglabāšana</translation>
 <translation id="1966382378801805537">Chromium nevar noteikt vai iestatīt noklusējuma pārlūku.</translation>
 <translation id="1990262977744080398">Uzzināt, kāpēc pārlūkā Chromium daži faili tiek bloķēti (saite tiks atvērta jaunā cilnē)</translation>
 <translation id="1999715455684970349">Nodrošina Chromium programmatūras pastāvīgu atjaunināšanu. Ja šis pakalpojums tiks atspējots vai pārtraukts, jūsu Chromium programmatūra netiks pastāvīgi atjaunināta, kas nozīmē, ka nebūs iespējams labot drošības ievainojamības, ja tādas radīsies, turklāt var nedarboties funkcijas. Šis pakalpojums pats tiek atinstalēts, ja neviena Chromium programmatūra to neizmanto.</translation>
@@ -252,6 +253,7 @@
 <translation id="3802055581630249637">Pārlūkā Chromium tiek iepriekš ielādētas lapas, ko jūs, iespējams, apmeklēsiet. Tādējādi var tās ielādēt ātrāk tad, kad tās tiešām apmeklējat.</translation>
 <translation id="3810973564298564668">Pārvaldīt</translation>
 <translation id="3823384748599722168">Lai izmantotu savas saglabātās paroles, izmantojiet saiti kvadrātkodā, lejupielādējiet pārlūku Chromium operētājsistēmai iOS un pierakstieties savā Google kontā.</translation>
+<translation id="3837584850181228767">Chromium padoms: funkcija “Droša pārlūkošana ar papildu aizsardzību”</translation>
 <translation id="3846683726093018685">**Apkopošana:** vienā teikumā, kas nepārsniedz 30 vārdus, aprakstiet ekrānuzņēmumā redzamā satura galveno tēmu un nolūku.
 
           **Jautājumu ieteikšana:** ģenerējiet sarakstu ar aizzīmēm ar 3–5 jautājumiem, kas liek aizdomāties un kurus lietotājs varētu uzdot, lai labāk izprastu ekrānuzņēmumu. Šajos jautājumos ir jābūt vismaz vienam jautājumam, kas ir saistīts ar vizuālu objektu, tā dizainu vai izvietojumu.</translation>

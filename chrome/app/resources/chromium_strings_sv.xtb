@@ -85,6 +85,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="193439633299369377">Chromium OS måste startas om för att uppdateringen ska börja gälla.</translation>
 <translation id="1951406923938785464">Den här nedladdningen blockerades av Chromium eftersom filtypen inte brukar laddas ned och den kan vara farlig</translation>
 <translation id="1953553007165777902">Laddar ned … <ph name="MINUTE" /> minut/minuter återstår</translation>
+<translation id="1965068424387304464">Tips för Chromium: Spara lösenord</translation>
 <translation id="1966382378801805537">Chromium kan inte fastställa eller ange standardwebbläsaren</translation>
 <translation id="1990262977744080398">Läs mer om varför vissa filer blockeras i Chromium (öppnas på en ny flik)</translation>
 <translation id="1999715455684970349">Ser till att Chromium-mjukvaran är uppdaterad. Om denna tjänst inaktiveras eller stoppas uppdateras inte Chromium-mjukvaran. Det innebär att vissa funktioner kanske inte fungerar och att eventuella säkerhetsrisker inte kan åtgärdas. Tjänsten avinstalleras automatiskt om den inte används av Chromium-mjukvara.</translation>
@@ -255,6 +256,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3802055581630249637">Sidor som du troligen kommer att besöka läses in i förväg i Chromium så att de läses in snabbare när du besöker dem</translation>
 <translation id="3810973564298564668">Hantera</translation>
 <translation id="3823384748599722168">Om du vill använda sparade lösenord skannar du QR-koden, laddar ned Chromium för iOS och loggar in på ditt Google-konto</translation>
+<translation id="3837584850181228767">Tips för Chromium: Förbättrad säker webbsökning</translation>
 <translation id="3846683726093018685">**Sammanfatta:** Beskriv det primära ämnet och syftet med innehållet på skärmbilden i en mening på färre än 30 ord.
 
           **Föreslå frågor:** Skapa en punktlista med tre till fem tankeväckande frågor som en användare kan ställa för att bättre förstå skärmbilden. Minst en fråga ska handla specifikt om ett visuellt objekt, dess design eller placering.</translation>

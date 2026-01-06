@@ -188,11 +188,9 @@
 <translation id="2903493209154104877">地址</translation>
 <translation id="2910701580606108292">需先询问，得到许可后才允许网站播放受保护的内容</translation>
 <translation id="2918484639460781603">前往“设置”</translation>
-<translation id="293060180538644702">接收 Chrome 提示通知</translation>
 <translation id="2932883381142163287">举报滥用行为</translation>
 <translation id="2939338015096024043">开启此设置后，网站可以请求跟踪您的摄像头位置并了解您周围的环境。关闭此设置后，网站无法跟踪您的摄像头位置，也无法了解您周围的环境。</translation>
 <translation id="2968755619301702150">证书查看器</translation>
-<translation id="2979365474350987274">第三方 Cookie 受到限制</translation>
 <translation id="2990583317361835189">不允许网站使用移动传感器</translation>
 <translation id="3004438526346162184">网站可以使用此功能管理所有显示屏上的窗口</translation>
 <translation id="3008272652534848354">重置权限</translation>
@@ -631,7 +629,6 @@
 <translation id="7835852323729233924">正在播放媒体</translation>
 <translation id="783819812427904514">将视频取消静音</translation>
 <translation id="7846076177841592234">取消选择</translation>
-<translation id="7881140103901777395">Chrome 会限制大多数网站使用第三方 Cookie。不过，该网站已获准使用第三方 Cookie，因为它需要依赖这类 Cookie 来提供基本服务。\n\n访问“设置”可<ph name="BEGIN_LINK" />管理对第三方 Cookie 的使用权限<ph name="END_LINK" />。</translation>
 <translation id="7882806643839505685">允许特定网站播放声音。</translation>
 <translation id="7891547341794213004">隐藏“继续使用此标签页”卡片</translation>
 <translation id="789722939441020330">不允许网站自动下载多个文件</translation>

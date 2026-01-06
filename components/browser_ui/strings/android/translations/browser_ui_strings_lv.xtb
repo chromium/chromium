@@ -188,11 +188,9 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="2903493209154104877">Adreses</translation>
 <translation id="2910701580606108292">Jautāt, pirms atļaut vietnēm atskaņot aizsargātu saturu</translation>
 <translation id="2918484639460781603">Pāriet uz iestatījumiem</translation>
-<translation id="293060180538644702">Saņemiet paziņojumus par Chrome padomiem</translation>
 <translation id="2932883381142163287">Ziņot par ļaunprātīgu izmantošanu</translation>
 <translation id="2939338015096024043">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju izsekot kameras pozīciju un iegūt informāciju par jūsu apkārtni. Kad šis slēdzis ir izslēgts, vietnes nevar izsekot kameras pozīciju un iegūt informāciju par jūsu apkārtni.</translation>
 <translation id="2968755619301702150">Sertifikātu skatītājs</translation>
-<translation id="2979365474350987274">Trešo pušu sīkfailu izmantošana ir ierobežota</translation>
 <translation id="2990583317361835189">Neļaut vietnēm izmantot kustību sensorus</translation>
 <translation id="3004438526346162184">Vietnes var izmantot šo funkciju, lai pārvaldītu logus visos jūsu displejos.</translation>
 <translation id="3008272652534848354">Atiestatīt atļaujas</translation>
@@ -631,7 +629,6 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="7835852323729233924">Multivides atskaņošana</translation>
 <translation id="783819812427904514">Ieslēgt video skaņu</translation>
 <translation id="7846076177841592234">Atcelt atlasi</translation>
-<translation id="7881140103901777395">Pārlūkā Chrome lielākajai daļai vietņu tiek liegts izmantot trešo pušu sīkfailus. Tomēr šajā vietnē trešo pušu sīkfaili ir atļauti, jo vietnei tie ir nepieciešami, lai nodrošinātu pamatpakalpojumus.\n\nLai <ph name="BEGIN_LINK" />pārvaldītu piekļuvi trešo pušu sīkfailiem<ph name="END_LINK" />, pārejiet uz iestatījumiem.</translation>
 <translation id="7882806643839505685">Atļaut skaņu konkrētai vietnei</translation>
 <translation id="7891547341794213004">Paslēpt kartīti “Turpināt šajā cilnē”</translation>
 <translation id="789722939441020330">Neļaut vietnēm automātiski lejupielādēt vairākus failus</translation>

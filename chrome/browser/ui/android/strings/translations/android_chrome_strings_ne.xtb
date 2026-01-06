@@ -49,7 +49,6 @@
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
 <translation id="1183189057400844278">आफ्नो Google खातामा सेभ गरिएका पासवर्डहरू सधैँ प्रयोग गर्न सकियोस् भन्नाका लागि आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="1187810343066461819">यो कारबाट बुकमार्क, हिस्ट्री र अन्य डेटा पनि मेटाउनुहोस्</translation>
-<translation id="1193589902336218259">सुझावसम्बन्धी नोटिफिकेसनहरू अन गर्नुहोस्</translation>
 <translation id="1193729455103054076">भरपर्दो पासवर्ड प्रयोग गर्ने हो?</translation>
 <translation id="11947597112837849">इमेल ठेगाना</translation>
 <translation id="1197267115302279827">बुकमार्कहरू सार्नुहोस्</translation>
@@ -994,7 +993,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5267572070504076962">खतरनाक साइटहरूबाट जोगिन Safe Browsing अन गर्नुहोस्</translation>
 <translation id="5271967389191913893">यन्त्रले डाउनलोड गर्नको लागि सामग्रीलाई खोल्न सक्दैन।</translation>
 <translation id="5273031377282080577">तपाईंका एड्मिन यो सेटिङ व्यवस्थापन गर्नुहुन्छ।</translation>
-<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{प्रयोग नगरिएको एउटा साइट अनसब्स्क्राइब गरिएको छ}other{प्रयोग नगरिएका # वटा साइट अनसब्स्क्राइब गरिएका छन्}}</translation>
 <translation id="5292796745632149097">निम्न यन्त्रमा पठाउनुहोस्</translation>
 <translation id="5301876394151419436">तपाईं <ph name="EMAIL" /> खाताबाट साइन इन हुनुहुन्छ। तपाईं जुनसुकै बेला सेटिङमा गई सिंक गर्न छाड्न सक्नुहुन्छ। Google ले तपाईंले विगतमा हेरेका वेबपेजका आधारमा Search र अन्य सेवाहरू पर्सनलाइज गर्न सक्छ।</translation>
 <translation id="5304593522240415983">यो क्षेत्र खाली हुन सक्दैन</translation>
@@ -1585,7 +1583,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7612619742409846846">यस रूपमा Google मा साइन इन गरियो</translation>
 <translation id="7612989789287281429">साइन इन गरिँदै छ…</translation>
 <translation id="7619072057915878432"><ph name="FILE_NAME" /> डाउनलोड नेटवर्क असफलताका कारणले असफल भयो।</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{एउटा साइट अनसब्सक्राइब गरिएको छ}other{# वटा साइट अनसब्सक्राइब गरिएका छन्}}</translation>
 <translation id="7626032353295482388">Chrome मा स्वागत छ</translation>
 <translation id="7628417132421583481">पासवर्ड म्यानेजरमा जानुहोस्</translation>
 <translation id="7630202231528827509">सेवा प्रदायकको URL</translation>

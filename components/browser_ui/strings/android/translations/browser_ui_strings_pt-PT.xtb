@@ -188,11 +188,9 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="2903493209154104877">Moradas</translation>
 <translation id="2910701580606108292">Perguntar antes de permitir que os sites reproduzam conteúdos protegidos</translation>
 <translation id="2918484639460781603">Ir para definições</translation>
-<translation id="293060180538644702">Receba notificações de dicas do Chrome</translation>
 <translation id="2932883381142163287">Denunciar abuso</translation>
 <translation id="2939338015096024043">Quando esta opção está ativada, os sites podem pedir para monitorizar a posição da câmara e saber mais sobre o ambiente à sua volta. Quando esta opção está desativada, os sites não podem monitorizar a posição da câmara nem saber mais sobre o ambiente à sua volta.</translation>
 <translation id="2968755619301702150">Visualizador de certificados</translation>
-<translation id="2979365474350987274">Os cookies de terceiros são limitados</translation>
 <translation id="2990583317361835189">Não permitir que os sites utilizem sensores de movimentos</translation>
 <translation id="3004438526346162184">Os sites podem usar esta funcionalidade para gerir janelas em todos os seus ecrãs</translation>
 <translation id="3008272652534848354">Repor autorizações</translation>
@@ -631,7 +629,6 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="7835852323729233924">Multimédia em reprodução</translation>
 <translation id="783819812427904514">Reativar o som do vídeo</translation>
 <translation id="7846076177841592234">Cancelar seleção</translation>
-<translation id="7881140103901777395">Na maioria dos sites, o Chrome limita a utilização de cookies de terceiros. Porém, os cookies de terceiros são permitidos neste site porque este depende deles para oferecer serviços básicos.\n\nAceda às definições para <ph name="BEGIN_LINK" />gerir o acesso a cookies de terceiros<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Permita a reprodução de som de um site específico.</translation>
 <translation id="7891547341794213004">Ocultar cartão Continuar com este separador</translation>
 <translation id="789722939441020330">Não permitir que os sites transfiram automaticamente vários ficheiros</translation>
