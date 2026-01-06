@@ -2378,9 +2378,8 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
             token);
         frame->UpdateAcquireSyncToken(token);
       }
-    } else if (frame->storage_type() !=
-               media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
-      // If the frame is not backed by a GPU memory buffer and the VEA does not
+    } else if (!frame->HasMappableSharedImage()) {
+      // If the frame is not backed by a mappable SI and the VEA does not
       // support SI encoding, we need to guarantee the frame must be converted
       // to a mappable frame.
       if (MaybeConvertRGBAToNV12AndEncode(frame_chunk, frame)) {
@@ -2391,8 +2390,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
       if (!frame) {
         return;
       }
-      CHECK_EQ(frame->storage_type(),
-               media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
+      CHECK(frame->HasMappableSharedImage());
     }
   }
   DoNativeEncodeWithNativeInput(frame_chunk, frame);
