@@ -5454,7 +5454,6 @@ static_library("ui") {
       "//chrome/browser/ai",
       "//chrome/browser/background/glic",
       "//chrome/browser/glic",
-      "//chrome/browser/glic:impl",
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/browser_ui:glow",
       "//chrome/browser/glic/browser_ui:glow_controller",
@@ -5463,7 +5462,6 @@ static_library("ui") {
       "//chrome/browser/glic/fre",
     ]
     allow_circular_includes_from += [
-      "//chrome/browser/glic:impl",
       "//chrome/browser/glic/fre",
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/browser_ui:glow_impl",

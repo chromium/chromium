@@ -63,13 +63,14 @@ source_set("glic") {
       "host/guest_util.h",
       "public/glic_keyed_service.h",
       "public/glic_keyed_service_factory.h",
-      "widget/glic_view.h",
       "widget/glic_window_controller.h",
     ]
 
     # Desktop-only sources
     sources += [
       "glic_hotkey.h",
+      "widget/glic_view.h",
+      "widget/glic_widget.h",
       "widget/local_hotkey_manager.h",
     ]
   } else {  # is_android
@@ -105,6 +106,7 @@ source_set("glic") {
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/glic/resources:browser_resources",
       "//chrome/browser/optimization_guide",
+      "//chrome/browser/themes",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
       "//ui/views",
@@ -270,7 +272,6 @@ source_set("impl") {
       "widget/glic_side_panel_ui.h",
       "widget/glic_view.cc",
       "widget/glic_widget.cc",
-      "widget/glic_widget.h",
       "widget/glic_window_controller_impl.cc",
       "widget/glic_window_controller_impl.h",
       "widget/inactive_view_controller.cc",
@@ -304,6 +305,7 @@ source_set("impl") {
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/signin",
     "//chrome/browser/subscription_eligibility",
+    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui:layout_constants",
