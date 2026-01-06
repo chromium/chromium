@@ -369,6 +369,8 @@ views::View* VerticalTabStripRegionView::SetTabStripView(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
+  tab_strip_view_->SetProperty(views::kMarginsKey,
+                               gfx::Insets::VH(kRegionVerticalPadding, 0));
   std::optional<size_t> separator_index = GetIndexOf(top_button_separator_);
   CHECK(separator_index.has_value());
   ReorderChildView(tab_strip_view_, separator_index.value() + 1);
@@ -396,10 +398,6 @@ void VerticalTabStripRegionView::OnCollapsedStateChanged(
 
   if (tab_strip_view_) {
     tab_strip_view_->SetCollapsedState(state_controller->IsCollapsed());
-    tab_strip_view_->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::TLBR(kRegionVerticalPadding, horizontal_padding,
-                          kRegionVerticalPadding, 0));
   }
 }
 

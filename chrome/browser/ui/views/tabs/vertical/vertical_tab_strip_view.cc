@@ -69,9 +69,6 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
   const int region_horizontal_padding = GetLayoutConstant(
       is_collapsed_ ? VERTICAL_TAB_STRIP_COLLAPSED_HORIZONTAL_PADDING
                     : VERTICAL_TAB_STRIP_UNCOLLAPSED_HORIZONTAL_PADDING);
-
-  views::SizeBounds tab_container_size_bounds =
-      size_bounds.Inset(gfx::Insets::VH(kRegionVeritcalInteriorMargin, 0));
   int y = 0;
 
   // Allocate the available space between the pinned and unpinned containers so
@@ -84,9 +81,15 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
   }
 
   // Place the pinned container.
+  views::SizeBounds pinned_tab_container_size_bounds =
+      size_bounds.Inset(gfx::Insets::TLBR(kRegionVeritcalInteriorMargin,
+                                          region_horizontal_padding,
+                                          kRegionVeritcalInteriorMargin, 0));
   gfx::Rect pinned_container_bounds(
-      0, y, tab_container_size_bounds.width().value(),
-      pinned_tabs_scroll_view_->GetPreferredSize(tab_container_size_bounds)
+      region_horizontal_padding, y,
+      pinned_tab_container_size_bounds.width().value(),
+      pinned_tabs_scroll_view_
+          ->GetPreferredSize(pinned_tab_container_size_bounds)
           .height());
   pinned_container_bounds.set_height(
       std::min(pinned_container_bounds.height(), (remaining_height / 2)));
@@ -102,9 +105,10 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
                                !pinned_tabs_container_view_->children().empty();
   if (is_collapsed_ && has_pinned_tabs) {
     int separator_width =
-        size_bounds.width().value() - region_horizontal_padding;
+        size_bounds.width().value() - 2 * region_horizontal_padding;
     gfx::Rect tabs_separator_bounds(
-        0, y, separator_width, tabs_separator_->GetPreferredSize().height());
+        region_horizontal_padding, y, separator_width,
+        tabs_separator_->GetPreferredSize().height());
     layouts.child_layouts.emplace_back(tabs_separator_.get(), true,
                                        tabs_separator_bounds);
 
@@ -114,9 +118,12 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
                                        gfx::Rect());
   }
 
-  // Place the unpinned container.
-  gfx::Rect unpinned_container_bounds(
-      0, y, tab_container_size_bounds.width().value(), remaining_height);
+  // Place the unpinned container using the entire available width, we do not
+  // inset the x value by |region_horizontal_padding| here because, when the tab
+  // strip is collapsed, tab groups need to draw the group colored line in this
+  // space.
+  gfx::Rect unpinned_container_bounds(0, y, size_bounds.width().value(),
+                                      remaining_height);
   layouts.child_layouts.emplace_back(unpinned_tabs_scroll_view_.get(),
                                      unpinned_tabs_scroll_view_->GetVisible(),
                                      unpinned_container_bounds);

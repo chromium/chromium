@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -57,12 +58,18 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
   // Layout children in order. Children will have their preferred height and
   // fill available width.
   for (auto* child : children) {
+    // The leading inset should not be applied for tab groups when the tab strip
+    // is collapsed since the group color line is drawn in that space.
+    int x = views::AsViewClass<VerticalTabGroupView>(child) && is_collapsed_
+                ? 0
+                : horizontal_padding;
     views::SizeBounds child_bounds =
         views::SizeBounds(size_bounds.width().is_bounded()
-                              ? (size_bounds.width() - horizontal_padding)
+                              ? (size_bounds.width() - (x + horizontal_padding))
                               : size_bounds.width(),
                           {});
     gfx::Rect bounds = gfx::Rect(child->GetPreferredSize(child_bounds));
+    bounds.set_x(x);
 
     const bool is_child_dragging = dragging_views_.contains(child);
     if (is_child_dragging) {
@@ -82,11 +89,12 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
     // If width is bounded, child views should respect the width constraints and
     // take up the available width excluding trailing horizontal padding.
     if (size_bounds.width().is_bounded()) {
-      bounds.set_width(size_bounds.width().value() - horizontal_padding);
+      bounds.set_width(size_bounds.width().value() - bounds.x() -
+                       horizontal_padding);
     }
     layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
     height += bounds.height() + kTabVerticalPadding;
-    width = std::max(width, bounds.width() + horizontal_padding);
+    width = std::max(width, bounds.width() + bounds.x());
   }
   // Remove excess padding if needed.
   if (!children.empty()) {

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
@@ -193,6 +194,12 @@ void VerticalTabStripController::ToggleTabGroupCollapsedState(
           base::UserMetricsAction("TabGroups_TabGroupHeader_Collapsed"));
     }
   }
+}
+
+bool VerticalTabStripController::IsCollapsed() {
+  tabs::VerticalTabStripStateController* state_controller =
+      tabs::VerticalTabStripStateController::From(browser_view_->browser());
+  return state_controller && state_controller->IsCollapsed();
 }
 
 bool VerticalTabStripController::IsContextMenuCommandChecked(

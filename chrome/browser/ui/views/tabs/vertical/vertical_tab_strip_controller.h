@@ -50,6 +50,7 @@ class VerticalTabStripController : public TabContextMenuController::Delegate {
   void ExtendSelectionTo(const tabs::TabInterface* tab_interface);
   void ToggleTabGroupCollapsedState(const TabGroup* group,
                                     ToggleTabGroupCollapsedStateOrigin origin);
+  bool IsCollapsed();
 
   TabContextMenuController* GetTabContextMenuController() {
     return context_menu_controller_.get();

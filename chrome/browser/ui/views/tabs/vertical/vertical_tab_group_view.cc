@@ -6,8 +6,11 @@
 
 #include <numeric>
 
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
@@ -32,6 +35,7 @@
 namespace {
 constexpr int kTabVerticalPadding = 2;
 constexpr int kGroupLineWidth = 2;
+constexpr int kGroupLineCollapsedLeadingPadding = 2;
 constexpr int kGroupLineCornerRadius = 4;
 constexpr int kGroupHeaderHeight = 26;
 constexpr int kGroupHeaderVerticalMargin = 4;
@@ -79,14 +83,28 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
   views::ProposedLayout layouts;
   int width = 0;
   int height = kGroupHeaderVerticalMargin;
+  auto* controller = collection_node_->GetController();
+  bool is_tab_strip_collapsed = controller && controller->IsCollapsed();
 
   gfx::Rect header_bounds;
+  gfx::Rect group_line_bounds;
+  group_line_bounds.set_width(kGroupLineWidth);
+
+  // If the tab strip is collapsed then the group line should appear on the
+  // leading side of all grouped tabs and the header.
+  if (is_tab_strip_collapsed) {
+    group_line_bounds.set_x(kGroupLineCollapsedLeadingPadding);
+    group_line_bounds.set_y(height);
+    header_bounds.set_x(
+        GetLayoutConstant(VERTICAL_TAB_STRIP_COLLAPSED_HORIZONTAL_PADDING));
+  }
+
   header_bounds.set_y(height);
   header_bounds.set_height(kGroupHeaderHeight);
   // If width is bounded, the group header should respect the width constraints
   // and take up the available width excluding trailing horizontal padding.
   if (size_bounds.width().is_bounded()) {
-    header_bounds.set_width(size_bounds.width().value());
+    header_bounds.set_width(size_bounds.width().value() - header_bounds.x());
   }
   layouts.child_layouts.emplace_back(
       group_header_.get(), group_header_->GetVisible(), header_bounds);
@@ -94,8 +112,12 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
       header_bounds.height() + kGroupHeaderVerticalMargin + kTabVerticalPadding;
   width = std::max(width, header_bounds.width());
 
-  gfx::Rect group_line_bounds = gfx::Rect(
-      (kTabLeadingPadding - kGroupLineWidth) / 2, height, kGroupLineWidth, 0);
+  // If the tab strip is not collapsed then the group line is below and left
+  // aligned with the header.
+  if (!is_tab_strip_collapsed) {
+    group_line_bounds.set_x((kTabLeadingPadding - kGroupLineWidth) / 2);
+    group_line_bounds.set_y(height);
+  }
 
   const std::vector<views::View*> children =
       collection_node_ ? collection_node_->GetDirectChildren()
@@ -106,11 +128,15 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
   for (auto* child : children) {
     gfx::Rect bounds = gfx::Rect(child->GetPreferredSize());
     bounds.set_y(height);
-    bounds.set_x(kTabLeadingPadding);
+    // If the tab strip is not collapsed then the groups tabs should be inset.
+    bounds.set_x(
+        is_tab_strip_collapsed
+            ? GetLayoutConstant(VERTICAL_TAB_STRIP_COLLAPSED_HORIZONTAL_PADDING)
+            : kTabLeadingPadding);
     // If width is bounded, child views should respect the width constraints
     // and take up the available width excluding trailing horizontal padding.
     if (size_bounds.width().is_bounded()) {
-      bounds.set_width(size_bounds.width().value() - kTabLeadingPadding);
+      bounds.set_width(size_bounds.width().value() - bounds.x());
     }
     layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
     height += bounds.height() + kTabVerticalPadding;
