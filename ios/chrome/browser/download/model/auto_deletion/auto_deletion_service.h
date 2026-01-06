@@ -115,7 +115,13 @@ class AutoDeletionService : public web::DownloadTaskObserver {
 
   // Invoked after the download task data is read from data. It finishes
   // scheduling the file for deletion.
-  void MarkTaskForDeletionHelper(const std::string& task_id, NSData* data);
+  void UpdateAwaitingTaskOnResponseData(const std::string& task_id,
+                                        NSData* data);
+
+  // Updates the DownloadTaskDetails::file_content property associated with
+  // `task_id` if `data` is not null.
+  void MaybeUpdateAwaitingTaskFileContent(const std::string& task_id,
+                                          NSData* data);
 
   // Notifies the Scheduler to remove its expired ScheduledFiles.
   void OnFilesDeletedFromDisk(base::Time instant, base::OnceClosure closure);
