@@ -44,8 +44,6 @@ class VerticalUnpinnedTabContainerView : public views::View,
   base::CallbackListSubscription RegisterWillDestroyCallback(
       base::OnceClosure callback) override;
 
-  void SetCollapsedState(bool is_collapsed);
-
  private:
   void ResetCollectionNode();
 
@@ -56,8 +54,6 @@ class VerticalUnpinnedTabContainerView : public views::View,
   // Clears drag state and removes the transformations that were being used for
   // the drag.
   void ResetDragState();
-
-  bool is_collapsed_ = false;
 
   raw_ptr<TabCollectionNode> collection_node_;
   const raw_ref<TabCollectionAnimatingLayoutManager> layout_manager_;

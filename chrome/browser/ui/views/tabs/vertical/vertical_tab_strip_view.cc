@@ -145,8 +145,6 @@ VerticalTabStripView::GetUnpinnedTabsContainer() {
 void VerticalTabStripView::SetCollapsedState(bool is_collapsed) {
   if (is_collapsed != is_collapsed_) {
     is_collapsed_ = is_collapsed;
-    pinned_tabs_container_view_->SetCollapsedState(is_collapsed);
-    unpinned_tabs_container_view_->SetCollapsedState(is_collapsed);
     InvalidateLayout();
   }
 }

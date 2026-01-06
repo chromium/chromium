@@ -48,10 +48,12 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
   views::ProposedLayout layouts;
   int width = 0;
   int height = 0;
+  auto* controller = collection_node_->GetController();
+  bool is_collapsed = controller && controller->IsCollapsed();
 
   const int horizontal_padding = GetLayoutConstant(
-      is_collapsed_ ? VERTICAL_TAB_STRIP_COLLAPSED_HORIZONTAL_PADDING
-                    : VERTICAL_TAB_STRIP_UNCOLLAPSED_HORIZONTAL_PADDING);
+      is_collapsed ? VERTICAL_TAB_STRIP_COLLAPSED_HORIZONTAL_PADDING
+                   : VERTICAL_TAB_STRIP_UNCOLLAPSED_HORIZONTAL_PADDING);
 
   const auto children = collection_node_->GetDirectChildren();
 
@@ -60,7 +62,7 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
   for (auto* child : children) {
     // The leading inset should not be applied for tab groups when the tab strip
     // is collapsed since the group color line is drawn in that space.
-    int x = views::AsViewClass<VerticalTabGroupView>(child) && is_collapsed_
+    int x = views::AsViewClass<VerticalTabGroupView>(child) && is_collapsed
                 ? 0
                 : horizontal_padding;
     views::SizeBounds child_bounds =
@@ -211,11 +213,6 @@ base::CallbackListSubscription
 VerticalUnpinnedTabContainerView::RegisterWillDestroyCallback(
     base::OnceClosure callback) {
   return on_will_destroy_callback_list_.Add(std::move(callback));
-}
-
-void VerticalUnpinnedTabContainerView::SetCollapsedState(bool is_collapsed) {
-  // Parent view handles triggering layout update.
-  is_collapsed_ = is_collapsed;
 }
 
 bool VerticalUnpinnedTabContainerView::CanDropTab() {
