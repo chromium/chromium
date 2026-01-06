@@ -20,7 +20,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -116,15 +115,11 @@ public class BottomControlsCoordinator implements BackPressHandler {
         mSceneLayer = new ScrollingBottomViewSceneLayer(root, root.getTopShadowHeight());
         PropertyModelChangeProcessor.create(
                 model, new ViewHolder(root, mSceneLayer), BottomControlsViewBinder::bind);
-        if (ChromeFeatureList.sBcivBottomControls.isEnabled()) {
-            Set<PropertyKey> exclusions = new HashSet();
-            exclusions.add(BottomControlsProperties.ANDROID_VIEW_VISIBLE);
-            layoutManager.createCompositorMCPWithExclusions(
-                    model, mSceneLayer, BottomControlsViewBinder::bindCompositorMCP, exclusions);
-        } else {
-            layoutManager.createCompositorMCP(
-                    model, mSceneLayer, BottomControlsViewBinder::bindCompositorMCP);
-        }
+        Set<PropertyKey> exclusions = new HashSet();
+        exclusions.add(BottomControlsProperties.ANDROID_VIEW_VISIBLE);
+        layoutManager.createCompositorMCPWithExclusions(
+                model, mSceneLayer, BottomControlsViewBinder::bindCompositorMCP, exclusions);
+
         int bottomControlsHeightId = R.dimen.bottom_controls_height;
 
         View container = root.findViewById(R.id.bottom_container_slot);

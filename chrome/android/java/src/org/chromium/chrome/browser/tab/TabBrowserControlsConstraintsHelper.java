@@ -16,7 +16,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsOffsetTagModifications;
 import org.chromium.cc.input.BrowserControlsState;
-import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
@@ -237,17 +236,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
 
         boolean isNewStateForced = isStateForced(constraints);
         if (!mOffsetTagsInfo.hasTags() && !isNewStateForced) {
-            OffsetTag bottomControlsOffsetTag = null;
-            if (ChromeFeatureList.sBcivBottomControls.isEnabled()) {
-                bottomControlsOffsetTag = OffsetTag.createRandom();
-            }
-
-            updateOffsetTags(
-                    new BrowserControlsOffsetTagsInfo(
-                            OffsetTag.createRandom(),
-                            OffsetTag.createRandom(),
-                            bottomControlsOffsetTag),
-                    constraints);
+            updateOffsetTags(new BrowserControlsOffsetTagsInfo(), constraints);
         } else if (mOffsetTagsInfo.hasTags() && isNewStateForced) {
             updateOffsetTags(new BrowserControlsOffsetTagsInfo(null, null, null), constraints);
         }

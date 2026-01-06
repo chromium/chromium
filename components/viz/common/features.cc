@@ -39,11 +39,6 @@ namespace features {
 // involvement. For now, this applies only to top controls.
 BASE_FEATURE(kAndroidBrowserControlsInViz, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If this flag is enabled, AndroidBrowserControlsInViz and
-// BottomControlsRefactor with the "Dispatch yOffset" variation must also be
-// enabled.
-BASE_FEATURE(kAndroidBcivBottomControls, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If this flag is enabled, a DumpWithoutCrashing() is captured when a bad
 // state is detected when moving the composited UI. For example, this could
 // mean scrolling without a resource, or OffsetTagValues trying to position
@@ -524,10 +519,6 @@ bool ShouldRemoveRedirectionBitmap() {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-bool IsBcivBottomControlsEnabled() {
-  return base::FeatureList::IsEnabled(features::kAndroidBcivBottomControls);
-}
-
 bool IsBrowserControlsInVizEnabled() {
   return base::FeatureList::IsEnabled(features::kAndroidBrowserControlsInViz);
 }

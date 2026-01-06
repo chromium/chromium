@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerS
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -146,7 +145,7 @@ class EdgeToEdgeBottomChinMediator
 
     private boolean isVisible() {
         // This assumes the chin is at the very bottom, or all layers below the chin are scrollable.
-        if (ChromeFeatureList.sBcivBottomControls.isEnabled() && mModel.get(OFFSET_TAG) != null) {
+        if (mModel.get(OFFSET_TAG) != null) {
             return mBottomControlsStacker.getBrowserControls().getBottomControlOffset()
                     < mModel.get(HEIGHT);
         } else {

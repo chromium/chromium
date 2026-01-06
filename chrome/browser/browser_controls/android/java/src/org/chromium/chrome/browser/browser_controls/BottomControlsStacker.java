@@ -17,7 +17,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.OffsetTagConstraints;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
@@ -354,39 +353,37 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             @BrowserControlsState int constraints,
             boolean shouldUpdateOffsets) {
         mBrowserControlsState = constraints;
-        if (ChromeFeatureList.sBcivBottomControls.isEnabled()) {
-            mOffsetTagsInfo = offsetTagsInfo;
-            int additionalHeight = 0;
-            for (int layerType : STACK_ORDER) {
-                BottomControlsLayer layer = mLayers.get(layerType);
-                if (layer == null) continue;
+        mOffsetTagsInfo = offsetTagsInfo;
+        int additionalHeight = 0;
+        for (int layerType : STACK_ORDER) {
+            BottomControlsLayer layer = mLayers.get(layerType);
+            if (layer == null) continue;
 
-                if (isLayerNonScrollable(layer.getType())) {
-                    layer.clearOffsetTag();
-                } else {
-                    additionalHeight += layer.updateOffsetTag(offsetTagsInfo);
-                }
+            if (isLayerNonScrollable(layer.getType())) {
+                layer.clearOffsetTag();
+            } else {
+                additionalHeight += layer.updateOffsetTag(offsetTagsInfo);
             }
+        }
 
-            int totalHeight = mTotalHeight;
-            if (totalHeight == INVALID_HEIGHT) {
-                // TODO(crbug.com/463962392): Investigate if this causes any other bugs.
-                Log.w(TAG, "Using mTotalHeight before initialization");
+        int totalHeight = mTotalHeight;
+        if (totalHeight == INVALID_HEIGHT) {
+            // TODO(crbug.com/463962392): Investigate if this causes any other bugs.
+            Log.w(TAG, "Using mTotalHeight before initialization");
 
-                totalHeight = 0;
-            }
+            totalHeight = 0;
+        }
 
-            mBrowserControlsSizer.setBottomControlsAdditionalHeight(additionalHeight);
-            offsetTagsInfo.mBottomControlsConstraints =
-                    new OffsetTagConstraints(0, 0, 0, totalHeight + additionalHeight);
+        mBrowserControlsSizer.setBottomControlsAdditionalHeight(additionalHeight);
+        offsetTagsInfo.mBottomControlsConstraints =
+                new OffsetTagConstraints(0, 0, 0, totalHeight + additionalHeight);
 
-            if (shouldUpdateOffsets) {
-                repositionLayers(
-                        mBrowserControlsSizer.getBottomControlOffset(),
-                        mBrowserControlsSizer.getBottomControlsMinHeightOffset(),
-                        false,
-                        isVisibilityForced());
-            }
+        if (shouldUpdateOffsets) {
+            repositionLayers(
+                    mBrowserControlsSizer.getBottomControlOffset(),
+                    mBrowserControlsSizer.getBottomControlsMinHeightOffset(),
+                    false,
+                    isVisibilityForced());
         }
     }
 
@@ -414,7 +411,6 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             int bottomControlsMinHeightOffset,
             boolean animated,
             boolean offsetsAppliedByBrowser) {
-
         // 0. Initialize the offset for each layer.
         SparseIntArray yOffsetOfLayers = new SparseIntArray(STACK_ORDER.length);
         int height = 0;
@@ -455,7 +451,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             //
             // When the offsets are applied by the browser, the browser should be in full control of
             // the layers' positions, and the behavior is identical to having BCIV disabled.
-            if (ChromeFeatureList.sBcivBottomControls.isEnabled() && !offsetsAppliedByBrowser) {
+            if (!offsetsAppliedByBrowser) {
                 layerYOffset = mLayerRestingOffsets.get(type);
             } else {
                 boolean shouldScrollOff = shouldLayerScrollOff(layer, totalMinHeight);
@@ -613,14 +609,12 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             // than one non-scrollable layer exists.
             mHasMoreThanOneNonScrollableLayer = minHeight != 0;
 
-            if (ChromeFeatureList.sBcivBottomControls.isEnabled()) {
-                if (shouldScrollOff) {
-                    if (mOffsetTagsInfo != null) {
-                        layer.updateOffsetTag(mOffsetTagsInfo);
-                    }
-                } else {
-                    layer.clearOffsetTag();
+            if (shouldScrollOff) {
+                if (mOffsetTagsInfo != null) {
+                    layer.updateOffsetTag(mOffsetTagsInfo);
                 }
+            } else {
+                layer.clearOffsetTag();
             }
 
             height += layer.getHeight();

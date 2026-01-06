@@ -35,14 +35,11 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRule;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -150,40 +147,6 @@ public class EdgeToEdgeBottomChinMediatorTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.BCIV_BOTTOM_CONTROLS)
-    public void testUpdateColor_bciv_disabled() {
-        // make view visible
-        mModel.set(HEIGHT, DEFAULT_HEIGHT);
-        mMediator.onBrowserControlsOffsetUpdate(0);
-
-        mMediator.changeBottomChinColor(Color.BLUE);
-        assertEquals("The color should have been updated to blue.", Color.BLUE, mModel.get(COLOR));
-        assertEquals(
-                "The cached color should have been updated to blue.",
-                Color.BLUE,
-                mMediator.getNavigationBarColorForTesting());
-
-        mMediator.changeBottomChinColor(Color.RED);
-        assertEquals("The color should have been updated to red.", Color.RED, mModel.get(COLOR));
-        assertEquals(
-                "The cached color should have been updated to red.",
-                Color.RED,
-                mMediator.getNavigationBarColorForTesting());
-
-        // scroll view offscreen
-        mMediator.onBrowserControlsOffsetUpdate(mModel.get(HEIGHT));
-
-        // color shouldn't be applied, but should be cached
-        mMediator.changeBottomChinColor(Color.WHITE);
-        assertEquals("The color should have not been updated.", Color.RED, mModel.get(COLOR));
-
-        // scroll view back on screen, should apply cached color
-        mMediator.onBrowserControlsOffsetUpdate(0);
-        assertEquals("The cached color should be applied.", Color.WHITE, mModel.get(COLOR));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.BCIV_BOTTOM_CONTROLS)
     public void testUpdateColor_bciv_enabled() {
         OffsetTag offsetTag = OffsetTag.createRandom();
         mModel.set(OFFSET_TAG, offsetTag);
@@ -204,13 +167,23 @@ public class EdgeToEdgeBottomChinMediatorTest {
 
         // scroll view offscreen
         doReturn(DEFAULT_HEIGHT).when(mBrowserControlsStateProvider).getBottomControlOffset();
+
+        // color shouldn't be applied, but should be cached
         mMediator.changeBottomChinColor(Color.WHITE);
         assertEquals("The color should have not been updated.", Color.RED, mModel.get(COLOR));
 
+        // scroll view back on screen, should apply cached color
+        doReturn(0).when(mBrowserControlsStateProvider).getBottomControlOffset();
+        mMediator.onBrowserControlsOffsetUpdate(0);
+        assertEquals("The cached color should be applied.", Color.WHITE, mModel.get(COLOR));
+
+        // scroll view offscreen
+        doReturn(DEFAULT_HEIGHT).when(mBrowserControlsStateProvider).getBottomControlOffset();
+
         // null out offset tag, browser offset should take over and color should be updated
         mModel.set(OFFSET_TAG, null);
-        mMediator.changeBottomChinColor(Color.WHITE);
-        assertEquals("The color should have updated to white.", Color.WHITE, mModel.get(COLOR));
+        mMediator.changeBottomChinColor(Color.BLUE);
+        assertEquals("The color should have updated to white.", Color.BLUE, mModel.get(COLOR));
     }
 
     @Test

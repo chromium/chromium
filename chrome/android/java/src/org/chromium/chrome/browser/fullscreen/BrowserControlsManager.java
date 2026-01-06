@@ -439,7 +439,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         if (mHasBottomControlsHeightAnimation) {
             mBottomAnimationInitialOffset = getBottomControlOffset();
         }
-        if (ChromeFeatureList.sBcivBottomControls.isEnabled() && !isVisibilityForced()) {
+        if (!isVisibilityForced()) {
             updateBottomControlsOffsetTagConstraints(
                     oldHeight, oldMinHeight, newHeight, newMinHeight);
         }
@@ -447,7 +447,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
 
     private void bottomControlsAnimationEnded() {
         mHasBottomControlsHeightAnimation = false;
-        if (ChromeFeatureList.sBcivBottomControls.isEnabled() && !isVisibilityForced()) {
+        if (!isVisibilityForced()) {
             updateBottomControlsOffsetTagConstraints(
                     mBottomControlsHeight,
                     mBottomControlsMinHeight,
@@ -776,9 +776,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             // frames because the browser submits a frame with the height update before the offsets
             // in the renderer and browser are updated.
             // When visibility is forced, BCIV doesn't apply, so offsets should still be updated.
-            if (!ChromeFeatureList.sBcivBottomControls.isEnabled()
-                    || !shouldAnimateBrowserControlsHeightChanges()
-                    || isVisibilityForced()) {
+            if (!shouldAnimateBrowserControlsHeightChanges() || isVisibilityForced()) {
                 notifyControlOffsetChanged();
             }
             notifyControlsPositionChanged();

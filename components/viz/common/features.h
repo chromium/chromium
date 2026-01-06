@@ -19,7 +19,6 @@
 namespace features {
 
 #if BUILDFLAG(IS_ANDROID)
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidBcivBottomControls);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidBrowserControlsInViz);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidDumpForBadCompositedUiState);
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -184,7 +183,6 @@ VIZ_COMMON_EXPORT bool Use90HzSwapChainCountFor72fps();
 VIZ_COMMON_EXPORT bool IsCrosContentAdjustedRefreshRateEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_ANDROID)
-VIZ_COMMON_EXPORT bool IsBcivBottomControlsEnabled();
 VIZ_COMMON_EXPORT bool IsBrowserControlsInVizEnabled();
 
 // If the allowlist is non-empty, the soc must be in the allowlist. Blocklist
