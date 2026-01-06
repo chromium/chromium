@@ -228,8 +228,6 @@ class ContextualSearchboxHandler
                          const SkBitmap& preview_bitmap);
 
   std::optional<base::Uuid> GetTaskId();
-  void AssociateTabWithTask(const base::UnguessableToken& file_token);
-  void DisassociateTabsFromTask();
 
   void RecordTabClickedMetric(tabs::TabInterface* const tab);
 
