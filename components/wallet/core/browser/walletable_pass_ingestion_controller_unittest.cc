@@ -20,11 +20,13 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/wallet/core/browser/data_models/data_model_utils.h"
 #include "components/wallet/core/browser/metrics/wallet_metrics.h"
+#include "components/wallet/core/browser/network/wallet_http_client.h"
 #include "components/wallet/core/browser/walletable_pass_client.h"
 #include "components/wallet/core/browser/walletable_pass_ingestion_controller_test_api.h"
 #include "components/wallet/core/browser/walletable_permission_utils.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "components/wallet/core/common/wallet_prefs.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -46,6 +48,15 @@ using testing::WithArgs;
 
 namespace wallet {
 namespace {
+
+class MockWalletHttpClient : public WalletHttpClient {
+ public:
+  MockWalletHttpClient() = default;
+  MOCK_METHOD(void,
+              SavePass,
+              (const WalletablePass& pass, SavePassCallback callback),
+              (override));
+};
 
 class MockWalletablePassClient : public WalletablePassClient {
  public:
@@ -76,6 +87,7 @@ class MockWalletablePassClient : public WalletablePassClient {
   MOCK_METHOD(PrefService*, GetPrefService, (), (override));
   MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
   MOCK_METHOD(GeoIpCountryCode, GetGeoIpCountryCode, (), (override));
+  MOCK_METHOD(WalletHttpClient*, GetWalletHttpClient, (), (override));
 };
 
 // Mock implementation of WalletablePassIngestionController that provides mocks
@@ -99,9 +111,11 @@ class WalletablePassIngestionControllerTest : public testing::Test {
   WalletablePassIngestionControllerTest() = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kWalletablePassDetection,
-        {{"walletable_supported_country_allowlist", "US"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{kWalletablePassDetection,
+          {{"walletable_supported_country_allowlist", "US"}}},
+         {kWalletablePassSave, {}}},
+        {});
     wallet::prefs::RegisterProfilePrefs(test_pref_service().registry());
     ON_CALL(mock_client_, GetOptimizationGuideDecider())
         .WillByDefault(Return(&mock_decider_));
@@ -115,6 +129,8 @@ class WalletablePassIngestionControllerTest : public testing::Test {
         .WillByDefault(Return(test_identity_environment().identity_manager()));
     ON_CALL(mock_client_, GetGeoIpCountryCode())
         .WillByDefault(Return(GeoIpCountryCode("US")));
+    ON_CALL(mock_client_, GetWalletHttpClient())
+        .WillByDefault(Return(&mock_wallet_http_client_));
     controller_ =
         std::make_unique<MockWalletablePassIngestionController>(&mock_client_);
   }
@@ -201,6 +217,9 @@ class WalletablePassIngestionControllerTest : public testing::Test {
                       PassCategoryToString(pass_category)}),
         expected_event, 1);
   }
+
+ protected:
+  testing::NiceMock<MockWalletHttpClient> mock_wallet_http_client_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -760,6 +779,7 @@ TEST_F(WalletablePassIngestionControllerTest,
 
   WalletablePassClient::WalletablePassBubbleResultCallback bubble_callback;
   ExpectSaveBubbleOnClient(walletable_pass, &bubble_callback);
+  EXPECT_CALL(mock_wallet_http_client_, SavePass);
 
   test_api(controller()).ShowSaveBubble(url, walletable_pass);
 

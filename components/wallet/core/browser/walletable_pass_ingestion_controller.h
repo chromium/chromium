@@ -16,6 +16,7 @@
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
 #include "components/wallet/core/browser/data_models/wallet_barcode.h"
 #include "components/wallet/core/browser/data_models/walletable_pass.h"
+#include "components/wallet/core/browser/network/wallet_http_client.h"
 #include "components/wallet/core/browser/strike_databases/walletable_pass_consent_strike_database.h"
 #include "components/wallet/core/browser/strike_databases/walletable_pass_save_strike_database_by_host.h"
 #include "components/wallet/core/browser/walletable_pass_client.h"
@@ -152,6 +153,11 @@ class WalletablePassIngestionController {
       const GURL& url,
       WalletablePass walletable_pass,
       WalletablePassClient::WalletablePassBubbleResult result);
+
+  // Callback invoked when the pass is saved successfully or fails.
+  void OnPassSaved(const GURL& url,
+                   base::expected<WalletHttpClient::SavePassResult,
+                                  WalletHttpClient::WalletRequestError> result);
 
   // A raw reference to the client, which owns `this` and therefore outlives
   // it.

@@ -20,6 +20,7 @@ static_library("wallet") {
     "//components/variations/service",
     "//components/wallet/content/browser",
     "//components/wallet/core/browser",
+    "//services/network/public/cpp",
   ]
 }
 

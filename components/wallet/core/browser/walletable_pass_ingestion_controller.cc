@@ -6,6 +6,8 @@
 
 #include "base/barrier_closure.h"
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
@@ -15,8 +17,10 @@
 #include "components/wallet/core/browser/data_models/data_model_utils.h"
 #include "components/wallet/core/browser/data_models/walletable_pass.h"
 #include "components/wallet/core/browser/metrics/wallet_metrics.h"
+#include "components/wallet/core/browser/network/wallet_http_client.h"
 #include "components/wallet/core/browser/walletable_pass_client.h"
 #include "components/wallet/core/browser/walletable_permission_utils.h"
+#include "components/wallet/core/common/wallet_features.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 
@@ -430,7 +434,12 @@ void WalletablePassIngestionController::OnGetSaveBubbleResult(
   const std::string category = PassCategoryToString(pass_category);
   switch (result) {
     case kAccepted:
-      // TODO(crbug.com/452579752): Save pass to Wallet.
+      if (base::FeatureList::IsEnabled(kWalletablePassSave)) {
+        client_->GetWalletHttpClient()->SavePass(
+            walletable_pass,
+            base::BindOnce(&WalletablePassIngestionController::OnPassSaved,
+                           weak_ptr_factory_.GetWeakPtr(), url));
+      }
       save_strike_db_->ClearStrikes(
           WalletablePassSaveStrikeDatabaseByHost::GetId(category,
                                                         url.GetHost()));
@@ -470,6 +479,13 @@ void WalletablePassIngestionController::OnGetSaveBubbleResult(
           metrics::WalletablePassSaveFunnelEvents::kSaveBubbleWasDiscarded);
       break;
   }
+}
+
+void WalletablePassIngestionController::OnPassSaved(
+    const GURL& url,
+    base::expected<WalletHttpClient::SavePassResult,
+                   WalletHttpClient::WalletRequestError> result) {
+  // TODO(crbug.com/470178423): Log save success / failure to UMA and cache url.
 }
 
 }  // namespace wallet
