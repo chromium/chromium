@@ -102,57 +102,43 @@ std::optional<DomStorageDatabase::MapMetadata> TryParseAccessMetadata(
   };
 }
 
-LocalStorageLevelDB::LocalStorageLevelDB(PassKey) {}
-
-LocalStorageLevelDB::~LocalStorageLevelDB() = default;
-
-DbStatus LocalStorageLevelDB::Open(
-    PassKey,
-    const base::FilePath& directory,
-    const std::string& name,
-    const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
-        memory_dump_id) {
-  ASSIGN_OR_RETURN(
-      leveldb_,
-      DomStorageDatabaseLevelDB::Open(
-          directory, name, memory_dump_id, kLocalStorageLevelDBVersionKey,
-          /*min_supported_version=*/kLocalStorageLevelDBVersion,
-          /*max_supported_version=*/kLocalStorageLevelDBVersion));
-  return DbStatus::OK();
-}
-
-DomStorageDatabase::Key LocalStorageLevelDB::CreateAccessMetaDataKey(
+// Returns "METAACCESS:<serialized `storage_key`>".
+DomStorageDatabase::Key CreateAccessMetaDataKey(
     const blink::StorageKey& storage_key) {
   return CreatePrefixedStorageKey(kAccessMetaPrefix, storage_key);
 }
 
-DomStorageDatabase::Key LocalStorageLevelDB::CreateWriteMetaDataKey(
+// Returns "META:<serialized `storage_key`>".
+DomStorageDatabase::Key CreateWriteMetaDataKey(
     const blink::StorageKey& storage_key) {
   return CreatePrefixedStorageKey(kWriteMetaPrefix, storage_key);
 }
 
-DomStorageDatabase::Value LocalStorageLevelDB::CreateAccessMetaDataValue(
-    base::Time last_accessed) {
+// Return the the serialized bytes for the `LocalStorageAreaAccessMetaData`
+// protobuf with `last_accessed`.
+DomStorageDatabase::Value CreateAccessMetaDataValue(base::Time last_accessed) {
   storage::LocalStorageAreaAccessMetaData metadata;
   metadata.set_last_accessed(last_accessed.ToInternalValue());
   return ToBytes(metadata.SerializeAsString());
 }
 
-DomStorageDatabase::Value LocalStorageLevelDB::CreateWriteMetaDataValue(
-    base::Time last_modified,
-    base::ByteSize total_size) {
+// Return the the serialized bytes for the `LocalStorageAreaWriteMetaData`
+// protobuf with `last_modified` and `total_size`.
+DomStorageDatabase::Value CreateWriteMetaDataValue(base::Time last_modified,
+                                                   base::ByteSize total_size) {
   storage::LocalStorageAreaWriteMetaData metadata;
   metadata.set_last_modified(last_modified.ToInternalValue());
   metadata.set_size_bytes(total_size.InBytes());
   return ToBytes(metadata.SerializeAsString());
 }
 
-DomStorageDatabase::Key LocalStorageLevelDB::GetMapPrefix(
-    const blink::StorageKey& storage_key) {
+// Returns "_<storage key>\x00", which matches all of the map key/value pairs
+// for `storage_key`.
+DomStorageDatabase::Key GetMapPrefix(const blink::StorageKey& storage_key) {
   const std::string serialized_storage_key =
       storage_key.SerializeForLocalStorage();
 
-  Key map_prefix;
+  DomStorageDatabase::Key map_prefix;
   map_prefix.reserve(/*kLocalStorageSessionId=*/1 +
                      serialized_storage_key.size() +
                      /*kLocalStorageKeyMapSeparator=*/1);
@@ -170,6 +156,25 @@ DomStorageDatabase::Key LocalStorageLevelDB::GetMapPrefix(
   // Append a null byte: '0x00'.
   map_prefix.push_back(kLocalStorageKeyMapSeparator);
   return map_prefix;
+}
+
+LocalStorageLevelDB::LocalStorageLevelDB(PassKey) {}
+
+LocalStorageLevelDB::~LocalStorageLevelDB() = default;
+
+DbStatus LocalStorageLevelDB::Open(
+    PassKey,
+    const base::FilePath& directory,
+    const std::string& name,
+    const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+        memory_dump_id) {
+  ASSIGN_OR_RETURN(
+      leveldb_,
+      DomStorageDatabaseLevelDB::Open(
+          directory, name, memory_dump_id, kLocalStorageLevelDBVersionKey,
+          /*min_supported_version=*/kLocalStorageLevelDBVersion,
+          /*max_supported_version=*/kLocalStorageLevelDBVersion));
+  return DbStatus::OK();
 }
 
 DomStorageDatabaseLevelDB& LocalStorageLevelDB::GetLevelDB() {

@@ -81,45 +81,6 @@ class LocalStorageLevelDB : public DomStorageDatabase {
                 const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
                     memory_dump_id);
 
-  // TODO(crbug.com/377242771): Make private after fully adopting the
-  // `DomStorageDatabase` interface, which will make LevelDB and SQLite
-  // swappable.
-  //
-  // Returns "METAACCESS:<serialized `storage_key`>".
-  static Key CreateAccessMetaDataKey(const blink::StorageKey& storage_key);
-
-  // TODO(crbug.com/377242771): Make private after fully adopting the
-  // `DomStorageDatabase` interface, which will make LevelDB and SQLite
-  // swappable.
-  //
-  // Returns "META:<serialized `storage_key`>".
-  static Key CreateWriteMetaDataKey(const blink::StorageKey& storage_key);
-
-  // TODO(crbug.com/377242771): Make private after fully adopting the
-  // `DomStorageDatabase` interface, which will make LevelDB and SQLite
-  // swappable.
-  //
-  // Return the the serialized bytes for the `LocalStorageAreaAccessMetaData`
-  // protobuf with `last_accessed`.
-  static Value CreateAccessMetaDataValue(base::Time last_accessed);
-
-  // TODO(crbug.com/377242771): Make private after fully adopting the
-  // `DomStorageDatabase` interface, which will make LevelDB and SQLite
-  // swappable.
-  //
-  // Return the the serialized bytes for the `LocalStorageAreaWriteMetaData`
-  // protobuf with `last_modified` and `total_size`.
-  static Value CreateWriteMetaDataValue(base::Time last_modified,
-                                        base::ByteSize total_size);
-
-  // TODO(crbug.com/377242771): Make private after fully adopting the
-  // `DomStorageDatabase` interface, which will make LevelDB and SQLite
-  // swappable.
-  //
-  // Returns "_<storage key>\x00", which matches all of the map key/value pairs
-  // for `storage_key`.
-  static Key GetMapPrefix(const blink::StorageKey& storage_key);
-
   // Implement the `DomStorageDatabase` interface:
   DomStorageDatabaseLevelDB& GetLevelDB() override;
   StatusOr<std::map<Key, Value>> ReadMapKeyValues(
