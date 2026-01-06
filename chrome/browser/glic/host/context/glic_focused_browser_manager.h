@@ -16,11 +16,12 @@
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager_interface.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "ui/views/widget/widget_observer.h"
 
-class Browser;
 class BrowserWindowInterface;
+class BrowserCollection;
+class Profile;
 
 namespace views {
 class Widget;
@@ -30,7 +31,7 @@ namespace glic {
 
 // Responsible for managing which browser window is considered "focused".
 class GlicFocusedBrowserManager : public GlicFocusedBrowserManagerInterface,
-                                  public BrowserListObserver,
+                                  public BrowserCollectionObserver,
                                   public views::WidgetObserver,
                                   public GlicWindowController::StateObserver {
  public:
@@ -66,9 +67,9 @@ class GlicFocusedBrowserManager : public GlicFocusedBrowserManagerInterface,
   // visible.
   BrowserWindowInterface* GetCandidateBrowser() const;
 
-  // BrowserListObserver
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
   // views::WidgetObserver
   void OnWidgetShowStateChanged(views::Widget* widget) override;
@@ -138,6 +139,8 @@ class GlicFocusedBrowserManager : public GlicFocusedBrowserManagerInterface,
       browser_subscriptions_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
+  base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 
   base::OneShotTimer debouncer_;
 
