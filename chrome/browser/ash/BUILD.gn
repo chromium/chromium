@@ -122,7 +122,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/customization:unit_tests",
     "//chrome/browser/ash/dbus:unit_tests",
     "//chrome/browser/ash/dbus/vm:unit_tests",
-    "//chrome/browser/ash/device_name:unit_tests",
     "//chrome/browser/ash/diagnostics:unit_tests",
     "//chrome/browser/ash/drive:unit_tests",
     "//chrome/browser/ash/eche_app:unit_tests",

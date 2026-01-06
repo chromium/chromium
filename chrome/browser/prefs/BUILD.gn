@@ -196,7 +196,6 @@ source_set("impl") {
       "//chrome/browser/ash/crostini",
       "//chrome/browser/ash/cryptauth",
       "//chrome/browser/ash/customization",
-      "//chrome/browser/ash/device_name",
       "//chrome/browser/ash/extensions",
       "//chrome/browser/ash/file_manager",
       "//chrome/browser/ash/file_system_provider",

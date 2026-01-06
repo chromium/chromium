@@ -1193,9 +1193,6 @@ inline constexpr char kLoginExtensionApiDataForNextLoginAttempt[] =
 inline constexpr char kLastRsuDeviceIdUploaded[] =
     "rsu.last_rsu_device_id_uploaded";
 
-// A string pref stored in local state containing the name of the device.
-inline constexpr char kDeviceName[] = "device_name";
-
 // Int64 pref indicating the time in microseconds since Windows epoch when the
 // timer for update required which will block user session was started. If the
 // timer is not started the pref holds the default value base::Time().

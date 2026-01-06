@@ -2159,7 +2159,6 @@ static_library("ui") {
       "//chrome/browser/ash/crostini",
       "//chrome/browser/ash/customization",
       "//chrome/browser/ash/dbus/vm",
-      "//chrome/browser/ash/device_name",
       "//chrome/browser/ash/eche_app",
       "//chrome/browser/ash/eol",
       "//chrome/browser/ash/extended_updates",

@@ -349,7 +349,6 @@
 #include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service.h"
 #include "chrome/browser/ash/cryptauth/cryptauth_device_id_provider.h"
 #include "chrome/browser/ash/customization/customization_document.h"
-#include "chrome/browser/ash/device_name/device_name_store.h"
 #include "chrome/browser/ash/extensions/extensions_permissions_tracker.h"
 #include "chrome/browser/ash/file_manager/file_manager_pref_names.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
@@ -950,6 +949,11 @@ constexpr char kTPCDExperimentClientStateVersion[] =
     "tpcd_experiment.client_state_version";
 constexpr char kTPCDExperimentProfileState[] = "tpcd_experiment.profile_state";
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Deprecated 01/2026.
+constexpr char kDeviceName[] = "device_name";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1066,6 +1070,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kTPCDExperimentClientState, 0);
   registry->RegisterIntegerPref(kTPCDExperimentClientStateVersion, 0);
   registry->RegisterIntegerPref(kTPCDExperimentProfileState, 0);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 01/2026.
+  registry->RegisterStringPref(kDeviceName, "");
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1464,7 +1473,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::bluetooth_config::DeviceNameManagerImpl::RegisterLocalStatePrefs(
       registry);
   ash::demo_mode::RegisterLocalStatePrefs(registry);
-  ash::DeviceNameStore::RegisterLocalStatePrefs(registry);
   ash::DozeModePowerStatusScheduler::RegisterLocalStatePrefs(registry);
   chromeos::DeviceOAuth2TokenStoreChromeOS::RegisterPrefs(registry);
   ash::device_settings_cache::RegisterPrefs(registry);
@@ -2256,6 +2264,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kTPCDExperimentClientState);
   local_state->ClearPref(kTPCDExperimentClientStateVersion);
   local_state->ClearPref(kTPCDExperimentProfileState);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Added 01/2026.
+  local_state->ClearPref(kDeviceName);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
