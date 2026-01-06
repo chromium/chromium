@@ -450,6 +450,7 @@ SafetyCheckNotificationsImpressionTriggerEnabled();
 int SafetyCheckNotificationsImpressionLimit();
 
 // Feature flag enabling Choose from Drive.
+// TODO(crbug.com/473788390): Clean-up feature once file upload menu is ready.
 BASE_DECLARE_FEATURE(kIOSChooseFromDrive);
 
 // Feature flag enabling a fix for the Download manager mediator.
