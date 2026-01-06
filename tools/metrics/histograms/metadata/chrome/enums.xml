@@ -187,25 +187,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="LOCK_ERROR"/>
 </enum>
 
-<enum name="NTSTATUS">
-  <int value="-1073741818" label="0xC0000006 - STATUS_IN_PAGE_ERROR"/>
-  <int value="-1073741810" label="0xC000000E - STATUS_NO_SUCH_DEVICE"/>
-  <int value="-1073741808" label="0xC0000010 - STATUS_INVALID_DEVICE_REQUEST"/>
-  <int value="-1073741803" label="0xC0000015 - STATUS_NONEXISTENT_SECTOR"/>
-  <int value="-1073741790" label="0xC0000022 - STATUS_ACCESS_DENIED"/>
-  <int value="-1073741764" label="0xC000003C - STATUS_DATA_OVERRUN"/>
-  <int value="-1073741697" label="0xC000007F - STATUS_DISK_FULL"/>
-  <int value="-1073741668" label="0xC000009C - STATUS_DEVICE_DATA_ERROR"/>
-  <int value="-1073741667" label="0xC000009D - STATUS_DEVICE_NOT_CONNECTED"/>
-  <int value="-1073741643" label="0xC00000B5 - STATUS_IO_TIMEOUT"/>
-  <int value="-1073741630" label="0xC00000C2 - STATUS_ADAPTER_HARDWARE_ERROR"/>
-  <int value="-1073741591" label="0xC00000E9 - STATUS_UNEXPECTED_IO_ERROR"/>
-  <int value="-1073741435" label="0xC0000185 - STATUS_IO_DEVICE_ERROR"/>
-  <int value="-1073740669" label="0xC0000483 - STATUS_DEVICE_HARDWARE_ERROR"/>
-  <int value="-1073740023" label="0xC0000709 - STATUS_HARDWARE_MEMORY_ERROR"/>
-  <int value="0" label="0x00000000 - STATUS_SUCCESS"/>
-</enum>
-
 <enum name="RemoteHungProcessTerminateReason">
   <int value="1" label="Terminate accepted by user"/>
   <int value="2" label="No visible windows found"/>
