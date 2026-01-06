@@ -9,12 +9,23 @@
 #include "base/unguessable_token.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
+#include "net/device_bound_sessions/session_display.h"
+#include "net/device_bound_sessions/session_error.h"
 
 namespace net::device_bound_sessions {
 
 struct NET_EXPORT SessionEvent {
  public:
-  enum class EventType {};
+  enum class EventType {
+    kCreation,
+  };
+
+  static SessionEvent MakeCreationEvent(
+      SchemefulSite site,
+      std::optional<std::string> session_id,
+      bool succeeded,
+      SessionError::ErrorType fetch_error,
+      std::optional<SessionDisplay> new_session_display);
 
   ~SessionEvent();
   SessionEvent(const SessionEvent&);
@@ -25,12 +36,18 @@ struct NET_EXPORT SessionEvent {
   base::UnguessableToken event_id = base::UnguessableToken::Create();
   SchemefulSite site;
   std::optional<std::string> session_id;
-  // TODO(crbug.com/471017387): Add a default once EventType has any values.
-  EventType event_type;
+  EventType event_type = EventType::kCreation;
   bool succeeded = false;
 
+  // TODO(crbug.com/471021582): Add additional creation fields.
+  std::optional<SessionError::ErrorType> fetch_error;
+  std::optional<SessionDisplay> new_session_display;
+
  private:
-  SessionEvent();
+  SessionEvent(EventType event_type,
+               SchemefulSite site,
+               std::optional<std::string> session_id,
+               bool succeeded);
 };
 
 }  // namespace net::device_bound_sessions

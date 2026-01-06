@@ -258,12 +258,13 @@ void SessionServiceImpl::RegisterBoundSessionInternal(
     base::expected<Session*, SessionError> federated_provider_session) {
   bool is_google_subdomain_for_histograms = IsSubdomainOf(
       registration_params.registration_endpoint().host(), "google.com");
-
+  SchemefulSite site =
+      SchemefulSite(registration_params.registration_endpoint());
   // A federated session was attempted but had an error.
   if (!federated_provider_session.has_value()) {
     OnRegistrationComplete(
         std::move(on_access_callback), is_google_subdomain_for_histograms,
-        /*is_federated_registration_for_histograms=*/true,
+        /*is_federated_registration_for_histograms=*/true, site,
         /*fetcher=*/nullptr,
         RegistrationResult(std::move(federated_provider_session.error())));
     return;
@@ -300,7 +301,8 @@ void SessionServiceImpl::RegisterBoundSessionInternal(
       &SessionServiceImpl::OnRegistrationComplete, weak_factory_.GetWeakPtr(),
       std::move(on_access_callback), is_google_subdomain_for_histograms,
       /*is_federated_registration_for_histograms=*/federated_provider_session !=
-          nullptr);
+          nullptr,
+      site);
   if (*federated_provider_session) {
     fetcher_raw->StartFetchWithFederatedKey(
         request_params, *(*federated_provider_session)->unexportable_key_id(),
@@ -513,14 +515,16 @@ void SessionServiceImpl::OnRegistrationComplete(
     OnAccessCallback on_access_callback,
     bool is_google_subdomain_for_histograms,
     bool is_federated_registration_for_histograms,
+    SchemefulSite site,
     RegistrationFetcher* fetcher,
     RegistrationResult registration_result) {
   if (is_google_subdomain_for_histograms) {
     base::UmaHistogramBoolean(
         "Net.DeviceBoundSessions.GoogleRegistrationIsFromStandard", true);
   }
-  SessionError::ErrorType result = OnRegistrationCompleteInternal(
-      std::move(on_access_callback), fetcher, std::move(registration_result));
+  SessionError::ErrorType result =
+      OnRegistrationCompleteInternal(std::move(on_access_callback), fetcher,
+                                     std::move(registration_result), site);
   base::UmaHistogramEnumeration("Net.DeviceBoundSessions.RegistrationResult",
                                 result);
   if (is_federated_registration_for_histograms) {
@@ -1077,30 +1081,48 @@ void SessionServiceImpl::RemoveObserver(net::SchemefulSite site,
 SessionError::ErrorType SessionServiceImpl::OnRegistrationCompleteInternal(
     OnAccessCallback on_access_callback,
     RegistrationFetcher* fetcher,
-    RegistrationResult registration_result) {
+    RegistrationResult registration_result,
+    SchemefulSite site) {
   RemoveFetcher(fetcher);
 
-  return std::move(registration_result)
-      .Visit(absl::Overload(
-          [&](std::unique_ptr<Session> session) {
-            CHECK(session);
-            const SchemefulSite site(session->origin());
-            NotifySessionAccess(on_access_callback,
-                                SessionAccess::AccessType::kCreation,
-                                SessionKey{site, session->id()}, *session);
-            AddSession(site, std::move(session));
-            return SessionError::kSuccess;
-          },
-          [](RegistrationResult::NoSessionConfigChange)
-              -> SessionError::ErrorType {
-            // This should not be returned for registrations.
-            NOTREACHED();
-          },
-          [](SessionError error) {
-            // We failed to create a new session, so there's nothing to clean
-            // up.
-            return error.type;
-          }));
+  SessionError::ErrorType result =
+      std::move(registration_result)
+          .Visit(absl::Overload(
+              [&](std::unique_ptr<Session> session) {
+                CHECK(session);
+                const SchemefulSite site(session->origin());
+                SessionError::ErrorType success_result = SessionError::kSuccess;
+                if (!event_callbacks_.empty()) {
+                  SessionEvent event = SessionEvent::MakeCreationEvent(
+                      site, session->id().value(), /*succeeded=*/true,
+                      success_result, session->ToDisplay());
+                  event_callbacks_.Notify(event);
+                }
+                NotifySessionAccess(on_access_callback,
+                                    SessionAccess::AccessType::kCreation,
+                                    SessionKey{site, session->id()}, *session);
+                AddSession(site, std::move(session));
+                return success_result;
+              },
+              [](RegistrationResult::NoSessionConfigChange)
+                  -> SessionError::ErrorType {
+                // This should not be returned for registrations.
+                NOTREACHED();
+              },
+              [&](SessionError error) {
+                // We failed to create a new session, so there's nothing to
+                // clean up.
+                // TODO(crbug.com/471021582): Some failed creation events could
+                // have a session_id. Can we thread that through?
+                if (!event_callbacks_.empty()) {
+                  SessionEvent event = SessionEvent::MakeCreationEvent(
+                      site, /*session_id=*/std::nullopt, /*succeeded=*/false,
+                      error.type, /*new_session_display=*/std::nullopt);
+                  event_callbacks_.Notify(event);
+                }
+                return error.type;
+              }));
+  return result;
 }
 
 SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(

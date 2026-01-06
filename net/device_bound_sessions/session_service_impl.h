@@ -185,6 +185,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void OnRegistrationComplete(OnAccessCallback on_access_callback,
                               bool is_google_subdomain_for_histograms,
                               bool is_federated_registration_for_histograms,
+                              SchemefulSite site,
                               RegistrationFetcher* fetcher,
                               RegistrationResult result);
   void OnRefreshRequestCompletion(RefreshTrigger trigger,
@@ -238,7 +239,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   SessionError::ErrorType OnRegistrationCompleteInternal(
       OnAccessCallback on_access_callback,
       RegistrationFetcher* fetcher,
-      RegistrationResult result);
+      RegistrationResult result,
+      SchemefulSite site);
 
   // Helper function encapsulating the processing of refresh
   SessionError::ErrorType OnRefreshRequestCompletionInternal(

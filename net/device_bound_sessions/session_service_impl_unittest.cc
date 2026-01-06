@@ -19,6 +19,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "components/unexportable_keys/features.h"
@@ -470,6 +471,72 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnSetChallenge) {
   EXPECT_EQ(access.session_key.site, SchemefulSite(kTestUrl));
   EXPECT_EQ(access.session_key.id.value(), kSessionId);
   EXPECT_TRUE(access.cookies.empty());
+}
+
+TEST_F(SessionServiceImplTest, EventObserverOnRegistrationSuccess) {
+  base::MockCallback<SessionService::OnEventCallback> event_callback;
+  base::CallbackListSubscription subscription =
+      service().AddEventObserver(event_callback.Get());
+  EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
+    EXPECT_EQ(event.event_type, SessionEvent::EventType::kCreation);
+    EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
+    EXPECT_EQ(event.session_id, kSessionId);
+    EXPECT_TRUE(event.succeeded);
+    EXPECT_EQ(event.fetch_error, SessionError::kSuccess);
+    ASSERT_TRUE(event.new_session_display.has_value());
+    EXPECT_EQ(event.new_session_display->key.id.value(), kSessionId);
+  });
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      "challenge", /*authorization=*/std::nullopt);
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, kRefreshUrlString, kOrigin);
+  service().RegisterBoundSession(
+      base::DoNothing(), std::move(fetch_param),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
+}
+
+TEST_F(SessionServiceImplTest, EventObserverOnRegistrationFailure) {
+  base::MockCallback<SessionService::OnEventCallback> event_callback;
+  base::CallbackListSubscription subscription =
+      service().AddEventObserver(event_callback.Get());
+  EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
+    EXPECT_EQ(event.event_type, SessionEvent::EventType::kCreation);
+    EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
+    EXPECT_EQ(event.session_id, std::nullopt);
+    EXPECT_FALSE(event.succeeded);
+    EXPECT_EQ(event.fetch_error, SessionError::kInvalidFetcherUrl);
+    ASSERT_FALSE(event.new_session_display.has_value());
+  });
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      "challenge", /*authorization=*/std::nullopt);
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
+      SessionError::kInvalidFetcherUrl, kRefreshUrlString);
+  service().RegisterBoundSession(
+      base::DoNothing(), std::move(fetch_param),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
+}
+
+TEST_F(SessionServiceImplTest, NoCallbackIfEventObserverRemoved) {
+  base::MockCallback<SessionService::OnEventCallback> event_callback;
+  // Subscription goes out of scope, which should remove the observer.
+  {
+    base::CallbackListSubscription subscription =
+        service().AddEventObserver(event_callback.Get());
+  }
+  EXPECT_CALL(event_callback, Run(_)).Times(0);
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      "challenge", /*authorization=*/std::nullopt);
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, kRefreshUrlString, kOrigin);
+  service().RegisterBoundSession(
+      base::DoNothing(), std::move(fetch_param),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 }
 
 TEST_F(SessionServiceImplTest, GetAllSessions) {
