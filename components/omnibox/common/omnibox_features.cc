@@ -321,7 +321,7 @@ BASE_FEATURE(kUseAgentspace25Logo, ENABLED);
 BASE_FEATURE(kEnableSiteSearchAllowUserOverridePolicy, ENABLED);
 
 // Enables preconnecting to omnibox suggestions that are not only Search types.
-BASE_FEATURE(kPreconnectNonSearchOmniboxSuggestions, DISABLED);
+BASE_FEATURE(kPreconnectNonSearchOmniboxSuggestions, ENABLED);
 
 // Enabls adding an aim shortcut in the typed state.
 BASE_FEATURE(kOmniboxAimShortcutTypedState, DISABLED);
