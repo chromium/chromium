@@ -6,6 +6,7 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/contextual_search/contextual_search_service.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 
@@ -32,6 +33,16 @@ static jboolean JNI_ComposeplateUtils_IsAimEntrypointLFFEligible(
       AimEligibilityServiceFactory::GetForProfile(profile),
       chrome::android::kAndroidComposeplateLFFAllLocales,
       chrome::android::kAndroidComposeplateLFF);
+}
+
+// static
+static jboolean JNI_ComposeplateUtils_IsEnabledByPolicy(JNIEnv* env,
+                                                        Profile* profile) {
+  DCHECK(profile);
+  // TODO(crbug.com/469142288): this should only disable sharing; for now the
+  // resolution is that in M144 we disable all of the fusebox.
+  return contextual_search::ContextualSearchService::IsContextSharingEnabled(
+      profile->GetPrefs());
 }
 
 DEFINE_JNI(ComposeplateUtils)

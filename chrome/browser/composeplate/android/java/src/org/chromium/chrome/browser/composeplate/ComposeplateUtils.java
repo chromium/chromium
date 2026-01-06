@@ -43,6 +43,15 @@ public class ComposeplateUtils {
     }
 
     /**
+     * Returns whether the composeplate is enabled by policy.
+     *
+     * @param profile The current profile.
+     */
+    public static boolean isEnabledByPolicy(Profile profile) {
+        return ComposeplateUtilsJni.get().isEnabledByPolicy(profile);
+    }
+
+    /**
      * Applies a white color with shadow to the default background drawable and set it as the new
      * background of the view if apply equals to true; otherwise resets to the default background.
      *
@@ -83,5 +92,7 @@ public class ComposeplateUtils {
         boolean isAimEntrypointEligible(@JniType("Profile*") Profile profile);
 
         boolean isAimEntrypointLFFEligible(@JniType("Profile*") Profile profile);
+
+        boolean isEnabledByPolicy(@JniType("Profile*") Profile profile);
     }
 }
