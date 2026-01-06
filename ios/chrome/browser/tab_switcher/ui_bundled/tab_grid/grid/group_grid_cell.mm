@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/group_tab_view.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_snapshots_view.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon.h"
+#import "ios/chrome/browser/tab_switcher/util/tab_group_color_palette.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -344,8 +345,21 @@ const CGFloat kTopBarLargeInset = 20;
 }
 
 - (void)setGroupColor:(UIColor*)groupColor {
-  _dotContainer.color = groupColor;
   _groupColor = groupColor;
+  _dotContainer.color = groupColor;
+
+  if (!IsTabGroupColorOnSurfaceEnabled()) {
+    return;
+  }
+  if (!groupColor) {
+    return;
+  }
+
+  TabGroupColorPalette* tabGroupColorPalette =
+      [[TabGroupColorPalette alloc] initWithSeedColor:groupColor];
+
+  // Apply the right tone to surfaces.
+  _dotContainer.color = tabGroupColorPalette.commonColor;
 }
 
 - (void)setTitle:(NSString*)title {
