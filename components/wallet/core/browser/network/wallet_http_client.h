@@ -17,6 +17,7 @@ class WalletHttpClient {
  public:
   enum class WalletRequestError {
     kGenericError = 1,
+    kAccessTokenFetchFailed = 2,
     // TODO(crbug.com/468915960): Add more error codes.
   };
   struct SavePassResult {

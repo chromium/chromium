@@ -5,14 +5,19 @@
 #include "components/wallet/core/browser/network/wallet_http_client_impl.h"
 
 #include "base/json/json_reader.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/version_info/version_info.h"
 #include "components/wallet/core/browser/data_models/walletable_pass.h"
 #include "components/wallet/core/common/wallet_features.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -24,16 +29,15 @@
 namespace wallet {
 namespace {
 
+constexpr char kAccessToken[] = "test access token";
+
 using SavePassCallback = base::test::TestFuture<
     base::expected<WalletHttpClient::SavePassResult,
                    WalletHttpClient::WalletRequestError>>;
 
 class WalletHttpClientImplTest : public testing::Test {
  public:
-  WalletHttpClientImplTest()
-      : client_(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)) {}
+  WalletHttpClientImplTest() = default;
 
   ~WalletHttpClientImplTest() override = default;
 
@@ -41,13 +45,25 @@ class WalletHttpClientImplTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         kWalletablePassDetection,
         {{"walletable_pass_save_url", "https://test-wallet.com/"}});
+    identity_test_env_.MakePrimaryAccountAvailable(
+        "test@example.com", signin::ConsentLevel::kSignin);
+    client_ = std::make_unique<WalletHttpClientImpl>(
+        identity_test_env_.identity_manager(),
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_));
   }
+
+  void TearDown() override { client_.reset(); }
 
   GURL GetUpsertPassUrl() {
     return GURL(kWalletablePassSaveUrl.Get()).Resolve("v1/passes:upsert");
   }
 
-  WalletHttpClientImpl* client() { return &client_; }
+  WalletHttpClientImpl* client() { return client_.get(); }
+
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return &identity_test_env_;
+  }
 
   network::TestURLLoaderFactory* test_url_loader_factory() {
     return &test_url_loader_factory_;
@@ -57,7 +73,8 @@ class WalletHttpClientImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  WalletHttpClientImpl client_;
+  signin::IdentityTestEnvironment identity_test_env_;
+  std::unique_ptr<WalletHttpClientImpl> client_;
 };
 
 // Tests that SavePass successfully triggers a network request and invokes the
@@ -67,8 +84,20 @@ TEST_F(WalletHttpClientImplTest, SavePass_Success) {
   SavePassCallback save_pass_callback;
   client()->SavePass(pass, save_pass_callback.GetCallback());
 
+  // Access token is fetched successfully.
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kAccessToken, base::Time::Max());
+
+  // Handle the network response.
   GURL expected_url = GetUpsertPassUrl();
   EXPECT_TRUE(test_url_loader_factory()->IsPending(expected_url.spec()));
+  std::optional<std::string> auth_header =
+      test_url_loader_factory()
+          ->GetPendingRequest(0)
+          ->request.headers.GetHeader(net::HttpRequestHeaders::kAuthorization);
+  EXPECT_EQ(auth_header.value_or(std::string()),
+            base::StrCat({"Bearer ", kAccessToken}));
+
   test_url_loader_factory()->AddResponse(expected_url.spec(), "{}");
 
   ASSERT_TRUE(save_pass_callback.Wait());
@@ -76,10 +105,35 @@ TEST_F(WalletHttpClientImplTest, SavePass_Success) {
 
 // Tests that SavePass correctly handles server errors by invoking the callback
 // with a failure result.
+TEST_F(WalletHttpClientImplTest, SavePass_TokenFetchError) {
+  LoyaltyCard loyalty_card;
+  loyalty_card.plan_name = "Program Name";
+  loyalty_card.issuer_name = "Issuer Name";
+  loyalty_card.member_id = "Member ID";
+
+  WalletablePass pass;
+  pass.pass_data = loyalty_card;
+
+  SavePassCallback save_pass_callback;
+  client()->SavePass(pass, save_pass_callback.GetCallback());
+
+  // Access token fetch fails.
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+
+  ASSERT_TRUE(save_pass_callback.Wait());
+  EXPECT_EQ(save_pass_callback.Get().error(),
+            WalletHttpClient::WalletRequestError::kAccessTokenFetchFailed);
+}
+
 TEST_F(WalletHttpClientImplTest, SavePass_Failure) {
   WalletablePass pass;
   SavePassCallback save_pass_callback;
   client()->SavePass(pass, save_pass_callback.GetCallback());
+
+  // Access token is fetched successfully.
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kAccessToken, base::Time::Max());
 
   GURL expected_url = GetUpsertPassUrl();
   EXPECT_TRUE(test_url_loader_factory()->IsPending(expected_url.spec()));
@@ -111,6 +165,10 @@ TEST_F(WalletHttpClientImplTest, SavePass_ConcurrentRequests) {
   client()->SavePass(pass1, save_pass_callback1.GetCallback());
   client()->SavePass(pass2, save_pass_callback2.GetCallback());
 
+  // Access token is fetched successfully.
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kAccessToken, base::Time::Max());
+
   ASSERT_EQ(test_url_loader_factory()->NumPending(), 2);
 
   // Complete both requests.
@@ -137,6 +195,10 @@ TEST_F(WalletHttpClientImplTest, SavePass_LoyaltyCard_RequestStructure) {
 
   SavePassCallback save_pass_callback;
   client()->SavePass(pass, save_pass_callback.GetCallback());
+
+  // Access token is fetched successfully.
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kAccessToken, base::Time::Max());
 
   GURL expected_url = GetUpsertPassUrl();
   network::TestURLLoaderFactory::PendingRequest* pending_request =

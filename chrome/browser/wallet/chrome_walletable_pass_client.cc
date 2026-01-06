@@ -77,8 +77,9 @@ WalletHttpClient* ChromeWalletablePassClient::GetWalletHttpClient() {
   if (!wallet_http_client_) {
     Profile* profile =
         Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
-    wallet_http_client_ =
-        std::make_unique<WalletHttpClientImpl>(profile->GetURLLoaderFactory());
+    wallet_http_client_ = std::make_unique<WalletHttpClientImpl>(
+        IdentityManagerFactory::GetForProfile(profile),
+        profile->GetURLLoaderFactory());
   }
   return wallet_http_client_.get();
 }
