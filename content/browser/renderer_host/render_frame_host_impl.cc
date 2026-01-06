@@ -67,6 +67,7 @@
 #include "components/input/utils.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "components/viz/common/features.h"
+#include "components/webauthn/core/browser/remote_validation.h"
 #include "content/browser/about_url_loader_factory.h"
 #include "content/browser/accessibility/render_accessibility_host.h"
 #include "content/browser/bad_message.h"
@@ -18174,7 +18175,7 @@ void RenderFrameHostImpl::PerformGetAssertionWebAuthSecurityChecks(
     return;
   }
 
-  std::unique_ptr<RemoteValidation> remote_validation =
+  std::unique_ptr<webauthn::RemoteValidation> remote_validation =
       GetWebAuthRequestSecurityChecker()->ValidateDomainAndRelyingPartyID(
           effective_origin, relying_party_id, request_type,
           remote_desktop_client_override_origin,
@@ -18216,7 +18217,7 @@ void RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
     return;
   }
 
-  std::unique_ptr<RemoteValidation> remote_validation =
+  std::unique_ptr<webauthn::RemoteValidation> remote_validation =
       GetWebAuthRequestSecurityChecker()->ValidateDomainAndRelyingPartyID(
           effective_origin, relying_party_id, request_type,
           remote_desktop_client_override_origin,
@@ -18254,7 +18255,7 @@ void RenderFrameHostImpl::PerformReportWebAuthSecurityChecks(
     return;
   }
 
-  std::unique_ptr<RemoteValidation> remote_validation =
+  std::unique_ptr<webauthn::RemoteValidation> remote_validation =
       GetWebAuthRequestSecurityChecker()->ValidateDomainAndRelyingPartyID(
           effective_origin, relying_party_id,
           WebAuthRequestSecurityChecker::RequestType::kReport,

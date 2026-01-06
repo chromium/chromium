@@ -12,8 +12,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/webauthn/core/browser/remote_validation.h"
 #include "content/browser/bad_message.h"
-#include "content/browser/webauth/remote_validation.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
@@ -41,8 +41,32 @@
 
 namespace content {
 
-
-
+namespace {
+blink::mojom::AuthenticatorStatus ToAuthenticatorStatus(
+    webauthn::RemoteValidation::Status status) {
+  switch (status) {
+    case webauthn::RemoteValidation::Status::kSuccess:
+      return blink::mojom::AuthenticatorStatus::SUCCESS;
+    case webauthn::RemoteValidation::Status::kBadRelyingPartyId:
+      return blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID;
+    case webauthn::RemoteValidation::Status::kJsonParseError:
+      return blink::mojom::AuthenticatorStatus::
+          BAD_RELYING_PARTY_ID_JSON_PARSE_ERROR;
+    case webauthn::RemoteValidation::Status::kNoJsonMatchHitLimits:
+      return blink::mojom::AuthenticatorStatus::
+          BAD_RELYING_PARTY_ID_NO_JSON_MATCH_HIT_LIMITS;
+    case webauthn::RemoteValidation::Status::kNoJsonMatch:
+      return blink::mojom::AuthenticatorStatus::
+          BAD_RELYING_PARTY_ID_NO_JSON_MATCH;
+    case webauthn::RemoteValidation::Status::kAttemptedFetch:
+      return blink::mojom::AuthenticatorStatus::
+          BAD_RELYING_PARTY_ID_ATTEMPTED_FETCH;
+    case webauthn::RemoteValidation::Status::kWrongContentType:
+      return blink::mojom::AuthenticatorStatus::
+          BAD_RELYING_PARTY_ID_WRONG_CONTENT_TYPE;
+  }
+}
+}  // namespace
 
 WebAuthRequestSecurityChecker::WebAuthRequestSecurityChecker(
     RenderFrameHost* host)
@@ -115,7 +139,7 @@ WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
   return blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
 }
 
-std::unique_ptr<RemoteValidation>
+std::unique_ptr<webauthn::RemoteValidation>
 WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
     const url::Origin& caller_origin,
     const std::string& relying_party_id,
@@ -187,8 +211,15 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
         GetContentClient()->browser()->GetSystemSharedURLLoaderFactory();
   }
 
-  return RemoteValidation::Create(caller_origin, relying_party_id,
-                                  url_loader_factory, std::move(callback));
+  return webauthn::RemoteValidation::Create(
+      caller_origin, relying_party_id, url_loader_factory,
+      base::BindOnce(
+          [](base::OnceCallback<void(blink::mojom::AuthenticatorStatus)>
+                 callback,
+             webauthn::RemoteValidation::Status status) {
+            std::move(callback).Run(ToAuthenticatorStatus(status));
+          },
+          std::move(callback)));
 }
 
 blink::mojom::AuthenticatorStatus

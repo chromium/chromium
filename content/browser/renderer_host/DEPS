@@ -41,6 +41,9 @@ specific_include_rules = {
   "navigation_transitions/navigation_transition_utils\.cc": [
     "+gpu/command_buffer/client/client_shared_image.h",
   ],
+  "render_frame_host_impl.cc": [
+    "+components/webauthn/core/browser/remote_validation.h",
+  ],
   "render_process_host_impl(_receiver_bindings)?\.cc": [
     "+google_apis/gaia/gaia_config.h",
     "+google_apis/gaia/gaia_switches.h",

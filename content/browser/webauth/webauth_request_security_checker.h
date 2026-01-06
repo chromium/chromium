@@ -13,7 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "content/browser/webauth/remote_validation.h"
+#include "components/webauthn/core/browser/remote_validation.h"
 #include "content/common/content_export.h"
 #include "device/fido/public/public_key_credential_descriptor.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
@@ -89,7 +89,7 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
   //   https://url.spec.whatwg.org/#valid-domain-string
   //   https://html.spec.whatwg.org/multipage/origin.html#concept-origin-effective-domain
   //   https://html.spec.whatwg.org/multipage/origin.html#is-a-registrable-domain-suffix-of-or-is-equal-to
-  std::unique_ptr<RemoteValidation> ValidateDomainAndRelyingPartyID(
+  std::unique_ptr<webauthn::RemoteValidation> ValidateDomainAndRelyingPartyID(
       const url::Origin& caller_origin,
       const std::string& relying_party_id,
       RequestType request_type,

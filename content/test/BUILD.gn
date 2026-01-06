@@ -3664,6 +3664,7 @@ test("content_unittests") {
       "../browser/webauth/webauth_request_security_checker_unittest.cc",
     ]
     deps += [
+      "//components/webauthn/core/browser",
       "//components/webauthn/core/browser:client_data",
       "//device/base",
       "//device/fido:mocks",

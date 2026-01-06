@@ -10,8 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "components/webauthn/core/browser/remote_validation.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/webauth/remote_validation.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -340,12 +340,12 @@ INSTANTIATE_TEST_SUITE_P(
 
 class WebAuthRequestSecurityCheckerWellKnownJSONTest : public testing::Test {
  protected:
-  blink::mojom::AuthenticatorStatus Test(std::string_view caller_origin_str,
-                                         std::string_view json) {
+  webauthn::RemoteValidation::Status Test(std::string_view caller_origin_str,
+                                          std::string_view json) {
     GURL caller_origin_url(caller_origin_str);
     CHECK(caller_origin_url.is_valid()) << caller_origin_str;
 
-    return RemoteValidation::ValidateWellKnownJSON(
+    return webauthn::RemoteValidation::ValidateWellKnownJSON(
         url::Origin::Create(caller_origin_url), json);
   }
 };
@@ -353,16 +353,16 @@ class WebAuthRequestSecurityCheckerWellKnownJSONTest : public testing::Test {
 TEST_F(WebAuthRequestSecurityCheckerWellKnownJSONTest, Inputs) {
   struct TestCase {
     const char* json;
-    blink::mojom::AuthenticatorStatus expected;
+    webauthn::RemoteValidation::Status expected;
   };
-  constexpr blink::mojom::AuthenticatorStatus parse_error =
-      blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID_JSON_PARSE_ERROR;
-  constexpr blink::mojom::AuthenticatorStatus ok =
-      blink::mojom::AuthenticatorStatus::SUCCESS;
-  constexpr blink::mojom::AuthenticatorStatus no_match =
-      blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID_NO_JSON_MATCH;
-  constexpr blink::mojom::AuthenticatorStatus no_match_hit_limits = blink::
-      mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID_NO_JSON_MATCH_HIT_LIMITS;
+  constexpr webauthn::RemoteValidation::Status parse_error =
+      webauthn::RemoteValidation::Status::kJsonParseError;
+  constexpr webauthn::RemoteValidation::Status ok =
+      webauthn::RemoteValidation::Status::kSuccess;
+  constexpr webauthn::RemoteValidation::Status no_match =
+      webauthn::RemoteValidation::Status::kNoJsonMatch;
+  constexpr webauthn::RemoteValidation::Status no_match_hit_limits =
+      webauthn::RemoteValidation::Status::kNoJsonMatchHitLimits;
 
   static const TestCase kTestCases[] = {
       {R"([])", parse_error},

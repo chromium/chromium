@@ -8,10 +8,16 @@ source_set("browser") {
   sources = [
     "passkey_data_type_controller.cc",
     "passkey_data_type_controller.h",
+    "remote_validation.cc",
+    "remote_validation.h",
   ]
   deps = [
+    "//base",
     "//components/sync",
     "//components/webauthn:features",
+    "//net",
+    "//services/network/public/cpp",
+    "//url",
   ]
 
   if (!is_android && !is_ios) {

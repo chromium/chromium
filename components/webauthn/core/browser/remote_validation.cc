@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webauth/remote_validation.h"
+#include "components/webauthn/core/browser/remote_validation.h"
 
 #include <optional>
 #include <string>
@@ -20,11 +20,10 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
 
-namespace content {
+namespace webauthn {
 
 static const net::NetworkTrafficAnnotationTag kRpIdCheckTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("webauthn_rp_id_check", R"(
@@ -73,10 +72,9 @@ std::unique_ptr<RemoteValidation> RemoteValidation::Create(
     const url::Origin& caller_origin,
     const std::string& relying_party_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback) {
+    base::OnceCallback<void(Status)> callback) {
   if (!url_loader_factory) {
-    std::move(callback).Run(
-        blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID);
+    std::move(callback).Run(Status::kBadRelyingPartyId);
     return nullptr;
   }
 
@@ -93,8 +91,7 @@ std::unique_ptr<RemoteValidation> RemoteValidation::Create(
   if (host_info.family != url::CanonHostInfo::Family::NEUTRAL ||
       !net::IsCanonicalizedHostCompliant(canonicalized_domain)) {
     // The RP ID must look like a hostname, e.g. not an IP address.
-    std::move(callback).Run(
-        blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID);
+    std::move(callback).Run(Status::kBadRelyingPartyId);
     return nullptr;
   }
 
@@ -131,7 +128,7 @@ std::unique_ptr<RemoteValidation> RemoteValidation::Create(
 }
 
 // static
-blink::mojom::AuthenticatorStatus RemoteValidation::ValidateWellKnownJSON(
+RemoteValidation::Status RemoteValidation::ValidateWellKnownJSON(
     const url::Origin& caller_origin,
     const std::string_view json) {
   // This code processes a .well-known/webauthn JSON. See
@@ -140,14 +137,12 @@ blink::mojom::AuthenticatorStatus RemoteValidation::ValidateWellKnownJSON(
   auto result = base::JSONReader::ReadDict(json, base::JSON_PARSE_RFC);
 
   if (!result.has_value()) {
-    return blink::mojom::AuthenticatorStatus::
-        BAD_RELYING_PARTY_ID_JSON_PARSE_ERROR;
+    return Status::kJsonParseError;
   }
 
   const base::Value::List* origins = result->FindList("origins");
   if (!origins) {
-    return blink::mojom::AuthenticatorStatus::
-        BAD_RELYING_PARTY_ID_JSON_PARSE_ERROR;
+    return Status::kJsonParseError;
   }
 
   constexpr size_t kMaxLabels = 5;
@@ -155,8 +150,7 @@ blink::mojom::AuthenticatorStatus RemoteValidation::ValidateWellKnownJSON(
   base::flat_set<std::string> labels_seen;
   for (const base::Value& origin_str : *origins) {
     if (!origin_str.is_string()) {
-      return blink::mojom::AuthenticatorStatus::
-          BAD_RELYING_PARTY_ID_JSON_PARSE_ERROR;
+      return Status::kJsonParseError;
     }
 
     const GURL url(origin_str.GetString());
@@ -187,38 +181,34 @@ blink::mojom::AuthenticatorStatus RemoteValidation::ValidateWellKnownJSON(
 
     const auto origin = url::Origin::Create(url);
     if (origin.IsSameOriginWith(caller_origin)) {
-      return blink::mojom::AuthenticatorStatus::SUCCESS;
+      return Status::kSuccess;
     }
   }
 
   if (hit_limits) {
-    return blink::mojom::AuthenticatorStatus::
-        BAD_RELYING_PARTY_ID_NO_JSON_MATCH_HIT_LIMITS;
+    return Status::kNoJsonMatchHitLimits;
   }
-  return blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID_NO_JSON_MATCH;
+  return Status::kNoJsonMatch;
 }
 
-RemoteValidation::RemoteValidation(
-    const url::Origin& caller_origin,
-    base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback)
+RemoteValidation::RemoteValidation(const url::Origin& caller_origin,
+                                   base::OnceCallback<void(Status)> callback)
     : caller_origin_(caller_origin), callback_(std::move(callback)) {}
 
 // OnFetchComplete is called when the `.well-known/webauthn` for an
 // RP ID has finished downloading.
 void RemoteValidation::OnFetchComplete(std::optional<std::string> body) {
   if (!body) {
-    std::move(callback_).Run(blink::mojom::AuthenticatorStatus::
-                                 BAD_RELYING_PARTY_ID_ATTEMPTED_FETCH);
+    std::move(callback_).Run(Status::kAttemptedFetch);
     return;
   }
 
   if (loader_->ResponseInfo()->mime_type != "application/json") {
-    std::move(callback_).Run(blink::mojom::AuthenticatorStatus::
-                                 BAD_RELYING_PARTY_ID_WRONG_CONTENT_TYPE);
+    std::move(callback_).Run(Status::kWrongContentType);
     return;
   }
 
   std::move(callback_).Run(ValidateWellKnownJSON(caller_origin_, *body));
 }
 
-}  // namespace content
+}  // namespace webauthn

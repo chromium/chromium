@@ -5557,7 +5557,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 #if BUILDFLAG(IS_ANDROID)
   // Holds a reference to a pending remote WebAuthn RP ID validation while one
   // is ongoing. Destroying this object cancels the validation.
-  std::unique_ptr<RemoteValidation> webauthn_remote_rp_id_validation_;
+  std::unique_ptr<webauthn::RemoteValidation> webauthn_remote_rp_id_validation_;
 #endif
 
   // Tracks the page that initiates Protected Audience auction. This is set

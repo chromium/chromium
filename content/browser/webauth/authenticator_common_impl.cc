@@ -43,6 +43,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/webauthn/core/browser/common_utils.h"
+#include "components/webauthn/core/browser/remote_validation.h"
 #include "components/webauthn/json/value_conversions.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -50,7 +51,6 @@
 #include "content/browser/webauth/authenticator_impl.h"
 #include "content/browser/webauth/authenticator_request_outcome_enums.h"
 #include "content/browser/webauth/client_data_json.h"
-#include "content/browser/webauth/remote_validation.h"
 #include "content/browser/webauth/virtual_authenticator.h"
 #include "content/browser/webauth/virtual_authenticator_manager_impl.h"
 #include "content/browser/webauth/virtual_fido_discovery_factory.h"
@@ -837,7 +837,7 @@ struct AuthenticatorCommonImpl::RequestState {
       pending_proxied_request_id;
 
   // A pending remote validation of an RP ID.
-  std::unique_ptr<RemoteValidation> remote_rp_id_validation;
+  std::unique_ptr<webauthn::RemoteValidation> remote_rp_id_validation;
 
   std::optional<Mediation> mediation_;
 };
@@ -1132,7 +1132,7 @@ void AuthenticatorCommonImpl::MakeCredential(
     // WebAuthenticationDelegateBase::OriginMayUseRemoteDesktopClientOverride().
     remote_desktop_override_origin = remote_desktop_client_override->origin;
   }
-  std::unique_ptr<RemoteValidation> remote_validation =
+  std::unique_ptr<webauthn::RemoteValidation> remote_validation =
       security_checker_->ValidateDomainAndRelyingPartyID(
           caller_origin, relying_party_id, request_type,
           remote_desktop_override_origin,
@@ -1589,7 +1589,7 @@ void AuthenticatorCommonImpl::GetCredential(
     // WebAuthenticationDelegateBase::OriginMayUseRemoteDesktopClientOverride().
     remote_desktop_override_origin = remote_desktop_client_override->origin;
   }
-  std::unique_ptr<RemoteValidation> remote_validation =
+  std::unique_ptr<webauthn::RemoteValidation> remote_validation =
       security_checker_->ValidateDomainAndRelyingPartyID(
           caller_origin, relying_party_id, request_type,
           remote_desktop_override_origin,
@@ -2074,7 +2074,7 @@ void AuthenticatorCommonImpl::Report(
     CompleteReportRequest(status);
     return;
   }
-  std::unique_ptr<RemoteValidation> remote_validation =
+  std::unique_ptr<webauthn::RemoteValidation> remote_validation =
       security_checker_->ValidateDomainAndRelyingPartyID(
           req_state_->caller_origin, req_state_->relying_party_id,
           WebAuthRequestSecurityChecker::RequestType::kReport,
