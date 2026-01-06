@@ -785,13 +785,17 @@ void PrefetchContainer::UpdateResourceRequest(
   // There are sometimes other headers that are modified during navigation
   // redirects; see |NavigationRequest::OnRedirectChecksComplete| (including
   // some which are added by throttles). These aren't yet supported for
-  // prefetch, including browsing topics and client hints.
-  // TODO(crbug.com/441612842): Support User-Agent overrides.
+  // prefetch, including browsing topics.
   net::HttpRequestHeaders updated_headers;
   std::vector<std::string> headers_to_remove;
+
+  // ------------------------------------------------------------------------
+  // `Sec-Purpose`:
   updated_headers.SetHeader(blink::kSecPurposeHeaderName,
                             GetSecPurposeHeaderValue(redirect_info.new_url));
 
+  // ------------------------------------------------------------------------
+  // `Sec-Speculation-Tags`:
   // Sec-Speculation-Tags is set only when the prefetch is triggered
   // by speculation rules and it is not cross-site prefetch redirection.
   // To see more details:
@@ -806,6 +810,14 @@ void PrefetchContainer::UpdateResourceRequest(
                               serialized_list.value());
   }
 
+  // ------------------------------------------------------------------------
+  // WebContents override (`User-Agent`):
+  // TODO(crbug.com/441612842): Support User-Agent overrides, which is applied
+  // for the initial request by `MaybeApplyOverrideForUserAgentHeader()`.
+
+  // ------------------------------------------------------------------------
+  // Client Hints:
+  // DevTools overrides (Client Hints, `User-Agent`, `Accept`):
   // Remove any existing client hints headers, then (re-)add the new client
   // hints that are appropriate for the redirect.
   if (base::FeatureList::IsEnabled(features::kPrefetchClientHints)) {
@@ -818,6 +830,7 @@ void PrefetchContainer::UpdateResourceRequest(
                           &updated_headers);
   }
 
+  // ------------------------------------------------------------------------
   // To avoid spurious reordering, don't remove headers that will be updated
   // anyway.
   std::erase_if(headers_to_remove, [&](const std::string& header) {
