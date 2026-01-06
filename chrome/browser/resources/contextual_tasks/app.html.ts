@@ -24,7 +24,8 @@ export function getHtml(this: ContextualTasksAppElement) {
   `}
   <webview id="threadFrame"></webview>
   <div class="flex-center">
-    <div id="relativeThreadHolder">
+    <div id="composeboxHeaderWrapper"
+        ?hidden="${!this.showComposeboxHeader_}">
       <h1 class="thread-header">
           ${this.friendlyZeroStateTitle}
           ${this.friendlyZeroStateSubtitle.length > 0 ?
