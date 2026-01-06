@@ -4,12 +4,12 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {ReadAloudSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {DEFAULT_SETTINGS, ReadAloudSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {HighlightMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertCheckMarksForDropdown, assertHeadersForDropdown, mockMetrics, stubAnimationFrame} from './common.js';
+import {assertCheckMarksForDropdown, assertHeadersForDropdown, assertTestSettingsAreNotDefaultSettings, mockMetrics, stubAnimationFrame, TEST_RANDOM_VALUE_SETTINGS} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
@@ -21,6 +21,10 @@ suite('HighlightMenuElement', () => {
     highlightMenu = document.createElement('highlight-menu');
     document.body.appendChild(highlightMenu);
   }
+
+  suiteSetup(() => {
+    assertTestSettingsAreNotDefaultSettings();
+  });
 
   setup(() => {
     // Clearing the DOM should always be done first.
@@ -114,13 +118,8 @@ suite('HighlightMenuElement', () => {
     assertNotEquals(granularity, startingIndex);
 
     highlightMenu.settingsPrefs = {
-      letterSpacing: 0,
-      lineSpacing: 0,
-      theme: 0,
-      speechRate: 0,
-      font: '',
+      ...DEFAULT_SETTINGS,
       highlightGranularity: granularity,
-      lineFocus: 0,
     };
     await microtasksFinished();
 
@@ -132,13 +131,8 @@ suite('HighlightMenuElement', () => {
     const startingIndex = highlightMenu.$.menu.currentSelectedIndex;
 
     highlightMenu.settingsPrefs = {
-      letterSpacing: 100,
-      lineSpacing: 101,
-      theme: 102,
-      speechRate: 103,
-      font: 'font',
+      ...TEST_RANDOM_VALUE_SETTINGS,
       highlightGranularity: 0,
-      lineFocus: 104,
     };
     await microtasksFinished();
 

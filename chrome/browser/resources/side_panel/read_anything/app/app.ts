@@ -19,7 +19,7 @@ import {ContentController, ContentType} from '../content/content_controller.js';
 import type {ContentListener, ContentState} from '../content/content_controller.js';
 import {LineFocusController, type LineFocusListener} from '../content/line_focus_controller.js';
 import {NodeStore} from '../content/node_store.js';
-import {LineFocusType, type SettingsPrefs} from '../content/read_anything_types.js';
+import {DEFAULT_SETTINGS, LineFocusType, type SettingsPrefs} from '../content/read_anything_types.js';
 import {SelectionController} from '../content/selection_controller.js';
 import type {LanguageToastElement} from '../read_aloud/language_toast.js';
 import {SpeechController} from '../read_aloud/speech_controller.js';
@@ -134,15 +134,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       SelectionController.getInstance();
   private lineFocusController_: LineFocusController =
       LineFocusController.getInstance();
-  protected accessor settingsPrefs_: SettingsPrefs = {
-    letterSpacing: 0,
-    lineSpacing: 0,
-    theme: 0,
-    speechRate: 0,
-    font: '',
-    highlightGranularity: 0,
-    lineFocus: 0,
-  };
+  protected accessor settingsPrefs_: SettingsPrefs = DEFAULT_SETTINGS;
 
   protected accessor isSpeechActive_: boolean = false;
   protected accessor isAudioCurrentlyPlaying_: boolean = false;

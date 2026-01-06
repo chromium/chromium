@@ -105,6 +105,15 @@ export interface SettingsPrefs {
   highlightGranularity: number;
   lineFocus: number;
 }
+export const DEFAULT_SETTINGS: SettingsPrefs = {
+  letterSpacing: 0,
+  lineSpacing: 0,
+  theme: 0,
+  speechRate: 0,
+  font: '',
+  highlightGranularity: 0,
+  lineFocus: 0,
+};
 
 export interface ShowAtConfigPrefs {
   anchorAlignmentX?: AnchorAlignment;

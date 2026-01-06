@@ -11,7 +11,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsPrefs, ShowAtConfigPrefs} from '../content/read_anything_types.js';
-import {ToolbarEvent} from '../content/read_anything_types.js';
+import {DEFAULT_SETTINGS, ToolbarEvent} from '../content/read_anything_types.js';
 import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
@@ -54,15 +54,7 @@ export class FontMenuElement extends FontMenuElementBase implements
 
   accessor areFontsLoaded: boolean = false;
   accessor pageLanguage: string = '';
-  accessor settingsPrefs: SettingsPrefs = {
-    letterSpacing: 0,
-    lineSpacing: 0,
-    theme: 0,
-    speechRate: 0,
-    font: '',
-    highlightGranularity: 0,
-    lineFocus: 0,
-  };
+  accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
   accessor nonModal: boolean = false;
 
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();

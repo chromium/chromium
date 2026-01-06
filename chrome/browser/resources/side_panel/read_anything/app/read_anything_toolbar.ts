@@ -31,7 +31,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement, html, type TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {SettingsOption, ToolbarEvent} from '../content/read_anything_types.js';
+import {DEFAULT_SETTINGS, SettingsOption, ToolbarEvent} from '../content/read_anything_types.js';
 import type {SettingsPrefs} from '../content/read_anything_types.js';
 import type {ColorMenuElement} from '../menus/color_menu.js';
 import type {FontMenuElement} from '../menus/font_menu.js';
@@ -165,15 +165,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   accessor isReadAloudPlayable: boolean = false;
   accessor localeToDisplayName: {[lang: string]: string} = {};
   accessor previewVoicePlaying: SpeechSynthesisVoice|null = null;
-  accessor settingsPrefs: SettingsPrefs = {
-    letterSpacing: 0,
-    lineSpacing: 0,
-    theme: 0,
-    speechRate: 0,
-    font: '',
-    highlightGranularity: 0,
-    lineFocus: 0,
-  };
+  accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
   accessor selectedVoice: SpeechSynthesisVoice|undefined;
   accessor pageLanguage: string = '';
   protected accessor hideSpinner_: boolean = true;
