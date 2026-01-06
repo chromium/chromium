@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/tabs/tabs_event_router_android.h"
+#include "chrome/browser/extensions/api/tabs/tabs_event_router_platform_delegate_android.h"
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/notimplemented.h"
@@ -86,15 +86,16 @@ bool WillDispatchTabCreatedEvent(
 
 }  // namespace
 
-TabsEventRouterAndroid::TabEntry::TabEntry(TabsEventRouterAndroid* router,
-                                           content::WebContents* contents)
+TabsEventRouterPlatformDelegate::TabEntry::TabEntry(
+    TabsEventRouterPlatformDelegate* owner,
+    content::WebContents* contents)
     : content::WebContentsObserver(contents),
-      router_(router),
+      owner_(owner),
       url_(contents->GetURL()) {}
 
-TabsEventRouterAndroid::TabEntry::~TabEntry() = default;
+TabsEventRouterPlatformDelegate::TabEntry::~TabEntry() = default;
 
-void TabsEventRouterAndroid::TabEntry::DidStopLoading() {
+void TabsEventRouterPlatformDelegate::TabEntry::DidStopLoading() {
   std::set<std::string> changed_property_names;
   changed_property_names.insert(tabs_constants::kStatusKey);
 
@@ -103,28 +104,29 @@ void TabsEventRouterAndroid::TabEntry::DidStopLoading() {
     changed_property_names.insert(tabs_constants::kUrlKey);
   }
 
-  router_->TabUpdated(this, std::move(changed_property_names));
+  owner_->TabUpdated(this, std::move(changed_property_names));
 }
 
-void TabsEventRouterAndroid::TabEntry::TitleWasSet(
+void TabsEventRouterPlatformDelegate::TabEntry::TitleWasSet(
     content::NavigationEntry* entry) {
   std::set<std::string> changed_property_names;
   changed_property_names.insert(tabs_constants::kTitleKey);
-  router_->TabUpdated(this, std::move(changed_property_names));
+  owner_->TabUpdated(this, std::move(changed_property_names));
 }
 
-void TabsEventRouterAndroid::TabEntry::WebContentsDestroyed() {
+void TabsEventRouterPlatformDelegate::TabEntry::WebContentsDestroyed() {
   int tab_id = ExtensionTabUtil::GetTabId(web_contents());
   if (!SessionID::IsValidValue(tab_id)) {
     return;
   }
-  int removed_count = router_->tab_entries_.erase(tab_id);
+  int removed_count = owner_->tab_entries_.erase(tab_id);
   DCHECK_GT(removed_count, 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TabsEventRouterAndroid::TabsEventRouterAndroid(Profile* profile)
+TabsEventRouterPlatformDelegate::TabsEventRouterPlatformDelegate(
+    Profile* profile)
     : profile_(profile) {
   TabModelList::AddObserver(this);
   for (TabModel* const model : TabModelList::models()) {
@@ -132,24 +134,24 @@ TabsEventRouterAndroid::TabsEventRouterAndroid(Profile* profile)
   }
 }
 
-TabsEventRouterAndroid::~TabsEventRouterAndroid() {
+TabsEventRouterPlatformDelegate::~TabsEventRouterPlatformDelegate() {
   TabModelList::RemoveObserver(this);
 }
 
-void TabsEventRouterAndroid::OnTabModelAdded(TabModel* tab_model) {
+void TabsEventRouterPlatformDelegate::OnTabModelAdded(TabModel* tab_model) {
   if (profile_->IsSameOrParent(tab_model->GetProfile())) {
     tab_model_observations_.AddObservation(tab_model);
   }
 }
 
-void TabsEventRouterAndroid::OnTabModelRemoved(TabModel* tab_model) {
+void TabsEventRouterPlatformDelegate::OnTabModelRemoved(TabModel* tab_model) {
   if (tab_model_observations_.IsObservingSource(tab_model)) {
     tab_model_observations_.RemoveObservation(tab_model);
   }
 }
 
-void TabsEventRouterAndroid::DidAddTab(TabAndroid* tab,
-                                       TabModel::TabLaunchType type) {
+void TabsEventRouterPlatformDelegate::DidAddTab(TabAndroid* tab,
+                                                TabModel::TabLaunchType type) {
   if (!tab || !tab->web_contents()) {
     return;
   }
@@ -171,7 +173,7 @@ void TabsEventRouterAndroid::DidAddTab(TabAndroid* tab,
   DispatchTabCreatedEvent(tab->web_contents(), tab->IsActivated());
 }
 
-void TabsEventRouterAndroid::TabRemoved(TabAndroid* tab) {
+void TabsEventRouterPlatformDelegate::TabRemoved(TabAndroid* tab) {
   if (!tab || !tab->web_contents()) {
     return;
   }
@@ -184,7 +186,7 @@ void TabsEventRouterAndroid::TabRemoved(TabAndroid* tab) {
   tab_entries_.erase(tab_id);
 }
 
-void TabsEventRouterAndroid::TabUpdated(
+void TabsEventRouterPlatformDelegate::TabUpdated(
     TabEntry* entry,
     std::set<std::string> changed_property_names) {
   CHECK(!changed_property_names.empty());
@@ -192,7 +194,7 @@ void TabsEventRouterAndroid::TabUpdated(
                           std::move(changed_property_names));
 }
 
-void TabsEventRouterAndroid::DispatchTabCreatedEvent(
+void TabsEventRouterPlatformDelegate::DispatchTabCreatedEvent(
     content::WebContents* contents,
     bool active) {
   Profile* const profile =
@@ -206,7 +208,7 @@ void TabsEventRouterAndroid::DispatchTabCreatedEvent(
   EventRouter::Get(profile)->BroadcastEvent(std::move(event));
 }
 
-void TabsEventRouterAndroid::DispatchTabUpdatedEvent(
+void TabsEventRouterPlatformDelegate::DispatchTabUpdatedEvent(
     content::WebContents* contents,
     std::set<std::string> changed_property_names) {
   DCHECK(!changed_property_names.empty());

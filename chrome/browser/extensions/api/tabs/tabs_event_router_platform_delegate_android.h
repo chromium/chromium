@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_API_TABS_TABS_EVENT_ROUTER_ANDROID_H_
-#define CHROME_BROWSER_EXTENSIONS_API_TABS_TABS_EVENT_ROUTER_ANDROID_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_API_TABS_TABS_EVENT_ROUTER_PLATFORM_DELEGATE_ANDROID_H_
+#define CHROME_BROWSER_EXTENSIONS_API_TABS_TABS_EVENT_ROUTER_PLATFORM_DELEGATE_ANDROID_H_
 
 #include <map>
 #include <memory>
@@ -28,19 +28,18 @@ class WebContents;
 
 namespace extensions {
 
-// TabsEventRouterAndroid listens to tab events on Android and routes them to
-// listeners inside extension process renderers.
-//
-// TODO(crbug.com/427503497): This class is a temporary solution to unblock the
+// TODO(crbug.com/473593117): This class is a temporary solution to unblock the
 // Tabs API on desktop Android. It can be deleted once TabsEventRouter works on
 // desktop Android.
-class TabsEventRouterAndroid : public TabModelListObserver,
-                               public TabModelObserver {
+class TabsEventRouterPlatformDelegate : public TabModelListObserver,
+                                        public TabModelObserver {
  public:
-  explicit TabsEventRouterAndroid(Profile* profile);
-  TabsEventRouterAndroid(const TabsEventRouterAndroid&) = delete;
-  TabsEventRouterAndroid& operator=(const TabsEventRouterAndroid&) = delete;
-  ~TabsEventRouterAndroid() override;
+  explicit TabsEventRouterPlatformDelegate(Profile* profile);
+  TabsEventRouterPlatformDelegate(const TabsEventRouterPlatformDelegate&) =
+      delete;
+  TabsEventRouterPlatformDelegate& operator=(
+      const TabsEventRouterPlatformDelegate&) = delete;
+  ~TabsEventRouterPlatformDelegate() override;
 
   // TabModelListObserver:
   void OnTabModelAdded(TabModel* tab_model) override;
@@ -53,7 +52,8 @@ class TabsEventRouterAndroid : public TabModelListObserver,
  private:
   class TabEntry : public content::WebContentsObserver {
    public:
-    TabEntry(TabsEventRouterAndroid* router, content::WebContents* contents);
+    TabEntry(TabsEventRouterPlatformDelegate* owner,
+             content::WebContents* contents);
     ~TabEntry() override;
 
     // content::WebContentsObserver:
@@ -61,7 +61,7 @@ class TabsEventRouterAndroid : public TabModelListObserver,
     void TitleWasSet(content::NavigationEntry* entry) override;
     void WebContentsDestroyed() override;
 
-    const raw_ptr<TabsEventRouterAndroid> router_;
+    const raw_ptr<TabsEventRouterPlatformDelegate> owner_;
     GURL url_;
   };
 
@@ -96,4 +96,4 @@ class TabsEventRouterAndroid : public TabModelListObserver,
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_API_TABS_TABS_EVENT_ROUTER_ANDROID_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_API_TABS_TABS_EVENT_ROUTER_PLATFORM_DELEGATE_ANDROID_H_
