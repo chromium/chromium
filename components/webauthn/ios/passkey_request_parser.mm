@@ -43,44 +43,63 @@ constexpr char kDisplayName[] = "displayName";
 constexpr char kType[] = "type";
 constexpr char kTransports[] = "transports";
 
+// Returns the string if valid, otherwise returns the error.
+base::expected<const std::string, PasskeysParsingError> ValidateString(
+    const std::string* str,
+    PasskeysParsingError missing_code,
+    PasskeysParsingError empty_code) {
+  if (!str) {
+    return base::unexpected(missing_code);
+  }
+  if (str->empty()) {
+    return base::unexpected(empty_code);
+  }
+  return *str;
+}
+
 // Decodes a base 64 encoded string into a data vector.
-// Returns an empty vector on failure.
-std::vector<uint8_t> Base64Decode(const std::string* base_64_string) {
+// Returns std::nullopt on failure.
+std::optional<std::vector<uint8_t>> Base64Decode(
+    const std::string& base_64_string) {
   std::vector<uint8_t> decoded_data;
-  if (!base_64_string || base_64_string->empty()) {
+  if (base_64_string.empty()) {
     return decoded_data;
   }
 
   std::string decoded_string;
-  if (base::Base64Decode(*base_64_string, &decoded_string,
-                         base::Base64DecodePolicy::kStrict)) {
-    decoded_data.assign(decoded_string.begin(), decoded_string.end());
+  if (!base::Base64Decode(base_64_string, &decoded_string,
+                          base::Base64DecodePolicy::kStrict)) {
+    return std::nullopt;
   }
 
+  decoded_data.assign(decoded_string.begin(), decoded_string.end());
   return decoded_data;
 }
 
 // Builds a PublicKeyCredentialUserEntity object from the parameters contained
 // in the provided dictionary.
-device::PublicKeyCredentialUserEntity BuildUserEntity(
-    const base::Value::Dict* dict) {
-  device::PublicKeyCredentialUserEntity user_entity;
-  if (!dict) {
-    return user_entity;
+base::expected<device::PublicKeyCredentialUserEntity, PasskeysParsingError>
+BuildUserEntity(const base::Value::Dict& dict) {
+  auto id_base_64 =
+      ValidateString(dict.FindString(kId), PasskeysParsingError::kMissingUserId,
+                     PasskeysParsingError::kEmptyUserId);
+  if (!id_base_64.has_value()) {
+    return base::unexpected(id_base_64.error());
   }
 
-  const std::string* id_base_64 = dict->FindString(kId);
-  std::vector<uint8_t> decoded_id = Base64Decode(id_base_64);
-  if (!decoded_id.empty()) {
-    user_entity.id = std::move(decoded_id);
+  std::optional<std::vector<uint8_t>> decoded_id = Base64Decode(*id_base_64);
+  if (!decoded_id.has_value()) {
+    return base::unexpected(PasskeysParsingError::kMalformedUserId);
   }
 
-  const std::string* name = dict->FindString(kName);
+  device::PublicKeyCredentialUserEntity user_entity(*decoded_id);
+
+  const std::string* name = dict.FindString(kName);
   if (name && !name->empty()) {
     user_entity.name = *name;
   }
 
-  const std::string* display_name = dict->FindString(kDisplayName);
+  const std::string* display_name = dict.FindString(kDisplayName);
   if (display_name && !display_name->empty()) {
     user_entity.display_name = *display_name;
   }
@@ -90,19 +109,18 @@ device::PublicKeyCredentialUserEntity BuildUserEntity(
 
 // Builds a PublicKeyCredentialRpEntity object from the parameters contained in
 // the provided dictionary.
-device::PublicKeyCredentialRpEntity BuildRpEntity(
-    const base::Value::Dict* dict) {
-  device::PublicKeyCredentialRpEntity rp_entity;
-  if (!dict) {
-    return rp_entity;
+base::expected<device::PublicKeyCredentialRpEntity, PasskeysParsingError>
+BuildRpEntity(const base::Value::Dict& dict) {
+  auto id_str =
+      ValidateString(dict.FindString(kId), PasskeysParsingError::kMissingRpId,
+                     PasskeysParsingError::kEmptyRpId);
+  if (!id_str.has_value()) {
+    return base::unexpected(id_str.error());
   }
 
-  const std::string* id_str = dict->FindString(kId);
-  if (id_str && !id_str->empty()) {
-    rp_entity.id = *id_str;
-  }
+  device::PublicKeyCredentialRpEntity rp_entity(*id_str);
 
-  const std::string* name = dict->FindString(kName);
+  const std::string* name = dict.FindString(kName);
   if (name && !name->empty()) {
     rp_entity.name = *name;
   }
@@ -125,8 +143,9 @@ device::UserVerificationRequirement ToUserVerificationRequirement(
 }
 
 // Reads a list of PublicKeyCredentialDescriptor from the provided list.
-std::vector<device::PublicKeyCredentialDescriptor> ReadCredentials(
-    const base::Value::List* serialized_descriptors) {
+base::expected<std::vector<device::PublicKeyCredentialDescriptor>,
+               PasskeysParsingError>
+ReadCredentials(const base::Value::List* serialized_descriptors) {
   std::vector<device::PublicKeyCredentialDescriptor> credential_descriptors;
   if (!serialized_descriptors) {
     return credential_descriptors;
@@ -134,19 +153,32 @@ std::vector<device::PublicKeyCredentialDescriptor> ReadCredentials(
 
   for (const auto& serialized_descriptor : *serialized_descriptors) {
     const base::Value::Dict& dict = serialized_descriptor.GetDict();
-    std::vector<uint8_t> decoded_id = Base64Decode(dict.FindString(kId));
-    if (decoded_id.empty()) {
+
+    const std::string* type = dict.FindString(kType);
+    if (!type) {
+      return base::unexpected(PasskeysParsingError::kMissingCredentialType);
+    }
+
+    // Only the "public-key" type is supported.
+    if (*type != device::kPublicKey) {
       continue;
     }
 
-    // Only the public-key type is supported.
-    const std::string* type = dict.FindString(kType);
-    if (!type || *type != device::kPublicKey) {
-      continue;
+    auto credential_id_base_64 = ValidateString(
+        dict.FindString(kId), PasskeysParsingError::kMissingCredentialId,
+        PasskeysParsingError::kEmptyCredentialId);
+    if (!credential_id_base_64.has_value()) {
+      return base::unexpected(credential_id_base_64.error());
+    }
+
+    std::optional<std::vector<uint8_t>> decoded_id =
+        Base64Decode(*credential_id_base_64);
+    if (!decoded_id.has_value()) {
+      return base::unexpected(PasskeysParsingError::kMalformedCredentialId);
     }
 
     device::PublicKeyCredentialDescriptor credential_descriptor(
-        device::CredentialType::kPublicKey, std::move(decoded_id));
+        device::CredentialType::kPublicKey, std::move(*decoded_id));
 
     // Read transport protocols.
     const base::Value::List* transports = dict.FindList(kTransports);
@@ -176,29 +208,52 @@ base::expected<PasskeyRequestParams, PasskeysParsingError> BuildRequestParams(
     return base::unexpected(PasskeysParsingError::kMissingRequest);
   }
 
-  return PasskeyRequestParams(
-      std::move(request_info), BuildRpEntity(dict.FindDict(kRpEntity)),
-      Base64Decode(request_dict->FindString(kChallenge)),
-      ToUserVerificationRequirement(
-          request_dict->FindString(kUserVerification)));
+  auto challenge_base_64 =
+      ValidateString(request_dict->FindString(kChallenge),
+                     PasskeysParsingError::kMissingChallenge,
+                     PasskeysParsingError::kEmptyChallenge);
+  if (!challenge_base_64.has_value()) {
+    return base::unexpected(challenge_base_64.error());
+  }
+
+  std::optional<std::vector<uint8_t>> challenge =
+      Base64Decode(*challenge_base_64);
+  if (!challenge.has_value()) {
+    return base::unexpected(PasskeysParsingError::kMalformedChallenge);
+  }
+
+  const base::Value::Dict* rp_entity_dict = dict.FindDict(kRpEntity);
+  if (!rp_entity_dict) {
+    return base::unexpected(PasskeysParsingError::kMissingRpEntity);
+  }
+
+  auto rp_entity = BuildRpEntity(*rp_entity_dict);
+  if (!rp_entity.has_value()) {
+    return base::unexpected(rp_entity.error());
+  }
+
+  return PasskeyRequestParams(std::move(request_info), std::move(*rp_entity),
+                              std::move(*challenge),
+                              ToUserVerificationRequirement(
+                                  request_dict->FindString(kUserVerification)));
 }
 
 }  // namespace
 
 base::expected<IOSPasskeyClient::RequestInfo, PasskeysParsingError>
 BuildRequestInfo(const base::Value::Dict& dict) {
-  const std::string* frame_id = dict.FindString(kFrameId);
-  if (!frame_id) {
-    return base::unexpected(PasskeysParsingError::kMissingFrameId);
-  } else if (frame_id->empty()) {
-    return base::unexpected(PasskeysParsingError::kEmptyFrameId);
+  auto frame_id = ValidateString(dict.FindString(kFrameId),
+                                 PasskeysParsingError::kMissingFrameId,
+                                 PasskeysParsingError::kEmptyFrameId);
+  if (!frame_id.has_value()) {
+    return base::unexpected(frame_id.error());
   }
 
-  const std::string* request_id = dict.FindString(kRequestId);
-  if (!request_id) {
-    return base::unexpected(PasskeysParsingError::kMissingRequestId);
-  } else if (request_id->empty()) {
-    return base::unexpected(PasskeysParsingError::kEmptyRequestId);
+  auto request_id = ValidateString(dict.FindString(kRequestId),
+                                   PasskeysParsingError::kMissingRequestId,
+                                   PasskeysParsingError::kEmptyRequestId);
+  if (!request_id.has_value()) {
+    return base::unexpected(request_id.error());
   }
 
   return IOSPasskeyClient::RequestInfo(*frame_id, *request_id);
@@ -211,9 +266,14 @@ BuildAssertionRequestParams(IOSPasskeyClient::RequestInfo request_info,
   if (!request_params.has_value()) {
     return base::unexpected(request_params.error());
   }
-  return AssertionRequestParams(
-      std::move(*request_params),
-      ReadCredentials(dict.FindList(kAllowCredentials)));
+
+  auto credentials = ReadCredentials(dict.FindList(kAllowCredentials));
+  if (!credentials.has_value()) {
+    return base::unexpected(credentials.error());
+  }
+
+  return AssertionRequestParams(std::move(*request_params),
+                                std::move(*credentials));
 }
 
 base::expected<RegistrationRequestParams, PasskeysParsingError>
@@ -223,9 +283,25 @@ BuildRegistrationRequestParams(IOSPasskeyClient::RequestInfo request_info,
   if (!request_params.has_value()) {
     return base::unexpected(request_params.error());
   }
-  return RegistrationRequestParams(
-      std::move(*request_params), BuildUserEntity(dict.FindDict(kUserEntity)),
-      ReadCredentials(dict.FindList(kExcludeCredentials)));
+
+  const base::Value::Dict* user_entity_dict = dict.FindDict(kUserEntity);
+  if (!user_entity_dict) {
+    return base::unexpected(PasskeysParsingError::kMissingUserEntity);
+  }
+
+  auto user_entity = BuildUserEntity(*user_entity_dict);
+  if (!user_entity.has_value()) {
+    return base::unexpected(user_entity.error());
+  }
+
+  auto credentials = ReadCredentials(dict.FindList(kExcludeCredentials));
+  if (!credentials.has_value()) {
+    return base::unexpected(credentials.error());
+  }
+
+  return RegistrationRequestParams(std::move(*request_params),
+                                   std::move(*user_entity),
+                                   std::move(*credentials));
 }
 
 }  // namespace webauthn

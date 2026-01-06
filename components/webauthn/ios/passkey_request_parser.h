@@ -18,6 +18,20 @@ enum class PasskeysParsingError {
   kMissingRequestId,
   kEmptyRequestId,
   kMissingRequest,
+  kMissingChallenge,
+  kEmptyChallenge,
+  kMalformedChallenge,
+  kMissingRpEntity,
+  kMissingRpId,
+  kEmptyRpId,
+  kMissingUserEntity,
+  kMissingUserId,
+  kEmptyUserId,
+  kMalformedUserId,
+  kMissingCredentialType,
+  kMissingCredentialId,
+  kEmptyCredentialId,
+  kMalformedCredentialId,
 };
 
 // Builds a IOSPasskeyClient::RequestInfo object from the parameters contained
