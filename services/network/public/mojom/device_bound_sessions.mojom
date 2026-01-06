@@ -194,6 +194,39 @@ enum DeviceBoundSessionError {
 
 // LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError)
 
+// LINT.IfChange(DeviceBoundSessionRefreshResult)
+enum DeviceBoundSessionRefreshResult {
+  kRefreshed = 0,
+  kInitializedService = 1,
+  kUnreachable = 2,
+  kServerError = 3,
+  kRefreshQuotaExceeded = 4,
+  kFatalError = 5,
+  kSigningQuotaExceeded = 6,
+};
+
+// LINT.ThenChange(//net/device_bound_sessions/refresh_result.h:DeviceBoundSessionRefreshResult)
+
+// LINT.IfChange(DeviceBoundSessionChallengeResult)
+enum DeviceBoundSessionChallengeResult {
+  kSuccess = 0,
+  kNoSessionId = 1,
+  kNoSessionMatch = 2,
+  kCantSetBoundCookie = 3,
+};
+
+// LINT.ThenChange(//net/device_bound_sessions/challenge_result.h:DeviceBoundSessionChallengeResult)
+
+// LINT.IfChange(DeviceBoundSessionEventType)
+enum DeviceBoundSessionEventType {
+  kCreation = 0,
+  kRefresh = 1,
+  kChallenge = 2,
+  kTermination = 3,
+};
+
+// LINT.ThenChange(//net/device_bound_sessions/session_event.h:DeviceBoundSessionEventType)
+
 // DeviceBoundSessionManager is a privileged interface that should only
 // be used in trusted processes.
 [RequireContext=sandbox.mojom.Context.kBrowser]

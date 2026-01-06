@@ -19,12 +19,14 @@ namespace net::device_bound_sessions {
 
 struct NET_EXPORT SessionEvent {
  public:
+  // LINT.IfChange(DeviceBoundSessionEventType)
   enum class EventType {
     kCreation,
     kRefresh,
     kChallenge,
     kTermination,
   };
+  // LINT.ThenChange(//services/network/public/mojom/device_bound_sessions.mojom:DeviceBoundSessionEventType)
 
   static SessionEvent MakeCreationEvent(
       SchemefulSite site,

@@ -10,6 +10,7 @@
 #include "net/device_bound_sessions/deletion_reason.h"
 #include "net/device_bound_sessions/session_access.h"
 #include "net/device_bound_sessions/session_error.h"
+#include "net/device_bound_sessions/session_event.h"
 #include "net/device_bound_sessions/session_inclusion_rules_display.h"
 #include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/session_params.h"
@@ -17,7 +18,9 @@
 #include "services/network/public/mojom/device_bound_sessions.mojom-shared.h"
 
 namespace net::device_bound_sessions {
+enum class ChallengeResult;
 enum class InclusionResult;
+enum class RefreshResult;
 struct SessionDisplay;
 }
 
@@ -830,6 +833,34 @@ struct StructTraits<network::mojom::DeviceBoundSessionDisplayDataView,
       const net::device_bound_sessions::SessionDisplay& r);
   static bool Read(network::mojom::DeviceBoundSessionDisplayDataView data,
                    net::device_bound_sessions::SessionDisplay* out);
+};
+
+template <>
+struct EnumTraits<network::mojom::DeviceBoundSessionRefreshResult,
+                  net::device_bound_sessions::RefreshResult> {
+  static network::mojom::DeviceBoundSessionRefreshResult ToMojom(
+      net::device_bound_sessions::RefreshResult input);
+  static bool FromMojom(network::mojom::DeviceBoundSessionRefreshResult input,
+                        net::device_bound_sessions::RefreshResult* output);
+};
+
+template <>
+struct EnumTraits<network::mojom::DeviceBoundSessionChallengeResult,
+                  net::device_bound_sessions::ChallengeResult> {
+  static network::mojom::DeviceBoundSessionChallengeResult ToMojom(
+      net::device_bound_sessions::ChallengeResult input);
+  static bool FromMojom(network::mojom::DeviceBoundSessionChallengeResult input,
+                        net::device_bound_sessions::ChallengeResult* output);
+};
+
+template <>
+struct EnumTraits<network::mojom::DeviceBoundSessionEventType,
+                  net::device_bound_sessions::SessionEvent::EventType> {
+  static network::mojom::DeviceBoundSessionEventType ToMojom(
+      net::device_bound_sessions::SessionEvent::EventType input);
+  static bool FromMojom(
+      network::mojom::DeviceBoundSessionEventType input,
+      net::device_bound_sessions::SessionEvent::EventType* output);
 };
 
 }  // namespace mojo

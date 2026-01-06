@@ -24,7 +24,7 @@ enum class RefreshResult {
   kSigningQuotaExceeded = 6,  // Signing quota exceeded.
   kMaxValue = kSigningQuotaExceeded
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionRefreshResult)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionRefreshResult,//services/network/public/mojom/device_bound_sessions.mojom:DeviceBoundSessionRefreshResult)
 
 }  // namespace net::device_bound_sessions
 

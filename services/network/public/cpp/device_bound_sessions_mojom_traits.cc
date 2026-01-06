@@ -7,7 +7,9 @@
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/device_bound_sessions/challenge_result.h"
 #include "net/device_bound_sessions/inclusion_result.h"
+#include "net/device_bound_sessions/refresh_result.h"
 #include "net/device_bound_sessions/session_display.h"
 #include "net/device_bound_sessions/session_params.h"
 #include "services/network/public/cpp/cookie_manager_mojom_traits.h"
@@ -358,4 +360,154 @@ bool StructTraits<network::mojom::DeviceBoundSessionDisplayDataView,
          data.ReadAllowedRefreshInitiators(&out->allowed_refresh_initiators) &&
          data.ReadCachedChallenge(&out->cached_challenge);
 }
+
+// static
+network::mojom::DeviceBoundSessionRefreshResult
+EnumTraits<network::mojom::DeviceBoundSessionRefreshResult,
+           net::device_bound_sessions::RefreshResult>::
+    ToMojom(net::device_bound_sessions::RefreshResult input) {
+  using RefreshResult = net::device_bound_sessions::RefreshResult;
+  using MojomRefreshResult = network::mojom::DeviceBoundSessionRefreshResult;
+  switch (input) {
+    case RefreshResult::kRefreshed:
+      return MojomRefreshResult::kRefreshed;
+    case RefreshResult::kInitializedService:
+      return MojomRefreshResult::kInitializedService;
+    case RefreshResult::kUnreachable:
+      return MojomRefreshResult::kUnreachable;
+    case RefreshResult::kServerError:
+      return MojomRefreshResult::kServerError;
+    case RefreshResult::kRefreshQuotaExceeded:
+      return MojomRefreshResult::kRefreshQuotaExceeded;
+    case RefreshResult::kFatalError:
+      return MojomRefreshResult::kFatalError;
+    case RefreshResult::kSigningQuotaExceeded:
+      return MojomRefreshResult::kSigningQuotaExceeded;
+  }
+  NOTREACHED();
+}
+
+// static
+bool EnumTraits<network::mojom::DeviceBoundSessionRefreshResult,
+                net::device_bound_sessions::RefreshResult>::
+    FromMojom(network::mojom::DeviceBoundSessionRefreshResult input,
+              net::device_bound_sessions::RefreshResult* output) {
+  using RefreshResult = net::device_bound_sessions::RefreshResult;
+  using MojomRefreshResult = network::mojom::DeviceBoundSessionRefreshResult;
+  switch (input) {
+    case MojomRefreshResult::kRefreshed:
+      *output = RefreshResult::kRefreshed;
+      return true;
+    case MojomRefreshResult::kInitializedService:
+      *output = RefreshResult::kInitializedService;
+      return true;
+    case MojomRefreshResult::kUnreachable:
+      *output = RefreshResult::kUnreachable;
+      return true;
+    case MojomRefreshResult::kServerError:
+      *output = RefreshResult::kServerError;
+      return true;
+    case MojomRefreshResult::kRefreshQuotaExceeded:
+      *output = RefreshResult::kRefreshQuotaExceeded;
+      return true;
+    case MojomRefreshResult::kFatalError:
+      *output = RefreshResult::kFatalError;
+      return true;
+    case MojomRefreshResult::kSigningQuotaExceeded:
+      *output = RefreshResult::kSigningQuotaExceeded;
+      return true;
+  }
+  return false;
+}
+
+// static
+network::mojom::DeviceBoundSessionChallengeResult
+EnumTraits<network::mojom::DeviceBoundSessionChallengeResult,
+           net::device_bound_sessions::ChallengeResult>::
+    ToMojom(net::device_bound_sessions::ChallengeResult input) {
+  using ChallengeResult = net::device_bound_sessions::ChallengeResult;
+  using MojomChallengeResult =
+      network::mojom::DeviceBoundSessionChallengeResult;
+  switch (input) {
+    case ChallengeResult::kSuccess:
+      return MojomChallengeResult::kSuccess;
+    case ChallengeResult::kNoSessionId:
+      return MojomChallengeResult::kNoSessionId;
+    case ChallengeResult::kNoSessionMatch:
+      return MojomChallengeResult::kNoSessionMatch;
+    case ChallengeResult::kCantSetBoundCookie:
+      return MojomChallengeResult::kCantSetBoundCookie;
+  }
+  NOTREACHED();
+}
+
+// static
+bool EnumTraits<network::mojom::DeviceBoundSessionChallengeResult,
+                net::device_bound_sessions::ChallengeResult>::
+    FromMojom(network::mojom::DeviceBoundSessionChallengeResult input,
+              net::device_bound_sessions::ChallengeResult* output) {
+  using ChallengeResult = net::device_bound_sessions::ChallengeResult;
+  using MojomChallengeResult =
+      network::mojom::DeviceBoundSessionChallengeResult;
+  switch (input) {
+    case MojomChallengeResult::kSuccess:
+      *output = ChallengeResult::kSuccess;
+      return true;
+    case MojomChallengeResult::kNoSessionId:
+      *output = ChallengeResult::kNoSessionId;
+      return true;
+    case MojomChallengeResult::kNoSessionMatch:
+      *output = ChallengeResult::kNoSessionMatch;
+      return true;
+    case MojomChallengeResult::kCantSetBoundCookie:
+      *output = ChallengeResult::kCantSetBoundCookie;
+      return true;
+  }
+  return false;
+}
+
+// static
+network::mojom::DeviceBoundSessionEventType
+EnumTraits<network::mojom::DeviceBoundSessionEventType,
+           net::device_bound_sessions::SessionEvent::EventType>::
+    ToMojom(net::device_bound_sessions::SessionEvent::EventType input) {
+  using EventType = net::device_bound_sessions::SessionEvent::EventType;
+  using MojomEventType = network::mojom::DeviceBoundSessionEventType;
+  switch (input) {
+    case EventType::kCreation:
+      return MojomEventType::kCreation;
+    case EventType::kRefresh:
+      return MojomEventType::kRefresh;
+    case EventType::kChallenge:
+      return MojomEventType::kChallenge;
+    case EventType::kTermination:
+      return MojomEventType::kTermination;
+  }
+  NOTREACHED();
+}
+
+// static
+bool EnumTraits<network::mojom::DeviceBoundSessionEventType,
+                net::device_bound_sessions::SessionEvent::EventType>::
+    FromMojom(network::mojom::DeviceBoundSessionEventType input,
+              net::device_bound_sessions::SessionEvent::EventType* output) {
+  using EventType = net::device_bound_sessions::SessionEvent::EventType;
+  using MojomEventType = network::mojom::DeviceBoundSessionEventType;
+  switch (input) {
+    case MojomEventType::kCreation:
+      *output = EventType::kCreation;
+      return true;
+    case MojomEventType::kRefresh:
+      *output = EventType::kRefresh;
+      return true;
+    case MojomEventType::kChallenge:
+      *output = EventType::kChallenge;
+      return true;
+    case MojomEventType::kTermination:
+      *output = EventType::kTermination;
+      return true;
+  }
+  return false;
+}
+
 }  // namespace mojo

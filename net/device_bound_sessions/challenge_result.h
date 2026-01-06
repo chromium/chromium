@@ -8,6 +8,7 @@
 namespace net::device_bound_sessions {
 
 // Result when attempting to set a challenge.
+// LINT.IfChange(DeviceBoundSessionChallengeResult)
 enum class ChallengeResult {
   kSuccess,             // Successfully set new challenge.
   kNoSessionId,         // No session_id found in header.
@@ -15,6 +16,7 @@ enum class ChallengeResult {
   kCantSetBoundCookie,  // Request is not allowed to set cookies and therefore
                         // not challenges either.
 };
+// LINT.ThenChange(//services/network/public/mojom/device_bound_sessions.mojom:DeviceBoundSessionChallengeResult)
 
 }  // namespace net::device_bound_sessions
 
