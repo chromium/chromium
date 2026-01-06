@@ -904,7 +904,7 @@ std::pair<std::optional<base::Uuid>,
           contextual_search::ContextualSearchSessionHandle*>
 ContextualTasksSidePanelCoordinator::GetSessionHandleForActiveTabOrSidePanel() {
   content::WebContents* web_contents = nullptr;
-  if (ShouldBeOpen()) {
+  if (IsSidePanelOpenForContextualTask()) {
     if (web_view_ && web_view_->GetWebContents()) {
       web_contents = web_view_->GetWebContents();
     }
