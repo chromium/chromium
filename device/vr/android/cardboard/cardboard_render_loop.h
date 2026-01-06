@@ -102,8 +102,6 @@ class CardboardRenderLoop : public base::android::JavaHandlerThread,
 
   bool IsSubmitFrameExpected(int16_t frame_index);
 
-  void ProcessFrameFromMailbox(int16_t frame_index,
-                               const gpu::MailboxHolder& mailbox);
   void ProcessFrameDrawnIntoTexture(const gpu::SyncToken& sync_token);
   void OnWebXrTokenSignaled(std::unique_ptr<gfx::GpuFence> gpu_fence);
 

@@ -189,8 +189,6 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   // mojom::XRSessionController
   void SetFrameDataRestricted(bool restricted) override;
 
-  void ProcessFrameFromMailbox(int16_t frame_index,
-                               const gpu::MailboxHolder& mailbox);
   void ProcessFrameDrawnIntoTexture(int16_t frame_index,
                                     const gpu::SyncToken& sync_token);
   // Notifies that the screen was touched at |touch_point| using a pointer.
