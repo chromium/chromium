@@ -72,7 +72,9 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -282,7 +284,7 @@ class ActiveStateCalculator : public PanelStateObserver {
   raw_ptr<BrowserWindowInterface> attached_browser_ = nullptr;
 };
 
-class BrowserIsOpenCalculator : public BrowserListObserver {
+class BrowserIsOpenCalculator : public BrowserCollectionObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -291,25 +293,25 @@ class BrowserIsOpenCalculator : public BrowserListObserver {
 
   explicit BrowserIsOpenCalculator(Profile* profile, Observer* observer)
       : profile_(profile) {
-    BrowserList::AddObserver(this);
-    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-        [this](BrowserWindowInterface* browser_window_interface) {
-          OnBrowserAdded(
-              browser_window_interface->GetBrowserForMigrationOnly());
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
+    GlobalBrowserCollection::GetInstance()->ForEach(
+        [this](BrowserWindowInterface* browser) {
+          OnBrowserCreated(browser);
           return true;
         });
     // Don't notify observer during construction.
     observer_ = observer;
   }
-  ~BrowserIsOpenCalculator() override { BrowserList::RemoveObserver(this); }
+  ~BrowserIsOpenCalculator() override = default;
 
-  void OnBrowserAdded(Browser* browser) override {
-    if (browser->profile() == profile_) {
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
+    if (browser->GetProfile() == profile_) {
       UpdateBrowserCount(1);
     }
   }
-  void OnBrowserRemoved(Browser* browser) override {
-    if (browser->profile() == profile_) {
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
+    if (browser->GetProfile() == profile_) {
       UpdateBrowserCount(-1);
     }
   }
@@ -330,6 +332,9 @@ class BrowserIsOpenCalculator : public BrowserListObserver {
   raw_ptr<Profile> profile_;
   raw_ptr<Observer> observer_ = nullptr;
   int open_browser_count_ = 0;
+
+  base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 // Does time-based debouncing and cache-based deduping of FocusedTabData
