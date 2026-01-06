@@ -46,7 +46,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
-import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
@@ -285,8 +284,6 @@ public class CustomTabToolbarButtonsViewBinder
             var parent = optionalButton.getParent();
             if (parent != null) {
                 ((ViewGroup) parent).removeView(optionalButton);
-                ChromePureJavaExceptionReporter.reportJavaExceptionFromMsg(
-                        "Optional button parent: " + parent, /* isWarning= */ true);
             }
         }
         // Check if we have space for the optional button and we should be showing it. The optional
