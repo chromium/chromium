@@ -1675,5 +1675,75 @@ TEST(BrowserControlsOffsetManagerTest, SmoothScrollPreventsInstantJump) {
   manager->ScrollEnd();
 }
 
+class BrowserControlsOffsetManagerCancelAnimationTest : public testing::Test {
+ public:
+  BrowserControlsOffsetManagerCancelAnimationTest()
+      : client_(100.f, 0.5f, 0.5f) {}
+
+ protected:
+  MockBrowserControlsOffsetManagerClient client_;
+};
+
+TEST_F(BrowserControlsOffsetManagerCancelAnimationTest,
+       HeightChangeCancelAnimationsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kBrowserControlsHeightChangeCancelAnimations);
+  BrowserControlsOffsetManager* manager = client_.manager();
+
+  manager->UpdateBrowserControlsState(BrowserControlsState::kHidden,
+                                      BrowserControlsState::kBoth, true,
+                                      std::nullopt);
+  EXPECT_TRUE(manager->HasAnimation());
+
+  client_.SetBrowserControlsParams({150, 0, 0, 0, false, false});
+  EXPECT_TRUE(manager->HasAnimation());
+}
+
+TEST_F(BrowserControlsOffsetManagerCancelAnimationTest,
+       HeightChangeCancelAnimationsEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kBrowserControlsHeightChangeCancelAnimations);
+  BrowserControlsOffsetManager* manager = client_.manager();
+
+  manager->UpdateBrowserControlsState(BrowserControlsState::kHidden,
+                                      BrowserControlsState::kBoth, true,
+                                      std::nullopt);
+  EXPECT_TRUE(manager->HasAnimation());
+
+  client_.SetBrowserControlsParams({150, 0, 0, 0, false, false});
+  EXPECT_FALSE(manager->HasAnimation());
+}
+
+TEST_F(BrowserControlsOffsetManagerCancelAnimationTest,
+       HeightChangeCancelAnimationsEnabledWithAnimatedHeightChange) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kBrowserControlsHeightChangeCancelAnimations);
+  BrowserControlsOffsetManager* manager = client_.manager();
+
+  manager->UpdateBrowserControlsState(BrowserControlsState::kHidden,
+                                      BrowserControlsState::kBoth, true,
+                                      std::nullopt);
+  EXPECT_TRUE(manager->HasAnimation());
+
+  client_.SetBrowserControlsParams({150, 0, 0, 0, true, false});
+  EXPECT_TRUE(manager->HasAnimation());
+}
+
+TEST_F(BrowserControlsOffsetManagerCancelAnimationTest,
+       HeightChangeCancelAnimationsEnabledNoAnimation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kBrowserControlsHeightChangeCancelAnimations);
+  BrowserControlsOffsetManager* manager = client_.manager();
+
+  EXPECT_FALSE(manager->HasAnimation());
+
+  client_.SetBrowserControlsParams({150, 0, 0, 0, false, false});
+  EXPECT_FALSE(manager->HasAnimation());
+}
+
 }  // namespace
 }  // namespace cc
