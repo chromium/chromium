@@ -574,6 +574,23 @@ bool GetUrl(IDataObject* data_object,
   return false;
 }
 
+std::vector<std::wstring> GetFilenames(HDROP hdrop) {
+  std::vector<std::wstring> filenames;
+  if (!hdrop) {
+    return filenames;
+  }
+
+  const int kMaxFilenameLen = 4096;
+  const unsigned num_files = DragQueryFileW(hdrop, 0xffffffff, 0, 0);
+  for (unsigned int i = 0; i < num_files; ++i) {
+    wchar_t filename[kMaxFilenameLen];
+    if (DragQueryFileW(hdrop, i, filename, kMaxFilenameLen)) {
+      filenames.push_back(filename);
+    }
+  }
+  return filenames;
+}
+
 bool GetFilenames(IDataObject* data_object,
                   std::vector<std::wstring>* filenames) {
   DCHECK(data_object && filenames);
@@ -584,19 +601,7 @@ bool GetFilenames(IDataObject* data_object,
   if (GetData(data_object, ClipboardFormatType::CFHDropType(), &medium)) {
     {
       base::win::ScopedHGlobal<HDROP> hdrop(medium.hGlobal);
-      if (!hdrop.data()) {
-        return false;
-      }
-
-      const int kMaxFilenameLen = 4096;
-      const unsigned num_files = DragQueryFileW(hdrop.data(), 0xffffffff, 0, 0);
-      for (unsigned int i = 0; i < num_files; ++i) {
-        wchar_t filename[kMaxFilenameLen];
-        if (!DragQueryFileW(hdrop.data(), i, filename, kMaxFilenameLen)) {
-          continue;
-        }
-        filenames->push_back(filename);
-      }
+      *filenames = GetFilenames(hdrop.data());
     }
     ReleaseStgMedium(&medium);
     return !filenames->empty();

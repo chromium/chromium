@@ -626,26 +626,13 @@ void ClipboardWin::ReadFilenames(ClipboardBuffer buffer,
   if (!clipboard.Acquire(GetClipboardWindow()))
     return;
 
-  // TODO(crbug.com/40749279): Refactor similar code in clipboard_utils_win:
-  // clipboard_util::GetFilenames() and reuse rather than duplicate.
   HANDLE data = GetClipboardDataWithLimit(
       ClipboardFormatType::CFHDropType().ToFormatEtc().cfFormat);
   if (data) {
     {
       base::win::ScopedHGlobal<HDROP> hdrop(data);
-      if (!hdrop.data()) {
-        return;
-      }
-
-      const int kMaxFilenameLen = 4096;
-      const unsigned num_files = DragQueryFileW(hdrop.data(), 0xffffffff, 0, 0);
-      for (unsigned int i = 0; i < num_files; ++i) {
-        wchar_t filename[kMaxFilenameLen];
-        if (!DragQueryFileW(hdrop.data(), i, filename, kMaxFilenameLen)) {
-          continue;
-        }
-        base::FilePath path(filename);
-        result->push_back(ui::FileInfo(path, base::FilePath()));
+      for (const auto& filename : clipboard_util::GetFilenames(hdrop.data())) {
+        result->emplace_back(base::FilePath(filename), base::FilePath());
       }
     }
     return;

@@ -5,6 +5,9 @@
 #ifndef UI_BASE_CLIPBOARD_CLIPBOARD_UTIL_WIN_H_
 #define UI_BASE_CLIPBOARD_CLIPBOARD_UTIL_WIN_H_
 
+#include <windows.h>
+
+#include <shellapi.h>
 #include <shlobj.h>
 #include <stddef.h>
 
@@ -55,6 +58,10 @@ bool GetUrl(IDataObject* data_object,
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
 bool GetFilenames(IDataObject* data_object,
                   std::vector<std::wstring>* filenames);
+
+// Returns filenames from the HDROP.
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
+std::vector<std::wstring> GetFilenames(HDROP hdrop);
 
 // Creates a new STGMEDIUM object to hold files.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
