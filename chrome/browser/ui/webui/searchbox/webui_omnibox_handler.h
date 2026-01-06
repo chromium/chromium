@@ -60,6 +60,7 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
 
   void OnShow();
   void OnShowAiModeButtonPrefChanged();
+  void OnContentSharingPolicyChanged();
 
   // ContextualSearchboxHandler:
   void SetPage(

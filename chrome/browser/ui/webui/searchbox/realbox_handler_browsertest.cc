@@ -88,6 +88,7 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
       searchbox::mojom::TabInfoPtr tab_info) override {}
   void OnShow() override {}
   MOCK_METHOD(void, SetKeywordSelected, (bool is_keyword_selected), (override));
+  MOCK_METHOD(void, UpdateContentSharingPolicy, (bool enabled), (override));
   MOCK_METHOD(void, UpdateLensSearchEligibility, (bool eligible), (override));
   MOCK_METHOD(void, UpdateAimEligibility, (bool eligible), (override));
   void OnShowAiModePrefChanged(bool canShow) override {}

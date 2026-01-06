@@ -404,6 +404,9 @@ interface Page {
   // Called when Lens search eligibility changes.
   UpdateLensSearchEligibility(bool eligible);
 
+  // Called when content sharing policy changes.
+  UpdateContentSharingPolicy(bool enabled);
+
   // Notifies the UI to show or hide AI features.
   UpdateAimEligibility(bool eligible);
 
