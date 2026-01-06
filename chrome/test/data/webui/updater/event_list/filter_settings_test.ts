@@ -4,7 +4,7 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {UpdaterProcessMap} from 'chrome://updater/event_history.js';
-import type {AppCommandStartEvent, InstallStartEvent, MergedUpdateEvent, MergedUpdaterProcessEvent, UninstallStartEvent, UpdateEndEvent, UpdateStartEvent} from 'chrome://updater/event_history.js';
+import type {AppCommandStartEvent, InstallStartEvent, MergedUpdateEvent, MergedUpdaterProcessEvent, Scope, UninstallStartEvent, UpdateEndEvent, UpdateStartEvent} from 'chrome://updater/event_history.js';
 import {applyFilterSettings, createDefaultFilterSettings, createEmptyFilterSettings} from 'chrome://updater/event_list/filter_settings.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertNull} from 'chrome://webui-test/chai_assert.js';
 
@@ -95,6 +95,7 @@ suite('FilterSettings', () => {
           new Set(['INSTALL', 'UPDATE', 'UNINSTALL']), settings.eventTypes);
       assertDeepEquals(
           new Set(['UPDATED', 'UPDATE_ERROR']), settings.updateOutcomes);
+      assertEquals(0, settings.scopes.size);
       assertNull(settings.startDate);
       assertNull(settings.endDate);
     });
@@ -114,6 +115,7 @@ suite('FilterSettings', () => {
       assertEquals(0, settings.apps.size);
       assertEquals(0, settings.eventTypes.size);
       assertEquals(0, settings.updateOutcomes.size);
+      assertEquals(0, settings.scopes.size);
       assertNull(settings.startDate);
       assertNull(settings.endDate);
     });
@@ -133,8 +135,8 @@ suite('FilterSettings', () => {
       assertArrayEquals([], result);
     });
 
-    function createUpdaterProcessEvent(startTimestamp: number):
-        MergedUpdaterProcessEvent {
+    function createUpdaterProcessEvent(
+        startTimestamp: number, scope?: Scope): MergedUpdaterProcessEvent {
       return {
         eventType: 'UPDATER_PROCESS',
         startEvent: {
@@ -146,6 +148,7 @@ suite('FilterSettings', () => {
           bound: 'START',
           errors: [],
           timestamp: new Date(startTimestamp),
+          scope,
         },
         endEvent: {
           eventType: 'UPDATER_PROCESS',
@@ -299,6 +302,80 @@ suite('FilterSettings', () => {
         const result = applyFilterSettings(processMap, events, settings);
 
         assertArrayEquals([event1, event2, event4], result);
+      });
+    });
+
+    suite('filters by scope', () => {
+      function createProcessEvent(
+          pid: number, token: string, scope: Scope): MergedUpdaterProcessEvent {
+        return {
+          eventType: 'UPDATER_PROCESS',
+          startEvent: {
+            eventType: 'UPDATER_PROCESS',
+            eventId: `process-${pid}`,
+            deviceUptime: 0,
+            pid,
+            processToken: token,
+            bound: 'START',
+            errors: [],
+            timestamp: new Date(100000),
+            scope,
+          },
+          endEvent: {
+            eventType: 'UPDATER_PROCESS',
+            eventId: `process-${pid}`,
+            deviceUptime: 1000,
+            pid,
+            processToken: token,
+            bound: 'END',
+            errors: [],
+          },
+        };
+      }
+
+      const processUser = createProcessEvent(100, 'token-100', 'USER');
+      const processSystem = createProcessEvent(200, 'token-200', 'SYSTEM');
+
+      const processMap = new UpdaterProcessMap([processUser, processSystem]);
+
+      function createEvent(
+          uptime: number, pid: number, token: string): InstallStartEvent {
+        return {
+          eventType: 'INSTALL',
+          bound: 'START',
+          eventId: `event-${uptime}`,
+          deviceUptime: uptime,
+          pid,
+          processToken: token,
+          errors: [],
+          appId: 'app1',
+        };
+      }
+
+      const eventUser = createEvent(100, 100, 'token-100');
+      const eventSystem = createEvent(200, 200, 'token-200');
+
+      const events = [eventUser, eventSystem];
+
+      test('user scope', () => {
+        const settings = createEmptyFilterSettings();
+        settings.scopes = new Set(['USER']);
+        const result = applyFilterSettings(processMap, events, settings);
+        assertArrayEquals([eventUser], result);
+      });
+
+      test('system scope', () => {
+        const settings = createEmptyFilterSettings();
+        settings.scopes = new Set(['SYSTEM']);
+        const result = applyFilterSettings(processMap, events, settings);
+        assertArrayEquals([eventSystem], result);
+      });
+
+      test('both scopes', () => {
+        const settings = createEmptyFilterSettings();
+        settings.scopes = new Set(['USER', 'SYSTEM']);
+        const result = applyFilterSettings(processMap, events, settings);
+        assertArrayEquals([eventUser, eventSystem], result);
       });
     });
   });

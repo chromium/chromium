@@ -63,6 +63,11 @@ IN_PROC_BROWSER_TEST_F(UpdaterAppTest, OutcomeDialogTest) {
           "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(UpdaterAppTest, ScopeDialogTest) {
+  RunTest("updater/event_list/filter_dialog/scope_dialog_test.js",
+          "mocha.run();");
+}
+
 IN_PROC_BROWSER_TEST_F(UpdaterAppTest, TypeDialogTest) {
   RunTest("updater/event_list/filter_dialog/type_dialog_test.js",
           "mocha.run();");

@@ -6,6 +6,7 @@ import './filter_dialog/filter_dialog.js';
 import './filter_dialog/app_dialog.js';
 import './filter_dialog/event_dialog.js';
 import './filter_dialog/outcome_dialog.js';
+import './filter_dialog/scope_dialog.js';
 import './filter_dialog/date_dialog.js';
 import './filter_dialog/type_dialog.js';
 import '//resources/cr_elements/cr_chip/cr_chip.js';
@@ -22,8 +23,8 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {localizeEventType, localizeUpdateOutcome} from '../event_history.js';
-import type {CommonUpdateOutcome, EventType} from '../event_history.js';
+import {localizeEventType, localizeScope, localizeUpdateOutcome} from '../event_history.js';
+import type {CommonUpdateOutcome, EventType, Scope} from '../event_history.js';
 import {loadTimeData} from '../i18n_setup.js';
 
 import {getCss} from './filter_bar.css.js';
@@ -44,6 +45,7 @@ export enum FilterCategory {
   EVENT = 'event',
   OUTCOME = 'outcome',
   DATE = 'date',
+  SCOPE = 'scope',
 }
 
 export type FilterMenuState = FilterCategory|'closed'|'type';
@@ -120,10 +122,13 @@ export class FilterBarElement extends CrLitElement {
         initialFilterOrder.push(FilterCategory.APP);
       }
       if (this.filterSettings.eventTypes.size > 0) {
-        initialFilterOrder.push(FilterCategory.DATE);
+        initialFilterOrder.push(FilterCategory.EVENT);
       }
       if (this.filterSettings.updateOutcomes.size > 0) {
-        initialFilterOrder.push(FilterCategory.EVENT);
+        initialFilterOrder.push(FilterCategory.OUTCOME);
+      }
+      if (this.filterSettings.scopes.size > 0) {
+        initialFilterOrder.push(FilterCategory.SCOPE);
       }
       if (this.filterSettings.startDate || this.filterSettings.endDate) {
         initialFilterOrder.push(FilterCategory.DATE);
@@ -147,6 +152,8 @@ export class FilterBarElement extends CrLitElement {
       this.updateFilterOrder(
           FilterCategory.OUTCOME, this.filterSettings.updateOutcomes.size > 0);
       this.updateFilterOrder(
+          FilterCategory.SCOPE, this.filterSettings.scopes.size > 0);
+      this.updateFilterOrder(
           FilterCategory.DATE,
           !!(this.filterSettings.startDate || this.filterSettings.endDate));
     }
@@ -165,6 +172,9 @@ export class FilterBarElement extends CrLitElement {
         break;
       case FilterCategory.OUTCOME:
         this.filterSettings.updateOutcomes.clear();
+        break;
+      case FilterCategory.SCOPE:
+        this.filterSettings.scopes.clear();
         break;
       case FilterCategory.DATE:
         this.filterSettings.startDate = null;
@@ -208,6 +218,12 @@ export class FilterBarElement extends CrLitElement {
             'filterChipUpdateOutcome',
             Array.from(this.filterSettings.updateOutcomes)
                 .map(localizeUpdateOutcome)
+                .join(', '));
+      case FilterCategory.SCOPE:
+        return loadTimeData.getStringF(
+            'filterChipUpdaterScope',
+            Array.from(this.filterSettings.scopes)
+                .map(localizeScope)
                 .join(', '));
       case FilterCategory.DATE:
         return loadTimeData.getStringF(
@@ -264,6 +280,13 @@ export class FilterBarElement extends CrLitElement {
     await this.onFiltersChanged();
   }
 
+  protected async onScopeFilterChange(e: CustomEvent<Set<Scope>>) {
+    this.updateFilterOrder(FilterCategory.SCOPE, e.detail.size > 0);
+    this.filterSettings.scopes = new Set(e.detail);
+    this.closeFilterMenu();
+    await this.onFiltersChanged();
+  }
+
   protected async onDateFilterChange(
       e: CustomEvent<{start: Date | null, end: Date|null}>) {
     this.updateFilterOrder(
@@ -304,6 +327,7 @@ export class FilterBarElement extends CrLitElement {
     this.filterSettings.apps.clear();
     this.filterSettings.eventTypes.clear();
     this.filterSettings.updateOutcomes.clear();
+    this.filterSettings.scopes.clear();
     this.filterSettings.startDate = null;
     this.filterSettings.endDate = null;
     this.filterOrder = [];

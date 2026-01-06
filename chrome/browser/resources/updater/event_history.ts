@@ -51,7 +51,7 @@ const UPDATE_PRIORITIES = ['BACKGROUND', 'FOREGROUND'] as const;
  */
 export type UpdatePriority = (typeof UPDATE_PRIORITIES)[number];
 
-const SCOPES = ['USER', 'SYSTEM'] as const;
+export const SCOPES = ['USER', 'SYSTEM'] as const;
 /**
  * The scope of an updater process.
  */
@@ -85,6 +85,7 @@ type EndEvent = BaseEvent&{bound: 'END'};
 /**
  * Represents a pair of START and END events of the same type.
  */
+// clang-format off
 interface EventPair<Event,
                     Start extends StartEvent&{eventType: Event},
                     End extends EndEvent&{eventType: Event}> {
@@ -101,6 +102,7 @@ interface EventPair<Event,
    */
   endEvent: End;
 }
+// clang-format on
 
 /**
  * Represents an app registered with the updater.
@@ -150,6 +152,14 @@ export type CommonUpdateOutcome = (typeof COMMON_UPDATE_OUTCOMES)[number];
  */
 export function localizeUpdateOutcome(outcome: CommonUpdateOutcome) {
   return loadTimeData.getString(`updateOutcome${outcome}`);
+}
+
+/**
+ * Returns the localized title of a scope.
+ */
+export function localizeScope(scope: Scope): string {
+  return loadTimeData.getString(
+      scope === 'SYSTEM' ? 'scopeSystem' : 'scopeUser');
 }
 
 // ---------------------------------------------------------------------------

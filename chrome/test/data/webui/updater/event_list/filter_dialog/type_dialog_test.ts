@@ -24,11 +24,12 @@ suite('TypeDialogElement', () => {
   test('displays menu items', async () => {
     await microtasksFinished();
     const items = filterType.shadowRoot.querySelectorAll('.filter-menu-item');
-    expect(items.length).to.equal(4);
+    expect(items.length).to.equal(5);
     expect(items[0]!.textContent.trim()).to.equal('App');
     expect(items[1]!.textContent.trim()).to.equal('Event Type');
     expect(items[2]!.textContent.trim()).to.equal('Update Outcome');
-    expect(items[3]!.textContent.trim()).to.equal('Date');
+    expect(items[3]!.textContent.trim()).to.equal('Updater Scope');
+    expect(items[4]!.textContent.trim()).to.equal('Date');
   });
 
   test('fires type-selection-changed event on click', async () => {

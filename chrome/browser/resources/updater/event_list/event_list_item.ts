@@ -12,7 +12,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {Scope, UpdaterProcessMap} from '../event_history.js';
-import {getAppId, isMergedHistoryEvent} from '../event_history.js';
+import {getAppId, isMergedHistoryEvent, localizeScope} from '../event_history.js';
 import type {HistoryEvent, MergedActivateEvent, MergedAppCommandEvent, MergedHistoryEvent, MergedInstallEvent, MergedQualifyEvent, MergedUninstallEvent, MergedUpdateEvent, MergedUpdaterProcessEvent, PersistedDataEvent} from '../event_history.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {getKnownAppNamesById} from '../known_apps.js';
@@ -111,10 +111,7 @@ export class EventListItemElement extends CrLitElement {
 
   protected get scopeLabel(): string {
     assert(this.scope !== undefined);
-    return this.scope ?
-        loadTimeData.getString(
-            this.scope === 'SYSTEM' ? 'scopeSystem' : 'scopeUser') :
-        '';
+    return localizeScope(this.scope);
   }
 
   /**

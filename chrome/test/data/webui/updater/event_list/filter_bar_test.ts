@@ -64,7 +64,7 @@ suite('FilterBarElement', () => {
     expect(filterType).to.not.be.null;
 
     expect(filterType!.shadowRoot.querySelectorAll('.filter-menu-item').length)
-        .to.equal(4);
+        .to.equal(5);
   });
 
   test('closes filter menu when clicking outside', async () => {
@@ -98,7 +98,7 @@ suite('FilterBarElement', () => {
     await microtasksFinished();
 
     const content = filterBar.shadowRoot.querySelector<HTMLElement>(
-        'app-dialog, event-dialog, outcome-dialog, date-dialog')!;
+        'app-dialog, event-dialog, outcome-dialog, scope-dialog, date-dialog')!;
     expect(content).to.not.be.null;
 
     await itemSelection(content);
@@ -178,9 +178,22 @@ suite('FilterBarElement', () => {
     expect(filterBar.filterSettings.updateOutcomes.has('UPDATED')).to.be.true;
   });
 
-  test('can add and remove date filter', async () => {
+  test('can add and remove scope filter', async () => {
     await clearFilters();
     await addFilter(3, async (content) => {
+      expect(content.tagName).to.equal('SCOPE-DIALOG');
+      const checkbox =
+          content.shadowRoot!.querySelector<CrCheckboxElement>('cr-checkbox');
+      checkbox!.click();
+      await microtasksFinished();
+    });
+    expect(filterBar.filterSettings.scopes.size).to.equal(1);
+    expect(filterBar.filterSettings.scopes.has('USER')).to.be.true;
+  });
+
+  test('can add and remove date filter', async () => {
+    await clearFilters();
+    await addFilter(4, async (content) => {
       expect(content.tagName).to.equal('DATE-DIALOG');
       const startDateInput =
           content.shadowRoot!.querySelector<HTMLInputElement>('#start-date');
@@ -199,6 +212,7 @@ suite('FilterBarElement', () => {
       apps: new Set(['Google Chrome']),
       eventTypes: new Set(['INSTALL']),
       updateOutcomes: new Set(['UPDATED']),
+      scopes: new Set(['USER']),
       startDate: new Date(),
       endDate: new Date(),
     };
@@ -207,6 +221,7 @@ suite('FilterBarElement', () => {
     expect(filterBar.filterSettings.apps.size).to.equal(0);
     expect(filterBar.filterSettings.eventTypes.size).to.equal(0);
     expect(filterBar.filterSettings.updateOutcomes.size).to.equal(0);
+    expect(filterBar.filterSettings.scopes.size).to.equal(0);
     expect(filterBar.filterSettings.startDate).to.be.null;
     expect(filterBar.filterSettings.endDate).to.be.null;
     expect(filterBar.shadowRoot.getElementById('clear-filters-button'))
@@ -218,16 +233,18 @@ suite('FilterBarElement', () => {
       apps: new Set(['App1', 'App2']),
       eventTypes: new Set(['INSTALL', 'UPDATE']),
       updateOutcomes: new Set(['UPDATED']),
+      scopes: new Set(['USER']),
       startDate: new Date('2025-01-01T00:00'),
       endDate: new Date('2025-01-02T00:00'),
     };
     await microtasksFinished();
     const chips = filterBar.shadowRoot.querySelectorAll('.chip');
-    expect(chips.length).to.equal(4);
+    expect(chips.length).to.equal(5);
     expect(chips[0]!.textContent).to.contain('App: App1, App2');
     expect(chips[1]!.textContent).to.contain('Event Type: Install, Update');
     expect(chips[2]!.textContent).to.contain('Update Outcome: Updated');
-    expect(chips[3]!.textContent).to.contain('01/01/2025');
+    expect(chips[3]!.textContent).to.contain('Updater Scope: Per-user updater');
+    expect(chips[4]!.textContent).to.contain('01/01/2025');
   });
 
   test('edits date filter when date chip is clicked', async () => {
@@ -235,6 +252,7 @@ suite('FilterBarElement', () => {
       apps: new Set(),
       eventTypes: new Set(),
       updateOutcomes: new Set(),
+      scopes: new Set(),
       startDate: new Date('2025-01-01T00:00'),
       endDate: null,
     };
@@ -255,6 +273,7 @@ suite('FilterBarElement', () => {
       apps: new Set(),
       eventTypes: new Set(),
       updateOutcomes: new Set(),
+      scopes: new Set(),
       startDate: new Date('2025-01-01T00:00'),
       endDate: null,
     };

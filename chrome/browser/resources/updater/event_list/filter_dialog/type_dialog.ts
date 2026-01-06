@@ -49,6 +49,10 @@ export class TypeDialogElement extends CrLitElement {
           label: loadTimeData.getString('updateOutcome'),
         },
         {
+          filterCategory: FilterCategory.SCOPE,
+          label: loadTimeData.getString('scope'),
+        },
+        {
           filterCategory: FilterCategory.DATE,
           label: loadTimeData.getString('date'),
         },

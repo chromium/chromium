@@ -71,6 +71,13 @@ export function getHtml(this: FilterBarElement) {
           @close="${this.onFilterDialogClose}">
       </filter-dialog-outcome>
     ` : ''}
+    ${this.filterMenuState === FilterCategory.SCOPE ? html`
+      <scope-dialog .anchorElement="${this.getDialogAnchor()}"
+          .initialSelections="${this.filterSettings.scopes}"
+          @filter-change="${this.onScopeFilterChange}"
+          @close="${this.onFilterDialogClose}">
+      </filter-dialog-scope>
+    ` : ''}
     ${this.filterMenuState === FilterCategory.DATE ? html`
       <date-dialog .anchorElement="${this.getDialogAnchor()}"
           .initialStartDate="${this.filterSettings.startDate}"

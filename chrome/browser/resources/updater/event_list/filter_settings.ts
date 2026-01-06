@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {CommonUpdateOutcome, EventType, HistoryEvent, MergedHistoryEvent, MergedUpdateEvent, UpdaterProcessMap} from '../event_history.js';
+import {assert} from '//resources/js/assert.js';
+
+import type {CommonUpdateOutcome, EventType, HistoryEvent, MergedHistoryEvent, MergedUpdateEvent, Scope, UpdaterProcessMap} from '../event_history.js';
 import {getAppId, isMergedHistoryEvent} from '../event_history.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {getKnownApps} from '../known_apps.js';
@@ -16,6 +18,7 @@ export interface FilterSettings {
   updateOutcomes: Set<CommonUpdateOutcome>;
   startDate: Date|null;
   endDate: Date|null;
+  scopes: Set<Scope>;
 }
 
 /**
@@ -34,6 +37,7 @@ export function createDefaultFilterSettings(): FilterSettings {
     updateOutcomes: new Set<CommonUpdateOutcome>(['UPDATED', 'UPDATE_ERROR']),
     startDate: null,
     endDate: null,
+    scopes: new Set(),
   };
 }
 
@@ -47,6 +51,7 @@ export function createEmptyFilterSettings(): FilterSettings {
     updateOutcomes: new Set(),
     startDate: null,
     endDate: null,
+    scopes: new Set(),
   };
 }
 
@@ -82,6 +87,13 @@ export function applyFilterSettings(
       return false;
     }
     if (filterSettings.endDate && (!date || date > filterSettings.endDate)) {
+      return false;
+    }
+    const process = processMap.getUpdaterProcessForEvent(event);
+    assert(process !== undefined);
+    if (filterSettings.scopes.size > 0 &&
+        (!process.startEvent.scope ||
+         !filterSettings.scopes.has(process.startEvent.scope))) {
       return false;
     }
     if (filterSettings.apps.size > 0) {
