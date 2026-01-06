@@ -4954,6 +4954,16 @@ targets.bundle(
                 "SIM_IPHONE_15_PRO_MAX_18_5",
             ],
         ),
+        targets.bundle(
+            targets = "ios_swift_interop_xcuitests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_PRO_7TH_GEN_18_5",
+                "SIM_IPHONE_15_18_5",
+            ],
+        ),
     ],
 )
 
@@ -5010,6 +5020,16 @@ targets.bundle(
                 "SIM_IPHONE_SE_3RD_GEN_18_5",
             ],
         ),
+        targets.bundle(
+            targets = "ios_swift_interop_xcuitests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_PRO_7TH_GEN_18_5",
+                "SIM_IPHONE_15_18_5",
+            ],
+        ),
     ],
 )
 
@@ -5063,6 +5083,16 @@ targets.bundle(
                 "SIM_IPHONE_SE_3RD_GEN_26_2",
             ],
         ),
+        targets.bundle(
+            targets = "ios_swift_interop_xcuitests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_6TH_GEN_26_2",
+                "SIM_IPHONE_16_26_2",
+            ],
+        ),
     ],
 )
 
@@ -5102,6 +5132,16 @@ targets.bundle(
                 "SIM_IPAD_AIR_6TH_GEN_26_2",
                 "SIM_IPHONE_16_26_2",
                 "SIM_IPHONE_SE_3RD_GEN_26_2",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_swift_interop_xcuitests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_6TH_GEN_26_2",
+                "SIM_IPHONE_16_26_2",
             ],
         ),
     ],
@@ -5737,6 +5777,13 @@ targets.bundle(
                 "SIM_IPHONE_16_26_0",
             ],
         ),
+    ],
+)
+
+targets.bundle(
+    name = "ios_swift_interop_xcuitests",
+    targets = [
+        "ios_swift_interop_xcuitests_module",
     ],
 )
 
