@@ -174,7 +174,6 @@
   align-items: flex-start;
   display: flex;
   flex-direction: column;
-  gap: 2px;
   min-width: 0;
   width: 100%;
 }
@@ -194,6 +193,7 @@
   font-size: 13px;
   font-weight: 500;
   overflow: hidden;
+  line-height: 20px;
   text-align: left;
   text-overflow: ellipsis;
   white-space: nowrap;
