@@ -47,6 +47,9 @@ class ContextualSearchService : public KeyedService {
       const std::string& locale);
   ~ContextualSearchService() override;
 
+  // KeyedService:
+  void Shutdown() override;
+
   // Register profile related prefs.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
   // Check whether contextual search is enabled.
@@ -85,9 +88,6 @@ class ContextualSearchService : public KeyedService {
 
   // Called by SessionHandle to manage ref counts.
   void ReleaseSession(const SessionId& session_id);
-
-  // KeyedService:
-  void Shutdown() override;
 
   // Map of active sessions, keyed by the session ID.
   std::map<SessionId, ContextualSearchSessionEntry> sessions_;

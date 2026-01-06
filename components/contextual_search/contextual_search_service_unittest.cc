@@ -32,13 +32,14 @@ using testing::NotNull;
 class ContextualSearchServiceTest : public testing::Test {
  public:
   ContextualSearchServiceTest()
-      : test_shared_loader_factory_(
+      : identity_test_env_(std::make_unique<signin::IdentityTestEnvironment>()),
+        test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {}
 
   void SetUp() override {
     service_ = std::make_unique<ContextualSearchService>(
-        identity_test_env_.identity_manager(), test_shared_loader_factory_,
+        identity_test_env_->identity_manager(), test_shared_loader_factory_,
         search_engines_test_environment_.template_url_service(),
         &fake_variations_client_, version_info::Channel::UNKNOWN, "en-US");
     ContextualSearchService::RegisterProfilePrefs(pref_service_.registry());
@@ -60,7 +61,7 @@ class ContextualSearchServiceTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  signin::IdentityTestEnvironment identity_test_env_;
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
@@ -379,6 +380,26 @@ TEST_F(ContextualSearchServiceTest, NullController) {
   // These calls should not crash.
   EXPECT_TRUE(session_handle->GetUploadedContextFileInfos().empty());
   EXPECT_TRUE(session_handle->GetSubmittedContextFileInfos().empty());
+}
+
+// Regression test for crbug.com/466564968
+TEST_F(ContextualSearchServiceTest, CreateSessionAfterShutdown) {
+  // Call Shutdown to clear the IdentityManager pointer.
+  service_->Shutdown();
+
+  // Destroy the IdentityManager to ensure the service is not holding a dangling
+  // pointer.
+  identity_test_env_.reset();
+
+  // Create a new session. This should not crash even if IdentityManager is gone
+  // (simulated by it being null after Shutdown).
+  auto config_params =
+      std::make_unique<ContextualSearchContextController::ConfigParams>();
+  auto session_handle = service_->CreateSession(
+      std::move(config_params), ContextualSearchSource::kUnknown);
+
+  ASSERT_THAT(session_handle, NotNull());
+  ASSERT_THAT(session_handle->GetController(), NotNull());
 }
 
 }  // namespace contextual_search
