@@ -23,26 +23,6 @@ namespace optimization_guide::model_execution::prefs {
 
 namespace {
 
-struct LegacyUsagePref {
-  const char* path;
-  mojom::OnDeviceFeature feature;
-};
-
-constexpr LegacyUsagePref kLegacyUsagePrefs[] = {
-    {"optimization_guide.last_time_on_device_eligible_feature_used",
-     mojom::OnDeviceFeature::kCompose},
-    {"optimization_guide.model_execution.last_time_prompt_api_used",
-     mojom::OnDeviceFeature::kPromptApi},
-    {"optimization_guide.model_execution.last_time_summarize_api_used",
-     mojom::OnDeviceFeature::kSummarize},
-    {"optimization_guide.model_execution.last_time_test_used",
-     mojom::OnDeviceFeature::kTest},
-    {"optimization_guide.model_execution.last_time_history_search_used",
-     mojom::OnDeviceFeature::kHistorySearch},
-    {"optimization_guide.model_execution.last_time_history_query_intent_used",
-     mojom::OnDeviceFeature::kHistoryQueryIntent},
-};
-
 std::string PrefKey(mojom::OnDeviceFeature feature) {
   return base::NumberToString(
       (static_cast<uint64_t>(ToModelExecutionFeatureProto(feature))));
@@ -133,23 +113,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                               PrefRegistry::LOSSY_PREF);
   registry->RegisterIntegerPref(
       localstate::kGenAILocalFoundationalModelEnterprisePolicySettings, 0);
-}
-
-void RegisterLegacyUsagePrefsForMigration(PrefRegistrySimple* registry) {
-  for (auto& pref : kLegacyUsagePrefs) {
-    registry->RegisterTimePref(pref.path, base::Time::Min());
-  }
-}
-
-void MigrateLegacyUsagePrefs(PrefService* local_state) {
-  for (auto& pref : kLegacyUsagePrefs) {
-    if (local_state->HasPrefPath(pref.path)) {
-      DCHECK(!local_state->GetDict(localstate::kLastUsageByFeature)
-                  .Find(PrefKey(pref.feature)));
-      SetLastUsage(local_state, pref.feature, local_state->GetTime(pref.path));
-      local_state->ClearPref(pref.path);
-    }
-  }
 }
 
 void PruneOldUsagePrefs(PrefService* local_state) {

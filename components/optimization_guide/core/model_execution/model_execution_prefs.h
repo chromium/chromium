@@ -65,12 +65,6 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-void RegisterLegacyUsagePrefsForMigration(PrefRegistrySimple* registry);
-
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-void MigrateLegacyUsagePrefs(PrefService* local_state);
-
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 void PruneOldUsagePrefs(PrefService* local_state);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 void RecordFeatureUsage(PrefService* local_state,
