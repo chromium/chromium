@@ -287,13 +287,13 @@ bool ClearSiteDataHandler::ParseHeader(
         base::EndsWith(input_type, net::kDatatypeStorageBucketSuffix)) {
       const int prefix_len = strlen(net::kDatatypeStorageBucketPrefix);
 
-      const std::string bucket_name = input_type.substr(
+      std::string bucket_name = input_type.substr(
           prefix_len,
           input_type.length() -
               (prefix_len + strlen(net::kDatatypeStorageBucketSuffix)));
 
       if (IsValidBucketName(bucket_name))
-        storage_buckets_to_remove->insert(bucket_name);
+        storage_buckets_to_remove->insert(std::move(bucket_name));
 
       // Exit the loop and continue since for buckets, there are no booleans
       // and the logic later would cause a crash.
