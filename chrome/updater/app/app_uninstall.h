@@ -20,6 +20,11 @@ class App;
 // official install directory for `scope`, excluding the current version.
 std::vector<base::FilePath> GetVersionExecutablePaths(UpdaterScope scope);
 
+// Uninstalls all versions not matching the current version of the updater for
+// the given `scope`. Returns `kErrorOk` if successful,
+// `kErrorFailedToUninstallOtherVersion` otherwise.
+[[nodiscard]] int UninstallOtherVersions(UpdaterScope scope);
+
 // Returns a command line to uninstall the updater at `executable_path`.
 base::CommandLine GetUninstallSelfCommandLine(
     UpdaterScope scope,

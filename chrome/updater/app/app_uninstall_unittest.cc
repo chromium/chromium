@@ -56,6 +56,27 @@ TEST_F(AppUninstallTest, GetVersionExecutablePaths) {
   ASSERT_TRUE(base::DeletePathRecursively(*path));
 }
 
+// The mac test setup is incompatible with the code below.
+#if !BUILDFLAG(IS_MAC)
+TEST_F(AppUninstallTest, UninstallOtherVersions) {
+  for (int major_version_offset : {-2, -1, 0, 1, 2, 3}) {
+    updater::test::SetupFakeUpdaterVersion(
+        GetUpdaterScopeForTesting(), base::Version(kUpdaterVersion),
+        major_version_offset,
+        /*should_create_updater_executable=*/false);
+  }
+
+  ASSERT_EQ(GetVersionExecutablePaths(GetUpdaterScopeForTesting()).size(), 5u);
+  ASSERT_EQ(UninstallOtherVersions(GetUpdaterScopeForTesting()), kErrorOk);
+  ASSERT_EQ(GetVersionExecutablePaths(GetUpdaterScopeForTesting()).size(), 0u);
+
+  const std::optional<base::FilePath> path =
+      GetInstallDirectory(GetUpdaterScopeForTesting());
+  ASSERT_TRUE(path);
+  ASSERT_TRUE(base::DeletePathRecursively(*path));
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 TEST_F(AppUninstallTest, GetUninstallSelfCommandLine) {
   const base::CommandLine command_line(GetUninstallSelfCommandLine(
       GetUpdaterScopeForTesting(),

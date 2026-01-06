@@ -95,6 +95,46 @@ base::CommandLine GetUninstallSelfCommandLine(
   return command_line;
 }
 
+[[nodiscard]] int UninstallOtherVersions(UpdaterScope scope) {
+  bool has_error = false;
+  for (const base::FilePath& version_executable_path :
+       GetVersionExecutablePaths(scope)) {
+    if (!base::PathExists(version_executable_path)) {
+      const base::FilePath& version_path = version_executable_path.DirName();
+      VLOG(1) << __func__
+              << ": Other version updater missing main binary. Deleting "
+                 "orphaned directory: "
+              << version_path;
+      base::DeletePathRecursively(version_path);
+      continue;
+    }
+    const base::CommandLine command_line(
+        GetUninstallSelfCommandLine(scope, version_executable_path));
+    int exit_code = -1;
+    std::string output;
+    if (base::GetAppOutputWithExitCode(command_line, &output, &exit_code)) {
+      VLOG(1) << __func__ << ": Ran: " << command_line.GetCommandLineString()
+              << ": " << output << ": " << exit_code;
+      if (exit_code != 0) {
+        has_error = true;
+      } else {
+        // Wait until the install is completely removed, for instance, wait for
+        // the completion of the separate cmd script on Windows to complete the
+        // uninstall.
+        for (const auto deadline = base::TimeTicks::Now() + base::Seconds(20);
+             base::PathExists(command_line.GetProgram()) &&
+             (base::TimeTicks::Now() < deadline);
+             base::PlatformThread::Sleep(base::Milliseconds(100))) {
+        }
+      }
+    } else {
+      VLOG(1) << "Failed to run the command to uninstall other versions.";
+      has_error = true;
+    }
+  }
+  return has_error ? kErrorFailedToUninstallOtherVersion : kErrorOk;
+}
+
 namespace {
 
 // Uninstalls the enterprise companion app if it exists.
@@ -129,45 +169,6 @@ namespace {
           << !enterprise_companion::FindExistingInstall();
 
   return exit_code == 0 ? kErrorOk : kErrorFailedToUninstallCompanionApp;
-}
-
-// Uninstalls all versions not matching the current version of the updater for
-// the given `scope`.
-[[nodiscard]] int UninstallOtherVersions(UpdaterScope scope) {
-  bool has_error = false;
-  for (const base::FilePath& version_executable_path :
-       GetVersionExecutablePaths(scope)) {
-    const base::CommandLine command_line(
-        GetUninstallSelfCommandLine(scope, version_executable_path));
-    if (!base::PathExists(command_line.GetProgram())) {
-      VLOG(1)
-          << __func__
-          << ": Other version updater has no main binary, skip the uninstall.";
-      return kErrorOk;
-    }
-    int exit_code = -1;
-    std::string output;
-    if (base::GetAppOutputWithExitCode(command_line, &output, &exit_code)) {
-      VLOG(1) << __func__ << ": Ran: " << command_line.GetCommandLineString()
-              << ": " << output << ": " << exit_code;
-      if (exit_code != 0) {
-        has_error = true;
-      } else {
-        // Wait until the install is completely removed, for instance, wait for
-        // the completion of the separate cmd script on Windows to complete the
-        // uninstall.
-        for (const auto deadline = base::TimeTicks::Now() + base::Seconds(20);
-             base::PathExists(command_line.GetProgram()) &&
-             (base::TimeTicks::Now() < deadline);
-             base::PlatformThread::Sleep(base::Milliseconds(100))) {
-        }
-      }
-    } else {
-      VLOG(1) << "Failed to run the command to uninstall other versions.";
-      has_error = true;
-    }
-  }
-  return has_error ? kErrorFailedToUninstallOtherVersion : kErrorOk;
 }
 
 void UninstallInThreadPool(UpdaterScope scope,
