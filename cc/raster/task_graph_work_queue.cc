@@ -146,7 +146,7 @@ TaskGraphWorkQueue::PrioritizedTask::~PrioritizedTask() = default;
 
 NamespaceToken TaskGraphWorkQueue::GenerateNamespaceToken() {
   NamespaceToken token(next_namespace_id_++);
-  DCHECK(!base::Contains(namespaces_, token));
+  DCHECK(!namespaces_.contains(token));
   return token;
 }
 

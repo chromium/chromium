@@ -55,7 +55,7 @@ static bool LayerHasValidPropertyTreeIndices(const LayerImpl* layer) {
 
 static bool LayerWillPushProperties(const LayerTreeImpl* tree,
                                     const LayerImpl* layer) {
-  return base::Contains(tree->LayersThatShouldPushProperties(), layer) ||
+  return tree->LayersThatShouldPushProperties().contains(layer) ||
          // TODO(crbug.com/40335690): Stop always pushing PictureLayerImpl
          // properties.
          base::Contains(tree->picture_layers(), layer);

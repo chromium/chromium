@@ -2049,7 +2049,7 @@ void PictureLayerImpl::InvalidateRasterInducingScrolls(
 void PictureLayerImpl::SetPaintWorkletRecord(
     scoped_refptr<const PaintWorkletInput> input,
     PaintRecord record) {
-  DCHECK(base::Contains(paint_worklet_records_, input));
+  DCHECK(paint_worklet_records_.contains(input));
   paint_worklet_records_[input].second = std::move(record);
 }
 

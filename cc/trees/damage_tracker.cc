@@ -177,7 +177,7 @@ void DamageTracker::InitializeUpdateDamageTracking(
         render_surface->OwningEffectNode()->view_transition_element_resource_id;
 
     if (resource_id.IsValid()) {
-      DCHECK(!base::Contains(id_to_render_surface_map, resource_id));
+      DCHECK(!id_to_render_surface_map.contains(resource_id));
       id_to_render_surface_map.emplace(resource_id, render_surface);
     }
   }
