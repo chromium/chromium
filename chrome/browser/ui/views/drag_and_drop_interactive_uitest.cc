@@ -780,7 +780,8 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
   void SetUp() override {
     // Ensure PreserveDropEffect is enabled for DragAndDropBrowserTest.
     feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kPreserveDropEffect, {}}},
+        {{blink::features::kPreserveDropEffect, {}},
+         {blink::features::kSetDefaultDropEffect, {}}},
         {blink::features::kSupportOpeningDraggedLinksInSameTab});
     InProcessBrowserTest::SetUp();
   }
@@ -1773,7 +1774,7 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step2(
       // (these coordinates are relative to the right frame).
       state->expected_dom_event_data.set_expected_client_position("(155, 150)");
       state->expected_dom_event_data.set_expected_page_position("(155, 150)");
-      state->expected_dom_event_data.set_expected_drop_effect("copy");
+      state->expected_dom_event_data.set_expected_drop_effect("move");
 
       EXPECT_TRUE(
           dragenter_event_waiter.WaitForNextMatchingEvent(&dragenter_event));

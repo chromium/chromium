@@ -4076,7 +4076,7 @@
     },
     {
       // When enabled, preserves dropEffect in drag event set during dragover
-      // events.
+      // events. See https://crbug.com/434151262
       name: "PreserveDropEffect",
       status: "test",
     },
@@ -4813,6 +4813,12 @@
     {
       name: "ServiceWorkerStaticRouterTimingInfo",
       status: "stable",
+    },
+    {
+      // When enabled, sets the default drop effect as according to spec for
+      // events like dragOver, dragLeave, etc. See https://crbug.com/434151262
+      name: "SetDefaultDropEffect",
+      status: "test",
     },
     {
       name: "SetHTMLCanRunScripts",
