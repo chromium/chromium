@@ -203,10 +203,10 @@ public final class NativeTestServer implements AutoCloseable {
     }
 
     /** Java counterpart of native net::test_server::EmbeddedTestServer::HandleRequestCallback. */
-    public static interface HandleRequestCallback {
+    public interface HandleRequestCallback {
         // Note currently we only support RawHttpResponse. We could add support for more flexible
         // response generation if need be.
-        public RawHttpResponse handleRequest(HttpRequest httpRequest);
+        RawHttpResponse handleRequest(HttpRequest httpRequest);
     }
 
     // The following indirecting methods are needed because jni_zero doesn't support @CalledByNative
