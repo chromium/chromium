@@ -66,7 +66,7 @@ std::u16string_view StarRatingView::GetTextForTesting() const {
 }
 
 ui::ImageModel StarRatingView::GetImageModel(double rating, int index) {
-  const int icon_size = GetLayoutConstant(STAR_RATING_ICON_SIZE);
+  const int icon_size = GetLayoutConstant(LayoutConstant::kStarRatingIconSize);
   double rest;
   if (rating >= index + 1) {
     // Full icon.

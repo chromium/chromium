@@ -323,7 +323,7 @@ void PageInfoMainView::SetPermissionInfo(
       layout_provider
           ->GetInsetsMetric(ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON)
           .left() +
-      GetLayoutConstant(PAGE_INFO_ICON_SIZE) +
+      GetLayoutConstant(LayoutConstant::kPageInfoIconSize) +
       layout_provider->GetDistanceMetric(
           views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   reset_button_->SetProperty(

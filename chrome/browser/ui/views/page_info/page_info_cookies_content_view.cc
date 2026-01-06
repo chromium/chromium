@@ -534,7 +534,7 @@ void PageInfoCookiesContentView::MaybeAddSyncDisclaimer() {
   // Add the enterprise icon.
   cookies_sync_icon_ = cookies_sync_container_->AddChildView(
       std::make_unique<NonAccessibleImageView>());
-  const int icon_size = GetLayoutConstant(PAGE_INFO_ICON_SIZE);
+  const int icon_size = GetLayoutConstant(LayoutConstant::kPageInfoIconSize);
   cookies_sync_icon_->SetImageSize({icon_size, icon_size});
   cookies_sync_icon_->SetImage(
       PageInfoViewFactory::GetImageModel(vector_icons::kBusinessIcon));

@@ -84,7 +84,7 @@ class PageInfoSubpageView : public views::View {
 };
 
 int GetIconSize() {
-  return GetLayoutConstant(PAGE_INFO_ICON_SIZE);
+  return GetLayoutConstant(LayoutConstant::kPageInfoIconSize);
 }
 
 }  // namespace

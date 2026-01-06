@@ -142,7 +142,8 @@ class PageInfoCookiesContentViewBaseTestClass : public TestWithBrowserView {
 
   ui::ImageModel GetImageModel(const gfx::VectorIcon& icon) {
     return ui::ImageModel::FromVectorIcon(
-        icon, ui::kColorIcon, GetLayoutConstant(PAGE_INFO_ICON_SIZE));
+        icon, ui::kColorIcon,
+        GetLayoutConstant(LayoutConstant::kPageInfoIconSize));
   }
 
   virtual std::vector<base::test::FeatureRefAndParams> EnabledFeatures() {
