@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -596,7 +595,7 @@ AnimatingLayoutManager::GetChildViewsInPaintOrder(const View* host) const {
 
   // Add the result of the views.
   for (View* child : host->children()) {
-    if (!base::Contains(fading, child)) {
+    if (!fading.contains(child)) {
       result.push_back(child);
     }
   }
@@ -1056,7 +1055,7 @@ void AnimatingLayoutManager::CalculateFadeInfos() {
   for (View* child : host_view()->children()) {
     const auto& index = child_to_info[child];
     if (index.start_visible && index.target_visible &&
-        !base::Contains(previously_fading, child)) {
+        !previously_fading.contains(child)) {
       start_leading_edges.emplace(index.start_bounds.origin_main(), child);
       target_leading_edges.emplace(index.target_bounds.origin_main(), child);
     }
@@ -1127,7 +1126,7 @@ void AnimatingLayoutManager::CalculateFadeInfos() {
                                       prev_info.target_bounds.max_main());
       }
       fade_infos_.push_back(fade_info);
-    } else if (base::Contains(previously_fading, child)) {
+    } else if (previously_fading.contains(child)) {
       // Capture the fact that this view was fading as part of an animation that
       // was interrupted. (It is therefore technically still fading.) This
       // status goes away when the animation ends.

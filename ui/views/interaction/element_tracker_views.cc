@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
@@ -66,7 +65,7 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver,
   ~ElementDataViews() override = default;
 
   void AddView(View* view) {
-    if (base::Contains(view_data_lookup_, view)) {
+    if (view_data_lookup_.contains(view)) {
       return;
     }
 

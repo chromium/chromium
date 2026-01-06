@@ -10,7 +10,6 @@
 
 #include "base/auto_reset.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -488,7 +487,7 @@ bool InteractionTestUtilMouse::PerformGesturesImpl(const GestureParams& params,
       const auto& move = std::get<MouseMoveGesture>(gesture);
 #if defined(USE_AURA)
       if (!buttons_down_.empty()) {
-        CHECK(base::Contains(buttons_down_, ui_controls::LEFT));
+        CHECK(buttons_down_.contains(ui_controls::LEFT));
         dragging_ = true;
       }
 #endif

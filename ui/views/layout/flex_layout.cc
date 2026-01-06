@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
@@ -704,7 +703,7 @@ void FlexLayout::CalculateNonFlexAvailableSpace(
   // non-flex views get their space first, these views will have access to the
   // entire budget of remaining space in the layout.
   for (size_t index = 0; index < data.child_data.size(); ++index) {
-    if (base::Contains(all_flex_indices, index)) {
+    if (all_flex_indices.contains(index)) {
       continue;
     }
 

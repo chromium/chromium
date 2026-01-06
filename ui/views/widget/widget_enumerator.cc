@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 
 namespace views {
 
@@ -26,7 +25,7 @@ WidgetEnumerator::~WidgetEnumerator() {
 }
 
 void WidgetEnumerator::OnWidgetDestroying(Widget* widget) {
-  CHECK(base::Contains(widgets_, widget));
+  CHECK(widgets_.contains(widget));
   widget->RemoveObserver(this);
   widgets_.erase(widget);
 }
