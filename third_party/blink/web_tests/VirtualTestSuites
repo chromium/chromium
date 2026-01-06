@@ -2751,7 +2751,7 @@
     "args": [
       "--disable-features=RelaxDOMValidNames"
     ],
-    "expires": "Jan 1, 2026"
+    "expires": "Feb 1, 2026"
   },
   {
     "prefix": "renderer-side-content-decoding",
