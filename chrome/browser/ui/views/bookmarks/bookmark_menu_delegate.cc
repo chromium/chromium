@@ -1007,7 +1007,10 @@ MenuItemView* BookmarkMenuDelegate::CreateMenu(
   AddMenuToMaps(menu, BookmarkFolderOrURL(folder));
   node_start_child_idx_map_[folder] = start_child_index;
 
-  if (base::FeatureList::IsEnabled(features::kTabGroupMenuImprovements)) {
+  // We do not show the 'open all' options on non permanent folders.
+  // In particular, we do not show them in the bookmark bar overflow menu.
+  if (base::FeatureList::IsEnabled(features::kTabGroupMenuImprovements) &&
+      folder.as_non_permanent_folder()) {
     const bookmarks::BookmarkNode* node =
         GetBookmarkMergedSurfaceService()->GetUnderlyingNodes(folder)[0];
     int count = bookmarks::OpenCount(node);
