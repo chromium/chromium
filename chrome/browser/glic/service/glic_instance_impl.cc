@@ -32,22 +32,33 @@
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/user_education_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "ui/base/l10n/l10n_util.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/widget/local_hotkey_manager.h"
+#endif
 
 namespace glic {
 
@@ -780,8 +791,52 @@ void GlicInstanceImpl::ClearActiveEmbedderAndNotifyStateChange() {
     NotifyStateChange();
     NotifyPanelStateChanged();
     host().PanelWasClosed();
+#if !BUILDFLAG(IS_ANDROID)
+    MaybeShowShortcutToastPromo();
+    MaybeShowShortcutSnoozePromo();
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
   return;
+}
+
+void GlicInstanceImpl::MaybeShowShortcutToastPromo() {
+  Browser* browser = chrome::FindTabbedBrowser(profile_, false);
+  if (!browser) {
+    // If there is no browser window open for the profile, skip the promo.
+    return;
+  }
+
+  user_education::FeaturePromoParams params(
+      feature_engagement::
+          kIPHGlicTrustFirstOnboardingShortcutToastPromoFeature);
+  params.body_params = l10n_util::GetStringFUTF16(
+      IDS_GLIC_SHORTCUT_IPH_TEXT,
+      glic::LocalHotkeyManager::GetConfigurableAccelerator(
+          glic::LocalHotkeyManager::Hotkey::kFocusToggle)
+          .GetShortcutText());
+
+  BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
+      std::move(params));
+}
+
+void GlicInstanceImpl::MaybeShowShortcutSnoozePromo() {
+  Browser* browser = chrome::FindTabbedBrowser(profile_, false);
+  if (!browser) {
+    // If there is no browser window open for the profile, skip the promo.
+    return;
+  }
+
+  user_education::FeaturePromoParams params(
+      feature_engagement::
+          kIPHGlicTrustFirstOnboardingShortcutSnoozePromoFeature);
+  params.body_params = l10n_util::GetStringFUTF16(
+      IDS_GLIC_SHORTCUT_IPH_TEXT,
+      glic::LocalHotkeyManager::GetConfigurableAccelerator(
+          glic::LocalHotkeyManager::Hotkey::kFocusToggle)
+          .GetShortcutText());
+
+  BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
+      std::move(params));
 }
 
 void GlicInstanceImpl::MaybeShowHostUi(GlicUiEmbedder* embedder) {

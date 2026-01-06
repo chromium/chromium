@@ -363,6 +363,7 @@
   <if expr="not use_titlecase">
     <message name="IDS_CONTENT_CONTEXT_GLICSHAREIMAGE" desc="Share image with Gemini and recreate based on user-selected prompt">Create image with Gemini</message>
   </if>
+
   <!-- IPH -->
   <if expr="use_titlecase">
     <message name="IDS_GLIC_PROMO_CONFIRM" desc="The button that a user clicks to open Gemini.">Try Now</message>
@@ -375,5 +376,16 @@
   </message>
   <message name="IDS_GLIC_TRYIT_BODY" desc="Text for a promo pointing to the Gemini icon in Chrome, that opens Gemini in Chrome if selected.">
     Chat with Gemini in Chrome to get answers, key takeaways, and more as you browse
+  </message>
+
+  <!-- Shortcut IPH -->
+  <message name="IDS_GLIC_SHORTCUT_IPH_TEXT_TEMPLATE" desc="Placeholder for string to be shown for IPH informing users about Glic keyboard shortcut." translateable="false">
+    <ph name="message">$1<ex>Easily open with Ctrl+⌘+G</ex></ph>
+  </message>
+  <message name="IDS_GLIC_SHORTCUT_IPH_TEXT" desc="Title for a promo pointing to the Gemini icon in Chrome. It informs the user about a keyboard shortcut for quicly opening Gemini in Chrome." translateable="false">
+    Easily open with <ph name="FOCUS_TOGGLE_HOTKEY">$1<ex>Ctrl+⌘+G</ex></ph>
+  </message>
+  <message name="IDS_GLIC_SHORTCUT_IPH_SCREENREADER" is_accessibility_with_no_ui="true" desc="Title for a promo pointing to the Gemini icon in Chrome for screen readers. It informs the user about a keyboard shortcut for quicly opening Gemini in Chrome." translateable="false">
+    Easily open Gemini in Chrome with <ph name="FOCUS_TOGGLE_HOTKEY">$1<ex>Ctrl+⌘+G</ex></ph>
   </message>
 </grit-part>

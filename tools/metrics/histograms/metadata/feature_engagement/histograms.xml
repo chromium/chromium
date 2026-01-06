@@ -255,6 +255,10 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_GenericAlwaysTriggerHelpUiFeature"
       summary="generic feature to always show help Ui whenever asked"/>
   <variant name="IPH_GlicPromo" summary="Glic promotion"/>
+  <variant name="IPH_GlicTrustFirstOnboardingShortcutSnoozePromo"
+      summary="Glic quick access shortcut snooze promo."/>
+  <variant name="IPH_GlicTrustFirstOnboardingShortcutToastPromo"
+      summary="Glic quick access shortcut toast promo."/>
   <variant name="IPH_GlicTryIt" summary="Glic promo with a call to action."/>
   <variant name="IPH_GlobalMediaControls" summary="the Global Media Controls"/>
   <variant name="IPH_GMCCastStartStop"

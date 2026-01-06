@@ -385,6 +385,10 @@ should be able to be added at any place in this file.
   <variant name="_GenericAlwaysTriggerHelpUiFeature"
       summary="For generic always show help UI feature."/>
   <variant name="_GlicPromo" summary="For Glic feature."/>
+  <variant name="_GlicTrustFirstOnboardingShortcutSnoozePromo"
+      summary="For Glic shortcut feature with a snooze promo."/>
+  <variant name="_GlicTrustFirstOnboardingShortcutToastPromo"
+      summary="For Glic shortcut feature with a toast promo."/>
   <variant name="_GlicTryIt" summary="For Glic feature with a call to action."/>
   <variant name="_GlobalMediaControls"
       summary="For GlobalMediaControls feature."/>

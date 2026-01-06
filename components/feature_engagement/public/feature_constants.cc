@@ -110,6 +110,12 @@ BASE_FEATURE(kIPHFocusHelpBubbleScreenReaderPromoFeature,
 BASE_FEATURE(kIPHGlicPromoFeature,
              "IPH_GlicPromo",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHGlicTrustFirstOnboardingShortcutSnoozePromoFeature,
+             "IPH_GlicTrustFirstOnboardingShortcutSnoozePromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHGlicTrustFirstOnboardingShortcutToastPromoFeature,
+             "IPH_GlicTrustFirstOnboardingShortcutToastPromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHGlicTryItFeature,
              "IPH_GlicTryIt",
              base::FEATURE_DISABLED_BY_DEFAULT);

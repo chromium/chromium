@@ -327,6 +327,10 @@ class GlicInstanceImpl : public GlicInstance,
 
   void UpdateSharingManagerDelegate();
 
+  void MaybeShowShortcutToastPromo();
+
+  void MaybeShowShortcutSnoozePromo();
+
   using StateChangeCallbackList =
       base::RepeatingCallbackList<void(bool, mojom::CurrentView view)>;
   StateChangeCallbackList state_change_callback_list_;
