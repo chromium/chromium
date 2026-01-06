@@ -14042,7 +14042,14 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "data_extracted": "0",
+                        "extraction_timing": "0",
+                        "storage_implementation": "1",
+                        "ttl_days": "7"
+                    },
                     "enable_features": [
+                        "PageContentCache",
                         "PersistTabContext"
                     ]
                 }
