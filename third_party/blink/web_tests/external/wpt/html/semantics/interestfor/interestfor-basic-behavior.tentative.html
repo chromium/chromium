@@ -16,7 +16,7 @@
 
 <button data-testcase="<button>" interestfor=target>Button</button>
 
-<a data-testcase="<a>" href=foo interestfor=target>Link</a>
+<a data-testcase="<a>" href="#" interestfor=target>Link</a>
 
 <img src="/images/blue.png" usemap="#map" id=areatarget>
 <map id=map>
@@ -24,9 +24,25 @@
 </map>
 
 <svg viewBox="0 0 100 100" style="width: 100px" xmlns="http://www.w3.org/2000/svg">
-  <a data-testcase="SVG <a>" href=foo interestfor=target>
+  <a data-testcase="SVG <a>" href="#" interestfor=target>
     <text x=50 y=90>SVG A</text>
   </a>
+</svg>
+
+<a data-testcase="Broken img" href="#" interestfor=target>
+  <img src="broken" width="50" height="50">
+</a>
+
+<a data-testcase="SVG <use>" href="#" interestfor=target>
+  <svg width="50" height="50" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <use xlink:href="#thick-star"></use>
+  </svg>
+</a>
+<svg style="display: none;">
+  <symbol id="thick-star" viewBox="0 0 24 24">
+    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+          fill="yellow" stroke="black" stroke-width="2" stroke-linejoin="round"/>
+  </symbol>
 </svg>
 
 <div id=target>Target</div>

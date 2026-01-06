@@ -1990,17 +1990,11 @@ void Element::HandlePointerEventsForInterestFor(
   if (!RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled()) {
     return;
   }
-  for (Element* element = this; element; element = element->parentElement()) {
-    if (element->InterestForElement() || element->SourceInterestInvoker() ||
-        element->GetInterestState() != InterestState::kNoInterest)
-        [[unlikely]] {
-      if (event_type == event_type_names::kPointerover) {
-        element->HandleInterestForHoverOrFocus(InterestSource::kHover);
-      } else {
-        CHECK_EQ(event_type, event_type_names::kPointerout);
-        element->HandleInterestForHoverOrFocus(InterestSource::kDeHover);
-      }
-    }
+  if (event_type == event_type_names::kPointerover) {
+    HandleInterestForHoverOrFocus(InterestSource::kHover);
+  } else {
+    CHECK_EQ(event_type, event_type_names::kPointerout);
+    HandleInterestForHoverOrFocus(InterestSource::kDeHover);
   }
 }
 
