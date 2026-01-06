@@ -239,14 +239,14 @@ bool TransportClientSocketPool::IsStalled() const {
 void TransportClientSocketPool::AddHigherLayeredPool(
     HigherLayeredPool* higher_pool) {
   CHECK(higher_pool);
-  CHECK(!base::Contains(higher_pools_, higher_pool));
+  CHECK(!higher_pools_.contains(higher_pool));
   higher_pools_.insert(higher_pool);
 }
 
 void TransportClientSocketPool::RemoveHigherLayeredPool(
     HigherLayeredPool* higher_pool) {
   CHECK(higher_pool);
-  CHECK(base::Contains(higher_pools_, higher_pool));
+  CHECK(higher_pools_.contains(higher_pool));
   higher_pools_.erase(higher_pool);
 }
 
@@ -361,11 +361,11 @@ int TransportClientSocketPool::RequestSockets(
     }
     if (rv < 0 && rv != ERR_IO_PENDING) {
       // We're encountering a synchronous error.  Give up.
-      if (!base::Contains(group_map_, group_id))
+      if (!group_map_.contains(group_id))
         deleted_group = true;
       break;
     }
-    if (!base::Contains(group_map_, group_id)) {
+    if (!group_map_.contains(group_id)) {
       // Unexpected.  The group should only be getting deleted on synchronous
       // error.
       NOTREACHED();
@@ -583,7 +583,7 @@ void TransportClientSocketPool::SetPriority(const GroupId& group_id,
                                             RequestPriority priority) {
   auto group_it = group_map_.find(group_id);
   if (group_it == group_map_.end()) {
-    DCHECK(base::Contains(pending_callback_map_, handle));
+    DCHECK(pending_callback_map_.contains(handle));
     // The Request has already completed and been destroyed; nothing to
     // reprioritize.
     return;
@@ -619,7 +619,7 @@ void TransportClientSocketPool::CancelRequest(const GroupId& group_id,
     return;
   }
 
-  CHECK(base::Contains(group_map_, group_id));
+  CHECK(group_map_.contains(group_id));
   // Don't try to disable `fail_if_alias_require_proxy_override_` during a
   // request cancellation.
   Group* group = GetOrCreateGroup(
@@ -690,7 +690,7 @@ size_t TransportClientSocketPool::IdleSocketCountInGroup(
 LoadState TransportClientSocketPool::GetLoadState(
     const GroupId& group_id,
     const ClientSocketHandle* handle) const {
-  if (base::Contains(pending_callback_map_, handle))
+  if (pending_callback_map_.contains(handle))
     return LOAD_STATE_CONNECTING;
 
   auto group_it = group_map_.find(group_id);
@@ -910,7 +910,7 @@ void TransportClientSocketPool::OnSSLConfigForServersChanged(
 }
 
 bool TransportClientSocketPool::HasGroup(const GroupId& group_id) const {
-  return base::Contains(group_map_, group_id);
+  return group_map_.contains(group_id);
 }
 
 void TransportClientSocketPool::CleanupIdleSockets(
@@ -1191,7 +1191,7 @@ void TransportClientSocketPool::RemoveConnectJob(ConnectJob* job,
 
 void TransportClientSocketPool::OnAvailableSocketSlot(const GroupId& group_id,
                                                       Group* group) {
-  DCHECK(base::Contains(group_map_, group_id));
+  DCHECK(group_map_.contains(group_id));
   if (group->IsEmpty()) {
     RemoveGroup(group_id);
   } else if (group->has_unbound_requests()) {
@@ -1462,7 +1462,7 @@ void TransportClientSocketPool::InvokeUserCallbackLater(
     CompletionOnceCallback callback,
     int rv,
     const SocketTag& socket_tag) {
-  CHECK(!base::Contains(pending_callback_map_, handle));
+  CHECK(!pending_callback_map_.contains(handle));
   pending_callback_map_[handle] = CallbackResultPair(std::move(callback), rv);
   if (rv == OK) {
     handle->socket()->ApplySocketTag(socket_tag);

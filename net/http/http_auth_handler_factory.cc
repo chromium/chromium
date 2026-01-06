@@ -260,7 +260,7 @@ bool HttpAuthHandlerRegistryFactory::IsSchemeAllowedForTesting(
 bool HttpAuthHandlerRegistryFactory::IsSchemeAllowed(
     const std::string& scheme) const {
   if (http_auth_preferences() && http_auth_preferences()->allowed_schemes()) {
-    return base::Contains(*http_auth_preferences()->allowed_schemes(), scheme);
+    return http_auth_preferences()->allowed_schemes()->contains(scheme);
   }
   return base::Contains(kDefaultAuthSchemes, scheme);
 }

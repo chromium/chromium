@@ -143,7 +143,7 @@ bool WithinOriginLabelLimit(const std::vector<std::string>& relying_origins,
       continue;
     }
 
-    if (!base::Contains(labels_seen, label)) {
+    if (!labels_seen.contains(label)) {
       if (labels_seen.size() >= kMaxLabels) {
         continue;
       }

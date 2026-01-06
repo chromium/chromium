@@ -57,7 +57,7 @@ DohProviderEntry::List GetDohProviderEntriesFromNameservers(
       // Finch, the experiment only includes possible users of the
       // corresponding DoH provider (since the client will be included in the
       // experiment if the provider feature flag is checked).
-      if (base::Contains(entry->ip_addresses, server.address()) &&
+      if (entry->ip_addresses.contains(server.address()) &&
           base::FeatureList::IsEnabled(entry->feature.get()) &&
           !base::Contains(entries, entry)) {
         entries.push_back(entry);
@@ -163,7 +163,7 @@ std::vector<DnsOverHttpsServerConfig> GetDohUpgradeServersFromDotHostname(
     // the experiment only includes possible users of the corresponding DoH
     // provider (since the client will be included in the experiment if the
     // provider feature flag is checked).
-    if (base::Contains(entry->dns_over_tls_hostnames, dot_server) &&
+    if (entry->dns_over_tls_hostnames.contains(dot_server) &&
         base::FeatureList::IsEnabled(entry->feature.get())) {
       doh_servers.push_back(entry->doh_server_config);
     }

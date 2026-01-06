@@ -847,8 +847,8 @@ SpdySession::SpdySession(
         .Set("proxy", spdy_session_key_.proxy_chain().ToDebugString());
   });
 
-  DCHECK(base::Contains(initial_settings_, spdy::SETTINGS_HEADER_TABLE_SIZE));
-  DCHECK(base::Contains(initial_settings_, spdy::SETTINGS_INITIAL_WINDOW_SIZE));
+  DCHECK(initial_settings_.contains(spdy::SETTINGS_HEADER_TABLE_SIZE));
+  DCHECK(initial_settings_.contains(spdy::SETTINGS_INITIAL_WINDOW_SIZE));
 
   if (greased_http2_frame_) {
     // See https://tools.ietf.org/html/draft-bishop-httpbis-grease-00
@@ -1272,7 +1272,7 @@ void SpdySession::ResetStream(spdy::SpdyStreamId stream_id,
 }
 
 bool SpdySession::IsStreamActive(spdy::SpdyStreamId stream_id) const {
-  return base::Contains(active_streams_, stream_id);
+  return active_streams_.contains(stream_id);
 }
 
 LoadState SpdySession::GetLoadState() const {

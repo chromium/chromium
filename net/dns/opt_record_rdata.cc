@@ -348,7 +348,7 @@ void OptRecordRdata::AddOpt(std::unique_ptr<Opt> opt) {
 }
 
 bool OptRecordRdata::ContainsOptCode(uint16_t opt_code) const {
-  return base::Contains(opts_, opt_code);
+  return opts_.contains(opt_code);
 }
 
 std::vector<const OptRecordRdata::Opt*> OptRecordRdata::GetOpts() const {

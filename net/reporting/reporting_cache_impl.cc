@@ -1209,7 +1209,7 @@ void ReportingCacheImpl::ConsistencyCheckEndpoint(
   DCHECK_LE(0, endpoint.info.weight);
 
   // The endpoint is in the |endpoint_its_by_url_| index.
-  DCHECK(base::Contains(endpoint_its_by_url_, endpoint.info.url));
+  DCHECK(endpoint_its_by_url_.contains(endpoint.info.url));
   auto url_range = endpoint_its_by_url_.equal_range(endpoint.info.url);
   std::vector<EndpointMap::iterator> endpoint_its_for_url;
   for (auto index_it = url_range.first; index_it != url_range.second;
@@ -1361,7 +1361,7 @@ void ReportingCacheImpl::RemoveEndpointsInGroupOtherThan(
 
   const auto group_range = endpoints_.equal_range(group_key);
   for (auto it = group_range.first; it != group_range.second;) {
-    if (base::Contains(endpoints_to_keep_urls, it->second.info.url)) {
+    if (endpoints_to_keep_urls.contains(it->second.info.url)) {
       ++it;
       continue;
     }
