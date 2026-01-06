@@ -59,7 +59,8 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   explicit VerticalTabStripRegionView(
       tabs::VerticalTabStripStateController* state_controller,
       actions::ActionItem* root_action_item,
-      BrowserWindowInterface* browser);
+      BrowserWindowInterface* browser,
+      BrowserView* browser_view);
   VerticalTabStripRegionView(const VerticalTabStripRegionView&) = delete;
   VerticalTabStripRegionView& operator=(const VerticalTabStripRegionView&) =
       delete;
@@ -187,6 +188,8 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   // Animation for collapsing (GetCurrentValue() -> 0) and expanding
   // (GetCurrentValue() -> 1).
   gfx::SlideAnimation resize_animation_;
+
+  const raw_ptr<BrowserView> browser_view_ = nullptr;
 
   // The width of the exclusion zone. This is used to determine when to toggle
   // the collapse state of the state controller.

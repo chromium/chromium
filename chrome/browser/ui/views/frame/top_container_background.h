@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/background.h"
 
@@ -16,10 +17,13 @@ class BrowserView;
 // Background which renders the appropriate toolbar/bookmarks/etc. background
 // on a view which must be a descendant of the browser view in the hierarchy. If
 // there is a background image, it will be painted or tiled appropriately.
+// TODO(crbug.com/473064096): Refactor to be More Extensible.
 class TopContainerBackground : public views::Background {
  public:
+  enum TopChromeArea { TOOLBAR, FRAME_ACTIVE, FRAME_INACTIVE };
   // Construct a themed background for the specified browser.
-  explicit TopContainerBackground(BrowserView* browser_view);
+  explicit TopContainerBackground(BrowserView* browser_view,
+                                  TopChromeArea top_chrome_area = TOOLBAR);
 
   TopContainerBackground(const TopContainerBackground& other) = delete;
   TopContainerBackground& operator=(const TopContainerBackground& other) =
@@ -56,7 +60,8 @@ class TopContainerBackground : public views::Background {
   // any painting occurred.
   static bool PaintThemeCustomImage(gfx::Canvas* canvas,
                                     const views::View* view,
-                                    const BrowserView* browser_view);
+                                    const BrowserView* browser_view,
+                                    TopChromeArea top_chrome_area = TOOLBAR);
 
   // Similar to PaintThemeCustomImage but the image is supplied.
   static void PaintThemeAlignedImage(gfx::Canvas* canvas,
@@ -69,19 +74,24 @@ class TopContainerBackground : public views::Background {
   // TODO(pbos): Figure out if tab painting could reuse this logic.
   static void PaintBackground(gfx::Canvas* canvas,
                               const views::View* view,
-                              const BrowserView* browser_view);
+                              const BrowserView* browser_view,
+                              TopChromeArea top_chrome_area = TOOLBAR);
 
   // Returns the theme-aware solid background color painted when
   // IDR_THEME_TOOLBAR does not exist; otherwise returns a nullptr.
   static std::optional<SkColor> GetBackgroundColor(
       const views::View* view,
-      const BrowserView* browser_view);
+      const BrowserView* browser_view,
+      TopChromeArea top_chrome_area = TOOLBAR);
+
+  TopChromeArea GetTopChromeArea() { return top_chrome_area_; }
 
  private:
   // views::Background:
   void Paint(gfx::Canvas* canvas, views::View* view) const override;
 
   const raw_ptr<BrowserView> browser_view_;
+  TopChromeArea top_chrome_area_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_BACKGROUND_H_

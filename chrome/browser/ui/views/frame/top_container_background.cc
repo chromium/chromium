@@ -12,37 +12,57 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 
 namespace {
 
-bool WillPaintCustomImage(const views::View* view) {
+bool WillPaintCustomImage(const views::View* view, int id) {
   const ui::ThemeProvider* const theme_provider = view->GetThemeProvider();
-  return theme_provider->HasCustomImage(IDR_THEME_TOOLBAR);
+  return theme_provider->HasCustomImage(id);
+}
+
+std::pair<int, ui::ColorId> GetTopChromeInfo(
+    TopContainerBackground::TopChromeArea top_chrome_area) {
+  switch (top_chrome_area) {
+    case TopContainerBackground::TopChromeArea::TOOLBAR:
+      return {IDR_THEME_TOOLBAR, kColorToolbar};
+    case TopContainerBackground::TopChromeArea::FRAME_ACTIVE:
+      return {IDR_THEME_FRAME, ui::kColorFrameActive};
+    case TopContainerBackground::TopChromeArea::FRAME_INACTIVE:
+      return {IDR_THEME_FRAME_INACTIVE, ui::kColorFrameInactive};
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace
 
-TopContainerBackground::TopContainerBackground(BrowserView* browser_view)
-    : browser_view_(browser_view) {}
+TopContainerBackground::TopContainerBackground(BrowserView* browser_view,
+                                               TopChromeArea top_chrome_area)
+    : browser_view_(browser_view), top_chrome_area_(top_chrome_area) {}
 
 void TopContainerBackground::Paint(gfx::Canvas* canvas,
                                    views::View* view) const {
-  PaintBackground(canvas, view, browser_view_);
+  PaintBackground(canvas, view, browser_view_, top_chrome_area_);
 }
 
 bool TopContainerBackground::PaintThemeCustomImage(
     gfx::Canvas* canvas,
     const views::View* view,
-    const BrowserView* browser_view) {
-  if (!WillPaintCustomImage(view)) {
+    const BrowserView* browser_view,
+    TopChromeArea top_chrome_area) {
+  int theme_resource_id = GetTopChromeInfo(top_chrome_area).first;
+
+  if (!WillPaintCustomImage(view, theme_resource_id)) {
     return false;
   }
 
   const ui::ThemeProvider* const theme_provider = view->GetThemeProvider();
   PaintThemeAlignedImage(canvas, view, browser_view,
-                         theme_provider->GetImageSkiaNamed(IDR_THEME_TOOLBAR));
+                         theme_provider->GetImageSkiaNamed(theme_resource_id));
+
   return true;
 }
 
@@ -76,19 +96,26 @@ void TopContainerBackground::PaintThemeAlignedImage(
 
 void TopContainerBackground::PaintBackground(gfx::Canvas* canvas,
                                              const views::View* view,
-                                             const BrowserView* browser_view) {
-  bool painted = PaintThemeCustomImage(canvas, view, browser_view);
+                                             const BrowserView* browser_view,
+                                             TopChromeArea top_chrome_area) {
+  bool painted =
+      PaintThemeCustomImage(canvas, view, browser_view, top_chrome_area);
   if (!painted) {
-    canvas->DrawColor(view->GetColorProvider()->GetColor(kColorToolbar));
+    canvas->DrawColor(view->GetColorProvider()->GetColor(
+        GetTopChromeInfo(top_chrome_area).second));
   }
 }
 
 std::optional<SkColor> TopContainerBackground::GetBackgroundColor(
     const views::View* view,
-    const BrowserView* browser_view) {
-  const bool will_be_painted = WillPaintCustomImage(view);
+    const BrowserView* browser_view,
+    TopChromeArea top_chrome_area) {
+  std::pair<int, ui::ColorId> top_chrome_info =
+      GetTopChromeInfo(top_chrome_area);
+  const bool will_be_painted =
+      WillPaintCustomImage(view, top_chrome_info.first);
   if (!will_be_painted) {
-    return view->GetColorProvider()->GetColor(kColorToolbar);
+    return view->GetColorProvider()->GetColor(top_chrome_info.second);
   }
 
   return std::nullopt;

@@ -957,7 +957,7 @@ BrowserView::BrowserView(Browser* browser)
     auto vertical_tab_strip_container =
         std::make_unique<VerticalTabStripRegionView>(
             vertical_tab_strip_state_controller,
-            browser_->GetActions()->root_action_item(), browser_);
+            browser_->GetActions()->root_action_item(), browser_, this);
 
     vertical_tab_strip_container_ =
         AddChildView(std::move(vertical_tab_strip_container));

@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
@@ -56,10 +57,12 @@ constexpr int kRegionVerticalPadding = 5;
 VerticalTabStripRegionView::VerticalTabStripRegionView(
     tabs::VerticalTabStripStateController* state_controller,
     actions::ActionItem* root_action_item,
-    BrowserWindowInterface* browser)
+    BrowserWindowInterface* browser,
+    BrowserView* browser_view)
     : tab_strip_model_(browser->GetTabStripModel()),
       state_controller_(state_controller),
-      resize_animation_(this) {
+      resize_animation_(this),
+      browser_view_(browser_view) {
   flex_layout_ = SetLayoutManager(std::make_unique<views::FlexLayout>());
   flex_layout_->SetOrientation(views::LayoutOrientation::kVertical)
       .SetInteriorMargin(kRegionInteriorMargins)
@@ -433,8 +436,17 @@ void VerticalTabStripRegionView::ResizeToWidth(int width) {
 }
 
 void VerticalTabStripRegionView::UpdateBackgroundColors() {
-  SetBackground(views::CreateSolidBackground(
-      IsFrameActive() ? ui::kColorFrameActive : ui::kColorFrameInactive));
+  TopContainerBackground::TopChromeArea top_chrome_area =
+      IsFrameActive() ? TopContainerBackground::TopChromeArea::FRAME_ACTIVE
+                      : TopContainerBackground::TopChromeArea::FRAME_INACTIVE;
+
+  auto* top_container_background =
+      static_cast<TopContainerBackground*>(GetBackground());
+  if (!top_container_background ||
+      top_chrome_area != top_container_background->GetTopChromeArea()) {
+    SetBackground(std::make_unique<TopContainerBackground>(browser_view_,
+                                                           top_chrome_area));
+  }
   top_button_separator_->SetColorId(IsFrameActive()
                                         ? kColorTabDividerFrameActive
                                         : kColorTabDividerFrameInactive);
