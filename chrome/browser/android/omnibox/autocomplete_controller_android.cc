@@ -184,6 +184,9 @@ void AutocompleteControllerAndroid::Start(
 
   auto* bridge = composebox_query_controller_bridge_.get();
   if (bridge) {
+    AndroidComposeboxNonZPSSection::num_attachments_ =
+        bridge->GetAttachmentCount();
+
     std::unique_ptr<lens::proto::LensOverlaySuggestInputs> inputs =
         bridge->CreateLensOverlaySuggestInputs();
     if (AreLensSuggestInputsReady(*inputs)) {
@@ -308,6 +311,10 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
   // Apply any AI Modes and Tools.
   auto* bridge = composebox_query_controller_bridge_.get();
   if (bridge) {
+    AndroidComposeboxZpsSection::num_attachments_ =
+        bridge->GetAttachmentCount();
+    AndroidComposeboxNonZPSSection::tool_mode_ = tool_mode;
+
     std::unique_ptr<lens::proto::LensOverlaySuggestInputs> inputs =
         bridge->CreateLensOverlaySuggestInputs();
     if (AreLensSuggestInputsReady(*inputs)) {

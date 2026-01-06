@@ -673,10 +673,7 @@ void AutocompleteResult::SortAndCull(
       if (omnibox::IsAndroidHub(page_classification)) {
         sections.push_back(
             std::make_unique<AndroidHubNonZPSSection>(suggestion_groups_map_));
-      } else if (omnibox::IsComposebox(page_classification) &&
-                 (input.lens_overlay_suggest_inputs() ||
-                  input.aim_tool_mode() ==
-                      omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN)) {
+      } else if (omnibox::IsComposebox(page_classification)) {
         sections.push_back(std::make_unique<AndroidComposeboxNonZPSSection>(
             suggestion_groups_map_));
       } else {

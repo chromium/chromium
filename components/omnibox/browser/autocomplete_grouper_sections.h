@@ -12,6 +12,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "third_party/omnibox_proto/aim_tools_and_models.pb.h"
 
 class Section;
 using Groups = std::vector<Group>;
@@ -125,6 +126,11 @@ class AndroidComposeboxNonZPSSection : public Section {
  public:
   explicit AndroidComposeboxNonZPSSection(
       const omnibox::GroupConfigMap& group_configs);
+
+  // TODO(crbug.com/464014032): split by mode.
+  // Number of contextual attachments
+  static size_t num_attachments_;
+  static omnibox::ChromeAimToolsAndModels tool_mode_;
 };
 
 // Android prefix section for Hub search (ZPS).
@@ -303,6 +309,9 @@ class AndroidComposeboxZpsSection : public ZpsSection {
       size_t max_suggestions,
       size_t max_aim_suggestions,
       size_t max_contextual_suggestions);
+
+  // Number of contextual attachments
+  static size_t num_attachments_;
 };
 
 class IOSComposeboxZpsSection : public ZpsSection {

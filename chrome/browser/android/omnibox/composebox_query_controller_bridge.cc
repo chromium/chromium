@@ -109,6 +109,10 @@ void ComposeboxQueryControllerBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
+size_t ComposeboxQueryControllerBridge::GetAttachmentCount() const {
+  return query_controller_->GetFileInfoList().size();
+}
+
 base::WeakPtr<ComposeboxQueryControllerBridge>
 ComposeboxQueryControllerBridge::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

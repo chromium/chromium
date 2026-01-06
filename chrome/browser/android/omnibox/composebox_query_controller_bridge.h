@@ -70,6 +70,8 @@ class ComposeboxQueryControllerBridge
       const std::optional<contextual_search::FileUploadErrorType>& error_type)
       override;
 
+  size_t GetAttachmentCount() const;
+
   base::WeakPtr<ComposeboxQueryControllerBridge> AsWeakPtr();
 
  private:
