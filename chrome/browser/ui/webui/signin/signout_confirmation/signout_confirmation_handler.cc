@@ -102,21 +102,6 @@ int ComputeAcceptButtonLabelId(ChromeSignoutConfirmationPromptVariant variant) {
   }
 }
 
-int ComputeCancelButtonLabelId(ChromeSignoutConfirmationPromptVariant variant) {
-  switch (variant) {
-    case ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData:
-      return IDS_CANCEL;
-    case ChromeSignoutConfirmationPromptVariant::kUnsyncedData:
-      return IDS_CANCEL;
-    case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
-      return IDS_PROFILES_VERIFY_ACCOUNT_BUTTON;
-    case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
-      return IDS_CANCEL;
-    default:
-      NOTREACHED();
-  }
-}
-
 // Constructs the initial data to be sent over to page. Currently, this only
 // consists of strings based on the prompt `variant`.
 signout_confirmation::mojom::SignoutConfirmationDataPtr
@@ -135,7 +120,12 @@ ConstructSignoutConfirmationData(
   signout_confirmation_mojo->accept_button_label =
       l10n_util::GetStringUTF8(ComputeAcceptButtonLabelId(variant));
   signout_confirmation_mojo->cancel_button_label =
-      l10n_util::GetStringUTF8(ComputeCancelButtonLabelId(variant));
+      l10n_util::GetStringUTF8(IDS_CANCEL);
+  if (variant ==
+      ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton) {
+    signout_confirmation_mojo->verify_button_label =
+        l10n_util::GetStringUTF8(IDS_PROFILES_VERIFY_ACCOUNT_BUTTON);
+  }
 
   signout_confirmation_mojo->has_unsynced_data =
       variant == ChromeSignoutConfirmationPromptVariant::kUnsyncedData ||
@@ -210,12 +200,13 @@ void SignoutConfirmationHandler::Accept(bool uninstall_account_extensions) {
 }
 
 void SignoutConfirmationHandler::Cancel(bool uninstall_account_extensions) {
-  ChromeSignoutConfirmationChoice cancel_choice =
-      (variant_ ==
-       ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton)
-          ? ChromeSignoutConfirmationChoice::kCancelSignoutAndReauth
-          : ChromeSignoutConfirmationChoice::kCancelSignout;
-  FinishAndCloseDialog(cancel_choice, uninstall_account_extensions);
+  FinishAndCloseDialog(ChromeSignoutConfirmationChoice::kCancelSignout,
+                       uninstall_account_extensions);
+}
+
+void SignoutConfirmationHandler::PerformReauth() {
+  FinishAndCloseDialog(ChromeSignoutConfirmationChoice::kCancelSignoutAndReauth,
+                       /*uninstall_account_extensions=*/false);
 }
 
 void SignoutConfirmationHandler::Close() {

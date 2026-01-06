@@ -13,6 +13,7 @@ class TestSignoutConfirmationHandler extends TestBrowserProxy implements
       'updateViewHeight',
       'accept',
       'cancel',
+      'performReauth',
       'close',
     ]);
   }
@@ -27,6 +28,10 @@ class TestSignoutConfirmationHandler extends TestBrowserProxy implements
 
   cancel(uninstallAccountExtensions: boolean) {
     this.methodCalled('cancel', uninstallAccountExtensions);
+  }
+
+  performReauth() {
+    this.methodCalled('performReauth');
   }
 
   close() {

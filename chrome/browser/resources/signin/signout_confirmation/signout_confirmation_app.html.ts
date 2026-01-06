@@ -25,15 +25,21 @@ export function getHtml(this: SignoutConfirmationAppElement) {
     </extensions-section>
   ` : ``}
   <div id="action-row">
+    <cr-button id="cancelButton"
+        class="${this.showVerifyReauthButton_() ? '' : 'tonal-button'}"
+        @click="${this.onCancelButtonClick_}">
+      ${this.data_.cancelButtonLabel}
+    </cr-button>
+    <cr-button id="verifyReauthButton" class="tonal-button"
+        @click="${this.onVerifyReauthButtonClick_}"
+        ?hidden="${!this.showVerifyReauthButton_()}">
+      ${this.data_.verifyButtonLabel}
+    </cr-button>
     <cr-button id="acceptButton" class="action-button
         ${this.isUnoPhase2FollowUpEnabled_ && this.data_.hasUnsyncedData ?
             'delete-button' : ''}"
         @click="${this.onAcceptButtonClick_}" autofocus>
       ${this.data_.acceptButtonLabel}
-    </cr-button>
-    <cr-button id="cancelButton" class="tonal-button"
-        @click="${this.onCancelButtonClick_}">
-      ${this.data_.cancelButtonLabel}
     </cr-button>
   </div>
 </div>
