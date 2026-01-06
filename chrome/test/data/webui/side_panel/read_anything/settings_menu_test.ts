@@ -6,26 +6,39 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {SettingsMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
+
+import {FakeReadingMode} from './fake_reading_mode.js';
+
 
 suite('SettingsMenuElement', () => {
   let settingsMenu: SettingsMenuElement;
 
-  setup(() => {
+  setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const readingMode = new FakeReadingMode();
+    chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
+    chrome.readingMode.imagesFeatureEnabled = true;
+    chrome.readingMode.isLineFocusEnabled = true;
+
     settingsMenu = document.createElement('settings-menu');
     document.body.appendChild(settingsMenu);
+
+    const anchor = document.createElement('div');
+    document.body.appendChild(anchor);
+    settingsMenu.open(anchor);
+
     settingsMenu.$.lazyMenu.get();
+    await microtasksFinished();
   });
 
   test('click outside fires close-all-menus event', () => {
-    settingsMenu.open(document.body);
-
     let closeWasCalled = false;
     document.addEventListener(
         ToolbarEvent.CLOSE_ALL_MENUS, () => closeWasCalled = true);
 
-    document.body.dispatchEvent(new MouseEvent('click', {
+    document.dispatchEvent(new PointerEvent('click', {
       bubbles: true,
       composed: true,
       cancelable: true,
@@ -34,18 +47,15 @@ suite('SettingsMenuElement', () => {
     assertTrue(
         closeWasCalled,
         'Clicking outside should fire the close-all-menus event');
-    assertFalse(settingsMenu.$.lazyMenu.get().open);
   });
 
   test('click inside does NOT fires close-all-menus event', () => {
-    settingsMenu.open(document.body);
-
     let closeWasCalled = false;
-    document.addEventListener(
+    settingsMenu.addEventListener(
         ToolbarEvent.CLOSE_ALL_MENUS, () => closeWasCalled = true);
 
     const internalMenu = settingsMenu.$.lazyMenu.get();
-    internalMenu.dispatchEvent(new MouseEvent('click', {
+    internalMenu.dispatchEvent(new PointerEvent('click', {
       bubbles: true,
       composed: true,
       cancelable: true,
@@ -54,5 +64,21 @@ suite('SettingsMenuElement', () => {
     assertFalse(
         closeWasCalled,
         'Clicking inside should NOT fire the close-all-menus event');
+  });
+
+  test('open settings submenu event is fired with menu items', () => {
+    const actionMenu = settingsMenu.$.lazyMenu.get();
+    const menuItems =
+        actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row');
+
+    let submenuEvents = 0;
+    settingsMenu.addEventListener(
+        ToolbarEvent.OPEN_SETTINGS_SUBMENU, () => submenuEvents++);
+    for (const item of menuItems) {
+      item.click();
+    }
+
+    // TODO(crbug.com/471212662): Implement the View submenu
+    assertEquals(7, submenuEvents);
   });
 });

@@ -189,7 +189,8 @@ ${renderTextStyleOptions.call(this)}
 <settings-menu
   id="settingsMenu"
   .presentationState="${this.presentationState}"
-  @close-all-menus="${this.onCloseAllMenus_}">
+  @close-all-menus="${this.onCloseAllMenus_}"
+  @open-settings-submenu="${this.onOpenSettingsSubmenu_}">
 </settings-menu>
 <!--_html_template_end_-->`;
   // clang-format on
@@ -243,7 +244,8 @@ export function getHtml(this: ReadAnythingToolbarElement) {
     id="highlightMenu"
     .nonModal="${this.isImmersiveEnabled_}"
     .settingsPrefs="${this.settingsPrefs}"
-    @highlight-change="${this.onHighlightChange_}">
+    @highlight-change="${this.onHighlightChange_}"
+    @close-all-menus="${this.onCloseAllMenus_}">
   </highlight-menu>
   <color-menu
       id="colorMenu"
@@ -269,7 +271,8 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       .areFontsLoaded="${this.areFontsLoaded_}"
       .settingsPrefs="${this.settingsPrefs}"
       .pageLanguage="${this.pageLanguage}"
-      @font-change="${this.onFontChange_}">
+      @font-change="${this.onFontChange_}"
+      @close-all-menus="${this.onCloseAllMenus_}">
   </font-menu>
   <line-focus-menu
       id="lineFocusMenu"

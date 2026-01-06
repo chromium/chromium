@@ -131,6 +131,11 @@ suite('FontMenu', () => {
   });
 
   test('propagates font', async () => {
+    const numberOfFonts = 3;
+    let closeAllMenusCount = 0;
+    document.addEventListener(
+        ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
+
     const font1 = 'Times';
     fontMenu.$.menu.dispatchEvent(
         new CustomEvent(ToolbarEvent.FONT, {detail: {data: font1}}));
@@ -149,7 +154,9 @@ suite('FontMenu', () => {
     assertEquals(
         ReadAnythingSettingsChange.FONT_CHANGE,
         await metrics.whenCalled('recordTextSettingsChange'));
-    assertEquals(3, metrics.getCallCount('recordTextSettingsChange'));
+    assertEquals(
+        numberOfFonts, metrics.getCallCount('recordTextSettingsChange'));
+    assertEquals(numberOfFonts, closeAllMenusCount);
   });
 
   test('can be closed programatically', () => {

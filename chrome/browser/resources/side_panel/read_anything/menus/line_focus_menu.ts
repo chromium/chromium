@@ -14,7 +14,7 @@ import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {getHtml} from './line_focus_menu.html.js';
-import type {MenuStateItem} from './menu_util.js';
+import type {MenuStateItem, ToolbarMenu} from './menu_util.js';
 import {getIndexOfSetting} from './menu_util.js';
 import type {SimpleActionMenuElement} from './simple_action_menu.js';
 
@@ -27,7 +27,8 @@ export interface LineFocusMenuElement {
 const LineFocusMenuElementBase = WebUiListenerMixinLit(CrLitElement);
 
 // Stores and propagates the data for the color theme menu.
-export class LineFocusMenuElement extends LineFocusMenuElementBase {
+export class LineFocusMenuElement extends LineFocusMenuElementBase implements
+    ToolbarMenu {
   static get is() {
     return 'line-focus-menu';
   }

@@ -15,7 +15,7 @@ import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {getHtml} from './line_spacing_menu.html.js';
 import {getIndexOfSetting} from './menu_util.js';
-import type {MenuStateItem} from './menu_util.js';
+import type {MenuStateItem, ToolbarMenu} from './menu_util.js';
 import type {SimpleActionMenuElement} from './simple_action_menu.js';
 
 export interface LineSpacingMenuElement {
@@ -27,7 +27,8 @@ export interface LineSpacingMenuElement {
 const LineSpacingMenuElementBase = WebUiListenerMixinLit(CrLitElement);
 
 // Stores and propagates the data for the line spacing menu.
-export class LineSpacingMenuElement extends LineSpacingMenuElementBase {
+export class LineSpacingMenuElement extends LineSpacingMenuElementBase
+    implements ToolbarMenu {
   static get is() {
     return 'line-spacing-menu';
   }

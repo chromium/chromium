@@ -32,6 +32,7 @@ export function getHtml(this: SettingsMenuElement) {
         ${item.itemType === SettingsItemType.TOGGLE ? html`
             <cr-toggle></cr-toggle>
         ` : item.id === SettingsOption.VIEW ? '' : html`
+            <!-- TODO(crbug.com/473611756): Fix direction in RTL -->
             <cr-icon class="end-icon" icon="cr:chevron-right"></cr-icon>
         `}
       </button>

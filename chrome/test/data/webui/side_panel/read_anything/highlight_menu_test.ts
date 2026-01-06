@@ -42,6 +42,10 @@ suite('HighlightMenuElement', () => {
 
   test('highlight change is propagated', async () => {
     createHighlightMenu();
+    const numberOfOptions = 3;
+    let closeAllMenusCount = 0;
+    document.addEventListener(
+        ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
 
     const highlight1 = chrome.readingMode.noHighlighting;
     highlightMenu.$.menu.dispatchEvent(new CustomEvent(
@@ -61,7 +65,9 @@ suite('HighlightMenuElement', () => {
     assertEquals(
         ReadAloudSettingsChange.HIGHLIGHT_CHANGE,
         await metrics.whenCalled('recordSpeechSettingsChange'));
-    assertEquals(3, metrics.getCallCount('recordSpeechSettingsChange'));
+    assertEquals(
+        numberOfOptions, metrics.getCallCount('recordSpeechSettingsChange'));
+    assertEquals(numberOfOptions, closeAllMenusCount);
   });
 
   test('highlight change logs new granularity', async () => {

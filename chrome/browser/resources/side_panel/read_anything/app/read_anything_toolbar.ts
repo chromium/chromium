@@ -20,6 +20,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import '//resources/cr_elements/icons.html.js';
 
+import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
@@ -30,14 +31,15 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement, html, type TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {SettingsOption, ToolbarEvent} from '../content/read_anything_types.js';
 import type {SettingsPrefs} from '../content/read_anything_types.js';
-import {ToolbarEvent} from '../content/read_anything_types.js';
 import type {ColorMenuElement} from '../menus/color_menu.js';
 import type {FontMenuElement} from '../menus/font_menu.js';
 import type {HighlightMenuElement} from '../menus/highlight_menu.js';
 import type {LetterSpacingMenuElement} from '../menus/letter_spacing_menu.js';
 import type {LineFocusMenuElement} from '../menus/line_focus_menu.js';
 import type {LineSpacingMenuElement} from '../menus/line_spacing_menu.js';
+import type {ToolbarMenu} from '../menus/menu_util.js';
 import type {RateMenuElement} from '../menus/rate_menu.js';
 import type {SettingsMenuElement} from '../menus/settings_menu.js';
 import {getCurrentSpeechRate} from '../read_aloud/speech_presentation_rules.js';
@@ -67,7 +69,6 @@ export interface ReadAnythingToolbarElement {
     settingsMenu: SettingsMenuElement,
   };
 }
-
 interface MenuButton {
   id: string;
   icon: string;
@@ -539,8 +540,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   protected onHighlightChange_(event: CustomEvent<{data: number}>) {
     // Event handler for highlight-change (from highlight-menu).
     const changedHighlight = event.detail.data;
-    this.setHighlightButtonIcon_(
-        changedHighlight !== chrome.readingMode.noHighlighting);
+    if (!this.isImmersiveEnabled_) {
+      this.setHighlightButtonIcon_(
+          changedHighlight !== chrome.readingMode.noHighlighting);
+    }
   }
 
   protected onHighlightClick_(event: MouseEvent) {
@@ -754,11 +757,58 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     elementToFocus.focus();
   }
 
-  protected onCloseAllMenus_() {
+  protected onCloseAllMenus_(
+      event: CustomEvent<{previousId: SettingsOption | null}>) {
+    this.closeAllMenus_(event.detail?.previousId);
+  }
+
+  protected onOpenSettingsSubmenu_(event: CustomEvent<{
+    id: SettingsOption,
+    previousId: SettingsOption|null,
+    target: HTMLElement,
+  }>) {
     if (!this.isImmersiveEnabled_) {
       return;
     }
+
+    const {id, previousId, target} = event.detail;
+    if (previousId) {
+      const previousMenu = this.settingsMenu_[previousId];
+      previousMenu?.close();
+    }
+
+    const showAtConfig = {
+      minY: 0,
+      anchorAlignmentX: AnchorAlignment.BEFORE_START,
+      anchorAlignmentY: AnchorAlignment.AFTER_START,
+    };
+    const currentMenu = this.settingsMenu_[id];
+    currentMenu?.open(target, showAtConfig);
+  }
+
+  private closeAllMenus_(previousId: SettingsOption|null = null) {
+    if (!this.isImmersiveEnabled_) {
+      return;
+    }
+
+    if (previousId) {
+      const previousMenu = this.settingsMenu_[previousId];
+      previousMenu?.close();
+    }
+
     this.$.settingsMenu.close();
+  }
+
+  get settingsMenu_(): Partial<Record<SettingsOption, ToolbarMenu>> {
+    return {
+      [SettingsOption.COLOR]: this.$.colorMenu,
+      [SettingsOption.VOICE_HIGHLIGHT]: this.$.highlightMenu,
+      [SettingsOption.FONT]: this.$.fontMenu,
+      [SettingsOption.LETTER_SPACING]: this.$.letterSpacingMenu,
+      [SettingsOption.LINE_FOCUS]: this.$.lineFocusMenu,
+      [SettingsOption.LINE_SPACING]: this.$.lineSpacingMenu,
+      [SettingsOption.VOICE_SELECTION]: this.$.voiceSelectionMenu,
+    };
   }
 
   private getMoreOptionsButtons_(): HTMLElement[] {

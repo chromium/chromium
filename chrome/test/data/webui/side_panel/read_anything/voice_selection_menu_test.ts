@@ -679,4 +679,12 @@ suite('VoiceSelectionMenu', () => {
       });
     });
   });
+
+  test('can be closed programatically', () => {
+    stubAnimationFrame();
+    voiceSelectionMenu.open(document.body);
+    assertTrue(voiceSelectionMenu.$.voiceSelectionMenu.get().open);
+    voiceSelectionMenu.close();
+    assertFalse(voiceSelectionMenu.$.voiceSelectionMenu.get().open);
+  });
 });

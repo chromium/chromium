@@ -15,7 +15,7 @@ import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {getHtml} from './letter_spacing_menu.html.js';
 import {getIndexOfSetting} from './menu_util.js';
-import type {MenuStateItem} from './menu_util.js';
+import type {MenuStateItem, ToolbarMenu} from './menu_util.js';
 import type {SimpleActionMenuElement} from './simple_action_menu.js';
 
 export interface LetterSpacingMenuElement {
@@ -27,7 +27,8 @@ export interface LetterSpacingMenuElement {
 const LetterSpacingMenuElementBase = WebUiListenerMixinLit(CrLitElement);
 
 // Stores and propagates the data for the letter spacing menu.
-export class LetterSpacingMenuElement extends LetterSpacingMenuElementBase {
+export class LetterSpacingMenuElement extends LetterSpacingMenuElementBase
+    implements ToolbarMenu {
   static get is() {
     return 'letter-spacing-menu';
   }

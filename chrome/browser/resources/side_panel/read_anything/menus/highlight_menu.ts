@@ -9,12 +9,13 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsPrefs, ShowAtConfigPrefs} from '../content/read_anything_types.js';
+import {ToolbarEvent} from '../content/read_anything_types.js';
 import {ReadAloudSettingsChange} from '../shared/metrics_browser_proxy.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {getHtml} from './highlight_menu.html.js';
 import {getIndexOfSetting} from './menu_util.js';
-import type {MenuStateItem} from './menu_util.js';
+import type {MenuStateItem, ToolbarMenu} from './menu_util.js';
 import type {SimpleActionMenuElement} from './simple_action_menu.js';
 
 export interface HighlightMenuElement {
@@ -26,7 +27,8 @@ export interface HighlightMenuElement {
 const HighlightMenuElementBase = WebUiListenerMixinLit(CrLitElement);
 
 // Stores and propagates the data for the highlight menu.
-export class HighlightMenuElement extends HighlightMenuElementBase {
+export class HighlightMenuElement extends HighlightMenuElementBase implements
+    ToolbarMenu {
   static get is() {
     return 'highlight-menu';
   }
@@ -96,6 +98,7 @@ export class HighlightMenuElement extends HighlightMenuElementBase {
     this.logger_.logSpeechSettingsChange(
         ReadAloudSettingsChange.HIGHLIGHT_CHANGE);
     this.logger_.logHighlightGranularity(event.detail.data);
+    this.fire(ToolbarEvent.CLOSE_ALL_MENUS);
   }
 }
 

@@ -25,7 +25,7 @@
   --iron-icon-height: 16px;
 }
 
-.menu-row:hover {
+.menu-row:hover, .active {
   background-color: var(--cr-hover-background-color);
 }
 

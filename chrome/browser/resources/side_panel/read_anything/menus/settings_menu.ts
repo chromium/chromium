@@ -134,6 +134,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   accessor presentationState: number = 0;
 
   protected options_: SettingsItem[] = [];
+  private currentOpenId_: string|null = null;
   private blockedEvents_: string[] = ['click', 'pointerdown'];
   private pointerEventCallback_: (e: Event) => void = () => {};
 
@@ -215,11 +216,32 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     const currentTarget = e.currentTarget as HTMLElement;
     const index = Number.parseInt(currentTarget.dataset['index']!);
     const item = this.options_[index];
+    if (!item) {
+      return;
+    }
 
-    if (item && item.id === SettingsOption.VIEW) {
+    // TODO (crbug.com/470379647): Add the toggle elements to settings menu
+    if (item.itemType === SettingsItemType.TOGGLE) {
+      return;
+    }
+
+    const newMenuId = item.id;
+    if (newMenuId === SettingsOption.VIEW) {
       chrome.readingMode.togglePresentation();
       this.close();
+      return;
     }
+
+    if (this.currentOpenId_ === newMenuId) {
+      return;
+    }
+
+    this.fire(ToolbarEvent.OPEN_SETTINGS_SUBMENU, {
+      id: newMenuId,
+      previousId: this.currentOpenId_,
+      target: currentTarget,
+    });
+    this.currentOpenId_ = newMenuId;
   }
 
   open(anchor: HTMLElement) {
@@ -237,6 +259,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       window.removeEventListener(
           eventType, this.pointerEventCallback_, {capture: true});
     });
+    this.currentOpenId_ = null;
   }
 
   // Immersive design uses non-modal menus to support submenus. Since non-modal
@@ -267,7 +290,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     }
 
     if (e.type === 'click') {
-      this.fire(ToolbarEvent.CLOSE_ALL_MENUS);
+      this.fire(
+          ToolbarEvent.CLOSE_ALL_MENUS, {previousId: this.currentOpenId_});
     }
   }
 }
