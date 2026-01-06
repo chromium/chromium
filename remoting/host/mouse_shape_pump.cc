@@ -6,10 +6,13 @@
 
 #include <stdint.h>
 
+#include <cstdint>
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "remoting/proto/control.pb.h"
@@ -78,13 +81,23 @@ void MouseShapePump::OnMouseCursor(
       }
 
       CHECK_EQ(cursor->image()->pixel_format(), webrtc::FOURCC_ARGB);
-      uint8_t* current_row = cursor->image()->data();
+      size_t stride = base::checked_cast<size_t>(cursor->image()->stride());
+      size_t total_size =
+          stride * base::checked_cast<size_t>(cursor->image()->size().height());
+      size_t row_size =
+          base::checked_cast<size_t>(cursor->image()->size().width()) *
+          base::checked_cast<size_t>(webrtc::DesktopFrame::kBytesPerPixel);
+
+      base::span<uint8_t> current_row =
+          // SAFETY: `cursor->image()->data()` points to a buffer of at least
+          // `total_size` bytes, as guaranteed by `webrtc::DesktopFrame`.
+          // See:
+          // https://chromium.googlesource.com/external/webrtc/+/HEAD/modules/desktop_capture/desktop_frame.h
+          UNSAFE_BUFFERS(base::span(cursor->image()->data(), total_size));
       for (int y = 0; y < cursor->image()->size().height(); ++y) {
         cursor_proto->mutable_data()->append(
-            current_row, UNSAFE_TODO(current_row +
-                                     cursor->image()->size().width() *
-                                         webrtc::DesktopFrame::kBytesPerPixel));
-        UNSAFE_TODO(current_row += cursor->image()->stride());
+            reinterpret_cast<const char*>(current_row.data()), row_size);
+        current_row = current_row.subspan(stride);
       }
     } else {
       cursor_proto->set_width(0);
