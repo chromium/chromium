@@ -933,8 +933,8 @@ void V4L2VideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
   if (state_ == State::kInitialized) {
     // Start streaming input queue and polling. This is required for the
-    // stateful decoder, and doesn't hurt for the stateless one.
-    if (!StartStreamV4L2Queue(false)) {
+    // stateful decoder.
+    if (backend_is_stateful_ && !StartStreamV4L2Queue(false)) {
       LogAndRecordUMA(FROM_HERE,
                       V4l2VideoDecoderFunctions::kStartStreamV4L2Queue);
       SetState(State::kError);
