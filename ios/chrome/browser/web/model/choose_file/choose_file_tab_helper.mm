@@ -206,7 +206,7 @@ void ChooseFileTabHelper::DidSubmitSelection(ChooseFileController* controller,
 
 #pragma mark - web::WebStateObserver
 
-void ChooseFileTabHelper::DidFinishNavigation(
+void ChooseFileTabHelper::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   if (!navigation_context->IsSameDocument()) {

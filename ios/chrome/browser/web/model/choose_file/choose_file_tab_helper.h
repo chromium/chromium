@@ -81,8 +81,8 @@ class ChooseFileTabHelper : public web::WebStateUserData<ChooseFileTabHelper>,
       base::OnceCallback<void(bool)> completion) const;
 
   // web::WebStateObserver implementation.
-  void DidFinishNavigation(web::WebState* web_state,
-                           web::NavigationContext* navigation_context) override;
+  void DidStartNavigation(web::WebState* web_state,
+                          web::NavigationContext* navigation_context) override;
   void WasHidden(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 

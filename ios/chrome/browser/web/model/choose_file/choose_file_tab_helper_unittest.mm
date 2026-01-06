@@ -102,8 +102,8 @@ TEST_F(ChooseFileTabHelperTest, StopChoosingFiles) {
   EXPECT_FALSE(tab_helper_->IsChoosingFiles());
 }
 
-// Tests that finishing navigation to a different document stops file selection.
-TEST_F(ChooseFileTabHelperTest, DidFinishNavigation) {
+// Tests that starting navigation to a different document stops file selection.
+TEST_F(ChooseFileTabHelperTest, DidStartNavigation) {
   EXPECT_FALSE(tab_helper_->IsChoosingFiles());
 
   auto controller = std::make_unique<FakeChooseFileController>(
@@ -118,11 +118,11 @@ TEST_F(ChooseFileTabHelperTest, DidFinishNavigation) {
   auto navigation_context = std::make_unique<web::FakeNavigationContext>();
 
   navigation_context->SetIsSameDocument(true);
-  tab_helper_->DidFinishNavigation(web_state_.get(), navigation_context.get());
+  tab_helper_->DidStartNavigation(web_state_.get(), navigation_context.get());
   EXPECT_TRUE(tab_helper_->IsChoosingFiles());
 
   navigation_context->SetIsSameDocument(false);
-  tab_helper_->DidFinishNavigation(web_state_.get(), navigation_context.get());
+  tab_helper_->DidStartNavigation(web_state_.get(), navigation_context.get());
   EXPECT_FALSE(tab_helper_->IsChoosingFiles());
 }
 
