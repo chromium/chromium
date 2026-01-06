@@ -10,6 +10,12 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
 
+declare_args() {
+  # Name of the implementation to use for the //ios/web provider API.
+  # Can be overridden by embedders.
+  ios_web_provider_target = "//ios/web/providers"
+}
+
 group("all_tests") {
   testonly = true
   deps = [
@@ -56,6 +62,7 @@ source_set("web") {
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
     "//ios/web/webui",
     "//services/network:network_service",
+    ios_web_provider_target,
   ]
 
   if (ios_enable_javascript_flags) {
