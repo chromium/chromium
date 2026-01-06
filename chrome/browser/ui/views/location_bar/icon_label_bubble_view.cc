@@ -307,7 +307,8 @@ views::ProposedLayout IconLabelBubbleView::CalculateProposedLayout(
       should_use_label_bounds ? image_bounds_with_label : image_bounds);
 
   // The separator should be the same height as the icons.
-  const int separator_height = GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
+  const int separator_height =
+      GetLayoutConstant(LayoutConstant::kLocationBarIconSize);
   gfx::Rect separator_bounds(label_bounds);
   separator_bounds.Inset(
       gfx::Insets::VH((separator_bounds.height() - separator_height) / 2, 0));
@@ -664,7 +665,7 @@ void IconLabelBubbleView::UpdateBorder() {
   // the bubble should be smaller, so use an empty border to shrink down the
   // content bounds so the background gets painted correctly.
   SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
-      GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
+      GetLayoutConstant(LayoutConstant::kLocationBarChildInteriorPadding),
       GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING).left())));
 }
 

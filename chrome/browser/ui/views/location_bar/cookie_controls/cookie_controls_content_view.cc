@@ -41,7 +41,7 @@ using Util = ::content_settings::CookieControlsUtil;
 constexpr int kMaxBubbleWidth = 1000;
 
 int GetDefaultIconSize() {
-  return GetLayoutConstant(PAGE_INFO_ICON_SIZE);
+  return GetLayoutConstant(LayoutConstant::kPageInfoIconSize);
 }
 
 std::unique_ptr<views::View> CreateSeparator(bool padded) {
@@ -208,7 +208,8 @@ void CookieControlsContentView::AddFeedbackSection() {
   const ui::ImageModel feedback_icon = ui::ImageModel::FromVectorIcon(
       kSubmitFeedbackIcon, ui::kColorMenuIcon, GetDefaultIconSize());
   const ui::ImageModel launch_icon = ui::ImageModel::FromVectorIcon(
-      vector_icons::kLaunchIcon, ui::kColorMenuIcon, GetDefaultIconSize());
+      vector_icons::kLaunchIcon, ui::kColorMenuIcon,
+      GetLayoutConstant(LayoutConstant::kPageInfoIconSize));
 
   feedback_section_->AddChildView(CreatePaddedSeparator());
 

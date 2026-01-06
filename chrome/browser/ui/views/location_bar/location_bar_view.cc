@@ -462,7 +462,8 @@ void LocationBarView::Init() {
       !IsPageActionMigrated(PageActionIconType::kBookmarkStar);
   static constexpr int kBetweenIconSpacing = 8;
   const page_actions::PageActionViewParams page_action_params{
-      .icon_size = GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE),
+      .icon_size =
+          GetLayoutConstant(LayoutConstant::kLocationBarTrailingIconSize),
       .icon_insets = GetLayoutInsets(LOCATION_BAR_PAGE_ACTION_ICON_PADDING),
       .between_icon_spacing = kBetweenIconSpacing,
       .icon_label_bubble_delegate = this,
@@ -755,13 +756,14 @@ bool LocationBarView::HasFocus() const {
 }
 
 gfx::Size LocationBarView::GetMinimumSize() const {
-  const int height = GetLayoutConstant(LOCATION_BAR_HEIGHT);
+  const int height = GetLayoutConstant(LayoutConstant::kLocationBarHeight);
   if (!IsInitialized()) {
     return gfx::Size(0, height);
   }
 
   const int inset_width = GetInsets().width();
-  const int padding = GetLayoutConstant(LOCATION_BAR_ELEMENT_PADDING);
+  const int padding =
+      GetLayoutConstant(LayoutConstant::kLocationBarElementPadding);
   const int leading_width = GetMinimumLeadingWidth();
   const int omnibox_width = omnibox_view_->GetMinimumSize().width();
   const int trailing_width = GetMinimumTrailingWidth();
@@ -781,13 +783,14 @@ gfx::Size LocationBarView::GetMinimumSize() const {
 
 gfx::Size LocationBarView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  const int height = GetLayoutConstant(LOCATION_BAR_HEIGHT);
+  const int height = GetLayoutConstant(LayoutConstant::kLocationBarHeight);
   if (!IsInitialized()) {
     return gfx::Size(0, height);
   }
 
   const int inset_width = GetInsets().width();
-  const int padding = GetLayoutConstant(LOCATION_BAR_ELEMENT_PADDING);
+  const int padding =
+      GetLayoutConstant(LayoutConstant::kLocationBarElementPadding);
   const int leading_width = GetMinimumLeadingWidth();
   const int omnibox_width = omnibox_view_->GetMinimumSize().width();
   const int trailing_width = GetMinimumTrailingWidth();
@@ -865,17 +868,18 @@ void LocationBarView::Layout(PassKey) {
                                         text_left);
   LocationBarLayout trailing_decorations(
       LocationBarLayout::Position::kRightEdge,
-      GetLayoutConstant(LOCATION_BAR_TRAILING_DECORATION_INNER_PADDING));
+      GetLayoutConstant(
+          LayoutConstant::kLocationBarTrailingDecorationInnerPadding));
 
   const std::u16string keyword(GetOmniboxController()->edit_model()->keyword());
   // In some cases (e.g. fullscreen mode) we may have 0 height.  We still want
   // to position our child views in this case, because other things may be
   // positioned relative to them (e.g. the "bookmark added" bubble if the user
   // hits ctrl-d).
-  const int vertical_padding =
-      GetLayoutConstant(LOCATION_BAR_PAGE_INFO_ICON_VERTICAL_PADDING);
-  const int trailing_decorations_edge_padding =
-      GetLayoutConstant(LOCATION_BAR_TRAILING_DECORATION_EDGE_PADDING);
+  const int vertical_padding = GetLayoutConstant(
+      LayoutConstant::kLocationBarPageInfoIconVerticalPadding);
+  const int trailing_decorations_edge_padding = GetLayoutConstant(
+      LayoutConstant::kLocationBarTrailingDecorationEdgePadding);
 
   const int location_height = std::max(height() - (vertical_padding * 2), 0);
   // The largest fraction of the omnibox that can be taken by the EV or search
@@ -1026,7 +1030,8 @@ void LocationBarView::Layout(PassKey) {
   // TODO(crbug.com/350541615): This can be removed once current non-resizable
   // decorations are updated to support LocationBayLayout::auto_collapse.
   const int inset_width = GetInsets().width();
-  const int padding = GetLayoutConstant(LOCATION_BAR_ELEMENT_PADDING);
+  const int padding =
+      GetLayoutConstant(LayoutConstant::kLocationBarElementPadding);
   const int unelided_omnibox_width = omnibox_view_->GetUnelidedTextWidth();
   const int reserved_width = unelided_omnibox_width + inset_width + padding * 2;
 
@@ -1418,15 +1423,16 @@ bool LocationBarView::IsVirtualKeyboardVisible(views::Widget* widget) {
 
 // static
 int LocationBarView::GetAvailableTextHeight() {
-  return std::max(0, GetLayoutConstant(LOCATION_BAR_HEIGHT) -
-                         2 * GetLayoutConstant(LOCATION_BAR_ELEMENT_PADDING));
+  return std::max(
+      0, GetLayoutConstant(LayoutConstant::kLocationBarHeight) -
+             2 * GetLayoutConstant(LayoutConstant::kLocationBarElementPadding));
 }
 
 // static
 int LocationBarView::GetAvailableDecorationTextHeight() {
   const int bubble_padding =
-      GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING) +
-      GetLayoutConstant(LOCATION_BAR_BUBBLE_FONT_VERTICAL_PADDING);
+      GetLayoutConstant(LayoutConstant::kLocationBarChildInteriorPadding) +
+      GetLayoutConstant(LayoutConstant::kLocationBarBubbleFontVerticalPadding);
   return std::max(
       0, LocationBarView::GetAvailableTextHeight() - (bubble_padding * 2));
 }
@@ -1441,7 +1447,7 @@ int LocationBarView::GetMinimumLeadingWidth() const {
     return location_icon_view_->GetMinimumLabelTextWidth();
   }
 
-  return GetLayoutConstant(LOCATION_BAR_ELEMENT_PADDING) +
+  return GetLayoutConstant(LayoutConstant::kLocationBarElementPadding) +
          location_icon_view_->GetMinimumSize().width();
 }
 
@@ -2113,7 +2119,7 @@ ui::ImageModel LocationBarView::GetLocationIcon(
 
   return omnibox_view_
              ? omnibox_view_->GetIcon(
-                   GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
+                   GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
                    location_icon_view_->GetForegroundColor(),
                    View::GetColorProvider()->GetColor(kColorOmniboxResultsIcon),
                    View::GetColorProvider()->GetColor(

@@ -95,7 +95,7 @@ SelectedKeywordView::SelectedKeywordView(
 SelectedKeywordView::~SelectedKeywordView() = default;
 
 void SelectedKeywordView::SetCustomImage(const gfx::Image& image) {
-  const int icon_size = GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
+  const int icon_size = GetLayoutConstant(LayoutConstant::kLocationBarIconSize);
   using_custom_image_ = !image.IsEmpty();
   if (using_custom_image_) {
     IconLabelBubbleView::SetImageModel(ui::ImageModel::FromImageSkia(

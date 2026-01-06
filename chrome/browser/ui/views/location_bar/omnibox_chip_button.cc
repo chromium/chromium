@@ -59,7 +59,8 @@ OmniboxChipButton::OmniboxChipButton(PressedCallback callback)
   SetCustomPadding(
       gfx::Insets::VH(kChipVerticalPadding, kChipHorizontalPadding));
   label()->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
-  SetCornerRadius(GetLayoutConstant(LOCATION_BAR_CHILD_CORNER_RADIUS));
+  SetCornerRadius(
+      GetLayoutConstant(LayoutConstant::kLocationBarChildCornerRadius));
   animation_ = std::make_unique<gfx::SlideAnimation>(this);
 
   UpdateIconAndColors();
@@ -201,8 +202,8 @@ void OmniboxChipButton::OnAnimationValueMaybeChanged() {
 int OmniboxChipButton::GetIconSize() const {
   // Mimic the sizing for other trailing icons.
   return GetLayoutConstant((theme_ == OmniboxChipTheme::kIconStyle)
-                               ? LOCATION_BAR_TRAILING_ICON_SIZE
-                               : LOCATION_BAR_CHIP_ICON_SIZE);
+                               ? LayoutConstant::kLocationBarTrailingIconSize
+                               : LayoutConstant::kLocationBarChipIconSize);
 }
 
 void OmniboxChipButton::AddObserver(Observer* observer) {
