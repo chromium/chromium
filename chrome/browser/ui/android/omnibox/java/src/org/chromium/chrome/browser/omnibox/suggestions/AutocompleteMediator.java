@@ -1562,6 +1562,7 @@ class AutocompleteMediator
     public void onAttachmentListChanged() {
         if (!isActive()) return;
 
+        mAutocompleteInput.setHasAttachments(mFuseboxCoordinator.getAttachmentsCount() > 0);
         // Re-request ZPS in the event of attachments being removed/replaced.
         onTextChanged(
                 mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
