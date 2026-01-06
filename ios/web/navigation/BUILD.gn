@@ -85,6 +85,7 @@ source_set("core") {
   ]
 
   sources = [
+    "back_forward_navigation_type.h",
     "crw_navigation_item_holder.h",
     "crw_navigation_item_holder.mm",
     "navigation_context_impl.h",
