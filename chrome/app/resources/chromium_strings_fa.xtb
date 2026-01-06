@@ -399,7 +399,7 @@
 <translation id="5941711191222866238">کوچک کردن</translation>
 <translation id="5949225980829865667">‏برای دریافت این نشانک و موارد بیشتر در همه دستگاه‌هایتان، به سیستم Chromium وارد شوید</translation>
 <translation id="5953657885167112863">‏‫Chromium را مخصوص خودتان کنید</translation>
-<translation id="5968400720580217226">حالت هوش مصنوعی</translation>
+<translation id="5968400720580217226">حالت هوشواره‌ای</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{‏اگر به‌مدت یک دقیقه از Chromium استفاده نشود، سازمانتان آن را به‌طور خودکار می‌بندد.}one{‏اگر به‌مدت # دقیقه از Chromium استفاده نشود، سازمانتان آن را به‌طور خودکار می‌بندد.}other{‏اگر به‌مدت # دقیقه از Chromium استفاده نشود، سازمانتان آن را به‌طور خودکار می‌بندد.}}</translation>
 <translation id="5987687638152509985">‏به‌روزرسانی Chromium برای شروع همگام‌سازی</translation>
 <translation id="6003112304606738118">درحال بارگیری… <ph name="HOURS" /> ساعت باقی مانده است</translation>
@@ -433,7 +433,7 @@
 <translation id="6245734527075554892">‏نشانی‌های وب را با فهرست سایت‌های ناامنی که در Chromium ذخیره شده است مقایسه می‌کند</translation>
 <translation id="6248213926982192922">‏Chromium  مرورگر پیش‌فرض شود</translation>
 <translation id="6268381023930128611">‏از Chromium خارج می‌شوید؟</translation>
-<translation id="6270547683008298381">‏این برگه‌ها از منابع بیشتری استفاده می‌کنند. برای بهبود عملکرد، اجازه دهید Chromium آن‌ها را غیرفعال کند.</translation>
+<translation id="6270547683008298381">‏این زبانه‌ها از منابع بیشتری استفاده می‌کنند. برای بهبود عملکرد، اجازه دهید Chromium آن‌ها را غیرفعال کند.</translation>
 <translation id="6281746429495226318">‏سفارشی کردن نمایه Chromium</translation>
 <translation id="6290827346642914212">‏نام‌گذاری نمایه Chromium</translation>
 <translation id="6294831894865512704">‏یکی از افزونه‌ها از شما می‌خواهد به سیستم Chromium وارد شوید</translation>
@@ -520,7 +520,7 @@
 <translation id="7223968959479464213">‏مدیر وظایف - Chromium</translation>
 <translation id="7246575524853130370">‏علایق شما به‌طوری‌که Chromium برآورد کرده است</translation>
 <translation id="7274695763216404502">سنجاق شد! دفعه بعد «جستجوی تصویر» را از نوارابزار باز کنید</translation>
-<translation id="7288567540154601580">برگه‌ها و افزونه‌ها</translation>
+<translation id="7288567540154601580">زبانه‌ها و افزونه‌ها</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{‏Chromium توصیه می‌کند آن را بردارید}one{‏Chromium توصیه می‌کند آن را بردارید}other{‏Chromium توصیه می‌کند آن‌ها را بردارید}}</translation>
 <translation id="7309928523159922338">‏سنجش آگهی به سایت‌هایی که بازدید می‌کنید امکان می‌دهد اطلاعاتی را از Chromium درخواست کنند که به آن‌ها کمک می‌کند عملکرد آگهی‌هایشان را بسنجند. «سنجش آگهی» ردیابی بین‌سایتی را با انتقال حداقل اطلاعات ممکن بین سایت‌ها محدود می‌کند.</translation>
 <translation id="731795002583552498">‏در حال به‌روزرسانی Chromium</translation>
