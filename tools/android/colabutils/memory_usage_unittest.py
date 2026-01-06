@@ -14,7 +14,7 @@ _SRC_PATH = pathlib.Path(__file__).resolve().parents[3]
 sys.path.append(str(_SRC_PATH / 'tools/android'))
 from colabutils.memory_usage import (MemoryUsageView, TreeNode,
                                      _aggregate_nodes, _zip_by_name,
-                                     _compare_node_lists)
+                                     _compare_node_lists, _prettify_size)
 
 _REALISTIC_JSON = """
 [
@@ -336,6 +336,23 @@ class MemoryUsageViewTest(unittest.TestCase):
         self.assertEqual(-10, child_10.delta)
         self.assertEqual(20, child_20.value)
         self.assertEqual(-20, child_20.delta)
+
+    def test_prettify_size(self):
+        tests = [
+            (500, 500),
+            (1024, '1 KiB'),
+            (1536, '1.5 KiB'),
+            (1500, '1.46 KiB'),
+            (1048576, '1 MiB'),
+            (123456789, '117.74 MiB'),
+            (1099511627776, '1024 GiB'),
+            (2000000000000, 2000000000000),
+        ]
+
+        test_lines = []
+        for inp, expected in tests:
+            self.assertEqual(expected, _prettify_size(inp))
+
 
 if __name__ == '__main__':
     unittest.main()

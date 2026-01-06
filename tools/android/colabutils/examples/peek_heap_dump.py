@@ -27,9 +27,9 @@ def main():
     print(f'Loading heap dump from: {args.trace_file}')
     view = MemoryUsageView.from_heap_dump(args.trace_file)
 
-    print('Memory usage:')
-    for root in view.roots:
-        print(f'  {root.name}: {root.value} bytes')
+    print('Memory usage for toplevel frames:')
+    for line in view.toplevel_pretty_report():
+        print(line)
     return 0
 
 

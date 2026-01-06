@@ -6,6 +6,7 @@
 # TODO(crbug.com/73768497): Move this file and other files related to memory
 # usage into a separate subdirectory.
 
+import copy
 import jinja2
 import json
 import os
@@ -129,19 +130,31 @@ class MemoryUsageView:
     def toplevel_names(self) -> list[str]:
         return [root.name for root in self.roots]
 
+    def toplevel_pretty_report(self) -> list[str]:
+        """Generates pretty-printed memory usage for toplevel frames."""
+        result = []
+        for root in self.roots:
+            pretty_size = _prettify_size(root.value)
+            result.append((root.name, root.value, pretty_size))
+        for triplet in sorted(result, key=lambda t: t[1], reverse=True):
+            yield f'{triplet[0]}: {triplet[2]}'
+
     def display(self):
         if not _HAS_IPYTHON:
             print('Error: Could not import IPython module')
             return
+        saved_roots = self.roots
         unique_root_id = f'metrics-root-{id(self)}'
         env = jinja2.Environment(
             loader=jinja2.FileSystemLoader(_MEMORY_USAGE_DIR))
+        env.policies['json.dumps_function'] = MemoryUsageView.to_json
         try:
             # Common heap profiles are a too deep for the default recursion
             # limit.
             previous_recursion_limit = sys.getrecursionlimit()
             sys.setrecursionlimit(10000)
-            env.policies['json.dumps_function'] = MemoryUsageView.to_json
+            self.roots = copy.deepcopy(self.roots)
+            _prettify_nodes(self.roots)
             template = env.get_template('memory_usage_table.html.j2')
             html_str = template.render(json_data=self, root_id=unique_root_id)
         finally:
@@ -307,3 +320,26 @@ def _compare_node_lists(nodes_base: list[TreeNode],
         merged_node.children = _compare_node_lists(base.children, new.children)
         result.append(merged_node)
     return sorted(result, key=lambda node: node.delta, reverse=True)
+
+
+def _prettify_size(size_bytes: int):
+    KIB = 1024
+    TIB = KIB**4
+
+    if size_bytes < KIB or size_bytes > TIB:
+        # The JS display table replaces zero integers with empty cells. To allow
+        # removing such clutter simply do not convert the result to str.
+        return size_bytes
+
+    for unit in ['KiB', 'MiB', 'GiB']:
+        size_bytes /= KIB
+        if size_bytes < KIB or unit == 'GiB':
+            result = f'{size_bytes:.2f}'.rstrip('0').rstrip('.')
+            return f'{result} {unit}'
+
+
+def _prettify_nodes(nodes: list[TreeNode]):
+    for node in nodes:
+        node.value = _prettify_size(node.value)
+        node.delta = _prettify_size(node.delta)
+        _prettify_nodes(node.children)
