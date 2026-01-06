@@ -75,16 +75,10 @@ bool SoftNavigationContext::AddPaintedArea(PaintTimingRecord* record) {
   }
 
   if (record->IsImageRecord()) {
-    if (!largest_image_ ||
-        largest_image_->RecordedSize() < record->RecordedSize()) {
-      largest_image_ = To<ImageRecord>(record);
-    }
+    lcp_calculator_->MaybeUpdateLargestPaintedImage(To<ImageRecord>(record));
   } else {
     CHECK(record->IsTextRecord());
-    if (!largest_text_ ||
-        largest_text_->RecordedSize() < record->RecordedSize()) {
-      largest_text_ = To<TextRecord>(record);
-    }
+    lcp_calculator_->MaybeUpdateLargestText(To<TextRecord>(record));
   }
 
   return true;
@@ -171,29 +165,15 @@ bool SoftNavigationContext::TryUpdateLcpCandidate() {
     return false;
   }
 
-  bool latest_lcp_details_for_ukm_changed = false;
-  // TODO(crbug.com/425989954): Guard on paint_time, because although this
-  // TryUpdateLcpCandidate gets called after presentation feedback, it might not
-  // be the right presentation time for this specific text/image record.
-  if (largest_text_ && largest_text_->HasPaintTime()) {
-    latest_lcp_details_for_ukm_changed =
-        latest_lcp_details_for_ukm_changed ||
-        lcp_calculator_->NotifyMetricsIfLargestTextPaintChanged(
-            *largest_text_.Get());
-  }
-  if (largest_image_ && largest_image_->HasPaintTime()) {
-    latest_lcp_details_for_ukm_changed =
-        latest_lcp_details_for_ukm_changed ||
-        lcp_calculator_->NotifyMetricsIfLargestImagePaintChanged(
-            *largest_image_.Get());
-  }
-
+  std::pair<TextRecord*, bool> text_result =
+      lcp_calculator_->NotifyMetricsIfLargestTextPaintChanged();
+  std::pair<ImageRecord*, bool> image_result =
+      lcp_calculator_->NotifyMetricsIfLargestImagePaintChanged();
   if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window_)) {
     lcp_calculator_->UpdateWebExposedLargestContentfulPaintIfNeeded(
-        largest_text_, largest_image_);
+        text_result.first, image_result.first);
   }
-
-  return latest_lcp_details_for_ukm_changed;
+  return text_result.second || image_result.second;
 }
 
 const LargestContentfulPaintDetails&
@@ -218,8 +198,6 @@ void SoftNavigationContext::WriteIntoTrace(
 
 void SoftNavigationContext::Trace(Visitor* visitor) const {
   visitor->Trace(lcp_calculator_);
-  visitor->Trace(largest_text_);
-  visitor->Trace(largest_image_);
   visitor->Trace(first_image_or_text_);
   visitor->Trace(window_);
   visitor->Trace(latest_unemitted_icp_entry_);
@@ -227,8 +205,6 @@ void SoftNavigationContext::Trace(Visitor* visitor) const {
 
 void SoftNavigationContext::Shutdown() {
   lcp_calculator_ = nullptr;
-  largest_text_ = nullptr;
-  largest_image_ = nullptr;
   first_image_or_text_ = nullptr;
   window_ = nullptr;
   latest_unemitted_icp_entry_ = nullptr;

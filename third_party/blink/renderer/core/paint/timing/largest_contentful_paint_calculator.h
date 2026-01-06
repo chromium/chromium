@@ -60,14 +60,51 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
       const TextRecord* largest_text,
       const ImageRecord* largest_image);
 
-  bool NotifyMetricsIfLargestImagePaintChanged(const ImageRecord&);
-  bool NotifyMetricsIfLargestTextPaintChanged(const TextRecord&);
+  std::pair<ImageRecord*, bool> NotifyMetricsIfLargestImagePaintChanged();
+  std::pair<TextRecord*, bool> NotifyMetricsIfLargestTextPaintChanged();
 
   const LargestContentfulPaintDetails& LatestLcpDetails() const {
     return latest_lcp_details_;
   }
 
+  void MaybeRecordRemovedCandidateUseCounter(const ImageRecord&);
+  void MaybeRecordRemovedCandidateUseCounter(const TextRecord&);
+
+  // Updates the largest text candidate if the given `TextRecord` is larger.
+  // Candidates are not emitted to the performance timeline until
+  // `UpdateWebExposedLargestContentfulText()` is called, and metrics are not
+  // updated until `NotifyMetricsIfLargestTextPaintChanged()` is called.
+  void MaybeUpdateLargestText(TextRecord*);
+
+  // Updates the largest painted image candidate if the given `ImageRecord` is
+  // larger. Candidates are not emitted to the performance timeline until
+  // `UpdateWebExposedLargestContentfulImage()` is called, and metrics are not
+  // updated until `NotifyMetricsIfLargestImagePaintChanged()` is called.
+  void MaybeUpdateLargestPaintedImage(ImageRecord*);
+
+  // Returns true iff an image of `size` should be tracked for computing LCP.
+  bool IsImageNeededForLcp(uint64_t size) const;
+
+  // Called when an image is painted for the first time, regardless of whether
+  // or not it's sufficiently loaded enough to be considered for paint timing.
+  // The LCP algorithm assumes such images will be painted, and if the user
+  // abandons the page before the image has finished loading and the image is
+  // the LCP candidate, the page load isn't reported to UKM.
+  void OnImageFirstPaint(ImageRecord*);
+
+  // Called when a pending image, one that has been painted but whose paint and
+  // presentation times are not yet set, is removed from the DOM.
+  void OnPendingImageRemoved(ImageRecord* record);
+
   void Trace(Visitor* visitor) const;
+
+  ImageRecord* LargestPaintedOrPendingImageForTest() const {
+    return LargestPaintedOrPendingImage();
+  }
+  ImageRecord* LargestPaintedImageForTest() const {
+    return largest_painted_image_;
+  }
+  TextRecord* LargestTextForTest() const { return largest_text_; }
 
  private:
   friend class LargestContentfulPaintCalculatorTest;
@@ -96,6 +133,8 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
 
   void UpdateLatestLcpDetailsTypeIfNeeded();
 
+  ImageRecord* LargestPaintedOrPendingImage() const;
+
   Member<WindowPerformance> window_performance_;
 
   uint64_t largest_reported_size_ = 0u;
@@ -110,6 +149,31 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   LargestContentfulPaintDetails latest_lcp_details_;
 
   Member<Delegate> delegate_;
+
+  // The current largest text. For hard navs, this is the largest presented
+  // text. For soft navs, it's the largest painted text.
+  //
+  // TODO(crbug.com/454082771): Soft nav behavior should match hard nav behavior
+  // for this and and `largest_painted_image_`.
+  Member<TextRecord> largest_text_;
+
+  // The current largest image "committed" candidate. For hard navs, this is the
+  // largest presented image, and it's the LCP image candidate if it's larger
+  // than the `largest_pending_image_`. For soft navs, this is the largest
+  // painted image, and it represents the current LCP image candidate.
+  Member<ImageRecord> largest_painted_image_;
+
+  // The largest image that has been encountered, but not necessarily loaded,
+  // painted, or presented yet. This is used to prevent recording LCP for pages
+  // that are unloaded when the largest image is still pending.
+  //
+  // TODO(crbug.com/449779010): This is currently only used for hard navs, but
+  // soft navs should also have this behavior.
+  //
+  // TODO(crbug.com/454067883): This also affects which intermediate candidates
+  // are emitted to performance timeline, since this gets passed to
+  // `UpdateWebExposedLargestContentfulPaintIfNeeded().
+  Member<ImageRecord> largest_pending_image_;
 };
 
 }  // namespace blink

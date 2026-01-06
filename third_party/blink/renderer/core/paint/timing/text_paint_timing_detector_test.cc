@@ -126,7 +126,9 @@ class TextPaintTimingDetectorTest : public testing::Test {
     InvokePresentationTimeCallback(mock_callback_manager_);
     // Outside the tests, this is invoked by
     // |PaintTimingCallbackManagerImpl::ReportPaintTime|.
-    GetLargestTextPaintManager().UpdateMetricsCandidate();
+    if (GetTextPaintTimingDetector()->IsRecordingLargestTextPaint()) {
+      GetTextPaintTimingDetector()->UpdateMetricsCandidate();
+    }
   }
 
   void ChildFramePresentationTimeCallBack() {
@@ -168,6 +170,8 @@ class TextPaintTimingDetectorTest : public testing::Test {
     mock_callback_manager_ =
         MakeGarbageCollected<MockPaintTimingCallbackManager>();
     GetTextPaintTimingDetector()->ResetCallbackManager(mock_callback_manager_);
+    main_frame_lcp_calculator_ =
+        GetPaintTimingDetector().GetLargestContentfulPaintCalculator();
     UpdateAllLifecyclePhases();
   }
 
@@ -179,6 +183,9 @@ class TextPaintTimingDetectorTest : public testing::Test {
         MakeGarbageCollected<MockPaintTimingCallbackManager>();
     GetChildFrameTextPaintTimingDetector().ResetCallbackManager(
         child_frame_mock_callback_manager_);
+    child_frame_lcp_calculator_ = GetChildFrameView()
+                                      .GetPaintTimingDetector()
+                                      .GetLargestContentfulPaintCalculator();
     UpdateAllLifecyclePhases();
   }
 
@@ -232,14 +239,11 @@ class TextPaintTimingDetectorTest : public testing::Test {
   }
 
   TextRecord* TextRecordOfLargestTextPaint() {
-    return GetLargestTextPaintManager().LargestText();
+    return main_frame_lcp_calculator_->LargestTextForTest();
   }
 
   TextRecord* ChildFrameTextRecordOfLargestTextPaint() {
-    return GetChildFrameView()
-        .GetPaintTimingDetector()
-        .GetTextPaintTimingDetector()
-        .ltp_manager_.LargestText();
+    return child_frame_lcp_calculator_->LargestTextForTest();
   }
 
   void SetFontSize(Element* font_element, uint16_t font_size) {
@@ -274,6 +278,9 @@ class TextPaintTimingDetectorTest : public testing::Test {
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   Persistent<MockPaintTimingCallbackManager> mock_callback_manager_;
   Persistent<MockPaintTimingCallbackManager> child_frame_mock_callback_manager_;
+  // Cache the LCP calculators so they can still be accessed after input events.
+  Persistent<LargestContentfulPaintCalculator> main_frame_lcp_calculator_;
+  Persistent<LargestContentfulPaintCalculator> child_frame_lcp_calculator_;
 };
 
 constexpr base::TimeDelta TextPaintTimingDetectorTest::kQuantumOfTime;

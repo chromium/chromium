@@ -171,8 +171,6 @@ class CORE_EXPORT SoftNavigationContext
 
   Member<LocalDOMWindow> window_;
   Member<LargestContentfulPaintCalculator> lcp_calculator_;
-  Member<TextRecord> largest_text_;
-  Member<ImageRecord> largest_image_;
   Member<PaintTimingRecord> first_image_or_text_;
   Member<InteractionContentfulPaint> latest_unemitted_icp_entry_;
 

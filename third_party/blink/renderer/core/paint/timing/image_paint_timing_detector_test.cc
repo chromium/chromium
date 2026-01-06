@@ -123,21 +123,21 @@ class ImagePaintTimingDetectorTest : public testing::Test,
 
   ImageRecord* LargestImage() {
     return GetPaintTimingDetector()
-        .GetImagePaintTimingDetector()
-        .records_manager_.LargestImage();
+        .GetLargestContentfulPaintCalculator()
+        ->LargestPaintedOrPendingImageForTest();
   }
 
   ImageRecord* LargestPaintedImage() {
     return GetPaintTimingDetector()
-        .GetImagePaintTimingDetector()
-        .records_manager_.largest_painted_image_.Get();
+        .GetLargestContentfulPaintCalculator()
+        ->LargestPaintedImageForTest();
   }
 
   ImageRecord* ChildFrameLargestImage() {
     return GetChildFrameView()
         .GetPaintTimingDetector()
-        .GetImagePaintTimingDetector()
-        .records_manager_.LargestImage();
+        .GetLargestContentfulPaintCalculator()
+        ->LargestPaintedOrPendingImageForTest();
   }
 
   size_t CountImageRecords() {
