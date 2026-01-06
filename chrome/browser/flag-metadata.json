@@ -2857,11 +2857,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-accessibility-manifest-v3-braille-ime",
-    "owners": [ "akihiroota@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-accessibility-manifest-v3-chromevox",
     "owners": [ "akihiroota@chromium.org", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 150

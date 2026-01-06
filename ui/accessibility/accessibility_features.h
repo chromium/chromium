@@ -252,9 +252,6 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kAccessibilityManifestV3AccessibilityCommon);
 AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForAccessibilityCommon();
 
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityManifestV3BrailleIme);
-AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForBrailleIme();
-
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityManifestV3ChromeVox);
 AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForChromeVox();
 

@@ -292,13 +292,6 @@ bool IsAccessibilityShakeToLocateEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityShakeToLocate);
 }
 
-BASE_FEATURE(kAccessibilityManifestV3BrailleIme,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityManifestV3EnabledForBrailleIme() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityManifestV3BrailleIme);
-}
-
 BASE_FEATURE(kAccessibilityManifestV3ChromeVox,
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAccessibilityManifestV3EnabledForChromeVox() {
