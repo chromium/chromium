@@ -273,7 +273,7 @@ class OopPixelTest : public testing::Test,
                                       options.resource_size);
     gpu::SyncToken sync_token =
         gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
-    sii->DestroySharedImage(sync_token, std::move(client_shared_image));
+    client_shared_image->UpdateDestructionSyncToken(sync_token);
     return result;
   }
 
@@ -2696,7 +2696,7 @@ TEST_F(OopPixelTest, WritePixels) {
       ReadbackMailbox(ri, dest_client_si->mailbox(), options.resource_size);
   sync_token = gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
 
-  sii->DestroySharedImage(sync_token, std::move(dest_client_si));
+  dest_client_si->UpdateDestructionSyncToken(sync_token);
   ExpectEquals(actual, expected);
 }
 
@@ -2857,8 +2857,8 @@ TEST_P(OopYUVToRGBPixelTest, CopyI420SharedImage) {
   gpu::RasterScopedAccess::EndAccess(std::move(src_ri_access));
   gpu::SyncToken sync_token =
       gpu::RasterScopedAccess::EndAccess(std::move(dest_ri_access));
-  sii->DestroySharedImage(sync_token, std::move(dest_client_si));
-  sii->DestroySharedImage(sync_token, std::move(yuv_client_si));
+  dest_client_si->UpdateDestructionSyncToken(sync_token);
+  yuv_client_si->UpdateDestructionSyncToken(sync_token);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2939,8 +2939,8 @@ TEST_F(OopPixelTest, CopyNV12SharedImage) {
   gpu::RasterScopedAccess::EndAccess(std::move(src_ri_access));
   gpu::SyncToken sync_token =
       gpu::RasterScopedAccess::EndAccess(std::move(dest_ri_access));
-  sii->DestroySharedImage(sync_token, std::move(dest_client_si));
-  sii->DestroySharedImage(sync_token, std::move(y_uv_client_si));
+  dest_client_si->UpdateDestructionSyncToken(sync_token);
+  y_uv_client_si->UpdateDestructionSyncToken(sync_token);
 }
 #endif  // !BUILDFLAG(IS_ANDROID_EMULATOR)
 
