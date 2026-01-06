@@ -322,7 +322,7 @@ TEST_F(FillJsTest, GetAriaDescriptionInvalid) {
 
 // Tests that getUniqueID from fill_test_api API returns the ID of an element
 // from all JavaScript content worlds.
-TEST_F(FillJsTest, DISABLED_GetUniqueIDInAllJavaScriptContentWorlds) {
+TEST_F(FillJsTest, GetUniqueIDInAllJavaScriptContentWorlds) {
   LoadHtml(@"<html><body>"
             "<form id='form'>"
             "<input id='input' type='text'></input>"
@@ -340,10 +340,8 @@ TEST_F(FillJsTest, DISABLED_GetUniqueIDInAllJavaScriptContentWorlds) {
   // Verify the ID retrieval in all content worlds.
   for (auto content_world : {web::ContentWorld::kIsolatedWorld,
                              web::ContentWorld::kPageContentWorld}) {
-    bool is_autofill_world =
-        ContentWorldForAutofillJavascriptFeatures() == content_world;
     SCOPED_TRACE(testing::Message()
-                 << "Autofill content world = " << is_autofill_world);
+                 << "content_world = " << static_cast<int>(content_world));
     // Check that the correct ID is returned for the form and input elements.
     // IDs should accessible from both content worlds.
     id form_id = GetUniqueID(@"form", content_world);
@@ -356,7 +354,7 @@ TEST_F(FillJsTest, DISABLED_GetUniqueIDInAllJavaScriptContentWorlds) {
 
 // Tests that getUniqueID from fill_test_api API returns the null ID when an
 // invalid value is stored in the DOM.
-TEST_F(FillJsTest, DISABLED_GetUniqueIDReturnsNotSetWhenInvalidIDInDOM) {
+TEST_F(FillJsTest, GetUniqueIDReturnsNotSetWhenInvalidIDInDOM) {
   LoadHtml(@"<html><body>"
             "<form id='form'/>"
             "</form></body></html>");
@@ -365,7 +363,7 @@ TEST_F(FillJsTest, DISABLED_GetUniqueIDReturnsNotSetWhenInvalidIDInDOM) {
   ExecuteJavaScriptInAutofillContentWorld(
       @"var form = document.getElementById('form');"
        "__gCrWeb.getRegisteredApi('fill_test_api')."
-       "getFunction('setUniqueIDIfNeeded');");
+       "getFunction('setUniqueIDIfNeeded')(form);");
 
   std::vector<NSString*> invalid_ids = {@"''", @"'word'", @"null",
                                         @"undefined"};
@@ -383,19 +381,19 @@ TEST_F(FillJsTest, DISABLED_GetUniqueIDReturnsNotSetWhenInvalidIDInDOM) {
     web::test::ExecuteJavaScriptForFeature(web_state(), set_invalid_id_script,
                                            GetDummyPageContentWorldFeature());
 
-    // Verify the ID retrieval in all content worlds.
-    for (auto content_world : {web::ContentWorld::kIsolatedWorld,
-                               web::ContentWorld::kPageContentWorld}) {
-      bool is_autofill_world =
-          ContentWorldForAutofillJavascriptFeatures() == content_world;
-      SCOPED_TRACE(testing::Message()
-                   << "Autofill content world = " << is_autofill_world);
-      // The ID should be non-zero only in the same content world as the rest of
-      // Autofill scripts. In the other content world, the ID stored in the DOM
-      // is invalid so getUniqueID should return the null/zero ID.
-      id form_id = GetUniqueID(@"form", content_world);
-      EXPECT_NSEQ(form_id, is_autofill_world ? @"1" : @"0");
-    }
+    // Verify the ID retrieval in the isolated content world.
+    // The ID should be non-zero because Autofill scripts run in this world and
+    // will assign a valid ID.
+    id isolated_form_id =
+        GetUniqueID(@"form", web::ContentWorld::kIsolatedWorld);
+    EXPECT_NSEQ(isolated_form_id, @"1");
+
+    // Verify the ID retrieval in the page content world.
+    // The ID should be zero because the DOM attribute is invalid and this is
+    // not the Autofill content world.
+    id page_form_id =
+        GetUniqueID(@"form", web::ContentWorld::kPageContentWorld);
+    EXPECT_NSEQ(page_form_id, @"0");
   }
 }
 
