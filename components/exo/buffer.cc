@@ -502,6 +502,8 @@ std::unique_ptr<Buffer> Buffer::CreateBufferFromGMBHandle(
     bool is_overlay_candidate,
     bool y_invert) {
   CHECK(viz::HasEquivalentBufferFormat(format));
+  UMA_HISTOGRAM_ENUMERATION("Graphics.Exo.Buffer.SharedImageFormat",
+                            viz::GetSharedImageFormatUMA(format));
   // If format is true multiplanar format, we prefer external sampler on
   // ChromeOS.
   if (format.is_multi_plane()) {
