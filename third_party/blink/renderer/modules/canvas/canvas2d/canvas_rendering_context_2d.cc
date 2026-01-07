@@ -244,7 +244,11 @@ bool CanvasRenderingContext2D::IsComposited() const {
     return false;
   }
 
-  return !element->LowLatencyEnabled();
+  if (element->LowLatencyEnabled()) {
+    return false;
+  }
+
+  return true;
 }
 
 void CanvasRenderingContext2D::Stop() {
