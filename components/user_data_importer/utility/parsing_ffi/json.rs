@@ -7,7 +7,6 @@ use crate::models::Metadata;
 use serde::{de, de::Deserializer, de::Error as DeserializerError};
 use std::fmt;
 use std::io::{BufReader, Read};
-use zip;
 
 pub const STREAM_BUFFER_SIZE: usize = 4096;
 
@@ -48,7 +47,7 @@ struct ArrayDeserializerSeed<'de, T>(Box<dyn FnMut(T) + 'de>)
 where
     T: de::DeserializeOwned;
 
-impl<'de, 'a, T> de::DeserializeSeed<'de> for ArrayDeserializerSeed<'de, T>
+impl<'de, T> de::DeserializeSeed<'de> for ArrayDeserializerSeed<'de, T>
 where
     T: de::DeserializeOwned,
 {
@@ -100,7 +99,7 @@ where
     T: de::DeserializeOwned + 'de,
     R: std::io::Read,
 {
-    const VALID_PARTIAL_DESERIALIZATION: &'static str = "Valid partial deserialization";
+    const VALID_PARTIAL_DESERIALIZATION: &str = "Valid partial deserialization";
 
     struct MapVisitor<'de, T>
     where
@@ -125,7 +124,7 @@ where
         where
             M: de::MapAccess<'de>,
         {
-            const METADATA_TOKEN: &'static str = "metadata";
+            const METADATA_TOKEN: &str = "metadata";
             let Ok(data_type) = expected_data_type(self.file_type) else {
                 return Err(DeserializerError::custom("File type has no associated data type"));
             };
@@ -183,7 +182,7 @@ where
             if e.to_string().starts_with(VALID_PARTIAL_DESERIALIZATION) {
                 return Ok(());
             }
-            return Err(e.to_string());
+            Err(e.to_string())
         }
     }
 }
