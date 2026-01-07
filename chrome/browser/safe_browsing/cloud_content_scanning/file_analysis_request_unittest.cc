@@ -103,7 +103,7 @@ class FileAnalysisRequestTest : public testing::Test {
 };
 
 TEST_F(FileAnalysisRequestTest, InvalidFiles) {
-  base::test::TaskEnvironment task_environment;
+  content::BrowserTaskEnvironment task_environment;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
@@ -168,7 +168,7 @@ TEST_F(FileAnalysisRequestTest, InvalidFiles) {
 }
 
 TEST_F(FileAnalysisRequestTest, NormalFiles) {
-  base::test::TaskEnvironment task_environment;
+  content::BrowserTaskEnvironment task_environment;
 
   enterprise_connectors::ScanRequestUploadResult result;
   BinaryUploadRequest::Data data;
@@ -199,7 +199,7 @@ TEST_F(FileAnalysisRequestTest, NormalFiles) {
 }
 
 TEST_F(FileAnalysisRequestTest, NormalFilesDataControls) {
-  base::test::TaskEnvironment task_environment;
+  content::BrowserTaskEnvironment task_environment;
 
   enterprise_connectors::ScanRequestUploadResult result;
   BinaryUploadRequest::Data data;
@@ -238,7 +238,7 @@ TEST_F(FileAnalysisRequestTest, NormalFilesDataControls) {
 }
 
 TEST_F(FileAnalysisRequestTest, LargeFiles) {
-  base::test::TaskEnvironment task_environment;
+  content::BrowserTaskEnvironment task_environment;
 
   enterprise_connectors::ScanRequestUploadResult result;
   BinaryUploadRequest::Data data;
@@ -279,7 +279,7 @@ TEST_F(FileAnalysisRequestTest, NewFileLimitSet) {
       enterprise_connectors::kEnableNewUploadSizeLimit,
       {{"max_file_size_mb", "100"}});
 
-  base::test::TaskEnvironment task_environment;
+  content::BrowserTaskEnvironment task_environment;
 
   enterprise_connectors::ScanRequestUploadResult result;
   BinaryUploadRequest::Data data;
@@ -307,7 +307,7 @@ TEST_F(FileAnalysisRequestTest, NewFileLimitSet) {
 }
 
 TEST_F(FileAnalysisRequestTest, PopulatesDigest) {
-  base::test::TaskEnvironment task_environment;
+  content::BrowserTaskEnvironment task_environment;
   std::string file_contents = "Normal file contents";
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -332,7 +332,7 @@ TEST_F(FileAnalysisRequestTest, PopulatesDigest) {
 }
 
 TEST_F(FileAnalysisRequestTest, PopulatesFilename) {
-  base::test::TaskEnvironment task_environment;
+  content::BrowserTaskEnvironment task_environment;
   std::string file_contents = "contents";
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -355,7 +355,7 @@ TEST_F(FileAnalysisRequestTest, PopulatesFilename) {
 }
 
 TEST_F(FileAnalysisRequestTest, CachesResults) {
-  base::test::TaskEnvironment task_environment;
+  content::BrowserTaskEnvironment task_environment;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
@@ -385,7 +385,7 @@ TEST_F(FileAnalysisRequestTest, CachesResults) {
 }
 
 TEST_F(FileAnalysisRequestTest, CachesResultsWithKnownMimetype) {
-  base::test::TaskEnvironment task_environment;
+  content::BrowserTaskEnvironment task_environment;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
@@ -416,7 +416,6 @@ TEST_F(FileAnalysisRequestTest, CachesResultsWithKnownMimetype) {
 TEST_F(FileAnalysisRequestTest, DelayedFileOpening) {
   content::BrowserTaskEnvironment browser_task_environment;
 
-  // base::test::TaskEnvironment task_environment;
   std::string file_contents = "Normal file contents";
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -562,7 +561,7 @@ TEST_F(FileAnalysisRequestTest, ObfuscatedFile) {
   scoped_feature_list.InitAndEnableFeature(
       enterprise_obfuscation::kEnterpriseFileObfuscation);
 
-  base::test::TaskEnvironment task_environment;
+  content::BrowserTaskEnvironment task_environment;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
