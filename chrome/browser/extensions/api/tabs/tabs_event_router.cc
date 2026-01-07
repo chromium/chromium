@@ -107,21 +107,6 @@ TabsEventRouter::TabEntry::TabEntry(TabsEventRouter& router,
   was_audible_ = audible_helper->WasRecentlyAudible();
 }
 
-std::set<std::string> TabsEventRouter::TabEntry::UpdateLoadState() {
-  // The tab may go in & out of loading (for instance if iframes navigate).
-  // We only want to respond to the first change from loading to !loading after
-  // the NavigationEntryCommitted() was fired.
-  if (!complete_waiting_on_load_ || web_contents()->IsLoading()) {
-    return std::set<std::string>();
-  }
-
-  // Send 'status' of tab change. Expecting 'complete' is fired.
-  complete_waiting_on_load_ = false;
-  std::set<std::string> changed_property_names;
-  changed_property_names.insert(tabs_constants::kStatusKey);
-  return changed_property_names;
-}
-
 bool TabsEventRouter::TabEntry::SetAudible(bool new_val) {
   if (was_audible_ == new_val) {
     return false;
@@ -153,11 +138,18 @@ void TabsEventRouter::TabEntry::NavigationEntryCommitted(
 }
 
 void TabsEventRouter::TabEntry::DidStopLoading() {
-#if BUILDFLAG(IS_ANDROID)
-  // Android platforms use DidStopLoading() for the status reaching "complete",
-  // whereas other platforms rely on updates from the tab strip.
-  // TODO(https://crbug.com/473593117): Could all platforms just use
-  // DidStopLoading()?
+  // The tab may go in & out of loading (for instance if iframes navigate).
+  // We only want to respond to the first change from loading to !loading after
+  // the NavigationEntryCommitted() was fired.
+  if (!complete_waiting_on_load_) {
+    return;
+  }
+
+  // Cache that we're no longer waiting on the load to finish so that we don't
+  // dispatch for any subsequent (same page) loads. This will be reset on the
+  // next navigation.
+  complete_waiting_on_load_ = false;
+
   std::set<std::string> changed_property_names;
   changed_property_names.insert(tabs_constants::kStatusKey);
 
@@ -167,7 +159,6 @@ void TabsEventRouter::TabEntry::DidStopLoading() {
   }
 
   router_->TabUpdated(this, std::move(changed_property_names));
-#endif
 }
 
 void TabsEventRouter::TabEntry::TitleWasSet(content::NavigationEntry* entry) {

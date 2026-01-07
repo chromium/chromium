@@ -76,14 +76,6 @@ class TabsEventRouter : public favicon::FaviconDriverObserver,
     TabEntry(const TabEntry&) = delete;
     TabEntry& operator=(const TabEntry&) = delete;
 
-    // Indicate via a list of property names if a tab is loading based on its
-    // WebContents. Whether the state has changed or not is used to determine if
-    // events need to be sent to extensions during processing of TabChangedAt()
-    // If this method indicates that a tab should "hold" a state-change to
-    // "loading", the NavigationEntryCommitted() method should eventually send a
-    // similar message to undo it.
-    std::set<std::string> UpdateLoadState();
-
     // Update the audible and muted states and return whether they were changed
     bool SetAudible(bool new_val);
     bool SetMuted(bool new_val);

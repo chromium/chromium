@@ -165,7 +165,9 @@ void TabsEventRouterPlatformDelegate::OnTabChangedAt(
   // TabClosingAt() may have already removed the entry for |contents| even
   // though the tab has not yet been detached.
   if (entry) {
-    router_->TabUpdated(entry, entry->UpdateLoadState());
+    // Pass an empty set of changed properties. TabUpdated() will still check
+    // other states that might have updated as a part of OnTabChangedAt().
+    router_->TabUpdated(entry, /*changed_property_names=*/{});
   }
 }
 
