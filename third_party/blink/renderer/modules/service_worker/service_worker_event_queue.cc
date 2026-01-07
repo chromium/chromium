@@ -160,7 +160,7 @@ bool ServiceWorkerEventQueue::HasEvent(int event_id) const {
 }
 
 bool ServiceWorkerEventQueue::HasEventInQueue(int event_id) const {
-  return base::Contains(queued_online_events_, event_id);
+  return queued_online_events_.contains(event_id);
 }
 
 std::unique_ptr<ServiceWorkerEventQueue::StayAwakeToken>

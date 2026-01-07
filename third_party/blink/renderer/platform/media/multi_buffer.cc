@@ -226,7 +226,7 @@ void MultiBuffer::AddReader(const BlockId& pos, Reader* reader) {
     }
   }
   if (!provider) {
-    DCHECK(!base::Contains(writer_index_, pos));
+    DCHECK(!writer_index_.contains(pos));
     writer_index_[pos] = CreateWriter(pos, is_client_audio_element_);
     provider = writer_index_[pos].get();
   }
@@ -380,7 +380,7 @@ MultiBuffer::ProviderState MultiBuffer::SuggestProviderState(
 
 bool MultiBuffer::ProviderCollision(const BlockId& id) const {
   // If there is a writer at the same location, it is always a collision.
-  if (base::Contains(writer_index_, id)) {
+  if (writer_index_.contains(id)) {
     return true;
   }
 
