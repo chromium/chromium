@@ -113,7 +113,7 @@ std::unordered_set<device::mojom::XRSessionFeature> GetMissingRequiredFeatures(
   std::unordered_set<device::mojom::XRSessionFeature> missing_required_features;
 
   for (const auto& required_feature : required_features) {
-    if (!base::Contains(enabled_features, required_feature)) {
+    if (!enabled_features.contains(required_feature)) {
       DVLOG(2) << __func__
                << ": one of the required features was not enabled on the "
                   "created session, feature: "

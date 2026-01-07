@@ -811,7 +811,7 @@ PrerenderHostId PrerenderHostRegistry::CreateAndStartHost(
         std::move(reuse_host), attributes, prerender_web_contents);
     prerender_host_id = prerender_host->prerender_host_id();
 
-    CHECK(!base::Contains(prerender_host_by_id_, prerender_host_id));
+    CHECK(!prerender_host_by_id_.contains(prerender_host_id));
     prerender_host_by_id_[prerender_host_id] = std::move(prerender_host);
 
     if (GetPrerenderLimitGroup(attributes.trigger_type, eagerness) ==

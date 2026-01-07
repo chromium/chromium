@@ -3342,7 +3342,7 @@ void RenderWidgetHostImpl::RequestKeyboardLock(
 
   const bool esc_requested =
       !keyboard_keys_to_lock_.has_value() ||
-      base::Contains(keyboard_keys_to_lock_.value(), ui::DomCode::ESCAPE);
+      keyboard_keys_to_lock_.value().contains(ui::DomCode::ESCAPE);
   delegate_->RequestKeyboardLock(this, esc_requested);
 }
 

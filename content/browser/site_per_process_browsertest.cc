@@ -6402,11 +6402,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   run_loop2.Run();
 
   // At this point, we should have two pending WebContents.
-  EXPECT_TRUE(base::Contains(
-      web_contents()->pending_contents_,
+  EXPECT_TRUE(web_contents()->pending_contents_.contains(
       GlobalRoutingID(process1->GetDeprecatedID(), routing_id1)));
-  EXPECT_TRUE(base::Contains(
-      web_contents()->pending_contents_,
+  EXPECT_TRUE(web_contents()->pending_contents_.contains(
       GlobalRoutingID(process2->GetDeprecatedID(), routing_id2)));
 
   // Both subframes were set up in the same way, so the next routing ID for the
@@ -6561,8 +6559,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       GlobalRoutingID(process1->GetDeprecatedID(), routing_id1);
   // Add an interceptor for first popup widget so it doesn't get closed
   // immediately while the other one is being opened.
-  EXPECT_TRUE(
-      base::Contains(web_contents()->pending_widgets_, first_popup_global_id));
+  EXPECT_TRUE(web_contents()->pending_widgets_.contains(first_popup_global_id));
 
   RequestCloseWidgetInterceptor child1_popup_widget_interceptor(
       static_cast<RenderWidgetHostImpl*>(
@@ -6582,10 +6579,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   run_loop2.Run();
 
   // At this point, we should have two pending widgets.
-  EXPECT_TRUE(
-      base::Contains(web_contents()->pending_widgets_, first_popup_global_id));
-  EXPECT_TRUE(base::Contains(
-      web_contents()->pending_widgets_,
+  EXPECT_TRUE(web_contents()->pending_widgets_.contains(first_popup_global_id));
+  EXPECT_TRUE(web_contents()->pending_widgets_.contains(
       GlobalRoutingID(process2->GetDeprecatedID(), routing_id2)));
 
   // Both subframes were set up in the same way, so the next routing ID for the
@@ -6596,11 +6591,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Now simulate both widgets being shown.
   interceptor1.ResumeShowPopupWidget();
   interceptor2.ResumeShowPopupWidget();
-  EXPECT_FALSE(base::Contains(
-      web_contents()->pending_widgets_,
+  EXPECT_FALSE(web_contents()->pending_widgets_.contains(
       GlobalRoutingID(process1->GetDeprecatedID(), routing_id1)));
-  EXPECT_FALSE(base::Contains(
-      web_contents()->pending_widgets_,
+  EXPECT_FALSE(web_contents()->pending_widgets_.contains(
       GlobalRoutingID(process2->GetDeprecatedID(), routing_id2)));
 
   // There are posted tasks that must be run before the test shuts down, lest

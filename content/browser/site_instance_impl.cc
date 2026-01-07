@@ -95,7 +95,7 @@ class SiteInstanceImpl::DefaultSiteInstanceState {
   }
 
   bool ContainsSite(const GURL& site_url) {
-    return base::Contains(default_site_url_set_, site_url);
+    return default_site_url_set_.contains(site_url);
   }
 
  private:

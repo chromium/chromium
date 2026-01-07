@@ -2215,7 +2215,7 @@ bool SetCookie(
     net::CookieOptions::SameSiteCookieContext context,
     base::optional_ref<const net::CookiePartitionKey> cookie_partition_key) {
   if (cookie_partition_key) {
-    DCHECK(base::Contains(base::ToLowerASCII(value), ";partitioned"));
+    DCHECK(base::ToLowerASCII(value).contains(";partitioned"));
   }
   mojo::Remote<network::mojom::CookieManager> cookie_manager;
   browser_context->GetDefaultStoragePartition()

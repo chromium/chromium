@@ -821,7 +821,7 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
       // "about:" in that case.  This looks like a bug that needs to be fixed!
       if (!SiteInstance::ShouldAssignSiteForURL(iter.first.site_url()) &&
           !iter.first.site_url().IsAboutBlank() &&
-          base::Contains(iter.second, host->GetID())) {
+          iter.second.contains(host->GetID())) {
         return true;
       }
     }
@@ -2913,7 +2913,7 @@ void RenderProcessHostImpl::ForEachRenderFrameHost(
 void RenderProcessHostImpl::RegisterRenderFrameHost(
     const GlobalRenderFrameHostId& render_frame_host_id,
     bool is_outermost_main_frame) {
-  DCHECK(!base::Contains(render_frame_host_id_set_, render_frame_host_id));
+  DCHECK(!render_frame_host_id_set_.contains(render_frame_host_id));
 
   if (is_outermost_main_frame) {
     ++outermost_main_frame_count_;
@@ -2931,7 +2931,7 @@ void RenderProcessHostImpl::RegisterRenderFrameHost(
 void RenderProcessHostImpl::UnregisterRenderFrameHost(
     const GlobalRenderFrameHostId& render_frame_host_id,
     bool is_outermost_main_frame) {
-  DCHECK(base::Contains(render_frame_host_id_set_, render_frame_host_id));
+  DCHECK(render_frame_host_id_set_.contains(render_frame_host_id));
   render_frame_host_id_set_.erase(render_frame_host_id);
   prerendering_frame_host_id_set_.erase(render_frame_host_id);
   if (is_outermost_main_frame) {
@@ -2943,7 +2943,7 @@ void RenderProcessHostImpl::UnregisterRenderFrameHost(
 void RenderProcessHostImpl::OnRenderFrameHostPrerenderStateChanged(
     const GlobalRenderFrameHostId& render_frame_host_id,
     bool is_prerendering) {
-  CHECK(base::Contains(render_frame_host_id_set_, render_frame_host_id));
+  CHECK(render_frame_host_id_set_.contains(render_frame_host_id));
   if (is_prerendering) {
     prerendering_frame_host_id_set_.insert(render_frame_host_id);
   } else {
@@ -4486,14 +4486,14 @@ void RenderProcessHostImpl::RemovePendingView() {
 
 void RenderProcessHostImpl::AddPriorityClient(
     RenderProcessHostPriorityClient* priority_client) {
-  DCHECK(!base::Contains(priority_clients_, priority_client));
+  DCHECK(!priority_clients_.contains(priority_client));
   priority_clients_.insert(priority_client);
   UpdateProcessPriorityInputs();
 }
 
 void RenderProcessHostImpl::RemovePriorityClient(
     RenderProcessHostPriorityClient* priority_client) {
-  DCHECK(base::Contains(priority_clients_, priority_client));
+  DCHECK(priority_clients_.contains(priority_client));
   priority_clients_.erase(priority_client);
   UpdateProcessPriorityInputs();
 }

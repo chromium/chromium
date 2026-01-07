@@ -17024,8 +17024,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationReservedOnceRandomlyChosen) {
     auto pa_requests_map =
         private_aggregation_manager_.TakePrivateAggregationRequests();
     ASSERT_EQ(pa_requests_map.size(), 2u);
-    ASSERT_TRUE(base::Contains(pa_requests_map, kBidder1));
-    ASSERT_TRUE(base::Contains(pa_requests_map, kSeller));
+    ASSERT_TRUE(pa_requests_map.contains(kBidder1));
+    ASSERT_TRUE(pa_requests_map.contains(kSeller));
 
     const auto& bidder_requests = pa_requests_map[kBidder1];
     const auto& seller_requests = pa_requests_map[kSeller];
@@ -17164,7 +17164,7 @@ TEST_F(AuctionRunnerTest, PrivateAggregationReservedOnceAdditionalBid) {
     auto pa_requests_map =
         private_aggregation_manager_.TakePrivateAggregationRequests();
     ASSERT_EQ(pa_requests_map.size(), 1u);
-    ASSERT_TRUE(base::Contains(pa_requests_map, kSeller));
+    ASSERT_TRUE(pa_requests_map.contains(kSeller));
 
     const auto& seller_requests = pa_requests_map[kSeller];
 

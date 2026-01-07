@@ -127,7 +127,7 @@ void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
   CHECK(GetRoutingPair(old_host) != GetRoutingPair(new_host));
 
   if (old_host) {
-    CHECK(base::Contains(frame_tree_node_ids_, new_host->GetFrameTreeNodeId()));
+    CHECK(frame_tree_node_ids_.contains(new_host->GetFrameTreeNodeId()));
     EnsureStableParentValue(old_host);
     CHECK_EQ(old_host->GetParent(), new_host->GetParent());
     GlobalRoutingID routing_pair = GetRoutingPair(old_host);
@@ -284,8 +284,7 @@ void WebContentsObserverConsistencyChecker::DidFinishNavigation(
   // If ReadyToCommitNavigation was dispatched, verify that the
   // |navigation_handle| has the same RenderFrameHost at this time as the one
   // returned at ReadyToCommitNavigation.
-  if (base::Contains(ready_to_commit_hosts_,
-                     navigation_handle->GetNavigationId())) {
+  if (ready_to_commit_hosts_.contains(navigation_handle->GetNavigationId())) {
     CHECK_EQ(ready_to_commit_hosts_[navigation_handle->GetNavigationId()],
              navigation_handle->GetRenderFrameHost());
     ready_to_commit_hosts_.erase(navigation_handle->GetNavigationId());
@@ -422,7 +421,7 @@ std::string WebContentsObserverConsistencyChecker::Format(
 
 bool WebContentsObserverConsistencyChecker::NavigationIsOngoing(
     NavigationHandle* navigation_handle) {
-  return base::Contains(ongoing_navigations_, navigation_handle);
+  return ongoing_navigations_.contains(navigation_handle);
 }
 
 void WebContentsObserverConsistencyChecker::EnsureStableParentValue(
@@ -506,7 +505,7 @@ void WebContentsObserverConsistencyChecker::AddInputEventObserver(
 
 void WebContentsObserverConsistencyChecker::RemoveInputEventObserver(
     RenderFrameHost* render_frame_host) {
-  DCHECK(base::Contains(input_observer_map_, render_frame_host));
+  DCHECK(input_observer_map_.contains(render_frame_host));
   input_observer_map_.erase(render_frame_host);
 }
 

@@ -2551,7 +2551,7 @@ TYPED_TEST(TrustedSignalsCacheTest, WrongCompressionGroup) {
                       partition_id);
 
   // Modify index of the only compression group when generating a response.
-  CHECK(base::Contains(fetch.compression_groups, 0));
+  CHECK(fetch.compression_groups.contains(0));
   auto compression_group_node = fetch.compression_groups.extract(0);
   compression_group_node.key() = 1;
   fetch.compression_groups.insert(std::move(compression_group_node));

@@ -5601,9 +5601,8 @@ bool InterestGroupAuction::IsBuyerOptedInToRealTimeReporting(
     const url::Origin& owner) {
   return config_->non_shared_params.per_buyer_real_time_reporting_types
              .has_value() &&
-         base::Contains(
-             *config_->non_shared_params.per_buyer_real_time_reporting_types,
-             owner);
+         config_->non_shared_params.per_buyer_real_time_reporting_types
+             ->contains(owner);
 }
 
 void InterestGroupAuction::MaybeAddScriptFailureRealTimeContribution(

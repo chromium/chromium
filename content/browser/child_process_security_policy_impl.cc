@@ -492,7 +492,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   // Grant certain permissions to a file.
   void GrantPermissionsForFileSystem(const std::string& filesystem_id,
                                      int permissions) {
-    if (!base::Contains(filesystem_permissions_, filesystem_id)) {
+    if (!filesystem_permissions_.contains(filesystem_id)) {
       storage::IsolatedContext::GetInstance()->AddReference(filesystem_id);
     }
     filesystem_permissions_[filesystem_id] |= permissions;
@@ -541,7 +541,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
     // This should only be allowed for opaque origins with LoadDataWithBaseURL
     // and file origins with allow_universal_access_from_file_urls.
     CHECK(origin.opaque() || origin.scheme() == url::kFileScheme);
-    return base::Contains(webview_origin_exemption_set_, origin);
+    return webview_origin_exemption_set_.contains(origin);
   }
 
   void GrantPermissionForMidi() { can_send_midi_ = true; }
@@ -590,13 +590,13 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
     if (url.SchemeIs(url::kFileScheme)) {
       base::FilePath path;
       if (net::FileURLToFilePath(url, &path)) {
-        return base::Contains(request_file_set_, path);
+        return request_file_set_.contains(path);
       }
     }
 
 #if BUILDFLAG(IS_ANDROID)
     if (url.SchemeIs(url::kContentScheme)) {
-      return base::Contains(request_file_set_, base::FilePath(url.spec()));
+      return request_file_set_.contains(base::FilePath(url.spec()));
     }
 #endif
 
@@ -758,7 +758,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   bool CanRequestOrigin(const url::Origin& origin) const {
     // Anything already in |origin_map_| must have at least request permissions
     // already.
-    return base::Contains(origin_map_, origin);
+    return origin_map_.contains(origin);
   }
 
   typedef std::map<std::string, CommitRequestPolicy> SchemeMap;
@@ -973,7 +973,7 @@ void ChildProcessSecurityPolicyImpl::Add(ChildProcessId child_id,
 void ChildProcessSecurityPolicyImpl::SecurityStateMaps::CreateStateForProcess(
     ChildProcessId child_id,
     BrowserContext* browser_context) {
-  if (base::Contains(security_state_, child_id)) {
+  if (security_state_.contains(child_id)) {
     NOTREACHED() << "Add child process at most once.";
   }
 
@@ -1049,7 +1049,7 @@ bool ChildProcessSecurityPolicyImpl::IsWebSafeScheme(
     const std::string& scheme) {
   base::AutoLock lock(schemes_lock_);
 
-  return base::Contains(schemes_okay_to_request_in_any_process_, scheme);
+  return schemes_okay_to_request_in_any_process_.contains(scheme);
 }
 
 void ChildProcessSecurityPolicyImpl::RegisterPseudoScheme(
@@ -1067,7 +1067,7 @@ void ChildProcessSecurityPolicyImpl::RegisterPseudoScheme(
 bool ChildProcessSecurityPolicyImpl::IsPseudoScheme(const std::string& scheme) {
   base::AutoLock lock(schemes_lock_);
 
-  return base::Contains(pseudo_schemes_, scheme);
+  return pseudo_schemes_.contains(scheme);
 }
 
 void ChildProcessSecurityPolicyImpl::ClearRegisteredSchemeForTesting(
@@ -1544,7 +1544,7 @@ bool ChildProcessSecurityPolicyImpl::CanCommitURL(int child_id,
     // enforce that http pages cannot commit in an extension process.
     {
       base::AutoLock schemes_lock(schemes_lock_);
-      if (base::Contains(schemes_okay_to_commit_in_any_process_, scheme)) {
+      if (schemes_okay_to_commit_in_any_process_.contains(scheme)) {
         return true;
       }
     }
@@ -3010,9 +3010,8 @@ bool ChildProcessSecurityPolicyImpl::
         BrowserContext* browser_context,
         const url::Origin& origin) {
   base::AutoLock origins_isolation_opt_in_lock(origins_isolation_opt_in_lock_);
-  return base::Contains(origin_isolation_opt_ins_and_outs_, browser_context) &&
-         base::Contains(origin_isolation_opt_ins_and_outs_[browser_context],
-                        origin);
+  return origin_isolation_opt_ins_and_outs_.contains(browser_context) &&
+         origin_isolation_opt_ins_and_outs_[browser_context].contains(origin);
 }
 
 OriginAgentClusterIsolationState*
@@ -3069,9 +3068,8 @@ void ChildProcessSecurityPolicyImpl::AddDefaultIsolatedOriginIfNeeded(
   // during global walks and frame removals, since we do want to track the
   // origin's non-isolated status in those cases.
   if (!is_global_walk_or_frame_removal &&
-      !(base::Contains(origin_isolation_opt_ins_and_outs_, browser_context) &&
-        base::Contains(origin_isolation_opt_ins_and_outs_[browser_context],
-                       origin))) {
+      !(origin_isolation_opt_ins_and_outs_.contains(browser_context) &&
+        origin_isolation_opt_ins_and_outs_[browser_context].contains(origin))) {
     return;
   }
 
@@ -3269,9 +3267,8 @@ bool ChildProcessSecurityPolicyImpl::UpdateOriginIsolationOptInListIfNecessary(
 
   base::AutoLock origins_isolation_opt_in_lock(origins_isolation_opt_in_lock_);
 
-  if (base::Contains(origin_isolation_opt_ins_and_outs_, browser_context) &&
-      base::Contains(origin_isolation_opt_ins_and_outs_[browser_context],
-                     origin)) {
+  if (origin_isolation_opt_ins_and_outs_.contains(browser_context) &&
+      origin_isolation_opt_ins_and_outs_[browser_context].contains(origin)) {
     return false;
   }
 
@@ -3450,7 +3447,7 @@ bool ChildProcessSecurityPolicyImpl::SecurityStateMaps::AddProcessReference(
 
   // Check to see if the SecurityState has been removed from |security_state_|
   // via a Remove() call. This corresponds to the process being destroyed.
-  if (!base::Contains(security_state_, child_id)) {
+  if (!security_state_.contains(child_id)) {
     if (!duplicating_handle) {
       // Do not allow Handles to be created after the process has been
       // destroyed, unless they are being duplicated.

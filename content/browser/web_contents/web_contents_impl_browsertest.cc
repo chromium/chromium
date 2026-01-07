@@ -2747,7 +2747,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestClientHintsEnabled,
   const std::string mobile_id = network::GetClientHintToNameMap().at(
       network::mojom::WebClientHintsType::kUAMobile);
   const net::test_server::HttpRequest& request = request_future.Get();
-  ASSERT_TRUE(base::Contains(request.headers, mobile_id));
+  ASSERT_TRUE(request.headers.contains(mobile_id));
   // "?!" corresponds to "mobile=true".
   EXPECT_EQ("?1", request.headers.at(mobile_id));
   ShellContentBrowserClient::Get()

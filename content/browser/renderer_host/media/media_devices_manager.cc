@@ -696,7 +696,7 @@ bool MediaDevicesManager::IsAudioOutputDeviceExplicitlyAuthorized(
   }
   blink::WebMediaDeviceInfo device_info;
   device_info.device_id = raw_device_id;
-  return base::Contains(authorized_devices->second, device_info);
+  return authorized_devices->second.contains(device_info);
 }
 
 void MediaDevicesManager::GetSpeakerSelectionAndMicrophonePermissionState(
@@ -1105,7 +1105,7 @@ void MediaDevicesManager::OnDevicesEnumerated(
     if (authorized_devices != audio_device_origin_map_.end()) {
       for (const auto& enum_device : enumeration[static_cast<size_t>(
                MediaDeviceType::kMediaAudioOutput)]) {
-        if (base::Contains(authorized_devices->second, enum_device)) {
+        if (authorized_devices->second.contains(enum_device)) {
           translation[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]
               .push_back(TranslateMediaDeviceInfo(
                   /*has_permission=*/true, salt_and_origin, enum_device));
@@ -1194,7 +1194,7 @@ void MediaDevicesManager::GotAudioInputCapabilities(
     size_t capabilities_index,
     const std::optional<media::AudioParameters>& parameters) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(base::Contains(enumeration_states_, state_id));
+  DCHECK(enumeration_states_.contains(state_id));
 
   auto& enumeration_state = enumeration_states_[state_id];
   DCHECK_GT(enumeration_state.num_pending_audio_input_capabilities, 0);

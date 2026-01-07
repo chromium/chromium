@@ -155,8 +155,7 @@ void ActiveMediaSessionController::OnSeek(const base::TimeDelta& time) {
 }
 
 void ActiveMediaSessionController::OnSeekTo(const base::TimeDelta& time) {
-  if (base::Contains(actions_,
-                     media_session::mojom::MediaSessionAction::kSeekTo)) {
+  if (actions_.contains(media_session::mojom::MediaSessionAction::kSeekTo)) {
     media_controller_remote_->SeekTo(time);
   } else if (position_) {
     auto time_diff =

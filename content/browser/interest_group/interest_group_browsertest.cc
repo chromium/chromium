@@ -10271,16 +10271,14 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   // No requests should have been made for the interest group or auction URLs.
   base::AutoLock auto_lock(requests_lock_);
-  EXPECT_FALSE(base::Contains(
-      received_https_test_server_requests_,
+  EXPECT_FALSE(received_https_test_server_requests_.contains(
       embedded_https_test_server().GetURL("/interest_group/bidding_logic.js")));
-  EXPECT_FALSE(
-      base::Contains(received_https_test_server_requests_,
-                     embedded_https_test_server().GetURL(
-                         "/interest_group/trusted_bidding_signals.json")));
-  EXPECT_FALSE(base::Contains(received_https_test_server_requests_,
-                              embedded_https_test_server().GetURL(
-                                  "/interest_group/decision_logic.js")));
+  EXPECT_FALSE(received_https_test_server_requests_.contains(
+      embedded_https_test_server().GetURL(
+          "/interest_group/trusted_bidding_signals.json")));
+  EXPECT_FALSE(received_https_test_server_requests_.contains(
+      embedded_https_test_server().GetURL(
+          "/interest_group/decision_logic.js")));
   WaitForAccessObserved({
       {"global", TestInterestGroupObserver::kJoin, test_origin_a, "cars"},
   });
@@ -10346,8 +10344,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
   // No requests should have been made for the disabled interest group's URLs.
   base::AutoLock auto_lock(requests_lock_);
-  EXPECT_FALSE(base::Contains(
-      received_https_test_server_requests_,
+  EXPECT_FALSE(received_https_test_server_requests_.contains(
       embedded_https_test_server().GetURL(
           "/interest_group/bidding_logic_stop_bidding_after_win.js")));
   WaitForAccessObserved({
@@ -14066,8 +14063,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForUrl(embedded_https_test_server().GetURL(
       "/echoall?report_bidder_stop_bidding_after_win&cars"));
   base::AutoLock auto_lock(requests_lock_);
-  EXPECT_FALSE(base::Contains(
-      received_https_test_server_requests_,
+  EXPECT_FALSE(received_https_test_server_requests_.contains(
       embedded_https_test_server().GetURL("/echoall?report_bidder")));
 }
 

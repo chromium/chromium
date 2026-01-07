@@ -2506,9 +2506,9 @@ void AuthenticatorCommonImpl::OnRegisterResponse(
     transports = *response_data->transports;
   }
   bool is_transport_used_internal =
-      base::Contains(transports, device::FidoTransportProtocol::kInternal);
+      transports.contains(device::FidoTransportProtocol::kInternal);
   bool is_transport_used_cable =
-      base::Contains(transports, device::FidoTransportProtocol::kHybrid);
+      transports.contains(device::FidoTransportProtocol::kHybrid);
 
   const auto attestation =
       std::get<device::CtapMakeCredentialRequest>(req_state_->ctap_request)
