@@ -1268,6 +1268,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void CaptureRegion(
       mojo::PendingRemote<mojom::CaptureRegionObserver> observer) override {
+#if !BUILDFLAG(IS_ANDROID)
     content::WebContents* web_contents = nullptr;
     const FocusedTabData& focus = sharing_manager().GetFocusedTabData();
     // Prioritize the focused tab, but fall back to the unfocused tab if one is
@@ -1280,6 +1281,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       web_contents = active_tab->GetContents();
     }
     glic_service_->CaptureRegion(web_contents, std::move(observer));
+#else
+    NOTIMPLEMENTED();
+#endif
   }
 
   void SetAudioDucking(bool enabled,

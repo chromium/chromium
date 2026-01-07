@@ -38,7 +38,6 @@
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/context/glic_tab_data_observer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/host/glic_region_capture_controller.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/host.h"
@@ -77,6 +76,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_occlusion_notifier.h"
+#include "chrome/browser/glic/host/glic_region_capture_controller.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_controller_impl.h"
 #endif
@@ -171,8 +171,10 @@ GlicKeyedService::GlicKeyedService(
                                             &window_controller(),
                                             metrics_.get(),
                                             enabling_.get())),
+#if !BUILDFLAG(IS_ANDROID)
       region_capture_controller_(
           std::make_unique<GlicRegionCaptureController>()),
+#endif
       auth_controller_(std::make_unique<AuthController>(profile,
                                                         identity_manager,
                                                         /*use_for_fre=*/false)),
@@ -237,9 +239,11 @@ GlicKeyedService::~GlicKeyedService() {
   metrics_->SetControllers(nullptr, nullptr);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 GlicRegionCaptureController& GlicKeyedService::region_capture_controller() {
   return *region_capture_controller_;
 }
+#endif
 
 // static
 GlicKeyedService* GlicKeyedService::Get(content::BrowserContext* context) {
@@ -585,11 +589,13 @@ base::CallbackListSubscription GlicKeyedService::AddUserInputSubmittedCallback(
   return user_input_submitted_callback_list_.Add(std::move(callback));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void GlicKeyedService::CaptureRegion(
     content::WebContents* web_contents,
     mojo::PendingRemote<mojom::CaptureRegionObserver> observer) {
   region_capture_controller_->CaptureRegion(web_contents, std::move(observer));
 }
+#endif
 
 void GlicKeyedService::ShareContextImage(tabs::TabInterface* tab,
                                          content::RenderFrameHost* frame,

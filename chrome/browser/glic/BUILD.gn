@@ -217,8 +217,6 @@ source_set("impl") {
       "host/context/glic_tab_data_observer.cc",
       "host/context/glic_tab_data_observer.h",
       "host/glic_annotation_manager.cc",
-      "host/glic_region_capture_controller.cc",
-      "host/glic_region_capture_controller.h",
       "host/glic_ui.cc",
       "host/glic_web_contents_warming_pool.cc",
       "host/glic_web_contents_warming_pool.h",
@@ -256,6 +254,8 @@ source_set("impl") {
     # Desktop only
     sources += [
       "glic_hotkey.cc",
+      "host/glic_region_capture_controller.cc",
+      "host/glic_region_capture_controller.h",
       "widget/application_hotkey_delegate.cc",
       "widget/application_hotkey_delegate.h",
       "widget/glic_floating_ui.cc",

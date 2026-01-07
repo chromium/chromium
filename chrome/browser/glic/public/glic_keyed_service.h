@@ -255,9 +255,11 @@ class GlicKeyedService : public KeyedService,
   base::CallbackListSubscription AddUserInputSubmittedCallback(
       base::RepeatingClosure callback);
 
+#if !BUILDFLAG(IS_ANDROID)
   void CaptureRegion(
       content::WebContents* web_contents,
       mojo::PendingRemote<mojom::CaptureRegionObserver> observer);
+#endif
 
   // Fetches the image for the context menu item (if possible, and potentially
   // scaling and reencoding) and sends the result to the web client as
@@ -268,7 +270,9 @@ class GlicKeyedService : public KeyedService,
 
   AuthController& GetAuthController() { return *auth_controller_; }
 
+#if !BUILDFLAG(IS_ANDROID)
   GlicRegionCaptureController& region_capture_controller();
+#endif
 
   bool IsActiveWebContents(content::WebContents* contents);
 
@@ -389,7 +393,9 @@ class GlicKeyedService : public KeyedService,
   std::unique_ptr<GlicWindowController> window_controller_;
   std::unique_ptr<GlicSharingManager> sharing_manager_;
   std::unique_ptr<GlicShareImageHandler> share_image_handler_;
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<GlicRegionCaptureController> region_capture_controller_;
+#endif
   std::unique_ptr<AuthController> auth_controller_;
   std::unique_ptr<base::MemoryPressureListenerRegistration>
       memory_pressure_listener_registration_;
