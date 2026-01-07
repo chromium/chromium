@@ -83,7 +83,8 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
   views::ProposedLayout layouts;
   int width = 0;
   int height = kGroupHeaderVerticalMargin;
-  auto* controller = collection_node_->GetController();
+  auto* controller =
+      collection_node_ ? collection_node_->GetController() : nullptr;
   bool is_tab_strip_collapsed = controller && controller->IsCollapsed();
 
   gfx::Rect header_bounds;
