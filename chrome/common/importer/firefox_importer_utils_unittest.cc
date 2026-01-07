@@ -10,9 +10,11 @@
 
 #include <array>
 
+#include "base/base_paths.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_path_override.h"
 #include "base/values.h"
 #include "chrome/grit/generated_resources.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -132,6 +134,50 @@ TEST(FirefoxImporterUtilsTest, GetFirefoxImporterName) {
       GetFirefoxImporterName(base::FilePath(
                                         FILE_PATH_LITERAL("/invalid/path"))));
 }
+
+#if BUILDFLAG(IS_LINUX)
+
+TEST(FirefoxImporterUtilsTest, GetProfilesINI) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const base::ScopedPathOverride home(base::DIR_HOME, temp_dir.GetPath());
+  const base::FilePath profiles_ini_subpath =
+      base::FilePath::FromASCII(".mozilla/firefox/profiles.ini");
+
+  const base::FilePath standard_path =
+      temp_dir.GetPath().Append(profiles_ini_subpath);
+  const base::FilePath snap_path = temp_dir.GetPath()
+                                       .AppendASCII("snap/firefox/common")
+                                       .Append(profiles_ini_subpath);
+  const base::FilePath flatpak_path =
+      temp_dir.GetPath()
+          .AppendASCII(".var/app/org.mozilla.firefox")
+          .Append(profiles_ini_subpath);
+
+  const std::array<base::FilePath, 3> paths = {standard_path, snap_path,
+                                               flatpak_path};
+  for (const auto& path : paths) {
+    ASSERT_TRUE(base::CreateDirectory(path.DirName()));
+    ASSERT_TRUE(base::WriteFile(path, "[General]\nStartWithLastProfile=1"));
+  }
+
+  // Ensure that search order is respected:
+  //  1. standard path
+  //  2. snap path
+  //  3. flatpak path
+  EXPECT_EQ(GetProfilesINI(), standard_path);
+  ASSERT_TRUE(base::DeleteFile(standard_path));
+  EXPECT_EQ(GetProfilesINI(), snap_path);
+  ASSERT_TRUE(base::DeleteFile(snap_path));
+  EXPECT_EQ(GetProfilesINI(), flatpak_path);
+
+  // Ensure that an empty path is returned when no profiles.ini file is found
+  ASSERT_TRUE(base::DeleteFile(flatpak_path));
+  EXPECT_EQ(GetProfilesINI(), base::FilePath());
+}
+
+#endif
 
 TEST(FirefoxImporterUtilsTest, GetFirefoxProfilePath) {
   base::Value::Dict no_profiles;
