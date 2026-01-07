@@ -242,7 +242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Recovery.Result" enum="SqlRecoveryResult"
-    expires_after="2026-06-07">
+    expires_after="2027-02-01">
   <owner>etienneb@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -251,7 +251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Recovery.Result.{DatabaseTag}" enum="SqlRecoveryResult"
-    expires_after="2026-04-05">
+    expires_after="2027-02-01">
   <owner>etienneb@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -262,7 +262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Recovery.ResultCode" enum="SqliteLoggedResultCode"
-    expires_after="2026-06-07">
+    expires_after="2027-02-01">
   <owner>etienneb@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -275,7 +275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Recovery.ResultCode.{DatabaseTag}"
-    enum="SqliteLoggedResultCode" expires_after="2026-02-01">
+    enum="SqliteLoggedResultCode" expires_after="2027-02-01">
   <owner>etienneb@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
