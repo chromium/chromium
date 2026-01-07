@@ -11,6 +11,7 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace cc::slim {
 
@@ -106,10 +107,18 @@ void UIResourceLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
   constexpr auto kVideoType = gfx::ProtectedVideoType::kClear;
   const bool needs_blending = !static_cast<LayerTreeImpl*>(layer_tree())
                                    ->IsUIResourceOpaque(resource_id_);
+  const gfx::Size resource_size = static_cast<LayerTreeImpl*>(layer_tree())
+                                      ->GetUIResourceSize(resource_id_);
+  const gfx::PointF tex_coord_top_left = gfx::ScalePoint(
+      uv_top_left(), resource_size.width(), resource_size.height());
+  const gfx::PointF tex_coord_bottom_right = gfx::ScalePoint(
+      uv_bottom_right(), resource_size.width(), resource_size.height());
+
   quad->SetNew(quad_state, quad_state->quad_layer_rect,
                quad_state->visible_quad_layer_rect, needs_blending,
-               viz_resource_id, uv_top_left(), uv_bottom_right(),
-               SkColors::kTransparent, kNearest, kSecureOutputOnly, kVideoType);
+               viz_resource_id, tex_coord_top_left, tex_coord_bottom_right,
+               SkColors::kTransparent, kNearest, kSecureOutputOnly, kVideoType,
+               /*is_tex_coords_normalized=*/false);
 }
 
 }  // namespace cc::slim
