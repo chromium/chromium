@@ -36,7 +36,8 @@ DataSharingUIConfig::~DataSharingUIConfig() = default;
 
 bool DataSharingUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return data_sharing::features::IsDataSharingFunctionalityEnabled();
+  return data_sharing::features::IsDataSharingFunctionalityEnabled() &&
+         !browser_context->IsOffTheRecord();
 }
 
 bool DataSharingUIConfig::ShouldAutoResizeHost() {
