@@ -264,9 +264,11 @@ void ShowDockedMagnifierNotification() {
   std::vector<AcceleratorLookup::AcceleratorDetails> details =
       Shell::Get()->accelerator_lookup()->GetAvailableAcceleratorsForAction(
           AcceleratorAction::kToggleDockedMagnifier);
-  // This dialog is only shown when docked magnification was enabled from the
-  // accelerator.
-  CHECK(!details.empty());
+  if (details.empty()) {
+    // We should not show the notification if the activation source was not from
+    // the accelerator.
+    return;
+  }
   std::u16string accelerator =
       AcceleratorLookup::GetAcceleratorDetailsText(details[0]);
   ShowAccessibilityNotification(
@@ -289,9 +291,11 @@ void ShowFullscreenMagnifierNotification() {
   std::vector<AcceleratorLookup::AcceleratorDetails> details =
       Shell::Get()->accelerator_lookup()->GetAvailableAcceleratorsForAction(
           AcceleratorAction::kToggleFullscreenMagnifier);
-  // This dialog is only shown when fullscreen magnification was enabled from
-  // the accelerator.
-  CHECK(!details.empty());
+  if (details.empty()) {
+    // We should not show the notification if the activation source was not from
+    // the accelerator.
+    return;
+  }
   std::u16string accelerator =
       AcceleratorLookup::GetAcceleratorDetailsText(details[0]);
   ShowAccessibilityNotification(
@@ -314,9 +318,11 @@ void ShowHighContrastNotification() {
   std::vector<AcceleratorLookup::AcceleratorDetails> details =
       Shell::Get()->accelerator_lookup()->GetAvailableAcceleratorsForAction(
           AcceleratorAction::kToggleHighContrast);
-  // This dialog is only shown when high conrast was enabled from the
-  // accelerator.
-  CHECK(!details.empty());
+  if (details.empty()) {
+    // We should not show the notification if the activation source was not from
+    // the accelerator.
+    return;
+  }
   std::u16string accelerator =
       AcceleratorLookup::GetAcceleratorDetailsText(details[0]);
   ShowAccessibilityNotification(IDS_HIGH_CONTRAST_ACCEL_TITLE,
