@@ -1715,6 +1715,73 @@ TEST_F(AIPageContentAgentTest, ContentVisibilityHidden) {
   EXPECT_TRUE(hidden_container.children_nodes.empty());
 }
 
+TEST_F(AIPageContentAgentTest, ContentVisibilityHiddenActionable) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <style>"
+      "    #hidden {"
+      "      content-visibility: hidden"
+      "    }"
+      "  </style>"
+      "  <div id=hidden>hidden text</div>visible text"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // Actionable mode exercises geometry and hit-testing paths used in
+  // production APC requests.
+  GetAIPageContentWithActionableElements();
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 2u);
+
+  const auto& hidden_container = *root.children_nodes[0];
+  CheckContainerNode(hidden_container);
+  CheckAnnotatedRole(hidden_container,
+                     mojom::blink::AIPageContentAnnotatedRole::kContentHidden);
+  // Content-visibility hidden subtrees are represented but not expanded.
+  EXPECT_TRUE(hidden_container.children_nodes.empty());
+  // The container itself is laid out; actionable mode should capture its
+  // geometry without forcing layout on descendants.
+  EXPECT_TRUE(hidden_container.content_attributes->geometry);
+
+  const auto& visible_text_node = *root.children_nodes[1];
+  CheckTextNode(visible_text_node, "visible text");
+  ASSERT_TRUE(visible_text_node.content_attributes->geometry);
+  EXPECT_FALSE(visible_text_node.content_attributes->geometry
+                   ->visible_bounding_box.IsEmpty());
+}
+
+TEST_F(AIPageContentAgentTest, ContentVisibilityHiddenIframeActionable) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body><style>iframe { content-visibility: hidden }</style>"
+      "<iframe srcdoc='<div>hidden iframe text</div>'></iframe>"
+      "  visible text</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // Actionable mode exercises iframe geometry and traversal paths.
+  GetAIPageContentWithActionableElements();
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 2u);
+
+  const auto& iframe_node = *root.children_nodes[0];
+  CheckIframeNode(iframe_node);
+  CheckAnnotatedRole(iframe_node,
+                     mojom::blink::AIPageContentAnnotatedRole::kContentHidden);
+  // The iframe container is laid out, but its subtree should not be traversed
+  // when display locks block layout/prepaint on children.
+  EXPECT_TRUE(iframe_node.children_nodes.empty());
+  ASSERT_TRUE(iframe_node.content_attributes->geometry);
+
+  const auto& visible_text_node = *root.children_nodes[1];
+  CheckTextNode(visible_text_node, "  visible text");
+  ASSERT_TRUE(visible_text_node.content_attributes->geometry);
+  EXPECT_FALSE(visible_text_node.content_attributes->geometry
+                   ->visible_bounding_box.IsEmpty());
+}
+
 TEST_F(AIPageContentAgentTest, ContentVisibilityAuto) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),

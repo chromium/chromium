@@ -414,6 +414,11 @@ bool IsVisible(const LayoutObject& object) {
   return object.Style()->Visibility() == EVisibility::kVisible;
 }
 
+bool AreChildrenBlockedByDisplayLock(const LayoutObject& object) {
+  return object.ChildLayoutBlockedByDisplayLock() ||
+         object.ChildPrePaintBlockedByDisplayLock();
+}
+
 void AddClickabilityReasons(
     const Element& element,
     const ax::mojom::Role role,
@@ -1366,7 +1371,9 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
     const LayoutObject& object,
     mojom::blink::AIPageContentNode& content_node,
     const RecursionData& recursion_data) {
-  if (object.ChildPrePaintBlockedByDisplayLock()) {
+  if (AreChildrenBlockedByDisplayLock(object)) {
+    // APC only includes content with layout objects; display-locked subtrees
+    // skip child layout/prepaint, so they are not included in the layout tree.
     return false;
   }
 
@@ -1458,6 +1465,11 @@ void AIPageContentAgent::ContentBuilder::ProcessIframe(
     }
   }
 
+  if (AreChildrenBlockedByDisplayLock(object)) {
+    // Avoid forcing layout or hit-testing in display-locked iframe subtrees.
+    return;
+  }
+
   // Add interaction metadata before walking the tree to ensure we promote
   // interactive DOM nodes to ContentNodes.
   if (local_frame->GetDocument()) {
@@ -1498,7 +1510,6 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
       mojom::blink::AIPageContentAttributes::New();
   mojom::blink::AIPageContentAttributes& attributes =
       *content_node->content_attributes;
-
   // Compute state that is used to decide whether this node generates a
   // ContentNode before making the decision below.
   AddAnnotatedRoles(object, attributes.annotated_roles);
