@@ -19,9 +19,9 @@ import("//components/module_installer/android/module_desc_java.gni")
 template("chrome_feature_module") {
   assert(defined(invoker.module_desc))
   _module_desc = invoker.module_desc
-  _is_monochrome_or_trichrome =
-      (defined(invoker.is_monochrome) && invoker.is_monochrome) ||
-      (defined(invoker.is_trichrome) && invoker.is_trichrome)
+  _is_monochrome = defined(invoker.is_monochrome) && invoker.is_monochrome
+  _is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
+  assert(!_is_monochrome, "Monochrome is an unsupported configuration")
   not_needed(invoker, [ "is_trichrome" ])
 
   _is_64_bit_browser =
@@ -46,7 +46,7 @@ template("chrome_feature_module") {
 
   _shared_libraries = []
   if (defined(_module_desc.native_deps) && _module_desc.native_deps != []) {
-    if (_is_monochrome_or_trichrome) {
+    if (_is_trichrome) {
       if (_is_64_bit_browser) {
         _base_target_name = "libmonochrome_64"
       } else {
@@ -64,13 +64,12 @@ template("chrome_feature_module") {
       "//chrome/android:${_base_target_name}_${_module_desc.name}${_toolchain}",
     ]
 
-    if (_is_monochrome_or_trichrome && _is_64_bit_browser &&
-        build_hwasan_splits) {
+    if (_is_trichrome && _is_64_bit_browser && build_hwasan_splits) {
       _hwasan_toolchain = "//build/toolchain/android:android_clang_arm64_hwasan"
       _shared_libraries += [ "//chrome/android:${_base_target_name}_${_module_desc.name}($_hwasan_toolchain)" ]
     }
   } else {
-    not_needed([ "_is_monochrome_or_trichrome" ])
+    not_needed([ "_is_trichrome" ])
   }
 
   if (defined(_module_desc.pak_deps)) {
@@ -158,7 +157,7 @@ template("chrome_feature_module") {
           target_cpu == "arm" || (target_cpu == "arm64" && !_is_64_bit_browser)
 
       if (_needs_32bit_lib) {
-        if (_is_monochrome_or_trichrome) {
+        if (_is_trichrome) {
           asset_deps += [ "//chrome/android:libmonochrome_unwind_table_assets" ]
         } else {
           asset_deps += [ "//chrome/android:libchrome_unwind_table_assets" ]

@@ -59,8 +59,7 @@ if (target_os == "android") {
     if (is_desktop_android) {
       _version_dictionary_template +=
           "chrome_desktop_version_code = \"@CHROME_DESKTOP_VERSION_CODE@\" "
-      _version_dictionary_template +=
-          "chrome_desktop_beta_version_code = \"@CHROME_DESKTOP_BETA_VERSION_CODE@\" "
+      _version_dictionary_template += "chrome_desktop_beta_version_code = \"@CHROME_DESKTOP_BETA_VERSION_CODE@\" "
     }
     _version_dictionary_template +=
         "chrome_32_version_code = \"@CHROME_32_VERSION_CODE@\" "
@@ -88,8 +87,10 @@ if (target_os == "android") {
         "trichrome_auto_64_version_code = \"@TRICHROME_AUTO_64_VERSION_CODE@\" "
     _version_dictionary_template += "trichrome_desktop_64_version_code = \"@TRICHROME_DESKTOP_64_VERSION_CODE@\" "
     if (target_cpu == "arm64") {
-      _version_dictionary_template += "chrome_high_version_code = \"@CHROME_HIGH_VERSION_CODE@\" "
-      _version_dictionary_template += "chrome_high_beta_version_code = \"@CHROME_HIGH_BETA_VERSION_CODE@\" "
+      _version_dictionary_template +=
+          "chrome_high_version_code = \"@CHROME_HIGH_VERSION_CODE@\" "
+      _version_dictionary_template +=
+          "chrome_high_beta_version_code = \"@CHROME_HIGH_BETA_VERSION_CODE@\" "
       _version_dictionary_template += "trichrome_64_32_high_version_code = \"@TRICHROME_64_32_HIGH_VERSION_CODE@\" "
       _version_dictionary_template += "trichrome_auto_64_32_high_version_code = \"@TRICHROME_AUTO_64_32_HIGH_VERSION_CODE@\" "
     }
@@ -261,7 +262,7 @@ if (is_android && current_toolchain == default_toolchain) {
   if (defined(chrome_desktop_version_code)) {
     lines_to_write += [
       "ChromeDesktop: $chrome_desktop_version_code",
-      "ChromeDesktopOpenBeta: $chrome_desktop_beta_version_code"
+      "ChromeDesktopOpenBeta: $chrome_desktop_beta_version_code",
     ]
   }
 
@@ -405,22 +406,6 @@ if (is_android) {
       } else {
         false_false_false_true = trichrome_version_code
       }
-    }
-  }
-
-  # Key: {android_64bit_target_cpu}_{is_64_bit_browser}_{include_64_bit_webview}_{include_32_bit_webview}
-  MONOCHROME_VERSION_MAP = {
-    if (android_64bit_target_cpu) {
-      if (defined(android_app_secondary_abi)) {
-        true_true_true_true = monochrome_64_32_version_code
-        true_false_true_true = monochrome_32_64_version_code
-        true_true_true_false = monochrome_64_version_code
-        true_false_false_true = monochrome_32_version_code
-      } else {
-        true_true_true_false = monochrome_version_code
-      }
-    } else {
-      false_false_false_true = monochrome_version_code
     }
   }
 

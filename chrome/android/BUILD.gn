@@ -1744,11 +1744,10 @@ if (_is_default_toolchain) {
     _is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
     _is_bundle_module =
         defined(invoker.is_bundle_module) && invoker.is_bundle_module
+    assert(!_is_monochrome, "Monochrome is an unsupported configuration")
 
     if (_is_trichrome) {
       _variant = "trichrome_chrome"
-    } else if (_is_monochrome) {
-      _variant = "monochrome"
     } else {
       _variant = "chrome"
     }
@@ -1759,7 +1758,7 @@ if (_is_default_toolchain) {
     }
 
     if (enable_resource_allowlist_generation) {
-      if (_is_trichrome || _is_monochrome) {
+      if (_is_trichrome) {
         _lib = "libmonochrome_inputs"
       } else {
         _lib = "libchrome_inputs"
@@ -1771,7 +1770,7 @@ if (_is_default_toolchain) {
 
       generate_resource_allowlist(_resource_allowlist_target) {
         _fat_lib_toolchain = current_toolchain
-        if (_is_monochrome || _is_trichrome) {
+        if (_is_trichrome) {
           # TODO(agrieve): For 64-bit primary, using libmonochrome_64 would be
           #     more efficient.
           _fat_lib_toolchain = _monochrome_browser_toolchain
@@ -1780,67 +1779,6 @@ if (_is_default_toolchain) {
 
         inputs = [ get_label_info(deps[0], "root_out_dir") + _lib_path ]
         output = _resource_allowlist_file
-      }
-
-      # Use custom resource ID list instead of android_webview's compiler
-      # resource allowlist because //android_webview:generate_webui_resources
-      # and //android_webview:generate_components_resources use hand-written
-      # resource allowlists.
-      if (_is_monochrome) {
-        _locale_allowlist_target = "${_variant}_locale_allowlist"
-        _locale_allowlist_file =
-            "$target_gen_dir/${_variant}_locale_allowlist.txt"
-        _system_webview_locale_allowlist_target =
-            "${_variant}_system_webview_locale_resource_allowlist"
-        _system_webview_locale_allowlist_file =
-            "$target_gen_dir/" +
-            "${_variant}_system_webview_locale_resource_id_list.txt"
-
-        action(_system_webview_locale_allowlist_target) {
-          script = "//tools/grit/pak_util.py"
-
-          _system_webview_en_US_locale_pak =
-              "$root_out_dir/android_webview/locales/en-US.pak"
-
-          inputs = [ _system_webview_en_US_locale_pak ]
-
-          outputs = [ _system_webview_locale_allowlist_file ]
-
-          deps = [ "//android_webview:repack_locales" ]
-
-          args = [
-            "list-id",
-            "--output",
-            rebase_path(_system_webview_locale_allowlist_file, root_build_dir),
-            rebase_path(_system_webview_en_US_locale_pak, root_build_dir),
-          ]
-        }
-
-        action(_locale_allowlist_target) {
-          script = "//tools/resources/filter_resource_allowlist.py"
-
-          inputs = [
-            _resource_allowlist_file,
-            _system_webview_locale_allowlist_file,
-          ]
-
-          outputs = [ _locale_allowlist_file ]
-
-          deps = [
-            ":$_resource_allowlist_target",
-            ":$_system_webview_locale_allowlist_target",
-            "//android_webview:system_webview_pak_allowlist",
-          ]
-
-          args = [
-            "--input",
-            rebase_path(_resource_allowlist_file, root_build_dir),
-            "--filter",
-            rebase_path(_system_webview_locale_allowlist_file, root_build_dir),
-            "--output",
-            rebase_path(_locale_allowlist_file, root_build_dir),
-          ]
-        }
       }
     }
 
@@ -1857,10 +1795,6 @@ if (_is_default_toolchain) {
       if (enable_resource_allowlist_generation) {
         repack_allowlist = _resource_allowlist_file
         deps += [ ":${_resource_allowlist_target}" ]
-        if (_is_monochrome) {
-          locale_allowlist = _locale_allowlist_file
-          deps += [ ":$_locale_allowlist_target" ]
-        }
       }
     }
 
@@ -1897,9 +1831,6 @@ if (_is_default_toolchain) {
         ":${_variant}_locale_pak_assets",
         ":${_variant}_paks",
       ]
-      if (_is_monochrome) {
-        deps += [ "//android_webview:locale_pak_assets" ]
-      }
     }
   }
 
