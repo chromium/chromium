@@ -116,8 +116,6 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
   }
 
   if (input->HasMappableSharedImage()) {
-    auto gpu_memory_buffer_handle = input->GetGpuMemoryBufferHandle();
-
     // STORAGE_MAPPABLE_SHARED_IMAGE may carry meaningful or dummy shared_image.
     std::optional<gpu::ExportedSharedImage> shared_image;
     gpu::SyncToken sync_token;
