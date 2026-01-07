@@ -107,6 +107,11 @@ class PrefProvider : public UserModifiableProvider {
   // Migrate between GEOLOCATION and GEOLOCATION_WITH_OPTIONS.
   void MigrateGeolocationExceptions();
 
+#if !BUILDFLAG(IS_IOS)
+  // Migrate between LOCAL_NETWORK_ACCESS and LOCAL_NETWORK/LOOPBACK_NETWORK
+  void MigrateLocalNetworkAccessExceptions();
+#endif  // !BUILDFLAG(IS_IOS)
+
   // Returns true if this provider supports the given |content_type|.
   bool supports_type(ContentSettingsType content_type) const {
     return content_settings_prefs_.find(content_type) !=

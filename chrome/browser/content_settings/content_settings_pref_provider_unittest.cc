@@ -46,6 +46,7 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -1168,7 +1169,7 @@ TEST_F(PrefProviderTest, LastVisitedTimeUpdating) {
   provider.ShutdownOnUIThread();
 }
 
-TEST_F(PrefProviderTest, MigrateOnFeatureEnabled) {
+TEST_F(PrefProviderTest, MigrateGeolocationOnFeatureEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kApproximateGeolocationPermission);
@@ -1213,7 +1214,7 @@ TEST_F(PrefProviderTest, MigrateOnFeatureEnabled) {
   }
 }
 
-TEST_F(PrefProviderTest, MigrateBackOnFeatureDisabled) {
+TEST_F(PrefProviderTest, MigrateGeolocationBackOnFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kApproximateGeolocationPermission);
@@ -1258,6 +1259,106 @@ TEST_F(PrefProviderTest, MigrateBackOnFeatureDisabled) {
                      ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
                      /*include_incognito=*/false)
                      .has_value());
+    new_provider.ShutdownOnUIThread();
+  }
+}
+
+TEST_F(PrefProviderTest, MigrateLocalNetworkAccessOnFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{network::features::kLocalNetworkAccessChecks},
+      /*disabled_features=*/{
+          network::features::kLocalNetworkAccessChecksSplitPermissions});
+
+  TestingProfile profile;
+  PrefService* prefs = profile.GetPrefs();
+
+  ContentSettingsPattern allow_pattern =
+      ContentSettingsPattern::FromString("[*.]example.com");
+  ContentSettingsPattern block_pattern =
+      ContentSettingsPattern::FromString("[*.]evil.com");
+  GURL allow_url("http://example.com");
+  GURL block_url("http://evil.com");
+
+  {
+    PrefProvider provider(prefs, /*off_the_record=*/false,
+                          /*store_last_modified=*/true,
+                          /*restore_session=*/false);
+    provider.SetWebsiteSetting(allow_pattern, allow_pattern,
+                               ContentSettingsType::LOCAL_NETWORK_ACCESS,
+                               base::Value(CONTENT_SETTING_ALLOW), {});
+    provider.SetWebsiteSetting(block_pattern, block_pattern,
+                               ContentSettingsType::LOCAL_NETWORK_ACCESS,
+                               base::Value(CONTENT_SETTING_BLOCK), {});
+    provider.ShutdownOnUIThread();
+  }
+
+  // Test migration forward.
+  feature_list.Reset();
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{network::features::kLocalNetworkAccessChecks,
+                            network::features::
+                                kLocalNetworkAccessChecksSplitPermissions},
+      /*disabled_features=*/{});
+
+  {
+    PrefProvider new_provider(prefs, /*off_the_record=*/false,
+                              /*store_last_modified=*/true,
+                              /*restore_session=*/false);
+    // CONTENT_SETTING_ALLOW is migrated to both LOCAL_NETWORK and
+    // LOOPBACK_NETWORK
+    EXPECT_EQ(CONTENT_SETTING_ALLOW,
+              TestUtils::GetContentSetting(&new_provider, allow_url, allow_url,
+                                           ContentSettingsType::LOCAL_NETWORK,
+                                           /*include_incognito=*/false));
+    EXPECT_EQ(CONTENT_SETTING_ALLOW, TestUtils::GetContentSetting(
+                                         &new_provider, allow_url, allow_url,
+                                         ContentSettingsType::LOOPBACK_NETWORK,
+                                         /*include_incognito=*/false));
+    // CONTENT_SETTING_BLOCK is only migrated to LOCAL_NETWORK
+    EXPECT_EQ(CONTENT_SETTING_BLOCK,
+              TestUtils::GetContentSetting(&new_provider, block_url, block_url,
+                                           ContentSettingsType::LOCAL_NETWORK,
+                                           /*include_incognito=*/false));
+    EXPECT_EQ(
+        CONTENT_SETTING_DEFAULT,
+        TestUtils::GetContentSetting(&new_provider, block_url, block_url,
+                                     ContentSettingsType::LOOPBACK_NETWORK,
+                                     /*include_incognito=*/false));
+    new_provider.ShutdownOnUIThread();
+  }
+
+  // Then migrate back.
+  feature_list.Reset();
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{network::features::kLocalNetworkAccessChecks},
+      /*disabled_features=*/{
+          network::features::kLocalNetworkAccessChecksSplitPermissions});
+
+  {
+    PrefProvider new_provider(prefs, /*off_the_record=*/false,
+                              /*store_last_modified=*/true,
+                              /*restore_session=*/false);
+
+    // Both LOCAL_NETWORK and LOOPBACK_NETWORK exceptions should be cleared.
+    EXPECT_EQ(CONTENT_SETTING_DEFAULT,
+              TestUtils::GetContentSetting(&new_provider, allow_url, allow_url,
+                                           ContentSettingsType::LOCAL_NETWORK,
+                                           /*include_incognito=*/false));
+    EXPECT_EQ(
+        CONTENT_SETTING_DEFAULT,
+        TestUtils::GetContentSetting(&new_provider, allow_url, allow_url,
+                                     ContentSettingsType::LOOPBACK_NETWORK,
+                                     /*include_incognito=*/false));
+    EXPECT_EQ(CONTENT_SETTING_DEFAULT,
+              TestUtils::GetContentSetting(&new_provider, block_url, block_url,
+                                           ContentSettingsType::LOCAL_NETWORK,
+                                           /*include_incognito=*/false));
+    EXPECT_EQ(
+        CONTENT_SETTING_DEFAULT,
+        TestUtils::GetContentSetting(&new_provider, block_url, block_url,
+                                     ContentSettingsType::LOOPBACK_NETWORK,
+                                     /*include_incognito=*/false));
     new_provider.ShutdownOnUIThread();
   }
 }

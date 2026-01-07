@@ -85,6 +85,11 @@ class DefaultProvider : public ObservableProvider {
   // Migrate between GEOLOCATION and GEOLOCATION_WITH_OPTIONS.
   void MigrateGeolocationDefaultValue();
 
+#if !BUILDFLAG(IS_IOS)
+  // Migrate between LOCAL_NETWORK_ACCESS and LOCAL_NETWORK/LOOPBACK_NETWORK
+  void MigrateLocalNetworkAccessDefaultValue();
+#endif  // !BUILDFLAG(IS_IOS)
+
   // Record Histograms Metrics.
   void RecordHistogramMetrics();
 
