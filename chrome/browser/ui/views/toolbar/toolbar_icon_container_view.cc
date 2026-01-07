@@ -131,7 +131,8 @@ ToolbarIconContainerView::ToolbarIconContainerView(
         .SetIgnoreDefaultMainAxisMargins(true)
         .SetDefault(
             views::kMarginsKey,
-            gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_ELEMENT_PADDING)));
+            gfx::Insets::VH(
+                0, GetLayoutConstant(LayoutConstant::kToolbarElementPadding)));
   }
 }
 

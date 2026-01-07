@@ -443,7 +443,8 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
   const float scale = canvas->image_scale();
 
   const float unscaled_bottom =
-      tabstrip_bounds.bottom() - GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
+      tabstrip_bounds.bottom() -
+      GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
   const int bottom = std::round(unscaled_bottom * scale);
   const int x = std::round(browser_bounds.x() * scale);
   const int width = std::round(browser_bounds.width() * scale);
@@ -466,8 +467,9 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
                           tab_strip_view->GetWidget()->GetRootView(), &bounds);
 
       // Extend the bounds to cover the curve at the end of the toolbar.
-      bounds.set_height(bounds.height() +
-                        GetLayoutConstant(TOOLBAR_CORNER_RADIUS));
+      bounds.set_height(
+          bounds.height() +
+          GetLayoutConstant(LayoutConstant::kToolbarCornerRadius));
       canvas->ClipRect(bounds, SkClipOp::kDifference);
     }
   }
@@ -492,7 +494,8 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
   const float stroke_width = scale;
   const float stroke_outset = stroke_width / 2;
   const float corner_radius =
-      GetLayoutConstant(TOOLBAR_CORNER_RADIUS) * scale + stroke_outset;
+      GetLayoutConstant(LayoutConstant::kToolbarCornerRadius) * scale +
+      stroke_outset;
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(stroke_width);
 

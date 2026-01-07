@@ -95,8 +95,8 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
   if (is_tab_strip_collapsed) {
     group_line_bounds.set_x(kGroupLineCollapsedLeadingPadding);
     group_line_bounds.set_y(height);
-    header_bounds.set_x(
-        GetLayoutConstant(VERTICAL_TAB_STRIP_COLLAPSED_HORIZONTAL_PADDING));
+    header_bounds.set_x(GetLayoutConstant(
+        LayoutConstant::kVerticalTabStripCollapsedHorizontalPadding));
   }
 
   header_bounds.set_y(height);
@@ -131,7 +131,8 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
     // If the tab strip is not collapsed then the groups tabs should be inset.
     bounds.set_x(
         is_tab_strip_collapsed
-            ? GetLayoutConstant(VERTICAL_TAB_STRIP_COLLAPSED_HORIZONTAL_PADDING)
+            ? GetLayoutConstant(
+                  LayoutConstant::kVerticalTabStripCollapsedHorizontalPadding)
             : kTabLeadingPadding);
     // If width is bounded, child views should respect the width constraints
     // and take up the available width excluding trailing horizontal padding.

@@ -207,7 +207,7 @@ TEST_F(PinnedToolbarActionsContainerTest, ContainerMargins) {
           container()->GetAnimatingLayoutManager()->target_layout_manager())
           ->interior_margin()
           .right(),
-      -GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN));
+      -GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin));
 }
 
 TEST_F(PinnedToolbarActionsContainerTest, PinningAndUnpinning) {

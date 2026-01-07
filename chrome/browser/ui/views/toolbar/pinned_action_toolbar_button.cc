@@ -78,9 +78,11 @@ PinnedActionToolbarButton::PinnedActionToolbarButton(
   ConfigureInkDropForToolbar(this);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   // Pinned action toolbar buttons have right margin and no left margin.
-  SetProperty(views::kMarginsKey,
-              gfx::Insets::TLBR(
-                  0, 0, 0, GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN)));
+  SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(
+          0, 0, 0,
+          GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin)));
   set_drag_controller(container_.get());
   GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);

@@ -929,9 +929,11 @@ views::View* ToolbarView::GetDefaultFocusableChild() {
 }
 
 void ToolbarView::InitLayout() {
-  const int default_margin = GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN);
+  const int default_margin =
+      GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin);
   // TODO(dfried): rename this constant.
-  const int location_bar_margin = GetLayoutConstant(TOOLBAR_STANDARD_SPACING);
+  const int location_bar_margin =
+      GetLayoutConstant(LayoutConstant::kToolbarStandardSpacing);
 
   // Shift previously flex-able elements' order by `kOrderOffset`.
   // This will cause them to be the first ones to drop out or shrink to minimum.

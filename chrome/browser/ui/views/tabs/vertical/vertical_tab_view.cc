@@ -142,7 +142,7 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
     glic_tab_underline_view_->SetProperty(views::kViewIgnoredByLayoutKey, true);
     glic_tab_underline_view_->SetBoundsRect(
         gfx::Rect(0, 0, 2 * glic::TabUnderlineView::kEffectThickness,
-                  GetLayoutConstant(VERTICAL_TAB_HEIGHT)));
+                  GetLayoutConstant(LayoutConstant::kVerticalTabHeight)));
   }
 #endif
 
@@ -152,7 +152,8 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCollapseMargins(true)
-      .SetMinimumCrossAxisSize(GetLayoutConstant(VERTICAL_TAB_HEIGHT));
+      .SetMinimumCrossAxisSize(
+          GetLayoutConstant(LayoutConstant::kVerticalTabHeight));
 
   alert_indicator_->SetProperty(
       views::kFlexBehaviorKey,
