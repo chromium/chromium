@@ -30,14 +30,25 @@ class IntelligentScanDelegate : public KeyedService {
   // Represents the result of an intelligent scan.
   struct IntelligentScanResult {
     static constexpr int kModelVersionUnavailable = -1;
-    static IntelligentScanResult Failure(int model_version,
+    static IntelligentScanResult Success(std::string brand,
+                                         std::string intent,
+                                         int model_version,
                                          ModelType model_type);
+    static IntelligentScanResult Failure(
+        int model_version,
+        ModelType model_type,
+        IntelligentScanInfo::NoInfoReason no_info_reason);
+
+    IntelligentScanResult();
+    IntelligentScanResult(const IntelligentScanResult& other);
+    IntelligentScanResult& operator=(const IntelligentScanResult& other);
 
     std::string brand;
     std::string intent;
     int model_version;
     bool execution_success;
     ModelType model_type;
+    IntelligentScanInfo::NoInfoReason no_info_reason;
   };
   using IntelligentScanDoneCallback =
       base::OnceCallback<void(IntelligentScanResult)>;

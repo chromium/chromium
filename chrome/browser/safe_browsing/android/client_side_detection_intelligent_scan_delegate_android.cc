@@ -148,8 +148,9 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
   if (!result.response.has_value()) {
     client_side_detection::LogOnDeviceModelExecutionSuccessAndTime(
         /*success=*/false, session_execution_start_time);
-    std::move(callback_).Run(
-        IntelligentScanResult::Failure(model_version, ModelType::kOnDevice));
+    std::move(callback_).Run(IntelligentScanResult::Failure(
+        model_version, ModelType::kOnDevice,
+        IntelligentScanInfo::ON_DEVICE_MODEL_OUTPUT_MISSING));
     return;
   }
 
@@ -168,16 +169,15 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
 
   if (!scam_detection_response) {
     base::debug::DumpWithoutCrashing();
-    std::move(callback_).Run(
-        IntelligentScanResult::Failure(model_version, ModelType::kOnDevice));
+    std::move(callback_).Run(IntelligentScanResult::Failure(
+        model_version, ModelType::kOnDevice,
+        IntelligentScanInfo::ON_DEVICE_MODEL_OUTPUT_MISSING));
     return;
   }
 
-  std::move(callback_).Run({.brand = scam_detection_response->brand(),
-                            .intent = scam_detection_response->intent(),
-                            .model_version = model_version,
-                            .execution_success = true,
-                            .model_type = ModelType::kOnDevice});
+  std::move(callback_).Run(IntelligentScanResult::Success(
+      scam_detection_response->brand(), scam_detection_response->intent(),
+      model_version, ModelType::kOnDevice));
 
   // Reset this inquiry immediately so that future inference is not affected by
   // the old context.
@@ -203,7 +203,11 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
         "SBClientPhishing.ServerSideModelExecutionError",
         result.response.error().error());
     std::move(callback_).Run(
-        IntelligentScanResult::Failure(model_version, ModelType::kServerSide));
+        // TODO(crbug.com/462643935): Add a new NoInfoReason for
+        // SERVER_MODEL_OUTPUT_MISSING.
+        IntelligentScanResult::Failure(
+            model_version, ModelType::kServerSide,
+            IntelligentScanInfo::ON_DEVICE_MODEL_OUTPUT_MISSING));
     return;
   }
 
@@ -212,16 +216,16 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
       result.response.value());
 
   if (!scam_detection_response) {
-    std::move(callback_).Run(
-        IntelligentScanResult::Failure(model_version, ModelType::kServerSide));
+    // TODO(crbug.com/462643935): Add a new NoInfoReason for
+    // SERVER_MODEL_OUTPUT_MISSING.
+    std::move(callback_).Run(IntelligentScanResult::Failure(
+        model_version, ModelType::kServerSide,
+        IntelligentScanInfo::ON_DEVICE_MODEL_OUTPUT_MISSING));
     return;
   }
-
-  std::move(callback_).Run({.brand = scam_detection_response->brand(),
-                            .intent = scam_detection_response->intent(),
-                            .model_version = model_version,
-                            .execution_success = true,
-                            .model_type = ModelType::kServerSide});
+  std::move(callback_).Run(IntelligentScanResult::Success(
+      scam_detection_response->brand(), scam_detection_response->intent(),
+      model_version, ModelType::kServerSide));
 
   // Reset this inquiry immediately so that future inference is not affected by
   // the old context.
@@ -326,8 +330,11 @@ ClientSideDetectionIntelligentScanDelegateAndroid::StartIntelligentScan(
   ModelType model_type =
       is_server_model_enabled_ ? ModelType::kServerSide : ModelType::kOnDevice;
   if (!IsIntelligentScanAvailable(/*log_failed_eligibility_reason=*/false)) {
+    // TODO(crbug.com/462643935): Add a new NoInfoReason for
+    // SERVER_MODEL_UNAVAILABLE.
     std::move(callback).Run(IntelligentScanResult::Failure(
-        IntelligentScanResult::kModelVersionUnavailable, model_type));
+        IntelligentScanResult::kModelVersionUnavailable, model_type,
+        IntelligentScanInfo::ON_DEVICE_MODEL_UNAVAILABLE));
     return std::nullopt;
   }
   bool is_at_quota = IsAtIntelligentScanQuota();
@@ -337,10 +344,10 @@ ClientSideDetectionIntelligentScanDelegateAndroid::StartIntelligentScan(
         "SBClientPhishing.ServerSideModelHitQuotaAtInquiryTime", is_at_quota);
   }
   if (is_at_quota) {
-    // TODO(crbug.com/462643935): Add a new IntelligentScanResult for quota
-    // exceeded.
+    // TODO(crbug.com/462643935): Add a new NoInfoReason for quota exceeded.
     std::move(callback).Run(IntelligentScanResult::Failure(
-        IntelligentScanResult::kModelVersionUnavailable, model_type));
+        IntelligentScanResult::kModelVersionUnavailable, model_type,
+        IntelligentScanInfo::ON_DEVICE_MODEL_UNAVAILABLE));
     return std::nullopt;
   }
 

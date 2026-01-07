@@ -1771,10 +1771,7 @@ void ClientSideDetectionHost::OnIntelligentScanDone(
     intelligent_scan_info.set_brand(response.brand);
     intelligent_scan_info.set_intent(response.intent);
   } else {
-    // TODO(crbug.com/462643935): Add a new reason for
-    // SERVER_MODEL_OUTPUT_MISSING.
-    intelligent_scan_info.set_no_info_reason(
-        IntelligentScanInfo::ON_DEVICE_MODEL_OUTPUT_MISSING);
+    intelligent_scan_info.set_no_info_reason(response.no_info_reason);
   }
   if (response.model_version != IntelligentScanDelegate::IntelligentScanResult::
                                     kModelVersionUnavailable) {

@@ -297,6 +297,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   EXPECT_EQ(future.Get().brand, "test_brand");
   EXPECT_EQ(future.Get().intent, "test_intent");
   EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
+  EXPECT_EQ(future.Get().no_info_reason,
+            IntelligentScanInfo::NO_INFO_REASON_UNSPECIFIED);
   EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 0);
 
   histogram_tester_.ExpectUniqueSample(
@@ -340,6 +342,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   EXPECT_EQ(future.Get().brand, "");
   EXPECT_EQ(future.Get().intent, "");
   EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
+  EXPECT_EQ(future.Get().no_info_reason,
+            IntelligentScanInfo::ON_DEVICE_MODEL_OUTPUT_MISSING);
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.ServerSideModelExecutionSuccess", false, 1);
   histogram_tester_.ExpectUniqueSample(
@@ -361,6 +365,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
 
   EXPECT_FALSE(future.Get().execution_success);
   EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
+  EXPECT_EQ(future.Get().no_info_reason,
+            IntelligentScanInfo::ON_DEVICE_MODEL_UNAVAILABLE);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
@@ -410,6 +416,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
     ASSERT_TRUE(future.IsReady());
     EXPECT_FALSE(future.Get().execution_success);
     EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
+    EXPECT_EQ(future.Get().no_info_reason,
+              IntelligentScanInfo::ON_DEVICE_MODEL_UNAVAILABLE);
   }
   histogram_tester_.ExpectBucketCount(
       "SBClientPhishing.ServerSideModelHitQuotaAtInquiryTime", true, 1);
@@ -454,6 +462,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
     delegate_->StartIntelligentScan("test", future.GetCallback());
     EXPECT_FALSE(future.Get().execution_success);
     EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
+    EXPECT_EQ(future.Get().no_info_reason,
+              IntelligentScanInfo::ON_DEVICE_MODEL_OUTPUT_MISSING);
   }
 
   // Next scan should fail due to quota.
@@ -466,6 +476,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
     ASSERT_TRUE(future.IsReady());
     EXPECT_FALSE(future.Get().execution_success);
     EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
+    EXPECT_EQ(future.Get().no_info_reason,
+              IntelligentScanInfo::ON_DEVICE_MODEL_UNAVAILABLE);
   }
 }
 
@@ -634,6 +646,8 @@ TEST_F(
   EXPECT_EQ(future.Get().brand, "test_brand");
   EXPECT_EQ(future.Get().intent, "test_intent");
   EXPECT_EQ(future.Get().model_type, ModelType::kOnDevice);
+  EXPECT_EQ(future.Get().no_info_reason,
+            IntelligentScanInfo::NO_INFO_REASON_UNSPECIFIED);
   // Inquiry should be reset after a successful response.
   EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 0);
   histogram_tester_.ExpectTotalCount(
@@ -663,6 +677,8 @@ TEST_F(
   EXPECT_EQ(future.Get().brand, "");
   EXPECT_EQ(future.Get().intent, "");
   EXPECT_EQ(future.Get().model_type, ModelType::kOnDevice);
+  EXPECT_EQ(future.Get().no_info_reason,
+            IntelligentScanInfo::ON_DEVICE_MODEL_OUTPUT_MISSING);
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
   histogram_tester_.ExpectUniqueSample(
@@ -683,6 +699,8 @@ TEST_F(
   EXPECT_EQ(future.Get().brand, "");
   EXPECT_EQ(future.Get().intent, "");
   EXPECT_EQ(future.Get().model_type, ModelType::kOnDevice);
+  EXPECT_EQ(future.Get().no_info_reason,
+            IntelligentScanInfo::ON_DEVICE_MODEL_UNAVAILABLE);
 }
 
 TEST_F(

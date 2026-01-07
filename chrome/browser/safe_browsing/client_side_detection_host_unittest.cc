@@ -3806,11 +3806,13 @@ class ClientSideDetectionHostScamDetectionTest
               base::UnguessableToken token = base::UnguessableToken::Create();
               IntelligentScanDelegate::IntelligentScanResult
                   scam_detection_response;
-              scam_detection_response.execution_success = false;
-              scam_detection_response.model_version = -1;
               scam_detection_response.model_type =
                   IntelligentScanDelegate::ModelType::kOnDevice;
               if (!should_return_response) {
+                scam_detection_response.execution_success = false;
+                scam_detection_response.model_version = -1;
+                scam_detection_response.no_info_reason =
+                    IntelligentScanInfo::ON_DEVICE_MODEL_OUTPUT_MISSING;
                 std::move(callback).Run(scam_detection_response);
                 return token;
               }

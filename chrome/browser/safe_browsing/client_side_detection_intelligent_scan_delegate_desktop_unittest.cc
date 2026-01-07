@@ -515,6 +515,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
       "SBClientPhishing.OnDeviceModelSessionCreationTime", 0);
   EXPECT_FALSE(future.Get().execution_success);
   EXPECT_EQ(future.Get().model_type, ModelType::kOnDevice);
+  EXPECT_EQ(future.Get().no_info_reason,
+            IntelligentScanInfo::ON_DEVICE_MODEL_OUTPUT_MISSING);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
@@ -685,6 +687,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EXPECT_FALSE(future.Get().execution_success);
   EXPECT_EQ(future.Get().model_version, 123);
   EXPECT_EQ(future.Get().model_type, ModelType::kOnDevice);
+  EXPECT_EQ(future.Get().no_info_reason,
+            IntelligentScanInfo::ON_DEVICE_MODEL_OUTPUT_MISSING);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
@@ -758,6 +762,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EXPECT_FALSE(future.Get().execution_success);
   EXPECT_EQ(future.Get().model_version, 123);
   EXPECT_EQ(future.Get().model_type, ModelType::kOnDevice);
+  EXPECT_EQ(future.Get().no_info_reason,
+            IntelligentScanInfo::ON_DEVICE_MODEL_OUTPUT_MISSING);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
@@ -797,6 +803,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EXPECT_EQ(future.Get().intent, "Search Engine");
   EXPECT_EQ(future.Get().model_version, 123);
   EXPECT_EQ(future.Get().model_type, ModelType::kOnDevice);
+  EXPECT_EQ(future.Get().no_info_reason,
+            IntelligentScanInfo::NO_INFO_REASON_UNSPECIFIED);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
