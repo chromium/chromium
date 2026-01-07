@@ -1067,7 +1067,6 @@ TEST_P(AutofillCrowdsourcingEncodingUploadProto,
     EXPECT_EQ(field_metadata.aria_description(),
               StrToHash3Bit(field.aria_description()));
     EXPECT_EQ(field_metadata.placeholder(), StrToHash3Bit(field.placeholder()));
-    EXPECT_EQ(field_metadata.initial_value(), StrToHash3Bit(field.value()));
     EXPECT_EQ(field_metadata.autocomplete(),
               StrToHash3Bit(field.autocomplete_attribute()));
     EXPECT_EQ(field_metadata.pattern(), StrToHash3Bit(field.pattern()));
@@ -1161,7 +1160,6 @@ TEST_P(AutofillCrowdsourcingEncodingQueryProto,
     EXPECT_EQ(field_metadata.aria_description(),
               StrToHash3Bit(field.aria_description()));
     EXPECT_EQ(field_metadata.placeholder(), StrToHash3Bit(field.placeholder()));
-    EXPECT_EQ(field_metadata.initial_value(), StrToHash3Bit(field.value()));
     EXPECT_EQ(field_metadata.autocomplete(),
               StrToHash3Bit(field.autocomplete_attribute()));
     EXPECT_EQ(field_metadata.pattern(), StrToHash3Bit(field.pattern()));

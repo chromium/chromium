@@ -404,9 +404,6 @@ void PopulateThreeBitHashedFieldMetadata(
   if (!field.placeholder().empty()) {
     field_metadata->set_placeholder(StrToHash3Bit(field.placeholder()));
   }
-  if (!field.initial_value().empty()) {
-    field_metadata->set_initial_value(StrToHash3Bit(field.initial_value()));
-  }
   if (!field.autocomplete_attribute().empty()) {
     field_metadata->set_autocomplete(
         StrToHash3Bit(field.autocomplete_attribute()));
