@@ -60,10 +60,11 @@ NSString* GetBannerName(NSString* exporterDisplayName) {
   self.titleText =
       l10n_util::GetNSString(IDS_IOS_CREDENTIAL_EXCHANGE_IMPORT_TITLE);
   self.configuration.primaryActionString = l10n_util::GetNSString(IDS_CONTINUE);
-  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                           target:self
-                           action:@selector(cancelButtonTapped)];
+  self.navigationItem.leftBarButtonItem =
+      [[UIBarButtonItem alloc] initWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                                       style:UIBarButtonItemStylePlain
+                                      target:self
+                                      action:@selector(cancelButtonTapped)];
   [super viewDidLoad];
 }
 
@@ -101,12 +102,13 @@ NSString* GetBannerName(NSString* exporterDisplayName) {
     case CredentialImportStage::kNotStarted:
       NOTREACHED();
     case CredentialImportStage::kImporting:
-      self.navigationItem.rightBarButtonItem = nil;
+      self.navigationItem.leftBarButtonItem.enabled = NO;
       self.configuration.primaryActionEnabled = NO;
       [self reloadConfiguration];
       [_tableView notifyImportStart];
       break;
     case CredentialImportStage::kImported:
+      self.navigationItem.leftBarButtonItem = nil;
       self.configuration.primaryActionString = l10n_util::GetNSString(IDS_DONE);
       self.configuration.primaryActionEnabled = YES;
       [self reloadConfiguration];
