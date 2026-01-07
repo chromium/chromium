@@ -110,7 +110,7 @@ BASE_FEATURE(kSafetyHubUnusedPermissionRevocationForAllSurfaces,
 // for notifications if Chrome does not have and cannot acquire app-level
 // permissions on Android.
 BASE_FEATURE(kReturnDeniedForNotificationsWhenNoAppLevelSettings,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Only applicable if kApproximateGeolocationPermission is enabled. When
