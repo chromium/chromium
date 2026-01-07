@@ -58,14 +58,27 @@ void StartupLaunchManager::Client::SetLaunchOnStartup(bool enable_launch) {
     launch_manager->ReleaseSharedWriteLock();
   }
 }
-// TODO(crbug.com/467376419): Record count of such occurrences.
-void StartupLaunchManager::ForceReleaseAllLocks() {
-  // No-op if the locks are already released.
-  if (lock_counter_ == 0) {
-    return;
-  }
-  lock_counter_ = 0;
-  UpdateLaunchOnStartup(GetStartupLaunchMode());
+
+DEFINE_USER_DATA(StartupLaunchManager);
+
+StartupLaunchManager::StartupLaunchManager(BrowserProcess* browser_process)
+    : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
+      scoped_unowned_user_data_(browser_process->GetUnownedUserDataHost(),
+                                *this) {
+  // Acquire a lock so that any writes to registry are deferred until `Init()`
+  // is called.
+  AcquireSharedWriteLock();
+}
+
+StartupLaunchManager::~StartupLaunchManager() = default;
+
+// static
+StartupLaunchManager* StartupLaunchManager::From(
+    BrowserProcess* browser_process) {
+  return browser_process ? Get(browser_process->GetUnownedUserDataHost())
+                         : nullptr;
 }
 
 void StartupLaunchManager::AcquireSharedWriteLock() {
@@ -83,6 +96,27 @@ void StartupLaunchManager::ReleaseSharedWriteLock() {
     fallback_timer_.Stop();
     UpdateLaunchOnStartup(GetStartupLaunchMode());
   }
+}
+
+void StartupLaunchManager::CommitLaunchOnStartupState() {
+  // Release the lock acquired in the constructor.
+  ReleaseSharedWriteLock();
+
+  // Set up a task to release all shared write locks, and writing the pending
+  // changes to the registry if any client fails to do their initial
+  // registration for one minute.
+  fallback_timer_.Start(FROM_HERE, base::Minutes(1), this,
+                        &StartupLaunchManager::ForceReleaseAllLocks);
+}
+
+// TODO(crbug.com/467376419): Record count of such occurrences.
+void StartupLaunchManager::ForceReleaseAllLocks() {
+  // No-op if the locks are already released.
+  if (lock_counter_ == 0) {
+    return;
+  }
+  lock_counter_ = 0;
+  UpdateLaunchOnStartup(GetStartupLaunchMode());
 }
 
 std::optional<StartupLaunchMode> StartupLaunchManager::GetStartupLaunchMode()
@@ -121,39 +155,6 @@ void StartupLaunchManager::UnregisterLaunchOnStartup(
       previous_startup_mode != current_startup_mode) {
     UpdateLaunchOnStartup(current_startup_mode);
   }
-}
-
-DEFINE_USER_DATA(StartupLaunchManager);
-
-StartupLaunchManager::StartupLaunchManager(BrowserProcess* browser_process)
-    : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
-      scoped_unowned_user_data_(browser_process->GetUnownedUserDataHost(),
-                                *this) {
-  // Acquire a lock so that any writes to registry are deferred until `Init()`
-  // is called.
-  AcquireSharedWriteLock();
-}
-
-StartupLaunchManager::~StartupLaunchManager() = default;
-
-// static
-StartupLaunchManager* StartupLaunchManager::From(
-    BrowserProcess* browser_process) {
-  return browser_process ? Get(browser_process->GetUnownedUserDataHost())
-                         : nullptr;
-}
-
-void StartupLaunchManager::CommitLaunchOnStartupState() {
-  // Release the lock acquired in the constructor.
-  ReleaseSharedWriteLock();
-
-  // Set up a task to release all shared write locks, and writing the pending
-  // changes to the registry if any client fails to do their initial
-  // registration for one minute.
-  fallback_timer_.Start(FROM_HERE, base::Minutes(1), this,
-                        &StartupLaunchManager::ForceReleaseAllLocks);
 }
 
 void StartupLaunchManager::UpdateLaunchOnStartup(
