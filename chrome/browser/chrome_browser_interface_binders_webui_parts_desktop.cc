@@ -144,6 +144,11 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/webui/unexportable_keys_internals/unexportable_keys_internals.mojom.h"
+#include "chrome/browser/ui/webui/unexportable_keys_internals/unexportable_keys_internals_ui.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/diagnostics_ui/diagnostics_ui.h"
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
@@ -581,6 +586,12 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   RegisterWebUIControllerInterfaceBinder<updater_ui::mojom::PageHandlerFactory,
                                          UpdaterUI>(map);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_MAC)
+  RegisterWebUIControllerInterfaceBinder<
+      unexportable_keys_internals::mojom::PageHandlerFactory,
+      UnexportableKeysInternalsUI>(map);
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(

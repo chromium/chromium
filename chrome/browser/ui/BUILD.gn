@@ -4978,6 +4978,7 @@ static_library("ui") {
       ]
       deps += [
         "//chrome/browser/ui/webui/unexportable_keys_internals",
+        "//chrome/browser/ui/webui/unexportable_keys_internals:impl",
         "//components/crash/core/common:crash_key",
         "//services/audio/public/cpp",
       ]

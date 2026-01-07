@@ -10690,8 +10690,10 @@ test("unit_tests") {
         "../browser/ui/views/desktop_capture/screen_capture_permission_checker_mac_unittest.mm",
         "../browser/ui/views/frame/browser_frame_view_mac_unittest.mm",
       ]
-
-      deps += [ "//services/audio/public/cpp:test_support" ]
+      deps += [
+        "//chrome/browser/ui/webui/unexportable_keys_internals:unit_tests",
+        "//services/audio/public/cpp:test_support",
+      ]
     }
     if (is_mac || is_linux) {
       sources += [ "../browser/ui/webui/password_manager/promo_cards/relaunch_chrome_promo_unittest.cc" ]

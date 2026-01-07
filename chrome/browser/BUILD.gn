@@ -7561,6 +7561,19 @@ static_library("browser") {
     ]
   }
 
+  if (is_mac) {
+    deps += [
+      "//chrome/browser/ui/webui/unexportable_keys_internals",
+      "//chrome/browser/ui/webui/unexportable_keys_internals:mojo_bindings",
+    ]
+
+    # TODO(crbug.com/364667553, crbug.com/365680821): Remove once
+    # modularizations of `//c/b/signin` and `//c/b/profiles` are complete.
+    deps += [ "//chrome/browser/ui/webui/unexportable_keys_internals:impl" ]
+    allow_circular_includes_from +=
+        [ "//chrome/browser/ui/webui/unexportable_keys_internals:impl" ]
+  }
+
   if (enable_media_remoting) {
     sources += [
       "media/cast_remoting_connector.cc",

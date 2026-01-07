@@ -1251,7 +1251,7 @@
     "includes": [7490],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/unexportable_keys_internals/resources.grd": {
-    "META": {"sizes": {"includes": [5]}},
+    "META": {"sizes": {"includes": [10]}},
     "includes": [7495],
   },
   # END components/ section.
