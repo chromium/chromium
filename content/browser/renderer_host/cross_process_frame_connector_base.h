@@ -249,6 +249,10 @@ class CrossProcessFrameConnectorBase
 
   // Returns the embedder's visibility.
   virtual Visibility EmbedderVisibility() = 0;
+
+  // Reflects visibility forced on the view. This really needs a coherent
+  // story with all the other notions of visibility!
+  virtual void ForceRenderable(bool renderable) = 0;
 };
 
 }  // namespace content

@@ -294,6 +294,8 @@ void SecureEmbedConnectorImpl::SetView(RenderWidgetHostViewChildFrame* view,
     if (delegate_) {
       delegate_->SetFrameSinkId(frame_sink_id_);
     }
+
+    MaybeRefreshSurfaceKeepAlive();
   }
 }
 
@@ -341,6 +343,8 @@ void SecureEmbedConnectorImpl::SynchronizeVisualProperties(
   last_received_css_zoom_factor_ = visual_properties.css_zoom_factor;
   last_received_local_frame_size_ = visual_properties.local_frame_size;
   screen_infos_ = visual_properties.screen_infos;
+  bool local_surface_id_changed =
+      (local_surface_id_ != visual_properties.local_surface_id);
   local_surface_id_ = visual_properties.local_surface_id;
 
   // TODO(secure-embed): Not implemented yet.
@@ -372,6 +376,10 @@ void SecureEmbedConnectorImpl::SynchronizeVisualProperties(
       visual_properties.root_widget_viewport_segments);
 
   render_widget_host->UpdateVisualProperties(propagate);
+
+  if (local_surface_id_changed) {
+    MaybeRefreshSurfaceKeepAlive();
+  }
 }
 
 void SecureEmbedConnectorImpl::UpdateCursor(const ui::Cursor& cursor) {
@@ -466,7 +474,11 @@ cc::TouchAction SecureEmbedConnectorImpl::InheritedEffectiveTouchAction()
 }
 
 bool SecureEmbedConnectorImpl::IsHidden() const {
-  return visibility_ == blink::mojom::FrameVisibility::kNotRendered;
+  // We want IsHidden() to return false even when the page isn't actually
+  // rendering us, since WebContents may want to render us for features like
+  // capture; any CSS that's hiding us should make us not show up incorrectly
+  // in the parent renderer regardless.
+  return !embedder_web_contents_;
 }
 
 bool SecureEmbedConnectorImpl::IsThrottled() const {
@@ -493,6 +505,20 @@ void SecureEmbedConnectorImpl::DidUpdateVisualProperties(
 
 void SecureEmbedConnectorImpl::SetVisibilityForChildViews(bool visible) const {
   current_child_frame_host()->SetVisibilityForChildViews(visible);
+}
+
+void SecureEmbedConnectorImpl::ForceRenderable(bool renderable) {
+  // We may be force-shown by WebContents to enable tab capture, even if we're
+  // in background. To enable that, we want to create a reference to the
+  // surface, to help the compositor notice its capture; this won't be created
+  // by the parent renderer unless it gets actually painted.
+  auto surface_id = view_->GetCurrentSurfaceId();
+  if (renderable && view_ && view_->GetCompositor() && surface_id.is_valid()) {
+    keep_surface_alive_ =
+        view_->GetCompositor()->TakeScopedKeepSurfaceAliveCallback(surface_id);
+  } else {
+    keep_surface_alive_.reset();
+  }
 }
 
 void SecureEmbedConnectorImpl::SetLocalFrameSize(
@@ -558,7 +584,6 @@ void SecureEmbedConnectorImpl::OnSetInheritedEffectiveTouchAction(
 
 void SecureEmbedConnectorImpl::OnVisibilityChanged(
     blink::mojom::FrameVisibility visibility) {
-  bool visible = visibility != blink::mojom::FrameVisibility::kNotRendered;
   visibility_ = visibility;
 
   if (!view_) {
@@ -577,12 +602,6 @@ void SecureEmbedConnectorImpl::OnVisibilityChanged(
     case blink::mojom::FrameVisibility::kRenderedOutOfViewport:
       guest_web_contents_->WasOccluded();
       break;
-  }
-
-  if (visible && !view_->host()->frame_tree()->IsHidden()) {
-    view_->Show();
-  } else if (!visible) {
-    view_->Hide();
   }
 }
 
@@ -787,6 +806,12 @@ RenderFrameHostImpl* SecureEmbedConnectorImpl::current_child_frame_host()
   }
   return static_cast<WebContentsImpl*>(guest_web_contents_.get())
       ->GetPrimaryMainFrame();
+}
+
+void SecureEmbedConnectorImpl::MaybeRefreshSurfaceKeepAlive() {
+  if (keep_surface_alive_) {
+    ForceRenderable(true);
+  }
 }
 
 }  // namespace content

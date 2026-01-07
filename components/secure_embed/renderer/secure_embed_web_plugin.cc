@@ -253,7 +253,8 @@ void SecureEmbedWebPlugin::SynchronizeVisualProperties() {
       sent_visual_properties_->root_widget_viewport_segments !=
           pending_visual_properties.root_widget_viewport_segments ||
       sent_visual_properties_->capture_sequence_number !=
-          pending_visual_properties.capture_sequence_number;
+          pending_visual_properties.capture_sequence_number ||
+      !sent_last_is_visible_ || sent_last_is_visible_ != last_is_visible_;
 
   if (synchronized_props_changed) {
     parent_local_surface_id_allocator_->GenerateId();
@@ -272,6 +273,7 @@ void SecureEmbedWebPlugin::SynchronizeVisualProperties() {
     host_->SynchronizeVisualProperties(pending_visual_properties,
                                        last_is_visible_);
     sent_visual_properties_ = pending_visual_properties;
+    sent_last_is_visible_ = last_is_visible_;
     container_->ScheduleAnimation();
   }
 }
@@ -352,6 +354,7 @@ void SecureEmbedWebPlugin::SetFrameSinkId(
 
   // Any visual properties previously sent are now invalid.
   sent_visual_properties_ = std::nullopt;
+  sent_last_is_visible_ = std::nullopt;
 
   SynchronizeVisualProperties();
 }

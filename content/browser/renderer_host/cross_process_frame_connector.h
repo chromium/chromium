@@ -309,6 +309,8 @@ class CONTENT_EXPORT CrossProcessFrameConnector
   // Returns the embedder's visibility.
   Visibility EmbedderVisibility() override;
 
+  void ForceRenderable(bool renderable) override;
+
  protected:
   friend class MockCrossProcessFrameConnector;
   friend class SitePerProcessBrowserTestBase;

@@ -677,6 +677,11 @@ Visibility CrossProcessFrameConnector::EmbedderVisibility() {
   return current_child_frame_host()->delegate()->GetVisibility();
 }
 
+void CrossProcessFrameConnector::ForceRenderable(bool renderable) {
+  // Not needed here; since the neccessary work will be done on the parent
+  // view (unless people start capturing frames or such).
+}
+
 RenderFrameHostImpl* CrossProcessFrameConnector::current_child_frame_host()
     const {
   return frame_proxy_in_parent_renderer_

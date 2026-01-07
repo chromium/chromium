@@ -101,6 +101,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   bool IsPointerLocked() override;
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;
+  ui::Compositor* GetCompositor() override;
 
   // RenderWidgetHostViewBase implementation.
 #if BUILDFLAG(IS_ANDROID)
@@ -291,8 +292,6 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   base::WeakPtr<RenderWidgetHostViewChildFrame> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
-
-  ui::Compositor* GetCompositor() override;
 
   void SetInputHelperForTesting(
       std::unique_ptr<input::ChildFrameInputHelper> input_helper) {

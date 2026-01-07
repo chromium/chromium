@@ -248,6 +248,10 @@ uint32_t RenderWidgetHostViewChildFrame::GetCaptureSequenceNumber() const {
 
 void RenderWidgetHostViewChildFrame::ShowWithVisibility(
     PageVisibilityState /*page_visibility*/) {
+  if (frame_connector_) {
+    frame_connector_->ForceRenderable(true);
+  }
+
   if (!host()->is_hidden())
     return;
 
@@ -261,6 +265,10 @@ void RenderWidgetHostViewChildFrame::ShowWithVisibility(
 }
 
 void RenderWidgetHostViewChildFrame::Hide() {
+  if (frame_connector_) {
+    frame_connector_->ForceRenderable(false);
+  }
+
   if (host()->is_hidden())
     return;
 

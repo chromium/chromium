@@ -99,6 +99,7 @@ class SecureEmbedWebPlugin : public blink::WebPlugin,
   scoped_refptr<cc::PictureLayer> crashed_layer_;
 
   std::optional<blink::FrameVisualProperties> sent_visual_properties_;
+  std::optional<bool> sent_last_is_visible_;
 
   gfx::Rect last_window_rect_;
   gfx::Rect last_clip_rect_;
