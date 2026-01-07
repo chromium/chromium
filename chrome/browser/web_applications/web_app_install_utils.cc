@@ -732,7 +732,7 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
 
   web_app.SetBorderlessUrlPatterns(web_app_info.borderless_url_patterns);
 
-  web_app.SetDescription(base::UTF16ToUTF8(web_app_info.description));
+  web_app.SetDescription(base::UTF16ToUTF8(web_app_info.description.value()));
   web_app.SetLaunchQueryParams(web_app_info.launch_query_params);
   if (web_app_info.scope.is_valid()) {
     web_app.SetScope(web_app_info.scope);

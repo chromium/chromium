@@ -67,7 +67,7 @@ constexpr SquareSizePx kMaxIconSize =
     webapps::InstallableEvaluator::kMaximumIconSizeInPx;
 
 // Matches a localized text object from a map based on |application_locale|.
-const blink::mojom::ManifestLocalizedTextObject* MatchLocalizedText(
+blink::mojom::ManifestLocalizedTextObjectPtr MatchLocalizedText(
     const base::flat_map<icu::Locale,
                          blink::mojom::ManifestLocalizedTextObjectPtr>&
         localized_map,
@@ -78,14 +78,14 @@ const blink::mojom::ManifestLocalizedTextObject* MatchLocalizedText(
 
   auto it = localized_map.find(application_locale);
   if (it != localized_map.end()) {
-    return it->second.get();
+    return it->second.Clone();
   }
 
   // Fall back to language-only ("en") match if no exact match ("en-US") found.
   icu::Locale language_only(application_locale.getLanguage());
   it = localized_map.find(language_only);
   if (it != localized_map.end()) {
-    return it->second.get();
+    return it->second.Clone();
   }
   return nullptr;
 }
@@ -98,7 +98,7 @@ LocalizedText GetLocalizedTitleFromManifestFields(
                                              ->Get()
                                              .c_str());
 
-    const blink::mojom::ManifestLocalizedTextObject* localized_name = nullptr;
+    blink::mojom::ManifestLocalizedTextObjectPtr localized_name;
     if (manifest.name_localized.has_value()) {
       localized_name =
           MatchLocalizedText(*manifest.name_localized, application_locale);
@@ -121,6 +121,34 @@ LocalizedText GetLocalizedTitleFromManifestFields(
     result = name;
   } else if (manifest.short_name) {
     result = *manifest.short_name;
+  }
+  return result;
+}
+
+LocalizedText GetLocalizedDescriptionFromManifestFields(
+    const blink::mojom::Manifest& manifest) {
+  if (base::FeatureList::IsEnabled(features::kWebAppManifestLocalization)) {
+    const icu::Locale application_locale(g_browser_process->GetFeatures()
+                                             ->application_locale_storage()
+                                             ->Get()
+                                             .c_str());
+
+    if (manifest.description_localized.has_value()) {
+      blink::mojom::ManifestLocalizedTextObjectPtr localized_description =
+          MatchLocalizedText(*manifest.description_localized,
+                             application_locale);
+      if (localized_description && !localized_description->value.empty()) {
+        return LocalizedText(localized_description->value,
+                             localized_description->lang,
+                             localized_description->dir);
+      }
+    }
+  }
+  // Fall back to non-localized field. Use assignment operator which handles
+  // clearing lang/dir fields.
+  LocalizedText result;
+  if (manifest.description.has_value()) {
+    result = *manifest.description;
   }
   return result;
 }
@@ -751,8 +779,11 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
   }
 
   install_info().launch_handler = manifest_->launch_handler;
-  if (manifest_->description.has_value()) {
-    install_info().description = manifest_->description.value();
+
+  LocalizedText description =
+      GetLocalizedDescriptionFromManifestFields(*manifest_);
+  if (!description.empty()) {
+    install_info().description = std::move(description);
   }
 
   install_info().translations = ToWebAppTranslations(manifest_->translations);

@@ -442,7 +442,7 @@ void ShowWebAppDetailedInstallDialog(
           start_url);
 
   const std::u16string description = gfx::TruncateString(
-      install_info->description, webapps::kMaximumDescriptionLength,
+      install_info->description.value(), webapps::kMaximumDescriptionLength,
       gfx::CHARACTER_BREAK);
   auto manifest_id = install_info->manifest_id();
 

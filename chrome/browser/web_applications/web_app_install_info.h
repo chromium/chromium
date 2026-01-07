@@ -327,8 +327,9 @@ struct WebAppInstallInfo {
   // translations and text direction information to be preserved.
   LocalizedText title;
 
-  // Description of the application.
-  std::u16string description;
+  // Description of the application, stored in a localized format to allow
+  // translations and text direction information to be preserved.
+  LocalizedText description;
 
   // The URL of the manifest.
   // https://www.w3.org/TR/appmanifest/#web-application-manifest
