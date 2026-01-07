@@ -44,7 +44,6 @@ cc_defaults {
     apex_available: [
         "com.android.tethering",
     ],
-    defaults: ["${GN2BP_MODULE_PREFIX}third_party_boringssl_boringssl__flags"],
     min_sdk_version: "30",
     include_dirs: [
         "external/cronet/${GN2BP_IMPORT_CHANNEL}/buildtools/third_party/libc++/",
@@ -57,16 +56,14 @@ cc_defaults {
     ],
     local_include_dirs: ["src/include"],
     export_include_dirs: ["src/include"],
-    cflags: [
-        "-DBORINGSSL_IMPLEMENTATION",
-        "-DBORINGSSL_SHARED_LIBRARY",
-    ],
 }
 
 cc_defaults {
     name: "${GN2BP_MODULE_PREFIX}libcrypto_defaults",
+    defaults: ["${GN2BP_MODULE_PREFIX}third_party_boringssl_boringssl__flags_libcrypto"],
     target: {
         android: {
+            cflags: ["-DBORINGSSL_SHARED_LIBRARY"],
             // On FIPS builds (i.e. Android only) prevent other libraries
             // from pre-empting symbols in libcrypto which could affect FIPS
             // compliance and cause integrity checks to fail. See b/160231064.
@@ -123,6 +120,14 @@ cc_object {
     },
 }
 
+// libcrypto must be compiled as a separate shared library to pass the
+// FIPS integrity test (POST). the FIPS self-check mechanism requires the
+// crypto code to be in its own segregated block so that its integrity can
+// be verified. All other components of boringSSL should be statically
+// linked to the main shared library.
+//
+// See https://boringssl.googlesource.com/boringssl/+/master/crypto/fipsmodule/FIPS.md#shared-build
+// for more information on FIPS compliance.
 cc_library_shared {
     name: "${GN2BP_MODULE_PREFIX}libcrypto",
     // Make sure to use the same name between tot and stable, so that
@@ -154,23 +159,13 @@ cc_library_shared {
     afdo: true,
 }
 
-cc_library_shared {
-    name: "${GN2BP_MODULE_PREFIX}libssl",
+cc_library_static {
+    name: "${GN2BP_MODULE_PREFIX}ssl_and_pki",
     defaults: [
         "${GN2BP_MODULE_PREFIX}boringssl_defaults",
         "${GN2BP_MODULE_PREFIX}libssl_sources",
-    ],
-    unique_host_soname: true,
-    shared_libs: ["${GN2BP_MODULE_PREFIX}libcrypto"],
-}
-
-cc_library_shared {
-    name: "${GN2BP_MODULE_PREFIX}libpki",
-    defaults: [
-        "${GN2BP_MODULE_PREFIX}boringssl_defaults",
         "${GN2BP_MODULE_PREFIX}libpki_sources",
+        "${GN2BP_MODULE_PREFIX}third_party_boringssl_boringssl__flags",
     ],
-    unique_host_soname: true,
-    cflags: ["-D_BORINGSSL_LIBPKI_"],
     shared_libs: ["${GN2BP_MODULE_PREFIX}libcrypto"],
 }

@@ -396,11 +396,17 @@ def enable_boringssl(module, arch):
     return
   if arch == 'common':
     shared_libs = module.shared_libs
+    static_libs = module.static_libs
+    whole_static_libs = module.whole_static_libs
   else:
     shared_libs = module.target[arch].shared_libs
+    static_libs = module.target[arch].static_libs
+    whole_static_libs = module.target[arch].whole_static_libs
   shared_libs.add(f'{MODULE_PREFIX}libcrypto')
-  shared_libs.add(f'{MODULE_PREFIX}libssl')
-  shared_libs.add(f'{MODULE_PREFIX}libpki')
+  if module.type == "cc_library_static":
+    static_libs.add(f'{MODULE_PREFIX}ssl_and_pki')
+  else:
+    whole_static_libs.add(f'{MODULE_PREFIX}ssl_and_pki')
 
 
 def add_androidx_experimental_java_deps(module, _):
@@ -3444,26 +3450,31 @@ def apply_post_processing(module):
 
 
 def make_cc_defaults_from_boringssl(boringssl_module: Module) -> Module:
+  module_name = boringssl_module.name + "__flags"
   cc_default_flags_module = Module(
-      "cc_defaults", boringssl_module.name + "__flags",
+      "cc_defaults", module_name,
       "Flags auto-extracted from BoringSSL GN rules, to be used in manually maintained BoringSSL Android.bp rules"
   )
 
-  def _get_filtered_cflags(cflags):
+  libcrypto_cc_defaults_flags_module = Module(
+      "cc_defaults", f'{module_name}_libcrypto',
+      f"""This cc_defaults inherits the same flags from {module_name} except some flags that breaks FIPS compliance."""
+  )
+
+  def _get_libcrypto_cflags(cflags):
     return [
         cflag for cflag in cflags
         if all(not cflag.startswith(denied_prefix) for denied_prefix in [
             # Breaks FIPS compliance as this is used by the linker's `--gc-sections` to remove
             # unused sections which breaks the hash. `-fno-*-sections` is intentionally not
             # added here as those flags are used to build all of boringSSL, while only
-            # boringCrypto(libcrypto) requires it, so it's manually defined in the
-            # Android.bp for that target.
+            # boringCrypto(libcrypto) requires it.
             "-ffunction-sections",
             "-fdata-sections",
         ])
     ]
 
-  def _get_filtered_ldflags(ldflags):
+  def _get_libcrypto_ldflags(ldflags):
     return [
         ldflag for ldflag in ldflags
         if all(not ldflag.startswith(denied_prefix) for denied_prefix in [
@@ -3473,18 +3484,25 @@ def make_cc_defaults_from_boringssl(boringssl_module: Module) -> Module:
         ])
     ]
 
-  cc_default_flags_module.cflags = _get_filtered_cflags(boringssl_module.cflags)
-  cc_default_flags_module.ldflags = _get_filtered_ldflags(
+  cc_default_flags_module.cflags = boringssl_module.cflags
+  cc_default_flags_module.ldflags = boringssl_module.ldflags
+  libcrypto_cc_defaults_flags_module.cflags = _get_libcrypto_cflags(
+      boringssl_module.cflags)
+  libcrypto_cc_defaults_flags_module.ldflags = _get_libcrypto_ldflags(
       boringssl_module.ldflags)
   for arch, variant in boringssl_module.target.items():
-    cc_default_flags_module.target[arch].cflags = _get_filtered_cflags(
-        variant.cflags)
-    cc_default_flags_module.target[arch].ldflags = _get_filtered_ldflags(
-        variant.ldflags)
+    cc_default_flags_module.target[arch].cflags = variant.cflags
+    cc_default_flags_module.target[arch].ldflags = variant.ldflags
+    libcrypto_cc_defaults_flags_module.target[
+        arch].cflags = _get_libcrypto_cflags(variant.cflags)
+    libcrypto_cc_defaults_flags_module.target[
+        arch].ldflags = _get_libcrypto_ldflags(variant.ldflags)
+
   cc_default_flags_module.build_file_path = ""
-  cc_default_flags_module.host_supported = boringssl_module.host_supported
+  libcrypto_cc_defaults_flags_module.build_file_path = ""
   cc_default_flags_module.defaults = [cc_defaults_module]
-  return cc_default_flags_module
+  libcrypto_cc_defaults_flags_module.defaults = [cc_defaults_module]
+  return (cc_default_flags_module, libcrypto_cc_defaults_flags_module)
 
 def create_blueprint_for_targets(gn, targets, test_targets):
   """Generate a blueprint for a list of GN targets."""
@@ -3515,9 +3533,9 @@ def create_blueprint_for_targets(gn, targets, test_targets):
   for module in blueprint.modules.values():
     apply_post_processing(module)
 
-  blueprint.add_module(
-      make_cc_defaults_from_boringssl(blueprint.modules[label_to_module_name(
-          "//third_party/boringssl:boringssl")]))
+  for module in make_cc_defaults_from_boringssl(blueprint.modules[
+      label_to_module_name("//third_party/boringssl:boringssl")]):
+    blueprint.add_module(module)
   return blueprint
 
 
