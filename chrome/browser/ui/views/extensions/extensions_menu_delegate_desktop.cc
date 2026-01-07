@@ -96,7 +96,8 @@ void ExtensionsMenuDelegateDesktop::OnActiveWebContentsChanged(
 }
 
 void ExtensionsMenuDelegateDesktop::OnHostAccessRequestAddedOrUpdated(
-    const extensions::ExtensionId& extension_id,
+    ExtensionActionViewModel* action_model,
+    int index,
     content::WebContents* web_contents) {
   CHECK(current_page_);
 
@@ -113,10 +114,7 @@ void ExtensionsMenuDelegateDesktop::OnHostAccessRequestAddedOrUpdated(
     return;
   }
 
-  // TODO(crbug.com/330588494): Add to correct index based on alphabetic
-  // order.
-  int index = 0;
-  AddOrUpdateExtensionRequestingAccess(main_page, extension_id, index,
+  AddOrUpdateExtensionRequestingAccess(main_page, action_model, index,
                                        web_contents);
   main_page->SetOptionalSectionVisibility(optional_section);
 }
@@ -156,26 +154,6 @@ void ExtensionsMenuDelegateDesktop::OnHostAccessRequestsCleared() {
   }
 
   main_page->ClearExtensionsRequestingAccess();
-  main_page->SetOptionalSectionVisibility(optional_section);
-}
-
-void ExtensionsMenuDelegateDesktop::OnHostAccessRequestDismissedByUser(
-    const extensions::ExtensionId& extension_id) {
-  CHECK(current_page_);
-
-  // Site access requests only affect the main page.
-  ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
-  if (!main_page) {
-    return;
-  }
-
-  ExtensionsMenuViewModel::OptionalSection optional_section =
-      menu_model_->GetOptionalSection();
-  if (!CanShowHostAccessRequests(optional_section)) {
-    return;
-  }
-
-  main_page->RemoveExtensionRequestingAccess(extension_id);
   main_page->SetOptionalSectionVisibility(optional_section);
 }
 
@@ -411,23 +389,18 @@ void ExtensionsMenuDelegateDesktop::UpdateMainPage(
       menu_model_->GetOptionalSection();
   if (optional_section ==
       ExtensionsMenuViewModel::OptionalSection::kHostAccessRequests) {
-    int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
-    auto* permissions_manager = PermissionsManager::Get(browser_->profile());
-    int index = 0;
+    // Clear any existing requests first to ensure a clean state.
+    // Note: There are few times when we will be re-populating the requests
+    // unnecessarily. This is okay because it should be uncommon, as it requires
+    // various extensions to add a host access request for a specific site and
+    // the user to have withheld site access for such extensions.
+    main_page->ClearExtensionsRequestingAccess();
 
-    const std::vector<std::unique_ptr<ExtensionActionViewModel>>&
-        action_models = menu_model_->action_models();
-    for (const auto& action_model : action_models) {
-      auto extension_id = action_model->GetId();
-      if (permissions_manager->HasActiveHostAccessRequest(tab_id,
-                                                          extension_id)) {
-        AddOrUpdateExtensionRequestingAccess(main_page, extension_id, index,
-                                             web_contents);
-        ++index;
-      } else {
-        // Otherwise remove its entry, if existent.
-        main_page->RemoveExtensionRequestingAccess(extension_id);
-      }
+    const auto& requests = menu_model_->host_access_requests();
+    for (size_t i = 0; i < requests.size(); ++i) {
+      AddOrUpdateExtensionRequestingAccess(
+          main_page, menu_model_->GetActionViewModel(requests[i]), i,
+          web_contents);
     }
   }
   main_page->SetOptionalSectionVisibility(optional_section);
@@ -500,16 +473,15 @@ void ExtensionsMenuDelegateDesktop::InsertMenuEntry(
 
 void ExtensionsMenuDelegateDesktop::AddOrUpdateExtensionRequestingAccess(
     ExtensionsMenuMainPageView* main_page,
-    const extensions::ExtensionId& extension_id,
+    ExtensionActionViewModel* action_model,
     int index,
     content::WebContents* web_contents) {
-  ToolbarActionViewModel* view_model =
-      extensions_container_->GetActionForId(extension_id);
-  std::u16string name = view_model->GetActionName();
+  auto extension_id = action_model->GetId();
+  std::u16string name = action_model->GetActionName();
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
   ui::ImageModel icon =
-      view_model->GetIcon(web_contents, gfx::Size(icon_size, icon_size));
+      action_model->GetIcon(web_contents, gfx::Size(icon_size, icon_size));
 
   main_page->AddOrUpdateExtensionRequestingAccess(extension_id, name, icon,
                                                   index);

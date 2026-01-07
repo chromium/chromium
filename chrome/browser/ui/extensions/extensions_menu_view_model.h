@@ -49,14 +49,16 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   class Observer : public base::CheckedObserver {
    public:
     // Notifies the delegate that the active web contents changed to
-    // `web_contents`.
+    // `web_contents`, which may have impacted the model's content (e.g host
+    // access requests may have changed).
     virtual void OnActiveWebContentsChanged(
         content::WebContents* web_contents) = 0;
 
     // Notifies the delegate that a new host access request was added or updated
-    // for `extension_id` on `web_contents`.
+    // with `action_model` on `index`.
     virtual void OnHostAccessRequestAddedOrUpdated(
-        const extensions::ExtensionId& extension_id,
+        ExtensionActionViewModel* action_model,
+        int index,
         content::WebContents* web_contents) = 0;
 
     // Notifies the delegate that the host access request for
@@ -67,11 +69,6 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
     // Notifies the delegate that host access requests on the current site were
     // cleared.
     virtual void OnHostAccessRequestsCleared() = 0;
-
-    // Notifies the delegate that the host access requests for `extension_id` on
-    // the current site was dismissed.
-    virtual void OnHostAccessRequestDismissedByUser(
-        const extensions::ExtensionId& extension_id) = 0;
 
     virtual void OnShowHostAccessRequestsInToolbarChanged(
         const extensions::ExtensionId& extension_id,
@@ -237,6 +234,10 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // `extension_id`.
   bool CanShowSitePermissionsPage(const extensions::ExtensionId& extension_id);
 
+  // Returns the extension action view model for the given `extension_id`.
+  ExtensionActionViewModel* GetActionViewModel(
+      const extensions::ExtensionId& extension_id) const;
+
   // Returns the state for the extension's context menu button.
   ControlState GetContextMenuButtonState(
       const extensions::ExtensionId& extension_id);
@@ -267,6 +268,12 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   const std::vector<std::unique_ptr<ExtensionActionViewModel>>&
   action_models() {
     return action_models_;
+  }
+
+  // Returns the id's of the extensions that have valid host access requests for
+  // the current site.
+  const std::vector<extensions::ExtensionId>& host_access_requests() {
+    return host_access_requests_;
   }
 
   // PermissionsManager::Observer:
@@ -307,12 +314,25 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   void DidFinishNavigation(content::NavigationHandle* handle) override;
 
  private:
-  // Populates the action models in alphabetical order.
-  void PopulateActionModels();
+  // Populates `action_models_` and `host_access_requests_` after actions
+  // have been initialized.
+  void Populate();
 
-  // Returns the extension action view model for the given `extension_id`.
-  ExtensionActionViewModel* GetActionViewModel(
-      const extensions::ExtensionId& extension_id) const;
+  // Adds `extension_id` to `host_access_requests` in the correct sorted
+  // order and notifies observers.
+  void AddHostAccessRequest(const extensions::ExtensionId& extension_id);
+
+  // Removes `extension_id` from `host_access_requests` and notifies
+  // observers.
+  void RemoveHostAccessRequest(const extensions::ExtensionId& extension_id);
+
+  // Updates `host_access_requests_` with the extensions that have active host
+  // access requests, clearing any existent ones. This should be called when
+  // actions are initialized, or on page navigations.
+  void UpdateHostAccessRequests();
+
+  // Updates the model when web contents changed, and notifies observers.
+  void OnWebContentsChanged(content::WebContents* web_contents);
 
   content::WebContents* GetActiveWebContents();
 
@@ -327,6 +347,9 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
 
   // The actions models ordered alphabetically by their action name.
   std::vector<std::unique_ptr<ExtensionActionViewModel>> action_models_;
+
+  // The extensions that have valid host access requests on the current site.
+  std::vector<extensions::ExtensionId> host_access_requests_;
 
   base::ScopedObservation<extensions::PermissionsManager,
                           extensions::PermissionsManager::Observer>

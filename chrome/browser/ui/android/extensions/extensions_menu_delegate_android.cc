@@ -59,17 +59,13 @@ void ExtensionsMenuDelegateAndroid::OnActionsInitialized() {
 }
 
 void ExtensionsMenuDelegateAndroid::OnHostAccessRequestAddedOrUpdated(
-    const extensions::ExtensionId& extension_id,
+    ExtensionActionViewModel* action_model,
+    int index,
     content::WebContents* web_contents) {
   // TODO(crbug.com/473213114)
 }
 
 void ExtensionsMenuDelegateAndroid::OnHostAccessRequestsCleared() {
-  // TODO(crbug.com/473213114)
-}
-
-void ExtensionsMenuDelegateAndroid::OnHostAccessRequestDismissedByUser(
-    const extensions::ExtensionId& extension_id) {
   // TODO(crbug.com/473213114)
 }
 

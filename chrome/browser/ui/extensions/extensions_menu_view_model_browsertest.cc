@@ -1255,3 +1255,76 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   EXPECT_EQ(actions[1]->GetActionName(), u"beta");
   EXPECT_EQ(actions[2]->GetActionName(), u"Gamma");
 }
+
+// Tests that host access requests are maintained in alphabetical order
+// matching the action_models_ order, regardless of the order they are added.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
+                       HostAccessRequests_SortedInsertionAndRemoval) {
+  // Add 3 extensions (A, B, C) and withhold their permissions, using names that
+  // ensure alphabetical order.
+  auto extension_A = AddExtensionWithHostPermission("Alpha", "<all_urls>");
+  auto extension_B = AddExtensionWithHostPermission("Beta", "<all_urls>");
+  auto extension_C = AddExtensionWithHostPermission("Gamma", "<all_urls>");
+
+  extensions::ScriptingPermissionsModifier(profile(), extension_A)
+      .SetWithholdHostPermissions(true);
+  extensions::ScriptingPermissionsModifier(profile(), extension_B)
+      .SetWithholdHostPermissions(true);
+  extensions::ScriptingPermissionsModifier(profile(), extension_C)
+      .SetWithholdHostPermissions(true);
+
+  NavigateTo("example.com");
+  content::WebContents* web_contents = GetActiveWebContents();
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+
+  // Verify initial state for action models are sorted.
+  const auto& actions = menu_model()->action_models();
+  ASSERT_EQ(3u, actions.size());
+  EXPECT_EQ(extension_A->id(), actions[0]->GetId());
+  EXPECT_EQ(extension_B->id(), actions[1]->GetId());
+  EXPECT_EQ(extension_C->id(), actions[2]->GetId());
+  EXPECT_TRUE(menu_model()->host_access_requests().empty());
+
+  // Add request for "Beta".
+  permissions_manager()->AddHostAccessRequest(web_contents, tab_id,
+                                              *extension_B);
+  std::vector<extensions::ExtensionId> requests =
+      menu_model()->host_access_requests();
+  ASSERT_EQ(1u, requests.size());
+  EXPECT_EQ(extension_B->id(), requests[0]);
+
+  // Add request for "Alpha".
+  // Order should be [Alpha, Beta, Gamma].
+  permissions_manager()->AddHostAccessRequest(web_contents, tab_id,
+                                              *extension_A);
+  requests = menu_model()->host_access_requests();
+  ASSERT_EQ(2u, requests.size());
+  EXPECT_EQ(extension_A->id(), requests[0]);
+  EXPECT_EQ(extension_B->id(), requests[1]);
+
+  // Add request for "Gamma".
+  // Order should be [Alpha, Beta, Gamma].
+  permissions_manager()->AddHostAccessRequest(web_contents, tab_id,
+                                              *extension_C);
+  requests = menu_model()->host_access_requests();
+  ASSERT_EQ(3u, requests.size());
+  EXPECT_EQ(extension_A->id(), requests[0]);
+  EXPECT_EQ(extension_B->id(), requests[1]);
+  EXPECT_EQ(extension_C->id(), requests[2]);
+
+  // Remove request for "Beta".
+  // Order should be [Alpha, Gamma].
+  permissions_manager()->RemoveHostAccessRequest(tab_id, extension_B->id());
+  requests = menu_model()->host_access_requests();
+  ASSERT_EQ(2u, requests.size());
+  EXPECT_EQ(extension_A->id(), requests[0]);
+  EXPECT_EQ(extension_C->id(), requests[1]);
+
+  // Dismiss request for "Alpha".
+  // Only request left is [Gamma].
+  permissions_manager()->UserDismissedHostAccessRequest(web_contents, tab_id,
+                                                        extension_A->id());
+  requests = menu_model()->host_access_requests();
+  ASSERT_EQ(1u, requests.size());
+  EXPECT_EQ(extension_C->id(), requests[0]);
+}

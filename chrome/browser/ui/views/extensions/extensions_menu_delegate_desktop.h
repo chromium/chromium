@@ -50,13 +50,12 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Delegate,
   // ExtensionsMenuViewModel::Observer:
   void OnActiveWebContentsChanged(content::WebContents* web_contents) override;
   void OnHostAccessRequestAddedOrUpdated(
-      const extensions::ExtensionId& extension_id,
+      ExtensionActionViewModel* action_model,
+      int index,
       content::WebContents* web_contents) override;
   void OnHostAccessRequestRemoved(
       const extensions::ExtensionId& extension_id) override;
   void OnHostAccessRequestsCleared() override;
-  void OnHostAccessRequestDismissedByUser(
-      const extensions::ExtensionId& extension_id) override;
   void OnShowHostAccessRequestsInToolbarChanged(
       const extensions::ExtensionId& extension_id,
       bool can_show_requests) override;
@@ -122,7 +121,7 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Delegate,
   // `index`.
   void AddOrUpdateExtensionRequestingAccess(
       ExtensionsMenuMainPageView* main_page,
-      const extensions::ExtensionId& extension_id,
+      ExtensionActionViewModel* action_model,
       int index,
       content::WebContents* web_contents);
 

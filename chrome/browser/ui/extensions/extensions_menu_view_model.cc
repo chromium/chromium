@@ -546,7 +546,7 @@ ExtensionsMenuViewModel::ExtensionsMenuViewModel(
   tab_list_interface_observation_.Observe(tab_list);
 
   if (toolbar_model_->actions_initialized()) {
-    PopulateActionModels();
+    Populate();
   }
 }
 
@@ -739,6 +739,15 @@ bool ExtensionsMenuViewModel::CanShowSitePermissionsPage(
 
   return CanUserCustomizeExtensionSiteAccess(*extension, *profile,
                                              *toolbar_model_, *web_contents);
+}
+
+ExtensionActionViewModel* ExtensionsMenuViewModel::GetActionViewModel(
+    const extensions::ExtensionId& extension_id) const {
+  auto it =
+      std::ranges::find_if(action_models_, [&extension_id](const auto& model) {
+        return model->GetId() == extension_id;
+      });
+  return it != action_models_.end() ? it->get() : nullptr;
 }
 
 ExtensionsMenuViewModel::ControlState
@@ -969,9 +978,13 @@ void ExtensionsMenuViewModel::OnHostAccessRequestAdded(
     return;
   }
 
-  for (Observer& observer : observers_) {
-    observer.OnHostAccessRequestAddedOrUpdated(extension_id, web_contents);
+  // Ignore if the extension already has an active request.
+  if (std::ranges::find(host_access_requests_, extension_id) !=
+      host_access_requests_.end()) {
+    return;
   }
+
+  AddHostAccessRequest(extension_id);
 }
 
 void ExtensionsMenuViewModel::OnHostAccessRequestUpdated(
@@ -986,17 +999,37 @@ void ExtensionsMenuViewModel::OnHostAccessRequestUpdated(
 
   auto* permissions_manager =
       extensions::PermissionsManager::Get(browser_->GetProfile());
-  if (permissions_manager->HasActiveHostAccessRequest(tab_id, extension_id)) {
-    // Update the request iff it's an active one.
+  bool is_active =
+      permissions_manager->HasActiveHostAccessRequest(tab_id, extension_id);
+  bool is_on_menu_model =
+      std::ranges::find(host_access_requests_, extension_id) !=
+      host_access_requests_.end();
+
+  if (is_active && is_on_menu_model) {
+    // Since it's already on the menu model, just notify the observers about the
+    // update.
+    // TODO(crbug.com/472154266): a request update should have no change on the
+    // UI, since it only has the extension name and icon which are static from
+    // the manifest. Consider removing this.
+    auto it = std::ranges::find(host_access_requests_, extension_id);
+    int index = std::distance(host_access_requests_.begin(), it);
+    ExtensionActionViewModel* action_model = GetActionViewModel(extension_id);
+    CHECK(action_model);
+
     for (Observer& observer : observers_) {
-      observer.OnHostAccessRequestAddedOrUpdated(extension_id,
+      observer.OnHostAccessRequestAddedOrUpdated(action_model, index,
                                                  GetActiveWebContents());
     }
-  } else {
-    // Otherwise, remove the request if existent.
-    for (Observer& observer : observers_) {
-      observer.OnHostAccessRequestRemoved(extension_id);
-    }
+    return;
+  }
+
+  if (is_active && !is_on_menu_model) {
+    AddHostAccessRequest(extension_id);
+    return;
+  }
+
+  if (!is_active && is_on_menu_model) {
+    RemoveHostAccessRequest(extension_id);
   }
 }
 
@@ -1010,9 +1043,7 @@ void ExtensionsMenuViewModel::OnHostAccessRequestRemoved(
     return;
   }
 
-  for (Observer& observer : observers_) {
-    observer.OnHostAccessRequestRemoved(extension_id);
-  }
+  RemoveHostAccessRequest(extension_id);
 }
 
 void ExtensionsMenuViewModel::OnHostAccessRequestsCleared(int tab_id) {
@@ -1022,6 +1053,8 @@ void ExtensionsMenuViewModel::OnHostAccessRequestsCleared(int tab_id) {
   if (tab_id != current_tab_id) {
     return;
   }
+
+  host_access_requests_.clear();
 
   for (Observer& observer : observers_) {
     observer.OnHostAccessRequestsCleared();
@@ -1039,9 +1072,7 @@ void ExtensionsMenuViewModel::OnHostAccessRequestDismissedByUser(
     return;
   }
 
-  for (Observer& observer : observers_) {
-    observer.OnHostAccessRequestDismissedByUser(extension_id);
-  }
+  RemoveHostAccessRequest(extension_id);
 }
 
 void ExtensionsMenuViewModel::OnShowAccessRequestsInToolbarChanged(
@@ -1122,7 +1153,7 @@ void ExtensionsMenuViewModel::OnToolbarActionUpdated(
 }
 
 void ExtensionsMenuViewModel::OnToolbarModelInitialized() {
-  PopulateActionModels();
+  Populate();
 
   for (Observer& observer : observers_) {
     observer.OnActionsInitialized();
@@ -1139,9 +1170,7 @@ void ExtensionsMenuViewModel::OnActiveTabChanged(tabs::TabInterface* tab) {
   auto* web_contents = tab->GetContents();
   WebContentsObserver::Observe(web_contents);
 
-  for (Observer& observer : observers_) {
-    observer.OnActiveWebContentsChanged(web_contents);
-  }
+  OnWebContentsChanged(web_contents);
 }
 
 void ExtensionsMenuViewModel::DidFinishNavigation(
@@ -1151,32 +1180,102 @@ void ExtensionsMenuViewModel::DidFinishNavigation(
     return;
   }
 
-  for (Observer& observer : observers_) {
-    observer.OnActiveWebContentsChanged(web_contents);
-  }
+  OnWebContentsChanged(web_contents);
 }
 
-void ExtensionsMenuViewModel::PopulateActionModels() {
+void ExtensionsMenuViewModel::Populate() {
   CHECK(toolbar_model_->actions_initialized());
   CHECK(action_models_.empty());
+  CHECK(host_access_requests_.empty());
 
+  // Create and sort the action models by name.
   for (const auto& id : toolbar_model_->action_ids()) {
     auto model = delegate_->CreateActionViewModel(id);
     if (model) {
       action_models_.push_back(std::move(model));
     }
   }
-
   std::sort(action_models_.begin(), action_models_.end(), SortActionsByName);
+
+  UpdateHostAccessRequests();
 }
 
-ExtensionActionViewModel* ExtensionsMenuViewModel::GetActionViewModel(
-    const extensions::ExtensionId& extension_id) const {
-  auto it =
+void ExtensionsMenuViewModel::AddHostAccessRequest(
+    const extensions::ExtensionId& extension_id) {
+  // Find the "rank" of the new extension in the sorted `action_models_` list.
+  auto action_model_it =
       std::ranges::find_if(action_models_, [&extension_id](const auto& model) {
         return model->GetId() == extension_id;
       });
-  return it != action_models_.end() ? it->get() : nullptr;
+  CHECK(action_model_it != action_models_.end());
+
+  // Find the correct insertion spot in `host_access_requests_` to match
+  // the order in `action_models_`.
+  auto insert_it = host_access_requests_.begin();
+  for (; insert_it != host_access_requests_.end(); ++insert_it) {
+    auto current_req_it = std::ranges::find_if(
+        action_models_, [req_id = *insert_it](const auto& model) {
+          return model->GetId() == req_id;
+        });
+
+    if (action_model_it < current_req_it) {
+      break;
+    }
+  }
+
+  // Insert the extension to the requests list.
+  insert_it = host_access_requests_.insert(insert_it, extension_id);
+
+  // Notify observers.
+  int index = std::distance(host_access_requests_.begin(), insert_it);
+  ExtensionActionViewModel* action_model = action_model_it->get();
+  for (Observer& observer : observers_) {
+    observer.OnHostAccessRequestAddedOrUpdated(action_model, index,
+                                               GetActiveWebContents());
+  }
+}
+
+void ExtensionsMenuViewModel::RemoveHostAccessRequest(
+    const extensions::ExtensionId& extension_id) {
+  auto it = std::ranges::find(host_access_requests_, extension_id);
+  if (it == host_access_requests_.end()) {
+    return;
+  }
+
+  host_access_requests_.erase(it);
+
+  for (Observer& observer : observers_) {
+    observer.OnHostAccessRequestRemoved(extension_id);
+  }
+}
+
+void ExtensionsMenuViewModel::UpdateHostAccessRequests() {
+  host_access_requests_.clear();
+
+  // Store the extension ids for the actions that have an active request.
+  // Since action_models_ is sorted, iterating through it ensures
+  // host_access_requests_ is also sorted.
+  auto* permissions_manager =
+      extensions::PermissionsManager::Get(browser_->GetProfile());
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(GetActiveWebContents());
+
+  for (const auto& action_model : action_models()) {
+    auto extension_id = action_model->GetId();
+    if (permissions_manager->HasActiveHostAccessRequest(tab_id, extension_id)) {
+      host_access_requests_.push_back(extension_id);
+    }
+  }
+}
+
+void ExtensionsMenuViewModel::OnWebContentsChanged(
+    content::WebContents* web_contents) {
+  // Host access requests are dependent on the web content's origin. Therefore,
+  // we need to reset them when web contents change.
+  UpdateHostAccessRequests();
+
+  for (Observer& observer : observers_) {
+    observer.OnActiveWebContentsChanged(web_contents);
+  }
 }
 
 content::WebContents* ExtensionsMenuViewModel::GetActiveWebContents() {
