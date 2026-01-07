@@ -43,10 +43,10 @@ fn create_reader() -> XmlEventReader<Cursor<Vec<u8>>> {
         .ignore_invalid_encoding_declarations(true)
         .ignore_comments(false)
         .allow_multiple_root_elements(false);
-    return XmlEventReader::new_with_config(cursor, parser_config);
+    XmlEventReader::new_with_config(cursor, parser_config)
 }
 
-fn create_read_state<'a>(callbacks: Pin<&mut XmlCallbacks>) -> Box<XmlReadState<'_>> {
+fn create_read_state(callbacks: Pin<&mut XmlCallbacks>) -> Box<XmlReadState<'_>> {
     let event_reader = create_reader();
     Box::new(XmlReadState {
         event_reader,
@@ -78,7 +78,7 @@ fn new_namespaces(existing: &Namespace, new: &Namespace, seen_first_event: bool)
         // it likely did not come from the input document.
         // See: https://github.com/kornelski/xml-rs/issues/48
         if existing.get(new_prefix).is_none_or(|uri| uri != new_uri)
-            && (seen_first_event || new_prefix != "" || new_uri != "")
+            && (seen_first_event || !new_prefix.is_empty() || !new_uri.is_empty())
         {
             result.put(new_prefix, new_uri);
         }
@@ -139,7 +139,7 @@ fn process_next_event(read_state: &mut XmlReadState) {
                 ProcessingInstruction { name, data } => {
                     let data = data.unwrap_or_default();
                     let data = data.trim_start();
-                    read_state.parser_callbacks.as_mut().ProcessingInstruction(&name, &data);
+                    read_state.parser_callbacks.as_mut().ProcessingInstruction(&name, data);
                 }
                 StartElement { name, attributes, namespace } => {
                     let local_name: &str = &name.local_name;
@@ -149,7 +149,7 @@ fn process_next_event(read_state: &mut XmlReadState) {
                     let ns: &str = &name.namespace.unwrap_or_default();
 
                     let new_namespaces = new_namespaces(
-                        &read_state.namespace_stack.last().unwrap_or(&Namespace::empty()),
+                        read_state.namespace_stack.last().unwrap_or(&Namespace::empty()),
                         &namespace,
                         read_state.seen_first_event,
                     );
@@ -209,7 +209,6 @@ fn process_next_event(read_state: &mut XmlReadState) {
         }
         Err(failure) => {
             read_state.error_details = Some(failure.clone());
-            return;
         }
     }
 }
@@ -275,40 +274,36 @@ fn attributes_next<'a>(
     false
 }
 
-fn namespaces_next<'a>(
-    namespaces_iterator: &'a mut NamespacesIterator,
+fn namespaces_next(
+    namespaces_iterator: &mut NamespacesIterator,
     prefix: &mut String,
     uri: &mut String,
 ) -> bool {
-    loop {
-        if let Some(namespace) = namespaces_iterator.namespaces.next() {
-            // TODO(drott): Why does the library generate these default ones?
-            // TODO(drott): Why do we see an empty namespace here for
-            // fast/dom/attribute-namespaces-get-set.html and XML like:
-            // <root xmlns:foo=\"http://www.example.com\" attr=\"test2\" foo:attr=\"test\" />
-            // and virtual/rust-xml/fast/xmlhttprequest/xmlhttprequest-get.xhtml
-            // Filed as: https://github.com/kornelski/xml-rs/issues/50
+    for namespace in namespaces_iterator.namespaces.by_ref() {
+        // TODO(drott): Why does the library generate these default ones?
+        // TODO(drott): Why do we see an empty namespace here for
+        // fast/dom/attribute-namespaces-get-set.html and XML like:
+        // <root xmlns:foo=\"http://www.example.com\" attr=\"test2\" foo:attr=\"test\" />
+        // and virtual/rust-xml/fast/xmlhttprequest/xmlhttprequest-get.xhtml
+        // Filed as: https://github.com/kornelski/xml-rs/issues/50
 
-            // Letting the empty namespace and empty URL pass through here
-            // is important to reset the default namespace to none.
-            if (namespace.0 == "xml" && namespace.1 == NS_XML_URI)
-                || (namespace.0 == "xmlns" && namespace.1 == NS_XMLNS_URI)
-            {
-                continue;
-            }
-
-            *prefix = namespace.0.to_string();
-            *uri = namespace.1.to_string();
-            return true;
-        } else {
-            break;
+        // Letting the empty namespace and empty URL pass through here
+        // is important to reset the default namespace to none.
+        if (namespace.0 == "xml" && namespace.1 == NS_XML_URI)
+            || (namespace.0 == "xmlns" && namespace.1 == NS_XMLNS_URI)
+        {
+            continue;
         }
+
+        *prefix = namespace.0.to_string();
+        *uri = namespace.1.to_string();
+        return true;
     }
     false
 }
 
-fn parse_attributes<'a>(
-    attributes_string: &'a [u8],
+fn parse_attributes(
+    attributes_string: &[u8],
     success: &mut bool,
 ) -> Vec<AttributeNameValue> {
     let mut reader = create_reader();
@@ -375,6 +370,7 @@ mod ffi {
         // strings, so one way to convey that to the C++ side is to carry an
         // extra boolean - which we require to be able to distinguish between a
         // null and an empty namespace URI.
+        #[allow(clippy::too_many_arguments)]
         fn StartElementNs(
             self: Pin<&mut XmlCallbacks>,
             local_name: &str,
@@ -416,8 +412,8 @@ mod ffi {
         ) -> bool;
         fn saw_error(read_state: &XmlReadState) -> bool;
 
-        unsafe fn parse_attributes<'a>(
-            attributes_string: &'a [u8],
+        unsafe fn parse_attributes(
+            attributes_string: &[u8],
             success: &mut bool,
         ) -> Vec<AttributeNameValue>;
 

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // https://www.w3.org/TR/xhtml1/DTD/xhtml-lat1.ent
-pub const LAT1_MAP: &[(&'static str, &'static str)] = &[
+pub const LAT1_MAP: &[(&str, &str)] = &[
     ("nbsp", "\u{a0}"),
     ("iexcl", "\u{a1}"),
     ("cent", "\u{a2}"),
@@ -104,7 +104,7 @@ pub const LAT1_MAP: &[(&'static str, &'static str)] = &[
 
 // https://www.w3.org/TR/xhtml1/DTD/xhtml-symbol.ent
 
-pub const SYMBOL_MAP: &[(&'static str, &'static str)] = &[
+pub const SYMBOL_MAP: &[(&str, &str)] = &[
     ("fnof", "\u{192}"),
     ("Alpha", "\u{391}"),
     ("Beta", "\u{392}"),
@@ -235,7 +235,7 @@ pub const SYMBOL_MAP: &[(&'static str, &'static str)] = &[
 // https://www.w3.org/TR/xhtml1/DTD/xhtml-special.ent except standard XML ones
 // from https://www.w3.org/TR/REC-xml/#sec-predefined-ent
 
-pub const SPECIAL_MAP: &[(&'static str, &'static str)] = &[
+pub const SPECIAL_MAP: &[(&str, &str)] = &[
     ("OElig", "\u{152}"),
     ("oelig", "\u{153}"),
     ("Scaron", "\u{160}"),
@@ -271,7 +271,7 @@ pub const SPECIAL_MAP: &[(&'static str, &'static str)] = &[
 // And removing existing ones above.
 // TODO(drott): Check if we can combine this with the existing entity parsing
 // code we have in Blink that the existing XMLDocumentParser uses?
-pub const HTML5_MAP: &[(&'static str, &'static str)] = &[
+pub const HTML5_MAP: &[(&str, &str)] = &[
     ("AMP", "\u{00026}"),
     ("Abreve", "\u{00102}"),
     ("Acy", "\u{00410}"),
