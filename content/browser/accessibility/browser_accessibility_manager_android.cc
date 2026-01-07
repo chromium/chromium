@@ -425,8 +425,13 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
                                features::kAccessibilityAtomicLiveRegions))) {
           wcax->HandleLiveRegionNodeChanged(android_node->GetUniqueId());
         }
-      } else if (!base::FeatureList::IsEnabled(
-                     features::kAccessibilityDeprecateTypeAnnounce)) {
+      }
+      // TODO(crbug.com/470048610): When the Finch experiment for
+      // kAccessibilityAtomicLiveRegions is complete, we should convert these
+      // two if-statements into an if-else statement. However, for the
+      // experiment, we need both code paths to be preserved.
+      if (!base::FeatureList::IsEnabled(
+              features::kAccessibilityDeprecateTypeAnnounce)) {
         // If we don't support WINDOW_CONTENT_CHANGED events BUT have not yet
         // deprecated TYPE_ANNOUNCEMENT, we should fire a TYPE_ANNOUNCEMENT
         // event which contains the text of the changed node.

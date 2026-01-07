@@ -144,8 +144,8 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
+    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+    @EnableFeatures({
         ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
     })
@@ -156,8 +156,8 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
+    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+    @EnableFeatures({
         ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
     })
@@ -182,6 +182,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     @EnableFeatures({
+        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
     })
@@ -191,8 +192,8 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
+    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+    @EnableFeatures({
         ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
     })
@@ -205,6 +206,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     @EnableFeatures({
+        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
     })
@@ -216,8 +218,8 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
+    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+    @EnableFeatures({
         ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
     })
@@ -230,6 +232,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     @EnableFeatures({
+        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
     })
@@ -930,9 +933,10 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
+    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+    @EnableFeatures({
         ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
+        ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
     })
     public void test_liveRegionAdd() {
         performTest("live-region-add.html", "live-region-add-expected-android.txt");
@@ -940,15 +944,19 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE)
+    @EnableFeatures({
+        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
+        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
+        ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
+    })
     public void test_liveRegionAdd_exp() {
         performTest("live-region-add.html", "live-region-add-expected-android-exp.txt");
     }
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
+    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+    @EnableFeatures({
         ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
     })
@@ -959,6 +967,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     @EnableFeatures({
+        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
     })
@@ -977,9 +986,10 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
-        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE
+    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+    @EnableFeatures({
+        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
+        ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
     })
     public void test_liveRegionChanged() {
         performTest("live-region-change.html", "live-region-change-expected-android.txt");
@@ -987,16 +997,21 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE)
+    @EnableFeatures({
+        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
+        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
+        ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
+    })
     public void test_liveRegionChanged_exp() {
         performTest("live-region-change.html", "live-region-change-expected-android-exp.txt");
     }
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
-        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE
+    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+    @EnableFeatures({
+        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
+        ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
     })
     public void test_liveRegionChangedInnerHtml() {
         performTest(
@@ -1006,7 +1021,11 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE)
+    @EnableFeatures({
+        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
+        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
+        ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
+    })
     public void test_liveRegionChangedInnerHtml_exp() {
         performTest(
                 "live-region-change-innerhtml.html",
@@ -1015,9 +1034,10 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
-        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE
+    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+    @EnableFeatures({
+        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
+        ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
     })
     public void test_liveRegionChangedInnerText() {
         performTest(
@@ -1027,8 +1047,8 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
+    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+    @EnableFeatures({
         ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
     })
@@ -1041,6 +1061,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     @EnableFeatures({
+        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
     })
@@ -1052,7 +1073,11 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE)
+    @EnableFeatures({
+        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
+        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
+        ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
+    })
     public void test_liveRegionChangedInnerText_exp() {
         performTest(
                 "live-region-change-innertext.html",
@@ -1067,9 +1092,10 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
-        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE
+    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+    @EnableFeatures({
+        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
+        ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
     })
     public void test_liveRegionElemReparent() {
         performTest(
@@ -1078,7 +1104,11 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE)
+    @EnableFeatures({
+        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
+        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
+        ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
+    })
     public void test_liveRegionElemReparent_exp() {
         performTest(
                 "live-region-elem-reparent.html",
@@ -1256,8 +1286,8 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
+    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+    @EnableFeatures({
         ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
     })
@@ -1270,6 +1300,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     @EnableFeatures({
+        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
     })
