@@ -48,6 +48,22 @@ TEST(ToVectorTest, Projection) {
   ProjectionTest<base::flat_set<int>>();
 }
 
+TEST(ToVectorTest, IdentityWithCustomType) {
+  std::set<int> v = {1, 2, 3};
+  auto vec = base::ToVector<int64_t>(v);
+  static_assert(std::same_as<decltype(vec), std::vector<int64_t>>);
+
+  EXPECT_THAT(vec, ElementsAre(1L, 2L, 3L));
+}
+
+TEST(ToVectorTest, IdentityWithCustomTypeAndProjection) {
+  std::set<int> v = {1, 2, 3};
+  auto vec = base::ToVector<int64_t>(v, [](int x) { return x * 2; });
+  static_assert(std::same_as<decltype(vec), std::vector<int64_t>>);
+
+  EXPECT_THAT(vec, ElementsAre(2L, 4L, 6L));
+}
+
 TEST(ToVectorTest, MoveOnly) {
   std::vector<std::unique_ptr<int>> v;
   v.push_back(std::make_unique<int>(1));
@@ -94,6 +110,17 @@ TEST(ToVectorTest, MoveConstructionFromArray) {
       std::make_unique<int>(3),
   });
   EXPECT_THAT(vec, ElementsAre(Pointee(1), Pointee(2), Pointee(3)));
+}
+
+TEST(ToVectorTest, CustomTypeWithArray) {
+  auto vec = base::ToVector<std::string_view>({
+      "foo",
+      "bar",
+      "baz",
+  });
+
+  static_assert(std::same_as<decltype(vec), std::vector<std::string_view>>);
+  EXPECT_THAT(vec, ElementsAre("foo", "bar", "baz"));
 }
 
 }  // namespace
