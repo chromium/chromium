@@ -337,8 +337,7 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromGpu(
   CHECK(source_frame);
   // NV12 is the only supported format.
   DCHECK_EQ(source_frame->format(), media::PIXEL_FORMAT_NV12);
-  DCHECK_EQ(source_frame->storage_type(),
-            media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
+  DCHECK(source_frame->HasMappableSharedImage());
 
   // This is necessary because mapping may require waiting on IO thread,
   // but webrtc API is synchronous.
