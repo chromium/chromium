@@ -1,4 +1,7 @@
 features:
 - name: text-combine-upright
   files:
-  - "text-combine-upright-*"
+  - text-combine-upright-*
+- name: writing-mode
+  files:
+  - writing-mode-*

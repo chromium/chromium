@@ -4,3 +4,7 @@ features:
   - 'position-fixed-*.xht'
   - position-004.xht
   - position-006.xht
+- name: width-height
+  files:
+  - '*width*'
+  - '*height*'
