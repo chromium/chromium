@@ -359,10 +359,11 @@ void DisassemblerElf<TRAITS>::ExtractInterestingSectionHeaders() {
   for (elf::Elf32_Half i = 0; i < sections_count_; ++i) {
     const typename Traits::Elf_Shdr* section = UNSAFE_TODO(sections_ + i);
     if ((section_judgements_[i] & SECTION_BIT_MAYBE_USEFUL_FOR_POINTERS) != 0) {
-      if (IsRelocSection<Traits>(*section))
+      if (IsRelocSection<Traits>(*section)) {
         reloc_section_dims_.emplace_back(*section);
-      else if (IsExecSection<Traits>(*section))
+      } else if (IsExecSection<Traits>(*section)) {
         exec_headers_.push_back(section);
+      }
     }
   }
   auto comp = [](const typename Traits::Elf_Shdr* a,
@@ -370,6 +371,7 @@ void DisassemblerElf<TRAITS>::ExtractInterestingSectionHeaders() {
     return a->sh_offset < b->sh_offset;
   };
   std::sort(reloc_section_dims_.begin(), reloc_section_dims_.end());
+  SectionDimensionsElf::ResolveOverlaps(&reloc_section_dims_);
   std::sort(exec_headers_.begin(), exec_headers_.end(), comp);
 }
 

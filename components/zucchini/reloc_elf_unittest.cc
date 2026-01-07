@@ -114,6 +114,98 @@ class FakeImageWithReloc {
 
 }  // namespace
 
+TEST(RelocElfTest, ResolveOverlaps) {
+  // Helper to keep test cases succinct. |sorted_regions| provides regions only,
+  // and is used to construct the input list of SectionDimensionsElf.
+  // |expected_mask| is a string whose characters corresponding to each element
+  // in |sorted_regions|, indicating whether ("1") or not ("0") an element is
+  // expected to remain in the final output.
+  auto run_test = [](const std::string expected_mask,
+                     std::vector<BufferRegion> sorted_regions) {
+    // |entsize| doesn't matter; just use constant.
+    constexpr size_t ENTSIZE = 4U;
+
+    size_t n = sorted_regions.size();
+    CHECK_EQ(n, expected_mask.length());
+    std::vector<SectionDimensionsElf> sorted_dims;
+    std::vector<SectionDimensionsElf> expected_dims;
+    for (size_t i = 0; i < n; ++i) {
+      auto region = sorted_regions[i];
+      sorted_dims.emplace_back(region.offset, region.size, ENTSIZE);
+      if (expected_mask[i] == '1') {
+        expected_dims.emplace_back(sorted_dims.back());
+      }
+    }
+    CHECK(std::is_sorted(sorted_dims.begin(), sorted_dims.end()));
+    CHECK(std::is_sorted(expected_dims.begin(), expected_dims.end()));
+    SectionDimensionsElf::ResolveOverlaps(&sorted_dims);
+    EXPECT_EQ(expected_dims, sorted_dims);
+  };
+
+  // Trivial cases.
+  run_test("", std::vector<BufferRegion>());
+  run_test("1", {{0U, +100U}});
+
+  // Zero-sized regions are pathological and should be removed.
+  run_test("0", {{100U, +0U}});
+  run_test("00", {{100U, +0U}, {100U, +0U}});
+  run_test("110", {{100U, +10U}, {110U, +10U}, {110U, +0U}});
+
+  // Two disjoint regions: All kept.
+  run_test("11", {{0U, +100U}, {200U, +100U}});
+
+  // Adjacent regions: All kept.
+  run_test("111", {{100U, +100U}, {200U, +300U}, {500U, +20U}});
+
+  // Slight overlap: Second region is removed.
+  run_test("101", {{101U, +100U}, {200U, +300U}, {500U, +20U}});
+
+  // Exact overlaps: Duplicated regions are removed.
+  run_test("1101", {{50U, +20U}, {100U, +100U}, {100U, +100U}, {300U, +40U}});
+  run_test("10100", {{1U, +4U}, {1U, +4U}, {7U, +4U}, {7U, +4U}, {7U, +4U}});
+
+  // Overlap with prefix: Covered region is removed.
+  run_test("1101", {{50U, +20U}, {100U, +100U}, {100U, +40U}, {300U, +40U}});
+
+  // Overlap with suffix: Covered region is removed.
+  run_test("1101", {{50U, +20U}, {100U, +100U}, {170U, +53U}, {300U, +40U}});
+
+  // Complete coverage: Covered region is removed.
+  run_test("1101", {{50U, +20U}, {100U, +100U}, {101U, +98U}, {300U, +40U}});
+
+  // Second straddle between first and third: Second region is removed.
+  run_test("101", {{100U, +50U}, {120U, +70U}, {150U, +100U}});
+
+  // All three overlap: The first one wins.
+  run_test("100", {{100U, +100U}, {120U, +100U}, {150U, +100U}});
+
+  // Small regions shadowed by large one.
+  run_test("1000011", {{100U, +100U},
+                       {110U, +20U},
+                       {130U, +20U},
+                       {160U, +20U},
+                       {190U, +20U},  // Still overlaps, so removed.
+                       {205U, +5U},   // Overlaps with a removed one, so kept.
+                       {210U, +20U}});
+
+  // Linear overlap chain: The first (and alternating ones) survive, even though
+  // they have smaller total coverage. This is owing to greedy algorithm.
+  run_test("101010", {{100U, +10U},
+                      {105U, +95U},
+                      {200U, +10U},
+                      {205U, +95U},
+                      {300U, +10U},
+                      {305U, +95U}});
+
+  // Intersperse zero-sized regions with one non-zero-sized region.
+  run_test("010000", {{90U, +0U},
+                      {100U, +10U},
+                      {100U, +0U},
+                      {104U, +0U},
+                      {110U, +0U},
+                      {120U, +0U}});
+}
+
 TEST(RelocElfTest, ReadWrite32) {
   // Set up mock image: Size = 0x3000, .reloc at 0x600. RVA is 0x40000 + offset.
   constexpr size_t kImageSize = 0x3000;

@@ -13,6 +13,24 @@
 
 namespace zucchini {
 
+/******** SectionDimensionsElf ********/
+
+// static
+void SectionDimensionsElf::ResolveOverlaps(
+    std::vector<SectionDimensionsElf>* sorted_dims) {
+  size_t hi = 0;
+  auto it = std::remove_if(
+      sorted_dims->begin(), sorted_dims->end(),
+      [&](const SectionDimensionsElf& v) {
+        if (v.region.size > 0 && v.region.lo() >= hi) {  // Keep if good.
+          hi = v.region.hi();
+          return false;
+        }
+        return true;
+      });
+  sorted_dims->erase(it, sorted_dims->end());
+}
+
 /******** RelocReaderElf ********/
 
 RelocReaderElf::RelocReaderElf(
