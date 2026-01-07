@@ -153,7 +153,7 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
                                    /*use_month_type=*/true)};
   const RegexPredictions regex_predictions = DetermineRegexTypes(
       GeoIpCountryCode(""), LanguageCode(""), form_structure.ToFormData(),
-      /*log_manager=*/nullptr);
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
   regex_predictions.ApplyTo(form_structure.fields());
   form_structure.RationalizeAndAssignSections(
       GeoIpCountryCode(""), LanguageCode(""), /*log_manager=*/nullptr);
@@ -179,7 +179,7 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
                                    /*use_month_type=*/true)};
   const RegexPredictions regex_predictions = DetermineRegexTypes(
       GeoIpCountryCode(""), LanguageCode(""), form_structure.ToFormData(),
-      /*log_manager=*/nullptr);
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
   regex_predictions.ApplyTo(form_structure.fields());
   form_structure.RationalizeAndAssignSections(
       GeoIpCountryCode(""), LanguageCode(""), /*log_manager=*/nullptr);
@@ -204,7 +204,7 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
                                    /*use_month_type=*/true)};
   const RegexPredictions regex_predictions = DetermineRegexTypes(
       GeoIpCountryCode(""), LanguageCode(""), form_structure.ToFormData(),
-      /*log_manager=*/nullptr);
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
   regex_predictions.ApplyTo(form_structure.fields());
   form_structure.RationalizeAndAssignSections(
       GeoIpCountryCode(""), LanguageCode(""), /*log_manager=*/nullptr);
@@ -226,7 +226,7 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
                                    /*use_month_type=*/true)};
   const RegexPredictions regex_predictions = DetermineRegexTypes(
       GeoIpCountryCode(""), LanguageCode(""), form_structure.ToFormData(),
-      /*log_manager=*/nullptr);
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
   regex_predictions.ApplyTo(form_structure.fields());
   form_structure.RationalizeAndAssignSections(
       GeoIpCountryCode(""), LanguageCode(""), /*log_manager=*/nullptr);

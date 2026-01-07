@@ -676,13 +676,13 @@ void AutofillManager::ParseFormsAsyncCommon(
         callback) {
   // To be run on a different task (must not access global or member
   // variables).
-  auto run_heuristics = [](AsyncContext context) {
+  auto run_heuristics = [](AsyncContext context, bool ignore_small_forms) {
     SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormsAsync.RunHeuristics");
     context.regex_predictions.reserve(context.forms.size());
     for (const FormData& form : context.forms) {
       context.regex_predictions.push_back(DetermineRegexTypes(
           context.country_code, context.current_page_language, form,
-          context.log_manager.get()));
+          context.log_manager.get(), ignore_small_forms));
     }
     return context;
   };
@@ -721,18 +721,21 @@ void AutofillManager::ParseFormsAsyncCommon(
   // To be run on the main thread (accesses member variables).
   auto run_heuristics_and_update_cache = base::BindOnce(
       [](base::WeakPtr<AutofillManager> self,
-         AsyncContext (*run_heuristics)(AsyncContext),
+         AsyncContext (*run_heuristics)(AsyncContext, bool),
          base::OnceCallback<void(AsyncContext)> update_cache,
-         AsyncContext context) {
+         bool ignore_small_forms, AsyncContext context) {
         if (!self) {
           return;
         }
         self->parsing_task_runner_->PostTaskAndReplyWithResult(
-            FROM_HERE, base::BindOnce(run_heuristics, std::move(context)),
+            FROM_HERE,
+            base::BindOnce(run_heuristics, std::move(context),
+                           ignore_small_forms),
             std::move(update_cache));
       },
       parsing_weak_ptr_factory_.GetWeakPtr(), run_heuristics,
-      std::move(update_cache));
+      std::move(update_cache),
+      /*ignore_small_forms=*/!client().IsTabInActorMode());
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Parsing happens in the following order:
@@ -791,6 +794,7 @@ void AutofillManager::RunMlModels(
     std::vector<FormData> forms = context.forms;
     ml_handler->GetModelPredictionsForForms(
         std::move(forms), country_code,
+        /*ignore_small_forms=*/!manager->client().IsTabInActorMode(),
         base::BindOnce(std::move(receive_predictions), std::move(context)));
   };
 

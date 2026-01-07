@@ -29,11 +29,13 @@ namespace {
 // are returned, but not assigned to the `fields_` yet. Use
 // `AssignBestFieldTypes()` to do so.
 FieldCandidatesMap ParseFieldTypesWithPatterns(const FormData& form,
-                                               ParsingContext& context) {
+                                               ParsingContext& context,
+                                               bool ignore_small_forms) {
   FieldCandidatesMap field_type_map;
 
   if (ShouldRunHeuristics(form)) {
-    FormFieldParser::ParseFormFields(context, form.fields(), field_type_map);
+    FormFieldParser::ParseFormFields(context, form.fields(), field_type_map,
+                                     ignore_small_forms);
   } else if (ShouldRunHeuristicsForSingleFields(form)) {
     FormFieldParser::ParseSingleFields(context, form.fields(), field_type_map);
     FormFieldParser::ParseStandaloneCVCFields(context, form.fields(),
@@ -121,7 +123,8 @@ void RegexPredictions::ApplyTo(
 RegexPredictions DetermineRegexTypes(const GeoIpCountryCode& client_country,
                                      const LanguageCode& current_page_language,
                                      const FormData& form,
-                                     LogManager* log_manager) {
+                                     LogManager* log_manager,
+                                     bool ignore_small_forms) {
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.DetermineHeuristicTypes");
 
   const LanguageCode& page_language =
@@ -135,9 +138,10 @@ RegexPredictions DetermineRegexTypes(const GeoIpCountryCode& client_country,
                          PatternFile::kLegacy,
 #endif
                          GetActiveRegexFeatures(), log_manager);
-  return RegexPredictions(HeuristicSource::kRegexes,
-                          ParseFieldTypesWithPatterns(form, context),
-                          form.fields());
+  return RegexPredictions(
+      HeuristicSource::kRegexes,
+      ParseFieldTypesWithPatterns(form, context, ignore_small_forms),
+      form.fields());
 }
 
 }  // namespace autofill

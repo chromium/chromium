@@ -37,8 +37,9 @@ class FormStructureShouldTest : public testing::Test {
   }
 
   static bool FormIsAutofillable(const FormData& form) {
-    const RegexPredictions regex_predictions = DetermineRegexTypes(
-        GeoIpCountryCode(""), LanguageCode(""), form, nullptr);
+    const RegexPredictions regex_predictions =
+        DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""), form,
+                            nullptr, /*ignore_small_forms=*/true);
     FormStructure form_structure(form);
     regex_predictions.ApplyTo(form_structure.fields());
     form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),

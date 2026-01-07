@@ -239,7 +239,8 @@ std::string CreateManualOverridePrediction(
 
 void ParseRationalizeAndSection(FormStructure& form) {
   const RegexPredictions regex_predictions = DetermineRegexTypes(
-      GeoIpCountryCode(""), LanguageCode(""), form.ToFormData(), nullptr);
+      GeoIpCountryCode(""), LanguageCode(""), form.ToFormData(), nullptr,
+      /*ignore_small_forms=*/true);
   regex_predictions.ApplyTo(form.fields());
   form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
                                     nullptr);

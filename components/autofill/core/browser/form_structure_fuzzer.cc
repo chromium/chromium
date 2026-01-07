@@ -74,7 +74,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FormStructure form_structure(form_data);
   const RegexPredictions regex_predictions = DetermineRegexTypes(
       GenerateGeoIpCountryCode(data_provider), LanguageCode(""), form_data,
-      /*log_manager=*/nullptr);
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
   regex_predictions.ApplyTo(form_structure.fields());
   form_structure.RationalizeAndAssignSections(
       GenerateGeoIpCountryCode(data_provider), LanguageCode(""),

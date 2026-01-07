@@ -486,15 +486,16 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
     if (ml_predictions_handler) {
       base::test::TestFuture<ModelPredictions> future;
       ml_predictions_handler->GetModelPredictionsForForm(
-          form_structure->ToFormData(), client_country, future.GetCallback());
+          form_structure->ToFormData(), client_country,
+          /*ignore_small_forms=*/true, future.GetCallback());
       future.Get().ApplyTo(form_structure->fields());
     }
     // Similarly to AutofillManager::ParseFormsAsync, the heuristics are
     // executed after the ML model. If ML predictions are enabled, this does
     // not override the heuristic types but performs rationalization.
-    const RegexPredictions regex_predictions =
-        DetermineRegexTypes(client_country, page_language,
-                            form_structure->ToFormData(), log_manager);
+    const RegexPredictions regex_predictions = DetermineRegexTypes(
+        client_country, page_language, form_structure->ToFormData(),
+        log_manager, /*ignore_small_forms=*/true);
     regex_predictions.ApplyTo(form_structure->fields());
     form_structure->RationalizeAndAssignSections(client_country, page_language,
                                                  log_manager);

@@ -88,6 +88,7 @@ class MockFieldClassificationModelHandler
               GetModelPredictionsForForms,
               (std::vector<FormData>,
                const GeoIpCountryCode& client_country,
+               bool,
                base::OnceCallback<void(std::vector<ModelPredictions>)>),
               (override));
 };
@@ -587,7 +588,7 @@ class AutofillManagerTestForModelPredictions : public AutofillManagerTest {
     ON_CALL(*handler, GetModelPredictionsForForms)
         .WillByDefault(
             [](std::vector<FormData> forms,
-               const GeoIpCountryCode& client_country,
+               const GeoIpCountryCode& client_country, bool ignore_small_forms,
                base::OnceCallback<void(std::vector<ModelPredictions>)>
                    callback) {
               const ModelPredictions kEmptyPredictions = ModelPredictions(

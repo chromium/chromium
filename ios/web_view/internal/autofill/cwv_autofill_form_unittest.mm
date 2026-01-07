@@ -39,7 +39,7 @@ TEST_F(CWVAutofillFormTest, Initialization) {
       std::make_unique<autofill::FormStructure>(form_data);
   const autofill::RegexPredictions regex_predictions = DetermineRegexTypes(
       autofill::GeoIpCountryCode(""), autofill::LanguageCode(""),
-      form_structure->ToFormData(), nullptr);
+      form_structure->ToFormData(), nullptr, /*ignore_small_forms=*/true);
   regex_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(
       autofill::GeoIpCountryCode(""), autofill::LanguageCode(""), nullptr);

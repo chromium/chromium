@@ -229,7 +229,8 @@ bool FormFieldParser::MatchesRegexWithCache(
 // static
 void FormFieldParser::ParseFormFields(ParsingContext& context,
                                       base::span<const FormFieldData> fields,
-                                      FieldCandidatesMap& field_candidates) {
+                                      FieldCandidatesMap& field_candidates,
+                                      bool ignore_small_forms) {
   // Email pass.
   ParseFormFieldsPass(EmailFieldParser::Parse, context, fields, &IsRelevant,
                       field_candidates);
@@ -297,7 +298,8 @@ void FormFieldParser::ParseFormFields(ParsingContext& context,
                       field_candidates);
 
   ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
-      fields, field_candidates, context.client_country, context.log_manager);
+      fields, field_candidates, context.client_country, context.log_manager,
+      ignore_small_forms);
 }
 
 // static
@@ -305,7 +307,8 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
     base::span<const FormFieldData> fields,
     FieldCandidatesMap& field_candidates,
     GeoIpCountryCode client_country,
-    LogManager* log_manager) {
+    LogManager* log_manager,
+    bool ignore_small_forms) {
   // Set to count distinct field types.
   FieldTypeSet heuristic_types;
   for (const auto& [field_id, candidates] : field_candidates) {
@@ -328,7 +331,8 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
   // the only recognized field on account registration sites. Also make an
   // exception for single-field Autofillable types, even when the form contains
   // less than kMinRequiredFieldsForHeuristics fields in its form signature.
-  if (fillable_distinct_field_types >= kMinRequiredFieldsForHeuristics) {
+  if (!ignore_small_forms ||
+      fillable_distinct_field_types >= kMinRequiredFieldsForHeuristics) {
     return;
   }
 

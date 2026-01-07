@@ -170,12 +170,16 @@ class FormFieldParser {
 
   virtual ~FormFieldParser() = default;
 
-  // Classifies each field in |fields| with its heuristically detected type.
+  // Classifies each field in `fields` with its heuristically detected type.
   // Each field has a derived unique name that is used as the key into
-  // |field_candidates|.
+  // `field_candidates`. If `ignore_small_forms` is true, the address
+  // predictions will be cleared from fields in forms that are smaller than
+  // `kMinRequiredFieldsForHeuristics`, otherwise the address predictions will
+  // stay as predicted, no matter the form size.
   static void ParseFormFields(ParsingContext& context,
                               base::span<const FormFieldData> fields,
-                              FieldCandidatesMap& field_candidates);
+                              FieldCandidatesMap& field_candidates,
+                              bool ignore_small_forms);
 
   // Looks for types that are allowed to appear in solitary (such as merchant
   // promo codes) inside |fields|. Each field has a derived unique name that is
@@ -220,7 +224,8 @@ class FormFieldParser {
           {});
 
   // Removes entries from `field_candidates` in case
-  // - not enough fields were classified by local heuristics.
+  // - not enough fields were classified by local heuristics and
+  // `ignore_small_forms` was true.
   // - fields were not explicitly allow-listed because they appear in
   //   contexts that don't contain enough fields (e.g. forms with only an
   //   email address).
@@ -228,7 +233,8 @@ class FormFieldParser {
       base::span<const FormFieldData> fields,
       FieldCandidatesMap& field_candidates,
       GeoIpCountryCode client_country,
-      LogManager* log_manager);
+      LogManager* log_manager,
+      bool ignore_small_forms);
 
  protected:
   friend class FormFieldParserTestApi;

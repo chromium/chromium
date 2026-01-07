@@ -42,13 +42,15 @@ class RegexPredictions {
 };
 
 // Evaluates regular expressions against the form fields to determine their
-// possible types.
-// HeuristicSource::kRegexes refers this function.
+// possible types. `ignore_small_forms` denotes whether the heuristic
+// predictions should be cleared in case that the number of address fillable
+// fields in a form is smaller than `kMinRequiredFieldsForHeuristics`.
 [[nodiscard]] RegexPredictions DetermineRegexTypes(
     const GeoIpCountryCode& client_country,
     const LanguageCode& current_page_language,
     const FormData& form,
-    LogManager* log_manager);
+    LogManager* log_manager,
+    bool ignore_small_forms);
 
 }  // namespace autofill
 
