@@ -157,7 +157,7 @@ void SupervisedUserNavigationObserver::DidFinishNavigation(
 
   // If this is a different navigation than the one that triggered the
   // interstitial in the frame, then interstitial is done.
-  if (base::Contains(supervised_user_interstitials_, frame_id) &&
+  if (supervised_user_interstitials_.contains(frame_id) &&
       navigation_id != supervised_user_interstitials_[frame_id]
                            ->web_content_handler()
                            ->GetInterstitialNavigationId()) {
@@ -195,9 +195,8 @@ void SupervisedUserNavigationObserver::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
   if (render_frame_host->IsInPrimaryMainFrame()) {
-    bool main_frame_blocked =
-        base::Contains(supervised_user_interstitials_,
-                       render_frame_host->GetFrameTreeNodeId());
+    bool main_frame_blocked = supervised_user_interstitials_.contains(
+        render_frame_host->GetFrameTreeNodeId());
     int count = supervised_user_interstitials_.size();
     if (main_frame_blocked) {
       count = 0;
@@ -219,7 +218,7 @@ void SupervisedUserNavigationObserver::RecordPageLoadUKM(
   // configuration).
   const content::FrameTreeNodeId main_frame_id =
       render_frame_host->GetFrameTreeNodeId();
-  if (base::Contains(supervised_user_interstitials_, main_frame_id)) {
+  if (supervised_user_interstitials_.contains(main_frame_id)) {
     // The main frame was blocked.
     if (supervised_user_interstitials_[main_frame_id]
             ->filtering_behavior_reason() ==
@@ -384,7 +383,7 @@ void SupervisedUserNavigationObserver::URLFilterCheckCallback(
 
   content::FrameTreeNodeId frame_id = render_frame_host->GetFrameTreeNodeId();
   bool is_showing_interstitial =
-      base::Contains(supervised_user_interstitials_, frame_id);
+      supervised_user_interstitials_.contains(frame_id);
   bool should_show_interstitial = result.IsBlocked();
 
   // If an interstitial is being shown where it shouldn't (for e.g. because a
@@ -421,7 +420,7 @@ void SupervisedUserNavigationObserver::MaybeShowInterstitial(
           reason);
   supervised_user_interstitials_[frame_id] = std::move(interstitial);
 
-  bool already_requested = base::Contains(requested_hosts_, url.GetHost());
+  bool already_requested = requested_hosts_.contains(url.GetHost());
   bool is_main_frame =
       frame_id == web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId();
 
@@ -461,7 +460,7 @@ void SupervisedUserNavigationObserver::GoBack() {
   }
 
   content::FrameTreeNodeId frame_id = frame_tree_node_id();
-  if (base::Contains(supervised_user_interstitials_, frame_id)) {
+  if (supervised_user_interstitials_.contains(frame_id)) {
     supervised_user_interstitials_[frame_id]->GoBack();
   }
 }
@@ -469,7 +468,7 @@ void SupervisedUserNavigationObserver::GoBack() {
 void SupervisedUserNavigationObserver::RequestUrlAccessRemote(
     RequestUrlAccessRemoteCallback callback) {
   content::FrameTreeNodeId frame_id = frame_tree_node_id();
-  if (!base::Contains(supervised_user_interstitials_, frame_id)) {
+  if (!supervised_user_interstitials_.contains(frame_id)) {
     DLOG(WARNING) << "Interstitial with id not found: " << frame_id;
     return;
   }
@@ -485,7 +484,7 @@ void SupervisedUserNavigationObserver::RequestUrlAccessRemote(
 void SupervisedUserNavigationObserver::RequestUrlAccessLocal(
     RequestUrlAccessLocalCallback callback) {
   content::FrameTreeNodeId frame_id = frame_tree_node_id();
-  if (!base::Contains(supervised_user_interstitials_, frame_id)) {
+  if (!supervised_user_interstitials_.contains(frame_id)) {
     DLOG(WARNING) << "Interstitial with id not found: " << frame_id;
     return;
   }

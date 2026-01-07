@@ -147,7 +147,7 @@ void ArcApplicationNotifierController::SetIcon(const std::string& app_id,
 
 void ArcApplicationNotifierController::OnAppUpdate(
     const apps::AppUpdate& update) {
-  if (!base::Contains(package_to_app_ids_, update.PublisherId())) {
+  if (!package_to_app_ids_.contains(update.PublisherId())) {
     return;
   }
 

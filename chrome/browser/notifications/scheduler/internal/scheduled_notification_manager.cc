@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
@@ -223,7 +222,7 @@ class ScheduledNotificationManagerImpl : public ScheduledNotificationManager {
     }
     std::vector<std::string> icons_to_delete;
     for (const auto& loaded_icon_key : *uuids_from_icon_store.get()) {
-      if (!base::Contains(icons_uuid_from_entries, loaded_icon_key)) {
+      if (!icons_uuid_from_entries.contains(loaded_icon_key)) {
         icons_to_delete.emplace_back(loaded_icon_key);
       }
     }
@@ -239,7 +238,7 @@ class ScheduledNotificationManagerImpl : public ScheduledNotificationManager {
       bool expired = entry->create_time + config_->notification_expiration <=
                      base::Time::Now();
       bool valid = ValidateNotificationEntry(*entry);
-      bool deprecated_client = !base::Contains(clients_, entry->type);
+      bool deprecated_client = !clients_.contains(entry->type);
       if (expired || deprecated_client || !valid) {
         DeleteNotification(*entry, false /*should_delete_in_memory*/);
       } else {

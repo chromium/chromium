@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/i18n/time_formatting.h"
@@ -717,7 +716,7 @@ void ExtensionTelemetryService::AddSignalHelper(
     ExtensionStore& store,
     SignalSubscribers& subscribers) {
   ExtensionSignalType signal_type = signal.GetType();
-  DCHECK(base::Contains(subscribers, signal_type));
+  DCHECK(subscribers.contains(signal_type));
 
   if (!store.contains(signal.extension_id())) {
     // This is the first signal triggered by this extension since the last

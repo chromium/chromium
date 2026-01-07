@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -248,8 +247,8 @@ void SessionService::SetSplitTab(SessionID window_id,
 
   // Tabs get unsplit as they close. However, if the whole window is closing
   // tabs should stay in their split. So, ignore this call in that case.
-  if (base::Contains(pending_window_close_ids_, window_id) ||
-      base::Contains(window_closing_ids_, window_id)) {
+  if (pending_window_close_ids_.contains(window_id) ||
+      window_closing_ids_.contains(window_id)) {
     return;
   }
 
@@ -265,8 +264,8 @@ void SessionService::SetSplitTabData(
   }
 
   // Any split metadata changes happening in a closing window can be ignored.
-  if (base::Contains(pending_window_close_ids_, window_id) ||
-      base::Contains(window_closing_ids_, window_id)) {
+  if (pending_window_close_ids_.contains(window_id) ||
+      window_closing_ids_.contains(window_id)) {
     return;
   }
 
@@ -282,8 +281,8 @@ void SessionService::SetTabGroup(SessionID window_id,
 
   // Tabs get ungrouped as they close. However, if the whole window is closing
   // tabs should stay in their groups. So, ignore this call in that case.
-  if (base::Contains(pending_window_close_ids_, window_id) ||
-      base::Contains(window_closing_ids_, window_id)) {
+  if (pending_window_close_ids_.contains(window_id) ||
+      window_closing_ids_.contains(window_id)) {
     return;
   }
 
@@ -320,8 +319,8 @@ void SessionService::SetTabGroupMetadata(
   }
 
   // Any group metadata changes happening in a closing window can be ignored.
-  if (base::Contains(pending_window_close_ids_, window_id) ||
-      base::Contains(window_closing_ids_, window_id)) {
+  if (pending_window_close_ids_.contains(window_id) ||
+      window_closing_ids_.contains(window_id)) {
     return;
   }
 

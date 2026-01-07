@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -104,7 +103,7 @@ SessionRestorePolicy::SessionRestorePolicy()
 SessionRestorePolicy::~SessionRestorePolicy() = default;
 
 float SessionRestorePolicy::AddTabForScoring(content::WebContents* contents) {
-  DCHECK(!base::Contains(tab_data_, contents));
+  DCHECK(!tab_data_.contains(contents));
 
   // When the first tab is added keep track of a 'now' time. This ensures that
   // the scoring function returns consistent values over the lifetime of the

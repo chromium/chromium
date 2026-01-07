@@ -12,7 +12,6 @@
 #include <variant>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -760,8 +759,8 @@ PrintBackendServiceManager::RegisterClient(
   // System print is a special case because it can display a system dialog and
   // is window modal.  In this scenario we do not want the print backend to
   // self-terminate even if the user is idle for a long period of time.
-  if (base::Contains(sandboxed_remotes_bundles_, remote_id) ||
-      base::Contains(unsandboxed_remotes_bundles_, remote_id) ||
+  if (sandboxed_remotes_bundles_.contains(remote_id) ||
+      unsandboxed_remotes_bundles_.contains(remote_id) ||
       sandboxed_service_remote_for_test_) {
     // Service already existed, possibly was recently marked for being reset
     // with a short timeout or is already in use for other client types.

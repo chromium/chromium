@@ -71,7 +71,7 @@ void NearbyConnectionsMdnsManager::StartDiscoverySession(
       << __func__
       << " Starting mDNS discovery session for service_type:" << service_type;
 
-  if (base::Contains(device_listers_, service_type)) {
+  if (device_listers_.contains(service_type)) {
     CD_LOG(INFO, Feature::NS)
         << __func__ << " Already discovering for this service type.";
     std::move(callback).Run(true);

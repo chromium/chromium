@@ -7,7 +7,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
@@ -160,7 +159,7 @@ ChromeSpeechRecognitionService::GetSodaConfigPaths() {
         g_browser_process->local_state()->GetFilePath(config.config_path_pref);
 
     if (!config_path.empty() &&
-        base::Contains(registered_language_packs, config.language_name)) {
+        registered_language_packs.contains(config.language_name)) {
       config_file_paths[config.language_name] = config_path;
     }
   }

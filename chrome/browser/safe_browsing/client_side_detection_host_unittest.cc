@@ -256,7 +256,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
       const GURL& gurl,
       CheckUrlForHighConfidenceAllowlistCallback callback) override {
     std::string url = gurl.spec();
-    DCHECK(base::Contains(urls_allowlist_match_, url));
+    DCHECK(urls_allowlist_match_.contains(url));
 
     ui_task_runner()->PostTask(
         FROM_HERE,

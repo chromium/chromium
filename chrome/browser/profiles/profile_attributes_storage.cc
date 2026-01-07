@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -756,7 +755,7 @@ const gfx::Image* ProfileAttributesStorage::LoadAvatarPictureFromPath(
 }
 bool ProfileAttributesStorage::IsGAIAPictureLoaded(
     const std::string& key) const {
-  return base::Contains(cached_avatar_images_, key);
+  return cached_avatar_images_.contains(key);
 }
 
 void ProfileAttributesStorage::SaveGAIAImageAtPath(
@@ -1046,7 +1045,7 @@ ProfileAttributesEntry* ProfileAttributesStorage::InitEntryWithKey(
   base::FilePath path =
       user_data_dir_.Append(base::FilePath::FromUTF8Unsafe(key));
 
-  DCHECK(!base::Contains(profile_attributes_entries_, path.value()));
+  DCHECK(!profile_attributes_entries_.contains(path.value()));
   ProfileAttributesEntry* new_entry =
       &profile_attributes_entries_[path.value()];
   new_entry->Initialize(this, path, prefs_);

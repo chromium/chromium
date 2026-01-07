@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/observer_list.h"
@@ -291,7 +290,7 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
   if (CanApplyPortSpecificPolicy()) {
     auto* policy = g_browser_process->serial_policy_allowed_ports();
     for (const auto& entry : policy->usb_device_policy()) {
-      if (!base::Contains(entry.second, origin)) {
+      if (!entry.second.contains(origin)) {
         continue;
       }
 
@@ -302,7 +301,7 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
     }
 
     for (const auto& entry : policy->usb_vendor_policy()) {
-      if (!base::Contains(entry.second, origin)) {
+      if (!entry.second.contains(origin)) {
         continue;
       }
 
@@ -311,7 +310,7 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
           origin, std::move(object), SettingSource::kPolicy, IsOffTheRecord()));
     }
 
-    if (base::Contains(policy->all_ports_policy(), origin)) {
+    if (policy->all_ports_policy().contains(origin)) {
       base::Value::Dict object;
       object.Set(kPortNameKey, l10n_util::GetStringUTF16(
                                    IDS_SERIAL_POLICY_DESCRIPTION_FOR_ANY_PORT));
@@ -461,7 +460,7 @@ bool SerialChooserContext::HasPortPermission(
   auto it = ephemeral_ports_.find(origin);
   if (it != ephemeral_ports_.end()) {
     const std::set<base::UnguessableToken> ports = it->second;
-    if (base::Contains(ports, port.token)) {
+    if (ports.contains(port.token)) {
       return true;
     }
   }
@@ -611,7 +610,7 @@ base::WeakPtr<SerialChooserContext> SerialChooserContext::AsWeakPtr() {
 }
 
 void SerialChooserContext::OnPortAdded(device::mojom::SerialPortInfoPtr port) {
-  if (!base::Contains(port_info_, port->token)) {
+  if (!port_info_.contains(port->token)) {
     port_info_.insert({port->token, port->Clone()});
   }
 

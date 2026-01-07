@@ -4,7 +4,6 @@
 
 #include "components/page_load_metrics/browser/observers/prerender_page_load_metrics_observer.h"
 
-#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
@@ -482,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
                     .size());
 
   auto entries = GetMergedUkmEntries(PrerenderPageLoad::kEntryName);
-  EXPECT_FALSE(base::Contains(entries, prerender_url));
+  EXPECT_FALSE(entries.contains(prerender_url));
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
@@ -519,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
 
   // Verify that UKM records the URL after the redirection, not the initial URL.
   auto entries = GetMergedUkmEntries(PrerenderPageLoad::kEntryName);
-  ASSERT_FALSE(base::Contains(entries, prerender_url));
+  ASSERT_FALSE(entries.contains(prerender_url));
   const ukm::mojom::UkmEntry* prerendered_page_entry =
       entries[redirected_url].get();
   ASSERT_TRUE(prerendered_page_entry);
@@ -910,7 +909,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   // not the initial URL.
   auto entries = GetMergedUkmEntries(PrerenderPageLoad::kEntryName);
   EXPECT_EQ(2u, entries.size());
-  ASSERT_FALSE(base::Contains(entries, prerender_url));
+  ASSERT_FALSE(entries.contains(prerender_url));
   const ukm::mojom::UkmEntry* prerendered_page_entry =
       entries[navigation_url].get();
   ASSERT_TRUE(prerendered_page_entry);

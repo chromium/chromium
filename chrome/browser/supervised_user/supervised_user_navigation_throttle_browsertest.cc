@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -93,7 +92,7 @@ class RenderFrameTracker : public content::WebContentsObserver {
   void FrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override;
 
   content::RenderFrameHost* GetHost(content::FrameTreeNodeId frame_id) {
-    if (!base::Contains(render_frame_hosts_, frame_id)) {
+    if (!render_frame_hosts_.contains(frame_id)) {
       return nullptr;
     }
     return render_frame_hosts_[frame_id];
@@ -114,7 +113,7 @@ void RenderFrameTracker::RenderFrameHostChanged(
 
 void RenderFrameTracker::FrameDeleted(
     content::FrameTreeNodeId frame_tree_node_id) {
-  if (!base::Contains(render_frame_hosts_, frame_tree_node_id)) {
+  if (!render_frame_hosts_.contains(frame_tree_node_id)) {
     return;
   }
 
@@ -499,7 +498,7 @@ const GURL& SupervisedUserIframeFilterTest::GetBlockedFrameURL(
   auto* navigation_observer =
       SupervisedUserNavigationObserver::FromWebContents(tab);
   const auto& interstitials = navigation_observer->interstitials_for_test();
-  DCHECK(base::Contains(interstitials, frame_id));
+  DCHECK(interstitials.contains(frame_id));
   return interstitials.at(frame_id)->url();
 }
 
@@ -590,7 +589,7 @@ bool SupervisedUserIframeFilterTest::RunCommandAndGetBooleanFromFrame(
       SupervisedUserNavigationObserver::FromWebContents(tab);
   auto& interstitials = navigation_observer->interstitials_for_test();
 
-  if (!base::Contains(interstitials, frame_id)) {
+  if (!interstitials.contains(frame_id)) {
     return false;
   }
 
@@ -954,8 +953,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
       SupervisedUserNavigationObserver::FromWebContents(active_contents);
   ASSERT_NE(navigation_observer, nullptr);
 
-  EXPECT_TRUE(base::Contains(navigation_observer->requested_hosts_for_test(),
-                             kExampleHost));
+  EXPECT_TRUE(
+      navigation_observer->requested_hosts_for_test().contains(kExampleHost));
 
   NavigationFinishedWaiter waiter(
       active_contents,
@@ -964,8 +963,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
   permission_creator()->HandleDelayedRequests();
   waiter.Wait();
 
-  EXPECT_FALSE(base::Contains(navigation_observer->requested_hosts_for_test(),
-                              kExampleHost));
+  EXPECT_FALSE(
+      navigation_observer->requested_hosts_for_test().contains(kExampleHost));
 
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
 }
@@ -1070,8 +1069,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNarrowWidthIframeFilterTest,
       SupervisedUserNavigationObserver::FromWebContents(active_contents);
   ASSERT_NE(navigation_observer, nullptr);
 
-  EXPECT_TRUE(base::Contains(navigation_observer->requested_hosts_for_test(),
-                             kExampleHost));
+  EXPECT_TRUE(
+      navigation_observer->requested_hosts_for_test().contains(kExampleHost));
 
   NavigationFinishedWaiter waiter(
       active_contents,
@@ -1080,8 +1079,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNarrowWidthIframeFilterTest,
   permission_creator()->HandleDelayedRequests();
   waiter.Wait();
 
-  EXPECT_FALSE(base::Contains(navigation_observer->requested_hosts_for_test(),
-                              kExampleHost));
+  EXPECT_FALSE(
+      navigation_observer->requested_hosts_for_test().contains(kExampleHost));
 
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
 }

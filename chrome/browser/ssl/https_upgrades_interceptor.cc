@@ -626,7 +626,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   // If the request URL is in the set of URLs that HttpsUpgradesInterceptor has
   // already processed, skip upgrading and trigger fallback to HTTP to avoid a
   // redirect loop.
-  if (base::Contains(urls_seen_, url)) {
+  if (urls_seen_.contains(url)) {
     // Record failure type metrics for upgraded navigations.
     RecordHttpsFirstModeNavigation(Event::kUpgradeFailed, *interstitial_state_);
     RecordHttpsFirstModeNavigation(Event::kUpgradeRedirectLoop,

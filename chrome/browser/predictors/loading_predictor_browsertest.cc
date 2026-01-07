@@ -13,7 +13,6 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -278,31 +277,29 @@ class TestPreconnectManagerObserver
 
   bool HasOriginAttemptedToPreconnect(const GURL& origin) {
     DCHECK_EQ(origin, origin.DeprecatedGetOriginAsURL());
-    return base::Contains(preconnect_url_attempts_, origin);
+    return preconnect_url_attempts_.contains(origin);
   }
 
   bool HasHostBeenLookedUp(
       const std::string& host,
       const net::NetworkAnonymizationKey& network_anonymization_key) {
     ResolveHostRequestInfo preconnect_info{host, network_anonymization_key};
-    return base::Contains(successful_dns_lookups_, preconnect_info) ||
-           base::Contains(unsuccessful_dns_lookups_, preconnect_info);
+    return successful_dns_lookups_.contains(preconnect_info) ||
+           unsuccessful_dns_lookups_.contains(preconnect_info);
   }
 
   bool HostFound(
       const std::string& host,
       const net::NetworkAnonymizationKey& network_anonymization_key) {
-    return base::Contains(
-        successful_dns_lookups_,
+    return successful_dns_lookups_.contains(
         ResolveHostRequestInfo{host, network_anonymization_key});
   }
 
   bool ProxyFound(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key) {
-    return base::Contains(successful_proxy_lookups_,
-                          ResolveProxyRequestInfo{url::Origin::Create(url),
-                                                  network_anonymization_key});
+    return successful_proxy_lookups_.contains(ResolveProxyRequestInfo{
+        url::Origin::Create(url), network_anonymization_key});
   }
 
   const std::vector<GURL>& PreconnectUrlAttemptsHistory() const {
@@ -351,8 +348,8 @@ class TestPreconnectManagerObserver
   };
 
   bool HasProxyBeenLookedUp(const ResolveProxyRequestInfo& resolve_proxy_info) {
-    return base::Contains(successful_proxy_lookups_, resolve_proxy_info) ||
-           base::Contains(unsuccessful_proxy_lookups_, resolve_proxy_info);
+    return successful_proxy_lookups_.contains(resolve_proxy_info) ||
+           unsuccessful_proxy_lookups_.contains(resolve_proxy_info);
   }
 
   void Wait() {

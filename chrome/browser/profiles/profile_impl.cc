@@ -13,7 +13,6 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/environment.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -1030,7 +1029,7 @@ void ProfileImpl::DestroyOffTheRecordProfile(Profile* otr_profile) {
 }
 
 bool ProfileImpl::HasOffTheRecordProfile(const OTRProfileID& otr_profile_id) {
-  return base::Contains(otr_profiles_, otr_profile_id);
+  return otr_profiles_.contains(otr_profile_id);
 }
 
 bool ProfileImpl::HasAnyOffTheRecordProfile() {

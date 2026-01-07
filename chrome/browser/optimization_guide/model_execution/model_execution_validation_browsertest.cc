@@ -105,8 +105,8 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     EXPECT_EQ(request.method, net::test_server::METHOD_POST);
     EXPECT_NE(request.headers.end(), request.headers.find("X-Client-Data"));
-    EXPECT_TRUE(base::Contains(request.headers,
-                               net::HttpRequestHeaders::kAuthorization));
+    EXPECT_TRUE(
+        request.headers.contains(net::HttpRequestHeaders::kAuthorization));
     std::move(model_execution_request_closure_).Run();
 
     if (should_server_fail_model_execution_) {

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"

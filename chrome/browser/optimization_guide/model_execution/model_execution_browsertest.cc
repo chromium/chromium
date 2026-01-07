@@ -309,8 +309,8 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     EXPECT_NE(request.headers.end(), request.headers.find("X-Client-Data"));
 
     // Access token should be set.
-    EXPECT_TRUE(base::Contains(request.headers,
-                               net::HttpRequestHeaders::kAuthorization));
+    EXPECT_TRUE(
+        request.headers.contains(net::HttpRequestHeaders::kAuthorization));
     EXPECT_EQ(expected_bearer_access_token_,
               request.headers.at(net::HttpRequestHeaders::kAuthorization));
 
@@ -358,8 +358,8 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     EXPECT_NE(request.headers.end(), request.headers.find("X-Client-Data"));
 
     // Access token should not be set.
-    EXPECT_FALSE(base::Contains(request.headers,
-                                net::HttpRequestHeaders::kAuthorization));
+    EXPECT_FALSE(
+        request.headers.contains(net::HttpRequestHeaders::kAuthorization));
 
     std::string serialized_response;
     response->set_code(net::HTTP_OK);

@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
@@ -151,8 +150,8 @@ bool ChromePluginServiceFilter::CanLoadPlugin(int render_process_id,
   if (!details)
     return false;
 
-  return (base::Contains(details->authorized_plugins, path) ||
-          base::Contains(details->authorized_plugins, base::FilePath()));
+  return (details->authorized_plugins.contains(path) ||
+          details->authorized_plugins.contains(base::FilePath()));
 }
 
 void ChromePluginServiceFilter::RenderProcessExited(

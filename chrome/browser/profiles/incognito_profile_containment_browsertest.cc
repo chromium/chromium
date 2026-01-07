@@ -4,7 +4,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -164,7 +163,7 @@ bool AreDirectoriesModified(Snapshot& snapshot_before,
 
   // Check for new directories.
   for (const std::string& directory : snapshot_after.directories) {
-    if (!base::Contains(snapshot_before.directories, directory)) {
+    if (!snapshot_before.directories.contains(directory)) {
       // If a file/prefix in this directory is allowlisted, ignore directory
       // addition.
       if (std::ranges::any_of(allow_list,

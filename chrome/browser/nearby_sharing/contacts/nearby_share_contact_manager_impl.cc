@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -37,7 +36,7 @@ std::set<std::string> RemoveNonexistentContactsFromAllowlist(
     const std::vector<nearby::sharing::proto::ContactRecord>& contacts) {
   std::set<std::string> new_allowed_contact_ids;
   for (const nearby::sharing::proto::ContactRecord& contact : contacts) {
-    if (base::Contains(allowed_contact_ids, contact.id())) {
+    if (allowed_contact_ids.contains(contact.id())) {
       new_allowed_contact_ids.insert(contact.id());
     }
   }
@@ -51,7 +50,7 @@ std::vector<nearby::sharing::proto::Contact> ContactRecordsToContacts(
     const std::vector<nearby::sharing::proto::ContactRecord>& contact_records) {
   std::vector<nearby::sharing::proto::Contact> contacts;
   for (const auto& contact_record : contact_records) {
-    bool is_selected = base::Contains(allowed_contact_ids, contact_record.id());
+    bool is_selected = allowed_contact_ids.contains(contact_record.id());
     for (const auto& identifier : contact_record.identifiers()) {
       nearby::sharing::proto::Contact contact;
       contact.mutable_identifier()->CopyFrom(identifier);

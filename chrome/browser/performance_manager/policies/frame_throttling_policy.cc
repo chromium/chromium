@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
@@ -55,7 +54,7 @@ void FrameThrottlingPolicy::OnTakenFromGraph(Graph* graph) {
 
 bool FrameThrottlingPolicy::IsFrameSinkThrottled(
     const content::GlobalRenderFrameHostId& id) const {
-  return base::Contains(throttled_frames_, id);
+  return throttled_frames_.contains(id);
 }
 
 void FrameThrottlingPolicy::EnableFrameSinkThrottle(

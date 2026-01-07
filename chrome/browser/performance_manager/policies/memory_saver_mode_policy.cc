@@ -4,7 +4,6 @@
 
 #include "chrome/browser/performance_manager/policies/memory_saver_mode_policy.h"
 
-#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "components/performance_manager/public/decorators/tab_page_decorator.h"

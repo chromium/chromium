@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
@@ -273,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, FirstLayoutAndOnLoad) {
       // for text equality is inherently flaky, and this determinism is not a
       // guarantee that we make to callers.
       if (result.event() == mojom::TextDumpEvent::kFirstLayout) {
-        EXPECT_TRUE(base::Contains(*result.contents(), u"hello"));
+        EXPECT_TRUE(result.contents()->contains(u"hello"));
         has_first_layout_event = true;
       }
 

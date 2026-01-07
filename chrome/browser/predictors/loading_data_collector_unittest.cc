@@ -344,12 +344,11 @@ TEST_F(LoadingDataCollectorTest, SimpleNavigation) {
   // recorded.
   collector_->RecordPrefetchInitiated(navigation_id,
                                       GURL("http://google.com/style3.css"));
-  EXPECT_FALSE(base::Contains(page_request_summary->prefetch_urls,
-                              GURL("http://google.com/style3.css")));
+  EXPECT_FALSE(page_request_summary->prefetch_urls.contains(
+      GURL("http://google.com/style3.css")));
   collector_->RecordPreconnectInitiated(
       navigation_id, GURL("https://external.resource.com/style.css"));
-  EXPECT_FALSE(base::Contains(
-      page_request_summary->preconnect_origins,
+  EXPECT_FALSE(page_request_summary->preconnect_origins.contains(
       url::Origin::Create(GURL("https://external.resource.com/style.css"))));
 
   for (const auto& resource_load_info : resources) {

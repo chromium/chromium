@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
@@ -192,8 +191,7 @@ class AdHeuristicTPCDBrowserTestBase
     register_response->WaitForRequest();
 
     // COOKIE SHOULD BE ALLOWED.
-    EXPECT_TRUE(
-        base::Contains(register_response->http_request()->headers, "Cookie"));
+    EXPECT_TRUE(register_response->http_request()->headers.contains("Cookie"));
 
     // Check JS access.
     NavigateFrameTo("b.test", "/empty.html?isad=1");
@@ -219,15 +217,13 @@ class AdHeuristicTPCDBrowserTestBase
     FetchCookies("b.test", "/empty.html");
     register_response2->WaitForRequest();
     // COOKIE SHOULD NOT BE BLOCKED.
-    EXPECT_TRUE(
-        base::Contains(register_response2->http_request()->headers, "Cookie"));
+    EXPECT_TRUE(register_response2->http_request()->headers.contains("Cookie"));
 
     FetchCookies("b.test", "/empty.html?isad=1");
     register_response->WaitForRequest();
     // COOKIE SHOULD BE BLOCKED.
-    EXPECT_EQ(
-        base::Contains(register_response->http_request()->headers, "Cookie"),
-        false);
+    EXPECT_EQ(register_response->http_request()->headers.contains("Cookie"),
+              false);
 
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
     histogram_tester.ExpectBucketCount(kAdHeuristicOverrideHistogramName,

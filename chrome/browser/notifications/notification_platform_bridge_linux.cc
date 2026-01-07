@@ -19,7 +19,6 @@
 #include "base/barrier_closure.h"
 #include "base/callback_list.h"
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -368,7 +367,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
 
     gfx::Image notification_image;
     if (copy_notification->type() == message_center::NOTIFICATION_TYPE_IMAGE &&
-        base::Contains(capabilities_, kCapabilityBodyImages)) {
+        capabilities_.contains(kCapabilityBodyImages)) {
       notification_image = ResizeImageToFdoMaxSize(copy_notification->image());
     }
 
@@ -518,14 +517,13 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     for (auto& item : capabilities) {
       capabilities_.insert(std::move(item));
     }
-    if (!base::Contains(capabilities_, kCapabilityBody) ||
-        !base::Contains(capabilities_, kCapabilityActions)) {
+    if (!capabilities_.contains(kCapabilityBody) ||
+        !capabilities_.contains(kCapabilityActions)) {
       OnConnectionInitializationFinished(
           ConnectionInitializationStatusCode::MISSING_REQUIRED_CAPABILITIES);
       return;
     }
-    body_images_supported_ =
-        base::Contains(capabilities_, kCapabilityBodyImages);
+    body_images_supported_ = capabilities_.contains(kCapabilityBodyImages);
 
     dbus_utils::CallMethod<"", "ssss">(
         notification_proxy_, kFreedesktopNotificationsName,
@@ -639,12 +637,11 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     }
 
     const bool has_support_for_kde_origin_name =
-        base::Contains(capabilities_, kCapabilityXKdeOriginName);
+        capabilities_.contains(kCapabilityXKdeOriginName);
 
     std::ostringstream body;
-    if (base::Contains(capabilities_, kCapabilityBody)) {
-      const bool body_markup =
-          base::Contains(capabilities_, kCapabilityBodyMarkup);
+    if (capabilities_.contains(kCapabilityBody)) {
+      const bool body_markup = capabilities_.contains(kCapabilityBodyMarkup);
 
       if (!has_support_for_kde_origin_name) {
         if (body_markup) {
@@ -652,7 +649,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
         }
 
         if (linkify_context_if_possible) {
-          if (base::Contains(capabilities_, kCapabilityBodyHyperlinks)) {
+          if (capabilities_.contains(kCapabilityBodyHyperlinks)) {
             body << "<a href=\""
                  << base::EscapeForHTML(notification->origin_url().spec())
                  << "\">" << context_display_text << "</a>\n\n";
@@ -686,7 +683,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
       } else if (notification->type() ==
                      message_center::NOTIFICATION_TYPE_IMAGE &&
                  data->files.has_image &&
-                 base::Contains(capabilities_, kCapabilityBodyImages)) {
+                 capabilities_.contains(kCapabilityBodyImages)) {
         body << "<img src=\"file://"
              << base::EscapePath(
                     data->files.dir_path.Append("image.png").value())
@@ -700,10 +697,10 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     // us in OnActionInvoked().  Odd-indexed ones contain the button text.
     std::vector<std::string> actions;
     std::optional<std::u16string> inline_reply_placeholder;
-    if (base::Contains(capabilities_, kCapabilityActions)) {
+    if (capabilities_.contains(kCapabilityActions)) {
       const bool has_support_for_inline_reply =
           connected_to_notification_replied_signal_ &&
-          base::Contains(capabilities_, kCapabilityInlineReply);
+          capabilities_.contains(kCapabilityInlineReply);
       data->action_start = data->action_end;
 
       for (const auto& button_info : notification->buttons()) {
@@ -788,11 +785,10 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
 
     const int32_t kExpireTimeoutDefault = -1;
     const int32_t kExpireTimeoutNever = 0;
-    int32_t expire_timeout =
-        notification->never_timeout() ? kExpireTimeoutNever
-        : base::Contains(capabilities_, kCapabilityPersistence)
-            ? kExpireTimeoutDefault
-            : kExpireTimeout;
+    int32_t expire_timeout = notification->never_timeout() ? kExpireTimeoutNever
+                             : capabilities_.contains(kCapabilityPersistence)
+                                 ? kExpireTimeoutDefault
+                                 : kExpireTimeout;
 
     dbus_utils::CallMethod<"susssasa{sv}i", "u">(
         notification_proxy_, kFreedesktopNotificationsName, kMethodNotify,

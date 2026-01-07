@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -499,8 +498,8 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
       // based on the feature toggle.
       ASSERT_TRUE(console_error_observer_->Wait());
       EXPECT_EQ(console_error_observer_->messages().size(), 1u);
-      EXPECT_TRUE(base::Contains(console_error_observer_->GetMessageAt(0u),
-                                 "Protected Audience"));
+      EXPECT_TRUE(console_error_observer_->GetMessageAt(0u).contains(
+          "Protected Audience"));
     }
 
     // Verify the automatic beacon was not sent.
@@ -570,8 +569,8 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
       // based on the feature toggle.
       ASSERT_TRUE(console_error_observer_->Wait());
       EXPECT_EQ(console_error_observer_->messages().size(), 1u);
-      EXPECT_TRUE(base::Contains(console_error_observer_->GetMessageAt(0u),
-                                 "Protected Audience"));
+      EXPECT_TRUE(console_error_observer_->GetMessageAt(0u).contains(
+          "Protected Audience"));
     }
 
     // Verify the reportEvent beacon was not sent.
@@ -750,14 +749,14 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
     // reporting.
     ASSERT_TRUE(console_error_observer_->Wait());
     EXPECT_EQ(console_error_observer_->messages().size(), 2u);
-    EXPECT_TRUE(base::Contains(console_error_observer_->GetMessageAt(0u),
-                               "Protected Audience"));
-    EXPECT_FALSE(base::Contains(console_error_observer_->GetMessageAt(0u),
-                                "Attribution Reporting"));
-    EXPECT_TRUE(base::Contains(console_error_observer_->GetMessageAt(1u),
-                               "Protected Audience"));
-    EXPECT_FALSE(base::Contains(console_error_observer_->GetMessageAt(1u),
-                                "Attribution Reporting"));
+    EXPECT_TRUE(console_error_observer_->GetMessageAt(0u).contains(
+        "Protected Audience"));
+    EXPECT_FALSE(console_error_observer_->GetMessageAt(0u).contains(
+        "Attribution Reporting"));
+    EXPECT_TRUE(console_error_observer_->GetMessageAt(1u).contains(
+        "Protected Audience"));
+    EXPECT_FALSE(console_error_observer_->GetMessageAt(1u).contains(
+        "Attribution Reporting"));
 
     // Verify the `reportWin()` beacon was not sent.
     fenced_frame_test_helper().SendBasicRequest(
@@ -845,14 +844,14 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
     // reporting.
     ASSERT_TRUE(console_error_observer_->Wait());
     EXPECT_EQ(console_error_observer_->messages().size(), 2u);
-    EXPECT_TRUE(base::Contains(console_error_observer_->GetMessageAt(0u),
-                               "Protected Audience"));
-    EXPECT_FALSE(base::Contains(console_error_observer_->GetMessageAt(0u),
-                                "Attribution Reporting"));
-    EXPECT_TRUE(base::Contains(console_error_observer_->GetMessageAt(1u),
-                               "Protected Audience"));
-    EXPECT_FALSE(base::Contains(console_error_observer_->GetMessageAt(1u),
-                                "Attribution Reporting"));
+    EXPECT_TRUE(console_error_observer_->GetMessageAt(0u).contains(
+        "Protected Audience"));
+    EXPECT_FALSE(console_error_observer_->GetMessageAt(0u).contains(
+        "Attribution Reporting"));
+    EXPECT_TRUE(console_error_observer_->GetMessageAt(1u).contains(
+        "Protected Audience"));
+    EXPECT_FALSE(console_error_observer_->GetMessageAt(1u).contains(
+        "Attribution Reporting"));
 
     // Verify the `reportResult()` beacon was not sent.
     fenced_frame_test_helper().SendBasicRequest(

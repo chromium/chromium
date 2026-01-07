@@ -3342,7 +3342,7 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
     // The settings passed to this function should match the content of the
     // print Connector policy.
     EXPECT_EQ(scanning_data.settings.tags.size(), 1u);
-    EXPECT_TRUE(base::Contains(scanning_data.settings.tags, "dlp"));
+    EXPECT_TRUE(scanning_data.settings.tags.contains("dlp"));
     if (scanning_data.settings.cloud_or_local_settings.is_cloud_analysis()) {
       EXPECT_EQ(scanning_data.settings.cloud_or_local_settings.dm_token(),
                 kFakeDmToken);

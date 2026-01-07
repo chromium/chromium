@@ -248,7 +248,7 @@ WebContents* PrintPreviewDialogController::GetPrintPreviewForContents(
     WebContents* contents) const {
   // `preview_dialog_map_` is keyed by the preview dialog, so if
   // base::Contains() succeeds, then `contents` is the preview dialog.
-  if (base::Contains(preview_dialog_map_, contents)) {
+  if (preview_dialog_map_.contains(contents)) {
     return contents;
   }
 

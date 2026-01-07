@@ -512,7 +512,7 @@ void HttpsFirstModeService::ProcessEngagedSitesList(
         detail.total_score >= kHttpsAddThreshold.Get() &&
         engagement_service->GetScore(GetHttpUrlFromHttps(origin)) <=
             kHttpAddThreshold.Get() &&
-        !base::Contains(enabled_origins, origin) &&
+        !enabled_origins.contains(origin) &&
         !net::IsHostnameNonUnique(origin.host())) {
       state->SetHttpsEnforcementForHost(origin.GetHost(), /*enforced=*/true,
                                         partition);

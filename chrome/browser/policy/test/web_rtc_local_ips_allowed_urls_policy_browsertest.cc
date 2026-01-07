@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -53,7 +52,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcLocalIpsAllowedUrlsTest, RunTest) {
   const auto& expected_urls = GenerateUrlList();
   EXPECT_EQ(expected_urls.size(), allowed_urls.size());
   for (const auto& allowed_url : allowed_urls) {
-    EXPECT_TRUE(base::Contains(expected_urls, allowed_url));
+    ASSERT_TRUE(allowed_url.is_string());
+    EXPECT_TRUE(expected_urls.contains(allowed_url.GetString()));
   }
 }
 

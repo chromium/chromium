@@ -14,7 +14,6 @@
 
 #include "base/base64url.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/json/values_util.h"
@@ -435,7 +434,7 @@ NearbySharePrivateCertificate::GenerateUnusedSalt() {
       next_salts_for_testing_.pop();
     }
 
-    if (!base::Contains(consumed_salts_, salt)) {
+    if (!consumed_salts_.contains(salt)) {
       consumed_salts_.insert(salt);
       return salt;
     }

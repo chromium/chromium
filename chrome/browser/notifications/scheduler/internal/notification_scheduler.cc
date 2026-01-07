@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -178,7 +177,7 @@ class DisplayHelper {
   // Called when notification display flow is finished. Invokes
   // |finish_callback_| when all display flows are done.
   void MaybeFinish(const std::string& guid, bool shown) {
-    if (base::Contains(guids_, guid) && shown) {
+    if (guids_.contains(guid) && shown) {
       shown_count_++;
     }
     guids_.erase(guid);

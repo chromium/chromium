@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/contains.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -43,7 +42,7 @@ TEST_F(PrivacySandboxNoticeHistogramsTest, CheckPSNoticeHistograms) {
   for (const Notice* notice : catalog.GetNotices()) {
     // TODO(crbug.com/333406690): Implement something to clean up notices that
     // don't exist.
-    if (!base::Contains(*notices, notice->GetStorageName())) {
+    if (!notices->contains(notice->GetStorageName())) {
       missing_notices.emplace_back(notice->GetStorageName());
     }
   }
@@ -70,7 +69,7 @@ TEST_F(PrivacySandboxNoticeHistogramsTest, CheckPSNoticeActionHistograms) {
       continue;
     }
     if (std::string notice_name = GetNoticeActionStringFromEvent(event);
-        !base::Contains(*actions, notice_name)) {
+        !actions->contains(notice_name)) {
       missing_actions.emplace_back(notice_name);
     }
   }

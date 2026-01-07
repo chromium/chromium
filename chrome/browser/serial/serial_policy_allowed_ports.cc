@@ -7,7 +7,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
@@ -56,13 +55,13 @@ void SerialPolicyAllowedPorts::RegisterPrefs(PrefRegistrySimple* registry) {
 bool SerialPolicyAllowedPorts::HasPortPermission(
     const url::Origin& origin,
     const device::mojom::SerialPortInfo& port_info) {
-  if (base::Contains(all_ports_policy_, origin)) {
+  if (all_ports_policy_.contains(origin)) {
     return true;
   }
 
   if (port_info.has_vendor_id) {
     auto it = usb_vendor_policy_.find(port_info.vendor_id);
-    if (it != usb_vendor_policy_.end() && base::Contains(it->second, origin)) {
+    if (it != usb_vendor_policy_.end() && it->second.contains(origin)) {
       return true;
     }
   }
@@ -70,7 +69,7 @@ bool SerialPolicyAllowedPorts::HasPortPermission(
   if (port_info.has_vendor_id && port_info.has_product_id) {
     auto it = usb_device_policy_.find(
         std::make_pair(port_info.vendor_id, port_info.product_id));
-    if (it != usb_device_policy_.end() && base::Contains(it->second, origin)) {
+    if (it != usb_device_policy_.end() && it->second.contains(origin)) {
       return true;
     }
   }

@@ -5,7 +5,6 @@
 #include <array>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -413,8 +412,8 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, FileURLBlocklist) {
 
   PrefService* prefs = browser()->profile()->GetPrefs();
 
-  EXPECT_FALSE(base::Contains(prefs->GetList(policy_prefs::kUrlBlocklist),
-                              (base::Value("file://*"))));
+  EXPECT_FALSE(
+      prefs->GetList(policy_prefs::kUrlBlocklist).contains("file://*"));
 
   base::Value::List disabledscheme;
   disabledscheme.Append("file");
@@ -424,8 +423,7 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, FileURLBlocklist) {
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
 
-  EXPECT_TRUE(base::Contains(prefs->GetList(policy_prefs::kUrlBlocklist),
-                             base::Value("file://*")));
+  EXPECT_TRUE(prefs->GetList(policy_prefs::kUrlBlocklist).contains("file://*"));
 
   // Allowlist one folder and blocklist an another just inside.
   base::Value::List allowlist;

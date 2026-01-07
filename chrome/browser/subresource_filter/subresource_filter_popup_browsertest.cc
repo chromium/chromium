@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -54,11 +53,11 @@ void RoundTripAndVerifyLogMessages(
 
   for (size_t i = 0u; i < observer.messages().size(); ++i) {
     std::string message = observer.GetMessageAt(i);
-    if (base::Contains(messages_expected, message)) {
+    if (messages_expected.contains(message)) {
       messages_expected.erase(message);
       continue;
     }
-    if (base::Contains(messages_not_expected, message)) {
+    if (messages_not_expected.contains(message)) {
       ADD_FAILURE() << "Saw anti-expected message: " << message;
     }
   }

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -657,8 +656,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
       password_store->stored_passwords();
   GURL www_url = https_test_server().GetURL("www.example.com", "/");
   EXPECT_EQ(2U, passwords.size());
-  EXPECT_TRUE(base::Contains(passwords, psl_url.spec()));
-  EXPECT_TRUE(base::Contains(passwords, www_url.spec()));
+  EXPECT_TRUE(passwords.contains(psl_url.spec()));
+  EXPECT_TRUE(passwords.contains(www_url.spec()));
 }
 
 IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
@@ -705,8 +704,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
       password_store->stored_passwords();
   GURL www_url = https_test_server().GetURL("www.example.com", "/");
   EXPECT_EQ(2U, passwords.size());
-  EXPECT_TRUE(base::Contains(passwords, psl_url.spec()));
-  EXPECT_TRUE(base::Contains(passwords, www_url.spec()));
+  EXPECT_TRUE(passwords.contains(psl_url.spec()));
+  EXPECT_TRUE(passwords.contains(www_url.spec()));
   EXPECT_EQ(u"user", passwords[psl_url.spec()].front().username_value);
   EXPECT_EQ(u"password", passwords[psl_url.spec()].front().password_value);
   EXPECT_EQ(u"user", passwords[www_url.spec()].front().username_value);

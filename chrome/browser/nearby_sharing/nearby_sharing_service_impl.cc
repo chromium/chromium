@@ -10,7 +10,6 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/barrier_closure.h"
-#include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
@@ -1040,7 +1039,7 @@ void NearbySharingServiceImpl::DoCancel(
 
 bool NearbySharingServiceImpl::DidLocalUserCancelTransfer(
     const ShareTarget& share_target) {
-  return base::Contains(locally_cancelled_share_target_ids_, share_target.id);
+  return locally_cancelled_share_target_ids_.contains(share_target.id);
 }
 
 void NearbySharingServiceImpl::Open(const ShareTarget& share_target,
@@ -2898,7 +2897,7 @@ void NearbySharingServiceImpl::OnOutgoingConnection(
   bool success = info && info->endpoint_id() && connection;
   RecordNearbyShareEstablishConnectionMetrics(
       success, /*cancelled=*/
-      base::Contains(all_cancelled_share_target_ids_, share_target.id),
+      all_cancelled_share_target_ids_.contains(share_target.id),
       base::TimeTicks::Now() - connect_start_time);
 
   if (!success) {

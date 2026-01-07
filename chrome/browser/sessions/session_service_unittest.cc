@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -1253,7 +1252,7 @@ TEST_F(SessionServiceTest, TabGroupMetadataSaved) {
 
   for (int group_ndx = 0; group_ndx < kNumGroups; ++group_ndx) {
     const tab_groups::TabGroupId group_id = group_ids[group_ndx];
-    ASSERT_TRUE(base::Contains(tab_groups, group_id));
+    ASSERT_TRUE(tab_groups.contains(group_id));
     EXPECT_EQ(visual_data[group_ndx], tab_groups[group_id]->visual_data);
     if (tab_groups[group_id]->saved_guid.has_value()) {
       EXPECT_EQ(saved_guids[group_ndx],
@@ -1337,7 +1336,7 @@ TEST_F(SessionServiceTest, SplitTabDataSaved) {
 
   for (int split_ndx = 0; split_ndx < kNumSplitTabs; ++split_ndx) {
     const split_tabs::SplitTabId split_id = split_ids[split_ndx];
-    ASSERT_TRUE(base::Contains(split_tab_map, split_id));
+    ASSERT_TRUE(split_tab_map.contains(split_id));
     EXPECT_EQ(visual_data[split_ndx],
               split_tab_map[split_id]->split_visual_data_);
   }

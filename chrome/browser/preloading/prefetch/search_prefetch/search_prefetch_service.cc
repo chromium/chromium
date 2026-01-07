@@ -7,7 +7,6 @@
 #include <iterator>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/values_util.h"
@@ -1267,7 +1266,7 @@ void SearchPrefetchService::FireAllExpiryTimerForTesting() {
 void SearchPrefetchService::SetLoaderDestructionCallbackForTesting(
     const GURL& canonical_search_url,
     base::OnceClosure streaming_url_loader_destruction_callback) {
-  CHECK(base::Contains(prefetches_, canonical_search_url));
+  CHECK(prefetches_.contains(canonical_search_url));
   return prefetches_[canonical_search_url]
       ->SetLoaderDestructionCallbackForTesting(  // IN-TEST
           std::move(streaming_url_loader_destruction_callback));

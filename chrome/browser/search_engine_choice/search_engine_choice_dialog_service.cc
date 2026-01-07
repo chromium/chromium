@@ -7,7 +7,6 @@
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
@@ -107,7 +106,7 @@ void SearchEngineChoiceDialogService::BrowserRegistry::OnBrowserRemoved(
 
 bool SearchEngineChoiceDialogService::BrowserRegistry::IsRegistered(
     Browser& browser) const {
-  return base::Contains(registered_browsers_, browser);
+  return registered_browsers_.contains(browser);
 }
 
 bool SearchEngineChoiceDialogService::BrowserRegistry::HasOpenDialog(

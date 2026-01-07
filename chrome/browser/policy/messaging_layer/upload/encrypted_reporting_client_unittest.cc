@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -151,9 +150,9 @@ class EncryptedReportingClientTest : public ::testing::Test {
     const network::ResourceRequest& request =
         (*url_loader_factory_.pending_requests())[index].request;
     if (expect_dm_token) {
-      EXPECT_TRUE(base::Contains(request.headers.ToString(), kDmToken));
+      EXPECT_TRUE(request.headers.ToString().contains(kDmToken));
     } else {
-      EXPECT_FALSE(base::Contains(request.headers.ToString(), kDmToken));
+      EXPECT_FALSE(request.headers.ToString().contains(kDmToken));
     }
     CHECK(request.request_body);
     CHECK(request.request_body->elements());
