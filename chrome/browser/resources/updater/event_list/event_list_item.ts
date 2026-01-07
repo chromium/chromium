@@ -149,6 +149,7 @@ export class EventListItemElement extends CrLitElement {
   private computeFormattedDate(): string|undefined {
     return this.eventDate ? new Intl
                                 .DateTimeFormat(undefined, {
+                                  timeZoneName: 'short',
                                   month: 'numeric',
                                   day: 'numeric',
                                   hour: 'numeric',

@@ -46,10 +46,22 @@ function getEventEntries(
       shouldShowBreak: index > 0 && nextEventDate !== undefined &&
           nextEventDate.getTime() - eventDate.getTime() > 1000 * 60 * 60,
       eventDate,
-      formattedEventDate: eventDate.toLocaleString(),
+      formattedEventDate: getFormattedDate(eventDate),
       formattedRelativeEventDate: getRelativeDate(eventDate),
     };
   });
+}
+
+function getFormattedDate(date: Date): string {
+  return new Intl
+      .DateTimeFormat(undefined, {
+        timeZoneName: 'short',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+      })
+      .format(date);
 }
 
 function getRelativeDate(date: Date): string {

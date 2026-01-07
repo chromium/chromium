@@ -367,6 +367,16 @@ suite('EventListElement', () => {
     const label =
         listBreaks[0]!.querySelector('.event-list-break-label')!.textContent;
     const p1Date = new Date('2025-12-17T12:00:00Z');
-    assertStringContains(label, p1Date.toLocaleString());
+    assertStringContains(
+        label,
+        new Intl
+            .DateTimeFormat(undefined, {
+              timeZoneName: 'short',
+              month: 'numeric',
+              day: 'numeric',
+              hour: 'numeric',
+              minute: 'numeric',
+            })
+            .format(p1Date));
   });
 });
