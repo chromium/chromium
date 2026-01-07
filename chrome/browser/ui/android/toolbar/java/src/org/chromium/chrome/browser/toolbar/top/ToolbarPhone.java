@@ -1021,11 +1021,15 @@ public class ToolbarPhone extends ToolbarLayout
             float oldScrollFraction = mNtpSearchBoxScrollFraction;
             if (scrollFraction > 0.f && mNtpSearchBoxScrollFraction != 1.f) {
                 // Snap to the toolbar region.
+                endFocusTransition();
                 mNtpSearchBoxScrollFraction = 1.f;
                 createAndRunNtpFocusAnimatorRefactored();
             } else if (scrollFraction <= 0.f && mNtpSearchBoxScrollFraction != 0.f) {
-                // Un-snap from the toolbar region. Track the starting offset for scroll state.
+                // Un-snap from the toolbar region.
+                endFocusTransition();
                 mNtpSearchBoxScrollFraction = 0.f;
+                // Track the starting offset for scroll state. Set after #endFocusTransition, since
+                // that method clears this value.
                 mRefactoredNtpStartingOffset = getLocationBarTranslationY();
                 createAndRunNtpFocusAnimatorRefactored();
             }
