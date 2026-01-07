@@ -34,10 +34,6 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 @interface OmniboxPopupPresenter ()
 /// Constraint for the bottom anchor of the popup when form factor is phone.
 @property(nonatomic, strong) NSLayoutConstraint* bottomConstraintPhone;
-/// Constraint for the bottom anchor of the popup when form factor is regular
-/// horizontal size class and composebox is being shown.
-@property(nonatomic, strong)
-    NSLayoutConstraint* bottomConstraintComposeboxRegular;
 /// Constraint for the height anchor of the popup when form factor is tablet.
 @property(nonatomic, strong) NSLayoutConstraint* heightConstraintTablet;
 
@@ -193,20 +189,14 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 }
 
 - (void)updatePopupConstraints {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     BOOL showRegularLayout =
         IsRegularXRegularSizeClass(self.popupContainerView.traitCollection);
-    if (IsComposeboxIpadEnabled() &&
-        _presentationContext == OmniboxPresentationContext::kComposebox) {
-      self.bottomConstraintComposeboxRegular.active = showRegularLayout;
-      self.bottomConstraintPhone.active = !showRegularLayout;
-    } else {
-      if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-        self.bottomConstraintPhone.active = !showRegularLayout;
-        self.heightConstraintTablet.active = showRegularLayout;
-      } else {
-        self.bottomConstraintPhone.active = YES;
-      }
-    }
+    self.bottomConstraintPhone.active = !showRegularLayout;
+    self.heightConstraintTablet.active = showRegularLayout;
+  } else {
+    self.bottomConstraintPhone.active = YES;
+  }
 }
 
 // Sets the additional vertical content inset for the suggestion list.
@@ -293,47 +283,29 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   // to defocus the omnibox.
   self.heightConstraintTablet = [popup.heightAnchor
       constraintLessThanOrEqualToAnchor:popup.superview.heightAnchor
-                             multiplier:IsComposeboxIpadEnabled() ? 1 : 0.7];
+                             multiplier:0.7];
 
-  if (IsComposeboxIpadEnabled() &&
-      _presentationContext == OmniboxPresentationContext::kComposebox) {
-    // Constraints the popup bottom to its container superview so composebox for
-    // large size class is a completely containerized popup. Otherwise, the
-    // iphone fullscreen layout will be used.
-    self.bottomConstraintComposeboxRegular.active = NO;
-    self.bottomConstraintComposeboxRegular =
-        [popup.superview.safeAreaLayoutGuide.bottomAnchor
-            constraintEqualToAnchor:popup.bottomAnchor];
-    self.bottomConstraintPhone.active = NO;
+  BOOL tabletFormFactor =
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+
+  // Bottom constraints.
+  if (tabletFormFactor) {
+    BOOL paddingAmmount =
+        _presentationContext == OmniboxPresentationContext::kLensOverlay
+            ? 0
+            : kPopupBottomPaddingTablet + kSecondaryToolbarWithoutOmniboxHeight;
+    NSLayoutAnchor* superviewAnchor =
+        _presentationContext == OmniboxPresentationContext::kLensOverlay
+            ? popup.superview.bottomAnchor
+            : popup.superview.safeAreaLayoutGuide.bottomAnchor;
+    self.bottomConstraintPhone =
+        [superviewAnchor constraintGreaterThanOrEqualToAnchor:popup.bottomAnchor
+                                                     constant:paddingAmmount];
+  } else {
     CGFloat offset = self.useBottomOmniboxInPopup ? _bottomOmniboxOffset : 0;
     self.bottomConstraintPhone =
         [popup.bottomAnchor constraintEqualToAnchor:popup.superview.bottomAnchor
                                            constant:-offset];
-  } else {
-    BOOL tabletFormFactor =
-        ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
-
-    // Bottom constraints.
-    if (tabletFormFactor) {
-      BOOL paddingAmmount =
-          _presentationContext == OmniboxPresentationContext::kLensOverlay
-              ? 0
-              : kPopupBottomPaddingTablet +
-                    kSecondaryToolbarWithoutOmniboxHeight;
-      NSLayoutAnchor* superviewAnchor =
-          _presentationContext == OmniboxPresentationContext::kLensOverlay
-              ? popup.superview.bottomAnchor
-              : popup.superview.safeAreaLayoutGuide.bottomAnchor;
-
-      self.bottomConstraintPhone = [superviewAnchor
-          constraintGreaterThanOrEqualToAnchor:popup.bottomAnchor
-                                      constant:paddingAmmount];
-    } else {
-      CGFloat offset = self.useBottomOmniboxInPopup ? _bottomOmniboxOffset : 0;
-      self.bottomConstraintPhone = [popup.bottomAnchor
-          constraintEqualToAnchor:popup.superview.bottomAnchor
-                         constant:-offset];
-    }
   }
 
   // Top constraints.
@@ -359,6 +331,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
       [NSMutableArray arrayWithObject:_popupContainerTopConstraint];
 
   BOOL regularXRegularSizeClass =
+      tabletFormFactor &&
       IsRegularXRegularSizeClass(self.popupContainerView.traitCollection);
   if (regularXRegularSizeClass && self.topOmniboxGuide) {
     NSLayoutConstraint* leadingConstraint = [popup.leadingAnchor

@@ -40,6 +40,7 @@
 #import "ui/base/device_form_factor.h"
 
 namespace {
+const CGFloat kTopPadding = 8.0;
 const CGFloat kBottomPadding = 8.0;
 const CGFloat kFooterHeight = 4.0;
 /// Percentage of the suggestion height that needs to be visible in order to
@@ -68,8 +69,7 @@ const CGFloat kCloseButtonPadding = 16.0f;
                                           OmniboxPopupCarouselCellDelegate,
                                           OmniboxPopupRowDelegate,
                                           UITableViewDataSource,
-                                          UITableViewDelegate,
-                                          SelfSizingTableViewDelegate>
+                                          UITableViewDelegate>
 
 /// Index path of currently highlighted row. The rows can be highlighted by
 /// tapping and holding on them or by using arrow keys on a hardware keyboard.
@@ -85,7 +85,7 @@ const CGFloat kCloseButtonPadding = 16.0f;
 @property(nonatomic, assign) CGFloat keyboardHeight;
 
 /// Table view that displays the results.
-@property(nonatomic, strong) SelfSizingTableView* tableView;
+@property(nonatomic, strong) UITableView* tableView;
 
 /// Alignment of omnibox text. Popup text should match this alignment.
 @property(nonatomic, assign) NSTextAlignment alignment;
@@ -179,9 +179,9 @@ const CGFloat kCloseButtonPadding = 16.0f;
 // Sets the additional vertical content inset for the suggestion list.
 - (void)setAdditionalVerticalContentInset:
     (UIEdgeInsets)additionalVerticalContentInset {
-  self.tableView.contentInset = UIEdgeInsetsMake(
-      kOmniboxPopupTopPadding + additionalVerticalContentInset.top, 0,
-      additionalVerticalContentInset.bottom, 0);
+  self.tableView.contentInset =
+      UIEdgeInsetsMake(kTopPadding + additionalVerticalContentInset.top, 0,
+                       additionalVerticalContentInset.bottom, 0);
   [self.tableView
       setContentOffset:CGPointMake(0, -self.tableView.contentInset.top)
               animated:YES];
@@ -942,12 +942,6 @@ const CGFloat kCloseButtonPadding = 16.0f;
   }
 }
 
-#pragma mark - SelfSizingTableViewDelegate
-
-- (void)tableViewContentSizeDidChange:(CGSize)contentSize {
-  self.preferredContentSize = contentSize;
-}
-
 #pragma mark - OmniboxPopupCarouselCellDelegate
 
 - (void)carouselCellDidChangeItemCount:(OmniboxPopupCarouselCell*)carouselCell {
@@ -1095,7 +1089,6 @@ const CGFloat kCloseButtonPadding = 16.0f;
                                            style:UITableViewStyleGrouped];
   self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
   self.tableView.delegate = self;
-  self.tableView.contentSizeDelegate = self;
   self.tableView.dataSource = self;
 
   self.tableView.accessibilityIdentifier =
@@ -1115,16 +1108,15 @@ const CGFloat kCloseButtonPadding = 16.0f;
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     self.tableView.tableFooterView =
         [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, FLT_MIN)];
-    [self.tableView setDirectionalLayoutMargins:NSDirectionalEdgeInsetsMake(
-                                                    kOmniboxPopupTopPadding, 0,
-                                                    kBottomPadding, 0)];
+    [self.tableView
+        setDirectionalLayoutMargins:NSDirectionalEdgeInsetsMake(
+                                        kTopPadding, 0, kBottomPadding, 0)];
     self.tableView.contentInset =
-        UIEdgeInsetsMake(kOmniboxPopupTopPadding, 0, kBottomPadding, 0);
+        UIEdgeInsetsMake(kTopPadding, 0, kBottomPadding, 0);
   } else {
     [self.tableView setDirectionalLayoutMargins:NSDirectionalEdgeInsetsMake(
                                                     0, 0, kBottomPadding, 0)];
-    self.tableView.contentInset =
-        UIEdgeInsetsMake(kOmniboxPopupTopPadding, 0, 0, 0);
+    self.tableView.contentInset = UIEdgeInsetsMake(kTopPadding, 0, 0, 0);
   }
 
   self.tableView.sectionHeaderHeight = 0.1;

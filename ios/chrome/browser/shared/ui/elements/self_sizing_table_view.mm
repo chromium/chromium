@@ -7,12 +7,8 @@
 @implementation SelfSizingTableView
 
 - (void)setContentSize:(CGSize)contentSize {
-  if (CGSizeEqualToSize(self.contentSize, contentSize)) {
-    return;
-  }
   [super setContentSize:contentSize];
   [self invalidateIntrinsicContentSize];
-  [self.contentSizeDelegate tableViewContentSizeDidChange:contentSize];
 }
 
 - (CGSize)intrinsicContentSize {
