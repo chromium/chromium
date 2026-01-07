@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATION_METRICS_H_
-#define CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATION_METRICS_H_
+#ifndef COMPONENTS_ON_DEVICE_TRANSLATION_METRICS_H_
+#define COMPONENTS_ON_DEVICE_TRANSLATION_METRICS_H_
 
 #include <string_view>
 
 namespace on_device_translation {
 
-// Record language code for a certain UMA. If the launuage code is not
+// Record language code for a certain UMA. If the language code is not
 // recognized it will be recorded as unknown.
 void RecordLanguageUma(std::string_view uma_name,
                        std::string_view language_code);
@@ -40,4 +40,4 @@ void RecordTranslationCharacterCount(std::string_view source_lang,
 
 }  // namespace on_device_translation
 
-#endif  // CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATION_METRICS_H_
+#endif  // COMPONENTS_ON_DEVICE_TRANSLATION_METRICS_H_

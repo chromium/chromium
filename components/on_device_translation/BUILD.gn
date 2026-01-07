@@ -12,8 +12,11 @@ source_set("on_device_translation") {
     "constants.h",
     "features.cc",
     "features.h",
+    "metrics.cc",
+    "metrics.h",
   ]
   deps = [
+    ":public",
     "//base",
     "//third_party/blink/public/common:headers",
   ]
@@ -35,6 +38,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "features_unittest.cc",
+    "metrics_unittest.cc",
     "public/language_pack_unittest.cc",
   ]
   deps = [
