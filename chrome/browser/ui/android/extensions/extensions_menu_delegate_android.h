@@ -76,6 +76,8 @@ class ExtensionsMenuDelegateAndroid : public ExtensionsMenuViewModel::Delegate,
       const extensions::ExtensionId& extension_id) override;
 
  private:
+  const raw_ptr<BrowserWindowInterface> browser_;
+
   // The platform-agnostic menu view model.
   std::unique_ptr<ExtensionsMenuViewModel> menu_model_;
   base::ScopedObservation<ExtensionsMenuViewModel,

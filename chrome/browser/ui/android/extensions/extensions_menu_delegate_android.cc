@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/android/extensions/extensions_menu_delegate_android.h"
 
+#include "chrome/browser/ui/android/extensions/extension_action_delegate_android.h"
+
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/extensions/jni_headers/ExtensionsMenuBridge_jni.h"
 
@@ -12,7 +14,8 @@ namespace extensions {
 ExtensionsMenuDelegateAndroid::ExtensionsMenuDelegateAndroid(
     BrowserWindowInterface* browser,
     const base::android::JavaRef<jobject>& java_object)
-    : menu_model_(std::make_unique<ExtensionsMenuViewModel>(browser,
+    : browser_(browser),
+      menu_model_(std::make_unique<ExtensionsMenuViewModel>(browser,
                                                             /*delegate=*/this)),
       java_object_(java_object) {
   menu_model_observation_.Observe(menu_model_.get());
@@ -27,8 +30,9 @@ void ExtensionsMenuDelegateAndroid::Destroy(JNIEnv* env) {
 std::unique_ptr<ExtensionActionViewModel>
 ExtensionsMenuDelegateAndroid::CreateActionViewModel(
     const extensions::ExtensionId& extension_id) {
-  // TODO(crbug.com/473192151)
-  return nullptr;
+  return ExtensionActionViewModel::Create(
+      extension_id, browser_,
+      std::make_unique<ExtensionActionDelegateAndroid>(browser_));
 }
 
 void ExtensionsMenuDelegateAndroid::OnActiveWebContentsChanged(
