@@ -369,6 +369,13 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         super.onBindViewHolder(viewHolder, position);
         int typeId = mListData.get(position).type;
+
+        // If this view was previously used during a drag (and drifted off-screen), it might still
+        // have the "closed hand" cursor set, so we reset it to a default cursor.
+        if (ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
+            viewHolder.itemView.setPointerIcon(null);
+        }
+
         // Overridden to given the draggable items a chance to bind correctly since a ViewHolder
         // is required.
         DragBinder dragBinder = mDragBinderMap.get(typeId);

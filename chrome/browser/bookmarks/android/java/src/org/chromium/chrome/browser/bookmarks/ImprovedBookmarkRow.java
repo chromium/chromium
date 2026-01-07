@@ -362,6 +362,8 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
                 mDragHandle.setVisibility(
                         (mIsDragEnabled && mIsSelected) ? View.VISIBLE : View.GONE);
             }
+            // ViewOutlineProvider re-runs getOutline().
+            invalidateOutline();
         }
 
         mCheckImageView.setVisibility(checkVisible ? View.VISIBLE : View.GONE);

@@ -47,6 +47,11 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
     // Tracks if the drag handle is currently being pressed (via touch or mouse down).
     private boolean mIsHandleTouched;
 
+    // Tracks if a drag interaction was just successfully initiated. Used to prevent the handle from
+    // hiding when the system (the ItemTouchHelper working with RecyclerView) sends ACTION_CANCEL to
+    // the grab handle’s onTouch listener on drag start.
+    private boolean mDragInteractionActive;
+
     private final Runnable mSelectRunnable = this::selectItem;
     private final Runnable mStartDragRunnable = this::startDrag;
     private final Runnable mHideHandleRunnable = this::hideDragHandle;
@@ -273,9 +278,16 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
             }
 
             boolean isSelected = mSelectionDelegate.isItemSelected(mBookmarkId);
-            if (!isSelected) {
+
+            // If mDragInteractionActive = true, it means this ACTION_CANCEL signal came from the
+            // ItemTouchHelper taking over when the drag started, so we want the handle to stay
+            // visible.
+            if (!isSelected && !mDragInteractionActive) {
                 mHandler.postDelayed(mHideHandleRunnable, HIDE_HANDLE_DELAY_MS);
             }
+
+            // Reset the flag for the next interaction.
+            mDragInteractionActive = false;
 
             if (mRecyclerView != null) {
                 mRecyclerView.requestDisallowInterceptTouchEvent(false);
@@ -415,6 +427,8 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
         // Set grabbing (closed hand) on ImprovedBookmarkRow.
         mViewHolder.itemView.setPointerIcon(
                 PointerIcon.getSystemIcon(mContext, PointerIcon.TYPE_GRABBING));
+
+        mDragInteractionActive = true;
 
         // Manually call startDrag, which we disabled in the adapter.
         mItemTouchHelper.startDrag(mViewHolder);
