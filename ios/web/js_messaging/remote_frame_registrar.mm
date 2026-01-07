@@ -108,12 +108,6 @@ void ChildFrameRegistrar::DeclareNewRemoteToken(
 
 ChildFrameRegistrar* ChildFrameRegistrar::GetOrCreateForWebState(
     web::WebState* web_state) {
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAcrossIframesIos) &&
-      !base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos)) {
-    return nullptr;
-  }
-
   ChildFrameRegistrar* helper = FromWebState(web_state);
   if (!helper) {
     CreateForWebState(web_state);

@@ -30,11 +30,6 @@ BASE_FEATURE(kAutofillFixXhrForXframe, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillFormSubmissionEventsInCaptureMode,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// LINT.IfChange(autofill_isolated_content_world)
-BASE_FEATURE(kAutofillIsolatedWorldForJavascriptIos,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// LINT.ThenChange(/components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_isolated_content_world)
-
 BASE_FEATURE(kAutofillPaymentsSheetV2Ios, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAutofillPaymentsSheetV3Ios, base::FEATURE_DISABLED_BY_DEFAULT);

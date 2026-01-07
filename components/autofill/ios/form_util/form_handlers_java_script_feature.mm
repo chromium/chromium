@@ -47,13 +47,11 @@ std::vector<web::JavaScriptFeature::FeatureScript> GetFeatureScripts() {
       FeatureScript::ReinjectionBehavior::kReinjectOnDocumentRecreation,
       placeholder_replacements_callback));
 
-  if (base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos)) {
-    feature_scripts.push_back(FeatureScript::CreateWithFilename(
-        kRemoteTokenRegistrationScriptName,
-        FeatureScript::InjectionTime::kDocumentStart,
-        FeatureScript::TargetFrames::kAllFrames,
-        FeatureScript::ReinjectionBehavior::kReinjectOnDocumentRecreation));
-  }
+  feature_scripts.push_back(FeatureScript::CreateWithFilename(
+      kRemoteTokenRegistrationScriptName,
+      FeatureScript::InjectionTime::kDocumentStart,
+      FeatureScript::TargetFrames::kAllFrames,
+      FeatureScript::ReinjectionBehavior::kReinjectOnDocumentRecreation));
 
   return feature_scripts;
 }

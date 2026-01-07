@@ -275,10 +275,6 @@ std::optional<std::pair<WebFrame*, LocalFrameToken>> GetIsolatedFrame(
     const std::string& page_world_frame_id,
     const std::string& remote_frame_token,
     web::WebState* web_state) {
-  if (!base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos)) {
-    return std::nullopt;
-  }
-
   std::optional<LocalFrameToken> local_frame_token =
       LookupLocalFrame(remote_frame_token, web_state);
 

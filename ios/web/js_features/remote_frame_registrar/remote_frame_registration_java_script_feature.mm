@@ -44,12 +44,6 @@ RemoteFrameRegistrationJavaScriptFeature::GetScriptMessageHandlerName() const {
 void RemoteFrameRegistrationJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAcrossIframesIos) &&
-      !base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos)) {
-    return;
-  }
-
   if (!message.body() || !message.body()->is_dict()) {
     return;
   }

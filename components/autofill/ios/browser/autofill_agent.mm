@@ -235,14 +235,11 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
     _prefObserverBridge->ObserveChangesForPreference(
         autofill::prefs::kAutofillProfileEnabled, &_prefChangeRegistrar);
 
-    // Inject feature flags in the page content world when running in the
-    // isolated world. Feature flags are needed for the form submission hook
-    // that is injected in that the page world.
-    if (base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos)) {
-      _page_world_features_injector =
-          std::make_unique<AutofillFormFeaturesInjector>(
-              webState, web::ContentWorld::kPageContentWorld);
-    }
+    // Inject feature flags in the page content world. Feature flags are needed
+    // for the form submission hook that is injected in that the page world.
+    _page_world_features_injector =
+        std::make_unique<AutofillFormFeaturesInjector>(
+            webState, web::ContentWorld::kPageContentWorld);
   }
   return self;
 }

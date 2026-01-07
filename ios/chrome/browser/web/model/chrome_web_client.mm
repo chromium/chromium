@@ -410,13 +410,9 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
 
   features.push_back(autofill::AutofillJavaScriptFeature::GetInstance());
   features.push_back(autofill::FormHandlersJavaScriptFeature::GetInstance());
-
-  if (base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos)) {
-    features.push_back(
-        autofill::ProgrammaticFormSubmissionHandlerJavaScriptFeature::
-            GetInstance());
-  }
-
+  features.push_back(
+      autofill::ProgrammaticFormSubmissionHandlerJavaScriptFeature::
+          GetInstance());
   features.push_back(
       autofill::SuggestionControllerJavaScriptFeature::GetInstance());
   features.push_back(AutofillBottomSheetJavaScriptFeature::GetInstance());

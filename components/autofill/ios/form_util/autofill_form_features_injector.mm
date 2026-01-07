@@ -55,11 +55,6 @@ void SetAutofillFormFeatureFlags(WebFrame* web_frame) {
                          features::kAutofillIgnoreCheckableElements));
 
   AutofillFormFeaturesJavaScriptFeature::GetInstance()
-      ->SetAutofillIsolatedContentWorld(
-          web_frame,
-          base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos));
-
-  AutofillFormFeaturesJavaScriptFeature::GetInstance()
       ->SetAutofillCorrectUserEditedBitInParsedField(
           web_frame, base::FeatureList::IsEnabled(
                          kAutofillCorrectUserEditedBitInParsedField));

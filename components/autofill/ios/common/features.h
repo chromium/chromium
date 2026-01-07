@@ -37,12 +37,6 @@ BASE_DECLARE_FEATURE(kAutofillFixXhrForXframe);
 // propagated.
 BASE_DECLARE_FEATURE(kAutofillFormSubmissionEventsInCaptureMode);
 
-// Controls whether to use the isolated content world instead of the page
-// content world for the Autofill JS feature scripts.
-// TODO(crbug.com/40747550) Remove once the isolated content world is launched
-// for Autofill.
-BASE_DECLARE_FEATURE(kAutofillIsolatedWorldForJavascriptIos);
-
 // Enables the second version of the payments suggestion bottom sheet to prevent
 // bugs that we've seen in production on other transaction sheets (e.g. some
 // fields becoming unresponsive).

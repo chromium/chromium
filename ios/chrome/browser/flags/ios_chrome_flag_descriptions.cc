@@ -164,12 +164,6 @@ const char kAutofillEnableWalletBrandingDescription[] =
     "When enabled, certain strings and logos referencing Google Account, "
     "Google Payments, and Google Pay will instead reference Google Wallet.";
 
-const char kAutofillIsolatedWorldForJavascriptIOSName[] =
-    "Isolated content world for Autofill";
-const char kAutofillIsolatedWorldForJavascriptIOSDescription[] =
-    "Use the isolated content world instead of the page content world "
-    "for the Autofill JS feature scripts.";
-
 const char kAutofillLocalSaveCardBottomSheetName[] =
     "Enable save card bottomsheet for local save";
 const char kAutofillLocalSaveCardBottomSheetDescription[] =
