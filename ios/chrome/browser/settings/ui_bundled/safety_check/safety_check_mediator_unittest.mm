@@ -819,8 +819,6 @@ TEST_F(SafetyCheckMediatorTest, CheckNowClickableAll) {
 // Tests that the notifications opt-in button correctly displays the "Turn Off"
 // notifications prompt when notifications are currently enabled.
 TEST_F(SafetyCheckMediatorTest, NotificationsOptInButtonPromptsTurnOff) {
-  feature_list_.InitWithFeatures({kSafetyCheckNotifications}, {});
-
   [mediator_ disconnect];
   mediator_ = [[SafetyCheckMediator alloc]
       initWithUserPrefService:pref_service_
@@ -842,8 +840,6 @@ TEST_F(SafetyCheckMediatorTest, NotificationsOptInButtonPromptsTurnOff) {
 // Tests that the notifications opt-in button correctly displays the "Turn On"
 // notifications prompt when notifications are currently disabled.
 TEST_F(SafetyCheckMediatorTest, NotificationsOptInButtonPromptsTurnOn) {
-  feature_list_.InitWithFeatures({kSafetyCheckNotifications}, {});
-
   [mediator_ disconnect];
   mediator_ = [[SafetyCheckMediator alloc]
       initWithUserPrefService:pref_service_
@@ -864,8 +860,6 @@ TEST_F(SafetyCheckMediatorTest, NotificationsOptInButtonPromptsTurnOn) {
 
 // Tests that the histogram is correctly fired for opting in to notifications.
 TEST_F(SafetyCheckMediatorTest, NotificationsHistogramFiresForOptIn) {
-  feature_list_.InitWithFeatures({kSafetyCheckNotifications}, {});
-
   UpdateSafetyCheckNotificationsPermission(NO);
 
   TableViewItem* opt_in_item =
@@ -885,8 +879,6 @@ TEST_F(SafetyCheckMediatorTest, NotificationsHistogramFiresForOptIn) {
 
 // Tests that the histogram is correctly fired for opting out of notifications.
 TEST_F(SafetyCheckMediatorTest, NotificationsHistogramFiresForOptOut) {
-  feature_list_.InitWithFeatures({kSafetyCheckNotifications}, {});
-
   UpdateSafetyCheckNotificationsPermission(YES);
 
   TableViewItem* opt_in_item =

@@ -1931,8 +1931,6 @@ struct EnhancedSafeBrowsingActivePromoData
 // Updates the state of the Safety Check notifications button based on whether
 // the user has Safety Check notifications enabled.
 - (void)updateSafetyCheckNotificationsButtonState {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
   // Safety Check notifications are controlled by app-wide notification
   // settings, not profile-specific ones. No Gaia ID is required below in
   // `GetMobileNotificationPermissionStatusForClient()`.
@@ -2622,8 +2620,7 @@ struct EnhancedSafeBrowsingActivePromoData
     (PushNotificationClientId)clientID {
   [self updateNotificationsDetailText];
 
-  if (IsSafetyCheckNotificationsEnabled() &&
-      clientID == PushNotificationClientId::kSafetyCheck) {
+  if (clientID == PushNotificationClientId::kSafetyCheck) {
     [self updateSafetyCheckNotificationsButtonState];
   }
 }

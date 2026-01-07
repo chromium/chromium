@@ -312,24 +312,23 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
       forSectionWithIdentifier:SectionIdentifierLastPasswordCheckup];
 
   // Notifications opt-in section.
-  if (IsSafetyCheckNotificationsEnabled()) {
-    [model addSectionWithIdentifier:SectionIdentifierNotificationsOptIn];
 
-    if (!_notificationsOptInItem) {
-      _notificationsOptInItem = [self notificationsOptInItem];
-    }
+  [model addSectionWithIdentifier:SectionIdentifierNotificationsOptIn];
 
-    [model addItem:_notificationsOptInItem
-        toSectionWithIdentifier:SectionIdentifierNotificationsOptIn];
-
-    if (!_notificationsDescriptionFooterItem) {
-      _notificationsDescriptionFooterItem =
-          [self notificationsDescriptionFooterItem];
-    }
-
-    [model setFooter:_notificationsDescriptionFooterItem
-        forSectionWithIdentifier:SectionIdentifierNotificationsOptIn];
+  if (!_notificationsOptInItem) {
+    _notificationsOptInItem = [self notificationsOptInItem];
   }
+
+  [model addItem:_notificationsOptInItem
+      toSectionWithIdentifier:SectionIdentifierNotificationsOptIn];
+
+  if (!_notificationsDescriptionFooterItem) {
+    _notificationsDescriptionFooterItem =
+        [self notificationsDescriptionFooterItem];
+  }
+
+  [model setFooter:_notificationsDescriptionFooterItem
+      forSectionWithIdentifier:SectionIdentifierNotificationsOptIn];
 
   if (_consumerHasBeenUpdated) {
     [self updateItemsDependingOnPasswordCheckupState];
@@ -392,8 +391,6 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
 }
 
 - (TableViewTextItem*)notificationsOptInItem {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
   TableViewTextItem* notificationsOptInItem =
       [[TableViewTextItem alloc] initWithType:ItemTypeNotificationsOptIn];
   notificationsOptInItem.text =
@@ -405,8 +402,6 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
 }
 
 - (TableViewLinkHeaderFooterItem*)notificationsDescriptionFooterItem {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
   TableViewLinkHeaderFooterItem* footerItem =
       [[TableViewLinkHeaderFooterItem alloc]
           initWithType:ItemTypeNotificationsDescriptionFooter];
@@ -487,8 +482,6 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
 }
 
 - (void)setSafetyCheckNotificationsEnabled:(BOOL)enabled {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
   _safetyCheckNotificationsEnabled = enabled;
 
   [self updateNotificationsOptInItem];
@@ -580,7 +573,6 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
       }
       break;
     case ItemTypeNotificationsOptIn:
-      CHECK(IsSafetyCheckNotificationsEnabled());
       [self.delegate toggleSafetyCheckNotifications];
   }
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -844,8 +836,6 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
 
 // Updates the `_notificationsOptInItem`.
 - (void)updateNotificationsOptInItem {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
   _notificationsOptInItem.text =
       NotificationsOptInItemText(_safetyCheckNotificationsEnabled);
 

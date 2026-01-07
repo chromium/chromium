@@ -240,9 +240,7 @@
   [_consumer setContentNotificationsItem:self.contentNotificationsItem];
   [_consumer setTipsNotificationsItem:self.tipsNotificationsItem];
   [_consumer setTipsNotificationsFooterItem:self.tipsNotificationsFooterItem];
-  if (IsSafetyCheckNotificationsEnabled()) {
-    [_consumer setSafetyCheckItem:self.safetyCheckItem];
-  }
+  [_consumer setSafetyCheckItem:self.safetyCheckItem];
   if (base::FeatureList::IsEnabled(
           send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
     [_consumer setSendTabNotificationsItem:self.sendTabNotificationsItem];

@@ -355,25 +355,22 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     _checkStartItem.textColor = [UIColor colorNamed:kBlueColor];
     _checkStartItem.accessibilityTraits |= UIAccessibilityTraitButton;
 
-    if (IsSafetyCheckNotificationsEnabled()) {
-      TableViewTextItem* notificationsOptInItem =
-          [[TableViewTextItem alloc] initWithType:NotificationsOptInItemType];
+    TableViewTextItem* notificationsOptInItem =
+        [[TableViewTextItem alloc] initWithType:NotificationsOptInItemType];
+    notificationsOptInItem.accessibilityIdentifier =
+        kSafetyCheckNotificationsOptInButtonAccessibilityID;
+    notificationsOptInItem.text =
+        push_notification_settings::
+                GetMobileNotificationPermissionStatusForClient(
+                    PushNotificationClientId::kSafetyCheck, GaiaId())
+            ? GetNSString(
+                  IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURN_OFF_NOTIFICATIONS_ELLIPSIS)
+            : GetNSString(
+                  IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURN_ON_NOTIFICATIONS_ELLIPSIS);
+    notificationsOptInItem.textColor = [UIColor colorNamed:kBlueColor];
+    notificationsOptInItem.accessibilityTraits |= UIAccessibilityTraitButton;
 
-      notificationsOptInItem.accessibilityIdentifier =
-          kSafetyCheckNotificationsOptInButtonAccessibilityID;
-      notificationsOptInItem.text =
-          push_notification_settings::
-                  GetMobileNotificationPermissionStatusForClient(
-                      PushNotificationClientId::kSafetyCheck, GaiaId())
-              ? GetNSString(
-                    IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURN_OFF_NOTIFICATIONS_ELLIPSIS)
-              : GetNSString(
-                    IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURN_ON_NOTIFICATIONS_ELLIPSIS);
-      notificationsOptInItem.textColor = [UIColor colorNamed:kBlueColor];
-      notificationsOptInItem.accessibilityTraits |= UIAccessibilityTraitButton;
-
-      self.notificationsOptInItem = notificationsOptInItem;
-    }
+    self.notificationsOptInItem = notificationsOptInItem;
   }
 
   return self;
@@ -417,8 +414,6 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 }
 
 - (void)reconfigureNotificationsSection:(BOOL)enabled {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
   // If notifications are `enabled`, the button should prompt users to disable
   // them.
   self.notificationsOptInItem.text =

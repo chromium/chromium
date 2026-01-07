@@ -159,16 +159,12 @@ using password_manager::WarningType;
 }
 
 - (void)updateNotificationsButton:(BOOL)enabled {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
   [self.mediator reconfigureNotificationsSection:enabled];
 }
 
 #pragma mark - SafetyCheckMediatorDelegate
 
 - (void)toggleSafetyCheckNotifications {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
   // Safety Check notifications are controlled by app-wide notification
   // settings, not profile-specific ones. No Gaia ID is required below in
   // `GetMobileNotificationPermissionStatusForClient()`.
@@ -340,8 +336,6 @@ using password_manager::WarningType;
 // notification service preferences. Displays a confirmation snackbar with a
 // link to notification settings.
 - (void)disableNotifications {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
   GetApplicationContext()->GetPushNotificationService()->SetPreference(
       GaiaId(), PushNotificationClientId::kSafetyCheck, false);
 
