@@ -1020,6 +1020,24 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/base/data_type.h:SyncDataTypes) -->
 
+<!-- LINT.IfChange(SyncDeviceStatisticsSuccess) -->
+
+<enum name="SyncDeviceStatisticsSuccess">
+  <int value="0" label="Success: All requests succeeded"/>
+  <int value="1"
+      label="Success: Request for primary account succeeded, but at least one
+             non-primary failed"/>
+  <int value="2"
+      label="Failure: Request for primary account failed, but at least one
+             non-primary succeeded"/>
+  <int value="3" label="Failure: All requests failed"/>
+  <int value="4"
+      label="Failure: The primary account was changed (or removed) while
+             requests were ongoing"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/device_statistics_tracker.h:SyncDeviceStatisticsSuccess) -->
+
 <!-- LINT.IfChange(SyncEntityChange) -->
 
 <enum name="SyncEntityChange">

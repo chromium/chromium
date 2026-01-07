@@ -1132,6 +1132,29 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Sync.DeviceStatistics.RequestsCompletedSuccess"
+    enum="SyncDeviceStatisticsSuccess" expires_after="2026-06-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Whenever all GetUpdates requests that were started (see
+    `Sync.DeviceStatistics.RequestsStartedCount`) have completed, records the
+    success of the entire operation.
+  </summary>
+</histogram>
+
+<histogram name="Sync.DeviceStatistics.RequestsStartedCount" units="requests"
+    expires_after="2026-06-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Whenever GetUpdates requests are started for the purpose
+    of device statistics metrics, records the number of requests (= the number
+    of accounts in the profile). This happens on Sync startup, at most once per
+    day.
+  </summary>
+</histogram>
+
 <histogram name="Sync.DownloadUpdatesResult" enum="SyncerErrorValues"
     expires_after="2026-06-21">
   <owner>rushans@google.com</owner>
