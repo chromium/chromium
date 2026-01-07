@@ -13,6 +13,7 @@ import '../menus/line_spacing_menu.js';
 import '../menus/letter_spacing_menu.js';
 import '../menus/highlight_menu.js';
 import '../menus/rate_menu.js';
+import '../menus/presentation_menu.js';
 import '../menus/settings_menu.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
@@ -40,6 +41,7 @@ import type {LetterSpacingMenuElement} from '../menus/letter_spacing_menu.js';
 import type {LineFocusMenuElement} from '../menus/line_focus_menu.js';
 import type {LineSpacingMenuElement} from '../menus/line_spacing_menu.js';
 import type {ToolbarMenu} from '../menus/menu_util.js';
+import type {PresentationMenuElement} from '../menus/presentation_menu.js';
 import type {RateMenuElement} from '../menus/rate_menu.js';
 import type {SettingsMenuElement} from '../menus/settings_menu.js';
 import {getCurrentSpeechRate} from '../read_aloud/speech_presentation_rules.js';
@@ -67,6 +69,7 @@ export interface ReadAnythingToolbarElement {
     toolbarContainer: HTMLElement,
     more: CrIconButtonElement,
     settingsMenu: SettingsMenuElement,
+    presentationMenu: PresentationMenuElement,
   };
 }
 interface MenuButton {
@@ -800,6 +803,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       [SettingsOption.LINE_FOCUS]: this.$.lineFocusMenu,
       [SettingsOption.LINE_SPACING]: this.$.lineSpacingMenu,
       [SettingsOption.VOICE_SELECTION]: this.$.voiceSelectionMenu,
+      [SettingsOption.PRESENTATION]: this.$.presentationMenu,
     };
   }
 

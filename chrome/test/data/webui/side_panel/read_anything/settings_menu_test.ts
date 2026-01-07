@@ -78,7 +78,6 @@ suite('SettingsMenuElement', () => {
       item.click();
     }
 
-    // TODO(crbug.com/471212662): Implement the View submenu
-    assertEquals(7, submenuEvents);
+    assertEquals(8, submenuEvents);
   });
 });

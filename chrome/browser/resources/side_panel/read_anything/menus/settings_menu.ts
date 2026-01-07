@@ -12,7 +12,6 @@ import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/c
 import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {SettingsOption, ToolbarEvent} from '../content/read_anything_types.js';
@@ -84,6 +83,12 @@ const MENU_ITEM_DATA: Record<SettingsOption, SettingsItem> = {
     ariaLabel: 'lineFocusLabel',
     itemType: SettingsItemType.MENU,
   },
+  [SettingsOption.PRESENTATION]: {
+    id: SettingsOption.PRESENTATION,
+    icon: 'read-anything:view',
+    ariaLabel: 'viewLabel',
+    itemType: SettingsItemType.MENU,
+  },
   [SettingsOption.VOICE_SELECTION]: {
     id: SettingsOption.VOICE_SELECTION,
     icon: 'read-anything:voice-selection',
@@ -94,12 +99,6 @@ const MENU_ITEM_DATA: Record<SettingsOption, SettingsItem> = {
     id: SettingsOption.VOICE_HIGHLIGHT,
     icon: 'read-anything:highlight-on',
     ariaLabel: 'voiceHighlightLabel',
-    itemType: SettingsItemType.MENU,
-  },
-  [SettingsOption.VIEW]: {
-    id: SettingsOption.VIEW,
-    icon: 'read-anything:view',
-    ariaLabel: 'viewLabel',
     itemType: SettingsItemType.MENU,
   },
 };
@@ -149,32 +148,6 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     this.initializeMenuOptions_();
   }
 
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-    // TODO(crbug.com/471212662): Add a designated toggle menu and delete this
-    if (changedProperties.has('presentationState')) {
-      this.initializeMenuOptions_();
-    }
-  }
-
-  // TODO(crbug.com/471212662): Remove this method when we add the final menu
-  // buttons that don't use these strings.
-  private getTogglePresentationLabel_(): string {
-    // The kInImmersiveOverlay enum value is 3 and the kInSidePanel enum value
-    // is 2 in ReadAnythingPresentationState. See
-    // chrome/common/read_anything/read_anything.mojom.
-
-    // kInSidePanel = 2
-    if (this.presentationState === 2) {
-      return 'View: Show in Immersive';
-    }
-    // kInImmersiveOverlay = 3
-    if (this.presentationState === 3) {
-      return 'View: Show in Side Panel';
-    }
-    return 'View: Toggle';
-  }
-
   private initializeMenuOptions_() {
     let optionIDs = [
       SettingsOption.COLOR,
@@ -189,7 +162,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       optionIDs.push(SettingsOption.LINE_FOCUS);
     }
 
-    optionIDs = optionIDs.concat([SettingsOption.VIEW, SettingsOption.LINKS]);
+    optionIDs =
+        optionIDs.concat([SettingsOption.PRESENTATION, SettingsOption.LINKS]);
 
     if (chrome.readingMode.imagesEnabled) {
       optionIDs.push(SettingsOption.IMAGES);
@@ -198,11 +172,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     // TODO (crbug.com/470379647): Add the toggle elements to settings menu
     this.options_ = optionIDs.map(id => {
       const original = MENU_ITEM_DATA[id];
-      let ariaLabel = loadTimeData.getString(original.ariaLabel);
-
-      if (id === SettingsOption.VIEW) {
-        ariaLabel = this.getTogglePresentationLabel_();
-      }
+      const ariaLabel = loadTimeData.getString(original.ariaLabel);
 
       return {
         ...original,
@@ -226,12 +196,6 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     }
 
     const newMenuId = item.id;
-    if (newMenuId === SettingsOption.VIEW) {
-      chrome.readingMode.togglePresentation();
-      this.close();
-      return;
-    }
-
     if (this.currentOpenId_ === newMenuId) {
       return;
     }

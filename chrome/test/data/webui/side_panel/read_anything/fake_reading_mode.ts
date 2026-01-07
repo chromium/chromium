@@ -71,6 +71,10 @@ export class FakeReadingMode {
   lineFocusStaticLine: number = 54;
   lineFocusCursorLine: number = 55;
 
+  // Enum values for presentation states.
+  inSidePanelPresentationState: number = 2;
+  inImmersiveOverlayPresentationState: number = 3;
+
   // Whether the Read Aloud feature flag is enabled.
   isReadAloudEnabled: boolean = true;
   imagesFeatureEnabled: boolean = false;

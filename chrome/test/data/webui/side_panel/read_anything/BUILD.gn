@@ -32,6 +32,7 @@ build_webui_tests("build") {
     "line_spacing_test.ts",
     "movement_test.ts",
     "node_store_test.ts",
+    "presentation_menu_test.ts",
     "rate_menu_test.ts",
     "read_aloud_model_test.ts",
     "read_aloud_highlighting_test.ts",

@@ -192,6 +192,10 @@ ${renderTextStyleOptions.call(this)}
   @close-all-menus="${this.onCloseAllMenus_}"
   @open-settings-submenu="${this.onOpenSettingsSubmenu_}">
 </settings-menu>
+<presentation-menu id="presentationMenu"
+  .presentationState="${this.presentationState}"
+  @close-all-menus="${this.onCloseAllMenus_}">
+</presentation-menu>
 <!--_html_template_end_-->`;
   // clang-format on
 }

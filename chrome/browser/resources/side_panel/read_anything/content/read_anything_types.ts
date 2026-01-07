@@ -77,6 +77,7 @@ export enum ToolbarEvent {
   LINE_FOCUS = 'line-focus-change',
   CLOSE_ALL_MENUS = 'close-all-menus',
   OPEN_SETTINGS_SUBMENU = 'open-settings-submenu',
+  PRESENTATION_CHANGE = 'presentation-change',
 }
 
 // The available menu items in Reading mode
@@ -89,7 +90,7 @@ export enum SettingsOption {
   LINE_FOCUS = 'line-focus',
   LINE_SPACING = 'line-spacing',
   LINKS = 'links',
-  VIEW = 'view',
+  PRESENTATION = 'presentation',
   VOICE_HIGHLIGHT = 'voice-highlight',
   VOICE_SELECTION = 'voice-selection',
 }

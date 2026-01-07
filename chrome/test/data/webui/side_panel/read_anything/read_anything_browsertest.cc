@@ -337,6 +337,11 @@ class ImmersiveReadAnythingMochaTest : public ReadAnythingMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+IN_PROC_BROWSER_TEST_F(ImmersiveReadAnythingMochaTest, PresentationMenu) {
+  RunSidePanelTest("side_panel/read_anything/presentation_menu_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ImmersiveReadAnythingMochaTest, SettingsMenu) {
   RunSidePanelTest("side_panel/read_anything/settings_menu_test.js",
                    "mocha.run()");

@@ -43,6 +43,8 @@ build_webui("build") {
     "menus/line_spacing_menu.html.ts",
     "menus/line_spacing_menu.ts",
     "menus/menu_util.ts",
+    "menus/presentation_menu.html.ts",
+    "menus/presentation_menu.ts",
     "menus/rate_menu.html.ts",
     "menus/rate_menu.ts",
     "menus/settings_menu.html.ts",

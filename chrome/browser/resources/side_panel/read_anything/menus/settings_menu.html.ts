@@ -4,8 +4,6 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {SettingsOption} from '../content/read_anything_types.js';
-
 import {SettingsItemType, type SettingsMenuElement} from './settings_menu.js';
 
 
@@ -27,11 +25,9 @@ export function getHtml(this: SettingsMenuElement) {
 
         <div class="label">${item.ariaLabel}</div>
 
-        <!-- TODO(crbug.com/471212662): Add a designated toggle menu and delete
-        this SettingsOption.VIEW check -->
         ${item.itemType === SettingsItemType.TOGGLE ? html`
             <cr-toggle></cr-toggle>
-        ` : item.id === SettingsOption.VIEW ? '' : html`
+        ` : html`
             <!-- TODO(crbug.com/473611756): Fix direction in RTL -->
             <cr-icon class="end-icon" icon="cr:chevron-right"></cr-icon>
         `}
