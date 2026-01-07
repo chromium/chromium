@@ -63,6 +63,20 @@ std::ostream& operator<<(std::ostream& os,
   }
 }
 }  // namespace glic::prefs
+
+namespace actor {
+std::ostream& operator<<(std::ostream& os,
+                         ActorPolicyChecker::CanActOutcome value) {
+  switch (value) {
+    case ActorPolicyChecker::CanActOutcome::kYes:
+      return os << "kYes";
+    case ActorPolicyChecker::CanActOutcome::kNo:
+      return os << "kNo";
+    case ActorPolicyChecker::CanActOutcome::kByAllowlistOnly:
+      return os << "kByAllowlistOnly";
+  }
+}
+}  // namespace actor
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 namespace actor {
@@ -373,69 +387,70 @@ ActorPolicyChecker::ComputeActOnWebCapability() {
 #if !BUILDFLAG(ENABLE_GLIC)
   return CanActOutcome::kYes;
 #else
+  auto log_and_return = [&](CanActOutcome outcome, std::string_view reason) {
+    journal_->Log(GURL(), TaskId(),
+                  "ActorPolicyChecker::ComputeActOnWebCapability",
+                  JournalDetailsBuilder()
+                      .Add("outcome", base::ToString(outcome))
+                      .Add("reason", reason)
+                      .Build());
+    return outcome;
+  };
+
   bool policy_exemption = features::kGlicActorPolicyControlExemption.Get();
   bool is_likely_dogfood_client = IsLikelyDogfoodClient();
+  if (is_likely_dogfood_client || policy_exemption) {
+    return log_and_return(
+        CanActOutcome::kYes,
+        is_likely_dogfood_client
+            ? "is likely dogfood client"
+            : "extempted via cmdline `glic_actor_policy_control_exemption`");
+  }
+
   auto* profile = service_->GetProfile();
   CHECK(profile);
-  bool is_browser_managed = IsBrowserManaged(*profile);
-  bool actuation_enabled_for_managed_user = false;
-  bool actuation_enabled_by_allowlist_only = false;
-  if (is_browser_managed) {
-    actuation_enabled_for_managed_user =
-        ActuationEnabledForManagedUser(*profile, *journal_);
-    if (!actuation_enabled_for_managed_user) {
-      // If actuation in general is blocked by policy, but there is a non-empty
-      // allow list, then we need `CanActOnWeb()` to be true so we can
-      // attempt actuation up until the point where we evaluate a URL for its
-      // inclusion in the allow list. If it's not explicitly allowed by the
-      // list, then we perform the blocking there.
-      actuation_enabled_by_allowlist_only = HasUrlAllowlist(*profile);
-    }
-  }
+
   bool account_eligible_for_actuation =
       IsAccountEligibleForActuation(*profile, *journal_);
-  bool account_has_chrome_benefits =
-      AccountHasChromeBenefits(*profile, *journal_);
-
-  journal_->Log(
-      GURL(), TaskId(), "ActorPolicyChecker::ComputeActOnWebCapability",
-      JournalDetailsBuilder()
-          .Add("policy_exemption", base::ToString(policy_exemption))
-          .Add("is_likely_dogfood_client",
-               base::ToString(is_likely_dogfood_client))
-          .Add("is_browser_managed", base::ToString(is_browser_managed))
-
-          .Add("account_eligible_for_actuation",
-               base::ToString(account_eligible_for_actuation))
-          .Add("actuation_enabled_for_managed_user",
-               base::ToString(actuation_enabled_for_managed_user))
-          .Add("actuation_enabled_by_allowlist_only",
-               base::ToString(actuation_enabled_by_allowlist_only))
-          .Add("account_has_chrome_benefits",
-               base::ToString(account_has_chrome_benefits))
-          .Build());
-
-  if (is_likely_dogfood_client || policy_exemption) {
-    return CanActOutcome::kYes;
-  }
   if (account_eligible_for_actuation_for_testing_) [[unlikely]] {
     account_eligible_for_actuation = true;
   }
   if (!account_eligible_for_actuation) {
-    return CanActOutcome::kNo;
+    return log_and_return(CanActOutcome::kNo,
+                          "Account not eligible for actuation");
   }
-  if (!is_browser_managed) {
-    // Only respect the consumer check if the browser is not managed.
-    return account_has_chrome_benefits ? CanActOutcome::kYes
-                                       : CanActOutcome::kNo;
+
+  if (!IsBrowserManaged(*profile)) {
+    if (AccountHasChromeBenefits(*profile, *journal_)) {
+      // Only respect the consumer check if the browser is not managed.
+      return log_and_return(CanActOutcome::kYes,
+                            "Not managed: account has chrome benefits");
+    }
+    return log_and_return(CanActOutcome::kNo,
+                          "Not managed: account does not have chrome benefits");
   }
-  if (actuation_enabled_for_managed_user) {
-    return CanActOutcome::kYes;
+
+  if (ActuationEnabledForManagedUser(*profile, *journal_)) {
+    return log_and_return(CanActOutcome::kYes,
+                          "Managed: actuation enabled via policy");
   }
-  if (actuation_enabled_by_allowlist_only) {
-    return CanActOutcome::kByAllowlistOnly;
+  if (HasUrlAllowlist(*profile)) {
+    // If actuation in general is blocked by policy, but there is a non-empty
+    // allow list, then we need `CanActOnWeb()` to be true so we can
+    // attempt actuation up until the point where we evaluate a URL for its
+    // inclusion in the allow list. If it's not explicitly allowed by the
+    // list, then we perform the blocking there.
+    return log_and_return(
+        CanActOutcome::kByAllowlistOnly,
+        "Managed: actuation disabled but URL allowlist present");
   }
-  return CanActOutcome::kNo;
+  // We reach this point only if:
+  // - Account is eligible for actuation
+  // - Browser has management
+  //   - Actuation is disabled by policy
+  //   - No URL allowlist is present
+  return log_and_return(CanActOutcome::kNo,
+                        "Managed: actuation disabled by policy");
 #endif  // !BUILDFLAG(ENABLE_GLIC)
 }
 

@@ -107,6 +107,7 @@ class ActorPolicyChecker : public signin::IdentityManager::Observer,
     kNo,
     kByAllowlistOnly,
   };
+  friend std::ostream& operator<<(std::ostream& os, CanActOutcome value);
 
   CanActOutcome ComputeActOnWebCapability();
 
