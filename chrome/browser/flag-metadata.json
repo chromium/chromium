@@ -8791,6 +8791,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "read-anything-line-focus",
+    "owners": [ "kristislee@google.com", "komo-eng@google.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "read-anything-omnibox-chip",
     "owners": [ "kristislee@google.com", "komo-eng@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 150

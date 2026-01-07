@@ -13450,6 +13450,7 @@ from previous Chrome versions.
   <int value="-322937746" label="disable-desktop-capture-picker-new-ui"/>
   <int value="-322827131" label="tab-management-experiment-type-basil"/>
   <int value="-322684763" label="WebBluetoothRequestLargerMtu:disabled"/>
+  <int value="-321837736" label="ReadAnythingLineFocus:enabled"/>
   <int value="-321727218" label="SuspendStateMachine:enabled"/>
   <int value="-320820051" label="enable-zero-copy"/>
   <int value="-320165144" label="BiometricsAuthForPwdFill:enabled"/>
@@ -17005,6 +17006,7 @@ from previous Chrome versions.
   <int value="904441371" label="LocalNetworkAccessChecksWebRTC:disabled"/>
   <int value="904811479" label="query-tiles-enable-trending"/>
   <int value="905739808" label="GlobalMediaControlsUpdatedUI:disabled"/>
+  <int value="905852983" label="ReadAnythingLineFocus:disabled"/>
   <int value="907051864" label="UseMultiPlaneFormatForHardwareVideo:disabled"/>
   <int value="907056713" label="DetectFormSubmissionOnFormClear:enabled"/>
   <int value="907696422" label="SafetyHub:disabled"/>
