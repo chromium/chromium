@@ -96,7 +96,7 @@ class SupervisedUserBrowserTestBase :
   void SetInitialSupervisedUserState(InitialSupervisedUserState initial_state);
 
 #if BUILDFLAG(IS_ANDROID)
-  AndroidParentalControls* GetAndroidParentalControls();
+  AndroidParentalControls* GetDeviceParentalControls();
 #endif  // BUILDFLAG(IS_ANDROID)
 
  private:

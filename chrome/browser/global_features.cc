@@ -63,10 +63,6 @@
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/supervised_user/core/browser/android/android_parental_controls.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace {
 
 // This is the generic entry point for test code to stub out browser
@@ -189,12 +185,6 @@ void GlobalFeatures::PostBrowserProcessInitCore() {
         safe_browsing::ApplicationAdvancedProtectionStatusDetector>(
         g_browser_process->profile_manager());
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  android_parental_controls_ =
-      std::make_unique<supervised_user::AndroidParentalControls>();
-  android_parental_controls_->Init();
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void GlobalFeatures::PostMainMessageLoopRun() {
@@ -234,13 +224,6 @@ GlobalFeatures::CreateWhatsNewRegistry() {
   return whats_new::CreateWhatsNewRegistry();
 }
 #endif
-
-#if BUILDFLAG(IS_ANDROID)
-supervised_user::AndroidParentalControls*
-GlobalFeatures::GetAndroidParentalControls() {
-  return android_parental_controls_.get();
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 // static
 ui::UserDataFactoryWithOwner<BrowserProcess>&

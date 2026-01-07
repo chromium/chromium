@@ -81,8 +81,7 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
       std::make_unique<SupervisedUserServicePlatformDelegate>(*profile)
 #if BUILDFLAG(IS_ANDROID)
           ,
-      CHECK_DEREF(
-          g_browser_process->GetFeatures()->GetAndroidParentalControls())
+      CHECK_DEREF(g_browser_process->device_parental_controls())
 #endif  // BUILDFLAG(IS_ANDROID)
   );
 }
@@ -108,9 +107,9 @@ void SupervisedUserBrowserTestBase::SetUpBrowserContextKeyedServices(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  GetAndroidParentalControls()->SetBrowserContentFiltersEnabledForTesting(
+  GetDeviceParentalControls()->SetBrowserContentFiltersEnabledForTesting(
       initial_state_.android_parental_controls.browser_filter);
-  GetAndroidParentalControls()->SetSearchContentFiltersEnabledForTesting(
+  GetDeviceParentalControls()->SetSearchContentFiltersEnabledForTesting(
       initial_state_.android_parental_controls.search_filter);
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -149,8 +148,8 @@ base::WeakPtr<MockUrlCheckerClient> MockUrlCheckerClient::GetWeakPtr() {
 
 #if BUILDFLAG(IS_ANDROID)
 AndroidParentalControls*
-SupervisedUserBrowserTestBase::GetAndroidParentalControls() {
-  return g_browser_process->GetFeatures()->GetAndroidParentalControls();
+SupervisedUserBrowserTestBase::GetDeviceParentalControls() {
+  return g_browser_process->device_parental_controls();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

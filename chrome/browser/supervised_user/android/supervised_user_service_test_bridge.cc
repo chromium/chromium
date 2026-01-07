@@ -50,8 +50,7 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
           std::make_unique<safe_search_api::FakeURLCheckerClient>()),
       std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
 #if BUILDFLAG(IS_ANDROID)
-      CHECK_DEREF(
-          g_browser_process->GetFeatures()->GetAndroidParentalControls())
+      CHECK_DEREF(g_browser_process->device_parental_controls())
 #endif  // BUILDFLAG(IS_ANDROID)
   );
 }
@@ -65,15 +64,13 @@ static void JNI_SupervisedUserServiceTestBridge_Init(JNIEnv* env,
 
 static void JNI_SupervisedUserServiceTestBridge_EnableBrowserContentFilters(
     JNIEnv* env) {
-  g_browser_process->GetFeatures()
-      ->GetAndroidParentalControls()
+  g_browser_process->device_parental_controls()
       ->SetBrowserContentFiltersEnabledForTesting(true);
 }
 
 static void JNI_SupervisedUserServiceTestBridge_EnableSearchContentFilters(
     JNIEnv* env) {
-  g_browser_process->GetFeatures()
-      ->GetAndroidParentalControls()
+  g_browser_process->device_parental_controls()
       ->SetSearchContentFiltersEnabledForTesting(true);
 }
 }  // namespace supervised_user

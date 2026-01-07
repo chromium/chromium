@@ -101,8 +101,7 @@ std::unique_ptr<KeyedService> SupervisedUserServiceFactory::BuildInstanceFor(
       std::move(platform_delegate)
 #if BUILDFLAG(IS_ANDROID)
           ,
-      CHECK_DEREF(
-          g_browser_process->GetFeatures()->GetAndroidParentalControls())
+      CHECK_DEREF(g_browser_process->device_parental_controls())
 #endif  // BUILDFLAG(IS_ANDROID)
   );
 }

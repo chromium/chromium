@@ -765,6 +765,7 @@ static_library("test_support") {
       "//chrome:chrome_android_core",
       "//chrome/browser/ui/android/tab_model",
       "//components/feed/core/v2:feed_core_stubs",
+      "//components/supervised_user/core/browser/android",
     ]
 
     sources += [

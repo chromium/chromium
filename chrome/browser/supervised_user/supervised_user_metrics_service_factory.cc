@@ -86,8 +86,7 @@ SupervisedUserMetricsServiceFactory::BuildServiceInstanceForBrowserContext(
       *supervised_user::SupervisedUserUrlFilteringServiceFactory::GetForProfile(
           profile),
 #if BUILDFLAG(IS_ANDROID)
-      CHECK_DEREF(
-          g_browser_process->GetFeatures()->GetAndroidParentalControls()),
+      CHECK_DEREF(g_browser_process->device_parental_controls()),
 #endif
       std::move(extensions_metrics_delegate),
       std::make_unique<supervised_user::MetricsServiceAccessorDelegateImpl>());

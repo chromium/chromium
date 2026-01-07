@@ -92,9 +92,7 @@ std::unique_ptr<KeyedService> BuildTestSupervisedUserService(
       std::make_unique<SupervisedUserServicePlatformDelegate>(*profile)
 #if BUILDFLAG(IS_ANDROID)
           ,
-      *TestingBrowserProcess::GetGlobal()
-           ->GetFeatures()
-           ->GetAndroidParentalControls()
+      *TestingBrowserProcess::GetGlobal()->device_parental_controls()
 #endif  // BUILDFLAG(IS_ANDROID)
   );
 }
@@ -284,8 +282,7 @@ class ClassifyUrlNavigationThrottleAsyncCheckerTest
 #if BUILDFLAG(IS_ANDROID)
       case SupervisionMode::kLocalSupervision:
         TestingBrowserProcess::GetGlobal()
-            ->GetFeatures()
-            ->GetAndroidParentalControls()
+            ->device_parental_controls()
             ->SetBrowserContentFiltersEnabledForTesting(true);
         break;
 #endif  // BUILDFLAG(IS_ANDROID)

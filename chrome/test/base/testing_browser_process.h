@@ -71,6 +71,10 @@ namespace resource_coordinator {
 class ResourceCoordinatorParts;
 }
 
+namespace supervised_user {
+class AndroidParentalControls;
+}  // namespace supervised_user
+
 namespace variations {
 class VariationsService;
 }
@@ -153,6 +157,9 @@ class TestingBrowserProcess
   printing::PrintPreviewDialogController* print_preview_dialog_controller()
       override;
   printing::BackgroundPrintingManager* background_printing_manager() override;
+#if BUILDFLAG(IS_ANDROID)
+  supervised_user::AndroidParentalControls* device_parental_controls() override;
+#endif  // BUILDFLAG(IS_ANDROID)
   const std::string& GetApplicationLocale() override;
   void SetApplicationLocale(const std::string& actual_locale) override;
   DownloadStatusUpdater* download_status_updater() override;
@@ -296,6 +303,11 @@ class TestingBrowserProcess
   std::unique_ptr<printing::PrintPreviewDialogController>
       print_preview_dialog_controller_;
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<supervised_user::AndroidParentalControls>
+      device_parental_controls_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
   std::unique_ptr<subresource_filter::RulesetService>

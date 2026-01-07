@@ -148,6 +148,7 @@
 #include "chrome/browser/share/share_history.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_client.h"
 #include "components/page_info/android/page_info_client.h"
+#include "components/supervised_user/core/browser/android/android_parental_controls.h"
 #else
 #include <vector>
 
@@ -1645,7 +1646,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // Now that the file thread has been started, start metrics.
   StartMetricsRecording();
 
-  // Do any initializating in the browser process that requires all threads
+  // Do any initializing in the browser process that requires all threads
   // running.
   browser_process_->PreMainMessageLoopRun();
 

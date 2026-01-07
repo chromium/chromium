@@ -118,8 +118,7 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
       std::make_unique<SupervisedUserServicePlatformDelegate>(*profile)
 #if BUILDFLAG(IS_ANDROID)
           ,
-      CHECK_DEREF(
-          g_browser_process->GetFeatures()->GetAndroidParentalControls())
+      CHECK_DEREF(g_browser_process->device_parental_controls())
 #endif  // BUILDFLAG(IS_ANDROID)
   );
 }

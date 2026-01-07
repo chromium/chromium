@@ -182,6 +182,7 @@
 #include "chrome/browser/ssl/chrome_security_state_client.h"
 #include "chrome/browser/webapps/webapps_client_android.h"
 #include "chrome/browser/webauthn/android/chrome_webauthn_client_android.h"
+#include "components/supervised_user/core/browser/android/android_parental_controls.h"
 #include "components/webauthn/android/webauthn_client_android.h"
 
 namespace chrome_browser_prefs {
@@ -302,6 +303,10 @@ BrowserProcessImpl::BrowserProcessImpl(StartupData* startup_data)
       active_primary_accounts_metrics_recorder_(
           std::make_unique<signin::ActivePrimaryAccountsMetricsRecorder>(
               *local_state_)),
+#if BUILDFLAG(IS_ANDROID)
+      device_parental_controls_(
+          std::make_unique<supervised_user::AndroidParentalControls>()),
+#endif
       platform_part_(std::make_unique<BrowserProcessPlatformPart>()),
       network_time_tracker_(startup_data->chrome_feature_list_creator()
                                 ->TakeNetworkTimeTracker()) {
@@ -331,6 +336,10 @@ const ui::UnownedUserDataHost& BrowserProcessImpl::GetUnownedUserDataHost()
 void BrowserProcessImpl::Init() {
   features_ = GlobalFeatures::CreateGlobalFeatures();
   features_->PreBrowserProcessInit();
+
+#if BUILDFLAG(IS_ANDROID)
+  device_parental_controls_->Init();
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Forces creation of |metrics_services_manager_client_| if necessary
@@ -1070,6 +1079,14 @@ BrowserProcessImpl::background_printing_manager() {
   return NULL;
 #endif
 }
+
+#if BUILDFLAG(IS_ANDROID)
+supervised_user::AndroidParentalControls*
+BrowserProcessImpl::device_parental_controls() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return device_parental_controls_.get();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
 IntranetRedirectDetector* BrowserProcessImpl::intranet_redirect_detector() {

@@ -108,6 +108,10 @@
 #include "chrome/browser/notifications/notification_ui_manager.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/supervised_user/core/browser/android/android_parental_controls.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace {
 
 class TestActivityReporter : public activity_reporter::ActivityReporter {
@@ -528,6 +532,17 @@ TestingBrowserProcess::background_printing_manager() {
   return nullptr;
 #endif
 }
+
+#if BUILDFLAG(IS_ANDROID)
+supervised_user::AndroidParentalControls*
+TestingBrowserProcess::device_parental_controls() {
+  if (!device_parental_controls_) {
+    device_parental_controls_ =
+        std::make_unique<supervised_user::AndroidParentalControls>();
+  }
+  return device_parental_controls_.get();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 const std::string& TestingBrowserProcess::GetApplicationLocale() {
   CHECK(features_);
