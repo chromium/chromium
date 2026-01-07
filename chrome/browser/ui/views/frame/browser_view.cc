@@ -4619,14 +4619,10 @@ void BrowserView::ShowSplitView(bool focus_active_view) {
   // contents within MultiContentsView. See crbug.com/458189541 and
   // crbug.com/447369458
   if (focus_active_view) {
-    if (base::FeatureList::IsEnabled(features::kSideBySideFocusClearing)) {
-      if (!GetWidget()->IsActive()) {
-        GetFocusManager()->SetStoredFocusView(
-            multi_contents_view_->GetActiveContentsView());
-        restore_focus_on_activation_ = true;
-      } else {
-        multi_contents_view_->GetActiveContentsView()->RequestFocus();
-      }
+    if (!GetWidget()->IsActive()) {
+      GetFocusManager()->SetStoredFocusView(
+          multi_contents_view_->GetActiveContentsView());
+      restore_focus_on_activation_ = true;
     } else {
       multi_contents_view_->GetActiveContentsView()->RequestFocus();
     }
@@ -4687,11 +4683,7 @@ void BrowserView::UpdateContentsInSplitView(
   // Clear focus to avoid reentrency when setting the web contents within
   // MultiContentsView. See crbug.com/458189541 and crbug.com/447369458
   if (!GetWidget()->IsActive()) {
-    if (base::FeatureList::IsEnabled(features::kSideBySideFocusClearing)) {
-      GetFocusManager()->ClearFocus();
-    } else {
-      multi_contents_view_->RequestFocus();
-    }
+    GetFocusManager()->ClearFocus();
   }
 
   // Set web contents in multi_contents_view_ to match new_tabs and update the

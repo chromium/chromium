@@ -143,8 +143,6 @@ BASE_FEATURE_PARAM(int,
 
 BASE_FEATURE(kSideBySideLinkMenuNewBadge, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSideBySideFocusClearing, base::FEATURE_ENABLED_BY_DEFAULT);
-
 constexpr base::FeatureParam<SidePanelRelativeAlignment>::Option
     kSidePanelRelativeAlignmentOptions[] = {
         {SidePanelRelativeAlignment::kShowPanelsOnSameSide, "same"},

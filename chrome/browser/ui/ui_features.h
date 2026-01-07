@@ -165,8 +165,6 @@ BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetNudgeUsedLimit);
 
 BASE_DECLARE_FEATURE(kSideBySideLinkMenuNewBadge);
 
-BASE_DECLARE_FEATURE(kSideBySideFocusClearing);
-
 enum class SidePanelRelativeAlignment {
   // Shows the toolbar and content height side panels on the same side.
   kShowPanelsOnSameSide,
