@@ -16,6 +16,7 @@ extern NSString* const kAimComposeboxButtonBackgroundColor;
 extern NSString* const kBackgroundColor;
 extern NSString* const kCloseButtonColor;
 extern NSString* const kDisabledTintColor;
+extern NSString* const kDestinationHighlightColor;
 // Background color used in the rounded squares behind favicons.
 extern NSString* const kFaviconBackgroundColor;
 // Primary grouped background color.

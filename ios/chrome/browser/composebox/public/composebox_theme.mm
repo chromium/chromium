@@ -75,7 +75,8 @@
     if (self.isTopInputPlate) {
       return [UIColor colorNamed:kAimComposeboxButtonBackgroundColor];
     } else {
-      return [UIColor colorNamed:kBlueHaloColor];
+      return [[UIColor colorNamed:kDestinationHighlightColor]
+          colorWithAlphaComponent:0.7];
     }
   } else {
     return [UIColor clearColor];
