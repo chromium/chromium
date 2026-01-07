@@ -203,7 +203,7 @@ AuthenticatorRequestDialogModel::GetGpmAccountInfo() {
     return std::nullopt;
   }
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
+      IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
   if (!identity_manager) {
     return std::nullopt;
   }
