@@ -256,6 +256,14 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImagePool
   // mojom::SharedImagePoolClientInterface implementation.
   void OnClearPool() override { Clear(); }
 
+  base::ByteSize EstimatedSizeInBytes() const {
+    base::ByteSize result;
+    for (const auto& image : image_pool_) {
+      result += image->GetSharedImage()->EstimatedSizeInBytes();
+    }
+    return result;
+  }
+
   // Returns a weak pointer to this pool, allowing for safe reference without
   // ownership.
   base::WeakPtr<SharedImagePool<ClientImageType>> GetWeakPtr() {

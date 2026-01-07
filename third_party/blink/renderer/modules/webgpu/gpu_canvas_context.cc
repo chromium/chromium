@@ -119,9 +119,19 @@ SkAlphaType GPUCanvasContext::GetAlphaType() const {
 viz::SharedImageFormat GPUCanvasContext::GetSharedImageFormat() const {
   if (!swap_buffers_) {
     return GetN32FormatForCanvas();
-    ;
   }
   return swap_buffers_->Format();
+}
+
+base::ByteSize GPUCanvasContext::AllocatedBufferSize() const {
+  base::ByteSize result;
+  if (resource_provider_) {
+    result += resource_provider_->EstimatedSizeInBytes();
+  }
+  if (swap_buffers_) {
+    result += swap_buffers_->EstimatedSizeInBytes();
+  }
+  return result;
 }
 
 gfx::ColorSpace GPUCanvasContext::GetColorSpace() const {
@@ -714,6 +724,7 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
   SkAlphaType alpha_type = GetAlphaType();
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       swap_buffers_->GetNewTexture(swap_texture_descriptor_, alpha_type);
+  Host()->UpdateMemoryUsage();
   if (!mailbox_texture) {
     // Try to give a helpful message for the most common cause for mailbox
     // texture creation failure.

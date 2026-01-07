@@ -158,7 +158,6 @@ void OffscreenCanvas::SetSize(gfx::Size size) {
   }
 
   size_ = size;
-  UpdateMemoryUsage();
   current_frame_damage_rect_ = SkIRect::MakeWH(Size().width(), Size().height());
 
   if (context_ && context_->isContextLost()) {
@@ -170,6 +169,8 @@ void OffscreenCanvas::SetSize(gfx::Size size) {
   if (context_) {
     if (context_->IsWebGL() || IsWebGPU()) {
       context_->Reshape(Size().width(), Size().height());
+      // Reshape() affects memory usage for the context.
+      UpdateMemoryUsage();
     } else if (context_->IsRenderingContext2D() ||
                context_->IsImageBitmapRenderingContext()) {
       context_->Reset();

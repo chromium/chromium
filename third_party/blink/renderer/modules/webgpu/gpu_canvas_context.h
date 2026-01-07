@@ -66,6 +66,8 @@ class GPUCanvasContext : public ScriptWrappable,
   V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
   SkAlphaType GetAlphaType() const override;
   viz::SharedImageFormat GetSharedImageFormat() const override;
+  base::ByteSize AllocatedBufferSize() const override;
+  int AllocatedBufferCountPerPixel() const override { NOTREACHED(); }
   gfx::ColorSpace GetColorSpace() const override;
   // Produces a snapshot of the current contents of the swap chain if possible
   // or else a snapshot of the most-recently presented contents.
