@@ -48,7 +48,6 @@
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string_manager.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
-#include "third_party/blink/renderer/platform/fonts/font_cache_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/parkable_image_manager.h"
 #include "third_party/blink/renderer/platform/heap/blink_gc_memory_dump_provider.h"
@@ -184,9 +183,6 @@ void Platform::InitializeMainThreadCommon(
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       PartitionAllocMemoryDumpProvider::Instance(), "PartitionAlloc",
-      base::SingleThreadTaskRunner::GetCurrentDefault());
-  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      FontCacheMemoryDumpProvider::Instance(), "FontCaches",
       base::SingleThreadTaskRunner::GetCurrentDefault());
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       MemoryCacheDumpProvider::Instance(), "MemoryCache",

@@ -258,20 +258,6 @@ void FontCache::CrashWithFontInfo(const FontDescription* font_description) {
   NOTREACHED();
 }
 
-void FontCache::DumpShapeResultCache(
-    base::trace_event::ProcessMemoryDump* memory_dump) {
-  DCHECK(IsMainThread());
-  base::trace_event::MemoryAllocatorDump* dump =
-      memory_dump->CreateAllocatorDump("font_caches/shape_caches");
-  size_t shape_result_cache_size = 0;
-  // TODO(layout-dev): We had a logic to compute the memory amount consumed
-  // by the legacy ShapeCache.  Should we update this for NGShapeCache and
-  // FrameShapeCache?
-  dump->AddScalar("size", "bytes", shape_result_cache_size);
-  memory_dump->AddSuballocation(dump->guid(),
-                                Partitions::kAllocatedObjectPoolName);
-}
-
 sk_sp<SkTypeface> FontCache::CreateTypefaceFromUniqueName(
     const FontFaceCreationParams& creation_params) {
   FontUniqueNameLookup* unique_name_lookup =

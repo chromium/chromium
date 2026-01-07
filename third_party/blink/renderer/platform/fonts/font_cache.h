@@ -64,12 +64,6 @@
 class SkString;
 class SkTypeface;
 
-namespace base {
-namespace trace_event {
-class ProcessMemoryDump;
-}  // namespace trace_event
-}  // namespace base
-
 namespace blink {
 
 class FontDescription;
@@ -99,7 +93,6 @@ extern const char kNotoColorEmojiCompat[];
 
 class PLATFORM_EXPORT FontCache final {
   DISALLOW_NEW();
-
  public:
   // FontCache initialisation on Windows depends on a global FontMgr being
   // configured through a call from the browser process. CreateIfNeeded helps
@@ -245,9 +238,6 @@ class PLATFORM_EXPORT FontCache final {
       bool subpixel_ascent_descent = false);
 
   static void CrashWithFontInfo(const FontDescription*);
-
-  // Memory reporting
-  void DumpShapeResultCache(base::trace_event::ProcessMemoryDump*);
 
   FontFallbackMap& GetFontFallbackMap();
 
