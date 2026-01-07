@@ -129,7 +129,13 @@ bool GetDeviceDetails(const base::FilePath& device_path, StorageInfo* info) {
                          kMaxPathBufLen)) {
     return false;
   }
-  mount_point.resize(UNSAFE_TODO(wcslen(mount_point.c_str())));
+
+  size_t actual_length = mount_point.find(L'\0');
+  // 2. Resize based on the found index. If no null is found (shouldn't happen
+  // with Win32 success), it remains at kMaxPathBufLen - 1.
+  if (actual_length != std::wstring::npos) {
+    mount_point.resize(actual_length);
+  }
 
   // Note: experimentally this code does not spin a floppy drive. It
   // returns a GUID associated with the device, not the volume.
