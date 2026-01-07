@@ -125,6 +125,9 @@ cc_object {
 
 cc_library_shared {
     name: "${GN2BP_MODULE_PREFIX}libcrypto",
+    // Make sure to use the same name between tot and stable, so that
+    // AFDO understands they are the same library.
+    stem: "libcrypto_httpengine",
     defaults: [
         "${GN2BP_MODULE_PREFIX}boringssl_defaults",
         "${GN2BP_MODULE_PREFIX}libcrypto_defaults",
