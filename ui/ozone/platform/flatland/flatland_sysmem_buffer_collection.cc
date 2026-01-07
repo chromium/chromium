@@ -189,21 +189,19 @@ std::unique_ptr<ImageConstraintsInfo> InitializeImageConstraintsInfo(
 
 // static
 bool FlatlandSysmemBufferCollection::IsNativePixmapConfigSupported(
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage) {
-  switch (format) {
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-    case gfx::BufferFormat::R_8:
-    case gfx::BufferFormat::RG_88:
-    case gfx::BufferFormat::RGBA_8888:
-    case gfx::BufferFormat::RGBX_8888:
-    case gfx::BufferFormat::BGRA_8888:
-    case gfx::BufferFormat::BGRX_8888:
-      break;
-
-    default:
-      return false;
+  base::flat_set<viz::SharedImageFormat> kSupportedFormats =
+      base::MakeFlatSet<viz::SharedImageFormat>(std::vector(
+          {viz::SinglePlaneFormat::kR_8, viz::SinglePlaneFormat::kRG_88,
+           viz::SinglePlaneFormat::kRGBA_8888,
+           viz::SinglePlaneFormat::kBGRA_8888,
+           viz::SinglePlaneFormat::kRGBX_8888,
+           viz::SinglePlaneFormat::kBGRX_8888, viz::MultiPlaneFormat::kNV12}));
+  if (!kSupportedFormats.contains(format)) {
+    return false;
   }
+
   switch (usage) {
     case gfx::BufferUsage::SCANOUT:
     case gfx::BufferUsage::GPU_READ:
