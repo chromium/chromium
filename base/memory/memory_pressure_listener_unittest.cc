@@ -162,4 +162,126 @@ TEST(MemoryPressureListenerTest, MemoryLimit) {
   EXPECT_EQ(listener.GetMemoryLimit(), 0);
 }
 
+TEST(MemoryPressureListenerTest, RepeatedNotifications) {
+  MemoryPressureListenerRegistry registry;
+  MockMemoryPressureListener listener;
+  MemoryPressureListenerRegistration registration(
+      MemoryPressureListenerTag::kTest, &listener);
+
+  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_MODERATE))
+      .Times(2);
+  MemoryPressureListenerRegistry::NotifyMemoryPressure(
+      MEMORY_PRESSURE_LEVEL_MODERATE);
+  MemoryPressureListenerRegistry::NotifyMemoryPressure(
+      MEMORY_PRESSURE_LEVEL_MODERATE);
+  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_CRITICAL))
+      .Times(2);
+  MemoryPressureListenerRegistry::NotifyMemoryPressure(
+      MEMORY_PRESSURE_LEVEL_CRITICAL);
+  MemoryPressureListenerRegistry::NotifyMemoryPressure(
+      MEMORY_PRESSURE_LEVEL_CRITICAL);
+  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_CRITICAL);
+}
+
+TEST(MemoryPressureListenerTest, IgnoreRepeatedNotifications) {
+  MemoryPressureListenerRegistry registry;
+  MockMemoryPressureListener listener;
+  MemoryPressureListenerRegistration registration(
+      MemoryPressureListenerTag::kTest, &listener,
+      /*ignore_repeated_notifications=*/true);
+
+  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_MODERATE))
+      .Times(1);
+  MemoryPressureListenerRegistry::NotifyMemoryPressure(
+      MEMORY_PRESSURE_LEVEL_MODERATE);
+  MemoryPressureListenerRegistry::NotifyMemoryPressure(
+      MEMORY_PRESSURE_LEVEL_MODERATE);
+  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_CRITICAL))
+      .Times(1);
+  MemoryPressureListenerRegistry::NotifyMemoryPressure(
+      MEMORY_PRESSURE_LEVEL_CRITICAL);
+  MemoryPressureListenerRegistry::NotifyMemoryPressure(
+      MEMORY_PRESSURE_LEVEL_CRITICAL);
+  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_CRITICAL);
+}
+
+TEST(MemoryPressureListenerTest, AsyncRepeatedNotifications) {
+  MemoryPressureListenerRegistry registry;
+  test::TaskEnvironment task_env;
+
+  MockMemoryPressureListener listener;
+  AsyncMemoryPressureListenerRegistration registration(
+      FROM_HERE, MemoryPressureListenerTag::kTest, &listener);
+
+  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_MODERATE))
+      .Times(1);
+  MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
+      MEMORY_PRESSURE_LEVEL_MODERATE, task_env.QuitClosure());
+  task_env.RunUntilQuit();
+  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_MODERATE))
+      .Times(1);
+  MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
+      MEMORY_PRESSURE_LEVEL_MODERATE, task_env.QuitClosure());
+  task_env.RunUntilQuit();
+  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_CRITICAL))
+      .Times(1);
+  MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
+      MEMORY_PRESSURE_LEVEL_CRITICAL, task_env.QuitClosure());
+  task_env.RunUntilQuit();
+  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_CRITICAL);
+
+  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_CRITICAL))
+      .Times(1);
+  MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
+      MEMORY_PRESSURE_LEVEL_CRITICAL, task_env.QuitClosure());
+  task_env.RunUntilQuit();
+  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_CRITICAL);
+}
+
+TEST(MemoryPressureListenerTest, AsyncIgnoreRepeatedNotifications) {
+  MemoryPressureListenerRegistry registry;
+  test::TaskEnvironment task_env;
+
+  MockMemoryPressureListener listener;
+  AsyncMemoryPressureListenerRegistration registration(
+      FROM_HERE, MemoryPressureListenerTag::kTest, &listener,
+      /*ignore_repeated_notifications=*/true);
+
+  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_MODERATE))
+      .Times(1);
+  MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
+      MEMORY_PRESSURE_LEVEL_MODERATE, task_env.QuitClosure());
+  task_env.RunUntilQuit();
+  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_MODERATE))
+      .Times(0);
+  MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
+      MEMORY_PRESSURE_LEVEL_MODERATE, task_env.QuitClosure());
+  task_env.RunUntilQuit();
+  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_CRITICAL))
+      .Times(1);
+  MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
+      MEMORY_PRESSURE_LEVEL_CRITICAL, task_env.QuitClosure());
+  task_env.RunUntilQuit();
+  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_CRITICAL);
+
+  EXPECT_CALL(listener, OnMemoryPressure(MEMORY_PRESSURE_LEVEL_CRITICAL))
+      .Times(0);
+  MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
+      MEMORY_PRESSURE_LEVEL_CRITICAL, task_env.QuitClosure());
+  task_env.RunUntilQuit();
+  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_CRITICAL);
+}
+
 }  // namespace base

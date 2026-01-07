@@ -181,7 +181,8 @@ class BASE_EXPORT MemoryPressureListener : public CheckedObserver {
   void SetInitialMemoryPressureLevel(MemoryPressureLevel memory_pressure_level);
 
   // Sets the current memory pressure level and invokes `OnMemoryPressure()`.
-  void UpdateMemoryPressureLevel(MemoryPressureLevel memory_pressure_level);
+  void UpdateMemoryPressureLevel(MemoryPressureLevel memory_pressure_level,
+                                 bool ignore_repeated_notifications);
 
   // Returns the current memory pressure level. This is initialized upon
   // registration by the registry.
@@ -194,7 +195,8 @@ class BASE_EXPORT MemoryPressureListenerRegistration {
  public:
   MemoryPressureListenerRegistration(
       MemoryPressureListenerTag,
-      MemoryPressureListener* memory_pressure_listener);
+      MemoryPressureListener* memory_pressure_listener,
+      bool ignore_repeated_notifications = false);
 
   // Deprecated constructor that takes location as a parameter. Not removed just
   // to avoid a mass-refactoring. This class will eventually be deleted in favor
@@ -202,7 +204,8 @@ class BASE_EXPORT MemoryPressureListenerRegistration {
   MemoryPressureListenerRegistration(
       const Location& creation_location,
       MemoryPressureListenerTag,
-      MemoryPressureListener* memory_pressure_listener);
+      MemoryPressureListener* memory_pressure_listener,
+      bool ignore_repeated_notifications = false);
 
   MemoryPressureListenerRegistration(
       const MemoryPressureListenerRegistration&) = delete;
@@ -232,6 +235,8 @@ class BASE_EXPORT MemoryPressureListenerRegistration {
   raw_ptr<MemoryPressureListener> memory_pressure_listener_
       GUARDED_BY_CONTEXT(thread_checker_);
 
+  bool ignore_repeated_notifications_ GUARDED_BY_CONTEXT(thread_checker_);
+
   raw_ptr<MemoryPressureListenerRegistry> registry_
       GUARDED_BY_CONTEXT(thread_checker_);
 
@@ -245,7 +250,8 @@ class BASE_EXPORT AsyncMemoryPressureListenerRegistration {
   AsyncMemoryPressureListenerRegistration(
       const Location& creation_location,
       MemoryPressureListenerTag tag,
-      MemoryPressureListener* memory_pressure_listener);
+      MemoryPressureListener* memory_pressure_listener,
+      bool ignore_repeated_notifications = false);
 
   AsyncMemoryPressureListenerRegistration(
       const AsyncMemoryPressureListenerRegistration&) = delete;

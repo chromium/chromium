@@ -81,7 +81,13 @@ void MemoryPressureListener::SetInitialMemoryPressureLevel(
 }
 
 void MemoryPressureListener::UpdateMemoryPressureLevel(
-    MemoryPressureLevel memory_pressure_level) {
+    MemoryPressureLevel memory_pressure_level,
+    bool ignore_repeated_notifications) {
+  if (memory_pressure_level_ == memory_pressure_level &&
+      ignore_repeated_notifications) {
+    return;
+  }
+
   memory_pressure_level_ = memory_pressure_level;
   OnMemoryPressure(memory_pressure_level);
 }
@@ -90,9 +96,11 @@ void MemoryPressureListener::UpdateMemoryPressureLevel(
 
 MemoryPressureListenerRegistration::MemoryPressureListenerRegistration(
     MemoryPressureListenerTag tag,
-    MemoryPressureListener* memory_pressure_listener)
+    MemoryPressureListener* memory_pressure_listener,
+    bool ignore_repeated_notifications)
     : tag_(tag),
       memory_pressure_listener_(memory_pressure_listener),
+      ignore_repeated_notifications_(ignore_repeated_notifications),
       registry_(MemoryPressureListenerRegistry::MaybeGet()) {
   if (!registry_) {
     DLOG(WARNING) << "Registration of a MemoryPressureListener failed. The "
@@ -106,8 +114,11 @@ MemoryPressureListenerRegistration::MemoryPressureListenerRegistration(
 MemoryPressureListenerRegistration::MemoryPressureListenerRegistration(
     const Location& creation_location,
     MemoryPressureListenerTag tag,
-    MemoryPressureListener* memory_pressure_listener)
-    : MemoryPressureListenerRegistration(tag, memory_pressure_listener) {}
+    MemoryPressureListener* memory_pressure_listener,
+    bool ignore_repeated_notifications)
+    : MemoryPressureListenerRegistration(tag,
+                                         memory_pressure_listener,
+                                         ignore_repeated_notifications) {}
 
 MemoryPressureListenerRegistration::~MemoryPressureListenerRegistration() {
   if (!registry_) {
@@ -137,7 +148,8 @@ void MemoryPressureListenerRegistration::UpdateMemoryPressureLevel(
     PassKey<MemoryPressureListenerRegistry>,
     MemoryPressureLevel memory_pressure_level) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  memory_pressure_listener_->UpdateMemoryPressureLevel(memory_pressure_level);
+  memory_pressure_listener_->UpdateMemoryPressureLevel(
+      memory_pressure_level, ignore_repeated_notifications_);
 }
 
 // AsyncMemoryPressureListenerRegistration::MainThread -------------------------
@@ -149,11 +161,12 @@ class AsyncMemoryPressureListenerRegistration::MainThread
 
   void Init(WeakPtr<AsyncMemoryPressureListenerRegistration> parent,
             scoped_refptr<SequencedTaskRunner> listener_task_runner,
-            MemoryPressureListenerTag tag) {
+            MemoryPressureListenerTag tag,
+            bool ignore_repeated_notifications) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     listener_task_runner_ = std::move(listener_task_runner);
     parent_ = std::move(parent);
-    listener_.emplace(tag, this);
+    listener_.emplace(tag, this, ignore_repeated_notifications);
     // If there is already memory pressure at this time, notify the listener.
     if (memory_pressure_level() != MEMORY_PRESSURE_LEVEL_NONE) {
       OnMemoryPressure(memory_pressure_level());
@@ -191,7 +204,8 @@ AsyncMemoryPressureListenerRegistration::
     AsyncMemoryPressureListenerRegistration(
         const Location& creation_location,
         MemoryPressureListenerTag tag,
-        MemoryPressureListener* memory_pressure_listener)
+        MemoryPressureListener* memory_pressure_listener,
+        bool ignore_repeated_notifications)
     : memory_pressure_listener_(memory_pressure_listener),
       creation_location_(creation_location) {
   // TODO(crbug.com/40123466): DCHECK instead of silently failing when a
@@ -204,7 +218,8 @@ AsyncMemoryPressureListenerRegistration::
     main_thread_task_runner_->PostTask(
         FROM_HERE, BindOnce(&MainThread::Init, Unretained(main_thread_.get()),
                             weak_ptr_factory_.GetWeakPtr(),
-                            SequencedTaskRunner::GetCurrentDefault(), tag));
+                            SequencedTaskRunner::GetCurrentDefault(), tag,
+                            ignore_repeated_notifications));
   }
 }
 
@@ -233,7 +248,10 @@ void AsyncMemoryPressureListenerRegistration::UpdateMemoryPressureLevel(
         data->set_creation_location_iid(
             trace_event::InternedSourceLocation::Get(&ctx, creation_location_));
       });
-  memory_pressure_listener_->UpdateMemoryPressureLevel(memory_pressure_level);
+  // `ignore_repeated_notifications` was already passed to the constructor of
+  // the sync registration in MainThread. No need to also pass it here.
+  memory_pressure_listener_->UpdateMemoryPressureLevel(
+      memory_pressure_level, /*ignore_repeated_notifications=*/false);
 }
 
 }  // namespace base
