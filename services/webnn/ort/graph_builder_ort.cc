@@ -160,9 +160,16 @@ constexpr base::cstring_view kAttrUpper = "upper";
 constexpr base::cstring_view kInserted = "Inserted";
 constexpr base::cstring_view kToEmulate = "ToEmulate";
 constexpr base::cstring_view kUnderscore = "_";
+constexpr std::string_view kNullCharacter("\0", 1);
 
 std::string GetOperandName(std::string_view name, OperandId id) {
-  return base::JoinString({name, base::NumberToString(id.value())},
+  // ORT CreateValueInfo API rejects name starting with null character:
+  // https://github.com/microsoft/onnxruntime/blob/7b5a93ef5f71ca58a1b6e4ae81b250e767756c68/onnxruntime/core/session/model_editor_c_api.cc#L29
+  std::string effective_name(name);
+  base::ReplaceChars(effective_name, kNullCharacter, kUnderscore,
+                     &effective_name);
+
+  return base::JoinString({effective_name, base::NumberToString(id.value())},
                           kUnderscore);
 }
 
