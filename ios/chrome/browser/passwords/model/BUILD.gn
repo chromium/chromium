@@ -133,14 +133,6 @@ source_set("password_controller_delegate") {
   sources = [ "password_controller_delegate.h" ]
 }
 
-source_set("save_passwords_consumer") {
-  sources = [
-    "save_passwords_consumer.h",
-    "save_passwords_consumer.mm",
-  ]
-  deps = [ "//components/password_manager/core/browser" ]
-}
-
 source_set("store_factory") {
   sources = [
     "credentials_cleaner_runner_factory.cc",
