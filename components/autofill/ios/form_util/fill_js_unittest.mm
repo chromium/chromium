@@ -13,12 +13,13 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/autofill/ios/browser/test_autofill_java_script_feature_container.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
+#import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -40,60 +41,36 @@ web::JavaScriptFeature::FeatureScript GetFillTestScript() {
       web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames);
 }
 
-// Creates a dummy JavaScriptFeature for the page content world.
-// Used for running test scripts in the page content world.
-web::JavaScriptFeature* GetDummyPageContentWorldFeature() {
-  static base::NoDestructor<web::JavaScriptFeature> dummy_feature(
-      web::ContentWorld::kPageContentWorld,
-      /*feature_scripts=*/std::vector<web::JavaScriptFeature::FeatureScript>(
-          {GetFillTestScript()}));
-  return dummy_feature.get();
-}
-
-// Creates a dummy JavaScriptFeature for the isolated content world.
-// Used for running test scripts in the isolated content world.
-web::JavaScriptFeature* GetDummyIsolatedWorldFeature() {
-  static base::NoDestructor<web::JavaScriptFeature> dummy_feature(
-      web::ContentWorld::kIsolatedWorld,
-      /*feature_scripts=*/std::vector<web::JavaScriptFeature::FeatureScript>(
-          {GetFillTestScript()}));
-  return dummy_feature.get();
-}
-
-// Retuns the dummy JS feature for the corresponding content world.
-web::JavaScriptFeature* GetDummyFeatureForContentWorld(
+// Creates a JavaScriptFeature that injects `fill_util_test.ts` into
+// `content_world`.
+std::unique_ptr<web::JavaScriptFeature> CreateFillTestFeature(
     web::ContentWorld content_world) {
-  switch (content_world) {
-    case web::ContentWorld::kIsolatedWorld:
-      return GetDummyIsolatedWorldFeature();
-    case web::ContentWorld::kPageContentWorld:
-      return GetDummyPageContentWorldFeature();
-    case web::ContentWorld::kAllContentWorlds:
-      NOTREACHED();
-  }
+  return std::make_unique<web::JavaScriptFeature>(
+      content_world,
+      /*feature_scripts=*/
+      std::vector<web::JavaScriptFeature::FeatureScript>({GetFillTestScript()}),
+      /*dependent_features=*/
+      std::vector<const web::JavaScriptFeature*>(
+          {// `fill_util_test.ts` indirectly depends of
+           // `autofill_form_features.ts`.
+           AutofillFormFeaturesJavaScriptFeature::GetInstance()}));
 }
 
-// TODO(crbug.com/359538514): Make test non-parameterized once Autofill in the
-// isolated world is launched.
-class FillJsTest : public web::WebTestWithWebState {
- public:
-  FillJsTest() : web::WebTestWithWebState() {}
-
-  void SetUp() override {
-    web::WebTestWithWebState::SetUp();
-    OverrideJavaScriptFeatures(
-        {AutofillFormFeaturesJavaScriptFeature::GetInstance(),
-         GetDummyPageContentWorldFeature(), GetDummyIsolatedWorldFeature()});
-  }
-
-  void TearDown() override {
-    // Clean up overriden features. Don't leave a dangling pointer to
-    // features in `feature_container_`.
-    OverrideJavaScriptFeatures({});
-    web::WebTestWithWebState::TearDown();
-  }
-
+class FillJsTest : public AutofillTestWithWebState {
  protected:
+  FillJsTest()
+      : AutofillTestWithWebState(std::make_unique<web::FakeWebClient>()) {
+    isolated_world_feature_ =
+        CreateFillTestFeature(web::ContentWorld::kIsolatedWorld);
+    page_world_feature_ =
+        CreateFillTestFeature(web::ContentWorld::kPageContentWorld);
+
+    web::FakeWebClient* web_client =
+        static_cast<web::FakeWebClient*>(GetWebClient());
+    web_client->SetJavaScriptFeatures(
+        {isolated_world_feature_.get(), page_world_feature_.get()});
+  }
+
   // Returns the chrome-set renderer ID for the element with ID `element_id`.
   // Runs getUniqueID from fill_test_api API in the given content world.
   NSString* GetUniqueID(NSString* element_id, web::ContentWorld content_world) {
@@ -104,24 +81,33 @@ class FillJsTest : public web::WebTestWithWebState {
             element_id];
 
     id result_id = web::test::ExecuteJavaScriptForFeatureAndReturnResult(
-        web_state(), script, GetDummyFeatureForContentWorld(content_world));
+        web_state(), script, GetTestFeatureForContentWorld(content_world));
+
     return base::apple::ObjCCastStrict<NSString>(result_id);
   }
 
-  // Runs `script` in the main content world for Autofill features.
-  id ExecuteJavaScriptInAutofillContentWorld(NSString* script) {
+  // Runs `script` in the isolated content world..
+  id ExecuteJavaScript(NSString* script) override {
     return web::test::ExecuteJavaScriptForFeatureAndReturnResult(
-        web_state(), script,
-        GetDummyFeatureForContentWorld(
-            ContentWorldForAutofillJavascriptFeatures()));
+        web_state(), script, isolated_world_feature_.get());
   }
 
-  //  Test instances of JavaScriptFeature's that are injected in a different
-  //  content world depending on kAutofillIsolatedWorldForJavascriptIos.
-  //  TODO(crbug.com/359538514): Remove this variable and use
-  //  the statically stored instances once Autofill in the isolated
-  //  world is launched.
-  TestAutofillJavaScriptFeatureContainer feature_container_;
+ private:
+  // Retuns the test JS feature for the corresponding content world.
+  web::JavaScriptFeature* GetTestFeatureForContentWorld(
+      web::ContentWorld content_world) {
+    switch (content_world) {
+      case web::ContentWorld::kIsolatedWorld:
+        return isolated_world_feature_.get();
+      case web::ContentWorld::kPageContentWorld:
+        return page_world_feature_.get();
+      case web::ContentWorld::kAllContentWorlds:
+        NOTREACHED();
+    }
+  }
+
+  std::unique_ptr<web::JavaScriptFeature> isolated_world_feature_;
+  std::unique_ptr<web::JavaScriptFeature> page_world_feature_;
 };
 
 TEST_F(FillJsTest, GetCanonicalActionForForm) {
@@ -155,7 +141,7 @@ TEST_F(FillJsTest, GetCanonicalActionForForm) {
                                                 html_action];
 
     LoadHtml(html);
-    id result = ExecuteJavaScriptInAutofillContentWorld(
+    id result = ExecuteJavaScript(
         @"__gCrWeb.getRegisteredApi('fill_test_api')."
         @"getFunction('getCanonicalActionForForm')(document.body.children[0])");
     NSString* base_url = base::SysUTF8ToNSString(BaseUrl());
@@ -172,7 +158,7 @@ TEST_F(FillJsTest, GetCanonicalActionForForm) {
 TEST_F(FillJsTest, GetAriaLabel) {
   LoadHtml(@"<input id='input' type='text' aria-label='the label'/>");
 
-  id result = ExecuteJavaScriptInAutofillContentWorld(
+  id result = ExecuteJavaScript(
       @"__gCrWeb.getRegisteredApi('fill_test_api')."
       @"getFunction('getAriaLabel')(document.getElementById('input'));");
   NSString* expected_result = @"the label";
@@ -184,7 +170,7 @@ TEST_F(FillJsTest, GetAriaLabel) {
 TEST_F(FillJsTest, ShouldAutocompleteOneTimeCode) {
   LoadHtml(@"<input id='input' type='text' autocomplete='one-time-code'/>");
 
-  id result = ExecuteJavaScriptInAutofillContentWorld(
+  id result = ExecuteJavaScript(
       @"__gCrWeb.getRegisteredApi('fill_test_api')."
       @"getFunction('shouldAutocomplete')(document.getElementById('input'));");
   EXPECT_NSEQ(result, @NO);
@@ -200,7 +186,7 @@ TEST_F(FillJsTest, GetAriaLabelledBySingle) {
             "</div>"
             "</body></html>");
 
-  id result = ExecuteJavaScriptInAutofillContentWorld(
+  id result = ExecuteJavaScript(
       @"__gCrWeb.getRegisteredApi('fill_test_api')."
       @"getFunction('getAriaLabel')(document.getElementById('input'));");
   NSString* expected_result = @"Name";
@@ -217,7 +203,7 @@ TEST_F(FillJsTest, GetAriaLabelledByMulti) {
             "</div>"
             "</body></html>");
 
-  id result = ExecuteJavaScriptInAutofillContentWorld(
+  id result = ExecuteJavaScript(
       @"__gCrWeb.getRegisteredApi('fill_test_api')."
       @"getFunction('getAriaLabel')(document.getElementById('input'));");
   NSString* expected_result = @"Billing Name";
@@ -235,7 +221,7 @@ TEST_F(FillJsTest, GetAriaLabelledByTakesPrecedence) {
             "</div>"
             "</body></html>");
 
-  id result = ExecuteJavaScriptInAutofillContentWorld(
+  id result = ExecuteJavaScript(
       @"__gCrWeb.getRegisteredApi('fill_test_api')."
       @"getFunction('getAriaLabel')(document.getElementById('input'));");
   NSString* expected_result = @"Name";
@@ -253,7 +239,7 @@ TEST_F(FillJsTest, GetAriaLabelledByInvalid) {
             "</div>"
             "</body></html>");
 
-  id result = ExecuteJavaScriptInAutofillContentWorld(
+  id result = ExecuteJavaScript(
       @"__gCrWeb.getRegisteredApi('fill_test_api')."
       @"getFunction('getAriaLabel')(document.getElementById('input'));");
   NSString* expected_result = @"";
@@ -271,7 +257,7 @@ TEST_F(FillJsTest, GetAriaLabelledByFallback) {
             "</div>"
             "</body></html>");
 
-  id result = ExecuteJavaScriptInAutofillContentWorld(
+  id result = ExecuteJavaScript(
       @"__gCrWeb.getRegisteredApi('fill_test_api')."
       @"getFunction('getAriaLabel')(document.getElementById('input'));");
   NSString* expected_result = @"valid";
@@ -285,9 +271,9 @@ TEST_F(FillJsTest, GetAriaDescriptionSingle) {
             "<div id='div1'>aria description</div>"
             "</body></html>");
 
-  id result = ExecuteJavaScriptInAutofillContentWorld(
-    @"__gCrWeb.getRegisteredApi('fill_test_api')."
-    @"getFunction('getAriaDescription')(document.getElementById('input'));");
+  id result = ExecuteJavaScript(
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('getAriaDescription')(document.getElementById('input'));");
   NSString* expected_result = @"aria description";
   EXPECT_NSEQ(result, expected_result);
 }
@@ -300,9 +286,9 @@ TEST_F(FillJsTest, GetAriaDescriptionMulti) {
             "<div id='div1'>aria</div>"
             "</body></html>");
 
-  id result = ExecuteJavaScriptInAutofillContentWorld(
-    @"__gCrWeb.getRegisteredApi('fill_test_api')."
-    @"getFunction('getAriaDescription')(document.getElementById('input'));");
+  id result = ExecuteJavaScript(
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('getAriaDescription')(document.getElementById('input'));");
   NSString* expected_result = @"aria description";
   EXPECT_NSEQ(result, expected_result);
 }
@@ -313,9 +299,9 @@ TEST_F(FillJsTest, GetAriaDescriptionInvalid) {
             "<input id='input' type='text' aria-describedby='invalid'/>"
             "</body></html>");
 
-  id result = ExecuteJavaScriptInAutofillContentWorld(
-    @"__gCrWeb.getRegisteredApi('fill_test_api')."
-    @"getFunction('getAriaDescription')(document.getElementById('input'));");
+  id result = ExecuteJavaScript(
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('getAriaDescription')(document.getElementById('input'));");
   NSString* expected_result = @"";
   EXPECT_NSEQ(result, expected_result);
 }
@@ -329,13 +315,12 @@ TEST_F(FillJsTest, GetUniqueIDInAllJavaScriptContentWorlds) {
             "</form></body></html>");
 
   // Set IDs for form and input in the content world for Autofill features.
-  ExecuteJavaScriptInAutofillContentWorld(
-      @"var form = document.getElementById('form');"
-       "__gCrWeb.getRegisteredApi('fill_test_api')."
-       "getFunction('setUniqueIDIfNeeded')(form);"
-       "var input = document.getElementById('input');"
-       "__gCrWeb.getRegisteredApi('fill_test_api')."
-       "getFunction('setUniqueIDIfNeeded')(input);");
+  ExecuteJavaScript(@"var form = document.getElementById('form');"
+                     "__gCrWeb.getRegisteredApi('fill_test_api')."
+                     "getFunction('setUniqueIDIfNeeded')(form);"
+                     "var input = document.getElementById('input');"
+                     "__gCrWeb.getRegisteredApi('fill_test_api')."
+                     "getFunction('setUniqueIDIfNeeded')(input);");
 
   // Verify the ID retrieval in all content worlds.
   for (auto content_world : {web::ContentWorld::kIsolatedWorld,
@@ -360,10 +345,9 @@ TEST_F(FillJsTest, GetUniqueIDReturnsNotSetWhenInvalidIDInDOM) {
             "</form></body></html>");
 
   // Set IDs for form and input in the content world for Autofill features.
-  ExecuteJavaScriptInAutofillContentWorld(
-      @"var form = document.getElementById('form');"
-       "__gCrWeb.getRegisteredApi('fill_test_api')."
-       "getFunction('setUniqueIDIfNeeded')(form);");
+  ExecuteJavaScript(@"var form = document.getElementById('form');"
+                     "__gCrWeb.getRegisteredApi('fill_test_api')."
+                     "getFunction('setUniqueIDIfNeeded')(form);");
 
   std::vector<NSString*> invalid_ids = {@"''", @"'word'", @"null",
                                         @"undefined"};
@@ -375,11 +359,9 @@ TEST_F(FillJsTest, GetUniqueIDReturnsNotSetWhenInvalidIDInDOM) {
                           "form.setAttribute('__gChrome_uniqueID', %@);",
                          invalid_id];
 
-    // Make the renderer ID invalid. Running the script in the page content
-    // world to simulate a real-life scenario. The DOM is shared across content
+    // Make the renderer ID invalid. The DOM is shared across content
     // worlds so it doesn't really matter which content world we use.
-    web::test::ExecuteJavaScriptForFeature(web_state(), set_invalid_id_script,
-                                           GetDummyPageContentWorldFeature());
+    ExecuteJavaScript(set_invalid_id_script);
 
     // Verify the ID retrieval in the isolated content world.
     // The ID should be non-zero because Autofill scripts run in this world and
@@ -447,7 +429,7 @@ TEST_F(FillJsTest, Stringify) {
     // Load a sample HTML page. As a side-effect, loading HTML via
     // `webController_` will also inject web_bundle.js.
     LoadHtml(@"<p>");
-    id result = ExecuteJavaScriptInAutofillContentWorld(data.test_script);
+    id result = ExecuteJavaScript(data.test_script);
     EXPECT_NSEQ(data.expected_value, result)
         << " with input: " << base::SysNSStringToUTF8(data.test_script);
   }
@@ -457,12 +439,10 @@ TEST_F(FillJsTest, Stringify) {
 TEST_F(FillJsTest, StringifyJSONGlobalOverride) {
   LoadHtml(@"<p>");
   // Override JSON.stringify to return a random value.
-  ExecuteJavaScriptInAutofillContentWorld(
-      @"JSON.stringify = function() { return 'broken'; }");
+  ExecuteJavaScript(@"JSON.stringify = function() { return 'broken'; }");
 
-  id result = ExecuteJavaScriptInAutofillContentWorld(
-      @"__gCrWeb.getRegisteredApi('fill_test_api')."
-      @"getFunction('stringify')({'a':'b'})");
+  id result = ExecuteJavaScript(@"__gCrWeb.getRegisteredApi('fill_test_api')."
+                                @"getFunction('stringify')({'a':'b'})");
   EXPECT_NSEQ(result, @"{\"a\":\"b\"}");
 }
 
@@ -471,21 +451,21 @@ TEST_F(FillJsTest, StringifyJSONGlobalOverride) {
 TEST_F(FillJsTest, StringifyPrototypeToJSON) {
   LoadHtml(@"<p>");
   // Object.prototype.toJSON override.
-  ExecuteJavaScriptInAutofillContentWorld(
+  ExecuteJavaScript(
       @"Object.prototype.toJSON = function() { return 'hacked object'; }");
 
-  id obj_result = ExecuteJavaScriptInAutofillContentWorld(
-      @"__gCrWeb.getRegisteredApi('fill_test_api')."
-      @"getFunction('stringify')({'a':'b'})");
+  id obj_result =
+      ExecuteJavaScript(@"__gCrWeb.getRegisteredApi('fill_test_api')."
+                        @"getFunction('stringify')({'a':'b'})");
   EXPECT_NSEQ(obj_result, @"{\"a\":\"b\"}");
 
   // Array.prototype.toJSON override.
-  ExecuteJavaScriptInAutofillContentWorld(
+  ExecuteJavaScript(
       @"Array.prototype.toJSON = function() { return 'hacked array'; }");
 
-  id arr_result = ExecuteJavaScriptInAutofillContentWorld(
-      @"__gCrWeb.getRegisteredApi('fill_test_api')."
-      @"getFunction('stringify')(['a','b'])");
+  id arr_result =
+      ExecuteJavaScript(@"__gCrWeb.getRegisteredApi('fill_test_api')."
+                        @"getFunction('stringify')(['a','b'])");
   EXPECT_NSEQ(arr_result, @"[\"a\",\"b\"]");
 }
 
@@ -494,15 +474,13 @@ TEST_F(FillJsTest, StringifyPrototypeToJSON) {
 TEST_F(FillJsTest, StringifyRestoresPrototypeToJSON) {
   LoadHtml(@"<p>");
 
-  ExecuteJavaScriptInAutofillContentWorld(
+  ExecuteJavaScript(
       @"Array.prototype.toJSON = function() { return 'hacked array'; }");
 
-  ExecuteJavaScriptInAutofillContentWorld(
-      @"__gCrWeb.getRegisteredApi('fill_test_api')."
-      @"getFunction('stringify')(['a','b'])");
+  ExecuteJavaScript(@"__gCrWeb.getRegisteredApi('fill_test_api')."
+                    @"getFunction('stringify')(['a','b'])");
 
-  id result = ExecuteJavaScriptInAutofillContentWorld(
-      @"Array.prototype.toJSON.call([])");
+  id result = ExecuteJavaScript(@"Array.prototype.toJSON.call([])");
   EXPECT_NSEQ(result, @"hacked array");
 }
 
@@ -511,13 +489,12 @@ TEST_F(FillJsTest, StringifyRestoresPrototypeToJSON) {
 TEST_F(FillJsTest, StringifyRestoresOwnToJSON) {
   LoadHtml(@"<p>");
 
-  ExecuteJavaScriptInAutofillContentWorld(
-      @"var obj = { 'a': 'b' };"
-      @"obj.toJSON = function() { return 'own toJSON'; };"
-      @"__gCrWeb.getRegisteredApi('fill_test_api')."
-      @"getFunction('stringify')(obj)");
+  ExecuteJavaScript(@"var obj = { 'a': 'b' };"
+                    @"obj.toJSON = function() { return 'own toJSON'; };"
+                    @"__gCrWeb.getRegisteredApi('fill_test_api')."
+                    @"getFunction('stringify')(obj)");
 
-  id result = ExecuteJavaScriptInAutofillContentWorld(@"obj.toJSON()");
+  id result = ExecuteJavaScript(@"obj.toJSON()");
   EXPECT_NSEQ(result, @"own toJSON");
 }
 
