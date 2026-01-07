@@ -133,6 +133,8 @@ class TabModelJniBridge : public TabModel {
       tab_groups::TabGroupId group_id) override;
   std::optional<tab_groups::TabGroupId> CreateTabGroup(
       const std::vector<tabs::TabHandle>& tabs) override;
+  void SetTabGroupTitle(tab_groups::TabGroupId group_id,
+                        const std::u16string& title) override;
   std::optional<tab_groups::TabGroupId> AddTabsToGroup(
       std::optional<tab_groups::TabGroupId> group_id,
       const std::set<tabs::TabHandle>& tabs) override;

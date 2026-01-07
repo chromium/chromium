@@ -223,6 +223,11 @@ std::optional<tab_groups::TabGroupId> TestTabModel::CreateTabGroup(
   return std::nullopt;
 }
 
+void TestTabModel::SetTabGroupTitle(tab_groups::TabGroupId group_id,
+                                    const std::u16string& title) {
+  NOTIMPLEMENTED();
+}
+
 std::optional<tab_groups::TabGroupId> TestTabModel::AddTabsToGroup(
     std::optional<tab_groups::TabGroupId> group_id,
     const std::set<tabs::TabHandle>& tabs) {
@@ -500,6 +505,11 @@ std::optional<tab_groups::TabGroupVisualData>
 OwningTestTabModel::GetTabGroupVisualData(tab_groups::TabGroupId group_id) {
   NOTIMPLEMENTED();
   return std::nullopt;
+}
+
+void OwningTestTabModel::SetTabGroupTitle(tab_groups::TabGroupId group_id,
+                                          const std::u16string& title) {
+  NOTIMPLEMENTED();
 }
 
 std::optional<tab_groups::TabGroupId> OwningTestTabModel::AddTabsToGroup(

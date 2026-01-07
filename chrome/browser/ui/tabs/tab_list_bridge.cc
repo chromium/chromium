@@ -257,6 +257,25 @@ std::optional<tab_groups::TabGroupId> TabListBridge::CreateTabGroup(
   return tab_strip_->AddToNewGroup(std::move(tab_indices));
 }
 
+void TabListBridge::SetTabGroupTitle(tab_groups::TabGroupId group_id,
+                                     const std::u16string& title) {
+  // Not all browsers support tab groups.
+  if (!tab_strip_->group_model()) {
+    return;
+  }
+  TabGroup* tab_group = tab_strip_->group_model()->GetTabGroup(group_id);
+  if (!tab_group) {
+    return;
+  }
+  const tab_groups::TabGroupVisualData* visual_data = tab_group->visual_data();
+  if (!visual_data) {
+    return;
+  }
+  tab_groups::TabGroupVisualData new_visual_data(title, visual_data->color(),
+                                                 visual_data->is_collapsed());
+  tab_group->SetVisualData(new_visual_data);
+}
+
 std::optional<tab_groups::TabGroupId> TabListBridge::AddTabsToGroup(
     std::optional<tab_groups::TabGroupId> group_id,
     const std::set<tabs::TabHandle>& tabs) {

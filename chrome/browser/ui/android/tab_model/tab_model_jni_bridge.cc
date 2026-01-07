@@ -34,6 +34,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -62,6 +63,8 @@ using base::android::SafeGetArrayLength;
 using base::android::ScopedJavaLocalRef;
 using chrome::android::ActivityType;
 using content::WebContents;
+using tab_groups::TabGroupColorId;
+using tab_groups::TabGroupVisualData;
 
 namespace {
 
@@ -609,10 +612,26 @@ std::vector<tab_groups::TabGroupId> TabModelJniBridge::ListTabGroups() {
   return group_ids;
 }
 
-std::optional<tab_groups::TabGroupVisualData>
-TabModelJniBridge::GetTabGroupVisualData(tab_groups::TabGroupId group_id) {
-  // TODO(crbug.com/405219902): Implement JNI for Android.
-  return std::nullopt;
+std::optional<TabGroupVisualData> TabModelJniBridge::GetTabGroupVisualData(
+    tab_groups::TabGroupId group_id) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+
+  // The JNI method returns nullopt on failure.
+  const std::optional<std::u16string> title =
+      Java_TabModelJniBridge_getTabGroupTitle(env, jobj, group_id.token());
+  if (!title) {
+    return std::nullopt;
+  }
+  const int color =
+      Java_TabModelJniBridge_getTabGroupColor(env, jobj, group_id.token());
+
+  // The cast is safe because the enum values are synced across C++ and Java.
+  const TabGroupColorId color_id = static_cast<TabGroupColorId>(color);
+  const bool collapsed =
+      Java_TabModelJniBridge_getTabGroupCollapsed(env, jobj, group_id.token());
+  TabGroupVisualData visual_data(title.value(), color_id, collapsed);
+  return visual_data;
 }
 
 std::optional<tab_groups::TabGroupId> TabModelJniBridge::CreateTabGroup(
@@ -623,6 +642,13 @@ std::optional<tab_groups::TabGroupId> TabModelJniBridge::CreateTabGroup(
   std::optional<base::Token> group_id_token =
       Java_TabModelJniBridge_createTabGroup(env, jobj, tabs_to_add);
   return tab_groups::TabGroupId::FromOptionalToken(group_id_token);
+}
+
+void TabModelJniBridge::SetTabGroupTitle(tab_groups::TabGroupId group_id,
+                                         const std::u16string& title) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  Java_TabModelJniBridge_setTabGroupTitle(env, jobj, group_id.token(), title);
 }
 
 std::optional<tab_groups::TabGroupId> TabModelJniBridge::AddTabsToGroup(

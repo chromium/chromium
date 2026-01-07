@@ -73,6 +73,10 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, GetFunction) {
   std::optional<tab_groups::TabGroupId> group = tab_list->CreateTabGroup(tabs);
   ASSERT_TRUE(group.has_value());
 
+  // TODO(crbug.com/371432155): Test color and collapsed when those properties
+  // can be set on Android.
+  tab_list->SetTabGroupTitle(*group, u"Title");
+
   // Call the chrome.tabGroups.get() function with a valid group id.
   auto extension = CreateTabGroupsExtension();
   int group_id = ExtensionTabUtil::GetGroupId(*group);
@@ -86,6 +90,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, GetFunction) {
   EXPECT_EQ(ExtensionTabUtil::GetWindowId(browser_window_interface()),
             *group_info.FindInt("windowId"));
   EXPECT_FALSE(*group_info.FindBool("shared"));
+  EXPECT_EQ("Title", *group_info.FindString("title"));
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, GetFunctionInvalidGroup) {
