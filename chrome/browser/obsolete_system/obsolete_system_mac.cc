@@ -10,9 +10,9 @@
 #include "chrome/grit/branded_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-// Chromium 138 will be the last mstone to support macOS 11.
-constexpr int kLastMStoneWithSupport = 138;
-constexpr int kMacOSReleaseBeingObsoleted = 11;
+// Chromium 150 will be the last mstone to support macOS 12.
+constexpr int kLastMStoneWithSupport = 150;
+constexpr int kMacOSReleaseBeingObsoleted = 12;
 
 namespace ObsoleteSystem {
 
