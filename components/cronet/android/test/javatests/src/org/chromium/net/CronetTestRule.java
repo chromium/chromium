@@ -247,7 +247,6 @@ public class CronetTestRule implements TestRule {
             }
             Log.i(TAG, "Running test against " + implementation + " implementation.");
             setImplementationUnderTest(implementation);
-            boolean implementationSkipped = false;
             try {
                 evaluateWithFramework(base, testName, netLogEnabled, desc);
                 allImplementionsSkipped = false;
