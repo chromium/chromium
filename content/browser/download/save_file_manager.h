@@ -56,7 +56,6 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -68,6 +67,7 @@
 #include "content/common/content_export.h"
 #include "net/base/isolation_info.h"
 #include "services/network/public/cpp/request_mode.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 class GURL;
 
@@ -243,16 +243,16 @@ class CONTENT_EXPORT SaveFileManager
   void ClearURLLoader(SaveItemId save_item_id);
 
   // A map from save_item_id into SaveFiles.
-  std::unordered_map<SaveItemId, std::unique_ptr<SaveFile>> save_file_map_;
+  absl::flat_hash_map<SaveItemId, std::unique_ptr<SaveFile>> save_file_map_;
 
   // Tracks which SavePackage to send data to, called only on UI thread.
   // SavePackageMap maps save item ids to their SavePackage.
-  std::unordered_map<SaveItemId, raw_ptr<SavePackage, CtnExperimental>>
+  absl::flat_hash_map<SaveItemId, raw_ptr<SavePackage, CtnExperimental>>
       packages_;
 
   // The helper object doing the actual download. Should be accessed on the UI
   // thread.
-  std::unordered_map<SaveItemId, std::unique_ptr<SimpleURLLoaderHelper>>
+  absl::flat_hash_map<SaveItemId, std::unique_ptr<SimpleURLLoaderHelper>>
       url_loader_helpers_;
 };
 
