@@ -24416,6 +24416,21 @@
             ]
         }
     ],
+    "SmoothBrowserControlsScrollAnimation": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260106",
+                    "enable_features": [
+                        "BrowserControlsSmoothScroll"
+                    ]
+                }
+            ]
+        }
+    ],
     "SnapshotInSwift": [
         {
             "platforms": [
