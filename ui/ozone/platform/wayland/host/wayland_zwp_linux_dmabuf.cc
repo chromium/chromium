@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cstring>
 
+#include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/timer/elapsed_timer.h"
@@ -237,6 +238,7 @@ void WaylandZwpLinuxDmabuf::OnFormatTable(
     zwp_linux_dmabuf_feedback_v1* feedback,
     int32_t fd,
     uint32_t size) {
+  base::ScopedFD scoped_fd(fd);
   auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data);
   if (!self) {
     return;
@@ -248,7 +250,8 @@ void WaylandZwpLinuxDmabuf::OnFormatTable(
   self->format_table_.clear();
   self->supported_buffer_formats_with_modifiers_.clear();
 
-  void* format_ptr = mmap(nullptr, size, PROT_READ, MAP_PRIVATE, fd, 0);
+  void* format_ptr =
+      mmap(nullptr, size, PROT_READ, MAP_PRIVATE, scoped_fd.get(), 0);
   if (format_ptr == MAP_FAILED) {
     LOG(ERROR) << "Failed to map zwp_linux_dmabuf_feedback_v1 format table";
     return;

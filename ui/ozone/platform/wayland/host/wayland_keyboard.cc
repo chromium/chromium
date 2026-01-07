@@ -12,6 +12,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
@@ -241,6 +242,7 @@ void WaylandKeyboard::OnKeymap(void* data,
                                uint32_t format,
                                int32_t fd,
                                uint32_t size) {
+  base::ScopedFD scoped_fd(fd);
   auto* self = static_cast<WaylandKeyboard*>(data);
   DCHECK(self);
 
@@ -251,7 +253,7 @@ void WaylandKeyboard::OnKeymap(void* data,
   // mapped with MAP_PRIVATE by the recipient, as MAP_SHARED may fail."
   int map_flags =
       wl_keyboard_get_version(keyboard) >= 7 ? MAP_PRIVATE : MAP_SHARED;
-  void* keymap = mmap(nullptr, size, PROT_READ, map_flags, fd, 0);
+  void* keymap = mmap(nullptr, size, PROT_READ, map_flags, scoped_fd.get(), 0);
   if (keymap == MAP_FAILED) {
     DPLOG(ERROR) << "Failed to map XKB keymap.";
     return;
