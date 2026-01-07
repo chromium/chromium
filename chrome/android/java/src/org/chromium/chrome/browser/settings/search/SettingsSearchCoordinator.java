@@ -576,7 +576,13 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
      *
      * @see {@link Activity#onConfigurationChanged(Configuration)}.
      */
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+    public void onConfigurationChanged(Configuration newConfig) {
+        // mUseMultiColumnSupplier doesn't return the right, updated value immediately.
+        // Posting the job to the next slot fixes it.
+        mHandler.post(this::onConfigurationChangedInternal);
+    }
+
+    private void onConfigurationChangedInternal() {
         boolean useMultiColumn = mUseMultiColumnSupplier.getAsBoolean();
 
         if (useMultiColumn == mUseMultiColumn) {
