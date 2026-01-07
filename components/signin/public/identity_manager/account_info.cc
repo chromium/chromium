@@ -479,7 +479,7 @@ AccountInfo ConvertFromJavaAccountInfo(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_account_info) {
   CHECK(j_account_info);
-  // TODO(crbug.com/348373729): Marshal account image & capabilities from Java.
+  // TODO(crbug.com/473992484): Marshal account image & capabilities from Java.
   AccountInfo::Builder builder(
       signin::Java_CoreAccountInfo_getGaiaId(env, j_account_info),
       signin::Java_CoreAccountInfo_getEmail(env, j_account_info));
