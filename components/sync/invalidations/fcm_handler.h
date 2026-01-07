@@ -94,20 +94,13 @@ class FCMHandler : public gcm::GCMAppHandler {
 
  private:
   // Called when a subscription token is obtained from the GCM server.
-  void DidRetrieveToken(base::TimeTicks fetch_time_for_metrics,
-                        bool is_validation,
-                        const std::string& subscription_token,
+  void DidRetrieveToken(const std::string& subscription_token,
                         instance_id::InstanceID::Result result);
-
-  // Records UMA metrics for the initial token retrieval.
-  void RecordInitialTokenRetrievalMetrics(
-      base::TimeTicks fetch_time_for_metrics,
-      instance_id::InstanceID::Result result) const;
 
   void ScheduleNextTokenValidation();
   void StartTokenValidation();
 
-  void StartTokenFetch(bool is_validation);
+  void StartTokenFetch();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
