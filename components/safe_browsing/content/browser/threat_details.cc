@@ -487,8 +487,8 @@ void ThreatDetails::AddDomElement(
     // of our current frame. We can easily lookup our parent.
     const std::string& parent_key =
         GetElementKey(frame_tree_node_id, parent_element_node_id);
-    if (elements_.contains(parent_key)) {
-      parent_element = elements_[parent_key].get();
+    if (auto it = elements_.find(parent_key); it != elements_.end()) {
+      parent_element = it->second.get();
     }
   }
 
@@ -691,9 +691,9 @@ void ThreatDetails::FinishCollection(
   for (auto& element_pair : elements_) {
     const std::string& element_key = element_pair.first;
     HTMLElement* element = element_pair.second.get();
-    if (iframe_key_to_frame_tree_id_map_.contains(element_key)) {
-      content::FrameTreeNodeId frame_tree_id_of_iframe_renderer =
-          iframe_key_to_frame_tree_id_map_[element_key];
+    if (auto it = iframe_key_to_frame_tree_id_map_.find(element_key);
+        it != iframe_key_to_frame_tree_id_map_.end()) {
+      content::FrameTreeNodeId frame_tree_id_of_iframe_renderer = it->second;
       const std::unordered_set<int>& child_ids =
           frame_tree_id_to_children_map_[frame_tree_id_of_iframe_renderer];
       for (const int child_id : child_ids) {
