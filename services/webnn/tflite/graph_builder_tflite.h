@@ -168,7 +168,7 @@ class GraphBuilderTflite final {
   // tensor information. The `override_tensor_type` is used to override the
   // tensor type, such as when dequantising a float16 operator to float32 before
   // serializing an operator which does not support float32.
-  TensorInfo SerializeOperand(
+  base::expected<TensorInfo, std::string> SerializeOperand(
       OperandId operand_id,
       QuantizateParametersOffset quantize_params,
       std::optional<::tflite::TensorType> override_tensor_type = std::nullopt);
@@ -214,14 +214,16 @@ class GraphBuilderTflite final {
   // The `Buffer` in TFLite schema is the table of raw data buffers, it is used
   // for WebNN constant operations. Referenced by tensors with the index of
   // buffer.
-  BufferIndex SerializeBuffer(base::span<const uint8_t> buffer);
+  base::expected<BufferIndex, std::string> SerializeBuffer(
+      base::span<const uint8_t> buffer);
 
   // Serializes `buffer` as a tensor with the given `dimensions` and `type `to
   // the flat buffer and returns the index in `tensors_` if it's successful.
   template <typename DataType>
     requires internal::IsSupportedTensorType<DataType>
-  TensorIndex SerializeTensorWithBuffer(base::span<const DataType> buffer,
-                                        base::span<const int32_t> dimensions);
+  base::expected<TensorIndex, std::string> SerializeTensorWithBuffer(
+      base::span<const DataType> buffer,
+      base::span<const int32_t> dimensions);
 
   // Serializes temporary tensor for casting the data type of input operand or
   // decomposing WebNN operation that isn't supported in TFLite schema.
@@ -298,10 +300,11 @@ class GraphBuilderTflite final {
 
   // Serialize a sub graph (min appending max operation) for clamp.
   template <typename DataType>
-  OperatorOffset SerializeSubGraphMaxMin(const TensorInfo& input_tensor_info,
-                                         TensorIndex output_tensor_index,
-                                         base::span<const DataType> min_values,
-                                         base::span<const DataType> max_values);
+  base::expected<OperatorOffset, std::string> SerializeSubGraphMaxMin(
+      const TensorInfo& input_tensor_info,
+      TensorIndex output_tensor_index,
+      base::span<const DataType> min_values,
+      base::span<const DataType> max_values);
 
   // Serialize gather_nd indices tensor.
   template <typename DataType>
@@ -346,7 +349,7 @@ class GraphBuilderTflite final {
 
   // This function is called by `SerializeResample2d` to serialize WebNN
   // resample2d operator or used to emulate WebNN operations.
-  OperatorOffset SerializeResizeOperation(
+  base::expected<OperatorOffset, std::string> SerializeResizeOperation(
       mojom::Resample2d::InterpolationMode mode,
       TensorIndex input_tensor_index,
       TensorIndex output_tensor_index,
@@ -366,17 +369,17 @@ class GraphBuilderTflite final {
       base::span<const DataType> values,
       uint32_t block_size);
   // Block-wise expand the dimension of input tensor along the given axis.
-  TensorIndex BlockwiseExpandAlongAxis(
+  base::expected<TensorIndex, std::string> BlockwiseExpandAlongAxis(
       base::span<const int32_t> input_dimensions,
       TensorIndex input_tensor_index,
       uint32_t block_size,
       uint32_t axis);
   // Block-wise expand the scale and zero point for quantize / dequantize.
-  std::tuple<TensorIndex, TensorIndex> BlockwiseExpandScaleAndZeroPoint(
-      TensorIndex scale_tensor_index,
-      TensorIndex zero_point_tensor_index,
-      base::span<const int32_t> scale_shape,
-      base::span<const int32_t> input_shape);
+  base::expected<std::tuple<TensorIndex, TensorIndex>, std::string>
+  BlockwiseExpandScaleAndZeroPoint(TensorIndex scale_tensor_index,
+                                   TensorIndex zero_point_tensor_index,
+                                   base::span<const int32_t> scale_shape,
+                                   base::span<const int32_t> input_shape);
 
   // This function is called by `SerializeMatmul` to serialize WebNN
   // matmul operator or used to emulate WebNN operations.
@@ -386,7 +389,7 @@ class GraphBuilderTflite final {
 
   // A helper function is used to emulate batch, layer or instance
   // normalization.
-  OperatorOffset SerializeNormalizationOperation(
+  base::expected<OperatorOffset, std::string> SerializeNormalizationOperation(
       base::span<const int32_t> input_dimensions,
       ::tflite::TensorType input_tensor_type,
       TensorIndex input_tensor_index,
@@ -399,19 +402,21 @@ class GraphBuilderTflite final {
 
   // Compute the means and variance values for the instance and layer
   // normalization.
-  std::tuple<TensorIndex, TensorIndex> ComputeMeanAndVarianceForNormalization(
+  base::expected<std::tuple<TensorIndex, TensorIndex>, std::string>
+  ComputeMeanAndVarianceForNormalization(
       base::span<const int32_t> input_dimensions,
       ::tflite::TensorType input_tensor_type,
       TensorIndex input_tensor_index,
       base::span<const int32_t> axes);
-  TensorIndex TransposeAndReshapeLayerNormalizationScaleBias(
+  base::expected<TensorIndex, std::string>
+  TransposeAndReshapeLayerNormalizationScaleBias(
       base::span<const int32_t> input_dimensions,
       const TensorInfo& scale_or_bias_tensor_info,
       base::span<const uint32_t> axes);
 
   // This function is called by `SerializeReduce` to serialize WebNN
   // reduce operators or used to emulate WebNN operations.
-  OperatorOffset SerializeReduceOperation(
+  base::expected<OperatorOffset, std::string> SerializeReduceOperation(
       ::tflite::BuiltinOperator operator_code,
       TensorIndex input_tensor_index,
       TensorIndex output_tensor_index,
@@ -434,7 +439,7 @@ class GraphBuilderTflite final {
 
   // This function is called by `SerializeLinear` to serialize WebNN linear or
   // used to emulate WebNN operation that isn't supported in TFLite schema.
-  OperatorOffset SerializeLinearOperation(
+  base::expected<OperatorOffset, std::string> SerializeLinearOperation(
       base::span<const int32_t> input_dimensions,
       ::tflite::TensorType input_tensor_type,
       TensorIndex input_tensor_index,
@@ -445,7 +450,7 @@ class GraphBuilderTflite final {
   // This function is called by `SerializeTranspose` to serialize WebNN
   // transpose operator or used to insert a tempary operator to transpose
   // different layout.
-  OperatorOffset SerializeTransposeOperation(
+  base::expected<OperatorOffset, std::string> SerializeTransposeOperation(
       TensorIndex input_tensor_index,
       TensorIndex output_tensor_index,
       base::span<const int32_t> input_shape,
@@ -453,13 +458,14 @@ class GraphBuilderTflite final {
 
   // This function is called by SerializeScatterND or SerializeScatterElements
   // to serialize WebNN scatterND or scatterElements operation.
-  OperatorOffset SerializeWebNNScatterND(const TensorInfo& input_tensor_info,
-                                         const TensorInfo& updates_tensor_info,
-                                         TensorIndex indices_tensor_index,
-                                         TensorIndex output_tensor_index);
+  base::expected<OperatorOffset, std::string> SerializeWebNNScatterND(
+      const TensorInfo& input_tensor_info,
+      const TensorInfo& updates_tensor_info,
+      TensorIndex indices_tensor_index,
+      TensorIndex output_tensor_index);
   // This function is called by `SerializeWebNNScatterND` to implement WebNN
   // scatterND operation.
-  OperatorOffset SerializeTFLiteScatterND(
+  base::expected<OperatorOffset, std::string> SerializeTFLiteScatterND(
       base::span<const int32_t> input_shapes,
       TensorIndex indices_tensor_index,
       TensorIndex updates_tensor_index,
@@ -467,9 +473,10 @@ class GraphBuilderTflite final {
 
   // This function is called by `SerializeReverse` to serialize WebNN
   // reverse operation.
-  OperatorOffset SerializeReverseOperation(TensorIndex input_tensor_index,
-                                           base::span<const int32_t> axes,
-                                           TensorIndex output_tensor_index);
+  base::expected<OperatorOffset, std::string> SerializeReverseOperation(
+      TensorIndex input_tensor_index,
+      base::span<const int32_t> axes,
+      TensorIndex output_tensor_index);
 
   // This function is called by `SerializeWhere` to serialize WebNN where
   // operation or used to emulate scatterND operation.
@@ -486,11 +493,12 @@ class GraphBuilderTflite final {
 
   // Insert a tempary transpose operation for input operand with calling
   // `SerializeTransposeOperation`.
-  TensorIndex InsertTransposeOperation(const TensorInfo& input_tensor_info,
-                                       base::span<const uint32_t> permutation);
+  base::expected<TensorIndex, std::string> InsertTransposeOperation(
+      const TensorInfo& input_tensor_info,
+      base::span<const uint32_t> permutation);
 
   // Serialize a sub graph (pow appending mul operation) for erf operation.
-  TensorIndex SerializeSubGraphPowMul(
+  base::expected<TensorIndex, std::string> SerializeSubGraphPowMul(
       base::span<const int32_t> input_dimensions,
       ::tflite::TensorType input_tensor_type,
       TensorIndex input_tensor_index,
@@ -711,8 +719,9 @@ class GraphBuilderTflite final {
       const mojom::LeakyRelu& leaky_relu);
   base::expected<OperatorOffset, std::string> SerializeLinear(
       const mojom::Linear& linear);
-  OperatorOffset SerializeIsInfinite(const TensorInfo& input_tensor_info,
-                                     const TensorInfo& output_tensor_info);
+  base::expected<OperatorOffset, std::string> SerializeIsInfinite(
+      const TensorInfo& input_tensor_info,
+      const TensorInfo& output_tensor_info);
   OperatorOffset SerializeLogicalNot(const TensorInfo& input_tensor_info,
                                      const TensorInfo& output_tensor_info);
   base::expected<OperatorOffset, std::string> SerializeLstmCell(
