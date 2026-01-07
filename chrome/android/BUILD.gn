@@ -1912,13 +1912,6 @@ if (_is_default_toolchain) {
     is_monochrome = false
     is_bundle_module = true
   }
-  resource_packaging("monochrome_apk_pak_assets") {
-    is_monochrome = true
-  }
-  resource_packaging("monochrome_bundle_module_pak_assets") {
-    is_monochrome = true
-    is_bundle_module = true
-  }
   resource_packaging("trichrome_chrome_bundle_module_pak_assets") {
     is_monochrome = false
     is_trichrome = true
@@ -2255,14 +2248,6 @@ if (_is_default_toolchain) {
   }
 
   if (android_64bit_target_cpu) {
-    chrome_public_apk_or_module_tmpl("monochrome_64_public_apk") {
-      is_monochrome = true
-      apk_name = "MonochromePublic64"
-      target_type = "android_apk"
-      is_64_bit_browser = true
-      include_32_bit_webview = false
-    }
-
     trichrome_library_apk_tmpl("trichrome_library_64_apk") {
       apk_name = "TrichromeLibrary64"
       is_64_bit_browser = true
@@ -3373,7 +3358,7 @@ if (_is_default_toolchain) {
   }
 }
 
-# Monochrome equivalent of Chrome's APK or bundle library template.
+# Trichrome equivalent of Chrome's APK or bundle library template.
 template("libmonochrome_tmpl") {
   chrome_common_shared_library(target_name) {
     sources = [ "../browser/android/monochrome_entry_point.cc" ]
