@@ -92,9 +92,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
                  'android_resource_apk=%s\n' % resource_apk)
       props = [
           'application = android.app.Application',
-          # TODO(https://crbug.com/450954710): Turn this on.
-          #'sdk = 29,36',
-          'sdk = 29',
+          'sdk = 29,36',
           ('shadows = org.chromium.testing.local.'
            'CustomShadowApplicationPackageManager'),
       ]
