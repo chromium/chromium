@@ -776,6 +776,15 @@ class PrefModelAssociatorWithPreferencesAccountStorageTest
 
     sync_change_processor_ =
         std::make_unique<syncer::FakeSyncChangeProcessor>();
+
+    pref_service_->OnSyncServiceInitialized(&sync_service_);
+    // Preferences toggle is set by default.
+    sync_service_.GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kPreferences, true);
+  }
+
+  ~PrefModelAssociatorWithPreferencesAccountStorageTest() override {
+    sync_service_.Shutdown();
   }
 
   void MergeDataAndStartSyncing(const syncer::SyncDataList& initial_data) {
@@ -795,6 +804,7 @@ class PrefModelAssociatorWithPreferencesAccountStorageTest
   std::unique_ptr<PrefServiceSyncable> pref_service_;
   raw_ptr<PrefModelAssociator> pref_model_associator_ = nullptr;
   std::unique_ptr<syncer::FakeSyncChangeProcessor> sync_change_processor_;
+  syncer::TestSyncService sync_service_;
 };
 
 // Tests that no notification is issued if the effective value is unchanged upon
@@ -942,35 +952,16 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
   EXPECT_TRUE(account_pref_store_->GetValues().empty());
 }
 
-class ScopedSyncServiceInitializer {
- public:
-  ScopedSyncServiceInitializer(syncer::TestSyncService* sync_service,
-                               PrefServiceSyncable* pref_service)
-      : sync_service_(sync_service) {
-    pref_service->OnSyncServiceInitialized(sync_service_);
-  }
-  ~ScopedSyncServiceInitializer() { sync_service_->Shutdown(); }
-
- private:
-  raw_ptr<syncer::TestSyncService> sync_service_;
-};
-
 class PrefModelAssociatorWithPreferencesAccountStorageTestWithoutSelectedTypes
     : public PrefModelAssociatorWithPreferencesAccountStorageTest {
  public:
   PrefModelAssociatorWithPreferencesAccountStorageTestWithoutSelectedTypes() {
     feature_list_.InitAndDisableFeature(
         syncer::kSyncPreferencesUseSelectedTypes);
-
-    sync_service_.GetUserSettings()->SetSelectedType(
-        syncer::UserSelectableType::kPreferences, true);
   }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  syncer::TestSyncService sync_service_;
-  ScopedSyncServiceInitializer sync_service_initializer_{&sync_service_,
-                                                         pref_service_.get()};
 };
 
 TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithoutSelectedTypes,
@@ -990,8 +981,6 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithoutSelectedTypes,
 
 TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithoutSelectedTypes,
        OverridesPrefUpdatedBeforeMergeDataAndStartSyncing) {
-  sync_service_.GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kPreferences, true);
   pref_service_->SetString(kStringPrefName, "new_value");
 
   // Value is not written to the account store.
@@ -1012,9 +1001,6 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithoutSelectedTypes,
 
 TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithoutSelectedTypes,
        OverwritesAccountPrefValueUponMergeDataAndStartSyncing) {
-  sync_service_.GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kPreferences, true);
-
   // Pre-existing value in the account store.
   account_pref_store_->SetValue(kStringPrefName, base::Value("new_value"), 0);
   ASSERT_EQ(pref_service_->GetString(kStringPrefName), "new_value");
@@ -1045,15 +1031,10 @@ class PrefModelAssociatorWithPreferencesAccountStorageTestWithSelectedTypes
  protected:
   base::test::ScopedFeatureList feature_list_{
       syncer::kSyncPreferencesUseSelectedTypes};
-  syncer::TestSyncService sync_service_;
-  ScopedSyncServiceInitializer sync_service_initializer_{&sync_service_,
-                                                         pref_service_.get()};
 };
 
 TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithSelectedTypes,
        ShouldCommitPrefAddedBeforeMergeDataAndStartSyncing) {
-  sync_service_.GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kPreferences, true);
   pref_service_->SetString(kStringPrefName, "value");
 
   // Before sync starts up, the user changes a pref value. This gets written to
@@ -1074,8 +1055,6 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithSelectedTypes,
 
 TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithSelectedTypes,
        ShouldCommitPrefUpdatedBeforeMergeDataAndStartSyncing) {
-  sync_service_.GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kPreferences, true);
   pref_service_->SetString(kStringPrefName, "new_value");
 
   // Before sync starts up, the user changes a pref value. This gets written to

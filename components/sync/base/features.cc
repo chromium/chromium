@@ -169,7 +169,7 @@ BASE_FEATURE(kSyncTrustedVaultInfobarMessageImprovements,
 #endif  // BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kSyncPreferencesUseSelectedTypes,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncUseOsCryptAsync, base::FEATURE_DISABLED_BY_DEFAULT);
 
