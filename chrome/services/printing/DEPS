@@ -5,6 +5,7 @@ include_rules = [
   "+components/printing/common",
   "+components/pwg_encoder",
   "+content/public/child/child_thread.h",
+  "+content/public/common/content_switches.h",
   "+content/public/utility/utility_thread.h",
   "+pdf/pdf.h",
 ]
