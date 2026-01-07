@@ -56,6 +56,9 @@ struct SwapTimings {
   // When GPU scheduler removed the last required dependency.
   base::TimeTicks gpu_task_ready;
 
+  // When the GPU thread started scheduling overlays.
+  base::TimeTicks gpu_started_overlay;
+
   bool is_null() const { return swap_start.is_null() && swap_end.is_null(); }
 };
 

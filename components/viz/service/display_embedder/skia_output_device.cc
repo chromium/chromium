@@ -158,6 +158,11 @@ void SkiaOutputDevice::SetDependencyTimings(base::TimeTicks task_ready) {
   gpu_task_ready_ = task_ready;
 }
 
+void SkiaOutputDevice::SetOverlayStartTimings(
+    base::TimeTicks gpu_start_overlay) {
+  gpu_started_overlay_ = gpu_start_overlay;
+}
+
 void SkiaOutputDevice::ReadbackForTesting(
     base::OnceCallback<void(SkBitmap)> callback) {
   NOTIMPLEMENTED();
@@ -168,10 +173,12 @@ void SkiaOutputDevice::StartSwapBuffers(BufferPresentedCallback feedback) {
             capabilities_.pending_swap_params.GetMax());
 
   pending_swaps_.emplace(++swap_id_, std::move(feedback), viz_scheduled_draw_,
-                         gpu_started_draw_, gpu_task_ready_);
+                         gpu_started_draw_, gpu_task_ready_,
+                         gpu_started_overlay_);
   viz_scheduled_draw_ = base::TimeTicks();
   gpu_started_draw_ = base::TimeTicks();
   gpu_task_ready_ = base::TimeTicks();
+  gpu_started_overlay_ = base::TimeTicks();
 }
 
 void SkiaOutputDevice::FinishSwapBuffers(
@@ -247,13 +254,15 @@ SkiaOutputDevice::SwapInfo::SwapInfo(
     SkiaOutputDevice::BufferPresentedCallback feedback,
     base::TimeTicks viz_scheduled_draw,
     base::TimeTicks gpu_started_draw,
-    base::TimeTicks gpu_task_ready)
+    base::TimeTicks gpu_task_ready,
+    base::TimeTicks gpu_started_overlay)
     : feedback_(std::move(feedback)) {
   params_.swap_response.swap_id = swap_id;
   params_.swap_response.timings.swap_start = base::TimeTicks::Now();
   params_.swap_response.timings.viz_scheduled_draw = viz_scheduled_draw;
   params_.swap_response.timings.gpu_started_draw = gpu_started_draw;
   params_.swap_response.timings.gpu_task_ready = gpu_task_ready;
+  params_.swap_response.timings.gpu_started_overlay = gpu_started_overlay;
 }
 
 SkiaOutputDevice::SwapInfo::SwapInfo(SwapInfo&& other) = default;

@@ -1237,7 +1237,6 @@ void Display::DidReceiveSwapBuffersAck(
   // Check that the swap timings correspond with the timestamp from when
   // the swap was triggered. Note that not all output surfaces provide timing
   // information, hence the check for a valid swap_start.
-
   if (!timings.swap_start.is_null()) {
     DCHECK_LE(draw_start_timestamp, timings.swap_start);
     base::TimeDelta draw_start_to_swap_start =
@@ -1245,6 +1244,22 @@ void Display::DidReceiveSwapBuffersAck(
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Compositing.Display.DrawToSwapUs", draw_start_to_swap_start,
         kDrawToSwapMin, kDrawToSwapMax, kDrawToSwapUsBuckets);
+  }
+
+  if (!timings.gpu_started_overlay.is_null()) {
+    DCHECK_LE(draw_start_timestamp, timings.gpu_started_overlay);
+    TRACE_EVENT_ASYNC_BEGIN_WITH_TIMESTAMP0("viz", "DrawToScheduleOverlay",
+                                            params.swap_trace_id,
+                                            draw_start_timestamp);
+    TRACE_EVENT_ASYNC_END_WITH_TIMESTAMP0("viz", "DrawToScheduleOverlay",
+                                          params.swap_trace_id,
+                                          timings.gpu_started_overlay);
+    base::TimeDelta draw_start_to_overlay_start =
+        timings.gpu_started_overlay - draw_start_timestamp;
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Compositing.Display.DrawToScheduleOverlay",
+        draw_start_to_overlay_start, kDrawToSwapMin, kDrawToSwapMax,
+        kDrawToSwapUsBuckets);
   }
 
   if (!timings.viz_scheduled_draw.is_null()) {

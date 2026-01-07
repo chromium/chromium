@@ -2433,6 +2433,7 @@ bool SkiaOutputSurfaceImplOnGpu::PresentFrame(OutputSurfaceFrame frame) {
     constexpr base::TimeDelta kHistogramMaxTime = base::Milliseconds(16);
     constexpr int kHistogramTimeBuckets = 50;
     base::TimeTicks start_time = base::TimeTicks::Now();
+    output_device_->SetOverlayStartTimings(start_time);
 
     output_device_->ScheduleOverlays(std::move(overlays_));
 
