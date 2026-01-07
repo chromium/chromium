@@ -11699,6 +11699,23 @@
             ]
         }
     ],
+    "GlicGeminiInstructions": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicGeminiInstructions"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicHandoffButtonHiddenClientControl": [
         {
             "platforms": [
