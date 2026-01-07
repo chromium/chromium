@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -221,10 +220,8 @@ TEST_F(SelectFileDialogWinTest, CancelAllDialogs) {
           ui::SelectFileDialog::SELECT_OPEN_MULTI_FILE, kSelectFileDefaultTitle,
       }};
 
-  for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    SCOPED_TRACE(base::StringPrintf("i=%zu", i));
-
-    const auto& test_case = UNSAFE_TODO(kTestCases[i]);
+  for (size_t i = 0; const auto& test_case : kTestCases) {
+    SCOPED_TRACE(base::StringPrintf("i=%zu", i++));
 
     scoped_refptr<ui::SelectFileDialog> dialog =
         ui::SelectFileDialog::Create(this, nullptr);
