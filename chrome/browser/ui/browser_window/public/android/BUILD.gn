@@ -24,6 +24,7 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/multiwindow:java",
+    "//components/browser_ui/desktop_windowing/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/base/mojom:ui_base_types_java",

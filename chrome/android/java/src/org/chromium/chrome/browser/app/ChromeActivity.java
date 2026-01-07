@@ -1044,18 +1044,23 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             TabModel currentTabModel,
             @Nullable MultiInstanceManager multiInstanceManager) {
         try (TraceEvent e = TraceEvent.scoped("ChromeActivity.initializeChromeAndroidTask")) {
-            // Initialize PopupCreator early so that ChromeAndroidTaskTracker can use it
-            // to create intents for popup windows.
+            // 1. Initialize PopupCreator early so that ChromeAndroidTaskTracker can use it to
+            // create intents for popup windows.
             PopupCreator.initializePopupIntentCreator();
-            // 1. Obtain a ChromeAndroidTask that represents the Task (window) for this Activity.
+
             var chromeAndroidTaskTracker = ChromeAndroidTaskTrackerFactory.getInstance();
             if (chromeAndroidTaskTracker == null) {
                 return;
             }
 
+            // 2. Obtain ChromeAndroidTask dependencies.
             var activityWindowAndroid = getWindowAndroid();
             assert activityWindowAndroid != null
                     : "ChromeAndroidTask must be initialized after Java WindowAndroid is created.";
+
+            assert mRootUiCoordinator != null
+                    : "ChromeAndroidTask must be initialized after RootUiCoordinator";
+            var desktopWindowStateManager = mRootUiCoordinator.getDesktopWindowStateManager();
 
             int pendingIdExtraValue =
                     IntentUtils.safeGetIntExtra(
@@ -1064,19 +1069,23 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             /* defaultValue= */ -1);
             Integer pendingId = pendingIdExtraValue == -1 ? null : pendingIdExtraValue;
 
+            // 3. Obtain a ChromeAndroidTask that represents the Task (window) for this Activity.
             var chromeAndroidTask =
                     chromeAndroidTaskTracker.obtainTask(
                             browserWindowType,
                             new ChromeAndroidTask.ActivityScopedObjects(
-                                    activityWindowAndroid, currentTabModel, multiInstanceManager),
+                                    activityWindowAndroid,
+                                    currentTabModel,
+                                    desktopWindowStateManager,
+                                    multiInstanceManager),
                             pendingId);
 
-            // 2. Add windowing features.
+            // 4. Add windowing features.
             chromeAndroidTask.addFeature(
                     ExtensionWindowControllerBridge.class,
                     () -> ExtensionWindowControllerBridgeFactory.create(chromeAndroidTask));
 
-            // 3. Make the ChromeAndroidTask available via OneshotSupplier.
+            // 5. Make the ChromeAndroidTask available via OneshotSupplier.
             mChromeAndroidTaskSupplier.set(chromeAndroidTask);
         }
     }

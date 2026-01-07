@@ -13,6 +13,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.util.List;
@@ -56,19 +57,17 @@ public interface ChromeAndroidTask {
     final class ActivityScopedObjects {
         final ActivityWindowAndroid mActivityWindowAndroid;
         final TabModel mTabModel;
+        final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
         final @Nullable MultiInstanceManager mMultiInstanceManager;
-
-        public ActivityScopedObjects(
-                ActivityWindowAndroid activityWindowAndroid, TabModel tabModel) {
-            this(activityWindowAndroid, tabModel, /* multiInstanceManager= */ null);
-        }
 
         public ActivityScopedObjects(
                 ActivityWindowAndroid activityWindowAndroid,
                 TabModel tabModel,
+                @Nullable DesktopWindowStateManager desktopWindowStateManager,
                 @Nullable MultiInstanceManager multiInstanceManager) {
             mActivityWindowAndroid = activityWindowAndroid;
             mTabModel = tabModel;
+            mDesktopWindowStateManager = desktopWindowStateManager;
             mMultiInstanceManager = multiInstanceManager;
         }
     }
