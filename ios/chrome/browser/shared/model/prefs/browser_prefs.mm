@@ -252,6 +252,10 @@ inline constexpr char kAutofillStatesDataDir[] = "autofill.states_data_dir";
 inline constexpr char kFingerprintingProtectionEnabled[] =
     "tracking_protection.fingerprinting_protection_enabled";
 
+// Deprecated 01/2026.
+inline constexpr char kMagicStackSafetyCheckNotificationsShown[] =
+    "ios.home_customization.magic_stack.safety_check.notifications_shown";
+
 // Migrates a integer pref from source to target PrefService.
 void MigrateIntegerPref(std::string_view pref_name,
                         PrefService* target_pref_service,
@@ -560,10 +564,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kIosSafetyCheckNotificationsLastTriggered, -1);
 
-  // List pref that stores the positions of the Safety Check module (with
-  // notifications opt-in) within the Magic Stack.
-  registry->RegisterListPref(prefs::kMagicStackSafetyCheckNotificationsShown);
-
   password_manager::PasswordManager::RegisterLocalPrefs(registry);
 
   // Prefs used to skip too frequent identity confirmation snackbar prompt.
@@ -644,6 +644,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   // Deprecated 09/2025.
   registry->RegisterBooleanPref(prefs::kBottomOmnibox, false);
+
+  // Deprecated 01/2026.
+  registry->RegisterListPref(kMagicStackSafetyCheckNotificationsShown);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -1147,6 +1150,8 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // Added 09/2025.
   RenameBooleanPref(omnibox::kIsOmniboxInBottomPosition, prefs::kBottomOmnibox,
                     prefs);
+  // Added 01/2026.
+  prefs->ClearPref(kMagicStackSafetyCheckNotificationsShown);
 }
 
 // This method should be periodically pruned of year+ old migrations.
