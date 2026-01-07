@@ -101,7 +101,7 @@ class AttemptLoginToolInteractiveUiTest
     ASSERT_TRUE(embedded_https_test_server().Start());
 
     // Open glic window and track instance.
-    RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached));
+    RunTestSequence(OpenGlic());
     TrackGlicInstanceWithTabIndex(
         InProcessBrowserTest::browser()->tab_strip_model()->active_index());
     // Create new task with instance as ActorTaskDelegate.

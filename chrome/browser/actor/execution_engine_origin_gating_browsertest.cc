@@ -202,7 +202,7 @@ class ExecutionEngineOriginGatingBrowserTestBase
   }
 
   void OpenGlicAndCreateTask() {
-    RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached));
+    RunTestSequence(OpenGlic());
     TrackGlicInstanceWithTabIndex(
         InProcessBrowserTest::browser()->tab_strip_model()->active_index());
     base::test::TestFuture<

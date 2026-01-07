@@ -331,8 +331,8 @@ class GlicApiTestBase : public T {
     defined(MEMORY_SANITIZER)
     GTEST_SKIP() << "AssertAllTestsRegistered not processed for slow binaries.";
 #else
-    T::RunTestSequence(T::OpenGlicWindow(T::GlicWindowMode::kDetached,
-                                         T::GlicInstrumentMode::kNone));
+    T::RunTestSequence(T::DeprecatedOpenGlicWindow(
+        T::GlicWindowMode::kDetached, T::GlicInstrumentMode::kNone));
     ExecuteJsTest();
     ASSERT_TRUE(step_data()->is_list());
     ::testing::UnitTest* unit_test = ::testing::UnitTest::GetInstance();

@@ -46,8 +46,8 @@ IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
   browser()->profile()->GetPrefs()->SetBoolean(
       glic::prefs::kGlicMicrophoneEnabled, false);
   RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kAttached,
-                     GlicInstrumentMode::kHostAndContents),
+      DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,
+                               GlicInstrumentMode::kHostAndContents),
       WaitForElementVisible(test::kGlicContentsElementId, {"body"}),
       ClickMockGlicElement(kAudioCaptureStart),
       WaitForJsResult(test::kGlicContentsElementId,
@@ -63,8 +63,8 @@ IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
   browser()->profile()->GetPrefs()->SetBoolean(
       glic::prefs::kGlicMicrophoneEnabled, true);
   RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kAttached,
-                     GlicInstrumentMode::kHostAndContents),
+      DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,
+                               GlicInstrumentMode::kHostAndContents),
       WaitForElementVisible(test::kGlicContentsElementId, {"body"}),
       ClickMockGlicElement(kAudioCaptureStart),
       WaitForJsResult(test::kGlicContentsElementId,
@@ -88,8 +88,8 @@ IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
   RunTestSequence(
       InstrumentTab(kActiveTabId),
       NavigateWebContents(kActiveTabId, embedded_test_server()->GetURL("/")),
-      OpenGlicWindow(GlicWindowMode::kAttached,
-                     GlicInstrumentMode::kHostAndContents),
+      DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,
+                               GlicInstrumentMode::kHostAndContents),
       WaitForElementVisible(test::kGlicContentsElementId, {"body"}),
       ClickMockGlicElement(kContextToggle),
       WaitForJsResult(
@@ -107,8 +107,8 @@ IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
   RunTestSequence(
       InstrumentTab(kActiveTabId),
       NavigateWebContents(kActiveTabId, embedded_test_server()->GetURL("/")),
-      OpenGlicWindow(GlicWindowMode::kAttached,
-                     GlicInstrumentMode::kHostAndContents),
+      DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,
+                               GlicInstrumentMode::kHostAndContents),
       WaitForElementVisible(test::kGlicContentsElementId, {"body"}),
       ClickMockGlicElement(kContextToggle),
       WaitForJsResult(
@@ -123,8 +123,8 @@ IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
   browser()->profile()->GetPrefs()->SetBoolean(
       glic::prefs::kGlicGeolocationEnabled, false);
   RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kAttached,
-                     GlicInstrumentMode::kHostAndContents),
+      DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,
+                               GlicInstrumentMode::kHostAndContents),
       WaitForElementVisible(test::kGlicContentsElementId, {"body"}),
       ClickMockGlicElement(kGetLocationButton),
       WaitForJsResult(
@@ -139,8 +139,8 @@ IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
   browser()->profile()->GetPrefs()->SetBoolean(
       glic::prefs::kGlicGeolocationEnabled, true);
   RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kAttached,
-                     GlicInstrumentMode::kHostAndContents),
+      DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,
+                               GlicInstrumentMode::kHostAndContents),
       WaitForElementVisible(test::kGlicContentsElementId, {"body"}),
       ClickMockGlicElement(kGetLocationButton),
       WaitForJsResult(

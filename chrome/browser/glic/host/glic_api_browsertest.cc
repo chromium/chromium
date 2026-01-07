@@ -271,8 +271,7 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
         InstrumentTab(kFirstTab), NavigateWebContents(kFirstTab, page_url()),
         Log("Opening Glic window"),
         !open_floating
-            ? OpenGlicWindow(GlicWindowMode::kDetached,
-                             GlicInstrumentMode::kHostAndContents)
+            ? OpenGlic(GlicInstrumentMode::kHostAndContents)
             : OpenGlicFloatingWindow(GlicInstrumentMode::kHostAndContents),
         Log("Done opening glic window"));
   }
@@ -291,8 +290,7 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
     browser()->tab_strip_model()->ActivateTabAt(index);
     TrackGlicInstanceWithTabIndex(index);
     RunTestSequence(
-        InstrumentTab(tab_id),
-        OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone),
+        InstrumentTab(tab_id), OpenGlic(GlicInstrumentMode::kNone),
         RegisterConversation("instance_" + base::NumberToString(index)));
     GlicInstanceImpl* instance = GetGlicInstanceImpl();
     return instance;
@@ -748,11 +746,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testAllTestsAreRegistered) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testLoadWhileWindowClosed) {
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone),
-      // Registering a conversation id ensures that the instance isn't deleted
-      // as soon as the side panel is closed.
-      RegisterConversation("test-id"), CloseGlic());
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone),
+                  // Registering a conversation id ensures that the instance
+                  // isn't deleted as soon as the side panel is closed.
+                  RegisterConversation("test-id"), CloseGlic());
   ExecuteJsTest();
   // Make sure the WebUI transitions to kReady, otherwise the web client may be
   // destroyed.
@@ -763,11 +760,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsWindowClosed) {
   base::HistogramTester histogram_tester;
   // Immediately close the window to check behavior while window is closed.
   // Fail client initialization, should see error page.
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone),
-      // Registering a conversation id ensures that the instance isn't deleted
-      // as soon as the side panel is closed.
-      RegisterConversation("test-id"), CloseGlic());
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone),
+                  // Registering a conversation id ensures that the instance
+                  // isn't deleted as soon as the side panel is closed.
+                  RegisterConversation("test-id"), CloseGlic());
   ExecuteJsTest();
   WaitForWebUiState(mojom::WebUiState::kError);
   histogram_tester.ExpectUniqueSample(
@@ -777,8 +773,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsWindowClosed) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsWindowOpen) {
   // Fail client initialization, should see error page.
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
   ExecuteJsTest({
       .params = base::Value(base::Value::Dict().Set("failWith", "error")),
   });
@@ -786,8 +781,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsWindowOpen) {
 
   // Closing and reopening the window should trigger a retry. This time the
   // client initializes correctly.
-  RunTestSequence(CloseGlic(), OpenGlicWindow(GlicWindowMode::kDetached,
-                                              GlicInstrumentMode::kNone));
+  RunTestSequence(CloseGlic(), OpenGlic(GlicInstrumentMode::kNone));
   ExecuteJsTest({
       .params = base::Value(base::Value::Dict().Set("failWith", "none")),
   });
@@ -852,8 +846,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebActuationSettingEnabled,
 #define MAYBE_testReload testReload
 #endif
 IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testReload) {
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
   ExecuteJsTest({
       .params = base::Value(
@@ -867,8 +860,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testReload) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testReloadWebUi) {
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
   ExecuteJsTest();
 
@@ -888,8 +880,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testReloadWebUi) {
 // The client navigates to the 'sorry' page before it finishes initialize().
 // Chrome should show this page.
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testSorryPageBeforeInitialize) {
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
   ExecuteJsTest({
       .params = base::Value(base::Value::Dict().Set(
@@ -911,8 +902,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testSorryPageBeforeInitialize) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testSorryPageAfterInitialize) {
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
   ExecuteJsTest({
       .params = base::Value(base::Value::Dict().Set(
@@ -934,8 +924,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testSorryPageAfterInitialize) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsAfterReload) {
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
   ExecuteJsTest({
       .params = base::Value(
@@ -954,8 +943,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testNoClientCreated) {
   GTEST_SKIP() << "skip timeout test for slow binary";
 #else
   base::HistogramTester histogram_tester;
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
   ExecuteJsTest();
   listener.WaitForWebUiState(mojom::WebUiState::kError);
@@ -976,8 +964,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testNoBootstrap) {
   GTEST_SKIP() << "skip timeout test for slow binary";
 #else
   base::HistogramTester histogram_tester;
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
   ExecuteJsTest();
   listener.WaitForWebUiState(mojom::WebUiState::kError);
@@ -993,8 +980,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testInitializeTimesOut) {
   GTEST_SKIP() << "skip timeout test for slow binary";
 #else
   base::HistogramTester histogram_tester;
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
   ExecuteJsTest({
       .params = base::Value(base::Value::Dict().Set("failWith", "timeout")),
@@ -1011,8 +997,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testInitializeTimesOut) {
 
 // Connect the client, and check that the special request header is sent.
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testRequestHeader) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   const GURL cross_origin_rpc_url =
       embedded_test_server()->GetURL("b.com", "/fake-rpc/cors");
   ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
@@ -1051,24 +1036,21 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testRequestHeader) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTab) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents),
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
                   CheckTabCount(1));
   ExecuteJsTest();
   RunTestSequence(CheckTabCount(2));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabFailsWithUnsupportedScheme) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents),
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
                   CheckTabCount(1));
   ExecuteJsTest();
   RunTestSequence(CheckTabCount(1));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabInBackground) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents),
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
                   CheckTabCount(1));
 
   // Creating a new tab via the glic API in the foreground should change the
@@ -1091,8 +1073,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabInBackground) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabByClickingOnLink) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents),
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
                   CheckTabCount(1));
   // Have the test track this tab's glic instance.
   TrackGlicInstanceWithId(GetGlicInstance()->id());
@@ -1124,8 +1105,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabByClickingOnLink) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testPopupOpens) {
   browser_activator().SetMode(BrowserActivator::Mode::kFirst);
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents),
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
                   CheckPopupCount(0));
   ExecuteJsTest();
   RunTestSequence(CheckPopupCount(1));
@@ -1136,16 +1116,14 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabByClickingOnLinkDaisyChains) {
     GTEST_SKIP() << "Test only supported with multi-instance on";
   }
 
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents),
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
                   CheckTabCount(1));
 
   ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabFailsIfNotActive) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest();
 }
 
@@ -1251,8 +1229,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testMultiplePanelsDetachedAndFloating) {
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   browser()->tab_strip_model()->ActivateTabAt(0);
   ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
 
   // Execute test on the first tab instance.
   ExecuteJsTest({.params = base::Value("first")});
@@ -1262,8 +1239,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testMultiplePanelsDetachedAndFloating) {
   TrackGlicInstanceWithTabIndex(1);
   browser()->tab_strip_model()->ActivateTabAt(1);
   RunTestSequence(InstrumentTab(kSecondTab),
-                  OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+                  OpenGlic(GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest({.params = base::Value("second")});
 
   // Continue on the first tab.
@@ -1282,8 +1258,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testThereCanOnlyBeOneFloaty) {
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   browser()->tab_strip_model()->ActivateTabAt(0);
   ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   GlicInstanceImpl* tab0_instance = GetGlicInstanceImpl();
   // Execute test on the first tab instance.
   ExecuteJsTest({.params = base::Value("first")});
@@ -1295,8 +1270,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testThereCanOnlyBeOneFloaty) {
   TrackGlicInstanceWithTabIndex(1);
   browser()->tab_strip_model()->ActivateTabAt(1);
   RunTestSequence(InstrumentTab(kSecondTab),
-                  OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+                  OpenGlic(GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest({.params = base::Value("second")});
   GlicInstanceImpl* tab1_instance = GetGlicInstanceImpl();
 
@@ -1314,8 +1288,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   if (!GetParam().multi_instance) {
     GTEST_SKIP() << "Multi-instance only";
   }
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest();
   histogram_tester->ExpectBucketCount(
       "Glic.Interaction.SwitchConversationTarget",
@@ -1327,8 +1300,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   if (!GetParam().multi_instance) {
     GTEST_SKIP() << "Multi-instance only";
   }
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest();
   histogram_tester->ExpectBucketCount(
       "Glic.Interaction.SwitchConversationTarget",
@@ -1340,8 +1312,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   if (!GetParam().multi_instance) {
     GTEST_SKIP() << "Multi-instance only";
   }
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
 
   ExecuteJsTest({.params = base::Value("step1")});
 
@@ -1349,8 +1320,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   browser()->tab_strip_model()->ActivateTabAt(1);
   TrackGlicInstanceWithTabIndex(1);
   RunTestSequence(InstrumentTab(kSecondTab),
-                  OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+                  OpenGlic(GlicInstrumentMode::kHostAndContents));
 
   ExecuteJsTest({.params = base::Value("step2")});
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -1366,8 +1336,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   if (!GetParam().multi_instance) {
     GTEST_SKIP() << "Multi-instance only";
   }
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
 
   ExecuteJsTest({.params = base::Value("step1")});
 
@@ -1375,8 +1344,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   browser()->tab_strip_model()->ActivateTabAt(1);
   TrackGlicInstanceWithTabIndex(1);
   RunTestSequence(InstrumentTab(kSecondTab),
-                  OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+                  OpenGlic(GlicInstrumentMode::kHostAndContents));
 
   ExecuteJsTest({.params = base::Value("step2")});
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -1387,8 +1355,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   ASSERT_TRUE(AddTabAtIndex(1, page_url(), ui::PAGE_TRANSITION_TYPED));
   browser()->tab_strip_model()->ActivateTabAt(1);
   RunTestSequence(InstrumentTab(kThirdTab),
-                  OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+                  OpenGlic(GlicInstrumentMode::kHostAndContents));
 
   ExecuteJsTest({.params = base::Value("step3")});
 
@@ -1404,8 +1371,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testSwitchConversationWithEmptyId) {
   if (!GetParam().multi_instance) {
     GTEST_SKIP() << "Multi-instance only";
   }
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
 
   ExecuteJsTest({.params = base::Value("initiateSwitch")});
 
@@ -1437,10 +1403,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testTabSwitchDoesNotLogActivationMetric) {
   }
 
   // Open Glic in the first tab. This is the first activation.
-  RunTestSequence(InstrumentTab(kFirstTab),
-                  NavigateWebContents(kFirstTab, page_url()),
-                  OpenGlicWindow(GlicWindowMode::kAttached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(
+      InstrumentTab(kFirstTab), NavigateWebContents(kFirstTab, page_url()),
+      DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,
+                               GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest({.params = base::Value("first")});
 
   // Open a second tab and navigate it.
@@ -1449,9 +1415,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testTabSwitchDoesNotLogActivationMetric) {
 
   // Activate the second tab and open Glic there.
   browser()->tab_strip_model()->ActivateTabAt(1);
-  RunTestSequence(InstrumentTab(kSecondTab),
-                  OpenGlicWindow(GlicWindowMode::kAttached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(
+      InstrumentTab(kSecondTab),
+      DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,
+                               GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest({.params = base::Value("second")});
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -1482,10 +1449,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testDetachDoesNotLogActivationMetric) {
   }
 
   // Open Glic in side panel.
-  RunTestSequence(InstrumentTab(kFirstTab),
-                  NavigateWebContents(kFirstTab, page_url()),
-                  OpenGlicWindow(GlicWindowMode::kAttached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(
+      InstrumentTab(kFirstTab), NavigateWebContents(kFirstTab, page_url()),
+      DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,
+                               GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest({.params = base::Value("registerAndDetach")});
 
   TrackFloatingGlicInstance();
@@ -1583,8 +1550,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testPanelActive) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testIsBrowserOpen) {
   browser_activator().SetMode(BrowserActivator::Mode::kFirst);
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   TrackGlicInstanceWithId(GetGlicInstance()->id());
   ExecuteJsTest();
 
@@ -1599,8 +1565,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testIsBrowserOpen) {
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testEnableDragResize) {
   // TODO: resize is not yet implemented for multi-instance.
   SKIP_TEST_FOR_MULTI_INSTANCE();
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest();
   RunTestSequence(WaitForCanResizeEnabled(/*enabled=*/true));
 }
@@ -1609,8 +1574,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testDisableDragResize) {
   // TODO: resize is not yet implemented for multi-instance.
   SKIP_TEST_FOR_MULTI_INSTANCE();
   // Check the default resize setting here.
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents),
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
                   WaitForCanResizeEnabled(/*enabled=*/true));
   ExecuteJsTest();
   RunTestSequence(WaitForCanResizeEnabled(/*enabled=*/false));
@@ -1619,8 +1583,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testDisableDragResize) {
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitiallyNotResizable) {
   // TODO: resize is not yet implemented for multi-instance.
   SKIP_TEST_FOR_MULTI_INSTANCE();
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest();
   RunTestSequence(WaitForCanResizeEnabled(/*enabled=*/false));
 }
@@ -1833,8 +1796,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndPreloading,
 
   // Open the glic panel and attempt to extract focused and arbitrary tab
   // context.
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   ContinueJsTest();
   histogram_tester->ExpectBucketCount(
       "Glic.Api.RequestCounts.GetContextFromFocusedTab",
@@ -1914,8 +1876,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
       AddInstrumentedTab(kSecondTab,
                          InProcessBrowserTest::embedded_test_server()->GetURL(
                              "/glic/browser_tests/test.html")),
-      OpenGlicWindow(GlicWindowMode::kDetached,
-                     GlicInstrumentMode::kHostAndContents));
+      OpenGlic(GlicInstrumentMode::kHostAndContents));
 
   // Confirm that the observer only notified of this last state.
   ContinueJsTest();
@@ -1926,7 +1887,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetFocusedTabStateV2BrowserClosed) {
   SKIP_TEST_FOR_MULTI_INSTANCE();
   browser_activator().SetMode(BrowserActivator::Mode::kFirst);
   // Note: ideally this test would only open Glic after the main browser is
-  // closed. This however crashes in `OpenGlicWindow()`.
+  // closed. This however crashes in `DeprecatedOpenGlicWindow()`.
   TrackFloatingGlicInstance();
   RunTestSequence(OpenGlicFloatingWindow(GlicInstrumentMode::kHostAndContents));
 
@@ -2199,11 +2160,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCloseAndOpenWhileOpening) {
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
   ExecuteJsTest();
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
   ContinueJsTest();
 }
 
@@ -2227,21 +2186,18 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   // Open 3 tabs and register a conversation in each.
   RunTestSequence(InstrumentTab(kFirstTab),
                   NavigateWebContents(kFirstTab, page_url()),
-                  OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+                  OpenGlic(GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest({.params = base::Value("instance1")});
 
   ASSERT_TRUE(AddTabAtIndex(1, page_url(), ui::PAGE_TRANSITION_TYPED));
   TrackGlicInstanceWithTabIndex(1);
   RunTestSequence(InstrumentTab(kSecondTab),
-                  OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+                  OpenGlic(GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest({.params = base::Value("instance2")});
 
   ASSERT_TRUE(AddTabAtIndex(2, page_url(), ui::PAGE_TRANSITION_TYPED));
   TrackGlicInstanceWithTabIndex(2);
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest({.params = base::Value("instance3")});
 
   // Activate tabs in a specific order to set recency: 1, 3, 2.
@@ -2253,15 +2209,13 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   // Open a 4th tab to verify.
   ASSERT_TRUE(AddTabAtIndex(3, page_url(), ui::PAGE_TRANSITION_TYPED));
   TrackGlicInstanceWithTabIndex(3);
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest({.params = base::Value("instance4")});
 
   // Open a 5th tab to verify.
   ASSERT_TRUE(AddTabAtIndex(4, page_url(), ui::PAGE_TRANSITION_TYPED));
   TrackGlicInstanceWithTabIndex(4);
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest({.params = base::Value("verify")});
 }
 
@@ -2376,8 +2330,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testDaisyChainRecursiveAndInput) {
   }
   RunTestSequence(InstrumentTab(kFirstTab),
                   NavigateWebContents(kFirstTab, page_url()),
-                  OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+                  OpenGlic(GlicInstrumentMode::kHostAndContents));
 
   // 1. Trigger "createTab" from the first tab's Glic panel.
   ExecuteJsTest({.params = base::Value("createTab")});
@@ -2489,8 +2442,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testNavigateToDifferentClientPage) {
   base::HistogramTester histogram_tester;
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   WebUIStateListener listener(GetHost());
   listener.WaitForWebUiState(mojom::WebUiState::kReady);
   ExecuteJsTest({.params = base::Value(0)});  // test run count: 0.
@@ -2506,8 +2458,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testNavigateToDifferentClientPage) {
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testNavigateToAboutBlank) {
   // Client loads, and navigates to a new URL. We try to load the client again,
   // but it fails.
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   WebUIStateListener listener(GetHost());
   listener.WaitForWebUiState(mojom::WebUiState::kReady);
   ExecuteJsTest();
@@ -2527,8 +2478,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout,
 #else
   // Client loads, and navigates to a new URL. We try to load the client again,
   // but it fails.
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents),
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
                   RegisterConversation("test-id"));
   WebUIStateListener listener(GetHost());
   listener.WaitForWebUiState(mojom::WebUiState::kReady);
@@ -2538,15 +2488,13 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout,
 
   // Open the glic window to trigger reloading the client.
   // This time the client should load, falling back to the original URL.
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest({.params = base::Value(1)});
 #endif
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCallingApiWhileHiddenRecordsMetrics) {
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
   ExecuteJsTest();
   RunTestSequence(CloseGlic());
 
@@ -2691,8 +2639,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinTabsThatNavigateInBackground) {
 
       AddInstrumentedTab(kSecondTab, embedded_https_test_server().GetURL(
                                          "a.com", "/test_data/page.html?two")));
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest();
 
   RunTestSequence(
@@ -3057,9 +3004,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testRemoveBlankInstanceOnClose) {
     GTEST_SKIP() << "Only supported in multi-instance mode.";
   }
 
-  RunTestSequence(
-      InstrumentTab(kFirstTab),
-      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  RunTestSequence(InstrumentTab(kFirstTab),
+                  OpenGlic(GlicInstrumentMode::kNone));
   ASSERT_EQ(1u, GetService()->window_controller().GetInstances().size());
   ExecuteJsTest();
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -3081,8 +3027,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   browser()->tab_strip_model()->ActivateTabAt(1);
   TrackGlicInstanceWithTabIndex(1);
   RunTestSequence(InstrumentTab(kSecondTab),
-                  OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+                  OpenGlic(GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest({.params = base::Value("second")});
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -3097,8 +3042,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCaptureRegion) {
   ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   // Wait for the sharing manager to have a focused tab before running the JS
   // test to avoid a race condition where CaptureRegion is called before the
   // focused tab is known.
@@ -3121,8 +3065,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCaptureRegion) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCaptureRegionMultiple) {
   ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return GetService()->sharing_manager().GetFocusedTabData().focus();
   }));
@@ -3151,8 +3094,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCaptureRegionMultiple) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCaptureRegionCancelBrowser) {
   ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return GetService()->sharing_manager().GetFocusedTabData().focus();
   }));
@@ -3171,8 +3113,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCaptureRegionCancelBrowser) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCaptureRegionNoFocus) {
   browser_activator().SetMode(BrowserActivator::Mode::kFirst);
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   TrackGlicInstanceWithId(GetGlicInstance()->id());
   ExecuteJsTest();
 
@@ -3187,8 +3128,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCaptureRegionNoFocus) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCaptureRegionCalledTwice) {
   ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return GetService()->sharing_manager().GetFocusedTabData().focus();
   }));
@@ -3218,8 +3158,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testRegisterConversationWithEmptyId) {
     GTEST_SKIP() << "Only supported in multi-instance mode.";
   }
   // Open glic window.
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
 
   // Verify that there is no conversation ID initially.
   ASSERT_FALSE(GetGlicInstanceImpl()->conversation_id());
@@ -3323,9 +3262,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelWillOpenBeforeClientReady) {
   if (!GetParam().multi_instance) {
     GTEST_SKIP() << "Only supported in multi-instance mode.";
   }
-  RunTestSequence(
-      InstrumentTab(kFirstTab),
-      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
+  RunTestSequence(InstrumentTab(kFirstTab),
+                  OpenGlic(GlicInstrumentMode::kNone));
   Host::PanelWillOpenOptions options;
   options.conversation_info = mojom::ConversationInfo::New();
   options.conversation_info->conversation_id = "test_conversation_id";
@@ -3623,8 +3561,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestHibernateOnMemoryUsage,
   }
 
   // Open Glic, verify it's active.
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents),
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
                   RegisterConversation("test_id"));
   GlicInstanceImpl* instance = GetGlicInstanceImpl();
 
@@ -3664,11 +3601,10 @@ INSTANTIATE_TEST_SUITE_P(
     DefaultTestParamSet(),
 #endif
     &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    GlicApiTest,
-    DefaultTestParamSet(),
-    &WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiTest,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithDefaultTabContextEnabled,
                          DefaultTestParamSet(),

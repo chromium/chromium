@@ -190,8 +190,8 @@ IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest, OpenSettingsFromGlicUi) {
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";
   }
   RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kAttached,
-                     GlicInstrumentMode::kHostAndContents),
+      DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,
+                               GlicInstrumentMode::kHostAndContents),
       InstrumentNextTab(kSettingsTab),
       ClickMockGlicElement(kOpenSettingsButton),
       WaitForWebContentsReady(

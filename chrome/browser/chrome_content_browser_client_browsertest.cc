@@ -555,8 +555,7 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, FeatureOverridesChromeSchemes) {
 
 #if BUILDFLAG(ENABLE_GLIC)
 IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, PrefersColorSchemeGlic) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   content::RenderFrameHost* webui_frame =
       GetWebFrame(TargetWebContents::kGlicWebUi).value();
   ApplyColorProvider(*content::WebContents::FromRenderFrameHost(webui_frame));

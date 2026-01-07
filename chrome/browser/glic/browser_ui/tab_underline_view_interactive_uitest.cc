@@ -204,9 +204,8 @@ class TabUnderlineViewUiTest : public test::InteractiveGlicTest {
     RunTestSequence(
         // See https://crrev.com/c/6373789: the glic window is in detach mode by
         // default.
-        OpenGlicWindow(GlicWindowMode::kDetached),
-        ExecuteJsAt(test::kGlicContentsElementId,
-                    kContextAccessIndicatorCheckBox, kClickFn));
+        OpenGlic(), ExecuteJsAt(test::kGlicContentsElementId,
+                                kContextAccessIndicatorCheckBox, kClickFn));
   }
 
   void CloseGlicWindow() {
@@ -339,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest, ToggleSharingWithSingleTab) {
   TesterImpl* tester = static_cast<TesterImpl*>(underline->tester());
   EXPECT_FALSE(underline->IsShowing());
 
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached));
+  RunTestSequence(OpenGlic());
   EXPECT_TRUE(glic_service()->IsWindowShowing());
   // The underline should show when sharing is turned on.
   glic_service()->SetContextAccessIndicator(true);
@@ -362,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest, ToggleSharingWithSingleTab) {
 
 IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest,
                        SingleTabPinningWhileGlicWindowOpen) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached));
+  RunTestSequence(OpenGlic());
   EXPECT_TRUE(glic_service()->IsWindowShowing());
   auto* underline = GetUnderlineOfActiveTab();
   TesterImpl* tester = static_cast<TesterImpl*>(underline->tester());
@@ -412,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest,
   EXPECT_TRUE(sharing_manager().IsTabPinned(tab_handle));
 
   // The underline of a pinned tab should show when the glic window is opened.
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached));
+  RunTestSequence(OpenGlic());
   tester->WaitForAnimationStart();
   EXPECT_TRUE(underline->IsShowing());
   tester->AdvanceTimeAndTickAnimation(base::TimeDelta());
@@ -470,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest,
   EXPECT_TRUE(sharing_manager().IsTabPinned(TabHandleAtIndex(1)));
 
   // Underlines of all pinned tabs should show when the glic window is opened.
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached));
+  RunTestSequence(OpenGlic());
   tester1->WaitForAnimationStart();
   tester2->WaitForAnimationStart();
   EXPECT_TRUE(underline1->IsShowing());
@@ -512,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest, TabAlertIndicatorHidden) {
 
 IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest,
                        TabAlertIndicatorHidden_PinnedTab) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached));
+  RunTestSequence(OpenGlic());
   EXPECT_TRUE(glic_service()->IsWindowShowing());
   auto* underline = GetUnderlineOfActiveTab();
   TesterImpl* tester = static_cast<TesterImpl*>(underline->tester());
@@ -576,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewFeatureDisabledBrowserTest,
   AlertIndicatorButton* alert_button = GetAlertIndicatorButtonOfActiveTab();
   EXPECT_FALSE(alert_button->GetVisible());
 
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached));
+  RunTestSequence(OpenGlic());
   EXPECT_TRUE(glic_service()->IsWindowShowing());
 
   base::RunLoop wait_for_alert_loop;
