@@ -770,6 +770,7 @@ bool ShouldShowWebauthnHybridEntryPoint(const FormFieldData& field) {
 
 bool IsManagementFooterOption(const Suggestion& suggestion) {
   switch (suggestion.type) {
+    case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kManageAddress:
     case SuggestionType::kManageAutofillAi:
     case SuggestionType::kManageCreditCard:
@@ -786,7 +787,6 @@ bool IsManagementFooterOption(const Suggestion& suggestion) {
     case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeSavedStateNotification:
     case SuggestionType::kComposeDisable:
-    case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kPasswordEntry:
