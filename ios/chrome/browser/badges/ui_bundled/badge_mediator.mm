@@ -303,6 +303,15 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
       }
     }
 
+    // Add badge at the front of the list if it is the Reader mode badge.
+    if (badgeType == kBadgeTypeReaderMode) {
+      BadgeTappableItem* readerModeItem =
+          [[BadgeTappableItem alloc] initWithBadgeType:kBadgeTypeReaderMode];
+      readerModeItem.badgeState = infobarTypeBadgeStatePair.second;
+      [badges insertObject:readerModeItem atIndex:0];
+      continue;
+    }
+
     BadgeTappableItem* item =
         [[BadgeTappableItem alloc] initWithBadgeType:badgeType];
     item.badgeState = infobarTypeBadgeStatePair.second;
