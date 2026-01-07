@@ -74,6 +74,9 @@
         "variant_id": "RELEASE_LKGM"
       },
       {
+        "args": [
+          "-retries=0"
+        ],
         "ci_only": true,
         "cros_board": "betty",
         "cros_test_max_in_shard": 20,
@@ -254,6 +257,9 @@
         "variant_id": "RELEASE_LKGM"
       },
       {
+        "args": [
+          "-retries=0"
+        ],
         "ci_only": true,
         "cros_board": "betty",
         "cros_test_max_in_shard": 20,
@@ -838,6 +844,9 @@
         "variant_id": "RELEASE_LKGM"
       },
       {
+        "args": [
+          "-retries=0"
+        ],
         "ci_only": true,
         "cros_board": "betty",
         "cros_test_max_in_shard": 20,
@@ -1430,6 +1439,9 @@
         "variant_id": "RELEASE_LKGM"
       },
       {
+        "args": [
+          "-retries=0"
+        ],
         "ci_only": true,
         "cros_board": "brya",
         "cros_model": "kano",
@@ -1993,6 +2005,9 @@
         "variant_id": "RELEASE_LKGM"
       },
       {
+        "args": [
+          "-retries=0"
+        ],
         "ci_only": true,
         "cros_board": "brya",
         "cros_model": "kano",
@@ -2503,6 +2518,9 @@
         "variant_id": "RELEASE_LKGM"
       },
       {
+        "args": [
+          "-retries=0"
+        ],
         "ci_only": true,
         "cros_board": "jacuzzi",
         "cros_test_max_in_shard": 20,
@@ -2659,6 +2677,9 @@
         "variant_id": "RELEASE_LKGM"
       },
       {
+        "args": [
+          "-retries=0"
+        ],
         "ci_only": true,
         "cros_board": "reven-vmtest",
         "cros_test_max_in_shard": 20,
@@ -2781,6 +2802,9 @@
         "variant_id": "RELEASE_LKGM"
       },
       {
+        "args": [
+          "-retries=0"
+        ],
         "ci_only": true,
         "cros_board": "trogdor",
         "cros_test_max_in_shard": 20,
@@ -2901,6 +2925,9 @@
         "variant_id": "RELEASE_LKGM"
       },
       {
+        "args": [
+          "-retries=0"
+        ],
         "ci_only": true,
         "cros_board": "volteer",
         "cros_test_max_in_shard": 20,
@@ -3013,6 +3040,9 @@
         "variant_id": "RELEASE_LKGM"
       },
       {
+        "args": [
+          "-retries=0"
+        ],
         "ci_only": true,
         "cros_board": "volteer",
         "cros_test_max_in_shard": 20,

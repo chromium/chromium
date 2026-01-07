@@ -201,6 +201,9 @@
 
     'chromeos_chrome_disabled_tast_tests': {
       'chrome_disabled_tast_tests': {
+        'args': [
+          '-retries=0',
+        ],
         'ci_only': True,
         'skylab': {
           'timeout_sec': 14400,
