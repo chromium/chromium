@@ -28,6 +28,9 @@ public class IncognitoRestoreAppLaunchDrawBlockerFactory {
      * @param savedInstanceStateSupplier A {@link Supplier<Bundle>} instance to pass in the bundle
      *     that was persisted during onSaveInstanceState that allows to look for signals on whether
      *     to block the draw or not.
+     * @param persistentStateSupplier A {@link Supplier<PersistableBundle>} instance to pass in the
+     *     PersistableBundle that was persisted during onSaveInstanceState that allows to look for
+     *     signals on whether to block the draw or not.
      * @param tabModelSelectorSupplier A {@link ObservableSupplier<TabModelSelector>} that allows to
      *     listen for onTabStateInitialized signals which is used a fallback to unblock draw.
      * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting.

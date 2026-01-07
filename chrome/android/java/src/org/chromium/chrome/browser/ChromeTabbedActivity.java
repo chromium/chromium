@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.notifications.tips.TipsPromoCoordinator.INVALID_TIPS_NOTIFICATION_FEATURE_TYPE;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 import static org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED;
+import static org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlocker.SUPPORTED_PROFILE_TYPE;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import android.app.Activity;
@@ -1621,7 +1622,18 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         }
 
         Bundle savedInstanceState = getSavedInstanceState();
-        if (savedInstanceState != null
+        PersistableBundle persistentState = getPersistentInstanceState();
+        if (shouldPersistAcrossReboots()
+                && persistentState != null
+                && persistentState.getBoolean(IS_INCOGNITO_SELECTED, false)) {
+            // This will be executed only once since SavedInstanceState will be reset a few lines
+            // later.
+            AndroidSessionDurationsServiceState.restoreNativeFromSerialized(
+                    persistentState,
+                    getCurrentTabModel()
+                            .getProfile()
+                            .getPrimaryOtrProfile(/* createIfNeeded= */ true));
+        } else if (savedInstanceState != null
                 && savedInstanceState.getBoolean(IS_INCOGNITO_SELECTED, false)) {
             // This will be executed only once since SavedInstanceState will be reset a few lines
             // later.
@@ -1633,6 +1645,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         }
 
         resetSavedInstanceState();
+        resetPersistentInstanceState();
         BookmarkUtils.maybeExpireLastBookmarkLocationForReadLater(
                 mInactivityTrackerSupplier.get().getTimeSinceLastBackgroundedMs());
 
@@ -3273,14 +3286,24 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         assert mSupportedProfileType != SupportedProfileType.UNSET;
 
         Bundle savedInstanceState = getSavedInstanceState();
+        PersistableBundle persistentState = getPersistentInstanceState();
 
         // We determine SupportedProfileType in onPreCreate().
         // We determine the model as soon as possible so every systems get initialized coherently.
+        boolean isIncognitoSelectedInSavedState =
+                savedInstanceState != null
+                        && savedInstanceState.getBoolean(IS_INCOGNITO_SELECTED, false);
+        // TODO(crbug.com/459921316): Only persist incognito state for app updates, state should
+        //  be discarded after a reboot.
+        boolean isIncognitoSelectedInPersistentState =
+                shouldPersistAcrossReboots()
+                        && persistentState != null
+                        && persistentState.getBoolean(IS_INCOGNITO_SELECTED, false);
         boolean startIncognito =
                 (mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD)
                         || (mSupportedProfileType == SupportedProfileType.MIXED
-                                && savedInstanceState != null
-                                && savedInstanceState.getBoolean(IS_INCOGNITO_SELECTED, false));
+                                && (isIncognitoSelectedInSavedState
+                                        || isIncognitoSelectedInPersistentState));
 
         mNextTabPolicySupplier = new ChromeNextTabPolicySupplier(mLayoutStateProviderSupplier);
 
@@ -3566,8 +3589,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         int windowId = getExtraWindowIdFromIntent(intent);
         if (persistentState != null && persistentState.containsKey(WINDOW_INDEX)) {
             mWindowId = persistentState.getInt(WINDOW_INDEX, INVALID_WINDOW_ID);
-
-            assert windowId != INVALID_WINDOW_ID;
+            assert mWindowId != INVALID_WINDOW_ID;
             if (mWindowId == INVALID_WINDOW_ID) mWindowId = 0;
         } else if (savedInstanceState != null && savedInstanceState.containsKey(WINDOW_INDEX)) {
             // Activity is recreated after destruction. |windowId| must not be valid in this case.
@@ -4331,14 +4353,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             super.onSaveInstanceState(outState);
             CipherLazyHolder.sCipherInstance.saveToBundle(outState);
             saveToBaseBundle(outState);
-            Boolean isIncognito = getCurrentTabModel().isIncognito();
-            outState.putBoolean(IS_INCOGNITO_SELECTED, isIncognito);
-            // If it's Incognito and native is initialized and profile exists, serialize duration
-            // service state.
-            if (isIncognito && ProfileManager.isInitialized()) {
-                AndroidSessionDurationsServiceState.serializeFromNative(
-                        outState, getCurrentTabModel().getProfile());
-            }
         }
     }
 
@@ -4353,6 +4367,16 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     private void saveToBaseBundle(BaseBundle bundle) {
         bundle.putInt(WINDOW_INDEX, TabWindowManagerSingleton.getInstance().getIdForWindow(this));
+
+        Boolean isIncognito = getCurrentTabModel().isIncognito();
+        bundle.putBoolean(IS_INCOGNITO_SELECTED, isIncognito);
+        bundle.putInt(SUPPORTED_PROFILE_TYPE, mSupportedProfileType);
+        // If it's Incognito and native is initialized and profile exists, serialize duration
+        // service state.
+        if (isIncognito && ProfileManager.isInitialized()) {
+            AndroidSessionDurationsServiceState.serializeFromNative(
+                    bundle, getCurrentTabModel().getProfile());
+        }
     }
 
     @Override
