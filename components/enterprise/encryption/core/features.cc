@@ -8,4 +8,7 @@ namespace enterprise_encryption {
 
 BASE_FEATURE(kEnableCacheEncryption, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableCacheEncryptionForTesting,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace enterprise_encryption
