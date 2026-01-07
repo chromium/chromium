@@ -352,9 +352,9 @@ class MultiEtwPayloadHandler final {
     if (!is_enabled_) {
       return 0;
     }
-    ULONG ret =
-        provider_->EventEnd(metadata_, metadata_index_, &descriptors_[0],
-                            descriptors_index_, event_descriptor_);
+    ULONG ret = provider_->EventEnd(metadata_, metadata_index_,
+                                    base::span(descriptors_),
+                                    descriptors_index_, event_descriptor_);
     return ret;
   }
 

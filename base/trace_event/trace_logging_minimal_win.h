@@ -117,6 +117,7 @@
 #include <variant>
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
@@ -217,7 +218,7 @@ class BASE_EXPORT TlmProvider {
     // Pack the event metadata.
     char metadata[kMaxEventMetadataSize];
     uint16_t metadata_index;
-    metadata_index = EventBegin(metadata, event_name);
+    metadata_index = EventBegin(base::span(metadata), event_name);
     {  // scope for dummy array (simulates a C++17 comma-fold expression)
       char dummy[sizeof...(FieldTys) == 0 ? 1 : sizeof...(FieldTys)] = {
           EventAddField(metadata, &metadata_index, event_fields.GetInType(),
@@ -238,8 +239,8 @@ class BASE_EXPORT TlmProvider {
     }
 
     // Finalize event and call EventWrite.
-    return EventEnd(metadata, metadata_index, descriptors, descriptors_index,
-                    event_descriptor);
+    return EventEnd(metadata, metadata_index, base::span(descriptors),
+                    descriptors_index, event_descriptor);
   }
 
  private:
@@ -293,26 +294,25 @@ class BASE_EXPORT TlmProvider {
       PVOID callback_context);
 
   // Returns initial value of metadata_index.
-  uint16_t EventBegin(char* metadata,
+  uint16_t EventBegin(base::span<char> metadata,
                       std::string_view event_name) const noexcept;
 
-  char EventAddField(char* metadata,
+  char EventAddField(base::span<char> metadata,
                      uint16_t* metadata_index,
                      uint8_t in_type,
                      uint8_t out_type,
                      std::string_view field_name) const noexcept;
 
   // Returns Win32 error code, or 0 for success.
-  ULONG EventEnd(char* metadata,
+  ULONG EventEnd(base::span<char> metadata,
                  uint16_t metadata_index,
-                 EVENT_DATA_DESCRIPTOR* descriptors,
+                 base::span<EVENT_DATA_DESCRIPTOR> descriptors,
                  uint32_t descriptors_index,
                  const EVENT_DESCRIPTOR& event_descriptor) const noexcept;
 
   bool KeywordEnabled(uint64_t keyword) const noexcept;
 
-  uint16_t AppendNameToMetadata(char* metadata,
-                                uint16_t metadata_size,
+  uint16_t AppendNameToMetadata(base::span<char> metadata,
                                 uint16_t metadata_index,
                                 std::string_view name) const noexcept;
 
