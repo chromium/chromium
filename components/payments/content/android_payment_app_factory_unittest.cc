@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -197,7 +196,7 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest, NoErrorsWhenNoApps) {
 // The |arg| is of type std::unique_ptr<PaymentApp>.
 MATCHER_P3(PaymentAppMatches, type, package, method, "") {
   return arg->type() == type && arg->GetId() == package &&
-         base::Contains(arg->GetAppMethodNames(), method);
+         arg->GetAppMethodNames().contains(method);
 }
 
 // The payment app factory should return the TWA payment app when running in TWA

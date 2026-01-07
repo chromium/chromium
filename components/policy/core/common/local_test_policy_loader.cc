@@ -7,7 +7,6 @@
 #include <map>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"

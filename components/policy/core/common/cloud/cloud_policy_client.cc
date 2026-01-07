@@ -9,7 +9,6 @@
 #include <variant>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -1771,7 +1770,7 @@ void CloudPolicyClient::OnPolicyFetchCompleted(base::Time start_time,
         entity_id = policy_data.settings_entity_id();
       }
       CloudPolicyClientTypeParams key(type, entity_id);
-      if (base::Contains(last_policy_fetch_responses_, key)) {
+      if (last_policy_fetch_responses_.contains(key)) {
         LOG_POLICY(WARNING, CBCM_ENROLLMENT)
             << "Duplicate PolicyFetchResponse for type: " << type
             << ", entity: " << entity_id << ", ignoring";

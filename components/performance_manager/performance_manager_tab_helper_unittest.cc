@@ -8,7 +8,6 @@
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
@@ -137,7 +136,7 @@ void PerformanceManagerTabHelperTest::CheckGraphTopology(
   EXPECT_GE(num_hosts, associated_process_nodes.size());
 
   for (const ProcessNode* process_node : associated_process_nodes) {
-    EXPECT_TRUE(base::Contains(process_nodes, process_node));
+    EXPECT_TRUE(process_nodes.contains(process_node));
   }
 
   EXPECT_EQ(4u, GraphOperations::GetFrameNodes(page).size());

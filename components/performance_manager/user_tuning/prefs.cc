@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/json/values_util.h"
 #include "base/values.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -162,14 +161,14 @@ bool IsSiteInTabDiscardExceptionsList(PrefService* pref_service,
                                       const std::string& site) {
   const base::Value::Dict& discard_exceptions_map =
       pref_service->GetDict(kTabDiscardingExceptionsWithTime);
-  return base::Contains(discard_exceptions_map, site);
+  return discard_exceptions_map.contains(site);
 }
 
 void AddSiteToTabDiscardExceptionsList(PrefService* pref_service,
                                        const std::string& site) {
   const base::Value::Dict& discard_exceptions_original =
       pref_service->GetDict(kTabDiscardingExceptionsWithTime);
-  if (!base::Contains(discard_exceptions_original, site)) {
+  if (!discard_exceptions_original.contains(site)) {
     base::Value::Dict discard_exceptions_map =
         discard_exceptions_original.Clone();
     discard_exceptions_map.Set(site, base::TimeToValue(base::Time::Now()));

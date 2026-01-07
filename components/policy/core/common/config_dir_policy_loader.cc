@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -187,7 +186,7 @@ void ConfigDirPolicyLoader::Merge3rdPartyPolicy(const base::Value* policies,
                                         : POLICY_DOMAIN_EXTENSIONS;
 
   for (auto domains_it : *domains_dictionary) {
-    if (!base::Contains(supported_domains, domains_it.first)) {
+    if (!supported_domains.contains(domains_it.first)) {
       SYSLOG(WARNING) << "Unsupported 3rd party policy domain: "
                       << domains_it.first;
       continue;

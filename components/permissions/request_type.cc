@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
@@ -392,7 +391,7 @@ bool IsConfirmationChipSupported(RequestType for_request_type) {
           RequestType::kMicStream,
           // clang-format on
       });
-  return base::Contains(kRequestsWithChip, for_request_type);
+  return kRequestsWithChip.contains(for_request_type);
 }
 
 #if !BUILDFLAG(IS_IOS)

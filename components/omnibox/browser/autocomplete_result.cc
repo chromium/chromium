@@ -19,7 +19,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
@@ -825,7 +824,7 @@ void AutocompleteResult::GroupAndDemoteMatchesInGroups() {
     }
 
     const omnibox::GroupId group_id = match.suggestion_group_id.value();
-    if (!base::Contains(suggestion_groups_map(), group_id)) {
+    if (!suggestion_groups_map().contains(group_id)) {
       // Strip group IDs from the matches for which there is no suggestion
       // group information. These matches should instead be treated as
       // ordinary matches with no group IDs.

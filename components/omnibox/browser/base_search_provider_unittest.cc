@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -327,8 +326,8 @@ TEST_F(BaseSearchProviderTest, PreserveSubtypesWhenDeduplicating) {
   EXPECT_EQ(AutocompleteMatchType::SEARCH_HISTORY, match.type);
   EXPECT_EQ(omnibox::TYPE_NATIVE_CHROME, match.suggest_type);
   ASSERT_EQ(2U, match.subtypes.size());
-  EXPECT_TRUE(base::Contains(match.subtypes, omnibox::SUBTYPE_PERSONAL));
-  EXPECT_TRUE(base::Contains(match.subtypes, omnibox::SUBTYPE_TRENDS));
+  EXPECT_TRUE(match.subtypes.contains(omnibox::SUBTYPE_PERSONAL));
+  EXPECT_TRUE(match.subtypes.contains(omnibox::SUBTYPE_TRENDS));
   EXPECT_EQ(1300, match.relevance);
 
   ASSERT_EQ(1U, match.duplicate_matches.size());
@@ -336,7 +335,7 @@ TEST_F(BaseSearchProviderTest, PreserveSubtypesWhenDeduplicating) {
   EXPECT_EQ(AutocompleteMatchType::SEARCH_SUGGEST_ENTITY, duplicate.type);
   EXPECT_EQ(omnibox::TYPE_CATEGORICAL_QUERY, duplicate.suggest_type);
   ASSERT_EQ(1U, duplicate.subtypes.size());
-  EXPECT_TRUE(base::Contains(duplicate.subtypes, omnibox::SUBTYPE_TRENDS));
+  EXPECT_TRUE(duplicate.subtypes.contains(omnibox::SUBTYPE_TRENDS));
   EXPECT_EQ(850, duplicate.relevance);
 }
 

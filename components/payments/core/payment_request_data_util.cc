@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -100,7 +99,7 @@ FilterStringifiedMethodData(
   auto result =
       std::make_unique<std::map<std::string, std::set<std::string>>>();
   for (const auto& pair : stringified_method_data) {
-    if (base::Contains(supported_payment_method_names, pair.first)) {
+    if (supported_payment_method_names.contains(pair.first)) {
       result->insert({pair.first, pair.second});
     }
   }

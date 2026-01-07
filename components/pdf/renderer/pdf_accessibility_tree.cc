@@ -47,7 +47,6 @@
 #include "ui/gfx/geometry/transform.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "base/containers/contains.h"
 #include "ui/strings/grit/auto_image_annotation_strings.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

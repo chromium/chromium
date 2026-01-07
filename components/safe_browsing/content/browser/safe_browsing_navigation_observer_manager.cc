@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -306,7 +305,7 @@ void NavigationEventList::RecordPendingNavigationEvent(
 void NavigationEventList::AddRedirectUrlToPendingNavigationEvent(
     content::NavigationHandle* navigation_handle,
     const GURL& server_redirect_url) {
-  if (!base::Contains(pending_navigation_events_, navigation_handle)) {
+  if (!pending_navigation_events_.contains(navigation_handle)) {
     return;
   }
   pending_navigation_events_[navigation_handle]->server_redirect_urls.push_back(
@@ -315,7 +314,7 @@ void NavigationEventList::AddRedirectUrlToPendingNavigationEvent(
 
 void NavigationEventList::RemovePendingNavigationEvent(
     content::NavigationHandle* navigation_handle) {
-  if (base::Contains(pending_navigation_events_, navigation_handle)) {
+  if (pending_navigation_events_.contains(navigation_handle)) {
     pending_navigation_events_.erase(navigation_handle);
   }
 }
@@ -930,8 +929,8 @@ void SafeBrowsingNavigationObserverManager::MaybeAddToReferrerChain(
     }
   }
   // Update the referrer entry if we got here from a Push notification.
-  if (base::Contains(notification_navigation_events_,
-                     nav_event->original_request_url) &&
+  if (notification_navigation_events_.contains(
+          nav_event->original_request_url) &&
       (nav_event->navigation_initiation ==
            ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE ||
        nav_event->navigation_initiation ==

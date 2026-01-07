@@ -243,8 +243,8 @@ TEST_F(ObjectPermissionContextBaseTest, GetOriginsWithGrants) {
 
   auto origins_with_grants = context_.GetOriginsWithGrants();
   EXPECT_EQ(2u, origins_with_grants.size());
-  EXPECT_TRUE(base::Contains(origins_with_grants, origin2_));
-  EXPECT_TRUE(base::Contains(origins_with_grants, origin1_));
+  EXPECT_TRUE(origins_with_grants.contains(origin2_));
+  EXPECT_TRUE(origins_with_grants.contains(origin1_));
 }
 
 TEST_F(ObjectPermissionContextBaseTest, GetAllGrantedObjects) {

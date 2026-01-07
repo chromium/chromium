@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "components/paint_preview/common/glyph_usage.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -98,8 +97,7 @@ uint32_t PaintPreviewTracker::CreateContentForRemoteFrame(
   sk_sp<SkPicture> pic = SkPicture::MakePlaceholder(
       SkRect::MakeXYWH(rect.x(), rect.y(), rect.width(), rect.height()));
   const uint32_t content_id = pic->uniqueID();
-  DCHECK(!base::Contains(picture_context_.content_id_to_embedding_token,
-                         content_id));
+  DCHECK(!picture_context_.content_id_to_embedding_token.contains(content_id));
   picture_context_.content_id_to_embedding_token[content_id] = embedding_token;
   subframe_pics_[content_id] = pic;
   return content_id;
@@ -114,7 +112,7 @@ void PaintPreviewTracker::AddGlyphs(const SkTextBlob* blob) {
     // Fail fast if the number of glyphs is undetermined or 0.
     if (typeface->countGlyphs() <= 0)
       continue;
-    if (!base::Contains(typeface_glyph_usage_, typeface->uniqueID())) {
+    if (!typeface_glyph_usage_.contains(typeface->uniqueID())) {
       if (ShouldUseDenseGlyphUsage(typeface)) {
         typeface_glyph_usage_.insert(
             {typeface->uniqueID(),

@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -75,7 +74,7 @@ EncryptedReportingJobConfiguration::~EncryptedReportingJobConfiguration() {
 void EncryptedReportingJobConfiguration::UpdatePayloadBeforeGetInternal() {
   for (auto it = payload_.begin(); it != payload_.end();) {
     const auto& [key, value] = *it;
-    if (!base::Contains(GetTopLevelKeyAllowList(), key)) {
+    if (!GetTopLevelKeyAllowList().contains(key)) {
       it = payload_.erase(it);
       continue;
     }

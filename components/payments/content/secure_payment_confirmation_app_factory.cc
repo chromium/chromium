@@ -15,7 +15,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
@@ -290,8 +289,8 @@ void SecurePaymentConfirmationAppFactory::Create(
   DCHECK(delegate);
 
   base::WeakPtr<PaymentRequestSpec> spec = delegate->GetSpec();
-  if (!spec || !base::Contains(spec->payment_method_identifiers_set(),
-                               methods::kSecurePaymentConfirmation)) {
+  if (!spec || !spec->payment_method_identifiers_set().contains(
+                   methods::kSecurePaymentConfirmation)) {
     delegate->OnDoneCreatingPaymentApps();
     return;
   }

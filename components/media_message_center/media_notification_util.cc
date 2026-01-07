@@ -4,7 +4,6 @@
 
 #include "components/media_message_center/media_notification_util.h"
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -84,8 +83,7 @@ base::flat_set<MediaSessionAction> GetTopVisibleActions(
     if (visible_actions.size() >= max_actions)
       break;
 
-    if (!base::Contains(enabled_actions, action) ||
-        base::Contains(ignored_actions, action))
+    if (!enabled_actions.contains(action) || ignored_actions.contains(action))
       continue;
 
     visible_actions.insert(action);

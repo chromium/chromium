@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/account_id/account_id.h"

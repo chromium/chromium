@@ -14,7 +14,6 @@
 
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/i18n/icu_string_conversions.h"
@@ -187,7 +186,7 @@ constexpr auto kReservedReservedGroupSectionsMap =
 // section known to Chrome.
 omnibox::GroupSection ChromeGroupSectionForRemoteGroupIndex(
     const int group_index) {
-  if (base::Contains(kReservedReservedGroupSectionsMap, group_index)) {
+  if (kReservedReservedGroupSectionsMap.contains(group_index)) {
     return kReservedReservedGroupSectionsMap.at(group_index);
   } else {
     // Return a default section if we don't have any reserved sections left.
@@ -1017,7 +1016,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
     }
 
     // There is nothing to do if the group config has been added before.
-    if (base::Contains(results->suggestion_groups_map, suggestion_group_id)) {
+    if (results->suggestion_groups_map.contains(suggestion_group_id)) {
       return true;
     }
 
@@ -1040,7 +1039,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
     // Add the group config associated with the suggestion, if the suggestion
     // has a valid group ID and a corresponding group config is found in the
     // response.
-    if (!base::Contains(groups_info.group_configs(), suggestion_group_id) ||
+    if (!groups_info.group_configs().contains(suggestion_group_id) ||
         !add_group_config(suggestion_group_id, groups_info.group_configs().at(
                                                    suggestion_group_id))) {
       continue;

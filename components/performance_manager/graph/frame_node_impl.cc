@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"

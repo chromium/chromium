@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "third_party/omnibox_proto/groups.pb.h"
@@ -36,7 +35,7 @@ bool Group::CanAdd(const AutocompleteMatch& match) const {
   DCHECK(match.suggestion_group_id.has_value());
   const auto group_id = match.suggestion_group_id.value();
   // Check if `group_id` is permitted in this `Group`.
-  if (!base::Contains(group_id_limits_and_counts_, group_id)) {
+  if (!group_id_limits_and_counts_.contains(group_id)) {
     return false;
   }
   const auto& limit_and_count = group_id_limits_and_counts_.at(group_id);
@@ -75,7 +74,7 @@ void Group::GroupMatchesByGroupId() {
   size_t position = 0;
   for (const auto& match : matches_) {
     auto group_id = match->suggestion_group_id.value();
-    if (!base::Contains(group_id_position, group_id)) {
+    if (!group_id_position.contains(group_id)) {
       group_id_position[group_id] = position++;
     }
   }

@@ -7,7 +7,6 @@
 #include <map>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/nix/xdg_util.h"
 #include "components/dbus/utils/read_value.h"
@@ -66,7 +65,7 @@ void TestSecretPortal::RetrieveSecret(
       method_call->GetSender(), *handle_token));
   auto* exported_response = bus_->GetExportedObject(response_path);
 
-  EXPECT_TRUE(!pre_test_ || !base::Contains(*options, "token"));
+  EXPECT_TRUE(!pre_test_ || !options->contains("token"));
 
   auto response = dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());

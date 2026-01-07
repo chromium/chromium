@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
@@ -323,7 +322,7 @@ GraphImpl* GraphImpl::FromGraph(const Graph* graph) {
 bool GraphImpl::NodeInGraph(const NodeBase* node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const NodeSet& nodes = GetNodesOfType(node->GetNodeType());
-  return base::Contains(nodes, node->ToNode());
+  return nodes.contains(node->ToNode());
 }
 
 bool GraphImpl::NodeEdgesArePublic(const NodeBase* node) const {

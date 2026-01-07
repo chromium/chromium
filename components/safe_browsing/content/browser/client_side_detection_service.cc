@@ -9,7 +9,6 @@
 
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -223,7 +222,7 @@ void ClientSideDetectionService::OnURLLoaderComplete(
       "SBClientPhishing.NetworkResult2", url_loader->NetError(),
       response_code.has_value() ? response_code.value() : 0);
 
-  DCHECK(base::Contains(client_phishing_reports_, url_loader));
+  DCHECK(client_phishing_reports_.contains(url_loader));
   HandlePhishingVerdict(url_loader, url_loader->GetFinalURL(),
                         url_loader->NetError(), response_code,
                         std::move(response_body).value_or(""));

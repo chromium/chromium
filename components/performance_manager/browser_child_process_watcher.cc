@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/process.h"
@@ -65,15 +64,13 @@ ProcessNodeImpl* BrowserChildProcessWatcher::GetChildProcessNode(
 
 void BrowserChildProcessWatcher::CreateChildProcessNodeForTesting(
     const content::ChildProcessData& data) {
-  CHECK(!base::Contains(tracked_process_nodes_,
-                        BrowserChildProcessHostId(data.id)));
+  CHECK(!tracked_process_nodes_.contains(BrowserChildProcessHostId(data.id)));
   BrowserChildProcessLaunchedAndConnected(data);
 }
 
 void BrowserChildProcessWatcher::DeleteChildProcessNodeForTesting(
     const content::ChildProcessData& data) {
-  CHECK(base::Contains(tracked_process_nodes_,
-                       BrowserChildProcessHostId(data.id)));
+  CHECK(tracked_process_nodes_.contains(BrowserChildProcessHostId(data.id)));
   BrowserChildProcessHostDisconnected(data);
 }
 

@@ -9,7 +9,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/values.h"
@@ -221,15 +220,15 @@ SegregatedPrefStore::~SegregatedPrefStore() {
 }
 
 PersistentPrefStore* SegregatedPrefStore::StoreForKey(std::string_view key) {
-  return (base::Contains(selected_preference_names_, key) ? selected_pref_store_
-                                                          : default_pref_store_)
+  return (selected_preference_names_.contains(key) ? selected_pref_store_
+                                                   : default_pref_store_)
       .get();
 }
 
 const PersistentPrefStore* SegregatedPrefStore::StoreForKey(
     std::string_view key) const {
-  return (base::Contains(selected_preference_names_, key) ? selected_pref_store_
-                                                          : default_pref_store_)
+  return (selected_preference_names_.contains(key) ? selected_pref_store_
+                                                   : default_pref_store_)
       .get();
 }
 

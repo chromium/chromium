@@ -7,7 +7,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
@@ -190,7 +189,7 @@ void ObjectPermissionContextBase::UpdateObjectPermission(
 
   origin_objects_it->second.erase(object_it);
   key = GetKeyForObject(new_object);
-  DCHECK(!base::Contains(origin_objects_it->second, key));
+  DCHECK(!origin_objects_it->second.contains(key));
 
   GrantObjectPermission(origin, std::move(new_object));
 }

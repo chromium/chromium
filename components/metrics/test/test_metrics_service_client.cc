@@ -8,7 +8,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
@@ -37,7 +36,7 @@ void TestMetricsServiceClient::SetMetricsClientId(
 }
 
 bool TestMetricsServiceClient::ShouldUploadMetricsForUserId(uint64_t user_id) {
-  return base::Contains(allowed_user_ids_, user_id);
+  return allowed_user_ids_.contains(user_id);
 }
 
 int32_t TestMetricsServiceClient::GetProduct() {

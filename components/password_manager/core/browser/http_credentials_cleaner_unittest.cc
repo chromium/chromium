@@ -4,7 +4,6 @@
 
 #include "components/password_manager/core/browser/http_credentials_cleaner.h"
 
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -232,7 +231,7 @@ TEST_P(HttpCredentialCleanerTest, ReportHttpMigrationMetrics) {
 
     // For no matching case https credentials were added and for an equivalent
     // case they already existed.
-    EXPECT_TRUE(base::Contains(current_store, "https://example.org/"));
+    EXPECT_TRUE(current_store.contains("https://example.org/"));
   } else {
     // Hsts not enabled or credentials are have different passwords, so
     // nothing should change in the password store.

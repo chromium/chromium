@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/performance_manager_impl.h"
@@ -96,7 +95,7 @@ void SiteDataCacheFactory::SetCacheInspectorForTesting(
     const std::string& browser_context_id,
     SiteDataCacheInspector* inspector) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!base::Contains(data_cache_inspector_map_, browser_context_id));
+  DCHECK(!data_cache_inspector_map_.contains(browser_context_id));
   data_cache_inspector_map_.emplace(browser_context_id, inspector);
 }
 
@@ -106,13 +105,13 @@ void SiteDataCacheFactory::OnBrowserContextCreated(
     std::optional<std::string> parent_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(!base::Contains(data_cache_map_, browser_context_id));
+  DCHECK(!data_cache_map_.contains(browser_context_id));
 
   if (parent_context_id) {
     SiteDataCacheInspector* parent_debug =
         GetInspectorForBrowserContext(parent_context_id.value());
     DCHECK(parent_debug);
-    DCHECK(base::Contains(data_cache_map_, parent_context_id.value()));
+    DCHECK(data_cache_map_.contains(parent_context_id.value()));
     SiteDataCache* data_cache_for_readers =
         data_cache_map_[parent_context_id.value()].get();
     DCHECK(data_cache_for_readers);
@@ -130,7 +129,7 @@ void SiteDataCacheFactory::OnBrowserContextCreated(
 void SiteDataCacheFactory::OnBrowserContextDestroyed(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::Contains(data_cache_map_, browser_context_id));
+  DCHECK(data_cache_map_.contains(browser_context_id));
   data_cache_map_.erase(browser_context_id);
 }
 

@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"

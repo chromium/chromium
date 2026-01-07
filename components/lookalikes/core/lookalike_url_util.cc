@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/hash/sha1.h"
 #include "base/i18n/char_iterator.h"
@@ -186,7 +185,7 @@ bool SkeletonsMatch(const url_formatter::Skeletons& skeletons1,
   DCHECK(!skeletons1.empty());
   DCHECK(!skeletons2.empty());
   for (const std::string& skeleton1 : skeletons1) {
-    if (base::Contains(skeletons2, skeleton1)) {
+    if (skeletons2.contains(skeleton1)) {
       return true;
     }
   }
@@ -442,7 +441,7 @@ bool DoesETLDPlus1MatchTopDomainOrEngagedSite(
       // consider engaged sites that are bare eTLD+1s (or a trivial subdomain)
       // and are a skeleton match.
       if (IsETLDPlusOneOrTrivialSubdomain(engaged_site) &&
-          base::Contains(engaged_site.skeletons, skeleton)) {
+          engaged_site.skeletons.contains(skeleton)) {
         *embedded_target = engaged_site.domain_and_registry;
         return true;
       }

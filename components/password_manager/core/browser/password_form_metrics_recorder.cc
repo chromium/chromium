@@ -11,7 +11,6 @@
 
 #include "base/check_deref.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -141,21 +140,17 @@ UsernamePasswordsState CalculateUsernamePasswordsState(
     // or both. In the last case we use the control type of the form as a
     // tie-break, if this is `password`, the user likely typed a password,
     // otherwise a username.
-    bool is_possibly_saved_username_in_profile_store = base::Contains(
-        saved_usernames,
+    bool is_possibly_saved_username_in_profile_store = saved_usernames.contains(
         std::make_pair(value, PasswordForm::Store::kProfileStore));
-    bool is_possibly_saved_username_in_account_store = base::Contains(
-        saved_usernames,
+    bool is_possibly_saved_username_in_account_store = saved_usernames.contains(
         std::make_pair(value, PasswordForm::Store::kAccountStore));
     bool is_possibly_saved_username =
         is_possibly_saved_username_in_profile_store ||
         is_possibly_saved_username_in_account_store;
 
-    bool is_possibly_saved_password_in_profile_store = base::Contains(
-        saved_passwords,
+    bool is_possibly_saved_password_in_profile_store = saved_passwords.contains(
         std::make_pair(value, PasswordForm::Store::kProfileStore));
-    bool is_possibly_saved_password_in_account_store = base::Contains(
-        saved_passwords,
+    bool is_possibly_saved_password_in_account_store = saved_passwords.contains(
         std::make_pair(value, PasswordForm::Store::kAccountStore));
     bool is_possibly_saved_password =
         is_possibly_saved_password_in_profile_store ||

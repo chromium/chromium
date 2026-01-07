@@ -8,7 +8,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
@@ -27,7 +26,7 @@ ExpiredHistogramsChecker::~ExpiredHistogramsChecker() = default;
 
 bool ExpiredHistogramsChecker::ShouldRecord(uint32_t histogram_hash) const {
   // If histogram is explicitly allowed then it should always be recorded.
-  if (base::Contains(allowlist_, histogram_hash)) {
+  if (allowlist_.contains(histogram_hash)) {
     return true;
   }
   return !std::binary_search(std::begin(expired_histogram_hashes_),
