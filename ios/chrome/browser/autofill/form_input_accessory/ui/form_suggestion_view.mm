@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_suggestion_view.h"
+#import "ios/chrome/browser/autofill/form_input_accessory/ui/form_suggestion_view.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
@@ -13,9 +13,9 @@
 #import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "ios/chrome/browser/autofill/form_input_accessory/ui/form_suggestion_label.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_suggestion_label.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"

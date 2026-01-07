@@ -1,3 +1,4 @@
 include_rules = [
+  "+ios/chrome/browser/autofill/form_input_accessory/public",
   "+ios/chrome/browser/autofill/ui_bundled",
 ]

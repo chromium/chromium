@@ -21,8 +21,8 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_prefs.h"
+#import "ios/chrome/browser/autofill/form_input_accessory/test/form_input_accessory_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
@@ -84,11 +84,12 @@ id<GREYMatcher> KeyboardAccessoryPasswordSuggestion(NSString* realm) {
 // Matcher for the autofill backup password suggestion chip in the keyboard
 // accessory.
 id<GREYMatcher> KeyboardAccessoryBackupPasswordSuggestion(NSString* realm) {
-  id<GREYMatcher> accessibility_label_matcher = grey_accessibilityLabel([NSString
-      stringWithFormat:
-          @"%@, %@, %@", kExampleUsername, realm,
-          l10n_util::GetNSString(
-              IDS_IOS_KEYBOARD_ACCESSORY_RECOVERY_PASSWORD_ACCESSIBILITY_LABEL)]);
+  NSString* label = l10n_util::GetNSString(
+      IDS_IOS_KEYBOARD_ACCESSORY_RECOVERY_PASSWORD_ACCESSIBILITY_LABEL);
+
+  id<GREYMatcher> accessibility_label_matcher =
+      grey_accessibilityLabel([NSString
+          stringWithFormat:@"%@, %@, %@", kExampleUsername, realm, label]);
   id<GREYMatcher> backup_icon = grey_accessibilityID(
       kRecoveryPasswordSuggestionIconAccessibilityIdentifier);
   return grey_allOf(accessibility_label_matcher,
