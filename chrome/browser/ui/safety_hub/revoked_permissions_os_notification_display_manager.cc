@@ -45,8 +45,10 @@ void RevokedPermissionsOSNotificationDisplayManager::DisplayNotification() {
   auto revoked_urls = GetRevocationUrls();
   std::string first_affected_domain = GetFirstAffectedDomain(revoked_urls);
   if (notification_wrapper_) {
-    notification_wrapper_->DisplayNotification(revoked_urls.size(),
-                                               first_affected_domain);
+    notification_wrapper_->DisplayNotification(
+        revoked_urls.size(), first_affected_domain,
+        IsAnyRevocationDueToSuspiciousContent(revoked_urls),
+        IsAnyRevocationDueToDisruptiveContent(revoked_urls));
   }
 }
 
@@ -54,8 +56,10 @@ void RevokedPermissionsOSNotificationDisplayManager::UpdateNotification() {
   auto revoked_urls = GetRevocationUrls();
   std::string first_affected_domain = GetFirstAffectedDomain(revoked_urls);
   if (notification_wrapper_) {
-    notification_wrapper_->UpdateNotification(revoked_urls.size(),
-                                              first_affected_domain);
+    notification_wrapper_->UpdateNotification(
+        revoked_urls.size(), first_affected_domain,
+        IsAnyRevocationDueToSuspiciousContent(revoked_urls),
+        IsAnyRevocationDueToDisruptiveContent(revoked_urls));
   }
 }
 
@@ -89,4 +93,24 @@ RevokedPermissionsOSNotificationDisplayManager::GetRevocationUrls() {
     revoked_urls.insert(disruptive_url);
   }
   return revoked_urls;
+}
+
+bool RevokedPermissionsOSNotificationDisplayManager::
+    IsAnyRevocationDueToSuspiciousContent(const std::set<GURL>& revoked_urls) {
+  return std::any_of(revoked_urls.begin(), revoked_urls.end(),
+                     [this](const GURL& revoked_url) {
+                       return AbusiveNotificationPermissionsManager::
+                           IsUrlRevokedDueToSuspiciousContent(hcsm_.get(),
+                                                              revoked_url);
+                     });
+}
+
+bool RevokedPermissionsOSNotificationDisplayManager::
+    IsAnyRevocationDueToDisruptiveContent(const std::set<GURL>& revoked_urls) {
+  return std::any_of(revoked_urls.begin(), revoked_urls.end(),
+                     [this](const GURL& revoked_url) {
+                       return DisruptiveNotificationPermissionsManager::
+                           IsUrlRevokedDisruptiveNotification(hcsm_.get(),
+                                                              revoked_url);
+                     });
 }

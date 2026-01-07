@@ -12,18 +12,24 @@ NotificationWrapperAndroid::~NotificationWrapperAndroid() = default;
 
 void NotificationWrapperAndroid::DisplayNotification(
     int num_revoked_permissions,
-    std::string& first_affected_domain) {
+    std::string& first_affected_domain,
+    bool any_suspicious_revocations,
+    bool any_disruptive_revocations) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_UnsubscribedNotificationsNotificationManager_displayNotification(
-      env, num_revoked_permissions, first_affected_domain);
+      env, num_revoked_permissions, first_affected_domain,
+      any_suspicious_revocations, any_disruptive_revocations);
 }
 
 void NotificationWrapperAndroid::UpdateNotification(
     int num_revoked_permissions,
-    std::string& first_affected_domain) {
+    std::string& first_affected_domain,
+    bool any_suspicious_revocations,
+    bool any_disruptive_revocations) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_UnsubscribedNotificationsNotificationManager_updateNotification(
-      env, num_revoked_permissions, first_affected_domain);
+      env, num_revoked_permissions, first_affected_domain,
+      any_suspicious_revocations, any_disruptive_revocations);
 }
 
 DEFINE_JNI(UnsubscribedNotificationsNotificationManager)

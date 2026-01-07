@@ -20,9 +20,13 @@ class RevokedPermissionsOSNotificationDisplayManager : public KeyedService {
    public:
     virtual ~SafetyHubNotificationWrapper() = default;
     virtual void DisplayNotification(int count,
-                                     std::string& first_affected_domain) = 0;
+                                     std::string& first_affected_domain,
+                                     bool any_suspicious_revocations,
+                                     bool any_disruptive_revocations) = 0;
     virtual void UpdateNotification(int count,
-                                    std::string& first_affected_domain) = 0;
+                                    std::string& first_affected_domain,
+                                    bool any_suspicious_revocations,
+                                    bool any_disruptive_revocations) = 0;
   };
 
   explicit RevokedPermissionsOSNotificationDisplayManager(
@@ -40,6 +44,10 @@ class RevokedPermissionsOSNotificationDisplayManager : public KeyedService {
 
  private:
   std::set<GURL> GetRevocationUrls();
+  bool IsAnyRevocationDueToSuspiciousContent(
+      const std::set<GURL>& revoked_urls);
+  bool IsAnyRevocationDueToDisruptiveContent(
+      const std::set<GURL>& revoked_urls);
 
   scoped_refptr<HostContentSettingsMap> hcsm_;
   std::unique_ptr<SafetyHubNotificationWrapper> notification_wrapper_;

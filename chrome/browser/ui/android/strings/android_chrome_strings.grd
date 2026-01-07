@@ -1689,10 +1689,18 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_DISRUPTIVE_AND_SUSPICIOUS_NOTIFICATIONS_NOTIFICATION_TITLE_PLURAL" desc="Title for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
         Unsubscribed from <ph name="COUNT">%1$d<ex>2</ex></ph> sites
       </message>
-      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_MESSAGE" desc="Message for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed." meaning="This message informs about notification permissions having been revoked from one or more sites and explains that the user can review and manage [those notification permission revocations] by either clicking on this message or on the Review button below it.">
+      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_DISRUPTIVE_AND_SUSPICIOUS_NOTIFICATIONS_NOTIFICATION_MESSAGE" desc="Message for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed, due to disruptive and suspicious content." meaning="This message informs about notification permissions having been revoked from one or more sites and explains that the user can review and manage [those notification permission revocations] by either clicking on this message or on the Review button below it.">
+        Chrome stopped abusive and unused sites from sending notifications
+      </message>
+      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_DISRUPTIVE_NOTIFICATIONS_NOTIFICATION_MESSAGE" desc="Message for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed, due to disruptive content." meaning="This message informs about notification permissions having been revoked from one or more sites and explains that the user can review and manage [those notification permission revocations] by either clicking on this message or on the Review button below it.">
         {NUM_REVOKED_PERMISSIONS, plural,
-        =1 {Chrome stopped notifications from this site. You can review and manage.}
-        other {Chrome stopped notifications from these sites. You can review and manage.}}
+        =1 {Chrome stopped a site you haven’t visited recently from sending you notifications}
+        other {Chrome stopped sites you haven’t visited recently from sending you notifications}}
+      </message>
+      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_SUSPICIOUS_NOTIFICATIONS_NOTIFICATION_MESSAGE" desc="Message for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed, due to suspicious content." meaning="This message informs about notification permissions having been revoked from one or more sites and explains that the user can review and manage [those notification permission revocations] by either clicking on this message or on the Review button below it.">
+        {NUM_REVOKED_PERMISSIONS, plural,
+        =1 {Chrome stopped this site from sending notifications because of spam or deceptive content}
+        other {Chrome stopped these sites from sending notifications because of spam or deceptive content}}
       </message>
       <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_ACK" desc="Button to acknowledge the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
         Got it
