@@ -6690,7 +6690,6 @@ static_library("browser") {
       "CoreVideo.framework",  # Used for the Thumbnail capturer on macOS.
       "DiskArbitration.framework",
       "IOKit.framework",
-      "ImageCaptureCore.framework",
       "LocalAuthentication.framework",
       "OpenGL.framework",
       "QuartzCore.framework",

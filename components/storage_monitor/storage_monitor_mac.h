@@ -17,8 +17,6 @@
 
 namespace storage_monitor {
 
-class ImageCaptureDeviceManager;
-
 // This class posts notifications to listeners when a new disk
 // is attached, removed, or changed.
 class COMPONENT_EXPORT(STORAGE_MONITOR) StorageMonitorMac final
@@ -69,8 +67,6 @@ class COMPONENT_EXPORT(STORAGE_MONITOR) StorageMonitorMac final
   std::map<std::string, StorageInfo> disk_info_map_;
 
   int pending_disk_updates_ = 0;
-
-  std::unique_ptr<ImageCaptureDeviceManager> image_capture_device_manager_;
 
   base::WeakPtrFactory<StorageMonitorMac> weak_ptr_factory_{this};
 };

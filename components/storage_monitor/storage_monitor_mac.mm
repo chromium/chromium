@@ -16,7 +16,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "components/storage_monitor/image_capture_device_manager.h"
 #include "components/storage_monitor/media_storage_util.h"
 #include "components/storage_monitor/storage_info.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -182,9 +181,6 @@ void StorageMonitorMac::Init() {
 
   DASessionScheduleWithRunLoop(session_.get(), CFRunLoopGetCurrent(),
                                kCFRunLoopCommonModes);
-
-  image_capture_device_manager_ = std::make_unique<ImageCaptureDeviceManager>();
-  image_capture_device_manager_->SetNotifications(receiver());
 }
 
 void StorageMonitorMac::UpdateDisk(UpdateType update_type,
@@ -258,12 +254,6 @@ void StorageMonitorMac::EjectDevice(
   std::string uuid;
   if (!StorageInfo::CrackDeviceId(device_id, &type, &uuid)) {
     std::move(callback).Run(EJECT_FAILURE);
-    return;
-  }
-
-  if (type == StorageInfo::MAC_IMAGE_CAPTURE &&
-      image_capture_device_manager_.get()) {
-    image_capture_device_manager_->EjectDevice(uuid, std::move(callback));
     return;
   }
 

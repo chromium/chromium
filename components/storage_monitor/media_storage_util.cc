@@ -23,10 +23,6 @@ namespace storage_monitor {
 
 namespace {
 
-#if BUILDFLAG(IS_MAC)
-const char kRootPath[] = "/";
-#endif
-
 typedef std::vector<StorageInfo> StorageInfoList;
 
 base::FilePath::StringType FindRemovableStorageLocationById(
@@ -91,12 +87,6 @@ bool MediaStorageUtil::CanCreateFileSystem(const std::string& device_id,
   if (!StorageInfo::CrackDeviceId(device_id, &type, nullptr)) {
     return false;
   }
-
-#if BUILDFLAG(IS_MAC)
-  if (type == StorageInfo::MAC_IMAGE_CAPTURE) {
-    return true;
-  }
-#endif
 
   return !path.empty() && path.IsAbsolute() && !path.ReferencesParent();
 }
@@ -175,16 +165,8 @@ base::FilePath MediaStorageUtil::FindDevicePathById(
     return base::FilePath::FromUTF8Unsafe(unique_id);
   }
 
-  // For ImageCapture, the synthetic filesystem will be rooted at a fake
-  // top-level directory which is the device_id.
-#if BUILDFLAG(IS_MAC)
-  if (type == StorageInfo::MAC_IMAGE_CAPTURE) {
-    return base::FilePath(kRootPath + device_id);
-  }
-#endif
-
   DCHECK(
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
       type == StorageInfo::MTP_OR_PTP ||
 #endif
       type == StorageInfo::REMOVABLE_MASS_STORAGE_WITH_DCIM ||

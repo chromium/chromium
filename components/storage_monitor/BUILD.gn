@@ -38,17 +38,12 @@ component("storage_monitor") {
     ]
   } else if (is_mac) {
     sources += [
-      "image_capture_device.h",
-      "image_capture_device.mm",
-      "image_capture_device_manager.h",
-      "image_capture_device_manager.mm",
       "storage_monitor_mac.h",
       "storage_monitor_mac.mm",
     ]
     frameworks = [
       "DiskArbitration.framework",
       "Foundation.framework",
-      "ImageCaptureCore.framework",
       "UniformTypeIdentifiers.framework",
     ]
   } else if (is_chromeos) {
@@ -156,14 +151,8 @@ source_set("unit_tests") {
   }
 
   if (is_mac) {
-    sources += [
-      "image_capture_device_manager_unittest.mm",
-      "storage_monitor_mac_unittest.mm",
-    ]
-    frameworks = [
-      "ImageCaptureCore.framework",
-      "UniformTypeIdentifiers.framework",
-    ]
+    sources += [ "storage_monitor_mac_unittest.mm" ]
+    frameworks = [ "UniformTypeIdentifiers.framework" ]
   }
 
   if (is_chromeos) {

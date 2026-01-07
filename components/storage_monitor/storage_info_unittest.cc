@@ -10,7 +10,7 @@
 
 namespace storage_monitor {
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kMtpDeviceId[] = "mtp:VendorModelSerial:ABC:1233:1237912873";
 const char kUniqueId[] = "VendorModelSerial:ABC:1233:1237912873";
 
@@ -30,17 +30,6 @@ TEST(StorageInfoTest, CrackMtpDeviceId) {
   ASSERT_TRUE(StorageInfo::CrackDeviceId(kMtpDeviceId, &type, &id));
   EXPECT_EQ(kUniqueId, id);
   EXPECT_EQ(StorageInfo::MTP_OR_PTP, type);
-}
-#endif
-
-#if BUILDFLAG(IS_MAC)
-TEST(StorageInfoTest, TestImageCaptureDeviceId) {
-  const char kImageCaptureDeviceId[] = "ic:xyz";
-  StorageInfo::Type type;
-  std::string id;
-  ASSERT_TRUE(StorageInfo::CrackDeviceId(kImageCaptureDeviceId, &type, &id));
-  EXPECT_EQ(StorageInfo::MAC_IMAGE_CAPTURE, type);
-  EXPECT_EQ("xyz", id);
 }
 #endif
 
