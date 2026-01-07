@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "content/public/browser/permission_result.h"
 #include "device/vr/public/mojom/xr_session.mojom-shared.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -65,7 +64,7 @@ bool XrPermissionResults::HasPermissionsFor(
 
 bool XrPermissionResults::HasPermissionsFor(
     blink::PermissionType permission_type) const {
-  if (!base::Contains(permission_type_to_status_, permission_type)) {
+  if (!permission_type_to_status_.contains(permission_type)) {
     return false;
   }
 

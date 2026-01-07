@@ -6,7 +6,6 @@
 
 #include <tuple>
 
-#include "base/containers/contains.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
@@ -135,7 +134,7 @@ void PrefetchDocumentManager::ProcessCandidates(
       continue;
     }
 
-    if (!base::Contains(url_set, url)) {
+    if (!url_set.contains(url)) {
       static_cast<PrefetchHandleImpl*>(prefetch.get())
           ->SetPrefetchStatusOnReleaseStartedPrefetch(
               PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved);

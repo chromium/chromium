@@ -958,7 +958,7 @@ class SharedDictionaryBrowserTest
       return nullptr;
     }
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    if (base::Contains(request.headers, "Authorization")) {
+    if (request.headers.contains("Authorization")) {
       response->set_code(net::HTTP_OK);
       std::optional<std::string> dict_hash =
           GetAvailableDictionary(request.headers);

@@ -4,7 +4,6 @@
 
 #include "content/browser/renderer_host/plugin_registry_impl.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "content/browser/plugin_service_impl.h"
 #include "content/public/browser/content_browser_client.h"
@@ -56,7 +55,7 @@ void PluginRegistryImpl::GetPlugins(GetPluginsCallback callback) {
         plugin_blink->mime_types.push_back(std::move(mime_type_blink));
         if (!plugin_blink->may_use_external_handler) {
           plugin_blink->may_use_external_handler =
-              base::Contains(mime_handler_view_mime_types, mime_type.mime_type);
+              mime_handler_view_mime_types.contains(mime_type.mime_type);
         }
       }
       plugins.push_back(std::move(plugin_blink));

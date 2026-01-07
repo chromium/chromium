@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -308,7 +307,7 @@ class FakeImageDownloader : public blink::mojom::ImageDownloader {
                      uint32_t max_bitmap_size,
                      bool bypass_cache,
                      DownloadImageCallback callback) override {
-    if (!base::Contains(fake_response_data_per_url_, url)) {
+    if (!fake_response_data_per_url_.contains(url)) {
       // This could return a 404, but there is no test that currently relies on
       // it.
       return;
@@ -325,7 +324,7 @@ class FakeImageDownloader : public blink::mojom::ImageDownloader {
       uint32_t max_bitmap_size,
       bool bypass_cache,
       DownloadImageFromAxNodeCallback callback) override {
-    if (!base::Contains(fake_response_data_per_ax_node_id_, ax_node_id)) {
+    if (!fake_response_data_per_ax_node_id_.contains(ax_node_id)) {
       // This could return a 404, but there is no test that currently relies on
       // it.
       return;

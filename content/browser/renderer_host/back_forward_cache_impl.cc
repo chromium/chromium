@@ -13,7 +13,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -1807,7 +1806,7 @@ bool BackForwardCacheImpl::IsQueryAllowed(const GURL& current_url) {
       base::SplitString(current_url.query(), "&", base::TRIM_WHITESPACE,
                         base::SplitResult::SPLIT_WANT_NONEMPTY);
   for (const std::string& cgi_param : cgi_params) {
-    if (base::Contains(blocked_cgi_params_, cgi_param)) {
+    if (blocked_cgi_params_.contains(cgi_param)) {
       return false;
     }
   }

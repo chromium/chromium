@@ -184,7 +184,7 @@ void AgentSchedulingGroup::AddFrameRoute(
     const blink::LocalFrameToken& frame_token,
     RenderFrameImpl* render_frame,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DCHECK(!base::Contains(listener_map_, frame_token));
+  DCHECK(!listener_map_.contains(frame_token));
   listener_map_.insert({frame_token, render_frame});
 
   // See warning in `GetAssociatedInterface`.
@@ -200,7 +200,7 @@ void AgentSchedulingGroup::AddFrameRoute(
 
 void AgentSchedulingGroup::RemoveFrameRoute(
     const blink::LocalFrameToken& frame_token) {
-  DCHECK(base::Contains(listener_map_, frame_token));
+  DCHECK(listener_map_.contains(frame_token));
   listener_map_.erase(frame_token);
 }
 

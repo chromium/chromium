@@ -511,7 +511,7 @@ void EmitCookieWarningsAndMetrics(
         cookie->cookie_or_line->is_cookie() &&
         cookie->cookie_or_line->get_cookie().Name().empty()) {
       cookie_set_has_empty_name = true;
-      if (base::Contains(cookie->cookie_or_line->get_cookie().Value(), '=')) {
+      if (cookie->cookie_or_line->get_cookie().Value().contains('=')) {
         cookie_set_has_empty_name_and_ambiguous_value = true;
       }
     }

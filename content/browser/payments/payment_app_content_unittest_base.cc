@@ -10,7 +10,6 @@
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -249,7 +248,7 @@ PaymentAppContentUnitTestBase::CreateUninitializedPaymentManager(
   // Find a last registered payment manager.
   for (const auto& candidate_manager :
        payment_app_context()->payment_managers_) {
-    if (!base::Contains(existing_managers, candidate_manager.first)) {
+    if (!existing_managers.contains(candidate_manager.first)) {
       return candidate_manager.first;
     }
   }

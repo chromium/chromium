@@ -5,7 +5,6 @@
 #include "content/renderer/renderer_navigation_metrics_manager.h"
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"

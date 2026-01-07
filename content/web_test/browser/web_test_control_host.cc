@@ -21,7 +21,6 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -1254,8 +1253,8 @@ void WebTestControlHost::HandleNewRenderFrameHost(RenderFrameHost* frame) {
   // TODO(rakina): Understand the fetch tests to figure out if it's possible to
   // remove RenderProcessHost tracking here.
   if (main_window &&
-      (!base::Contains(main_window_render_view_hosts_, view_host) ||
-       !base::Contains(main_window_render_process_hosts_, process_host))) {
+      (!main_window_render_view_hosts_.contains(view_host) ||
+       !main_window_render_process_hosts_.contains(process_host))) {
     // When we find the main window's main frame for the first time, we mark the
     // test as starting for the renderer.
     const bool starting_test = main_window_render_process_hosts_.empty();
@@ -2192,7 +2191,7 @@ mojo::AssociatedRemote<mojom::WebTestRenderFrame>&
 WebTestControlHost::GetWebTestRenderFrameRemote(RenderFrameHost* frame) {
   GlobalRenderFrameHostId key(frame->GetProcess()->GetDeprecatedID(),
                               frame->GetRoutingID());
-  if (!base::Contains(web_test_render_frame_map_, key)) {
+  if (!web_test_render_frame_map_.contains(key)) {
     mojo::AssociatedRemote<mojom::WebTestRenderFrame>& new_ptr =
         web_test_render_frame_map_[key];
     frame->GetRemoteAssociatedInterfaces()->GetInterface(&new_ptr);

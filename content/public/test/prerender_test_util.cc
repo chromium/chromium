@@ -949,7 +949,7 @@ net::test_server::HttpRequest::HeaderMap PrerenderTestHelper::GetRequestHeaders(
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
   base::AutoLock auto_lock(lock_);
   std::string path = url.PathForRequest();
-  DCHECK(base::Contains(request_headers_by_path_, path)) << path;
+  DCHECK(request_headers_by_path_.contains(path)) << path;
   return request_headers_by_path_[path];
 }
 

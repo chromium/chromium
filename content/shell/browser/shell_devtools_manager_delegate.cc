@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -197,7 +196,7 @@ BrowserContext* ShellDevToolsManagerDelegate::GetDefaultBrowserContext() {
 void ShellDevToolsManagerDelegate::ClientAttached(
     content::DevToolsAgentHostClientChannel* channel) {
   // Make sure we don't receive notifications twice for the same client.
-  CHECK(!base::Contains(sessions_, channel));
+  CHECK(!sessions_.contains(channel));
   sessions_.emplace(
       channel,
       std::make_unique<shell::protocol::ShellDevToolsSession>(

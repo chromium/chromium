@@ -1466,7 +1466,7 @@ void PrefetchService::MayReleasePrefetch(
     return;
   }
 
-  if (!base::Contains(owned_prefetches(), prefetch_container->key())) {
+  if (!owned_prefetches().contains(prefetch_container->key())) {
     return;
   }
 

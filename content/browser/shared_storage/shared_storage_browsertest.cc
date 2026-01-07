@@ -16,7 +16,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -5903,11 +5902,11 @@ class SharedStorageHeaderObserverBrowserTest
       const std::vector<std::string>& extra_headers) {
     response.WaitForRequest();
     if (expect_writable_header) {
-      ASSERT_TRUE(base::Contains(response.http_request()->headers,
-                                 "Sec-Shared-Storage-Writable"));
+      ASSERT_TRUE(response.http_request()->headers.contains(
+          "Sec-Shared-Storage-Writable"));
     } else {
-      EXPECT_FALSE(base::Contains(response.http_request()->headers,
-                                  "Sec-Shared-Storage-Writable"));
+      EXPECT_FALSE(response.http_request()->headers.contains(
+          "Sec-Shared-Storage-Writable"));
     }
     EXPECT_EQ(response.http_request()->content, "");
     response.Send(http_status, content_type,

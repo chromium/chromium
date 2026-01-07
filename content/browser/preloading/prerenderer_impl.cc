@@ -279,8 +279,8 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
   // removed from `started_prerenders_` via `OnCancel`.
   CHECK(std::find_if(started_prerenders_.begin(), started_prerenders_.end(),
                      [&](const PrerenderInfo& x) {
-                       return base::Contains(canceled_prerender_rules_set,
-                                             x.prerender_host_id);
+                       return canceled_prerender_rules_set.contains(
+                           x.prerender_host_id);
                      }) == started_prerenders_.end());
 
   // Actually start the candidates in their original order once the diffing is

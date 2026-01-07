@@ -11,7 +11,6 @@
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -736,7 +735,7 @@ void FrameTree::RegisterRenderViewHost(RenderViewHostMapId id,
   TRACE_EVENT_INSTANT("navigation", "FrameTree::RegisterRenderViewHost",
                       ChromeTrackEvent::kRenderViewHost, *rvh);
   CHECK(!rvh->is_speculative());
-  bool rvh_id_already_in_map = base::Contains(render_view_host_map_, id);
+  bool rvh_id_already_in_map = render_view_host_map_.contains(id);
   bool rfh_in_bfcache =
       controller()
           .GetBackForwardCache()

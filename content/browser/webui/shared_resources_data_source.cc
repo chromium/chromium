@@ -6,7 +6,6 @@
 
 #include <set>
 
-#include "base/containers/contains.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -38,7 +37,7 @@ void AddResources(const std::set<int>& resource_ids,
                   base::span<const webui::ResourcePath> resources,
                   WebUIDataSource* source) {
   for (const auto& resource : resources) {
-    if (base::Contains(resource_ids, resource.id)) {
+    if (resource_ids.contains(resource.id)) {
       source->AddResourcePath(resource.path, resource.id);
     }
   }
