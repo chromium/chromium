@@ -5863,6 +5863,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_INSTANCE_SWITCHER_TABS_INACTIVE" desc="The title of the inactive instances tab header on the multi-instance switcher dialog.">
         Inactive (<ph name="ITEM_COUNT">%1$s<ex>2</ex></ph>)
       </message>
+      <message name="IDS_INSTANCE_SWITCHER_NO_INACTIVE_WINDOWS" desc="Text shown in the instance switcher when there are no inactive windows.">
+        No inactive windows
+      </message>
       <message name="IDS_INSTANCE_SWITCHER_ENTRY_EMPTY_WINDOW" desc="Title of an instance entry that has no tabs in it.">
         Empty window
       </message>

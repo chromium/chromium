@@ -1913,6 +1913,11 @@ public class InstanceSwitcherCoordinatorTest {
         // After closing, the inactive list should be empty.
         onView(withId(R.id.inactive_instance_list)).check(matches(withItemCount(0)));
 
+        // Verify the "No inactive windows" message is displayed.
+        onView(withText(R.string.instance_switcher_no_inactive_windows))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+
         // The "more" button should now be hidden.
         onView(allOf(withId(R.id.title_more_button), isDisplayed())).check(doesNotExist());
     }

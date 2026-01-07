@@ -106,6 +106,7 @@ public class InstanceSwitcherCoordinator {
     private boolean mNewWindowEnabled;
     private boolean mIsInactiveListShowing;
     private @MonotonicNonNull FrameLayout mInstanceListContainer;
+    private @MonotonicNonNull FrameLayout mInactiveListEmptyStateView;
     private @MonotonicNonNull RecyclerView mActiveInstancesList;
     private @MonotonicNonNull RecyclerView mInactiveInstancesList;
     private @MonotonicNonNull DialogListItemDecoration mActiveListItemDecoration;
@@ -167,6 +168,8 @@ public class InstanceSwitcherCoordinator {
                             .inflate(R.layout.instance_switcher_dialog_v2, null);
             mInstanceListContainer = mDialogView.findViewById(R.id.instance_list_container);
             mMaxInfoView = mDialogView.findViewById(R.id.max_instance_info);
+            mInactiveListEmptyStateView =
+                    mDialogView.findViewById(R.id.inactive_list_empty_state_view);
             mNewWindowLayout = mDialogView.findViewById(R.id.new_window);
             TextView newWindowTextView = mNewWindowLayout.findViewById(R.id.new_window_text);
             if (mIsIncognitoWindow) {
@@ -220,6 +223,7 @@ public class InstanceSwitcherCoordinator {
                             unselectItems(/* hideVisibleList= */ false);
                             updateMoreMenu();
                             updatePositiveButtonText();
+                            updateInactiveListEmptyStateVisibility();
                         }
 
                         @Override
@@ -735,6 +739,7 @@ public class InstanceSwitcherCoordinator {
             updateCommandUiState(getTotalInstanceCount() < mMaxInstanceCount);
             updateTabTitle(mActiveModelList.size(), mInactiveModelList.size());
             updateMoreMenu();
+            updateInactiveListEmptyStateVisibility();
         } else {
             removeItemFromModelList(instanceId, mModelList);
             // Update new window item based on instance count after instance removal.
@@ -896,6 +901,12 @@ public class InstanceSwitcherCoordinator {
                 BrowserUiListMenuUtils.getBasicListMenu(mContext, menuItems, delegate);
 
         mDialog.set(ModalDialogProperties.TITLE_MORE_BUTTON_DELEGATE, () -> listMenu);
+    }
+
+    private void updateInactiveListEmptyStateVisibility() {
+        if (mInactiveListEmptyStateView == null) return;
+        boolean showEmptyState = mIsInactiveListShowing && mInactiveModelList.size() == 0;
+        mInactiveListEmptyStateView.setVisibility(showEmptyState ? View.VISIBLE : View.GONE);
     }
 
     private void buildWindowManagerMoreMenu(PropertyModel.Builder builder) {

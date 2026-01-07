@@ -48,6 +48,21 @@ found in the LICENSE file.
             android:divider="@null"/>
     </FrameLayout>
 
+    <FrameLayout
+        android:id="@+id/inactive_list_empty_state_view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/instance_switcher_dialog_list_item_height"
+        android:visibility="gone"
+        android:background="@drawable/single_list_item_background">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/instance_switcher_no_inactive_windows"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary.InstanceSwitcherItem" />
+    </FrameLayout>
+
     <include layout="@layout/instance_switcher_cmd_item_v2" />
 
 </LinearLayout>
