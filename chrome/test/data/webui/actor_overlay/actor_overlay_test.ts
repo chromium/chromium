@@ -469,4 +469,63 @@ suite('MagicCursor', function() {
     // Target (900, 100) is closer to right edge (1000, 0).
     await verifyInitialCursorMove(900, 100, 1000, 0);
   });
+
+  test('TriggerClickAnimation', async function() {
+    const magicCursor =
+        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
+    assertTrue(!!magicCursor);
+
+    // Move the cursor first to initialize it.
+    const point = {x: 100, y: 150};
+    const movePromise = testRemote.moveCursorTo(point);
+    await microtasksFinished();
+    magicCursor.dispatchEvent(new Event('transitionend'));
+    await movePromise;
+
+    // Trigger click animation.
+    const clickPromise = testRemote.triggerClickAnimation();
+    await microtasksFinished();
+
+    // Verify the class is added and CSS variables are set.
+    assertTrue(magicCursor.classList.contains('clicking'));
+    assertEquals('100px', magicCursor.style.getPropertyValue('--cursor-x'));
+    assertEquals('150px', magicCursor.style.getPropertyValue('--cursor-y'));
+
+    // Finish animation and verify cleanup.
+    magicCursor.dispatchEvent(new Event('animationend'));
+    await clickPromise;
+    assertFalse(magicCursor.classList.contains('clicking'));
+  });
+
+  test('TriggerClickAnimation_IgnoredIfUninitialized', async function() {
+    const magicCursor =
+        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
+    assertTrue(!!magicCursor);
+
+    // Ensure cursor is not initialized (opacity is 0).
+    assertEquals('', magicCursor.style.opacity);
+
+    // Attempt to click.
+    const clickPromise = testRemote.triggerClickAnimation();
+    await microtasksFinished();
+
+    // Verify the animation class was never added because the cursor hasn't been
+    // initialized by a movement first.
+    assertFalse(magicCursor.classList.contains('clicking'));
+    // The promise should still resolve immediately.
+    await clickPromise;
+  });
+
+  test('ClickAnimationTimingMatchesCSS', function() {
+    const magicCursor =
+        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
+    assertTrue(!!magicCursor);
+
+    magicCursor.classList.add('clicking');
+    const style = window.getComputedStyle(magicCursor);
+
+    assertEquals('0.4s', style.animationDuration);
+    assertEquals('ease-out', style.animationTimingFunction);
+    assertTrue(style.animationName.includes('cursor-click'));
+  });
 });

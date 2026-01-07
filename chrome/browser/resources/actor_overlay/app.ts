@@ -66,6 +66,7 @@ export class ActorOverlayAppElement extends CrLitElement {
   private setBorderGlowVisibilityListenerId_: number | null = null;
   private setThemeListenerId_: number|null = null;
   private moveCursorToListenerId_: number|null = null;
+  private triggerClickAnimationListenerId_: number|null = null;
   private shouldShowCursor_: boolean =
       loadTimeData.getBoolean('isMagicCursorEnabled');
   private isCursorInitialized_: boolean = false;
@@ -104,6 +105,10 @@ export class ActorOverlayAppElement extends CrLitElement {
         proxy.callbackRouter.moveCursorTo.addListener(
             this.moveCursorTo.bind(this));
 
+    this.triggerClickAnimationListenerId_ =
+        proxy.callbackRouter.triggerClickAnimation.addListener(
+            this.triggerClickAnimation.bind(this));
+
     // Theme
     this.setThemeListenerId_ =
         proxy.callbackRouter.setTheme.addListener(this.setTheme.bind(this));
@@ -123,6 +128,9 @@ export class ActorOverlayAppElement extends CrLitElement {
     assert(this.moveCursorToListenerId_);
     ActorOverlayBrowserProxy.getInstance().callbackRouter.removeListener(
         this.moveCursorToListenerId_);
+    assert(this.triggerClickAnimationListenerId_);
+    ActorOverlayBrowserProxy.getInstance().callbackRouter.removeListener(
+        this.triggerClickAnimationListenerId_);
     assert(this.setThemeListenerId_);
     ActorOverlayBrowserProxy.getInstance().callbackRouter.removeListener(
         this.setThemeListenerId_);
@@ -155,6 +163,25 @@ export class ActorOverlayAppElement extends CrLitElement {
         '--actor-scrim-background-val2', skColorToRgba(theme.scrimColors[1]!));
     this.style.setProperty(
         '--actor-scrim-background-val3', skColorToRgba(theme.scrimColors[2]!));
+  }
+
+  private async triggerClickAnimation(): Promise<void> {
+    const cursor = this.$.magicCursor;
+    if (!cursor || !this.shouldShowCursor_ || !this.isCursorInitialized_) {
+      return Promise.resolve();
+    }
+
+    cursor.style.setProperty('--cursor-x', `${Math.round(this.currentX_)}px`);
+    cursor.style.setProperty('--cursor-y', `${Math.round(this.currentY_)}px`);
+
+    return new Promise((resolve) => {
+      const onAnimationEnd = () => {
+        cursor.classList.remove('clicking');
+        resolve();
+      };
+      cursor.addEventListener('animationend', onAnimationEnd, {once: true});
+      cursor.classList.add('clicking');
+    });
   }
 
   private moveCursorTo(point: Point): Promise<void> {

@@ -97,4 +97,8 @@ void ActorOverlayHandler::OnThemeChanged() {
   }
 }
 
+void ActorOverlayHandler::TriggerClickAnimation(base::OnceClosure callback) {
+  page_->TriggerClickAnimation(std::move(callback));
+}
+
 }  // namespace actor::ui

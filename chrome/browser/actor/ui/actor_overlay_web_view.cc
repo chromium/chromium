@@ -103,6 +103,18 @@ void ActorOverlayWebView::MoveCursorTo(const gfx::Point& point,
   }
 }
 
+void ActorOverlayWebView::TriggerClickAnimation(base::OnceClosure callback) {
+  // Ensure the callback runs on any early return. We Release() ownership only
+  // when passing the callback to an asynchronous operation.
+  base::ScopedClosureRunner runner(std::move(callback));
+  if (!base::FeatureList::IsEnabled(features::kGlicActorUiOverlayMagicCursor)) {
+    return;
+  }
+  if (actor::ui::ActorOverlayUI* web_ui = GetWebUi()) {
+    web_ui->TriggerClickAnimation(runner.Release());
+  }
+}
+
 actor::ui::ActorOverlayUI* ActorOverlayWebView::GetWebUi() {
   if (!web_contents()) {
     return nullptr;

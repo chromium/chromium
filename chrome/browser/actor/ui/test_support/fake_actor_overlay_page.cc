@@ -48,4 +48,10 @@ void FakeActorOverlayPage::ResetCounters() {
   theme_call_count_ = 0;
 }
 
+void FakeActorOverlayPage::TriggerClickAnimation(
+    TriggerClickAnimationCallback callback) {
+  trigger_click_animation_call_count_++;
+  // Simulate the WebUI replying once the animation is done.
+  std::move(callback).Run();
+}
 }  // namespace actor::ui

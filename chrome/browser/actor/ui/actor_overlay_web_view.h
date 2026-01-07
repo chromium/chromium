@@ -43,6 +43,9 @@ class ActorOverlayWebView : public views::WebView {
   // Forwards the cursor coordinates to WebUI.
   void MoveCursorTo(const gfx::Point& point, base::OnceClosure callback);
 
+  // Notifies the WebUI to trigger a click animation at the current coordinate.
+  void TriggerClickAnimation(base::OnceClosure callback);
+
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
 
