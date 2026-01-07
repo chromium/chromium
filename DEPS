@@ -2042,7 +2042,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/cpu_features.git' + '@' + '936b9ab5515dead115606559502e3864958f7f6e',
 
   'src/third_party/cpuinfo/src':
-    Var('chromium_git') + '/external/github.com/pytorch/cpuinfo.git' + '@' + '2846bafc7c785f274e6e5defb26dabdb05fac148',
+    Var('chromium_git') + '/external/github.com/pytorch/cpuinfo.git' + '@' + '315f594e7f4d4c35f357289ae5304af8d38d9fc3',
 
   'src/third_party/crc32c/src':
     Var('chromium_git') + '/external/github.com/google/crc32c.git' + '@' + 'd3d60ac6e0f16780bcfcc825385e1d338801a558',
