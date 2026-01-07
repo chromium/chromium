@@ -183,7 +183,6 @@ enum ItemType : NSInteger {
 
 // Dismisses the Last Visited VC.
 - (void)dismissLastVisited {
-  // TODO(crbug.com/364824898): Record that Last Visited was dismissed.
   [self.pageInfoCommandsHandler hidePageInfo];
 }
 
