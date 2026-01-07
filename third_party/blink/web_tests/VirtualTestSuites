@@ -393,7 +393,7 @@
     "args": [
       "--enable-features=CpuPerformance"
     ],
-    "expires": "Dec 31, 2025"
+    "expires": "Jun 30, 2026"
   },
   {
     "prefix": "cross-partition-blob-url",
