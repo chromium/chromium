@@ -182,10 +182,9 @@ export class PowerBookmarksService {
       });
       this.addListener_(
           'onTabUpdated',
-          (_tabId: number, _changeInfo: object, tab: chrome.tabs.Tab) => {
-            if (tab.active) {
-              this.delegate_.setCurrentUrl(tab.url);
-            }
+          (_tabId: number, _changeInfo: object, _tab: chrome.tabs.Tab) => {
+            this.bookmarksApi_.getActiveUrl().then(
+                url => this.delegate_.setCurrentUrl(url));
           });
 
       this.bookmarksApi_.pageCallbackRouter.onBookmarkNodeAdded.addListener(
