@@ -438,7 +438,7 @@ TRICHROME64_32_APK_FILENAMES = {
     'chrome_canary': 'TrichromeChromeGoogle6432Canary.apks',
     'chrome_dev': 'TrichromeChromeGoogle6432Dev.apks',
     'chrome_stable': 'TrichromeChromeGoogle6432Stable.apks',
-    'system_webview': 'TrichromeWebViewGoogle6432.apks',
+    'webview': 'TrichromeWebViewGoogle6432.apks',
 }
 
 TRICHROME64_APK_FILENAMES = {
@@ -447,7 +447,7 @@ TRICHROME64_APK_FILENAMES = {
     'chrome_canary': 'TrichromeChromeGoogle64Canary.apks',
     'chrome_dev': 'TrichromeChromeGoogle64Dev.apks',
     'chrome_stable': 'TrichromeChromeGoogle64Stable.apks',
-    'system_webview': 'TrichromeWebViewGoogle64.apks',
+    'webview': 'TrichromeWebViewGoogle64.apks',
 }
 
 TRICHROME_LIBRARY_FILENAMES = {
@@ -464,7 +464,7 @@ TRICHROME64_32_LIBRARY_FILENAMES = {
     'chrome_canary': 'TrichromeLibraryGoogle6432Canary.apk',
     'chrome_dev': 'TrichromeLibraryGoogle6432Dev.apk',
     'chrome_stable': 'TrichromeLibraryGoogle6432Stable.apk',
-    'system_webview': 'TrichromeLibraryGoogle6432.apk',
+    'webview': 'TrichromeLibraryGoogle6432.apk',
 }
 
 TRICHROME64_LIBRARY_FILENAMES = {
@@ -473,16 +473,11 @@ TRICHROME64_LIBRARY_FILENAMES = {
     'chrome_canary': 'TrichromeLibraryGoogle64Canary.apk',
     'chrome_dev': 'TrichromeLibraryGoogle64Dev.apk',
     'chrome_stable': 'TrichromeLibraryGoogle64Stable.apk',
-    'system_webview': 'TrichromeLibraryGoogle64.apk',
+    'webview': 'TrichromeLibraryGoogle64.apk',
 }
 
 WEBVIEW_APK_FILENAMES = {
-    # clank release
-    'android_webview': 'AndroidWebview.apk',
-    # clank official
-    'system_webview_google': 'SystemWebViewGoogle.apk',
-    # upstream
-    'system_webview': 'SystemWebView.apk',
+    'webview': 'SystemWebViewGoogle.apk',
 }
 
 # Old storage locations for per CL builds
@@ -1264,7 +1259,7 @@ class AndroidBuildMixin:
 
   def _get_apk_mapping(self):
     sdk = self.device.build_version_sdk
-    if 'webview' in self.apk.lower():
+    if self.apk == 'webview':
       return WEBVIEW_APK_FILENAMES
     # Need these logic to bisect very old build. Release binaries are stored
     # forever and occasionally there are requests to bisect issues introduced
@@ -1304,13 +1299,43 @@ class AndroidBuildMixin:
     else:
       print("No APK(s) found.")
 
+  def _swap_webview_apk_filename(self):
+    if self.binary_name == 'SystemWebViewGoogle.apk':
+      self.binary_name = 'SystemWebView.apk'
+    elif self.binary_name == 'SystemWebView.apk':
+      self.binary_name = 'SystemWebViewGoogle.apk'
+    else:
+      raise BisectException(
+          f'{self.binary_name} is not a known WebView APK filename.')
+
   def _install_revision(self, download, tempdir):
     UnzipFilenameToDir(download, tempdir)
     apk_path = glob.glob(self._get_extract_binary_glob(tempdir))
     if len(apk_path) == 0:
-      self._show_available_apks(tempdir)
-      raise BisectException(f'Can not find {self.binary_name} from {tempdir}')
-    InstallOnAndroid(self.device, apk_path[0])
+      if self.apk == 'webview':
+        self._swap_webview_apk_filename()
+        print(f'Retrying with {self.binary_name}')
+        apk_path = glob.glob(self._get_extract_binary_glob(tempdir))
+        if len(apk_path) == 0:
+          self._show_available_apks(tempdir)
+          raise BisectException(
+              f'Cannot find {self.binary_name} from {tempdir}')
+      else:
+        self._show_available_apks(tempdir)
+        raise BisectException(f'Cannot find {self.binary_name} from {tempdir}')
+    try:
+      InstallOnAndroid(self.device, apk_path[0])
+    except Exception as e:
+      print(f'Failed to install {self.binary_name} due to {e}')
+      if self.apk == 'webview':
+        self._swap_webview_apk_filename()
+        print(f'Retrying with {self.binary_name}')
+        apk_path = glob.glob(self._get_extract_binary_glob(tempdir))
+        if len(apk_path) == 0:
+          self._show_available_apks(tempdir)
+          raise BisectException(
+              f'Cannot find {self.binary_name} from {tempdir}')
+        InstallOnAndroid(self.device, apk_path[0])
 
   def _launch_revision(self, tempdir, executables, args=()):
     if args:
@@ -1399,6 +1424,11 @@ class AndroidReleaseBuild(AndroidBuildMixin, ReleaseBuild):
     self.signed = options.signed
     # We could download the apk directly from build bucket
     self.archive_name = self.binary_name
+
+  def _get_apk_filename(self):
+    if self.apk == 'webview':
+      return 'AndroidWebview.apk'
+    return super()._get_apk_filename()
 
   def _get_release_bucket(self):
     if self.signed:
@@ -2333,25 +2363,30 @@ def InitializeAndroidDevice(device_id, apk, chrome_flags):
 
 
 def _IsWebViewProvider(apk_helper_instance):
-  meta_data = apk_helper_instance.GetAllMetadata()
-  meta_data_keys = [pair[0] for pair in meta_data]
-  return 'com.android.webview.WebViewLibrary' in meta_data_keys
-
+  try:
+    meta_data = apk_helper_instance.GetAllMetadata()
+    meta_data_keys = [pair[0] for pair in meta_data]
+    return 'com.android.webview.WebViewLibrary' in meta_data_keys
+  except Exception as e:
+    print(f'Failed to get APK metadata: {e}')
+    return False
 
 def InstallOnAndroid(device, apk_path):
-  """Installs the chromium build on a given device."""
-  print('Installing %s on android device...' % apk_path)
-  device.Install(apk_path)
+  """Installs the Chromium build on a given device."""
+  print('Installing %s on Android device...' % apk_path)
+  device.Install(apk_path, reinstall=True, allow_downgrade=True)
+  print('Installation succeeded.')
+
   helper = apk_helper.ApkHelper(apk_path)
   if _IsWebViewProvider(helper):
+    package_name = helper.GetPackageName()
     print(f'Detected {apk_path} to be a WebView package. Setting your webview '
-          f'implementation to {helper.GetPackageName()}...')
-    device.SetWebViewImplementation(helper.GetPackageName())
-
+          f'implementation to {package_name}...')
+    device.SetWebViewImplementation(package_name)
 
 def LaunchOnAndroid(device, apk):
   """Launches the chromium build on a given device."""
-  if 'webview' in apk:
+  if apk == 'webview':
     return
 
   print('Launching  chrome on android device...')
@@ -2681,7 +2716,7 @@ def ParseCommandLine(args=None):
               'channels if you see `[Bisect Exception]: Could not found enough'
               'revisions for Android chrome release channel.\n')
 
-  if opts.apk and 'webview' in opts.apk:
+  if opts.apk and opts.apk == 'webview':
     if opts.archive == 'android-arm64-high' and opts.build_type != 'official':
       parser.error(
           'Bisecting WebView for android-arm64-high, please choose official '
