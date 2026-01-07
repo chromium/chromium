@@ -467,7 +467,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Display.VizDependencyResolvedToGpuStartedDrawUs"
-    units="microseconds" expires_after="2024-10-20">
+    units="microseconds" expires_after="2027-01-07">
   <owner>vasilyt@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -477,7 +477,7 @@ chromium-metrics-reviews@google.com.
     task's dependencies have been solved and the time when the Gpu Thread
     started processing it. Only reported for platforms supporting high
     resolution clocks. Note: this metric was expired from 2022-12-18 to
-    2023-11-17.
+    2023-11-17 and 2024-10-20 to 2025-01-07.
   </summary>
 </histogram>
 
