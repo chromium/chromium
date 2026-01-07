@@ -4422,7 +4422,7 @@
       "--text-contrast=0.5",
       "--text-gamma=0.0"
     ],
-    "expires": "Jan 1, 2026"
+    "expires": "never"
   },
   {
     "prefix": "text-autosizing",
