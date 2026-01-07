@@ -50,6 +50,7 @@ android_library("java") {
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionInstallDialogBridge.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionUiBackendImpl.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionUtilBridge.java",
+      "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionsMenuBridge.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionsToolbarBridge.java",
     ]
     srcjar_deps += [
@@ -71,6 +72,7 @@ if (enable_extensions_core) {
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionDeveloperPrivateBridge.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionInstallDialogBridge.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionUtilBridge.java",
+      "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionsMenuBridge.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionsToolbarBridge.java",
     ]
   }

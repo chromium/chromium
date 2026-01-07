@@ -4,17 +4,28 @@
 
 #include "chrome/browser/ui/android/extensions/extensions_menu_delegate_android.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/ui/android/extensions/jni_headers/ExtensionsMenuBridge_jni.h"
+
+namespace extensions {
+
 ExtensionsMenuDelegateAndroid::ExtensionsMenuDelegateAndroid(
-    BrowserWindowInterface* browser)
-    : menu_model_(
-          std::make_unique<ExtensionsMenuViewModel>(browser,
-                                                    /*delegate=*/this)) {
+    BrowserWindowInterface* browser,
+    const base::android::JavaRef<jobject>& java_object)
+    : menu_model_(std::make_unique<ExtensionsMenuViewModel>(browser,
+                                                            /*delegate=*/this)),
+      java_object_(java_object) {
   menu_model_observation_.Observe(menu_model_.get());
 }
 
 ExtensionsMenuDelegateAndroid::~ExtensionsMenuDelegateAndroid() = default;
 
-std::unique_ptr<ExtensionActionViewModel> CreateActionViewModel(
+void ExtensionsMenuDelegateAndroid::Destroy(JNIEnv* env) {
+  delete this;
+}
+
+std::unique_ptr<ExtensionActionViewModel>
+ExtensionsMenuDelegateAndroid::CreateActionViewModel(
     const extensions::ExtensionId& extension_id) {
   // TODO(crbug.com/473192151)
   return nullptr;
@@ -125,3 +136,17 @@ void ExtensionsMenuDelegateAndroid::OpenSitePermissionsPage(
     const extensions::ExtensionId& extension_id) {
   // TODO(crbug.com/473213115)
 }
+
+static jlong JNI_ExtensionsMenuBridge_Init(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& java_object,
+    jlong j_browser_window_interface) {
+  BrowserWindowInterface* browser =
+      reinterpret_cast<BrowserWindowInterface*>(j_browser_window_interface);
+  return reinterpret_cast<jlong>(
+      new ExtensionsMenuDelegateAndroid(browser, java_object));
+}
+
+}  // namespace extensions
+
+DEFINE_JNI(ExtensionsMenuBridge)

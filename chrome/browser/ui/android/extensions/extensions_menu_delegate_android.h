@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_handler.h"
@@ -9,16 +11,24 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_EXTENSIONS_EXTENSIONS_MENU_DELEGATE_ANDROID_H_
 #define CHROME_BROWSER_UI_ANDROID_EXTENSIONS_EXTENSIONS_MENU_DELEGATE_ANDROID_H_
 
-// Implements Android-specific extensions menu UI logic.
+namespace extensions {
+
+// Implements Android-specific extensions menu UI logic. Acts as the JNI bridge
+// for the extensions menu. This bridge is created and owned by Java UI code.
 class ExtensionsMenuDelegateAndroid : public ExtensionsMenuViewModel::Delegate,
                                       public ExtensionsMenuViewModel::Observer,
                                       public ExtensionsMenuHandler {
  public:
-  explicit ExtensionsMenuDelegateAndroid(BrowserWindowInterface* browser);
+  ExtensionsMenuDelegateAndroid(
+      BrowserWindowInterface* browser,
+      const base::android::JavaRef<jobject>& java_object);
   ExtensionsMenuDelegateAndroid(const ExtensionsMenuDelegateAndroid&) = delete;
   const ExtensionsMenuDelegateAndroid& operator=(
       const ExtensionsMenuDelegateAndroid&) = delete;
   ~ExtensionsMenuDelegateAndroid() override;
+
+  // JNI implementations.
+  void Destroy(JNIEnv* env);
 
   // ExtensionsMenuViewModel::Delegate:
   std::unique_ptr<ExtensionActionViewModel> CreateActionViewModel(
@@ -71,6 +81,10 @@ class ExtensionsMenuDelegateAndroid : public ExtensionsMenuViewModel::Delegate,
   base::ScopedObservation<ExtensionsMenuViewModel,
                           ExtensionsMenuViewModel::Observer>
       menu_model_observation_{this};
+
+  const base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };
+
+}  // namespace extensions
 
 #endif  // CHROME_BROWSER_UI_ANDROID_EXTENSIONS_EXTENSIONS_MENU_DELEGATE_ANDROID_H_
