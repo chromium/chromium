@@ -9,7 +9,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
@@ -79,7 +78,7 @@ cast_channel::Result AppActivity::SendAppMessageToReceiver(
     return cast_channel::Result::kFailed;
   }
   const std::string& message_namespace = cast_message.app_message_namespace();
-  if (!base::Contains(session->message_namespaces(), message_namespace)) {
+  if (!session->message_namespaces().contains(message_namespace)) {
     DLOG(ERROR) << "Disallowed message namespace: " << message_namespace;
     if (client && cast_message.sequence_number()) {
       client->SendErrorCodeToClient(
@@ -189,7 +188,7 @@ bool AppActivity::CanJoinSession(const CastMediaSource& cast_source) const {
     return false;
   }
 
-  if (base::Contains(connected_clients_, cast_source.client_id())) {
+  if (connected_clients_.contains(cast_source.client_id())) {
     return false;
   }
 

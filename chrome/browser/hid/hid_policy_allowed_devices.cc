@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
@@ -75,33 +74,30 @@ void HidPolicyAllowedDevices::RegisterLocalStatePrefs(
 bool HidPolicyAllowedDevices::HasDevicePermission(
     const url::Origin& origin,
     const device::mojom::HidDeviceInfo& device) {
-  if (base::Contains(all_devices_policy_, origin)) {
+  if (all_devices_policy_.contains(origin)) {
     return true;
   }
 
   auto vendor_it = vendor_policy_.find(device.vendor_id);
-  if (vendor_it != vendor_policy_.end() &&
-      base::Contains(vendor_it->second, origin)) {
+  if (vendor_it != vendor_policy_.end() && vendor_it->second.contains(origin)) {
     return true;
   }
 
   auto device_it = device_policy_.find({device.vendor_id, device.product_id});
-  if (device_it != device_policy_.end() &&
-      base::Contains(device_it->second, origin)) {
+  if (device_it != device_policy_.end() && device_it->second.contains(origin)) {
     return true;
   }
 
   for (const auto& collection : device.collections) {
     auto usage_page_it = usage_page_policy_.find(collection->usage->usage_page);
     if (usage_page_it != usage_page_policy_.end() &&
-        base::Contains(usage_page_it->second, origin)) {
+        usage_page_it->second.contains(origin)) {
       return true;
     }
 
     auto usage_it = usage_policy_.find(
         {collection->usage->usage_page, collection->usage->usage});
-    if (usage_it != usage_policy_.end() &&
-        base::Contains(usage_it->second, origin)) {
+    if (usage_it != usage_policy_.end() && usage_it->second.contains(origin)) {
       return true;
     }
   }

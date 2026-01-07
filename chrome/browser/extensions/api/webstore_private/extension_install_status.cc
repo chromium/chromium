@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/api/webstore_private/extension_install_status.h"
 
-#include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -114,9 +113,9 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
       supervised_user::AreExtensionsPermissionsEnabled(profile) &&
       !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
           profile) &&
-      !base::Contains(profile->GetPrefs()->GetDict(
-                          prefs::kSupervisedUserApprovedExtensions),
-                      extension_id)) {
+      !profile->GetPrefs()
+           ->GetDict(prefs::kSupervisedUserApprovedExtensions)
+           .contains(extension_id)) {
     return kCustodianApprovalRequiredForInstallation;
   }
   // Check if parent approval is needed for a supervised user to enable

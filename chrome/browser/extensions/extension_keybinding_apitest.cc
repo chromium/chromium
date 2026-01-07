@@ -5,7 +5,6 @@
 // This file contains UI interactive tests for the extensions commands API.
 // For non-UI interactive tests, see extension_keybinding_browsertest.cc.
 
-#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -214,7 +213,7 @@ void SendKeyPressToAction(Browser* browser,
   base::RunLoop().RunUntilIdle();
   // Check that the event was dispatched if and only if we expected it to be.
   EXPECT_EQ(expect_dispatch,
-            base::Contains(event_tracker.dispatched_events(), event_name));
+            event_tracker.dispatched_events().contains(event_name));
 
   // Do a round-trip to the extension renderer. This serves as a pseudo-
   // RunUntilIdle()-type of method for the extension renderer itself, since
@@ -675,9 +674,8 @@ IN_PROC_BROWSER_TEST_P(IncognitoCommandsApiTest, IncognitoMode) {
   } else {
     base::RunLoop().RunUntilIdle();
   }
-  EXPECT_EQ(
-      is_incognito_enabled,
-      base::Contains(test_observer.dispatched_events(), "action.onClicked"));
+  EXPECT_EQ(is_incognito_enabled,
+            test_observer.dispatched_events().contains("action.onClicked"));
 
   test_observer.ClearEvents();
 
@@ -691,9 +689,8 @@ IN_PROC_BROWSER_TEST_P(IncognitoCommandsApiTest, IncognitoMode) {
     base::RunLoop().RunUntilIdle();
   }
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(
-      is_incognito_enabled,
-      base::Contains(test_observer.dispatched_events(), "commands.onCommand"));
+  EXPECT_EQ(is_incognito_enabled,
+            test_observer.dispatched_events().contains("commands.onCommand"));
 }
 
 IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest,

@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -75,7 +74,7 @@ class ServiceDiscoveryDeviceListerImpl : public ServiceDiscoveryDeviceLister {
     }
 
     // If there is already a resolver working on this service, don't add one.
-    if (base::Contains(resolvers_, service_name)) {
+    if (resolvers_.contains(service_name)) {
       VLOG(1) << "Resolver already exists, service_name: " << service_name;
       return;
     }

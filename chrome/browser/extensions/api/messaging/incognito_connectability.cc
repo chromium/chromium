@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/strings/utf_string_conversions.h"
@@ -153,7 +152,7 @@ void IncognitoConnectability::OnInteractiveResponse(
       pending_origins_.find(make_pair(extension_id, origin));
   CHECK(origin_it != pending_origins_.end());
   PendingOrigin& pending_origin = origin_it->second;
-  DCHECK(base::Contains(pending_origin, infobar_manager));
+  DCHECK(pending_origin.contains(infobar_manager));
 
   std::vector<base::OnceCallback<void(bool)>> callbacks;
   if (response == ScopedAlertTracker::INTERACTIVE) {

@@ -318,7 +318,7 @@ ExternalInstallErrorDesktop::ExternalInstallErrorDesktop(
     const base::Value::List& initial_list =
         prefs->GetList(pref_names::kInitialInstallList);
 
-    if (base::Contains(initial_list, extension_id_)) {
+    if (initial_list.contains(extension_id_)) {
       prompt_->SetInitialExtensionsProviderName(base::UTF8ToUTF16(
           prefs->GetString(pref_names::kInitialInstallProviderName)));
     }

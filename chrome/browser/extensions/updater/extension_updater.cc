@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -386,7 +385,7 @@ void ExtensionUpdater::AddToDownloader(
     // An extension might be overwritten by policy, and have its update url
     // changed. Make sure existing extensions aren't fetched again, if a
     // pending fetch for an extension with the same id already exists.
-    if (base::Contains(pending_ids, extension_id)) {
+    if (pending_ids.contains(extension_id)) {
       continue;
     }
 
@@ -1048,7 +1047,7 @@ void ExtensionUpdater::NotifyStarted() {
 }
 
 void ExtensionUpdater::OnUpdateServiceFinished(int request_id) {
-  DCHECK(base::Contains(requests_in_progress_, request_id));
+  DCHECK(requests_in_progress_.contains(request_id));
   InProgressCheck& request = requests_in_progress_[request_id];
   DCHECK(request.awaiting_update_service);
   request.awaiting_update_service = false;
@@ -1056,7 +1055,7 @@ void ExtensionUpdater::OnUpdateServiceFinished(int request_id) {
 }
 
 void ExtensionUpdater::NotifyIfFinished(int request_id) {
-  DCHECK(base::Contains(requests_in_progress_, request_id));
+  DCHECK(requests_in_progress_.contains(request_id));
   InProgressCheck& request = requests_in_progress_[request_id];
   if (!request.in_progress_ids.empty() || request.awaiting_update_service) {
     return;  // This request is not done yet.

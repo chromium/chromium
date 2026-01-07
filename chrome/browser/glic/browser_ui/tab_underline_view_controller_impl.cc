@@ -4,7 +4,6 @@
 
 #include "chrome/browser/glic/browser_ui/tab_underline_view_controller_impl.h"
 
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "chrome/browser/glic/browser_ui/tab_underline_view.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
@@ -186,8 +185,7 @@ void TabUnderlineViewControllerImpl::OnContextTabsChanged(
     return;
   }
 
-  bool should_underline =
-      base::Contains(context_tabs, tab_interface->GetHandle());
+  bool should_underline = context_tabs.contains(tab_interface->GetHandle());
   UpdateUnderlineView(
       should_underline
           ? UpdateUnderlineReason::kContextualTask_TabInContext

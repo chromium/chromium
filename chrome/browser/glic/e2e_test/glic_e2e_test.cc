@@ -162,8 +162,8 @@ void GlicE2ETest::PreRunTestOnMainThread() {
 
   if (test_mode_ == kRecord || test_mode_ == kReplay) {
     // When WPR is used, for consistency, require consistent host and path.
-    CHECK(base::Contains(glic_fre_url.spec(), kAllowedHostAndPathForWpr) &&
-          base::Contains(glic_guest_url.spec(), kAllowedHostAndPathForWpr))
+    CHECK(glic_fre_url.spec().contains(kAllowedHostAndPathForWpr) &&
+          glic_guest_url.spec().contains(kAllowedHostAndPathForWpr))
         << "Please use allowed URL for WPR.";
   }
 }

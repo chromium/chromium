@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ref_counted_memory.h"
@@ -245,7 +244,7 @@ class PrinterProviderApiTest : public ExtensionApiTest,
       const std::vector<base::Value::Dict>& expected_printers) {
     ASSERT_EQ(expected_printers.size(), printers.size());
     for (const auto& printer_value : expected_printers) {
-      EXPECT_TRUE(base::Contains(printers, printer_value))
+      EXPECT_TRUE(printers.contains(printer_value))
           << "Unable to find " << printer_value << " in " << printers;
     }
   }

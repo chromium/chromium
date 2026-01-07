@@ -1860,8 +1860,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TestGroupDetachedAndReInserted) {
       browser()->tab_strip_model()->DetachTabGroupForInsertion(group);
 
   event_observer.WaitForEventWithName(api::tabs::OnUpdated::kEventName);
-  EXPECT_TRUE(base::Contains(event_observer.events(),
-                             api::tabs::OnUpdated::kEventName));
+  EXPECT_TRUE(
+      event_observer.events().contains(api::tabs::OnUpdated::kEventName));
 
   event_observer.ClearEvents();
 
@@ -1870,8 +1870,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TestGroupDetachedAndReInserted) {
 
   // Group added as well as the tab's group changed event should be sent.
   event_observer.WaitForEventWithName(api::tabs::OnUpdated::kEventName);
-  EXPECT_TRUE(base::Contains(event_observer.events(),
-                             api::tabs::OnUpdated::kEventName));
+  EXPECT_TRUE(
+      event_observer.events().contains(api::tabs::OnUpdated::kEventName));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, SplitViewAddedAndRemoved) {
@@ -1890,16 +1890,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, SplitViewAddedAndRemoved) {
       split_tabs::SplitTabCreatedSource());
 
   event_observer.WaitForEventWithName(api::tabs::OnUpdated::kEventName);
-  EXPECT_TRUE(base::Contains(event_observer.events(),
-                             api::tabs::OnUpdated::kEventName));
+  EXPECT_TRUE(
+      event_observer.events().contains(api::tabs::OnUpdated::kEventName));
 
   event_observer.ClearEvents();
 
   browser()->tab_strip_model()->RemoveSplit(split);
 
   event_observer.WaitForEventWithName(api::tabs::OnUpdated::kEventName);
-  EXPECT_TRUE(base::Contains(event_observer.events(),
-                             api::tabs::OnUpdated::kEventName));
+  EXPECT_TRUE(
+      event_observer.events().contains(api::tabs::OnUpdated::kEventName));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, Freezing) {

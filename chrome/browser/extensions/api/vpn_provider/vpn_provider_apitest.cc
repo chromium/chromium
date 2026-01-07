@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -197,8 +196,8 @@ class VpnProviderApiTest : public VpnProviderApiTestBase {
   }
 
   bool DoesConfigExist(const std::string& configuration_name) {
-    return base::Contains(service()->key_to_configuration_map_,
-                          GetKey(configuration_name));
+    return service()->key_to_configuration_map_.contains(
+        GetKey(configuration_name));
   }
 
   bool IsConfigConnected() {

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
@@ -47,7 +46,7 @@ class SupportedAudioVideoExtensions {
       const SupportedAudioVideoExtensions&) = delete;
 
   bool HasSupportedAudioVideoExtension(const base::FilePath& file) {
-    return base::Contains(audio_video_extensions_, file.Extension());
+    return audio_video_extensions_.contains(file.Extension());
   }
 
  private:

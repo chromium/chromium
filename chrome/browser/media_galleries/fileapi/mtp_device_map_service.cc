@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_async_delegate.h"
 #include "content/public/browser/browser_thread.h"
@@ -35,7 +34,7 @@ void MTPDeviceMapService::RegisterMTPFileSystem(
   DCHECK(!filesystem_id.empty());
 
   const AsyncDelegateKey key = GetAsyncDelegateKey(device_location, read_only);
-  if (!base::Contains(mtp_device_usage_map_, key)) {
+  if (!mtp_device_usage_map_.contains(key)) {
     // Note that this initializes the delegate asynchronously, but since
     // the delegate will only be used from the IO thread, it is guaranteed
     // to be created before use of it expects it to be there.
@@ -84,7 +83,7 @@ void MTPDeviceMapService::AddAsyncDelegate(
   DCHECK(!device_location.empty());
 
   const AsyncDelegateKey key = GetAsyncDelegateKey(device_location, read_only);
-  if (base::Contains(async_delegate_map_, key)) {
+  if (async_delegate_map_.contains(key)) {
     return;
   }
   async_delegate_map_[key] = delegate;

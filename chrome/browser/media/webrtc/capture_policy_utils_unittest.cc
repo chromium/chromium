@@ -4,7 +4,6 @@
 
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 
-#include "base/containers/contains.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"

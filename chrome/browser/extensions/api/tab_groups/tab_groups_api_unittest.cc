@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -278,10 +277,10 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsOnCreated) {
   browser()->tab_strip_model()->AddToNewGroup({1, 2, 3});
 
   EXPECT_EQ(2u, event_observer.events().size());
-  EXPECT_TRUE(base::Contains(event_observer.events(),
-                             api::tab_groups::OnCreated::kEventName));
-  EXPECT_TRUE(base::Contains(event_observer.events(),
-                             api::tab_groups::OnUpdated::kEventName));
+  EXPECT_TRUE(
+      event_observer.events().contains(api::tab_groups::OnCreated::kEventName));
+  EXPECT_TRUE(
+      event_observer.events().contains(api::tab_groups::OnUpdated::kEventName));
 }
 
 TEST_F(TabGroupsApiUnitTest, TabGroupsOnUpdated) {
@@ -297,8 +296,8 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsOnUpdated) {
   tab_strip_model->ChangeTabGroupVisuals(group, visual_data);
 
   EXPECT_EQ(1u, event_observer.events().size());
-  EXPECT_TRUE(base::Contains(event_observer.events(),
-                             api::tab_groups::OnUpdated::kEventName));
+  EXPECT_TRUE(
+      event_observer.events().contains(api::tab_groups::OnUpdated::kEventName));
 }
 
 TEST_F(TabGroupsApiUnitTest, TabGroupsOnRemoved) {
@@ -312,8 +311,8 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsOnRemoved) {
   tab_strip_model->RemoveFromGroup({1, 2, 3});
 
   EXPECT_EQ(1u, event_observer.events().size());
-  EXPECT_TRUE(base::Contains(event_observer.events(),
-                             api::tab_groups::OnRemoved::kEventName));
+  EXPECT_TRUE(
+      event_observer.events().contains(api::tab_groups::OnRemoved::kEventName));
 }
 
 TEST_F(TabGroupsApiUnitTest, TabGroupsOnMoved) {
@@ -327,8 +326,8 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsOnMoved) {
   tab_strip_model->MoveGroupTo(group, 0);
 
   EXPECT_EQ(1u, event_observer.events().size());
-  EXPECT_TRUE(base::Contains(event_observer.events(),
-                             api::tab_groups::OnMoved::kEventName));
+  EXPECT_TRUE(
+      event_observer.events().contains(api::tab_groups::OnMoved::kEventName));
 }
 
 // Test that tab groups aren't edited while dragging.

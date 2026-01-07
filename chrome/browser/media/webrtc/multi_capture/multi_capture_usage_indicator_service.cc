@@ -12,7 +12,6 @@
 #include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/functional/bind.h"
 #include "base/i18n/message_formatter.h"
@@ -301,7 +300,7 @@ MultiCaptureUsageIndicatorService::GetInstalledAndAllowlistedAppNames() const {
   std::map<webapps::AppId, std::string> current_capture_notification_apps;
   for (const auto& [app_id, app_name] :
        data_service_->GetCaptureAppsWithNotification()) {
-    if (base::Contains(started_captures_, app_id)) {
+    if (started_captures_.contains(app_id)) {
       current_capture_notification_apps[app_id] = app_name;
     } else {
       future_capture_notification_apps[app_id] = app_name;

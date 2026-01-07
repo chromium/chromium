@@ -8,7 +8,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "components/crx_file/id_util.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
@@ -327,7 +326,7 @@ void ExtensionManagementPrefUpdaterBase::AddStringToList(
     list_value_weak =
         &pref_.SetByDottedPath(path, base::Value::List())->GetList();
   }
-  CHECK(!base::Contains(*list_value_weak, base::Value(str)));
+  CHECK(!list_value_weak->contains(str));
   list_value_weak->Append(str);
 }
 

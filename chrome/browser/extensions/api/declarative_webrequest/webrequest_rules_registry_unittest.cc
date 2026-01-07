@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -285,10 +284,8 @@ TEST_F(WebRequestRulesRegistryTest, AddRulesImpl) {
   std::set<WebRequestRule::GlobalRuleId> matches_ids;
   for (const auto* match : matches)
     matches_ids.insert(match->id());
-  EXPECT_TRUE(
-      base::Contains(matches_ids, std::make_pair(kExtensionId, kRuleId1)));
-  EXPECT_TRUE(
-      base::Contains(matches_ids, std::make_pair(kExtensionId, kRuleId2)));
+  EXPECT_TRUE(matches_ids.contains(std::make_pair(kExtensionId, kRuleId1)));
+  EXPECT_TRUE(matches_ids.contains(std::make_pair(kExtensionId, kRuleId2)));
 
   GURL foobar_url("http://www.foobar.com");
   WebRequestInfo foobar_request_info(CreateRequestParams(foobar_url));

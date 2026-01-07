@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
@@ -109,7 +108,7 @@ ChromeComponentExtensionResourceManager::Data::Data() {
         base::FilePath("file_manager").AppendASCII(resource.path);
     resource_path = resource_path.NormalizePathSeparators();
 
-    DCHECK(!base::Contains(path_to_resource_id_, resource_path));
+    DCHECK(!path_to_resource_id_.contains(resource_path));
     path_to_resource_id_[resource_path] = resource.id;
   }
 
@@ -153,7 +152,7 @@ void ChromeComponentExtensionResourceManager::Data::AddComponentResourceEntries(
     base::FilePath resource_path = base::FilePath().AppendASCII(entry.path);
     resource_path = resource_path.NormalizePathSeparators();
 
-    DCHECK(!base::Contains(path_to_resource_id_, resource_path));
+    DCHECK(!path_to_resource_id_.contains(resource_path));
     path_to_resource_id_[resource_path] = entry.id;
   }
 }

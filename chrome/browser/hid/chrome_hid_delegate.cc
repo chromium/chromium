@@ -7,7 +7,6 @@
 #include <cstddef>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -187,7 +186,7 @@ std::unique_ptr<content::HidChooser> ChromeHidDelegate::RunChooser(
 
   // Start observing HidChooserContext for permission and device events.
   GetContextObserver(browser_context);
-  DCHECK(base::Contains(observations_, browser_context));
+  DCHECK(observations_.contains(browser_context));
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // If it's a webview, request permission to show chooser from the embedder.
@@ -279,7 +278,7 @@ void ChromeHidDelegate::RemoveObserver(
   if (!browser_context) {
     return;
   }
-  DCHECK(base::Contains(observations_, browser_context));
+  DCHECK(observations_.contains(browser_context));
   GetContextObserver(browser_context)->RemoveObserver(observer);
 }
 
@@ -322,7 +321,7 @@ bool ChromeHidDelegate::IsServiceWorkerAllowedForOrigin(
 ChromeHidDelegate::ContextObservation* ChromeHidDelegate::GetContextObserver(
     content::BrowserContext* browser_context) {
   DCHECK(browser_context);
-  if (!base::Contains(observations_, browser_context)) {
+  if (!observations_.contains(browser_context)) {
     observations_.emplace(browser_context, std::make_unique<ContextObservation>(
                                                this, browser_context));
   }

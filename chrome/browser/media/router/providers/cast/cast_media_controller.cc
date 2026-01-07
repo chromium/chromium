@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -260,14 +259,12 @@ void CastMediaController::UpdateMediaStatus(
   if (commands_list) {
     // |can_set_volume| and |can_mute| are not used, because the receiver volume
     // info obtained in SetSession() is used instead.
-    media_status_.can_play_pause =
-        base::Contains(*commands_list, base::Value(kMediaCommandPause));
-    media_status_.can_seek =
-        base::Contains(*commands_list, base::Value(kMediaCommandSeek));
+    media_status_.can_play_pause = commands_list->contains(kMediaCommandPause);
+    media_status_.can_seek = commands_list->contains(kMediaCommandSeek);
     media_status_.can_skip_to_next_track =
-        base::Contains(*commands_list, base::Value(kMediaCommandQueueNext));
+        commands_list->contains(kMediaCommandQueueNext);
     media_status_.can_skip_to_previous_track =
-        base::Contains(*commands_list, base::Value(kMediaCommandQueuePrev));
+        commands_list->contains(kMediaCommandQueuePrev);
   }
 
   const std::string* player_state =

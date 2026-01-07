@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/strcat.h"
@@ -135,7 +134,7 @@ bool FakeServiceDiscoveryDeviceLister::discovery_started() {
 void FakeServiceDiscoveryDeviceLister::SendUpdate(
     const ServiceDescription& description) {
   bool is_new;
-  if (!base::Contains(announced_services_, description.service_name)) {
+  if (!announced_services_.contains(description.service_name)) {
     is_new = true;
     announced_services_.insert(description.service_name);
   } else {

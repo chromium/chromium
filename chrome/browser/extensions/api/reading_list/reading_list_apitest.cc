@@ -84,16 +84,16 @@ IN_PROC_BROWSER_TEST_F(ReadingListApiTest,
       /*estimated_read_time=*/std::nullopt,
       /*creation_time=*/std::nullopt);
 
-  ASSERT_TRUE(base::Contains(event_observer.events(),
-                             api::reading_list::OnEntryAdded::kEventName));
+  ASSERT_TRUE(event_observer.events().contains(
+      api::reading_list::OnEntryAdded::kEventName));
   Event* normal_event = event_observer.events()
                             .at(api::reading_list::OnEntryAdded::kEventName)
                             .get();
   EXPECT_EQ(normal_event->restrict_to_browser_context, profile());
 
   event_observer.ClearEvents();
-  ASSERT_FALSE(base::Contains(event_observer.events(),
-                              api::reading_list::OnEntryAdded::kEventName));
+  ASSERT_FALSE(event_observer.events().contains(
+      api::reading_list::OnEntryAdded::kEventName));
 
   Profile* incognito_profile =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
@@ -107,8 +107,8 @@ IN_PROC_BROWSER_TEST_F(ReadingListApiTest,
       /*estimated_read_time=*/std::nullopt,
       /*creation_time=*/std::nullopt);
 
-  ASSERT_TRUE(base::Contains(event_observer.events(),
-                             api::reading_list::OnEntryAdded::kEventName));
+  ASSERT_TRUE(event_observer.events().contains(
+      api::reading_list::OnEntryAdded::kEventName));
   Event* incognito_event = event_observer.events()
                                .at(api::reading_list::OnEntryAdded::kEventName)
                                .get();
@@ -483,8 +483,8 @@ IN_PROC_BROWSER_TEST_F(ReadingListApiTest, ReadingListOnEntryAdded) {
 
   EXPECT_EQ(reading_list_model->size(), 1u);
 
-  EXPECT_TRUE(base::Contains(event_observer.events(),
-                             api::reading_list::OnEntryAdded::kEventName));
+  EXPECT_TRUE(event_observer.events().contains(
+      api::reading_list::OnEntryAdded::kEventName));
 }
 
 // Test that removing an entry generates an event.
@@ -506,8 +506,8 @@ IN_PROC_BROWSER_TEST_F(ReadingListApiTest, ReadingListOnEntryRemoved) {
   EXPECT_EQ(reading_list_model->size(), 0u);
 
   EXPECT_EQ(event_observer.events().size(), 1u);
-  EXPECT_TRUE(base::Contains(event_observer.events(),
-                             api::reading_list::OnEntryRemoved::kEventName));
+  EXPECT_TRUE(event_observer.events().contains(
+      api::reading_list::OnEntryRemoved::kEventName));
 }
 
 // Test that updating an entry generates an event.
@@ -531,15 +531,15 @@ IN_PROC_BROWSER_TEST_F(ReadingListApiTest, ReadingListOnEntryUpdated) {
   EXPECT_TRUE(reading_list_model->GetEntryByURL(url)->IsRead());
 
   EXPECT_EQ(event_observer.events().size(), 1u);
-  EXPECT_TRUE(base::Contains(event_observer.events(),
-                             api::reading_list::OnEntryUpdated::kEventName));
+  EXPECT_TRUE(event_observer.events().contains(
+      api::reading_list::OnEntryUpdated::kEventName));
 
   reading_list_model->SetEntryTitleIfExists(url, "New title");
   EXPECT_EQ(reading_list_model->GetEntryByURL(url)->Title(), "New title");
 
   EXPECT_EQ(event_observer.events().size(), 1u);
-  EXPECT_TRUE(base::Contains(event_observer.events(),
-                             api::reading_list::OnEntryUpdated::kEventName));
+  EXPECT_TRUE(event_observer.events().contains(
+      api::reading_list::OnEntryUpdated::kEventName));
 }
 
 }  // namespace

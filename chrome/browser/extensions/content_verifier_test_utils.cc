@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
@@ -53,7 +52,7 @@ void DownloaderTestDelegate::StartUpdateCheck(
   for (ExtensionDownloaderTask& task : tasks)
     requests_.push_back(std::move(task));
   for (const auto& id : extension_ids) {
-    if (base::Contains(responses_, id)) {
+    if (responses_.contains(id)) {
       CRXFileInfo crx_info(responses_[id].second, GetTestVerifierFormat());
       crx_info.extension_id = id;
       crx_info.expected_version = responses_[id].first;

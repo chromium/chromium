@@ -4,7 +4,6 @@
 
 #include "chrome/browser/media/router/providers/cast/cast_app_availability_tracker.h"
 
-#include "base/containers/contains.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 
 using cast_channel::GetAppAvailabilityResult;
@@ -16,7 +15,7 @@ CastAppAvailabilityTracker::~CastAppAvailabilityTracker() = default;
 
 base::flat_set<std::string> CastAppAvailabilityTracker::RegisterSource(
     const CastMediaSource& source) {
-  if (base::Contains(registered_sources_, source.source_id())) {
+  if (registered_sources_.contains(source.source_id())) {
     return base::flat_set<std::string>();
   }
 

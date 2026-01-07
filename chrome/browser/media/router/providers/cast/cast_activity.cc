@@ -4,7 +4,6 @@
 
 #include "chrome/browser/media/router/providers/cast/cast_activity.h"
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
@@ -40,7 +39,7 @@ mojom::RoutePresentationConnectionPtr CastActivity::AddClient(
     const url::Origin& origin,
     content::FrameTreeNodeId frame_tree_node_id) {
   const std::string& client_id = source.client_id();
-  DCHECK(!base::Contains(connected_clients_, client_id));
+  DCHECK(!connected_clients_.contains(client_id));
   std::unique_ptr<CastSessionClient> client =
       client_factory_for_test_
           ? client_factory_for_test_->MakeClientForTest(  // IN-TEST

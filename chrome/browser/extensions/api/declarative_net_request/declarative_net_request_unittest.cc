@@ -465,7 +465,7 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
   bool RulesetExists(const std::string& ruleset_id_string) {
     const DNRManifestData::ManifestIDToRulesetMap& public_id_map =
         DNRManifestData::GetManifestIDToRulesetMap(*extension());
-    return base::Contains(public_id_map, ruleset_id_string);
+    return public_id_map.contains(ruleset_id_string);
   }
 
   void VerifyGetDisabledRuleIdsFunction(

@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/warning_badge_service_factory.h"
@@ -141,7 +140,7 @@ void WarningBadgeService::UpdateBadgeStatus() {
   const std::set<Warning>& warnings = GetCurrentWarnings();
   bool non_suppressed_warnings_exist = false;
   for (auto i = warnings.begin(); i != warnings.end(); ++i) {
-    if (!base::Contains(suppressed_warnings_, *i)) {
+    if (!suppressed_warnings_.contains(*i)) {
       non_suppressed_warnings_exist = true;
       break;
     }

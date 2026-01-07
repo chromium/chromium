@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -3056,8 +3055,8 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, ScopesDefault) {
   const ExtensionTokenKey* token_key = func->GetExtensionTokenKeyForTest();
   EXPECT_EQ(token_key->scopes, granted_scopes);
   EXPECT_EQ(2ul, token_key->scopes.size());
-  EXPECT_TRUE(base::Contains(token_key->scopes, "scope1"));
-  EXPECT_TRUE(base::Contains(token_key->scopes, "scope2"));
+  EXPECT_TRUE(token_key->scopes.contains("scope1"));
+  EXPECT_TRUE(token_key->scopes.contains("scope2"));
   histogram_tester()->ExpectUniqueSample(
       kGetAuthTokenResultHistogramName, IdentityGetAuthTokenError::State::kNone,
       1);

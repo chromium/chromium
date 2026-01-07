@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/base_paths_posix.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/time_formatting.h"
@@ -659,7 +658,7 @@ base::FilePath MediaGalleriesPreferences::LookUpGalleryPathForExtension(
   DCHECK(IsInitialized());
   DCHECK(extension);
   if (!include_unpermitted_galleries &&
-      !base::Contains(GalleriesForExtension(*extension), gallery_id)) {
+      !GalleriesForExtension(*extension).contains(gallery_id)) {
     return base::FilePath();
   }
 
@@ -965,7 +964,7 @@ void MediaGalleriesPreferences::EraseOrBlocklistGalleryById(
       prefs, prefs::kMediaGalleriesRememberedGalleries);
   base::Value::List& list = update->Get();
 
-  if (!base::Contains(known_galleries_, id)) {
+  if (!known_galleries_.contains(id)) {
     return;
   }
 
@@ -1004,7 +1003,7 @@ void MediaGalleriesPreferences::EraseOrBlocklistGalleryById(
 bool MediaGalleriesPreferences::NonAutoGalleryHasPermission(
     MediaGalleryPrefId id) const {
   DCHECK(IsInitialized());
-  DCHECK(!base::Contains(known_galleries_, id) ||
+  DCHECK(!known_galleries_.contains(id) ||
          known_galleries_.find(id)->second.type !=
              MediaGalleryPrefInfo::kAutoDetected);
   ExtensionPrefs* prefs = GetExtensionPrefs();

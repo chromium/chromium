@@ -10,7 +10,6 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -4178,7 +4177,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
         base::AutoLock auto_lock(lock);
         ++served_service_worker_count;
         foo_header_value.clear();
-        if (base::Contains(request.headers, "foo")) {
+        if (request.headers.contains("foo")) {
           foo_header_value = request.headers.at("foo");
         }
 
@@ -4258,7 +4257,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
           base::AutoLock auto_lock(lock);
           ++served_service_worker_count;
           foo_header_value.clear();
-          if (base::Contains(request.headers, "foo")) {
+          if (request.headers.contains("foo")) {
             foo_header_value = request.headers.at("foo");
           }
           auto response =
@@ -4567,9 +4566,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   std::string body =
       content::EvalJs(tab, "document.body.textContent").ExtractString();
 
-  EXPECT_TRUE(
-      base::Contains(body, "This page has been blocked by an extension"));
-  EXPECT_TRUE(base::Contains(body, "Try disabling your extensions."));
+  EXPECT_TRUE(body.contains("This page has been blocked by an extension"));
+  EXPECT_TRUE(body.contains("Try disabling your extensions."));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

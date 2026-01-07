@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_test_utils.h"
@@ -34,7 +33,7 @@ void FakeDocumentScanAsh::OpenScanner(const std::string& client_id,
   // If a response for scanner_id hasn't been set, this is the equivalent
   // of trying to open a device that has been unplugged or disappeared off the
   // network.
-  if (!base::Contains(open_responses_, scanner_id)) {
+  if (!open_responses_.contains(scanner_id)) {
     auto response = crosapi::mojom::OpenScannerResponse::New();
     response->scanner_id = scanner_id;
     response->result = crosapi::mojom::ScannerOperationResult::kDeviceMissing;
@@ -67,7 +66,7 @@ void FakeDocumentScanAsh::OpenScanner(const std::string& client_id,
 
 void FakeDocumentScanAsh::GetOptionGroups(const std::string& scanner_handle,
                                           GetOptionGroupsCallback callback) {
-  if (!base::Contains(open_scanners_, scanner_handle)) {
+  if (!open_scanners_.contains(scanner_handle)) {
     auto response = crosapi::mojom::GetOptionGroupsResponse::New();
     response->scanner_handle = scanner_handle;
     response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
@@ -93,7 +92,7 @@ void FakeDocumentScanAsh::CloseScanner(const std::string& scanner_handle,
                                        CloseScannerCallback callback) {
   auto response = crosapi::mojom::CloseScannerResponse::New();
   response->scanner_handle = scanner_handle;
-  if (base::Contains(open_scanners_, scanner_handle)) {
+  if (open_scanners_.contains(scanner_handle)) {
     response->result = crosapi::mojom::ScannerOperationResult::kSuccess;
   } else {
     response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
@@ -106,7 +105,7 @@ void FakeDocumentScanAsh::StartPreparedScan(
     const std::string& scanner_handle,
     crosapi::mojom::StartScanOptionsPtr options,
     StartPreparedScanCallback callback) {
-  if (!base::Contains(open_scanners_, scanner_handle)) {
+  if (!open_scanners_.contains(scanner_handle)) {
     auto response = crosapi::mojom::StartPreparedScanResponse::New();
     response->scanner_handle = scanner_handle;
     response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
@@ -122,8 +121,8 @@ void FakeDocumentScanAsh::StartPreparedScan(
     std::move(callback).Run(std::move(response));
     return;
   }
-  if (base::Contains(start_responses_,
-                     open_scanners_.at(scanner_handle).connection_string)) {
+  if (start_responses_.contains(
+          open_scanners_.at(scanner_handle).connection_string)) {
     const auto& template_response = start_responses_.at(
         open_scanners_.at(scanner_handle).connection_string);
     response->result = template_response->result;
@@ -188,7 +187,7 @@ void FakeDocumentScanAsh::SetOptions(
   response->scanner_handle = scanner_handle;
   response->results.reserve(options.size());
 
-  if (!base::Contains(open_scanners_, scanner_handle)) {
+  if (!open_scanners_.contains(scanner_handle)) {
     for (const auto& setting : options) {
       response->results.emplace_back(crosapi::mojom::SetOptionResult::New(
           setting->name,
@@ -225,7 +224,7 @@ void FakeDocumentScanAsh::SetOptions(
     // can look up the value.  The real backend doesn't behave this way, but
     // this avoids a ton of boilerplate in tests without changing the handler
     // code coverage that can be achieved with the fake.
-    if (!base::Contains(response->options.value(), setting->name)) {
+    if (!response->options.value().contains(setting->name)) {
       auto option = crosapi::mojom::ScannerOption::New();
       option->name = setting->name;
       option->type = setting->type;

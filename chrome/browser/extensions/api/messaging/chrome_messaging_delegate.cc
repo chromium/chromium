@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/messaging/incognito_connectability.h"
@@ -57,10 +56,7 @@ ChromeMessagingDelegate::IsNativeMessagingHostAllowed(
       pref_service->GetList(pref_names::kNativeMessagingBlocklist);
 
   // Check if the name or the wildcard is in the blocklist.
-  base::Value name_value(native_host_name);
-  base::Value wildcard_value("*");
-  if (!base::Contains(blocklist, name_value) &&
-      !base::Contains(blocklist, wildcard_value)) {
+  if (!blocklist.contains(native_host_name) && !blocklist.contains("*")) {
     return allow_result;
   }
 
@@ -69,7 +65,7 @@ ChromeMessagingDelegate::IsNativeMessagingHostAllowed(
           pref_names::kNativeMessagingAllowlist)) {
     const base::Value::List& allowlist =
         pref_service->GetList(pref_names::kNativeMessagingAllowlist);
-    if (base::Contains(allowlist, name_value)) {
+    if (allowlist.contains(native_host_name)) {
       return allow_result;
     }
   }

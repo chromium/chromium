@@ -1652,9 +1652,8 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, MultipleUnscopedExtensions) {
               result.match_at(1).provider->type());
     EXPECT_EQ(omnibox::GROUP_UNSCOPED_EXTENSION_1,
               result.match_at(1).suggestion_group_id);
-    EXPECT_TRUE(base::Contains(extension_names,
-                               result.GetHeaderForSuggestionGroup(
-                                   *result.match_at(1).suggestion_group_id)));
+    EXPECT_TRUE(extension_names.contains(result.GetHeaderForSuggestionGroup(
+        *result.match_at(1).suggestion_group_id)));
     extension_names.erase(result.GetHeaderForSuggestionGroup(
         *result.match_at(1).suggestion_group_id));
   }
@@ -1663,9 +1662,8 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, MultipleUnscopedExtensions) {
               result.match_at(2).provider->type());
     EXPECT_EQ(omnibox::GROUP_UNSCOPED_EXTENSION_2,
               result.match_at(2).suggestion_group_id);
-    EXPECT_TRUE(base::Contains(extension_names,
-                               result.GetHeaderForSuggestionGroup(
-                                   *result.match_at(2).suggestion_group_id)));
+    EXPECT_TRUE(extension_names.contains(result.GetHeaderForSuggestionGroup(
+        *result.match_at(2).suggestion_group_id)));
   }
 }
 

@@ -641,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, TestServiceWorker_AcrossSession) {
     std::string file_contents;
     ASSERT_TRUE(base::ReadFileToString(
         extension->path().AppendASCII("background.js"), &file_contents));
-    EXPECT_TRUE(base::Contains(file_contents, "self.didModifyScript = true;"));
+    EXPECT_TRUE(file_contents.contains("self.didModifyScript = true;"));
   }
 
   // Now for the fun part. Start up the extension by opening a new tab,

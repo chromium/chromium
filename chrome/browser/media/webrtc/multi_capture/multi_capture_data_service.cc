@@ -5,7 +5,6 @@
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service.h"
 
 #include "base/barrier_closure.h"
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
@@ -167,8 +166,9 @@ void MultiCaptureDataService::LoadData() {
         base::BindOnce(&MultiCaptureDataService::OnIconReceived,
                        weak_ptr_factory_.GetWeakPtr(), *app_id));
 
-    const bool can_skip_active_notification = base::Contains(
-        app_without_notification_bundle_ids_, allowlisted_app_url.GetHost());
+    const bool can_skip_active_notification =
+        app_without_notification_bundle_ids_.contains(
+            allowlisted_app_url.GetHost());
     const std::string app_name = registrar.GetAppShortName(*app_id);
     if (can_skip_active_notification) {
       capture_apps_without_notification_[*app_id] = app_name;

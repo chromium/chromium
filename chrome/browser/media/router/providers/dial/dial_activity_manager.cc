@@ -8,7 +8,6 @@
 #include <optional>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
@@ -143,7 +142,7 @@ void DialActivityManager::AddActivity(const DialActivity& activity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   MediaRoute::Id route_id = activity.route.media_route_id();
-  DCHECK(!base::Contains(records_, route_id));
+  DCHECK(!records_.contains(route_id));
   // TODO(crbug.com/40090609): Consider adding a timeout for transitioning
   // to kLaunched state to clean up unresponsive launches.
   records_.emplace(route_id,

@@ -490,8 +490,8 @@ IN_PROC_BROWSER_TEST_F(
                             embedded_test_server()->GetURL("/simple.html")));
 
   // Check that the EventRouter has received and will dispatch the event.
-  ASSERT_TRUE(base::Contains(event_router_observer.events(),
-                             "webNavigation.onCompleted"));
+  ASSERT_TRUE(
+      event_router_observer.events().contains("webNavigation.onCompleted"));
   // Wait until the EventRouter has actually dispatched the event.
   // TODO(crbug.com/40276609): when this is solved, the event will
   // be dispatched immediately and this won't be necessary.

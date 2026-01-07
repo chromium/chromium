@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
@@ -744,7 +743,7 @@ void TabStatsTracker::OnInitialOrInsertedTab(
   // If we already have a WebContentsObserver for this tab then it means that
   // it's already tracked and it's being dragged into a new window, there's
   // nothing to do here.
-  if (!base::Contains(web_contents_usage_observers_, web_contents)) {
+  if (!web_contents_usage_observers_.contains(web_contents)) {
     for (TabStatsObserver& tab_stats_observer : tab_stats_observers_) {
       tab_stats_observer.OnTabAdded(web_contents);
     }
@@ -769,7 +768,7 @@ void TabStatsTracker::OnTabReplaced(content::WebContents* old_contents,
 void TabStatsTracker::OnWebContentsDestroyed(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::Contains(web_contents_usage_observers_, web_contents));
+  DCHECK(web_contents_usage_observers_.contains(web_contents));
   web_contents_usage_observers_.erase(
       web_contents_usage_observers_.find(web_contents));
   for (TabStatsObserver& tab_stats_observer : tab_stats_observers_) {
