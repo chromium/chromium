@@ -318,6 +318,32 @@ DataTypeSet UserSelectableOsTypeToAllDataTypes(UserSelectableOsType type) {
 DataType UserSelectableOsTypeToCanonicalDataType(UserSelectableOsType type) {
   return GetUserSelectableOsTypeInfo(type).canonical_data_type;
 }
+
+base::Value::List UserSelectableOsTypeSetToValueList(
+    syncer::UserSelectableOsTypeSet user_selected_types) {
+  base::Value::List value_list;
+  for (syncer::UserSelectableOsType type : user_selected_types) {
+    if (const char* name = syncer::GetUserSelectableOsTypeName(type)) {
+      value_list.Append(name);
+    }
+  }
+  return value_list;
+}
+
+syncer::UserSelectableOsTypeSet ValueListToUserSelectableOsTypeSet(
+    const base::Value::List& value_list) {
+  syncer::UserSelectableOsTypeSet user_selected_os_types;
+  for (const base::Value& value : value_list) {
+    if (!value.is_string()) {
+      continue;
+    }
+    if (std::optional<syncer::UserSelectableOsType> type =
+            syncer::GetUserSelectableOsTypeFromString(value.GetString())) {
+      user_selected_os_types.Put(type.value());
+    }
+  }
+  return user_selected_os_types;
+}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 std::ostream& operator<<(std::ostream& stream, const UserSelectableType& type) {

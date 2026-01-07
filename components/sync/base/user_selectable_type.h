@@ -87,6 +87,11 @@ DataType UserSelectableOsTypeToCanonicalDataType(UserSelectableOsType type);
 // Returns the type if the string matches a known OS type.
 std::optional<UserSelectableOsType> GetUserSelectableOsTypeFromString(
     const std::string& type);
+
+base::Value::List UserSelectableOsTypeSetToValueList(
+    syncer::UserSelectableOsTypeSet user_selected_types);
+syncer::UserSelectableOsTypeSet ValueListToUserSelectableOsTypeSet(
+    const base::Value::List& value_list);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // For GTest.
