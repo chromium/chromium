@@ -102,11 +102,10 @@ class SupervisedUserMetricsServiceExtensionDelegateFake
   bool RecordExtensionsMetrics() override;
 };
 
-class MetricsServiceAccessorDelegateMock
-    : public SupervisedUserMetricsService::MetricsServiceAccessorDelegate {
+class SynteticFieldTrialDelegateMock : public SynteticFieldTrialDelegate {
  public:
-  MetricsServiceAccessorDelegateMock();
-  ~MetricsServiceAccessorDelegateMock() override;
+  SynteticFieldTrialDelegateMock();
+  ~SynteticFieldTrialDelegateMock() override;
   MOCK_METHOD(void,
               RegisterSyntheticFieldTrial,
               (std::string_view trial_name, std::string_view group_name),
@@ -124,8 +123,8 @@ class SupervisedUserTestEnvironment {
       InitialSupervisionState initial_state =
           InitialSupervisionState::kUnsupervised);
   explicit SupervisedUserTestEnvironment(
-      std::unique_ptr<MetricsServiceAccessorDelegateMock>
-          metrics_service_accessor_delegate,
+      std::unique_ptr<SynteticFieldTrialDelegateMock>
+          synthetic_field_trial_delegate,
       InitialSupervisionState initial_state =
           InitialSupervisionState::kUnsupervised);
 

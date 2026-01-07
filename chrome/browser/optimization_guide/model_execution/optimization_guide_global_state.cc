@@ -34,6 +34,7 @@
 #include "components/services/unzip/content/unzip_service.h"
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace optimization_guide {
 

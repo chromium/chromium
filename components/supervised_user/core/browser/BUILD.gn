@@ -154,6 +154,7 @@ static_library("browser") {
   deps = [
     ":fetcher",
     ":fetcher_config",
+    ":synthetic_field_trial_delegate",
     "//base",
     "//components/content_settings/core/browser",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
@@ -248,4 +249,9 @@ source_set("unit_tests") {
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+# TODO(crbug.com/474015323): Consider merging with :device_parental_controls
+source_set("synthetic_field_trial_delegate") {
+  sources = [ "supervised_user_synthetic_field_trial_service_delegate.h" ]
 }

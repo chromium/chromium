@@ -100,8 +100,7 @@ SupervisedUserMetricsService::SupervisedUserMetricsService(
 #endif
     std::unique_ptr<SupervisedUserMetricsServiceExtensionDelegate>
         extensions_metrics_delegate,
-    std::unique_ptr<MetricsServiceAccessorDelegate>
-        metrics_service_accessor_delegate)
+    std::unique_ptr<SynteticFieldTrialDelegate> synthetic_field_trial_delegate)
     : pref_service_(pref_service),
       supervised_user_service_(supervised_user_service),
       url_filtering_service_(url_filtering_service),
@@ -109,8 +108,8 @@ SupervisedUserMetricsService::SupervisedUserMetricsService(
       android_parental_controls_(android_parental_controls),
 #endif
       extensions_metrics_delegate_(std::move(extensions_metrics_delegate)),
-      metrics_service_accessor_delegate_(
-          std::move(metrics_service_accessor_delegate)) {
+      synthetic_field_trial_delegate_(
+          std::move(synthetic_field_trial_delegate)) {
   DCHECK(pref_service_);
   supervised_user_service_observation_.Observe(&supervised_user_service);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -124,8 +123,8 @@ SupervisedUserMetricsService::SupervisedUserMetricsService(
                &SupervisedUserMetricsService::CheckForNewDay);
 
 #if BUILDFLAG(IS_ANDROID)
-  CHECK(metrics_service_accessor_delegate_)
-      << "Metrics service accessor delegate must exist on Android";
+  CHECK(synthetic_field_trial_delegate_)
+      << "Synthetic field trial delegate must exist on Android";
   android_parental_controls_service_observation_.Observe(
       &android_parental_controls);
   OnAndroidParentalControlsBrowserContentFiltersChanged();
@@ -169,7 +168,7 @@ void SupervisedUserMetricsService::RecordCurrentDay() {
 #if BUILDFLAG(IS_ANDROID)
 void SupervisedUserMetricsService::
     OnAndroidParentalControlsBrowserContentFiltersChanged() {
-  metrics_service_accessor_delegate_->RegisterSyntheticFieldTrial(
+  synthetic_field_trial_delegate_->RegisterSyntheticFieldTrial(
       kDeviceBrowserContentFiltersSyntheticFieldTrialName,
       GetDeviceFiltersSynthenticFieldTrialGroupName(
           android_parental_controls_->IsBrowserContentFiltersEnabled()));
@@ -177,7 +176,7 @@ void SupervisedUserMetricsService::
 
 void SupervisedUserMetricsService::
     OnAndroidParentalControlsSearchContentFiltersChanged() {
-  metrics_service_accessor_delegate_->RegisterSyntheticFieldTrial(
+  synthetic_field_trial_delegate_->RegisterSyntheticFieldTrial(
       kDeviceSearchContentFiltersSyntheticFieldTrialName,
       GetDeviceFiltersSynthenticFieldTrialGroupName(
           android_parental_controls_->IsSearchContentFiltersEnabled()));

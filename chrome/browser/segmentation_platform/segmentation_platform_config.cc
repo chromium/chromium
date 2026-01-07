@@ -10,6 +10,7 @@
 
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -218,8 +219,9 @@ void AppendConfigsFromExperiments(
     base::FieldTrialParams params;
     if (base::GetFieldTrialParams(active_group.trial_name, &params)) {
       const auto& it = params.find(kSegmentationConfigParamName);
-      if (it == params.end())
+      if (it == params.end()) {
         continue;
+      }
       param_values.push_back(it->second);
     }
   }
