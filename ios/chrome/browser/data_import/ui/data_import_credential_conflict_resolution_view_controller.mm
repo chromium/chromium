@@ -240,7 +240,7 @@ NSString* const kDataImportCredentialConflictResolutionSection =
   cell.contentConfiguration = config;
   cell.editingAccessoryView = [self accessoryViewForItemIdentifier:identifier];
   UIView* selectedBackgroundView = [[UIView alloc] init];
-  selectedBackgroundView.backgroundColor = [UIColor clearColor];
+  selectedBackgroundView.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
   cell.selectedBackgroundView = selectedBackgroundView;
   return cell;
 }
