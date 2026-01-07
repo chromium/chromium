@@ -609,6 +609,12 @@ std::vector<tab_groups::TabGroupId> TabModelJniBridge::ListTabGroups() {
   return group_ids;
 }
 
+std::optional<tab_groups::TabGroupVisualData>
+TabModelJniBridge::GetTabGroupVisualData(tab_groups::TabGroupId group_id) {
+  // TODO(crbug.com/405219902): Implement JNI for Android.
+  return std::nullopt;
+}
+
 std::optional<tab_groups::TabGroupId> TabModelJniBridge::CreateTabGroup(
     const std::vector<tabs::TabHandle>& tabs) {
   JNIEnv* env = AttachCurrentThread();

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -217,6 +218,23 @@ std::vector<tab_groups::TabGroupId> TabListBridge::ListTabGroups() {
     return {};
   }
   return tab_strip_->group_model()->ListTabGroups();
+}
+
+std::optional<tab_groups::TabGroupVisualData>
+TabListBridge::GetTabGroupVisualData(tab_groups::TabGroupId group_id) {
+  // Not all browsers support tab groups.
+  if (!tab_strip_->group_model()) {
+    return std::nullopt;
+  }
+  TabGroup* tab_group = tab_strip_->group_model()->GetTabGroup(group_id);
+  if (!tab_group) {
+    return std::nullopt;
+  }
+  const tab_groups::TabGroupVisualData* visual_data = tab_group->visual_data();
+  if (!visual_data) {
+    return std::nullopt;
+  }
+  return *visual_data;
 }
 
 std::optional<tab_groups::TabGroupId> TabListBridge::CreateTabGroup(

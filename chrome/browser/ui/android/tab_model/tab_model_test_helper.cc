@@ -211,6 +211,12 @@ std::vector<tab_groups::TabGroupId> TestTabModel::ListTabGroups() {
   return {};
 }
 
+std::optional<tab_groups::TabGroupVisualData>
+TestTabModel::GetTabGroupVisualData(tab_groups::TabGroupId group_id) {
+  NOTIMPLEMENTED();
+  return std::nullopt;
+}
+
 std::optional<tab_groups::TabGroupId> TestTabModel::CreateTabGroup(
     const std::vector<tabs::TabHandle>& tabs) {
   NOTIMPLEMENTED();
@@ -488,6 +494,12 @@ std::optional<tab_groups::TabGroupId> OwningTestTabModel::CreateTabGroup(
 std::vector<tab_groups::TabGroupId> OwningTestTabModel::ListTabGroups() {
   NOTIMPLEMENTED();
   return {};
+}
+
+std::optional<tab_groups::TabGroupVisualData>
+OwningTestTabModel::GetTabGroupVisualData(tab_groups::TabGroupId group_id) {
+  NOTIMPLEMENTED();
+  return std::nullopt;
 }
 
 std::optional<tab_groups::TabGroupId> OwningTestTabModel::AddTabsToGroup(

@@ -204,15 +204,15 @@ class ExtensionTabUtil {
   static int GetSplitId(const split_tabs::SplitTabId& id);
 
   // Gets the metadata for the group with ID `group_id`. Sets the `error` if not
-  // found. `window`, `id`, or `visual_data` may be nullptr and will not be set
-  // within the function if so.
+  // found. `out_window`, `out_id`, or `out_visual_data` may be nullptr and will
+  // not be set within the function if so.
   // TODO(crbug.com/405219902): Visual data is not yet supported on Android.
   static bool GetGroupById(int group_id,
                            content::BrowserContext* browser_context,
                            bool include_incognito,
-                           WindowController** window,
-                           tab_groups::TabGroupId* id,
-                           const tab_groups::TabGroupVisualData** visual_data,
+                           WindowController** out_window,
+                           tab_groups::TabGroupId* out_id,
+                           tab_groups::TabGroupVisualData* out_visual_data,
                            std::string* error);
 
   // Returns whether the group is shared or not.

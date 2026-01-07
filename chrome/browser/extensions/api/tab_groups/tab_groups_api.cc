@@ -99,8 +99,9 @@ ExtensionFunction::ResponseAction TabGroupsGetFunction::Run() {
   int group_id = params->group_id;
 
   tab_groups::TabGroupId id = tab_groups::TabGroupId::CreateEmpty();
-  const tab_groups::TabGroupVisualData* visual_data = nullptr;
+  tab_groups::TabGroupVisualData visual_data;
   std::string error;
+  // TODO(crbug.com/405219902): `visual_data` is empty on Android.
   if (!ExtensionTabUtil::GetGroupById(group_id, browser_context(),
                                       include_incognito_information(), nullptr,
                                       &id, &visual_data, &error)) {
@@ -109,13 +110,8 @@ ExtensionFunction::ResponseAction TabGroupsGetFunction::Run() {
 
   DCHECK(!id.is_empty());
 
-  // TODO(crbug.com/405219902): Replace this with CHECK(visual_data) and
-  // use *visual_data when desktop Android supports visual data.
-  const tab_groups::TabGroupVisualData& visual_data_ref =
-      visual_data ? *visual_data : tab_groups::TabGroupVisualData();
-
   return RespondNow(ArgumentList(api::tab_groups::Get::Results::Create(
-      ExtensionTabUtil::CreateTabGroupObject(id, visual_data_ref))));
+      ExtensionTabUtil::CreateTabGroupObject(id, visual_data))));
 }
 
 ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
@@ -228,7 +224,7 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
   int group_id = params->group_id;
   WindowController* window = nullptr;
   tab_groups::TabGroupId id = tab_groups::TabGroupId::CreateEmpty();
-  const tab_groups::TabGroupVisualData* visual_data = nullptr;
+  tab_groups::TabGroupVisualData visual_data;
   std::string error;
   if (!ExtensionTabUtil::GetGroupById(group_id, browser_context(),
                                       include_incognito_information(), &window,
@@ -242,16 +238,16 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
 
   DCHECK(!id.is_empty());
 
-  bool collapsed = visual_data->is_collapsed();
+  bool collapsed = visual_data.is_collapsed();
   if (params->update_properties.collapsed)
     collapsed = *params->update_properties.collapsed;
 
-  tab_groups::TabGroupColorId color = visual_data->color();
+  tab_groups::TabGroupColorId color = visual_data.color();
   if (params->update_properties.color != api::tab_groups::Color::kNone) {
     color = ExtensionTabUtil::ColorToColorId(params->update_properties.color);
   }
 
-  std::u16string title = visual_data->title();
+  std::u16string title = visual_data.title();
   if (params->update_properties.title)
     title = base::UTF8ToUTF16(*params->update_properties.title);
 
@@ -322,7 +318,7 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
   return false;
 #else
   WindowController* source_window = nullptr;
-  const tab_groups::TabGroupVisualData* visual_data = nullptr;
+  tab_groups::TabGroupVisualData visual_data;
   if (!ExtensionTabUtil::GetGroupById(
           group_id, browser_context(), include_incognito_information(),
           &source_window, group, &visual_data, error)) {
@@ -379,7 +375,7 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
     // If windowId is different from the current window, move between windows.
     if (target_browser != source_browser) {
       return MoveTabGroupBetweenBrowsers(source_browser, target_browser, *group,
-                                         *visual_data, tabs, new_index, error);
+                                         visual_data, tabs, new_index, error);
     }
   }
 

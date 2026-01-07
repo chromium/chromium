@@ -35,8 +35,10 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/tabs/public/tab_group.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -505,18 +507,23 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, RecordNavigationScheme) {
 // TODO(405219902): Port test to desktop Android when we have support for
 // creating a tab group from native code.
 IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, GetGroupById) {
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(1, tab_strip_model->count());
   ASSERT_TRUE(NavigateToURLInNewTab(GURL("about:blank")));
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, tab_strip_model->count());
 
-  tab_groups::TabGroupId group_id =
-      browser()->tab_strip_model()->AddToNewGroup({0, 1});
+  tab_groups::TabGroupId group_id = tab_strip_model->AddToNewGroup({0, 1});
+
+  const tab_groups::TabGroupVisualData new_data(
+      u"Test", tab_groups::TabGroupColorId::kCyan);
+  tab_strip_model->group_model()->GetTabGroup(group_id)->SetVisualData(
+      new_data);
 
   int raw_group_id = ExtensionTabUtil::GetGroupId(group_id);
 
   WindowController* window = nullptr;
   tab_groups::TabGroupId found_id = tab_groups::TabGroupId::CreateEmpty();
-  const tab_groups::TabGroupVisualData* visual_data = nullptr;
+  tab_groups::TabGroupVisualData visual_data;
   std::string error;
   bool found = ExtensionTabUtil::GetGroupById(
       raw_group_id, profile(),
@@ -525,7 +532,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, GetGroupById) {
   EXPECT_TRUE(found);
   EXPECT_TRUE(window);
   EXPECT_EQ(group_id, found_id);
-  EXPECT_TRUE(visual_data);
+  EXPECT_EQ(visual_data.title(), u"Test");
+  EXPECT_EQ(visual_data.color(), tab_groups::TabGroupColorId::kCyan);
   EXPECT_TRUE(error.empty());
 }
 

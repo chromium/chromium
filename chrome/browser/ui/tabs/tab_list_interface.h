@@ -25,6 +25,10 @@ class BrowserWindowInterface;
 class SessionID;
 class TabListInterfaceObserver;
 
+namespace tab_groups {
+class TabGroupVisualData;
+}
+
 // Interface for supporting a basic set of tab operations on Android and
 // Desktop.
 class TabListInterface {
@@ -111,6 +115,10 @@ class TabListInterface {
   // Returns a list of tab groups in this tab strip. If the tab strip does not
   // support tab groups (e.g. legacy apps) returns an empty vector.
   virtual std::vector<tab_groups::TabGroupId> ListTabGroups() = 0;
+
+  // Returns the visual data for a tab group, or nullopt on error.
+  virtual std::optional<tab_groups::TabGroupVisualData> GetTabGroupVisualData(
+      tab_groups::TabGroupId group_id) = 0;
 
   // Creates a tab group from a list of tabs and returns the group ID. Returns
   // nullopt on error (for example, if the tab list is empty).
