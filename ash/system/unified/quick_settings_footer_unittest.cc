@@ -40,6 +40,7 @@ class QuickSettingsFooterTest : public NoSessionAshTestBase {
   }
 
   void TearDown() override {
+    footer_ = nullptr;
     widget_.reset();
     NoSessionAshTestBase::TearDown();
   }
@@ -76,7 +77,7 @@ class QuickSettingsFooterTest : public NoSessionAshTestBase {
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by `widget_`.
-  raw_ptr<QuickSettingsFooter, DanglingUntriaged> footer_;
+  raw_ptr<QuickSettingsFooter> footer_;
 };
 
 // Tests that all buttons are with the correct view id, catalog name and UMA
