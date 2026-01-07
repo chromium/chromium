@@ -263,7 +263,7 @@ const base::FeatureParam<double>
 // Windows and Linux (via separate features and experiments). See
 // crbug.com/335680565.
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kFontDataServiceAllWebContents, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFontDataServiceAllWebContents, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<FontDataServiceTypefaceType>::Option
     font_data_service_typeface[] = {
         {FontDataServiceTypefaceType::kDwrite, "DWrite"},
