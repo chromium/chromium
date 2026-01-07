@@ -251,8 +251,6 @@ FetchCreditCardSuggestionDataSync(
     return {SuggestionDataSource::kSaveAndFillPromo, {}};
   }
 
-  std::pair<SuggestionDataSource, std::vector<SuggestionData>> suggestion_data;
-
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
       virtual_card_guid_to_last_four_map;
   if (trigger_field_type == CREDIT_CARD_STANDALONE_VERIFICATION_CODE) {
@@ -268,18 +266,15 @@ FetchCreditCardSuggestionDataSync(
   if (!virtual_card_guid_to_last_four_map.empty()) {
     // TODO(crbug.com/40916587): Refactor credit card suggestion code by moving
     // duplicate logic to helper functions.
-    suggestion_data = FetchVirtualCardStandaloneCvcFieldSuggestionDataSync(
+    return FetchVirtualCardStandaloneCvcFieldSuggestionDataSync(
         client, trigger_field, summary.metadata_logging_context);
-  } else {
-    // If no virtual cards available for standalone CVC field, fall back to
-    // regular credit card suggestions.
-    suggestion_data = FetchCreditCardOrCvcFieldSuggestionDataSync(
-        client, trigger_field, trigger_field_type,
-        four_digit_combinations_in_dom,
-        autofilled_last_four_digits_in_form_for_filtering, summary);
   }
 
-  return suggestion_data;
+  // If no virtual cards available for standalone CVC field, fall back to
+  // regular credit card suggestions.
+  return FetchCreditCardOrCvcFieldSuggestionDataSync(
+      client, trigger_field, trigger_field_type, four_digit_combinations_in_dom,
+      autofilled_last_four_digits_in_form_for_filtering, summary);
 }
 
 std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
