@@ -362,7 +362,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         }
 
         boolean isReadyToPayQueryRestricted =
-                !mFactoryDelegate.prefsCanMakePayment()
+                !mFactoryDelegate.getParams().prefsCanMakePayment()
                         && PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
                                 PaymentFeatureList.RESTRICT_IS_READY_TO_PAY_QUERY);
         if (mIsOffTheRecord) {
@@ -574,7 +574,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
             if (!mDownloader.isInitialized()) {
                 mDownloader.initialize(
                         mFactoryDelegate.getParams().getWebContents(),
-                        mFactoryDelegate.getCSPChecker());
+                        mFactoryDelegate.getParams().getCSPChecker());
             }
 
             manifestVerifiers.add(
@@ -854,7 +854,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                 getAppsSupportedDelegations(resolveInfo.activityInfo);
         // Allow-lists the Play Billing method for this feature in order for the Play Billing case
         // to skip the sheet in this case.
-        if (mFactoryDelegate.isFullDelegationRequired()
+        if (mFactoryDelegate.getParams().isFullDelegationRequired()
                 || methodName.equals(MethodStrings.GOOGLE_PLAY_BILLING)) {
             if (!appSupportedDelegations.providesAll(
                     mFactoryDelegate.getParams().getPaymentOptions())) {
@@ -893,9 +893,10 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
             app =
                     new AndroidPaymentApp(
                             sAndroidIntentLauncherForTest == null
-                                    ? assumeNonNull(mFactoryDelegate.getAndroidIntentLauncher())
+                                    ? assumeNonNull(
+                                            mFactoryDelegate.getParams().getAndroidIntentLauncher())
                                     : sAndroidIntentLauncherForTest,
-                            mFactoryDelegate.getDialogController(),
+                            mFactoryDelegate.getParams().getDialogController(),
                             packageName,
                             resolveInfo.activityInfo.name,
                             readyToPayServiceName,

@@ -1217,41 +1217,8 @@ public class PaymentRequestService
 
     // Implements PaymentAppFactoryDelegate:
     @Override
-    public boolean prefsCanMakePayment() {
-        return mDelegate.prefsCanMakePayment();
-    }
-
-    // Implements PaymentAppFactoryDelegate:
-    @Override
     public void setOptOutOffered() {
         mJourneyLogger.setOptOutOffered();
-    }
-
-    // Implements PaymentAppFactoryDelegate:
-    @Override
-    public CSPChecker getCSPChecker() {
-        return this;
-    }
-
-    // Implements PaymentAppFactoryDelegate:
-    @Override
-    public DialogController getDialogController() {
-        assumeNonNull(mBrowserPaymentRequest);
-        return mBrowserPaymentRequest.getDialogController();
-    }
-
-    // Implements PaymentAppFactoryDelegate:
-    @Override
-    public AndroidIntentLauncher getAndroidIntentLauncher() {
-        assumeNonNull(mBrowserPaymentRequest);
-        return mBrowserPaymentRequest.getAndroidIntentLauncher();
-    }
-
-    // Implements PaymentAppFactoryDelegate:
-    @Override
-    public boolean isFullDelegationRequired() {
-        assumeNonNull(mBrowserPaymentRequest);
-        return mBrowserPaymentRequest.isFullDelegationRequired();
     }
 
     /**
@@ -1849,6 +1816,39 @@ public class PaymentRequestService
     @Override
     public boolean isOffTheRecord() {
         return mIsOffTheRecord;
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public boolean prefsCanMakePayment() {
+        return mDelegate.prefsCanMakePayment();
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public CSPChecker getCSPChecker() {
+        return this;
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public DialogController getDialogController() {
+        assumeNonNull(mBrowserPaymentRequest);
+        return mBrowserPaymentRequest.getDialogController();
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public AndroidIntentLauncher getAndroidIntentLauncher() {
+        assumeNonNull(mBrowserPaymentRequest);
+        return mBrowserPaymentRequest.getAndroidIntentLauncher();
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public boolean isFullDelegationRequired() {
+        assumeNonNull(mBrowserPaymentRequest);
+        return mBrowserPaymentRequest.isFullDelegationRequired();
     }
 
     // Implements PaymentRequestUpdateEventListener:

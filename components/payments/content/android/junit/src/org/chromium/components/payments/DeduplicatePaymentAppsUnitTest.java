@@ -369,20 +369,8 @@ public class DeduplicatePaymentAppsUnitTest {
 
         // PaymentAppFactoryDelegate:
         @Override
-        public CSPChecker getCSPChecker() {
-            return null;
-        }
-
-        // PaymentAppFactoryDelegate:
-        @Override
         public PaymentAppFactoryParams getParams() {
             return null;
-        }
-
-        // PaymentAppFactoryDelegate:
-        @Override
-        public boolean isFullDelegationRequired() {
-            return false;
         }
     }
 }

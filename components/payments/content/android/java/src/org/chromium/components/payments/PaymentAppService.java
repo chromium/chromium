@@ -128,7 +128,7 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
 
         @Override
         public boolean prefsCanMakePayment() {
-            return mDelegate.prefsCanMakePayment();
+            return mDelegate.getParams().prefsCanMakePayment();
         }
 
         @Override
@@ -157,26 +157,6 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
         @Override
         public void setOptOutOffered() {
             mDelegate.setOptOutOffered();
-        }
-
-        @Override
-        public CSPChecker getCSPChecker() {
-            return mDelegate.getCSPChecker();
-        }
-
-        @Override
-        public @Nullable DialogController getDialogController() {
-            return mDelegate.getDialogController();
-        }
-
-        @Override
-        public @Nullable AndroidIntentLauncher getAndroidIntentLauncher() {
-            return mDelegate.getAndroidIntentLauncher();
-        }
-
-        @Override
-        public boolean isFullDelegationRequired() {
-            return mDelegate.isFullDelegationRequired();
         }
     }
 
