@@ -1106,16 +1106,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                 : "To filter both ACTIVE and INACTIVE instance types, use"
                         + " PersistedInstanceType.ANY.";
         for (Integer id : allIds) {
-            Activity activity = getActivityById(id);
-            // Since activity destruction is asynchronous and lacks a reliable completion callback.
-            // we will preemptively clean up the TaskId and update lastAccessedTime to ensure
-            // surfaces like the Recent Tabs page receive an accurate list of inactive instances in
-            // real time.
-            if (activity != null && activity.isFinishing()) {
-                MultiInstancePersistentStore.writeLastAccessedTime(id);
-                MultiInstancePersistentStore.removeTaskId(id);
-            }
-
             int persistedTaskId = MultiInstancePersistentStore.readTaskId(id);
 
             // Exclude ids not satisfying requirements.
@@ -1540,7 +1530,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         // switcher dialog and Recent Tabs.
         removeInvalidInstanceData(/* cleanupApplicationStatus= */ false);
 
-        // TODO:(crbug.com/469786540) Consider removeTaskId here.
         MultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
 
         if (mInstanceId != INVALID_WINDOW_ID) {
