@@ -1,0 +1,85 @@
+<html>
+  <head>
+    <script src="../../../resources/testharness.js"></script>
+    <script src="../../../resources/testharnessreport.js"></script>
+  </head>
+  <body id="body">
+    <!--
+      This tests that XSLT transforms can traverse into XHTML template element
+      content when applying XSL template. If the test succeeds, the transform
+      will have swapped the position of the body spans (A and B) with the
+      template content spans (C and D) and replaced the spans with divs.
+    -->
+    <script>
+      async_test((t) => {
+        const processor = new XSLTProcessor();
+
+        function loadDocument(url, callback) {
+          const xhr = new XMLHttpRequest();
+          xhr.open("GET", url);
+          xhr.responseType = "document";
+          xhr.onload = () => {
+            if (xhr.status === 200) {
+              callback(xhr.responseXML);
+            } else {
+              t.step(() => {
+                assert_unreached("Failed to load: " + url);
+              });
+            }
+          };
+          xhr.onerror = () => {
+            t.step(() => {
+              assert_unreached("XHR error while loading: " + url);
+            });
+          };
+          xhr.send();
+        }
+
+        function divChildTextNodes(parent) {
+          var output = "";
+
+          for (
+            var child = parent.firstChild;
+            child;
+            child = child.nextSibling
+          ) {
+            if (child.tagName == "div") {
+              output += child.textContent;
+            }
+          }
+
+          return output;
+        }
+
+        loadDocument("xslt-xhtml-template.xml", (xml) => {
+          loadDocument("resources/xhtml-template.xsl", (xsl) => {
+            t.step(() => {
+              processor.importStylesheet(xsl);
+
+              const ownerDocument = document.implementation.createDocument(
+                "",
+                "test",
+                null
+              );
+              const frag = processor.transformToFragment(xml, ownerDocument);
+
+              const bodyDivs = divChildTextNodes(frag.querySelector("body"));
+              const templateContentDivs = divChildTextNodes(
+                frag.querySelector("template").content
+              );
+
+              // Spans A/B should move to template, Spans C/D should move to body.
+              assert_equals(bodyDivs, "CD", "Body should contain divs C and D");
+              assert_equals(
+                templateContentDivs,
+                "AB",
+                "Template content should contain divs A and B"
+              );
+            });
+            t.done();
+          });
+        });
+      }, "XSLT should be able to traverse into and transform XHTML template element content");
+    </script>
+  </body>
+</html>

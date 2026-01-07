@@ -1,0 +1,3 @@
+Test for bug 10419: XSLTProcessor transformToFragment fails because of an XML declaration.
+
+FAILURE: ReferenceError: XSLTProcessor is not defined

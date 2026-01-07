@@ -1,0 +1,15 @@
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been deprecated by all browsers. These features will be removed from this browser soon. See https://chromestatus.com/feature/4709671889534976.
+
+<head xmlns="http://www.w3.org/1999/xhtml"><title></title></head>
+<body xmlns="http://www.w3.org/1999/xhtml">
+<pre>CHARACTERS IN XSLT: &lt;&lt;&lt;&amp;тест&amp;&gt;&gt;&gt;
+SOURCE XML: &lt;&lt;&lt;&amp;тест&amp;&gt;&gt;&gt;</pre>
+</body>
+
+
+
+--------
+Frame: '<!--framePath //<!--frame0-->-->'
+--------
+CHARACTERS IN XSLT: <<<&тест&>>>
+SOURCE XML: <<<&тест&>>>

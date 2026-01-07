@@ -1,0 +1,3 @@
+Test for bug 19215: XSLT transformToDocument fails when stylesheet contains &#160;
+
+Exception: ReferenceError: XSLTProcessor is not defined
