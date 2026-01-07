@@ -36,6 +36,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryStyle.NotchPosition;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.widget.ViewRectProvider;
 
@@ -356,16 +357,39 @@ class KeyboardAccessoryView extends LinearLayout {
         }
         params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
 
+        // accesory_shadow is not used for an undocked rounded bar, which uses elevation instead.
         findViewById(R.id.accessory_shadow).setVisibility(View.GONE);
         findViewById(R.id.accessory_bar_contents).setBackground(null);
-        setBackgroundResource(R.drawable.keyboard_accessory_shadow_shape);
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)) {
-            GradientDrawable background = (GradientDrawable) getBackground();
-            background.setCornerRadius(
-                    getResources()
-                            .getDimensionPixelSize(
-                                    R.dimen.keyboard_accessory_corner_radius_redesign));
+
+        if (isDynamicPositioningEnabled) {
+            // For the dynamic positioning the notch is displayed by outlining a background.
+            // This code path can be used only when AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN
+            // flag is enabled.
+            setBackgroundResource(R.color.default_bg_color_baseline);
+            @Px
+            int notchHeight =
+                    getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_notch_height);
+            @NotchPosition int notchPosition = style.getNotchPosition();
+            assert notchPosition != NotchPosition.HIDDEN;
+            if (notchPosition == NotchPosition.TOP) {
+                setPadding(getPaddingStart(), notchHeight, getPaddingEnd(), 0);
+            } else if (notchPosition == NotchPosition.BOTTOM) {
+                setPadding(getPaddingStart(), 0, getPaddingEnd(), notchHeight);
+            }
+            setOutlineProvider(new NotchedKeyboardAccessoryOutlineProvider(notchPosition));
+            setClipToOutline(true);
+        } else {
+            // For the static positioning the rounded background is implemented using a static
+            // drawable.
+            setBackgroundResource(R.drawable.keyboard_accessory_shadow_shape);
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)) {
+                GradientDrawable background = (GradientDrawable) getBackground();
+                background.setCornerRadius(
+                        getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.keyboard_accessory_corner_radius_redesign));
+            }
         }
         @Px
         int elevation = getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_elevation);

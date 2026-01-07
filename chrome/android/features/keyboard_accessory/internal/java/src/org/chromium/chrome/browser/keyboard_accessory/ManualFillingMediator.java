@@ -19,6 +19,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProper
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.SHOW_WHEN_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.SUPPRESSED_BY_BOTTOM_SHEET;
 
+import android.content.res.Resources;
 import android.graphics.RectF;
 import android.util.SparseArray;
 import android.view.Surface;
@@ -48,6 +49,7 @@ import org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.Ke
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.StateProperty;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryStyle;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryStyle.NotchPosition;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
@@ -810,44 +812,41 @@ class ManualFillingMediator
         return Math.max(0, contentOffset - topInsetOverlap);
     }
 
-    /**
-     * Gets the keyboard accessory's top offset for dynamic positioning. The offset is calculated in
-     * the way that positions the field above or below the field depending on the available space.
-     */
+    private @Px int getFocusedFieldBottomPx() {
+        return Math.round(
+                mModel.get(FIELD_BOUNDS).bottom * mWindowAndroid.getDisplay().getDipScale());
+    }
+
+    private @Px int getFocusedFieldTopPx() {
+        return Math.round(mModel.get(FIELD_BOUNDS).top * mWindowAndroid.getDisplay().getDipScale());
+    }
+
+    private @Px int getBarWithNotchHeightPx() {
+        Resources resources = mActivity.getResources();
+        return resources.getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign)
+                + resources.getDimensionPixelSize(R.dimen.keyboard_accessory_notch_height);
+    }
+
     private @Px int getTopOffsetForDynamicPositioning() {
+        return getNotchPositionForDynamicPositioning() == NotchPosition.TOP
+                ? getFocusedFieldBottomPx()
+                : getFocusedFieldTopPx() - getBarWithNotchHeightPx();
+    }
+
+    private @NotchPosition int getNotchPositionForDynamicPositioning() {
         CompositorViewHolder compositorViewHolder =
                 mActivity.getCompositorViewHolderSupplier().get();
         RectF viewport = new RectF();
         compositorViewHolder.getVisibleViewport(viewport);
 
         @Px int viewportHeight = Math.round(viewport.height());
-        @Px
-        int bottom =
-                Math.round(
-                        mModel.get(FIELD_BOUNDS).bottom
-                                * mWindowAndroid.getDisplay().getDipScale());
-        @Px
-        int top =
-                Math.round(
-                        mModel.get(FIELD_BOUNDS).top * mWindowAndroid.getDisplay().getDipScale());
-        @Px
-        int barPadding =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.keyboard_accessory_dynamic_positioning_padding);
-        @Px
-        int barHeight =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign);
 
-        // Display the keyboard accessory below the field if there is enough space.
-        if (viewportHeight - bottom > barHeight + barPadding) {
-            return bottom + barPadding;
+        // Display the notch below the bar.
+        if (viewportHeight - getFocusedFieldBottomPx() > getBarWithNotchHeightPx()) {
+            return NotchPosition.TOP;
         }
-        // If there is not enough space below the field, try to display it above the field.
-        return top - barHeight - barPadding;
+        // Display the notch above the bar.
+        return NotchPosition.BOTTOM;
     }
 
     /**
@@ -880,7 +879,10 @@ class ManualFillingMediator
             if (requiresVisibleBar(extensionState)) {
                 mKeyboardAccessory.setStyle(
                         KeyboardAccessoryStyle.createUndockedKeyboardAccessoryStyle(
-                                getHorizontalOffset(), getTopOffset(), getMaxWidth()));
+                                getHorizontalOffset(),
+                                getTopOffset(),
+                                getMaxWidth(),
+                                getNotchPositionForDynamicPositioning()));
                 mBottomInsetSupplier.set(0);
                 return;
             }
