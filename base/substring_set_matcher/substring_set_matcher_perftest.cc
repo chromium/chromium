@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -44,7 +43,7 @@ TEST(SubstringSetMatcherPerfTest, RandomKeys) {
     std::string str = GetRandomString(kPatternLen);
 
     // Ensure we don't have any duplicate pattern strings.
-    if (base::Contains(pattern_strings, str)) {
+    if (pattern_strings.contains(str)) {
       continue;
     }
 

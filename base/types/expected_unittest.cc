@@ -9,7 +9,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/strings/to_string.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/gtest_util.h"
@@ -638,12 +637,12 @@ TEST(Expected, ToString) {
   // `expected` should have a custom string representation that prints the
   // contained value/error.
   const std::string value_str = ToString(expected<int, int>(123456));
-  EXPECT_FALSE(base::Contains(value_str, "-byte object at "));
-  EXPECT_TRUE(base::Contains(value_str, "123456"));
+  EXPECT_FALSE(value_str.contains("-byte object at "));
+  EXPECT_TRUE(value_str.contains("123456"));
   const std::string error_str =
       ToString(expected<int, int>(unexpected(123456)));
-  EXPECT_FALSE(base::Contains(error_str, "-byte object at "));
-  EXPECT_TRUE(base::Contains(error_str, "123456"));
+  EXPECT_FALSE(error_str.contains("-byte object at "));
+  EXPECT_TRUE(error_str.contains("123456"));
 }
 
 TEST(Expected, ValueOr) {
@@ -1202,11 +1201,11 @@ TEST(ExpectedVoid, ToString) {
   // `expected<void, ...>` should have a custom string representation (that
   // prints the contained error, if applicable).
   const std::string value_str = ToString(expected<void, int>());
-  EXPECT_FALSE(base::Contains(value_str, "-byte object at "));
+  EXPECT_FALSE(value_str.contains("-byte object at "));
   const std::string error_str =
       ToString(expected<void, int>(unexpected(123456)));
-  EXPECT_FALSE(base::Contains(error_str, "-byte object at "));
-  EXPECT_TRUE(base::Contains(error_str, "123456"));
+  EXPECT_FALSE(error_str.contains("-byte object at "));
+  EXPECT_TRUE(error_str.contains("123456"));
 }
 
 TEST(ExpectedVoid, ErrorOr) {

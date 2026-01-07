@@ -1311,13 +1311,13 @@ TEST(ProcessGTestOutputTest, FoundTestCaseNotEnforced) {
   EXPECT_FALSE(GetAppOutputAndError(command_line, &output));
   // Banner should appear in the output.
   const char kBanner[] = "Found exact positive filter not enforced:";
-  EXPECT_TRUE(Contains(output, kBanner));
+  EXPECT_TRUE(output.contains(kBanner));
   std::vector<std::string> lines = base::SplitString(
       output, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   std::unordered_set<std::string> tests_not_enforced;
   bool banner_has_printed = false;
   for (size_t i = 0; i < lines.size(); i++) {
-    if (Contains(lines[i], kBanner)) {
+    if (lines[i].contains(kBanner)) {
       // The following two lines should have the test cases not enforced
       // and the third line for the check failure message.
       EXPECT_LT(i + 3, lines.size());
@@ -1341,9 +1341,9 @@ TEST(ProcessGTestOutputTest, FoundTestCaseNotEnforced) {
 // For official builds, they discard logs from CHECK failures, hence
 // the test case cannot catch the "Check failed" line.
 #if !defined(OFFICIAL_BUILD) || DCHECK_IS_ON()
-      EXPECT_TRUE(Contains(lines[i],
-                           "Check failed: "
-                           "!found_exact_positive_filter_not_enforced."));
+      EXPECT_TRUE(
+          lines[i].contains("Check failed: "
+                            "!found_exact_positive_filter_not_enforced."));
 #endif  // !defined(OFFICIAL_BUILD) || DCHECK_IS_ON()
       break;
     }

@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -200,18 +199,18 @@ TEST(ScopedGenericTest, OwnershipTracking) {
   std::unordered_set<int> freed;
   TrackedIntTraits traits(&freed, &owners);
 
-#define ASSERT_OWNED(value, owner)            \
-  ASSERT_TRUE(base::Contains(owners, value)); \
-  ASSERT_EQ(&owner, owners[value]);           \
-  ASSERT_FALSE(base::Contains(freed, value))
+#define ASSERT_OWNED(value, owner)     \
+  ASSERT_TRUE(owners.contains(value)); \
+  ASSERT_EQ(&owner, owners[value]);    \
+  ASSERT_FALSE(freed.contains(value))
 
-#define ASSERT_UNOWNED(value)                  \
-  ASSERT_FALSE(base::Contains(owners, value)); \
-  ASSERT_FALSE(base::Contains(freed, value))
+#define ASSERT_UNOWNED(value)           \
+  ASSERT_FALSE(owners.contains(value)); \
+  ASSERT_FALSE(freed.contains(value))
 
-#define ASSERT_FREED(value)                    \
-  ASSERT_FALSE(base::Contains(owners, value)); \
-  ASSERT_TRUE(base::Contains(freed, value))
+#define ASSERT_FREED(value)             \
+  ASSERT_FALSE(owners.contains(value)); \
+  ASSERT_TRUE(freed.contains(value))
 
   // Constructor.
   {

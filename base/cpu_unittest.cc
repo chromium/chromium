@@ -17,8 +17,8 @@
 // Tests whether we can run extended instructions represented by the CPU
 // information. This test actually executes some extended instructions (such as
 // MMX, SSE, etc.) supported by the CPU and sees we can run them without
-// "undefined instruction" exceptions. That is, this test succeeds when this
-// test finishes without a crash.
+// "undefined instruction" exceptions. That is, this test succeeds when it
+// finishes without a crash.
 TEST(CPU, RunExtendedInstructions) {
   // Retrieve the CPU information.
   base::CPU cpu;

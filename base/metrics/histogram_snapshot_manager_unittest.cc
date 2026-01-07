@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_delta_serialization.h"
@@ -46,7 +45,7 @@ class HistogramFlattenerDeltaRecorder : public HistogramFlattener {
                    const HistogramSamples& snapshot) override {
     recorded_delta_histograms_.push_back(&histogram);
     // Use CHECK instead of ASSERT to get full stack-trace and thus origin.
-    CHECK(!Contains(recorded_delta_histogram_sum_, histogram.histogram_name()));
+    CHECK(!recorded_delta_histogram_sum_.contains(histogram.histogram_name()));
     // Keep pointer to snapshot for testing. This really isn't ideal but the
     // snapshot-manager keeps the snapshot alive until it's "forgotten".
     InsertOrAssign(recorded_delta_histogram_sum_, histogram.histogram_name(),
@@ -64,7 +63,7 @@ class HistogramFlattenerDeltaRecorder : public HistogramFlattener {
   }
 
   int64_t GetRecordedDeltaHistogramSum(const std::string& name) {
-    EXPECT_TRUE(Contains(recorded_delta_histogram_sum_, name));
+    EXPECT_TRUE(recorded_delta_histogram_sum_.contains(name));
     return recorded_delta_histogram_sum_[name];
   }
 

@@ -19,7 +19,6 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/environment.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -1292,7 +1291,7 @@ void TestLauncher::ProcessTestResults(
   std::vector<TestResult> final_results;
 
   for (const auto& i : test_names) {
-    if (Contains(results_map, i)) {
+    if (results_map.contains(i)) {
       TestResult test_result = results_map[i];
       // Fix up the test status: we forcibly kill the child process
       // after the timeout, so from XML results it looks just like
@@ -1526,7 +1525,7 @@ bool TestLauncher::IsOnlyExactPositiveFilterFromFile(
     return false;
   }
   for (const auto& filter : positive_test_filter_) {
-    if (Contains(filter, '*')) {
+    if (filter.contains('*')) {
       LOG(ERROR) << "Found wildcard positive filters in the filter file.";
       return false;
     }
@@ -1961,7 +1960,7 @@ bool TestLauncher::ProcessAndValidateTests() {
   for (const TestInfo& test_info : tests_) {
     std::string test_name = test_info.GetFullName();
     // If any test has a matching disabled test, fail and log for audit.
-    if (base::Contains(disabled_tests, test_name)) {
+    if (disabled_tests.contains(test_name)) {
       LOG(ERROR) << test_name << " duplicated by a DISABLED_ test";
       result = false;
     }
@@ -1974,7 +1973,7 @@ bool TestLauncher::ProcessAndValidateTests() {
     std::vector<TestInfo> test_sequence;
     test_sequence.push_back(test_info);
     // Move Pre Tests prior to final test in order.
-    while (base::Contains(pre_tests, test_sequence.back().GetPreName())) {
+    while (pre_tests.contains(test_sequence.back().GetPreName())) {
       test_sequence.push_back(pre_tests[test_sequence.back().GetPreName()]);
       pre_tests.erase(test_sequence.back().GetDisabledStrippedName());
     }
@@ -2143,7 +2142,7 @@ std::vector<std::string> TestLauncher::CollectTests() {
     bool found_exact_positive_filter_not_enforced = false;
     for (const auto& filter : positive_exact_filter) {
       if (!ShouldRunInCurrentShard(filter) ||
-          Contains(enforced_positive_tests, std::string(filter))) {
+          enforced_positive_tests.contains(std::string(filter))) {
         continue;
       }
       if (!found_exact_positive_filter_not_enforced) {
@@ -2225,7 +2224,7 @@ bool TestLauncher::RunRetryTests() {
     // Retry all tests that depend on a failing test.
     std::vector<std::string> test_names;
     for (const TestInfo& test_info : tests_) {
-      if (base::Contains(tests_to_retry_, test_info.GetPrefixStrippedName())) {
+      if (tests_to_retry_.contains(test_info.GetPrefixStrippedName())) {
         test_names.push_back(test_info.GetFullName());
       }
     }
