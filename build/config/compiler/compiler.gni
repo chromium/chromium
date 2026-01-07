@@ -11,6 +11,7 @@ import("//build/config/compiler/pgo/pgo.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/cc_wrapper.gni")
+import("//build/toolchain/kythe.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
 
@@ -279,6 +280,12 @@ if (strip_absolute_paths_from_debug_symbols_default) {
 # When absolute_paths in debug symbols, we need to use input root
 # absolute path to execute remotely in RBE.
 clang_need_input_root_absolute_path = !strip_absolute_paths_from_debug_symbols
+
+# TODO(crbug.com/473693507): Remove once fixed.
+# Builders as Kythe client might output system headers with absolute paths.
+if (is_win && enable_kythe_annotations) {
+  clang_need_input_root_absolute_path = true
+}
 
 if (clang_need_input_root_absolute_path) {
   compiler_logs += [ "clang_need_input_root_absolute_path=true" ]
