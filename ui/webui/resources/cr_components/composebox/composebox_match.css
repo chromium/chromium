@@ -32,9 +32,12 @@
   position: relative;
 }
 
-.container:hover,
-:host(:is(:focus-visible, [selected])) .container {
+.container:hover {
   background-color: var(--color-searchbox-results-background-hovered);
+}
+
+:host(:is(:focus-visible, [selected])) .container {
+  background-color: var(--color-searchbox-results-background-selected, var(--color-searchbox-results-background-hovered));
 }
 
 #focusIndicator {
@@ -75,6 +78,10 @@
   padding-inline: var(--input-inline-spacing) 64px;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+:host(:is(:focus-visible, [selected])) #textContainer {
+  color: var(--color-searchbox-results-foreground-selected, var(--color-composebox-font-light));
 }
 
 #remove {
