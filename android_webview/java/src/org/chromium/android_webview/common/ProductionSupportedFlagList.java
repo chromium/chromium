@@ -1155,5 +1155,9 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.STICKY_USER_ACTIVATION_ACROSS_SAME_ORIGIN_NAVIGATION,
                 "When enabled, sticky user activations are preserved for same-origin top frame"
                         + " navigations."),
+        Flag.baseFeature(
+                CcFeatures.THROTTLE_MAIN_FRAME_TO60_HZ_WEBVIEW,
+                "When enabled, requestAnimationFrame() and related main-thread effects are capped"
+                        + " at 60Hz on 120Hz devices."),
     };
 }
