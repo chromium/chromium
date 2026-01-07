@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/files/file_path_watcher_kqueue.h"
 
 #include <fcntl.h>
@@ -17,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/file_descriptor_posix.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -135,11 +131,12 @@ bool FilePathWatcherKQueue::AreKeventValuesValid(struct kevent* kevents,
   }
   bool valid = true;
   for (int i = 0; i < count; ++i) {
-    if (kevents[i].flags & EV_ERROR && kevents[i].data) {
+    if (UNSAFE_TODO(kevents[i]).flags & EV_ERROR &&
+        UNSAFE_TODO(kevents[i]).data) {
       // Find the kevent in |events_| that matches the kevent with the error.
       EventVector::iterator event = events_.begin();
       for (; event != events_.end(); ++event) {
-        if (event->ident == kevents[i].ident) {
+        if (event->ident == UNSAFE_TODO(kevents[i]).ident) {
           break;
         }
       }
@@ -152,9 +149,10 @@ bool FilePathWatcherKQueue::AreKeventValuesValid(struct kevent* kevents,
       }
       if (path_name.empty()) {
         path_name = base::StringPrintf(
-            "fd %ld", reinterpret_cast<long>(&kevents[i].ident));
+            "fd %ld", reinterpret_cast<long>(&UNSAFE_TODO(kevents[i]).ident));
       }
-      DLOG(ERROR) << "Error: " << kevents[i].data << " for " << path_name;
+      DLOG(ERROR) << "Error: " << UNSAFE_TODO(kevents[i]).data << " for "
+                  << path_name;
       valid = false;
     }
   }

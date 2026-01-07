@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/files/file_path_watcher_fsevents.h"
 
 #include <dispatch/dispatch.h>
@@ -17,6 +12,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
@@ -145,14 +141,15 @@ void FilePathWatcherFSEvents::FSEventsCallback(
   std::vector<FilePath> paths;
   FSEventStreamEventId root_change_at = FSEventStreamGetLatestEventId(stream);
   for (size_t i = 0; i < num_events; i++) {
-    if (flags[i] & kFSEventStreamEventFlagRootChanged) {
+    if (UNSAFE_TODO(flags[i]) & kFSEventStreamEventFlagRootChanged) {
       root_changed = true;
     }
-    if (event_ids[i]) {
-      root_change_at = std::min(root_change_at, event_ids[i]);
+    if (UNSAFE_TODO(event_ids[i])) {
+      root_change_at = std::min(root_change_at, UNSAFE_TODO(event_ids[i]));
     }
-    paths.push_back(FilePath(reinterpret_cast<char**>(event_paths)[i])
-                        .StripTrailingSeparators());
+    paths.push_back(
+        FilePath(UNSAFE_TODO(reinterpret_cast<char**>(event_paths)[i]))
+            .StripTrailingSeparators());
   }
 
   // Reinitialize the event stream if we find changes to the root. This is

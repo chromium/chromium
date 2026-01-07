@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/files/file_enumerator.h"
 
 #include <dirent.h>
@@ -15,6 +10,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
@@ -35,7 +31,7 @@ bool GetStat(const FilePath& path, bool show_links, stat_wrapper_t* st) {
     // symlinks.
     DPLOG_IF(ERROR, errno != ENOENT || show_links)
         << "Cannot stat '" << path << "'";
-    memset(st, 0, sizeof(*st));
+    UNSAFE_TODO(memset(st, 0, sizeof(*st)));
     return false;
   }
 
@@ -63,7 +59,7 @@ bool ShouldTrackVisitedDirectories(int file_type) {
 // FileEnumerator::FileInfo ----------------------------------------------------
 
 FileEnumerator::FileInfo::FileInfo() {
-  memset(&stat_, 0, sizeof(stat_));
+  UNSAFE_TODO(memset(&stat_, 0, sizeof(stat_)));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -73,7 +69,7 @@ FileEnumerator::FileInfo::FileInfo(FilePath content_uri,
                                    off_t size,
                                    Time time)
     : content_uri_(std::move(content_uri)), filename_(std::move(filename)) {
-  memset(&stat_, 0, sizeof(stat_));
+  UNSAFE_TODO(memset(&stat_, 0, sizeof(stat_)));
   stat_.st_mode = is_directory ? S_IFDIR : S_IFREG;
   stat_.st_size = size;
   stat_.st_mtime = time.ToTimeT();

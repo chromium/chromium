@@ -35,7 +35,6 @@ class DirReaderLinux {
  public:
   explicit DirReaderLinux(const char* directory_path)
       : fd_(open(directory_path, O_RDONLY | O_DIRECTORY)) {
-    std::ranges::fill(buf_, 0);
   }
 
   DirReaderLinux(const DirReaderLinux&) = delete;
@@ -93,7 +92,7 @@ class DirReaderLinux {
 
  private:
   const int fd_;
-  alignas(linux_dirent) std::array<unsigned char, 512> buf_;
+  alignas(linux_dirent) std::array<unsigned char, 512> buf_ = {};
   size_t offset_ = 0;
   size_t size_ = 0;
 };

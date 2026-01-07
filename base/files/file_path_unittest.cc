@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/files/file_path.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <sstream>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/features.h"
 #include "base/files/safe_base_name.h"
 #include "base/strings/utf_ostream_operators.h"
@@ -1590,9 +1586,10 @@ TEST_F(FilePathTest, NormalizePathSeparators) {
       {FPL("/\\foo\\/bar"), FPL("\\\\foo\\\\bar")},
   };
   for (size_t i = 0; i < std::size(cases); ++i) {
-    FilePath input(cases[i].input);
+    FilePath input(UNSAFE_TODO(cases[i].input));
     FilePath observed = input.NormalizePathSeparators();
-    EXPECT_EQ(FilePath::StringType(cases[i].expected), observed.value())
+    EXPECT_EQ(FilePath::StringType(UNSAFE_TODO(cases[i].expected)),
+              observed.value())
         << "i: " << i << ", input: " << input.value();
   }
 }
@@ -1642,9 +1639,9 @@ TEST_F(FilePathTest, ContentUriTest) {
   };
 
   for (size_t i = 0; i < std::size(cases); ++i) {
-    FilePath input(cases[i].input);
+    FilePath input(UNSAFE_TODO(cases[i].input));
     bool observed = input.IsContentUri();
-    EXPECT_EQ(cases[i].expected, observed)
+    EXPECT_EQ(UNSAFE_TODO(cases[i].expected), observed)
         << "i: " << i << ", input: " << input.value();
   }
 }
