@@ -36,8 +36,8 @@ size_t AddressLineIndex(FieldType type) {
       base::MakeFixedFlatMap<FieldType, size_t>({{ADDRESS_HOME_LINE1, 0},
                                                  {ADDRESS_HOME_LINE2, 1},
                                                  {ADDRESS_HOME_LINE3, 2}});
-  if (kAddressLineIndex.contains(type)) {
-    return kAddressLineIndex.at(type);
+  if (auto it = kAddressLineIndex.find(type); it != kAddressLineIndex.end()) {
+    return it->second;
   }
   NOTREACHED();
 }
