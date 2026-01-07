@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.crypto;
 
 import android.os.Bundle;
+import android.os.PersistableBundle;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -62,9 +64,15 @@ public class CipherFactory {
     static final int NUM_BYTES = 16;
 
     static final String BUNDLE_IV = "org.chromium.content.browser.crypto.CipherFactory.IV";
+    static final String PERSISTENT_BUNDLE_IV =
+            "org.chromium.content.browser.crypto.CipherFactory.Persistent.IV";
     static final String BUNDLE_KEY = "org.chromium.content.browser.crypto.CipherFactory.KEY";
+    static final String PERSISTENT_BUNDLE_KEY =
+            "org.chromium.content.browser.crypto.CipherFactory.Persistent.KEY";
     static final String BUNDLE_TAB_STATE_STORAGE_KEY =
             "org.chromium.content.browser.crypto.CipherFactory.TAB_STATE_STORAGE_KEY";
+    static final String PERSISTENT_BUNDLE_TAB_STATE_STORAGE_KEY =
+            "org.chromium.content.browser.crypto.CipherFactory.Persistent.TAB_STATE_STORAGE_KEY";
 
     /** Holds intermediate data for the computation. */
     private static class CipherData {
@@ -208,6 +216,57 @@ public class CipherFactory {
         byte[] iv = savedInstanceState.getByteArray(BUNDLE_IV);
         if (wrappedKey == null || iv == null) return false;
 
+        return updateCipherData(wrappedKey, iv);
+    }
+
+    /**
+     * Saves the encryption data in a PersistableBundle. Expected to be called when an Activity
+     * saves its state before being sent to the background, particularly during a device reboot or
+     * app update.
+     *
+     * <p>The IV *could* go into the first block of the payload. However, since the staleness of the
+     * data is determined by whether or not it's able to be decrypted, the IV should not be read
+     * from it.
+     *
+     * @param outPersistentState The data bundle to store data into.
+     */
+    public void saveToPersistableBundle(PersistableBundle outPersistentState) {
+        CipherData data = getCipherData(false);
+        if (data == null) return;
+
+        byte[] wrappedKey = data.key.getEncoded();
+        int[] intKey = convertByteToIntArray(wrappedKey);
+        int[] intIv = convertByteToIntArray(data.iv);
+
+        if (wrappedKey != null && data.iv != null) {
+            outPersistentState.putIntArray(PERSISTENT_BUNDLE_KEY, intKey);
+            outPersistentState.putIntArray(PERSISTENT_BUNDLE_IV, intIv);
+        }
+    }
+
+    /**
+     * Restores the encryption key from the given PersistableBundle. Expected to be called when an
+     * Activity is being restored after a device reboot or app update.
+     *
+     * @param persistentState PersistableBundle containing the Activity's previous state.
+     * @return True if the data was restored successfully from the Bundle, or if the CipherData in
+     *     use matches the Bundle contents.
+     */
+    public boolean restoreFromPersistableBundle(PersistableBundle persistentState) {
+        if (persistentState == null) return false;
+
+        int[] intKey = persistentState.getIntArray(PERSISTENT_BUNDLE_KEY);
+        int[] intIv = persistentState.getIntArray(PERSISTENT_BUNDLE_IV);
+
+        if (intKey == null || intIv == null) return false;
+
+        byte[] wrappedKey = convertIntToByteArray(intKey);
+        byte[] iv = convertIntToByteArray(intIv);
+
+        return updateCipherData(wrappedKey, iv);
+    }
+
+    private boolean updateCipherData(byte[] wrappedKey, byte[] iv) {
         try {
             Key bundledKey = new SecretKeySpec(wrappedKey, "AES");
             synchronized (mDataLock) {
@@ -255,5 +314,24 @@ public class CipherFactory {
         // `ret` is non-zero iff some `a[i] ^ b[i]` differed.
         return ret == 0;
     }
-}
 
+    @VisibleForTesting
+    static int[] convertByteToIntArray(byte[] bytes) {
+        int[] intArray = new int[bytes.length];
+        for (int i = 0; i < bytes.length; i++) {
+            intArray[i] = (int) bytes[i];
+        }
+        return intArray;
+    }
+
+    @VisibleForTesting
+    static byte[] convertIntToByteArray(int[] integers) {
+        byte[] bytes = new byte[integers.length];
+        for (int i = 0; i < integers.length; i++) {
+            bytes[i] = (byte) integers[i];
+            assert (int) bytes[i] == integers[i]
+                    : "All integers should be in the range of possible byte values.";
+        }
+        return bytes;
+    }
+}

@@ -2148,8 +2148,18 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             Log.i(TAG, "#initializeState");
             Intent intent = getIntent();
 
-            boolean hadCipherData =
-                    CipherLazyHolder.sCipherInstance.restoreFromBundle(getSavedInstanceState());
+            boolean hadCipherData = false;
+            // TODO(crbug.com/459921316): Only persist incognito state for app updates, state should
+            //  be discarded after a reboot.
+            if (shouldPersistAcrossReboots()) {
+                hadCipherData =
+                        CipherLazyHolder.sCipherInstance.restoreFromPersistableBundle(
+                                getPersistentInstanceState());
+            }
+            if (!hadCipherData) {
+                hadCipherData =
+                        CipherLazyHolder.sCipherInstance.restoreFromBundle(getSavedInstanceState());
+            }
 
             boolean noRestoreState =
                     CommandLine.getInstance().hasSwitch(ChromeSwitches.NO_RESTORE_STATE);
@@ -4337,6 +4347,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         super.onSaveInstanceState(outState, outPersistentState);
         if (shouldPersistAcrossReboots()) {
             saveToBaseBundle(outPersistentState);
+            CipherLazyHolder.sCipherInstance.saveToPersistableBundle(outPersistentState);
         }
     }
 

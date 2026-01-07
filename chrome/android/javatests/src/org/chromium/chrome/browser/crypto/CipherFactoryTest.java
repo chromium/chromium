@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.crypto;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -12,9 +13,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.os.Bundle;
+import android.os.PersistableBundle;
 
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -103,6 +106,39 @@ public class CipherFactoryTest {
     }
 
     /**
+     * Restoring a {@link PersistableBundle} containing the same parameters already in use by the
+     * {@link CipherFactory} should keep the same keys.
+     */
+    @Test
+    @MediumTest
+    public void testSamePersistableBundleRestoration() throws Exception {
+        // Create two bundles with the same saved state.
+        PersistableBundle aPersistableBundle = new PersistableBundle();
+        PersistableBundle bPersistableBundle = new PersistableBundle();
+
+        byte[] sameIv = getRandomBytes(CipherFactory.NUM_BYTES);
+        aPersistableBundle.putIntArray(
+                CipherFactory.PERSISTENT_BUNDLE_IV, CipherFactory.convertByteToIntArray(sameIv));
+        bPersistableBundle.putIntArray(
+                CipherFactory.PERSISTENT_BUNDLE_IV, CipherFactory.convertByteToIntArray(sameIv));
+
+        byte[] sameKey = getRandomBytes(CipherFactory.NUM_BYTES);
+        aPersistableBundle.putIntArray(
+                CipherFactory.PERSISTENT_BUNDLE_KEY, CipherFactory.convertByteToIntArray(sameKey));
+        bPersistableBundle.putIntArray(
+                CipherFactory.PERSISTENT_BUNDLE_KEY, CipherFactory.convertByteToIntArray(sameKey));
+
+        // Restore using the first bundle, then the second. Both should succeed.
+        assertTrue(mCipherFactory.restoreFromPersistableBundle(aPersistableBundle));
+        Cipher aCipher = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
+        assertTrue(mCipherFactory.restoreFromPersistableBundle(bPersistableBundle));
+        Cipher bCipher = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
+
+        // Make sure the CipherFactory instances are using the same key.
+        sameOutputDifferentCiphers(INPUT_DATA, aCipher, bCipher);
+    }
+
+    /**
      * Restoring a {@link Bundle} containing a different set of parameters from those already in use
      * by the {@link CipherFactory} should fail. Any Ciphers created after the failed restoration
      * attempt should use the already-existing keys.
@@ -133,6 +169,28 @@ public class CipherFactoryTest {
         sameOutputDifferentCiphers(INPUT_DATA, aCipher, bCipher);
     }
 
+    /**
+     * Restoring a {@link PersistableBundle} containing a different set of parameters from those
+     * already in use by the {@link CipherFactory} should fail. Any Ciphers created after the failed
+     * restoration attempt should use the already-existing keys.
+     */
+    @Test
+    @MediumTest
+    public void testDifferentPersistableBundleRestoration() throws Exception {
+        // Restore one set of parameters.
+        PersistableBundle aPersistableBundle = createPersistableBundleWithRandomKey();
+        assertTrue(mCipherFactory.restoreFromPersistableBundle(aPersistableBundle));
+        Cipher aCipher = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
+
+        // Restore using a different set of parameters.
+        PersistableBundle bPersistableBundle = createPersistableBundleWithRandomKey();
+        assertFalse(mCipherFactory.restoreFromPersistableBundle(bPersistableBundle));
+        Cipher bCipher = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
+
+        // Make sure they're using the same (original) key by encrypting the same data.
+        sameOutputDifferentCiphers(INPUT_DATA, aCipher, bCipher);
+    }
+
     /** Restoration from a {@link Bundle} missing data should fail. */
     @Test
     @MediumTest
@@ -152,6 +210,28 @@ public class CipherFactoryTest {
         byte[] key = getRandomBytes(CipherFactory.NUM_BYTES);
         bBundle.putByteArray(CipherFactory.BUNDLE_KEY, key);
         assertFalse(mCipherFactory.restoreFromBundle(bBundle));
+    }
+
+    /** Restoration from a {@link PersistableBundle} missing data should fail. */
+    @Test
+    @MediumTest
+    public void testIncompletePersistableBundleRestoration() {
+        // Make sure we handle the null case.
+        assertFalse(mCipherFactory.restoreFromPersistableBundle(null));
+
+        // Try restoring without the key.
+        PersistableBundle aPersistableBundle = new PersistableBundle();
+        byte[] iv = getRandomBytes(CipherFactory.NUM_BYTES);
+        aPersistableBundle.putIntArray(
+                CipherFactory.PERSISTENT_BUNDLE_IV, CipherFactory.convertByteToIntArray(iv));
+        assertFalse(mCipherFactory.restoreFromPersistableBundle(aPersistableBundle));
+
+        // Try restoring without the initialization vector.
+        PersistableBundle bPersistableBundle = new PersistableBundle();
+        byte[] key = getRandomBytes(CipherFactory.NUM_BYTES);
+        bPersistableBundle.putIntArray(
+                CipherFactory.PERSISTENT_BUNDLE_KEY, CipherFactory.convertByteToIntArray(key));
+        assertFalse(mCipherFactory.restoreFromPersistableBundle(bPersistableBundle));
     }
 
     /**
@@ -176,6 +256,22 @@ public class CipherFactoryTest {
     }
 
     /**
+     * Parameters should only be saved when they're needed by the {@link CipherFactory}. Restoring
+     * parameters from a {@link PersistableBundle} before this point should result in {@link
+     * Cipher}s using the restored parameters instead of any generated ones.
+     */
+    @Test
+    @MediumTest
+    public void testRestorationSucceedsBeforeCipherCreated_PersistableBundle() {
+        PersistableBundle persistableBundle = createPersistableBundleWithRandomKey();
+
+        // The keys should be initialized only after restoration.
+        assertNull(mCipherFactory.getCipherData(false));
+        assertTrue(mCipherFactory.restoreFromPersistableBundle(persistableBundle));
+        assertNotNull(mCipherFactory.getCipherData(false));
+    }
+
+    /**
      * If the {@link CipherFactory} has already generated parameters, restorations of different data
      * should fail. All {@link Cipher}s should use the generated parameters.
      */
@@ -192,6 +288,25 @@ public class CipherFactoryTest {
         // The keys should be initialized after creating the cipher, so the keys shouldn't match.
         Cipher aCipher = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
         assertFalse(mCipherFactory.restoreFromBundle(bundle));
+        Cipher bCipher = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
+
+        // B's cipher should use the keys generated for A.
+        sameOutputDifferentCiphers(INPUT_DATA, aCipher, bCipher);
+    }
+
+    /**
+     * If the {@link CipherFactory} has already generated parameters, restorations of different data
+     * should fail. All {@link Cipher}s should use the generated parameters.
+     */
+    @Test
+    @MediumTest
+    public void testRestorationDiscardsAfterOtherCipherAlreadyCreated_PersistableBundle()
+            throws Exception {
+        PersistableBundle persistableBundle = createPersistableBundleWithRandomKey();
+
+        // The keys should be initialized after creating the cipher, so the keys shouldn't match.
+        Cipher aCipher = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
+        assertFalse(mCipherFactory.restoreFromPersistableBundle(persistableBundle));
         Cipher bCipher = mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
 
         // B's cipher should use the keys generated for A.
@@ -220,6 +335,30 @@ public class CipherFactoryTest {
 
         // Confirm the saved keys match by restoring it.
         assertTrue(mCipherFactory.restoreFromBundle(afterBundle));
+    }
+
+    /**
+     * Data saved out to the {@link PersistableBundle} should match what is held by the {@link
+     * CipherFactory}.
+     */
+    @Test
+    @MediumTest
+    public void testSavingToPersistableBundle() {
+        // Nothing should get saved out before Cipher data exists.
+        PersistableBundle initialBundle = new PersistableBundle();
+        mCipherFactory.saveToPersistableBundle(initialBundle);
+        assertFalse(initialBundle.containsKey(CipherFactory.PERSISTENT_BUNDLE_IV));
+        assertFalse(initialBundle.containsKey(CipherFactory.PERSISTENT_BUNDLE_KEY));
+
+        // Check that Cipher data gets saved if it exists.
+        mCipherFactory.getCipher(Cipher.ENCRYPT_MODE);
+        PersistableBundle afterBundle = new PersistableBundle();
+        mCipherFactory.saveToPersistableBundle(afterBundle);
+        assertTrue(afterBundle.containsKey(CipherFactory.PERSISTENT_BUNDLE_IV));
+        assertTrue(afterBundle.containsKey(CipherFactory.PERSISTENT_BUNDLE_KEY));
+
+        // Confirm the saved keys match by restoring it.
+        assertTrue(mCipherFactory.restoreFromPersistableBundle(afterBundle));
     }
 
     /** Test for setting and getting the tab state storage key. */
@@ -281,6 +420,38 @@ public class CipherFactoryTest {
         assertTrue(anotherCipherFactory.restoreFromBundle(legacyBundle));
         assertEquals(differentKey, anotherCipherFactory.getKeyForTabStateStorage());
         assertNotNull(anotherCipherFactory.getCipherData(false));
+    }
+
+    @Test
+    @SmallTest
+    public void testPersistBytesAsInts_multipleOf4() {
+        byte[] bytes = new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+
+        int[] intArray = CipherFactory.convertByteToIntArray(bytes);
+        assertArrayEquals(
+                new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}, intArray);
+        assertArrayEquals(bytes, CipherFactory.convertIntToByteArray(intArray));
+    }
+
+    @Test
+    @SmallTest
+    public void testPersistBytesAsInts_notMultipleOf4() {
+        byte[] bytes = new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
+
+        int[] intArray = CipherFactory.convertByteToIntArray(bytes);
+        assertArrayEquals(new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}, intArray);
+        assertArrayEquals(bytes, CipherFactory.convertIntToByteArray(intArray));
+    }
+
+    private PersistableBundle createPersistableBundleWithRandomKey() {
+        byte[] iv = getRandomBytes(CipherFactory.NUM_BYTES);
+        byte[] key = getRandomBytes(CipherFactory.NUM_BYTES);
+        PersistableBundle persistableBundle = new PersistableBundle();
+        persistableBundle.putIntArray(
+                CipherFactory.PERSISTENT_BUNDLE_IV, CipherFactory.convertByteToIntArray(iv));
+        persistableBundle.putIntArray(
+                CipherFactory.PERSISTENT_BUNDLE_KEY, CipherFactory.convertByteToIntArray(key));
+        return persistableBundle;
     }
 
     /**
