@@ -40,6 +40,8 @@ found in the LICENSE file.
         android:id="@+id/caption"
         style="@style/DownloadItemText"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:maxLines = "2"
+        android:singleLine = "false"
         app:layout_column="1"
         app:layout_row="1"
         app:layout_gravity="fill_horizontal" />

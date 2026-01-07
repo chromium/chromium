@@ -57,7 +57,11 @@ public abstract class InProgressViewHolder extends ListItemViewHolder {
         mActionButton.setOnClickListener(
                 view -> {
                     switch (offlineItem.state) {
-                        case OfflineItemState.IN_PROGRESS: // Intentional fallthrough.
+                        case OfflineItemState.IN_PROGRESS:
+                            if (UiUtils.shouldShowScanningStateOnUI(offlineItem)) {
+                                break;
+                            }
+                        // Intentional fallthrough.
                         case OfflineItemState.PENDING:
                             properties.get(ListProperties.CALLBACK_PAUSE).onResult(offlineItem);
                             break;

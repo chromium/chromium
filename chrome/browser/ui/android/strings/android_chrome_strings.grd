@@ -3403,6 +3403,13 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_DOWNLOAD_MANAGER_DANGEROUS_BLOCKED" desc="Caption shown below a file that was blocked for being dangerous.">
         Dangerous download blocked
       </message>
+      <message name="IDS_DOWNLOAD_MANAGER_ASYNC_SCANNING_TITLE" desc="Title shown for a download that is currently being scanned for its content.">
+        Scanning <ph name="FILE_NAME">%1$s<ex>test.pdf</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_MANAGER_ASYNC_SCANNING_DESCRIPTION" desc="Description on download home showing below the download about that the download is undergoing content check due to enterpise policies.">
+        Your download will complete if the file meets your organization’s policies
+      </message>
+
 
       <!-- Browsing History UI -->
       <message name="IDS_HISTORY_MANAGER_EMPTY_STATE" desc="Indicates that there are no browsing history items.">

@@ -158,6 +158,11 @@ public class ListUtils {
                 return inProgress ? ViewType.IN_PROGRESS : ViewType.GENERIC;
             }
 
+            if (UiUtils.shouldShowScanningStateOnUI(offlineItem.item)) {
+                // Use InProgressViewHolder for scanning item.
+                return ViewType.IN_PROGRESS;
+            }
+
             if (offlineItem.item.isSuggested) {
                 if (offlineItem.item.filter == OfflineItemFilter.PAGE) {
                     return ViewType.PREFETCH_ARTICLE;

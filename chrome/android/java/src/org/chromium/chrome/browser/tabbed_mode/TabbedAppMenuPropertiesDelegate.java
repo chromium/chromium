@@ -1219,7 +1219,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 buildModelForStandardMenuItem(
                         R.id.managed_by_menu_id,
                         R.string.managed_browser,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_business : 0));
+                        shouldShowIconBeforeItem() ? R.drawable.ic_domain : 0));
     }
 
     private MVCListAdapter.ListItem buildContentFilterHelpCenterMenuItem(Tab currentTab) {

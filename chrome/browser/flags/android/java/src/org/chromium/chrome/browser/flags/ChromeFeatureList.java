@@ -615,6 +615,7 @@ public abstract class ChromeFeatureList {
     public static final String SHOW_BLOCKED_SENSITIVE_DOWNLOAD = "ShowBlockedSensitiveDownload";
     public static final String SHOW_CLOSE_ALL_INCOGNITO_TABS_BUTTON =
             "ShowCloseAllIncognitoTabsButton";
+    public static final String SHOW_DOWNLOAD_SCANNING_STATE = "ShowDownloadScanningState";
     public static final String SHOW_NEW_TAB_ANIMATIONS = "ShowNewTabAnimations";
     public static final String SHOW_TAB_LIST_ANIMATIONS = "ShowTabListAnimations";
     public static final String SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS =

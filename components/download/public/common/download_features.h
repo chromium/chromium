@@ -27,6 +27,9 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
 
 // Whether to show blocked sensitive downloads on download home.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kShowBlockedSensitiveDownload);
+
+// Whether to show the download scanning state on download home.
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kShowDownloadScanningState);
 #endif
 
 // Whether download notification service uses new unified API based on offline

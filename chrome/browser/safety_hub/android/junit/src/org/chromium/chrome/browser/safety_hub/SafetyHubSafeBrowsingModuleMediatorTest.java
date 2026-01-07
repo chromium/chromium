@@ -35,7 +35,7 @@ import org.chromium.ui.base.TestActivity;
 @Batch(Batch.UNIT_TESTS)
 public class SafetyHubSafeBrowsingModuleMediatorTest {
     private static final @DrawableRes int SAFE_ICON = R.drawable.material_ic_check_24dp;
-    private static final @DrawableRes int MANAGED_ICON = R.drawable.ic_business;
+    private static final @DrawableRes int MANAGED_ICON = R.drawable.ic_domain;
     private static final @DrawableRes int WARNING_ICON = R.drawable.ic_error;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

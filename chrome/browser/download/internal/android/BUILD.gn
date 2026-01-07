@@ -166,6 +166,7 @@ android_resources("java_resources") {
     "java/res/drawable/circular_progress_bar_pause_tiny.xml",
     "java/res/drawable/circular_progress_bar_resume_tiny.xml",
     "java/res/drawable/circular_progress_bar_retry_tiny.xml",
+    "java/res/drawable/circular_progress_bar_scanning_tiny.xml",
     "java/res/drawable/circular_progress_bar_selector_large.xml",
     "java/res/drawable/circular_progress_bar_selector_small.xml",
     "java/res/drawable/download_interstitial_icon.xml",

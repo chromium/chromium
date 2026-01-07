@@ -159,8 +159,7 @@ class FullscreenSigninViewBinder {
             view.getBrowserManagedHeaderView().setVisibility(View.VISIBLE);
             view.getPrivacyDisclaimer().setText(R.string.fre_browser_managed_by_organization);
             view.getPrivacyDisclaimer()
-                    .setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            R.drawable.ic_business, 0, 0, 0);
+                    .setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_domain, 0, 0, 0);
         } else {
             view.getBrowserManagedHeaderView().setVisibility(View.GONE);
         }

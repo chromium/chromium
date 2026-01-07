@@ -438,6 +438,9 @@
       <message name="IDS_DOWNLOAD_NOTIFICATION_RESUME_BUTTON" desc="Text on the button that resumes a paused download.">
         Resume
       </message>
+      <message name="IDS_DOWNLOAD_NOTIFICATION_SCANNING_BUTTON" desc="Text on the button that scans a in-progress download.">
+        Scanning
+      </message>
       <message name="IDS_DOWNLOAD_NOTIFICATION_DELETE_FROM_HISTORY_BUTTON" desc="Text on the button that deletes a download from history.">
         Delete from history
       </message>

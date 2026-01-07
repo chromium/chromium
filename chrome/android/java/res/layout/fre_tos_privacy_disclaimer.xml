@@ -12,7 +12,7 @@ found in the LICENSE file.
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:drawablePadding="@dimen/fre_policy_privacy_disclaimer_icon_padding"
-    android:drawableStart="@drawable/ic_business"
+    android:drawableStart="@drawable/ic_domain"
     android:text="@string/fre_browser_managed_by_organization"
     android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
     app:chromeDrawableTint="@macro/default_text_color_secondary"

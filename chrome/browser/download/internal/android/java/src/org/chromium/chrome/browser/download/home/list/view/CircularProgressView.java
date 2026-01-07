@@ -46,7 +46,7 @@ public class CircularProgressView extends ChromeImageButton {
     public static final int INDETERMINATE = -1;
 
     /** The various states this {@link CircularProgressView} can be in. */
-    @IntDef({UiState.RUNNING, UiState.PAUSED, UiState.RETRY})
+    @IntDef({UiState.RUNNING, UiState.PAUSED, UiState.RETRY, UiState.SCANNING})
     @Retention(RetentionPolicy.SOURCE)
     public @interface UiState {
         /** This progress bar will look like it is actively running based on the XML drawable. */
@@ -57,6 +57,12 @@ public class CircularProgressView extends ChromeImageButton {
 
         /** This progress bar will look like it is able to be retried based on the XML drawable. */
         int RETRY = 2;
+
+        /**
+         * This progress bar will look like it is currently under scanning based on the XML
+         * drawable.
+         */
+        int SCANNING = 3;
     }
 
     private static final int MAX_LEVEL = 10000;
@@ -66,6 +72,7 @@ public class CircularProgressView extends ChromeImageButton {
     private final @Nullable Drawable mResumeButtonSrc;
     private final @Nullable Drawable mPauseButtonSrc;
     private final @Nullable Drawable mRetryButtonSrc;
+    private final @Nullable Drawable mScanningButtonSrc;
 
     private final ForegroundDrawableCompat mForegroundHelper;
 
@@ -104,6 +111,8 @@ public class CircularProgressView extends ChromeImageButton {
                 UiUtils.getDrawable(context, types, R.styleable.CircularProgressView_pauseSrc);
         mRetryButtonSrc =
                 UiUtils.getDrawable(context, types, R.styleable.CircularProgressView_retrySrc);
+        mScanningButtonSrc =
+                UiUtils.getDrawable(context, types, R.styleable.CircularProgressView_scanningSrc);
 
         if (types != null) types.recycle();
     }
@@ -137,6 +146,10 @@ public class CircularProgressView extends ChromeImageButton {
         Drawable imageDrawable;
         @StringRes int contentDescription;
         switch (state) {
+            case UiState.SCANNING:
+                imageDrawable = mScanningButtonSrc;
+                contentDescription = R.string.download_notification_scanning_button;
+                break;
             case UiState.RUNNING:
                 imageDrawable = mPauseButtonSrc;
                 contentDescription = R.string.download_notification_pause_button;
@@ -153,7 +166,9 @@ public class CircularProgressView extends ChromeImageButton {
         }
 
         setImageDrawable(imageDrawable);
-        setContentDescription(getContext().getText(contentDescription));
+        if (contentDescription != 0) {
+            setContentDescription(getContext().getText(contentDescription));
+        }
     }
 
     // AppCompatImageButton implementation.

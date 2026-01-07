@@ -12,6 +12,7 @@ found in the LICENSE file.
         <attr name="resumeSrc" format="reference" />
         <attr name="pauseSrc" format="reference" />
         <attr name="retrySrc" format="reference" />
+        <attr name="scanningSrc" format="reference" />
     </declare-styleable>
     <declare-styleable name="AspectRatioFrameLayout_Layout">
         <attr name="layout_aspectRatio" format="fraction" />

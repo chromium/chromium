@@ -50,6 +50,7 @@ found in the LICENSE file.
         <item name="resumeSrc">@drawable/circular_progress_bar_resume_tiny</item>
         <item name="retrySrc">@drawable/circular_progress_bar_retry_tiny</item>
         <item name="pauseSrc">@drawable/circular_progress_bar_pause_tiny</item>
+        <item name="scanningSrc">@drawable/circular_progress_bar_scanning_tiny</item>
     </style>
     <style name="SmallCircularProgress">
         <item name="android:layout_width">36dp</item>
@@ -61,6 +62,7 @@ found in the LICENSE file.
         <item name="resumeSrc">@drawable/ic_play_arrow_white_24dp</item>
         <item name="retrySrc">@drawable/ic_refresh_24dp</item>
         <item name="pauseSrc">@drawable/ic_pause_white_24dp</item>
+        <item name="scanningSrc">@drawable/ic_domain</item>
     </style>
     <style name="LargeCircularProgress">
         <item name="android:layout_width">@dimen/download_manager_progress_bar_focus_circle_size</item>
@@ -73,6 +75,7 @@ found in the LICENSE file.
         <item name="resumeSrc">@drawable/ic_file_download_36dp</item>
         <item name="retrySrc">@drawable/ic_refresh_36dp</item>
         <item name="pauseSrc">@drawable/ic_pause_white_36dp</item>
+        <item name="scanningSrc">@drawable/ic_domain_36dp</item>
     </style>
     <style name="LargeMediaPlayButton">
         <item name="android:layout_width">@dimen/download_manager_progress_bar_focus_circle_size</item>
