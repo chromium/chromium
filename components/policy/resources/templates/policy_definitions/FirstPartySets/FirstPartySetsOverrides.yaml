@@ -1,8 +1,8 @@
 caption: Override First-Party Sets.
 default: {}
-# TODO(b/313073098): Deprecate policy.
+deprecated: true
 desc: |-
-  This policy provides a way to override the list of sets the browser uses for First-Party Sets features.
+  This policy provides a way to override the list of sets the browser uses for First-Party Sets features (which was later renamed <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME">Related Website Sets</ph> feature).
 
   Each set in the browser's list of First-Party Sets must meet the requirements of a First-Party Set.
   A First-Party Set must contain a primary site and one or more member sites.
@@ -38,8 +38,8 @@ desc: |-
   On <ph name="MAC_OS_NAME">macOS</ph>, this policy is only available on instances that are managed via MDM, joined to a domain via MCX or enrolled in <ph name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise Core</ph>.
 
   This is the equivalent of the <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME">RelatedWebsiteSetsOverrides</ph> policy.
-  Either policy may be used, but this one will be deprecated soon so the <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME">RelatedWebsiteSetsOverrides</ph> policy is preferred.
-  They both have the same effect on the browser's behavior.
+  Either policy may be used with the same effect on the browser's behavior.
+  Both these policies are deprecated following <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME">Related Website Sets</ph> feature deprecation in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 144.
 example_value:
   additions:
   - associatedSites:
