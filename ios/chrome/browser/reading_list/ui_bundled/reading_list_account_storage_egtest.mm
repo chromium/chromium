@@ -546,7 +546,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Test that after sign-in with the Reading List promo, if two items are added
 // and one is removed, then after a sign-out and a new sign-in with the Reading
 // List sign-in promo with the same account, the removed item is not visible.
-- (void)testRemoveItemAfterSignInThenRefreshSignin {
+// TODO(crbug.com/474063690): Re-enable this test once it has been fixed.
+- (void)FLAKY_testRemoveItemAfterSignInThenRefreshSignin {
   // Sign-in with the Reading List Promo.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
