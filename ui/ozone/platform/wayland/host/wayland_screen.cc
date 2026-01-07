@@ -25,7 +25,6 @@
 #include "ui/display/display_list.h"
 #include "ui/display/util/display_util.h"
 #include "ui/display/util/gpu_info_util.h"
-#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/point.h"
@@ -83,23 +82,25 @@ WaylandScreen::WaylandScreen(WaylandConnection* connection)
   // which one is supported and use that. If RGBX_8888 is not supported, the
   // format that |have_format_alpha| uses will be used by default (RGBA_8888 or
   // BGRA_8888).
-  auto buffer_formats =
-      connection_->buffer_manager_host()->GetSupportedBufferFormats();
-  for (const auto& buffer_format : buffer_formats) {
-    auto format = buffer_format.first;
-
+  auto format_modifiers_map =
+      connection_->buffer_manager_host()->GetSupportedSharedImageFormats();
+  for (const auto& [format, modifiers] : format_modifiers_map) {
     // RGBA_8888 is the preferred format.
-    if (format == gfx::BufferFormat::RGBA_8888)
+    if (format == viz::SinglePlaneFormat::kRGBA_8888) {
       image_format_alpha_ = viz::SinglePlaneFormat::kRGBA_8888;
+    }
 
-    if (format == gfx::BufferFormat::RGBA_F16)
+    if (format == viz::SinglePlaneFormat::kRGBA_F16) {
       image_format_hdr_ = viz::SinglePlaneFormat::kRGBA_F16;
+    }
 
-    if (!image_format_hdr_ && format == gfx::BufferFormat::RGBA_1010102)
+    if (!image_format_hdr_ && format == viz::SinglePlaneFormat::kRGBA_1010102) {
       image_format_hdr_ = viz::SinglePlaneFormat::kRGBA_1010102;
+    }
 
-    if (!image_format_alpha_ && format == gfx::BufferFormat::BGRA_8888)
+    if (!image_format_alpha_ && format == viz::SinglePlaneFormat::kBGRA_8888) {
       image_format_alpha_ = viz::SinglePlaneFormat::kBGRA_8888;
+    }
 
     if (image_format_alpha_ && image_format_hdr_) {
       break;

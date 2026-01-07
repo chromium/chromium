@@ -18,7 +18,6 @@ struct zwp_linux_dmabuf_v1;
 struct zwp_linux_dmabuf_feedback_v1;
 
 namespace gfx {
-enum class BufferFormat : uint8_t;
 class Size;
 }  // namespace gfx
 
@@ -60,9 +59,9 @@ class WaylandZwpLinuxDmabuf
                     uint32_t planes_count,
                     wl::OnRequestBufferCallback callback);
 
-  // Returns supported buffer formats received from the Wayland compositor.
-  wl::BufferFormatsWithModifiersMap supported_buffer_formats() const {
-    return supported_buffer_formats_with_modifiers_;
+  // Returns supported formats received from the Wayland compositor.
+  wl::SharedImageFormatsWithModifiersMap supported_formats() const {
+    return supported_formats_with_modifiers_;
   }
 
   // Says if a new buffer can be created immediately. Depends on the version of
@@ -83,9 +82,10 @@ class WaylandZwpLinuxDmabuf
   };
 
   // Receives supported |fourcc_format| from either ::Modifers or ::Format call
-  // (depending on the protocol version), and stores it as gfx::BufferFormat to
-  // the |supported_buffer_formats_| container. Modifiers can also be passed to
-  // this method to be stored as a map of the format and modifier.
+  // (depending on the protocol version), and stores it as
+  // viz::SharedImageFormat to the |supported_formats_| container. Modifiers can
+  // also be passed to this method to be stored as a map of the format and
+  // modifier.
   void AddSupportedFourCCFormatAndModifier(uint32_t fourcc_format,
                                            std::optional<uint64_t> modifier);
 
@@ -140,8 +140,8 @@ class WaylandZwpLinuxDmabuf
   // Non-owned.
   const raw_ptr<WaylandConnection> connection_;
 
-  // Holds supported DRM formats translated to gfx::BufferFormat.
-  wl::BufferFormatsWithModifiersMap supported_buffer_formats_with_modifiers_;
+  // Holds supported DRM formats translated to viz::SharedImageFormat.
+  wl::SharedImageFormatsWithModifiersMap supported_formats_with_modifiers_;
 
   // Contains callbacks for requests to create |wl_buffer|s using
   // |zwp_linux_dmabuf_| factory.

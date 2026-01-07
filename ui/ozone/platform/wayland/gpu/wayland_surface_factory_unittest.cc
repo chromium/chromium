@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/buffer_types.h"
@@ -191,9 +192,9 @@ class WaylandSurfaceFactoryTest : public WaylandTest {
   ~WaylandSurfaceFactoryTest() override = default;
 
   void SetUp() override {
-    const base::flat_map<gfx::BufferFormat, std::vector<uint64_t>>
+    const base::flat_map<viz::SharedImageFormat, std::vector<uint64_t>>
         kSupportedFormatsWithModifiers{
-            {gfx::BufferFormat::BGRA_8888, {DRM_FORMAT_MOD_LINEAR}}};
+            {viz::SinglePlaneFormat::kBGRA_8888, {DRM_FORMAT_MOD_LINEAR}}};
 
     WaylandTest::SetUp();
 

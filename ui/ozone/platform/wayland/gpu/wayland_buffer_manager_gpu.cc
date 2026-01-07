@@ -75,8 +75,8 @@ WaylandBufferManagerGpu::~WaylandBufferManagerGpu() = default;
 
 void WaylandBufferManagerGpu::Initialize(
     mojo::PendingRemote<ozone::mojom::WaylandBufferManagerHost> remote_host,
-    const base::flat_map<::gfx::BufferFormat, std::vector<uint64_t>>&
-        buffer_formats_with_modifiers,
+    const base::flat_map<::viz::SharedImageFormat, std::vector<uint64_t>>&
+        shared_image_formats_with_modifiers,
     bool supports_dma_buf,
     bool supports_viewporter,
     bool supports_acquire_fence,
@@ -88,10 +88,7 @@ void WaylandBufferManagerGpu::Initialize(
   if (!gpu_thread_runner_)
     gpu_thread_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 
-  for (auto const& [buffer_format, modifier] : buffer_formats_with_modifiers) {
-    supported_formats_with_modifiers_[viz::GetSharedImageFormat(
-        buffer_format)] = modifier;
-  }
+  supported_formats_with_modifiers_ = shared_image_formats_with_modifiers;
   supports_viewporter_ = supports_viewporter;
   supports_acquire_fence_ = supports_acquire_fence;
   supports_dmabuf_ = supports_dma_buf;

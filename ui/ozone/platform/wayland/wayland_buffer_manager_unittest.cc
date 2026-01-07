@@ -369,12 +369,12 @@ TEST_P(WaylandBufferManagerTest, VerifyModifiers) {
     });
   }
 
-  auto buffer_formats =
-      connection_->buffer_factory()->GetSupportedBufferFormats();
-  ASSERT_EQ(buffer_formats.size(), 1u);
-  ASSERT_EQ(buffer_formats.begin()->first,
-            GetBufferFormatFromFourCCFormat(kFourccFormatR8));
-  auto modifiers = buffer_formats.begin()->second;
+  auto shared_image_formats =
+      connection_->buffer_factory()->GetSupportedSharedImageFormats();
+  ASSERT_EQ(shared_image_formats.size(), 1u);
+  ASSERT_EQ(shared_image_formats.begin()->first,
+            GetSharedImageFormatFromFourCCFormat(kFourccFormatR8));
+  auto modifiers = shared_image_formats.begin()->second;
   ASSERT_EQ(modifiers.size(), 2u);
   for (size_t i = 0; i < kFormatModifiers.size(); ++i) {
     ASSERT_EQ(modifiers[i], kFormatModifiers[i]);

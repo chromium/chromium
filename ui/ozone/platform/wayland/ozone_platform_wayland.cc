@@ -199,7 +199,7 @@ class OzonePlatformWayland : public OzonePlatform,
       return false;
 
     // When OzonePlatform instance is called from GPU process,
-    // |supported_buffer_formats_| is empty. Supported buffer formats are sent
+    // |supported_formats_| is empty. Supported shared image formats are sent
     // to |buffer_manager_| via IPC after gpu service init in that case.
     if (buffer_manager_) {
       if (!buffer_manager_->SupportsFormat(viz::GetSharedImageFormat(format))) {
@@ -215,8 +215,8 @@ class OzonePlatformWayland : public OzonePlatform,
         return false;
       }
     } else {
-      if (supported_buffer_formats_.find(format) ==
-          supported_buffer_formats_.end()) {
+      if (supported_formats_.find(viz::GetSharedImageFormat(format)) ==
+          supported_formats_.end()) {
         return false;
       }
     }
@@ -295,8 +295,8 @@ class OzonePlatformWayland : public OzonePlatform,
     input_controller_ = std::make_unique<StubInputController>();
     gpu_platform_support_host_.reset(CreateStubGpuPlatformSupportHost());
 
-    supported_buffer_formats_ =
-        connection_->buffer_manager_host()->GetSupportedBufferFormats();
+    supported_formats_ =
+        connection_->buffer_manager_host()->GetSupportedSharedImageFormats();
     linux_ui_delegate_ =
         std::make_unique<LinuxUiDelegateWayland>(connection_.get());
 
@@ -546,9 +546,9 @@ class OzonePlatformWayland : public OzonePlatform,
   std::unique_ptr<WaylandOverlayManager> overlay_manager_;
   std::unique_ptr<WaylandGLEGLUtility> gl_egl_utility_;
 
-  // Provides supported buffer formats for native gpu memory buffers
+  // Provides supported shared image formats for native gpu memory buffers
   // framework.
-  wl::BufferFormatsWithModifiersMap supported_buffer_formats_;
+  wl::SharedImageFormatsWithModifiersMap supported_formats_;
 
 #if defined(WAYLAND_GBM)
   // This is used both in the gpu and browser processes to find out if a drm

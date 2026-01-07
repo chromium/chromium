@@ -56,14 +56,14 @@ void WaylandBufferManagerConnector::OnGpuServiceLaunched(
       buffer_manager_gpu_remote.BindNewPipeAndPassReceiver().PassPipe());
   DCHECK(buffer_manager_gpu_remote);
 
-  wl::BufferFormatsWithModifiersMap buffer_formats_with_modifiers =
-      buffer_manager_host_->GetSupportedBufferFormats();
+  wl::SharedImageFormatsWithModifiersMap shared_image_formats_with_modifiers =
+      buffer_manager_host_->GetSupportedSharedImageFormats();
   bool supports_dma_buf = false;
 #if defined(WAYLAND_GBM)
   supports_dma_buf = buffer_manager_host_->SupportsDmabuf();
 #endif
   buffer_manager_gpu_remote->Initialize(
-      std::move(pending_remote), buffer_formats_with_modifiers,
+      std::move(pending_remote), shared_image_formats_with_modifiers,
       supports_dma_buf, buffer_manager_host_->SupportsViewporter(),
       buffer_manager_host_->SupportsAcquireFence(),
       buffer_manager_host_->SupportsOverlays(),

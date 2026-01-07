@@ -64,8 +64,9 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
   // Called by WaylandFrameManager if overlay data is invalid.
   void OnCommitOverlayError(const std::string& message);
 
-  // Returns supported buffer formats either from zwp_linux_dmabuf or wl_drm.
-  wl::BufferFormatsWithModifiersMap GetSupportedBufferFormats() const;
+  // Returns supported shared image formats either from zwp_linux_dmabuf or
+  // wl_drm.
+  wl::SharedImageFormatsWithModifiersMap GetSupportedSharedImageFormats() const;
 
   bool SupportsDmabuf() const;
   bool SupportsAcquireFence() const;
