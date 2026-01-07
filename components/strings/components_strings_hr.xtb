@@ -2045,7 +2045,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4270541775497538019">Spremnik za slaganje u snopove 6</translation>
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Nema recenzija za pregled. Prosječna ocjena je <ph name="STARS" />.}=1{Pogledajte jednu recenziju. Prosječna ocjena je <ph name="STARS" />.}one{Pogledajte # recenziju. Prosječna ocjena je <ph name="STARS" />.}few{Pogledajte # recenzije. Prosječna ocjena je <ph name="STARS" />.}other{Pogledajte svih # recenzija. Prosječna ocjena je <ph name="STARS" />.}}</translation>
 <translation id="4271652479722040953">Kad se proširenja dodaju u Chrome, relevantni podaci o tim proširenjima šalju se trećim stranama na analizu i vaš ih administrator može vidjeti. Podaci uključuju informacije o proširenjima kao što su naziv, vrijeme instalacije, izvor instalacije te aktivnost povezana s tim proširenjima (na primjer promjena kartica, kontaktiranje web-lokacija ili pristupanje kolačićima). Ti se podaci prikupljaju za proširenja instalirana iz Chrome web-trgovine, kao i za proširenja izvan trgovine.</translation>
-<translation id="4275830172053184480">Ponovo pokrenite svoj uređaj</translation>
+<translation id="4275830172053184480">Ponovno pokrenite uređaj</translation>
 <translation id="4276974990916607331">Ne, hvala</translation>
 <translation id="4277028893293644418">Poništi zaporku</translation>
 <translation id="4277529130885813215">Upotrijebite neki drugi uređaj</translation>

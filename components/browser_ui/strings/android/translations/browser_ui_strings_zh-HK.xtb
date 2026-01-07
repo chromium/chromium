@@ -120,7 +120,7 @@
 <translation id="2315043854645842844">作業系統不支援由客戶端選取憑證。</translation>
 <translation id="2347601491101454548">我嘅捷徑頁底面板宜家顯示喺畫面下半部</translation>
 <translation id="2359808026110333948">繼續</translation>
-<translation id="2379925928934107488">當 Chrome 採用深色主題背景時，盡可能對網站套用深色主題背景</translation>
+<translation id="2379925928934107488">當 Chrome 採用深色主題時，盡可能對網站套用深色主題</translation>
 <translation id="2390272837142897736">放大</translation>
 <translation id="2397689164757137845">已允許 • 精確位置</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
@@ -149,7 +149,7 @@
 <translation id="257931822824936280">已展開 - 點擊即可收合。</translation>
 <translation id="2586657967955657006">剪貼簿</translation>
 <translation id="2588271083332682494">分頁群組助你保持條理</translation>
-<translation id="2597457036804169544">不要為網站套用深色主題背景</translation>
+<translation id="2597457036804169544">不要為網站套用深色主題</translation>
 <translation id="2606760465469169465">自動驗證</translation>
 <translation id="2610903128639500624">前往 <ph name="BEGIN_LINK1" />Android 設定<ph name="END_LINK1" />管理
 
@@ -263,7 +263,7 @@
 <translation id="3763247130972274048">輕按影片的左或右面兩下即可略過 10 秒</translation>
 <translation id="3776508619697147021">網站可要求自動下載多個檔案</translation>
 <translation id="3779154269823594982">變更密碼</translation>
-<translation id="3797520601150691162">不要為特定網站套用深色主題背景</translation>
+<translation id="3797520601150691162">不要為特定網站套用深色主題</translation>
 <translation id="3803367742635802571">您瀏覽的網站可能無法正常運作</translation>
 <translation id="3816118180265633665">Chrome 顏色</translation>
 <translation id="381841723434055211">電話號碼</translation>
@@ -587,7 +587,7 @@
 <translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{縮放}other{縮放：<ph name="ZOOM_PERCENTAGE_NUMBER" />%%}}</translation>
 <translation id="7423098979219808738">事先詢問</translation>
 <translation id="7423538860840206698">禁止讀取剪貼簿</translation>
-<translation id="7425915948813553151">網站深色主題背景</translation>
+<translation id="7425915948813553151">網站深色主題</translation>
 <translation id="746412105358554870">JavaScript 優化和保安</translation>
 <translation id="7478658909253570368">不允許網站連接至序列連接埠</translation>
 <translation id="7488573225650545859">不要在應用程式清單中查看分頁</translation>

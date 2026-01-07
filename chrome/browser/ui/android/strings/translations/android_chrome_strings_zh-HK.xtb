@@ -107,7 +107,7 @@
 <translation id="1398057416966591719">你可前往 Google 帳戶<ph name="BEGIN_LINK1" />管理要儲存哪些 Chrome 資料<ph name="END_LINK1" />。
 
 如需其他會運用資料提升 Chrome 體驗的設定，請前往 <ph name="BEGIN_LINK2" />Google 服務<ph name="END_LINK2" />。</translation>
-<translation id="1407069428457324124">深色主題背景</translation>
+<translation id="1407069428457324124">深色主題</translation>
 <translation id="1407135791313364759">全部開啟</translation>
 <translation id="1409879593029778104"><ph name="FILE_NAME" /> 檔案已存在，因此無法下載。</translation>
 <translation id="1413446866325418126">將資料儲存至 Google 帳戶</translation>
@@ -161,7 +161,7 @@
 <translation id="1687482373098770139">你即將會在「追蹤中」分頁看到「<ph name="SITE_NAME" />」的內容和簡介。你追蹤的網站和搜尋內容會儲存在 Google 帳戶中。隨時可前往設定管理追蹤項目。</translation>
 <translation id="1689333818294560261">暱稱</translation>
 <translation id="1696555181932908973">你可嘗試在「<ph name="SITE_ETLD_PLUS_ONE" />」上透過其他方法繼續操作。</translation>
-<translation id="1702543251015153180">要變更深色主題背景設定嗎？</translation>
+<translation id="1702543251015153180">要變更深色主題設定嗎？</translation>
 <translation id="1702907158640575240">受管理的瀏覽器</translation>
 <translation id="170478069042229393"><ph name="TAB_TITLE" />，已固定的無痕式分頁</translation>
 <translation id="1718835860248848330">過去一小時</translation>
@@ -373,7 +373,7 @@
 <translation id="2587052924345400782">全新版本現已推出</translation>
 <translation id="2593272815202181319">等寬</translation>
 <translation id="260403163289591229">追蹤中</translation>
-<translation id="2604446170045642109">您可在設定中關閉網站深色主題背景。</translation>
+<translation id="2604446170045642109">您可在設定中關閉網站深色主題。</translation>
 <translation id="2605017215201958293">使用 AI 聆聽此頁的內容</translation>
 <translation id="2607441479295509868">已登出。重新登入即可使用帳戶中的書籤、密碼和其他資料。</translation>
 <translation id="2620314865574742210"><ph name="NAME" />邀請你存取共用項目。</translation>
@@ -557,7 +557,7 @@
 <translation id="3438681572027105609">如要在你的所有裝置上存取密碼和其他資料，請登入 Chrome</translation>
 <translation id="3439276997620616816">最近開啟的分頁會在這裡顯示</translation>
 <translation id="3443221991560634068">重新載入目前網頁</translation>
-<translation id="3444179773590444986">要就網站深色主題背景提供意見嗎？</translation>
+<translation id="3444179773590444986">要就網站深色主題提供意見嗎？</translation>
 <translation id="3448874648066942074">使用 AI 撮要頁面內容</translation>
 <translation id="3452832259067974318">為保障您的私隱，Chrome 不會在此欄位自動填入您的密碼。</translation>
 <translation id="3467081767799433066">廣告評估功能讓各個應用程式分享特定類型的資料 (例如使用者是否在瀏覽網站後購物)，以瞭解廣告成效。</translation>
@@ -681,7 +681,7 @@
 <translation id="3985022125189960801">您重新新增的網站可再次猜測您的興趣。</translation>
 <translation id="3985215325736559418">您要再次下載 <ph name="FILE_NAME" /> 嗎？</translation>
 <translation id="3987993985790029246">複製連結</translation>
-<translation id="3994236846568425219">在裝置啟用深色主題背景後啟用深色主題背景</translation>
+<translation id="3994236846568425219">在裝置啟用深色主題後啟用深色主題</translation>
 <translation id="4000212216660919741">離線首頁</translation>
 <translation id="4000670338830950598">自訂同管理 Google Chrome 嘅畫面有一個突顯項目</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{Google 帳戶中有 1 個被盜用的密碼}other{Google 帳戶中有 # 個被盜用的密碼}}</translation>
@@ -842,7 +842,7 @@
 <translation id="4668347365065281350">網站儲存的所有資料，包括 Cookie 和其他儲存在本機上的資料</translation>
 <translation id="4673702426794876519">無痕式視窗</translation>
 <translation id="4675298276894277358">此網站不會再顯示</translation>
-<translation id="4678082183394354975">已在 Chrome 中啟用網站的深色主題背景</translation>
+<translation id="4678082183394354975">已在 Chrome 中啟用網站的深色主題</translation>
 <translation id="4682306524980568490">最多顯示 <ph name="MAX_INSTANCE_COUNT" /> 個視窗</translation>
 <translation id="4684427112815847243">同步處理所有資料</translation>
 <translation id="4685741273709472646">由下拉式選單入面揀</translation>
@@ -1522,7 +1522,7 @@
 <translation id="7365073365123878797">如要開始在「Google 密碼管理工具」儲存並使用密碼，請更新 Google Play 服務</translation>
 <translation id="7375125077091615385">類型：</translation>
 <translation id="7376560087009844242">使用「輕觸搜尋」時，加入網頁上的更多文字可能會找到更相關的結果。您可隨時前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />調整設定。</translation>
-<translation id="7379900596734708416">現已推出網站的深色主題背景</translation>
+<translation id="7379900596734708416">現已推出網站的深色主題</translation>
 <translation id="7384486627147155832">提示通知宣傳目前顯示於畫面下半部</translation>
 <translation id="7388615499319468910">網站和廣告客戶可以瞭解廣告的效益。此設定已關閉。</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{清單中有 1 個其他檔案}other{清單中有 # 個其他檔案}}</translation>
@@ -1751,7 +1751,7 @@
 <translation id="8277710303010772444">開始搜尋</translation>
 <translation id="8279945625179116733">受 <ph name="APP_NAME" /> 保護</translation>
 <translation id="8281886186245836920">略過</translation>
-<translation id="8282297628636750033">在可用情況下，為網站套用深色主題背景</translation>
+<translation id="8282297628636750033">在可用情況下，為網站套用深色主題</translation>
 <translation id="8282950411412455249">前往安全性設定</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{關閉 1 個無痕式視窗}other{關閉 # 個無痕式視窗}}</translation>
 <translation id="831192587911042850">將目前的網站新增至您正在追蹤的網站清單。</translation>

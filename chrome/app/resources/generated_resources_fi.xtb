@@ -8514,7 +8514,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6841076158433142214">Et saa ilmoitusta, kun näitä sovelluksia käytetään näytön tallentamiseen:</translation>
 <translation id="6841143363521180029">Salattu</translation>
 <translation id="6841186874966388268">Virheet</translation>
-<translation id="6842135459748401207">Vain laitteet, jotka ovat kirjautuneet tilille <ph name="USER_EMAIL" /></translation>
+<translation id="6842135459748401207">Vain laitteet, joilla on kirjauduttu tilille <ph name="USER_EMAIL" /></translation>
 <translation id="6842136130964845393">Todenna henkilöllisyytesi varmistaaksesi, että sinulla on aina pääsy tallennettuihin salasanoihisi</translation>
 <translation id="6842670680297285750">Uusi jaettu näkymä nykyisellä välilehdellä</translation>
 <translation id="6842749380892715807">XML-sivustoluettelot ladattiin viimeksi <ph name="LAST_DATE_DOWNLOAD" />.</translation>

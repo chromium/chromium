@@ -2078,7 +2078,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="7899977217122813285">Ilmoitukset on mykistetty klo <ph name="TIME" /> asti keskittymisen aikana</translation>
-<translation id="7901010467630324625">Vain laitteet, jotka ovat kirjautuneet tilille <ph name="EMAIL" /></translation>
+<translation id="7901010467630324625">Vain laitteet, joilla on kirjauduttu tilille <ph name="EMAIL" /></translation>
 <translation id="7901190436359881020">Vaihda ikkunoita</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Kosketa sormenjälkitunnistinta</translation>

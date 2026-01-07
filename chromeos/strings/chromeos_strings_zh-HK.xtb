@@ -105,7 +105,7 @@
 <translation id="1397738625398125236">可連線偵測的閘道</translation>
 <translation id="1398634363027580500">HTTPS 延遲時間非常長</translation>
 <translation id="1406389211945506521">多謝你分享體驗。你的意見將有助我們建立更準確和有助益的內容。</translation>
-<translation id="1407069428457324124">深色主題背景</translation>
+<translation id="1407069428457324124">深色主題</translation>
 <translation id="1413240736185167732">失敗 - 篩選器發生錯誤</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">蘭花</translation>
@@ -216,7 +216,7 @@
 <translation id="1782199038061388045">翻譯</translation>
 <translation id="1788485524395674731">此應用程式由管理員管理</translation>
 <translation id="1792647875738159689">取消掃瞄中</translation>
-<translation id="1801418420130173017">停用深色主題背景</translation>
+<translation id="1801418420130173017">停用深色主題</translation>
 <translation id="1807246157184219062">淺色</translation>
 <translation id="1808803439260407870">經典藝術</translation>
 <translation id="181434555916624618">目前系統不會顯示有人臉的結果，請嘗試其他提示。</translation>
@@ -239,7 +239,7 @@
 <translation id="1858620243986915808">附加螢幕截圖</translation>
 <translation id="1860654594958086756">3D 呈現</translation>
 <translation id="1871413952174074704">APN 不可超過 <ph name="CHAR_LIMIT" /> 個字元</translation>
-<translation id="1871569928317311284">關閉深色主題背景</translation>
+<translation id="1871569928317311284">關閉深色主題</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">蝴蝶</translation>
 <translation id="188114911237521550">關閉暗光模式</translation>
@@ -965,7 +965,7 @@
 <translation id="522307662484862935">請勿輸入電郵地址</translation>
 <translation id="5223226274641517059">即時轉錄文字會在你錄音時顯示。你可隨時在「設定」中關閉此功能。</translation>
 <translation id="5226879510707344687">匯出轉錄文字</translation>
-<translation id="5227902338748591677">深色主題背景時間表</translation>
+<translation id="5227902338748591677">深色主題時間表</translation>
 <translation id="5229104491259541281">轉換「<ph name="QUERY" />」</translation>
 <translation id="5229344016299762883">結束全螢幕模式</translation>
 <translation id="5234764350956374838">關閉</translation>
@@ -1035,7 +1035,7 @@
 <translation id="5543701552415191873">鎖定咗</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5554741914132564590">此更新由外部裝置製造商提供，但尚未經 Google 驗證。</translation>
-<translation id="5559898619118303662">日落時自動切換至深色主題背景</translation>
+<translation id="5559898619118303662">日落時自動切換至深色主題</translation>
 <translation id="556042886152191864">按鈕</translation>
 <translation id="5562551811867441927">呈現多層次<ph name="TERRAIN_COLOR" />的<ph name="TERRAIN_FEATURE" /></translation>
 <translation id="5572169899491758844">掃瞄</translation>
@@ -1192,7 +1192,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6281936070694347328">定義「<ph name="QUERY" />」</translation>
 <translation id="6283581480003247988">藍色和紫色</translation>
-<translation id="6284632978374966585">開啟深色主題背景</translation>
+<translation id="6284632978374966585">開啟深色主題</translation>
 <translation id="6285260286443238386">匯出記錄</translation>
 <translation id="628726841779494414">在打印機設定中管理你的打印機</translation>
 <translation id="6292095526077353682">裝置充電時，螢幕保護程式的顯示時間長度：</translation>
@@ -1206,9 +1206,9 @@
 <translation id="6324916366299863871">編輯捷徑</translation>
 <translation id="6325525973963619867">失敗</translation>
 <translation id="6327262166342360252">此桌布是使用以下文字由 AI 建立而成：「<ph name="PROMPT" />」。</translation>
-<translation id="6331191339300272798">自動深色主題背景</translation>
+<translation id="6331191339300272798">自動深色主題</translation>
 <translation id="6340526405444716530">個人化</translation>
-<translation id="6348252528297699679">如要關閉位置，請前往 [設定] &gt; [私隱與安全] &gt; [私隱權設定] &gt; [位置資料存取權]。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="6348252528297699679">如要關閉位置，請前往 [設定] &gt; [私隱與安全] &gt; [私隱設定] &gt; [位置資料存取權]。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">使用者名稱和密碼</translation>
 <translation id="6352210854422428614">不同的行星</translation>
 <translation id="6359706544163531585">停用淺色主題背景</translation>
@@ -1775,7 +1775,7 @@
 <translation id="8855781559874488009">無法透過防火牆連線至 HTTP 網站</translation>
 <translation id="885701979325669005">儲存設備</translation>
 <translation id="885704831271383379">調暗鍵盤</translation>
-<translation id="8863170912498892583">啟用深色主題背景</translation>
+<translation id="8863170912498892583">啟用深色主題</translation>
 <translation id="8863888432376731307">取得「<ph name="QUERY" />」和其他查詢內容的<ph name="INTENT" /></translation>
 <translation id="8864415976656252616">沒有建議內容。請查看熱門說明內容。</translation>
 <translation id="8868741746785112895">GUID</translation>

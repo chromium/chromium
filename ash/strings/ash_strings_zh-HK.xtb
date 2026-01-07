@@ -127,7 +127,7 @@
 <translation id="1394698770495054737">完全模糊</translation>
 <translation id="1395878931462960119">{DAYS,plural, =1{1 天前}other{# 天前}}</translation>
 <translation id="1404963891829069586">「專注模式」音效</translation>
-<translation id="1407069428457324124">深色主題背景</translation>
+<translation id="1407069428457324124">深色主題</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />。用方向鍵就可以喺日期之間移動。</translation>
 <translation id="141170878022560212">中間按鈕</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />，已經安裝嘅應用程式</translation>
@@ -693,7 +693,7 @@
 <translation id="3401474642070997151">如要自訂建議，請用右鍵點擊或按住建議</translation>
 <translation id="3405101454990027959">開啟麥克風存取權</translation>
 <translation id="3409584356742878290">顯示或隱藏 Developer Tools 檢查器</translation>
-<translation id="3410336247007142655">顯示深色主題背景設定</translation>
+<translation id="3410336247007142655">顯示深色主題設定</translation>
 <translation id="3413817803639110246">目前尚未有任何通知</translation>
 <translation id="3417835166382867856">搜尋分頁</translation>
 <translation id="3426253816581969877">按住 <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> 鍵並輕按 <ph name="KEY" /> 鍵，直到切換至您要開啟的視窗，然後鬆開手指</translation>
@@ -1070,7 +1070,7 @@
 <translation id="458210817642223147">錄製 GIF</translation>
 <translation id="4582666543382004902">已關閉熱點以使用 Wi-Fi。如要使用熱點，請關閉 Wi-Fi。</translation>
 <translation id="4585337515783392668">停止投放到不明嘅接收器</translation>
-<translation id="4596144739579517758">深色主題背景已關閉</translation>
+<translation id="4596144739579517758">深色主題已關閉</translation>
 <translation id="4596442969149038771"><ph name="USER" />已分享</translation>
 <translation id="4610493115106525653">輸出內容良好</translation>
 <translation id="4611292653554630842">登入</translation>
@@ -1307,7 +1307,7 @@
 <translation id="5331975486040154427">USB-C 裝置 (左側後方連接埠)</translation>
 <translation id="533282197239610265">顯示投放裝置</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (右邊)</translation>
-<translation id="5352250171825660495">深色主題背景已開啟</translation>
+<translation id="5352250171825660495">深色主題已開啟</translation>
 <translation id="5354804064646502504">這種情況可能需要支付數據費用。
 未連接任何裝置。</translation>
 <translation id="5356963482258194581">在深色和淺色主題背景之間切換。請在桌面上按一下右鍵，並選取「桌布和樣式」。</translation>
@@ -1495,7 +1495,7 @@
 <translation id="5958529069007801266">受管使用者</translation>
 <translation id="596035801491797438">關閉「人臉操控」</translation>
 <translation id="5960410286721553511">查看手機最近的相片和媒體</translation>
-<translation id="5965524703725988602">切換深色主題背景。<ph name="STATE_TEXT" />。</translation>
+<translation id="5965524703725988602">切換深色主題。<ph name="STATE_TEXT" />。</translation>
 <translation id="5975235751479998104">向前循環切換視窗</translation>
 <translation id="5978382165065462689">透過「遠端協助」共用螢幕控制權。</translation>
 <translation id="5980301590375426705">結束訪客工作階段</translation>
@@ -2062,7 +2062,7 @@
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> 上的藍牙似乎已關閉。請開啟藍牙，才能使用 Phone Hub。</translation>
 <translation id="7884446017008693258">熱點設定</translation>
 <translation id="7884902759927478774">取消分頁拖曳</translation>
-<translation id="7886169021410746335">調整私隱權設定</translation>
+<translation id="7886169021410746335">調整私隱設定</translation>
 <translation id="7886277072580235377">登出帳戶後，系統將清除您的互聯網工作階段。<ph name="LEARN_MORE" /></translation>
 <translation id="7893503627044934815">不想顯示此檔案</translation>
 <translation id="7895348134893321514">Tote</translation>
@@ -2350,7 +2350,7 @@
 <translation id="8847100217801213944">顯示華氏溫度</translation>
 <translation id="8849001918648564819">隱藏</translation>
 <translation id="8855885154700222542">全螢幕鍵</translation>
-<translation id="8858369206579825206">私隱權設定</translation>
+<translation id="8858369206579825206">私隱設定</translation>
 <translation id="8860366331836346216">新增 eSIM 卡</translation>
 <translation id="8869149849311827122">確定要停用滑鼠游標控制嗎？</translation>
 <translation id="8870509716567206129">應用程式不支援分割畫面。</translation>

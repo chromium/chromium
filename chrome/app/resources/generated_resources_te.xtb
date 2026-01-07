@@ -11590,7 +11590,7 @@
 <translation id="8934585454328207858">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> USB పరికరాలను యాక్సెస్ చేస్తోంది}=2{పరికరాలను యాక్సెస్ చేసే ఎక్స్‌టెన్షన్‌లు: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{పరికరాలను యాక్సెస్ చేసే ఎక్స్‌టెన్షన్‌లు: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> + మరో {3}}}</translation>
 <translation id="8934732568177537184">కొనసాగించండి</translation>
 <translation id="8938800817013097409">USB-C పరికరం (వెనుక భాగంలో కుడి పోర్ట్)</translation>
-<translation id="8940056662913003694">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> రోజు క్రితం ఉపయోగించబడింది}=1{<ph name="TIME_COUNT" /> రోజుల క్రితం ఉపయోగించబడింది}=2{<ph name="TIME_COUNT" /> వారం క్రితం ఉపయోగించబడింది}other{<ph name="TIME_COUNT" /> వారాల క్రితం ఉపయోగించబడింది}}</translation>
+<translation id="8940056662913003694">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> రోజు క్రితం ఉపయోగించారు}=1{<ph name="TIME_COUNT" /> రోజుల క్రితం ఉపయోగించారు}=2{<ph name="TIME_COUNT" /> వారం క్రితం ఉపయోగించారు}other{<ph name="TIME_COUNT" /> వారాల క్రితం ఉపయోగించారు}}</translation>
 <translation id="8940081510938872932">ప్రస్తుతం మీ కంప్యూటర్ అనేక చర్యలను అమలు చేస్తోంది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="8940888110818450052">సైన్ ఇన్ ఆప్షన్‌లు</translation>
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' అనుమతిని ఉపసంహరించు</translation>
