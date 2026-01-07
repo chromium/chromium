@@ -149,10 +149,17 @@ Self& AddQuads<Self>::AddTextureQuad(const gfx::Rect& rect,
                                      const TextureQuadParams& params) {
   auto* sqs = AppendDefaultSharedQuadState(rect, visible_rect);
   auto* quad = pass_->CreateAndAppendDrawQuad<TextureDrawQuad>();
+
+  const auto resource_size_in_pixels =
+      params.resource_size_in_pixels.value_or(rect.size());
+
   quad->SetAll(sqs, rect, visible_rect, params.needs_blending, resource_id,
-               gfx::PointF(0.0f, 0.0f), gfx::PointF(1.0f, 1.0f),
+               gfx::PointF(0.0f, 0.0f),
+               gfx::PointF(resource_size_in_pixels.width(),
+                           resource_size_in_pixels.height()),
                params.background_color, params.nearest_neighbor,
-               params.secure_output_only, params.protected_video_type);
+               params.secure_output_only, params.protected_video_type,
+               /*is_tex_coords_normalized=*/false);
   return ThisRef();
 }
 

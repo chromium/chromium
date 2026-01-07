@@ -52,6 +52,7 @@ struct TextureQuadParams {
   bool secure_output_only = false;
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kClear;
+  std::optional<gfx::Size> resource_size_in_pixels;
 };
 
 namespace internal {
