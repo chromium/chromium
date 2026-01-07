@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/profiles/incognito_mode_policy_handler.h"
+#include "chrome/browser/profiles/chrome_incognito_mode_policy_handler.h"
 
 #include "base/command_line.h"
 #include "base/notreached.h"
@@ -20,12 +20,13 @@
 
 namespace policy {
 
-IncognitoModePolicyHandler::IncognitoModePolicyHandler() = default;
+ChromeIncognitoModePolicyHandler::ChromeIncognitoModePolicyHandler() = default;
 
-IncognitoModePolicyHandler::~IncognitoModePolicyHandler() = default;
+ChromeIncognitoModePolicyHandler::~ChromeIncognitoModePolicyHandler() = default;
 
-bool IncognitoModePolicyHandler::CheckPolicySettings(const PolicyMap& policies,
-                                                     PolicyErrorMap* errors) {
+bool ChromeIncognitoModePolicyHandler::CheckPolicySettings(
+    const PolicyMap& policies,
+    PolicyErrorMap* errors) {
   // It is safe to use `GetValueUnsafe()` because type checking is performed
   // before the value is used.
   const base::Value* availability =
@@ -59,8 +60,9 @@ bool IncognitoModePolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   return true;
 }
 
-void IncognitoModePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
-                                                     PrefValueMap* prefs) {
+void ChromeIncognitoModePolicyHandler::ApplyPolicySettings(
+    const PolicyMap& policies,
+    PrefValueMap* prefs) {
 #if BUILDFLAG(IS_WIN)
   // When browser starts with GCPW sign-in flag, it runs in incognito mode and
   // gaia login page is loaded. With this flag, user can't use Chrome normally.
@@ -68,8 +70,9 @@ void IncognitoModePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   // Chrome from launching in incognito mode.To make this work, we should ignore
   // setting inconito mode policy if GCPW sign-in flag is present.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::credential_provider::kGcpwSigninSwitch))
+          ::credential_provider::kGcpwSigninSwitch)) {
     return;
+  }
 #endif
 
   const base::Value* availability = policies.GetValue(

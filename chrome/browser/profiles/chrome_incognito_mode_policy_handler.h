@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PROFILES_INCOGNITO_MODE_POLICY_HANDLER_H_
-#define CHROME_BROWSER_PROFILES_INCOGNITO_MODE_POLICY_HANDLER_H_
+#ifndef CHROME_BROWSER_PROFILES_CHROME_INCOGNITO_MODE_POLICY_HANDLER_H_
+#define CHROME_BROWSER_PROFILES_CHROME_INCOGNITO_MODE_POLICY_HANDLER_H_
 
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
@@ -15,15 +15,16 @@ class PolicyErrorMap;
 class PolicyMap;
 
 // ConfigurationPolicyHandler for the incognito mode policies.
-class IncognitoModePolicyHandler : public ConfigurationPolicyHandler {
+class ChromeIncognitoModePolicyHandler : public ConfigurationPolicyHandler {
  public:
-  IncognitoModePolicyHandler();
+  ChromeIncognitoModePolicyHandler();
 
-  IncognitoModePolicyHandler(const IncognitoModePolicyHandler&) = delete;
-  IncognitoModePolicyHandler& operator=(const IncognitoModePolicyHandler&) =
+  ChromeIncognitoModePolicyHandler(const ChromeIncognitoModePolicyHandler&) =
       delete;
+  ChromeIncognitoModePolicyHandler& operator=(
+      const ChromeIncognitoModePolicyHandler&) = delete;
 
-  ~IncognitoModePolicyHandler() override;
+  ~ChromeIncognitoModePolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
   bool CheckPolicySettings(const PolicyMap& policies,
@@ -34,4 +35,4 @@ class IncognitoModePolicyHandler : public ConfigurationPolicyHandler {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_PROFILES_INCOGNITO_MODE_POLICY_HANDLER_H_
+#endif  // CHROME_BROWSER_PROFILES_CHROME_INCOGNITO_MODE_POLICY_HANDLER_H_

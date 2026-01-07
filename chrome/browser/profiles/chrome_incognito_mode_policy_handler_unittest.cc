@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/profiles/incognito_mode_policy_handler.h"
+#include "chrome/browser/profiles/chrome_incognito_mode_policy_handler.h"
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -15,13 +15,14 @@
 namespace policy {
 
 // Tests Incognito mode availability preference setting.
-class IncognitoModePolicyHandlerTest
+class ChromeIncognitoModePolicyHandlerTest
     : public ConfigurationPolicyPrefStoreTest {
  public:
   void SetUp() override {
     handler_list_.AddHandler(base::WrapUnique<ConfigurationPolicyHandler>(
-        new IncognitoModePolicyHandler));
+        new ChromeIncognitoModePolicyHandler));
   }
+
  protected:
   static const int kIncognitoModeAvailabilityNotSet = -1;
 
@@ -59,28 +60,28 @@ class IncognitoModePolicyHandlerTest
 // The following testcases verify that if the obsolete IncognitoEnabled
 // policy is not set, the IncognitoModeAvailability values should be copied
 // from IncognitoModeAvailability policy to pref "as is".
-TEST_F(IncognitoModePolicyHandlerTest,
+TEST_F(ChromeIncognitoModePolicyHandlerTest,
        NoObsoletePolicyAndIncognitoEnabled) {
   SetPolicies(INCOGNITO_ENABLED_UNKNOWN,
               static_cast<int>(policy::IncognitoModeAvailability::kEnabled));
   VerifyValues(policy::IncognitoModeAvailability::kEnabled);
 }
 
-TEST_F(IncognitoModePolicyHandlerTest,
+TEST_F(ChromeIncognitoModePolicyHandlerTest,
        NoObsoletePolicyAndIncognitoDisabled) {
   SetPolicies(INCOGNITO_ENABLED_UNKNOWN,
               static_cast<int>(policy::IncognitoModeAvailability::kDisabled));
   VerifyValues(policy::IncognitoModeAvailability::kDisabled);
 }
 
-TEST_F(IncognitoModePolicyHandlerTest,
+TEST_F(ChromeIncognitoModePolicyHandlerTest,
        NoObsoletePolicyAndIncognitoForced) {
   SetPolicies(INCOGNITO_ENABLED_UNKNOWN,
               static_cast<int>(policy::IncognitoModeAvailability::kForced));
   VerifyValues(policy::IncognitoModeAvailability::kForced);
 }
 
-TEST_F(IncognitoModePolicyHandlerTest,
+TEST_F(ChromeIncognitoModePolicyHandlerTest,
        NoObsoletePolicyAndNoIncognitoAvailability) {
   SetPolicies(INCOGNITO_ENABLED_UNKNOWN, kIncognitoModeAvailabilityNotSet);
   const base::Value* value = nullptr;
@@ -91,27 +92,27 @@ TEST_F(IncognitoModePolicyHandlerTest,
 // Checks that if the obsolete IncognitoEnabled policy is set, if sets
 // the IncognitoModeAvailability preference only in case
 // the IncognitoModeAvailability policy is not specified.
-TEST_F(IncognitoModePolicyHandlerTest,
+TEST_F(ChromeIncognitoModePolicyHandlerTest,
        ObsoletePolicyDoesNotAffectAvailabilityEnabled) {
   SetPolicies(INCOGNITO_ENABLED_FALSE,
               static_cast<int>(policy::IncognitoModeAvailability::kEnabled));
   VerifyValues(policy::IncognitoModeAvailability::kEnabled);
 }
 
-TEST_F(IncognitoModePolicyHandlerTest,
+TEST_F(ChromeIncognitoModePolicyHandlerTest,
        ObsoletePolicyDoesNotAffectAvailabilityForced) {
   SetPolicies(INCOGNITO_ENABLED_TRUE,
               static_cast<int>(policy::IncognitoModeAvailability::kForced));
   VerifyValues(policy::IncognitoModeAvailability::kForced);
 }
 
-TEST_F(IncognitoModePolicyHandlerTest,
+TEST_F(ChromeIncognitoModePolicyHandlerTest,
        ObsoletePolicySetsPreferenceToEnabled) {
   SetPolicies(INCOGNITO_ENABLED_TRUE, kIncognitoModeAvailabilityNotSet);
   VerifyValues(policy::IncognitoModeAvailability::kEnabled);
 }
 
-TEST_F(IncognitoModePolicyHandlerTest,
+TEST_F(ChromeIncognitoModePolicyHandlerTest,
        ObsoletePolicySetsPreferenceToDisabled) {
   SetPolicies(INCOGNITO_ENABLED_FALSE, kIncognitoModeAvailabilityNotSet);
   VerifyValues(policy::IncognitoModeAvailability::kDisabled);
