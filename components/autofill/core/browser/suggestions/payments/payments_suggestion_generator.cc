@@ -293,9 +293,9 @@ std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
         suggestion_data,
     bool is_card_number_field_empty,
     const payments::AmountExtractionStatus& amount_extraction_status) {
-  std::vector<Suggestion> suggestions;
   if (base::Contains(suggestion_data,
                      SuggestionDataSource::kSaveAndFillPromo)) {
+    std::vector<Suggestion> suggestions;
     bool display_gpay_logo = false;
     suggestions.push_back(
         CreateSaveAndFillSuggestion(client, display_gpay_logo));
@@ -306,8 +306,10 @@ std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
             display_gpay_logo, amount_extraction_status),
         std::back_inserter(suggestions));
     return suggestions;
-  } else if (base::Contains(suggestion_data,
-                            SuggestionDataSource::kVirtualStandaloneCvc)) {
+  }
+
+  if (base::Contains(suggestion_data,
+                     SuggestionDataSource::kVirtualStandaloneCvc)) {
     // Only trigger GetVirtualCreditCardsForStandaloneCvcField if it's
     // standalone CVC field.
     base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
@@ -319,17 +321,15 @@ std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
               trigger_field.origin(), four_digit_combinations_in_dom);
     }
 
-    suggestions = GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
+    return GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
         client, trigger_field, virtual_card_guid_to_last_four_map,
         suggestion_data, amount_extraction_status);
-  } else {
-    suggestions = GenerateCreditCardOrCvcFieldSuggestionsSync(
-        client, trigger_field, trigger_field_type, should_show_scan_credit_card,
-        summary, is_card_number_field_empty, suggestion_data,
-        amount_extraction_status);
   }
 
-  return suggestions;
+  return GenerateCreditCardOrCvcFieldSuggestionsSync(
+      client, trigger_field, trigger_field_type, should_show_scan_credit_card,
+      summary, is_card_number_field_empty, suggestion_data,
+      amount_extraction_status);
 }
 
 std::vector<Suggestion> GetSuggestionsForCreditCards(
