@@ -320,11 +320,6 @@ void BrowserControlsOffsetManager::OnBrowserControlsParamsChanged(
     } else if (BottomControlsShownRatio() == OldBottomControlsMinShownRatio()) {
       new_bottom_ratio = BottomControlsMinShownRatio();
     }
-
-    if (base::FeatureList::IsEnabled(
-            features::kBrowserControlsHeightChangeCancelAnimations)) {
-      ResetAnimations();
-    }
   }
 
   // Browser controls height change animations

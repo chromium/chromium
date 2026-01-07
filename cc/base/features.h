@@ -308,11 +308,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReportUkm);
 
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kBrowserControlsSmoothScroll);
 
-// When enabled, browser controls height changed that does not request animation
-// will cancel the ongoing animation.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(
-    kBrowserControlsHeightChangeCancelAnimations);
-
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_
