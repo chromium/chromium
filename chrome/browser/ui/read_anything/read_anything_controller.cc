@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/read_anything/read_anything_immersive_overlay_view.h"
+#include "chrome/browser/ui/read_anything/read_anything_service.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -129,11 +130,31 @@ void ReadAnythingController::RemoveObserver(Observer* observer) {
 void ReadAnythingController::OnEntryShown(
     std::optional<ReadAnythingOpenTrigger> trigger) {
   observers_.Notify(&Observer::Activate, true, trigger);
+
+  auto* service =
+      ReadAnythingService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
+  // At the moment, services are created for normal, guest, and incognito
+  // profiles but not unusual profile types. On the other hand,
+  // ReadAnythingController is created for all tabs. Thus we need a
+  // nullptr check.
+  if (service) {
+    service->OnReadAnythingShown();
+  }
 }
 
 void ReadAnythingController::OnEntryHidden() {
   observers_.Notify(&Observer::Activate, false,
                     std::optional<ReadAnythingOpenTrigger>());
+
+  auto* service =
+      ReadAnythingService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
+  // At the moment, services are created for normal, guest, and incognito
+  // profiles but not unusual profile types. On the other hand,
+  // ReadAnythingController is created for all tabs. Thus we need a
+  // nullptr check.
+  if (service) {
+    service->OnReadAnythingHidden();
+  }
 }
 
 void ReadAnythingController::TabWillDetach(

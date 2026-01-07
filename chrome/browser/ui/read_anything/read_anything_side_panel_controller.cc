@@ -174,14 +174,16 @@ void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
   read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
       /*should_show_page_action=*/false, tab_->GetBrowserWindowInterface());
 
-  auto* service =
-      ReadAnythingService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
-  // At the moment, services are created for normal, incognito, and guest
-  // profiles but not unusual profile types. On the other hand,
-  // ReadAnythingSidePanelController is created for all tabs. Thus we need a
-  // nullptr check.
-  if (service) {
-    service->OnReadAnythingSidePanelEntryShown();
+  if (!features::IsImmersiveReadAnythingEnabled()) {
+    auto* service = ReadAnythingService::Get(
+        tab_->GetBrowserWindowInterface()->GetProfile());
+    // At the moment, services are created for normal, incognito, and guest
+    // profiles but not unusual profile types. On the other hand,
+    // ReadAnythingSidePanelController is created for all tabs. Thus we need a
+    // nullptr check.
+    if (service) {
+      service->OnReadAnythingShown();
+    }
   }
 
   // Build and record UKM record for SidePanelShown to true on the current
@@ -227,15 +229,18 @@ void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
     }
   }
 
-  auto* service =
-      ReadAnythingService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
-  // At the moment, services are created for normal, guest, and incognito
-  // profiles but not unusual profile types. On the other hand,
-  // ReadAnythingSidePanelController is created for all tabs. Thus we need a
-  // nullptr check.
-  if (service) {
-    service->OnReadAnythingSidePanelEntryHidden();
+  if (!features::IsImmersiveReadAnythingEnabled()) {
+    auto* service = ReadAnythingService::Get(
+        tab_->GetBrowserWindowInterface()->GetProfile());
+    // At the moment, services are created for normal, guest, and incognito
+    // profiles but not unusual profile types. On the other hand,
+    // ReadAnythingSidePanelController is created for all tabs. Thus we need a
+    // nullptr check.
+    if (service) {
+      service->OnReadAnythingHidden();
+    }
   }
+
   if (features::IsImmersiveReadAnythingEnabled()) {
     auto* controller = ReadAnythingController::From(tab_);
     CHECK(controller);

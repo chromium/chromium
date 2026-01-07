@@ -13,6 +13,8 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
+#include "chrome/browser/ui/read_anything/read_anything_service.h"
+#include "chrome/browser/ui/read_anything/read_anything_service_factory.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -24,6 +26,7 @@
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,6 +41,16 @@ class MockReadAnythingLifecycleObserver : public ReadAnythingLifecycleObserver {
   MOCK_METHOD(void, OnDestroyed, (), (override));
   MOCK_METHOD(void, OnTabWillDetach, (), (override));
   MOCK_METHOD(void, OnReadingModePresenterChanged, (), (override));
+};
+
+class MockReadAnythingService : public ReadAnythingService {
+ public:
+  explicit MockReadAnythingService(Profile* profile)
+      : ReadAnythingService(profile) {}
+  ~MockReadAnythingService() override = default;
+
+  MOCK_METHOD(void, OnReadAnythingShown, (), (override));
+  MOCK_METHOD(void, OnReadAnythingHidden, (), (override));
 };
 
 class ReadAnythingControllerBrowserTest : public InProcessBrowserTest {
@@ -1097,4 +1110,31 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   AssertOverlayVisibility(/*visible=*/false);
   ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       OnEntryShownAndHidden_NotifiesService) {
+  auto* service = static_cast<MockReadAnythingService*>(
+      ReadAnythingServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          browser()->profile(),
+          base::BindRepeating([](content::BrowserContext* context)
+                                  -> std::unique_ptr<KeyedService> {
+            return std::make_unique<MockReadAnythingService>(
+                Profile::FromBrowserContext(context));
+          })));
+
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  // Expect service to be notified of show.
+  EXPECT_CALL(*service, OnReadAnythingShown()).Times(1);
+  controller->OnEntryShown(ReadAnythingOpenTrigger::kOmniboxChip);
+  testing::Mock::VerifyAndClearExpectations(service);
+
+  // Expect service to be notified of hide.
+  EXPECT_CALL(*service, OnReadAnythingHidden()).Times(1);
+  controller->OnEntryHidden();
+  testing::Mock::VerifyAndClearExpectations(service);
 }
