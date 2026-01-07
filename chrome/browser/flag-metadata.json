@@ -10856,6 +10856,8 @@
   {
     "name": "zero-copy-video-capture",
     "owners": [
+      "eugene@chromium.org",
+      "media-dev@chromium.org",
       // For CrOS
       "chromeos-camera-eng@google.com",
       "chromeos-gfx-video@google.com",
