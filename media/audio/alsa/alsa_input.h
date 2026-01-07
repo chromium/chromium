@@ -12,7 +12,9 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "media/audio/agc_audio_stream.h"
@@ -74,28 +76,30 @@ class MEDIA_EXPORT AlsaPcmInputStream
 
   // Non-refcounted pointer back to the audio manager.
   // The AudioManager indirectly holds on to stream objects, so we don't
-  // want circular references.  Additionally, stream objects live on the audio
-  // thread, which is owned by the audio manager and we don't want to addref
-  // the manager from that thread.
-  raw_ptr<AudioManagerBase> audio_manager_;
+  // want circular references.  Additionally, stream objects live on the
+  // audio thread, which is owned by the audio manager and we don't want to
+  // addref the manager from that thread.
+  const raw_ref<AudioManagerBase> audio_manager_;
   std::string device_name_;
-  AudioParameters params_;
-  int bytes_per_buffer_;
+  const AudioParameters params_;
+  const size_t total_samples_per_buffer_;
   raw_ptr<AlsaWrapper> wrapper_;
-  base::TimeDelta buffer_duration_;  // Length of each recorded buffer.
-  raw_ptr<AudioInputCallback> callback_;  // Valid during a recording session.
+  const base::TimeDelta buffer_duration_;  // Length of each recorded buffer.
+  raw_ptr<AudioInputCallback> callback_ =
+      nullptr;                      // Valid during a recording session.
   base::TimeTicks next_read_time_;  // Scheduled time for next read callback.
-  raw_ptr<snd_pcm_t>
-      device_handle_;  // Handle to the ALSA PCM recording device.
-  raw_ptr<snd_mixer_t> mixer_handle_;  // Handle to the ALSA microphone mixer.
-  raw_ptr<snd_mixer_elem_t>
-      mixer_element_handle_;  // Handle to the capture element.
+  raw_ptr<snd_pcm_t> device_handle_ =
+      nullptr;  // Handle to the ALSA PCM recording device.
+  raw_ptr<snd_mixer_t> mixer_handle_ =
+      nullptr;  // Handle to the ALSA microphone mixer.
+  raw_ptr<snd_mixer_elem_t> mixer_element_handle_ =
+      nullptr;  // Handle to the capture element.
   // Buffer used for reading audio data.
-  std::unique_ptr<uint8_t[]> audio_buffer_;
-  bool read_callback_behind_schedule_;
+  base::HeapArray<int16_t> audio_buffer_;
+  bool read_callback_behind_schedule_ = false;
   std::unique_ptr<AudioBus> audio_bus_;
   base::Thread capture_thread_;
-  bool running_;
+  bool running_ = false;
 };
 
 }  // namespace media

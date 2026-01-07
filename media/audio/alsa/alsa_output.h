@@ -30,6 +30,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -183,32 +184,32 @@ class MEDIA_EXPORT AlsaPcmOutputStream : public AudioOutputStream {
   uint32_t packet_size_;
   base::TimeDelta latency_;
   uint32_t bytes_per_output_frame_;
-  uint32_t alsa_buffer_frames_;
+  uint32_t alsa_buffer_frames_ = 0;
 
   // Flag indicating the code should stop reading from the data source or
   // writing to the ALSA device.  This is set because the device has entered
   // an unrecoverable error state, or the ClosedTask() has executed.
-  bool stop_stream_;
+  bool stop_stream_ = false;
 
   // Wrapper class to invoke all the ALSA functions.
   raw_ptr<AlsaWrapper> wrapper_;
 
   // Audio manager that created us.  Used to report that we've been closed.
-  raw_ptr<AudioManagerBase> manager_;
+  const raw_ref<AudioManagerBase> manager_;
 
   // Task runner to use for polling.
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // Handle to the actual PCM playback device.
-  raw_ptr<snd_pcm_t> playback_handle_;
+  raw_ptr<snd_pcm_t> playback_handle_ = nullptr;
 
   std::unique_ptr<SeekableBuffer> buffer_;
   uint32_t frames_per_packet_;
 
-  InternalState state_;
-  float volume_;  // Volume level from 0.0 to 1.0.
+  InternalState state_ = kCreated;
+  float volume_ = 1.0f;  // Volume level from 0.0 to 1.0.
 
-  raw_ptr<AudioSourceCallback> source_callback_;
+  raw_ptr<AudioSourceCallback> source_callback_ = nullptr;
 
   // Container for retrieving data from AudioSourceCallback::OnMoreData().
   std::unique_ptr<AudioBus> audio_bus_;
