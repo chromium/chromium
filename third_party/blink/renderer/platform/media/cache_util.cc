@@ -9,7 +9,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -50,15 +49,15 @@ uint32_t GetReasonsForUncacheability(const WebURLResponse& response) {
   std::string cache_control_header =
       base::ToLowerASCII(response.HttpHeaderField("cache-control").Utf8());
 
-  if (base::Contains(cache_control_header, "no-cache")) {
+  if (cache_control_header.contains("no-cache")) {
     reasons |= kNoCache;
   }
 
-  if (base::Contains(cache_control_header, "no-store")) {
+  if (cache_control_header.contains("no-store")) {
     reasons |= kNoStore;
   }
 
-  if (base::Contains(cache_control_header, "must-revalidate")) {
+  if (cache_control_header.contains("must-revalidate")) {
     reasons |= kHasMustRevalidate;
   }
 
@@ -93,8 +92,8 @@ base::TimeDelta GetCacheValidUntil(const WebURLResponse& response) {
   std::string cache_control_header =
       base::ToLowerASCII(response.HttpHeaderField("cache-control").Utf8());
 
-  if (base::Contains(cache_control_header, "no-cache") ||
-      base::Contains(cache_control_header, "must-revalidate")) {
+  if (cache_control_header.contains("no-cache") ||
+      cache_control_header.contains("must-revalidate")) {
     return base::TimeDelta();
   }
 

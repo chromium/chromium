@@ -28,7 +28,6 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/numerics/safe_conversions.h"
@@ -1541,7 +1540,7 @@ const AtomicString& XMLHttpRequest::getResponseHeader(
 
   if (response_.GetType() == network::mojom::FetchResponseType::kCors &&
       !cors::IsCorsSafelistedResponseHeader(name) &&
-      !base::Contains(access_control_expose_header_set, name.Ascii())) {
+      !access_control_expose_header_set.contains(name.Ascii())) {
     LogConsoleError(GetExecutionContext(),
                     StrCat({"Refused to get unsafe header \"", name, "\""}));
     return g_null_atom;

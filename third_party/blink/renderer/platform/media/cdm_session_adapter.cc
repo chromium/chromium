@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
@@ -82,7 +81,7 @@ bool CdmSessionAdapter::RegisterSession(
     const std::string& session_id,
     base::WeakPtr<WebContentDecryptionModuleSessionImpl> session) {
   // If this session ID is already registered, don't register it again.
-  if (base::Contains(sessions_, session_id))
+  if (sessions_.contains(session_id))
     return false;
 
   sessions_[session_id] = session;
@@ -90,7 +89,7 @@ bool CdmSessionAdapter::RegisterSession(
 }
 
 void CdmSessionAdapter::UnregisterSession(const std::string& session_id) {
-  DCHECK(base::Contains(sessions_, session_id));
+  DCHECK(sessions_.contains(session_id));
   sessions_.erase(session_id);
 }
 

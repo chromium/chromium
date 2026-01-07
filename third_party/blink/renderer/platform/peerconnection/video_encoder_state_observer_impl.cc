@@ -8,7 +8,6 @@
 
 #include "base/atomic_ref_count.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/sequence_checker.h"
 #include "third_party/webrtc/api/video/encoded_image.h"
 
@@ -142,7 +141,7 @@ void VideoEncoderStateObserverImpl::OnEncoderCreated(
     int encoder_id,
     const webrtc::VideoCodec& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
-  DCHECK(!base::Contains(encoder_state_by_id_, encoder_id));
+  DCHECK(!encoder_state_by_id_.contains(encoder_id));
 
   // Initially, assume all layers active.
   // TODO(hiroh): Set the number of layers to the currently configured layers?
