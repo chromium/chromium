@@ -585,7 +585,6 @@ class CORE_EXPORT FragmentBuilder {
   void PropagateSizeDependentData();
 
   void PropagateNamedTriggers(const PhysicalFragment& child);
-  void CreateNamedTriggersForSelf();
   TriggerScopedNameMap& EnsureNamedTriggers();
   void SetNamedTrigger(const TriggerScopedName& trigger_scoped_name,
                        const Element* trigger_owner);

@@ -1337,9 +1337,11 @@ class CSSAnimationsTriggerTest : public CSSAnimationsTest {
     EXPECT_NE(name_in_target, nullptr);
     EXPECT_EQ(name_in_target->GetName(), trigger_name);
 
-    const AnimationTrigger* trigger_in_scroller = GetTrigger(scroller);
+    const AnimationTrigger* trigger_in_scroller =
+        GetTrigger(scroller, /*self_declared=*/false);
     EXPECT_NE(trigger_in_scroller, nullptr);
-    const ScopedCSSName* name_in_scroller = GetTriggerName(scroller);
+    const ScopedCSSName* name_in_scroller =
+        GetTriggerName(scroller, /*self_declared=*/false);
     EXPECT_NE(name_in_scroller, nullptr);
     EXPECT_EQ(name_in_scroller->GetName(), trigger_name);
 
@@ -1348,28 +1350,44 @@ class CSSAnimationsTriggerTest : public CSSAnimationsTest {
     return trigger_in_target;
   }
 
-  const ScopedCSSName* GetTriggerName(Element& element) {
-    LayoutBox* box = element.GetLayoutBox();
-    for (const PhysicalFragment& fragment : box->PhysicalFragments()) {
-      if (!fragment.NamedTriggers()) {
-        continue;
+  const ScopedCSSName* GetTriggerName(Element& element,
+                                      bool self_declared = true) {
+    // For a given element, triggers declared on the element itself are stored
+    // on the element but not in its fragments; triggers declared on its
+    // descendants are stored in its fragments.
+    if (self_declared) {
+      if (element.NamedTriggers()) {
+        return element.NamedTriggers()->begin()->key.Get();
       }
-      return fragment.NamedTriggers()->begin()->key->GetScopedName();
+    } else {
+      LayoutBox* box = element.GetLayoutBox();
+      for (const PhysicalFragment& fragment : box->PhysicalFragments()) {
+        if (!fragment.NamedTriggers()) {
+          continue;
+        }
+        return fragment.NamedTriggers()->begin()->key->GetScopedName();
+      }
     }
     return nullptr;
   }
 
-  AnimationTrigger* GetTrigger(Element& element) {
-    LayoutBox* box = element.GetLayoutBox();
-    for (const auto& fragment : box->PhysicalFragments()) {
-      if (!fragment.NamedTriggers()) {
-        continue;
+  AnimationTrigger* GetTrigger(Element& element, bool self_declared = true) {
+    if (self_declared) {
+      if (element.NamedTriggers()) {
+        return element.NamedTriggers()->begin()->value.Get();
       }
-      const TriggerScopedName* scoped_name =
-          fragment.NamedTriggers()->begin()->key.Get();
-      const Element* trigger_owner = fragment.NamedTriggers()->begin()->value;
-      const ScopedCSSName* name = scoped_name->GetScopedName();
-      return trigger_owner->NamedTrigger(name);
+    } else {
+      LayoutBox* box = element.GetLayoutBox();
+      for (const auto& fragment : box->PhysicalFragments()) {
+        if (!fragment.NamedTriggers()) {
+          continue;
+        }
+        const TriggerScopedName* scoped_name =
+            fragment.NamedTriggers()->begin()->key.Get();
+        const Element* trigger_owner = fragment.NamedTriggers()->begin()->value;
+        const ScopedCSSName* name = scoped_name->GetScopedName();
+        return trigger_owner->NamedTrigger(name);
+      }
     }
     return nullptr;
   }

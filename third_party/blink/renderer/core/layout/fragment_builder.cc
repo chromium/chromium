@@ -1118,8 +1118,6 @@ void FragmentBuilder::Finalize() {
   is_finalized_ = true;
 #endif
 
-  CreateNamedTriggersForSelf();
-
   has_final_size_ = true;
   PropagateSizeDependentData();
 }
@@ -1187,33 +1185,28 @@ void FragmentBuilder::SetNamedTrigger(
 }
 
 void FragmentBuilder::PropagateNamedTriggers(const PhysicalFragment& child) {
-  if (!child.NamedTriggers()) {
+  const Element* child_element = DynamicTo<Element>(child.GetNode());
+  if (!child_element && !child.NamedTriggers()) {
     return;
   }
 
-  const TriggerScopedNameMap* trigger_scoped_name_map = child.NamedTriggers();
-  for (const auto& entry : *trigger_scoped_name_map) {
-    SetNamedTrigger(*entry.key, entry.value);
-  }
-}
-
-void FragmentBuilder::CreateNamedTriggersForSelf() {
-  if (!node_) {
-    return;
-  }
-
-  const Element* element = DynamicTo<Element>(node_.GetDOMNode());
-  if (!element) {
-    return;
-  }
-
-  if (const CSSAnimationData* data = Style().Animations()) {
+  // Add triggers declared on |child|'s element first. Triggers in the element's
+  // are later in tree order, so they should override if there is a name clash.
+  if (const CSSAnimationData* data = child.Style().Animations()) {
     for (const auto& name : data->TimelineTriggerNameList()) {
       if (name) {
         TriggerScopedName* trigger_scoped_name =
-            ToTriggerScopedName(*name, *element);
-        SetNamedTrigger(*trigger_scoped_name, element);
+            ToTriggerScopedName(*name, *child_element);
+        SetNamedTrigger(*trigger_scoped_name, child_element);
       }
+    }
+  }
+
+  // Add triggers declared by descendants of the |child|'s element.
+  if (child.NamedTriggers()) {
+    const TriggerScopedNameMap* trigger_scoped_name_map = child.NamedTriggers();
+    for (const auto& entry : *trigger_scoped_name_map) {
+      SetNamedTrigger(*entry.key, entry.value);
     }
   }
 }
