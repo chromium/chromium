@@ -240,14 +240,14 @@ public class CronetTestRule implements TestRule {
         boolean allImplementionsSkipped = true;
         AssumptionViolatedException lastAssumptionViolatedException = null;
         for (CronetTestFramework.CronetImplementation implementation : implementationsUnderTest) {
-            if (BuildConfig.CRONET_FOR_AOSP_BUILD
-                    && implementation.equals(CronetTestFramework.CronetImplementation.FALLBACK)) {
-                // Skip executing tests for JavaCronetEngine.
-                continue;
-            }
             Log.i(TAG, "Running test against " + implementation + " implementation.");
             setImplementationUnderTest(implementation);
             try {
+                assumeFalse(
+                        "Skipping JavaCronetEngine tests in AOSP",
+                        BuildConfig.CRONET_FOR_AOSP_BUILD
+                                && implementation.equals(
+                                        CronetTestFramework.CronetImplementation.FALLBACK));
                 evaluateWithFramework(base, testName, netLogEnabled, desc);
                 allImplementionsSkipped = false;
             } catch (AssumptionViolatedException assumptionViolatedException) {
