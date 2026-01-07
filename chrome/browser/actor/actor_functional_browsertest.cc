@@ -13,6 +13,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -99,9 +100,11 @@ base::expected<base::Value, std::string> ToExpected(
   return base::ok(std::move(result).TakeValue());
 }
 
-Actions MakeWaitForTaskId(base::TimeDelta duration, int task_id) {
-  Actions action = MakeWait(duration);
-  action.set_task_id(task_id);
+Actions MakeWaitForTaskId(std::optional<base::TimeDelta> duration,
+                          std::optional<tabs::TabHandle> observe_tab_handle,
+                          TaskId task_id) {
+  Actions action = MakeWait(duration, observe_tab_handle);
+  action.set_task_id(task_id.value());
   return action;
 }
 
@@ -161,6 +164,9 @@ class AsyncActionWaiter {
 
 class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
  public:
+  static constexpr base::TimeDelta kShortWaitTime = base::Milliseconds(10);
+  static constexpr base::TimeDelta kLongWaitTime = base::Minutes(2);
+
   ActorFunctionalBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlicMultiInstance,
@@ -201,6 +207,23 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
             future.SetValue(state);
           }
         }));
+  }
+
+  // Returns the state of the relevant ActorTask.
+  ActorTask::State GetActorTaskState(TaskId task_id) {
+    ActorTask* task = actor_keyed_service()->GetTask(task_id);
+    CHECK_NE(task, nullptr) << "ActorTask " << task_id << " not found.";
+    return task->GetState();
+  }
+
+  // Waits for the relevant ActorTask to reach the expected state or times out.
+  void RunUntilActorTaskStateIs(TaskId task_id,
+                                ActorTask::State expected_state) {
+    // TODO(crbug.com/473858969): Replace with a helper class.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return GetActorTaskState(task_id) == expected_state;
+    })) << "Timed out waiting for ActorTask "
+        << task_id << " to reach state " << ToString(expected_state);
   }
 
   // Common helper to run EvalJs in the Glic frame.
@@ -319,6 +342,8 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
   }
 
   // Helper to call the PauseActorTask TS API.
+  // Note: `tab_handle` needs to be specified if you intend to resume the task
+  // in the future without performing any tab-scoped actions beforehand.
   void PauseActorTask(TaskId task_id,
                       glic::mojom::ActorTaskPauseReason pause_reason =
                           glic::mojom::ActorTaskPauseReason::kPausedByModel,
@@ -480,11 +505,7 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, PauseAndResumeCreatedTask) {
   PauseActorTask(task_id, glic::mojom::ActorTaskPauseReason::kPausedByUser,
                  active_tab()->GetHandle());
   // Wait for the task to pause.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return actor_keyed_service()->GetTask(task_id)->GetState() ==
-           ActorTask::State::kPausedByUser;
-  })) << "Timed out waiting for task "
-      << task_id << " to pause.";
+  RunUntilActorTaskStateIs(task_id, ActorTask::State::kPausedByUser);
 
   const GURL target_url =
       embedded_test_server()->GetURL("/actor/blank.html?target");
@@ -498,11 +519,9 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, PauseAndResumeCreatedTask) {
 
   EXPECT_THAT(
       ResumeActorTask(task_id,
-                      glic::mojom::GetTabContextOptions().To<base::Value>())
-          .value(),
-      testing::Eq(mojom::ActionResultCode::kOk));
-  EXPECT_EQ(ActorTask::State::kReflecting,
-            actor_keyed_service()->GetTask(task_id)->GetState());
+                      glic::mojom::GetTabContextOptions().To<base::Value>()),
+      ValueIs(mojom::ActionResultCode::kOk));
+  EXPECT_EQ(ActorTask::State::kReflecting, GetActorTaskState(task_id));
 
   // Performing the action again should succeed.
   EXPECT_THAT(PerformActions(action),
@@ -556,11 +575,22 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
   TaskId task_id_1 = actor_keyed_service()->CreateTask();
   TaskId task_id_2 = actor_keyed_service()->CreateTask();
 
+  // Create tabs for each task using CreateActorTab API to ensure a
+  // TabObservation is included in its result.
+  ASSERT_OK_AND_ASSIGN(
+      tabs::TabHandle tab_1,
+      CreateActorTab(task_id_1, /*open_in_background=*/false,
+                     base::ToString(active_tab()->GetHandle().raw_value()),
+                     base::ToString(browser()->session_id().id())));
+  ASSERT_OK_AND_ASSIGN(
+      tabs::TabHandle tab_2,
+      CreateActorTab(task_id_2, /*open_in_background=*/false,
+                     base::ToString(active_tab()->GetHandle().raw_value()),
+                     base::ToString(browser()->session_id().id())));
+
   // Perform two WaitActions where the first resolves after the second
-  Actions action_1 =
-      MakeWaitForTaskId(base::Milliseconds(20), task_id_1.value());
-  Actions action_2 =
-      MakeWaitForTaskId(base::Milliseconds(10), task_id_2.value());
+  Actions action_1 = MakeWaitForTaskId(kShortWaitTime * 2, tab_1, task_id_1);
+  Actions action_2 = MakeWaitForTaskId(kShortWaitTime, tab_2, task_id_2);
 
   std::unique_ptr<AsyncActionWaiter> waiter_1 = PerformActionsAsync(action_1);
   std::unique_ptr<AsyncActionWaiter> waiter_2 = PerformActionsAsync(action_2);
@@ -570,8 +600,58 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
   ASSERT_OK_AND_ASSIGN(ActionsResult result_1, waiter_1->Wait());
   ASSERT_OK_AND_ASSIGN(ActionsResult result_2, waiter_2->Wait());
 
+  // Verify a tab observation was included in the results.
   EXPECT_THAT(result_1, HasResultCode(mojom::ActionResultCode::kOk));
+  EXPECT_THAT(result_1.tabs(), testing::SizeIs(1));
+  EXPECT_THAT(result_1.tabs().at(0).result(),
+              TabObservation::TAB_OBSERVATION_OK);
+
   EXPECT_THAT(result_2, HasResultCode(mojom::ActionResultCode::kOk));
+  EXPECT_THAT(result_2.tabs(), testing::SizeIs(1));
+  EXPECT_THAT(result_2.tabs().at(0).result(),
+              TabObservation::TAB_OBSERVATION_OK);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, PauseActiveTask) {
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  EXPECT_NE(task_id, TaskId());
+
+  TestFuture<ActorTask::State> task_completion_state;
+  base::CallbackListSubscription subscription =
+      CreateTaskCompletionSubscription(task_id, task_completion_state);
+
+  // Use a long wait to ensure we can pause before it completes.
+  optimization_guide::proto::Actions wait_action =
+      MakeWaitForTaskId(kLongWaitTime, active_tab()->GetHandle(), task_id);
+
+  std::unique_ptr<AsyncActionWaiter> waiter = PerformActionsAsync(wait_action);
+  PauseActorTask(task_id, glic::mojom::ActorTaskPauseReason::kPausedByUser,
+                 active_tab()->GetHandle());
+
+  // Verify the WaitAction was ended and the task was paused.
+  EXPECT_THAT(waiter->Wait(),
+              ValueIs(HasResultCode(mojom::ActionResultCode::kTaskPaused)));
+  RunUntilActorTaskStateIs(task_id, ActorTask::State::kPausedByUser);
+
+  EXPECT_THAT(
+      ResumeActorTask(task_id,
+                      glic::mojom::GetTabContextOptions().To<base::Value>()),
+      ValueIs(mojom::ActionResultCode::kOk));
+  EXPECT_EQ(ActorTask::State::kReflecting, GetActorTaskState(task_id));
+
+  // Verify new Actions can be performed after the task is resumed.
+  const GURL target_url =
+      embedded_test_server()->GetURL("/actor/blank.html?target");
+  optimization_guide::proto::Actions nav_action =
+      MakeNavigate(active_tab()->GetHandle(), target_url.spec());
+  nav_action.set_task_id(task_id.value());
+
+  EXPECT_THAT(PerformActions(nav_action),
+              base::test::ValueIs(HasResultCode(mojom::ActionResultCode::kOk)));
+  EXPECT_EQ(target_url, web_contents()->GetURL());
+
+  StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
+  EXPECT_EQ(ActorTask::State::kFinished, task_completion_state.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
