@@ -309,6 +309,10 @@ void ContextualCueingService::OnNudgeActivity(
       interaction = NudgeInteraction::kIgnoredOpenedContextualTasksSidePanel;
       log_ukm = true;
       break;
+    case tabs::GlicNudgeActivity::kNudgeIgnoredOmniboxContextMenuInteraction:
+      interaction = NudgeInteraction::kIgnoredOmniboxContextMenuInteraction;
+      log_ukm = true;
+      break;
   }
   LogNudgeInteractionHistogram(interaction, is_dynamic);
   // As this function is called multiple times per nudge only some of the

@@ -134,6 +134,10 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Closed due to contextual tasks side panel opening">
     The nudge was dismissed by the contextual tasks side panel opening.
   </int>
+  <int value="9" label="Closed due to omnibox context menu interaction">
+    The nudge was dismissed by an interaction with the context menu in the
+    omnibox.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:NudgeInteraction) -->

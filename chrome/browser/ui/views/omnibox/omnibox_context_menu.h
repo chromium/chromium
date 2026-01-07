@@ -64,6 +64,8 @@ class OmniboxContextMenu : public views::MenuDelegate,
   raw_ptr<views::MenuItemView> menu_;
   // Optional callback to run after ExecuteCommand is called.
   base::RepeatingClosure on_menu_closed_;
+  // The web contents of the Omnibox AIM Web UI.
+  base::WeakPtr<content::WebContents> web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_CONTEXT_MENU_H_
