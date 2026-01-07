@@ -17,15 +17,15 @@
 namespace ash::input_method {
 namespace {
 
-constexpr char kPkAutocorrectLevelPrefName[] =
+constexpr std::string_view kPkAutocorrectLevelPrefName =
     "physicalKeyboardAutoCorrectionLevel";
-constexpr char kVkAutocorrectLevelPrefName[] =
+constexpr std::string_view kVkAutocorrectLevelPrefName =
     "virtualKeyboardAutoCorrectionLevel";
-constexpr char kPkEnabledByDefaultPrefName[] =
+constexpr std::string_view kPkEnabledByDefaultPrefName =
     "physicalKeyboardAutoCorrectionEnabledByDefault";
 
 AutocorrectPreference GetAutocorrectPrefFor(
-    const std::string& autocorrect_pref_path,
+    const std::string_view autocorrect_pref_path,
     const PrefService& pref_service,
     const std::string& engine_id) {
   const base::Value::Dict& input_method_settings =
