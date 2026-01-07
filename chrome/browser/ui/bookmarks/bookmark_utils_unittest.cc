@@ -227,4 +227,41 @@ TEST_F(BookmarkUtilsGetBookmarkDropOperationTest, DropManagedNode) {
             ui::mojom::DragOperation::kCopy);
 }
 
+TEST_F(BookmarkUtilsGetBookmarkDropOperationTest, DropWhenNodeDeleted) {
+  AddNodesToBookmarkBarFromModelString("1 f1:[ 2 ]");
+  EXPECT_EQ(model()->bookmark_bar_node()->children().size(), 2u);
+
+  ui::OSExchangeData os_drag_data;
+  {
+    bookmarks::BookmarkNodeData drag_data(
+        model()->bookmark_bar_node()->children()[1].get());
+    drag_data.Write(profile()->GetPath(), &os_drag_data);
+  }
+
+  bookmarks::BookmarkNodeData drag_data;
+  drag_data.Read(os_drag_data);
+
+  ui::DropTargetEvent target_event(os_drag_data, gfx::PointF(), gfx::PointF(),
+                                   ui::DragDropTypes::DRAG_MOVE);
+
+  EXPECT_EQ(chrome::GetBookmarkDropOperation(
+                profile(), target_event, drag_data,
+                BookmarkParentFolder::BookmarkBarFolder(), 0),
+            ui::mojom::DragOperation::kMove);
+
+  // Delete bookmark node during drag-and-drop.
+  // This usually isn’t something the user does on purpose, but APIs like
+  // `chrome.bookmarks.removeTree()` can cause this to happen.
+  // See https://issues.chromium.org/issues/472376579
+  model()->Remove(model()->bookmark_bar_node()->children()[1].get(),
+                  bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  EXPECT_EQ(model()->bookmark_bar_node()->children().size(), 1u);
+
+  // Drop operation should be none after bookmark node is deleted.
+  EXPECT_EQ(chrome::GetBookmarkDropOperation(
+                profile(), target_event, drag_data,
+                BookmarkParentFolder::BookmarkBarFolder(), 0),
+            ui::mojom::DragOperation::kNone);
+}
+
 }  // namespace
