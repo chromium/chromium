@@ -1,0 +1,87 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_DRAGGED_TABS_CONTAINER_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_DRAGGED_TABS_CONTAINER_H_
+
+#include "base/containers/flat_set.h"
+#include "base/memory/raw_ref.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_target.h"
+
+class VerticalTabDragHandler;
+
+namespace views {
+class View;
+struct ProposedLayout;
+}  // namespace views
+
+// `VerticalDraggedTabsContainer` is an abstract class that can be derived to
+// support handling dragged vertical tabs within the vertical tab strip view
+// hierarchy. The class implements the `TabDragTarget` interface, allowing it to
+// be targeted by the core tab dragging logic. It also supports nested targets,
+// allowing the dragged tab view to be reparented into child views of this.
+class VerticalDraggedTabsContainer : public TabDragTarget {
+ public:
+  explicit VerticalDraggedTabsContainer(const views::View& host_view);
+  VerticalDraggedTabsContainer(const VerticalDraggedTabsContainer& other) =
+      delete;
+  VerticalDraggedTabsContainer& operator=(const VerticalDraggedTabsContainer&) =
+      delete;
+  ~VerticalDraggedTabsContainer() override;
+
+  // Recursively searches through the view hierarchy to find the collection
+  // that should should be handling the tab drag at the given point.
+  VerticalDraggedTabsContainer& GetTabDragTarget(
+      const gfx::Point& point_in_screen);
+
+  // TabDragTarget
+  TabDragContext* OnTabDragUpdated(TabDragTarget::DragController& controller,
+                                   const gfx::Point& point_in_screen) override;
+  void OnTabDragEntered() override {}
+  void OnTabDragExited() override;
+  void OnTabDragEnded() override;
+  bool CanDropTab() final;
+  void HandleTabDrop(TabDragTarget::DragController& controller) final {}
+  base::CallbackListSubscription RegisterWillDestroyCallback(
+      base::OnceClosure callback) final;
+
+ protected:
+  // Returns the expected Y coordinate for a dragged tab view's bounds, or null
+  // if the view isn't being dragged in this.
+  std::optional<int> GetYForDraggedTabBounds(const views::View& view) const;
+
+  // Helper for getting the view at a given point, excluding dragged views.
+  views::View* GetViewAtPoint(const views::ProposedLayout& layout,
+                              const gfx::Point& point);
+
+ private:
+  virtual VerticalTabDragHandler& GetDragHandler() = 0;
+
+  // Invalidates the layout of the host view, with the option to skip
+  // animations.
+  virtual void UpdateLayoutForDrag(bool skip_animations) = 0;
+
+  // Handles a dragged tab that is parented within this target.
+  // `point_in_container` is a point relative to this target's view.
+  virtual void HandleTabDragInContainer(
+      const gfx::Point point_in_container) = 0;
+
+  // Updates state related to dragging tabs, to be used when this container
+  // starts handling a drag.
+  void InitializeDragState(TabDragTarget::DragController& controller);
+
+  // Clears drag state and removes the transformations that were being used for
+  // the drag.
+  void ResetDragState();
+
+  const raw_ref<const views::View> host_view_;
+
+  // Child views that are being dragged.
+  base::flat_set<raw_ptr<views::View>> dragging_views_;
+  gfx::Point last_drag_point_;
+
+  base::OnceClosureList on_will_destroy_callback_list_;
+};
+
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_DRAGGED_TABS_CONTAINER_H_

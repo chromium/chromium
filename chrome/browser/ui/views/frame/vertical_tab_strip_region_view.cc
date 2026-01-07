@@ -456,7 +456,7 @@ TabDragTarget* VerticalTabStripRegionView::GetTabDragTarget(
   VerticalUnpinnedTabContainerView* container = GetUnpinnedTabsContainer();
   CHECK(container);
   if (container->GetBoundsInScreen().Contains(point_in_screen)) {
-    return container;
+    return &container->GetTabDragTarget(point_in_screen);
   }
   return nullptr;
 }

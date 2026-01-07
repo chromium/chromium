@@ -11,6 +11,7 @@ source_set("vertical") {
     "tab_collection_animating_layout_manager.h",
     "tab_collection_node.h",
     "top_container_button.h",
+    "vertical_dragged_tabs_container.h",
     "vertical_pinned_tab_container_view.h",
     "vertical_split_tab_view.h",
     "vertical_tab_group_header_view.h",
@@ -42,6 +43,7 @@ source_set("impl") {
     "tab_collection_animating_layout_manager.cc",
     "tab_collection_node.cc",
     "top_container_button.cc",
+    "vertical_dragged_tabs_container.cc",
     "vertical_pinned_tab_container_view.cc",
     "vertical_split_tab_view.cc",
     "vertical_tab_drag_handler.cc",
@@ -70,6 +72,7 @@ source_set("impl") {
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs:utils",
     "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/tabs/dragging:tab_drag_target",
     "//chrome/browser/ui/views/toolbar",
     "//components/contextual_tasks/public:feature_list",
   ]
