@@ -30,6 +30,8 @@ const gfx::VectorIcon& GetRowIcon(actor::ActorTask::State state) {
     if (state == actor::ActorTask::State::kPausedByActor ||
         state == actor::ActorTask::State::kWaitingOnUser) {
       return kHourglassIcon;
+    } else if (state == actor::ActorTask::State::kFinished) {
+      return kTaskSparkIcon;
     }
     return glic::GlicVectorIconManager::GetVectorIcon(
         IDR_ACTOR_AUTO_BROWSE_ICON);
