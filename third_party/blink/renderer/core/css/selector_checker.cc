@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 
 #include "base/auto_reset.h"
+#include "base/debug/crash_logging.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_argument_context.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
@@ -2055,6 +2056,24 @@ bool MatchesExternalSVGUseTarget(Element& element) {
 //     the element we are testing from the selector checker's point of view.
 bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
                                      MatchResult& result) const {
+  // We are seeing persistent issues with certain pages reporting hangs in
+  // :has() on slow machines; see crbug.com/467244732. Add a temporary crash key
+  // to try to get more precise information about which selectors are
+  // problematic.
+  //
+  // Of course, this will take a tiny bit of extra CPU time for every :has(),
+  // but we already serialize the :has() itself (for use as a cache key),
+  // on top of the fact that :has() is necessarily pretty slow by itself.
+  // So we can live with this for a couple of releases.
+  static auto* has_selector = base::debug::AllocateCrashKeyString(
+      "current-has-selector", base::debug::CrashKeySize::Size256);
+  if (context.original_selector) {
+    base::debug::SetCrashKeyString(
+        has_selector, context.original_selector->SelectorText().Utf8().c_str());
+  } else {
+    base::debug::SetCrashKeyString(has_selector, "<unknown>");
+  }
+
   Element& element = *context.element;
   if (mode_ == kResolvingStyle) {
     // Set 'AffectedBySubjectHas' or 'AffectedByNonSubjectHas' flag to
@@ -2087,6 +2106,7 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
     // (consider what happens if it is e.g. within :not()), but we would have to
     // have some way to propagate that up the stack, and consider interactions
     // with the forgiveness of :is().
+    base::debug::SetCrashKeyString(has_selector, "");
     return false;
   }
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
@@ -2096,6 +2116,7 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
   Document& document = has_anchor_element->GetDocument();
   DCHECK(document.GetCheckPseudoHasCacheScope());
   SelectorCheckingContext sub_context(has_anchor_element);
+  sub_context.original_selector = context.original_selector;
   sub_context.tree_scope = context.tree_scope;
   sub_context.scope = context.scope;
   // sub_context.match_visited is false (by default) to disable
@@ -2107,6 +2128,7 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
 
   if (match_in_shadow_tree && !has_anchor_element->GetShadowRoot()) {
     // Able to reach here when :host is after :has(). (e.g. ':has(div):host')
+    base::debug::SetCrashKeyString(has_selector, "");
     return false;
   }
 
@@ -2155,6 +2177,7 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
         context, has_anchor_element, argument_context, cache_scope_context,
         update_affected_by_has_flags);
     if (early_break == kBreakEarlyAndReturnAsMatched) {
+      base::debug::SetCrashKeyString(has_selector, "");
       return true;
     } else if (early_break == kBreakEarlyAndMoveToNextArgument) {
       continue;
@@ -2213,8 +2236,10 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
           argument_context, has_anchor_element, last_argument_checked_element,
           last_argument_checked_depth);
     }
+    base::debug::SetCrashKeyString(has_selector, "");
     return true;
   }
+  base::debug::SetCrashKeyString(has_selector, "");
   return false;
 }
 
