@@ -438,7 +438,7 @@ void XOSExchangeDataProvider::SetFileContents(
     const base::FilePath& filename,
     const std::string& file_contents) {
   DCHECK(!filename.empty());
-  DCHECK(!base::Contains(format_map(), x11::GetAtom(kMimeTypeMozillaUrl)));
+  DCHECK(!format_map().contains(x11::GetAtom(kMimeTypeMozillaUrl)));
   set_file_contents_name(filename);
   // Direct save handling is a complicated juggling affair between this class,
   // SelectionFormat, and XDragDropClient. The general idea behind
