@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -16,6 +17,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -83,9 +85,32 @@ std::optional<int64_t> IndexIsOptional(int64_t index_id) {
 // TODO(crbug.com/381086791): Remove after the bug is understood.
 std::atomic_int64_t g_num_connections = 0;
 
+// To investigate crashes and hangs on all platforms, see
+// crbug.com/384476946. Records an approximate (rounded down to the nearest 256)
+// number of connections as a crash key.
+void UpdateCrashKey(int64_t num_connections) {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "indexeddb_num_connections", base::debug::CrashKeySize::Size64);
+  static std::optional<int64_t> crash_key_value;
+
+  // Mask off the lowest byte to reduce precision and avoid spamming the crash
+  // key API, which can be costly. This mask is MAX_INT64 without the bottom
+  // byte.
+  const int64_t num_connections_rounded_down =
+      num_connections & 0x7fffffffffffff00;
+  if (!crash_key_value.has_value() ||
+      crash_key_value.value() < num_connections_rounded_down) {
+    base::debug::SetCrashKeyString(
+        crash_key, base::NumberToString(num_connections_rounded_down));
+    crash_key_value = num_connections_rounded_down;
+  }
+}
+
 void IncrementNumConnections() {
   int64_t new_connection_count =
       g_num_connections.fetch_add(1, std::memory_order_relaxed) + 1;
+
+  UpdateCrashKey(new_connection_count);
 
   // Report the number of connections when it's high. This will be used to
   // determine the proportion of clients with elevated number of connections and
@@ -98,7 +123,10 @@ void IncrementNumConnections() {
 }
 
 void DecrementNumConnections() {
-  g_num_connections.fetch_sub(1, std::memory_order_relaxed);
+  int64_t new_connection_count =
+      g_num_connections.fetch_sub(1, std::memory_order_relaxed);
+
+  UpdateCrashKey(new_connection_count);
 }
 
 }  // namespace
