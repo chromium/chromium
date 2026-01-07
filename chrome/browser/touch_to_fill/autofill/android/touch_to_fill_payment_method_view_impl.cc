@@ -196,7 +196,7 @@ bool TouchToFillPaymentMethodViewImpl::ShowIbans(
   return true;
 }
 
-bool TouchToFillPaymentMethodViewImpl::ShowLoyaltyCards(
+bool TouchToFillPaymentMethodViewImpl::ShowAffiliatedLoyaltyCards(
     TouchToFillPaymentMethodViewController* controller,
     base::span<const LoyaltyCard> affiliated_loyalty_cards,
     base::span<const LoyaltyCard> all_loyalty_cards,
@@ -206,7 +206,7 @@ bool TouchToFillPaymentMethodViewImpl::ShowLoyaltyCards(
     return false;
   }
 
-  Java_TouchToFillPaymentMethodViewBridge_showLoyaltyCards(
+  Java_TouchToFillPaymentMethodViewBridge_showAffiliatedLoyaltyCards(
       env, java_object_, affiliated_loyalty_cards, all_loyalty_cards,
       first_time_usage);
 

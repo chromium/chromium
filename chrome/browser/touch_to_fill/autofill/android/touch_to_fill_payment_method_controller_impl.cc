@@ -116,7 +116,7 @@ bool TouchToFillPaymentMethodControllerImpl::ShowIbans(
   return true;
 }
 
-bool TouchToFillPaymentMethodControllerImpl::ShowLoyaltyCards(
+bool TouchToFillPaymentMethodControllerImpl::ShowAffiliatedLoyaltyCards(
     std::unique_ptr<TouchToFillPaymentMethodView> view,
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const LoyaltyCard> affiliated_loyalty_cards,
@@ -133,8 +133,8 @@ bool TouchToFillPaymentMethodControllerImpl::ShowLoyaltyCards(
     return false;
   }
 
-  if (!view->ShowLoyaltyCards(this, affiliated_loyalty_cards, all_loyalty_cards,
-                              first_time_usage)) {
+  if (!view->ShowAffiliatedLoyaltyCards(this, affiliated_loyalty_cards,
+                                        all_loyalty_cards, first_time_usage)) {
     ResetJavaObject();
     return false;
   }

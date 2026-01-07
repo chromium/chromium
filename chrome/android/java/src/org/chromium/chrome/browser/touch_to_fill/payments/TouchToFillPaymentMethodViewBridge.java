@@ -86,11 +86,12 @@ class TouchToFillPaymentMethodViewBridge {
     }
 
     @CalledByNative
-    private void showLoyaltyCards(
+    private void showAffiliatedLoyaltyCards(
             @JniType("base::span<const LoyaltyCard>") List<LoyaltyCard> affiliatedLoyaltyCards,
             @JniType("base::span<const LoyaltyCard>") List<LoyaltyCard> allLoyaltyCards,
             boolean firstTimeUsage) {
-        mComponent.showLoyaltyCards(affiliatedLoyaltyCards, allLoyaltyCards, firstTimeUsage);
+        mComponent.showAffiliatedLoyaltyCards(
+                affiliatedLoyaltyCards, allLoyaltyCards, firstTimeUsage);
     }
 
     @CalledByNative

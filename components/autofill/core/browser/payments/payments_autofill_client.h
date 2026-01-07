@@ -635,11 +635,11 @@ class PaymentsAutofillClient : public RiskDataLoader {
   virtual bool ShowTouchToFillIban(base::WeakPtr<TouchToFillDelegate> delegate,
                                    base::span<const Iban> ibans_to_suggest) = 0;
 
-  // Shows the Touch To Fill surface for filling Wallet loyalty card
+  // Shows the Touch To Fill surface for filling Wallet affiliated loyalty card
   // information, if possible, returning `true` on success. `delegate` will be
   // notified of events. This function is not implemented on iOS and iOS
   // WebView, and should not be used on those platforms.
-  virtual bool ShowTouchToFillLoyaltyCard(
+  virtual bool ShowTouchToFillAffiliatedLoyaltyCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
       std::vector<LoyaltyCard> loyalty_cards_to_suggest) = 0;
 

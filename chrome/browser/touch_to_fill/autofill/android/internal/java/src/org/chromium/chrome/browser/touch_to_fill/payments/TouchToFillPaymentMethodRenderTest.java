@@ -931,7 +931,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsOneLoyaltyCard() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showLoyaltyCards(
+                    mCoordinator.showAffiliatedLoyaltyCards(
                             List.of(CVS_LOYALTY_CARD),
                             List.of(CVS_LOYALTY_CARD, DB_LOYALTY_CARD),
                             /* firstTimeUsage= */ false);
@@ -952,7 +952,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsAllLoyaltyCardsScreen() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showLoyaltyCards(
+                    mCoordinator.showAffiliatedLoyaltyCards(
                             List.of(CVS_LOYALTY_CARD),
                             List.of(CVS_LOYALTY_CARD, DB_LOYALTY_CARD),
                             /* firstTimeUsage= */ false);

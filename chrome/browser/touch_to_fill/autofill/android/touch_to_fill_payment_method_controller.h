@@ -56,10 +56,11 @@ class TouchToFillPaymentMethodController
                          base::span<const Iban> ibans_to_suggest) = 0;
 
   // Shows the Touch To Fill `view`. `delegate` will provide the fillable
-  // loyalty cards and be notified of the user's decision. `first_time_usage` is
-  // true if the user has never seen the loyalty card IPH or the Touch To Fill
-  // view before. Returns whether the surface was successfully shown.
-  virtual bool ShowLoyaltyCards(
+  // affiliated loyalty cards and be notified of the user's decision.
+  // `first_time_usage` is true if the user has never seen the loyalty card IPH
+  // or the Touch To Fill view before. Returns whether the surface was
+  // successfully shown.
+  virtual bool ShowAffiliatedLoyaltyCards(
       std::unique_ptr<TouchToFillPaymentMethodView> view,
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const LoyaltyCard> affiliated_loyalty_cards,

@@ -191,7 +191,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   bool ShowTouchToFillIban(
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::Iban> ibans_to_suggest) override;
-  bool ShowTouchToFillLoyaltyCard(
+  bool ShowTouchToFillAffiliatedLoyaltyCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
       std::vector<autofill::LoyaltyCard> loyalty_cards_to_suggest) override;
   bool OnPurchaseAmountExtracted(

@@ -584,7 +584,7 @@ class TouchToFillPaymentMethodMediator {
         RecordHistogram.recordCount100Histogram(TOUCH_TO_FILL_NUMBER_OF_IBANS_SHOWN, mIbans.size());
     }
 
-    public void showLoyaltyCards(
+    public void showAffiliatedLoyaltyCards(
             List<LoyaltyCard> affiliatedLoyaltyCards,
             List<LoyaltyCard> allLoyaltyCards,
             Function<LoyaltyCard, Drawable> valuableImageFunction,

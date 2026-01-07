@@ -49,10 +49,11 @@ class TouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView {
                           bool should_show_scan_credit_card) override;
   bool ShowIbans(TouchToFillPaymentMethodViewController* controller,
                  base::span<const autofill::Iban> ibans_to_suggest) override;
-  bool ShowLoyaltyCards(TouchToFillPaymentMethodViewController* controller,
-                        base::span<const LoyaltyCard> affiliated_loyalty_cards,
-                        base::span<const LoyaltyCard> all_loyalty_cards,
-                        bool first_time_usage) override;
+  bool ShowAffiliatedLoyaltyCards(
+      TouchToFillPaymentMethodViewController* controller,
+      base::span<const LoyaltyCard> affiliated_loyalty_cards,
+      base::span<const LoyaltyCard> all_loyalty_cards,
+      bool first_time_usage) override;
   bool OnPurchaseAmountExtracted(
       const TouchToFillPaymentMethodViewController& controller,
       base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,

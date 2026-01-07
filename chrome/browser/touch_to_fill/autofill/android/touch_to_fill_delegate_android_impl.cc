@@ -166,7 +166,7 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
   } else if (field->Type().GetGroups().contains(FieldTypeGroup::kLoyaltyCard) ||
              field->Type().GetLoyaltyCardType() ==
                  EMAIL_OR_LOYALTY_MEMBERSHIP_ID) {
-    return DryRunForLoyaltyCard();
+    return DryRunForAffiliatedLoyaltyCard();
   }
 
   return {TriggerOutcome::kUnsupportedFieldType, {}};
@@ -213,7 +213,7 @@ TouchToFillDelegateAndroidImpl::DryRunForCreditCard(const AutofillField& field,
 }
 
 TouchToFillDelegateAndroidImpl::DryRunResult
-TouchToFillDelegateAndroidImpl::DryRunForLoyaltyCard() {
+TouchToFillDelegateAndroidImpl::DryRunForAffiliatedLoyaltyCard() {
   ValuablesDataManager* vdm = manager_->client().GetValuablesDataManager();
   if (!vdm) {
     return DryRunResult(TriggerOutcome::kNoValidPaymentMethods, {});
@@ -272,8 +272,9 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
                              GetWeakPtr(), std::move(items_to_suggest));
                        },
                        [&](std::vector<LoyaltyCard> items_to_suggest) {
-                         return payments_client.ShowTouchToFillLoyaltyCard(
-                             GetWeakPtr(), std::move(items_to_suggest));
+                         return payments_client
+                             .ShowTouchToFillAffiliatedLoyaltyCard(
+                                 GetWeakPtr(), std::move(items_to_suggest));
                        }},
         std::move(dry_run.items_to_suggest));
     if (!shown) {

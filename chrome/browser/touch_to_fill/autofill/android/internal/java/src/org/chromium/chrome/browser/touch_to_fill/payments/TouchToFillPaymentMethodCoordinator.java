@@ -111,11 +111,11 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
     }
 
     @Override
-    public void showLoyaltyCards(
+    public void showAffiliatedLoyaltyCards(
             List<LoyaltyCard> affiliatedLoyaltyCards,
             List<LoyaltyCard> allLoyaltyCards,
             boolean firstTimeUsage) {
-        mMediator.showLoyaltyCards(
+        mMediator.showAffiliatedLoyaltyCards(
                 affiliatedLoyaltyCards, allLoyaltyCards, mValuableImageFunction, firstTimeUsage);
     }
 

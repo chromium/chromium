@@ -127,16 +127,16 @@ interface TouchToFillPaymentMethodComponent {
     void showIbans(List<PersonalDataManager.Iban> ibans);
 
     /**
-     * Displays a new loyalty card bottom sheet.
+     * Displays a bottom sheet for affiliated loyalty cards.
      *
-     * @param affiliatedLoyaltyCards The list of loyalty cards directly linked to the current
-     *     domain, that are displayed on the first screen in the bottom sheet.
+     * @param affiliatedLoyaltyCards The list of affiliated loyalty cards directly linked to the
+     *     current domain, that are displayed on the first screen in the bottom sheet.
      * @param allLoyaltyCards The list of all the user's loyalty cards that are displayed on the
      *     second screen in the bottom sheet.
      * @param firstTimeUsage A boolean indicating whether the first time usage message should be
      *     shown to the user.
      */
-    void showLoyaltyCards(
+    void showAffiliatedLoyaltyCards(
             List<LoyaltyCard> affiliatedLoyaltyCards,
             List<LoyaltyCard> allLoyaltyCards,
             boolean firstTimeUsage);

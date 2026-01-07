@@ -216,9 +216,9 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   DryRunResult DryRunForCreditCard(const AutofillField& field,
                                    const FormStructure& form);
 
-  // Returns a DryRunResult with the user's fillable loyalty cards, or
-  // an error reason if TTF should not be triggered.
-  DryRunResult DryRunForLoyaltyCard();
+  // Returns a DryRunResult with the user's fillable affiliated loyalty cards,
+  // or an error reason if TTF should not be triggered.
+  DryRunResult DryRunForAffiliatedLoyaltyCard();
 
   // Creates a list of booleans which denotes if credit cards are acceptable by
   // the merchant. The returned list has the same size as `credit_cards`, and

@@ -33,7 +33,7 @@ class TouchToFillPaymentMethodView {
       bool should_show_scan_credit_card) = 0;
   virtual bool ShowIbans(TouchToFillPaymentMethodViewController* controller,
                          base::span<const Iban> ibans_to_suggest) = 0;
-  virtual bool ShowLoyaltyCards(
+  virtual bool ShowAffiliatedLoyaltyCards(
       TouchToFillPaymentMethodViewController* controller,
       base::span<const LoyaltyCard> affiliated_loyalty_cards,
       base::span<const LoyaltyCard> all_loyalty_cards,

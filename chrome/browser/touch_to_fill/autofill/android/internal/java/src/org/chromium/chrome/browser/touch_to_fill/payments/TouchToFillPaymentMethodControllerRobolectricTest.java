@@ -2689,7 +2689,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testShowOneLoyaltyCardFirstTime() throws TimeoutException {
-        mCoordinator.showLoyaltyCards(
+        mCoordinator.showAffiliatedLoyaltyCards(
                 List.of(LOYALTY_CARD_1), List.of(LOYALTY_CARD_1), /* firstTimeUsage= */ true);
 
         assertModelHasCorrectAccessibilityStringIds(
@@ -2738,7 +2738,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         TOUCH_TO_FILL_LOYALTY_CARD_OUTCOME_HISTOGRAM,
                         TouchToFillLoyaltyCardOutcome.WALLET_SETTINGS);
-        mCoordinator.showLoyaltyCards(
+        mCoordinator.showAffiliatedLoyaltyCards(
                 List.of(LOYALTY_CARD_1), List.of(LOYALTY_CARD_1), /* firstTimeUsage= */ true);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
@@ -2758,7 +2758,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                         .expectIntRecord(TOUCH_TO_FILL_NUMBER_OF_AFFILIATED_LOYALTY_CARDS_SHOWN, 1)
                         .expectIntRecord(TOUCH_TO_FILL_NUMBER_OF_LOYALTY_CARDS_SHOWN, 2)
                         .build();
-        mCoordinator.showLoyaltyCards(
+        mCoordinator.showAffiliatedLoyaltyCards(
                 List.of(LOYALTY_CARD_1),
                 List.of(LOYALTY_CARD_1, LOYALTY_CARD_2),
                 /* firstTimeUsage= */ false);
@@ -2794,7 +2794,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                         .expectIntRecord(TOUCH_TO_FILL_NUMBER_OF_LOYALTY_CARDS_SHOWN, 2)
                         .expectIntRecord(TOUCH_TO_FILL_NUMBER_OF_AFFILIATED_LOYALTY_CARDS_SHOWN, 2)
                         .build();
-        mCoordinator.showLoyaltyCards(
+        mCoordinator.showAffiliatedLoyaltyCards(
                 List.of(LOYALTY_CARD_1, LOYALTY_CARD_2),
                 List.of(LOYALTY_CARD_1, LOYALTY_CARD_2),
                 /* firstTimeUsage= */ false);
@@ -2830,7 +2830,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testShowAllLoyaltyCards() throws TimeoutException {
-        mCoordinator.showLoyaltyCards(
+        mCoordinator.showAffiliatedLoyaltyCards(
                 List.of(LOYALTY_CARD_1),
                 List.of(LOYALTY_CARD_1, LOYALTY_CARD_2),
                 /* firstTimeUsage= */ false);
@@ -2872,7 +2872,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testSelectNonAffiliatedLoyaltyCard() {
-        mCoordinator.showLoyaltyCards(
+        mCoordinator.showAffiliatedLoyaltyCards(
                 List.of(LOYALTY_CARD_1),
                 List.of(LOYALTY_CARD_1, LOYALTY_CARD_2),
                 /* firstTimeUsage= */ false);
@@ -2909,7 +2909,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testPressBackButtonToShowHomeScreen() {
-        mCoordinator.showLoyaltyCards(
+        mCoordinator.showAffiliatedLoyaltyCards(
                 List.of(LOYALTY_CARD_1),
                 List.of(LOYALTY_CARD_1, LOYALTY_CARD_2),
                 /* firstTimeUsage= */ false);
@@ -2944,7 +2944,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testCallsDelegateWhenLoyaltyCardIsSelected() {
-        mCoordinator.showLoyaltyCards(
+        mCoordinator.showAffiliatedLoyaltyCards(
                 List.of(LOYALTY_CARD_1),
                 List.of(LOYALTY_CARD_1, LOYALTY_CARD_2),
                 /* firstTimeUsage= */ false);
@@ -2971,7 +2971,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testManageLoyaltyCardsClick() {
-        mCoordinator.showLoyaltyCards(
+        mCoordinator.showAffiliatedLoyaltyCards(
                 List.of(LOYALTY_CARD_1), List.of(LOYALTY_CARD_1), /* firstTimeUsage= */ false);
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
 
@@ -2993,7 +2993,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testDismissWithSwipeForLoyaltyCards() {
-        mCoordinator.showLoyaltyCards(
+        mCoordinator.showAffiliatedLoyaltyCards(
                 List.of(LOYALTY_CARD_1), List.of(LOYALTY_CARD_1), /* firstTimeUsage= */ false);
 
         HistogramWatcher histogramWatcher =

@@ -76,7 +76,7 @@ class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView
               (TouchToFillPaymentMethodViewController * controller,
                base::span<const Iban> ibans_to_suggest));
   MOCK_METHOD(bool,
-              ShowLoyaltyCards,
+              ShowAffiliatedLoyaltyCards,
               (TouchToFillPaymentMethodViewController * controller,
                base::span<const LoyaltyCard> affiliated_loyalty_cards,
                base::span<const LoyaltyCard> all_loyalty_cards,
@@ -326,16 +326,16 @@ TEST_F(TouchToFillPaymentMethodControllerTest, ShowIbansPassesIbansToTheView) {
 }
 
 TEST_F(TouchToFillPaymentMethodControllerTest,
-       ShowLoyaltyCardsPassesLoyaltyCardsToTheView) {
+       ShowAffiliatedLoyaltyCardsPassesLoyaltyCardsToTheView) {
   SetUpLoyaltyCardFormField();
   // Test that the loyalty cards have propagated to the view.
-  EXPECT_CALL(*mock_view_,
-              ShowLoyaltyCards(&payment_method_controller(),
+  EXPECT_CALL(*mock_view_, ShowAffiliatedLoyaltyCards(
+                               &payment_method_controller(),
                                ElementsAreArray(affiliated_loyalty_cards_),
                                ElementsAreArray(all_loyalty_cards_),
                                /*first_time_usage*/ true));
   OnBeforeAskForValuesToFill();
-  payment_method_controller().ShowLoyaltyCards(
+  payment_method_controller().ShowAffiliatedLoyaltyCards(
       std::move(mock_view_), ttf_delegate().GetWeakPointer(),
       affiliated_loyalty_cards_, all_loyalty_cards_, /*first_time_usage*/ true);
   OnAfterAskForValuesToFill();

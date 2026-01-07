@@ -955,7 +955,7 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillIban(
 #endif
 }
 
-bool ChromePaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
+bool ChromePaymentsAutofillClient::ShowTouchToFillAffiliatedLoyaltyCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
     std::vector<autofill::LoyaltyCard> loyalty_cards_to_suggest) {
 #if BUILDFLAG(IS_ANDROID)
@@ -978,7 +978,7 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
           feature_engagement::kIPHAutofillEnableLoyaltyCardsFeature);
 
   const bool loyalty_cards_shown =
-      GetTouchToFillPaymentMethodController()->ShowLoyaltyCards(
+      GetTouchToFillPaymentMethodController()->ShowAffiliatedLoyaltyCards(
           std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
           delegate, std::move(affiliated_loyalty_cards),
           std::move(loyalty_cards_to_suggest), first_time_usage);
