@@ -891,6 +891,7 @@ message EventLatency {
   //
   // To simplify the documentation below, we use "this frame" to refer to the
   // frame in which the scroll update was presented.
+  // LINT.IfChange
   message ScrollJankV4Result {
     // Next ID: 13
 
@@ -903,7 +904,6 @@ message EventLatency {
 
     // Reason why Chrome's scroll jank v4 metric marked a scroll update as
     // janky. A single scroll update can be janky for more than one reason.
-    // LINT.IfChange(JankReason)
     enum JankReason {
       JANK_REASON_UNSPECIFIED = 0;
 
@@ -922,7 +922,6 @@ message EventLatency {
       // Chrome missed one or more VSyncs in the middle of a fling.
       MISSED_VSYNC_DURING_FLING = 4;
     }
-    // LINT.ThenChange(//cc/metrics/scroll_jank_v4_result.h:JankReason,//tools/metrics/histograms/metadata/event/histograms.xml:ScrollJankReasonV4)
 
     // Number of VSyncs that that Chrome missed before presenting the scroll
     // update for each reason. Essentially a map<JankReason, int32>.
@@ -1110,6 +1109,7 @@ message EventLatency {
     // BeginFrameArgs.
     optional int64 vsync_interval_us = 12;
   }
+  // LINT.ThenChange(//base/tracing/stdlib/chrome/scroll_jank_v4.sql)
 
   // Deprecated in favor of top-level `ChromeTrackEvent.scroll_jank_v4`.
   optional ScrollJankV4Result scroll_jank_v4 = 10 [deprecated = true];

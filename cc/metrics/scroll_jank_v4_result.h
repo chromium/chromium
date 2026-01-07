@@ -35,7 +35,7 @@ enum class JankReason {
   kMissedVsyncDuringFling,
   kMaxValue = kMissedVsyncDuringFling,
 };
-// LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:JankReason,//tools/metrics/histograms/metadata/event/histograms.xml:ScrollJankReasonV4)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/event/histograms.xml:ScrollJankReasonV4)
 
 template <typename T>
 using JankReasonArray =

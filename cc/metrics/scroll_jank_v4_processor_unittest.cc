@@ -70,63 +70,33 @@ struct ScrollJankV4ProcessorTestCase {
 
 constexpr const char kTraceQuery[] =
     R"(
+    INCLUDE PERFETTO MODULE chrome.scroll_jank_v4;
+
     SELECT
-      EXTRACT_ARG(
-          arg_set_id,
-          'scroll_jank_v4.updates.real.first_event_latency_id'
-        ) AS event_latency_id,
-      EXTRACT_ARG(arg_set_id, 'scroll_jank_v4.is_janky')
-        AS is_janky,
+      first_event_latency_id,
+      is_janky,
       (
-        -- Concatenate the `missed_vsyncs_per_jank_reason` repeated field into a
-        -- single string. For example, the following value:
+        -- Concatenate `chrome_scroll_jank_v4_reasons` into a single string. For
+        -- example, the following values:
         --
-        --   { jank_reason: REASON_A, missed_vsyncs: 1 }
-        --   { jank_reason: REASON_B, missed_vsyncs: 2 }
-        --   { jank_reason: REASON_C, missed_vsyncs: 3 }
+        --   | jank_reason | missed_vsyncs |
+        --   |-------------|---------------|
+        --   | 'REASON_A'  | 1             |
+        --   | 'REASON_B'  | 2             |
+        --   | 'REASON_C'  | 3             |
         --
-        -- is converted to 'REASON_A(1),REASON_B(2),REASON_C(3)'.
+        -- are converted to 'REASON_A(1),REASON_B(2),REASON_C(3)'.
         SELECT
           GROUP_CONCAT(
             FORMAT('%s(%d)', jank_reason, missed_vsyncs),
             ','
             ORDER BY jank_reason ASC
           )
-        FROM
-          (
-            SELECT
-              args.string_value AS jank_reason,
-              SUBSTRING(args.key, 1, LENGTH(args.key) - LENGTH('.jank_reason'))
-                AS key_prefix
-            FROM args
-            WHERE
-              args.arg_set_id = slice.arg_set_id
-              AND args.flat_key =
-                'scroll_jank_v4.missed_vsyncs_per_jank_reason.jank_reason'
-          )
-        JOIN
-          (
-            SELECT
-              args.int_value AS missed_vsyncs,
-              SUBSTRING(
-                args.key,
-                1,
-                LENGTH(args.key) - LENGTH('.missed_vsyncs')
-              ) AS key_prefix
-            FROM args
-            WHERE
-              args.arg_set_id = slice.arg_set_id
-              AND args.flat_key =
-                'scroll_jank_v4.missed_vsyncs_per_jank_reason.missed_vsyncs'
-          )
-          -- Join the corresponding `jank_reason` and `missed_vsyncs` via
-          -- their shared 'scroll_jank_v4.missed_vsyncs_per_jank_reason[INDEX]'
-          -- key prefix.
-          USING(key_prefix)
+        FROM chrome_scroll_jank_v4_reasons AS reasons
+        WHERE reasons.id = results.id
       ) AS jank_reasons
-    FROM slice
-    WHERE name = 'ScrollJankV4'
-    ORDER BY event_latency_id ASC;
+    FROM chrome_scroll_jank_v4_results AS results
+    ORDER BY first_event_latency_id ASC;
     )";
 
 class ExpectedTraceResults {
@@ -154,7 +124,7 @@ class ExpectedTraceResults {
 
  private:
   QueryResult expected_results_ = {
-      {"event_latency_id", "is_janky", "jank_reasons"}};
+      {"first_event_latency_id", "is_janky", "jank_reasons"}};
 };
 
 }  // namespace

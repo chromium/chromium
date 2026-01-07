@@ -32,4 +32,5 @@ chrome_stdlib_sql_files = [
   "scroll_jank/scroll_offsets.sql",
   "scroll_jank/utils.sql",
   "scroll_jank_tagging.sql",
+  "scroll_jank_v4.sql",
 ]
