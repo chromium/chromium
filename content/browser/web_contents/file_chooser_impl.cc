@@ -171,11 +171,21 @@ void FileChooserImpl::OpenFileChooser(blink::mojom::FileChooserParamsPtr params,
     return;
   }
 
+  // Do not allow save mode from the renderer process.
+  // Save mode was primarily used by PPAPI and is not used anymore in Blink,
+  // i.e. `blink::FileInputType::OpenPopupView()`.
+  // The File System Access API handles save pickers in the browser process,
+  // bypassing this Mojo interface.
+  // See https://crbug.com/435684924 for context.
+  if (params->mode == blink::mojom::FileChooserParams::Mode::kSave) {
+    mojo::ReportBadMessage("FileChooser: Save mode is not allowed.");
+    listener->FileSelectionCanceled();
+    return;
+  }
+
   // Do not allow open dialogs to have renderer-controlled default_file_name.
   // See https://crbug.com/433800617 for context.
-  if (params->mode != blink::mojom::FileChooserParams::Mode::kSave) {
-    params->default_file_name = base::FilePath();
-  }
+  params->default_file_name = base::FilePath();
 
   // Don't allow page with open FileChooser to enter BackForwardCache to avoid
   // any unexpected behaviour from BackForwardCache.
@@ -214,6 +224,13 @@ void FileChooserImpl::FileSelected(
     const base::FilePath& base_dir,
     blink::mojom::FileChooserParams::Mode mode,
     std::vector<blink::mojom::FileChooserFileInfoPtr> files) {
+  if (mode == blink::mojom::FileChooserParams::Mode::kSave) {
+    // Save mode should be blocked by OpenFileChooser, but if we get here, e.g.
+    // via test, we must not process it to avoid granting read permissions to
+    // the renderer.
+    return;
+  }
+
   listener_impl_ = nullptr;
   if (!render_frame_host()) {
     std::move(callback_).Run(nullptr);
@@ -224,11 +241,6 @@ void FileChooserImpl::FileSelected(
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   // Grant the security access requested to the given files.
   for (const auto& file : files) {
-    if (mode == blink::mojom::FileChooserParams::Mode::kSave) {
-      policy->GrantCreateReadWriteFile(pid, file->get_native_file()->file_path);
-      continue;
-    }
-
     if (file->is_file_system()) {
       if (!file_system_context) {
         file_system_context =
