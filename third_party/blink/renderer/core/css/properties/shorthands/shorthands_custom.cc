@@ -3087,8 +3087,6 @@ bool GridLanes::ParseShorthand(
       GetCSSPropertyGridTemplateAreas().InitialValue();
   const CSSValue* grid_lanes_direction =
       CSSIdentifierValue::Create(CSSValueID::kNormal);
-  const CSSValue* grid_lanes_fill =
-      CSSIdentifierValue::Create(CSSValueID::kNormal);
 
   // Retrieve the string of `grid_lanes_template_areas`. We'll parse it into
   // appropriate `grid-template-areas` based on the `grid-lanes-direction`.
@@ -3118,12 +3116,6 @@ bool GridLanes::ParseShorthand(
       is_template_columns = false;
     }
     grid_lanes_direction = css_parsing_utils::ConsumeIdent(stream);
-  }
-
-  if (css_parsing_utils::IdentMatches<CSSValueID::kNormal,
-                                      CSSValueID::kReverse>(
-          stream.Peek().Id())) {
-    grid_lanes_fill = css_parsing_utils::ConsumeIdent(stream);
   }
 
   // At this point, we should be at the end of the stream or at an !important
@@ -3170,10 +3162,6 @@ bool GridLanes::ParseShorthand(
       CSSPropertyID::kGridLanesDirection, CSSPropertyID::kGridLanes,
       *grid_lanes_direction, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kGridLanesFill, CSSPropertyID::kGridLanes,
-      *grid_lanes_fill, important,
-      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
 
   return true;
 }
@@ -3191,57 +3179,6 @@ const CSSValue* GridLanes::CSSValueFromComputedStyleInternal(
 bool GridLanes::IsLayoutDependent(const ComputedStyle* style,
                                   LayoutObject* layout_object) const {
   return layout_object && layout_object->IsLayoutGridLanes();
-}
-
-bool GridLanesFlow::ParseShorthand(
-    bool important,
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  const StylePropertyShorthand::Properties& longhands =
-      gridLanesFlowShorthand().properties();
-  DCHECK_EQ(longhands.size(), 2u);
-
-  if (longhands[0]->PropertyID() != CSSPropertyID::kGridLanesDirection ||
-      longhands[1]->PropertyID() != CSSPropertyID::kGridLanesFill) {
-    return false;
-  }
-
-  const CSSValue* grid_lanes_direction = css_parsing_utils::ParseLonghand(
-      longhands[0]->PropertyID(), gridLanesFlowShorthand().id(), context,
-      stream);
-
-  if (!grid_lanes_direction) {
-    return false;
-  }
-
-  const CSSValue* grid_lanes_fill = css_parsing_utils::ParseLonghand(
-      longhands[1]->PropertyID(), gridLanesFlowShorthand().id(), context,
-      stream);
-
-  if (!grid_lanes_fill) {
-    return false;
-  }
-
-  AddProperty(longhands[0]->PropertyID(), gridLanesFlowShorthand().id(),
-              *grid_lanes_direction, important,
-              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  AddProperty(longhands[1]->PropertyID(), gridLanesFlowShorthand().id(),
-              *grid_lanes_fill, important,
-              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-
-  return true;
-}
-
-const CSSValue* GridLanesFlow::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject* layout_object,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValuesForShorthandProperty(
-      gridLanesFlowShorthand(), style, layout_object, allow_visited_style,
-      value_phase);
 }
 
 bool GridRow::ParseShorthand(

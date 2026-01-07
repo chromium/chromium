@@ -1234,10 +1234,6 @@
     // column
     // column-reverse
 
-    // grid-lanes-fill
-    // normal
-    // reverse
-
     // grid-template-{columns|rows}
     "minmax",
     "subgrid",

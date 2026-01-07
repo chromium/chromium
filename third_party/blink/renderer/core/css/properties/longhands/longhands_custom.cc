@@ -5273,14 +5273,6 @@ const CSSValue* GridLanesDirection::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.GridLanesDirection());
 }
 
-const CSSValue* GridLanesFill::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return CSSIdentifierValue::Create(style.GridLanesFill());
-}
-
 const CSSValue* GridRowEnd::ParseSingleValue(CSSParserTokenStream& stream,
                                              const CSSParserContext& context,
                                              CSSParserLocalContext&) const {

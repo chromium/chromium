@@ -3519,17 +3519,6 @@
       runtime_flag: "CSSGridLanesLayout",
     },
     {
-      name: "grid-lanes-fill",
-      property_methods: ["CSSValueFromComputedStyleInternal"],
-      field_group: "*",
-      field_template: "keyword",
-      keywords: ["normal", "reverse"],
-      typedom_types: ["Keyword"],
-      default_value: "normal",
-      invalidate: ["layout", "paint"],
-      runtime_flag: "CSSGridLanesLayout",
-    },
-    {
       name: "grid-row-end",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*",
@@ -8840,15 +8829,9 @@
     },
     {
       name: "grid-lanes",
-      longhands: [ "grid-template-areas", "grid-template-columns", "grid-lanes-direction", "grid-lanes-fill"],
+      longhands: [ "grid-template-areas", "grid-template-columns", "grid-lanes-direction"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       layout_dependent: true,
-      runtime_flag: "CSSGridLanesLayout",
-    },
-    {
-      name: "grid-lanes-flow",
-      longhands: ["grid-lanes-direction", "grid-lanes-fill"],
-      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       runtime_flag: "CSSGridLanesLayout",
     },
     {

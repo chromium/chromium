@@ -228,8 +228,7 @@ CSSValueList* CSSOMUtils::ComputedValueForGridTemplateShorthand(
 CSSValueList* CSSOMUtils::ComputedValueForGridLanesShorthand(
     const CSSValue* grid_template_tracks_values,
     const CSSValue* template_area_values,
-    const CSSValue* grid_lanes_direction_values,
-    const CSSValue* grid_lanes_fill_values) {
+    const CSSValue* grid_lanes_direction_values) {
   const bool has_initial_grid_template_tracks =
       IsNoneValue(grid_template_tracks_values);
   const bool has_initial_template_areas = IsNoneValue(template_area_values);
@@ -260,7 +259,6 @@ CSSValueList* CSSOMUtils::ComputedValueForGridLanesShorthand(
   }
 
   list->Append(*grid_lanes_direction_values);
-  list->Append(*grid_lanes_fill_values);
 
   return list;
 }

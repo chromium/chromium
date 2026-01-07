@@ -5254,14 +5254,10 @@ CSSValueList* ComputedStyleUtils::ValuesForGridLanesShorthand(
           : GetCSSPropertyGridTemplateRows().CSSValueFromComputedStyle(
                 style, layout_object, allow_visited_style, value_phase);
   DCHECK(grid_lanes_template_tracks_values);
-  const CSSValue* grid_lanes_fill_values =
-      shorthand.properties()[3]->CSSValueFromComputedStyle(
-          style, layout_object, allow_visited_style, value_phase);
-  DCHECK(grid_lanes_fill_values);
 
   return CSSOMUtils::ComputedValueForGridLanesShorthand(
       grid_lanes_template_tracks_values, template_area_values,
-      grid_lanes_direction_values, grid_lanes_fill_values);
+      grid_lanes_direction_values);
 }
 
 CSSValue* ComputedStyleUtils::ValueForNameScope(

@@ -872,9 +872,9 @@ enum CSSSampleId {
     kCaretAnimation = 809,
     // kViewTransitionCaptureMode = 810,
     kInteractivity = 811,
-    kGridLanesFill = 812,
+    // kGridLanesFill = 812,
     kGridLanesDirection = 813,
-    kGridLanesFlow = 814,
+    // kGridLanesFlow = 814,
     // kMasonryAutoTracks = 815,
     kResult = 816,
     // NOTE(crbug.com/429392773): kAnimationTrigger* entries are deprecated.

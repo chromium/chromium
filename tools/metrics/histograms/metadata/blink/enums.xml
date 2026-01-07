@@ -8127,9 +8127,9 @@ Called by update_use_counter_css.py.-->
   <int value="809" label="caret-animation"/>
   <int value="810" label="view-transition-capture-mode (obsolete)"/>
   <int value="811" label="interactivity"/>
-  <int value="812" label="grid-lanes-fill"/>
+  <int value="812" label="grid-lanes-fill (obsolete)"/>
   <int value="813" label="grid-lanes-direction"/>
-  <int value="814" label="grid-lanes-flow"/>
+  <int value="814" label="grid-lanes-flow (obsolete)"/>
   <int value="815" label="masonry-auto-tracks (obsolete)"/>
   <int value="816" label="result"/>
   <int value="817" label="animation-trigger-type (obsolete)"/>

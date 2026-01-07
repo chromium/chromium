@@ -630,8 +630,6 @@ String StylePropertySerializer::SerializeShorthand(
       return GetShorthandValueForGridLine(gridColumnShorthand());
     case CSSPropertyID::kGridLanes:
       return GetShorthandValueForGridLanes(gridLanesShorthand());
-    case CSSPropertyID::kGridLanesFlow:
-      return GetShorthandValue(gridLanesFlowShorthand());
     case CSSPropertyID::kGridRow:
       return GetShorthandValueForGridLine(gridRowShorthand());
     case CSSPropertyID::kGridTemplate:
@@ -2881,14 +2879,11 @@ String StylePropertySerializer::GetShorthandValueForGridLanes(
                 GetCSSPropertyGridTemplateColumns())
           : property_set_.GetPropertyCSSValue(GetCSSPropertyGridTemplateRows());
   DCHECK(grid_lanes_template_tracks_values);
-  const auto* grid_lanes_fill_values =
-      property_set_.GetPropertyCSSValue(*shorthand.properties()[3]);
-  DCHECK(grid_lanes_fill_values);
 
   const CSSValueList* grid_lanes_list =
       CSSOMUtils::ComputedValueForGridLanesShorthand(
           grid_lanes_template_tracks_values, template_area_values,
-          grid_lanes_direction_values, grid_lanes_fill_values);
+          grid_lanes_direction_values);
   return grid_lanes_list->CssText();
 }
 

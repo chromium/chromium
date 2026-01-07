@@ -257,8 +257,6 @@ gridColumnStart
 gridGap
 gridLanes
 gridLanesDirection
-gridLanesFill
-gridLanesFlow
 gridRow
 gridRowEnd
 gridRowGap
