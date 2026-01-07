@@ -712,7 +712,8 @@ public class AccountPickerBottomSheetMediator
             mSigninTimestampsLogger.recordTimestamp(Event.SIGNIN_ABORTED);
         }
 
-        mAccountPickerDelegate.onSeamlessSigninAbandoned();
+        // Dismisses the bottom sheet, if shown.
+        mAccountPickerDelegate.onSignInCancel();
     }
 
     private void updateCredentials() {

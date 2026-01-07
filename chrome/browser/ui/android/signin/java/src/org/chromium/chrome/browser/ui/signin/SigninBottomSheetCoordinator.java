@@ -199,15 +199,8 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
                 HISTORY_SYNC_ENTER_ANIMATION_DELAY_MS);
     }
 
-    /**
-     * TODO(crbug.com/464507068): This method name is temporary and linked to a specific
-     * implementation. The interface should be improved to use a generic `onSignInCancel()` from the
-     * delegate.
-     */
     @Override
-    public void onSeamlessSigninAbandoned() {
-        assert mSeamlessSigninCoordinator != null;
-        assert mAccountPickerBottomSheetCoordinator == null;
+    public void onSignInCancel() {
         mDelegate.onSignInCancel();
     }
 
