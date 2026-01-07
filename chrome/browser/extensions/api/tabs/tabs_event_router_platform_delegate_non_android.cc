@@ -34,7 +34,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
@@ -62,7 +61,6 @@ constexpr char kOldWindowIdKey[] = "oldWindowId";
 constexpr char kPinnedKey[] = "pinned";
 constexpr char kFrozenKey[] = "frozen";
 constexpr char kDiscardedKey[] = "discarded";
-constexpr char kAutoDiscardableKey[] = "autoDiscardable";
 constexpr char kTabIdKey[] = "tabId";
 constexpr char kTabIdsKey[] = "tabIds";
 constexpr char kToIndexKey[] = "toIndex";
@@ -82,11 +80,9 @@ TabsEventRouterPlatformDelegate::TabsEventRouterPlatformDelegate(
 
   tab_source_scoped_observation_.Observe(
       resource_coordinator::GetTabLifecycleUnitSource());
-  performance_manager::PageLiveStateDecorator::AddAllPageObserver(this);
 }
 
 TabsEventRouterPlatformDelegate::~TabsEventRouterPlatformDelegate() {
-  performance_manager::PageLiveStateDecorator::RemoveAllPageObserver(this);
   BrowserList::RemoveObserver(this);
 }
 
@@ -278,14 +274,6 @@ void TabsEventRouterPlatformDelegate::OnLifecycleUnitStateChanged(
         lifecycle_unit->AsTabLifecycleUnitExternal()->GetWebContents(),
         std::move(changed_property_names));
   }
-}
-
-void TabsEventRouterPlatformDelegate::OnIsAutoDiscardableChanged(
-    const performance_manager::PageNode* page_node) {
-  std::set<std::string> changed_property_names;
-  changed_property_names.insert(kAutoDiscardableKey);
-  router_->DispatchTabUpdatedEvent(page_node->GetWebContents().get(),
-                                   std::move(changed_property_names));
 }
 
 void TabsEventRouterPlatformDelegate::DispatchTabInsertedAt(

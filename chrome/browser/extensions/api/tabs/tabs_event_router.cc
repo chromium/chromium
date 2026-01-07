@@ -29,6 +29,7 @@ namespace {
 #if !BUILDFLAG(IS_ANDROID)
 constexpr char kAudibleKey[] = "audible";
 #endif
+constexpr char kAutoDiscardableKey[] = "autoDiscardable";
 constexpr char kMutedInfoKey[] = "mutedInfo";
 
 // Callback for the event dispatch system. Computes which tab properties have
@@ -194,9 +195,13 @@ void TabsEventRouter::TabEntry::WebContentsDestroyed() {
 // TabsEventRouter:
 
 TabsEventRouter::TabsEventRouter(Profile* profile)
-    : profile_(profile), platform_delegate_(*this, *profile) {}
+    : profile_(profile), platform_delegate_(*this, *profile) {
+  performance_manager::PageLiveStateDecorator::AddAllPageObserver(this);
+}
 
-TabsEventRouter::~TabsEventRouter() = default;
+TabsEventRouter::~TabsEventRouter() {
+  performance_manager::PageLiveStateDecorator::RemoveAllPageObserver(this);
+}
 
 void TabsEventRouter::RegisterForTabNotifications(
     content::WebContents& web_contents) {
@@ -370,6 +375,12 @@ void TabsEventRouter::FaviconUrlUpdated(content::WebContents* contents) {
   std::set<std::string> changed_property_names;
   changed_property_names.insert(tabs_constants::kFaviconUrlKey);
   DispatchTabUpdatedEvent(contents, std::move(changed_property_names));
+}
+
+void TabsEventRouter::OnIsAutoDiscardableChanged(
+    const performance_manager::PageNode* page_node) {
+  DispatchTabUpdatedEvent(page_node->GetWebContents().get(),
+                          {kAutoDiscardableKey});
 }
 
 }  // namespace extensions

@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/event_router.h"
 
@@ -40,8 +39,7 @@ class TabsEventRouterPlatformDelegate
     : public TabStripModelObserver,
       public BrowserTabStripTrackerDelegate,
       public BrowserListObserver,
-      public resource_coordinator::LifecycleUnitObserver,
-      public performance_manager::PageLiveStateObserver {
+      public resource_coordinator::LifecycleUnitObserver {
  public:
   TabsEventRouterPlatformDelegate(TabsEventRouter& router, Profile& profile);
 
@@ -80,10 +78,6 @@ class TabsEventRouterPlatformDelegate
   void OnLifecycleUnitStateChanged(
       resource_coordinator::LifecycleUnit* lifecycle_unit,
       ::mojom::LifecycleUnitState previous_state) override;
-
-  // performance_manager::PageLiveStateObserver:
-  void OnIsAutoDiscardableChanged(
-      const performance_manager::PageNode* page_node) override;
 
  private:
   // Methods called from OnTabStripModelChanged.

@@ -572,6 +572,7 @@ source_set("extensions") {
     "//components/infobars/content",
     "//components/infobars/core",
     "//components/no_state_prefetch/browser",
+    "//components/performance_manager",
     "//components/policy/core/browser",
     "//components/pref_registry",
     "//components/privacy_sandbox:features",

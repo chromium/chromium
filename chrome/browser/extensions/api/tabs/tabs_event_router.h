@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "components/favicon/core/favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
+#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/zoom/zoom_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/event_router.h"
@@ -45,6 +46,7 @@ namespace extensions {
 // this class is essentially delegated to its platform delegate. We need to
 // pull this functionality into this class.
 class TabsEventRouter : public favicon::FaviconDriverObserver,
+                        public performance_manager::PageLiveStateObserver,
                         public zoom::ZoomObserver {
  public:
   explicit TabsEventRouter(Profile* profile);
@@ -163,6 +165,10 @@ class TabsEventRouter : public favicon::FaviconDriverObserver,
 
   // Triggers a tab updated event if the favicon URL changes.
   void FaviconUrlUpdated(content::WebContents* contents);
+
+  // performance_manager::PageLiveStateObserver:
+  void OnIsAutoDiscardableChanged(
+      const performance_manager::PageNode* page_node) override;
 
   // Observations for different state changes in tabs.
 
