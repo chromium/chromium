@@ -1,4 +1,7 @@
 features:
+- name: video
+  files:
+  - video_*
 - name: preserves-pitch
   files:
   - preserves-pitch.html

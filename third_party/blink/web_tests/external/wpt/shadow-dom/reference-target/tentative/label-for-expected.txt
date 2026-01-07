@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Modifying the reference target changes .labels when using label/for
+  assert_array_equals: input1 after changing reference target lengths differ, expected array [] length 0, got [Element node <label id="label-input6" for="x-input6-outer">Input 6</la...] length 1
+[FAIL] Attaching a shadow root, inserting and removing a shadow host, and changing reference targets all cause label association to be updated
+  assert_array_equals: after inserting light input in container lengths differ, expected array [Element node <label id="outer-label8" for="outer-input8"></label>] length 1, got [] length 0
+Harness: the test ran to completion.
+

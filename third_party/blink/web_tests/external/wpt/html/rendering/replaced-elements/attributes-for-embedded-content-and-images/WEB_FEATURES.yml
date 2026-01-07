@@ -1,10 +1,13 @@
 features:
+- name: img
+  files:
+  - "img-*"
 - name: video
   files:
   - "video-*"
 - name: object
   files:
-  - "object-*"
-- name: audio
+  - "object_*"
+- name: picture
   files:
-  - audio-controls-intrinsic-size.html
+  - "picture-*"
