@@ -15,11 +15,14 @@ struct Environment {
   Environment() { mojo::core::InitializeCore(); }
 };
 
-extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
+extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data_ptr,
+                                      size_t size) {
+  // SAFETY: libfuzzer provides a valid pointer and size pair.
+  auto data = UNSAFE_BUFFERS(base::span<const uint8_t>(data_ptr, size));
+
   static Environment environment;
 
   // Try using the fuzz as the full contents of a port event.
-  mojo::core::NodeController::DeserializeRawBytesAsEventForFuzzer(
-      UNSAFE_TODO(base::span(data, size)));
+  mojo::core::NodeController::DeserializeRawBytesAsEventForFuzzer(data);
   return 0;
 }
