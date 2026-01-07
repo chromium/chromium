@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/strings/utf_string_conversion_utils.h"
 
+#include "base/compiler_specific.h"
 #include "base/third_party/icu/icu_utf.h"
 #include "build/build_config.h"
 
@@ -36,8 +32,8 @@ bool ReadUnicodeCharacter(const char* src,
                           size_t* char_index,
                           base_icu::UChar32* code_point_out) {
   base_icu::UChar32 code_point;
-  CBU8_NEXT(reinterpret_cast<const uint8_t*>(src), *char_index, src_len,
-            code_point);
+  UNSAFE_TODO(CBU8_NEXT(reinterpret_cast<const uint8_t*>(src), *char_index,
+                        src_len, code_point));
   *code_point_out = code_point;
 
   // The ICU macro above moves to the next char, we want to point to the last
@@ -52,20 +48,21 @@ bool ReadUnicodeCharacter(const char16_t* src,
                           size_t src_len,
                           size_t* char_index,
                           base_icu::UChar32* code_point) {
-  if (CBU16_IS_SURROGATE(src[*char_index])) {
-    if (!CBU16_IS_SURROGATE_LEAD(src[*char_index]) || !src_len ||
-        *char_index >= src_len - 1 || !CBU16_IS_TRAIL(src[*char_index + 1])) {
+  if (UNSAFE_TODO(CBU16_IS_SURROGATE(src[*char_index]))) {
+    if (!UNSAFE_TODO(CBU16_IS_SURROGATE_LEAD(src[*char_index])) || !src_len ||
+        *char_index >= src_len - 1 ||
+        !UNSAFE_TODO(CBU16_IS_TRAIL(src[*char_index + 1]))) {
       // Invalid surrogate pair.
       return false;
     }
 
     // Valid surrogate pair.
-    *code_point =
-        CBU16_GET_SUPPLEMENTARY(src[*char_index], src[*char_index + 1]);
+    *code_point = UNSAFE_TODO(
+        CBU16_GET_SUPPLEMENTARY(src[*char_index], src[*char_index + 1]));
     (*char_index)++;
   } else {
     // Not a surrogate, just one 16-bit word.
-    *code_point = src[*char_index];
+    *code_point = UNSAFE_TODO(src[*char_index]);
   }
 
   return IsValidCodepoint(*code_point);
@@ -77,7 +74,7 @@ bool ReadUnicodeCharacter(const wchar_t* src,
                           size_t* char_index,
                           base_icu::UChar32* code_point) {
   // Conversion is easy since the source is 32-bit.
-  *code_point = static_cast<base_icu::UChar32>(src[*char_index]);
+  *code_point = static_cast<base_icu::UChar32>(UNSAFE_TODO(src[*char_index]));
 
   // Validate the value.
   return IsValidCodepoint(*code_point);
@@ -99,8 +96,8 @@ size_t WriteUnicodeCharacter(base_icu::UChar32 code_point,
   size_t original_char_offset = char_offset;
   output->resize(char_offset + CBU8_MAX_LENGTH);
 
-  CBU8_APPEND_UNSAFE(reinterpret_cast<uint8_t*>(output->data()), char_offset,
-                     code_point);
+  UNSAFE_TODO(CBU8_APPEND_UNSAFE(reinterpret_cast<uint8_t*>(output->data()),
+                                 char_offset, code_point));
 
   // CBU8_APPEND_UNSAFE will advance our pointer past the inserted character, so
   // it will represent the new length of the string.
@@ -118,7 +115,7 @@ size_t WriteUnicodeCharacter(base_icu::UChar32 code_point,
   // Non-BMP characters use a double-character encoding.
   size_t char_offset = output->length();
   output->resize(char_offset + CBU16_MAX_LENGTH);
-  CBU16_APPEND_UNSAFE(&(*output)[0], char_offset, code_point);
+  UNSAFE_TODO(CBU16_APPEND_UNSAFE(&(*output)[0], char_offset, code_point));
   return CBU16_MAX_LENGTH;
 }
 

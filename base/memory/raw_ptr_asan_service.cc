@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/memory/raw_ptr_asan_service.h"
 
 #if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
@@ -58,15 +53,16 @@ constinit thread_local RawPtrAsanService::PendingReport pending_report;
 // static
 NO_SANITIZE("address")
 void RawPtrAsanService::MallocHook(const volatile void* ptr, size_t size) {
-  uint8_t* header =
-      static_cast<uint8_t*>(const_cast<void*>(ptr)) - kChunkHeaderSize;
+  uint8_t* header = UNSAFE_TODO(static_cast<uint8_t*>(const_cast<void*>(ptr)) -
+                                kChunkHeaderSize);
   *RawPtrAsanService::GetInstance().GetShadow(header) =
       kAsanUserPoisonedMemoryMagic;
 }
 
 NO_SANITIZE("address")
 bool RawPtrAsanService::IsSupportedAllocation(void* allocation_start) const {
-  uint8_t* header = static_cast<uint8_t*>(allocation_start) - kChunkHeaderSize;
+  uint8_t* header =
+      UNSAFE_TODO(static_cast<uint8_t*>(allocation_start) - kChunkHeaderSize);
   return *GetShadow(header) == kAsanUserPoisonedMemoryMagic;
 }
 
@@ -89,7 +85,7 @@ void RawPtrAsanService::Configure(
     CHECK_EQ(shadow_scale, kShadowScale);
 
     uint8_t* dummy_alloc = new uint8_t;
-    CHECK_EQ(*GetShadow(dummy_alloc - kChunkHeaderSize),
+    CHECK_EQ(*GetShadow(UNSAFE_TODO(dummy_alloc - kChunkHeaderSize)),
              kAsanHeapLeftRedzoneMagic);
 
     __asan_poison_memory_region(dummy_alloc, 1);
@@ -160,7 +156,8 @@ int GetCurrentThreadId() {
 void RawPtrAsanService::ErrorReportCallback(const char* reason,
                                             bool* should_exit_cleanly,
                                             bool* should_abort) {
-  if (strcmp(__asan_get_report_description(), "heap-use-after-free") != 0) {
+  if (UNSAFE_TODO(strcmp(__asan_get_report_description(),
+                         "heap-use-after-free")) != 0) {
     return;
   }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/test/launcher/test_launcher.h"
 
 #include <stdio.h>
@@ -469,13 +464,13 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
   zx_status_t result = fdio_ns_export_root(&flat_namespace);
   ZX_CHECK(ZX_OK == result, result) << "fdio_ns_export_root";
   for (size_t i = 0; i < flat_namespace->count; ++i) {
-    base::FilePath path(flat_namespace->path[i]);
+    base::FilePath path(UNSAFE_TODO(flat_namespace->path[i]));
     if (path == kDataPath || path == kCachePath) {
-      result = zx_handle_close(flat_namespace->handle[i]);
+      result = zx_handle_close(UNSAFE_TODO(flat_namespace->handle[i]));
       ZX_CHECK(ZX_OK == result, result) << "zx_handle_close";
     } else {
       new_options.paths_to_transfer.push_back(
-          {path, flat_namespace->handle[i]});
+          {path, UNSAFE_TODO(flat_namespace->handle[i])});
     }
   }
   free(flat_namespace);
@@ -1138,7 +1133,7 @@ bool TestLauncher::Run(CommandLine* command_line) {
   CHECK_EQ(0, pipe(g_shutdown_pipe));
 
   struct sigaction action;
-  memset(&action, 0, sizeof(action));
+  UNSAFE_TODO(memset(&action, 0, sizeof(action)));
   sigemptyset(&action.sa_mask);
   action.sa_handler = &ShutdownPipeSignalHandler;
 
@@ -2244,8 +2239,9 @@ bool TestLauncher::RunRetryTests() {
       return false;
     }
 
-    fprintf(stdout, "Retrying %zu test%s (retry #%zu)\n", retry_started_count,
-            retry_started_count > 1 ? "s" : "", retry_limit_ - retries_left_);
+    UNSAFE_TODO(fprintf(stdout, "Retrying %zu test%s (retry #%zu)\n",
+                        retry_started_count, retry_started_count > 1 ? "s" : "",
+                        retry_limit_ - retries_left_));
     fflush(stdout);
 
     --retries_left_;

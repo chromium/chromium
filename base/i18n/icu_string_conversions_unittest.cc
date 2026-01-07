@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/i18n/icu_string_conversions.h"
 
 #include <math.h>
@@ -18,6 +13,7 @@
 #include <sstream>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -43,7 +39,7 @@ std::u16string BuildString16(const wchar_t* s) {
   std::u16string u16;
   while (*s != 0) {
     DCHECK_LE(static_cast<unsigned int>(*s), 0xFFFFu);
-    u16.push_back(*s++);
+    u16.push_back(*UNSAFE_TODO(s++));
   }
   return u16;
 #endif

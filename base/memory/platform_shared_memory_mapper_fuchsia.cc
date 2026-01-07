@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/memory/platform_shared_memory_mapper.h"
 
 #include <lib/zx/vmar.h>
 
+#include "base/compiler_specific.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
 
@@ -33,7 +29,7 @@ std::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
     return std::nullopt;
   }
 
-  return span(reinterpret_cast<uint8_t*>(addr), size);
+  return UNSAFE_TODO(span(reinterpret_cast<uint8_t*>(addr), size));
 }
 
 void PlatformSharedMemoryMapper::Unmap(span<uint8_t> mapping) {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 
 #include <algorithm>
@@ -137,10 +132,10 @@ char* PrependHexAddress(char* output, const void* address) {
   uintptr_t value = reinterpret_cast<uintptr_t>(address);
   static const std::string_view kHexChars = "0123456789ABCDEF";
   do {
-    *output-- = kHexChars[value % 16];
+    *UNSAFE_TODO(output--) = kHexChars[value % 16];
     value /= 16;
   } while (value);
-  *output-- = 'x';
+  *UNSAFE_TODO(output--) = 'x';
   *output = '0';
   return output;
 }
@@ -1242,12 +1237,13 @@ void SequenceManagerImpl::RecordCrashKeys(const PendingTask& pending_task) {
   // from the task.
   size_t max_size = main_thread_only().async_stack_buffer.size();
   char* const buffer = &main_thread_only().async_stack_buffer[0];
-  char* const buffer_end = &buffer[max_size - 1];
+  char* const buffer_end = &UNSAFE_TODO(buffer[max_size - 1]);
   char* pos = buffer_end;
   // Leave space for the NUL terminator.
-  pos = PrependHexAddress(pos - 1, pending_task.task_backtrace[0]);
-  *(--pos) = ' ';
-  pos = PrependHexAddress(pos - 1, pending_task.posted_from.program_counter());
+  pos = PrependHexAddress(UNSAFE_TODO(pos - 1), pending_task.task_backtrace[0]);
+  *(UNSAFE_TODO(--pos)) = ' ';
+  pos = PrependHexAddress(UNSAFE_TODO(pos - 1),
+                          pending_task.posted_from.program_counter());
   DCHECK_GE(pos, buffer);
   debug::SetCrashKeyString(
       main_thread_only().async_stack_crash_key,

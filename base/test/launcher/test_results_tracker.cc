@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/test/launcher/test_results_tracker.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -296,16 +292,17 @@ TestResultsTracker::~TestResultsTracker() {
             FormatTimeAsIso8601(Time::Now()).c_str());
 
     for (const TestResult& result : results) {
-      fprintf(out_.get(),
-              "    <testcase name=\"%s\" status=\"run\" time=\"%.3f\""
-              "%s classname=\"%s\">\n",
-              result.GetTestName().c_str(), result.elapsed_time.InSecondsF(),
-              (result.timestamp
-                   ? StrCat({" timestamp=\"",
-                             FormatTimeAsIso8601(*result.timestamp), "\""})
-                         .c_str()
-                   : ""),
-              result.GetTestCaseName().c_str());
+      UNSAFE_TODO(fprintf(
+          out_.get(),
+          "    <testcase name=\"%s\" status=\"run\" time=\"%.3f\""
+          "%s classname=\"%s\">\n",
+          result.GetTestName().c_str(), result.elapsed_time.InSecondsF(),
+          (result.timestamp
+               ? StrCat({" timestamp=\"",
+                         FormatTimeAsIso8601(*result.timestamp), "\""})
+                     .c_str()
+               : ""),
+          result.GetTestCaseName().c_str()));
       if (result.status != TestResult::TEST_SUCCESS) {
         // The actual failure message is not propagated up to here, as it's too
         // much work to escape it properly, and in case of failure, almost
@@ -705,8 +702,8 @@ void TestResultsTracker::PrintTests(InputIterator first,
     return;
   }
 
-  fprintf(stdout, "%" PRIuS " test%s %s:\n", count, count != 1 ? "s" : "",
-          description.c_str());
+  UNSAFE_TODO(fprintf(stdout, "%" PRIuS " test%s %s:\n", count,
+                      count != 1 ? "s" : "", description.c_str()));
   for (InputIterator it = first; it != last; ++it) {
     const std::string& test_name = *it;
     const auto location_it = test_locations_.find(test_name);

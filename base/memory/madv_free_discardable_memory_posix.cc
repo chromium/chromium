@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/memory/madv_free_discardable_memory_posix.h"
 
 #include <errno.h>
@@ -18,6 +13,7 @@
 #include <atomic>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/asan_interface.h"
@@ -177,8 +173,8 @@ bool MadvFreeDiscardableMemoryPosix::LockPage(size_t page_index) {
                 "Incompatible layout of std::atomic.");
   DCHECK(std::atomic<intptr_t>{}.is_lock_free());
   std::atomic<intptr_t>* page_as_atomic =
-      reinterpret_cast<std::atomic<intptr_t>*>(
-          static_cast<uint8_t*>(data_) + page_index * base::GetPageSize());
+      reinterpret_cast<std::atomic<intptr_t>*>(UNSAFE_TODO(
+          static_cast<uint8_t*>(data_) + page_index * base::GetPageSize()));
 
   intptr_t expected = kPageMagicCookie;
 
@@ -200,8 +196,8 @@ void MadvFreeDiscardableMemoryPosix::UnlockPage(size_t page_index) {
   DCHECK(std::atomic<intptr_t>{}.is_lock_free());
 
   std::atomic<intptr_t>* page_as_atomic =
-      reinterpret_cast<std::atomic<intptr_t>*>(
-          static_cast<uint8_t*>(data_) + page_index * base::GetPageSize());
+      reinterpret_cast<std::atomic<intptr_t>*>(UNSAFE_TODO(
+          static_cast<uint8_t*>(data_) + page_index * base::GetPageSize()));
 
   // Store the first word of the page for use during unlocking.
   page_first_word_[page_index].store(*page_as_atomic,
@@ -215,9 +211,9 @@ void MadvFreeDiscardableMemoryPosix::DiscardPage(size_t page_index) {
   DFAKE_SCOPED_LOCK(thread_collision_warner_);
   DCHECK(!is_locked_);
   DCHECK(page_index < allocated_pages_);
-  int retval =
-      madvise(static_cast<uint8_t*>(data_) + base::GetPageSize() * page_index,
-              base::GetPageSize(), MADV_DONTNEED);
+  int retval = madvise(UNSAFE_TODO(static_cast<uint8_t*>(data_) +
+                                   base::GetPageSize() * page_index),
+                       base::GetPageSize(), MADV_DONTNEED);
   DPCHECK(!retval);
 }
 
