@@ -300,14 +300,14 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   std::map<gfx::AcceleratedWidget, raw_ptr<WaylandSurfaceGpu, CtnExperimental>>
       widget_to_surface_map_;  // Guarded by |lock_|.
 
-  // Supported buffer formats and modifiers sent by the Wayland compositor to
-  // the client. Corresponds to the map stored in WaylandZwpLinuxDmabuf and
-  // passed from it during initialization of this gpu host.
+  // Supported formats and modifiers sent by the Wayland compositor to the
+  // client. Corresponds to the map stored in WaylandZwpLinuxDmabuf and passed
+  // from it during initialization of this gpu host.
   // If `DRM_FORMAT_MOD_INVALID` is in the modifiers list, it means implicit
   // modifier is also supported as fallback if creation with explicit modifier
   // fails, the effective modifier will be derived from dmabuf.
-  base::flat_map<gfx::BufferFormat, std::vector<uint64_t>>
-      supported_buffer_formats_with_modifiers_;
+  base::flat_map<viz::SharedImageFormat, std::vector<uint64_t>>
+      supported_formats_with_modifiers_;
 
   // These task runners can be used to pass messages back to the same thread,
   // where the commit buffer request came from. For example, swap requests can

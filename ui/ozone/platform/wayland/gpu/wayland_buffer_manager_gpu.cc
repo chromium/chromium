@@ -88,7 +88,10 @@ void WaylandBufferManagerGpu::Initialize(
   if (!gpu_thread_runner_)
     gpu_thread_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 
-  supported_buffer_formats_with_modifiers_ = buffer_formats_with_modifiers;
+  for (auto const& [buffer_format, modifier] : buffer_formats_with_modifiers) {
+    supported_formats_with_modifiers_[viz::GetSharedImageFormat(
+        buffer_format)] = modifier;
+  }
   supports_viewporter_ = supports_viewporter;
   supports_acquire_fence_ = supports_acquire_fence;
   supports_dmabuf_ = supports_dma_buf;
@@ -351,9 +354,8 @@ void WaylandBufferManagerGpu::AddBindingWaylandBufferManagerGpu(
 
 const std::vector<uint64_t> WaylandBufferManagerGpu::GetModifiersForFormat(
     viz::SharedImageFormat format) const {
-  auto it = supported_buffer_formats_with_modifiers_.find(
-      viz::SharedImageFormatToBufferFormat(format));
-  if (it != supported_buffer_formats_with_modifiers_.end()) {
+  auto it = supported_formats_with_modifiers_.find(format);
+  if (it != supported_formats_with_modifiers_.end()) {
     if (drm_modifiers_filter_) {
       return drm_modifiers_filter_->Filter(format, it->second);
     }
@@ -364,9 +366,8 @@ const std::vector<uint64_t> WaylandBufferManagerGpu::GetModifiersForFormat(
 
 bool WaylandBufferManagerGpu::AllowsImplicitModifierForFormat(
     viz::SharedImageFormat format) const {
-  auto it = supported_buffer_formats_with_modifiers_.find(
-      viz::SharedImageFormatToBufferFormat(format));
-  if (it != supported_buffer_formats_with_modifiers_.end()) {
+  auto it = supported_formats_with_modifiers_.find(format);
+  if (it != supported_formats_with_modifiers_.end()) {
     return base::Contains(it->second, DRM_FORMAT_MOD_INVALID);
   }
   return false;
@@ -378,8 +379,7 @@ uint32_t WaylandBufferManagerGpu::AllocateBufferID() {
 
 bool WaylandBufferManagerGpu::SupportsFormat(
     viz::SharedImageFormat format) const {
-  return supported_buffer_formats_with_modifiers_.contains(
-      viz::SharedImageFormatToBufferFormat(format));
+  return supported_formats_with_modifiers_.contains(format);
 }
 
 void WaylandBufferManagerGpu::BindHostInterface(
