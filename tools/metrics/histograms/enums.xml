@@ -11236,6 +11236,7 @@ from previous Chrome versions.
   <int value="-1104746914" label="CrostiniVirtualKeyboardSupport:enabled"/>
   <int value="-1104609838" label="UserMediaCaptureOnFocus:enabled"/>
   <int value="-1104006220" label="AssistantNonPersonalizedVoiceSearch:enabled"/>
+  <int value="-1103457162" label="VerifyMTCs:enabled"/>
   <int value="-1103400515" label="VirtualKeyboardDarkMode:enabled"/>
   <int value="-1103230059" label="EnableHistorySyncOptinExpansionPill:enabled"/>
   <int value="-1103221768" label="DefaultChatWebApp:enabled"/>
@@ -17252,6 +17253,7 @@ from previous Chrome versions.
       label="ExperimentalWebMachineLearningNeuralNetwork:disabled"/>
   <int value="1000045846" label="OverlayNewLayout:disabled"/>
   <int value="1000706989" label="AutomaticTabDiscarding:disabled"/>
+  <int value="1001596100" label="VerifyMTCs:disabled"/>
   <int value="1002247842" label="WebGPUService:enabled"/>
   <int value="1002585107" label="emphasize-titles-in-omnibox-dropdown"/>
   <int value="1003002105" label="MaterialDesignBookmarks:disabled"/>

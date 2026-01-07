@@ -4338,6 +4338,12 @@ inline constexpr char kVcWebApiName[] = "VC web API";
 inline constexpr char kVcWebApiDescription[] =
     "Allows web API support for video conferencing on Chromebooks.";
 
+inline constexpr char kVerifyMTCsName[] = "Verify MTCs";
+inline constexpr char kVerifyMTCsDescription[] =
+    "Enables verification of Merkle Tree Certificates as described in "
+    "https://datatracker.ietf.org/doc/draft-davidben-tls-merkle-tree-certs/. "
+    "Requires #tls-trust-anchor-ids.";
+
 inline constexpr char kVerifyQWACsName[] = "Verify QWACs";
 inline constexpr char kVerifyQWACsDescription[] =
     "Enables verification of qualified certificates for website authentication "

@@ -10434,6 +10434,15 @@
     "expiry_milestone": 140
   },
   {
+    "name": "verify-mtcs",
+    "owners": [
+      "mattm@chromium.org",
+      "nharper@chromium.org",
+      "jdeblasio@chromium.org"
+    ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "verify-qwacs",
     "owners": [
       "nharper@chromium.org",

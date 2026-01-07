@@ -13464,12 +13464,17 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUpdaterUIDescription, kOsLinux | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(features::kUpdaterUI)},
 #endif
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
     {"read-anything-line-focus", flag_descriptions::kReadAnythingLineFocusName,
      flag_descriptions::kReadAnythingLineFocusDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kReadAnythingLineFocus)},
 #endif
+
+    {"verify-mtcs", flag_descriptions::kVerifyMTCsName,
+     flag_descriptions::kVerifyMTCsDescription, kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(net::features::kVerifyMTCs)},
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
