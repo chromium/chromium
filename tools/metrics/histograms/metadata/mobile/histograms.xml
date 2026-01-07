@@ -751,6 +751,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Tips"/>
     <variant name="TwaDisclosureInitial"/>
     <variant name="TwaDisclosureSubsequent"/>
+    <variant name="Unknown"/>
     <variant name="Updates"/>
     <variant name="Usb"/>
     <variant name="Vr"/>

@@ -873,8 +873,8 @@ public class NotificationUmaTracker {
             case ChannelId.TIPS:
                 return "Tips";
             default:
-                assert false : "Invalid channel id: " + channelId;
-                return "";
+                // Group all non-recognized channel ids into an aggregate bucket.
+                return "Unknown";
         }
         // LINT.ThenChange(//chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/channels/ChromeChannelDefinitions.java:ChannelId)
     }
