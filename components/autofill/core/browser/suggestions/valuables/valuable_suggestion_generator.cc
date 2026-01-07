@@ -358,7 +358,9 @@ void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
       all_loyalty_cards.begin(), non_affiliated_cards.begin()));
 
   // Show suggestions only in case there is a card that matches current domain.
-  if (affiliated_cards.empty()) {
+  if (affiliated_cards.empty() &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillEnableNonAffiliatedLoyaltyCardsFilling)) {
     callback({FillingProduct::kLoyaltyCard, {}});
     return;
   }
@@ -381,9 +383,14 @@ void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
   }
 
   // Build suggestions with 'all loyalty cards' submenu.
-  std::vector<Suggestion> suggestions = CreateSuggestionsFromLoyaltyCards(
-      affiliated_cards, *client.GetValuablesDataManager());
-  suggestions.emplace_back(SuggestionType::kSeparator);
+  std::vector<Suggestion> suggestions;
+
+  // Build affiliated cards suggestions section if affiliated cards exist.
+  if (!affiliated_cards.empty()) {
+    suggestions = CreateSuggestionsFromLoyaltyCards(
+        affiliated_cards, *client.GetValuablesDataManager());
+    suggestions.emplace_back(SuggestionType::kSeparator);
+  }
 
   // Build 'all loyalty cards' submenu.
   Suggestion& submenu_suggestion = suggestions.emplace_back(
