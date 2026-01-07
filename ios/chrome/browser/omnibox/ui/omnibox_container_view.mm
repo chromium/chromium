@@ -443,7 +443,11 @@ UIButton* CreateClearButton(OmniboxPresentationContext presentationContext) {
   _textView.textContainer.maximumNumberOfLines = numberOfLines;
   NSLineBreakMode defaultLineBreakMode =
       [self lineBreakModeForUserText:userText];
-  [self updateLastLineClipping:defaultLineBreakMode];
+  if ([_textView hasAutocompleteText]) {
+    [self updateLastLineClipping:defaultLineBreakMode];
+  } else {
+    _textView.textContainer.lineBreakMode = defaultLineBreakMode;
+  }
 
   // Limit the number of lines and update intrinsic size.
   _lastComputedIdealHeight = ceilf(userTextHeight + verticalPadding);
