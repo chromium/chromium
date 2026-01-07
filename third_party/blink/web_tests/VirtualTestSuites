@@ -283,7 +283,7 @@
       "clchambers@microsoft.com",
       "gerchiko@microsoft.com"
     ],
-    "expires": "Jan 1, 2026"
+    "expires": "Jan 1, 2027"
   },
   {
     "prefix": "connection-allowlist",
@@ -2063,7 +2063,7 @@
       "clchambers@microsoft.com",
       "gerchiko@microsoft.com"
     ],
-    "expires": "Jan 1, 2026"
+    "expires": "Jan 1, 2027"
   },
   {
     "prefix": "media-foundation-for-clear-dcomp",
