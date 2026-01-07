@@ -215,14 +215,14 @@ void SoftNavigationContext::EmitSoftNavigation() {
   CHECK(HasFirstContentfulPaint());
   was_emitted_ = true;
 
+  if (!RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window_)) {
+    return;
+  }
+
   TRACE_EVENT_INSTANT("scheduler,devtools.timeline,loading",
                       "SoftNavigationStart", perfetto::Track::FromPointer(this),
                       TimeOrigin(), "context", *this, "frame",
                       GetFrameIdForTracing(window_->GetFrame()));
-
-  if (!RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window_)) {
-    return;
-  }
 
   WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
   CHECK(performance);
