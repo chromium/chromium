@@ -155,8 +155,7 @@ const CGFloat kFeatureRowIconSize = 20;
 
   switch (featureType) {
     case PageActionMenuTranslate: {
-      ChromeIOSTranslateClient* translateClient =
-          ChromeIOSTranslateClient::FromWebState(_webState);
+      ChromeIOSTranslateClient* translateClient = [self findTranslateClient];
       return IsTranslateActive(translateClient);
     }
     case PageActionMenuCameraPermission: {
@@ -216,8 +215,7 @@ const CGFloat kFeatureRowIconSize = 20;
     return nil;
   }
 
-  ChromeIOSTranslateClient* translateClient =
-      ChromeIOSTranslateClient::FromWebState(_webState);
+  ChromeIOSTranslateClient* translateClient = [self findTranslateClient];
 
   if (!IsTranslateActive(translateClient) ||
       !translateClient->GetTranslateManager()) {
@@ -447,8 +445,7 @@ const CGFloat kFeatureRowIconSize = 20;
     return;
   }
 
-  ChromeIOSTranslateClient* translateClient =
-      ChromeIOSTranslateClient::FromWebState(_webState);
+  ChromeIOSTranslateClient* translateClient = [self findTranslateClient];
   if (!translateClient || !translateClient->GetTranslateManager()) {
     return;
   }
@@ -535,8 +532,7 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client) {
     return;
   }
 
-  ChromeIOSTranslateClient* translateClient =
-      ChromeIOSTranslateClient::FromWebState(webState);
+  ChromeIOSTranslateClient* translateClient = [self findTranslateClient];
   if (!translateClient || !translateClient->GetTranslateManager()) {
     return;
   }
@@ -597,6 +593,21 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client) {
       base::BindOnce(^(NSArray<NSString*>* suggestions){
           // No-op.
       }));
+}
+
+// Finds the translate client depending on whether Reader mode is active.
+- (ChromeIOSTranslateClient*)findTranslateClient {
+  web::WebState* targetWebState = _webState;
+  ReaderModeTabHelper* readerModeTabHelper =
+      ReaderModeTabHelper::FromWebState(_webState);
+  if (readerModeTabHelper) {
+    web::WebState* readerModeWebState =
+        readerModeTabHelper->GetReaderModeWebState();
+    if (readerModeWebState) {
+      targetWebState = readerModeWebState;
+    }
+  }
+  return ChromeIOSTranslateClient::FromWebState(targetWebState);
 }
 
 // Finds the translate infobar.
