@@ -64,10 +64,6 @@ using enum privacy_sandbox_test_util::OutputKey;
 constexpr auto CONTENT_SETTING_ALLOW = ContentSetting::CONTENT_SETTING_ALLOW;
 constexpr auto CONTENT_SETTING_BLOCK = ContentSetting::CONTENT_SETTING_BLOCK;
 
-// using enum content_settings::CookieControlsMode;
-constexpr auto kBlockThirdParty =
-    content_settings::CookieControlsMode::kBlockThirdParty;
-
 constexpr int kTestTaxonomyVersion = 1;
 
 }  // namespace
@@ -465,6 +461,9 @@ struct PrivateAggregationDebugModeTestCase {
   bool ignore_site_exception_feature_enabled = false;
 };
 
+// This test class relies on setting the cookie controls mode pref, which is not
+// used on iOS.
+#if !BUILDFLAG(IS_IOS)
 class PrivacySandboxSettingsPrivateAggregationDebugModeTest
     : public PrivacySandboxSettingsTest,
       public testing::WithParamInterface<PrivateAggregationDebugModeTestCase> {
@@ -556,6 +555,7 @@ TEST_P(PrivacySandboxSettingsPrivateAggregationDebugModeTest,
 
   EXPECT_EQ(is_debug_mode_allowed, expect_debug_mode);
 }
+#endif
 
 class PrivacySandboxSettingsTestCookiesClearOnExitTurnedOff
     : public PrivacySandboxSettingsTest {
@@ -770,6 +770,9 @@ TEST_F(PrivacySandboxSettingsM1Test, ApiPreferenceDisabled) {
            &kFalse_}});
 }
 
+// This test relies on setting the cookie controls mode pref, which is not used
+// on iOS.
+#if !BUILDFLAG(IS_IOS)
 TEST_F(
     PrivacySandboxSettingsM1Test,
     CookieControlsModeEffectsOnlyPrivateAggregationDebugModeAndFencedStorageRead) {
@@ -780,7 +783,8 @@ TEST_F(
                                    kM1FledgeEnabledUserPrefValue,
                                    kM1AdMeasurementEnabledUserPrefValue},
                  true},
-                {kCookieControlsModeUserPrefValue, kBlockThirdParty}},
+                {kCookieControlsModeUserPrefValue,
+                 content_settings::CookieControlsMode::kBlockThirdParty}},
       TestInput{
           {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
           {kTopicsURL, GURL("https://embedded.com")},
@@ -818,6 +822,7 @@ TEST_F(
           {kIsFencedStorageReadAllowedMetric,
            static_cast<int>(Status::kApisDisabled)}});
 }
+#endif
 
 TEST_F(PrivacySandboxSettingsM1Test, SiteDataDefaultBlockExceptionApplies) {
   // Confirm that blocking site data for a site disables M1 kAPIs, with the
