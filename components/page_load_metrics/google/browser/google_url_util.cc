@@ -128,4 +128,13 @@ bool IsGoogleSearchRedirectorUrl(const GURL& url) {
   return url.path() == "/searchurl/r.html" && url.has_ref();
 }
 
+bool IsGoogleSearchPrewarmUrl(const GURL& url) {
+  if (!IsGoogleSearchHostname(url)) {
+    return false;
+  }
+
+  return base::EndsWith(url.path(), "/prewarm.html",
+                        base::CompareCase::INSENSITIVE_ASCII);
+}
+
 }  // namespace page_load_metrics

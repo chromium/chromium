@@ -1540,6 +1540,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Clients.GoogleSearch.HttpStatusCode{NavigationType}"
+    enum="HttpResponseCode" expires_after="2026-06-14">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The HTTP status code of Google search page loads for {NavigationType}. This
+    is only recorded for Search navigations and is recorded OnRedirect and
+    OnCommit.
+  </summary>
+  <token key="NavigationType">
+    <variant name=".NonPrewarm" summary="non prewarm page"/>
+    <variant name=".Prewarm" summary="prewarm page"/>
+  </token>
+</histogram>
+
 <histogram name="PageLoad.Clients.GoogleSearch.IsFirstNavigationForGWS"
     enum="Boolean" expires_after="2026-04-12">
   <owner>suzukikeita@chromium.org</owner>

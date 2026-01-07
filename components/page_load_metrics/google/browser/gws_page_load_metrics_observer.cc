@@ -35,6 +35,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_connection_info.h"
+#include "net/http/http_response_headers.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
@@ -159,6 +160,12 @@ const char kHistogramGWSWarmUpType[] = HISTOGRAM_PREFIX "WarmUpType";
 
 const char kHistogramPrerenderSuffix[] = ".Prerender";
 const char kHistogramNonPrerenderSuffix[] = ".NonPrerender";
+
+const char kHistogramGWSHttpStatusCode[] = HISTOGRAM_PREFIX "HttpStatusCode";
+
+const char kHistogramGWSHttpStatusCodePrewarm[] = ".Prewarm";
+const char kHistogramGWSHttpStatusCodeNonPrewarm[] = ".NonPrewarm";
+
 // ServiceWorker related histograms.
 const char kHistogramServiceWorkerParseStartSearch[] =
     "PageLoad.Clients.ServiceWorker2.ParseTiming.NavigationToParseStart.search";
@@ -297,6 +304,21 @@ void ReportMetricForTraverseNavigation(bool is_restore_navigation,
   PAGE_LOAD_HISTOGRAM(restore_histogram_name, latency);
 }
 
+void RecordHttpStatusCode(int http_status_code, const GURL& url) {
+  std::string suffix;
+  if (page_load_metrics::IsGoogleSearchPrewarmUrl(url)) {
+    suffix = internal::kHistogramGWSHttpStatusCodePrewarm;
+  } else if (page_load_metrics::IsGoogleSearchResultUrl(url)) {
+    suffix = internal::kHistogramGWSHttpStatusCodeNonPrewarm;
+  }
+  if (suffix.empty()) {
+    return;
+  }
+  base::UmaHistogramSparse(
+      base::StrCat({internal::kHistogramGWSHttpStatusCode, suffix}),
+      http_status_code);
+}
+
 }  // namespace
 
 GWSPageLoadMetricsObserver::GWSPageLoadMetricsObserver() {
@@ -342,6 +364,17 @@ GWSPageLoadMetricsObserver::OnStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+GWSPageLoadMetricsObserver::OnRedirect(
+    content::NavigationHandle* navigation_handle) {
+  if (auto* response_headers = navigation_handle->GetResponseHeaders()) {
+    RecordHttpStatusCode(response_headers->response_code(),
+                         navigation_handle->GetURL());
+  }
+
+  return CONTINUE_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 GWSPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
   const bool is_gws_url =
@@ -360,6 +393,10 @@ GWSPageLoadMetricsObserver::OnCommit(
     page_load_metrics::PrerenderPrewarmNavigationData::GetOrCreate(
         GetDelegate().GetWebContents()->GetPrimaryMainFrame()->GetProcess(),
         prewarm_data->prewarm_committed());
+  }
+  if (auto* response_headers = navigation_handle->GetResponseHeaders()) {
+    RecordHttpStatusCode(response_headers->response_code(),
+                         navigation_handle->GetURL());
   }
   if (!is_gws_url) {
     return STOP_OBSERVING;
