@@ -14,58 +14,18 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
-#include "third_party/blink/renderer/core/html/loading_attribute.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
-#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 namespace {
-
-// Determine if the |bounding_client_rect| for a frame indicates that the frame
-// is probably hidden according to some experimental heuristics. Since hidden
-// frames are often used for analytics or communication, and lazily loading them
-// could break their functionality, so these heuristics are used to recognize
-// likely hidden frames and immediately load them so that they can function
-// properly.
-bool IsFrameProbablyHidden(const gfx::RectF& bounding_client_rect,
-                           const Element& element) {
-  // Tiny frames that are 4x4 or smaller are likely not intended to be seen by
-  // the user. Note that this condition includes frames marked as
-  // "display:none", since those frames would have dimensions of 0x0.
-  if (bounding_client_rect.width() <= 4.0f ||
-      bounding_client_rect.height() <= 4.0f) {
-    return true;
-  }
-
-  // Frames that are positioned completely off the page above or to the left are
-  // likely never intended to be visible to the user.
-  if (bounding_client_rect.right() < 0.0f ||
-      bounding_client_rect.bottom() < 0.0f) {
-    return true;
-  }
-
-  const ComputedStyle* style = element.GetComputedStyle();
-  if (style) {
-    switch (style->Visibility()) {
-      case EVisibility::kHidden:
-      case EVisibility::kCollapse:
-        return true;
-      case EVisibility::kVisible:
-        break;
-    }
-  }
-
-  return false;
-}
 
 int GetLazyLoadingFrameMarginPx(const Document& document) {
   const Settings* settings = document.GetSettings();
@@ -117,7 +77,7 @@ void LazyLoadFrameObserver::DeferLoadUntilNearViewport(
 
   lazy_load_intersection_observer_ = IntersectionObserver::Create(
       element_->GetDocument(),
-      BindRepeating(&LazyLoadFrameObserver::LoadIfHiddenOrNearViewport,
+      BindRepeating(&LazyLoadFrameObserver::LoadIfNearViewport,
                     WrapWeakPersistent(this)),
       LocalFrameUkmAggregator::kLazyLoadIntersectionObserver,
       IntersectionObserver::Params{
@@ -137,32 +97,12 @@ void LazyLoadFrameObserver::CancelPendingLazyLoad() {
   lazy_load_intersection_observer_.Clear();
 }
 
-void LazyLoadFrameObserver::LoadIfHiddenOrNearViewport(
+void LazyLoadFrameObserver::LoadIfNearViewport(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
   DCHECK(!entries.empty());
   DCHECK_EQ(element_, entries.back()->target());
 
   if (entries.back()->isIntersecting()) {
-    LoadImmediately();
-    return;
-  }
-
-  // When frames are loaded lazily, normally loading attributes are specified as
-  // |LoadingAttributeValue::kLazy|. However, the browser initiated lazyloading
-  // (e.g. LazyEmbeds) may apply lazyload automatically to some frames. In that
-  // case, target frames may not have loading="lazy" attributes. If the frame
-  // doesn't have loading="lazy", that means the frame is loaded as a lazyload
-  // manner, which is enabled by the browser initiated lazyloading.
-  //
-  // Normally the lazyload is triggered to frames regardless of size or
-  // visibility, but as the browser initiated lazyload does not apply
-  // lazyloading if the frame is small or hidden. See the comment in
-  // |IsFrameProbablyHidden()| for more details.
-  LoadingAttributeValue loading_attr = GetLoadingAttributeValue(
-      element_->FastGetAttribute(html_names::kLoadingAttr));
-  if (loading_attr != LoadingAttributeValue::kLazy &&
-      IsFrameProbablyHidden(entries.back()->GetGeometry().TargetRect(),
-                            *element_)) {
     LoadImmediately();
     return;
   }
@@ -194,7 +134,8 @@ void LazyLoadFrameObserver::LoadImmediately() {
   }
 
   // Note that whatever we delegate to for the navigation is responsible for
-  // clearing the frame's lazy load frame observer via |CancelPendingLayLoad()|.
+  // clearing the frame's lazy load frame observer via
+  // `CancelPendingLazyLoad()`.
   CHECK(!IsLazyLoadPending());
 }
 
