@@ -11434,12 +11434,6 @@
             ],
             "experiments": [
                 {
-                    "name": "Control",
-                    "disable_features": [
-                        "GlicButtonAltLabel"
-                    ]
-                },
-                {
                     "name": "LabelA",
                     "params": {
                         "glic-button-alt-label-variant": "0"
@@ -11463,6 +11457,12 @@
                         "glic-button-alt-label-variant": "2"
                     },
                     "enable_features": [
+                        "GlicButtonAltLabel"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
                         "GlicButtonAltLabel"
                     ]
                 }
