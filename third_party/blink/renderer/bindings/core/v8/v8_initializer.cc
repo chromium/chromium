@@ -574,6 +574,13 @@ V8Initializer::CodeGenerationCheckCallbackInMainThread(
     v8::Local<v8::Context> context,
     v8::Local<v8::Value> source,
     bool is_code_like) {
+  // The code generation callback should only be installed on "normal" JS
+  // contexts, which in turn should always have an associated ExecutionContext.
+  // If this invariant holds, we can simplify this code a little bit.
+  // We're probing this invariant to ensure it won't cause issues in practice.
+  // See also: Discussion on crrev.com/c/7207201.
+  CHECK(ToExecutionContext(context), base::NotFatalUntil::M150);
+
   // The TC39 "Dynamic Code Brand Check" feature is currently behind a flag.
   if (!RuntimeEnabledFeatures::TrustedTypesUseCodeLikeEnabled())
     is_code_like = false;
