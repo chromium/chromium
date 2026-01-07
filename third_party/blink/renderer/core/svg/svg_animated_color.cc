@@ -21,6 +21,7 @@
 
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
@@ -90,10 +91,18 @@ SVGParsingError SVGColorProperty::SetValueAsString(const String& value) {
     style_color_ = StyleColor(parsed_color);
     return SVGParseStatus::kNoError;
   }
-  if (EqualIgnoringASCIICase(trimmed_value, "currentColor")) {
-    style_color_ = StyleColor::CurrentColor();
-    return SVGParseStatus::kNoError;
+
+  // Check for currentcolor keyword, handling escaped characters
+  CSSParserTokenStream stream(trimmed_value);
+  if (!stream.AtEnd() && stream.Peek().GetType() == kIdentToken &&
+      stream.Peek().Id() == CSSValueID::kCurrentcolor) {
+    stream.Consume();
+    if (stream.AtEnd()) {
+      style_color_ = StyleColor::CurrentColor();
+      return SVGParseStatus::kNoError;
+    }
   }
+
   return SVGParseStatus::kParsingFailed;
 }
 
