@@ -849,15 +849,6 @@ void ContextualTasksComposeboxHandler::DeleteContext(
 
   if (!was_delayed) {
     ComposeboxHandler::DeleteContext(file_token, from_automatic_chip);
-
-    // Disassociate the tab from the task.
-    if (contextual_tasks_service_ && associated_tab_id.has_value()) {
-      auto task_id = web_ui_controller_->GetTaskId();
-      if (task_id.has_value()) {
-        contextual_tasks_service_->DisassociateTabFromTask(
-            task_id.value(), associated_tab_id.value());
-      }
-    }
   } else {
     OnFileUploadStatusChanged(
         file_token, lens::MimeType::kUnknown,
@@ -885,26 +876,4 @@ ContextualTasksComposeboxHandler::GetLensSearchController() const {
     return controller;
   }
   return nullptr;
-}
-
-void ContextualTasksComposeboxHandler::ClearFiles() {
-  // Disassociate all tabs from task.
-  if (contextual_tasks_service_) {
-    auto task_id = web_ui_controller_->GetTaskId();
-    if (task_id.has_value()) {
-      auto* contextual_session_handle = GetContextualSessionHandle();
-      if (contextual_session_handle) {
-        auto file_info_list =
-            contextual_session_handle->GetController()->GetFileInfoList();
-
-        for (const auto* file_info : file_info_list) {
-          if (file_info->tab_session_id.has_value()) {
-            contextual_tasks_service_->DisassociateTabFromTask(
-                task_id.value(), file_info->tab_session_id.value());
-          }
-        }
-      }
-    }
-  }
-  ComposeboxHandler::ClearFiles();
 }
