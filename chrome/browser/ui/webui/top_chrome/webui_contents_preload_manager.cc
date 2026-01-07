@@ -11,7 +11,6 @@
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -251,7 +250,10 @@ RequestResult::~RequestResult() = default;
 RequestResult::RequestResult(RequestResult&&) = default;
 RequestResult& RequestResult::operator=(RequestResult&&) = default;
 
-WebUIContentsPreloadManager::WebUIContentsPreloadManager() {
+WebUIContentsPreloadManager::WebUIContentsPreloadManager()
+    : memory_pressure_listener_registration_(
+          base::MemoryPressureListenerTag::kWebUIContentsPreloadManager,
+          this) {
   preload_mode_ =
       static_cast<PreloadMode>(features::kPreloadTopChromeWebUIMode.Get());
   webui_controller_embedder_stub_ =
@@ -546,11 +548,7 @@ bool WebUIContentsPreloadManager::ShouldPreloadForBrowserContext(
   }
 
   // Don't preload if under heavy memory pressure.
-  const auto* memory_monitor = base::MemoryPressureMonitor::Get();
-  if (memory_monitor &&
-      memory_monitor->GetCurrentPressureLevel(
-          base::MemoryPressureMonitorTag::kWebUIContentsPreloadManager) >=
-          base::MEMORY_PRESSURE_LEVEL_MODERATE) {
+  if (memory_pressure_level() >= base::MEMORY_PRESSURE_LEVEL_MODERATE) {
     return false;
   }
 
