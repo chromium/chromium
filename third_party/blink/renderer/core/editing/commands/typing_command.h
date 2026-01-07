@@ -73,6 +73,7 @@ class CORE_EXPORT TypingCommand final : public CompositeEditCommand {
   static void InsertText(Document&,
                          const String&,
                          Options,
+                         PasswordEchoBehavior,
                          TextCompositionType = kTextCompositionNone,
                          const bool is_incremental_insertion = false);
   static void InsertText(
@@ -81,6 +82,7 @@ class CORE_EXPORT TypingCommand final : public CompositeEditCommand {
       const SelectionInDOMTree&,
       Options,
       EditingState*,
+      PasswordEchoBehavior,
       TextCompositionType = kTextCompositionNone,
       const bool is_incremental_insertion = false,
       InputEvent::InputType = InputEvent::InputType::kInsertText,
@@ -173,6 +175,8 @@ class CORE_EXPORT TypingCommand final : public CompositeEditCommand {
   TextCompositionType composition_type_;
   const bool kill_ring_;
   bool preserves_typing_style_;
+  PasswordEchoBehavior password_echo_behavior_ =
+      PasswordEchoBehavior::kDoNotEcho;
 
   // Undoing a series of backward deletes will restore a selection around all of
   // the characters that were deleted, but only if the typing command being

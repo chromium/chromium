@@ -24,6 +24,13 @@ int GetKeyEventUnicodeChar(JNIEnv* env,
       JNI_KeyEvent::Java_KeyEvent_getUnicodeChar(env, event, meta_state));
 }
 
+bool IsVirtualKeyboardEvent(JNIEnv* env,
+                            const base::android::JavaRef<jobject>& event) {
+  int flags =
+      static_cast<int>(JNI_KeyEvent::Java_KeyEvent_getFlags(env, event));
+  return (flags & JNI_KeyEvent::FLAG_SOFT_KEYBOARD) != 0;
+}
+
 }  // namespace android
 }  // namespace events
 }  // namespace ui

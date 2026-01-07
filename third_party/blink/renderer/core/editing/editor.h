@@ -31,6 +31,7 @@
 #include "mojo/public/mojom/base/text_direction.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/editing/commands/edit_command.h"
 #include "third_party/blink/renderer/core/editing/editing_style.h"
 #include "third_party/blink/renderer/core/editing/finder/find_options.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
@@ -130,6 +131,8 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
       bool select_inserted_text,
       TextEvent* triggering_event,
       InputEvent::InputType = InputEvent::InputType::kInsertText,
+      EditCommand::PasswordEchoBehavior =
+          EditCommand::PasswordEchoBehavior::kDoNotEcho,
       DataTransfer* = nullptr);
   bool InsertLineBreak();
   bool InsertParagraphSeparator();
@@ -197,11 +200,13 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
                                     bool smart_replace,
                                     bool match_style,
                                     InputEvent::InputType,
+                                    EditCommand::PasswordEchoBehavior,
                                     DataTransfer* = nullptr);
   void ReplaceSelectionWithText(const String&,
                                 bool select_replacement,
                                 bool smart_replace,
-                                InputEvent::InputType);
+                                InputEvent::InputType,
+                                EditCommand::PasswordEchoBehavior);
 
   // Implementation of WebLocalFrameImpl::ReplaceSelection. Does not use smart
   // replacement.

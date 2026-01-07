@@ -1053,10 +1053,10 @@ void LayoutText::TextDidChange() {
 void LayoutText::TextDidChangeWithoutInvalidation() {
   NOT_DESTROYED();
   TextOffsetMap offset_map;
-  bool is_password_echo_enabled =
-      GetDocument().GetSettings() &&
-      GetDocument().GetSettings()->GetPasswordEchoEnabledPhysical() &&
-      GetDocument().GetSettings()->GetPasswordEchoEnabledTouch();
+  Settings* settings = GetDocument().GetSettings();
+  const bool is_password_echo_enabled =
+      settings && (settings->GetPasswordEchoEnabledPhysical() ||
+                   settings->GetPasswordEchoEnabledTouch());
   String original_text =
       (RuntimeEnabledFeatures::UseOriginalDomOffsetsForOffsetMapEnabled() &&
        !OriginalText().empty() && is_password_echo_enabled)

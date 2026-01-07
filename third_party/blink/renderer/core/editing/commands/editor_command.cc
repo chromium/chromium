@@ -1034,8 +1034,9 @@ static bool ExecuteTranspose(LocalFrame& frame,
   }
 
   // Insert the transposed characters.
-  editor.ReplaceSelectionWithText(new_transposed, false, false,
-                                  InputEvent::InputType::kInsertTranspose);
+  editor.ReplaceSelectionWithText(
+      new_transposed, false, false, InputEvent::InputType::kInsertTranspose,
+      EditCommand::PasswordEchoBehavior::kDoNotEcho);
   return true;
 }
 

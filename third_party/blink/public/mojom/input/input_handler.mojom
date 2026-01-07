@@ -46,6 +46,8 @@ struct KeyData {
   int32 native_key_code;
   bool is_system_key;
   bool is_browser_shortcut;
+  [EnableIf=is_android]
+  bool is_confirmed_physical_keyboard_input;
   mojo_base.mojom.String16 text;
   mojo_base.mojom.String16 unmodified_text;
 };

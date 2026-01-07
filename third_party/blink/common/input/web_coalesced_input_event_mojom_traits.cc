@@ -108,6 +108,10 @@ bool StructTraits<blink::mojom::EventDataView,
     key_event->dom_key = key_data->dom_key;
     key_event->is_system_key = key_data->is_system_key;
     key_event->is_browser_shortcut = key_data->is_browser_shortcut;
+#if BUILDFLAG(IS_ANDROID)
+    key_event->is_confirmed_physical_keyboard_input =
+        key_data->is_confirmed_physical_keyboard_input;
+#endif
     base::u16cstrlcpy(key_event->text.data(), key_data->text.c_str(),
                       blink::WebKeyboardEvent::kTextLengthCap);
     base::u16cstrlcpy(key_event->unmodified_text.data(),
@@ -385,8 +389,11 @@ StructTraits<blink::mojom::EventDataView,
   return blink::mojom::KeyData::New(
       key_event->dom_key, key_event->dom_code, key_event->windows_key_code,
       key_event->native_key_code, key_event->is_system_key,
-      key_event->is_browser_shortcut, key_event->text.data(),
-      key_event->unmodified_text.data());
+      key_event->is_browser_shortcut,
+#if BUILDFLAG(IS_ANDROID)
+      key_event->is_confirmed_physical_keyboard_input,
+#endif
+      key_event->text.data(), key_event->unmodified_text.data());
 }
 
 // static

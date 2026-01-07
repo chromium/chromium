@@ -16,6 +16,7 @@ class CORE_EXPORT InsertIncrementalTextCommand final
   InsertIncrementalTextCommand(
       Document&,
       const String& text,
+      PasswordEchoBehavior,
       RebalanceType = kRebalanceLeadingAndTrailingWhitespaces);
 
  private:

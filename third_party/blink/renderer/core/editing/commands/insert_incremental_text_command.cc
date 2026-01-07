@@ -137,8 +137,12 @@ SelectionInDOMTree ComputeSelectionForInsertion(
 InsertIncrementalTextCommand::InsertIncrementalTextCommand(
     Document& document,
     const String& text,
+    PasswordEchoBehavior password_echo_behavior,
     RebalanceType rebalance_type)
-    : InsertTextCommand(document, text, rebalance_type) {}
+    : InsertTextCommand(document,
+                        text,
+                        password_echo_behavior,
+                        rebalance_type) {}
 
 void InsertIncrementalTextCommand::DoApply(EditingState* editing_state) {
   DCHECK(!GetDocument().NeedsLayoutTreeUpdate());

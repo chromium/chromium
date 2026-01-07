@@ -40,6 +40,17 @@ class EditingState;
 
 class CORE_EXPORT EditCommand : public GarbageCollected<EditCommand> {
  public:
+  // Specifies which password echo setting to be used when executing text
+  // insertion or replacement operations within a password field.
+  enum class PasswordEchoBehavior {
+    kEchoIfPasswordEchoPhysicalEnabled,
+    kEchoIfPasswordEchoTouchEnabled,
+    // Password characters should only be echoed interactively during typing.
+    // Editing operations like pasting from clipboard should not trigger the
+    // password echo animation.
+    kDoNotEcho
+  };
+
   virtual ~EditCommand();
 
   virtual void SetParent(CompositeEditCommand*);

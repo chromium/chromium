@@ -935,7 +935,8 @@ void DeleteSelectionCommand::FixupWhitespace(const Position& position) {
          text_node->GetLayoutObject()->Style()->ShouldCollapseWhiteSpaces())
       << text_node;
   ReplaceTextInNode(text_node, position.ComputeOffsetInContainerNode(), 1,
-                    NonBreakingSpaceString());
+                    NonBreakingSpaceString(),
+                    EditCommand::PasswordEchoBehavior::kDoNotEcho);
 }
 
 // If a selection starts in one block and ends in another, we have to merge to

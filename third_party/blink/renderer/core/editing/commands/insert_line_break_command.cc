@@ -188,7 +188,8 @@ void InsertLineBreakCommand::DoApply(EditingState* editing_state) {
       // Deleting insignificant whitespace will remove textNode if it contains
       // nothing but insignificant whitespace.
       if (text_node->isConnected()) {
-        InsertTextIntoNode(text_node, 0, NonBreakingSpaceString());
+        InsertTextIntoNode(text_node, 0, NonBreakingSpaceString(),
+                           PasswordEchoBehavior::kDoNotEcho);
       } else {
         Text* nbsp_node =
             GetDocument().createTextNode(NonBreakingSpaceString());

@@ -2129,7 +2129,8 @@ void ApplyStyleCommand::JoinChildTextNodes(ContainerNode* node,
       new_end = Position(child_text,
                          child_text->length() + end.OffsetInContainerNode());
     String text_to_move = next_text->data();
-    InsertTextIntoNode(child_text, child_text->length(), text_to_move);
+    InsertTextIntoNode(child_text, child_text->length(), text_to_move,
+                       PasswordEchoBehavior::kDoNotEcho);
     // Removing a Text node doesn't dispatch synchronous events.
     RemoveNode(next, ASSERT_NO_EDITING_ABORT);
     // don't move child node pointer. it may want to merge with more text nodes.

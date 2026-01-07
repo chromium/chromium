@@ -60,7 +60,7 @@ TEST_F(StyleCommandsTest, StrikethroughToggleAfterDeletingContent) {
 
   // Type replacement content - it should inherit strikethrough.
   TypingCommand::InsertText(
-      GetDocument(), "X", 0,
+      GetDocument(), "X", 0, EditCommand::PasswordEchoBehavior::kDoNotEcho,
       TypingCommand::TextCompositionType::kTextCompositionNone, false);
 
   html = div->GetInnerHTMLString();
@@ -84,7 +84,7 @@ TEST_F(StyleCommandsTest, StrikethroughToggleAfterDeletingContent) {
 
   // Type new content.
   TypingCommand::InsertText(
-      GetDocument(), "Y", 0,
+      GetDocument(), "Y", 0, EditCommand::PasswordEchoBehavior::kDoNotEcho,
       TypingCommand::TextCompositionType::kTextCompositionNone, false);
 
   // Verify the new content doesn't have strikethrough styling.
@@ -124,7 +124,7 @@ TEST_F(StyleCommandsTest, StrikethroughToggleInEmptyContentEditable) {
 
   // Insert new text.
   TypingCommand::InsertText(
-      GetDocument(), "N", 0,
+      GetDocument(), "N", 0, EditCommand::PasswordEchoBehavior::kDoNotEcho,
       TypingCommand::TextCompositionType::kTextCompositionNone, false);
 
   // Verify the new text doesn't have strikethrough.

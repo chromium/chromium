@@ -24,8 +24,8 @@ TEST_F(InsertTextCommandTest, WithTypingStyle) {
   // Register typing style to make |InsertTextCommand| to attempt to apply
   // style to inserted text.
   GetDocument().execCommand("fontSizeDelta", false, "+3", ASSERT_NO_EXCEPTION);
-  auto* const command =
-      MakeGarbageCollected<InsertTextCommand>(GetDocument(), "x");
+  auto* const command = MakeGarbageCollected<InsertTextCommand>(
+      GetDocument(), "x", EditCommand::PasswordEchoBehavior::kDoNotEcho);
   command->Apply();
 
   EXPECT_EQ(

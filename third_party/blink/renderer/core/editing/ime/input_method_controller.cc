@@ -483,8 +483,10 @@ void InputMethodController::InsertTextDuringCompositionWithEvents(
       if (text.empty())
         TypingCommand::DeleteSelection(*frame.GetDocument(), 0);
       frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-      TypingCommand::InsertText(*frame.GetDocument(), text, options,
-                                composition_type, is_incremental_insertion);
+      TypingCommand::InsertText(
+          *frame.GetDocument(), text, options,
+          EditCommand::PasswordEchoBehavior::kEchoIfPasswordEchoTouchEnabled,
+          composition_type, is_incremental_insertion);
       break;
     case TypingCommand::TextCompositionType::kTextCompositionCancel:
       // TODO(editing-dev): Use TypingCommand::insertText after TextEvent was

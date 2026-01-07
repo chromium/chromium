@@ -73,6 +73,16 @@ ui::DomKey GetDomKeyFromEvent(
   return ui::DomKey::UNIDENTIFIED;
 }
 
+bool IsConfirmedPhysicalKeyboardEvent(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& android_key_event) {
+  if (android_key_event.is_null()) {
+    // Synthetic key event, not enough information to detect source.
+    return false;
+  }
+  return !ui::events::android::IsVirtualKeyboardEvent(env, android_key_event);
+}
+
 }  // namespace
 
 WebKeyboardEvent WebKeyboardEventBuilder::Build(
@@ -108,6 +118,8 @@ WebKeyboardEvent WebKeyboardEventBuilder::Build(
   }
   result.text[0] = result.unmodified_text[0];
   result.is_system_key = is_system_key;
+  result.is_confirmed_physical_keyboard_input =
+      IsConfirmedPhysicalKeyboardEvent(env, android_key_event);
 
   return result;
 }

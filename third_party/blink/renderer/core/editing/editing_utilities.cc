@@ -1755,7 +1755,8 @@ void InsertTextAndSendInputEventsOfTypeInsertReplacementText(
   if (RuntimeEnabledFeatures::InputEventDataTransferForInsertCmdEnabled()) {
     frame.GetEditor().InsertTextWithoutSendingTextEvent(
         replacement, false, nullptr,
-        InputEvent::InputType::kInsertReplacementText, data_transfer);
+        InputEvent::InputType::kInsertReplacementText,
+        EditCommand::PasswordEchoBehavior::kDoNotEcho, data_transfer);
   } else {
     frame.GetEditor().InsertTextWithoutSendingTextEvent(
         replacement, false, nullptr,
