@@ -416,7 +416,7 @@ TEST_F(SimpleFeatureTest, Context) {
 
   {
     SimpleFeature other_feature;
-    other_feature.set_location(SimpleFeature::COMPONENT_LOCATION);
+    other_feature.set_location(SimpleFeature::Location::kComponent);
     EXPECT_EQ(Feature::AvailabilityResult::kInvalidLocation,
               other_feature
                   .IsAvailableToContext(
@@ -577,57 +577,57 @@ TEST_F(SimpleFeatureTest, SessionType) {
 
 TEST_F(SimpleFeatureTest, Location) {
   // Component extensions can access any location.
-  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::COMPONENT_LOCATION,
+  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::Location::kComponent,
                                   ManifestLocation::kComponent));
-  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::EXTERNAL_COMPONENT_LOCATION,
+  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::Location::kExternalComponent,
                                   ManifestLocation::kComponent));
-  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::POLICY_LOCATION,
+  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::Location::kPolicy,
                                   ManifestLocation::kComponent));
-  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::UNPACKED_LOCATION,
+  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::Location::kUnpacked,
                                   ManifestLocation::kComponent));
 
   // Only component extensions can access the "component" location.
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::COMPONENT_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kComponent,
                                    ManifestLocation::kInvalidLocation));
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::COMPONENT_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kComponent,
                                    ManifestLocation::kUnpacked));
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::COMPONENT_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kComponent,
                                    ManifestLocation::kExternalComponent));
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::COMPONENT_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kComponent,
                                    ManifestLocation::kExternalPrefDownload));
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::COMPONENT_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kComponent,
                                    ManifestLocation::kExternalPolicy));
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::COMPONENT_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kComponent,
                                    ManifestLocation::kExternalPolicyDownload));
 
   // Policy extensions can access the "policy" location.
-  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::POLICY_LOCATION,
+  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::Location::kPolicy,
                                   ManifestLocation::kExternalPolicy));
-  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::POLICY_LOCATION,
+  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::Location::kPolicy,
                                   ManifestLocation::kExternalPolicyDownload));
 
   // Non-policy (except component) extensions cannot access policy.
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::POLICY_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kPolicy,
                                    ManifestLocation::kExternalComponent));
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::POLICY_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kPolicy,
                                    ManifestLocation::kInvalidLocation));
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::POLICY_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kPolicy,
                                    ManifestLocation::kUnpacked));
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::POLICY_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kPolicy,
                                    ManifestLocation::kExternalPrefDownload));
 
   // External component extensions can access the "external_component"
   // location.
-  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::EXTERNAL_COMPONENT_LOCATION,
+  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::Location::kExternalComponent,
                                   ManifestLocation::kExternalComponent));
 
   // Only unpacked and command line extensions can access the "unpacked"
   // location.
-  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::UNPACKED_LOCATION,
+  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::Location::kUnpacked,
                                   ManifestLocation::kUnpacked));
-  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::UNPACKED_LOCATION,
+  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::Location::kUnpacked,
                                   ManifestLocation::kCommandLine));
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::UNPACKED_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kUnpacked,
                                    ManifestLocation::kInternal));
 }
 

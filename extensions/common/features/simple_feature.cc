@@ -482,14 +482,14 @@ bool SimpleFeature::MatchesManifestLocation(
     ManifestLocation manifest_location) const {
   DCHECK(location_);
   switch (*location_) {
-    case SimpleFeature::COMPONENT_LOCATION:
+    case SimpleFeature::Location::kComponent:
       return manifest_location == ManifestLocation::kComponent;
-    case SimpleFeature::EXTERNAL_COMPONENT_LOCATION:
+    case SimpleFeature::Location::kExternalComponent:
       return manifest_location == ManifestLocation::kExternalComponent;
-    case SimpleFeature::POLICY_LOCATION:
+    case SimpleFeature::Location::kPolicy:
       return manifest_location == ManifestLocation::kExternalPolicy ||
              manifest_location == ManifestLocation::kExternalPolicyDownload;
-    case SimpleFeature::UNPACKED_LOCATION:
+    case SimpleFeature::Location::kUnpacked:
       return Manifest::IsUnpackedLocation(manifest_location);
   }
   NOTREACHED();
