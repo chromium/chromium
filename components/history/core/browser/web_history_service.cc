@@ -406,10 +406,10 @@ WebHistoryService::QueryHistoryResult ParseQueryResponse(
       query_history_result.events.push_back(std::move(result_event));
     }
   }
-  if (const std::string* continuation_token =
-          response.FindString("continuation_token")) {
-    query_history_result.continuation_token = *continuation_token;
-  }
+  const std::string* continuation_token =
+      response.FindString("continuation_token");
+  query_history_result.has_more_results =
+      continuation_token && !continuation_token->empty();
 
   return query_history_result;
 }

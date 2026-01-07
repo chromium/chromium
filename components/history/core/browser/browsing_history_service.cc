@@ -827,9 +827,9 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
             /*app_id=*/std::nullopt);
       }
     }
-    state->remote_status = query_history_result->continuation_token.empty()
-                               ? REACHED_BEGINNING
-                               : MORE_RESULTS;
+    state->remote_status = query_history_result->has_more_results
+                               ? MORE_RESULTS
+                               : REACHED_BEGINNING;
   } else {
     has_synced_results_ = false;
     state->remote_status = FAILURE;

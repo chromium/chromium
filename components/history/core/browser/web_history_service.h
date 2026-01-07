@@ -104,7 +104,7 @@ class WebHistoryService : public KeyedService {
     };
 
     std::vector<Event> events;
-    std::string continuation_token;
+    bool has_more_results = false;
   };
 
   // Callback with the result of a call to QueryHistory().
