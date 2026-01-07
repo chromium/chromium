@@ -72,7 +72,6 @@
 <translation id="1041607257468256895">Gestionar los permisos de ubicación de sitios web en Chrome</translation>
 <translation id="1042174272890264476">El ordenador también incluye la biblioteca RLZ de <ph name="SHORT_PRODUCT_NAME" />. RLZ asigna una etiqueta identificable, no exclusiva y no personal para medir las búsquedas y el uso de <ph name="SHORT_PRODUCT_NAME" /> derivados de una determinada campaña promocional. Estas etiquetas aparecen a veces en las consultas de la Búsqueda de Google realizadas en <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1042248468362992359">Conéctate a los datos móviles para usar Compartir Internet. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="1043505821207197890">Se ha producido un error. Es posible que Linux solo se haya actualizado parcialmente. Revisa los registros para consultar más información. Los registros se han guardado en Archivos &gt; Mis archivos &gt; <ph name="LOG_FILE" />.</translation>
 <translation id="104385770822424034">Añadir acción</translation>
 <translation id="1045487161760507186">No tienes que recordar la contraseña porque se guarda en el Gestor de contraseñas de Google</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 contraseña importada al <ph name="BRAND" /> de este dispositivo}other{{NUM_PASSWORDS} contraseñas importadas al <ph name="BRAND" /> de este dispositivo}}</translation>
@@ -410,7 +409,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1257336506558170607">Exportar certificado seleccionado</translation>
 <translation id="1258491128795710625">Novedades</translation>
 <translation id="1260451001046713751">Permitir siempre ventanas emergentes y redirecciones de <ph name="HOST" /></translation>
-<translation id="1260810365552581339">Es posible que Linux no tenga suficiente espacio en disco. Puedes aumentar el espacio en disco de Linux e intentar la restauración otra vez en <ph name="LINK_START" />Ajustes<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Moderada</translation>
 <translation id="126156426083987769">Ha habido un problema con las licencias del modo Demo del dispositivo.</translation>
 <translation id="1262395978737369974">Siempre tiene permiso para usar la optimización de JavaScript</translation>
@@ -905,7 +903,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1603914832182249871">(Incógnito)</translation>
 <translation id="1604432177629086300">No se ha podido imprimir. Comprueba la impresora y vuelve a intentarlo.</translation>
 <translation id="1604567162047669454">Reconocer semántica de diseño visual</translation>
-<translation id="1604774728851271529">Necesitas una conexión de red para actualizar Linux. Conéctate a Internet y vuelve a intentarlo.</translation>
 <translation id="1605148987885002237">Teclado e introducción de texto</translation>
 <translation id="1605744057217831567">Ver todos los datos y permisos de sitios</translation>
 <translation id="1606077700029460857">Cambiar configuración del ratón</translation>
@@ -1259,7 +1256,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1833059747301212935">Accede fácilmente a los documentos recientes y a los próximos eventos del calendario</translation>
 <translation id="183445248400150852">Los sitios usan esta función para anular la entrada de tu teclado, por ejemplo, en juegos o aplicaciones de escritorio remoto</translation>
 <translation id="1834503245783133039">No se ha podido completar la descarga: <ph name="FILE_NAME" /></translation>
-<translation id="1835261175655098052">Linux se ha actualizado</translation>
 <translation id="1837292628323740716">Navegación segura mejorada en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1837441256780906162">Microsoft OneDrive ha rechazado la solicitud. Inténtalo de nuevo más tarde.</translation>
 <translation id="1838374766361614909">Borrar búsqueda</translation>
@@ -1495,7 +1491,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1989288015781834552">Reinicia para finalizar la actualización; las pestañas volverán a abrirse</translation>
 <translation id="1989903373608997757">Usar siempre</translation>
 <translation id="1990046457226896323">Archivos de voz descargados</translation>
-<translation id="1990727803345673966">La copia de seguridad de tus archivos y aplicaciones de Linux se está restaurando</translation>
 <translation id="199191324030140441">Desactivar No molestar</translation>
 <translation id="1992397118740194946">Sin configurar</translation>
 <translation id="1994173015038366702">URL del sitio</translation>
@@ -1598,7 +1593,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="206960706005837784"><ph name="APP_NAME" /> ha terminado de imprimir en <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">No hay ningún archivo de registro local.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Haz clic para instalar la extensión}other{Haz clic para instalar las extensiones}}</translation>
-<translation id="2073496667646280609">Es posible que no tengas suficiente espacio de almacenamiento libre en tu dispositivo o que no hayas seleccionado una ubicación para la copia de seguridad. Prueba a liberar espacio o elegir otra ubicación.</translation>
 <translation id="2073505299004274893">Usa <ph name="CHARACTER_LIMIT" /> caracteres como máximo</translation>
 <translation id="2074263453710478603">Registros de usuario de Chrome en ChromeOS</translation>
 <translation id="2074599390896964828">Ubicación precisa</translation>
@@ -2364,7 +2358,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2572032849266859634">Se ha concedido acceso de solo lectura a <ph name="VOLUME_NAME" />.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> pestañas</translation>
 <translation id="2573276323521243649">Volver de la página de selección del avatar</translation>
-<translation id="2573417407488272418">Crea una copia de seguridad de tus aplicaciones y archivos en Archivos &gt; Mis archivos antes de la actualización.</translation>
 <translation id="2573831315551295105">Asignar interruptor para "<ph name="ACTION" />"</translation>
 <translation id="2574037773163798130">{NUM_TABS,plural, =1{Compartir pestaña con Gemini}other{Compartir # pestañas con Gemini}}</translation>
 <translation id="2575247648642144396">Este icono estará visible cuando la extensión se pueda utilizar en la página actual. Para utilizar la extensión, haz clic en el icono o pulsa <ph name="EXTENSION_SHORTCUT" />.</translation>
@@ -2592,7 +2585,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
     <ph name="BEGIN_PARAGRAPH2" />Google usa la información recogida de este dispositivo para mejorar la precisión de la ubicación y los servicios basados en la ubicación, así como para optimizar, proporcionar y mantener en general los servicios de Google. Tratamos esta información según los intereses legítimos de Google y de terceros para satisfacer las necesidades de los usuarios. Esta información no se usa para identificar a nadie.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Puedes desactivar la precisión de la ubicación en cualquier momento en los ajustes de ubicación de este dispositivo en Ajustes &gt; Privacidad y seguridad &gt; Controles de privacidad &gt; Acceso a la ubicación &gt; Ajustes de ubicación avanzados. Si este ajuste está desactivado, no se recogerá ningún dato de precisión de la ubicación. En el caso de las aplicaciones y los servicios de Android, solo se usa la dirección IP (si está disponible) para determinar la ubicación de este dispositivo, lo que puede afectar a la disponibilidad y la precisión de las ubicaciones de las aplicaciones y los servicios de Android como Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2729940704980595903">Consulta y gestiona tu Actividad en las Aplicaciones de Gemini</translation>
-<translation id="2730029791981212295">Creando copia de seguridad de las aplicaciones y archivos de Linux</translation>
 <translation id="2730550884708194161">Información sobre los perfiles de trabajo</translation>
 <translation id="2730596696987224099">Elegir una personalizada</translation>
 <translation id="2730647855013151888">Incluir toda la información personal</translation>
@@ -2828,7 +2820,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2885129935310217435">Hay un botón con el mismo nombre. Elige otro nombre.</translation>
 <translation id="2885378588091291677">Administrador de tareas</translation>
 <translation id="2885729872133513017">No se ha podido decodificar la respuesta del servidor.</translation>
-<translation id="2886119409731773154">Esto puede durar hasta 30 minutos.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> y <ph name="NUMBER_OF_DEVICES" /> más</translation>
 <translation id="2887344147309501015">Chatea con Gemini en Chrome para obtener respuestas, ideas clave y mucho más mientras navegas</translation>
@@ -3093,7 +3084,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3053273573829329829">Habilitar el PIN de usuario</translation>
 <translation id="3053274730492362225">Sin parpadeo</translation>
 <translation id="3058498974290601450">Puedes activar la sincronización en cualquier momento desde la configuración</translation>
-<translation id="3058517085907878899">Nombre del dispositivo</translation>
 <translation id="3060952009917586498">Cambiar el idioma del dispositivo. El idioma actual es el <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">No se ha podido establecer conexión con tu teléfono. Comprueba que tengas el teléfono cerca, que esté desbloqueado y que las conexiones Bluetooth y Wi‑Fi estén activadas.</translation>
 <translation id="3061302636956643119">El texto se enviará a Google para procesarse.</translation>
@@ -3214,7 +3204,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3158770568048368350">Esto puede hacer que tu red móvil se desconecte brevemente</translation>
 <translation id="3159335509547415276">Más información sobre las cuentas bloqueadas</translation>
 <translation id="3159493096109238499">Beis</translation>
-<translation id="3159978855457658359">Editar nombre del dispositivo</translation>
 <translation id="3160928651883997588">Preferencias de VPN</translation>
 <translation id="3161522574479303604">Todos los idiomas</translation>
 <translation id="3162070126914310576">Este dispositivo no se puede registrar ahora mismo porque tu unidad organizativa ha alcanzado su límite de registro inicial. Ponte en contacto con tu administrador para obtener ayuda.</translation>
@@ -4240,7 +4229,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Tu administrador ha vuelto a activar 1 extensión potencialmente dañina}other{Tu administrador ha vuelto a activar {NUM_EXTENSIONS} extensiones potencialmente dañinas}}</translation>
 <translation id="3834728400518755610">Es necesario apagar Linux para que se aplique el cambio realizado en el ajuste del micrófono. Apaga Linux para continuar.</translation>
 <translation id="3834775135533257713">No se ha podido añadir la aplicación <ph name="TO_INSTALL_APP_NAME" /> porque existe un conflicto con <ph name="INSTALLED_APP_NAME" />.</translation>
-<translation id="3835904559946595746">No se ha podido restaurar la copia de seguridad de Linux</translation>
 <translation id="383669374481694771">Esta página muestra información general sobre este dispositivo y su uso (como el nivel de batería, la actividad de las aplicaciones y del sistema, y los errores). Sirve para mejorar Android, y parte de los datos agregados también mejoran las aplicaciones y ayudan a los partners de Google, como los desarrolladores de Android, a mejorar sus productos y aplicaciones.</translation>
 <translation id="3837569373891539515">Puedes seleccionar todas las que correspondan. También podrás acceder a estas opciones en Configuración cuando termines de configurar tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3838085852053358637">No se ha podido cargar la extensión</translation>
@@ -4405,7 +4393,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3943582379552582368">&amp;Atrás</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3945513714196326460">Prueba un nombre más corto</translation>
-<translation id="3948027458879361203">Cambiar nombre de host</translation>
 <translation id="3948116654032448504">&amp;Buscar imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948334586359655083">Esta pestaña está reproduciendo audio</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> puede editar archivos de las siguientes carpetas</translation>
@@ -5575,7 +5562,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4769632191812288342">Estás usando la protección estándar</translation>
 <translation id="4770119228883592393">Permiso solicitado, pulsa ⌘ + Opción + flecha hacia abajo para responder</translation>
 <translation id="4772914216048388646">Organizado</translation>
-<translation id="4773112038801431077">Actualizar Linux</translation>
 <translation id="4773122030389014189">Compartir el grupo de pestañas <ph name="GROUP_NAME" /></translation>
 <translation id="4773253008034797668">Pueden conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="477548766361111120">Permitir que la extensión lea y modifique este sitio</translation>
@@ -5966,7 +5952,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5040823038948176460">Configuración de contenido adicional</translation>
 <translation id="5041509233170835229">Aplicación de Chrome</translation>
 <translation id="504194357571315770">Acción necesaria</translation>
-<translation id="5043440033854483429">El nombre puede contener letras, números y guiones (-), y debe tener entre 1 y 15 caracteres.</translation>
 <translation id="5043807571255634689"><ph name="SUBSCRIPTION_NAME" /> se quitará solo de este dispositivo. Para hacer cambios en tu suscripción, ponte en contacto con el proveedor de la suscripción. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5045367873597907704">Información sobre los dispositivos HID</translation>
 <translation id="5045550434625856497">Contraseña incorrecta</translation>
@@ -6084,7 +6069,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5117930984404104619">Controlar el comportamiento de otras extensiones, incluidas las URL visitadas</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5120886753782992638">Haz clic aquí para visitar <ph name="APPROVED_URL" /></translation>
-<translation id="5121052518313988218">El sistema operativo de tu contenedor de Linux está obsoleto. Dejará de recibir actualizaciones de seguridad y corrección de errores, y es posible que las funciones que siguen funcionando dejen de hacerlo de forma inesperada. Para seguir usando Linux, actualiza el sistema operativo a la versión más reciente.</translation>
 <translation id="5121130586824819730">Tu disco duro está lleno. Guarda el archivo en otra ubicación o libera espacio en el disco duro.</translation>
 <translation id="5123433949759960244">Balón de baloncesto</translation>
 <translation id="5125714798187802869">Activar</translation>
@@ -6401,7 +6385,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5340900621595888432">Envía datos de diagnóstico y uso</translation>
 <translation id="5341793073192892252">Se han bloqueado las siguientes cookies (las cookies de terceros se bloquean sin excepción)</translation>
 <translation id="5342091991439452114">El PIN debe tener al menos <ph name="MINIMUM" /> dígitos</translation>
-<translation id="5344036115151554031">Restaurando Linux</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (derecho)</translation>
 <translation id="534449933710420173">Carpeta sin nombre</translation>
 <translation id="5345916423802287046">Abrir aplicación al iniciar sesión</translation>
@@ -6635,7 +6618,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5497739595514726398">Chrome no ha podido verificar este paquete de instalación</translation>
 <translation id="5498967291577176373">Escribe más rápido con las sugerencias integradas para tu nombre, dirección o número de teléfono</translation>
 <translation id="5499211612787418966">Este cuadro de diálogo no está seleccionado actualmente. Pulsa Alt + Mayús + A para seleccionarlo.</translation>
-<translation id="5499453227627332024">Hay una actualización disponible para tu contenedor de Linux. También puedes actualizarlo más tarde en la aplicación Ajustes.</translation>
 <translation id="5499476581866658341">Ahora puedes consultar el contenido multimedia y las fotos recientes de tu teléfono</translation>
 <translation id="549957179819296104">Icono nuevo</translation>
 <translation id="5499634624419508916">Sustituir grupo de pestañas actual</translation>
@@ -7057,7 +7039,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5804259315582798390">No se ha podido habilitar la recuperación de datos locales</translation>
 <translation id="5805268472388605531">Mantén pulsadas las teclas del teclado para ver las tildes y los caracteres especiales</translation>
-<translation id="5805353596216929913">No había ninguna actualización disponible</translation>
 <translation id="5805697420284793859">Administrador de ventanas</translation>
 <translation id="5806322307130093061">Pulsa Intro para eliminar el archivo (<ph name="FILE_NAME" />)</translation>
 <translation id="5806447147478173900">Almacenamiento total usado por sitios mostrados: <ph name="TOTAL_USAGE" /></translation>
@@ -7507,7 +7488,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6113942107547980621">Si quieres usar Smart Lock, cambia al perfil del usuario principal en tu teléfono.</translation>
 <translation id="6116921718742659598">Cambiar configuración de idioma y de introducción de texto</translation>
 <translation id="6119008366402292080">No hay impresoras disponibles</translation>
-<translation id="6119927814891883061">Elegir <ph name="DEVICE_NAME" /> como nombre del dispositivo</translation>
 <translation id="6119972796024789243">Corrección de color</translation>
 <translation id="6121773125605585883">Ver contraseña con el nombre de usuario <ph name="USERNAME" /> para <ph name="WEBSITE" /></translation>
 <translation id="6122093587541546701">Correo electrónico (opcional):</translation>
@@ -7748,7 +7728,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6277105963844135994">Tiempo de espera de red agotado</translation>
 <translation id="6277518330158259200">H&amp;acer captura de pantalla</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6278776436938569440">Cambiar ubicación</translation>
 <translation id="6280215091796946657">Iniciar sesión con otra cuenta</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6281218688313242284">Gestionar tu cuenta de &amp;Google</translation>
@@ -8094,7 +8073,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="65334502113648172">Pulsa las teclas de flecha para reducir o ampliar el área de visualización. Para mover el área de visualización, pulsa Mayús y el signo + y, a continuación, usa las teclas de flecha.</translation>
 <translation id="6535331821390304775">Permitir siempre que <ph name="ORIGIN" /> abra este tipo de enlaces en la aplicación asociada</translation>
 <translation id="653659894138286600">Escanear documentos e imágenes</translation>
-<translation id="6537613839935722475">El nombre puede contener letras, números y guiones (-).</translation>
 <translation id="6538036594527795020">Cambiar el idioma de <ph name="APP" />. El idioma actual es el <ph name="LANGUAGE" />.</translation>
 <translation id="6538098297809675636">No se ha podido detectar el código</translation>
 <translation id="653920215766444089">Buscando dispositivo señalador</translation>
@@ -8108,7 +8086,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6542521951477560771">Enviando contenido a <ph name="RECEIVER_NAME" /></translation>
 <translation id="6544134392255015460">interruptor de retroiluminación de teclado</translation>
 <translation id="6545665334409411530">Frecuencia de repetición</translation>
-<translation id="6546856949879953071">Si quieres consultar información detallada sobre la actualización, los registros se han guardado en Archivos &gt; Mis archivos &gt; <ph name="LOG_FILE" /></translation>
 <translation id="6547354035488017500">Libera al menos 512 MB de espacio o el dispositivo no responderá. Para ello, elimina archivos del almacenamiento del dispositivo.</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />El servicio de ubicación de Google usa fuentes como redes Wi‑Fi o móviles y sensores para determinar la ubicación de tu dispositivo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puedes desactivar la ubicación de Android en tu dispositivo cuando quieras si vas a Ajustes &gt; Aplicaciones &gt; Google Play Store &gt; Gestionar preferencias de Android &gt; Seguridad y ubicación &gt; Ubicación. También puedes desactivar el uso de redes Wi‑Fi o móviles y sensores para determinar la ubicación de Android si desactivas Precisión de la ubicación de Google en el mismo menú.<ph name="END_PARAGRAPH2" /></translation>
@@ -8127,7 +8104,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6553046373262346328">{GROUP_COUNT,plural, =1{Se eliminará el grupo de todos los dispositivos en los que se haya iniciado sesión con <ph name="EMAIL" />}other{Se eliminarán los grupos de todos los dispositivos en los que se haya iniciado sesión con <ph name="EMAIL" />}}</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> usuarios</translation>
 <translation id="6555432686520421228">Elimina todas las cuentas de usuario y restablece tu dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /> como si lo acabaras de comprar.</translation>
-<translation id="6555604601707417276">Copia de seguridad de Linux restaurada</translation>
 <translation id="6555744145993174510">desde: <ph name="APP_ORIGIN" /></translation>
 <translation id="6556866813142980365">Rehacer</translation>
 <translation id="6556903358015358733">Tema y fondo de pantalla</translation>
@@ -8284,7 +8260,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6663190258859265334">Haz un Powerwash de tu <ph name="DEVICE_TYPE" /> y vuelve a la versión anterior.</translation>
 <translation id="6664774537677393800">Se ha producido un error al abrir tu perfil. Cierra sesión y vuelve a iniciarla.</translation>
 <translation id="6665874326033183068">Salvaje</translation>
-<translation id="6666559645296300656">Cancelando actualización de Linux</translation>
 <translation id="6667086124612170548">El archivo es demasiado grande para este dispositivo</translation>
 <translation id="6667092961374478614">Descubribilidad de <ph name="FEATURE_NAME" /></translation>
 <translation id="6667187897999649121">Por ahora, solo puedes compartir contraseñas con miembros de la familia. <ph name="BEGIN_LINK" />Crea un grupo familiar<ph name="END_LINK" /> de hasta 6 miembros y saca más partido a tus productos y suscripciones de Google.</translation>
@@ -8341,7 +8316,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6702639462873609204">&amp;Editar...</translation>
 <translation id="6702859741546259407">Para usar <ph name="FEATURE_NAME" />, activa el Bluetooth y la conexión Wi-Fi</translation>
 <translation id="6703109186846420472">,</translation>
-<translation id="6703254819490889819">Restaurar copia de seguridad</translation>
 <translation id="6707122714992751648">Ejecutar las pruebas de diagnóstico de ChromeOS</translation>
 <translation id="6707389671160270963">Certificado de cliente SSL</translation>
 <translation id="6707671917294473995">Los sitios web no tienen permiso para usar tu cámara</translation>
@@ -8620,7 +8594,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6883606786470492001">Gestiona tus temas de anuncios y otros ajustes para limitar la información que los sitios pueden obtener sobre ti con el fin de mostrarte anuncios personalizados</translation>
 <translation id="6884474387073389421">¿Seguro que quieres eliminar los datos de inicio de sesión seleccionados?</translation>
 <translation id="6885771755599377173">Vista previa de información del sistema</translation>
-<translation id="6886380424988777998">No se ha podido actualizar Linux</translation>
 <translation id="6886871292305414135">Abrir enlace en una pes&amp;taña nueva</translation>
 <translation id="6888831646723563669">Conéctate para disfrutar de todas las funciones de tu nuevo dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="6888850808202733940">Aplicaciones y juegos</translation>
@@ -8821,7 +8794,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7016995776279438971">Rojo-verde, rojo débil (protanomalía)</translation>
 <translation id="7017219178341817193">Añadir una nueva página</translation>
 <translation id="7017354871202642555">No se puede establecer un modo después de crear una ventana.</translation>
-<translation id="7019546817926942979">Tu dispositivo debe estar enchufado. Actualizar Linux puede consumir gran parte de la batería. Conecta el dispositivo a un cargador y vuelve a intentarlo.</translation>
 <translation id="7019805045859631636">Rápida</translation>
 <translation id="7021524108486027008">Ejecuta herramientas, editores e IDEs en un entorno gestionado por tu empresa en tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7022222879220069865">Todos los paneles táctiles se han desconectado</translation>
@@ -8896,7 +8868,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7074703793383805632">Grupo <ph name="GROUP_NAME" /> <ph name="SHARED_STATE" />, <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">PKCS #1 MD5 con cifrado RSA</translation>
 <translation id="7075625805486468288">Administra la configuración y los certificados HTTPS/SSL</translation>
-<translation id="7076875098323397992">No se puede iniciar la actualización</translation>
 <translation id="7077751457066325012">Ver y personalizar combinaciones de teclas</translation>
 <translation id="7077829361966535409">No se ha podido cargar la página de inicio de sesión con la configuración de proxy actual. <ph name="GAIA_RELOAD_LINK_START" />Intenta iniciar sesión de nuevo<ph name="GAIA_RELOAD_LINK_END" /> o utiliza otra <ph name="PROXY_SETTINGS_LINK_START" />configuración de proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Todas las redes</translation>
@@ -9754,7 +9725,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7668648754769651616">Las funciones de accesibilidad hacen que tu dispositivo sea más fácil de usar. Para acceder a los ajustes rápidos, selecciona la hora en la parte inferior de la pantalla.</translation>
 <translation id="7669620291129890197">Visible para tus dispositivos</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{PIN incorrecto. Solo te queda 1 intento.}other{PIN incorrecto. Te quedan # intentos.}}</translation>
-<translation id="7670434942695515800">Para obtener el mejor rendimiento, actualiza a la versión más reciente. Es recomendable crear una copia de seguridad de los archivos por si no se puede completar la actualización. Una vez comience la actualización, Linux se apagará. Guarda los archivos abiertos antes de continuar. <ph name="LINK_START" />Más información<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">Subtítulos</translation>
 <translation id="7671130400130574146">Utilizar bordes y barra de título</translation>
 <translation id="7671139479636735732">Haz clic con el botón derecho para visualizar tus ideas fácilmente</translation>
@@ -10121,7 +10091,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7921395044508886182">Los sitios pueden usar la optimización de JavaScript</translation>
 <translation id="7921901223958867679">Esta extensión puede leer y modificar <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 extensión</translation>
-<translation id="7923564237306226146">Actualización de Linux completada</translation>
 <translation id="7924075559900107275">candidato a asistencia a largo plazo</translation>
 <translation id="7924358170328001543">No se ha podido redirigir el puerto</translation>
 <translation id="7925108652071887026">Datos de Autocompletar</translation>
@@ -10192,7 +10161,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7963001036288347286">Aceleración del panel táctil</translation>
 <translation id="7963408577288987423">{COUNT,plural, =1{1 contraseña}other{{COUNT} contraseñas}}</translation>
 <translation id="7963513503134856713">Ventana movida hacia la derecha</translation>
-<translation id="7963608432878156675">Otros dispositivos pueden ver este nombre en las conexiones de red o Bluetooth.</translation>
 <translation id="7964458523224581615">Viridián</translation>
 <translation id="7965946703747956421">Eliminar <ph name="CREDENTIAL_TYPE" /> para el nombre de usuario <ph name="USER_EMAIL" /></translation>
 <translation id="7966241909927244760">C&amp;opiar dirección de imagen</translation>
@@ -10389,7 +10357,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="808488435221187916">Tu información está disponible en Google Wallet en cualquier dispositivo en el que hayas iniciado sesión</translation>
 <translation id="8086015605808120405">Configurando <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086121155774250556">Esta pestaña está compartiendo tu pantalla</translation>
-<translation id="8086610718778464681">No se ha podido crear una copia de seguridad de aplicaciones y archivos de Linux</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Este archivo está cifrado. Pídele al propietario que lo descifre.}other{Algunos de estos archivos están cifrados. Pídele al propietario que los descifre.}}</translation>
 <translation id="808894953321890993">Cambiar contraseña</translation>
 <translation id="8089782219932231262">{BOOKMARK_COUNT,plural, =1{1 marcador está guardado solo en este dispositivo. Para usarlo en tus otros dispositivos, guárdalo en tu cuenta de Google. Si hay duplicados, se eliminarán con esta acción.}other{{BOOKMARK_COUNT} marcadores están guardados solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google. Si hay duplicados, se eliminarán con esta acción.}}</translation>
@@ -10420,7 +10387,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8102139037507939978">Quita la información de identificación personal del archivo system_logs.txt.</translation>
 <translation id="810362914482827094">Buscar claves de acceso</translation>
 <translation id="8104088837833760645">Descargar perfil de eSIM</translation>
-<translation id="8104778744208707085">Requiere tu atención</translation>
 <translation id="8105050970626643057">Abre Gemini rápidamente cuando lo necesites</translation>
 <translation id="8105273883928376822">Inicia sesión para continuar.</translation>
 <translation id="8106114112474206597">Usa "i" para pulsar un botón del ratón</translation>
@@ -11997,7 +11963,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="9149866541089851383">Editar...</translation>
 <translation id="9150045010208374699">Utilizar la cámara</translation>
 <translation id="9150079578948279438">No se ha podido quitar el perfil. Inténtalo de nuevo o ponte en contacto con tu operador para recibir asistencia técnica.</translation>
-<translation id="9150860646299915960">Actualiza tu contenedor de Linux</translation>
 <translation id="915112772806845021">Los sitios usan esta función para activar Imagen en imagen automáticamente. De esta forma, puedes seguir viendo un vídeo y liberar espacio en la pantalla para hacer otras tareas.</translation>
 <translation id="9151249085738989067">Cambiar automáticamente la voz de ChromeVox según el idioma</translation>
 <translation id="9151906066336345901">Fin</translation>

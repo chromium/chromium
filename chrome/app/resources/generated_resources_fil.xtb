@@ -72,7 +72,6 @@
 <translation id="1041607257468256895">Pamahalaan ang mga pahintulot sa lokasyon sa website sa Chrome</translation>
 <translation id="1042174272890264476">Ang iyong computer ay may naka-built in din na RLZ library ng <ph name="SHORT_PRODUCT_NAME" />. Nagtatalaga ang RLZ ng hindi natatangi at hindi personal na nakakapagpakilalang tag upang sukatin ang mga paghahanap at paggamit ng <ph name="SHORT_PRODUCT_NAME" /> na nahimok ng isang partikular na kampanya sa pag-promote. Lumalabas minsan ang mga label na ito sa mga query sa Paghahanap sa Google sa <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1042248468362992359">Kumonekta sa mobile data para makagamit ng hotspot. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="1043505821207197890">Nagkaproblema. Puwede lang bahagyang i-upgrade ang Linux. Suriin ang mga log para sa higit pang impormasyon. Na-save ang mga log sa Mga File &gt; Aking mga file &gt; <ph name="LOG_FILE" /></translation>
 <translation id="104385770822424034">Magdagdag ng aksyon</translation>
 <translation id="1045487161760507186">Hindi mo kailangang tandaan ang password dahil nase-save ito para sa iyo sa Google Password Manager</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{Na-import ang 1 password sa <ph name="BRAND" /> sa device na ito}one{Na-import ang {NUM_PASSWORDS} password sa <ph name="BRAND" /> sa device na ito}other{Na-import ang {NUM_PASSWORDS} na password sa <ph name="BRAND" /> sa device na ito}}</translation>
@@ -411,7 +410,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1257336506558170607">I-export ang napiling certificate</translation>
 <translation id="1258491128795710625">Ano'ng Bago</translation>
 <translation id="1260451001046713751">Palaging payagan ang mga pop-up at pag-redirect mula sa <ph name="HOST" /></translation>
-<translation id="1260810365552581339">Posibleng wala nang sapat na disk space ang Linux. Puwede mong dagdagan ang disk space ng Linux at subukang mag-restore ulit sa <ph name="LINK_START" />Mga Setting<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Modest</translation>
 <translation id="126156426083987769">Nagkaproblema sa mga lisensya ng device sa demo mode.</translation>
 <translation id="1262395978737369974">Palaging pinapayagang gamitin ang pag-optimize ng JavaScript</translation>
@@ -907,7 +905,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1603914832182249871">(Incognito)</translation>
 <translation id="1604432177629086300">Hindi ma-print. Suriin ang printer at subukan ulit.</translation>
 <translation id="1604567162047669454">Makakilala ng mga semantic na visual na layout</translation>
-<translation id="1604774728851271529">Kailangan mo ng koneksyon ng network para ma-upgrade ang Linux. Kumonekta sa internet at subukan ulit.</translation>
 <translation id="1605148987885002237">Keyboard at mga input</translation>
 <translation id="1605744057217831567">Tingnan ang lahat ng data at pahintulot ng site</translation>
 <translation id="1606077700029460857">Baguhin ang mga setting ng mouse</translation>
@@ -1269,7 +1266,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1833059747301212935">Madaling i-access ang mga kamakailang dokumento at parating na event sa kalendaryo</translation>
 <translation id="183445248400150852">Ginagamit ng mga site ang feature na ito para i-override ang input ng iyong keyboard, gaya sa mga laro o remote na desktop app</translation>
 <translation id="1834503245783133039">Hindi na-download: <ph name="FILE_NAME" /></translation>
-<translation id="1835261175655098052">Ina-upgrade ang Linux</translation>
 <translation id="1837292628323740716">Pahusayin ang Ligtas na Pag-browse sa iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="1837441256780906162">Tinanggihan ng Microsoft OneDrive ang request. Pakisubukan ulit sa ibang pagkakataon.</translation>
 <translation id="1838374766361614909">I-clear ang paghahanap</translation>
@@ -1506,7 +1502,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1989288015781834552">Ilunsad ulit para tapusin ang pag-update. Bubukas ulit ang iyong mga tab.</translation>
 <translation id="1989903373608997757">Palaging gamitin</translation>
 <translation id="1990046457226896323">Na-download na ang mga speech file</translation>
-<translation id="1990727803345673966">Nire-restore ang iyong mga naka-back up na file at app ng Linux</translation>
 <translation id="199191324030140441">I-off ang Huwag Istorbohin</translation>
 <translation id="1992397118740194946">Hindi nakatakda</translation>
 <translation id="1994173015038366702">URL ng site</translation>
@@ -1609,7 +1604,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="206960706005837784">Natapos na ang pag-print ng <ph name="APP_NAME" /> sa <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Walang lokal na log file.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{I-click para i-install ang extension}one{I-click para i-install ang mga extension na ito}other{I-click para i-install ang mga extension na ito}}</translation>
-<translation id="2073496667646280609">Posibleng wala kang sapat na bakanteng storage sa iyong device o napiling lokasyon ng backup. Subukang magbakante ng espasyo o pumili ng ibang lokasyon.</translation>
 <translation id="2073505299004274893">Gumamit ng <ph name="CHARACTER_LIMIT" /> (na) character o mas kaunti</translation>
 <translation id="2074263453710478603">Mga Log ng User ng Chrome ng ChromeOS</translation>
 <translation id="2074599390896964828">Eksaktong Lokasyon</translation>
@@ -2377,7 +2371,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2572032849266859634">Ipinagkaloob na sa <ph name="VOLUME_NAME" /> ang read-only na access.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> (na) tab</translation>
 <translation id="2573276323521243649">Bumalik mula sa page ng pagpili ng avatar</translation>
-<translation id="2573417407488272418">Mag-back up ng mga app at file sa Mga File &gt; Aking mga file bago ang pag-upgrade.</translation>
 <translation id="2573831315551295105">Magtalaga ng switch para sa “<ph name="ACTION" />”</translation>
 <translation id="2574037773163798130">{NUM_TABS,plural, =1{I-share ang Tab sa Gemini}one{I-share ang # Tab sa Gemini}other{I-share ang # na Tab sa Gemini}}</translation>
 <translation id="2575247648642144396">Makikita ang icon na ito kapag makakakilos ang extension sa kasalukuyang pahina. Gamitin ang extension na ito sa pamamagitan ng pag-click sa icon o sa pamamagitan ng pagpindot sa <ph name="EXTENSION_SHORTCUT" />.</translation>
@@ -2605,7 +2598,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
     <ph name="BEGIN_PARAGRAPH2" />Ginagamit ng Google ang impormasyong ito na kinolekta mula sa device na ito para: mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon; at mapahusay, maibigay, at mapanatili sa pangkalahatan ang mga serbisyo ng Google. Pinoproseso namin ang impormasyong ito batay sa mga lehitimong interes ng Google at mga third party para tugunan ang mga pangangailangan ng mga user. Hindi ginagamit ang impormasyong ito para tumukoy ng sinumang indibidwal.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Puwede mong i-off ang Katumpakan ng Lokasyon sa anumang oras sa mga setting ng lokasyon ng device na ito sa ilalim ng Mga Setting &gt; Privacy at seguridad &gt; Mga kontrol sa privacy &gt; Access sa lokasyon &gt; Mga advanced na setting ng lokasyon. Kung naka-off ang Katumpakan ng Lokasyon, hindi mangongolekta ng data ng Katumpakan ng Lokasyon. Para sa mga app at serbisyo ng Android, ang IP address lang ang ginagamit, kung available, para tukuyin ang lokasyon ng device na ito, na puwedeng makaapekto sa availability at katumpakan ng mga lokasyon para sa mga app at serbisyo ng Android gaya ng Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2729940704980595903">Tingnan at pamahalaan ang iyong aktibidad sa Mga Gemini App</translation>
-<translation id="2730029791981212295">Bina-back-up ang mga app at file ng Linux</translation>
 <translation id="2730550884708194161">Tungkol sa mga profile sa trabaho</translation>
 <translation id="2730596696987224099">Pumili ng Sarili Mo</translation>
 <translation id="2730647855013151888">Isama ang lahat ng personal na impormasyon</translation>
@@ -2664,6 +2656,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2757338480560142065">Tiyaking ang password na sine-save mo ay tumutugma sa iyong password para sa <ph name="WEBSITE" /></translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Walang naibalik na resulta ng paghahanap para sa <ph name="SEARCH_QUERY" /></translation>
 <translation id="2762441749940182211">Naka-block ang camera</translation>
+<translation id="2763165257813209348">May sensitibo o mapanganib na data ang <ph name="FILE_NAME" />. Hahayaan ka ng iyong organisasyon na i-save ito sa cloud storage o i-discard ito</translation>
 <translation id="2764786626780673772">Mga detalye ng VPN</translation>
 <translation id="2764920001292228569">Maglagay ng pangalan ng profile</translation>
 <translation id="2765100602267695013">Makipag-ugnayan sa iyong provider sa mobile</translation>
@@ -2840,7 +2833,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2885129935310217435">May button na may katulad na pangalan. Pumili ng ibang pangalan.</translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2885729872133513017">Nagkaproblema habang dine-decode ang tugon ng server.</translation>
-<translation id="2886119409731773154">Puwede itong tumagal nang hanggang 30 minuto</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> at <ph name="NUMBER_OF_DEVICES" /> pa</translation>
 <translation id="2887344147309501015">Makipag-chat sa Gemini sa Chrome para makakuha ng mga sagot, pangunahing takeaway, at higit pa habang nagba-browse ka</translation>
@@ -3105,7 +3097,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3053273573829329829">I-enable ang pin ng user</translation>
 <translation id="3053274730492362225">Huwag kukurap</translation>
 <translation id="3058498974290601450">Maaari mong i-on ang pag-sync anumang oras sa mga setting.</translation>
-<translation id="3058517085907878899">Pangalan ng device</translation>
 <translation id="3060952009917586498">Palitan ang wika ng device. Ang kasalukuyang wika ay <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Hindi kami makakonekta sa iyong telepono. Tiyaking nasa malapit at naka-unlock ang iyong telepono at naka-on ang Bluetooth at Wi-Fi nito.</translation>
 <translation id="3061302636956643119">Ipapadala ang text sa Google para sa pagpoproseso.</translation>
@@ -3226,7 +3217,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3158770568048368350">Posibleng maging dahilan ito panandaliang pagdiskonekta ng iyong mobile network</translation>
 <translation id="3159335509547415276">Matuto tungkol sa mga naka-block na account</translation>
 <translation id="3159493096109238499">Beige</translation>
-<translation id="3159978855457658359">I-edit ang pangalan ng device</translation>
 <translation id="3160928651883997588">Mga kagustuhan sa VPN</translation>
 <translation id="3161522574479303604">Lahat ng wika</translation>
 <translation id="3162070126914310576">Hindi mae-enroll ang device na ito sa ngayon dahil naabot na ng iyong unit ng organisasyon ang inisyal na limitasyon nito sa pag-enroll. Makipag-ugnayan sa iyong administrator para sa tulong.</translation>
@@ -4252,7 +4242,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Na-on ulit ng iyong administrator ang 1 posibleng mapaminsalang extension}one{Na-on ulit ng iyong administrator ang {NUM_EXTENSIONS} posibleng mapaminsalang extension}other{Na-on ulit ng iyong administrator ang {NUM_EXTENSIONS} na posibleng mapaminsalang extension}}</translation>
 <translation id="3834728400518755610">Kinakailangan sa pagbabago sa setting ng mikropono na i-shut down ang Linux. I-shut down ang Linux para magpatuloy.</translation>
 <translation id="3834775135533257713">Hindi maidagdag ang application na "<ph name="TO_INSTALL_APP_NAME" />" dahil sumasalungat ito sa "<ph name="INSTALLED_APP_NAME" />".</translation>
-<translation id="3835904559946595746">Hindi ma-restore ang backup ng Linux</translation>
 <translation id="383669374481694771">Ito ay pangkalahatang impormasyon tungkol sa device na ito at kung paano ito ginagamit (gaya ng antas ng baterya, aktibidad ng system at app, at mga error). Gagamitin ang data para pahusayin ang Android, at makakatulong din ang ilang pinagsama-samang impormasyon sa mga app at partner ng Google, gaya ng mga developer ng Android, na pahusayin ang kanilang mga app at produkto.</translation>
 <translation id="3837569373891539515">Puwede mong piliin ang lahat ng naaangkop. Makikita mo rin ang mga opsyong ito sa Mga Setting pagkatapos mong i-set up ang iyong <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3838085852053358637">Hindi na-load ang extension</translation>
@@ -4418,7 +4407,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3943582379552582368">&amp;Bumalik</translation>
 <translation id="3943857333388298514">I-paste</translation>
 <translation id="3945513714196326460">Sumubok ng mas maikling pangalan</translation>
-<translation id="3948027458879361203">Baguhin ang hostname</translation>
 <translation id="3948116654032448504">&amp;Maghanap sa <ph name="SEARCH_ENGINE" /> para sa Larawan</translation>
 <translation id="3948334586359655083">Nagpe-play ng audio ang tab na ito</translation>
 <translation id="3948507072814225786">Puwedeng i-edit ng <ph name="ORIGIN" /> ang mga file sa mga sumusunod na folder</translation>
@@ -5588,7 +5576,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4769632191812288342">Nakakakuha ka ng karaniwang proteksyon</translation>
 <translation id="4770119228883592393">Humiling ng pahintulot, pindutin ang ⌘ + Option + Pababang arrow para tumugon</translation>
 <translation id="4772914216048388646">Maayos</translation>
-<translation id="4773112038801431077">I-upgrade ang Linux</translation>
 <translation id="4773122030389014189">I-share ang grupo ng tab na “<ph name="GROUP_NAME" />”</translation>
 <translation id="4773253008034797668">Pinapayagang kumonekta sa anumang device sa iyong lokal na network</translation>
 <translation id="477548766361111120">Payagan ang extension na basahin at baguhin ang site na ito</translation>
@@ -5980,7 +5967,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5040823038948176460">Mga karagdagang setting ng content</translation>
 <translation id="5041509233170835229">Chrome App</translation>
 <translation id="504194357571315770">Kailangan ng Aksyon</translation>
-<translation id="5043440033854483429">Puwedeng gumamit ang pangalan ng mga titik, numero, at hyphen (-), at dapat nasa pagitan ito ng 1 hanggang 15 character.</translation>
 <translation id="5043807571255634689">Aalisin ang <ph name="SUBSCRIPTION_NAME" /> sa device lang na ito. Para gumawa ng mga pagbabago sa iyong subscription, makipag-ugnayan sa provider ng subscription. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="5045367873597907704">Tungkol sa mga HID device</translation>
 <translation id="5045550434625856497">Hindi wastong password</translation>
@@ -6098,7 +6084,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5117930984404104619">Subaybayan ang pagkilos ng iba pang mga extension, kasama ang mga binisitang URL</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5120886753782992638">Mag-click dito para bisitahin ang <ph name="APPROVED_URL" /></translation>
-<translation id="5121052518313988218">Hindi na sinusuportahan ang operating system sa iyong Linux container Hindi na ito makakatanggap ng mga update sa seguridad at pag-aayos ng bug, at posibleng biglaang masira ang mga feature na kasalukuyang gumagana. Mag-upgrade sa pinakabagong bersyon para patuloy na magamit ang Linux.</translation>
 <translation id="5121130586824819730">Puno na ang iyong hard disk. Mangyaring i-save sa isa pang lokasyon o magbakante ng espasyo sa hard disk.</translation>
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5125714798187802869">I-activate</translation>
@@ -6416,7 +6401,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5340900621595888432">Ipadala ang data ng diagnostic at paggamit</translation>
 <translation id="5341793073192892252">Na-block ang sumusunod na cookies (bina-block ang third-party na cookies nang walang pagbubukod)</translation>
 <translation id="5342091991439452114">Hindi dapat bababa sa <ph name="MINIMUM" /> (na) digit ang PIN</translation>
-<translation id="5344036115151554031">Nire-restore ang Linux</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Kanan)</translation>
 <translation id="534449933710420173">Walang pangalang folder</translation>
 <translation id="5345916423802287046">Buksan ang app kapag nag-sign in ka</translation>
@@ -6650,7 +6634,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5497739595514726398">Hindi na-verify ng Chrome ang bundle ng pag-install na ito</translation>
 <translation id="5498967291577176373">Magsulat nang mas mabilis gamit ang mga inline na suhestyon para sa iyong pangalan, address, o numero ng telepono</translation>
 <translation id="5499211612787418966">Kasalukuyang hindi naka-focus ang dialog na ito. Pindutin ang Alt-Shift A para i-focus ang dialog na ito.</translation>
-<translation id="5499453227627332024">May available na pag-upgrade para sa iyong Linux Container. Puwede ka ring mag-upgrade sa ibang pagkakataon mula sa app na Mga Setting.</translation>
 <translation id="5499476581866658341">Puwede mo nang tingnan ang mga pinakabagong larawan at media ng iyong telepono</translation>
 <translation id="549957179819296104">Bagong icon</translation>
 <translation id="5499634624419508916">Palitan ang Kasalukuyang Grupo ng Tab</translation>
@@ -7072,7 +7055,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5804241973901381774">Mga Pahintulot</translation>
 <translation id="5804259315582798390">Hindi na-enable ang pag-recover ng lokal na data</translation>
 <translation id="5805268472388605531">Pindutin nang matagal ang mga keyboard key para makita ang mga accent mark at special character</translation>
-<translation id="5805353596216929913">Walang available na update</translation>
 <translation id="5805697420284793859">Window manager</translation>
 <translation id="5806322307130093061">Pindutin ang enter para i-delete ang file na <ph name="FILE_NAME" /></translation>
 <translation id="5806447147478173900">Kabuuang storage na ginagamit ng mga naka-display na site: <ph name="TOTAL_USAGE" /></translation>
@@ -7522,7 +7504,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6113942107547980621">Para gamitin ang Smart Lock, lumipat sa profile ng pangunahing user sa iyong telepono</translation>
 <translation id="6116921718742659598">Baguhin ang mga setting ng wika at input</translation>
 <translation id="6119008366402292080">Walang available na printer</translation>
-<translation id="6119927814891883061">Pangalanan ang device na <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">Pagtatama ng kulay</translation>
 <translation id="6121773125605585883">Tingnan ang password na may username na <ph name="USERNAME" /> para sa <ph name="WEBSITE" /></translation>
 <translation id="6122093587541546701">Email (opsyonal):</translation>
@@ -7763,7 +7744,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6277105963844135994">Nag-timeout ang network</translation>
 <translation id="6277518330158259200">Kumuha ng Screenshot</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6278776436938569440">Baguhin ang lokasyon</translation>
 <translation id="6280215091796946657">Mag-sign in gamit ang ibang account</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6281218688313242284">Pamahalaan ang iyong &amp;Google Account</translation>
@@ -8109,7 +8089,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="65334502113648172">Pindutin ang mga arrow key para paliitin o i-expand ang display area. Para ilipat-lipat ng puwesto ang display area, pindutin ang shift at +, pagkatapos ay gamitin ang mga arrow key.</translation>
 <translation id="6535331821390304775">Palaging payagan ang <ph name="ORIGIN" /> na buksan ang ganitong uri ng mga link sa nauugnay na app</translation>
 <translation id="653659894138286600">Mag-scan ng mga dokumento at larawan</translation>
-<translation id="6537613839935722475">Puwedeng gumamit ng mga titik, numero, at hyphen (-) ang pangalan</translation>
 <translation id="6538036594527795020">Palitan ang wika ng <ph name="APP" />. Ang kasalukuyang wika ay <ph name="LANGUAGE" />.</translation>
 <translation id="6538098297809675636">Error sa pag-detect ng code</translation>
 <translation id="653920215766444089">Naghahanap ng device na panturo</translation>
@@ -8123,7 +8102,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6542521951477560771">Nagka-cast sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="6544134392255015460">toggle ng backlight ng keyboard</translation>
 <translation id="6545665334409411530">Rate ng pag-uulit</translation>
-<translation id="6546856949879953071">Para sa detalyadong impormasyon sa pag-upgrade, na-save ang mga log sa Mga File &gt; Aking mga file &gt; <ph name="LOG_FILE" /></translation>
 <translation id="6547354035488017500">Magbakante ng hindi bababa sa 512 MB ng espasyo ng iyong device, kung hindi ay hindi gagana nang maayos ang iyong device. Upang magbakante ng espasyo, mag-delete ng mga file mula sa storage ng device.</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Ang serbisyo ng lokasyon ng Google ay gumagamit ng mga source tulad ng Wi-Fi, mga mobile network, at sensor para makatulong na tantyahin ang lokasyon ng iyong device.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puwede mong i-off ang lokasyon ng Android sa iyong device anumang oras sa pamamagitan ng pagpunta sa Mga Setting &gt; Mga App &gt; Google Play Store &gt; Pamahalaan ang mga kagustuhan sa Android &gt; Seguridad at lokasyon &gt; Lokasyon. Puwede mo ring i-off ang paggamit ng Wi-Fi, mga mobile network, at sensor para sa lokasyon ng Android sa pamamagitan ng pag-off sa “Katumpakan ng Lokasyon ng Google” sa parehong menu.<ph name="END_PARAGRAPH2" /></translation>
@@ -8142,7 +8120,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6553046373262346328">{GROUP_COUNT,plural, =1{Ide-delete nito ang grupo sa lahat ng device na naka-sign in sa <ph name="EMAIL" />}one{Ide-delete nito ang mga grupo sa lahat ng device na naka-sign in sa <ph name="EMAIL" />}other{Ide-delete nito ang mga grupo sa lahat ng device na naka-sign in sa <ph name="EMAIL" />}}</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> )(na) user</translation>
 <translation id="6555432686520421228">Alisin ang lahat ng account ng user at i-reset ang iyong <ph name="IDS_SHORT_PRODUCT_NAME" /> na device upang maging parang bago.</translation>
-<translation id="6555604601707417276">Na-restore ang pag-back up ng Linux</translation>
 <translation id="6555744145993174510">mula sa: <ph name="APP_ORIGIN" /></translation>
 <translation id="6556866813142980365">Redo</translation>
 <translation id="6556903358015358733">Tema at Wallpaper</translation>
@@ -8301,7 +8278,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6663190258859265334">I-powerwash ang iyong <ph name="DEVICE_TYPE" /> at bumalik sa nakaraang bersyon.</translation>
 <translation id="6664774537677393800">Nagkaproblema sa pagbukas ng iyong profile. Mangyaring mag-sign out at pagkatapos ay muling mag-sign in.</translation>
 <translation id="6665874326033183068">Wild</translation>
-<translation id="6666559645296300656">Pagkansela sa pag-upgrade ng Linux</translation>
 <translation id="6667086124612170548">Masyadong malaki ang file para sa device na ito</translation>
 <translation id="6667092961374478614">Pagiging nahahanap ng <ph name="FEATURE_NAME" /></translation>
 <translation id="6667187897999649121">Sa ngayon, puwede ka lang mag-share ng mga password sa mga miyembro ng pamilya. <ph name="BEGIN_LINK" />Gumawa ng grupo ng pamilya<ph name="END_LINK" /> na may hanggang 6 na miyembro, at mas sulitin ang iyong mga produkto at subscription sa buong Google.</translation>
@@ -8358,7 +8334,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6702639462873609204">&amp;I-edit...</translation>
 <translation id="6702859741546259407">Para magamit ang <ph name="FEATURE_NAME" />, i-on ang Bluetooth at Wi-Fi</translation>
 <translation id="6703109186846420472">,</translation>
-<translation id="6703254819490889819">I-restore ang backup</translation>
 <translation id="6707122714992751648">Magpatakbo ng mga diagnostic test ng ChromeOS</translation>
 <translation id="6707389671160270963">SSL Client Certificate</translation>
 <translation id="6707671917294473995">Hindi pinapayagan ang mga website na gamitin ang iyong camera</translation>
@@ -8637,7 +8612,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6883606786470492001">Pamahalaan ang iyong mga paksa ng ad at iba pang setting para limitahan ang puwedeng malaman ng mga site tungkol sa iyo para makapagpakita ang mga ito sa iyo ng mga naka-personalize na ad</translation>
 <translation id="6884474387073389421">Sigurado ka bang gusto mong i-delete ang napiling data sa pag-sign in?</translation>
 <translation id="6885771755599377173">Preview ng Impormasyon ng System</translation>
-<translation id="6886380424988777998">Hindi ma-upgrade ang Linux</translation>
 <translation id="6886871292305414135">Buksan ang link sa bagong &amp;tab</translation>
 <translation id="6888831646723563669">Kumonekta para ma-enjoy ang lahat ng feature sa iyong bagong <ph name="DEVICE_TYPE" /></translation>
 <translation id="6888850808202733940">Mga app at laro</translation>
@@ -8838,7 +8812,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7016995776279438971">Pula-berde, hirap makakita ng pula (Protanomaly)</translation>
 <translation id="7017219178341817193">Magdagdag ng bagong page </translation>
 <translation id="7017354871202642555">Hindi matakda ang mode pagkatapos matakda ang window.</translation>
-<translation id="7019546817926942979">Kailangang nakasaksak ang iyong device. Kapag ina-upgrade ang Linux, puwedeng mas mabilis na maubos ang iyong baterya. Ikonekta ang iyong device sa isang charger at subukan ulit.</translation>
 <translation id="7019805045859631636">Mabilis</translation>
 <translation id="7021524108486027008">Magpatakbo ng mga tool, editor, at IDE sa isang environment na pinapamahalaan ng iyong enterprise sa <ph name="DEVICE_TYPE" /> mo.</translation>
 <translation id="7022222879220069865">Nadiskonekta ang lahat ng touchpad</translation>
@@ -8913,7 +8886,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> na grupong <ph name="GROUP_NAME" /> - <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">PKCS #1 MD5 na May RSA Encryption</translation>
 <translation id="7075625805486468288">Pamahalaan ang mga certificate at setting ng HTTPS/SSL</translation>
-<translation id="7076875098323397992">Hindi masimulan ang pag-upgrade</translation>
 <translation id="7077751457066325012">Tumingin at mag-customize ng mga keyboard shortcut</translation>
 <translation id="7077829361966535409">Nabigong ma-load ang pahina sa pag-sign in gamit ang mga kasalukuyang setting ng proxy. Mangyaring <ph name="GAIA_RELOAD_LINK_START" />subukang mag-sign in muli<ph name="GAIA_RELOAD_LINK_END" />, o gumamit ng ibang <ph name="PROXY_SETTINGS_LINK_START" />mga setting ng proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Lahat ng network</translation>
@@ -9771,7 +9743,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7668648754769651616">Pinapadaling gamitin ng mga feature ng accessibility ang iyong device. Para i-access ang Mga Mabilisang Setting, piliin ang oras sa ibaba ng iyong screen.</translation>
 <translation id="7669620291129890197">Visible sa iyong mga device</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{Maling PIN. May isa kang pagtatangkang natitira.}one{Maling PIN. May # kang pagtatangkang natitira.}other{Maling PIN. May # kang pagtatangkang natitira.}}</translation>
-<translation id="7670434942695515800">Para sa pinakamahusay na performance, mag-upgrade sa pinakabagong bersyon. Inirerekomenda ang pag-back up ng iyong mga file kung sakaling hindi makumpleto ang pag-upgrade. Kapag nagsimula na ang pag-upgrade, magsa-shut down ang Linux. I-save ang mga nakabukas na file bago magpatuloy. <ph name="LINK_START" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">Mga Subtitle</translation>
 <translation id="7671130400130574146">Gumamit ng system title bar at mga hangganan</translation>
 <translation id="7671139479636735732">Mag-right click para madaling ma-visualize ang iyong mga ideya</translation>
@@ -10138,7 +10109,6 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7921395044508886182">Puwedeng gumamit ng pag-optimize ng JavaScript ang mga site</translation>
 <translation id="7921901223958867679">Kayang basahin at baguhin ng extension na ito ang <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 extension</translation>
-<translation id="7923564237306226146">Kumpleto na ang pag-upgrade ng Linux</translation>
 <translation id="7924075559900107275">kandidato para sa pangmatagalang suporta</translation>
 <translation id="7924358170328001543">Nagka-error sa pag-forward ng port</translation>
 <translation id="7925108652071887026">Mag-autofill ng data</translation>
@@ -10209,7 +10179,6 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7963001036288347286">Pag-accelerate ng touchpad</translation>
 <translation id="7963408577288987423">{COUNT,plural, =1{1 password}one{{COUNT} password}other{{COUNT} na password}}</translation>
 <translation id="7963513503134856713">Inilipat ang window papunta sa kanan</translation>
-<translation id="7963608432878156675">Nakikita ang pangalang ito sa iba pang device para sa Bluetooth at mga koneksyon ng network</translation>
 <translation id="7964458523224581615">Viridian</translation>
 <translation id="7965946703747956421">I-delete ang <ph name="CREDENTIAL_TYPE" /> para sa username: <ph name="USER_EMAIL" /></translation>
 <translation id="7966241909927244760">K&amp;opyahin ang Address ng Larawan</translation>
@@ -10406,7 +10375,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="808488435221187916">Available ang iyong impormasyon sa Google Wallet sa anumang naka-sign in na device</translation>
 <translation id="8086015605808120405">Kino-configure ang <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086121155774250556">Shine-share ng tab na ito ang iyong screen</translation>
-<translation id="8086610718778464681">Hindi ma-back up ang mga app at file ng Linux</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Naka-encrypt ang file na ito. Hilingin sa may-ari nitong i-decrypt ito.}one{Naka-encrypt ang ilan sa mga file na ito. Hilingin sa may-ari ng mga ito na i-decrypt ang mga ito.}other{Naka-encrypt ang ilan sa mga file na ito. Hilingin sa may-ari ng mga ito na i-decrypt ang mga ito.}}</translation>
 <translation id="808894953321890993">Palitan ang password</translation>
 <translation id="8089782219932231262">{BOOKMARK_COUNT,plural, =1{Mase-save ang 1 bookmark sa device lang na ito. Para magamit ito sa iba mo pang device, i-save ito sa iyong Google Account. Lilinisin din nito ang anumang duplicate.}one{Mase-save ang {BOOKMARK_COUNT} bookmark sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account. Lilinisin din nito ang anumang duplicate.}other{Mase-save ang {BOOKMARK_COUNT} na bookmark sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account. Lilinisin din nito ang anumang duplicate.}}</translation>
@@ -10437,7 +10405,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8102139037507939978">Alisin ang Impormasyong Nagbibigay ng Personal na Pagkakakilanlan sa system_logs.txt.</translation>
 <translation id="810362914482827094">Maghanap sa mga passkey</translation>
 <translation id="8104088837833760645">I-download ang profile ng eSIM</translation>
-<translation id="8104778744208707085">Nangangailangan ng iyong atensyon</translation>
 <translation id="8105050970626643057">Mabilis na buksan ang Gemini sa tuwing kailangan mo ito</translation>
 <translation id="8105273883928376822">Mag-sign in para magpatuloy.</translation>
 <translation id="8106114112474206597">Gamitin ang “i” para pindutin ang button ng mouse</translation>
@@ -12017,7 +11984,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9149866541089851383">I-edit...</translation>
 <translation id="9150045010208374699">Gamitin ang iyong camera</translation>
 <translation id="9150079578948279438">Hindi maalis ang profile. Pakisubukan ulit o makipag-ugnayan sa iyong carrier para sa technical support.</translation>
-<translation id="9150860646299915960">I-upgrade ang iyong Linux container</translation>
 <translation id="915112772806845021">Ginagamit ng mga site ang feature na ito para awtomatikong pumasok sa picture-in-picture. Nagbibigay-daan ito sa iyong patuloy na makapanood ng video, habang binabakante ang screen mo para sa iba pang gawain.</translation>
 <translation id="9151249085738989067">Awtomatikong palitan ang boses ng ChromeVox batay sa wika</translation>
 <translation id="9151906066336345901">end</translation>

@@ -72,7 +72,6 @@
 <translation id="1041607257468256895">Chrome でのウェブサイトに対する位置情報の利用許可を管理する</translation>
 <translation id="1042174272890264476">お使いのパソコンには <ph name="SHORT_PRODUCT_NAME" /> の RLZ ライブラリも組み込まれています。RLZ は、個人を特定できないタグを割り当てて、特定の販促キャンペーンで生じた検索や <ph name="SHORT_PRODUCT_NAME" /> の利用状況を計測します。これらのラベルは <ph name="PRODUCT_NAME" /> で Google 検索キーワード内に表示されることがあります。</translation>
 <translation id="1042248468362992359">アクセス ポイントを使用するには、モバイルデータに接続してください。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="1043505821207197890">エラーが発生しました。Linux のアップグレードが完了していない可能性があります。詳しくはログをご確認ください。ログは [ファイル] &gt; [マイファイル] &gt; <ph name="LOG_FILE" /> に保存されています</translation>
 <translation id="104385770822424034">アクションを追加</translation>
 <translation id="1045487161760507186">パスワードは Google パスワード マネージャーに保存されるため、覚えておく必要はありません</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 件のパスワードをこのデバイスの <ph name="BRAND" /> にインポートしました}other{{NUM_PASSWORDS} 件のパスワードをこのデバイスの <ph name="BRAND" /> にインポートしました}}</translation>
@@ -410,7 +409,6 @@
 <translation id="1257336506558170607">選択した証明書をエクスポート</translation>
 <translation id="1258491128795710625">最新情報</translation>
 <translation id="1260451001046713751"><ph name="HOST" /> のポップアップとリダイレクトを常に許可する</translation>
-<translation id="1260810365552581339">Linux のディスク空き容量が不足している可能性があります。Linux のディスク空き容量を増やしてから、[<ph name="LINK_START" />設定<ph name="LINK_END" />] でもう一度復元をお試しください。</translation>
 <translation id="1261380933454402672">弱め</translation>
 <translation id="126156426083987769">デモモードデバイスライセンスで問題が発生しました。</translation>
 <translation id="1262395978737369974">JavaScript の最適化の使用を常に許可する</translation>
@@ -905,7 +903,6 @@
 <translation id="1603914832182249871">（シークレット モード）</translation>
 <translation id="1604432177629086300">印刷できませんでした。プリンタを確認してもう一度お試しください。</translation>
 <translation id="1604567162047669454">ビジュアル レイアウト セマンティクスを認識</translation>
-<translation id="1604774728851271529">Linux をアップグレードするにはネットワーク接続が必要です。インターネットに接続してから、もう一度お試しください。</translation>
 <translation id="1605148987885002237">キーボードと入力</translation>
 <translation id="1605744057217831567">すべてのサイトデータと権限を表示</translation>
 <translation id="1606077700029460857">マウスの設定を変更</translation>
@@ -1258,7 +1255,6 @@
 <translation id="1833059747301212935">最近使用したドキュメントや今後のカレンダーの予定に簡単にアクセスできます</translation>
 <translation id="183445248400150852">サイトは、ゲームやリモート デスクトップ アプリなどでのユーザーのキーボード入力をオーバーライドするために、この機能を使用します</translation>
 <translation id="1834503245783133039"><ph name="FILE_NAME" /> をダウンロードできませんでした</translation>
-<translation id="1835261175655098052">Linux をアップグレードしています</translation>
 <translation id="1837292628323740716"><ph name="DEVICE_TYPE" /> でセーフ ブラウジング保護強化機能を有効にする</translation>
 <translation id="1837441256780906162">Microsoft OneDrive でリクエストが拒否されました。しばらくしてからもう一度お試しください。</translation>
 <translation id="1838374766361614909">検索をクリア</translation>
@@ -1492,7 +1488,6 @@
 <translation id="1989288015781834552">更新を完了するには再起動してください。開いているタブは復旧されます。</translation>
 <translation id="1989903373608997757">常に使用</translation>
 <translation id="1990046457226896323">読み上げファイルをダウンロードしました</translation>
-<translation id="1990727803345673966">バックアップした Linux のファイルとアプリを復元しています</translation>
 <translation id="199191324030140441">サイレント モードをオフにする</translation>
 <translation id="1992397118740194946">未設定</translation>
 <translation id="1994173015038366702">サイトの URL</translation>
@@ -1595,7 +1590,6 @@
 <translation id="206960706005837784"><ph name="APP_NAME" /> は <ph name="PRINTER_NAME" /> での印刷を終了しました</translation>
 <translation id="2071393345806050157">ローカルのログ ファイルがありません。</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{この拡張機能をインストールするには、クリックしてください}other{これらの拡張機能をインストールするには、クリックしてください}}</translation>
-<translation id="2073496667646280609">デバイスまたは選択したバックアップの場所の空き容量が不足している可能性があります。空き容量を確保するか、別の場所を選択してください。</translation>
 <translation id="2073505299004274893">半角 <ph name="CHARACTER_LIMIT" /> 文字以内で入力してください</translation>
 <translation id="2074263453710478603">ChromeOS の Chrome ユーザーのログ</translation>
 <translation id="2074599390896964828">正確な位置情報</translation>
@@ -2358,7 +2352,6 @@
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> への読み取り専用アクセスが許可されました。</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> 個のタブ</translation>
 <translation id="2573276323521243649">アバター選択ページから戻る</translation>
-<translation id="2573417407488272418">アップグレードする前に、[ファイル] &gt; [マイファイル] にアプリとファイルをバックアップしてください。</translation>
 <translation id="2573831315551295105">スイッチを「<ph name="ACTION" />」に割り当てます</translation>
 <translation id="2574037773163798130">{NUM_TABS,plural, =1{Gemini とタブを共有}other{Gemini と # 個のタブを共有}}</translation>
 <translation id="2575247648642144396">このアイコンは、表示中のページで拡張機能が使用できる場合に表示されます。この拡張機能を使用するには、アイコンをクリックするか、<ph name="EXTENSION_SHORTCUT" /> を押します。</translation>
@@ -2586,7 +2579,6 @@
 　　　　<ph name="BEGIN_PARAGRAPH2" />Google は、位置情報の精度と、位置情報を利用したサービスを改善し、Google のサービスを全般的に改善、提供、維持する目的でこの情報を使用します。また、ユーザーのニーズに応えるうえでの Google およびサードパーティの正当な利益に基づき、この情報を処理します。この情報が個人の特定に使用されることはありません。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />[位置情報の精度] は、このデバイスの位置情報の設定（[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] &gt; [位置情報の詳細設定]）でいつでもオフにできます。[位置情報の精度] をオフにした場合、位置情報の精度に関するデータは一切収集されません。Android アプリやサービスでは、IP アドレスのみを使用して（可能な場合）、このデバイスの位置情報を判断します。そのため、Google マップなどの Android アプリやサービスでの位置情報の利用範囲と精度に影響する可能性があります。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2729940704980595903">Gemini アプリ アクティビティの表示と管理</translation>
-<translation id="2730029791981212295">Linux アプリとファイルのバックアップ</translation>
 <translation id="2730550884708194161">仕事用プロファイルについて</translation>
 <translation id="2730596696987224099">自分で設定</translation>
 <translation id="2730647855013151888">すべての個人情報を含める</translation>
@@ -2645,6 +2637,7 @@
 <translation id="2757338480560142065">保存するパスワードが <ph name="WEBSITE" /> のパスワードと一致していることを確認してください</translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" />「<ph name="SEARCH_QUERY" />」に一致する検索結果はありませんでした</translation>
 <translation id="2762441749940182211">カメラがブロックされています</translation>
+<translation id="2763165257813209348"><ph name="FILE_NAME" /> には機密データまたは危険なデータが含まれています。組織の設定では、このデータをクラウド ストレージに保存するか破棄することができます。</translation>
 <translation id="2764786626780673772">VPN の詳細</translation>
 <translation id="2764920001292228569">プロファイルに名前を付けてください</translation>
 <translation id="2765100602267695013">ご利用の携帯通信会社にお問い合わせください。</translation>
@@ -2821,7 +2814,6 @@
 <translation id="2885129935310217435">同じ名前のボタンがあります。他の名前を選択してください。</translation>
 <translation id="2885378588091291677">タスク マネージャ</translation>
 <translation id="2885729872133513017">サーバーの応答をデコード中に問題が発生しました。</translation>
-<translation id="2886119409731773154">最大で 30 分ほどかかる場合があります</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> とその他 <ph name="NUMBER_OF_DEVICES" /> 個のデバイス</translation>
 <translation id="2887344147309501015">ブラウジング中に Gemini in Chrome と話して、質問の回答や重要なポイントなどを確認できます</translation>
@@ -3086,7 +3078,6 @@
 <translation id="3053273573829329829">ユーザー PIN を有効にする</translation>
 <translation id="3053274730492362225">点滅なし</translation>
 <translation id="3058498974290601450">同期は設定でいつでもオンにできます。</translation>
-<translation id="3058517085907878899">デバイス名を指定します</translation>
 <translation id="3060952009917586498">デバイスの言語を変更します。現在の言語は <ph name="LANGUAGE" /> です。</translation>
 <translation id="3060987956645097882">スマートフォンとの接続を確立できませんでした。Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください。</translation>
 <translation id="3061302636956643119">テキストは Google に送信されて処理されます。</translation>
@@ -3207,7 +3198,6 @@
 <translation id="3158770568048368350">モバイル ネットワークが一時的に切断される可能性があります</translation>
 <translation id="3159335509547415276">アカウントのブロックに関する詳細</translation>
 <translation id="3159493096109238499">ベージュ</translation>
-<translation id="3159978855457658359">デバイス名を編集</translation>
 <translation id="3160928651883997588">VPN 設定</translation>
 <translation id="3161522574479303604">すべての言語</translation>
 <translation id="3162070126914310576">組織部門の数が初期登録の上限に達しているため、このデバイスを今すぐ登録することはできません。サポートをご希望の場合は、管理者にご連絡ください。</translation>
@@ -4230,7 +4220,6 @@
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{管理者が 1 個の有害な可能性がある拡張機能を再度有効にしました}other{管理者が {NUM_EXTENSIONS} 個の有害な可能性がある拡張機能を再度有効にしました}}</translation>
 <translation id="3834728400518755610">マイクの設定を変更するには、Linux をシャットダウンする必要があります。続行するには Linux をシャットダウンしてください。</translation>
 <translation id="3834775135533257713">「<ph name="INSTALLED_APP_NAME" />」と競合するため、アプリケーション「<ph name="TO_INSTALL_APP_NAME" />」を追加できませんでした。</translation>
-<translation id="3835904559946595746">Linux バックアップを復元できませんでした</translation>
 <translation id="383669374481694771">このデバイスと使用状況に関する一般的な情報（電池残量、システムやアプリのアクティビティ、エラーなど）です。このデータは、Android の機能向上に使用されます。また、統計情報の一部は、Google のアプリのほか、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。</translation>
 <translation id="3837569373891539515">該当するものをすべて選択できます。これらのオプションは、<ph name="DEVICE_TYPE" /> の設定完了後に [設定] でも確認できます。</translation>
 <translation id="3838085852053358637">拡張機能を読み込めませんでした</translation>
@@ -4396,7 +4385,6 @@
 <translation id="3943582379552582368">戻る(&amp;B)</translation>
 <translation id="3943857333388298514">貼り付け</translation>
 <translation id="3945513714196326460">名前を短くしてください</translation>
-<translation id="3948027458879361203">ホスト名の変更</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" /> で画像を検索(&amp;S)</translation>
 <translation id="3948334586359655083">このタブは音声を再生しています</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> は次のフォルダのファイルを編集できます</translation>
@@ -5564,7 +5552,6 @@
 <translation id="4769632191812288342">標準保護機能が適用されています</translation>
 <translation id="4770119228883592393">権限がリクエストされました。対応するには、⌘+option+下矢印キーを押してください</translation>
 <translation id="4772914216048388646">整然</translation>
-<translation id="4773112038801431077">Linux のアップグレード</translation>
 <translation id="4773122030389014189">「<ph name="GROUP_NAME" />」タブグループを共有</translation>
 <translation id="4773253008034797668">ローカル ネットワーク上のデバイスへの接続を許可するサイト</translation>
 <translation id="477548766361111120">拡張機能にこのサイトの読み取りと変更を許可する</translation>
@@ -5955,7 +5942,6 @@
 <translation id="5040823038948176460">その他のコンテンツの設定</translation>
 <translation id="5041509233170835229">Chrome アプリ</translation>
 <translation id="504194357571315770">対応が必要</translation>
-<translation id="5043440033854483429">名前には文字、数字、ハイフン（-）を使用できます。1～15 文字の間で指定してください。</translation>
 <translation id="5043807571255634689"><ph name="SUBSCRIPTION_NAME" /> はこのデバイスからのみ削除されます。登録に変更を加える場合は、ご利用の登録プロバイダにお問い合わせください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5045367873597907704">HID デバイスについて</translation>
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
@@ -6073,7 +6059,6 @@
 <translation id="5117930984404104619">他の拡張機能の動作を監視（アクセスした URL を含む）</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5120886753782992638"><ph name="APPROVED_URL" /> にアクセスするには、ここをクリックしてください</translation>
-<translation id="5121052518313988218">お使いの Linux コンテナのオペレーティング システムはサポートが終了しています。セキュリティ アップデートやバグの修正が提供されなくなり、現在動作している機能が予期せず動作しなくなる可能性があります。引き続き Linux を使用するには、最新のバージョンにアップグレードしてください。</translation>
 <translation id="5121130586824819730">ハード ディスクがいっぱいです。別の場所に保存するか、ハード ディスクの空き容量を増やしてください。</translation>
 <translation id="5123433949759960244">バスケットボール</translation>
 <translation id="5125714798187802869">有効にする</translation>
@@ -6388,7 +6373,6 @@
 <translation id="5340900621595888432">診断データと使用状況データを送信する</translation>
 <translation id="5341793073192892252">以下の Cookie がブロックされました（サードパーティの Cookie は例外なくブロックされます）</translation>
 <translation id="5342091991439452114">PIN は <ph name="MINIMUM" /> 桁以上で設定してください</translation>
-<translation id="5344036115151554031">Linux を復元しています</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%（右）</translation>
 <translation id="534449933710420173">名前のないフォルダ</translation>
 <translation id="5345916423802287046">ログイン時にアプリを開く</translation>
@@ -6621,7 +6605,6 @@
 <translation id="5497739595514726398">Chrome でこのインストール バンドルを確認できませんでした</translation>
 <translation id="5498967291577176373">名前や住所、電話番号が候補として表示され、すばやく入力できます</translation>
 <translation id="5499211612787418966">このダイアログは現在フォーカスされていません。このダイアログをフォーカスするには Alt+Shift+A キーを押してください。</translation>
-<translation id="5499453227627332024">Linux コンテナのアップグレードが可能です。後で設定アプリからアップグレードすることもできます。</translation>
 <translation id="5499476581866658341">スマートフォンの最近の写真やメディアを表示できるようになりました</translation>
 <translation id="549957179819296104">アイコンが新しくなりました</translation>
 <translation id="5499634624419508916">既存のタブグループを置き換える</translation>
@@ -7043,7 +7026,6 @@
 <translation id="5804241973901381774">権限</translation>
 <translation id="5804259315582798390">ローカルデータの復元を有効にできませんでした</translation>
 <translation id="5805268472388605531">キーボードのキーを長押しすると、アクセント記号と特殊文字が表示されます</translation>
-<translation id="5805353596216929913">アップデートはありませんでした</translation>
 <translation id="5805697420284793859">ウィンドウ マネージャ</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" />、ファイルを削除するには Enter キーを押してください</translation>
 <translation id="5806447147478173900">表示されたサイトの合計ストレージ使用状況: <ph name="TOTAL_USAGE" /></translation>
@@ -7493,7 +7475,6 @@
 <translation id="6113942107547980621">Smart Lock を使用するには、お使いのスマートフォンでメインユーザーのプロフィールに切り替えます</translation>
 <translation id="6116921718742659598">言語と入力の設定を変更</translation>
 <translation id="6119008366402292080">プリンタがありません</translation>
-<translation id="6119927814891883061">デバイス名を <ph name="DEVICE_NAME" /> に指定します</translation>
 <translation id="6119972796024789243">色補正</translation>
 <translation id="6121773125605585883"><ph name="WEBSITE" /> のユーザー名 <ph name="USERNAME" /> のパスワードを表示します</translation>
 <translation id="6122093587541546701">メール（省略可）:</translation>
@@ -7734,7 +7715,6 @@
 <translation id="6277105963844135994">ネットワークがタイムアウトしました</translation>
 <translation id="6277518330158259200">スクリーンショットを撮る(&amp;A)</translation>
 <translation id="6278428485366576908">モード</translation>
-<translation id="6278776436938569440">場所を変更</translation>
 <translation id="6280215091796946657">別のアカウントでログイン</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6281218688313242284">Google アカウントを管理(&amp;G)</translation>
@@ -8080,7 +8060,6 @@
 <translation id="65334502113648172">矢印キーを押すと、表示領域を縮小または拡大できます。表示領域を移動するには、Shift キーと + キーを同時に押してから、矢印キーを使用します。</translation>
 <translation id="6535331821390304775"><ph name="ORIGIN" /> でのこのタイプのリンクは常に関連付けられたアプリで開く</translation>
 <translation id="653659894138286600">ドキュメントと画像のスキャン</translation>
-<translation id="6537613839935722475">名前には文字、数字、ハイフン（-）を使用できます</translation>
 <translation id="6538036594527795020"><ph name="APP" /> の言語を変更します。現在の言語は <ph name="LANGUAGE" /> です。</translation>
 <translation id="6538098297809675636">コード検出エラー</translation>
 <translation id="653920215766444089">ポインティング デバイスを探しています</translation>
@@ -8094,7 +8073,6 @@
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> にキャストしています</translation>
 <translation id="6544134392255015460">キーボード バックライトの切り替え</translation>
 <translation id="6545665334409411530">リピート回数 / 秒</translation>
-<translation id="6546856949879953071">アップグレードに関する詳しい情報は、[ファイル] &gt; [マイファイル] &gt; <ph name="LOG_FILE" /> に保存されているログで確認できます</translation>
 <translation id="6547354035488017500">デバイスの空き領域を 512 MB 以上確保してください。空き領域がこれより少なくなると、デバイスは応答しなくなります。空き領域を確保するために、デバイスのストレージからファイルを削除してください。</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google の位置情報サービスでは、デバイスの現在地を推定するために、Wi-Fi、モバイル ネットワーク、センサーなどの情報源が使用されます。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />[設定] &gt; [アプリ] &gt; [Google Play ストア] &gt; [Android 設定を管理] &gt; [セキュリティと現在地情報] &gt; [現在地情報] から随時、デバイスの Android 位置情報機能をオフにできます。また、同じメニューで [Google 位置情報の精度] をオフにすると、Android の位置情報機能に対して Wi-Fi、モバイル ネットワーク、センサーの使用をオフにすることもできます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">カーソル ブラウジングをオンにしますか？</translation>
@@ -8112,7 +8090,6 @@
 <translation id="6553046373262346328">{GROUP_COUNT,plural, =1{<ph name="EMAIL" /> にログインしているすべてのデバイスからグループを削除します}other{<ph name="EMAIL" /> にログインしているすべてのデバイスからグループを削除します}}</translation>
 <translation id="655384502888039633">ユーザー数: <ph name="USER_COUNT" /> 人</translation>
 <translation id="6555432686520421228">すべてのユーザー アカウントを削除し、<ph name="IDS_SHORT_PRODUCT_NAME" /> デバイスを出荷時と同じ状態にリセットします。</translation>
-<translation id="6555604601707417276">Linux バックアップを復元しました</translation>
 <translation id="6555744145993174510"><ph name="APP_ORIGIN" /> から</translation>
 <translation id="6556866813142980365">やり直す</translation>
 <translation id="6556903358015358733">テーマと壁紙</translation>
@@ -8269,7 +8246,6 @@
 <translation id="6663190258859265334"><ph name="DEVICE_TYPE" /> で Powerwash を実行し、以前のバージョンに戻します。</translation>
 <translation id="6664774537677393800">プロフィールを開こうとして問題が発生しました。ログアウトしてから再度ログインしてください。</translation>
 <translation id="6665874326033183068">荒涼</translation>
-<translation id="6666559645296300656">Linux のアップグレードをキャンセルしています</translation>
 <translation id="6667086124612170548">ファイルがこのデバイスには大きすぎます</translation>
 <translation id="6667092961374478614"><ph name="FEATURE_NAME" /> の検出の許可</translation>
 <translation id="6667187897999649121">現在のところ、パスワードはファミリー メンバーとのみ共有できます。最大 6 人のメンバーを招待して<ph name="BEGIN_LINK" />ファミリー グループを作成<ph name="END_LINK" />すると、Google のさまざまなサービスやサブスクリプションをさらに活用できます。</translation>
@@ -8326,7 +8302,6 @@
 <translation id="6702639462873609204">編集(&amp;E)...</translation>
 <translation id="6702859741546259407"><ph name="FEATURE_NAME" />　を使うには、Bluetooth と Wi-Fi をオンにしてください</translation>
 <translation id="6703109186846420472">、</translation>
-<translation id="6703254819490889819">バックアップを復元</translation>
 <translation id="6707122714992751648">ChromeOS 診断テストを実行する</translation>
 <translation id="6707389671160270963">SSL クライアント証明書</translation>
 <translation id="6707671917294473995">ウェブサイトでカメラの使用は許可されていません</translation>
@@ -8604,7 +8579,6 @@
 <translation id="6883606786470492001">広告トピックやその他の設定を管理して、パーソナライズド広告を表示するサイトがユーザーについて把握できる情報を制限します</translation>
 <translation id="6884474387073389421">選択したログインデータを削除してもよろしいですか？</translation>
 <translation id="6885771755599377173">システム情報のプレビュー</translation>
-<translation id="6886380424988777998">Linux をアップグレードできませんでした</translation>
 <translation id="6886871292305414135">新しいタブで開く(&amp;T)</translation>
 <translation id="6888831646723563669">接続して、新しい <ph name="DEVICE_TYPE" /> のあらゆる機能をご活用ください</translation>
 <translation id="6888850808202733940">アプリとゲーム</translation>
@@ -8805,7 +8779,6 @@
 <translation id="7016995776279438971">赤 - 緑、赤色弱（第一色弱）</translation>
 <translation id="7017219178341817193">新しいページを追加</translation>
 <translation id="7017354871202642555">ウィンドウが設定されている場合はモードを設定できません。</translation>
-<translation id="7019546817926942979">デバイスを電源に接続する必要があります。Linux のアップグレードを行うと、電池を大幅に消耗します。デバイスを電源に接続してから、もう一度お試しください。</translation>
 <translation id="7019805045859631636">速い</translation>
 <translation id="7021524108486027008"><ph name="DEVICE_TYPE" /> 上で、企業が管理している環境でツール、エディタ、IDE を実行します。</translation>
 <translation id="7022222879220069865">すべてのタッチパッドの接続を解除しました</translation>
@@ -8880,7 +8853,6 @@
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> <ph name="GROUP_NAME" /> グループ - <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">PKCS #1 MD5 with RSA 暗号化</translation>
 <translation id="7075625805486468288">HTTPS / SSL の証明書と設定を管理します</translation>
-<translation id="7076875098323397992">アップグレードを開始できません</translation>
 <translation id="7077751457066325012">キーボード ショートカットの表示とカスタマイズ</translation>
 <translation id="7077829361966535409">現在のプロキシ設定を使用してログイン ページを読み込むことができませんでした。<ph name="GAIA_RELOAD_LINK_START" />もう一度ログイン<ph name="GAIA_RELOAD_LINK_END" />してみるか、別の<ph name="PROXY_SETTINGS_LINK_START" />プロキシ設定<ph name="PROXY_SETTINGS_LINK_END" />を使用してみてください。</translation>
 <translation id="7078120482318506217">すべてのネットワーク</translation>
@@ -9738,7 +9710,6 @@
 <translation id="7668648754769651616">ユーザー補助機能をオンにするとデバイスが使いやすくなります。クイック設定にアクセスするには、画面下部に表示されている時刻を選択します。</translation>
 <translation id="7669620291129890197">デバイスに表示</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{PIN が正しくありません。あと 1 回試行できます。}other{PIN が正しくありません。あと # 回試行できます。}}</translation>
-<translation id="7670434942695515800">最適なパフォーマンスで使用するには、最新バージョンにアップグレードしてください。アップグレードを完了できない場合に備えて、ファイルをバックアップしておくことをおすすめします。アップグレードが始まると、Linux はシャットダウンされます。続行する前に開いているファイルを保存してください。<ph name="LINK_START" />詳細<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">字幕</translation>
 <translation id="7671130400130574146">システム タイトル バーと枠線の使用</translation>
 <translation id="7671139479636735732">右クリックでアイデアを簡単に視覚化</translation>
@@ -10104,7 +10075,6 @@
 <translation id="7921395044508886182">サイトで JavaScript の最適化を使用できます</translation>
 <translation id="7921901223958867679">この拡張機能により <ph name="HOST" /> の読み取りと変更が可能です</translation>
 <translation id="7922606348470480702">1 つの拡張機能</translation>
-<translation id="7923564237306226146">Linux のアップグレードが完了しました</translation>
 <translation id="7924075559900107275">長期サポート候補</translation>
 <translation id="7924358170328001543">ポート転送エラー</translation>
 <translation id="7925108652071887026">自動入力のデータ</translation>
@@ -10175,7 +10145,6 @@
 <translation id="7963001036288347286">タッチパッド アクセラレーション</translation>
 <translation id="7963408577288987423">{COUNT,plural, =1{1 件のパスワード}other{{COUNT} 件のパスワード}}</translation>
 <translation id="7963513503134856713">ウィンドウを右に移動しました</translation>
-<translation id="7963608432878156675">この名前は、他のデバイスの Bluetooth やネットワーク接続で表示されます</translation>
 <translation id="7964458523224581615">ビリジアン</translation>
 <translation id="7965946703747956421">ユーザー名 <ph name="USER_EMAIL" /> の <ph name="CREDENTIAL_TYPE" /> を削除</translation>
 <translation id="7966241909927244760">画像アドレスをコピー(&amp;C)</translation>
@@ -10372,7 +10341,6 @@
 <translation id="808488435221187916">保存した情報は、ログインしているデバイスから Google ウォレットにアクセスして確認できます</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> を設定しています...</translation>
 <translation id="8086121155774250556">このタブはデスクトップ画面を共有しています</translation>
-<translation id="8086610718778464681">Linux のアプリとファイルをバックアップできません</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{このファイルは暗号化されています。所有者に復号するよう依頼してください。}other{一部のファイルは暗号化されています。所有者に復号するよう依頼してください。}}</translation>
 <translation id="808894953321890993">パスワードを変更</translation>
 <translation id="8089782219932231262">{BOOKMARK_COUNT,plural, =1{1 件のブックマークがこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。保存時に重複する項目は整理されます。}other{{BOOKMARK_COUNT} 件のブックマークがこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。保存時に重複する項目は整理されます。}}</translation>
@@ -10403,7 +10371,6 @@
 <translation id="8102139037507939978">system_logs.txt から個人を特定できる情報を削除する。</translation>
 <translation id="810362914482827094">パスキーを検索</translation>
 <translation id="8104088837833760645">eSIM プロファイルのダウンロード</translation>
-<translation id="8104778744208707085">確認が必要です</translation>
 <translation id="8105050970626643057">必要なときに Gemini をすばやく開くことができます</translation>
 <translation id="8105273883928376822">続行するにはログインしてください。</translation>
 <translation id="8106114112474206597">I キーを使用してマウスボタンを押す</translation>
@@ -11980,7 +11947,6 @@
 <translation id="9149866541089851383">編集...</translation>
 <translation id="9150045010208374699">カメラを使用する</translation>
 <translation id="9150079578948279438">プロファイルを削除できませんでした。もう一度お試しいただくか、ご利用の携帯通信会社のテクニカル サポートにお問い合わせください。</translation>
-<translation id="9150860646299915960">Linux コンテナをアップグレードしてください</translation>
 <translation id="915112772806845021">サイトがピクチャー イン ピクチャーを自動的に開始する機能です。この機能を使用すると、動画の視聴を続行しながら、画面で他のタスクを行うことができます。</translation>
 <translation id="9151249085738989067">言語に基づいて ChromeVox の音声を自動的に切り替える</translation>
 <translation id="9151906066336345901">End</translation>

@@ -72,7 +72,6 @@
 <translation id="1041607257468256895">จัดการสิทธิ์เข้าถึงตำแหน่งของเว็บไซต์ใน Chrome</translation>
 <translation id="1042174272890264476">คอมพิวเตอร์ของคุณมาพร้อมกับไลบรารี RLZ ของ <ph name="SHORT_PRODUCT_NAME" /> ในตัว โดย RLZ จะระบุแท็กที่ซ้ำกันได้และไม่สามารถระบุตัวบุคคลเพื่อวัดการค้นหาและการใช้งาน <ph name="SHORT_PRODUCT_NAME" /> ที่ทำงานโดยแคมเปญส่งเสริมการขายบางรายการ บางครั้งป้ายกำกับจะปรากฏในคำค้นหาของ Google Search ใน <ph name="PRODUCT_NAME" /></translation>
 <translation id="1042248468362992359">เชื่อมต่ออินเทอร์เน็ตมือถือเพื่อใช้ฮอตสปอต <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="1043505821207197890">เกิดข้อผิดพลาด Linux อาจได้รับการอัปเกรดเพียงบางส่วน ตรวจสอบการบันทึกเพื่อดูข้อมูลเพิ่มเติม ระบบได้บันทึกข้อมูลไว้ใน Files &gt; ไฟล์ของฉัน &gt; <ph name="LOG_FILE" /></translation>
 <translation id="104385770822424034">เพิ่มการดำเนินการ</translation>
 <translation id="1045487161760507186">คุณไม่ต้องจดจำรหัสผ่านเนื่องจากระบบจะบันทึกไว้ให้คุณในเครื่องมือจัดการรหัสผ่านของ Google</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{นำเข้ารหัสผ่าน 1 รายการไปยัง<ph name="BRAND" /> ในอุปกรณ์นี้แล้ว}other{นำเข้ารหัสผ่าน {NUM_PASSWORDS} รายการไปยัง<ph name="BRAND" /> ในอุปกรณ์นี้แล้ว}}</translation>
@@ -410,7 +409,6 @@
 <translation id="1257336506558170607">ส่งออกใบรับรองที่เลือก</translation>
 <translation id="1258491128795710625">มีอะไรใหม่</translation>
 <translation id="1260451001046713751">อนุญาตป๊อปอัปและการเปลี่ยนเส้นทางจาก <ph name="HOST" /> เสมอ</translation>
-<translation id="1260810365552581339">Linux อาจมีพื้นที่ในดิสก์ไม่พอ คุณเพิ่มพื้นที่ในดิสก์ของ Linux และพยายามกู้คืนข้อมูลอีกครั้งได้ใน<ph name="LINK_START" />การตั้งค่า<ph name="LINK_END" /></translation>
 <translation id="1261380933454402672">ปานกลาง</translation>
 <translation id="126156426083987769">เกิดปัญหาเกี่ยวกับใบอนุญาตของอุปกรณ์โหมดสาธิต</translation>
 <translation id="1262395978737369974">ได้รับอนุญาตให้ใช้การเพิ่มประสิทธิภาพ JavaScript เสมอ</translation>
@@ -905,7 +903,6 @@
 <translation id="1603914832182249871">(โหมดไม่ระบุตัวตน)</translation>
 <translation id="1604432177629086300">พิมพ์ไม่สำเร็จ ตรวจสอบเครื่องพิมพ์แล้วลองอีกครั้ง</translation>
 <translation id="1604567162047669454">จดจำความหมายของเลย์เอาต์ที่มองเห็น</translation>
-<translation id="1604774728851271529">คุณต้องเชื่อมต่อเครือข่ายเพื่ออัปเกรด Linux เชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง</translation>
 <translation id="1605148987885002237">แป้นพิมพ์และการป้อนข้อมูล</translation>
 <translation id="1605744057217831567">ดูข้อมูลและสิทธิ์ทั้งหมดของเว็บไซต์</translation>
 <translation id="1606077700029460857">เปลี่ยนการตั้งค่าเมาส์</translation>
@@ -1259,7 +1256,6 @@
 <translation id="1833059747301212935">เข้าถึงเอกสารล่าสุดและกิจกรรมในปฏิทินที่กำลังจะเกิดขึ้นได้อย่างง่ายดาย</translation>
 <translation id="183445248400150852">เว็บไซต์ต่างๆ ใช้ฟีเจอร์นี้เพื่อลบล้างอินพุตจากแป้นพิมพ์ เช่น เพื่อการดำเนินการของเกมหรือแอป Remote Desktop</translation>
 <translation id="1834503245783133039">ดาวน์โหลดไม่สำเร็จ: <ph name="FILE_NAME" /></translation>
-<translation id="1835261175655098052">กำลังอัปเกรด Linux</translation>
 <translation id="1837292628323740716">ปรับปรุง Safe Browsing ใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="1837441256780906162">Microsoft OneDrive ปฏิเสธคำขอดังกล่าว โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="1838374766361614909">ล้างการค้นหา</translation>
@@ -1495,7 +1491,6 @@
 <translation id="1989288015781834552">เปิดอีกครั้งเพื่ออัปเดตให้เสร็จสิ้น แท็บจะเปิดขึ้นอีกครั้ง</translation>
 <translation id="1989903373608997757">ใช้เสมอ</translation>
 <translation id="1990046457226896323">ดาวน์โหลดไฟล์คำพูดแล้ว</translation>
-<translation id="1990727803345673966">ระบบกำลังกู้คืนไฟล์และแอป Linux ที่คุณสำรองข้อมูลไว้</translation>
 <translation id="199191324030140441">ปิดโหมดห้ามรบกวน</translation>
 <translation id="1992397118740194946">ไม่ได้ตั้งค่า</translation>
 <translation id="1994173015038366702">URL ของเว็บไซต์</translation>
@@ -1598,7 +1593,6 @@
 <translation id="206960706005837784"><ph name="APP_NAME" /> เสร็จสิ้นการพิมพ์จาก <ph name="PRINTER_NAME" /> แล้ว</translation>
 <translation id="2071393345806050157">ไม่มีไฟล์บันทึกในเครื่อง</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{คลิกเพื่อติดตั้งส่วนขยาย}other{คลิกเพื่อติดตั้งส่วนขยายเหล่านี้}}</translation>
-<translation id="2073496667646280609">คุณอาจเหลือพื้นที่เก็บข้อมูลไม่เพียงพอในอุปกรณ์หรือในพื้นที่สำรองที่เลือกไว้ ลองเพิ่มพื้นที่ว่างหรือเลือกพื้นที่อื่นสำหรับสำรองข้อมูล</translation>
 <translation id="2073505299004274893">ใช้อักขระไม่เกิน <ph name="CHARACTER_LIMIT" /> ตัว</translation>
 <translation id="2074263453710478603">บันทึกผู้ใช้ Chrome ของ ChromeOS</translation>
 <translation id="2074599390896964828">ตำแหน่งที่แน่นอน</translation>
@@ -2363,7 +2357,6 @@
 <translation id="2572032849266859634">ได้รับสิทธิ์ในการอ่าน <ph name="VOLUME_NAME" /> เท่านั้นแล้ว</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> แท็บ</translation>
 <translation id="2573276323521243649">กลับไปจากหน้าการเลือกรูปโปรไฟล์</translation>
-<translation id="2573417407488272418">สำรองแอปและไฟล์ไว้ใน Files &gt; ไฟล์ของฉัน ก่อนที่จะอัปเกรด</translation>
 <translation id="2573831315551295105">กำหนดสวิตช์ให้กับ "<ph name="ACTION" />"</translation>
 <translation id="2574037773163798130">{NUM_TABS,plural, =1{แชร์แท็บกับ Gemini}other{แชร์ # แท็บกับ Gemini}}</translation>
 <translation id="2575247648642144396">ไอคอนนี้จะปรากฏเมื่อส่วนขยายสามารถทำงานบนหน้าเว็บปัจจุบัน ใช้ส่วนขยายนี้โดยคลิกที่ไอคอน หรือกด <ph name="EXTENSION_SHORTCUT" /></translation>
@@ -2591,7 +2584,6 @@
     <ph name="BEGIN_PARAGRAPH2" />Google ใช้ข้อมูลที่รวบรวมจากอุปกรณ์นี้เพื่อปรับปรุงความแม่นยำของตำแหน่งและบริการตามตำแหน่ง รวมถึงปรับปรุง จัดหา และดูแลรักษาบริการของเราโดยทั่วไป เราประมวลผลข้อมูลนี้โดยอิงตามประโยชน์โดยชอบด้วยกฎหมายของ Google และของบุคคลที่สามในการตอบสนองความต้องการของผู้ใช้ ข้อมูลนี้ไม่ได้ใช้เพื่อระบุตัวตนบุคคลใด<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />คุณปิดความแม่นยำของตำแหน่งได้ทุกเมื่อในการตั้งค่าตำแหน่งของอุปกรณ์นี้ในส่วนการตั้งค่า &gt; ความเป็นส่วนตัวและความปลอดภัย &gt; การควบคุมความเป็นส่วนตัว &gt; การเข้าถึงตำแหน่ง &gt; การตั้งค่าตำแหน่งขั้นสูง หากความแม่นยำของตำแหน่งปิดอยู่ จะไม่มีการรวบรวมข้อมูลความแม่นยำของตำแหน่ง สำหรับแอปและบริการของ Android ระบบจะใช้เฉพาะที่อยู่ IP (หากมี) เพื่อระบุตำแหน่งของอุปกรณ์นี้ ซึ่งอาจส่งผลต่อความพร้อมใช้งานและความแม่นยำของตำแหน่งของแอปและบริการของ Android เช่น Google Maps<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2729940704980595903">ดูและจัดการกิจกรรมบนแอป Gemini</translation>
-<translation id="2730029791981212295">กำลังสำรองข้อมูลแอปและไฟล์ Linux</translation>
 <translation id="2730550884708194161">เกี่ยวกับโปรไฟล์งาน</translation>
 <translation id="2730596696987224099">เลือกเอง</translation>
 <translation id="2730647855013151888">รวมข้อมูลส่วนบุคคลทั้งหมด</translation>
@@ -2826,7 +2818,6 @@
 <translation id="2885129935310217435">มีปุ่มที่ใช้ชื่อนี้แล้ว โปรดเลือกชื่ออื่น</translation>
 <translation id="2885378588091291677">ตัวจัดการงาน</translation>
 <translation id="2885729872133513017">เกิดปัญหาเมื่อถอดรหัสการตอบกลับของเซิร์ฟเวอร์</translation>
-<translation id="2886119409731773154">การดำเนินการนี้อาจใช้เวลาถึง 30 นาที</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> และอีก <ph name="NUMBER_OF_DEVICES" /> รายการ</translation>
 <translation id="2887344147309501015">แชทกับ Gemini ใน Chrome เพื่อรับคำตอบ ประเด็นสำคัญ และอื่นๆ ขณะท่องเว็บ</translation>
@@ -3091,7 +3082,6 @@
 <translation id="3053273573829329829">เปิดใช้ PIN ของผู้ใช้</translation>
 <translation id="3053274730492362225">ไม่ต้องกะพริบ</translation>
 <translation id="3058498974290601450">คุณเปิดการซิงค์ได้ทุกเมื่อในการตั้งค่า</translation>
-<translation id="3058517085907878899">ตั้งชื่ออุปกรณ์</translation>
 <translation id="3060952009917586498">เปลี่ยนภาษาของอุปกรณ์ ปัจจุบันใช้ภาษา<ph name="LANGUAGE" /></translation>
 <translation id="3060987956645097882">เราเริ่มการเชื่อมต่อกับโทรศัพท์ไม่ได้ ตรวจสอบว่าโทรศัพท์อยู่ใกล้ๆ ปลดล็อกอยู่ และเปิดบลูทูธกับ Wi-Fi ไว้</translation>
 <translation id="3061302636956643119">ระบบจะส่งข้อความไปยัง Google เพื่อประมวลผล</translation>
@@ -3212,7 +3202,6 @@
 <translation id="3158770568048368350">การดำเนินการนี้อาจทำให้เครือข่ายมือถือขาดการเชื่อมต่อเป็นระยะเวลาสั้นๆ</translation>
 <translation id="3159335509547415276">ดูข้อมูลเกี่ยวกับบัญชีที่ถูกบล็อก</translation>
 <translation id="3159493096109238499">สีเบจ</translation>
-<translation id="3159978855457658359">แก้ไขชื่ออุปกรณ์</translation>
 <translation id="3160928651883997588">ค่ากำหนดของ VPN</translation>
 <translation id="3161522574479303604">ทุกภาษา</translation>
 <translation id="3162070126914310576">ลงทะเบียนอุปกรณ์นี้ไม่ได้ในตอนนี้เนื่องจากหน่วยขององค์กรถึงขีดจำกัดการลงทะเบียนเริ่มต้นแล้ว โปรดติดต่อผู้ดูแลระบบเพื่อขอความช่วยเหลือ</translation>
@@ -4236,7 +4225,6 @@
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{ผู้ดูแลระบบได้เปิดส่วนขยายที่อาจเป็นอันตราย 1 รายการขึ้นมาอีกครั้ง}other{ผู้ดูแลระบบได้เปิดส่วนขยายที่อาจเป็นอันตราย {NUM_EXTENSIONS} รายการขึ้นมาอีกครั้ง}}</translation>
 <translation id="3834728400518755610">ต้องปิด Linux เพื่อทำการเปลี่ยนแปลงการตั้งค่าไมโครโฟน ปิด Linux เพื่อดำเนินการต่อ</translation>
 <translation id="3834775135533257713">ไม่สามารถเพิ่มแอปพลิเคชัน "<ph name="TO_INSTALL_APP_NAME" />" เนื่องจากขัดแย้งกับ "<ph name="INSTALLED_APP_NAME" />"</translation>
-<translation id="3835904559946595746">กู้คืนข้อมูลสำรองของ Linux ไม่สำเร็จ</translation>
 <translation id="383669374481694771">นี่คือข้อมูลทั่วไปเกี่ยวกับอุปกรณ์และการใช้งานอุปกรณ์ (เช่น ระดับแบตเตอรี่ กิจกรรมในระบบและแอป ตลอดจนข้อผิดพลาด) ระบบจะใช้ข้อมูลเพื่อปรับปรุง Android และข้อมูลที่รวบรวมมาบางส่วนก็ยังจะช่วยให้แอปและพาร์ทเนอร์ของ Google เช่น นักพัฒนาแอป Android พัฒนาแอปและผลิตภัณฑ์ของตนให้ดีขึ้นด้วย</translation>
 <translation id="3837569373891539515">คุณเลือกได้มากกว่า 1 ข้อ และยังดูตัวเลือกเหล่านี้ได้ในการตั้งค่าหลังจากที่ตั้งค่า <ph name="DEVICE_TYPE" /> เสร็จแล้ว</translation>
 <translation id="3838085852053358637">ไม่สามารถโหลดส่วนขยาย</translation>
@@ -4402,7 +4390,6 @@
 <translation id="3943582379552582368">&amp;กลับ</translation>
 <translation id="3943857333388298514">วาง</translation>
 <translation id="3945513714196326460">ลองใช้ชื่อที่สั้นกว่านี้</translation>
-<translation id="3948027458879361203">เปลี่ยนชื่อโฮสต์</translation>
 <translation id="3948116654032448504">ค้นหา&amp;รูปภาพด้วย <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948334586359655083">แท็บนี้กำลังเล่นเสียง</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> แก้ไขไฟล์ในโฟลเดอร์ต่อไปนี้ได้</translation>
@@ -5572,7 +5559,6 @@
 <translation id="4769632191812288342">คุณกำลังได้รับการปกป้องแบบมาตรฐาน</translation>
 <translation id="4770119228883592393">ขอสิทธิ์ กด ⌘ + Option + ลูกศรลงเพื่อตอบกลับ</translation>
 <translation id="4772914216048388646">เป็นระเบียบ</translation>
-<translation id="4773112038801431077">อัปเกรด Linux</translation>
 <translation id="4773122030389014189">แชร์กลุ่มแท็บ "<ph name="GROUP_NAME" />"</translation>
 <translation id="4773253008034797668">ได้รับอนุญาตให้เชื่อมต่อกับอุปกรณ์ในเครือข่ายภายในของคุณ</translation>
 <translation id="477548766361111120">อนุญาตให้ส่วนขยายอ่านและเปลี่ยนแปลงเว็บไซต์นี้</translation>
@@ -5963,7 +5949,6 @@
 <translation id="5040823038948176460">การตั้งค่าเนื้อหาเพิ่มเติม</translation>
 <translation id="5041509233170835229">แอป Chrome</translation>
 <translation id="504194357571315770">ขอให้ดำเนินการ</translation>
-<translation id="5043440033854483429">ชื่อสามารถมีตัวอักษร ตัวเลข และขีดกลาง (-) รวมถึงต้องมีอักขระรวมตั้งแต่ 1 ถึง 15 ตัว</translation>
 <translation id="5043807571255634689">ระบบจะนำ <ph name="SUBSCRIPTION_NAME" /> ออกจากอุปกรณ์นี้เท่านั้น หากต้องการเปลี่ยนแปลงการสมัครใช้บริการ โปรดติดต่อผู้ให้บริการดังกล่าว <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="5045367873597907704">เกี่ยวกับอุปกรณ์ HID</translation>
 <translation id="5045550434625856497">รหัสผ่านไม่ถูกต้อง</translation>
@@ -6081,7 +6066,6 @@
 <translation id="5117930984404104619">ตรวจสอบพฤติกรรมของส่วนขยายอื่นๆ รวมถึง URL ที่เข้าชม</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5120886753782992638">คลิกที่นี่เพื่อไปยัง <ph name="APPROVED_URL" /></translation>
-<translation id="5121052518313988218">ไม่มีการรองรับระบบปฏิบัติการในคอนเทนเนอร์ Linux ของคุณแล้ว ระบบปฏิบัติการดังกล่าวจะไม่ได้รับการอัปเดตความปลอดภัยและการแก้ไขข้อบกพร่องอีกต่อไป นอกจากนี้ฟีเจอร์ที่ทำงานอยู่ก็อาจใช้งานไม่ได้โดยไม่คาดคิด โปรดอัปเกรดเป็นเวอร์ชันล่าสุดเพื่อใช้ Linux ต่อ</translation>
 <translation id="5121130586824819730">ฮาร์ดดิสก์ของคุณเต็ม โปรดบันทึกลงในตำแหน่งอื่นหรือเพิ่มเนื้อที่ว่างในฮาร์ดดิสก์</translation>
 <translation id="5123433949759960244">บาสเกตบอล</translation>
 <translation id="5125714798187802869">เปิดใช้งาน</translation>
@@ -6398,7 +6382,6 @@
 <translation id="5340900621595888432">ส่งข้อมูลการวินิจฉัยและการใช้งาน</translation>
 <translation id="5341793073192892252">บล็อกคุกกี้ต่อไปนี้แล้ว (บล็อกคุกกี้ของบุคคลที่สามอยู่โดยไม่มีข้อยกเว้น)</translation>
 <translation id="5342091991439452114">PIN ต้องมีอย่างน้อย <ph name="MINIMUM" /> หลัก</translation>
-<translation id="5344036115151554031">กำลังคืนค่า Linux</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ขวา)</translation>
 <translation id="534449933710420173">โฟลเดอร์ที่ไม่มีชื่อ</translation>
 <translation id="5345916423802287046">เริ่มต้นแอปเมื่อคุณลงชื่อเข้าใช้</translation>
@@ -6632,7 +6615,6 @@
 <translation id="5497739595514726398">Chrome ไม่สามารถยืนยันแพ็กเกจการติดตั้งนี้ได้</translation>
 <translation id="5498967291577176373">เขียนชื่อ ที่อยู่ หรือหมายเลขโทรศัพท์ของคุณได้เร็วขึ้นด้วยคำแนะนำในบรรทัด</translation>
 <translation id="5499211612787418966">ไม่ได้โฟกัสกล่องโต้ตอบนี้อยู่ กด Alt-Shift A เพื่อโฟกัสกล่องโต้ตอบนี้</translation>
-<translation id="5499453227627332024">มีการอัปเกรดพร้อมให้ดำเนินการกับคอนเทนเนอร์ Linux คุณอัปเกรดในภายหลังจากแอปการตั้งค่าก็ได้</translation>
 <translation id="5499476581866658341">ตอนนี้คุณดูรูปภาพและสื่อล่าสุดของโทรศัพท์ได้แล้ว</translation>
 <translation id="549957179819296104">ไอคอนใหม่</translation>
 <translation id="5499634624419508916">แทนที่กลุ่มแท็บที่มีอยู่</translation>
@@ -7052,7 +7034,6 @@
 <translation id="5804241973901381774">สิทธิ์</translation>
 <translation id="5804259315582798390">เปิดใช้การกู้คืนข้อมูลในเครื่องไม่สำเร็จ</translation>
 <translation id="5805268472388605531">กดแป้นบนแป้นพิมพ์ค้างไว้เพื่อดูเครื่องหมายการเน้นเสียงและสัญลักษณ์พิเศษ</translation>
-<translation id="5805353596216929913">ไม่มีอัปเดต</translation>
 <translation id="5805697420284793859">ตัวจัดการหน้าต่าง</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> กด Enter เพื่อลบไฟล์</translation>
 <translation id="5806447147478173900">พื้นที่เก็บข้อมูลทั้งหมดที่เว็บไซต์ต่างๆ ที่แสดงอยู่ใช้: <ph name="TOTAL_USAGE" /></translation>
@@ -7501,7 +7482,6 @@
 <translation id="6113942107547980621">โปรดเปลี่ยนเป็นโปรไฟล์ผู้ใช้หลักในโทรศัพท์เพื่อใช้ Smart Lock</translation>
 <translation id="6116921718742659598">เปลี่ยนการตั้งค่าภาษาและการป้อนข้อมูล</translation>
 <translation id="6119008366402292080">ไม่มีเครื่องพิมพ์</translation>
-<translation id="6119927814891883061">ตั้งชื่ออุปกรณ์ว่า <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">การแก้สี</translation>
 <translation id="6121773125605585883">ดูรหัสผ่านที่มีชื่อผู้ใช้ <ph name="USERNAME" /> สำหรับ <ph name="WEBSITE" /></translation>
 <translation id="6122093587541546701">อีเมล (ไม่บังคับ):</translation>
@@ -7742,7 +7722,6 @@
 <translation id="6277105963844135994">ระยะหมดเวลาของเครือข่าย</translation>
 <translation id="6277518330158259200">จับ&amp;ภาพหน้าจอ</translation>
 <translation id="6278428485366576908">ธีม</translation>
-<translation id="6278776436938569440">เปลี่ยนสถานที่</translation>
 <translation id="6280215091796946657">ลงชื่อเข้าใช้ด้วยบัญชีอื่น</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6281218688313242284">จัดการบัญชี &amp;Google ของคุณ</translation>
@@ -8088,7 +8067,6 @@
 <translation id="65334502113648172">กดแป้นลูกศรเพื่อย่อหรือขยายพื้นที่แสดงผล หากต้องการย้ายพื้นที่แสดงผลไปรอบๆ ให้กด Shift และ + แล้วใช้แป้นลูกศร</translation>
 <translation id="6535331821390304775">อนุญาตให้ <ph name="ORIGIN" /> เปิดลิงก์ประเภทนี้ในแอปที่เชื่อมโยงทุกครั้ง</translation>
 <translation id="653659894138286600">สแกนเอกสารและรูปภาพ</translation>
-<translation id="6537613839935722475">ชื่อมีตัวอักษร ตัวเลข และขีดกลาง (-) ได้</translation>
 <translation id="6538036594527795020">เปลี่ยนภาษาของ <ph name="APP" /> ปัจจุบันใช้ภาษา<ph name="LANGUAGE" /></translation>
 <translation id="6538098297809675636">เกิดข้อผิดพลาดขณะตรวจหารหัส</translation>
 <translation id="653920215766444089">กำลังค้นหาอุปกรณ์ชี้ตำแหน่ง</translation>
@@ -8102,7 +8080,6 @@
 <translation id="6542521951477560771">แคสต์ไปที่<ph name="RECEIVER_NAME" /></translation>
 <translation id="6544134392255015460">เปิด/ปิดไฟแบ็กไลต์ของแป้นพิมพ์</translation>
 <translation id="6545665334409411530">อัตราการพิมพ์ซ้ำ</translation>
-<translation id="6546856949879953071">หากต้องการข้อมูลการอัปเกรดโดยละเอียด ระบบได้บันทึกข้อมูลดังกล่าวไว้ใน Files &gt; ไฟล์ของฉัน &gt; <ph name="LOG_FILE" /></translation>
 <translation id="6547354035488017500">เพิ่มพื้นที่ว่างบนอุปกรณ์อย่างน้อย 512 MB มิฉะนั้นอุปกรณ์ของคุณอาจไม่ตอบสนอง หากต้องการเพิ่มพื้นที่ว่าง ให้ลบไฟล์ออกจากพื้นที่เก็บข้อมูลของอุปกรณ์</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />บริการตำแหน่งของ Google จะใช้แหล่งที่มาอย่าง Wi-Fi, เครือข่ายมือถือ และเซ็นเซอร์เพื่อช่วยประมาณตำแหน่งของอุปกรณ์<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />คุณปิดการใช้ตำแหน่งของ Android ในอุปกรณ์ได้ทุกเมื่อโดยไปที่การตั้งค่า &gt; แอป &gt; Google Play Store &gt; จัดการค่ากำหนด Android &gt; ความปลอดภัยและตำแหน่ง &gt; ตำแหน่ง และยังปิดการใช้ Wi-Fi, เครือข่ายมือถือ และเซ็นเซอร์สำหรับตำแหน่งของ Android ได้ด้วย โดยการปิด "ความแม่นยำของตำแหน่งของ Google" ในเมนูเดียวกัน<ph name="END_PARAGRAPH2" /></translation>
@@ -8121,7 +8098,6 @@
 <translation id="6553046373262346328">{GROUP_COUNT,plural, =1{การดำเนินการนี้จะลบกลุ่มออกจากอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้ <ph name="EMAIL" />}other{การดำเนินการนี้จะลบกลุ่มออกจากอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้ <ph name="EMAIL" />}}</translation>
 <translation id="655384502888039633">ผู้ใช้ <ph name="USER_COUNT" /> คน</translation>
 <translation id="6555432686520421228">ลบบัญชีผู้ใช้ทั้งหมดและรีเซ็ตอุปกรณ์ <ph name="IDS_SHORT_PRODUCT_NAME" /> ของคุณให้เหมือนใหม่</translation>
-<translation id="6555604601707417276">กู้คืนข้อมูลสำรอง Linux แล้ว</translation>
 <translation id="6555744145993174510">จาก: <ph name="APP_ORIGIN" /></translation>
 <translation id="6556866813142980365">ทำซ้ำ</translation>
 <translation id="6556903358015358733">ธีมและวอลเปเปอร์</translation>
@@ -8278,7 +8254,6 @@
 <translation id="6663190258859265334">Powerwash <ph name="DEVICE_TYPE" /> และเปลี่ยนกลับไปใช้เวอร์ชันก่อนหน้า</translation>
 <translation id="6664774537677393800">เกิดข้อผิดพลาดขณะเปิดโปรไฟล์ของคุณ โปรดออกจากระบบแล้วลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="6665874326033183068">ป่า</translation>
-<translation id="6666559645296300656">กำลังยกเลิกการอัปเกรด Linux</translation>
 <translation id="6667086124612170548">ไฟล์ใหญ่เกินไปสำหรับอุปกรณ์นี้</translation>
 <translation id="6667092961374478614">การค้นพบได้ของ<ph name="FEATURE_NAME" /></translation>
 <translation id="6667187897999649121">เฉพาะตอนนี้ คุณจะแชร์รหัสผ่านกับสมาชิกในครอบครัวได้เท่านั้น <ph name="BEGIN_LINK" />สร้างกลุ่มครอบครัว<ph name="END_LINK" />ที่มีสมาชิกได้สูงสุด 6 คนและใช้ประโยชน์จากผลิตภัณฑ์และการสมัครใช้บริการใน Google ได้มากขึ้น</translation>
@@ -8335,7 +8310,6 @@
 <translation id="6702639462873609204">&amp;แก้ไข...</translation>
 <translation id="6702859741546259407">เปิดบลูทูธและ Wi-Fi เพื่อใช้<ph name="FEATURE_NAME" /></translation>
 <translation id="6703109186846420472">,</translation>
-<translation id="6703254819490889819">กู้คืนข้อมูลสำรอง</translation>
 <translation id="6707122714992751648">เรียกใช้การทดสอบวินิจฉัย ChromeOS</translation>
 <translation id="6707389671160270963">ใบรับรองไคลเอ็นต์ SSL</translation>
 <translation id="6707671917294473995">เว็บไซต์ไม่ได้รับอนุญาตให้ใช้กล้อง</translation>
@@ -8614,7 +8588,6 @@
 <translation id="6883606786470492001">จัดการหัวข้อโฆษณาและการตั้งค่าอื่นๆ เพื่อจำกัดข้อมูลเกี่ยวกับคุณที่เว็บไซต์เข้าถึงได้เมื่อแสดงโฆษณาที่ปรับตามโปรไฟล์ของผู้ใช้</translation>
 <translation id="6884474387073389421">คุณแน่ใจไหมว่าต้องการลบข้อมูลการลงชื่อเข้าใช้ที่เลือก</translation>
 <translation id="6885771755599377173">ดูตัวอย่างข้อมูลระบบ</translation>
-<translation id="6886380424988777998">อัปเกรด Linux ไม่ได้</translation>
 <translation id="6886871292305414135">เปิดลิงก์ในแ&amp;ท็บใหม่</translation>
 <translation id="6888831646723563669">เชื่อมต่อเพื่อใช้งานฟีเจอร์ทั้งหมดใน <ph name="DEVICE_TYPE" /> เครื่องใหม่</translation>
 <translation id="6888850808202733940">แอปและเกม</translation>
@@ -8815,7 +8788,6 @@
 <translation id="7016995776279438971">สีแดง/เขียว เห็นสีแดงได้น้อย (ตาบอดสีแดง)</translation>
 <translation id="7017219178341817193">เพิ่มหน้าใหม่</translation>
 <translation id="7017354871202642555">ไม่สามารถกำหนดโหมดได้หลังจากกำหนดหน้าต่างแล้ว</translation>
-<translation id="7019546817926942979">คุณต้องชาร์จอุปกรณ์ การอัปเกรด Linux อาจทำให้แบตเตอรี่หมดอย่างรวดเร็ว ต่ออุปกรณ์กับที่ชาร์จแล้วลองอีกครั้ง</translation>
 <translation id="7019805045859631636">เร็ว</translation>
 <translation id="7021524108486027008">เรียกใช้เครื่องมือ เครื่องมือแก้ไข และ IDE ในสภาพแวดล้อมที่จัดการโดยองค์กรของคุณใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="7022222879220069865">เลิกเชื่อมต่อทัชแพดทั้งหมดแล้ว</translation>
@@ -8890,7 +8862,6 @@
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> กลุ่ม <ph name="GROUP_NAME" /> - <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">PKCS #1 MD5 พร้อมการเข้ารหัส RSA</translation>
 <translation id="7075625805486468288">จัดการใบรับรอง HTTPS/SSL และการตั้งค่า</translation>
-<translation id="7076875098323397992">เริ่มการอัปเกรดไม่ได้</translation>
 <translation id="7077751457066325012">ดูและปรับแต่งแป้นพิมพ์ลัด</translation>
 <translation id="7077829361966535409">หน้าลงชื่อเข้าใช้ไม่สามารถโหลดโดยใช้การตั้งค่าพร็อกซีในปัจจุบัน โปรด <ph name="GAIA_RELOAD_LINK_START" />ลองลงชื่อเข้าใช้อีกครั้ง<ph name="GAIA_RELOAD_LINK_END" /> หรือใช้<ph name="PROXY_SETTINGS_LINK_START" />การตั้งค่าพร็อกซี<ph name="PROXY_SETTINGS_LINK_END" />อื่นๆ</translation>
 <translation id="7078120482318506217">ทุกเครือข่าย</translation>
@@ -9747,7 +9718,6 @@
 <translation id="7668648754769651616">ฟีเจอร์การช่วยเหลือพิเศษจะช่วยให้อุปกรณ์ใช้งานง่ายยิ่งขึ้น หากต้องการเข้าถึงการตั้งค่าด่วน ให้เลือกเวลาที่ด้านล่างของหน้าจอ</translation>
 <translation id="7669620291129890197">แสดงให้อุปกรณ์ของคุณมองเห็น</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{PIN ไม่ถูกต้อง คุณป้อน PIN ได้อีก 1 ครั้ง}other{PIN ไม่ถูกต้อง คุณป้อน PIN ได้อีก # ครั้ง}}</translation>
-<translation id="7670434942695515800">อัปเกรดเป็นเวอร์ชันล่าสุดเพื่อประสิทธิภาพการทำงานที่ดีที่สุด ขอแนะนำให้สำรองไฟล์ไว้เผื่อในกรณีที่อัปเกรดไม่สำเร็จ เมื่อการอัปเกรดเริ่มต้น Linux จะหยุดทำงาน บันทึกไฟล์ที่เปิดไว้ก่อนที่จะดำเนินการต่อ <ph name="LINK_START" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">คำบรรยาย</translation>
 <translation id="7671130400130574146">ใช้แถบชื่อและเส้นขอบของระบบ</translation>
 <translation id="7671139479636735732">คลิกขวาเพื่อทำให้ไอเดียเป็นรูปธรรมได้ง่ายๆ</translation>
@@ -10114,7 +10084,6 @@
 <translation id="7921395044508886182">เว็บไซต์ใช้การเพิ่มประสิทธิภาพ JavaScript ได้</translation>
 <translation id="7921901223958867679">ส่วนขยายนี้อ่านและเปลี่ยนแปลง <ph name="HOST" /> ได้</translation>
 <translation id="7922606348470480702">ส่วนขยาย 1 รายการ</translation>
-<translation id="7923564237306226146">อัปเกรด Linux เรียบร้อยแล้ว</translation>
 <translation id="7924075559900107275">ตัวเลือกก่อนเข้าสู่การสนับสนุนระยะยาว</translation>
 <translation id="7924358170328001543">เกิดข้อผิดพลาดในการส่งต่อพอร์ต</translation>
 <translation id="7925108652071887026">ป้อนข้อมูลอัตโนมัติ</translation>
@@ -10185,7 +10154,6 @@
 <translation id="7963001036288347286">การเร่งความเร็วของทัชแพด</translation>
 <translation id="7963408577288987423">{COUNT,plural, =1{รหัสผ่าน 1 รายการ}other{รหัสผ่าน {COUNT} รายการ}}</translation>
 <translation id="7963513503134856713">หน้าต่างเลื่อนไปทางขวา</translation>
-<translation id="7963608432878156675">อุปกรณ์อื่นๆ จะเห็นชื่อนี้เมื่อมีการเชื่อมต่อบลูทูธและเครือข่าย</translation>
 <translation id="7964458523224581615">เวอรีเดียน</translation>
 <translation id="7965946703747956421">ลบ<ph name="CREDENTIAL_TYPE" />สำหรับชื่อผู้ใช้: <ph name="USER_EMAIL" /></translation>
 <translation id="7966241909927244760">คัด&amp;ลอกที่อยู่รูปภาพ</translation>
@@ -10382,7 +10350,6 @@
 <translation id="808488435221187916">ข้อมูลของคุณจะพร้อมใช้งานใน Google Wallet บนอุปกรณ์ใดก็ตามที่ลงชื่อเข้าใช้</translation>
 <translation id="8086015605808120405">กำลังกำหนดค่า <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086121155774250556">แท็บนี้กำลังแชร์หน้าจอของคุณ</translation>
-<translation id="8086610718778464681">สำรองแอปและไฟล์ Linux ไม่ได้</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{ไฟล์นี้มีการเข้ารหัส ขอให้เจ้าของไฟล์ถอดรหัส}other{ไฟล์เหล่านี้บางไฟล์มีการเข้ารหัส ขอให้เจ้าของไฟล์ถอดรหัส}}</translation>
 <translation id="808894953321890993">เปลี่ยนรหัสผ่าน</translation>
 <translation id="8089782219932231262">{BOOKMARK_COUNT,plural, =1{ระบบบันทึกบุ๊กมาร์ก 1 รายการไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google การดำเนินการนี้จะล้างรายการที่ซ้ำกันด้วย}other{ระบบบันทึกบุ๊กมาร์ก {BOOKMARK_COUNT} รายการไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google การดำเนินการนี้จะล้างรายการที่ซ้ำกันด้วย}}</translation>
@@ -10413,7 +10380,6 @@
 <translation id="8102139037507939978">นำข้อมูลส่วนบุคคลที่ระบุตัวบุคคลนั้นได้ออกจาก system_logs.txt</translation>
 <translation id="810362914482827094">ค้นหาพาสคีย์</translation>
 <translation id="8104088837833760645">ดาวน์โหลดโปรไฟล์ eSIM</translation>
-<translation id="8104778744208707085">ต้องตรวจสอบ</translation>
 <translation id="8105050970626643057">เปิด Gemini ได้อย่างรวดเร็วทุกเมื่อที่ต้องการ</translation>
 <translation id="8105273883928376822">โปรดลงชื่อเข้าใช้เพื่อดำเนินการต่อ</translation>
 <translation id="8106114112474206597">ใช้ปุ่ม "i" เพื่อกดปุ่มเมาส์</translation>
@@ -11990,7 +11956,6 @@
 <translation id="9149866541089851383">แก้ไข...</translation>
 <translation id="9150045010208374699">ใช้กล้องถ่ายรูปของคุณ</translation>
 <translation id="9150079578948279438">นำโปรไฟล์ออกไม่ได้ โปรดลองอีกครั้งหรือติดต่อผู้ให้บริการเพื่อรับการสนับสนุนด้านเทคนิค</translation>
-<translation id="9150860646299915960">อัปเกรดคอนเทนเนอร์ Linux</translation>
 <translation id="915112772806845021">เว็บไซต์ต่างๆ ใช้ฟีเจอร์นี้เพื่อเข้าสู่การแสดงภาพซ้อนภาพโดยอัตโนมัติ ซึ่งจะช่วยให้คุณดูวิดีโอต่อได้และยังทำให้หน้าจอมีที่ว่างมากขึ้นสำหรับงานอื่นๆ</translation>
 <translation id="9151249085738989067">เปลี่ยนเสียง ChromeVox อัตโนมัติโดยอิงตามภาษา</translation>
 <translation id="9151906066336345901">End</translation>

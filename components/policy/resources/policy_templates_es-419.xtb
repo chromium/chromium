@@ -94,15 +94,6 @@ Si la inhabilitas, no se permitirá la función de autocorrección en el teclado
 
       Si se establece esta política, la pantalla de acceso mostrará siempre la configuración regional que indica su primer valor (la política se define como una lista para otras futuras configuraciones). Si no se establece esta política o se establece una lista vacía, la pantalla de acceso mostrará la configuración regional de la última sesión de usuario. Si el valor de esta política no corresponde a una configuración regional válida, la pantalla de acceso mostrará una configuración de resguardo (la actual es en-US).</translation>
 <translation id="1050158007881386475">Inhabilitar los informes de estado de la placa del dispositivo</translation>
-<translation id="1050897390688148222">Lens Overlay permite a los usuarios realizar búsquedas contextuales en Google a través de una captura de pantalla o haciendo una pregunta sobre el contenido de la página actual. Esta función requiere que el usuario final habilite la opción.
-
-Esta función está disponible para todos los usuarios que tienen Google como motor de búsqueda predeterminado, a menos que esta política la inhabilite.
-
-Si estableces la política con el valor "0" (permitir) o no la estableces, los usuarios podrán acceder a la función.
-
-Si la estableces con el valor "1" (no permitir), la función no estará disponible.
-
-A partir de la versión <ph name="PRODUCT_NAME" /> 140, si no estableces la política, su comportamiento se determina según la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1052499923181221200">Esta política no tendrá efecto, a menos que SamlInSessionPasswordChangeEnabled sea verdadera.
       Si esta política es verdadera y se establece como, por ejemplo, 14, los usuarios de SAML recibirán una notificación sobre el vencimiento de su contraseña 14 días antes de la fecha de caducidad.
       Los usuarios podrán ocuparse de inmediato y cambiar la contraseña en la sesión, antes de que caduque.
@@ -4665,19 +4656,6 @@ Si no estableces la política, su comportamiento se determina según la polític
           Si la estableces, los usuarios no podrán cambiarla ni anularla.
 
           Si no la estableces, la función para resaltar el signo de intercalación estará inicialmente inhabilitada en la pantalla de acceso, pero el usuario podrá habilitarla en cualquier momento.</translation>
-<translation id="4182348537826882258">Si estableces la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, se detendrá la carga de las páginas web que tengan URLs prohibidas. Los administradores pueden especificar la lista de patrones de URL que se bloquearán. Si no la estableces, no se bloqueará ninguna URL en el navegador. Se pueden definir hasta 1,000 excepciones en <ph name="URL_ALLOWLIST_POLICY_NAME" />. Consulta cómo darle formato a un patrón de URL ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
-
-Nota: Esta política no se aplica a las URLs de JavaScript en la página con datos cargados de forma dinámica. Si bloqueaste example.com/abc, aún podría cargarse con XMLHTTPRequest. Además, esta política no impide que las páginas web actualicen la URL que se muestra en el cuadro multifunción a una bloqueada mediante la API de JavaScript History.
-
-A partir de la versión 73 de <ph name="PRODUCT_NAME" />, puedes bloquear las URLs javascript://*. Sin embargo, esto solo afecta el JavaScript ingresado en la barra de direcciones o, por ejemplo, bookmarklets.
-
-A partir de la versión 92 de <ph name="PRODUCT_NAME" />, esta política también es compatible en el modo sin interfaz gráfica.
-
-Nota: Si bloqueas las URLs internas chrome://* y chrome-untrusted://*, es posible que se produzcan errores inesperados o que se eludan en algunos casos. En lugar de bloquear determinadas URLs internas, consulta si hay más políticas específicas disponibles. Por ejemplo:
-
-- En lugar de bloquear chrome://settings/certificates, usa <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />.
-
-- En lugar de bloquear chrome-untrusted://crosh, usa <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="4183229833636799228">Configuración predeterminada de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="4185868802416355029">Permitir que las extensiones administradas usen la API de Enterprise Hardware Platform</translation>
 <translation id="4186244263855283575">Permite establecer un cronograma personalizado para reiniciar los dispositivos. Si la política se establece como verdadera, el dispositivo se reiniciará según el cronograma. Para cancelar otros reinicios programados, debe quitarse la política.
@@ -6582,13 +6560,6 @@ Las cuentas administradas no son aptas para unirse a un grupo familiar ni crear 
       Si no estableces la política, <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> no estará disponible para ninguna aplicación web.
 Para mejorar la privacidad, a partir de la versión 116 de <ph name="PRODUCT_NAME" />, esta política ya no admitirá la actualización dinámica. Por lo tanto, podemos garantizar al usuario que ninguna página adicional capturará las pantallas después de acceder si no se permitía al inicio de sesión.</translation>
 <translation id="5361167871898066799">Controlar la función de autocorrección en el teclado físico</translation>
-<translation id="5361708558735884308">Si estableces la política, se permitirá el acceso a las URLs de la lista, como excepciones a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Consulta la descripción de esa política para conocer el formato de las entradas de esta lista. Por ejemplo, si estableces la política <ph name="URL_BLOCKLIST_POLICY_NAME" /> como "*", se bloquearán todas las solicitudes. Además, con esta política puedes permitir el acceso a una lista limitada de URLs. Úsala para abrir excepciones para determinados esquemas, subdominios de otros dominios, puertos o rutas específicas, con el formato que se indica en (https://support.google.com/chrome/a?p=url_blocklist_filter_format). El filtro más específico determina si una URL está bloqueada o habilitada. La política <ph name="URL_ALLOWLIST_POLICY_NAME" /> tiene prioridad sobre la política <ph name="URL_BLOCKLIST_POLICY_NAME" />. Esta política se limitará a 1,000 entradas.
-
-Además, esta política puede permitir que el navegador invoque de forma automática aplicaciones externas registradas como controladores de los protocolos que se encuentran en la lista correspondiente, como "tel:" o "ssh:".
-
-Si no estableces la política, no se permitirán excepciones <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-A partir de la versión 92 de <ph name="PRODUCT_NAME" />, esta política también es compatible en el modo sin interfaz gráfica.</translation>
 <translation id="5362531528507578966">Anula el modo predeterminado de impresión de los gráficos de fondo.</translation>
 <translation id="5365476955714838841">Parámetros de la línea de comandos para el navegador alternativo</translation>
 <translation id="5365946944967967336">Mostrar el botón "Página principal" en la barra de herramientas</translation>
@@ -7647,7 +7618,6 @@ Si se establece como <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" /> (val
 <translation id="6011969832398368671">Permite que los sitios soliciten al usuario acceso de escritura a archivos y directorios</translation>
 <translation id="601234435141599215">Permitir la redirección de puertos a máquinas virtuales Linux</translation>
 <translation id="6012952794649558174">Usa el comportamiento predeterminado del navegador.</translation>
-<translation id="6013875085491664033">Habilitar el uso compartido de contenido con las integraciones de <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.</translation>
 <translation id="6015281292796053435">Esta política controla el envío de datos de la Navegación segura, lo que incluye la cantidad de advertencias generadas por esta función y las veces que se hace clic en ellas.
 
       Si no estableces la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> o la inhabilitas, se ignorará.
@@ -8438,7 +8408,6 @@ Esta política solo afecta a TLS 1.3 y QUIC, y no a versiones anteriores de TLS.
       Si inhabilitas esta política o no la estableces, no se podrán cambiar las contraseñas de SAML en chrome://password-change ni se mostrarán notificaciones cuando este tipo de contraseñas estén por vencer.</translation>
 <translation id="6457477291648119596">Type42</translation>
 <translation id="6458361632497500815">Si habilitas la política o no la estableces, todos los usuarios podrán utilizar <ph name="PRODUCT_CROSTINI_NAME" /> siempre que estén habilitadas las 3 políticas (<ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />, <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> y <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" />). Si inhabilitas la política, los usuarios no afiliados no podrán usar <ph name="PRODUCT_CROSTINI_NAME" />. En ese caso, se comenzará a aplicar la política en los contenedores de <ph name="PRODUCT_CROSTINI_NAME" /> que se inicien a partir de ese momento, pero no en aquellos que ya estén en ejecución.</translation>
-<translation id="6462604655173570082">Si no estableces la política o si la habilitas, los usuarios podrán ver y usar el botón <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el cuadro de búsqueda de la página Nueva pestaña. Si la inhabilitas, los usuarios no verán el botón <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el cuadro de búsqueda de la página Nueva pestaña.</translation>
 <translation id="6464074037294098618">Habilitar "Autocompletar" para las direcciones</translation>
 <translation id="6464564464230511695">Si habilitas la política o no la estableces, se permitirá el <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> en todas las páginas web.
 
@@ -8844,23 +8813,6 @@ Si habilitas la política, la función de actualización de GREASE de User-Agent
 <translation id="6682305153467826752">Habilitar la generación de informes para la identificación de máquinas</translation>
 <translation id="6684842561251679182">Cantidad de incrementos de claves del kernel de hitos retenidos</translation>
 <translation id="6685903773201985073">Permite la autenticación ambiental en sesiones comunes y de invitado.</translation>
-<translation id="668721405120274587">Esta política controla el uso compartido del contenido de páginas y archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> a través del panel lateral o las pestañas de <ph name="PRODUCT_NAME" />.
-
-Ten en cuenta que esta política no afecta a <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> en la Web. Solo controla cómo los usuarios pueden compartir información cuando usan <ph name="PRODUCT_NAME" />.
-
-0 o sin establecer = los usuarios pueden compartir contenido de páginas o archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
-
-1 = los usuarios no pueden compartir contenido de páginas o archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Se inhabilitarán o se ocultarán los puntos de entrada para compartir contexto.
-
-Esta política se ignorará cuando <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> no sea el motor de búsqueda predeterminado de los usuarios, ya que la función estará inhabilitada.
-
-Esta política es independiente de la política <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. La política <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> solo controla los puntos de entrada en el cuadro de búsqueda del cuadro multifunción o de la NTP, mientras que esta política controla el uso compartido de contexto a través del panel lateral o las pestañas.
-
-Esta política tampoco controla la integración de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que puede inhabilitar <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
-
-Si no estableces esta política, su comportamiento se determina según la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Para obtener más información sobre el manejo de datos de las funciones potenciadas por IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6687291630099400188">No mostrar información del sistema en la pantalla de acceso</translation>
 <translation id="6689343802305995925">No ocurre ninguna acción</translation>
 <translation id="6689792153960219308">Informar estado de hardware</translation>
@@ -11217,7 +11169,6 @@ Si no estableces la política, de forma predeterminada se utilizarán todas las 
 Consulta el RFC 8828, sección 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2) para obtener una descripción detallada de todos los valores de procesamiento.</translation>
 <translation id="8244171102276095471">Habilitar los paquetes de encriptación RC4 en TLS</translation>
 <translation id="8244525275280476362">Demora de recuperación máxima después de invalidar una política</translation>
-<translation id="8245574649143980200">Si no estableces la política o la habilitas, los usuarios podrán ver y usar el elemento del menú de la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el menú contextual. Si la inhabilitas, los usuarios no verán el elemento del menú de la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> (si la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> es compatible).</translation>
 <translation id="8247143534027746614">Bloquear el acceso a una lista de patrones de URL durante la autenticación</translation>
 <translation id="824818544897669723">Inhabilitar la eliminación del historial de descargas y del navegador</translation>
 <translation id="8250048892729838843">Esta política dejó de estar disponible. Si habilitas la política o no la estableces, los dispositivos tendrán controles de informes detallados.

@@ -72,7 +72,6 @@
 <translation id="1041607257468256895">‏Chrome میں ویب سائٹ کے مقام کی اجازتوں کا نظم کریں</translation>
 <translation id="1042174272890264476">‏آپ کا کمپیوٹر <ph name="SHORT_PRODUCT_NAME" /> کی پہلے سے شامل RLZ لائبریری کے ساتھ بھی آتا ہے۔ RLZ ایک غیر منفرد، ذاتی طور پر ناقابل شناخت ٹیگ کو تفویض کرتا ہے تاکہ تلاشوں اور ایک خاص پروموشنل مہم کے ذریعہ چلائے گئے <ph name="SHORT_PRODUCT_NAME" /> استعمال کی پیمائش کر سکے۔ یہ لیبلز کبھی کبھی Google تلاش استفسارات میں <ph name="PRODUCT_NAME" /> میں ظاہر ہوتے ہیں۔</translation>
 <translation id="1042248468362992359">ہاٹ اسپاٹ کا استعمال کرنے کے لیے موبائل ڈیٹا سے منسلک کریں۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="1043505821207197890">‏کچھ غلط ہوگیا۔ ممکن ہے کہ Linux صرف جزوی طور پر اپ گریڈ کیا جائے۔ مزید معلومات کے لیے لاگز کا جائزہ لیں۔ لاگز کو فائلز &gt; میری فائلز &gt; <ph name="LOG_FILE" /> میں محفوط کیا گیا ہے</translation>
 <translation id="104385770822424034">کارروائی شامل کریں</translation>
 <translation id="1045487161760507186">‏آپ کو پاس ورڈ یاد رکھنے کی ضرورت نہیں ہے کیونکہ یہ آپ کے لیے Google پاس ورڈ مینیجر میں محفوظ ہو جاتا ہے</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{اس آلے پر <ph name="BRAND" /> میں 1 پاس ورڈ در آمد کیا گیا}other{اس آلے پر <ph name="BRAND" /> میں {NUM_PASSWORDS} پاس ورڈز در آمد کیے گئے}}</translation>
@@ -410,7 +409,6 @@
 <translation id="1257336506558170607">منتخب کردہ سرٹیفیکیٹ برآمد کریں</translation>
 <translation id="1258491128795710625">نیا کیا ہے</translation>
 <translation id="1260451001046713751"><ph name="HOST" /> سے ہمیشہ پوپ - اپس اور ری ڈائریکٹس کی اجازت دیں</translation>
-<translation id="1260810365552581339">‏ممکن ہے کہ Linux میں کافی ڈسک اسپیس نہ ہو۔ آپ اپنے Linux ڈسک اسپیس کو بڑھا سکتے ہیں اور <ph name="LINK_START" />ترتیبات<ph name="LINK_END" /> میں دوبارہ بحال کرنے کی کوشش کر سکتے ہیں۔</translation>
 <translation id="1261380933454402672">معتدل</translation>
 <translation id="126156426083987769">ڈیمو موڈ میں آلہ کے لائسنسز سے متعلق ایک مسئلہ پیش آگیا۔</translation>
 <translation id="1262395978737369974">‏ہمیشہ JavaScript آپٹیمائزیشن استعمال کرنے کی اجازت ہے</translation>
@@ -905,7 +903,6 @@
 <translation id="1603914832182249871">(پوشیدگی)</translation>
 <translation id="1604432177629086300">پرنٹ نہیں کیا جا سکا۔ پرنٹر چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="1604567162047669454">ویژوئل لے آؤٹ کی سیمنٹکس کو پہچانیں</translation>
-<translation id="1604774728851271529">‏Linux اپ گریڈ کرنے کے لیے آپ کو نیٹ ورک کنکشن کی ضرورت ہے۔ انٹرنیٹ سے منسلک ہوں اور دوبارہ کوشش کریں۔</translation>
 <translation id="1605148987885002237">کی بورڈ اور ان پٹس</translation>
 <translation id="1605744057217831567">سبھی سائٹ کا ڈیٹا اور اجازتیں دیکھیں</translation>
 <translation id="1606077700029460857">ماؤس کی ترتیبات کو تبدیل کریں</translation>
@@ -1259,7 +1256,6 @@
 <translation id="1833059747301212935">حالیہ دستاویزات اور آئندہ کے کیلنڈر ایونٹس تک آسانی سے رسائی حاصل کریں</translation>
 <translation id="183445248400150852">سائٹس اس خصوصیت کو آپ کے کی بورڈ کے ان پٹ کو اوور رائیڈ کرنے کے لیے استعمال کرتی ہیں، جیسے گیمز یا ریموٹ ڈیسک ٹاپ ایپس کے لیے</translation>
 <translation id="1834503245783133039">ڈاؤن لوڈ ناکام: <ph name="FILE_NAME" /></translation>
-<translation id="1835261175655098052">‏Linux اپ گریڈ کیا جا رہا ہے</translation>
 <translation id="1837292628323740716">اپنے <ph name="DEVICE_TYPE" /> پر محفوظ براؤزنگ کو بہتر بنائیں</translation>
 <translation id="1837441256780906162">‏Microsoft OneDrive نے درخواست مسترد کر دی۔ براہ کرم بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="1838374766361614909">تلاش صاف کریں</translation>
@@ -1495,7 +1491,6 @@
 <translation id="1989288015781834552">اپ ڈیٹ مکمل کرنے کیلئے بند کر کے دوبارہ چلائیں۔ آپ کے ٹیبز دوبارہ کھل جائیں گے۔</translation>
 <translation id="1989903373608997757">ہمیشہ استعمال کریں</translation>
 <translation id="1990046457226896323">اسپیچ فائلز ڈاؤن لوڈ ہو گئیں</translation>
-<translation id="1990727803345673966">‏آپ کی بیک اپ لی گئی Linux فائلز اور ایپس کو بحال کیا جا رہا ہے</translation>
 <translation id="199191324030140441">'ڈسٹرب نہ کریں' کو آف کریں</translation>
 <translation id="1992397118740194946">سیٹ نہیں ہے</translation>
 <translation id="1994173015038366702">‏سائٹ کا URL</translation>
@@ -1598,7 +1593,6 @@
 <translation id="206960706005837784"><ph name="APP_NAME" /> نے <ph name="PRINTER_NAME" /> پر پرنٹ کا عمل مکمل کر لیا ہے</translation>
 <translation id="2071393345806050157">کوئی مقامی لاگ فائل نہیں ہے۔</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{ایکسٹینشن انسٹال کرنے کے لیے کلک کریں}other{ان ایکسٹینشنز کو انسٹال کرنے کے لیے کلک کریں}}</translation>
-<translation id="2073496667646280609">ممکن ہے کہ آپ کے آلے پر یا آپ کے منتخب کردہ بیک اپ مقام پر کافی اسٹوریج دستیاب نہ ہو۔ اسپیس خالی کرنے یا کوئی مختلف مقام منتخب کرنے کی کوشش کریں۔</translation>
 <translation id="2073505299004274893"><ph name="CHARACTER_LIMIT" /> یا اس سے کم حروف استعمال کریں</translation>
 <translation id="2074263453710478603">‏ChromeOS کروم صارف لاگز</translation>
 <translation id="2074599390896964828">قطعی مقام</translation>
@@ -2365,7 +2359,6 @@
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> کیلئے صرف پڑھنے کی رسائی دی گئی ہے۔</translation>
 <translation id="2573147659521059501">‫<ph name="NUM" /> ٹیبز</translation>
 <translation id="2573276323521243649">اوتار کے انتخاب کے صفحہ سے واپس جائیں</translation>
-<translation id="2573417407488272418">اپ گریڈ سے قبل ایپس اور فائلز کا فائلز &gt; میری فائلز میں بیک اپ لیں۔</translation>
 <translation id="2573831315551295105">"<ph name="ACTION" />" کیلئے سوئچ تفویض کریں</translation>
 <translation id="2574037773163798130">{NUM_TABS,plural, =1{‏‫Gemini کے ساتھ ٹیب کا اشتراک کریں}other{‏‫Gemini کے ساتھ # ٹیبز کا اشتراک کریں}}</translation>
 <translation id="2575247648642144396">جب ایکسٹینشن موجودہ صفحہ پر کارروائی کر سکے گا تو یہ آئیکن دیکھا جا سکے گا۔ آئیکن پر کلک کر کے یا <ph name="EXTENSION_SHORTCUT" /> کو دبا کر اس ایکسٹینشن کو استعمال کریں۔</translation>
@@ -2593,7 +2586,6 @@
     <ph name="BEGIN_PARAGRAPH2" />‫Google اس آلہ سے جمع کی گئی معلومات کو درج ذیل کے لیے استعمال کرتا ہے: مقام کی درستگی اور مقام پر مبنی سروسز کو بہتر بنانے؛ اور عام طور پر Google کی سروسز کو بہتر بنانے، فراہم کرنے اور برقرار رکھنے کے لیے۔ ہم صارفین کی ضروریات کو پورا کرنے کے لیے Google اور فریقین ثالث کی جائز دلچسپیوں کی بنیاد پر اس معلومات پر کارروائی کرتے ہیں۔ یہ معلومات کسی فرد کی شناخت کے لیے استعمال نہیں کی جاتی ہیں۔<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />آپ مقام کی درستگی کو کسی بھی وقت ترتیبات &gt; رازداری اور سیکیورٹی &gt; رازداری سے متعلق کنٹرولز &gt; مقام تک رسائی &gt; جدید ترین مقام کی ترتیبات کے تحت اس آلہ کے مقام کی ترتیبات میں آف کر سکتے ہیں۔ اگر مقام کی درستگی آف ہے تو مقام کی درستگی سے متعلق کوئی بھی ڈیٹا اکٹھا نہیں کیا جائے گا۔ ‫Android ایپس اور سروسز کے لیے، اس آلہ کے مقام کا تعین کرنے کے لیے، اگر دستیاب ہو تو صرف IP پتہ استعمال کیا جاتا ہے، جس سے Android ایپس اور سروسز جیسے Google Maps کے لیے مقامات کی دستیابی اور درستگی متاثر ہو سکتی ہے۔<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2729940704980595903">‏اپنی Gemini ایپس کی سرگرمی دیکھیں اور ان کا نظم کریں</translation>
-<translation id="2730029791981212295">‏Linux ایپس اور فائلز کا بیک اپ لیا جا رہا ہے</translation>
 <translation id="2730550884708194161">دفتری پروفائلز کے بارے میں</translation>
 <translation id="2730596696987224099">اپنا مقام خود منتخب کریں</translation>
 <translation id="2730647855013151888">تمام ذاتی معلومات شامل کریں</translation>
@@ -2652,6 +2644,7 @@
 <translation id="2757338480560142065">اس بات کو یقینی بنائیں کہ آپ جو پاس ورڈ محفوظ کر رہے ہیں وہ آپ کے <ph name="WEBSITE" /> کے پاس ورڈ سے مماثل ہے۔</translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> <ph name="SEARCH_QUERY" /> کے لیے کوئی تلاش کا نتیجہ نہیں آیا</translation>
 <translation id="2762441749940182211">کیمرا مسدود ہے</translation>
+<translation id="2763165257813209348">‫<ph name="FILE_NAME" /> میں حساس یا خطرناک ڈیٹا ہے۔ آپ کی تنظیم آپ کو اسے کلاؤڈ اسٹوریج میں محفوظ کرنے یا اسے مسترد کرنے کی اجازت دے گی</translation>
 <translation id="2764786626780673772">‏VPN کی تفصیلات</translation>
 <translation id="2764920001292228569">پروفائل کا نام درج کریں</translation>
 <translation id="2765100602267695013">براہ کرم اپنے موبائل فراہم کنندہ سے رابطہ کریں</translation>
@@ -2828,7 +2821,6 @@
 <translation id="2885129935310217435">اسی نام کا ایک بٹن موجود ہے۔ براہ کرم کوئی دوسرا منتخب کریں۔</translation>
 <translation id="2885378588091291677">ٹاسک مینیجر</translation>
 <translation id="2885729872133513017">سرور کے جواب کو ڈیکوڈ کرنے میں ایک مسئلہ پیش آگیا۔</translation>
-<translation id="2886119409731773154">اس میں 30 منٹ تک کا وقت لگ سکتا ہے</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> اور <ph name="NUMBER_OF_DEVICES" /> دیگر</translation>
 <translation id="2887344147309501015">‏براؤز کرتے وقت جوابات، اہم نکات اور مزید حاصل کرنے کے لیے Chrome میں Gemini کے ساتھ چیٹ کریں</translation>
@@ -3093,7 +3085,6 @@
 <translation id="3053273573829329829">صارف کا پن فعال کریں</translation>
 <translation id="3053274730492362225">کرسر بلنک نہیں کرتا ہے</translation>
 <translation id="3058498974290601450">آپ ترتیبات میں کسی بھی وقت مطابقت پذیری کو آن کر سکتے ہیں</translation>
-<translation id="3058517085907878899">آلہ کا نام</translation>
 <translation id="3060952009917586498">آلہ کی زبان تبدیل کریں۔ موجودہ زبان <ph name="LANGUAGE" /> ہے۔</translation>
 <translation id="3060987956645097882">‏ہم آپ کے فون کے ساتھ کنکشن قائم کرنے سے قاصر تھے۔ یقینی بنائیں کہ آپ کا فون قریب ہے، غیر مقفل ہے اور اس میں بلوٹوتھ اور Wi-Fi آن ہے۔</translation>
 <translation id="3061302636956643119">‏پروسیسنگ کے لیے ٹیکسٹ Google کو بھیجا جائے گا۔</translation>
@@ -3214,7 +3205,6 @@
 <translation id="3158770568048368350">یہ آپ کے موبائل نیٹ ورک کو مختصر طور پر غیر منسلک کرنے کا سبب بن سکتا ہے</translation>
 <translation id="3159335509547415276">مسدود کردہ اکاؤنٹس کے بارے میں جانیں</translation>
 <translation id="3159493096109238499">زردی مائل بھورا</translation>
-<translation id="3159978855457658359">آلے کے نام میں ترمیم کریں</translation>
 <translation id="3160928651883997588">‏VPN کی ترجیحات</translation>
 <translation id="3161522574479303604">سبھی زبانیں</translation>
 <translation id="3162070126914310576">اس آلے کو ابھی اندراج نہیں کیا جا سکتا کیونکہ آپ کا تنظیم یونٹ اپنے اندراج کی ابتدائی حد کو پہنچ گیا ہے۔ مدد کے لیے اپنے منتظم سے رابطہ کریں۔</translation>
@@ -4238,7 +4228,6 @@
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{آپ کے منتظم نے 1 ممکنہ طور پر نقصان دہ ایکسٹینشن کو پھر سے آن کر دیا}other{آپ کے منتظم نے {NUM_EXTENSIONS} ممکنہ طور پر نقصان دہ ایکسٹینشنز کو واپس آن کر دیا}}</translation>
 <translation id="3834728400518755610">‏مائیکروفون کی ترتیب میں تبدیلی کیلئے Linux کو شٹ ڈاؤن کرنے کی ضرورت ہے۔ آگے بڑھنے کے لیے Linux کو شٹ ڈاؤن کریں۔</translation>
 <translation id="3834775135533257713">ایپلیکیشن "<ph name="TO_INSTALL_APP_NAME" />" کو شامل نہیں کیا جا سکا کیونکہ یہ "<ph name="INSTALLED_APP_NAME" />" کے ساتھ متصادم ہے۔</translation>
-<translation id="3835904559946595746">‏Linux کا بیک اپ بحال نہیں ہو سکا</translation>
 <translation id="383669374481694771">‏یہ اس آلہ اور اس کے استعمال کیے جانے (جیسے بیٹری کی سطح، سسٹم، ایپ کی سرگرمی اور خرابیوں) کے بارے میں ایک عام معلومات ہے۔ Android کو بہتر بنانے کی خاطر ڈیٹا کا استعمال کیا جائے گا، اور کچھ مجموعی معلومات سے Google ایپس اور پارٹنرز، جیسے کہ Android ڈیولپرز، کو ان کی ایپس اور پروڈکٹس کو بہتر بنانے میں بھی مدد ملے گی۔</translation>
 <translation id="3837569373891539515">آپ لاگو ہونے والی سبھی چیزوں کو منتخب کر سکتے ہیں۔ اپنے <ph name="DEVICE_TYPE" /> کا سیٹ اپ مکمل کرنے کے بعد آپ یہ اختیارات ترتیبات میں بھی تلاش کر سکتے ہیں۔</translation>
 <translation id="3838085852053358637">ایکسٹیشن لوڈ کرنے میں ناکام</translation>
@@ -4404,7 +4393,6 @@
 <translation id="3943582379552582368">&amp;پیچھے</translation>
 <translation id="3943857333388298514">پیسٹ کریں</translation>
 <translation id="3945513714196326460">کوئی چھوٹا نام آزمائیں</translation>
-<translation id="3948027458879361203">میزبان کا نام تبدیل کریں</translation>
 <translation id="3948116654032448504">تصویر کیلئے <ph name="SEARCH_ENGINE" /> میں &amp;تلاش کریں</translation>
 <translation id="3948334586359655083">یہ ٹیب آڈیو چلا رہا ہے</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> مندرجہ ذیل فولڈرز کی فائلز میں ترمیم کر سکتا ہے</translation>
@@ -5574,7 +5562,6 @@
 <translation id="4769632191812288342">آپ کو معیاری تحفظ حاصل ہو رہا ہے</translation>
 <translation id="4770119228883592393">‏اجازت کی درخواست کی گئی، جواب دینے کے لیے ⌘ + Option + نیچے تیر کا نشان دبائیں</translation>
 <translation id="4772914216048388646">آرڈرلی</translation>
-<translation id="4773112038801431077">‏Linux کو اپ گریڈ کریں</translation>
 <translation id="4773122030389014189">‫"<ph name="GROUP_NAME" />" ٹیب گروپ کا اشتراک کریں</translation>
 <translation id="4773253008034797668">آپ کے مقامی نیٹ ورک پر کسی آلے سے منسلک ہونے کی اجازت حاصل ہے</translation>
 <translation id="477548766361111120">ایکسٹینشن کو اس سائٹ کو پڑھنے اور اس میں تبدیل کرنے کی اجازت دیں</translation>
@@ -5965,7 +5952,6 @@
 <translation id="5040823038948176460">اضافی مواد کی ترتیبات</translation>
 <translation id="5041509233170835229">Chrome App</translation>
 <translation id="504194357571315770">مطلوب عمل</translation>
-<translation id="5043440033854483429">نام حروف، اعداد اور ہائفنز (-) کا استعمال کر سکتا ہے اور اس میں ضروری طور پر 1 اور 15 حروف کی شمولیت ہونی چاہیے۔</translation>
 <translation id="5043807571255634689"><ph name="SUBSCRIPTION_NAME" /> کو صرف اس آلہ سے ہٹایا جائے گا۔ اپنی سبسکرپشن میں تبدیلیاں کرنے کے لیے، سبسکرپشن فراہم کنندہ سے رابطہ کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="5045367873597907704">‏HID آلات کے بارے میں</translation>
 <translation id="5045550434625856497">غلط پاس ورڈ</translation>
@@ -6083,7 +6069,6 @@
 <translation id="5117930984404104619">‏ملاحظہ کردہ URLs سمیت دیگر ایکسٹینشنز کے رویے کو مانیٹر کریں</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5120886753782992638"><ph name="APPROVED_URL" /> ملاحظہ کرنے کیلئے یہاں کلک کریں</translation>
-<translation id="5121052518313988218">‏آپ کے Linux کنٹینر میں آپریٹنگ سسٹم مزید تعاون یافتہ نہیں ہے۔ یہ سیکیورٹی اپ ڈیٹس اور بگ کی اصلاحات وصول کرنا بند کر دے گا، اور خصوصیات جو فی الحال کام کر رہی ہیں غیر متوقع طور پر کام کرنا بند کر سکتی ہیں۔ Linux کا استعمال جاری رکھنے کیلئے براہ کرم تازہ ترین ورژن میں اپ گریڈ کریں۔</translation>
 <translation id="5121130586824819730">آپ کی ہارڈ ڈسک بھری ہوئی ہے۔  براہ کرم کسی دوسرے مقام میں محفوظ کریں یا ہارڈ ڈسک پر مزید جگہ بنائیں۔</translation>
 <translation id="5123433949759960244">باسکٹ بال</translation>
 <translation id="5125714798187802869">فعال کریں</translation>
@@ -6400,7 +6385,6 @@
 <translation id="5340900621595888432">ڈائیگناسٹک اور استعمال کا ڈیٹا بھیجیں</translation>
 <translation id="5341793073192892252">مندرجہ ذیل کوکیز کو مسدود کر دیا گیا (فریق ثالث کوکیز کو استثناء کے بغیر مسدود کیا جا رہا ہے)</translation>
 <translation id="5342091991439452114">‏PIN کا کم از کم <ph name="MINIMUM" /> ہندسے کا ہونا ضروری ہے</translation>
-<translation id="5344036115151554031">‏Linux بحال کیا جا رہا ہے</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (دائیں)</translation>
 <translation id="534449933710420173">بغیر نام والا فولڈر</translation>
 <translation id="5345916423802287046">اپنے سائن ان کرتے وقت ایپ شروع کریں</translation>
@@ -6633,7 +6617,6 @@
 <translation id="5497739595514726398">‏Chrome اس انسٹالیشن بنڈل کی توثیق نہیں کر سکا</translation>
 <translation id="5498967291577176373">اپنے نام، پتہ یا فون نمبر کیلئے ان لائن تجاویز کے ساتھ زيادہ تیزی سے لکھیں</translation>
 <translation id="5499211612787418966">‏فی الحال اس ڈائیلاگ پر فوکس نہیں کیا گیا۔ اس ڈائیلاگ پر فوکس کرنے کے لیے Alt-Shift A دبائیں۔</translation>
-<translation id="5499453227627332024">‏آپ کے Linux Container کیلئے ایک اپ گریڈ دستیاب ہے۔ آپ بعد میں ترتیبات ایپ سے بھی اپ گریڈ کر سکتے ہیں۔</translation>
 <translation id="5499476581866658341">اب آپ اپنے فون کی حالیہ تصاویر اور میڈیا دیکھ سکتے ہیں</translation>
 <translation id="549957179819296104">نیا آئیکن</translation>
 <translation id="5499634624419508916">موجودہ ٹیب گروپ کو تبدیل کریں</translation>
@@ -7055,7 +7038,6 @@
 <translation id="5804241973901381774">اجازتیں</translation>
 <translation id="5804259315582798390">مقامی ڈیٹا کی بازیابی کو فعال کرنے میں ناکام</translation>
 <translation id="5805268472388605531">لہجے کے نشانات اور مخصوص حروف دیکھنے کے لیے کی بورڈ کی کلیدوں کو چھوئیں اور دبائے رکھیں</translation>
-<translation id="5805353596216929913">کوئی اپ ڈیٹ دستیاب نہیں تھی</translation>
 <translation id="5805697420284793859">ونڈو مینیجر</translation>
 <translation id="5806322307130093061">‏‫<ph name="FILE_NAME" /> فائل کو حذف کرنے کے لیے Enter دبائیں</translation>
 <translation id="5806447147478173900">ڈسپلے کردہ سائٹس کے ذریعہ استعمال کی گئی کل اسٹوریج: <ph name="TOTAL_USAGE" /></translation>
@@ -7505,7 +7487,6 @@
 <translation id="6113942107547980621">‏Smart Lock کا استعمال کرنے کے لیے اپنے فون پربنیادی صارف پروفائل پر سوئچ کریں</translation>
 <translation id="6116921718742659598">زبان اور ان پٹ کی ترتیبات تبدیل کریں</translation>
 <translation id="6119008366402292080">کوئی پرنٹر دستیاب نہیں ہے</translation>
-<translation id="6119927814891883061">آلہ کا نام <ph name="DEVICE_NAME" /> رکھیں</translation>
 <translation id="6119972796024789243">رنگ کی اصلاح</translation>
 <translation id="6121773125605585883"><ph name="WEBSITE" /> کے لیے <ph name="USERNAME" /> صارف کے نام کے ساتھ پاس ورڈ ملاحظہ کریں</translation>
 <translation id="6122093587541546701">ای میل (اختیاری):</translation>
@@ -7746,7 +7727,6 @@
 <translation id="6277105963844135994">نیٹ ورک ٹائم آؤٹ</translation>
 <translation id="6277518330158259200">ااسکرین شاٹ &amp;لیں</translation>
 <translation id="6278428485366576908">تھیم</translation>
-<translation id="6278776436938569440">مقام تبدیل کریں</translation>
 <translation id="6280215091796946657">مختلف اکاؤنٹ کے ساتھ سائن ان کریں</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6281218688313242284">‏اپنے Google اکاؤنٹ کا نظم کریں</translation>
@@ -8092,7 +8072,6 @@
 <translation id="65334502113648172">ڈسپلے ایریا کو سکڑنے یا پھیلانے کے لیے تیر کے نشان والی کلیدوں کو دبائیں۔ ڈسپلے ایریا کو ارد گرد منتقل کرنے کے لیے، شفٹ اور + دبائیں پھر تیر کے نشان والی کلیدوں کا استعمال کریں۔</translation>
 <translation id="6535331821390304775">وابستہ ایپ میں اس قسم کے لنکس کو کھولنے کے لیے ہمیشہ <ph name="ORIGIN" /> کو اجازت دیں</translation>
 <translation id="653659894138286600">دستاویزات اور تصاویر کو اسکین کریں</translation>
-<translation id="6537613839935722475">نام حروف، اعداد اور ہائفنز (-) کا استعمال کر سکتا ہے</translation>
 <translation id="6538036594527795020"><ph name="APP" /> کی زبان تبدیل کریں۔ موجودہ زبان <ph name="LANGUAGE" /> ہے۔</translation>
 <translation id="6538098297809675636">کوڈ کا پتہ لگانے میں خرابی</translation>
 <translation id="653920215766444089">پوائنٹنگ آلات کی تلاش کی جا رہی ہے</translation>
@@ -8106,7 +8085,6 @@
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> پر کاسٹ کیا جا رہا ہے</translation>
 <translation id="6544134392255015460">کی بورڈ بیک لائٹ ٹوگل کریں</translation>
 <translation id="6545665334409411530">تکرار کی شرح</translation>
-<translation id="6546856949879953071">اپ گریڈ سے متعلق تفصیلی معلومات کے لیے، لاگز کو فائلز &gt; میری فائلز &gt; <ph name="LOG_FILE" /> میں محفوظ رکھا گیا ہے</translation>
 <translation id="6547354035488017500">‏کم از کم ‎512 MB جگہ خالی کریں یا آپ کا آلہ جواب دینا بند کر دے گا۔ جگہ خالی کرنے کیلئے، آلہ کے اسٹوریج سے فائلیں حذف کریں۔</translation>
 <translation id="6547854317475115430">‏<ph name="BEGIN_PARAGRAPH1" />آپ کے آلہ کا مقام متعین کرنے میں مدد کرنے کے لئے Google کی مقام کی سروس Wi-Fi، موبائل نیٹ ورکس اور سینسرز جیسے ذرائع کا استعمال کرتی ہے۔<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />آپ کسی بھی وقت اپنے آلے پر ترتیبات &gt; ایپس &gt; Google Play اسٹور &gt; Android کی ترجیحات کا نظم کریں &gt; سیکیورٹی اور مقام &gt; مقام پر جا کر Android کا مقام آف کر سکتے ہیں۔ آپ اسی مینیو میں "Google مقام کی درستگی" کو آف کر کے Android کے مقام کے لیے Wi-Fi، موبائل نیٹ ورکس اور سینسرز کے استعمال کو آف بھی کر سکتے ہیں۔<ph name="END_PARAGRAPH2" /></translation>
@@ -8125,7 +8103,6 @@
 <translation id="6553046373262346328">{GROUP_COUNT,plural, =1{یہ <ph name="EMAIL" /> میں سائن ان کردہ تمام آلات سے گروپ کو حذف کر دے گا}other{یہ <ph name="EMAIL" /> میں سائن ان کردہ تمام آلات سے گروپ کو حذف کر دے گا}}</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> صارفین</translation>
 <translation id="6555432686520421228">بالکل نئے کی طرح ہونے کیلئے صارف کے سبھی اکاؤنٹس ہٹائیں اور اپنا <ph name="IDS_SHORT_PRODUCT_NAME" /> دوبارہ ترتیب دیں۔</translation>
-<translation id="6555604601707417276">‏Linux بیک اپ بحال ہو گیا</translation>
 <translation id="6555744145993174510">منجانب: <ph name="APP_ORIGIN" /></translation>
 <translation id="6556866813142980365">واپس لائیں</translation>
 <translation id="6556903358015358733">تھیم اور وال پیپر</translation>
@@ -8282,7 +8259,6 @@
 <translation id="6663190258859265334">‏اپنا <ph name="DEVICE_TYPE" /> Powerwash کریں اور پچھلے ورژن پر واپس جائیں۔</translation>
 <translation id="6664774537677393800">آپ کے پروفائل کو کھولتے وقت کچھ غلط ہوگیا۔ براہ کرم سائن آؤٹ کر کے دوبارہ سائن ان کریں۔</translation>
 <translation id="6665874326033183068">وائلڈ</translation>
-<translation id="6666559645296300656">‏Linux اپ گریڈ منسوخ ہو رہا ہے</translation>
 <translation id="6667086124612170548">فائل اس آلہ کے لیے بہت بڑی ہے</translation>
 <translation id="6667092961374478614"><ph name="FEATURE_NAME" /> کی قابل دریافتگی</translation>
 <translation id="6667187897999649121">‏ابھی کے لیے، آپ صرف فیملی ممبرز کے ساتھ پاس ورڈز کا اشتراک کر سکتے ہیں۔ 6 اراکین تک کا <ph name="BEGIN_LINK" />ایک فیملی گروپ بنائیں<ph name="END_LINK" /> اور Google پر اپنے پروڈکٹس اور سبسکرپشنز سے مزید حاصل کریں۔</translation>
@@ -8339,7 +8315,6 @@
 <translation id="6702639462873609204">&amp;ترمیم کریں…</translation>
 <translation id="6702859741546259407">‏<ph name="FEATURE_NAME" /> کا استعمال کرنے کیلئے، بلوٹوتھ اور Wi-Fi آن کریں</translation>
 <translation id="6703109186846420472">،</translation>
-<translation id="6703254819490889819">بیک اپ سے بحال کریں</translation>
 <translation id="6707122714992751648">‏ChromeOS تشخیصی ٹیسٹس چلائیں</translation>
 <translation id="6707389671160270963">‏SSL کلائنٹ سرٹیفکیٹ</translation>
 <translation id="6707671917294473995">ویب سائٹس کو آپ کا کیمرا استعمال کرنے کی اجازت نہیں ہے</translation>
@@ -8618,7 +8593,6 @@
 <translation id="6883606786470492001">اس امر کو محدود کرنے کیلئے کہ آپ کو ذاتی نوعیت کے اشتہارات دکھانے کیلئے کون سی سائٹس آپ کے بارے میں جان سکتی ہیں، اپنے اشتہار کے موضوعات اور دیگر ترتیبات کا نظم کریں</translation>
 <translation id="6884474387073389421">کیا آپ واقعی منتخب کردہ سائن ان ڈیٹا حذف کرنا چاہتے ہیں؟</translation>
 <translation id="6885771755599377173">سسٹم کی معلومات کا پیش منظر</translation>
-<translation id="6886380424988777998">‏Linux اپ گریڈ نہیں ہو سکا</translation>
 <translation id="6886871292305414135">لنک کو نئے &amp;ٹیب میں کھولیں</translation>
 <translation id="6888831646723563669">اپنے نئے <ph name="DEVICE_TYPE" /> پر تمام خصوصیات سے لطف اندوز ہونے کے لیے جڑے رہیں</translation>
 <translation id="6888850808202733940">ایپس اور گیمز</translation>
@@ -8819,7 +8793,6 @@
 <translation id="7016995776279438971">سرخ سبز، سرخ کمزور (سرخ اور سبز کی بے قاعدہ رنگ بینی)</translation>
 <translation id="7017219178341817193">ایک نیا صفحہ شامل کریں</translation>
 <translation id="7017354871202642555">ونڈو سیٹ ہو جانے کے بعد وضع سیٹ نہیں کر سکتے۔</translation>
-<translation id="7019546817926942979">‏آپ کے آلے کو پلگ - ان کیے جانے کی ضرورت ہے۔ Linux کو اپ گریڈ کرنے سے آپ کی بیٹری کی چارجنگ کافی حد تک ختم ہو سکتی ہے۔ اپنے آلے کو چارجر سے منسلک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="7019805045859631636">تیز</translation>
 <translation id="7021524108486027008">‏اپنے <ph name="DEVICE_TYPE" /> پر اپنے انٹرپرائز کے زیر انتظام ماحول میں ٹولز، ایڈیٹرز اور IDEs چلائیں۔</translation>
 <translation id="7022222879220069865">تمام ٹچ پیڈز غیر منسلک کر دیے گئے ہیں</translation>
@@ -8893,7 +8866,6 @@
 <translation id="7074703793383805632">‫<ph name="SHARED_STATE" /> <ph name="GROUP_NAME" /> گروپ - <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">‏RSA مرموز کاری کے ساتھ PKCS #1 MD5</translation>
 <translation id="7075625805486468288">‏HTTPS/SSL سرٹیفکیٹس اور ترتیبات کا نظم کریں</translation>
-<translation id="7076875098323397992">اپ گریڈ شروع نہیں کی جا سکتی</translation>
 <translation id="7077751457066325012">کی بورڈ شارٹ کٹس دیکھیں اور حسب ضرورت بنائیں</translation>
 <translation id="7077829361966535409">موجودہ پراکسی ترتیبات کا استعمال کر کے سائن ان صفحہ لوڈ ہونے میں ناکام ہوگیا۔ براہ کرم <ph name="GAIA_RELOAD_LINK_START" />دوبارہ سائن ان کرنے کی کوشش کریں<ph name="GAIA_RELOAD_LINK_END" /> یا مختلف <ph name="PROXY_SETTINGS_LINK_START" />پراکسی ترتیبات<ph name="PROXY_SETTINGS_LINK_END" /> استعمال کریں۔</translation>
 <translation id="7078120482318506217">تمام نیٹ ورکس</translation>
@@ -9751,7 +9723,6 @@
 <translation id="7668648754769651616">ایکسیسبیلٹی خصوصیات آپ کے آلے کو استعمال میں آسان تر بناتا ہے۔ فوری ترتیبات تک رسائی حاصل کرنے کے لیے، اپنی اسکرین کے نیچے وقت کا انتخاب کریں۔</translation>
 <translation id="7669620291129890197">آپ کے آلات پر مرئی</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{‏غلط PIN۔ آپ کے پاس ایک کوشش باقی ہے۔}other{‏غلط PIN۔ آپ کے پاس # کوششیں باقی ہیں۔}}</translation>
-<translation id="7670434942695515800">‏بہترین کارکردگی کے لیے تازہ ترین ورژن میں اپ گریڈ کریں۔ اپ گریڈ مکمل نہ ہو پانے کی صورت میں اپنی فائلز کی بیک اپ لینے کی تجویز کی جاتی ہے۔ اپ گریڈ شروع ہونے کے بعد، Linux شٹ ڈاؤن ہو جائے گا۔ آگے بڑھنے سے قبل کھلی ہوئی فائلز کو محفوظ کریں۔ <ph name="LINK_START" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">سب ٹائٹلز</translation>
 <translation id="7671130400130574146">سسٹم کا ٹائٹل بار اور بارڈرز استعمال کریں</translation>
 <translation id="7671139479636735732">اپنے آئیڈیاز کو آسانی سے ویژوئلائز کرنے کے لیے دائیں کلک کریں</translation>
@@ -10118,7 +10089,6 @@
 <translation id="7921395044508886182">‏سائٹس JavaScript کی آپٹیمائزیشن کا استعمال کر سکتی ہیں</translation>
 <translation id="7921901223958867679">یہ ایکسٹینشن پڑھ سکتی ہے ساتھ ہی <ph name="HOST" /> کو تبدیل بھی کر سکتی ہے</translation>
 <translation id="7922606348470480702">1 ایکسٹینشن</translation>
-<translation id="7923564237306226146">‏Linux اپ گریڈ مکمل ہو گیا</translation>
 <translation id="7924075559900107275">طویل مدتی سپورٹ کا امیدوار</translation>
 <translation id="7924358170328001543">پورٹ فارورڈ کرنے میں خرابی</translation>
 <translation id="7925108652071887026">آٹو فل ڈیٹا</translation>
@@ -10189,7 +10159,6 @@
 <translation id="7963001036288347286">ٹچ پیڈ کا ایکسیلریشن</translation>
 <translation id="7963408577288987423">{COUNT,plural, =1{‫1 پاس ورڈ}other{‫{COUNT} پاس ورڈز}}</translation>
 <translation id="7963513503134856713">ونڈو دائیں طرف منتقل ہو گئی</translation>
-<translation id="7963608432878156675">یہ نام بلوٹوتھ اور نیٹ ورک کنکشنز کے لیے دیگر آلات کے لیے مرئی ہے</translation>
 <translation id="7964458523224581615">فیروزی</translation>
 <translation id="7965946703747956421">صارف نام کا <ph name="CREDENTIAL_TYPE" /> حذف کریں: <ph name="USER_EMAIL" /></translation>
 <translation id="7966241909927244760">تصویر کا پتہ کا&amp;پی کریں</translation>
@@ -10385,7 +10354,6 @@
 <translation id="808488435221187916">‏آپ کی معلومات کسی بھی سائن ان کردہ آلہ پر Google والٹ میں دستیاب ہے</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> کو کنفیگر کیا جا رہا ہے…</translation>
 <translation id="8086121155774250556">یہ ٹیب آپ کی اسکرین کا اشتراک کر رہا ہے</translation>
-<translation id="8086610718778464681">‏Linux ایپس اور فائلز کا بیک اپ نہیں لے سکتے</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{یہ فائل مرموز کردہ ہے۔ اس کے مالک سے غیر مرموز کرنے کو کہیں۔}other{ان فائلز میں سے کچھ مرموز کردہ ہیں۔ ان کے مالک سے غیر مرموز کرنے کو کہیں۔}}</translation>
 <translation id="808894953321890993">پاس ورڈ تبدیل کریں</translation>
 <translation id="8089782219932231262">{BOOKMARK_COUNT,plural, =1{‏‫1 بُک مارک صرف اس آلے پر محفوظ ہے۔ اپنے دیگر آلات پر اس کا استعمال کرنے کیلئے، اسے اپنے Google اکاؤنٹ میں محفوظ کریں۔ اس سے تمام ڈپلیکیٹس بھی صاف ہو جائیں گے۔}other{‏‫{BOOKMARK_COUNT} بُک مارکس صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ میں محفوظ کریں۔ اس سے تمام ڈپلیکیٹس بھی صاف ہو جائیں گے۔}}</translation>
@@ -10416,7 +10384,6 @@
 <translation id="8102139037507939978">‏system_logs.txt سے ذاتی طور پر قابل شناخت معلومات اسٹرپ۔</translation>
 <translation id="810362914482827094">پاس کیز تلاش کریں</translation>
 <translation id="8104088837833760645">‏eSIM پروفائل ڈاؤن لوڈ کریں</translation>
-<translation id="8104778744208707085">آپ کی توجہ درکار ہے</translation>
 <translation id="8105050970626643057">‏ضرورت پڑنے پر Gemini کو جلدی سے کھولیں</translation>
 <translation id="8105273883928376822">جاری رکھنے کیلئے براہ کرم سائن ان کریں۔</translation>
 <translation id="8106114112474206597">‏ماؤس کے بٹن کو دبانے کیلئے "i" کا استعمال کریں</translation>
@@ -11993,7 +11960,6 @@
 <translation id="9149866541089851383">ترمیم کریں…</translation>
 <translation id="9150045010208374699">اپنا کیمرا استعمال کریں</translation>
 <translation id="9150079578948279438">پروفائل ہٹائی نہیں جا سکی۔ براہ کرم دوبارہ کوشش کریں یا تکنیکی سپورٹ کے لیے اپنے کیرئیر سے رابطہ کریں۔</translation>
-<translation id="9150860646299915960">‏اپنا Linux کنٹینر اپ گریڈ کریں</translation>
 <translation id="915112772806845021">خودکار طور پر تصویر میں تصویر داخل کرنے کیلئے، سائٹس اس خصوصیت کا استعمال کرتی ہیں۔ اس سے آپ کو دیگر ٹاسکس کیلئے اپنی اسکرین کو خالی کرتے ہوئے ویڈیو دیکھنا جاری رکھنے کی سہولت حاصل ہوتی ہے۔</translation>
 <translation id="9151249085738989067">‏زبان کی بنیاد پر ChromeVox آواز خودکار طور پر سوئچ کریں</translation>
 <translation id="9151906066336345901">end</translation>

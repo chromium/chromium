@@ -72,7 +72,6 @@
 <translation id="1041607257468256895">Vietņu atrašanās vietas atļauju pārvaldība pārlūkā Chrome</translation>
 <translation id="1042174272890264476">Jūsu datorā ir iebūvēta arī pārlūka <ph name="SHORT_PRODUCT_NAME" /> RLZ bibliotēka. RLZ piešķir neunikālu, personu neidentificējošu atzīmi, lai novērtētu noteiktas reklāmas kampaņas ietvaros ievadītos meklēšanas vienumus un pārlūka <ph name="SHORT_PRODUCT_NAME" /> lietojumu. Šīs atzīmes pārlūkā <ph name="PRODUCT_NAME" /> dažkārt tiek rādītas Google meklēšanas vaicājumos.</translation>
 <translation id="1042248468362992359">Lai izmantotu tīklāju, izveidojiet savienojumu ar mobilajiem datiem. <ph name="BEGIN_LINK_LEARN_MORE" />Uzziniet vairāk<ph name="END_LINK_LEARN_MORE" />.</translation>
-<translation id="1043505821207197890">Radās kļūda. Iespējams, operētājsistēma Linux netika pilnīgi jaunināta. Plašāku informāciju skatiet žurnālos. Žurnāli ir saglabāti mapē Faili &gt; Mani faili &gt; <ph name="LOG_FILE" />.</translation>
 <translation id="104385770822424034">Pievienot darbību</translation>
 <translation id="1045487161760507186">Jums nav jāiegaumē parole, jo tā tiek saglabāta Google paroļu pārvaldniekā.</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{Pakalpojumā <ph name="BRAND" /> šajā ierīcē tika importēta 1 parole.}zero{Pakalpojumā <ph name="BRAND" /> šajā ierīcē tika importētas {NUM_PASSWORDS} paroles.}one{Pakalpojumā <ph name="BRAND" /> šajā ierīcē tika importēta {NUM_PASSWORDS} parole.}other{Pakalpojumā <ph name="BRAND" /> šajā ierīcē tika importētas {NUM_PASSWORDS} paroles.}}</translation>
@@ -412,7 +411,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1257336506558170607">Eksportēt atlasīto sertifikātu</translation>
 <translation id="1258491128795710625">Jaunumi</translation>
 <translation id="1260451001046713751">Vienmēr atļaut uznirstošos logus un novirzīšanu no vietnes <ph name="HOST" /></translation>
-<translation id="1260810365552581339">Iespējams, operētājsistēmai Linux nav pietiekami daudz brīvas vietas diskā. <ph name="LINK_START" />Iestatījumos<ph name="LINK_END" /> varat palielināt operētājsistēmai Linux pieejamo brīvo vietu diskā un vēlreiz mēģināt atjaunot failus.</translation>
 <translation id="1261380933454402672">Mērena</translation>
 <translation id="126156426083987769">Radās problēma ar demonstrācijas režīma ierīces licencēm.</translation>
 <translation id="1262395978737369974">Vienmēr atļauts izmantot JavaScript optimizāciju</translation>
@@ -907,7 +905,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1603914832182249871">(Inkognito)</translation>
 <translation id="1604432177629086300">Nevarēja izdrukāt. Pārbaudiet printeri un mēģiniet vēlreiz.</translation>
 <translation id="1604567162047669454">Atpazīt vizuālā izkārtojuma semantiku</translation>
-<translation id="1604774728851271529">Lai jauninātu operētājsistēmu Linux, ir nepieciešams tīkla savienojums. Izveidojiet savienojumu ar internetu un mēģiniet vēlreiz.</translation>
 <translation id="1605148987885002237">Tastatūra un ievade</translation>
 <translation id="1605744057217831567">Skatīt visu vietņu datus un atļaujas</translation>
 <translation id="1606077700029460857">Mainīt peles iestatījumus</translation>
@@ -1261,7 +1258,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1833059747301212935">Viegli piekļūstiet jaunākajiem dokumentiem un gaidāmajiem kalendāra pasākumiem</translation>
 <translation id="183445248400150852">Vietnēs šī funkcija tiek izmantota, lai ignorētu ar tastatūru ievadītos datus, piemēram, spēlēs vai attālās darbvirsmas lietotnēs.</translation>
 <translation id="1834503245783133039">Nesekmīga lejupielāde: <ph name="FILE_NAME" /></translation>
-<translation id="1835261175655098052">Notiek Linux jaunināšana</translation>
 <translation id="1837292628323740716">Izmantojiet funkciju “Droša pārlūkošana ar papildu aizsardzību” savā ierīcē (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="1837441256780906162">Microsoft OneDrive noraidīja pieprasījumu. Lūdzu, vēlāk mēģiniet vēlreiz.</translation>
 <translation id="1838374766361614909">Notīrīt meklēšanas vaicājumu</translation>
@@ -1497,7 +1493,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1989288015781834552">Palaidiet atkārtoti, lai atjauninātu. Cilnes tiks atkārtoti atvērtas.</translation>
 <translation id="1989903373608997757">Vienmēr izmantot</translation>
 <translation id="1990046457226896323">Automātisko subtitru faili ir lejupielādēti.</translation>
-<translation id="1990727803345673966">Notiek jūsu dublēto Linux failu un lietotņu atjaunošana</translation>
 <translation id="199191324030140441">Izslēgt režīmu “Netraucēt”</translation>
 <translation id="1992397118740194946">Nav iestatīts</translation>
 <translation id="1994173015038366702">Vietnes URL</translation>
@@ -1600,7 +1595,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="206960706005837784"><ph name="APP_NAME" /> pabeidza drukāšanu, izmantojot printeri <ph name="PRINTER_NAME" />.</translation>
 <translation id="2071393345806050157">Nav lokālā žurnālfaila.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Noklikšķiniet, lai instalētu šo paplašinājumu}zero{Noklikšķiniet, lai instalētu šos paplašinājumus}one{Noklikšķiniet, lai instalētu šos paplašinājumus}other{Noklikšķiniet, lai instalētu šos paplašinājumus}}</translation>
-<translation id="2073496667646280609">Iespējams, ierīcē vai atlasītajā dublējuma atrašanās vietā nav pietiekami daudz brīvas vietas. Atbrīvojiet vietu vai izvēlieties citu atrašanās vietu.</translation>
 <translation id="2073505299004274893">Drīkst izmantot ne vairāk kā <ph name="CHARACTER_LIMIT" /> rakstzīmes</translation>
 <translation id="2074263453710478603">ChromeOS Chrome lietotāju žurnāli</translation>
 <translation id="2074599390896964828">Precīza atrašanās vieta</translation>
@@ -2365,7 +2359,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2572032849266859634">Tika piešķirta tikai lasīšanas piekļuve krātuvei <ph name="VOLUME_NAME" />.</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> cilnes</translation>
 <translation id="2573276323521243649">Atgriezties no avatāra atlases lapas</translation>
-<translation id="2573417407488272418">Pirms jaunināšanas dublējiet lietotnes un failus mapē Faili &gt; Mani faili.</translation>
 <translation id="2573831315551295105">Slēdža piešķiršana darbībai “<ph name="ACTION" />”</translation>
 <translation id="2574037773163798130">{NUM_TABS,plural, =1{Kopīgot cilni ar Gemini}zero{Kopīgot # cilnes ar Gemini}one{Kopīgot # cilni ar Gemini}other{Kopīgot # cilnes ar Gemini}}</translation>
 <translation id="2575247648642144396">Šī ikona ir redzama, ja pašlaik atvērtajā lapā var lietot paplašinājumu. Lai lietotu šo paplašinājumu, noklikšķiniet uz ikonas vai nospiediet taustiņu kombināciju <ph name="EXTENSION_SHORTCUT" />.</translation>
@@ -2593,7 +2586,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
     <ph name="BEGIN_PARAGRAPH2" />Google izmanto šo no šīs ierīces ievākto informāciju, lai uzlabotu atrašanās vietas precizitāti un ar atrašanās vietu saistītus pakalpojumus, kā arī kopumā uzlabotu, nodrošinātu un uzturētu Google pakalpojumus. Mēs apstrādājam šo informāciju, pamatojoties uz Google un trešo pušu likumīgajām interesēm sniegt lietotāju vajadzībām atbilstošu pakalpojumus. Šī informācija netiek izmantota, lai identificētu atsevišķas personas.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Jūs jebkurā brīdī varat izslēgt iestatījumu “Atrašanās vietas precizitāte” šīs ierīces atrašanās vietas iestatījumos sadaļā Iestatījumi &gt; Konfidencialitāte un drošība &gt; Konfidencialitātes vadīklas &gt; Piekļuve atrašanās vietai &gt; Atrašanās vietas papildu iestatījumi. Ja iestatījums “Atrašanās vietas precizitāte” ir izslēgts, netiek vākti nekādi atrašanās vietas precizitātes dati. Android lietotnēs un pakalpojumos ierīces atrašanās vietas noteikšanai tiek izmantota tikai IP adrese (ja tā ir pieejama). Tas var ietekmēt Android lietotņu un pakalpojumu, piemēram, Google Maps, pieejamību un atrašanās vietu precizitāti.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2729940704980595903">Skatiet un pārvaldiet savas Gemini Apps darbības.</translation>
-<translation id="2730029791981212295">Notiek Linux lietotņu un failu dublēšana</translation>
 <translation id="2730550884708194161">Par darba profiliem</translation>
 <translation id="2730596696987224099">Izvēlēties savu paroli</translation>
 <translation id="2730647855013151888">Iekļaut visu personas informāciju</translation>
@@ -2829,7 +2821,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2885129935310217435">Ir pieejama poga ar tādu pašu nosaukumu. Lūdzu, izvēlieties citu nosaukumu.</translation>
 <translation id="2885378588091291677">Uzdevumu pārvaldnieks</translation>
 <translation id="2885729872133513017">Dekodējot servera atbildi, radās problēma.</translation>
-<translation id="2886119409731773154">Šī darbība var ilgt pat 30 minūtes.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692">“<ph name="DEVICE" />” un vēl <ph name="NUMBER_OF_DEVICES" /> ierīces</translation>
 <translation id="2887344147309501015">Pārlūkojot varat tērzēt, izmantojot Gemini pārlūkā Chrome, lai iegūtu atbildes, galvenos secinājumus un citu informāciju.</translation>
@@ -3094,7 +3085,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3053273573829329829">Iespējot lietotāja PIN</translation>
 <translation id="3053274730492362225">Nemirgot</translation>
 <translation id="3058498974290601450">Jebkurā brīdī varat ieslēgt sinhronizāciju iestatījumos.</translation>
-<translation id="3058517085907878899">Ierīces nosaukuma piešķiršana</translation>
 <translation id="3060952009917586498">Varat mainīt ierīces valodu. Pašreizējā valoda: <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Nevarēja izveidot savienojumu ar jūsu tālruni. Tālrunim ir jāatrodas tuvumā, tam jābūt atbloķētam, un tajā ir jābūt ieslēgtam Bluetooth un Wi-Fi savienojumam.</translation>
 <translation id="3061302636956643119">Teksts tiks nosūtīts uzņēmumam Google apstrādei.</translation>
@@ -3215,7 +3205,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3158770568048368350">Tādējādi īslaicīgi var tikt pārtraukts savienojums ar mobilo tīklu</translation>
 <translation id="3159335509547415276">Uzziniet vairāk par bloķētiem kontiem.</translation>
 <translation id="3159493096109238499">Bēša</translation>
-<translation id="3159978855457658359">Ierīces nosaukuma rediģēšana</translation>
 <translation id="3160928651883997588">VPN preferences</translation>
 <translation id="3161522574479303604">Visas valodas</translation>
 <translation id="3162070126914310576">Šo ierīci pašlaik nevar reģistrēt, jo jūsu organizācijas vienībai ir sasniegts sākotnējās reģistrācijas ierobežojums. Lai saņemtu palīdzību, sazinieties ar administratoru.</translation>
@@ -4239,7 +4228,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Administrators atkārtoti ieslēdza 1 potenciāli kaitīgu paplašinājumu.}zero{Administrators atkārtoti ieslēdza {NUM_EXTENSIONS} potenciāli kaitīgus paplašinājumus.}one{Administrators atkārtoti ieslēdza {NUM_EXTENSIONS} potenciāli kaitīgu paplašinājumu.}other{Administrators atkārtoti ieslēdza {NUM_EXTENSIONS} potenciāli kaitīgus paplašinājumus.}}</translation>
 <translation id="3834728400518755610">Lai mikrofona iestatījuma izmaiņas stātos spēkā, ir jāizslēdz Linux dators. Lai turpinātu, izslēdziet Linux datoru.</translation>
 <translation id="3834775135533257713">Neizdevās pievienot lietojumprogrammu “<ph name="TO_INSTALL_APP_NAME" />”, jo rodas konflikts ar “<ph name="INSTALLED_APP_NAME" />”.</translation>
-<translation id="3835904559946595746">Nevarēja atjaunot Linux dublējumu</translation>
 <translation id="383669374481694771">Šī ir vispārīga informācija par šo ierīci un tās lietojumu (piemēram, par akumulatora uzlādes līmeni, sistēmas darbībām, lietotņu izmantojumu un kļūdām). Dati tiks izmantoti, lai uzlabotu Android darbību. Noteiktu apkopotu informāciju izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji, lai uzlabotu lietotnes un produktus.</translation>
 <translation id="3837569373891539515">Varat atlasīt visas atbilstošās opcijas. Šīs opcijas varat atrast arī sadaļā “Iestatījumi”, kad būsiet iestatījis savu ierīci (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="3838085852053358637">Neizdevās ielādēt paplašinājumu</translation>
@@ -4405,7 +4393,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="3943582379552582368">Atpakaļ</translation>
 <translation id="3943857333388298514">Ielīmēt</translation>
 <translation id="3945513714196326460">Izmantojiet īsāku nosaukumu.</translation>
-<translation id="3948027458879361203">Saimniekdatora nosaukuma maiņa</translation>
 <translation id="3948116654032448504">Meklēt attēlu <ph name="SEARCH_ENGINE" /> tīklā</translation>
 <translation id="3948334586359655083">Šī cilne atskaņo audio</translation>
 <translation id="3948507072814225786">Vietne <ph name="ORIGIN" /> var rediģēt tālāk norādītajās mapēs esošos failus.</translation>
@@ -5575,7 +5562,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4769632191812288342">Jums ir pieejama standarta aizsardzība.</translation>
 <translation id="4770119228883592393">Pieprasīta atļauja. Lai atbildētu, nospiediet taustiņu ⌘, taustiņu Option un lejupvērsto bultiņu.</translation>
 <translation id="4772914216048388646">Kārtīgs</translation>
-<translation id="4773112038801431077">Linux jaunināšana</translation>
 <translation id="4773122030389014189">Ciļņu grupas “<ph name="GROUP_NAME" />” kopīgošana</translation>
 <translation id="4773253008034797668">Drīkst izveidot savienojumu ar jebkuru ierīci jūsu lokālajā tīklā</translation>
 <translation id="477548766361111120">Atļaut paplašinājumam lasīt un mainīt šo vietni</translation>
@@ -5967,7 +5953,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5040823038948176460">Papildu satura iestatījumi</translation>
 <translation id="5041509233170835229">Chrome lietotne</translation>
 <translation id="504194357571315770">Nepieciešama darbība</translation>
-<translation id="5043440033854483429">Nosaukumā var izmantot burtus, ciparus un defises (-), un nosaukumā jābūt ne mazāk par vienu un ne vairāk par 15 rakstzīmēm.</translation>
 <translation id="5043807571255634689">Abonements <ph name="SUBSCRIPTION_NAME" /> tiks noņemts tikai no šīs ierīces. Lai veiktu izmaiņas abonementā, sazinieties ar abonementa nodrošinātāju. <ph name="LINK_BEGIN" />Uzziniet vairāk.<ph name="LINK_END" /></translation>
 <translation id="5045367873597907704">Par HID ierīcēm</translation>
 <translation id="5045550434625856497">Nepareiza parole</translation>
@@ -6085,7 +6070,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5117930984404104619">Pārraudzīt citu paplašinājumu, tostarp apmeklēto vietrāžu URL, darbību</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5120886753782992638">Noklikšķiniet šeit, lai apmeklētu vietni <ph name="APPROVED_URL" /></translation>
-<translation id="5121052518313988218">Jūsu Linux konteinera operētājsistēma vairs netiek atbalstīta. Tai vairs netiks sūtīti drošības atjauninājumi un kļūdu labojumi, un funkcijas, kuras šobrīd var izmantot, var negaidīti pārtraukt darboties. Lai turpinātu Linux izmantošanu, jauniniet uz jaunāko versiju.</translation>
 <translation id="5121130586824819730">Cietais disks ir pilns. Saglabājiet citā atrašanās vietā vai atbrīvojiet vietu cietajā diskā.</translation>
 <translation id="5123433949759960244">Basketbols</translation>
 <translation id="5125714798187802869">Aktivizēt</translation>
@@ -6402,7 +6386,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5340900621595888432">Sūtīt diagnostikas un lietojuma datus</translation>
 <translation id="5341793073192892252">Tālāk norādītie sīkfaili tika bloķēti (trešo pušu sīkfaili tiek bloķēti bez izņēmumiem).</translation>
 <translation id="5342091991439452114">PIN kodā ir jābūt vismaz <ph name="MINIMUM" /> cipariem.</translation>
-<translation id="5344036115151554031">Linux atjaunošana</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (labā)</translation>
 <translation id="534449933710420173">Mape bez nosaukuma</translation>
 <translation id="5345916423802287046">Palaist lietotni pierakstoties</translation>
@@ -6636,7 +6619,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5497739595514726398">Pārlūkā Chrome neizdevās verificēt šo instalēšanas komplektu</translation>
 <translation id="5498967291577176373">Rakstiet ātrāk, izmantojot iekļautos ieteikumus: savu vārdu, adresi un tālruņa numuru</translation>
 <translation id="5499211612787418966">Šis dialoglodziņš pašlaik nav izcelts. Lai izceltu šo dialoglodziņu, nospiediet taustiņu kombināciju Alt + Shift + A.</translation>
-<translation id="5499453227627332024">Jūsu Linux konteineram ir pieejams jauninājums. Jaunināšanu varat veikt arī vēlāk lietotnē Iestatījumi.</translation>
 <translation id="5499476581866658341">Tagad varat skatīt tālruņa jaunākos fotoattēlus un multivides saturu.</translation>
 <translation id="549957179819296104">Jaunā ikona</translation>
 <translation id="5499634624419508916">Aizstāt esošo ciļņu grupu</translation>
@@ -7056,7 +7038,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5804241973901381774">Atļaujas</translation>
 <translation id="5804259315582798390">Neizdevās iespējot lokālo datu atkopšanu</translation>
 <translation id="5805268472388605531">Lai skatītu uzsvara zīmes un speciālās rakstzīmes, nospiediet un turiet tastatūras taustiņus</translation>
-<translation id="5805353596216929913">Nebija pieejams neviens atjauninājums</translation>
 <translation id="5805697420284793859">Logu pārvaldnieks</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" />; nospiediet taustiņu Enter, lai dzēstu failu</translation>
 <translation id="5806447147478173900">Kopējais krātuves apjoms, ko izmanto parādītās vietnes: <ph name="TOTAL_USAGE" /></translation>
@@ -7505,7 +7486,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6113942107547980621">Lai izmantotu Smart Lock, pārslēdzieties uz tālruņa primāro lietotāja profilu</translation>
 <translation id="6116921718742659598">Mainīt valodas un ievades iestatījumus</translation>
 <translation id="6119008366402292080">Nav pieejams neviens printeris</translation>
-<translation id="6119927814891883061">Piešķirt ierīcei nosaukumu <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">Krāsu korekcija</translation>
 <translation id="6121773125605585883">Skatīt lietotājvārda <ph name="USERNAME" /> paroli vietnē <ph name="WEBSITE" /></translation>
 <translation id="6122093587541546701">E-pasta adrese (neobligāti):</translation>
@@ -7746,7 +7726,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6277105963844135994">Radās tīkla noildze.</translation>
 <translation id="6277518330158259200">I&amp;egūt ekrānuzņēmumu</translation>
 <translation id="6278428485366576908">Motīvs</translation>
-<translation id="6278776436938569440">Mainīt atrašanās vietu</translation>
 <translation id="6280215091796946657">Pierakstīties ar citu kontu</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6281218688313242284">&amp;Google konta pārvaldība</translation>
@@ -8092,7 +8071,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="65334502113648172">Nospiediet bultiņas, lai sakļautu vai izvērstu attēlojuma apgabalu. Lai pārvietotu attēlojuma apgabalu, nospiediet pārslēgšanas taustiņu un pluszīmes taustiņu (+), pēc tam izmantojiet bultiņas.</translation>
 <translation id="6535331821390304775">Vienmēr atļaut vietnei <ph name="ORIGIN" /> atvērt šī veida saites saistītajā lietotnē</translation>
 <translation id="653659894138286600">Skenēt dokumentus un attēlus</translation>
-<translation id="6537613839935722475">Nosaukumā var izmantot burtus, ciparus un defises (-)</translation>
 <translation id="6538036594527795020">Mainīt lietotnes <ph name="APP" /> valodu. Pašreizējā valoda ir <ph name="LANGUAGE" />.</translation>
 <translation id="6538098297809675636">Nosakot kodu, radās kļūda.</translation>
 <translation id="653920215766444089">Notiek rādītājierīces meklēšana…</translation>
@@ -8106,7 +8084,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6542521951477560771">Notiek apraide uz ierīci <ph name="RECEIVER_NAME" /></translation>
 <translation id="6544134392255015460">tastatūras fona apgaismojuma pārslēgšana</translation>
 <translation id="6545665334409411530">Atkārtošanas ātrums</translation>
-<translation id="6546856949879953071">Ja vēlaties skatīt detalizētu informāciju par jauninājumu, žurnāli ir saglabāti šeit: Faili &gt; Mani faili &gt; <ph name="LOG_FILE" />.</translation>
 <translation id="6547354035488017500">Atbrīvojiet vismaz 512 MB vietas ierīcē, pretējā gadījumā tā nereaģēs. Lai atbrīvotu vietu, izdzēsiet failus no ierīces krātuves.</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google atrašanās vietu pakalpojumos tiek izmantoti tādi avoti kā Wi-Fi, mobilais tīkls un sensori, lai palīdzētu noteikt jūsu ierīces atrašanās vietu.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Jūs jebkurā brīdī varat izslēgt Android atrašanās vietu pakalpojumus savā ierīcē, pārejot uz sadaļu Iestatījumi &gt; Lietotnes &gt; Google Play veikals &gt; Pārvaldīt Android preferences &gt; Drošība un atrašanas vieta &gt; Atrašanās vieta. Varat arī izslēgt Wi‑Fi, mobilo tīklu un sensoru izmantošanu Android ierīces atrašanās vietas noteikšanai, izslēdzot opciju “Google atrašanās vietas precizitāte” tajā pašā izvēlnē.<ph name="END_PARAGRAPH2" /></translation>
@@ -8125,7 +8102,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6553046373262346328">{GROUP_COUNT,plural, =1{Tādējādi grupa tiks dzēsta no visām ierīcēm, kurās esat pierakstījies ar <ph name="EMAIL" />.}zero{Tādējādi grupas tiks dzēstas no visām ierīcēm, kurās esat pierakstījies ar <ph name="EMAIL" />.}one{Tādējādi grupas tiks dzēstas no visām ierīcēm, kurās esat pierakstījies ar <ph name="EMAIL" />.}other{Tādējādi grupas tiks dzēstas no visām ierīcēm, kurās esat pierakstījies ar <ph name="EMAIL" />.}}</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> lietotāji</translation>
 <translation id="6555432686520421228">Noņemiet visus lietotāju kontus un atiestatiet savu <ph name="IDS_SHORT_PRODUCT_NAME" /> ierīci, lai izmantotu sākotnējos rūpnīcas iestatījumus.</translation>
-<translation id="6555604601707417276">Linux dublējums ir atjaunots</translation>
 <translation id="6555744145993174510">no: <ph name="APP_ORIGIN" /></translation>
 <translation id="6556866813142980365">Atcelt atsaukšanu</translation>
 <translation id="6556903358015358733">Motīvs un fona tapete</translation>
@@ -8286,7 +8262,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6663190258859265334">Aktivizējiet savā <ph name="DEVICE_TYPE" /> ierīcē funkciju Powerwash un atgriezieties iepriekšējā versijā.</translation>
 <translation id="6664774537677393800">Atverot jūsu profilu, radās kļūda. Lūdzu, izrakstieties un vēlreiz pierakstieties.</translation>
 <translation id="6665874326033183068">Mežonīgs</translation>
-<translation id="6666559645296300656">Linux jaunināšanas atcelšana</translation>
 <translation id="6667086124612170548">Fails ir par lielu šai ierīcei</translation>
 <translation id="6667092961374478614">Funkcijas <ph name="FEATURE_NAME" /> uztveramība</translation>
 <translation id="6667187897999649121">Šobrīd paroles varat kopīgot tikai ar ģimenes locekļiem. <ph name="BEGIN_LINK" />Izveidojiet ģimenes grupu<ph name="END_LINK" /> ar 6 dalībniekiem un izmantojiet Google produktu un abonementu papildu priekšrocības.</translation>
@@ -8343,7 +8318,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6702639462873609204">&amp;Rediģēt...</translation>
 <translation id="6702859741546259407">Lai izmantotu funkciju <ph name="FEATURE_NAME" />, ieslēdziet Bluetooth un Wi-Fi.</translation>
 <translation id="6703109186846420472">,</translation>
-<translation id="6703254819490889819">Atjaunot dublējumu</translation>
 <translation id="6707122714992751648">Izpildīt ChromeOS diagnostikas testus.</translation>
 <translation id="6707389671160270963">SSL klienta sertifikāts</translation>
 <translation id="6707671917294473995">Vietnēm nav atļauts izmantot jūsu kameru</translation>
@@ -8622,7 +8596,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6883606786470492001">Pārvaldot reklāmu tēmas un citus iestatījumus, varat ierobežot to, ko vietnes var uzzināt par jums, lai rādītu personalizētas reklāmas.</translation>
 <translation id="6884474387073389421">Vai tiešām vēlaties izdzēst atlasītos pierakstīšanās datus?</translation>
 <translation id="6885771755599377173">Sistēmas informācijas priekšskatījums</translation>
-<translation id="6886380424988777998">Nevarēja jaunināt operētājsistēmu Linux</translation>
 <translation id="6886871292305414135">Atvērt saiti jaunā cilnē</translation>
 <translation id="6888831646723563669">Izveidojiet savienojumu, lai izbaudītu visas jaunās <ph name="DEVICE_TYPE" /> funkcijas</translation>
 <translation id="6888850808202733940">Lietotnes un spēles</translation>
@@ -8823,7 +8796,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7016995776279438971">Sarkana un zaļa krāsa, vāja jutība pret sarkano krāsu (protanomālija)</translation>
 <translation id="7017219178341817193">Pievienot jaunu lapu</translation>
 <translation id="7017354871202642555">Nevar iestatīt režīmu pēc loga iestatīšanas.</translation>
-<translation id="7019546817926942979">Ierīcei ir jābūt pievienotai elektrotīklam. Jauninot Linux, var tikt ātri izlādēts akumulators. Pievienojiet savu ierīci lādētājam un mēģiniet vēlreiz.</translation>
 <translation id="7019805045859631636">Ātrs</translation>
 <translation id="7021524108486027008">Izmantojiet rīkus, rediģēšanas programmas un IDE jūsu uzņēmuma pārvaldītā vidē jūsu ierīcē (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="7022222879220069865">Visi skārienpaliktņi ir atvienoti</translation>
@@ -8898,7 +8870,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7074703793383805632">Grupas “<ph name="GROUP_NAME" />” statuss: <ph name="SHARED_STATE" /> — <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">PKCS #1 MD5 ar RSA šifrējumu</translation>
 <translation id="7075625805486468288">Pārvaldīt HTTPS/SSL sertifikātus un iestatījumus</translation>
-<translation id="7076875098323397992">Nevar sākt jaunināšanu</translation>
 <translation id="7077751457066325012">Skatīt un pielāgot īsinājumtaustiņus</translation>
 <translation id="7077829361966535409">Pierakstīšanās lapu neizdevās ielādēt, izmantojot pašreizējos starpniekservera iestatījumus. <ph name="GAIA_RELOAD_LINK_START" />Mēģiniet pierakstīties vēlreiz<ph name="GAIA_RELOAD_LINK_END" /> vai izmantojiet citus <ph name="PROXY_SETTINGS_LINK_START" />starpniekservera iestatījumus<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Visi tīkli</translation>
@@ -9756,7 +9727,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7668648754769651616">Pieejamības funkcijas atvieglo ierīces lietošanu. Lai piekļūtu ātrajiem iestatījumiem, ekrāna apakšdaļā atlasiet laiku.</translation>
 <translation id="7669620291129890197">Redzama jūsu ierīcēm</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{Nepareizs PIN. Ir atlicis viens mēģinājums.}zero{Nepareizs PIN. Ir atlikuši # mēģinājumi.}one{Nepareizs PIN. Ir atlicis # mēģinājums.}other{Nepareizs PIN. Ir atlikuši # mēģinājumi.}}</translation>
-<translation id="7670434942695515800">Lai uzlabotu veiktspēju, pārejiet uz jaunāko versiju. Ieteicams dublēt datus gadījumam, ja jaunināšanu nevarēs pabeigt. Kad tiks sākta jaunināšana, operētājsistēma Linux tiks izslēgta. Pirms turpināt, saglabājiet atvērtos failus. <ph name="LINK_START" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="7670483791111801022">Subtitri</translation>
 <translation id="7671130400130574146">Izmantot sistēmas virsrakstjoslu un apmales</translation>
 <translation id="7671139479636735732">Noklikšķiniet ar peles labo pogu, lai ērti vizualizētu savas idejas.</translation>
@@ -10123,7 +10093,6 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7921395044508886182">Atļaut vietnēm izmantot JavaScript optimizāciju</translation>
 <translation id="7921901223958867679">Šis paplašinājums var lasīt un mainīt vietnes <ph name="HOST" /> datus.</translation>
 <translation id="7922606348470480702">1 paplašinājums</translation>
-<translation id="7923564237306226146">Linux jaunināšana ir pabeigta</translation>
 <translation id="7924075559900107275">ilglaicīga atbalsta kandidāts</translation>
 <translation id="7924358170328001543">Porta pārsūtīšanas kļūda</translation>
 <translation id="7925108652071887026">Automātiskās aizpildes dati</translation>
@@ -10194,7 +10163,6 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7963001036288347286">Skārienpaliktņa darbības paātrināšana</translation>
 <translation id="7963408577288987423">{COUNT,plural, =1{1 parole}zero{{COUNT} paroļu}one{{COUNT} parole}other{{COUNT} paroles}}</translation>
 <translation id="7963513503134856713">Logs ir pārvietots pa labi</translation>
-<translation id="7963608432878156675">Šis nosaukums ir redzams citām ierīcēm, iestatot Bluetooth un tīkla savienojumus</translation>
 <translation id="7964458523224581615">Viridiāns</translation>
 <translation id="7965946703747956421">Dzēst datus (<ph name="CREDENTIAL_TYPE" />) lietotājvārdam: <ph name="USER_EMAIL" /></translation>
 <translation id="7966241909927244760">Kopēt attēla adresi</translation>
@@ -10391,7 +10359,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="808488435221187916">Jūsu informācija ir pieejama lietotnē Google maks jebkurā ierīcē, kurā veikta pierakstīšanās.</translation>
 <translation id="8086015605808120405">Notiek printera <ph name="PRINTER_NAME" /> konfigurēšana...</translation>
 <translation id="8086121155774250556">Šī cilne kopīgo jūsu ekrānu</translation>
-<translation id="8086610718778464681">Nevar dublēt Linux lietotnes un failus</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Šis fails ir šifrēts. Lūdziet faila īpašniekam to transkribēt.}zero{Daži no šiem failiem ir šifrēti. Lūdziet failu īpašniekam tos atšifrēt.}one{Daži no šiem failiem ir šifrēti. Lūdziet failu īpašniekam tos atšifrēt.}other{Daži no šiem failiem ir šifrēti. Lūdziet failu īpašniekam tos atšifrēt.}}</translation>
 <translation id="808894953321890993">Mainīt paroli</translation>
 <translation id="8089782219932231262">{BOOKMARK_COUNT,plural, =1{Viena grāmatzīme ir saglabāta tikai šajā ierīcē. Lai šo grāmatzīmi varētu izmantot citās ierīcēs, saglabājiet to savā Google kontā. Tiks notīrīti arī visi dublikāti.}zero{{BOOKMARK_COUNT} grāmatzīmes ir saglabātas tikai šajā ierīcē. Lai šīs grāmatzīmes varētu izmantot citās ierīcēs, saglabājiet tās savā Google kontā. Tiks notīrīti arī visi dublikāti.}one{{BOOKMARK_COUNT} grāmatzīme ir saglabāta tikai šajā ierīcē. Lai šīs grāmatzīmes varētu izmantot citās ierīcēs, saglabājiet tās savā Google kontā. Tiks notīrīti arī visi dublikāti.}other{{BOOKMARK_COUNT} grāmatzīmes ir saglabātas tikai šajā ierīcē. Lai šīs grāmatzīmes varētu izmantot citās ierīcēs, saglabājiet tās savā Google kontā. Tiks notīrīti arī visi dublikāti.}}</translation>
@@ -10422,7 +10389,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8102139037507939978">Izņemt personu identificējošu informāciju no faila system_logs.txt.</translation>
 <translation id="810362914482827094">Meklējiet piekļuves atslēgas</translation>
 <translation id="8104088837833760645">Lejupielādēt eSIM profilu</translation>
-<translation id="8104778744208707085">Jāizskata</translation>
 <translation id="8105050970626643057">Ātri atveriet Gemini, kad tas ir nepieciešams.</translation>
 <translation id="8105273883928376822">Lūdzu, pierakstieties, lai turpinātu</translation>
 <translation id="8106114112474206597">Lai nospiestu peles pogu, izmantojiet taustiņu “i”</translation>
@@ -12001,7 +11967,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9149866541089851383">Rediģēt ...</translation>
 <translation id="9150045010208374699">Izmantot jūsu videokameru</translation>
 <translation id="9150079578948279438">Nevarēja noņemt profilu. Lūdzu, mēģiniet vēlreiz vai sazinieties ar mobilo sakaru operatoru, lai saņemtu tehnisko atbalstu.</translation>
-<translation id="9150860646299915960">Atjauniniet Linux konteineri</translation>
 <translation id="915112772806845021">Vietnēs šī funkcija tiek izmantota, lai automātiski aktivizētu režīmu “Attēls attēlā”. Tādējādi varat turpināt skatīties videoklipu, vienlaikus atbrīvojot ekrānu citiem uzdevumiem.</translation>
 <translation id="9151249085738989067">Automātiski pārslēgt ChromeVox balsi atkarībā no valodas</translation>
 <translation id="9151906066336345901">beigvietas taustiņš</translation>

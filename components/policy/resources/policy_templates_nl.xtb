@@ -94,15 +94,6 @@ Als je dit beleid niet toepast, is de functie voor autocorrectie op het fysieke 
 
       Als dit beleid is ingesteld, wordt het inlogscherm altijd weergegeven in de taal die is aangegeven door de eerste waarde van dit beleid (het beleid wordt gedefinieerd als een lijst voor voorwaartse compatibiliteit). Als dit beleid niet is ingesteld of is ingesteld op een lege lijst, wordt het inlogscherm weergegeven in de taal van de laatste gebruikerssessie. Als dit beleid is ingesteld op een waarde die geen geldige taal is, wordt het inlogscherm weergegeven in een reservetaal (momenteel en-US).</translation>
 <translation id="1050158007881386475">Rapportage van moederbordstatus van apparaat uitzetten</translation>
-<translation id="1050897390688148222">Met Lensoverlay kunnen gebruikers contextuele Google-zoekopdrachten uitvoeren via een screenshot of door een vraag te stellen over de content van de huidige pagina. Voor deze functie moet de eindgebruiker zich aanmelden.
-
-Deze functie is beschikbaar voor alle gebruikers die Google als standaard zoekmachine hebben, tenzij de functie is uitgezet op basis van dit beleid.
-
-Als je het beleid instelt op 0 - Toestaan of niet instelt, is de functie beschikbaar voor gebruikers.
-
-Als je het beleid instelt op 1 - Niet toestaan, is de functie niet beschikbaar.
-
-Als je het beleid niet instelt, wordt het gedrag vanaf <ph name="PRODUCT_NAME" /> 140 bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1052499923181221200">Dit beleid heeft geen effect, tenzij SamlInSessionPasswordChangeEnabled is ingesteld op true.
       Als dat beleid is ingesteld op true en dit beleid bijvoorbeeld is ingesteld op 14, ontvangen SAML-gebruikers 14 dagen van tevoren een melding dat hun wachtwoord op een bepaalde datum verloopt.
       Ze kunnen dit direct oplossen door tijdens een sessie het wachtwoord te wijzigen voordat het verloopt.
@@ -4481,19 +4472,6 @@ Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph nam
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, staat de markering van het caret-teken in eerste instantie uit op het inlogscherm. De gebruiker kan deze functie op elk gewenst moment aanzetten.</translation>
-<translation id="4182348537826882258">Als je het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" /> instelt, worden webpagina's met verboden URL's niet geladen. Beheerders kunnen de lijst met URL-patronen opgeven die moeten worden geblokkeerd. Als je dit beleid niet instelt, worden er geen URL's geblokkeerd in de browser. Er kunnen maximaal 1000 uitzonderingen worden gedefinieerd in <ph name="URL_ALLOWLIST_POLICY_NAME" />. Bekijk hoe je een URL-patroon opmaakt (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-
-Opmerking: Dit beleid is niet van toepassing op in-page JavaScript-URL's met dynamisch geladen gegevens. Als je example.com/abc hebt geblokkeerd, kan example.com de pagina nog steeds laden met XMLHTTPRequest. Dit beleid voorkomt ook niet dat webpagina's de URL die in de omnibox wordt getoond, updaten naar een geblokkeerde site via de JavaScript History API.
-
-Vanaf versie 73 van <ph name="PRODUCT_NAME" /> kun je javascript://*-URL's blokkeren. Dit heeft alleen gevolgen voor JavaScript dat in de adresbalk wordt opgegeven of voor bijvoorbeeld bookmarklets.
-
-Vanaf versie 92 van <ph name="PRODUCT_NAME" /> wordt dit beleid ook ondersteund in de stand zonder interface.
-
-Opmerking: Als je interne URL's met chrome://* en chrome-untrusted://* blokkeert, kan dit leiden tot onverwachte fouten of kan de blokkering worden omzeild in speciale gevallen. In plaats van bepaalde interne URL's te blokkeren, kun je beter checken of er specifiekere beleidsregels beschikbaar zijn. Bijvoorbeeld:
-
-- Gebruik <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" /> in plaats van chrome://settings/certificates te blokkeren.
-
-- Gebruik <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> in plaats van chrome-untrusted://crosh te blokkeren.</translation>
 <translation id="4183229833636799228">Standaardinstelling voor <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="4185868802416355029">Beheerde extensies toestaan de Enterprise Hardware Platform API te gebruiken</translation>
 <translation id="4186244263855283575">Hiermee kun je een aangepast schema instellen om apparaten opnieuw op te starten. Als dit beleid is ingesteld op True, wordt het apparaat opnieuw opgestart volgens het schema. Het beleid moet worden verwijderd om meer instanties van gepland opnieuw opstarten te annuleren.
@@ -6307,13 +6285,6 @@ Beheerde accounts kunnen geen lid te worden van een gezinsgroep of er zelf een m
       Als het beleid niet is ingesteld, is <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> niet beschikbaar voor web-apps.
 Omdat we de privacy willen verbeteren, ondersteunt dit beleid vanaf <ph name="PRODUCT_NAME" /> versie 116 geen dynamische vernieuwing meer. Daarom kan de gebruiker er zeker van zijn dat er geen extra pagina's zijn die de schermen kunnen vastleggen na het inloggen (als dit nog niet was toegestaan tijdens de start van de sessie).</translation>
 <translation id="5361167871898066799">De functie voor autocorrectie op het fysieke toetsenbord beheren</translation>
-<translation id="5361708558735884308">Als je dit beleid instelt, wordt toegang geboden tot de vermelde URL's, als uitzonderingen op <ph name="URL_BLOCKLIST_POLICY_NAME" />. Zie de beschrijving van dat beleid voor de indeling van items in deze lijst. Als je <ph name="URL_BLOCKLIST_POLICY_NAME" /> bijvoorbeeld instelt op *, worden alle verzoeken geblokkeerd en kun je dit beleid gebruiken om toegang tot een beperkte lijst met URL's toe te staan. Je kunt dit beleid gebruiken om uitzonderingen voor bepaalde schema's, subdomeinen van andere domeinen, poorten of specifieke paden op te geven met de indeling die wordt gespecificeerd op (https://support.google.com/chrome/a?p=url_blocklist_filter_format). Het meest specifieke filter bepaalt of een URL wordt geblokkeerd of toegestaan. Het beleid <ph name="URL_ALLOWLIST_POLICY_NAME" /> krijgt voorrang op <ph name="URL_BLOCKLIST_POLICY_NAME" />. Dit beleid is beperkt tot 1000 items.
-
-Met dit beleid kan ook de automatische aanroep door de browser van een externe app worden aangezet die is geregistreerd als protocolhandler voor de vermelde protocollen, zoals tel: of ssh:.
-
-Als je het beleid niet instelt, zijn er geen uitzonderingen toegestaan op <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in de stand zonder interface.</translation>
 <translation id="5362531528507578966">Hiermee wordt de standaardmodus voor afdrukken met achtergrondbeelden overschreven.</translation>
 <translation id="5365476955714838841">Opdrachtregelparameters voor de alternatieve browser.</translation>
 <translation id="5365946944967967336">Homepage-knop in de werkbalk tonen</translation>
@@ -7348,7 +7319,6 @@ Als je dit beleid instelt op <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE"
 <translation id="6011969832398368671">Sites toestaan om gebruikers schrijftoegang te vragen tot bestanden en directory's</translation>
 <translation id="601234435141599215">Poortdoorschakeling naar virtuele Linux-machines toestaan</translation>
 <translation id="6012952794649558174">Standaardgedrag van browser gebruiken.</translation>
-<translation id="6013875085491664033">Content delen met <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />-integraties aanzetten</translation>
 <translation id="6015281292796053435">Met dit beleid wordt bepaald of informatie over Safe Browsing moet worden gerapporteerd, waaronder het aantal Safe Browsing-waarschuwingen en het aantal doorklikken van Safe Browsing-waarschuwingen.
 
       Als het beleid <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> niet is ingesteld of niet is toegepast, wordt dit beleid genegeerd.
@@ -8050,7 +8020,6 @@ Dit beleid heeft alleen invloed op TLS 1.3 en QUIC. Het heeft geen invloed op ee
       Als je dit beleid niet toepast of niet instelt, kan het SAML-wachtwoord niet worden gewijzigd op chrome://password-change. Er wordt ook geen melding getoond als SAML-wachtwoorden bijna verlopen.</translation>
 <translation id="6457477291648119596">Type42</translation>
 <translation id="6458361632497500815">Als je het beleid toepast of niet instelt, kunnen alle gebruikers <ph name="PRODUCT_CROSTINI_NAME" /> gebruiken, zolang alle drie beleidsregels (<ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />, <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> en <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" />) zijn toegepast. Als je het beleid niet toepast, kunnen niet-aangesloten gebruikers <ph name="PRODUCT_CROSTINI_NAME" /> niet gebruiken. Als je het beleid niet toepast, wordt het beleid wel toegepast op startende nieuwe <ph name="PRODUCT_CROSTINI_NAME" />-containers en niet op containers die al actief zijn.</translation>
-<translation id="6462604655173570082">Als je dit beleid toepast of niet instelt, kunnen gebruikers de <ph name="GOOGLE_LENS_PRODUCT_NAME" />-knop zien en gebruiken in het zoekvak op de pagina Nieuw tabblad. Als je dit beleid niet toepast, zien gebruikers de <ph name="GOOGLE_LENS_PRODUCT_NAME" />-knop niet in het zoekvak op de pagina Nieuw tabblad.</translation>
 <translation id="6464074037294098618">Automatisch invullen voor adressen aanzetten</translation>
 <translation id="6464564464230511695">Als je dit beleid toepast of niet instelt, is <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> toegestaan op alle webpagina's.
 
@@ -8450,23 +8419,6 @@ Dit beleid wordt in een toekomstige release verwijderd.</translation>
 <translation id="6682305153467826752">Rapportage van informatie over machine-identificatie aanzetten</translation>
 <translation id="6684842561251679182">Aantal mijlpalen voor op de kernel gebaseerde stappen worden uitgesteld</translation>
 <translation id="6685903773201985073">Ambient-verificatie in normale en gastsessies aanzetten.</translation>
-<translation id="668721405120274587">Met dit beleid bepaal je of pagina- en bestandscontent kan worden gedeeld met <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> via het zijvenster of de tabbladen van <ph name="PRODUCT_NAME" />.
-
-Dit beleid heeft geen invloed op <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> op het web. Het bepaalt alleen hoe gebruikers informatie met het product kunnen delen als ze <ph name="PRODUCT_NAME" /> gebruiken.
-
-0/niet ingesteld = gebruikers kunnen pagina- of bestandscontent delen met <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
-
-1 = gebruikers kunnen pagina- of bestandscontent niet delen met <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. De startpunten voor context delen worden uitgezet of verborgen.
-
-Dit beleid wordt genegeerd als <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> niet de standaard zoekmachine van gebruikers is, omdat de functie dan uitstaat.
-
-Dit beleid is onafhankelijk van het beleid <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. Het beleid <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> bepaalt alleen startpunten in de omnibox of het zoekvak op de pagina Nieuw tabblad, terwijl dit beleid context delen via het zijvenster of tabbladen beheert.
-
-Dit beleid beheert ook niet de integratie van <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />. Deze kan worden uitgezet door <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
-
-Als je dit beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="6687291630099400188">Systeemgegevens niet weergeven op het inlogscherm</translation>
 <translation id="6689343802305995925">Er wordt geen actie uitgevoerd.</translation>
 <translation id="6689792153960219308">De hardwarestatus melden</translation>
@@ -10701,7 +10653,6 @@ Als het beleid niet wordt ingesteld, worden standaard alle beschikbare netwerkin
 Zie RFC 8828 artikel 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2) voor een gedetailleerde beschrijving van alle waarden voor verwerking.</translation>
 <translation id="8244171102276095471">RC4-coderingssuites in TLS aanzetten</translation>
 <translation id="8244525275280476362">Maximum vertraging voor ophalen na ongeldigverklaring voor beleid</translation>
-<translation id="8245574649143980200">Als je dit beleid toepast of niet instelt, kunnen gebruikers het menu-item voor regio doorzoeken van <ph name="GOOGLE_LENS_PRODUCT_NAME" /> in het contextmenu zien en gebruiken. Als je dit beleid niet toepast, kunnen gebruikers het menu-item voor regio doorzoeken van <ph name="GOOGLE_LENS_PRODUCT_NAME" /> niet zien in het contextmenu als regio doorzoeken voor <ph name="GOOGLE_LENS_PRODUCT_NAME" /> wordt ondersteund.</translation>
 <translation id="8247143534027746614">Toegang tot een lijst met URL-patronen blokkeren tijdens verificatie</translation>
 <translation id="824818544897669723">Verwijdering van browser- en downloadgeschiedenis uitzetten</translation>
 <translation id="8250048892729838843">Dit beleid is beëindigd. Als je dit beleid toepast of niet instelt, kan het apparaat opties voor gedetailleerde rapportage krijgen.

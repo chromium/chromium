@@ -72,7 +72,6 @@
 <translation id="1041607257468256895">Zarządzaj dostępem witryn do lokalizacji w Chrome</translation>
 <translation id="1042174272890264476">Twój komputer zawiera również wbudowaną bibliotekę RLZ <ph name="SHORT_PRODUCT_NAME" />. Przypisuje ona powtarzalny, nieumożliwiający identyfikacji użytkownika tag służący do monitorowania wyszukiwań i używania <ph name="SHORT_PRODUCT_NAME" /> w ramach określonej kampanii promocyjnej. Etykiety te czasami pojawiają się w zapytaniach wyszukiwarki Google w <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1042248468362992359">Aby używać hotspota, połącz się przez mobilną transmisję danych. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="1043505821207197890">Coś poszło nie tak. Linux mógł nie zostać w pełni uaktualniony. Aby dowiedzieć się więcej, przejrzyj dzienniki. Zostały one zapisane tutaj: Pliki &gt; Moje pliki &gt; <ph name="LOG_FILE" /></translation>
 <translation id="104385770822424034">Dodaj działanie</translation>
 <translation id="1045487161760507186">Nie musisz pamiętać hasła, bo zapisze je za Ciebie Menedżer haseł Google</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{Do usługi <ph name="BRAND" /> na tym urządzeniu zaimportowano 1 hasło}few{Do usługi <ph name="BRAND" /> na tym urządzeniu zaimportowano {NUM_PASSWORDS} hasła}many{Do usługi <ph name="BRAND" /> na tym urządzeniu zaimportowano {NUM_PASSWORDS} haseł}other{Do usługi <ph name="BRAND" /> na tym urządzeniu zaimportowano {NUM_PASSWORDS} hasła}}</translation>
@@ -412,7 +411,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1257336506558170607">Eksportuj wybrany certyfikat</translation>
 <translation id="1258491128795710625">Nowe funkcje</translation>
 <translation id="1260451001046713751">Zawsze zezwalaj na wyskakujące okienka i przekierowania z <ph name="HOST" /></translation>
-<translation id="1260810365552581339">Być może brakuje wolnego miejsca na dysku Linuksa. Możesz zwiększyć ilość miejsca i ponowić przywracanie w <ph name="LINK_START" />Ustawieniach<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Umiarkowana</translation>
 <translation id="126156426083987769">Wystąpił problem z licencjami na urządzenia w trybie demonstracyjnym.</translation>
 <translation id="1262395978737369974">Zezwolono na używanie optymalizacji JavaScriptu bez ograniczeń</translation>
@@ -907,7 +905,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1603914832182249871">(Incognito)</translation>
 <translation id="1604432177629086300">Nie udało się wydrukować. Sprawdź drukarkę i spróbuj jeszcze raz.</translation>
 <translation id="1604567162047669454">Rozpoznawanie semantyki układu graficznego</translation>
-<translation id="1604774728851271529">Aby zaktualizować Linuksa, musisz mieć połączenie sieciowe. Połącz się z internetem i spróbuj ponownie.</translation>
 <translation id="1605148987885002237">Klawiatura i metody wprowadzania</translation>
 <translation id="1605744057217831567">Zobacz wszystkie dane witryn i ich uprawnienia</translation>
 <translation id="1606077700029460857">Zmień ustawienia myszy</translation>
@@ -1261,7 +1258,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1833059747301212935">Łatwo wyświetlaj ostatnie dokumenty i nadchodzące wydarzenia w kalendarzu</translation>
 <translation id="183445248400150852">Witryny używają tej funkcji do zastępowania sygnałów z klawiatury, na przykład w grach lub aplikacjach pulpitu zdalnego</translation>
 <translation id="1834503245783133039">Nie udało się pobrać: <ph name="FILE_NAME" /></translation>
-<translation id="1835261175655098052">Uaktualnianie Linuksa</translation>
 <translation id="1837292628323740716">Korzystaj z Ulepszonego bezpiecznego przeglądania na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1837441256780906162">Usługa Microsoft OneDrive odrzuciła prośbę. Spróbuj później.</translation>
 <translation id="1838374766361614909">Wyczyść wyszukiwanie</translation>
@@ -1497,7 +1493,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1989288015781834552">Uruchom ponownie, aby dokończyć aktualizację. Karty zostaną ponownie otwarte.</translation>
 <translation id="1989903373608997757">Używaj zawsze</translation>
 <translation id="1990046457226896323">Pliki z mową zostały pobrane</translation>
-<translation id="1990727803345673966">Przywracamy zapisane kopie zapasowe plików i aplikacji Linuksa</translation>
 <translation id="199191324030140441">Wyłącz tryb Nie przeszkadzać</translation>
 <translation id="1992397118740194946">Nie ustawiono</translation>
 <translation id="1994173015038366702">URL strony</translation>
@@ -1599,7 +1594,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="206960706005837784">Aplikacja <ph name="APP_NAME" /> zakończyła drukowanie na drukarce <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Nie ma lokalnego pliku dziennika.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Kliknij, by zainstalować rozszerzenie}few{Kliknij, by zainstalować te rozszerzenia}many{Kliknij, by zainstalować te rozszerzenia}other{Kliknij, by zainstalować te rozszerzenia}}</translation>
-<translation id="2073496667646280609">Możliwe, że na Twoim urządzeniu lub w wybranej lokalizacji kopii zapasowej jest za mało wolnego miejsca. Zwolnij miejsce lub wybierz inną lokalizację.</translation>
 <translation id="2073505299004274893">Użyj maksymalnie <ph name="CHARACTER_LIMIT" /> znaków</translation>
 <translation id="2074263453710478603">Logi użytkowników Chrome w systemie ChromeOS</translation>
 <translation id="2074599390896964828">Dokładna lokalizacja</translation>
@@ -2349,7 +2343,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2572032849266859634">Uprawnienia tylko do odczytu dysku <ph name="VOLUME_NAME" /> zostały przyznane.</translation>
 <translation id="2573147659521059501">Karty: <ph name="NUM" /></translation>
 <translation id="2573276323521243649">Powrót ze strony wyboru awatara</translation>
-<translation id="2573417407488272418">Przed aktualizacją zapisz kopie zapasowe aplikacji i plików tutaj: Pliki &gt; Moje pliki.</translation>
 <translation id="2573831315551295105">Przypisz przełącznik do czynności „<ph name="ACTION" />”</translation>
 <translation id="2574037773163798130">{NUM_TABS,plural, =1{Udostępnij kartę usłudze Gemini}few{Udostępnij # karty usłudze Gemini}many{Udostępnij # kart usłudze Gemini}other{Udostępnij # karty usłudze Gemini}}</translation>
 <translation id="2575247648642144396">Ta ikona będzie widoczna, gdy rozszerzenie będzie mogło działać na bieżącej stronie. Użyj tego rozszerzenia, klikając ikonę lub naciskając <ph name="EXTENSION_SHORTCUT" />.</translation>
@@ -2577,7 +2570,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
     <ph name="BEGIN_PARAGRAPH2" />Google wykorzystuje te informacje zebrane z tego urządzenia do zwiększania dokładności lokalizacji i usprawniania działania usług wykorzystujących lokalizację oraz ogólnie do ulepszania, świadczenia i utrzymywania usług Google. Przetwarzamy te dane na podstawie uzasadnionego interesu Google i innych firm w spełnianiu potrzeb użytkowników. Te informacje nie są używane do identyfikacji osób.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Możesz w każdej chwili wyłączyć dokładność lokalizacji w ustawieniach lokalizacji na tym urządzeniu. Aby to zrobić, wybierz Ustawienia &gt; Prywatność i bezpieczeństwo &gt; Ustawienia prywatności &gt; Dostęp do lokalizacji &gt; Zaawansowane ustawienia lokalizacji. Gdy ustawienie Dokładność lokalizacji jest wyłączone, dane poprawiające dokładność lokalizacji nie są zbierane. W przypadku aplikacji i usług na Androida do określania lokalizacji urządzenia używany jest tylko adres IP (jeśli jest dostępny). Może to wpływać na dostępność i dokładność lokalizacji w aplikacjach i usługach na Androida takich jak Mapy Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2729940704980595903">Wyświetlaj aktywność w aplikacjach z Gemini i nią zarządzaj</translation>
-<translation id="2730029791981212295">Tworzę kopię zapasową aplikacji i plików Linuksa</translation>
 <translation id="2730550884708194161">Informacje o profilach służbowych</translation>
 <translation id="2730596696987224099">Wybierz własne</translation>
 <translation id="2730647855013151888">Dołącz wszystkie dane osobowe</translation>
@@ -2812,7 +2804,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2885129935310217435">Istnieje przycisk o tej samej nazwie. Wybierz inną.</translation>
 <translation id="2885378588091291677">Menedżer zadań</translation>
 <translation id="2885729872133513017">Podczas dekodowania odpowiedzi serwera wystąpił problem.</translation>
-<translation id="2886119409731773154">Może to potrwać do 30 minut</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> i jeszcze <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="2887344147309501015">Rozmawiaj z Gemini w Chrome, aby otrzymywać odpowiedzi, najważniejsze wnioski i inne dane podczas przeglądania</translation>
@@ -3077,7 +3068,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3053273573829329829">Włącz kod PIN użytkownika</translation>
 <translation id="3053274730492362225">Nie mrugaj</translation>
 <translation id="3058498974290601450">W każdej chwili możesz włączyć synchronizację w ustawieniach</translation>
-<translation id="3058517085907878899">Nazwij urządzenie</translation>
 <translation id="3060952009917586498">Zmień język urządzenia. Bieżący język to <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Nie udało się nawiązać połączenia z Twoim telefonem. Sprawdź, czy telefon jest w pobliżu, jest odblokowany i ma włączone Bluetooth oraz Wi-Fi.</translation>
 <translation id="3061302636956643119">Tekst zostanie wysłany do Google w celu przetworzenia.</translation>
@@ -3198,7 +3188,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3158770568048368350">To może spowodować chwilowe rozłączenie sieci komórkowej</translation>
 <translation id="3159335509547415276">Więcej informacji o zablokowanych kontach</translation>
 <translation id="3159493096109238499">Beżowy</translation>
-<translation id="3159978855457658359">Edytuj nazwę urządzenia</translation>
 <translation id="3160928651883997588">Ustawienia VPN</translation>
 <translation id="3161522574479303604">Wszystkie języki</translation>
 <translation id="3162070126914310576">Nie można teraz zarejestrować tego urządzenia, ponieważ jednostka organizacyjna osiągnęła wstępny limit rejestracji. Aby uzyskać pomoc, skontaktuj się z administratorem.</translation>
@@ -4218,7 +4207,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Twój administrator ponownie włączył 1 potencjalnie niebezpieczne rozszerzenie}few{Twój administrator ponownie włączył {NUM_EXTENSIONS} potencjalnie niebezpieczne rozszerzenia}many{Twój administrator ponownie włączył {NUM_EXTENSIONS} potencjalnie niebezpiecznych rozszerzeń}other{Twój administrator ponownie włączył {NUM_EXTENSIONS} potencjalnie niebezpiecznego rozszerzenia}}</translation>
 <translation id="3834728400518755610">Zmiana ustawienia mikrofonu wymaga wyłączenia Linuksa. Wyłącz Linuksa, by kontynuować.</translation>
 <translation id="3834775135533257713">Nie udało się dodać aplikacji „<ph name="TO_INSTALL_APP_NAME" />”, bo występuje konflikt z aplikacją „<ph name="INSTALLED_APP_NAME" />”.</translation>
-<translation id="3835904559946595746">Nie udało się przywrócić kopii zapasowej Linuksa</translation>
 <translation id="383669374481694771">Są to ogólne informacje o tym urządzeniu i o jego używaniu (takie jak poziom naładowania baterii, aktywność w systemie i aplikacjach oraz błędy). Wykorzystamy je do ulepszania Androida. Niektóre informacje zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida, do tworzenia lepszych aplikacji i produktów.</translation>
 <translation id="3837569373891539515">Możesz wybrać wszystkie pasujące opcje. Po skonfigurowaniu urządzenia <ph name="DEVICE_TYPE" /> opcje te znajdziesz też w Ustawieniach.</translation>
 <translation id="3838085852053358637">Nie udało się wczytać rozszerzenia</translation>
@@ -4384,7 +4372,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3943582379552582368">&amp;Wstecz</translation>
 <translation id="3943857333388298514">Wklej</translation>
 <translation id="3945513714196326460">Podaj krótszą nazwę</translation>
-<translation id="3948027458879361203">Zmień nazwę hosta</translation>
 <translation id="3948116654032448504">&amp;Szukaj obrazu w <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948334586359655083">Ta karta odtwarza dźwięk</translation>
 <translation id="3948507072814225786">Strona <ph name="ORIGIN" /> może edytować pliki w tych folderach</translation>
@@ -5554,7 +5541,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4769632191812288342">Otrzymujesz standardową ochronę</translation>
 <translation id="4770119228883592393">Zgłoszono prośbę o uprawnienia. Aby odpowiedzieć, naciśnij ⌘ + Option + strzałka w dół.</translation>
 <translation id="4772914216048388646">Uporządkowany</translation>
-<translation id="4773112038801431077">Uaktualnij Linuksa</translation>
 <translation id="4773122030389014189">Udostępnij grupę kart „<ph name="GROUP_NAME" />”</translation>
 <translation id="4773253008034797668">Zezwolono na łączenie się z dowolnym urządzeniem w sieci lokalnej</translation>
 <translation id="477548766361111120">Zezwól rozszerzeniu na odczyt i zmianę tej witryny</translation>
@@ -5945,7 +5931,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5040823038948176460">Dodatkowe ustawienia treści</translation>
 <translation id="5041509233170835229">Aplikacja Chrome</translation>
 <translation id="504194357571315770">Wymagane działanie</translation>
-<translation id="5043440033854483429">Nazwa musi zawierać od 1 do 15 znaków. Mogą to być litery, cyfry i łączniki (-).</translation>
 <translation id="5043807571255634689">Karta <ph name="SUBSCRIPTION_NAME" /> zostanie usunięta tylko z tego urządzenia. Aby wprowadzić zmiany w subskrypcji, skontaktuj się z jej dostawcą. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="5045367873597907704">Urządzenia HID – informacje</translation>
 <translation id="5045550434625856497">Nieprawidłowe hasło</translation>
@@ -6063,7 +6048,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5117930984404104619">Monitorowanie działania innych rozszerzeń, w tym otwieranych adresów URL</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5120886753782992638">Aby otworzyć stronę <ph name="APPROVED_URL" />, kliknij tutaj</translation>
-<translation id="5121052518313988218">System operacyjny w Twoim kontenerze Linuksa nie jest już obsługiwany. Nie będzie otrzymywać kolejnych aktualizacji zabezpieczeń ani poprawek błędów, a funkcje, które teraz działają, mogą nieoczekiwanie zacząć sprawiać problemy. Aby nadal używać Linuksa, uaktualnij go do najnowszej wersji.</translation>
 <translation id="5121130586824819730">Dysk twardy jest pełny. Zapisz w innej lokalizacji lub zwolnij miejsce na dysku.</translation>
 <translation id="5123433949759960244">Piłka do koszykówki</translation>
 <translation id="5125714798187802869">Aktywuj</translation>
@@ -6380,7 +6364,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5340900621595888432">Wysyłaj dane diagnostyczne i dane o korzystaniu</translation>
 <translation id="5341793073192892252">Zablokowano te pliki cookie (pliki cookie innych firm są blokowane bez wyjątków)</translation>
 <translation id="5342091991439452114">Kod PIN musi się składać co najmniej z <ph name="MINIMUM" /> cyfr</translation>
-<translation id="5344036115151554031">Przywracanie Linuksa</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (prawa)</translation>
 <translation id="534449933710420173">Folder bez nazwy</translation>
 <translation id="5345916423802287046">Uruchom aplikację po zalogowaniu</translation>
@@ -6613,7 +6596,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5497739595514726398">Przeglądarka Chrome nie mogła zweryfikować tego pakietu instalacyjnego</translation>
 <translation id="5498967291577176373">Dzięki podpowiedziom w tekście szybciej wpisuj imię i nazwisko, adres oraz numer telefonu</translation>
 <translation id="5499211612787418966">To okno nie jest teraz zaznaczone. Aby je zaznaczyć, naciśnij Alt-Shift A.</translation>
-<translation id="5499453227627332024">Dostępna jest nowa wersja kontenera Linuksa. Aktualizację możesz też przeprowadzić później w aplikacji Ustawienia.</translation>
 <translation id="5499476581866658341">Możesz teraz wyświetlać najnowsze zdjęcia i pliki multimedialne z telefonu</translation>
 <translation id="549957179819296104">Nowa ikona</translation>
 <translation id="5499634624419508916">Zastąp istniejącą grupę kart</translation>
@@ -7035,7 +7017,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5804241973901381774">Uprawnienia</translation>
 <translation id="5804259315582798390">Nie udało się włączyć przywracania danych lokalnych</translation>
 <translation id="5805268472388605531">Naciśnij i przytrzymaj klawisze klawiatury, aby wyświetlić znaki akcentu i znaki specjalne</translation>
-<translation id="5805353596216929913">Brak dostępnych aktualizacji</translation>
 <translation id="5805697420284793859">Menedżer okien</translation>
 <translation id="5806322307130093061"><ph name="FILE_NAME" /> – naciśnij Enter, aby usunąć plik</translation>
 <translation id="5806447147478173900">Łączna ilość miejsca wykorzystywanego przez wyświetlane witryny: <ph name="TOTAL_USAGE" /></translation>
@@ -7485,7 +7466,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6113942107547980621">Aby używać Smart Lock, przełącz telefon na profil głównego użytkownika</translation>
 <translation id="6116921718742659598">Zmień język i ustawienia wprowadzania</translation>
 <translation id="6119008366402292080">Brak dostępnych drukarek</translation>
-<translation id="6119927814891883061">Nazwij urządzenie dla: <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">Korekcja kolorów</translation>
 <translation id="6121773125605585883">Wyświetl hasło powiązane z nazwą użytkownika <ph name="USERNAME" /> do strony <ph name="WEBSITE" />.</translation>
 <translation id="6122093587541546701">Adres e-mail (opcjonalnie):</translation>
@@ -7726,7 +7706,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6277105963844135994">Przekroczono czas oczekiwania na sieć</translation>
 <translation id="6277518330158259200">Wykon&amp;aj zrzut ekranu</translation>
 <translation id="6278428485366576908">Motyw</translation>
-<translation id="6278776436938569440">Zmień lokalizację</translation>
 <translation id="6280215091796946657">Zaloguj się na inne konto</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6281218688313242284">Zarządzaj kontem &amp;Google</translation>
@@ -8072,7 +8051,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="65334502113648172">Naciskając klawisze strzałek, możesz zmniejszyć lub powiększyć obszar wyświetlania. Aby poruszać się po obszarze wyświetlania, naciśnij Shift i +, a następnie użyj klawiszy strzałek.</translation>
 <translation id="6535331821390304775">Zawsze zezwalaj stronie <ph name="ORIGIN" /> na otwieranie linków tego typu w powiązanej aplikacji</translation>
 <translation id="653659894138286600">Skanowanie dokumentów i zdjęć</translation>
-<translation id="6537613839935722475">Nazwa może zawierać litery, cyfry i łączniki (-)</translation>
 <translation id="6538036594527795020">Zmień język aplikacji <ph name="APP" />. Bieżący język to <ph name="LANGUAGE" />.</translation>
 <translation id="6538098297809675636">Błąd wykrywania kodu</translation>
 <translation id="653920215766444089">Szukam urządzenia wskazującego</translation>
@@ -8086,7 +8064,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6542521951477560771">Przesyłam do: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6544134392255015460">przełącznik podświetlenia klawiatury</translation>
 <translation id="6545665334409411530">Szybkość powtarzania</translation>
-<translation id="6546856949879953071">Szczegółowe informacje znajdziesz w pliku dziennika zapisanym tutaj: Pliki &gt; Moje pliki &gt; <ph name="LOG_FILE" /></translation>
 <translation id="6547354035488017500">Zwolnij co najmniej 512 MB miejsca. W przeciwnym razie urządzenie przestanie odpowiadać. Aby zwolnić miejsce, usuń pliki z pamięci urządzenia.</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Usługa lokalizacyjna Google określa lokalizację urządzenia z użyciem Wi-Fi, sieci komórkowych i czujników.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Usługę lokalizacyjną Androida możesz wyłączyć w dowolnym momencie. Aby to zrobić, kliknij na urządzeniu Ustawienia &gt; Aplikacje &gt; Sklep Google Play &gt; Zarządzaj ustawieniami Androida &gt; Lokalizacja i blokady &gt; Lokalizacja. Możesz też wyłączyć używanie Wi-Fi, sieci komórkowych i czujników do określania lokalizacji przez Androida. W tym celu wyłącz w tym samym menu „Dokładność lokalizacji Google”.<ph name="END_PARAGRAPH2" /></translation>
@@ -8105,7 +8082,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6553046373262346328">{GROUP_COUNT,plural, =1{Spowoduje to usunięcie grupy ze wszystkich urządzeń zalogowanych na konto <ph name="EMAIL" />}few{Spowoduje to usunięcie grup ze wszystkich urządzeń zalogowanych na konto <ph name="EMAIL" />}many{Spowoduje to usunięcie grup ze wszystkich urządzeń zalogowanych na konto <ph name="EMAIL" />}other{Spowoduje to usunięcie grup ze wszystkich urządzeń zalogowanych na konto <ph name="EMAIL" />}}</translation>
 <translation id="655384502888039633">Użytkownicy: <ph name="USER_COUNT" /></translation>
 <translation id="6555432686520421228">Usuń wszystkie konta użytkowników i przywróć urządzenie <ph name="IDS_SHORT_PRODUCT_NAME" /> do stanu fabrycznego.</translation>
-<translation id="6555604601707417276">Przywrócono kopię zapasową Linuksa</translation>
 <translation id="6555744145993174510">z: <ph name="APP_ORIGIN" /></translation>
 <translation id="6556866813142980365">Ponów</translation>
 <translation id="6556903358015358733">Motyw i tapeta</translation>
@@ -8266,7 +8242,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6663190258859265334">Wykonaj Powerwash na urządzeniu <ph name="DEVICE_TYPE" /> i przywróć poprzednią wersję.</translation>
 <translation id="6664774537677393800">Podczas otwierania Twojego profilu coś poszło nie tak. Wyloguj się i ponownie zaloguj.</translation>
 <translation id="6665874326033183068">Dziki</translation>
-<translation id="6666559645296300656">Anuluję uaktualnienie Linuksa</translation>
 <translation id="6667086124612170548">Plik jest za duży na to urządzenie</translation>
 <translation id="6667092961374478614"><ph name="FEATURE_NAME" /> – wykrywalność</translation>
 <translation id="6667187897999649121">Obecnie hasła możesz udostępniać tylko członkom grupy rodzinnej. <ph name="BEGIN_LINK" />Utwórz grupę rodzinną<ph name="END_LINK" /> liczącą maksymalnie 6 osób i w pełni wykorzystaj potencjał produktów, usług i subskrypcji Google.</translation>
@@ -8323,7 +8298,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6702639462873609204">&amp;Edytuj</translation>
 <translation id="6702859741546259407">Aby użyć funkcji <ph name="FEATURE_NAME" />, włącz Bluetooth i Wi-Fi</translation>
 <translation id="6703109186846420472">,</translation>
-<translation id="6703254819490889819">Przywróć dane z kopii zapasowej</translation>
 <translation id="6707122714992751648">Uruchamianie testów diagnostycznych ChromeOS</translation>
 <translation id="6707389671160270963">Certyfikat klienta SSL</translation>
 <translation id="6707671917294473995">Witryny nie mogą używać aparatu</translation>
@@ -8600,7 +8574,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6883606786470492001">Zarządzaj tematami reklam i innymi ustawieniami, aby ograniczyć ilość informacji o Tobie, jakie są dostępne dla witryn wyświetlających Ci reklamy spersonalizowane</translation>
 <translation id="6884474387073389421">Czy na pewno chcesz usunąć wybrane dane logowania?</translation>
 <translation id="6885771755599377173">Podgląd informacji o systemie</translation>
-<translation id="6886380424988777998">Nie udało się uaktualnić Linuksa</translation>
 <translation id="6886871292305414135">Otwórz link w nowej &amp;karcie</translation>
 <translation id="6888831646723563669">Połącz się, aby korzystać ze wszystkich funkcji na nowym urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6888850808202733940">Gry i aplikacje</translation>
@@ -8801,7 +8774,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7016995776279438971">Czerwono-zielony, słaby czerwony (protanomalia)</translation>
 <translation id="7017219178341817193">Dodaj nową stronę</translation>
 <translation id="7017354871202642555">Nie można ustawić trybu po ustawieniu okna.</translation>
-<translation id="7019546817926942979">Podłącz urządzenie do zasilania. Uaktualnianie Linuksa może szybko rozładować baterię. Podłącz ładowarkę i spróbuj ponownie.</translation>
 <translation id="7019805045859631636">Szybko</translation>
 <translation id="7021524108486027008">Używaj narzędzi, edytorów i IDE w środowisku zarządzanym przez Twoją firmę na urządzeniu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7022222879220069865">Wszystkie touchpady zostały rozłączone</translation>
@@ -8876,7 +8848,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7074703793383805632">Grupa <ph name="SHARED_STATE" /> – <ph name="GROUP_NAME" /> – <ph name="OPENED_STATE" /></translation>
 <translation id="7075513071073410194">PKCS #1, MD5 z szyfrowaniem RSA</translation>
 <translation id="7075625805486468288">Zarządzanie certyfikatami i ustawieniami HTTPS/SSL</translation>
-<translation id="7076875098323397992">Nie można rozpocząć uaktualnienia</translation>
 <translation id="7077751457066325012">Wyświetl i dostosuj skróty klawiszowe</translation>
 <translation id="7077829361966535409">Nie można wczytać strony logowania przy bieżących ustawieniach serwera proxy. <ph name="GAIA_RELOAD_LINK_START" />Zaloguj się jeszcze raz<ph name="GAIA_RELOAD_LINK_END" /> lub użyj innych <ph name="PROXY_SETTINGS_LINK_START" />ustawień serwera proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Wszystkie sieci</translation>
@@ -9733,7 +9704,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7668648754769651616">Ułatwienia dostępu upraszczają korzystanie z urządzenia. Aby uzyskać dostęp do Szybkich ustawień, kliknij godzinę u dołu ekranu.</translation>
 <translation id="7669620291129890197">Widoczne dla Twoich urządzeń</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{Nieprawidłowy kod PIN. Pozostała jedna próba.}few{Nieprawidłowy kod PIN. Pozostały # próby.}many{Nieprawidłowy kod PIN. Pozostało # prób.}other{Nieprawidłowy kod PIN. Pozostało # próby.}}</translation>
-<translation id="7670434942695515800">Zalecamy zaktualizowanie do najnowszej wersji – pozwoli to uzyskać najlepszą wydajność. Warto utworzyć kopię zapasową plików, aby nie utracić danych, jeśli nie uda się przeprowadzić uaktualnienia. Po rozpoczęciu uaktualnienia Linux zostanie wyłączony. Zanim przejdziesz dalej, zapisz otwarte pliki. <ph name="LINK_START" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">Napisy</translation>
 <translation id="7671130400130574146">Użyj systemowego paska tytułu i ramek</translation>
 <translation id="7671139479636735732">Kliknij prawym przyciskiem, aby łatwo wizualizować pomysły</translation>
@@ -10100,7 +10070,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7921395044508886182">Witryny mogą używać optymalizacji JavaScriptu</translation>
 <translation id="7921901223958867679">To rozszerzenie może odczytywać witrynę <ph name="HOST" /> i wprowadzać w niej zmiany</translation>
 <translation id="7922606348470480702">1 rozszerzenie</translation>
-<translation id="7923564237306226146">Uaktualnienie Linuksa zostało ukończone</translation>
 <translation id="7924075559900107275">kandydat do długoterminowego wsparcia</translation>
 <translation id="7924358170328001543">Błąd przekierowania portów</translation>
 <translation id="7925108652071887026">Dane autouzupełniania</translation>
@@ -10171,7 +10140,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7963001036288347286">Przyspieszenie touchpada</translation>
 <translation id="7963408577288987423">{COUNT,plural, =1{1 hasło}few{{COUNT} hasła}many{{COUNT} haseł}other{{COUNT} hasła}}</translation>
 <translation id="7963513503134856713">Okno zostało przeniesione w prawo</translation>
-<translation id="7963608432878156675">Ta nazwa jest widoczna dla innych urządzeń połączonych przez sieć lub Bluetooth</translation>
 <translation id="7964458523224581615">Zieleń chromowa</translation>
 <translation id="7965946703747956421">Usuń: <ph name="CREDENTIAL_TYPE" /> dla nazwy użytkownika: <ph name="USER_EMAIL" /></translation>
 <translation id="7966241909927244760">K&amp;opiuj adres obrazu</translation>
@@ -10368,7 +10336,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="808488435221187916">Twoje informacje są dostępne w Portfelu Google na każdym urządzeniu, na którym się zalogujesz</translation>
 <translation id="8086015605808120405">Konfiguruję: <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">Ta karta udostępnia Twój ekran</translation>
-<translation id="8086610718778464681">Nie można utworzyć kopii zapasowej aplikacji i plików Linuksa</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Ten plik jest zaszyfrowany. Poproś właściciela, by go odszyfrował.}few{Niektóre z tych plików są zaszyfrowane. Poproś właściciela, by je odszyfrował.}many{Niektóre z tych plików są zaszyfrowane. Poproś właściciela, by je odszyfrował.}other{Niektóre z tych plików są zaszyfrowane. Poproś właściciela, by je odszyfrował.}}</translation>
 <translation id="808894953321890993">Zmień hasło</translation>
 <translation id="8089782219932231262">{BOOKMARK_COUNT,plural, =1{1 zakładka została zapisana tylko na tym urządzeniu. Aby używać jej na innych urządzeniach, zapisz ją na swoim koncie Google. Spowoduje to również usunięcie duplikatów.}few{{BOOKMARK_COUNT} zakładki zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google. Spowoduje to również usunięcie duplikatów.}many{{BOOKMARK_COUNT} zakładek zostało zapisanych tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google. Spowoduje to również usunięcie duplikatów.}other{{BOOKMARK_COUNT} zakładki zostało zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google. Spowoduje to również usunięcie duplikatów.}}</translation>
@@ -10399,7 +10366,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8102139037507939978">Usuń informacje umożliwiające identyfikację z pliku system_logs.txt.</translation>
 <translation id="810362914482827094">Wyszukaj klucze dostępu</translation>
 <translation id="8104088837833760645">Pobierz profil eSIM</translation>
-<translation id="8104778744208707085">Wymaga uwagi</translation>
 <translation id="8105050970626643057">Szybko otwieraj Gemini, kiedy tylko go potrzebujesz</translation>
 <translation id="8105273883928376822">Zaloguj się, aby kontynuować.</translation>
 <translation id="8106114112474206597">Aby nacisnąć przycisk myszy, użyj klawisza „I”</translation>
@@ -11971,7 +11937,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9149866541089851383">Edytuj...</translation>
 <translation id="9150045010208374699">Korzystanie z Twojej kamery</translation>
 <translation id="9150079578948279438">Nie udało się usunąć profilu. Spróbuj jeszcze raz lub skontaktuj się z operatorem, aby uzyskać pomoc techniczną.</translation>
-<translation id="9150860646299915960">Zaktualizuj kontener Linuksa</translation>
 <translation id="915112772806845021">Strony używają tego ustawienia, aby automatycznie włączać obraz w obrazie. Dzięki temu możesz kontynuować oglądanie filmu, a jednocześnie zyskać miejsce na ekranie na inne zadania.</translation>
 <translation id="9151249085738989067">Automatycznie zmieniaj głos ChromeVoxa na podstawie wykrytego języka</translation>
 <translation id="9151906066336345901">End</translation>

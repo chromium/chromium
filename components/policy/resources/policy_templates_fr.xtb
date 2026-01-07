@@ -94,15 +94,6 @@ Si elle est désactivée, la fonctionnalité de correction automatique est désa
 
       Si cette règle est définie, l'écran de connexion est toujours affiché dans les paramètres régionaux indiqués par la première valeur de cette règle (cette dernière est définie en tant que liste pour la compatibilité ascendante). Si cette règle n'est pas définie, ou si elle est définie sur une liste vide, l'écran de connexion est affiché dans les paramètres régionaux de la dernière session de l'utilisateur. Si cette règle est définie sur une valeur qui ne constitue pas des paramètres régionaux valides, l'écran de connexion est affiché dans des paramètres régionaux de remplacement (actuellement "en-US").</translation>
 <translation id="1050158007881386475">Désactiver les rapports sur l'état de la carte d'appareil</translation>
-<translation id="1050897390688148222">Lens Overlay permet aux utilisateurs d'effectuer des recherches Google contextuelles à partir d'une capture d'écran ou en posant une question sur le contenu de la page actuelle. Cette fonctionnalité nécessite l'activation par l'utilisateur final.
-
-Elle est disponible pour tous les utilisateurs dont le moteur de recherche par défaut est Google, sauf si cette règle la désactive.
-
-Si cette règle est définie sur 0 (Autorisé) ou n'est pas configurée, la fonctionnalité est disponible pour les utilisateurs.
-
-Si la règle est définie sur 1 (Ne pas autoriser), la fonctionnalité n'est pas disponible.
-
-À partir de <ph name="PRODUCT_NAME" /> 140, si la règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1052499923181221200">Cette règle n'a aucune incidence, sauf si la règle SamlInSessionPasswordChangeEnabled est définie sur "True".
       Si cette règle est définie sur "True" avec une valeur de 14, par exemple, les utilisateurs SAML sont alors avertis 14 jours avant l'expiration de leur mot de passe.
       Ils peuvent alors le modifier directement durant une session.
@@ -4484,19 +4475,6 @@ Si la règle n'est pas configurée, son comportement est déterminé par la règ
           Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 
           Si cette règle n'est pas configurée, la mise en surbrillance du curseur de saisie est initialement désactivée sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment.</translation>
-<translation id="4182348537826882258">Si vous définissez la règle <ph name="URL_BLOCKLIST_POLICY_NAME" />, les pages Web dont les URL sont interdites ne peuvent pas se charger. Les administrateurs peuvent spécifier la liste des formats d'URL à bloquer. Si cette règle n'est pas configurée, aucune URL n'est bloquée dans le navigateur. Vous pouvez définir jusqu'à 1 000 exceptions dans <ph name="URL_ALLOWLIST_POLICY_NAME" />. Découvrez les formats d'URL à respecter (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-
-Remarque : Cette règle ne s'applique pas aux URL JavaScript intégrées dans les pages dont les données sont chargées dynamiquement. Si vous bloquez example.com/abc, example.com pourra toujours la charger à l'aide de XMLHTTPRequest. En outre, cette règle n'empêche pas les pages Web de remplacer l'URL affichée dans l'omnibox par une URL bloquée à l'aide de l'API JavaScript History.
-
-À partir de la version 73 de <ph name="PRODUCT_NAME" />, vous pouvez bloquer les URL javascript://*. Toutefois, cela ne concerne que le code JavaScript saisi dans la barre d'adresse ou, par exemple, les favoris intelligents.
-
-À compter de la version 92 de <ph name="PRODUCT_NAME" />, cette règle est aussi prise en charge en mode headless.
-
-Remarque : Bloquer des URL internes chrome://* et chrome-untrusted://* peut entraîner des erreurs inattendues ou être contourné parfois. Au lieu de bloquer certaines URL internes, vérifiez si des règles plus spécifiques sont disponibles. Par exemple :
-
-- Au lieu de bloquer chrome://settings/certificates, utilisez <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />.
-
-- Au lieu de bloquer chrome-untrusted://crosh, utilisez <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="4183229833636799228">Paramètre par défaut pour le plug-in "<ph name="FLASH_PLUGIN_NAME" />"</translation>
 <translation id="4185868802416355029">Autoriser les extensions gérées à utiliser l'API Enterprise Hardware Platform</translation>
 <translation id="4186244263855283575">Permet de planifier le redémarrage des appareils de manière personnalisée. Une fois la règle définie sur "True", l'appareil redémarrera en fonction du calendrier établi. Pour annuler tout autre redémarrage planifié, cette règle doit être supprimée.
@@ -6337,13 +6315,6 @@ Les comptes gérés ne peuvent pas rejoindre ni créer de groupe familial, et ne
       Si cette règle n'est pas configurée, <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> n'est disponible pour aucune application Web.
 Pour améliorer la confidentialité, à partir de la version 116 de <ph name="PRODUCT_NAME" />, cette règle ne sera plus compatible avec l'actualisation dynamique. Cela permettra à l'utilisateur de s'assurer qu'aucune page supplémentaire ne pourra capturer les écrans après la connexion, sauf celles déjà autorisées au début de la session.</translation>
 <translation id="5361167871898066799">Contrôler la fonctionnalité de correction automatique pour le clavier physique</translation>
-<translation id="5361708558735884308">Cette règle permet d'autoriser l'accès aux URL listées comme exceptions à <ph name="URL_BLOCKLIST_POLICY_NAME" />. Lisez sa description pour connaître le format des entrées listées. Par exemple, définir <ph name="URL_BLOCKLIST_POLICY_NAME" /> sur "*" bloque toutes les requêtes, et vous pouvez appliquer cette règle pour autoriser l'accès à une liste limitée d'URL. Utilisez-la pour définir des exceptions à certains schémas, ports, chemins d'accès spécifiques ou sous-domaines d'autres domaines à l'aide du format spécifié sur https://support.google.com/chrome/a?p=url_blocklist_filter_format. Le filtre le plus spécifique détermine si une URL est bloquée ou autorisée. La règle <ph name="URL_ALLOWLIST_POLICY_NAME" /> prévaut sur <ph name="URL_BLOCKLIST_POLICY_NAME" />. Cette règle est limitée à 1 000 entrées.
-
-Elle permet aussi d'autoriser le navigateur d'une appli externe enregistrée comme gestionnaire de protocoles à appeler automatiquement les protocoles listés tels que "tel:" ou "ssh:".
-
-Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLIST_POLICY_NAME" /> n'est autorisée.
-
-À compter de la version 92 de <ph name="PRODUCT_NAME" />, cette règle est aussi prise en charge en mode headless.</translation>
 <translation id="5362531528507578966">Permet d'ignorer le mode d'impression d'images de fond par défaut.</translation>
 <translation id="5365476955714838841">Paramètres de ligne de commande pour le navigateur secondaire.</translation>
 <translation id="5365946944967967336">Afficher le bouton Accueil sur la barre d'outils</translation>
@@ -7391,7 +7362,6 @@ Si vous définissez cette valeur sur <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIEN
 <translation id="6011969832398368671">Autoriser les sites à demander aux utilisateurs l'accès en écriture aux fichiers et répertoires</translation>
 <translation id="601234435141599215">Autoriser le transfert de port vers les machines virtuelles Linux</translation>
 <translation id="6012952794649558174">Utiliser le comportement par défaut du navigateur.</translation>
-<translation id="6013875085491664033">Activer le partage de contenu avec les intégrations <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /></translation>
 <translation id="6015281292796053435">Cette règle détermine si les informations de navigation sécurisée, y compris le nombre d'avertissements de navigation sécurisée et le nombre de clics sur les avertissements de navigation sécurisée, doivent être enregistrées.
 
       Cette règle est ignorée si la règle <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> n'est pas définie ou si elle est désactivée.
@@ -8094,7 +8064,6 @@ Cette règle n'affecte que TLS 1.3 et QUIC. Elle n'affecte pas les versions ant
       Si cette règle est désactivée ou non définie, le mot de passe SAML n'est pas modifiable sur la page chrome://password-change, et aucune notification ne s'affiche en cas d'expiration imminente.</translation>
 <translation id="6457477291648119596">Type 42</translation>
 <translation id="6458361632497500815">Si cette règle est activée ou qu'elle n'est pas configurée, tous les utilisateurs sont autorisés à utiliser <ph name="PRODUCT_CROSTINI_NAME" /> tant que les trois règles <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />, <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> et <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" /> sont activées. Si elle est désactivée, les utilisateurs non affiliés ne sont pas autorisés à utiliser <ph name="PRODUCT_CROSTINI_NAME" />. Si vous la désactivez, elle est appliquée aux conteneurs <ph name="PRODUCT_CROSTINI_NAME" /> qui vont être lancés, mais pas à ceux qui le sont déjà.</translation>
-<translation id="6462604655173570082">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent afficher et utiliser le bouton <ph name="GOOGLE_LENS_PRODUCT_NAME" /> dans le champ de recherche de la page "Nouvel onglet". Si cette règle est désactivée, les utilisateurs ne verront pas le bouton <ph name="GOOGLE_LENS_PRODUCT_NAME" /> dans ce champ de recherche.</translation>
 <translation id="6464074037294098618">Activer la saisie automatique pour les adresses</translation>
 <translation id="6464564464230511695">Si cette règle est activée ou n'est pas configurée, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> est autorisé sur toutes les pages Web.
 
@@ -8495,23 +8464,6 @@ Lorsqu'elle est activée, la fonctionnalité de mise à jour GREASE User-Agent C
 <translation id="6682305153467826752">Activer les rapports sur les informations d'identification de l'ordinateur</translation>
 <translation id="6684842561251679182">Nombre d'incréments de clé du kernel des versions intermédiaires retenus</translation>
 <translation id="6685903773201985073">Activer l'authentification ambiante pour les sessions Invité et standards.</translation>
-<translation id="668721405120274587">Cette règle contrôle le partage du contenu de la page ou du fichier avec le <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> via le panneau latéral ou les onglets de <ph name="PRODUCT_NAME" />.
-
-Sachez que cette règle n'a pas d'incidence sur le <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> sur le Web. Elle contrôle uniquement la façon dont les utilisateurs peuvent partager des informations avec ce mode lorsqu'ils utilisent <ph name="PRODUCT_NAME" />.
-
-0/Non configurée : les utilisateurs peuvent partager le contenu de la page ou du fichier avec le <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
-
-1 : les utilisateurs ne peuvent pas partager le contenu de la page ou du fichier avec le <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Les points d'entrée pour partager le contexte seront désactivés ou masqués.
-
-Cette règle sera ignorée lorsque la <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> ne sera pas le moteur de recherche par défaut des utilisateurs, car la fonctionnalité sera désactivée.
-
-Cette règle est indépendante de la règle <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. La règle <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> ne contrôle que les points d'entrée sur l'omnibox ou le champ de recherche de la page "Nouvel onglet", tandis que cette règle contrôle le partage de contexte via le panneau latéral ou les onglets.
-
-Cette règle ne contrôle pas non plus l'intégration de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, qui peut être désactivée par <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
-
-Si cette règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6687291630099400188">Ne pas afficher les informations système sur l'écran de connexion</translation>
 <translation id="6689343802305995925">Aucune action ne se produit.</translation>
 <translation id="6689792153960219308">Envoyer des rapports sur l'état du matériel</translation>
@@ -10751,7 +10703,6 @@ Lorsqu'elle n'est pas définie, elle utilise par défaut toutes les interfaces r
 Consultez la section 5.2 du document RFC 8828 (https://tools.ietf.org/html/rfc8828.html#section-5.2) pour obtenir une description détaillée de toutes les valeurs de gestion.</translation>
 <translation id="8244171102276095471">Activer des suites de chiffrement RC4 dans TLS</translation>
 <translation id="8244525275280476362">Délai maximal de récupération après le rejet d'une règle</translation>
-<translation id="8245574649143980200">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent voir et utiliser la recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" /> via le menu contextuel. Si cette règle est désactivée, les utilisateurs ne peuvent pas voir la recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" /> dans le menu contextuel lorsque la recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" /> est disponible.</translation>
 <translation id="8247143534027746614">Bloquer l'accès à une liste de formats d'URL lors de l'authentification</translation>
 <translation id="824818544897669723">Désactiver la suppression des historiques du navigateur et des téléchargements</translation>
 <translation id="8250048892729838843">Cette règle est obsolète. Si cette règle est activée ou qu'elle n'est pas configurée, l'appareil peut recevoir des contrôles de rapports précis.

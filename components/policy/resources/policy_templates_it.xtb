@@ -94,15 +94,6 @@ Se viene disattivata, la funzionalità di correzione automatica sulla tastiera f
 
       Se questa norma viene impostata, la schermata di accesso verrà sempre visualizzata nella lingua stabilita dal primo valore di questa norma (la norma viene definita come elenco per la compatibilità con le versioni successive). Se la norma non viene impostata o se viene impostato un elenco vuoto, la schermata di accesso verrà visualizzata nella lingua dell'ultima sessione utente. Se la norma viene impostata su un valore non corrispondente a una lingua valida, la schermata di accesso verrà visualizzata in una lingua di riserva (attualmente en-US).</translation>
 <translation id="1050158007881386475">Disattiva i report sullo stato della scheda del dispositivo</translation>
-<translation id="1050897390688148222">Overlay di Lens consente agli utenti di eseguire ricerche contestuali su Google tramite uno screenshot o una domanda sui contenuti della pagina corrente. Questa funzionalità richiede l'attivazione da parte dell'utente finale.
-
-È disponibile per tutti gli utenti che usano Google come motore di ricerca predefinito, a meno che non venga disattivata da questa policy.
-
-Se la policy viene impostata su 0 - Consenti o se non viene configurata, la funzionalità è disponibile per gli utenti.
-
-Se viene impostata su 1 - Non consentire, la funzionalità non è disponibile.
-
-A partire dalla versione 140 di <ph name="PRODUCT_NAME" />, se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1052499923181221200">Questa policy non ha effetti a meno che SamlInSessionPasswordChangeEnabled sia impostata su true.
       Se quella policy è impostata su true e questa policy è impostata su (ad esempio) 14, significa che gli utenti SAML riceveranno una notifica che li informa con 14 giorni di anticipo che la password scadrà in una determinata data.
       Quindi, gli utenti possono organizzarsi immediatamente, modificare la password all'interno della sessione e aggiornarla prima della scadenza.
@@ -4571,19 +4562,6 @@ Se la policy non viene configurata, il relativo comportamento viene determinato 
           Se imposti questa policy, gli utenti non potranno modificarla o ignorarla.
 
           Se questa policy non viene impostata, inizialmente l'evidenziazione del cursore di testo è disattivata nella schermata di accesso, ma l'utente può attivarla in qualsiasi momento.</translation>
-<translation id="4182348537826882258">Se la policy <ph name="URL_BLOCKLIST_POLICY_NAME" /> viene configurata, le pagine web con URL vietati non vengono caricate. Gli amministratori possono specificare l'elenco di pattern URL da bloccare. Se la policy non viene configurata, non viene bloccato nessun URL nel browser. Nella policy <ph name="URL_ALLOWLIST_POLICY_NAME" /> è possibile definire fino a 1000 eccezioni. Scopri come formattare un pattern URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-
-Nota: questa policy non si applica agli URL JavaScript in-page con dati caricati dinamicamente. Se hai bloccato example.com/abc, example.com potrebbe comunque caricarlo utilizzando XMLHTTPRequest. Inoltre, questa policy non impedisce alle pagine web di aggiornare l'URL mostrato nella omnibox con uno bloccato usando l'API JavaScript History.
-
-A partire dalla versione 73 di <ph name="PRODUCT_NAME" />, puoi bloccare gli URL javascript://*. Tuttavia, questa operazione interessa solo il codice JavaScript inserito nella barra degli indirizzi o, ad esempio, nei bookmarklet.
-
-A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questa policy è supportata anche nella modalità headless.
-
-Nota: il blocco degli URL interni chrome://* e chrome-untrusted://* può causare errori imprevisti o essere aggirato in alcuni casi. Anziché bloccare determinati URL interni, controlla se sono disponibili policy più specifiche. Ad esempio:
-
-- Anziché bloccare chrome://settings/certificates, usa la policy <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />.
-
-- Anziché bloccare chrome-untrusted://crosh, usa la policy <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="4183229833636799228">Impostazione predefinita per il plug-in <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="4185868802416355029">Consenti alle estensioni gestite di utilizzare l'API Enterprise Hardware Platform</translation>
 <translation id="4186244263855283575">Consente di impostare una programmazione personalizzata per il riavvio dei dispositivi. Se viene impostata su True, il dispositivo verrà riavviato in base alla programmazione. La policy deve essere rimossa per annullare ulteriori riavvii programmati.
@@ -6435,13 +6413,6 @@ Gli account gestiti non sono idonei a far parte di un gruppo Famiglia o a crearl
       Se la policy non viene configurata, <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> non è disponibile per alcuna applicazione web.
 Per migliorare la privacy, a partire dalla versione 116 di <ph name="PRODUCT_NAME" />, questa policy non supporterà più l'aggiornamento dinamico. Pertanto, l'utente potrà assicurarsi che dopo l'accesso le altre pagine non saranno in grado di acquisire le schermate, se non era già stato consentito all'inizio della sessione.</translation>
 <translation id="5361167871898066799">Controlla la funzionalità di correzione automatica sulla tastiera fisica</translation>
-<translation id="5361708558735884308">La configurazione della policy consente di fornire l'accesso agli URL elencati, sotto forma di eccezioni a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Leggi la descrizione della policy per conoscere il formato delle voci di questo elenco. Ad esempio, se imposti la policy <ph name="URL_BLOCKLIST_POLICY_NAME" /> su *, tutte le richieste verranno bloccate e puoi utilizzare questa policy per consentire l'accesso a un elenco limitato di URL. Utilizzalo per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici utilizzando il formato specificato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. Il filtro più specifico consente di determinare se un URL è bloccato o consentito. La policy <ph name="URL_ALLOWLIST_POLICY_NAME" /> ha la precedenza sulla policy <ph name="URL_BLOCKLIST_POLICY_NAME" />. Per questa policy è possibile definire al massimo 1000 voci.
-
-Questa policy consente anche di attivare la chiamata automatica da parte del browser di applicazioni esterne registrate come gestori di protocollo per i protocolli elencati come "tel:" o "ssh:".
-
-Se la policy non viene configurata, non sono consentite eccezioni a <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questa policy è supportata anche nella modalità headless.</translation>
 <translation id="5362531528507578966">Consente di sostituire la modalità di stampa predefinita delle immagini di sfondo.</translation>
 <translation id="5365476955714838841">Parametri della riga di comando per il browser alternativo.</translation>
 <translation id="5365946944967967336">Mostra il pulsante Pagina iniziale nella barra degli strumenti</translation>
@@ -7485,7 +7456,6 @@ Se viene impostata su <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" /> (va
 <translation id="6011969832398368671">Consenti ai siti di richiedere all'utente l'accesso di scrittura di file e directory</translation>
 <translation id="601234435141599215">Consenti il port forwarding nelle macchine virtuali Linux</translation>
 <translation id="6012952794649558174">Usa comportamento predefinito del browser</translation>
-<translation id="6013875085491664033">Attiva la condivisione dei contenuti con le integrazioni di <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /></translation>
 <translation id="6015281292796053435">Questa policy consente di stabilire se segnalare o meno le informazioni di Navigazione sicura, inclusi il numero dell'avviso di Navigazione sicura e il numero del relativo clickthrough.
 
       Se la policy <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> non viene configurata o viene disattivata, viene ignorata.
@@ -8223,7 +8193,6 @@ Questa policy riguarda solo TLS 1.3 e QUIC, non le versioni precedenti di TLS.</
       Se questa policy viene impostata su Disattivata o se non viene configurata, non è possibile modificare le password SAML all'indirizzo chrome://password-change e non verranno mostrate notifiche quando tali password stanno per scadere.</translation>
 <translation id="6457477291648119596">Type42</translation>
 <translation id="6458361632497500815">Se la policy viene impostata su Attivata o se non viene configurata, tutti gli utenti possono utilizzare <ph name="PRODUCT_CROSTINI_NAME" /> finché tutte e tre le policy, <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />, <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> e <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" /> sono impostate su Attivata. Se la policy viene impostata su Disattivata, gli utenti non affiliati non possono utilizzare <ph name="PRODUCT_CROSTINI_NAME" />. Impostando la policy su Disattivata, questa viene applicata all'avvio di nuovi container <ph name="PRODUCT_CROSTINI_NAME" />, non a quelli già in esecuzione.</translation>
-<translation id="6462604655173570082">Se la policy non viene configurata o se viene impostata su Attivata, gli utenti possono visualizzare e usare il pulsante <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nella casella di ricerca della pagina Nuova scheda. Se la policy viene impostata su Disattivata, gli utenti non vedranno il pulsante <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nella casella di ricerca della pagina Nuova scheda.</translation>
 <translation id="6464074037294098618">Attiva la Compilazione automatica per gli indirizzi</translation>
 <translation id="6464564464230511695">Se questa policy viene attivata o se non viene configurata, la funzionalità <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> è consentita in tutte le pagine web.
 
@@ -8625,23 +8594,6 @@ Se la policy viene attivata, la funzionalità di aggiornamento del client hint d
 <translation id="6682305153467826752">Attiva la generazione di report sulle informazioni di identificazione delle macchine</translation>
 <translation id="6684842561251679182">Numero di versioni per cui gli incrementi della chiave del kernel vengono posticipati</translation>
 <translation id="6685903773201985073">Attiva l'autenticazione ambientale nelle sessioni standard e Ospite.</translation>
-<translation id="668721405120274587">Questa policy consente di controllare la condivisione dei contenuti di pagine e file con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> tramite il riquadro laterale o le schede di <ph name="PRODUCT_NAME" />.
-
-Tieni presente che questa policy non influisce su <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> sul web. Controlla solo il modo in cui gli utenti possono condividere informazioni con esso quando utilizzano <ph name="PRODUCT_NAME" />.
-
-0/non impostato = gli utenti possono condividere contenuti di pagine o file con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
-
-1 = gli utenti non possono condividere contenuti di pagine o file con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Gli entry point per la condivisione del contesto verranno disattivati o nascosti.
-
-Questa policy verrà ignorata quando <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> non è il motore di ricerca predefinito degli utenti perché la funzionalità è disattivata.
-
-Questa policy è indipendente dalla policy <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. La policy <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> controlla solo gli entry point nella omnibox o nella casella di ricerca della pagina Nuova scheda, mentre questa policy controlla la condivisione del contesto tramite il riquadro laterale o le schede.
-
-Questa policy non controlla l'integrazione di <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, che può essere disattivata da <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
-
-Se questa policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6687291630099400188">Non visualizzare le informazioni di sistema nella schermata di accesso</translation>
 <translation id="6689343802305995925">Non viene compiuta alcuna azione</translation>
 <translation id="6689792153960219308">Segnala lo stato dell'hardware</translation>
@@ -10937,7 +10889,6 @@ Se la policy non viene configurata, per impostazione predefinita vengono usate t
 Per una descrizione dettagliata di tutti i valori di gestione, consulta la sezione 5.2 del documento RFC 8828 (https://tools.ietf.org/html/rfc8828.html#section-5.2).</translation>
 <translation id="8244171102276095471">Attiva i pacchetti di crittografia RC4 in TLS</translation>
 <translation id="8244525275280476362">Ritardo di recupero massimo dopo l'invalidazione di una norma</translation>
-<translation id="8245574649143980200">Se la policy non viene configurata o se viene impostata su Attivata, gli utenti possono visualizzare la voce di menu per la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nel menu contestuale. Se viene impostata su Disattivata, gli utenti non vedranno la voce di menu per la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> se la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" /> è supportata.</translation>
 <translation id="8247143534027746614">Blocca l'accesso a un elenco di pattern URL durante l'autenticazione</translation>
 <translation id="824818544897669723">Viene disattivata l'eliminazione della cronologia del browser e dei download</translation>
 <translation id="8250048892729838843">Questa policy è stata ritirata. Se la policy viene attivata o se non viene configurata, il dispositivo potrà ricevere i controlli di reporting granulare.
