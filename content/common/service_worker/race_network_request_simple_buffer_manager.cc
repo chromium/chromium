@@ -8,6 +8,7 @@
 #include "base/location.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "content/common/features.h"
 
 namespace content {
@@ -22,11 +23,15 @@ RaceNetworkRequestSimpleBufferManager::
 
 void RaceNetworkRequestSimpleBufferManager::OnDataAvailable(
     base::span<const uint8_t> data) {
+  TRACE_EVENT("ServiceWorker",
+              "RaceNetworkRequestSimpleBufferManager::OnDataAvailable");
   buffered_body_.append(base::as_string_view(data));
   MaybeWriteData();
 }
 
 void RaceNetworkRequestSimpleBufferManager::OnDataComplete() {
+  TRACE_EVENT("ServiceWorker",
+              "RaceNetworkRequestSimpleBufferManager::OnDataComplete");
   // All data transferred to `buffered_body_`.
   drain_complete_ = true;
   MaybeWriteData();
@@ -59,6 +64,7 @@ void RaceNetworkRequestSimpleBufferManager::OnWriteAvailable(
 }
 
 void RaceNetworkRequestSimpleBufferManager::Finish() {
+  TRACE_EVENT("ServiceWorker", "RaceNetworkRequestSimpleBufferManager::Finish");
   write_position_ = 0;
   producer_handle_.reset();
   producer_handle_watcher_.reset();
@@ -66,6 +72,8 @@ void RaceNetworkRequestSimpleBufferManager::Finish() {
 }
 
 void RaceNetworkRequestSimpleBufferManager::MaybeWriteData() {
+  TRACE_EVENT("ServiceWorker",
+              "RaceNetworkRequestSimpleBufferManager::MaybeWriteData");
   if (!producer_handle_.is_valid()) {
     // A producer handle may not be valid here. For example, a teeing clone
     // operation for the body has just finished, and the manager is waiting for
