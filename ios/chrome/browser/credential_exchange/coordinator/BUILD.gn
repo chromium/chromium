@@ -65,6 +65,7 @@ source_set("export_coordinator") {
     "//ios/chrome/browser/credential_exchange/model",
     "//ios/chrome/browser/credential_exchange/ui",
     "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/passwords/coordinator",
     "//ios/chrome/browser/settings/ui_bundled/password:title_view",
     "//ios/chrome/browser/settings/ui_bundled/password:ui",
     "//ios/chrome/browser/shared/model/application_context",
@@ -75,6 +76,7 @@ source_set("export_coordinator") {
     "//ios/chrome/common/credential_provider/ui",
     "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
     "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/reauthentication",
     "//ui/base",
   ]
   frameworks = [ "Foundation.framework" ]

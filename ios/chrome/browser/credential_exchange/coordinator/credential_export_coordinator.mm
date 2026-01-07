@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/passwords/coordinator/password_export_handler.h"
+#import "ios/chrome/browser/passwords/coordinator/password_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -26,13 +28,15 @@
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_view_controller.h"
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 @interface CredentialExportCoordinator () <
     CredentialExportMediatorDelegate,
     PasskeyKeychainProviderBridgeDelegate,
-    PasskeyWelcomeScreenViewControllerDelegate>
+    PasskeyWelcomeScreenViewControllerDelegate,
+    PasswordExportHandler>
 @end
 
 @implementation CredentialExportCoordinator {
@@ -51,6 +55,12 @@
 
   // Email of the signed in user account.
   std::string _userEmail;
+
+  // Module handling reauthentication before accessing sensitive data.
+  ReauthenticationModule* _reauthModule;
+
+  // Alert for "Preparing Passwords" state of CSV export.
+  UIAlertController* _preparingPasswordsAlert;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -77,11 +87,15 @@
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(self.profile);
 
+  _reauthModule = password_manager::BuildReauthenticationModule();
+
   _mediator = [[CredentialExportMediator alloc]
-        initWithWindow:_baseNavigationController.view.window
-      affiliatedGroups:std::move(_affiliatedGroups)
-          passkeyModel:IOSPasskeyModelFactory::GetForProfile(self.profile)
-         faviconLoader:faviconLoader];
+              initWithWindow:_baseNavigationController.view.window
+            affiliatedGroups:std::move(_affiliatedGroups)
+                passkeyModel:IOSPasskeyModelFactory::GetForProfile(self.profile)
+               faviconLoader:faviconLoader
+      reauthenticationModule:_reauthModule
+               exportHandler:self];
   _affiliatedGroups = {};
   _viewController.delegate = _mediator;
   _mediator.delegate = self;
@@ -161,6 +175,62 @@
                             completion(trustedVaultKeys);
                           }
                         }];
+}
+
+#pragma mark - PasswordExportHandler
+
+- (void)showActivityViewWithActivityItems:(NSArray*)activityItems
+                        completionHandler:(void (^)(NSString* activityType,
+                                                    BOOL completed,
+                                                    NSArray* returnedItems,
+                                                    NSError* activityError))
+                                              completionHandler {
+  UIActivityViewController* activityViewController =
+      [[UIActivityViewController alloc] initWithActivityItems:activityItems
+                                        applicationActivities:nil];
+
+  NSArray* excludedActivityTypes = @[
+    UIActivityTypeAddToReadingList, UIActivityTypeAirDrop,
+    UIActivityTypeCopyToPasteboard, UIActivityTypeOpenInIBooks,
+    UIActivityTypePostToFacebook, UIActivityTypePostToFlickr,
+    UIActivityTypePostToTencentWeibo, UIActivityTypePostToTwitter,
+    UIActivityTypePostToVimeo, UIActivityTypePostToWeibo, UIActivityTypePrint
+  ];
+  activityViewController.excludedActivityTypes = excludedActivityTypes;
+
+  activityViewController.completionWithItemsHandler = completionHandler;
+
+  activityViewController.popoverPresentationController.sourceView =
+      _viewController.view;
+  activityViewController.popoverPresentationController.sourceRect =
+      _viewController.view.bounds;
+
+  [self presentViewControllerForExportFlow:activityViewController];
+}
+
+- (void)showExportErrorAlertWithLocalizedReason:(NSString*)localizedReason {
+  // TODO(crbug.com/470440092): Implement alerts to be displayed when exporting
+  // selected passwords to csv.
+}
+
+- (void)showPreparingPasswordsAlert {
+  // TODO(crbug.com/470440092): Implement alerts to be displayed when exporting
+  // selected passwords to csv.
+}
+
+- (void)showSetPasscodeForPasswordExportDialog {
+  // TODO(crbug.com/470440092): Implement alerts to be displayed when exporting
+  // selected passwords to csv.
+}
+
+#pragma mark - Private
+
+- (void)presentViewControllerForExportFlow:(UIViewController*)viewController {
+  // TODO(crbug.com/470440092): Once showPreparingPasswordsAlert is implemented,
+  // check here if _preparingPasswordsAlert needs dismissal.
+  [_viewController presentViewController:viewController
+                                animated:YES
+                              completion:nil];
 }
 
 @end

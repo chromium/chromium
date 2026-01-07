@@ -114,7 +114,25 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
 }
 
 - (void)didTapExportCSV {
-  // TODO(crbug.com/40284755): Implement export selected passwords to csv.
+  std::vector<password_manager::CredentialUIEntry> credentialsToExport;
+
+  for (NSIndexPath* path in self.tableView.indexPathsForSelectedRows) {
+    CredentialGroupIdentifier* item =
+        [_dataSource itemIdentifierForIndexPath:path];
+
+    const password_manager::AffiliatedGroup& group = item.affiliatedGroup;
+
+    base::span<const password_manager::CredentialUIEntry> credentialEntries =
+        group.GetCredentials();
+
+    for (const password_manager::CredentialUIEntry& entry : credentialEntries) {
+      if (entry.passkey_credential_id.empty()) {
+        credentialsToExport.push_back(entry);
+      }
+    }
+  }
+
+  [self.delegate exportCredentialsToCSV:std::move(credentialsToExport)];
 }
 
 #pragma mark - CredentialExportConsumer

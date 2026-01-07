@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/credential_exchange/model/credential_exporter.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_group_identifier.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/passwords/coordinator/password_exporter.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_view_controller_items.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 
@@ -22,6 +23,9 @@ const CGFloat kFaviconSize = 24.0;
 const CGFloat kMinFaviconSize = 16.0;
 
 }  // namespace
+
+@interface CredentialExportMediator () <PasswordExporterDelegate>
+@end
 
 @implementation CredentialExportMediator {
   // Used as a presentation anchor for OS views. Must not be nil.
@@ -39,19 +43,33 @@ const CGFloat kMinFaviconSize = 16.0;
 
   // Service used to retrieve favicons.
   raw_ptr<FaviconLoader> _faviconLoader;
+
+  // Maintains state about the "Export Passwords..." flow, and handles the
+  // actual serialization of the passwords.
+  PasswordExporter* _passwordExporter;
+
+  // Delegate capable of showing alerts needed in the password export flow.
+  __weak id<PasswordExportHandler> _exportHandler;
 }
 
 - (instancetype)initWithWindow:(UIWindow*)window
               affiliatedGroups:(std::vector<password_manager::AffiliatedGroup>)
                                    affiliatedGroups
                   passkeyModel:(webauthn::PasskeyModel*)passkeyModel
-                 faviconLoader:(FaviconLoader*)faviconLoader {
+                 faviconLoader:(FaviconLoader*)faviconLoader
+        reauthenticationModule:(id<ReauthenticationProtocol>)reauthModule
+                 exportHandler:(id<PasswordExportHandler>)exportHandler {
   self = [super init];
   if (self) {
     _window = window;
     _affiliatedGroups = std::move(affiliatedGroups);
     _passkeyModel = passkeyModel;
     _faviconLoader = faviconLoader;
+    _exportHandler = exportHandler;
+
+    _passwordExporter =
+        [[PasswordExporter alloc] initWithReauthenticationModule:reauthModule
+                                                        delegate:self];
   }
   return self;
 }
@@ -119,6 +137,41 @@ const CGFloat kMinFaviconSize = 16.0;
 
     [self.delegate fetchTrustedVaultKeysWithCompletion:completionBlock];
   }
+}
+
+- (void)exportCredentialsToCSV:
+    (std::vector<password_manager::CredentialUIEntry>)credentials {
+  if (_passwordExporter.exportState != ExportState::IDLE) {
+    return;
+  }
+
+  [_passwordExporter startExportFlow:credentials];
+}
+
+#pragma mark - PasswordExporterDelegate
+
+- (void)showActivityViewWithActivityItems:(NSArray*)activityItems
+                        completionHandler:
+                            (void (^)(NSString*, BOOL, NSArray*, NSError*))
+                                completionHandler {
+  [_exportHandler showActivityViewWithActivityItems:activityItems
+                                  completionHandler:completionHandler];
+}
+
+- (void)showExportErrorAlertWithLocalizedReason:(NSString*)errorReason {
+  [_exportHandler showExportErrorAlertWithLocalizedReason:errorReason];
+}
+
+- (void)showPreparingPasswordsAlert {
+  [_exportHandler showPreparingPasswordsAlert];
+}
+
+- (void)showSetPasscodeForPasswordExportDialog {
+  [_exportHandler showSetPasscodeForPasswordExportDialog];
+}
+
+- (void)updateExportPasswordsButton {
+  // No-op.
 }
 
 #pragma mark - Private
