@@ -14872,6 +14872,26 @@
             ]
         }
     ],
+    "IsolatesPriorityUseProcessPriority": [
+        {
+            "platforms": [
+                "android_webview",
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IsolatesPriorityUseProcessPriority"
+                    ]
+                }
+            ]
+        }
+    ],
     "JavaScriptPermissionBasedAPIMetricsEnabled": [
         {
             "platforms": [
@@ -26091,42 +26111,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PreloadMediaEngagementData"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UnimportantFramePolicy": [
-        {
-            "platforms": [
-                "android_webview",
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "IsolatesPriority",
-                    "enable_features": [
-                        "IsolatesPriorityBestEffortWhenHidden",
-                        "IsolatesPriorityUseProcessPriority",
-                        "UnimportantFramesPriority"
-                    ],
-                    "disable_features": [
-                        "RestrictThreadPoolInBackground",
-                        "UserVisibleProcessPriority"
-                    ]
-                },
-                {
-                    "name": "All",
-                    "enable_features": [
-                        "IsolatesPriorityBestEffortWhenHidden",
-                        "IsolatesPriorityUseProcessPriority",
-                        "RestrictThreadPoolInBackground",
-                        "UnimportantFramesPriority",
-                        "UserVisibleProcessPriority"
                     ]
                 }
             ]

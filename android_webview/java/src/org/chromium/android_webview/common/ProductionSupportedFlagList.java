@@ -1159,5 +1159,6 @@ public final class ProductionSupportedFlagList {
                 CcFeatures.THROTTLE_MAIN_FRAME_TO60_HZ_WEBVIEW,
                 "When enabled, requestAnimationFrame() and related main-thread effects are capped"
                         + " at 60Hz on 120Hz devices."),
+        Flag.baseFeature("IsolatesPriorityUseProcessPriority"),
     };
 }
