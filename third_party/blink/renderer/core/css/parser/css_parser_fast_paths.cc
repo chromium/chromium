@@ -1244,7 +1244,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kRowOverColumn ||
              value_id == CSSValueID::kColumnOverRow;
     case CSSPropertyID::kGridLanesDirection:
-      return value_id == CSSValueID::kRow ||
+      return value_id == CSSValueID::kNormal || value_id == CSSValueID::kRow ||
              value_id == CSSValueID::kRowReverse ||
              value_id == CSSValueID::kColumn ||
              value_id == CSSValueID::kColumnReverse;

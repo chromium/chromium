@@ -2856,6 +2856,8 @@ String StylePropertySerializer::GetShorthandValueForGridLine(
   return result.ReleaseString();
 }
 
+// TODO(almaher): Update grid-lanes based on new shorthand proposal in
+// https://github.com/w3c/csswg-drafts/issues/12023#issuecomment-3666148876
 String StylePropertySerializer::GetShorthandValueForGridLanes(
     const StylePropertyShorthand& shorthand) const {
   const auto* template_area_values =
@@ -2871,7 +2873,10 @@ String StylePropertySerializer::GetShorthandValueForGridLanes(
       property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
   DCHECK(grid_lanes_direction_values);
   const auto* grid_lanes_template_tracks_values =
-      CSSOMUtils::IsGridLanesColumnDirectionValue(grid_lanes_direction_values)
+      CSSOMUtils::IsGridLanesNormalDirectionValue(
+          grid_lanes_direction_values) ||
+              CSSOMUtils::IsGridLanesColumnDirectionValue(
+                  grid_lanes_direction_values)
           ? property_set_.GetPropertyCSSValue(
                 GetCSSPropertyGridTemplateColumns())
           : property_set_.GetPropertyCSSValue(GetCSSPropertyGridTemplateRows());

@@ -1167,6 +1167,16 @@ class ComputedStyle final : public ComputedStyleBase {
       case EGridLanesDirection::kColumn:
       case EGridLanesDirection::kColumnReverse:
         return kForColumns;
+      case EGridLanesDirection::kNormal:
+        // The 'normal' keyword resolves to 'columns' or 'rows' depending on
+        // whether 'grid-template-columns' or 'grid-template-rows' was set
+        // (respectively), defaulting to columns if both or neither are set.
+        if (SpecifiedGridTemplateColumns()) {
+          return kForColumns;
+        } else if (SpecifiedGridTemplateRows()) {
+          return kForRows;
+        }
+        return kForColumns;
       case EGridLanesDirection::kRow:
       case EGridLanesDirection::kRowReverse:
         return kForRows;
@@ -2690,19 +2700,6 @@ class ComputedStyle final : public ComputedStyleBase {
            display == EDisplay::kTableColumn ||
            display == EDisplay::kTableCell ||
            display == EDisplay::kTableCaption;
-  }
-
-  static GridTrackSizingDirection GridLanesTrackSizingDirection(
-      EGridLanesDirection direction) {
-    switch (direction) {
-      case EGridLanesDirection::kColumn:
-      case EGridLanesDirection::kColumnReverse:
-        return kForColumns;
-      case EGridLanesDirection::kRow:
-      case EGridLanesDirection::kRowReverse:
-        return kForRows;
-    }
-    NOTREACHED();
   }
 
   static CORE_EXPORT const ComputedGridTrackList& ComputedGridTemplate(

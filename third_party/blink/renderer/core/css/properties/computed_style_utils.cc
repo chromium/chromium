@@ -5222,6 +5222,8 @@ CSSValue* ComputedStyleUtils::ValueForFitText(const ComputedStyle& style,
   return list;
 }
 
+// TODO(almaher): Update grid-lanes based on new shorthand proposal in
+// https://github.com/w3c/csswg-drafts/issues/12023#issuecomment-3666148876
 CSSValueList* ComputedStyleUtils::ValuesForGridLanesShorthand(
     const StylePropertyShorthand& shorthand,
     const ComputedStyle& style,
@@ -5243,7 +5245,10 @@ CSSValueList* ComputedStyleUtils::ValuesForGridLanesShorthand(
           style, layout_object, allow_visited_style, value_phase);
   DCHECK(grid_lanes_direction_values);
   const CSSValue* grid_lanes_template_tracks_values =
-      CSSOMUtils::IsGridLanesColumnDirectionValue(grid_lanes_direction_values)
+      CSSOMUtils::IsGridLanesNormalDirectionValue(
+          grid_lanes_direction_values) ||
+              CSSOMUtils::IsGridLanesColumnDirectionValue(
+                  grid_lanes_direction_values)
           ? GetCSSPropertyGridTemplateColumns().CSSValueFromComputedStyle(
                 style, layout_object, allow_visited_style, value_phase)
           : GetCSSPropertyGridTemplateRows().CSSValueFromComputedStyle(

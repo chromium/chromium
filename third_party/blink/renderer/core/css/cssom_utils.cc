@@ -71,6 +71,15 @@ bool CSSOMUtils::HasGridRepeatValue(const CSSValueList* value_list) {
 }
 
 // static
+bool CSSOMUtils::IsGridLanesNormalDirectionValue(
+    const CSSValue* grid_lanes_direction_values) {
+  const auto* grid_lanes_direction_value =
+      DynamicTo<CSSIdentifierValue>(grid_lanes_direction_values);
+  return grid_lanes_direction_value &&
+         (grid_lanes_direction_value->GetValueID() == CSSValueID::kNormal);
+}
+
+// static
 bool CSSOMUtils::IsGridLanesColumnDirectionValue(
     const CSSValue* grid_lanes_direction_values) {
   const auto* grid_lanes_direction_value =
@@ -213,6 +222,9 @@ CSSValueList* CSSOMUtils::ComputedValueForGridTemplateShorthand(
 }
 
 // static
+//
+// TODO(almaher): Update grid-lanes based on new shorthand proposal in
+// https://github.com/w3c/csswg-drafts/issues/12023#issuecomment-3666148876
 CSSValueList* CSSOMUtils::ComputedValueForGridLanesShorthand(
     const CSSValue* grid_template_tracks_values,
     const CSSValue* template_area_values,
@@ -230,7 +242,8 @@ CSSValueList* CSSOMUtils::ComputedValueForGridLanesShorthand(
     // If we have template columns, we can serialize the template areas as is.
     // Otherwise, for template rows, we need to serialize multiple string tokens
     // into a single space-separated string.
-    if (IsGridLanesColumnDirectionValue(grid_lanes_direction_values)) {
+    if (IsGridLanesColumnDirectionValue(grid_lanes_direction_values) ||
+        IsGridLanesNormalDirectionValue(grid_lanes_direction_values)) {
       list->Append(*template_area_values);
     } else {
       const cssvalue::CSSGridTemplateAreasValue* template_areas =

@@ -33,6 +33,9 @@ class CSSOMUtils {
 
   static bool HasGridRepeatValue(const CSSValueList* value_list);
 
+  static bool IsGridLanesNormalDirectionValue(
+      const CSSValue* grid_lanes_direction_values);
+
   static bool IsGridLanesColumnDirectionValue(
       const CSSValue* grid_lanes_direction_values);
 

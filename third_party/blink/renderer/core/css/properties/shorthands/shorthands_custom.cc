@@ -3073,6 +3073,8 @@ const CSSValue* Grid::CSSValueFromComputedStyleInternal(
       gridShorthand(), style, layout_object, allow_visited_style, value_phase);
 }
 
+// TODO(almaher): Update grid-lanes based on new shorthand proposal in
+// https://github.com/w3c/csswg-drafts/issues/12023#issuecomment-3666148876
 bool GridLanes::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
@@ -3084,7 +3086,7 @@ bool GridLanes::ParseShorthand(
   const CSSValue* template_areas =
       GetCSSPropertyGridTemplateAreas().InitialValue();
   const CSSValue* grid_lanes_direction =
-      CSSIdentifierValue::Create(CSSValueID::kColumn);
+      CSSIdentifierValue::Create(CSSValueID::kNormal);
   const CSSValue* grid_lanes_fill =
       CSSIdentifierValue::Create(CSSValueID::kNormal);
 
@@ -3106,9 +3108,9 @@ bool GridLanes::ParseShorthand(
   }
   stream.ConsumeWhitespace();
 
-  if (css_parsing_utils::IdentMatches<CSSValueID::kRow, CSSValueID::kRowReverse,
-                                      CSSValueID::kColumn,
-                                      CSSValueID::kColumnReverse>(
+  if (css_parsing_utils::IdentMatches<
+          CSSValueID::kRow, CSSValueID::kRowReverse, CSSValueID::kColumn,
+          CSSValueID::kColumnReverse, CSSValueID::kNormal>(
           stream.Peek().Id())) {
     if (css_parsing_utils::IdentMatches<CSSValueID::kRow,
                                         CSSValueID::kRowReverse>(
