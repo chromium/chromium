@@ -780,6 +780,7 @@ class TabStripModel {
     CommandGlicStopShare,
     CommandGlicShare,
     CommandGlicCreateNewChat,
+    CommandGlicSwitchToRecentConversation,
 #endif
     CommandLast
   };

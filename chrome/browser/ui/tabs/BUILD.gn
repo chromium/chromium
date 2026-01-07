@@ -752,6 +752,7 @@ if (!is_android) {
       sources += [ "glic_tab_sub_menu_model_browsertest.cc" ]
       deps += [
         "//chrome/browser/glic",
+        "//chrome/browser/glic:impl",
         "//chrome/browser/glic/test_support",
       ]
     }

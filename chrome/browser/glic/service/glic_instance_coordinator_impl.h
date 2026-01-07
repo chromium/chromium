@@ -86,8 +86,8 @@ class GlicInstanceCoordinatorImpl
   // per profile.
   void OnWillCreateFloaty() override;
   void UnbindTabFromAnyInstance(tabs::TabInterface* tab) override;
-  std::vector<glic::mojom::ConversationInfoPtr> GetRecentlyActiveConversations()
-      override;
+  std::vector<glic::mojom::ConversationInfoPtr> GetRecentlyActiveConversations(
+      size_t limit) override;
   void ContextAccessIndicatorChanged(GlicInstanceImpl& instance,
                                      bool enabled) override;
 
@@ -97,6 +97,7 @@ class GlicInstanceCoordinatorImpl
   // GlicWindowController implementation
   HostManager& host_manager() override;
   GlicInstance* GetInstanceForTab(const tabs::TabInterface* tab) const override;
+  std::vector<ConversationInfo> GetRecentConversations(size_t limit) override;
 
   // Creates a new conversation and pins the given tabs.
   // This overrides any conversation that was already associated with any

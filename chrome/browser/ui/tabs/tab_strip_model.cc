@@ -2540,6 +2540,7 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     case CommandGlicShare:
       return true;
     case CommandGlicCreateNewChat:
+    case CommandGlicSwitchToRecentConversation:
       return true;
 #endif
 
@@ -2989,10 +2990,10 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       // Do nothing. The submenu's delegate will invoke the correct subcommand
       // later.
       break;
-    case CommandGlicCreateNewChat: {
-      // TODO: Implement command execution.
+    case CommandGlicCreateNewChat:
+    case CommandGlicSwitchToRecentConversation:
+      // These are handled by GlicTabSubMenuModel.
       break;
-    }
 #endif
 
     case CommandAddToNewComparisonTable: {

@@ -613,7 +613,7 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
 }
 
 std::vector<glic::mojom::ConversationInfoPtr>
-GlicInstanceCoordinatorImpl::GetRecentlyActiveConversations() {
+GlicInstanceCoordinatorImpl::GetRecentlyActiveConversations(size_t limit) {
   // This will only cover recently active conversations that still have living
   // instances. If an instance is torn down because the user closed all bound
   // tabs, it will not be included in the list.
@@ -636,10 +636,21 @@ GlicInstanceCoordinatorImpl::GetRecentlyActiveConversations() {
             });
 
   std::vector<glic::mojom::ConversationInfoPtr> result;
-  for (size_t i = 0; i < std::min(sorted_instances.size(), size_t{3}); ++i) {
+  for (size_t i = 0; i < std::min(sorted_instances.size(), limit); ++i) {
     auto info = sorted_instances[i]->GetConversationInfo();
     CHECK(info);
     result.push_back(std::move(info));
+  }
+  return result;
+}
+
+std::vector<ConversationInfo>
+GlicInstanceCoordinatorImpl::GetRecentConversations(size_t limit) {
+  std::vector<glic::mojom::ConversationInfoPtr> recent_conversations =
+      GetRecentlyActiveConversations(limit);
+  std::vector<ConversationInfo> result;
+  for (const auto& info : recent_conversations) {
+    result.emplace_back(info->conversation_id, info->conversation_title);
   }
   return result;
 }

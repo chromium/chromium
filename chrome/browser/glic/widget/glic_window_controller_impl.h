@@ -183,6 +183,7 @@ class GlicWindowControllerImpl
   GlicInstance* GetInstanceForTab(const tabs::TabInterface* tab) const override;
   void CreateNewConversationForTabs(
       const std::vector<tabs::TabInterface*>& tabs) override;
+  std::vector<ConversationInfo> GetRecentConversations(size_t limit) override;
 
   // GlicInstance implementation
   Host& host() override;

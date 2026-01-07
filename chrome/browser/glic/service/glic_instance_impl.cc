@@ -82,6 +82,8 @@ BASE_FEATURE(kGlicAvoidReactivatingActiveEmbedder,
 
 BASE_FEATURE(kGlicUnpinOnUnbindIfUnused, base::FEATURE_ENABLED_BY_DEFAULT);
 
+constexpr size_t kMaxRecentConversationsForPanel = 3;
+
 const base::FeatureParam<base::TimeDelta> kRemoveBlankInstanceDelay{
     &kGlicRemoveBlankInstancesOnClose, "delay", base::Seconds(1)};
 
@@ -1191,7 +1193,8 @@ void GlicInstanceImpl::NotifyPanelWillOpen(
   options.conversation_info = GetConversationInfo();
   if (coordinator_delegate_) {
     options.recently_active_conversations =
-        coordinator_delegate_->GetRecentlyActiveConversations();
+        coordinator_delegate_->GetRecentlyActiveConversations(
+            kMaxRecentConversationsForPanel);
   }
   host_.PanelWillOpen(invocation_source, std::move(options));
 }

@@ -80,7 +80,7 @@ class GlicInstanceImpl : public GlicInstance,
     virtual void OnWillCreateFloaty() = 0;
 
     virtual std::vector<glic::mojom::ConversationInfoPtr>
-    GetRecentlyActiveConversations() = 0;
+    GetRecentlyActiveConversations(size_t limit) = 0;
 
     // Called when the context access indicator changes on the instance.
     virtual void ContextAccessIndicatorChanged(

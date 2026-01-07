@@ -463,6 +463,11 @@ void GlicWindowControllerImpl::CreateNewConversationForTabs(
   NOTIMPLEMENTED();
 }
 
+std::vector<ConversationInfo> GlicWindowControllerImpl::GetRecentConversations(
+    size_t limit) {
+  return {};
+}
+
 bool GlicWindowControllerImpl::BeforeViewCreated(
     Browser* browser,
     mojom::InvocationSource source,

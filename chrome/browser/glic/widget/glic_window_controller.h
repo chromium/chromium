@@ -16,7 +16,6 @@
 #include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
 #include "build/build_config.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -52,6 +51,11 @@ class GlicWidget;
 class GlicKeyedService;
 enum class AttachChangeReason;
 
+struct ConversationInfo {
+  std::string id;
+  std::string title;
+};
+
 // MIGRATION IN PROGRESS - WARNING
 //
 // GlicWindowController is a misleading name!
@@ -73,6 +77,8 @@ class GlicWindowController {
       const tabs::TabInterface* tab) const = 0;
   virtual void CreateNewConversationForTabs(
       const std::vector<tabs::TabInterface*>& tabs) = 0;
+  virtual std::vector<ConversationInfo> GetRecentConversations(
+      size_t limit) = 0;
 
   // Show, summon, or activate the panel if needed, or close it if it's already
   // active and prevent_close is false.

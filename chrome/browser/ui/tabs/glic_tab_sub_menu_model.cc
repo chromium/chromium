@@ -12,11 +12,34 @@
 
 namespace glic {
 
+namespace {
+constexpr int kMaxRecentConversations = 10;
+}  // namespace
+
 GlicTabSubMenuModel::GlicTabSubMenuModel(TabStripModel* tab_strip_model,
                                          int context_index)
     : ui::SimpleMenuModel(this),
       tab_strip_model_(tab_strip_model),
       context_index_(context_index) {
+  GlicKeyedService* glic_service =
+      GlicKeyedService::Get(tab_strip_model_->profile());
+  if (!glic_service) {
+    return;
+  }
+
+  std::vector<ConversationInfo> conversations =
+      glic_service->window_controller().GetRecentConversations(
+          kMaxRecentConversations);
+
+  for (const auto& conversation : conversations) {
+    AddItem(TabStripModel::CommandGlicSwitchToRecentConversation,
+            base::UTF8ToUTF16(conversation.title));
+  }
+
+  if (!conversations.empty()) {
+    AddSeparator(ui::NORMAL_SEPARATOR);
+  }
+
   AddItem(TabStripModel::CommandGlicCreateNewChat,
           l10n_util::GetStringUTF16(IDS_TAB_CXMENU_GLIC_CREATE_NEW_CHAT));
 }
