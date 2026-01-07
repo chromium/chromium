@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
@@ -319,7 +318,7 @@ class FakeClient : public PdfInkModuleClient {
   }
 
   bool IsPageVisible(int page_index) override {
-    return base::Contains(visible_page_indices_, page_index);
+    return visible_page_indices_.contains(page_index);
   }
 
   MOCK_METHOD(bool,

@@ -11,7 +11,6 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
@@ -769,7 +768,7 @@ PDFiumFormFiller::GetEngineInIsolateScope(IPDF_JSPLATFORM* platform) {
 int PDFiumFormFiller::SetTimer(base::TimeDelta delay,
                                TimerCallback timer_func) {
   const int timer_id = ++g_last_timer_id;
-  DCHECK(!base::Contains(timers_, timer_id));
+  DCHECK(!timers_.contains(timer_id));
 
   auto timer = std::make_unique<base::RepeatingTimer>();
   timer->Start(FROM_HERE, delay, base::BindRepeating(timer_func, timer_id));
