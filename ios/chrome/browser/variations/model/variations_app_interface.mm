@@ -69,7 +69,8 @@ variations::SeedReaderWriter* GetSafeSeedReaderWriter() {
 }
 
 + (BOOL)fieldTrialExistsForTestSeed {
-  return variations::FieldTrialListHasAllStudiesFrom(variations::kTestSeedData);
+  return variations::FieldTrialListHasAllStudiesFrom(
+      variations::TestSeedData());
 }
 
 + (void)hasSafeSeed:(void (^)(BOOL hasSeed))completion {
@@ -82,12 +83,12 @@ variations::SeedReaderWriter* GetSafeSeedReaderWriter() {
 
 + (void)setTestSafeSeedAndSignature {
   std::string seed_data;
-  base::Base64Decode(variations::kTestSeedData.base64_uncompressed_data,
+  base::Base64Decode(variations::TestSeedData().base64_uncompressed_data,
                      &seed_data);
   GetSafeSeedReaderWriter()->StoreValidatedSeedInfo(
       variations::ValidatedSeedInfo{
           .seed_data = seed_data,
-          .signature = variations::kTestSeedData.base64_signature,
+          .signature = variations::TestSeedData().base64_signature,
           .milestone = 92,  // Milestone number is arbitrary.
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
@@ -100,11 +101,11 @@ variations::SeedReaderWriter* GetSafeSeedReaderWriter() {
 
 + (void)setCrashingRegularSeedAndSignature {
   std::string seed_data;
-  base::Base64Decode(variations::kCrashingSeedData.base64_uncompressed_data,
+  base::Base64Decode(variations::CrashingSeedData().base64_uncompressed_data,
                      &seed_data);
   GetSeedReaderWriter()->StoreValidatedSeedInfo(variations::ValidatedSeedInfo{
       .seed_data = seed_data,
-      .signature = variations::kCrashingSeedData.base64_signature,
+      .signature = variations::CrashingSeedData().base64_signature,
       .milestone = 92,  // Milestone number is arbitrary.
       .seed_date = base::Time::Now(),
       .client_fetch_time = base::Time::Now(),

@@ -957,8 +957,8 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
   base::WriteFile(test_seed_file,
                   base::StringPrintf("{\"variations_compressed_seed\": \"%s\","
                                      "\"variations_seed_signature\": \"%s\"}",
-                                     kTestSeedData.base64_compressed_data,
-                                     kTestSeedData.base64_signature));
+                                     TestSeedData().base64_compressed_data,
+                                     TestSeedData().base64_signature));
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       variations::switches::kVariationsTestSeedJsonPath, test_seed_file);
@@ -979,7 +979,8 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
   PlatformFieldTrials platform_field_trials;
   NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
 
-  ASSERT_FALSE(base::FieldTrialList::TrialExists(kTestSeedData.study_names[0]));
+  ASSERT_FALSE(
+      base::FieldTrialList::TrialExists(TestSeedData().study_names[0]));
 
   EXPECT_TRUE(field_trial_creator.SetUpFieldTrials(
       /*variation_ids=*/{},
@@ -991,7 +992,7 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
       *metrics_state_manager->CreateEntropyProviders(
           /*enable_limited_entropy_mode=*/false)));
 
-  EXPECT_TRUE(base::FieldTrialList::TrialExists(kTestSeedData.study_names[0]));
+  EXPECT_TRUE(base::FieldTrialList::TrialExists(TestSeedData().study_names[0]));
   EXPECT_EQ(
       local_state()->GetInteger(prefs::kVariationsFailedToFetchSeedStreak), 0);
   EXPECT_EQ(local_state()->GetInteger(prefs::kVariationsCrashStreak), 0);

@@ -35,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest,
   // pref to be set early enough to be read by the variations code, which runs
   // very early during startup.
   PrefService* local_state = g_browser_process->local_state();
-  WriteSeedData(local_state, kTestSeedData, kSafeSeedPrefKeys);
+  WriteSeedData(local_state, TestSeedData(), kSafeSeedPrefKeys);
   SimulateCrash(local_state);
 }
 
@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest,
                                        SeedUsage::kSafeSeedUsed, 1);
 
   // Verify that |kTestSeedData| has been applied.
-  EXPECT_TRUE(FieldTrialListHasAllStudiesFrom(kTestSeedData));
+  EXPECT_TRUE(FieldTrialListHasAllStudiesFrom(TestSeedData()));
 }
 
 IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest,
@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest,
   // very early during startup.
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetInteger(prefs::kVariationsFailedToFetchSeedStreak, 25);
-  WriteSeedData(local_state, kTestSeedData, kSafeSeedPrefKeys);
+  WriteSeedData(local_state, TestSeedData(), kSafeSeedPrefKeys);
 }
 
 IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest,
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest,
                                        SeedUsage::kSafeSeedUsed, 1);
 
   // Verify that |kTestSeedData| has been applied.
-  EXPECT_TRUE(FieldTrialListHasAllStudiesFrom(kTestSeedData));
+  EXPECT_TRUE(FieldTrialListHasAllStudiesFrom(TestSeedData()));
 }
 
 IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest,
@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest,
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetInteger(prefs::kVariationsCrashStreak, 2);
   local_state->SetInteger(prefs::kVariationsFailedToFetchSeedStreak, 24);
-  WriteSeedData(local_state, kTestSeedData, kRegularSeedPrefKeys);
+  WriteSeedData(local_state, TestSeedData(), kRegularSeedPrefKeys);
 }
 
 IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest, DoNotTriggerSafeMode) {

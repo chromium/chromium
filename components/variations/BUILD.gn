@@ -231,10 +231,6 @@ static_library("test_support") {
     "//services/network/public/cpp",
     "//third_party/zlib/google:compression_utils",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("unit_tests") {
@@ -317,10 +313,6 @@ source_set("unit_tests") {
   if (use_blink) {
     deps += [ "//third_party/blink/public/common" ]
   }
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # Convenience testing target

@@ -34,18 +34,18 @@
 
 namespace {
 
-using ::variations::kTestSeedData;
 using ::variations::SeedApplicationStage;
+using ::variations::TestSeedData;
 
 // Returns a seed. If `valid` is true, this will return a seed using
-// kTestSeedData, otherwise it will return a seed with unmatching signature.
+// TestSeedData(), otherwise it will return a seed with unmatching signature.
 std::unique_ptr<variations::SeedResponse> GetSeed(bool valid) {
   std::string data;
-  base::Base64Decode(kTestSeedData.base64_compressed_data, &data);
+  base::Base64Decode(TestSeedData().base64_compressed_data, &data);
 
   auto seed = std::make_unique<variations::SeedResponse>();
   seed->signature =
-      valid ? kTestSeedData.base64_signature : "invalid signature";
+      valid ? TestSeedData().base64_signature : "invalid signature";
   seed->data = data;
   seed->is_gzip_compressed = true;
   seed->date = base::Time::Now();
@@ -124,7 +124,7 @@ class IOSChromeVariationsSeedStoreTest : public PlatformTest {
   // Verify that the study in the test seed is `applied`.
   void VerifyTestSeedTrialExists(bool applied) {
     bool trial_exists =
-        base::FieldTrialList::TrialExists(kTestSeedData.study_names[0]);
+        base::FieldTrialList::TrialExists(TestSeedData().study_names[0]);
     EXPECT_EQ(applied, trial_exists);
   }
 
