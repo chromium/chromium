@@ -403,21 +403,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Compositing.Display.DrmThreadProxy.CheckOverlayCapabilitiesSyncOnDrmThreadUs"
-    units="microseconds" expires_after="2025-07-10">
-  <owner>harthuang@google.com</owner>
-  <owner>fangzhoug@chromium.org</owner>
-  <owner>petermcneeley@chromium.org</owner>
-  <owner>chromeos-gfx-compositor@chromium.org</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    Logged zero or more times per frame, the time spent checking if a page flip
-    is succeeded or failed on DRM thread. Only reported for platforms supporting
-    high resolution clocks.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.Display.FlattenedRenderPassCount" units="units"
     expires_after="2026-05-17">
   <owner>jonross@chromium.org</owner>
