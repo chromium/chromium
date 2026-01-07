@@ -39,11 +39,12 @@ package {
 build = ["sources.bp"]
 
 cc_defaults {
-    name: "${GN2BP_MODULE_PREFIX}cronet_defaults",
+    name: "${GN2BP_MODULE_PREFIX}boringssl_defaults",
     stl: "none",
     apex_available: [
         "com.android.tethering",
     ],
+    defaults: ["${GN2BP_MODULE_PREFIX}third_party_boringssl_boringssl__flags"],
     min_sdk_version: "30",
     include_dirs: [
         "external/cronet/${GN2BP_IMPORT_CHANNEL}/buildtools/third_party/libc++/",
@@ -54,34 +55,11 @@ cc_defaults {
         "${GN2BP_MODULE_PREFIX}buildtools_third_party_libc___libc__",
         "${GN2BP_MODULE_PREFIX}buildtools_third_party_libc__abi_libc__abi"
     ],
-}
-
-cc_defaults {
-    name: "${GN2BP_MODULE_PREFIX}boringssl_flags",
-    cflags: [
-        "-fvisibility=hidden",
-        "-DBORINGSSL_SHARED_LIBRARY",
-        "-DBORINGSSL_ANDROID_SYSTEM",
-        // Chromium uses extensive harderning mode, so setting the same for boringssl.
-        // This should override any platform default.
-        "-U_LIBCPP_HARDENING_MODE",
-        "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
-        "-DOPENSSL_SMALL",
-        "-Werror",
-        "-Wno-unused-parameter",
-    ],
-    cppflags: [
-        "-Wall",
-        "-Werror",
-    ],
-}
-
-cc_defaults {
-    name: "${GN2BP_MODULE_PREFIX}boringssl_defaults",
     local_include_dirs: ["src/include"],
     export_include_dirs: ["src/include"],
     cflags: [
         "-DBORINGSSL_IMPLEMENTATION",
+        "-DBORINGSSL_SHARED_LIBRARY",
     ],
 }
 
@@ -102,8 +80,6 @@ cc_object {
     name: "${GN2BP_MODULE_PREFIX}bcm_object",
     defaults: [
         "${GN2BP_MODULE_PREFIX}boringssl_defaults",
-        "${GN2BP_MODULE_PREFIX}boringssl_flags",
-        "${GN2BP_MODULE_PREFIX}cronet_defaults",
         "${GN2BP_MODULE_PREFIX}libcrypto_bcm_sources",
         "${GN2BP_MODULE_PREFIX}libcrypto_defaults",
     ],
@@ -151,8 +127,6 @@ cc_library_shared {
     name: "${GN2BP_MODULE_PREFIX}libcrypto",
     defaults: [
         "${GN2BP_MODULE_PREFIX}boringssl_defaults",
-        "${GN2BP_MODULE_PREFIX}boringssl_flags",
-        "${GN2BP_MODULE_PREFIX}cronet_defaults",
         "${GN2BP_MODULE_PREFIX}libcrypto_defaults",
         "${GN2BP_MODULE_PREFIX}libcrypto_sources",
     ],
@@ -181,8 +155,6 @@ cc_library_shared {
     name: "${GN2BP_MODULE_PREFIX}libssl",
     defaults: [
         "${GN2BP_MODULE_PREFIX}boringssl_defaults",
-        "${GN2BP_MODULE_PREFIX}boringssl_flags",
-        "${GN2BP_MODULE_PREFIX}cronet_defaults",
         "${GN2BP_MODULE_PREFIX}libssl_sources",
     ],
     unique_host_soname: true,
@@ -193,8 +165,6 @@ cc_library_shared {
     name: "${GN2BP_MODULE_PREFIX}libpki",
     defaults: [
         "${GN2BP_MODULE_PREFIX}boringssl_defaults",
-        "${GN2BP_MODULE_PREFIX}boringssl_flags",
-        "${GN2BP_MODULE_PREFIX}cronet_defaults",
         "${GN2BP_MODULE_PREFIX}libpki_sources",
     ],
     unique_host_soname: true,
