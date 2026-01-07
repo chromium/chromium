@@ -375,11 +375,13 @@ public class TabStripGroupContextMenuTest {
         // Update tab group title and verify.
         title = "newTitle";
         updateGroupTitle(title);
+        showMenu();
         onView(withText(title)).check(matches(isDisplayed()));
 
         // Delete the group title by clearing the edit box and verify its default to "N tabs".
         title = "";
         updateGroupTitle(title);
+        showMenu();
         onView(withText("2 tabs")).check(matches(isDisplayed()));
     }
 

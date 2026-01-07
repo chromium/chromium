@@ -17,10 +17,12 @@ import android.content.res.Resources;
 import android.database.DataSetObserver;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -634,6 +636,21 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                         }
                         mIsPresetTitleUsed = false;
                     }
+                });
+
+        // Listen for enter pressed to update the group title.
+        mGroupTitleEditText.setOnEditorActionListener(
+                (v, actionId, event) -> {
+                    if (actionId == EditorInfo.IME_ACTION_DONE
+                            || (event != null
+                                    && event.getAction() == KeyEvent.ACTION_DOWN
+                                    && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                        updateTabGroupTitle();
+                        mWindowAndroid.getKeyboardDelegate().hideKeyboard(mGroupTitleEditText);
+                        dismiss();
+                        return true; // Consumed.
+                    }
+                    return false;
                 });
 
         setExistingOrDefaultTitle(
