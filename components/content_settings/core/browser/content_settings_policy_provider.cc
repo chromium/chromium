@@ -168,11 +168,22 @@ constexpr PrefsForManagedContentSettingsMapEntry
          ContentSettingsType::CONTROLLED_FRAME, CONTENT_SETTING_ALLOW},
         {prefs::kManagedControlledFrameBlockedForUrls,
          ContentSettingsType::CONTROLLED_FRAME, CONTENT_SETTING_BLOCK},
-        // LocalNetworkAccess: Block takes precedence over Allow
+        // LocalNetworkAccess:
+        // * Block takes precedence over Allow
+        // * Policies apply to all 3 LNA permissions while we migrate to
+        //   split permissions (see crbug.com/465491626).
         {prefs::kManagedLocalNetworkAccessAllowedForUrls,
          ContentSettingsType::LOCAL_NETWORK_ACCESS, CONTENT_SETTING_ALLOW},
         {prefs::kManagedLocalNetworkAccessBlockedForUrls,
          ContentSettingsType::LOCAL_NETWORK_ACCESS, CONTENT_SETTING_BLOCK},
+        {prefs::kManagedLocalNetworkAccessAllowedForUrls,
+         ContentSettingsType::LOCAL_NETWORK, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedLocalNetworkAccessBlockedForUrls,
+         ContentSettingsType::LOCAL_NETWORK, CONTENT_SETTING_BLOCK},
+        {prefs::kManagedLocalNetworkAccessAllowedForUrls,
+         ContentSettingsType::LOOPBACK_NETWORK, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedLocalNetworkAccessBlockedForUrls,
+         ContentSettingsType::LOOPBACK_NETWORK, CONTENT_SETTING_BLOCK},
         {prefs::kManagedIdleDetectionAllowedForUrls,
          ContentSettingsType::IDLE_DETECTION, CONTENT_SETTING_ALLOW},
         {prefs::kManagedIdleDetectionBlockedForUrls,

@@ -6,6 +6,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/policy/policy_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -361,6 +362,77 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
                           "loopback-network", /*expect_nav_failure=*/true);
   RunIframeNavigationTest(initial_url, iframe_url, final_url, "local-network",
                           /*expect_nav_failure=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
+                       LocalNetworkAccessAllowedForUrlsPolicy) {
+  policy::PolicyMap policies;
+  base::Value::List allowlist;
+  allowlist.Append(base::Value("*"));
+  SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
+            base::Value(std::move(allowlist)));
+  UpdateProviderPolicy(policies);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_server().GetURL(
+          "a.com",
+          "/local_network_access/no-favicon-treat-as-public-address.html")));
+
+  // LNA fetch should pass for both loopback requests ...
+  ASSERT_EQ(true,
+            content::EvalJs(
+                web_contents(),
+                content::JsReplace("fetch($1).then(response => response.ok)",
+                                   https_server().GetURL("b.com", kLnaPath))));
+
+  // ... and for local requests.
+  ASSERT_EQ(true, content::EvalJs(
+                      web_contents(),
+                      content::JsReplace(
+                          "fetch($1).then(response => response.ok)",
+                          https_local_server().GetURL("b.com", kLnaPath))));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
+                       LocalNetworkAccessBlockedForUrlsPolicy) {
+  // Set both policies. Block should override Allow
+  policy::PolicyMap policies;
+  base::Value::List allowlist;
+  allowlist.Append(base::Value("*"));
+  SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
+            base::Value(std::move(allowlist)));
+  base::Value::List blocklist;
+  blocklist.Append(base::Value("*"));
+  SetPolicy(&policies, policy::key::kLocalNetworkAccessBlockedForUrls,
+            base::Value(std::move(blocklist)));
+  UpdateProviderPolicy(policies);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_server().GetURL(
+          "a.com",
+          "/local_network_access/no-favicon-treat-as-public-address.html")));
+
+  // Enable auto-accept of LNA permission request, although it should not be
+  // checked.
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  // LNA fetch should fail, both for loopback requests...
+  EXPECT_THAT(content::EvalJs(
+                  web_contents(),
+                  content::JsReplace("fetch($1).then(response => response.ok)",
+                                     https_server().GetURL("b.com", kLnaPath))),
+              content::EvalJsResult::IsError());
+
+  // ... and for local requests.
+  EXPECT_THAT(
+      content::EvalJs(
+          web_contents(),
+          content::JsReplace("fetch($1).then(response => response.ok)",
+                             https_local_server().GetURL("b.com", kLnaPath))),
+      content::EvalJsResult::IsError());
 }
 
 }  // namespace local_network_access
