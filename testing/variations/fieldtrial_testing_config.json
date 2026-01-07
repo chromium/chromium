@@ -14907,6 +14907,28 @@
             ]
         }
     ],
+    "JobPriorityBoosting": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "JobPriorityBoosting"
+                    ]
+                }
+            ]
+        }
+    ],
     "JumpStartOmnibox": [
         {
             "platforms": [
