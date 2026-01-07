@@ -88,11 +88,10 @@ class ServiceWatcherImplMac : public ServiceWatcher {
 
   scoped_refptr<base::SingleThreadTaskRunner> service_discovery_runner_;
 
-  // TODO(crbug.com/354231463): Remove usage of NetServiceBrowser once the
-  // feature media_router::kUseNetworkFrameworkForLocalDiscovery is enabled by
-  // default. `nw_browser_` and `browser_` lives on the
-  // `service_discovery_runner_`, though they are initialized on the object
-  // creator's sequence. They are cleaned up in `StopServiceBrowser()`.
+  // TODO(crbug.com/354231463): Remove usage of NetServiceBrowser. `nw_browser_`
+  // and `browser_` lives on the
+  // `service_discovery_runner_`.
+  //
   nw_browser_t __strong nw_browser_;
   NetServiceBrowser* __strong browser_;
 

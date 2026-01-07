@@ -10244,11 +10244,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "use-network-framework-for-local-discovery",
-    "owners": [ "muyaoxu@google.com", "openscreen-eng@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "use-new-feed-eligibility-service",
     "owners": [ "ginnyhuang@chromium.org" ],
     "expiry_milestone": 142

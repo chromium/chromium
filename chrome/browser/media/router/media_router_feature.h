@@ -65,12 +65,6 @@ BASE_DECLARE_FEATURE(kFallbackToAudioTabMirroring);
 // can be frequent and contain sensitive information, so disabled by default.
 BASE_DECLARE_FEATURE(kCastMessageLogging);
 
-#if BUILDFLAG(IS_MAC)
-// If enabled, Chrome uses the Network Framework API for local device discovery
-// on Mac.
-BASE_DECLARE_FEATURE(kUseNetworkFrameworkForLocalDiscovery);
-#endif
-
 extern const base::FeatureParam<int> kCastMirroringPlayoutDelayMs;
 
 // Registers |kMediaRouterCastAllowAllIPs| with local state pref |registry|.
