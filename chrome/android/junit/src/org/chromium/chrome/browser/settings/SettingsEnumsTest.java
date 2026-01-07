@@ -16,6 +16,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import org.chromium.base.Log;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 
@@ -43,8 +44,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SettingsEnumsTest {
+
     private static final String ENUMS_FILE_PATH =
             "/tools/metrics/histograms/metadata/settings/enums.xml";
+    public static final String TAG = "SettingsEnumsTest";
 
     @Test
     public void testAllSettingsFragmentSubclassesAreInEnum() throws Exception {
@@ -92,36 +95,51 @@ public class SettingsEnumsTest {
                     // PageInfo fragments are not used in settings.
                     continue;
                 }
-                if (entry.contains("/junit")) {
+                if (entry.contains("junit")) {
                     // Skip test classes.
+                    continue;
+                }
+                if (!(entry.contains("/chrome/browser/")
+                        || entry.contains("/components/browser_ui/")
+                        || entry.contains("/chrome/android/"))) {
+                    // All preferences should be in these packages.
                     continue;
                 }
                 processJarFile(entry, classLoader, fragmentSimpleNames);
             }
         }
+        Log.i(TAG, "Found fragments: " + fragmentSimpleNames.size());
         return fragmentSimpleNames;
     }
 
     private void processJarFile(
             String path, ClassLoader classLoader, Set<String> fragmentSimpleNames)
             throws IOException {
+        long start = System.currentTimeMillis();
+        int count = 0;
+        int found = 0;
         try (JarFile jarFile = new JarFile(path)) {
             Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements()) {
                 JarEntry jarEntry = entries.nextElement();
                 if (jarEntry.getName().endsWith(".class")) {
                     String className = jarEntry.getName().replace('/', '.').replace(".class", "");
-                    checkAndAddClass(className, classLoader, fragmentSimpleNames);
+                    if (checkAndAddClass(className, classLoader, fragmentSimpleNames)) {
+                        found++;
+                    }
+                    count++;
                 }
             }
         }
+        long duration = System.currentTimeMillis() - start;
+        Log.i(TAG, duration + " ms " + count + " " + found + " " + path);
     }
 
-    private void checkAndAddClass(
+    private boolean checkAndAddClass(
             String className, ClassLoader classLoader, Set<String> fragmentSimpleNames) {
         // Only check classes in expected packages to speed things up and avoid unrelated classes.
         if (!className.startsWith("org.chromium")) {
-            return;
+            return false;
         }
         try {
             Class<?> clazz = Class.forName(className, false, classLoader);
@@ -129,12 +147,14 @@ public class SettingsEnumsTest {
                     && !clazz.isInterface()
                     && !Modifier.isAbstract(clazz.getModifiers())) {
                 fragmentSimpleNames.add(clazz.getSimpleName());
+                return true;
             }
         } catch (ClassNotFoundException | NoClassDefFoundError e) {
             // It's possible to encounter classes that cannot be loaded in the test environment.
             // We can ignore these as they are unlikely to be the settings fragments we are
             // looking for.
         }
+        return false;
     }
 
     private Map<Integer, String> getFragmentHashesFromEnumsXml() throws Exception {
