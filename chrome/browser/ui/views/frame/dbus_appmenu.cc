@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -475,8 +474,8 @@ int DbusAppmenu::NextCommandId() {
     } else {
       last_command_id_++;
     }
-  } while (base::Contains(history_items_, last_command_id_) ||
-           base::Contains(profile_commands_, last_command_id_));
+  } while (history_items_.contains(last_command_id_) ||
+           profile_commands_.contains(last_command_id_));
   return last_command_id_;
 }
 
@@ -598,7 +597,7 @@ void DbusAppmenu::ExecuteCommand(int command_id, int event_flags) {
   } else if (command_id == kTagProfileCreate) {
     ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
         ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
-  } else if (base::Contains(history_items_, command_id)) {
+  } else if (history_items_.contains(command_id)) {
     HistoryItem* item = history_items_[command_id].get();
     // If this item can be restored using TabRestoreService, do so.
     // Otherwise, just load the URL.
@@ -616,7 +615,7 @@ void DbusAppmenu::ExecuteCommand(int command_id, int event_flags) {
                                  ui::PAGE_TRANSITION_AUTO_BOOKMARK, false),
           /*navigation_handle_callback=*/{});
     }
-  } else if (base::Contains(profile_commands_, command_id)) {
+  } else if (profile_commands_.contains(command_id)) {
     avatar_menu_->SwitchToProfile(profile_commands_[command_id], false);
   }
 }

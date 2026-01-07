@@ -145,7 +145,7 @@ class TwoClientGeneratedIconFixSyncTest
         .ReadTrustedIconsWithFallbackToManifestIcons(
             app_id, {kIconSize}, IconPurpose::ANY, icons_future.GetCallback());
     SizeToBitmap icons_bitmap = std::move(icons_future.Take().icons_map);
-    CHECK(base::Contains(icons_bitmap, kIconSize));
+    CHECK(icons_bitmap.contains(kIconSize));
 
     return {
         .is_generated = fake_providers_[profile]

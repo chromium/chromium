@@ -15,7 +15,6 @@
 #include "ash/public/cpp/login_screen.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"

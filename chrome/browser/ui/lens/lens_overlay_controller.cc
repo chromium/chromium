@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
@@ -543,7 +542,7 @@ void LensOverlayController::SendRegionText(lens::mojom::TextPtr text,
 
 lens::mojom::OverlayThemePtr LensOverlayController::CreateTheme(
     lens::PaletteId palette_id) {
-  CHECK(base::Contains(lens::kPaletteColors, palette_id));
+  CHECK(lens::kPaletteColors.contains(palette_id));
   const auto& palette = lens::kPaletteColors.at(palette_id);
   auto theme = lens::mojom::OverlayTheme::New();
   theme->primary = palette.at(lens::ColorId::kPrimary);

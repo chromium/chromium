@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
 
 #include "base/callback_list.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
@@ -29,7 +28,7 @@ TabCaptureContentsBorderHelper::~TabCaptureContentsBorderHelper() = default;
 void TabCaptureContentsBorderHelper::OnCapturerAdded(
     CaptureSessionId capture_session_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!base::Contains(session_to_bounds_, capture_session_id));
+  DCHECK(!session_to_bounds_.contains(capture_session_id));
 
   session_to_bounds_[capture_session_id] = std::nullopt;
 
@@ -57,7 +56,7 @@ void TabCaptureContentsBorderHelper::OnRegionCaptureRectChanged(
     CaptureSessionId capture_session_id,
     const std::optional<gfx::Rect>& region_capture_rect) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(base::Contains(session_to_bounds_, capture_session_id));
+  DCHECK(session_to_bounds_.contains(capture_session_id));
 
   if (region_capture_rect &&
       region_capture_rect->width() >= kMinContentsBorderWidth &&

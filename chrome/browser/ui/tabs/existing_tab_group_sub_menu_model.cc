@@ -7,7 +7,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"

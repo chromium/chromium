@@ -6,7 +6,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
@@ -572,8 +571,8 @@ class FeaturePromoLifecycleAppUiTest : public FeaturePromoLifecycleUiTest {
     return CheckBrowser(base::BindOnce([](Browser* browser) {
              const auto data = GetStorageService(browser)->ReadPromoData(
                  kFeaturePromoLifecycleTestPromo);
-             return base::Contains(data->shown_for_keys,
-                                   browser->app_controller()->app_id());
+             return data->shown_for_keys.contains(
+                 browser->app_controller()->app_id());
            }))
         .SetDescription("CheckShownForApp()");
   }

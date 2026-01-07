@@ -171,7 +171,7 @@ class SubAppsListView : public views::ScrollView {
       // have an icon of size 32 (AKA kSubAppIconSize) as per the behavior of
       // `PopulateTrustedIconBitmaps()`.
       if (image_info.is_maskable) {
-        CHECK(base::Contains(image_info.bitmaps, kSubAppIconSize));
+        CHECK(image_info.bitmaps.contains(kSubAppIconSize));
         web_app::MaskIconOnOs(
             image_info.bitmaps[kSubAppIconSize],
             base::BindOnce(&SubAppsListView::OnIconMaskedUpdateDialog,

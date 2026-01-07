@@ -305,7 +305,7 @@ void AccessibilityHandler::MaybeAddDictationLocales() {
     // locale, IME languages or enabled preferred languages.
     std::pair<std::string_view, std::string_view> lang_and_locale =
         language::SplitIntoMainAndTail(locale.first);
-    bool is_recommended = base::Contains(ui_languages, lang_and_locale.first);
+    bool is_recommended = ui_languages.contains(lang_and_locale.first);
 
     option.Set("recommended", is_recommended);
     locales_list.Append(std::move(option));

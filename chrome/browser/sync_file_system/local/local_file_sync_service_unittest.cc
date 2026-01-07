@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -657,7 +656,7 @@ TEST_F(OriginChangeMapTest, Basic) {
   GURL origin;
   while (!all_origins.empty()) {
     ASSERT_TRUE(NextOriginToProcess(&origin));
-    ASSERT_TRUE(base::Contains(all_origins, origin));
+    ASSERT_TRUE(all_origins.contains(origin));
     all_origins.erase(origin);
   }
 
@@ -670,7 +669,7 @@ TEST_F(OriginChangeMapTest, Basic) {
   all_origins.insert(kOrigin3);
   while (!all_origins.empty()) {
     ASSERT_TRUE(NextOriginToProcess(&origin));
-    ASSERT_TRUE(base::Contains(all_origins, origin));
+    ASSERT_TRUE(all_origins.contains(origin));
     all_origins.erase(origin);
   }
 
@@ -681,7 +680,7 @@ TEST_F(OriginChangeMapTest, Basic) {
   all_origins.insert(kOrigin3);
   while (!all_origins.empty()) {
     ASSERT_TRUE(NextOriginToProcess(&origin));
-    ASSERT_TRUE(base::Contains(all_origins, origin));
+    ASSERT_TRUE(all_origins.contains(origin));
     all_origins.erase(origin);
   }
 
@@ -692,7 +691,7 @@ TEST_F(OriginChangeMapTest, Basic) {
   all_origins.insert(std::begin(kOrigins), std::end(kOrigins));
   while (!all_origins.empty()) {
     ASSERT_TRUE(NextOriginToProcess(&origin));
-    ASSERT_TRUE(base::Contains(all_origins, origin));
+    ASSERT_TRUE(all_origins.contains(origin));
     all_origins.erase(origin);
   }
 }
@@ -716,7 +715,7 @@ TEST_F(OriginChangeMapTest, WithDisabled) {
   GURL origin;
   while (!all_origins.empty()) {
     ASSERT_TRUE(NextOriginToProcess(&origin));
-    ASSERT_TRUE(base::Contains(all_origins, origin));
+    ASSERT_TRUE(all_origins.contains(origin));
     all_origins.erase(origin);
   }
 
@@ -728,7 +727,7 @@ TEST_F(OriginChangeMapTest, WithDisabled) {
   all_origins.insert(kOrigin3);
   while (!all_origins.empty()) {
     ASSERT_TRUE(NextOriginToProcess(&origin));
-    ASSERT_TRUE(base::Contains(all_origins, origin));
+    ASSERT_TRUE(all_origins.contains(origin));
     all_origins.erase(origin);
   }
 
@@ -748,7 +747,7 @@ TEST_F(OriginChangeMapTest, WithDisabled) {
   all_origins.insert(kOrigin3);
   while (!all_origins.empty()) {
     ASSERT_TRUE(NextOriginToProcess(&origin));
-    ASSERT_TRUE(base::Contains(all_origins, origin));
+    ASSERT_TRUE(all_origins.contains(origin));
     all_origins.erase(origin);
   }
 }

@@ -163,13 +163,13 @@ TEST_F(TabOrganizationServiceTest, DoesntAddSessionOnTriggerIfExists) {
   AddValidTabToBrowser(browser, 0);
   service()->OnTriggerOccured(browser);
   service()->CreateSessionForBrowser(browser);
-  EXPECT_TRUE(base::Contains(service()->browser_session_map(), browser));
+  EXPECT_TRUE(service()->browser_session_map().contains(browser));
   const TabOrganizationSession* session =
       service()->GetSessionForBrowser(browser);
   EXPECT_NE(session, nullptr);
 
   service()->OnTriggerOccured(browser);
-  EXPECT_TRUE(base::Contains(service()->browser_session_map(), browser));
+  EXPECT_TRUE(service()->browser_session_map().contains(browser));
   EXPECT_EQ(session, service()->GetSessionForBrowser(browser));
 }
 

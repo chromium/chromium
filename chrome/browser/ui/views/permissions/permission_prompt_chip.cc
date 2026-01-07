@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"

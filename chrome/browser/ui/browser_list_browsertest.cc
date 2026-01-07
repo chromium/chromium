@@ -7,7 +7,6 @@
 #include <memory>
 #include <set>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -85,14 +84,14 @@ class BrowserObserverChild : public BrowserListObserver, TabStripModelObserver {
       : created_for_browser_(created_for_browser) {
     ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
         [this](BrowserWindowInterface* browser) {
-          EXPECT_FALSE(base::Contains(observed_browsers_, browser));
+          EXPECT_FALSE(observed_browsers_.contains(browser));
           observed_browsers_.insert(browser);
           // TODO(crbug.com/452120900): TabStripModelObserver auto-unregisters
           // in dtor
           browser->GetTabStripModel()->AddObserver(this);
           return true;
         });
-    EXPECT_TRUE(base::Contains(observed_browsers_, created_for_browser_));
+    EXPECT_TRUE(observed_browsers_.contains(created_for_browser_));
     BrowserList::GetInstance()->AddObserver(this);
   }
 
@@ -102,14 +101,14 @@ class BrowserObserverChild : public BrowserListObserver, TabStripModelObserver {
 
   void OnBrowserAdded(Browser* browser) override {
     EXPECT_NE(browser, created_for_browser_);
-    EXPECT_FALSE(base::Contains(observed_browsers_, browser));
+    EXPECT_FALSE(observed_browsers_.contains(browser));
     observed_browsers_.insert(browser);
     browser->tab_strip_model()->AddObserver(this);
   }
 
   void OnBrowserRemoved(Browser* browser) override {
     browser->tab_strip_model()->RemoveObserver(this);
-    EXPECT_TRUE(base::Contains(observed_browsers_, browser));
+    EXPECT_TRUE(observed_browsers_.contains(browser));
     observed_browsers_.erase(browser);
   }
 

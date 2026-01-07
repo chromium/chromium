@@ -6,7 +6,6 @@
 
 #include "base/byte_size.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "content/public/common/url_constants.h"

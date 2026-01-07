@@ -7,7 +7,6 @@
 #include <iterator>
 #include <numeric>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -362,7 +361,7 @@ void DoOpen(Browser* browser,
     // aren't already in groups.
     std::vector<int> tab_indices;
     for (int i = 0; i < model->count(); ++i) {
-      if (base::Contains(opened_web_contents, model->GetWebContentsAt(i)) &&
+      if (opened_web_contents.contains(model->GetWebContentsAt(i)) &&
           !model->GetTabGroupForTab(i).has_value()) {
         tab_indices.push_back(i);
       }
@@ -728,7 +727,7 @@ std::u16string SuggestUniqueTabGroupName(
     existing_titles.insert(group.title());
   }
 
-  if (!base::Contains(existing_titles, folder_title)) {
+  if (!existing_titles.contains(folder_title)) {
     return folder_title;
   }
 
@@ -736,7 +735,7 @@ std::u16string SuggestUniqueTabGroupName(
   for (int i = 1; i < kMaxAttempts; ++i) {
     std::u16string new_title =
         folder_title + u" (" + base::NumberToString16(i) + u")";
-    if (!base::Contains(existing_titles, new_title)) {
+    if (!existing_titles.contains(new_title)) {
       return new_title;
     }
   }

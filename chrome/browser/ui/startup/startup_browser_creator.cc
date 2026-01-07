@@ -13,7 +13,6 @@
 
 #include "apps/switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -184,8 +183,8 @@ class ProfileLaunchObserver : public ProfileObserver,
   // Returns true if `profile` has been launched by
   // StartupBrowserCreator::LaunchBrowser() and has at least one open window.
   bool HasBeenLaunchedAndBrowserOpen(const Profile* profile) const {
-    return base::Contains(opened_profiles_, profile) &&
-           base::Contains(launched_profiles_, profile);
+    return opened_profiles_.contains(profile) &&
+           launched_profiles_.contains(profile);
   }
 
   void AddLaunched(Profile* profile) {

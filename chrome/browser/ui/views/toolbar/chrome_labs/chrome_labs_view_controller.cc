@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_list.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -120,7 +119,7 @@ int ChromeLabsViewController::GetIndexOfEnabledLabState(
   flags_state->GetSanitizedEnabledFlags(flags_storage, &enabled_entries);
   for (int i = 0; i < entry->NumOptions(); i++) {
     const std::string name = entry->NameForOption(i);
-    if (base::Contains(enabled_entries, name)) {
+    if (enabled_entries.contains(name)) {
       return i;
     }
   }

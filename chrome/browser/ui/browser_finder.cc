@@ -8,7 +8,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"

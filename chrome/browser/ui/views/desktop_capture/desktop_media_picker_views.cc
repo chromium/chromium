@@ -10,7 +10,6 @@
 
 #include "audio_capture_permission_checker_mac.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"

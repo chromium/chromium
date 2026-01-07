@@ -195,7 +195,7 @@ class ChromeWebContentsViewDelegateHandleOnPerformingDrop
           current_requests_count_++;
           bool scan_succeeds =
               (path.empty() && text_scan_succeeds_) ||
-              (!path.empty() && !base::Contains(failing_file_scans_, path));
+              (!path.empty() && !failing_file_scans_.contains(path));
           enterprise_connectors::ContentAnalysisResponse response =
               scan_succeeds
                   ? FakeDelegate::SuccessfulResponse(std::move(dlp_tag))

@@ -452,7 +452,7 @@ void SavedTabGroupBar::SavedTabGroupReordered() {
   for (size_t i = 0; i < groups.size(); ++i) {
     const base::Uuid& guid = groups[i]->saved_guid();
 
-    if (base::Contains(buttons_by_guid, guid)) {
+    if (buttons_by_guid.contains(guid)) {
       views::View* const button = buttons_by_guid[guid];
       ReorderChildView(button, i);
     }

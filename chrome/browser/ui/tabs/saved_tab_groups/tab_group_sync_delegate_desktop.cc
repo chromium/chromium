@@ -7,7 +7,6 @@
 #include <iterator>
 #include <map>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/uuid.h"
 #include "chrome/browser/profiles/profile.h"
@@ -365,7 +364,7 @@ TabGroupId TabGroupSyncDelegateDesktop::AddOpenedTabsToGroup(
     const SavedTabGroup& saved_group) {
   std::vector<int> tab_indices;
   for (int i = 0; tabs::TabInterface* tab : *tab_strip_model) {
-    if (base::Contains(tab_guid_mapping, tab) && !tab->GetGroup().has_value()) {
+    if (tab_guid_mapping.contains(tab) && !tab->GetGroup().has_value()) {
       tab_indices.push_back(i);
     }
     ++i;

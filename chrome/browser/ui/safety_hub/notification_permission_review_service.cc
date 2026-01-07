@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_result.h"
@@ -158,7 +157,7 @@ NotificationPermissionsReviewService::UpdateOnUIThread(
     }
 
     // Blocklisted permissions should not be in the review list.
-    if (base::Contains(ignored_patterns_set, pair)) {
+    if (ignored_patterns_set.contains(pair)) {
       continue;
     }
 

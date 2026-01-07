@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 
-#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -132,9 +131,9 @@ class ProfileColorsUtilTest : public testing::Test {
     std::set<int> available_colors = GetAvailableColorsIds(entry);
     for (size_t i = 0; i < kColorsCount; ++i) {
       if (IsSaturatedForAutoselection(GetHighlightColor(i))) {
-        EXPECT_TRUE(base::Contains(available_colors, GetColor(i).id));
+        EXPECT_TRUE(available_colors.contains(GetColor(i).id));
       } else {
-        EXPECT_FALSE(base::Contains(available_colors, GetColor(i).id));
+        EXPECT_FALSE(available_colors.contains(GetColor(i).id));
       }
     }
   }
@@ -201,9 +200,9 @@ class ProfileColorsUtilTestDarkModeParam
       SkColor highlight_color = GetHighlightColor(i);
       if (IsSaturatedForAutoselection(highlight_color) &&
           IsColorMatchingColorScheme(highlight_color)) {
-        EXPECT_TRUE(base::Contains(available_colors, GetColor(i).id));
+        EXPECT_TRUE(available_colors.contains(GetColor(i).id));
       } else {
-        EXPECT_FALSE(base::Contains(available_colors, GetColor(i).id));
+        EXPECT_FALSE(available_colors.contains(GetColor(i).id));
       }
     }
   }
@@ -236,15 +235,15 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_F(ProfileColorsUtilTest,
        GenerateNewProfileColorWithMultipleColoredProfiles) {
   std::set<int> colors_ids = GetAvailableColorsIds();
-  EXPECT_TRUE(base::Contains(colors_ids, GetColor(5).id));
-  EXPECT_TRUE(base::Contains(colors_ids, GetColor(6).id));
+  EXPECT_TRUE(colors_ids.contains(GetColor(5).id));
+  EXPECT_TRUE(colors_ids.contains(GetColor(6).id));
   AddProfile(GetColor(5).color);
   AddProfile(GetColor(6).color);
 
   std::set<int> limited_colors_ids = GetAvailableColorsIds();
   EXPECT_EQ(colors_ids.size(), limited_colors_ids.size() + 2);
-  EXPECT_FALSE(base::Contains(limited_colors_ids, GetColor(5).id));
-  EXPECT_FALSE(base::Contains(limited_colors_ids, GetColor(6).id));
+  EXPECT_FALSE(limited_colors_ids.contains(GetColor(5).id));
+  EXPECT_FALSE(limited_colors_ids.contains(GetColor(6).id));
 }
 
 // Test that specifying a profile restricts the choice to colors of similar
@@ -257,15 +256,15 @@ TEST_F(ProfileColorsUtilTest, GenerateNewProfileColorForCurrentProfile) {
                             &current_profile_hsl);
 
   std::set<int> colors_ids = GetAvailableColorsIds(entry);
-  EXPECT_FALSE(base::Contains(colors_ids, GetColor(5).id));
+  EXPECT_FALSE(colors_ids.contains(GetColor(5).id));
   EXPECT_FALSE(colors_ids.empty());
   for (size_t i = 0; i < kColorsCount; i++) {
     const SkColor highlight_color = GetHighlightColor(i);
     if (i != kCurrentProfile && IsSaturatedForAutoselection(highlight_color) &&
         IsLightForAutoselection(highlight_color, current_profile_hsl.l)) {
-      EXPECT_TRUE(base::Contains(colors_ids, GetColor(i).id));
+      EXPECT_TRUE(colors_ids.contains(GetColor(i).id));
     } else {
-      EXPECT_FALSE(base::Contains(colors_ids, GetColor(i).id));
+      EXPECT_FALSE(colors_ids.contains(GetColor(i).id));
     }
   }
 }
@@ -301,7 +300,7 @@ TEST_F(ProfileColorsUtilTest,
   int remaining_id = *colors_ids.begin();
   SkColor remaining_color;
   for (size_t i = 0; i < kColorsCount; i++) {
-    if (base::Contains(colors_ids, GetColor(i).id)) {
+    if (colors_ids.contains(GetColor(i).id)) {
       if (GetColor(i).id == remaining_id) {
         remaining_color = GetColor(i).color;
       } else {
@@ -313,17 +312,17 @@ TEST_F(ProfileColorsUtilTest,
   // One `remaining_id` is left.
   std::set<int> singleton_colors_ids = GetAvailableColorsIds(entry);
   EXPECT_EQ(singleton_colors_ids.size(), 1u);
-  EXPECT_TRUE(base::Contains(singleton_colors_ids, remaining_id));
+  EXPECT_TRUE(singleton_colors_ids.contains(remaining_id));
 
   // Add this remaining profile, all unused colors are again available.
   AddProfile(remaining_color);
   std::set<int> remaining_ids = GetAvailableColorsIds(entry);
   for (size_t i = 0; i < kColorsCount; ++i) {
     if (IsSaturatedForAutoselection(GetHighlightColor(i)) &&
-        !base::Contains(colors_ids, GetColor(i).id) && i != kCurrentProfile) {
-      EXPECT_TRUE(base::Contains(remaining_ids, GetColor(i).id));
+        !colors_ids.contains(GetColor(i).id) && i != kCurrentProfile) {
+      EXPECT_TRUE(remaining_ids.contains(GetColor(i).id));
     } else {
-      EXPECT_FALSE(base::Contains(remaining_ids, GetColor(i).id));
+      EXPECT_FALSE(remaining_ids.contains(GetColor(i).id));
     }
   }
 }

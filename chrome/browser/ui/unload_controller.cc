@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
@@ -281,7 +280,7 @@ UnloadController::GetTabsNeedingBeforeUnloadFired() const {
     // Note that we filter out tabs in `tabs_needing_unload_fired_` as they have
     // already had their BeforeUnload fired (and don't need it fired again
     // unless browser closing gets cancelled).
-    if (!base::Contains(tabs_needing_unload_fired_, contents) &&
+    if (!tabs_needing_unload_fired_.contains(contents) &&
         should_fire_beforeunload) {
       tabs_needing_beforeunload.insert(contents);
     }

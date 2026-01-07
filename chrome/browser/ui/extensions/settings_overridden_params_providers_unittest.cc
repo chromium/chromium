@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/extensions/settings_overridden_params_providers.h"
 
-#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -113,8 +112,8 @@ TEST_F(SettingsOverriddenParamsProvidersUnitTest,
   ASSERT_EQ(ntp_extension->id(), params->controlling_extension_id);
 
   // The dialog message should contain the truncated name.
-  EXPECT_TRUE(base::Contains(params->dialog_message, truncated_name));
-  EXPECT_FALSE(base::Contains(params->dialog_message, extension_name));
+  EXPECT_TRUE(params->dialog_message.contains(truncated_name));
+  EXPECT_FALSE(params->dialog_message.contains(extension_name));
 }
 
 TEST_F(SettingsOverriddenParamsProvidersUnitTest,

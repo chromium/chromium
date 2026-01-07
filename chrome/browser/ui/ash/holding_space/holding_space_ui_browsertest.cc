@@ -33,7 +33,6 @@
 #include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/view_drawn_waiter.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -1131,7 +1130,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
           .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
             ASSERT_EQ(items.size(), item_ids.size());
             for (const HoldingSpaceItem* item : items) {
-              ASSERT_TRUE(base::Contains(item_ids, item->id()));
+              ASSERT_TRUE(item_ids.contains(item->id()));
             }
             run_loop.Quit();
           });

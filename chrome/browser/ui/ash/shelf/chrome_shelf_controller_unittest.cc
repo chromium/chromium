@@ -36,7 +36,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -327,7 +326,7 @@ class FakeAppServiceAppIconLoader : public AppServiceAppIconLoader {
       const std::vector<std::string>& expected_icon_loaded_app_ids) {
     bool icon_loaded = true;
     for (const auto& app_id : expected_icon_loaded_app_ids) {
-      if (!base::Contains(icon_loaded_app_ids_, app_id)) {
+      if (!icon_loaded_app_ids_.contains(app_id)) {
         icon_loaded = false;
         break;
       }
@@ -352,7 +351,7 @@ class FakeAppServiceAppIconLoader : public AppServiceAppIconLoader {
 
     bool icon_loaded = true;
     for (const auto& id : expected_icon_loaded_app_ids_) {
-      if (!base::Contains(icon_loaded_app_ids_, id)) {
+      if (!icon_loaded_app_ids_.contains(id)) {
         icon_loaded = false;
         break;
       }
@@ -1263,7 +1262,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
         {ash::kMessagesAppId, GURL("https://messages.google.com/web/")},
         {ash::kYoutubeAppId, GURL("https://www.youtube.com/?feature=ytca")}};
 
-    DCHECK(base::Contains(web_app_id_to_start_url, web_app_id));
+    DCHECK(web_app_id_to_start_url.contains(web_app_id));
     return web_app_id_to_start_url.at(web_app_id);
   }
 

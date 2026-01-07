@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/flag_descriptions.h"
@@ -48,7 +47,7 @@ TabOrganizationService::TabOrganizationService(
 TabOrganizationService::~TabOrganizationService() = default;
 
 void TabOrganizationService::OnTriggerOccured(const Browser* browser) {
-  if (base::Contains(browser_session_map_, browser)) {
+  if (browser_session_map_.contains(browser)) {
     // If the organizations havent been fully accepted or rejected, then it does
     // not need to be reset.
     if (!GetSessionForBrowser(browser)->IsComplete()) {
@@ -65,7 +64,7 @@ void TabOrganizationService::OnTriggerOccured(const Browser* browser) {
 
 const TabOrganizationSession* TabOrganizationService::GetSessionForBrowser(
     const Browser* browser) const {
-  if (base::Contains(browser_session_map_, browser)) {
+  if (browser_session_map_.contains(browser)) {
     return browser_session_map_.at(browser).get();
   }
   return nullptr;
@@ -73,7 +72,7 @@ const TabOrganizationSession* TabOrganizationService::GetSessionForBrowser(
 
 TabOrganizationSession* TabOrganizationService::GetSessionForBrowser(
     const Browser* browser) {
-  if (base::Contains(browser_session_map_, browser)) {
+  if (browser_session_map_.contains(browser)) {
     return browser_session_map_.at(browser).get();
   }
   return nullptr;
@@ -82,7 +81,7 @@ TabOrganizationSession* TabOrganizationService::GetSessionForBrowser(
 TabOrganizationSession* TabOrganizationService::CreateSessionForBrowser(
     const Browser* browser,
     const tabs::TabInterface* base_session_tab) {
-  CHECK(!base::Contains(browser_session_map_, browser));
+  CHECK(!browser_session_map_.contains(browser));
   CHECK(browser->tab_strip_model()->SupportsTabGroups());
   std::pair<BrowserSessionMap::iterator, bool> pair =
       browser_session_map_.emplace(
@@ -101,7 +100,7 @@ TabOrganizationSession* TabOrganizationService::ResetSessionForBrowser(
     const Browser* browser,
     const tabs::TabInterface* base_session_tab) {
   browser->tab_strip_model()->RemoveObserver(this);
-  if (base::Contains(browser_session_map_, browser)) {
+  if (browser_session_map_.contains(browser)) {
     RemoveBrowserFromSessionMap(browser);
   }
 
@@ -294,7 +293,7 @@ void TabOrganizationService::OnActionUIDismissed(const Browser* browser) {
 
 void TabOrganizationService::RemoveBrowserFromSessionMap(
     const Browser* browser) {
-  CHECK(base::Contains(browser_session_map_, browser));
+  CHECK(browser_session_map_.contains(browser));
   browser->tab_strip_model()->RemoveObserver(this);
   browser_session_map_.erase(browser);
 }

@@ -16,7 +16,6 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -471,17 +470,17 @@ base::flat_map<Site, ScopeConfig> g_scope_configs = {
      {.manifest_url_param = "?manifest=manifest_scope_Standalone.json"}}};
 
 ScopeConfig GetScopeUpdateConfiguration(Site scope) {
-  CHECK(base::Contains(g_scope_configs, scope));
+  CHECK(g_scope_configs.contains(scope));
   return g_scope_configs.find(scope)->second;
 }
 
 DisplayConfig GetDisplayUpdateConfiguration(Display display) {
-  CHECK(base::Contains(g_display_configs, display));
+  CHECK(g_display_configs.contains(display));
   return g_display_configs.find(display)->second;
 }
 
 SiteConfig GetSiteConfiguration(Site site) {
-  CHECK(base::Contains(g_site_configs, site));
+  CHECK(g_site_configs.contains(site));
   return g_site_configs.find(site)->second;
 }
 
@@ -529,7 +528,7 @@ SiteConfig GetSiteConfigurationFromAppName(const std::string& app_name) {
   bool is_app_found = false;
   for (auto const& [site, check_config] : g_site_configs) {
     if (check_config.app_name == app_name ||
-        base::Contains(check_config.alternate_titles, app_name)) {
+        check_config.alternate_titles.contains(app_name)) {
       config = check_config;
       is_app_found = true;
       break;

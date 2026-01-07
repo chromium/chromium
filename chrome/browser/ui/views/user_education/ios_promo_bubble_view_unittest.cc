@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -271,8 +270,8 @@ TEST_F(IOSPromoBubbleViewTest, AcceptOpensUrl_QRCode) {
       .WillOnce([](const content::OpenURLParams& params) {
         EXPECT_EQ(params.url.host(), "www.google.com");
         EXPECT_EQ(params.url.path(), "/chrome/go-mobile/");
-        EXPECT_TRUE(base::Contains(params.url.query(), "ios-campaign"));
-        EXPECT_TRUE(base::Contains(params.url.query(), "android-campaign"));
+        EXPECT_TRUE(params.url.query().contains("ios-campaign"));
+        EXPECT_TRUE(params.url.query().contains("android-campaign"));
         EXPECT_EQ(params.disposition,
                   WindowOpenDisposition::NEW_FOREGROUND_TAB);
       });

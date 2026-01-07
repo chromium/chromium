@@ -4,7 +4,6 @@
 
 #include "chrome/browser/support_tool/ash/shill_data_collector.h"
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -117,9 +116,8 @@ void DetectOrScrubPIIInDictionary(
     // values don't contain PII anyway.
     if (HasEmptyContents(entry.second))
       continue;
-    if (scrub &&
-        !base::Contains(pii_types_to_keep,
-                        system_logs::kShillPIIMaskedMap.at(entry.first))) {
+    if (scrub && !pii_types_to_keep.contains(
+                     system_logs::kShillPIIMaskedMap.at(entry.first))) {
       entry.second = base::Value(kMaskedString);
       continue;
     }

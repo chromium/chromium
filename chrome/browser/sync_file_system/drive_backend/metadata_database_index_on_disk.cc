@@ -7,7 +7,6 @@
 #include <array>
 #include <unordered_set>
 
-#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -225,7 +224,7 @@ void RemoveUnreachableItemsFromDB(LevelDBWrapper* db,
         continue;
       }
 
-      if (base::Contains(visited_trackers, tracker->tracker_id())) {
+      if (visited_trackers.contains(tracker->tracker_id())) {
         referred_file_ids.insert(tracker->file_id());
       } else {
         PutFileTrackerDeletionToDB(tracker->tracker_id(), db);
@@ -247,7 +246,7 @@ void RemoveUnreachableItemsFromDB(LevelDBWrapper* db,
         continue;
       }
 
-      if (!base::Contains(referred_file_ids, metadata->file_id())) {
+      if (!referred_file_ids.contains(metadata->file_id())) {
         PutFileMetadataDeletionToDB(metadata->file_id(), db);
       }
     }

@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -153,7 +152,7 @@ void DefaultBrowserInfoBarManager::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   if (change.type() == TabStripModelChange::kInserted) {
     for (const auto& contents : change.GetInsert()->contents) {
-      if (!base::Contains(infobars_, contents.contents)) {
+      if (!infobars_.contains(contents.contents)) {
         CreateInfoBarForWebContents(contents.contents,
                                     tab_strip_model->profile());
       }

@@ -5,7 +5,6 @@
 #include "chrome/browser/sync_file_system/local/local_file_sync_status.h"
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/observer_list.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/common/file_system/file_system_util.h"
@@ -61,7 +60,7 @@ bool ContainsChildOrParent(const Container& paths,
 
   // Check if any ancestor of |normalized_path| is in |writing_|.
   while (true) {
-    if (base::Contains(paths, normalized_path)) {
+    if (paths.contains(normalized_path)) {
       return true;
     }
 
