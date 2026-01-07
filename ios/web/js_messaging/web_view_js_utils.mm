@@ -148,7 +148,9 @@ void NotifyCompletionHandlerNullWebView(void (^completion_handler)(id,
 namespace web {
 
 NSString* const kJSEvaluationErrorDomain = @"JSEvaluationError";
-int const kMaximumParsingRecursionDepth = 10;
+// Corresponds to the mojom recursion depth defined in
+// mojo/public/cpp/bindings/lib/validation_context.h.
+int const kMaximumParsingRecursionDepth = 200;
 
 std::unique_ptr<base::Value> ValueResultFromWKResult(id wk_result) {
   return ::ValueResultFromWKResult(wk_result, kMaximumParsingRecursionDepth);
