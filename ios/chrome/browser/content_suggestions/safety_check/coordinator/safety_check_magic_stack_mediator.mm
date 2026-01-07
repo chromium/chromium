@@ -15,7 +15,6 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
-#import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/coordinator/safety_check_magic_stack_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/model/safety_check_prefs.h"
@@ -28,44 +27,15 @@
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_consumer.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
-#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
-#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_observer_bridge.h"
-#import "ios/chrome/browser/settings/ui_bundled/notifications/notifications_settings_observer.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 
-namespace {
-
-// Returns the number of times the Safety Check module with the
-// notifications opt-in button has been shown to the user in the Magic Stack.
-//
-// If `only_include_top_module` is `true`, only impressions where the module
-// was shown at the top of the Magic Stack are counted.
-int ImpressionsCount(const base::Value::List& impressions,
-                     bool only_include_top_module) {
-  int count = 0;
-
-  for (const base::Value& impression : impressions) {
-    std::optional<int> index = impression.GetIfInt();
-
-    if (index.has_value() && (!only_include_top_module || index.value() == 0)) {
-      count++;
-    }
-  }
-
-  return count;
-}
-
-}  // namespace
-
 @interface SafetyCheckMagicStackMediator () <
     ProfileStateObserver,
-    MagicStackModuleDelegate,
-    NotificationsSettingsObserverDelegate,
     PrefObserverDelegate,
     SafetyCheckAudience,
     SafetyCheckConsumerSource,
@@ -90,10 +60,8 @@ int ImpressionsCount(const base::Value::List& impressions,
   // Used by the Safety Check (Magic Stack) module for the current Safety Check
   // state.
   SafetyCheckState* _safetyCheckState;
+  // The Safety Check (Magic Stack) consumer.
   id<SafetyCheckMagicStackConsumer> _safetyCheckConsumer;
-  // An observer that tracks whether push notification permission settings have
-  // been modified.
-  NotificationsSettingsObserver* _notificationsObserver;
 }
 
 - (instancetype)initWithSafetyCheckManager:
@@ -108,11 +76,6 @@ int ImpressionsCount(const base::Value::List& impressions,
     _userState = userState;
     _profileState = profileState;
     [_profileState addObserver:self];
-
-    _notificationsObserver =
-        [[NotificationsSettingsObserver alloc] initWithPrefService:userState
-                                                        localState:localState];
-    _notificationsObserver.delegate = self;
 
     if (!safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_userState)) {
       if (!_prefObserverBridge) {
@@ -138,8 +101,6 @@ int ImpressionsCount(const base::Value::List& impressions,
           &_userPrefChangeRegistrar);
 
       _safetyCheckState = [self initialSafetyCheckState];
-
-      _safetyCheckState.delegate = self;
 
       if (ShouldHideSafetyCheckModuleIfNoIssues()) {
         [self updateIssueCount:[_safetyCheckState numberOfIssues]];
@@ -167,13 +128,8 @@ int ImpressionsCount(const base::Value::List& impressions,
 }
 
 - (void)disconnect {
-  _notificationsObserver.delegate = nil;
-  [_notificationsObserver disconnect];
-  _notificationsObserver = nil;
-
   _safetyCheckConsumer = nil;
 
-  _safetyCheckState.delegate = nil;
   _safetyCheckState.audience = nil;
   _safetyCheckState.safetyCheckConsumerSource = nil;
 
@@ -203,9 +159,6 @@ int ImpressionsCount(const base::Value::List& impressions,
                   passwordState:PasswordSafetyCheckState::kDefault
               safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
                    runningState:RunningSafetyCheckState::kDefault];
-  _safetyCheckState.showNotificationsOptIn =
-      [self shouldShowNotificationsOptIn];
-  _safetyCheckState.delegate = self;
   _safetyCheckState.audience = self;
   _safetyCheckState.safetyCheckConsumerSource = self;
 }
@@ -292,45 +245,6 @@ int ImpressionsCount(const base::Value::List& impressions,
     if (!IsSafetyCheckAutorunByManagerEnabled()) {
       _safetyCheckManager->StartSafetyCheck();
     }
-  }
-}
-
-#pragma mark - MagicStackModuleDelegate
-
-// Stores the index at which the Safety Check module (with notifications
-// opt-in button) was displayed in the Magic Stack. This is used to track
-// impressions for the Safety Check Notifications feature.
-- (void)magicStackModule:(MagicStackModule*)magicStackModule
-     wasDisplayedAtIndex:(NSUInteger)index {
-  if (magicStackModule.type != ContentSuggestionsModuleType::kSafetyCheck ||
-      !magicStackModule.showNotificationsOptIn) {
-    return;
-  }
-
-  CHECK(_localState);
-
-  base::Value::List impressions =
-      _localState->GetList(prefs::kMagicStackSafetyCheckNotificationsShown)
-          .Clone();
-
-  impressions.Append(static_cast<int>(index));
-
-  _localState->SetList(prefs::kMagicStackSafetyCheckNotificationsShown,
-                       std::move(impressions));
-}
-
-#pragma mark - NotificationsSettingsObserverDelegate
-
-- (void)notificationsSettingsDidChangeForClient:
-    (PushNotificationClientId)clientID {
-  if (clientID == PushNotificationClientId::kSafetyCheck) {
-    // When Safety Check notification permissions change, refresh the Magic
-    // Stack module. This ensures the Safety Check container accurately reflects
-    // the user's notification settings.
-    _safetyCheckState.showNotificationsOptIn =
-        [self shouldShowNotificationsOptIn];
-
-    [_safetyCheckConsumer safetyCheckStateDidChange:_safetyCheckState];
   }
 }
 
@@ -429,7 +343,6 @@ int ImpressionsCount(const base::Value::List& impressions,
   state.runningState = CanRunSafetyCheck(state.lastRunTime)
                            ? RunningSafetyCheckState::kRunning
                            : RunningSafetyCheckState::kDefault;
-  state.showNotificationsOptIn = [self shouldShowNotificationsOptIn];
   state.audience = self;
   state.safetyCheckConsumerSource = self;
 
@@ -469,32 +382,6 @@ int ImpressionsCount(const base::Value::List& impressions,
 
   _userState->SetInteger(
       prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, issuesCount);
-}
-
-// Returns `YES` if the notifications opt-in button should be displayed.
-- (BOOL)shouldShowNotificationsOptIn {
-  BOOL isOptedIn = push_notification_settings::
-      GetMobileNotificationPermissionStatusForClient(
-          PushNotificationClientId::kSafetyCheck, GaiaId());
-
-  if (isOptedIn) {
-    return NO;
-  }
-
-  base::Value::List impressions =
-      _localState->GetList(prefs::kMagicStackSafetyCheckNotificationsShown)
-          .Clone();
-
-  SafetyCheckNotificationsImpressionTrigger trigger =
-      SafetyCheckNotificationsImpressionTriggerEnabled();
-
-  int impressionsCount = ImpressionsCount(
-      impressions,
-      trigger == SafetyCheckNotificationsImpressionTrigger::kOnlyWhenTopModule);
-
-  int impressionsLimit = SafetyCheckNotificationsImpressionLimit();
-
-  return impressionsCount < impressionsLimit;
 }
 
 @end

@@ -61,15 +61,6 @@ BASE_DECLARE_FEATURE(kOmahaServiceRefactor);
 // are presented to the user (e.g., `kVerbose`, `kSuccinct`).
 extern const char kSafetyCheckNotificationsExperimentType[];
 
-// Name of the parameter that controls when an impression is counted
-// for the Safety Check notifications opt-in button (e.g., `kOnlyWhenTopModule`,
-// `kAlways`).
-extern const char kSafetyCheckNotificationsImpressionTrigger[];
-
-// Name of the parameter that controls the maximum number of impressions
-// allowed for the Safety Check notifications opt-in button.
-extern const char kSafetyCheckNotificationsImpressionLimit[];
-
 // Name of the parameter that controls whether Passwords notifications
 // are permitted to be sent to the user for Safety Check.
 extern const char kSafetyCheckAllowPasswordsNotifications[];
@@ -90,16 +81,6 @@ enum class SafetyCheckNotificationsExperimentalArm {
   // Arm that displays only a single Safety Check notification at any given
   // time.
   kSuccinct = 1,
-};
-
-// Defines param values for the Safety Check Notifications feature,
-// controlling when an impression is counted for the notifications opt-in button
-// in the Safety Check (Magic Stack) module.
-enum class SafetyCheckNotificationsImpressionTrigger {
-  // Impression counted only when the Safety Check module is the top module.
-  kOnlyWhenTopModule = 0,
-  // Impression counted regardless of the Safety Check module's position.
-  kAlways = 1,
 };
 
 // Name of the parameter that controls the experiment type for the Lens Shop
@@ -429,16 +410,6 @@ bool IsOmahaServiceRefactorEnabled();
 // Returns the experiment type for the Safety Check Notifications feature.
 SafetyCheckNotificationsExperimentalArm
 SafetyCheckNotificationsExperimentTypeEnabled();
-
-// Returns the impression trigger for the Safety Check (Magic Stack) module's
-// notification opt-in button.
-SafetyCheckNotificationsImpressionTrigger
-SafetyCheckNotificationsImpressionTriggerEnabled();
-
-// Returns the maximum number of impressions allowed for the Safety Check
-// notifications opt-in button, as specified by the
-// `kSafetyCheckNotificationsImpressionLimit` field trial parameter.
-int SafetyCheckNotificationsImpressionLimit();
 
 // Feature flag enabling Choose from Drive.
 // TODO(crbug.com/473788390): Clean-up feature once file upload menu is ready.
