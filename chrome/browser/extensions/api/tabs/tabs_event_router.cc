@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "content/public/browser/favicon_status.h"
@@ -24,6 +25,11 @@
 namespace extensions {
 
 namespace {
+
+#if !BUILDFLAG(IS_ANDROID)
+constexpr char kAudibleKey[] = "audible";
+#endif
+constexpr char kMutedInfoKey[] = "mutedInfo";
 
 // Callback for the event dispatch system. Computes which tab properties have
 // changed. Builds an argument list with an entry for the changed properties and
@@ -88,6 +94,105 @@ bool WillDispatchTabCreatedEvent(
 
 }  // namespace
 
+////////////////////////////////////////////////////////////////////////////////
+// TabsEventRouter::TabEntry:
+
+TabsEventRouter::TabEntry::TabEntry(TabsEventRouter& router,
+                                    content::WebContents& contents)
+    : WebContentsObserver(&contents),
+      was_muted_(contents.IsAudioMuted()),
+      router_(router) {
+  auto* audible_helper = RecentlyAudibleHelper::FromWebContents(&contents);
+  was_audible_ = audible_helper->WasRecentlyAudible();
+}
+
+std::set<std::string> TabsEventRouter::TabEntry::UpdateLoadState() {
+  // The tab may go in & out of loading (for instance if iframes navigate).
+  // We only want to respond to the first change from loading to !loading after
+  // the NavigationEntryCommitted() was fired.
+  if (!complete_waiting_on_load_ || web_contents()->IsLoading()) {
+    return std::set<std::string>();
+  }
+
+  // Send 'status' of tab change. Expecting 'complete' is fired.
+  complete_waiting_on_load_ = false;
+  std::set<std::string> changed_property_names;
+  changed_property_names.insert(tabs_constants::kStatusKey);
+  return changed_property_names;
+}
+
+bool TabsEventRouter::TabEntry::SetAudible(bool new_val) {
+  if (was_audible_ == new_val) {
+    return false;
+  }
+  was_audible_ = new_val;
+  return true;
+}
+
+bool TabsEventRouter::TabEntry::SetMuted(bool new_val) {
+  if (was_muted_ == new_val) {
+    return false;
+  }
+  was_muted_ = new_val;
+  return true;
+}
+
+void TabsEventRouter::TabEntry::NavigationEntryCommitted(
+    const content::LoadCommittedDetails& load_details) {
+  // Send 'status' of tab change. Expecting 'loading' is fired.
+  complete_waiting_on_load_ = true;
+  std::set<std::string> changed_property_names;
+  changed_property_names.insert(tabs_constants::kStatusKey);
+  if (web_contents()->GetURL() != url_) {
+    url_ = web_contents()->GetURL();
+    changed_property_names.insert(tabs_constants::kUrlKey);
+  }
+
+  router_->TabUpdated(this, std::move(changed_property_names));
+}
+
+void TabsEventRouter::TabEntry::DidStopLoading() {
+#if BUILDFLAG(IS_ANDROID)
+  // Android platforms use DidStopLoading() for the status reaching "complete",
+  // whereas other platforms rely on updates from the tab strip.
+  // TODO(https://crbug.com/473593117): Could all platforms just use
+  // DidStopLoading()?
+  std::set<std::string> changed_property_names;
+  changed_property_names.insert(tabs_constants::kStatusKey);
+
+  if (web_contents()->GetURL() != url_) {
+    url_ = web_contents()->GetURL();
+    changed_property_names.insert(tabs_constants::kUrlKey);
+  }
+
+  router_->TabUpdated(this, std::move(changed_property_names));
+#endif
+}
+
+void TabsEventRouter::TabEntry::TitleWasSet(content::NavigationEntry* entry) {
+  std::set<std::string> changed_property_names;
+  changed_property_names.insert(tabs_constants::kTitleKey);
+  router_->TabUpdated(this, std::move(changed_property_names));
+}
+
+void TabsEventRouter::TabEntry::WebContentsDestroyed() {
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents());
+  if (!SessionID::IsValidValue(tab_id)) {
+    return;
+  }
+
+  // This is necessary because it's possible for tabs to be created, detached
+  // and then destroyed without ever having been re-attached and closed. This
+  // happens in the case of a devtools WebContents that is opened in window,
+  // docked, then closed.
+  // Warning: |this| will be deleted after this call.
+  router_->UnregisterForTabNotifications(*web_contents(),
+                                         /*expect_registered=*/true);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// TabsEventRouter:
+
 TabsEventRouter::TabsEventRouter(Profile* profile)
     : profile_(profile), platform_delegate_(*this, *profile) {}
 
@@ -103,23 +208,61 @@ void TabsEventRouter::RegisterForTabNotifications(
           zoom::ZoomController::FromWebContents(&web_contents)) {
     zoom_scoped_observations_.AddObservation(zoom_controller);
   }
+
+  int tab_id = ExtensionTabUtil::GetTabId(&web_contents);
+  DCHECK(tab_entries_.find(tab_id) == tab_entries_.end());
+  tab_entries_[tab_id] = std::make_unique<TabEntry>(*this, web_contents);
 }
 
 void TabsEventRouter::UnregisterForTabNotifications(
-    content::WebContents& web_contents) {
+    content::WebContents& web_contents,
+    bool expect_registered) {
   if (auto* zoom_controller =
           zoom::ZoomController::FromWebContents(&web_contents);
       zoom_controller &&
       zoom_scoped_observations_.IsObservingSource(zoom_controller)) {
     zoom_scoped_observations_.RemoveObservation(zoom_controller);
   }
-  // `favicon_driver` should always exist, but we may not be observing it, since
-  // some tests can remove tabs without having called the corresponding method
-  // to initialize them.
-  if (auto* favicon_driver =
-          favicon::ContentFaviconDriver::FromWebContents(&web_contents);
-      favicon_scoped_observations_.IsObservingSource(favicon_driver)) {
+  auto* favicon_driver =
+      favicon::ContentFaviconDriver::FromWebContents(&web_contents);
+  bool is_observing_favicon_driver =
+      favicon_scoped_observations_.IsObservingSource(favicon_driver);
+  CHECK(is_observing_favicon_driver || !expect_registered);
+  if (is_observing_favicon_driver) {
     favicon_scoped_observations_.RemoveObservation(favicon_driver);
+  }
+
+  int tab_id = ExtensionTabUtil::GetTabId(&web_contents);
+  int removed_count = tab_entries_.erase(tab_id);
+  DCHECK(removed_count > 0 || !expect_registered);
+}
+
+TabsEventRouter::TabEntry* TabsEventRouter::GetTabEntry(
+    content::WebContents& contents) {
+  const auto it = tab_entries_.find(ExtensionTabUtil::GetTabId(&contents));
+
+  return it == tab_entries_.end() ? nullptr : it->second.get();
+}
+
+void TabsEventRouter::TabUpdated(TabEntry* entry,
+                                 std::set<std::string> changed_property_names) {
+#if !BUILDFLAG(IS_ANDROID)
+  auto* audible_helper =
+      RecentlyAudibleHelper::FromWebContents(entry->web_contents());
+  bool audible = audible_helper->WasRecentlyAudible();
+  if (entry->SetAudible(audible)) {
+    changed_property_names.insert(kAudibleKey);
+  }
+#endif
+
+  bool muted = entry->web_contents()->IsAudioMuted();
+  if (entry->SetMuted(muted)) {
+    changed_property_names.insert(kMutedInfoKey);
+  }
+
+  if (!changed_property_names.empty()) {
+    DispatchTabUpdatedEvent(entry->web_contents(),
+                            std::move(changed_property_names));
   }
 }
 

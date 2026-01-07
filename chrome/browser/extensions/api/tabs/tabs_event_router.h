@@ -5,18 +5,23 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_TABS_TABS_EVENT_ROUTER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_TABS_TABS_EVENT_ROUTER_H_
 
+#include <map>
+#include <memory>
 #include <set>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/favicon/core/favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "components/zoom/zoom_observer.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/api/tabs/tabs_event_router_platform_delegate_android.h"
@@ -52,12 +57,78 @@ class TabsEventRouter : public favicon::FaviconDriverObserver,
   // class, so we allow it to reach into this class's internal state.
   friend class TabsEventRouterPlatformDelegate;
 
+  // Maintain some information about known tabs, so we can:
+  //
+  //  - distinguish between tab creation and tab insertion
+  //  - not send tab-detached after tab-removed
+  //  - reduce the "noise" of TabChangedAt() when sending events to extensions
+  //  - remember last muted and audible states to know if there was a change
+  //  - listen to WebContentsObserver notifications and forward them to the
+  //    event router.
+  class TabEntry : public content::WebContentsObserver {
+   public:
+    // Create a TabEntry associated with, and tracking state changes to,
+    // `contents`.
+    TabEntry(TabsEventRouter& router, content::WebContents& contents);
+
+    TabEntry(const TabEntry&) = delete;
+    TabEntry& operator=(const TabEntry&) = delete;
+
+    // Indicate via a list of property names if a tab is loading based on its
+    // WebContents. Whether the state has changed or not is used to determine if
+    // events need to be sent to extensions during processing of TabChangedAt()
+    // If this method indicates that a tab should "hold" a state-change to
+    // "loading", the NavigationEntryCommitted() method should eventually send a
+    // similar message to undo it.
+    std::set<std::string> UpdateLoadState();
+
+    // Update the audible and muted states and return whether they were changed
+    bool SetAudible(bool new_val);
+    bool SetMuted(bool new_val);
+
+    // content::WebContentsObserver:
+    void NavigationEntryCommitted(
+        const content::LoadCommittedDetails& load_details) override;
+    void DidStopLoading() override;
+    void TitleWasSet(content::NavigationEntry* entry) override;
+    void WebContentsDestroyed() override;
+
+   private:
+    // Whether we are waiting to fire the 'complete' status change. This will
+    // occur the first time the WebContents stops loading after the
+    // NavigationEntryCommitted() method was called. The tab may go back into
+    // and out of the loading state subsequently, but we will ignore those
+    // changes.
+    bool complete_waiting_on_load_ = false;
+
+    // Previous audible and muted states
+    bool was_audible_ = false;
+    bool was_muted_;
+
+    GURL url_;
+
+    // Event router that the WebContents's noficiations are forwarded to.
+    raw_ref<TabsEventRouter> router_;
+  };
+
   // Registers to receive the various notifications we are interested in for a
   // tab.
   void RegisterForTabNotifications(content::WebContents& contents);
 
   // Removes notifications and tab entry added in RegisterForTabNotifications.
-  void UnregisterForTabNotifications(content::WebContents& contents);
+  // `expect_registered` indicates whether we should enforce that the tab was
+  // being observed.
+  void UnregisterForTabNotifications(content::WebContents& contents,
+                                     bool expect_registered);
+
+  // Gets the TabEntry for the given `contents`. Returns TabEntry* if found,
+  // nullptr if not.
+  TabEntry* GetTabEntry(content::WebContents& contents);
+
+  // Internal processing of tab updated events. Intended to be called when
+  // there's any changed property.
+  void TabUpdated(TabEntry* entry,
+                  std::set<std::string> changed_property_names);
 
   // Packages `changed_property_names` as a tab updated event for the tab
   // `contents` and dispatches the event to the extension.
@@ -94,6 +165,10 @@ class TabsEventRouter : public favicon::FaviconDriverObserver,
   void FaviconUrlUpdated(content::WebContents* contents);
 
   // Observations for different state changes in tabs.
+
+  using TabEntryMap = std::map<int, std::unique_ptr<TabEntry>>;
+  TabEntryMap tab_entries_;
+
   base::ScopedMultiSourceObservation<favicon::FaviconDriver,
                                      favicon::FaviconDriverObserver>
       favicon_scoped_observations_{this};

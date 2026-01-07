@@ -22,46 +22,6 @@
 
 namespace extensions {
 
-TabsEventRouterPlatformDelegate::TabEntry::TabEntry(
-    TabsEventRouterPlatformDelegate* owner,
-    content::WebContents* contents)
-    : content::WebContentsObserver(contents),
-      owner_(owner),
-      url_(contents->GetURL()) {}
-
-TabsEventRouterPlatformDelegate::TabEntry::~TabEntry() = default;
-
-void TabsEventRouterPlatformDelegate::TabEntry::DidStopLoading() {
-  std::set<std::string> changed_property_names;
-  changed_property_names.insert(tabs_constants::kStatusKey);
-
-  if (web_contents()->GetURL() != url_) {
-    url_ = web_contents()->GetURL();
-    changed_property_names.insert(tabs_constants::kUrlKey);
-  }
-
-  owner_->TabUpdated(this, std::move(changed_property_names));
-}
-
-void TabsEventRouterPlatformDelegate::TabEntry::TitleWasSet(
-    content::NavigationEntry* entry) {
-  std::set<std::string> changed_property_names;
-  changed_property_names.insert(tabs_constants::kTitleKey);
-  owner_->TabUpdated(this, std::move(changed_property_names));
-}
-
-void TabsEventRouterPlatformDelegate::TabEntry::WebContentsDestroyed() {
-  int tab_id = ExtensionTabUtil::GetTabId(web_contents());
-  if (!SessionID::IsValidValue(tab_id)) {
-    return;
-  }
-  owner_->router_->UnregisterForTabNotifications(*web_contents());
-  int removed_count = owner_->tab_entries_.erase(tab_id);
-  DCHECK_GT(removed_count, 0);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
 TabsEventRouterPlatformDelegate::TabsEventRouterPlatformDelegate(
     TabsEventRouter& router,
     Profile& profile)
@@ -99,16 +59,13 @@ void TabsEventRouterPlatformDelegate::DidAddTab(TabAndroid* tab,
   }
   // In the field, sometimes tabs are added with duplicate IDs. See
   // http://crbug.com/434055707
-  if (tab_entries_.contains(tab_id)) {
+  if (router_->GetTabEntry(*tab->web_contents())) {
     LOG(ERROR) << "Duplicate tab ID " << tab_id << " for "
                << tab->GetURL().spec();
     base::debug::DumpWithoutCrashing();
     return;
   }
   router_->RegisterForTabNotifications(*tab->web_contents());
-  tab_entries_.emplace(tab_id,
-                       std::make_unique<TabEntry>(this, tab->web_contents()));
-
   router_->DispatchTabCreatedEvent(tab->web_contents(), tab->IsActivated());
 }
 
@@ -122,16 +79,9 @@ void TabsEventRouterPlatformDelegate::TabRemoved(TabAndroid* tab) {
   }
   // NOTE: Some tests call `TabRemoved()` without calling `DidAddTab()`, so
   // there may not be anything to erase.
-  router_->UnregisterForTabNotifications(*tab->web_contents());
-  tab_entries_.erase(tab_id);
-}
-
-void TabsEventRouterPlatformDelegate::TabUpdated(
-    TabEntry* entry,
-    std::set<std::string> changed_property_names) {
-  CHECK(!changed_property_names.empty());
-  router_->DispatchTabUpdatedEvent(entry->web_contents(),
-                                   std::move(changed_property_names));
+  bool expect_registered = false;
+  router_->UnregisterForTabNotifications(*tab->web_contents(),
+                                         expect_registered);
 }
 
 }  // namespace extensions

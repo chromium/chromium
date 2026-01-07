@@ -60,90 +60,14 @@ constexpr char kNewWindowIdKey[] = "newWindowId";
 constexpr char kOldPositionKey[] = "oldPosition";
 constexpr char kOldWindowIdKey[] = "oldWindowId";
 constexpr char kPinnedKey[] = "pinned";
-constexpr char kAudibleKey[] = "audible";
 constexpr char kFrozenKey[] = "frozen";
 constexpr char kDiscardedKey[] = "discarded";
 constexpr char kAutoDiscardableKey[] = "autoDiscardable";
-constexpr char kMutedInfoKey[] = "mutedInfo";
 constexpr char kTabIdKey[] = "tabId";
 constexpr char kTabIdsKey[] = "tabIds";
 constexpr char kToIndexKey[] = "toIndex";
 
 }  // namespace
-
-TabsEventRouterPlatformDelegate::TabEntry::TabEntry(
-    TabsEventRouterPlatformDelegate* owner,
-    content::WebContents* contents)
-    : WebContentsObserver(contents),
-      complete_waiting_on_load_(false),
-      was_audible_(false),
-      was_muted_(contents->IsAudioMuted()),
-      owner_(owner) {
-  auto* audible_helper = RecentlyAudibleHelper::FromWebContents(contents);
-  was_audible_ = audible_helper->WasRecentlyAudible();
-}
-
-std::set<std::string>
-TabsEventRouterPlatformDelegate::TabEntry::UpdateLoadState() {
-  // The tab may go in & out of loading (for instance if iframes navigate).
-  // We only want to respond to the first change from loading to !loading after
-  // the NavigationEntryCommitted() was fired.
-  if (!complete_waiting_on_load_ || web_contents()->IsLoading()) {
-    return std::set<std::string>();
-  }
-
-  // Send 'status' of tab change. Expecting 'complete' is fired.
-  complete_waiting_on_load_ = false;
-  std::set<std::string> changed_property_names;
-  changed_property_names.insert(tabs_constants::kStatusKey);
-  return changed_property_names;
-}
-
-bool TabsEventRouterPlatformDelegate::TabEntry::SetAudible(bool new_val) {
-  if (was_audible_ == new_val) {
-    return false;
-  }
-  was_audible_ = new_val;
-  return true;
-}
-
-bool TabsEventRouterPlatformDelegate::TabEntry::SetMuted(bool new_val) {
-  if (was_muted_ == new_val) {
-    return false;
-  }
-  was_muted_ = new_val;
-  return true;
-}
-
-void TabsEventRouterPlatformDelegate::TabEntry::NavigationEntryCommitted(
-    const content::LoadCommittedDetails& load_details) {
-  // Send 'status' of tab change. Expecting 'loading' is fired.
-  complete_waiting_on_load_ = true;
-  std::set<std::string> changed_property_names;
-  changed_property_names.insert(tabs_constants::kStatusKey);
-  if (web_contents()->GetURL() != url_) {
-    url_ = web_contents()->GetURL();
-    changed_property_names.insert(tabs_constants::kUrlKey);
-  }
-
-  owner_->TabUpdated(this, std::move(changed_property_names));
-}
-
-void TabsEventRouterPlatformDelegate::TabEntry::TitleWasSet(
-    content::NavigationEntry* entry) {
-  std::set<std::string> changed_property_names;
-  changed_property_names.insert(tabs_constants::kTitleKey);
-  owner_->TabUpdated(this, std::move(changed_property_names));
-}
-
-void TabsEventRouterPlatformDelegate::TabEntry::WebContentsDestroyed() {
-  // This is necessary because it's possible for tabs to be created, detached
-  // and then destroyed without ever having been re-attached and closed. This
-  // happens in the case of a devtools WebContents that is opened in window,
-  // docked, then closed.
-  // Warning: |this| will be deleted after this call.
-  owner_->UnregisterForTabNotifications(web_contents());
-}
 
 TabsEventRouterPlatformDelegate::TabsEventRouterPlatformDelegate(
     TabsEventRouter& router,
@@ -241,11 +165,11 @@ void TabsEventRouterPlatformDelegate::OnTabChangedAt(
     tabs::TabInterface* tab,
     int index,
     TabChangeType change_type) {
-  TabEntry* entry = GetTabEntry(tab->GetContents());
+  TabsEventRouter::TabEntry* entry = router_->GetTabEntry(*tab->GetContents());
   // TabClosingAt() may have already removed the entry for |contents| even
   // though the tab has not yet been detached.
   if (entry) {
-    TabUpdated(entry, entry->UpdateLoadState());
+    router_->TabUpdated(entry, entry->UpdateLoadState());
   }
 }
 
@@ -369,11 +293,11 @@ void TabsEventRouterPlatformDelegate::DispatchTabInsertedAt(
     WebContents* contents,
     int index,
     bool active) {
-  if (!GetTabEntry(contents)) {
+  if (!router_->GetTabEntry(*contents)) {
     // We've never seen this tab, send create event as long as we're not in the
     // constructor.
     if (browser_tab_strip_tracker_.is_processing_initial_browsers()) {
-      RegisterForTabNotifications(contents);
+      router_->RegisterForTabNotifications(*contents);
     } else {
       TabCreatedAt(contents, index, active);
     }
@@ -417,14 +341,14 @@ void TabsEventRouterPlatformDelegate::DispatchTabClosingAt(
                          api::tabs::OnRemoved::kEventName, std::move(args),
                          EventRouter::UserGestureState::kUnknown);
 
-  UnregisterForTabNotifications(contents);
+  router_->UnregisterForTabNotifications(*contents, /*expect_registered=*/true);
 }
 
 void TabsEventRouterPlatformDelegate::DispatchTabDetachedAt(
     WebContents* contents,
     int index,
     bool was_active) {
-  if (!GetTabEntry(contents)) {
+  if (!router_->GetTabEntry(*contents)) {
     // The tab was removed. Don't send detach event.
     return;
   }
@@ -559,10 +483,11 @@ void TabsEventRouterPlatformDelegate::DispatchTabReplacedAt(
       events::TABS_ON_REPLACED, api::tabs::OnReplaced::kEventName,
       std::move(args), EventRouter::UserGestureState::kUnknown);
 
-  UnregisterForTabNotifications(old_contents);
+  router_->UnregisterForTabNotifications(*old_contents,
+                                         /*expect_registered=*/true);
 
-  if (!GetTabEntry(new_contents)) {
-    RegisterForTabNotifications(new_contents);
+  if (!router_->GetTabEntry(*new_contents)) {
+    router_->RegisterForTabNotifications(*new_contents);
   }
 }
 
@@ -570,54 +495,7 @@ void TabsEventRouterPlatformDelegate::TabCreatedAt(WebContents* contents,
                                                    int index,
                                                    bool active) {
   router_->DispatchTabCreatedEvent(contents, active);
-
-  RegisterForTabNotifications(contents);
-}
-
-void TabsEventRouterPlatformDelegate::TabUpdated(
-    TabEntry* entry,
-    std::set<std::string> changed_property_names) {
-  auto* audible_helper =
-      RecentlyAudibleHelper::FromWebContents(entry->web_contents());
-  bool audible = audible_helper->WasRecentlyAudible();
-  if (entry->SetAudible(audible)) {
-    changed_property_names.insert(kAudibleKey);
-  }
-
-  bool muted = entry->web_contents()->IsAudioMuted();
-  if (entry->SetMuted(muted)) {
-    changed_property_names.insert(kMutedInfoKey);
-  }
-
-  if (!changed_property_names.empty()) {
-    router_->DispatchTabUpdatedEvent(entry->web_contents(),
-                                     std::move(changed_property_names));
-  }
-}
-
-void TabsEventRouterPlatformDelegate::RegisterForTabNotifications(
-    WebContents* contents) {
   router_->RegisterForTabNotifications(*contents);
-
-  int tab_id = ExtensionTabUtil::GetTabId(contents);
-  DCHECK(tab_entries_.find(tab_id) == tab_entries_.end());
-  tab_entries_[tab_id] = std::make_unique<TabEntry>(this, contents);
-}
-
-void TabsEventRouterPlatformDelegate::UnregisterForTabNotifications(
-    WebContents* contents) {
-  router_->UnregisterForTabNotifications(*contents);
-
-  int tab_id = ExtensionTabUtil::GetTabId(contents);
-  int removed_count = tab_entries_.erase(tab_id);
-  DCHECK_GT(removed_count, 0);
-}
-
-TabsEventRouterPlatformDelegate::TabEntry*
-TabsEventRouterPlatformDelegate::GetTabEntry(WebContents* contents) {
-  const auto it = tab_entries_.find(ExtensionTabUtil::GetTabId(contents));
-
-  return it == tab_entries_.end() ? nullptr : it->second.get();
 }
 
 }  // namespace extensions

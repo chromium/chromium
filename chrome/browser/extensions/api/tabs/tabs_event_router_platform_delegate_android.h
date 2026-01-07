@@ -23,10 +23,6 @@ class Profile;
 class TabAndroid;
 class TabModel;
 
-namespace content {
-class WebContents;
-}
-
 namespace extensions {
 class TabsEventRouter;
 
@@ -52,36 +48,10 @@ class TabsEventRouterPlatformDelegate : public TabModelListObserver,
   void TabRemoved(TabAndroid* tab) override;
 
  private:
-  class TabEntry : public content::WebContentsObserver {
-   public:
-    TabEntry(TabsEventRouterPlatformDelegate* owner,
-             content::WebContents* contents);
-    ~TabEntry() override;
-
-    // content::WebContentsObserver:
-    void DidStopLoading() override;
-    void TitleWasSet(content::NavigationEntry* entry) override;
-    void WebContentsDestroyed() override;
-
-    const raw_ptr<TabsEventRouterPlatformDelegate> owner_;
-    GURL url_;
-  };
-
-  // Internal processing of tab updated events. Intended to be called when
-  // there's any changed property.
-  void TabUpdated(TabEntry* entry,
-                  std::set<std::string> changed_property_names);
-
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
                      base::Value::List args,
                      EventRouter::UserGestureState user_gesture);
-
-  void RegisterForTabNotifications(content::WebContents* contents);
-
-  // Gets the TabEntry for the given `contents`. Returns TabEntry* if found,
-  // nullptr if not.
-  TabEntry* GetTabEntry(content::WebContents* contents);
 
   // The platform-agnostic TabsEventRouter.
   // TODO(https://crbug.com/473593117): This should go away; it's just here
@@ -92,10 +62,6 @@ class TabsEventRouterPlatformDelegate : public TabModelListObserver,
 
   base::ScopedMultiSourceObservation<TabModel, TabModelObserver>
       tab_model_observations_{this};
-
-  // The map is keyed by tab id.
-  using TabEntryMap = std::map<int, std::unique_ptr<TabEntry>>;
-  TabEntryMap tab_entries_;
 };
 
 }  // namespace extensions
