@@ -19875,8 +19875,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_NEXT_VERSION" desc="Label indicating the version of a software installation that the Chrome Updater tried to update to.">
         Next version: <ph name="VERSION">$1<ex>1.2.3.4</ex></ph>
       </message>
-      <message name="IDS_UPDATER_NO_UPDATE" desc="Summary of an update event where the server indicated that no update was available.">
-        No update was available
+      <message name="IDS_UPDATER_NO_UPDATE" desc="Summary of an update event where the server indicated that no update was available. The text should indicate that the service was successfully able to check for an update. Not being offered an update is a normal occurance, the text should not suggest that any sort of error occured.">
+        Update check completed successfully. No update was available
       </message>
       <message name="IDS_UPDATER_OMAHA_REQUEST" desc="Label for a collapsible section displaying or chip indicating the presence of Omaha protocol request data in JSON format.">
         Omaha Request
