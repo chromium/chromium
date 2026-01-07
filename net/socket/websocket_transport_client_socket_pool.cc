@@ -170,8 +170,8 @@ void WebSocketTransportClientSocketPool::CancelRequest(
                   handle->group_generation());
   if (DeleteJob(handle)) {
     UpdateStateAfterRelease();
-    CHECK(!base::Contains(pending_callbacks_,
-                          reinterpret_cast<ClientSocketHandleID>(handle)));
+    CHECK(!pending_callbacks_.contains(
+        reinterpret_cast<ClientSocketHandleID>(handle)));
   } else {
     pending_callbacks_.erase(reinterpret_cast<ClientSocketHandleID>(handle));
   }

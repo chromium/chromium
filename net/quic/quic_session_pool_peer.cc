@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
@@ -109,7 +108,7 @@ QuicChromiumClientSession* QuicSessionPoolPeer::GetActiveSession(
 
 bool QuicSessionPoolPeer::IsLiveSession(QuicSessionPool* pool,
                                         QuicChromiumClientSession* session) {
-  return base::Contains(pool->all_sessions_, session);
+  return pool->all_sessions_.contains(session);
 }
 
 void QuicSessionPoolPeer::SetTaskRunner(

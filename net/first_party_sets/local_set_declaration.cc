@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/logging.h"
 #include "net/base/schemeful_site.h"
@@ -30,14 +29,14 @@ bool CheckPreconditions(
   if (!std::ranges::all_of(aliases, [&](const auto& p) {
         const auto& [alias_site, canonical_site] = p;
         // The canonical entry must exist.
-        if (!base::Contains(entries, canonical_site)) {
+        if (!entries.contains(canonical_site)) {
           emit(
               "Invalid local Related Website Set: alias names a site that has "
               "no entry in the set.");
           return false;
         }
         // The alias entry must not exist explicitly.
-        if (base::Contains(entries, alias_site)) {
+        if (entries.contains(alias_site)) {
           emit(
               "Invalid local Related Website Set: alias site should not be "
               "listed in `entries`.");

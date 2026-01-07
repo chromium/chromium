@@ -10,7 +10,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "net/dns/public/dns_protocol.h"
@@ -78,7 +77,7 @@ MDnsCache::UpdateType MDnsCache::UpdateDnsRecord(
   Key cache_key = Key::CreateFor(record.get());
 
   // Ignore "goodbye" packets for records not in cache.
-  if (record->ttl() == 0 && !base::Contains(mdns_cache_, cache_key)) {
+  if (record->ttl() == 0 && !mdns_cache_.contains(cache_key)) {
     return NoChange;
   }
 

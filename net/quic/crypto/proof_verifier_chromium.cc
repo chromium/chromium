@@ -8,7 +8,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -383,11 +382,10 @@ int ProofVerifierChromium::Job::DoVerifyCert(int result) {
 
 bool ProofVerifierChromium::Job::ShouldAllowUnknownRootForHost(
     const std::string& hostname) {
-  if (base::Contains(proof_verifier_->hostnames_to_allow_unknown_roots_, "")) {
+  if (proof_verifier_->hostnames_to_allow_unknown_roots_.contains("")) {
     return true;
   }
-  return base::Contains(proof_verifier_->hostnames_to_allow_unknown_roots_,
-                        hostname);
+  return proof_verifier_->hostnames_to_allow_unknown_roots_.contains(hostname);
 }
 
 int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {

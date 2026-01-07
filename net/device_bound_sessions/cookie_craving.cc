@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -123,7 +122,7 @@ base::expected<CookieCraving, SessionError> CookieCraving::Create(
           {"domain", "path", "secure", "httponly", "samesite"});
   if (!parsed_cookie.ForEachAttribute(
           [](std::string_view attribute, std::string_view value) {
-            return base::Contains(kPermittedAttributes, attribute);
+            return kPermittedAttributes.contains(attribute);
           })) {
     return base::unexpected(SessionError{
         SessionError::kInvalidCredentialsCookieUnpermittedAttribute});

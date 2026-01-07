@@ -16,7 +16,6 @@
 #include "base/base64.h"
 #include "base/build_time.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -374,7 +373,7 @@ void TransportSecurityState::UpdatePinList(
     pinset_names_map[pinset.name()] = &pinset;
   }
   for (const auto& pin : host_pins) {
-    if (!base::Contains(pinset_names_map, pin.pinset_name_)) {
+    if (!pinset_names_map.contains(pin.pinset_name_)) {
       // This should never happen, but if the component is bad and missing an
       // entry, we will ignore that particular pin.
       continue;

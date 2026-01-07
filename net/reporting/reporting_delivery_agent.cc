@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -369,14 +368,14 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
       if (!report_group_key.origin.has_value()) {
         DCHECK_EQ(ReportingTargetType::kEnterprise,
                   report_group_key.target_type);
-      } else if (!base::Contains(allowed_report_origins,
-                                 report_group_key.origin.value())) {
+      } else if (!allowed_report_origins.contains(
+                     report_group_key.origin.value())) {
         continue;
       }
 
       // Skip this group if there is already a pending upload for it.
       // We don't allow multiple concurrent uploads for the same group.
-      if (base::Contains(pending_groups_, report_group_key))
+      if (pending_groups_.contains(report_group_key))
         continue;
 
       // Find an endpoint to deliver these reports to.

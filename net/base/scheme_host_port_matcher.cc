@@ -5,7 +5,6 @@
 #include "net/base/scheme_host_port_matcher.h"
 
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -92,7 +91,7 @@ SchemeHostPortMatcherResult SchemeHostPortMatcher::Evaluate(
 std::string SchemeHostPortMatcher::ToString() const {
   std::string result;
   for (const auto& rule : rules_) {
-    DCHECK(!base::Contains(rule->ToString(), kParseRuleListDelimiterList));
+    DCHECK(!rule->ToString().contains(kParseRuleListDelimiterList));
     result += rule->ToString();
     result.push_back(kPrintRuleListDelimiter);
   }

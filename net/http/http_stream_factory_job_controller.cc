@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -1532,7 +1531,7 @@ bool HttpStreamFactory::JobController::IsQuicAllowedForHost(
   }
 
   std::string lowered_host = base::ToLowerASCII(host);
-  return base::Contains(host_allowlist, lowered_host);
+  return host_allowlist.contains(lowered_host);
 }
 
 void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
