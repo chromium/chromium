@@ -134,14 +134,10 @@ source_set("eg2_tests") {
   deps = [
     ":constants",
     "//base",
-    "//base/test:test_support",
-    "//components/commerce/core:feature_list",
-    "//components/variations",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/push_notification/test:test_support",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }
