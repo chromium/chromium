@@ -745,7 +745,7 @@ void WebGLRenderingContextWebGPUBase::clearColor(GLfloat red,
 }
 
 void WebGLRenderingContextWebGPUBase::clearDepth(GLfloat depth) {
-  driver_gl_.fn.glClearDepthFn(depth);
+  driver_gl_.fn.glClearDepthfFn(depth);
 }
 
 void WebGLRenderingContextWebGPUBase::clearStencil(GLint stencil) {
