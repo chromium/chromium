@@ -139,6 +139,11 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
   // and not the local-network permission.
   ASSERT_EQ("prompt", content::EvalJs(web_contents(),
                                       QueryPermissionScript("local-network")));
+
+  // Querying old permission should give the non-ask value.
+  ASSERT_EQ("denied",
+            content::EvalJs(web_contents(),
+                            QueryPermissionScript("local-network-access")));
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
@@ -165,6 +170,11 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
   // but the local-network permission should be denied.
   ASSERT_EQ("denied", content::EvalJs(web_contents(),
                                       QueryPermissionScript("local-network")));
+
+  // Querying old permission should give the non-ask value.
+  ASSERT_EQ("denied",
+            content::EvalJs(web_contents(),
+                            QueryPermissionScript("local-network-access")));
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
@@ -191,6 +201,11 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
   // and not the local-network permission.
   ASSERT_EQ("prompt", content::EvalJs(web_contents(),
                                       QueryPermissionScript("local-network")));
+
+  // Querying old permission should give the non-ask value.
+  ASSERT_EQ("granted",
+            content::EvalJs(web_contents(),
+                            QueryPermissionScript("local-network-access")));
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
@@ -216,6 +231,97 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
   // but the local-network permission should be.
   ASSERT_EQ("granted", content::EvalJs(web_contents(),
                                        QueryPermissionScript("local-network")));
+
+  // Querying old permission should give the non-ask value.
+  ASSERT_EQ("granted",
+            content::EvalJs(web_contents(),
+                            QueryPermissionScript("local-network-access")));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
+                       FetchAcceptPermissionLocalDenyPermissionLoopback) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_server().GetURL("a.com", kTreatAsPublicAddressPath)));
+
+  // Enable auto-accept of LNA permission request.
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  // Local LNA fetch should succeed.
+  ASSERT_EQ(true, content::EvalJs(
+                      web_contents(),
+                      content::JsReplace(
+                          "fetch($1).then(response => response.ok)",
+                          https_local_server().GetURL("b.com", kLnaPath))));
+
+  // Enable auto-deny of LNA permission request.
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
+
+  // Loopback LNA fetch should fail.
+  EXPECT_THAT(content::EvalJs(
+                  web_contents(),
+                  content::JsReplace("fetch($1).then(response => response.ok)",
+                                     https_server().GetURL("b.com", kLnaPath))),
+              content::EvalJsResult::IsError());
+
+  // local-network permission should be granted.
+  ASSERT_EQ("granted", content::EvalJs(web_contents(),
+                                       QueryPermissionScript("local-network")));
+
+  // loopback-network permission should be denied.
+  ASSERT_EQ("denied", content::EvalJs(web_contents(), QueryPermissionScript(
+                                                          "loopback-network")));
+
+  // Querying old permission should give the denied value.
+  ASSERT_EQ("denied",
+            content::EvalJs(web_contents(),
+                            QueryPermissionScript("local-network-access")));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
+                       FetchDenyPermissionLocalAcceptPermissionLoopback) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_server().GetURL("a.com", kTreatAsPublicAddressPath)));
+
+  // Enable auto-deny of LNA permission request.
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
+
+  // Local LNA fetch should fail.
+  EXPECT_THAT(
+      content::EvalJs(
+          web_contents(),
+          content::JsReplace("fetch($1).then(response => response.ok)",
+                             https_local_server().GetURL("b.com", kLnaPath))),
+      content::EvalJsResult::IsError());
+
+  // Enable auto-accept of LNA permission request.
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  // Loopback LNA fetch should succeed.
+  ASSERT_EQ(true,
+            content::EvalJs(
+                web_contents(),
+                content::JsReplace("fetch($1).then(response => response.ok)",
+                                   https_server().GetURL("b.com", kLnaPath))));
+
+  // local-network permission should be denied.
+  ASSERT_EQ("denied", content::EvalJs(web_contents(),
+                                      QueryPermissionScript("local-network")));
+
+  // loopback-network permission should be granted.
+  ASSERT_EQ("granted",
+            content::EvalJs(web_contents(),
+                            QueryPermissionScript("loopback-network")));
+
+  // Querying old permission should give the denied value.
+  ASSERT_EQ("denied",
+            content::EvalJs(web_contents(),
+                            QueryPermissionScript("local-network-access")));
 }
 
 // Open a public page that iframes a public page, then navigate it to a loopback
