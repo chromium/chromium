@@ -182,13 +182,18 @@ void NativeWidgetMac::OnWindowKeyStatusChanged(
   if (!widget || !widget->OnNativeWidgetActivationChanged(is_key)) {
     return;
   }
+  // The contentView is the BridgedContentView hosting the views::RootView. The
+  // focus manager will already know if a native subview has focus.
+  if (!is_content_first_responder) {
+    return;
+  }
 
   if (is_key) {
     widget->OnNativeFocus();
     widget->GetFocusManager()->RestoreFocusedView();
   } else {
     widget->OnNativeBlur();
-    widget->GetFocusManager()->StoreFocusedView(false);
+    widget->GetFocusManager()->StoreFocusedView(true);
     parent_key_lock_.reset();
   }
 }
