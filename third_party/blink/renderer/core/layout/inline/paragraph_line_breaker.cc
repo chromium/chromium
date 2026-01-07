@@ -172,11 +172,11 @@ std::optional<LayoutUnit> ParagraphLineBreaker::AttemptParagraphBalancing(
     const LineBreakResults::Status status = normal_lines.BreakLines(
         available_width, lines_until_clamp, line_clamp_ellipsis_width);
     if (status == LineBreakResults::Status::kFinished) {
-      // The paragraph ended before the ellipsis line. Since the number of lines
-      // in this line breaking will be used as the `max_lines` value when
-      // bisecting, it means the ellipsis would be placed on the wrong line.
-      // We clear the ellipsis width here to avoid that.
-      DCHECK_LT(normal_lines.Size(),
+      // The paragraph ended at or before the ellipsis line. Since the number
+      // of lines in this line breaking will be used as the `max_lines` value
+      // when bisecting, it means the ellipsis would be placed on the wrong
+      // line. We clear the ellipsis width here to avoid that.
+      DCHECK_LE(normal_lines.Size(),
                 static_cast<unsigned int>(lines_until_clamp));
       line_clamp_ellipsis_width = LayoutUnit();
     } else if (status == LineBreakResults::Status::kMaxLinesExceeded) {
