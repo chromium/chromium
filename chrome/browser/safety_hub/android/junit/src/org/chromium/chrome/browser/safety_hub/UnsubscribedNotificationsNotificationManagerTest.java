@@ -60,10 +60,9 @@ public class UnsubscribedNotificationsNotificationManagerTest {
         assertEquals(
                 "Chrome stopped a site you haven’t visited recently from sending you notifications",
                 notification.extras.getString(Notification.EXTRA_TEXT));
+        assertEquals(1, notification.actions.length);
         assertEquals("Review", notification.actions[0].title);
         assertNotNull(notification.actions[0].actionIntent);
-        assertEquals("Got it", notification.actions[1].title);
-        assertNotNull(notification.actions[1].actionIntent);
     }
 
     @Test

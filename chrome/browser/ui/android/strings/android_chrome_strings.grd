@@ -1702,9 +1702,6 @@ Your Google account may have other forms of browsing history like searches and a
         =1 {Chrome stopped this site from sending notifications because of spam or deceptive content}
         other {Chrome stopped these sites from sending notifications because of spam or deceptive content}}
       </message>
-      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_ACK" desc="Button to acknowledge the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
-        Got it
-      </message>
       <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_REVIEW" desc="Button to review revoked notifications on the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
         Review
       </message>

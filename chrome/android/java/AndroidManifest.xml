@@ -1168,9 +1168,6 @@ by a child template that "extends" this file.
         <receiver android:name="org.chromium.chrome.browser.offlinepages.AutoFetchNotifier$InProgressCancelReceiver"
             android:exported="false"/>
 
-        <receiver android:name="org.chromium.chrome.browser.safety_hub.UnsubscribedNotificationsNotificationManager$NotificationReceiver"
-            android:exported="false"/>
-
         <service android:name="org.chromium.chrome.browser.media.MediaCaptureNotificationService"
             {% if is_desktop_android == "true" and enable_screen_capture == "true" %}
             android:foregroundServiceType="camera|microphone|mediaProjection|mediaPlayback"
