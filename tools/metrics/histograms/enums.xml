@@ -9631,6 +9631,7 @@ from previous Chrome versions.
   <int value="-1648216169" label="NewOmniboxAnswerTypes:disabled"/>
   <int value="-1647433421" label="use-passthrough-command-decoder"/>
   <int value="-1647250046" label="LauncherPlayStoreSearch:enabled"/>
+  <int value="-1646708436" label="UpdaterUI:disabled"/>
   <int value="-1646653199" label="WallpaperGooglePhotosIntegration:enabled"/>
   <int value="-1646338362" label="LensOverlayTranslateLanguages:enabled"/>
   <int value="-1646196271" label="WebRtcStatsReportIdl:disabled"/>
@@ -11780,6 +11781,7 @@ from previous Chrome versions.
   <int value="-912585719" label="AppManagementIntentSettings:disabled"/>
   <int value="-912456561" label="MidiManagerWinrt:enabled"/>
   <int value="-911535733" label="ImageDescriptionsAlternateRouting:disabled"/>
+  <int value="-910750262" label="UpdaterUI:enabled"/>
   <int value="-910452816" label="ChromeOSParentalControlsSettings:disabled"/>
   <int value="-910238027"
       label="AutofillEnableBuyNowPayLaterForKlarna:enabled"/>

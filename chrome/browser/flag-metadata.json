@@ -10108,6 +10108,11 @@
     "expiry_milestone": 148
   },
   {
+    "name": "updater-ui",
+    "owners": [ "//chrome/updater/OWNERS" ],
+    "expiry_milestone": 153
+  },
+  {
     "name": "upload-office-to-cloud",
     "owners": [ "jboulic@chromium.org", "alexbn@chromium.org", "simmonsjosh@google.com" ],
     "expiry_milestone": 133

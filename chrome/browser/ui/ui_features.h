@@ -400,6 +400,10 @@ BASE_DECLARE_FEATURE(kWhatsNewDesktopRefresh);
 
 BASE_DECLARE_FEATURE(kTabGroupsFocusing);
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+BASE_DECLARE_FEATURE(kUpdaterUI);
+#endif
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_UI_UI_FEATURES_H_

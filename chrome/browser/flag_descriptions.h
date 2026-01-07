@@ -5775,6 +5775,10 @@ inline constexpr char kUpdateMenuTypeUpdateAvailable[] = "Update Available";
 inline constexpr char kUpdateMenuTypeUnsupportedOSVersion[] =
     "Unsupported OS Version";
 
+inline constexpr char kUpdaterUIName[] = "Chrome Updater UI";
+inline constexpr char kUpdaterUIDescription[] =
+    "When enabled, the chrome://updater page is available.";
+
 inline constexpr char kUseAngleDescriptionAndroid[] =
     "Choose the graphics backend for ANGLE. The Vulkan backend is still "
     "experimental, and may contain bugs that "
