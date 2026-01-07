@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_MAGIC_BOOST_MAGIC_BOOST_METRICS_H_
 #define CHROME_BROWSER_UI_ASH_MAGIC_BOOST_MAGIC_BOOST_METRICS_H_
 
-#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
 
 namespace chromeos::magic_boost {
 

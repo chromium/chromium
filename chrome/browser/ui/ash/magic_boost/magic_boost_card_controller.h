@@ -11,7 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_card_controller.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"

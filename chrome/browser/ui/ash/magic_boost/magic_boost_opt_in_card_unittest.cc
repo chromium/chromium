@@ -8,7 +8,7 @@
 #include <string_view>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
 #include "chrome/browser/ash/magic_boost/mock_magic_boost_state.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_card_controller.h"

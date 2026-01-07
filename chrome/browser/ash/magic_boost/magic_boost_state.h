@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_MAGIC_BOOST_MAGIC_BOOST_STATE_ASH_H_
-#define CHROME_BROWSER_ASH_MAGIC_BOOST_MAGIC_BOOST_STATE_ASH_H_
+#ifndef CHROME_BROWSER_ASH_MAGIC_BOOST_MAGIC_BOOST_STATE_H_
+#define CHROME_BROWSER_ASH_MAGIC_BOOST_MAGIC_BOOST_STATE_H_
 
 #include <memory>
 
@@ -113,4 +113,4 @@ class MagicBoostState : public chromeos::MagicBoostState,
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_MAGIC_BOOST_MAGIC_BOOST_STATE_ASH_H_
+#endif  // CHROME_BROWSER_ASH_MAGIC_BOOST_MAGIC_BOOST_STATE_H_

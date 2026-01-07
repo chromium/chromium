@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/input_method/editor_transition_enums.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "ui/display/screen.h"
 

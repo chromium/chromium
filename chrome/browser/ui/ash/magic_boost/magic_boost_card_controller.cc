@@ -10,7 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_metrics.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_opt_in_card.h"

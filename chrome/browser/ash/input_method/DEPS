@@ -8,7 +8,7 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/lobster/lobster_event_sink.h",
   "+chrome/browser/ash/lobster/lobster_service_provider.h",
-  "+chrome/browser/ash/magic_boost/magic_boost_controller_ash.h",
+  "+chrome/browser/ash/magic_boost/magic_boost_controller.h",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part_ash.h",

@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/magic_boost/mock_magic_boost_state.h"
 
 #include "base/functional/bind.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_state.h"
 
 namespace ash {
 

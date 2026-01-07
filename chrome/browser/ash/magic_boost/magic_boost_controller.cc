@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
 
 #include "ash/lobster/lobster_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_metrics.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_state.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 

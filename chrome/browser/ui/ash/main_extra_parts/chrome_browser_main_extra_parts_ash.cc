@@ -43,7 +43,7 @@
 #include "chrome/browser/ash/growth/campaigns_manager_session.h"
 #include "chrome/browser/ash/input_device_settings/peripherals_app_delegate_impl.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_state.h"
 #include "chrome/browser/ash/mahi/mahi_manager_impl.h"
 #include "chrome/browser/ash/mahi/media_app/mahi_media_app_content_manager_impl.h"
 #include "chrome/browser/ash/mahi/media_app/mahi_media_app_events_proxy_impl.h"

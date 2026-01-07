@@ -8,7 +8,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
 
 namespace ash {
 

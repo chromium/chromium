@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_MAGIC_BOOST_MAGIC_BOOST_CONTROLLER_ASH_H_
-#define CHROME_BROWSER_ASH_MAGIC_BOOST_MAGIC_BOOST_CONTROLLER_ASH_H_
+#ifndef CHROME_BROWSER_ASH_MAGIC_BOOST_MAGIC_BOOST_CONTROLLER_H_
+#define CHROME_BROWSER_ASH_MAGIC_BOOST_MAGIC_BOOST_CONTROLLER_H_
 
 #include "ash/system/magic_boost/magic_boost_constants.h"
 #include "base/memory/weak_ptr.h"
@@ -66,4 +66,4 @@ class MagicBoostControllerImpl : public MagicBoostController {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_MAGIC_BOOST_MAGIC_BOOST_CONTROLLER_ASH_H_
+#endif  // CHROME_BROWSER_ASH_MAGIC_BOOST_MAGIC_BOOST_CONTROLLER_H_

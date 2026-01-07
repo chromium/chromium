@@ -22,7 +22,7 @@
 #include "chrome/browser/ash/lobster/lobster_image_provider_from_snapper.h"
 #include "chrome/browser/ash/lobster/lobster_system_state_provider.h"
 #include "chrome/browser/ash/lobster/lobster_system_state_provider_impl.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"

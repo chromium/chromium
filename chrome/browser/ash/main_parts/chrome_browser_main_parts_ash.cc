@@ -119,7 +119,7 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
 #include "chrome/browser/ash/mahi/web_contents/mahi_web_contents_manager_impl.h"
 #include "chrome/browser/ash/net/apn_migrator.h"
 #include "chrome/browser/ash/net/bluetooth_pref_state_observer.h"

@@ -10,7 +10,7 @@
 #include "ash/system/mahi/test/mock_mahi_media_app_events_proxy.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_state.h"
 #include "chrome/browser/ash/magic_boost/mock_editor_panel_manager.h"
 #include "chrome/browser/ash/magic_boost/mock_magic_boost_state.h"
 #include "chrome/browser/global_features.h"

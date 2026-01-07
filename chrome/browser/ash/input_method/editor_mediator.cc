@@ -22,7 +22,7 @@
 #include "chrome/browser/ash/input_method/editor_text_query_from_memory.h"
 #include "chrome/browser/ash/input_method/editor_text_query_provider.h"
 #include "chrome/browser/ash/input_method/editor_transition_enums.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"

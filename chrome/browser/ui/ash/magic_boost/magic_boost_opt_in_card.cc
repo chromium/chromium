@@ -8,7 +8,7 @@
 
 #include "base/check_deref.h"
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/utils.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_constants.h"
