@@ -281,7 +281,9 @@ public class LaunchIntentDispatcher {
     /** Creates an Intent that can be used to launch a {@link CustomTabActivity}. */
     public static Intent createCustomTabActivityIntent(Context context, Intent intent) {
         // Use the copy constructor to carry over the myriad of extras.
-        Uri uri = Uri.parse(IntentHandler.getUrlFromIntent(intent));
+        String uriString = IntentHandler.getUrlFromIntent(intent);
+        assumeNonNull(uriString);
+        Uri uri = Uri.parse(uriString);
 
         Intent newIntent = new Intent(intent);
         newIntent.setAction(Intent.ACTION_VIEW);
