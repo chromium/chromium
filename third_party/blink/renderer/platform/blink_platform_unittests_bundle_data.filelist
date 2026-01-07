@@ -275,6 +275,7 @@
 ../../web_tests/images/resources/avif/gracehopper_422_12b_grid2x4.avif
 ../../web_tests/images/resources/avif/gray1024x704.avif
 ../../web_tests/images/resources/avif/green-no-alpha-ispe.avif
+../../web_tests/images/resources/avif/hdr-base-with-yuv400-gainmap.avif
 ../../web_tests/images/resources/avif/kodim03.avif
 ../../web_tests/images/resources/avif/peach.avif
 ../../web_tests/images/resources/avif/peach_13000000.avif

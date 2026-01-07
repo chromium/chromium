@@ -1120,6 +1120,29 @@ TEST(CrabbyStaticAVIFTests, GetIsoGainmapInfoAndDataHdrToSdr) {
   EXPECT_TRUE(gainmap_frame);
 }
 
+TEST(CrabbyStaticAVIFTests, MonochromeGainmap) {
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
+      "/images/resources/avif/hdr-base-with-yuv400-gainmap.avif");
+  std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
+  decoder->SetData(data, true);
+  EXPECT_FALSE(decoder->Failed());
+  EXPECT_EQ(decoder->Size(), gfx::Size(400, 200));
+  SkGainmapInfo gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  const bool has_gainmap =
+      decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data);
+  ASSERT_TRUE(has_gainmap);
+
+  // Check that the whole gainmap image is decoded.
+  std::unique_ptr<ImageDecoder> gainmap_decoder = CreateGainMapAVIFDecoder();
+  gainmap_decoder->SetData(gainmap_data, true);
+  EXPECT_FALSE(decoder->Failed());
+  EXPECT_EQ(gainmap_decoder->Size(), gfx::Size(400, 200));
+  ImageFrame* gainmap_frame = gainmap_decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(gainmap_frame);
+  EXPECT_EQ(gainmap_frame->GetStatus(), ImageFrame::kFrameComplete);
+}
+
 TEST(CrabbyStaticAVIFTests, GetIsoGainmapColorSpaceSameICC) {
   // The image has use_base_color_space set to false (i.e. use the alternate
   // image's color space), and the base and alternate image ICC profiles are the
