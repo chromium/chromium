@@ -15,6 +15,3 @@ NSString* const kOmniboxShareButtonIdentifier =
 
 NSString* const kOmniboxVoiceSearchButtonIdentifier =
     @"kOmniboxVoiceSearchButtonIdentifier";
-
-NSString* const kOmniboxTextHiddenLabelIdentifier =
-    @"kOmniboxTextHiddenLabelidentifier";
