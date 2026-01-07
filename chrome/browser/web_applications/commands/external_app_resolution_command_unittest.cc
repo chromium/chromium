@@ -9,7 +9,6 @@
 #include <string>
 #include <tuple>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
@@ -197,14 +196,14 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
   }
 
   std::vector<SquareSizePx> GetIconSizesForApp(const webapps::AppId& app_id) {
-    DCHECK(base::Contains(app_to_icons_data_, app_id));
+    DCHECK(app_to_icons_data_.contains(app_id));
     return base::ToVector(
         app_to_icons_data_[app_id],
         [](const auto& icon_data) { return icon_data.first; });
   }
 
   std::vector<SkColor> GetIconColorsForApp(const webapps::AppId& app_id) {
-    DCHECK(base::Contains(app_to_icons_data_, app_id));
+    DCHECK(app_to_icons_data_.contains(app_id));
     return base::ToVector(
         app_to_icons_data_[app_id],
         [](const auto& icon_data) { return icon_data.second.getColor(0, 0); });

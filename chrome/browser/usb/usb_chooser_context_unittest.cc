@@ -102,8 +102,8 @@ class UsbChooserContextTest : public testing::Test {
     EXPECT_TRUE(devices_future.Wait());
 
     // Add observers
-    EXPECT_FALSE(base::Contains(mock_permission_observers_, profile));
-    EXPECT_FALSE(base::Contains(mock_device_observers_, profile));
+    EXPECT_FALSE(mock_permission_observers_.contains(profile));
+    EXPECT_FALSE(mock_device_observers_.contains(profile));
     mock_permission_observers_.emplace(
         profile,
         std::make_unique<NiceMock<permissions::MockPermissionObserver>>());

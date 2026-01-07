@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/strings/utf_string_conversions.h"
@@ -81,9 +80,9 @@ class SupportToolUiUtilsTest : public ::testing::Test {
       std::optional<int> data_collector_enum =
           data_collector_item.FindInt(support_tool_ui::kDataCollectorProtoEnum);
       ASSERT_TRUE(data_collector_enum);
-      if (base::Contains(included_data_collectors,
-                         static_cast<support_tool::DataCollectorType>(
-                             data_collector_enum.value()))) {
+      if (included_data_collectors.contains(
+              static_cast<support_tool::DataCollectorType>(
+                  data_collector_enum.value()))) {
         data_collector_item.Set(support_tool_ui::kDataCollectorIncluded, true);
       }
     }

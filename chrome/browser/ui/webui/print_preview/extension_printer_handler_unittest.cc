@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
@@ -617,8 +616,8 @@ TEST_F(ExtensionPrinterHandlerTest, GetUsbPrinters) {
           .Set("extensionName", "Provider 2")
           .Set("extensionId", extension_2->id())
           .Set("provisional", true);
-  EXPECT_TRUE(base::Contains(printers, extension_1_entry));
-  EXPECT_TRUE(base::Contains(printers, extension_2_entry));
+  EXPECT_TRUE(printers.contains(extension_1_entry));
+  EXPECT_TRUE(printers.contains(extension_2_entry));
 
   fake_api->TriggerNextGetPrintersCallback(base::Value::List(), /*done=*/true);
 

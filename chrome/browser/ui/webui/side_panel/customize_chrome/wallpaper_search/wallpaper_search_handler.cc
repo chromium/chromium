@@ -13,7 +13,6 @@
 
 #include "base/barrier_callback.h"
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -167,7 +166,7 @@ WallpaperSearchHandler::~WallpaperSearchHandler() {
 
   bool is_result = false;
   if (background_id) {
-    if (base::Contains(wallpaper_search_results_, *background_id)) {
+    if (wallpaper_search_results_.contains(*background_id)) {
       base::UmaHistogramEnumeration(
           "NewTabPage.WallpaperSearch.SessionSetTheme",
           NtpWallpaperSearchThemeType::kResult);
@@ -420,7 +419,7 @@ void WallpaperSearchHandler::SetBackgroundToWallpaperSearchResult(
     const base::Token& result_id,
     double time,
     side_panel::customize_chrome::mojom::ResultDescriptorsPtr descriptors) {
-  CHECK(base::Contains(wallpaper_search_results_, result_id));
+  CHECK(wallpaper_search_results_.contains(result_id));
   auto& [image_quality, render_time, bitmap] =
       wallpaper_search_results_[result_id];
   if (image_quality) {
@@ -1068,7 +1067,7 @@ void WallpaperSearchHandler::SetResultRenderTime(
     const std::vector<base::Token>& result_ids,
     double time) {
   for (const auto& id : result_ids) {
-    CHECK(base::Contains(wallpaper_search_results_, id));
+    CHECK(wallpaper_search_results_.contains(id));
     auto& tuple = wallpaper_search_results_[id];
     std::get<1>(tuple) =
         std::make_optional(base::Time::FromMillisecondsSinceUnixEpoch(time));

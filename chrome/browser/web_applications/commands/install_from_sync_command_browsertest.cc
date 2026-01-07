@@ -84,7 +84,7 @@ class InstallFromSyncCommandTest : public base::test::WithFeatureOverride,
     web_app_provider->icon_manager().ReadIconAndResize(
         app_id, IconPurpose::ANY, size, test_future.GetCallback());
     SizeToBitmap bitmaps = test_future.Take();
-    CHECK(base::Contains(bitmaps, size));
+    CHECK(bitmaps.contains(size));
     return bitmaps[size];
   }
 

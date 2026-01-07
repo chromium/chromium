@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/whats_new/whats_new_storage_service_impl.h"
 
-#include "base/containers/contains.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_version.h"
@@ -59,7 +58,7 @@ void WhatsNewStorageServiceImpl::SetModuleEnabled(
     std::string_view module_name) {
   // Ensure active feature is in local state.
   const base::Value::List& enabled_modules = ReadModuleData();
-  if (!base::Contains(enabled_modules, module_name)) {
+  if (!enabled_modules.contains(module_name)) {
     GetEnabledOrder()->Append(module_name);
   }
 }

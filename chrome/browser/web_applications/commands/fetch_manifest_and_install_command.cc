@@ -219,7 +219,7 @@ void FetchManifestAndInstallCommand::GetScreenshot(
         callback) {
   // If the screenshot for a specific index has been downloaded, run the
   // callback instantly.
-  if (base::Contains(screenshots_downloaded_, index)) {
+  if (screenshots_downloaded_.contains(index)) {
     auto screenshot_info = screenshots_downloaded_.at(index);
     std::move(callback).Run(
         std::get<SkBitmap>(screenshot_info),

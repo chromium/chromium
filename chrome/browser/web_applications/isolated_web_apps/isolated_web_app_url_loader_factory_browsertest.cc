@@ -78,8 +78,7 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest
         [](const content::WebContentsConsoleObserver::Message& message) {
           return message.log_level ==
                      blink::mojom::ConsoleMessageLevel::kError &&
-                 base::Contains(
-                     message.message,
+                 message.message.contains(
                      u"Failed to read response from Signed Web Bundle");
         }));
 

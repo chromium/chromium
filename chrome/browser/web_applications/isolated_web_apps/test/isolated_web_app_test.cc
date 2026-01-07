@@ -108,7 +108,7 @@ class IsolatedWebAppTest::IwaComponentWrapper {
   base::FilePath WriteIwaComponentData(const base::Version& version,
                                        const IwaKeyDistribution& component_data,
                                        bool is_preloaded) {
-    CHECK(!base::Contains(component_dirs_, version))
+    CHECK(!component_dirs_.contains(version))
         << " There's already an installed component with version " << version;
     std::unique_ptr<base::ScopedTempDir> dir =
         CreateIwaComponentDir(version, component_data, is_preloaded);

@@ -351,9 +351,9 @@ void AddDeviceReportingInfo(base::Value::List* report_sources,
       ::reporting::kReportWebsiteTelemetryAllowlist);
   const auto& website_activity_allowlist = profile->GetPrefs()->GetList(
       ::reporting::kReportWebsiteActivityAllowlist);
-  if (base::Contains(website_activity_allowlist, wildcard_pattern_string) ||
+  if (website_activity_allowlist.contains(wildcard_pattern_string) ||
       (!website_telemetry_types.empty() &&
-       base::Contains(website_telemetry_allowlist, wildcard_pattern_string))) {
+       website_telemetry_allowlist.contains(wildcard_pattern_string))) {
     // One or more website metrics reporting policies allowlists all website
     // URLs.
     AddDeviceReportingElement(report_sources,

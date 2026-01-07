@@ -5,7 +5,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/bundle_versions_storage.h"
 
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_value_list.h"
 #include "base/json/json_writer.h"
@@ -125,9 +124,9 @@ GURL BundleVersionsStorage::AddBundle(
 void BundleVersionsStorage::RemoveBundle(
     const web_package::SignedWebBundleId& web_bundle_id,
     const IwaVersion& version) {
-  CHECK(base::Contains(bundle_versions_per_id_, web_bundle_id));
+  CHECK(bundle_versions_per_id_.contains(web_bundle_id));
   auto& bundle_versions = bundle_versions_per_id_[web_bundle_id];
-  CHECK(base::Contains(bundle_versions, version));
+  CHECK(bundle_versions.contains(version));
   bundle_versions.erase(version);
   if (bundle_versions.empty()) {
     bundle_versions_per_id_.erase(web_bundle_id);

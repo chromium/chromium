@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/to_value_list.h"
 #include "base/containers/to_vector.h"
@@ -379,8 +378,7 @@ void IsolatedWebAppUpdateDiscoveryTask::CheckIntegrityBundleForRotatedKey(
   // potentially big, bundle if it is not signed by the appropriate rotated key.
   if (initial_bytes &&
       initial_bytes->rfind("📦") != initial_bytes->find("📦") &&
-      !base::Contains(initial_bytes.value(),
-                      base::as_string_view(rotated_key))) {
+      !initial_bytes.value().contains(base::as_string_view(rotated_key))) {
     FailWith(Error::kUpdateManifestNoApplicableVersion);
     return;
   }

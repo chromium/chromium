@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui_presence_handler.h"
 
-#include "base/containers/contains.h"
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/ash/nearby/presence/nearby_presence_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -264,7 +263,7 @@ void NearbyInternalsPresenceHandler::HandleConnectToPresenceDevice(
       << __func__
       << ": Connection attempt for device with endpoint id: " << endpoint_id;
 
-  if (!base::Contains(endpoint_id_to_presence_device_map_, endpoint_id)) {
+  if (!endpoint_id_to_presence_device_map_.contains(endpoint_id)) {
     CD_LOG(WARNING, Feature::NEARBY_INFRA)
         << __func__ << ": Received endpoint_id for device no longer in map.";
     return;

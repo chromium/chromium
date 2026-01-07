@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -736,7 +735,7 @@ class UninstallWebAppCommandScheduler : public WebAppCommandScheduler {
       UninstallCallback callback,
       const base::Location& location) override {
     tried_to_uninstall_ = true;
-    EXPECT_TRUE(base::Contains(expected_apps_to_remove_, app_id));
+    EXPECT_TRUE(expected_apps_to_remove_.contains(app_id));
     EXPECT_EQ(management_type, expected_management_type_to_remove_.value_or(
                                    WebAppManagement::Type::kIwaPolicy));
     EXPECT_EQ(uninstall_source,

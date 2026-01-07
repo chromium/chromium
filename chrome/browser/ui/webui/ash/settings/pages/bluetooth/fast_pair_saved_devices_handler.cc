@@ -8,7 +8,6 @@
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
@@ -228,8 +227,7 @@ void FastPairSavedDevicesHandler::DecodingUrlsFinished() {
     nearby::fastpair::StoredDiscoveryItem item;
     if (item.ParseFromString(device.discovery_item_bytes()) &&
         item.has_icon_png() &&
-        base::Contains(image_byte_string_to_encoded_url_map_,
-                       item.icon_png())) {
+        image_byte_string_to_encoded_url_map_.contains(item.icon_png())) {
       image_url = image_byte_string_to_encoded_url_map_[item.icon_png()];
     }
 

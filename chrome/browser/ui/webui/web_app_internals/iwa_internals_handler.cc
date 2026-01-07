@@ -130,7 +130,7 @@ class IwaInternalsHandler::IwaManifestInstallUpdateHandler
       std::optional<IwaVersion> pinned_version,
       bool allow_downgrades,
       Handler::UpdateManifestInstalledIsolatedWebAppCallback callback) {
-    if (base::Contains(update_requests_, app_id)) {
+    if (update_requests_.contains(app_id)) {
       std::move(callback).Run(
           "Update check skipped: please wait for the pending update request to "
           "resolve first.");
@@ -684,8 +684,7 @@ void IwaInternalsHandler::SetAllowDowngradesForIsolatedWebApp(
   }
 
   // Removes `app_id` for which downgrades were turned off.
-  if (base::Contains(app_ids_allowing_downgrades_, app_id) &&
-      !allow_downgrades) {
+  if (app_ids_allowing_downgrades_.contains(app_id) && !allow_downgrades) {
     app_ids_allowing_downgrades_.erase(app_id);
     return;
   }

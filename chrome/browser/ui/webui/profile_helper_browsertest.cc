@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/profile_helper.h"
 
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"

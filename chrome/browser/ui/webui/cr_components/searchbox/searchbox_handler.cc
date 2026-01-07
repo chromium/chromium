@@ -6,7 +6,6 @@
 
 #include "base/base64.h"
 #include "base/base64url.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -263,7 +262,7 @@ bool MatchHasSideTypeAndRenderType(
     const omnibox::GroupConfigMap& suggestion_groups_map) {
   omnibox::GroupId group_id =
       match.suggestion_group_id.value_or(omnibox::GROUP_INVALID);
-  return base::Contains(suggestion_groups_map, group_id) &&
+  return suggestion_groups_map.contains(group_id) &&
          suggestion_groups_map.at(group_id).side_type() == side_type &&
          suggestion_groups_map.at(group_id).render_type() == render_type;
 }

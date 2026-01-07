@@ -13,7 +13,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -555,7 +554,7 @@ bool PrintPreviewHandler::ShouldReceiveRendererMessage(int request_id) {
     return false;
   }
 
-  if (!base::Contains(preview_callbacks_, request_id)) {
+  if (!preview_callbacks_.contains(request_id)) {
     BadMessageReceived();
     return false;
   }
@@ -589,7 +588,7 @@ void PrintPreviewHandler::HandleGetPrinters(const base::Value::List& args) {
 
   // Immediately resolve the callback without fetching printers if the printer
   // type is on the deny list.
-  if (base::Contains(printer_type_deny_list_, printer_type)) {
+  if (printer_type_deny_list_.contains(printer_type)) {
     ResolveJavascriptCallback(base::Value(callback_id), base::Value());
     return;
   }
@@ -628,7 +627,7 @@ void PrintPreviewHandler::HandleGetPrinterCapabilities(
   mojom::PrinterType printer_type = static_cast<mojom::PrinterType>(*type);
 
   // Reject the callback if the printer type is on the deny list.
-  if (base::Contains(printer_type_deny_list_, printer_type)) {
+  if (printer_type_deny_list_.contains(printer_type)) {
     RejectJavascriptCallback(base::Value(callback_id), base::Value());
     return;
   }
@@ -652,7 +651,7 @@ void PrintPreviewHandler::HandleGetPreview(const base::Value::List& args) {
   int request_id = settings.FindInt(kPreviewRequestID).value();
   CHECK_GT(request_id, -1);
 
-  CHECK(!base::Contains(preview_callbacks_, request_id));
+  CHECK(!preview_callbacks_.contains(request_id));
   preview_callbacks_[request_id] = callback_id;
   print_preview_ui()->OnPrintPreviewRequest(request_id);
   // Add an additional key in order to identify |print_preview_ui| later on
@@ -971,9 +970,8 @@ void PrintPreviewHandler::SendInitialSettings(
     initial_settings.Set(kPolicies, std::move(policies));
   }
 
-  initial_settings.Set(
-      kPdfPrinterDisabled,
-      base::Contains(printer_type_deny_list_, mojom::PrinterType::kPdf));
+  initial_settings.Set(kPdfPrinterDisabled, printer_type_deny_list_.contains(
+                                                mojom::PrinterType::kPdf));
 
   const bool destinations_managed =
       !printer_type_deny_list_.empty() &&
@@ -1122,7 +1120,7 @@ void PrintPreviewHandler::SendPagePreviewReady(int page_index,
   // gets called, the print preview may have failed. Since the failure message
   // may have arrived first, check for this case and bail out instead of
   // thinking this may be a bad IPC message.
-  if (base::Contains(preview_failures_, preview_request_id)) {
+  if (preview_failures_.contains(preview_request_id)) {
     return;
   }
 

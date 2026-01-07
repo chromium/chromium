@@ -89,7 +89,7 @@ base::Value PerformanceHandler::GetCurrentOpenSites() {
 
   std::unordered_set<std::string> added_hosts;
   for (auto& [last_active_time, host] : last_active_time_host_pairs) {
-    if (!base::Contains(added_hosts, host)) {
+    if (!added_hosts.contains(host)) {
       added_hosts.insert(host);
       hosts.Append(host);
     }

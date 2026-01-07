@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_command.h"
 
-#include "base/containers/contains.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
