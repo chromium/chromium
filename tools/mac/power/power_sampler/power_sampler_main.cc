@@ -113,8 +113,8 @@ bool MaybeAddSamplerToController(
 
 bool ConsumeSamplerName(const std::string& sampler_name,
                         base::flat_set<std::string>& sampler_names) {
-  if (sampler_names.contains(sampler_name)) {
-    sampler_names.erase(sampler_name);
+  if (auto it = sampler_names.find(sampler_name); it != sampler_names.end()) {
+    sampler_names.erase(it);
     return true;
   }
   return false;
