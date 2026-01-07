@@ -68,14 +68,14 @@ export class ActionChipsElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
-      themeHasBackgroundImage: {type: Boolean, reflect: true},
+      showBackground: {type: Boolean, reflect: true},
     };
   }
 
   private handler: ActionChipsHandlerInterface;
   private callbackRouter: PageCallbackRouter;
   protected accessor actionChips_: ActionChip[] = [];
-  accessor themeHasBackgroundImage: boolean = false;
+  accessor showBackground: boolean = false;
   protected accessor showSimplifiedUI_: boolean =
       loadTimeData.getBoolean('ntpNextShowSimplificationUIEnabled');
   private onActionChipChangedListenerId_: number|null = null;
@@ -149,7 +149,7 @@ export class ActionChipsElement extends CrLitElement {
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    if (changedProperties.has('themeHasBackgroundImage')) {
+    if (changedProperties.has('showBackground')) {
       this.updateBackgroundColor_();
     }
 
@@ -239,7 +239,7 @@ export class ActionChipsElement extends CrLitElement {
       return;
     }
 
-    const simplifiedChipBgColor = this.themeHasBackgroundImage ?
+    const simplifiedChipBgColor = this.showBackground ?
         'var(--color-new-tab-page-action-chip-background)' :
         'transparent';
 

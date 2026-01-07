@@ -70,7 +70,7 @@
   width: 100%;
 }
 
-:host([show-simplified-ui_][theme-has-background-image])
+:host([show-simplified-ui_][show-background])
 .action-chips-container {
   overflow: hidden;
 }

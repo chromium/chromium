@@ -1381,8 +1381,9 @@ export class AppElement extends AppElementBase {
     return !!this.theme_ && this.theme_.isDark;
   }
 
-  protected themeHasBackgroundImage_(): boolean {
-    return !!this.theme_ && !!this.theme_.backgroundImage;
+  protected showActionChipsBackground_(): boolean {
+    return !!this.theme_ &&
+        (!!this.theme_.backgroundImage || !this.theme_.isGm3);
   }
 
   protected showThemeAttribution_(): boolean {

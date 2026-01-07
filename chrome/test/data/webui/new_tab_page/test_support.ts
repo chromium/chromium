@@ -69,6 +69,7 @@ export function createBackgroundImage(url: string): BackgroundImage {
 export function createTheme({
   isDark = false,
   isBaseline = true,
+  isGm3 = true,
   backgroundColor = {
     value: 0xffff0000,
   },
@@ -89,6 +90,7 @@ export function createTheme({
     logoColor: null,
     isBaseline: isBaseline,
     isDark,
+    isGm3,
     mostVisited: mostVisited,
     textColor: {value: 0xff0000ff},
     isCustomBackground: true,

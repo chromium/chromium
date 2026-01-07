@@ -49,6 +49,8 @@ struct Theme {
   skia.mojom.SkColor background_color;
   // True if user color mode is baseline.
   bool is_baseline;
+  // True if theme is GM3 (uses user color pref).
+  bool is_gm3;
   // True if the background is custom.
   bool is_custom_background;
   // True if daily refresh is enabled.

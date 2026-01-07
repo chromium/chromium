@@ -176,6 +176,11 @@ new_tab_page::mojom::ThemePtr MakeTheme(
           : std::nullopt;
   theme->background_color = color_provider.GetColor(kColorNewTabPageBackground);
   theme->is_baseline = theme_service->GetIsBaseline();
+  // Theme is GM3 if there is a GM3 color set or the theme is baseline and no
+  // CWS theme is set.
+  theme->is_gm3 =
+      (theme_service->GetUserColor().has_value() || theme->is_baseline) &&
+      !theme_service->UsingExtensionTheme();
   const bool theme_has_custom_image =
       theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND);
   SkColor text_color;
