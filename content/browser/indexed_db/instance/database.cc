@@ -18,7 +18,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -974,7 +973,7 @@ Status Database::ClearOperation(
 }
 
 bool Database::IsObjectStoreIdInMetadata(int64_t object_store_id) const {
-  return base::Contains(metadata().object_stores, object_store_id);
+  return metadata().object_stores.contains(object_store_id);
 }
 
 bool Database::IsObjectStoreIdAndMaybeIndexIdInMetadata(
@@ -986,7 +985,7 @@ bool Database::IsObjectStoreIdAndMaybeIndexIdInMetadata(
   const IndexedDBObjectStoreMetadata& object_store_metadata =
       GetObjectStoreMetadata(object_store_id);
   return index_id == IndexedDBIndexMetadata::kInvalidId ||
-         base::Contains(object_store_metadata.indexes, index_id);
+         object_store_metadata.indexes.contains(index_id);
 }
 
 storage::mojom::IdbDatabaseMetadataPtr Database::GetIdbInternalsMetadata()

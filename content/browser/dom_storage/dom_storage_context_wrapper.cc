@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -414,14 +413,14 @@ void DOMStorageContextWrapper::AddNamespace(
     const std::string& namespace_id,
     SessionStorageNamespaceImpl* session_namespace) {
   base::AutoLock lock(alive_namespaces_lock_);
-  DCHECK(!base::Contains(alive_namespaces_, namespace_id));
+  DCHECK(!alive_namespaces_.contains(namespace_id));
   alive_namespaces_[namespace_id] = session_namespace;
 }
 
 void DOMStorageContextWrapper::RemoveNamespace(
     const std::string& namespace_id) {
   base::AutoLock lock(alive_namespaces_lock_);
-  DCHECK(base::Contains(alive_namespaces_, namespace_id));
+  DCHECK(alive_namespaces_.contains(namespace_id));
   alive_namespaces_.erase(namespace_id);
 }
 

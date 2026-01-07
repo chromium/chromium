@@ -18,7 +18,6 @@
 #include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
@@ -935,8 +934,8 @@ void IndexedDBContextImpl::PurgeOrigins() {
     // Delete the storage if its origin matches one of the origins to purge, or
     // if it is third-party and the top-level site is same-site with one of
     // those origins.
-    bool delete_bucket = base::Contains(origins_to_purge_on_shutdown_,
-                                        bucket_locator.storage_key.origin());
+    bool delete_bucket = origins_to_purge_on_shutdown_.contains(
+        bucket_locator.storage_key.origin());
 
     if (!delete_bucket && bucket_locator.storage_key.IsThirdPartyContext()) {
       delete_bucket = std::ranges::any_of(

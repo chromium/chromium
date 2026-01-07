@@ -233,7 +233,7 @@ void CdmStorageManager::DidOpenFile(const blink::StorageKey& storage_key,
 
   // Check whether this CDM file is in-use.
   CdmFileId id(file_name, cdm_type, storage_key);
-  if (base::Contains(cdm_files_, id)) {
+  if (cdm_files_.contains(id)) {
     std::move(callback).Run(Status::kInUse, mojo::NullAssociatedRemote());
     return;
   }

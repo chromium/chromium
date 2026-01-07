@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
@@ -78,7 +77,7 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
   void RecursiveAssertUniqueIds(const ui::AXNode* node,
                                 absl::flat_hash_set<int>* ids) const {
     ASSERT_TRUE(ids);
-    ASSERT_FALSE(base::Contains(*ids, node->id()));
+    ASSERT_FALSE(ids->contains(node->id()));
     ids->insert(node->id());
     for (const ui::AXNode* child : node->children()) {
       RecursiveAssertUniqueIds(child, ids);

@@ -7,7 +7,6 @@
 #include <map>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -290,7 +289,7 @@ TetheringHandler::TetheringImpl::~TetheringImpl() = default;
 
 void TetheringHandler::TetheringImpl::Bind(
     uint16_t port, std::unique_ptr<BindCallback> callback) {
-  if (base::Contains(bound_sockets_, port)) {
+  if (bound_sockets_.contains(port)) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&BindCallback::sendFailure, std::move(callback),

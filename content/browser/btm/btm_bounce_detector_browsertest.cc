@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -3128,9 +3127,9 @@ class BtmPrivacySandboxDataPreservationTest : public ContentBrowserTest {
               if (request.relative_url != "/issue") {
                 return nullptr;
               }
-              if (!base::Contains(request.headers, "Sec-Private-State-Token") ||
-                  !base::Contains(request.headers,
-                                  "Sec-Private-State-Token-Crypto-Version")) {
+              if (!request.headers.contains("Sec-Private-State-Token") ||
+                  !request.headers.contains(
+                      "Sec-Private-State-Token-Crypto-Version")) {
                 return MakeTrustTokenFailureResponse();
               }
 

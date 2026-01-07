@@ -8,7 +8,6 @@
 #include <string>
 #include <tuple>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
@@ -2696,7 +2695,7 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
     SCOPED_TRACE(from_here.ToString());
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     std::string file_name = url.GetPath();
-    CHECK(base::Contains(cookie_headers_map_, file_name));
+    CHECK(cookie_headers_map_.contains(file_name));
     std::string header = cookie_headers_map_[file_name];
     EXPECT_EQ(expected_value, header);
     cookie_headers_map_.erase(file_name);
@@ -2711,7 +2710,7 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
     SCOPED_TRACE(from_here.ToString());
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     std::string file_name = url.GetPath();
-    CHECK(base::Contains(sec_fetch_dest_headers_map_, file_name));
+    CHECK(sec_fetch_dest_headers_map_.contains(file_name));
     std::string header = sec_fetch_dest_headers_map_[file_name];
     EXPECT_EQ(expected_value, header);
     sec_fetch_dest_headers_map_.erase(file_name);
@@ -7139,10 +7138,10 @@ class FencedFrameReportEventBrowserTest
     response->set_code(net::HTTP_OK);
     response->AddCustomHeader(cors::kAccessControlAllowMethods,
                               request->method_string);
-    if (base::Contains(request->headers, "Origin")) {
+    if (request->headers.contains("Origin")) {
       response->AddCustomHeader(cors::kAccessControlAllowOrigin, "*");
     }
-    if (base::Contains(request->headers, cors::kAccessControlRequestHeaders)) {
+    if (request->headers.contains(cors::kAccessControlRequestHeaders)) {
       response->AddCustomHeader(
           cors::kAccessControlAllowHeaders,
           request->headers.at(cors::kAccessControlRequestHeaders));
@@ -7202,7 +7201,7 @@ class FencedFrameReportEventBrowserTest
         ASSERT_FALSE(step.destination.path.empty());
         int redirect_index = 0;
         for (auto& redirect_destination : step.redirects) {
-          ASSERT_FALSE(base::Contains(paths, redirect_destination.path));
+          ASSERT_FALSE(paths.contains(redirect_destination.path));
           ASSERT_FALSE(redirect_destination.origin.empty());
           ASSERT_FALSE(redirect_destination.path.empty());
           paths.insert(redirect_destination.path);
@@ -7469,10 +7468,10 @@ class FencedFrameReportEventBrowserTest
               /*web_expected=*/true,
               /*os_expected=*/false);
         } else {
-          EXPECT_FALSE(base::Contains(response.http_request()->headers,
-                                      "Attribution-Reporting-Eligible"));
-          EXPECT_FALSE(base::Contains(response.http_request()->headers,
-                                      "Attribution-Reporting-Support"));
+          EXPECT_FALSE(response.http_request()->headers.contains(
+              "Attribution-Reporting-Eligible"));
+          EXPECT_FALSE(response.http_request()->headers.contains(
+              "Attribution-Reporting-Support"));
         }
 
         // TODO(crbug.com/40286778): Remove this check after 3PCD.
@@ -8236,11 +8235,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
         response.http_request()->headers.at("Attribution-Reporting-Support"),
         /*web_expected=*/true,
         /*os_expected=*/false);
-    EXPECT_TRUE(
-        base::Contains(response.http_request()->headers, "Content-Length"));
-    EXPECT_TRUE(
-        base::Contains(response.http_request()->headers, "Content-Type"));
-    EXPECT_TRUE(base::Contains(response.http_request()->headers, "Origin"));
+    EXPECT_TRUE(response.http_request()->headers.contains("Content-Length"));
+    EXPECT_TRUE(response.http_request()->headers.contains("Content-Type"));
+    EXPECT_TRUE(response.http_request()->headers.contains("Origin"));
 
     // Send 302 redirect response.
     GURL redirect_url = https_server()->GetURL("a.test", "/redirect.html");
@@ -8259,12 +8256,11 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
     EXPECT_EQ(redirect_response.http_request()->method,
               net::test_server::HttpMethod::METHOD_GET);
     // Check that POST-specific headers were stripped.
-    EXPECT_FALSE(base::Contains(redirect_response.http_request()->headers,
-                                "Content-Length"));
-    EXPECT_FALSE(base::Contains(redirect_response.http_request()->headers,
-                                "Content-Type"));
     EXPECT_FALSE(
-        base::Contains(redirect_response.http_request()->headers, "Origin"));
+        redirect_response.http_request()->headers.contains("Content-Length"));
+    EXPECT_FALSE(
+        redirect_response.http_request()->headers.contains("Content-Type"));
+    EXPECT_FALSE(redirect_response.http_request()->headers.contains("Origin"));
     // Check that the content body was stripped.
     EXPECT_TRUE(redirect_response.http_request()->content.empty());
     // These extra request headers were not stripped.
@@ -8358,12 +8354,11 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
     EXPECT_EQ(reporting_response.http_request()->method,
               net::test_server::HttpMethod::METHOD_POST);
     EXPECT_EQ(reporting_response.http_request()->content, event_data);
-    EXPECT_TRUE(base::Contains(reporting_response.http_request()->headers,
-                               "Content-Length"));
-    EXPECT_TRUE(base::Contains(reporting_response.http_request()->headers,
-                               "Content-Type"));
     EXPECT_TRUE(
-        base::Contains(reporting_response.http_request()->headers, "Origin"));
+        reporting_response.http_request()->headers.contains("Content-Length"));
+    EXPECT_TRUE(
+        reporting_response.http_request()->headers.contains("Content-Type"));
+    EXPECT_TRUE(reporting_response.http_request()->headers.contains("Origin"));
     ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
         reporting_response.http_request()->headers.at(
             "Attribution-Reporting-Eligible"));
@@ -8391,10 +8386,10 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
     EXPECT_EQ(redirect_response.http_request()->method,
               net::test_server::HttpMethod::METHOD_GET);
     EXPECT_EQ(redirect_response.http_request()->headers.at("Origin"), "null");
-    EXPECT_FALSE(base::Contains(redirect_response.http_request()->headers,
-                                "Content-Length"));
-    EXPECT_FALSE(base::Contains(redirect_response.http_request()->headers,
-                                "Content-Type"));
+    EXPECT_FALSE(
+        redirect_response.http_request()->headers.contains("Content-Length"));
+    EXPECT_FALSE(
+        redirect_response.http_request()->headers.contains("Content-Type"));
     // Check that the content body was stripped.
     EXPECT_TRUE(redirect_response.http_request()->content.empty());
     // These extra request headers were not stripped.
@@ -9192,10 +9187,10 @@ class FencedFrameAutomaticBeaconBrowserTest
     response->set_code(net::HTTP_OK);
     response->AddCustomHeader(cors::kAccessControlAllowMethods,
                               request->method_string);
-    if (base::Contains(request->headers, "Origin")) {
+    if (request->headers.contains("Origin")) {
       response->AddCustomHeader(cors::kAccessControlAllowOrigin, "*");
     }
-    if (base::Contains(request->headers, cors::kAccessControlRequestHeaders)) {
+    if (request->headers.contains(cors::kAccessControlRequestHeaders)) {
       response->AddCustomHeader(
           cors::kAccessControlAllowHeaders,
           request->headers.at(cors::kAccessControlRequestHeaders));

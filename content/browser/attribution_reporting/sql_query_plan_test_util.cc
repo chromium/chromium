@@ -14,7 +14,6 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -100,7 +99,7 @@ bool SqlIndexMatcher::MatchAndExplain(const SqlQueryPlan& plan,
       plan_piece.substr(start_pos, end_pos - start_pos);
 
   return std::ranges::all_of(columns_, [index_text](const std::string& col) {
-    return base::Contains(index_text, col);
+    return index_text.contains(col);
   });
 }
 
@@ -155,7 +154,7 @@ void SqlIndexMatcher::DescribeTo(std::ostream* out, bool negated) const {
 // TODO(apaseltiner): This check is not robust, as some "scans" are optimized
 // using an index.
 bool HasFullTableScan(const SqlQueryPlan& plan) {
-  return base::Contains(plan.plan, "SCAN");
+  return plan.plan.contains("SCAN");
 }
 
 }  // namespace

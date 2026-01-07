@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -155,7 +154,7 @@ void ServiceWorkerDevToolsManager::WorkerStarting(
     bool* pause_on_start) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const WorkerId worker_id(worker_process_id, worker_route_id);
-  DCHECK(!base::Contains(live_hosts_, worker_id));
+  DCHECK(!live_hosts_.contains(worker_id));
 
   scoped_refptr<ServiceWorkerDevToolsAgentHost> agent_host =
       TakeStoppedHost(context_wrapper.get(), version_id);

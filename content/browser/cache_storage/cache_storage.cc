@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
@@ -250,13 +249,13 @@ class CacheStorage::MemoryLoader : public CacheStorage::CacheLoader {
 
   void NotifyCacheCreated(const std::u16string& cache_name,
                           CacheStorageCacheHandle cache_handle) override {
-    DCHECK(!base::Contains(cache_handles_, cache_name));
+    DCHECK(!cache_handles_.contains(cache_name));
     cache_handles_.insert(std::make_pair(cache_name, std::move(cache_handle)));
   }
 
   void NotifyCacheDoomed(CacheStorageCacheHandle cache_handle) override {
     auto* impl = CacheStorageCache::From(cache_handle);
-    DCHECK(base::Contains(cache_handles_, impl->cache_name()));
+    DCHECK(cache_handles_.contains(impl->cache_name()));
     cache_handles_.erase(impl->cache_name());
   }
 
@@ -295,7 +294,7 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
       int64_t cache_size,
       int64_t cache_padding) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(base::Contains(cache_name_to_cache_dir_, cache_name));
+    DCHECK(cache_name_to_cache_dir_.contains(cache_name));
 
     std::string cache_dir = cache_name_to_cache_dir_[cache_name];
     base::FilePath cache_path = directory_path_.AppendASCII(cache_dir);
@@ -360,7 +359,7 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
 
   void CleanUpDeletedCache(CacheStorageCache* cache) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(base::Contains(doomed_cache_to_path_, cache));
+    DCHECK(doomed_cache_to_path_.contains(cache));
 
     base::FilePath cache_path =
         directory_path_.AppendASCII(doomed_cache_to_path_[cache]);
@@ -400,7 +399,7 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
     protobuf_index.set_bucket_is_default(bucket_locator_.is_default);
 
     for (const auto& cache_metadata : index.ordered_cache_metadata()) {
-      DCHECK(base::Contains(cache_name_to_cache_dir_, cache_metadata.name));
+      DCHECK(cache_name_to_cache_dir_.contains(cache_metadata.name));
 
       proto::CacheStorageIndex::Cache* index_cache = protobuf_index.add_cache();
       index_cache->set_name(base::UTF16ToUTF8(cache_metadata.name));
@@ -527,7 +526,7 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
 
   void NotifyCacheDoomed(CacheStorageCacheHandle cache_handle) override {
     auto* impl = CacheStorageCache::From(cache_handle);
-    DCHECK(base::Contains(cache_name_to_cache_dir_, impl->cache_name()));
+    DCHECK(cache_name_to_cache_dir_.contains(impl->cache_name()));
     auto iter = cache_name_to_cache_dir_.find(impl->cache_name());
     doomed_cache_to_path_[cache_handle.value()] = iter->second;
     cache_name_to_cache_dir_.erase(iter);
@@ -548,7 +547,7 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
     {
       base::FilePath cache_path;
       while (!(cache_path = file_enum.Next()).empty()) {
-        if (!base::Contains(*cache_dirs, cache_path.BaseName().AsUTF8Unsafe()))
+        if (!cache_dirs->contains(cache_path.BaseName().AsUTF8Unsafe()))
           dirs_to_delete.push_back(cache_path);
       }
     }
@@ -983,8 +982,7 @@ bool CacheStorage::InitiateScheduledIndexWriteForTest(
 
 void CacheStorage::CacheSizeUpdated(const CacheStorageCache* cache) {
   // Should not be called for doomed caches.
-  DCHECK(
-      !base::Contains(doomed_caches_, const_cast<CacheStorageCache*>(cache)));
+  DCHECK(!doomed_caches_.contains(const_cast<CacheStorageCache*>(cache)));
   DCHECK_NE(cache->cache_padding(), kSizeUnknown);
   bool size_changed =
       cache_index_->SetCacheSize(cache->cache_name(), cache->cache_size());
@@ -1167,7 +1165,7 @@ void CacheStorage::HasCacheImpl(const std::u16string& cache_name,
                                 BoolAndErrorCallback callback) {
   TRACE_EVENT("CacheStorage", "CacheStorage::HasCacheImpl",
               perfetto::Flow::Global(trace_id), "cache_name", cache_name);
-  bool has_cache = base::Contains(cache_map_, cache_name);
+  bool has_cache = cache_map_.contains(cache_name);
   std::move(callback).Run(has_cache, CacheStorageError::kSuccess);
 }
 

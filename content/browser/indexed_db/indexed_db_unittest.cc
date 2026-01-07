@@ -19,7 +19,6 @@
 #include "base/auto_reset.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -2829,8 +2828,7 @@ TEST_P(IndexedDBTest, DatabaseFailedOpen) {
     run_loop.Run();
     BucketContext* bucket_context = GetBucketContext(bucket_locator.id);
     ASSERT_TRUE(bucket_context);
-    EXPECT_FALSE(
-        base::Contains(bucket_context->GetDatabasesForTesting(), db_name));
+    EXPECT_FALSE(bucket_context->GetDatabasesForTesting().contains(db_name));
   }
 }
 

@@ -553,7 +553,7 @@ void FindRequestManager::RemoveFrame(RenderFrameHost* rfh) {
 
   // If no pending find replies are expected for the removed frame, then just
   // report the updated results.
-  if (!base::Contains(pending_initial_replies_, rfh) &&
+  if (!pending_initial_replies_.contains(rfh) &&
       pending_find_next_reply_ != rfh) {
     bool final_update =
         pending_initial_replies_.empty() && !pending_find_next_reply_;
@@ -801,7 +801,7 @@ RenderFrameHost* FindRequestManager::Traverse(RenderFrameHost* from_rfh,
     RenderFrameHost* current_rfh = rfh;
     if (!matches_only ||
         find_in_page_clients_.find(current_rfh)->second->number_of_matches() ||
-        base::Contains(pending_initial_replies_, current_rfh)) {
+        pending_initial_replies_.contains(current_rfh)) {
       // Note that if there is still a pending reply expected for this frame,
       // then it may have unaccounted matches and will not be skipped via
       // |matches_only|.
@@ -838,7 +838,7 @@ void FindRequestManager::AddFrame(RenderFrameHost* rfh, bool force) {
 bool FindRequestManager::CheckFrame(RenderFrameHost* rfh) const {
   // TODO(crbug.com/40196212): Convert IsFindInPageDisabled to a DCHECK when we
   // replace DidFinishLoad with DidFinishNavigation in FrameObserver.
-  if (!rfh || !base::Contains(find_in_page_clients_, rfh) ||
+  if (!rfh || !find_in_page_clients_.contains(rfh) ||
       IsFindInPageDisabled(rfh)) {
     return false;
   }

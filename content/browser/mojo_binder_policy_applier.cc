@@ -6,7 +6,6 @@
 
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "content/public/browser/mojo_binder_policy_map.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -84,7 +83,7 @@ void MojoBinderPolicyApplier::ApplyPolicyToNonAssociatedBinder(
         std::move(binder_callback).Run();
         break;
       case MojoBinderNonAssociatedPolicy::kDefer:
-        if (base::Contains(kSyncMethodInterfaces, interface_name)) {
+        if (kSyncMethodInterfaces.contains(interface_name)) {
           std::move(binder_callback).Run();
         } else {
           deferred_binders_.push_back(std::move(binder_callback));
@@ -105,7 +104,7 @@ void MojoBinderPolicyApplier::ApplyPolicyToNonAssociatedBinder(
       }
       break;
     case MojoBinderNonAssociatedPolicy::kDefer:
-      if (base::Contains(kSyncMethodInterfaces, interface_name)) {
+      if (kSyncMethodInterfaces.contains(interface_name)) {
         deferred_sync_binders_.push_back(std::move(binder_callback));
       } else {
         deferred_binders_.push_back(std::move(binder_callback));

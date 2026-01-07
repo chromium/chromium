@@ -10,7 +10,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -152,8 +151,7 @@ DevToolsURLLoaderInterceptor::Pattern::Pattern(
 bool DevToolsURLLoaderInterceptor::Pattern::Matches(
     const std::string& url,
     blink::mojom::ResourceType resource_type) const {
-  if (!resource_types.empty() &&
-      !base::Contains(resource_types, resource_type)) {
+  if (!resource_types.empty() && !resource_types.contains(resource_type)) {
     return false;
   }
   return base::MatchPattern(url, url_pattern);

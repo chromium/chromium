@@ -8,7 +8,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -144,7 +143,7 @@ bool MatchesFilter(const std::string* device_name,
 
   if (filter->services) {
     for (const auto& service : filter->services.value()) {
-      if (!base::Contains(device_uuids, service)) {
+      if (!device_uuids.contains(service)) {
         return false;
       }
     }

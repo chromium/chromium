@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -123,7 +122,7 @@ void AggregatableReportAssembler::AssembleReport(
   }
 
   int64_t id = unique_id_counter_++;
-  CHECK(!base::Contains(pending_requests_, id));
+  CHECK(!pending_requests_.contains(id));
 
   const PendingRequest& pending_request =
       pending_requests_

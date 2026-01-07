@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
@@ -229,7 +228,7 @@ struct ExpectedReportWaiter {
     // The embedded test server resolves all urls to 127.0.0.1, so get the real
     // request host from the request headers.
     const net::test_server::HttpRequest& request = *response->http_request();
-    DCHECK(base::Contains(request.headers, "Host"));
+    DCHECK(request.headers.contains("Host"));
     const GURL& request_url = request.GetURL();
     GURL header_url = GURL("https://" + request.headers.at("Host"));
     std::string host = header_url.GetHost();
@@ -259,7 +258,7 @@ struct ExpectedReportWaiter {
     // for report url was not set properly.
     EXPECT_EQ(expected_url, request_url.ReplaceComponents(replace_host));
 
-    EXPECT_TRUE(base::Contains(request.headers, "User-Agent"));
+    EXPECT_TRUE(request.headers.contains("User-Agent"));
     EXPECT_EQ(request.headers.at("Content-Type"), "application/json");
   }
 };
@@ -667,10 +666,10 @@ IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
 
   // Verify the navigation request does not contain the eligibility header.
   register_response1->WaitForRequest();
-  EXPECT_FALSE(base::Contains(register_response1->http_request()->headers,
-                              "Attribution-Reporting-Eligible"));
-  EXPECT_FALSE(base::Contains(register_response1->http_request()->headers,
-                              "Attribution-Reporting-Support"));
+  EXPECT_FALSE(register_response1->http_request()->headers.contains(
+      "Attribution-Reporting-Eligible"));
+  EXPECT_FALSE(register_response1->http_request()->headers.contains(
+      "Attribution-Reporting-Support"));
 
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_OK);
@@ -1939,10 +1938,10 @@ void TestServiceWorker(const char* registration_js,
                     "a.test", "/attribution_reporting/register_source"))));
 
   register_response->WaitForRequest();
-  EXPECT_TRUE(base::Contains(register_response->http_request()->headers,
-                             "Attribution-Reporting-Eligible"));
-  EXPECT_TRUE(base::Contains(register_response->http_request()->headers,
-                             "Attribution-Reporting-Support"));
+  EXPECT_TRUE(register_response->http_request()->headers.contains(
+      "Attribution-Reporting-Eligible"));
+  EXPECT_TRUE(register_response->http_request()->headers.contains(
+      "Attribution-Reporting-Support"));
 }
 
 IN_PROC_BROWSER_TEST_P(

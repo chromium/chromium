@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -93,7 +92,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleHttpAuthRequest(
   }
 
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
-  if (base::Contains(request.headers, "Authorization")) {
+  if (request.headers.contains("Authorization")) {
     http_response->set_code(net::HTTP_OK);
     http_response->set_content("Success!");
   } else {

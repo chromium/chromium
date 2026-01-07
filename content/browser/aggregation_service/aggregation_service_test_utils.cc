@@ -18,7 +18,6 @@
 
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -409,7 +408,7 @@ std::vector<uint8_t> DecryptPayloadWithHpke(
       base::as_byte_span(authenticated_info_str);
 
   // No null terminators should have been copied when concatenating the strings.
-  CHECK(!base::Contains(authenticated_info_str, '\0'));
+  CHECK(!authenticated_info_str.contains('\0'));
 
   bssl::ScopedEVP_HPKE_CTX recipient_context;
   if (!EVP_HPKE_CTX_setup_recipient(

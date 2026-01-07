@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -1151,7 +1150,7 @@ void CacheStorageDispatcherHost::UpdateOrCreateDefaultBucket(
 bool CacheStorageDispatcherHost::WasNotifiedOfBucketDataDeletion(
     const storage::BucketLocator& bucket_locator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Contains(deleted_buckets_, bucket_locator);
+  return deleted_buckets_.contains(bucket_locator);
 }
 
 void CacheStorageDispatcherHost::NotifyBucketDataDeleted(
