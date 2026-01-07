@@ -241,9 +241,16 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         mIsConditionalRequest = options.mediation == Mediation.CONDITIONAL;
         mIsImmediateRequest = options.mediation == Mediation.IMMEDIATE;
 
+        boolean isPasswordOnlyFlux =
+                options.publicKey == null
+                        && options.password
+                        && options.mediation == Mediation.IMMEDIATE
+                        && DeviceFeatureMap.isEnabled(
+                                DeviceFeatureList
+                                        .WEBAUTHN_AUTHENTICATOR_PASSWORDS_ONLY_IMMEDIATE_REQUESTS);
         if (!GmsCoreUtils.isWebauthnSupported()
                 || (!isChrome(mWebContents) && !GmsCoreUtils.isResultReceiverSupported())
-                || options.publicKey == null) {
+                || (options.publicKey == null && !isPasswordOnlyFlux)) {
             RequestMetrics metrics =
                     new RequestMetrics.Builder()
                             .setGetAssertionOutcome(GetAssertionOutcome.OTHER_FAILURE)
@@ -253,7 +260,6 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                             AuthenticatorStatus.NOT_IMPLEMENTED, metrics));
             return;
         }
-        assumeNonNull(options.publicKey);
 
         mPendingFido2CredentialRequest = getFido2CredentialRequest();
         mPendingFido2CredentialRequest.handleGetCredentialRequest(

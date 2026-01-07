@@ -458,6 +458,59 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
         }
     }
 
+    @SuppressWarnings("NewApi")
+    private void handlePasswordOnlyImmediateRequest(GetCredentialOptions options, Origin origin) {
+        assert options.password && options.mediation == Mediation.IMMEDIATE;
+        final String originString = convertOriginToString(origin);
+        if (!isChrome(mAuthenticationContextProvider.getWebContents())) {
+            if (CredManSupportProvider.getCredManSupportForWebView() == CredManSupport.DISABLED) {
+                returnErrorAndResetCallback(
+                        AuthenticatorStatus.NOT_IMPLEMENTED,
+                        /* response= */ null,
+                        /* credentialRequestResult= */ null);
+                return;
+            }
+            int result =
+                    mCredManHelper.startGetRequest(
+                            options,
+                            originString,
+                            /* clientDataJson= */ null,
+                            /* clientDataHash= */ null,
+                            /* ignoreGpm= */ false);
+            if (result != AuthenticatorStatus.SUCCESS) {
+                returnErrorAndResetCallback(
+                        result,
+                        /* response= */ null,
+                        CredentialRequestResult.ANDROID_CRED_MAN_ERROR);
+            }
+            return;
+        }
+
+        if (getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN) {
+            int result =
+                    mCredManHelper.startGetRequest(
+                            options,
+                            originString,
+                            /* clientDataJson= */ null,
+                            /* clientDataHash= */ null,
+                            /* ignoreGpm= */ false);
+            if (result != AuthenticatorStatus.SUCCESS) {
+                returnErrorAndResetCallback(
+                        result,
+                        /* response= */ null,
+                        CredentialRequestResult.ANDROID_CRED_MAN_ERROR);
+            }
+            return;
+        }
+
+        // For password-only immediate requests in Chrome without ONLY_CRED_MAN,
+        // we go directly to showing the TouchToFill UI. There is no CredMan
+        // involved because Chrome doesn't support passwords from CredMan in parallel mode.
+        mCancellableUiState = CancellableUiState.WAITING_FOR_CREDENTIAL_LIST;
+        onWebauthnCredentialDetailsListReceived(
+                options, originString, /* clientDataHash= */ null, new ArrayList<>());
+    }
+
     /**
      * Process a WebAuthn get() request.
      *
@@ -477,7 +530,13 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
         log(TAG, "handleGetCredentialRequest");
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         assert frameHost != null;
-        PublicKeyCredentialRequestOptions publicKeyOptions = assumeNonNull(options.publicKey);
+
+        if (options.publicKey == null) {
+            handlePasswordOnlyImmediateRequest(options, origin);
+            return;
+        }
+
+        PublicKeyCredentialRequestOptions publicKeyOptions = options.publicKey;
 
         // TODO(https://crbug.com/381219428): Handle challenge_url.
         if (publicKeyOptions.challenge == null) {
@@ -943,12 +1002,7 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
         log(TAG, "onWebauthnCredentialDetailsListReceived");
         assert mCancellableUiState == CancellableUiState.WAITING_FOR_CREDENTIAL_LIST
                 || mCancellableUiState == CancellableUiState.CANCEL_PENDING;
-        PublicKeyCredentialRequestOptions publicKeyOptions = assumeNonNull(options.publicKey);
-        boolean hasAllowCredentials =
-                publicKeyOptions.allowCredentials != null
-                        && publicKeyOptions.allowCredentials.length != 0;
         boolean isConditionalRequest = options.mediation == Mediation.CONDITIONAL;
-        assert isConditionalRequest || !hasAllowCredentials;
         boolean isImmediateRequest = options.mediation == Mediation.IMMEDIATE;
 
         if (mCancellableUiState == CancellableUiState.CANCEL_PENDING) {
@@ -961,18 +1015,26 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
         stopImmediateTimer();
 
         List<WebauthnCredentialDetails> discoverableCredentials = new ArrayList<>();
-        for (WebauthnCredentialDetails credential : credentials) {
-            if (!credential.mIsDiscoverable) continue;
+        if (options.publicKey != null) {
+            PublicKeyCredentialRequestOptions publicKeyOptions = options.publicKey;
+            boolean hasAllowCredentials =
+                    publicKeyOptions.allowCredentials != null
+                            && publicKeyOptions.allowCredentials.length != 0;
+            assert isConditionalRequest || !hasAllowCredentials;
 
-            if (!hasAllowCredentials) {
-                discoverableCredentials.add(credential);
-                continue;
-            }
+            for (WebauthnCredentialDetails credential : credentials) {
+                if (!credential.mIsDiscoverable) continue;
 
-            for (PublicKeyCredentialDescriptor descriptor : publicKeyOptions.allowCredentials) {
-                if (Arrays.equals(credential.mCredentialId, descriptor.id)) {
+                if (!hasAllowCredentials) {
                     discoverableCredentials.add(credential);
-                    break;
+                    continue;
+                }
+
+                for (PublicKeyCredentialDescriptor descriptor : publicKeyOptions.allowCredentials) {
+                    if (Arrays.equals(credential.mCredentialId, descriptor.id)) {
+                        discoverableCredentials.add(credential);
+                        break;
+                    }
                 }
             }
         }
@@ -997,7 +1059,8 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
         }
 
         Runnable hybridCallback = null;
-        if (GmsCoreUtils.isHybridClientApiSupported()) {
+        if (GmsCoreUtils.isHybridClientApiSupported() && options.publicKey != null) {
+            PublicKeyCredentialRequestOptions publicKeyOptions = options.publicKey;
             hybridCallback =
                     () ->
                             dispatchHybridGetAssertionRequest(

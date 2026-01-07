@@ -201,6 +201,7 @@ source_set("unit_tests") {
 
 robolectric_library("junit") {
   sources = [
+    "junit/src/org/chromium/components/webauthn/AuthenticatorImplPasswordOnlyTest.java",
     "junit/src/org/chromium/components/webauthn/AuthenticatorImplTest.java",
     "junit/src/org/chromium/components/webauthn/BarrierTest.java",
     "junit/src/org/chromium/components/webauthn/Fido2ApiRobolectricTest.java",
