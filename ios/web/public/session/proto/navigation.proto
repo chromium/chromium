@@ -58,6 +58,7 @@ message NavigationItemStorage {
   ReferrerStorage referrer = 6;
   HttpHeaderListStorage http_request_headers = 7;
   bytes security_scoped_file_resource = 8;
+  bool was_created_automatically = 9;
 }
 
 // Represents the navigation history for a WebState, including the index of the

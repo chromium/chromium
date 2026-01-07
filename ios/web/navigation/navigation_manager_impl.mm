@@ -25,6 +25,7 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/timer/elapsed_timer.h"
+#import "ios/public/provider/web/navigation_api.h"
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/back_forward_navigation_type.h"
 #import "ios/web/navigation/crw_navigation_item_holder.h"
@@ -44,6 +45,10 @@ namespace {
 void SetNavigationItemInWKItem(WKBackForwardListItem* wk_item,
                                std::unique_ptr<web::NavigationItemImpl> item) {
   DCHECK(wk_item);
+  if (item) {
+    item->SetWasCreatedAutomatically(
+        web::provider::WasCreatedAutomatically(wk_item));
+  }
   [[CRWNavigationItemHolder holderForBackForwardListItem:wk_item]
       setNavigationItem:std::move(item)];
 }
