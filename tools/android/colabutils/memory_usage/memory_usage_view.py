@@ -3,9 +3,6 @@
 # found in the LICENSE file.
 """Utilities for viewing and diffing Sum Trees of memory usage."""
 
-# TODO(crbug.com/73768497): Move this file and other files related to memory
-# usage into a separate subdirectory.
-
 import copy
 import jinja2
 import json
@@ -29,7 +26,7 @@ except ImportError:
 from . import demangler
 
 _MEMORY_USAGE_DIR = pathlib.Path(__file__).resolve().parent
-_SRC_PATH = _MEMORY_USAGE_DIR.parents[2]
+_SRC_PATH = _MEMORY_USAGE_DIR.parents[3]
 sys.path.append(str(_SRC_PATH / 'third_party/perfetto/python'))
 from perfetto.trace_processor import TraceProcessor
 

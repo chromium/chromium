@@ -146,19 +146,19 @@ rm "$RAW_TRACE"
 
 The `MemoryUsageView` can load this trace like so:
 ```python
-from colabutils import memory_usage
+from colabutils.memory_usage import MemoryUsageView
 
-view = memory_usage.MemoryUsageView.from_heap_dump('symbolized-trace')
+view = MemoryUsageView.from_heap_dump('symbolized-trace')
 view.toplevel_names()
 view.display()
 ```
 
 View a diff between two memory usage views:
 ```python
-from colabutils import memory_usage
+from colabutils.memory_usage import MemoryUsageView
 
-view1 = memory_usage.MemoryUsageView.from_heap_dump('symbolized-trace1')
-view2 = memory_usage.MemoryUsageView.from_heap_dump('symbolized-trace2')
-diff_view = memory_usage.MemoryUsageView.from_comparison(view, view2)
+view1 = MemoryUsageView.from_heap_dump('symbolized-trace1')
+view2 = MemoryUsageView.from_heap_dump('symbolized-trace2')
+diff_view = MemoryUsageView.from_comparison(view, view2)
 diff_view.display()
 ```

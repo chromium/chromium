@@ -16,7 +16,7 @@ class Demangler:
     """
 
     def __init__(self):
-        src_path = pathlib.Path(__file__).resolve().parents[3]
+        src_path = pathlib.Path(__file__).resolve().parents[4]
         self.binary_path = str(
             src_path /
             'third_party/llvm-build/Release+Asserts/bin/llvm-cxxfilt')

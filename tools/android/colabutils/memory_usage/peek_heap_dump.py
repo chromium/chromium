@@ -10,7 +10,7 @@ import sys
 
 _SRC_PATH = pathlib.Path(__file__).resolve().parents[4]
 sys.path.append(str(_SRC_PATH / 'tools/android'))
-from colabutils.memory_usage import MemoryUsageView
+from colabutils.memory_usage.memory_usage_view import MemoryUsageView
 
 
 def main():
