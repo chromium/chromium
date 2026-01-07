@@ -255,8 +255,9 @@ class ThemeService : public KeyedService,
   // Returns the theme service type that should be used on startup.
   virtual ui::SystemTheme GetDefaultSystemTheme() const;
 
-  // Clears override fields and saves the dictionary.
-  virtual void ClearThemeData(bool clear_ntp_background);
+  // Clears override fields and saves the dictionary. When `reset_all_settings`
+  // is true, also resets NTP background and follows system theme colors.
+  virtual void ClearThemeData(bool reset_all_settings);
 
   // Initialize current theme state data from preferences.
   virtual void InitFromPrefs();

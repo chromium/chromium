@@ -978,6 +978,27 @@ TEST_F(ThemeServiceTest, UseDeviceTheme_ExplicitlyTrue) {
 }
 #endif  // IS_CHROMEOS
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+// Verify that UseDefaultTheme() clears the system theme follow preference.
+TEST_F(ThemeServiceTest, UseDefaultTheme_ClearsSystemThemeFollow) {
+  // Set the preference to true first
+  theme_service()->UseDeviceTheme(true);
+  EXPECT_FALSE(profile()
+                   ->GetPrefs()
+                   ->FindPreference(prefs::kBrowserFollowsSystemThemeColors)
+                   ->IsDefaultValue());
+
+  // Call UseDefaultTheme()
+  theme_service()->UseDefaultTheme();
+
+  // Verify the preference was cleared (not set to false, but actually cleared)
+  EXPECT_TRUE(profile()
+                  ->GetPrefs()
+                  ->FindPreference(prefs::kBrowserFollowsSystemThemeColors)
+                  ->IsDefaultValue());
+}
+#endif
+
 TEST_F(ThemeServiceTest, SetUseDeviceTheme) {
   theme_service()->UseDeviceTheme(false);
   EXPECT_FALSE(theme_service()->UsingDeviceTheme());
