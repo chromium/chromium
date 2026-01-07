@@ -630,15 +630,15 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_Bitmap) {
   auto provider = Canvas2DResourceProviderBitmap::CreateForTesting(
       gfx::Size(kMaxTextureSize - 1, kMaxTextureSize), color_params,
       CanvasResourceProvider::ShouldInitialize::kCallClear);
-  EXPECT_TRUE(!!provider);
+  EXPECT_TRUE(provider && provider->IsValid());
   provider = Canvas2DResourceProviderBitmap::CreateForTesting(
       gfx::Size(kMaxTextureSize, kMaxTextureSize), color_params,
       CanvasResourceProvider::ShouldInitialize::kCallClear);
-  EXPECT_TRUE(!!provider);
+  EXPECT_TRUE(provider && provider->IsValid());
   provider = Canvas2DResourceProviderBitmap::CreateForTesting(
       gfx::Size(kMaxTextureSize + 1, kMaxTextureSize), color_params,
       CanvasResourceProvider::ShouldInitialize::kCallClear);
-  EXPECT_TRUE(!!provider);
+  EXPECT_TRUE(provider && provider->IsValid());
 }
 
 TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SharedImage) {
@@ -649,19 +649,19 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SharedImage) {
       gfx::Size(kMaxTextureSize - 1, kMaxTextureSize), color_params,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, gpu::SharedImageUsageSet());
-  EXPECT_TRUE(!!provider);
+  EXPECT_TRUE(provider && provider->IsValid());
   provider = CanvasResourceProvider::CreateSharedImageProvider(
       gfx::Size(kMaxTextureSize, kMaxTextureSize), color_params,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, gpu::SharedImageUsageSet());
-  EXPECT_TRUE(!!provider);
+  EXPECT_TRUE(provider && provider->IsValid());
   provider = CanvasResourceProvider::CreateSharedImageProvider(
       gfx::Size(kMaxTextureSize + 1, kMaxTextureSize), color_params,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, gpu::SharedImageUsageSet());
-  // The CanvasResourceProvider for SharedImage should not be created or valid
-  // if the texture size is greater than the maximum value
-  EXPECT_TRUE(!provider || !provider->IsValid());
+  // The CanvasResourceProvider for SharedImage should not be created
+  // if the texture size is greater than the maximum value.
+  EXPECT_FALSE(provider);
 }
 
 TEST_F(CanvasResourceProviderTest, FlushForImage) {
