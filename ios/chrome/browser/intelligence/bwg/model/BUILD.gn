@@ -27,6 +27,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/url_loading/model",
+    "//ios/public/provider/chrome/browser/bwg:bwg_api",
     "//ios/web/public",
   ]
   public_deps = [ "//base" ]

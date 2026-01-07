@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
+
 // Input type for BWG queries.
 typedef NS_ENUM(NSInteger, BWGInputType) {
   // Unknown input type.
@@ -65,6 +67,11 @@ typedef NS_ENUM(NSInteger, BWGInputType) {
 // TODO(crbug.com/436019705) Rename this to `clientID` and `serverID`.
 - (void)didTapNewChatButtonWithSessionID:(NSString*)sessionID
                           conversationID:(NSString*)conversationID;
+
+// Called when the Gemini view state changes.
+- (void)didSwitchToViewState:(ios::provider::GeminiViewState)viewState
+                   sessionID:(NSString*)sessionID
+              conversationID:(NSString*)conversationID;
 
 @end
 

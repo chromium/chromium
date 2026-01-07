@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 
 namespace {
 
@@ -75,6 +76,12 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
 - (void)newSessionCreatedWithClientID:(NSString*)clientID
                              serverID:(NSString*)serverID {
   [self updateSessionWithClientID:clientID serverID:serverID];
+}
+
+- (void)didSwitchToViewState:(ios::provider::GeminiViewState)viewState
+                   sessionID:(NSString*)sessionID
+              conversationID:(NSString*)conversationID {
+  // TODO(crbug.com/473852217): Handle expanded state.
 }
 
 - (void)UIDidAppearWithClientID:(NSString*)clientID
