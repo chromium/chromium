@@ -222,8 +222,8 @@
   color: var(--color-sys-on-surface);
   font-size: 13px;
   font-weight: 500;
-  overflow: hidden;
   line-height: 20px;
+  overflow: hidden;
   text-align: left;
   text-overflow: ellipsis;
   white-space: nowrap;
