@@ -383,7 +383,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Called when the uninstall URL is set. If the given URL is invalid, $(ref:runtime.lastError) will be set.",
+          "description": "Promise that resolves when the uninstall URL is set. If the given URL is invalid, the promise will be rejected.",
           "parameters": []
         }
       },
@@ -439,7 +439,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "A callback to be invoked when a restart request was successfully rescheduled.",
+          "description": "Promise that resolves when a restart request was successfully rescheduled.",
           "parameters": [],
           "optional": true
         }
@@ -555,7 +555,7 @@
         "parameters": [],
         "returns_async": {
           "name": "callback",
-          "description": "Called with results",
+          "description": "Promise that resolves with information about the current platform.",
           "parameters": [
             {
               "name": "platformInfo",
@@ -594,7 +594,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Invoked with the matching contexts, if any.",
+          "description": "Promise that resolves with the matching contexts, if any.",
           "parameters": [
             {
               "name": "contexts",

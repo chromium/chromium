@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -264,6 +264,13 @@ chrome.runtime.openOptionsPage = function(callback) {};
 chrome.runtime.getManifest = function() {};
 
 /**
+ * Returns the extension's version as declared in the manifest.
+ * @return {string} The extension's version.
+ * @see https://developer.chrome.com/extensions/runtime#method-getVersion
+ */
+chrome.runtime.getVersion = function() {};
+
+/**
  * Converts a relative path within an app/extension install directory to a
  * fully-qualified URL.
  * @param {string} path A path to a resource within an app/extension expressed
@@ -280,8 +287,8 @@ chrome.runtime.getURL = function(path) {};
  * @param {string} url URL to be opened after the extension is uninstalled. This
  *     URL must have an http: or https: scheme. Set an empty string to not open
  *     a new tab upon uninstallation.
- * @param {function(): void=} callback Called when the uninstall URL is set. If
- *     the given URL is invalid, $(ref:runtime.lastError) will be set.
+ * @param {function(): void=} callback Promise that resolves when the uninstall
+ *     URL is set. If the given URL is invalid, the promise will be rejected.
  * @see https://developer.chrome.com/extensions/runtime#method-setUninstallURL
  */
 chrome.runtime.setUninstallURL = function(url, callback) {};
@@ -330,7 +337,7 @@ chrome.runtime.restart = function() {};
  * extension to invoke this API.
  * @param {number} seconds Time to wait in seconds before rebooting the device,
  *     or -1 to cancel a scheduled reboot.
- * @param {function(): void=} callback A callback to be invoked when a restart
+ * @param {function(): void=} callback Promise that resolves when a restart
  *     request was successfully rescheduled.
  * @see https://developer.chrome.com/extensions/runtime#method-restartAfterDelay
  */
@@ -392,7 +399,9 @@ chrome.runtime.connectNative = function(application) {};
  * @param {{
  *   includeTlsChannelId: (boolean|undefined)
  * }=} options
- * @param {function(*): void=} callback
+ * @param {function(*): void=} callback Promise support was added for extension
+ *     contexts in Chrome 99. When communicating from a web page to an
+ *     extension, promises are available from Chrome 118.
  * @see https://developer.chrome.com/extensions/runtime#method-sendMessage
  */
 chrome.runtime.sendMessage = function(extensionId, message, options, callback) {};
@@ -410,8 +419,8 @@ chrome.runtime.sendNativeMessage = function(application, message, callback) {};
 
 /**
  * Returns information about the current platform.
- * @param {function(!chrome.runtime.PlatformInfo): void} callback Called with
- *     results
+ * @param {function(!chrome.runtime.PlatformInfo): void} callback Promise that
+ *     resolves with information about the current platform.
  * @see https://developer.chrome.com/extensions/runtime#method-getPlatformInfo
  */
 chrome.runtime.getPlatformInfo = function(callback) {};
@@ -429,7 +438,7 @@ chrome.runtime.getPackageDirectoryEntry = function(callback) {};
  *     contexts. A context matches if it matches all specified fields in the
  *     filter. Any unspecified field in the filter matches all contexts.
  * @param {function(!Array<!chrome.runtime.ExtensionContext>): void} callback
- *     Invoked with the matching contexts, if any.
+ *     Promise that resolves with the matching contexts, if any.
  * @see https://developer.chrome.com/extensions/runtime#method-getContexts
  */
 chrome.runtime.getContexts = function(filter, callback) {};
