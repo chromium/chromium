@@ -633,13 +633,13 @@ bool TraceReportDatabase::EnsureTableCreated() {
     return false;
   }
   if (meta_table.GetVersionNumber() < kCurrentVersionNumber) {
-    if (!database_.Execute("DROP TABLE local_traces IF EXISTS")) {
+    if (!database_.Execute("DROP TABLE IF EXISTS local_traces")) {
       return false;
     }
-    if (!database_.Execute("DROP TABLE local_traces_index IF EXISTS")) {
+    if (!database_.Execute("DROP TABLE IF EXISTS local_traces_index")) {
       return false;
     }
-    if (!database_.Execute("DROP TABLE local_traces_payloads IF EXISTS")) {
+    if (!database_.Execute("DROP TABLE IF EXISTS local_traces_payloads")) {
       return false;
     }
     if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {
