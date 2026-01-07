@@ -684,6 +684,29 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
 #pragma mark - UICollectionViewDelegate
 
+- (void)collectionView:(UICollectionView*)collectionView
+    didEndDisplayingCell:(UICollectionViewCell*)cell
+      forItemAtIndexPath:(NSIndexPath*)indexPath {
+  if (![cell isKindOfClass:[ComposeboxInputItemCell class]]) {
+    return;
+  }
+
+  // If the evicted cell’s associated input item is no longer in the data
+  // source, it was likely removed by the user.
+  // Proactively prepare the cell for reuse now to help alleviate memory
+  // pressure.
+  ComposeboxInputItemCell* composeboxCell = (ComposeboxInputItemCell*)cell;
+  if (ComposeboxInputItem* associatedItem = composeboxCell.associatedItem) {
+    for (ComposeboxInputItem* item in _dataSource.snapshot.itemIdentifiers) {
+      if (item.identifier == associatedItem.identifier) {
+        return;
+      }
+    }
+  }
+
+  [composeboxCell prepareForReuse];
+}
+
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
   [self updateCarouselFade];
 }
