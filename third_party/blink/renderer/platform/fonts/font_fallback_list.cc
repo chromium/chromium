@@ -46,8 +46,7 @@
 namespace blink {
 
 FontFallbackList::FontFallbackList(FontSelector* font_selector)
-    : font_selector_(font_selector),
-      generation_(FontCache::Get().Generation()) {}
+    : font_selector_(font_selector) {}
 
 void FontFallbackList::Trace(Visitor* visitor) const {
   visitor->Trace(font_list_);
@@ -213,7 +212,6 @@ const FontData* FontFallbackList::FontDataAt(
   // families we've looked at before in |family_index_|, so that we never scan
   // the same spot in the list twice.  GetFontData will adjust our
   // |family_index_| as it scans for the right font to make.
-  DCHECK_EQ(FontCache::Get().Generation(), generation_);
   const FontData* result = GetFontData(font_description);
   if (result) {
     font_list_.push_back(result);

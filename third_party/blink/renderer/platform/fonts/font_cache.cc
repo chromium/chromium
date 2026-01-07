@@ -231,15 +231,10 @@ void FontCache::AddClient(FontCacheClient* client) {
   font_cache_clients_.insert(client);
 }
 
-uint16_t FontCache::Generation() {
-  return generation_;
-}
-
 void FontCache::Invalidate() {
   TRACE_EVENT0("fonts,ui", "FontCache::Invalidate");
   font_platform_data_cache_.Clear();
   font_data_cache_.Clear();
-  generation_++;
 
   for (const auto& client : font_cache_clients_) {
     client->FontCacheInvalidated();

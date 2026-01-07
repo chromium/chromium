@@ -136,7 +136,6 @@ class PLATFORM_EXPORT FontCache final {
 
   void AddClient(FontCacheClient*);
 
-  uint16_t Generation();
   void Invalidate();
 
 #if BUILDFLAG(IS_WIN)
@@ -316,7 +315,6 @@ class PLATFORM_EXPORT FontCache final {
   static float device_scale_factor_;
 #endif
 
-  uint16_t generation_ = 0;
   bool platform_init_ = false;
   HeapHashSet<WeakMember<FontCacheClient>> font_cache_clients_;
   FontPlatformDataCache font_platform_data_cache_;

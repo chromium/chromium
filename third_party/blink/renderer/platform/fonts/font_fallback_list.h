@@ -66,7 +66,6 @@ class PLATFORM_EXPORT FontFallbackList
   bool ShouldSkipDrawing() const;
 
   FontSelector* GetFontSelector() const { return font_selector_.Get(); }
-  uint16_t Generation() const { return generation_; }
 
   const ShapeResult& GetOrCreateEmphasisMarkShape(const Font&,
                                                   const AtomicString& mark);
@@ -155,7 +154,6 @@ class PLATFORM_EXPORT FontFallbackList
   Member<const SimpleFontData> cached_primary_simple_font_data_for_tab_size_;
   const Member<FontSelector> font_selector_;
   int family_index_ = 0;
-  const uint16_t generation_;
   Vector<FontFeatureRange, FontFeatureRange::kInitialSize> font_features_;
 
   bool has_loading_fallback_ : 1 = false;
