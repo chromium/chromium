@@ -146,16 +146,6 @@ void PaintPreviewCompositorCollectionImpl::CreateCompositor(
   std::move(callback).Run(token);
 }
 
-void PaintPreviewCompositorCollectionImpl::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
-  if (memory_pressure_level >= base::MEMORY_PRESSURE_LEVEL_MODERATE) {
-    SkGraphics::PurgeAllCaches();
-    if (discardable_shared_memory_manager_) {
-      discardable_shared_memory_manager_->ReleaseFreeMemory();
-    }
-  }
-}
-
 void PaintPreviewCompositorCollectionImpl::ListCompositors(
     ListCompositorsCallback callback) {
   std::vector<base::UnguessableToken> ids;

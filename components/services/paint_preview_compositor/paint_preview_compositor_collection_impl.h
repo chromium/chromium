@@ -53,8 +53,6 @@ class PaintPreviewCompositorCollectionImpl
   void CreateCompositor(
       mojo::PendingReceiver<mojom::PaintPreviewCompositor> compositor,
       CreateCompositorCallback callback) override;
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override;
   void ListCompositors(ListCompositorsCallback callback) override;
 
  private:

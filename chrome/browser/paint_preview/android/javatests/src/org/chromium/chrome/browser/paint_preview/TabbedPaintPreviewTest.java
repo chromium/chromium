@@ -384,9 +384,6 @@ public class TabbedPaintPreviewTest {
         }
 
         @Override
-        public void addMemoryPressureListener(Runnable runnable) {}
-
-        @Override
         public int requestBitmap(
                 UnguessableToken frameGuid,
                 Rect clipRect,

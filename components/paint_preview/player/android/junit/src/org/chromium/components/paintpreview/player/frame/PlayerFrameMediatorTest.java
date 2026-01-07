@@ -177,13 +177,7 @@ public class PlayerFrameMediatorTest {
     private static class TestPlayerCompositorDelegate implements PlayerCompositorDelegate {
         final List<RequestedBitmap> mRequestedBitmap = new ArrayList<>();
         final List<ClickedPoint> mClickedPoints = new ArrayList<>();
-        Runnable mOnMemoryPressureRunnable;
         private int mNextRequestId;
-
-        @Override
-        public void addMemoryPressureListener(Runnable runnable) {
-            mOnMemoryPressureRunnable = runnable;
-        }
 
         @Override
         public int requestBitmap(
@@ -1401,47 +1395,5 @@ public class PlayerFrameMediatorTest {
         expectedBitmapScaleMatrix.postScale(2f, 2f);
         expectedBitmapScaleMatrix.postTranslate(-5f, -10f);
         Assert.assertEquals(expectedBitmapScaleMatrix, bitmapScaleMatrix);
-    }
-
-    /** Tests purging on bitmap responses. */
-    @Test
-    public void testOnMemoryPressure() {
-        // Sets the bitmap tile size to 150x200 and triggers bitmap request for the upper left tiles
-        // and their adjacent tiles.
-        mMediator.updateViewportSize(150, 200, 1f);
-
-        // Create mock bitmaps for response.
-        Bitmap bitmap00 = Mockito.mock(Bitmap.class);
-        Bitmap bitmap10 = Mockito.mock(Bitmap.class);
-        Bitmap bitmap20 = Mockito.mock(Bitmap.class);
-        Bitmap bitmap01 = Mockito.mock(Bitmap.class);
-        Bitmap bitmap11 = Mockito.mock(Bitmap.class);
-
-        Bitmap[][] expectedBitmapMatrix = new Bitmap[12][4];
-        expectedBitmapMatrix[0][0] = bitmap00;
-        expectedBitmapMatrix[0][1] = bitmap01;
-        expectedBitmapMatrix[1][0] = bitmap10;
-        expectedBitmapMatrix[1][1] = bitmap11;
-        expectedBitmapMatrix[2][0] = bitmap20;
-
-        // Call the request callback with mock bitmaps and assert they're added to the model.
-        mCompositorDelegate.mRequestedBitmap.get(0).mBitmapCallback.onResult(bitmap00);
-        mCompositorDelegate.mRequestedBitmap.get(1).mBitmapCallback.onResult(bitmap10);
-        mCompositorDelegate.mRequestedBitmap.get(2).mBitmapCallback.onResult(bitmap01);
-        mCompositorDelegate.mRequestedBitmap.get(3).mBitmapCallback.onResult(bitmap20);
-        mCompositorDelegate.mRequestedBitmap.get(4).mBitmapCallback.onResult(bitmap11);
-        Assert.assertTrue(
-                Arrays.deepEquals(
-                        expectedBitmapMatrix, mModel.get(PlayerFrameProperties.BITMAP_MATRIX)));
-
-        expectedBitmapMatrix = new Bitmap[12][4];
-        expectedBitmapMatrix[0][0] = bitmap00;
-        expectedBitmapMatrix[1][0] = bitmap10;
-
-        Assert.assertNotNull(mCompositorDelegate.mOnMemoryPressureRunnable);
-        mCompositorDelegate.mOnMemoryPressureRunnable.run();
-        Assert.assertTrue(
-                Arrays.deepEquals(
-                        expectedBitmapMatrix, mModel.get(PlayerFrameProperties.BITMAP_MATRIX)));
     }
 }

@@ -38,15 +38,8 @@ namespace paint_preview {
 namespace {
 
 // To minimize peak memory usage limit the number of concurrent bitmap requests.
-// These correspond to memory pressure levels None, Moderate, Critical
-// respectively. If a value of 0 is used for any level the process will abort
-// once that memory level is reached.
-constexpr std::
-    array<size_t, PlayerCompositorDelegateAndroid::PressureLevelCount::kLevels>
-        kMaxParallelBitmapRequests = {3, 2, 0};
-constexpr std::
-    array<size_t, PlayerCompositorDelegateAndroid::PressureLevelCount::kLevels>
-        kMaxParallelBitmapRequestsLowMemory = {2, 1, 0};
+constexpr size_t kMaxParallelBitmapRequests = 3;
+constexpr size_t kMaxParallelBitmapRequestsLowMemory = 2;
 
 }  // namespace
 
@@ -170,17 +163,6 @@ PlayerCompositorDelegateAndroid::GetRootFrameOffsets(JNIEnv* env) {
   return j_offsets;
 }
 
-void PlayerCompositorDelegateAndroid::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
-  // Don't handle the critical case leave that to the base class implementation
-  // which should kill the preview.
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_MODERATE) {
-    Java_PlayerCompositorDelegateImpl_onModerateMemoryPressure(
-        base::android::AttachCurrentThread(), java_ref_);
-  }
-  PlayerCompositorDelegate::OnMemoryPressure(memory_pressure_level);
-}
-
 // static
 void PlayerCompositorDelegateAndroid::CompositeResponseFramesToVectors(
     const base::flat_map<base::UnguessableToken, mojom::FrameDataPtr>& frames,
@@ -275,8 +257,7 @@ void PlayerCompositorDelegateAndroid::OnJavaBitmapCallback(
   if (result.status ==
       mojom::PaintPreviewCompositor::BitmapStatus::kAllocFailed) {
     base::android::RunRunnableAndroid(j_error_callback);
-    // Treat this as a critical memory pressure failure. We should abort.
-    OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    PlayerCompositorDelegate::OnAllocationFailure();
     return;
   }
 
