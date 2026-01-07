@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {expect} from '//webui-test/chai.js';
 import {FilterCategory} from 'chrome://updater/event_list/filter_bar.js';
 import {TypeDialogElement} from 'chrome://updater/event_list/filter_dialog/type_dialog.js';
+import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('TypeDialogElement', () => {
@@ -17,19 +17,19 @@ suite('TypeDialogElement', () => {
   });
 
   test('renders correctly', () => {
-    expect(filterType instanceof HTMLElement).to.be.true;
-    expect(filterType.tagName).to.equal('TYPE-DIALOG');
+    assertTrue(filterType instanceof HTMLElement);
+    assertEquals('TYPE-DIALOG', filterType.tagName);
   });
 
   test('displays menu items', async () => {
     await microtasksFinished();
     const items = filterType.shadowRoot.querySelectorAll('.filter-menu-item');
-    expect(items.length).to.equal(5);
-    expect(items[0]!.textContent.trim()).to.equal('App');
-    expect(items[1]!.textContent.trim()).to.equal('Event Type');
-    expect(items[2]!.textContent.trim()).to.equal('Update Outcome');
-    expect(items[3]!.textContent.trim()).to.equal('Updater Scope');
-    expect(items[4]!.textContent.trim()).to.equal('Date');
+    assertEquals(5, items.length);
+    assertEquals('App', items[0]!.textContent.trim());
+    assertEquals('Event Type', items[1]!.textContent.trim());
+    assertEquals('Update Outcome', items[2]!.textContent.trim());
+    assertEquals('Updater Scope', items[3]!.textContent.trim());
+    assertEquals('Date', items[4]!.textContent.trim());
   });
 
   test('fires type-selection-changed event on click', async () => {
@@ -44,14 +44,14 @@ suite('TypeDialogElement', () => {
     items[0]!.click();
     await microtasksFinished();
 
-    expect(capturedEvent).to.not.be.null;
-    expect(capturedEvent!.detail).to.equal(FilterCategory.APP);
+    assertNotEquals(null, capturedEvent);
+    assertEquals(FilterCategory.APP, capturedEvent!.detail);
   });
 
   test('focuses first menu item on load', async () => {
     await microtasksFinished();
     const item =
         filterType.shadowRoot.querySelector<HTMLElement>('.filter-menu-item');
-    expect(item).to.equal(filterType.shadowRoot.activeElement);
+    assertEquals(filterType.shadowRoot.activeElement, item);
   });
 });

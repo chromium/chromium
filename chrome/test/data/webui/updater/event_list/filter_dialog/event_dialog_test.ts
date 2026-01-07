@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import type {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import {expect} from '//webui-test/chai.js';
 import {EventDialogElement} from 'chrome://updater/event_list/filter_dialog/event_dialog.js';
+import {assertEquals, assertGE, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('EventDialogElement', () => {
@@ -17,22 +17,22 @@ suite('EventDialogElement', () => {
   });
 
   test('renders correctly', () => {
-    expect(filterEvent instanceof HTMLElement).to.be.true;
-    expect(filterEvent.tagName).to.equal('EVENT-DIALOG');
+    assertTrue(filterEvent instanceof HTMLElement);
+    assertEquals('EVENT-DIALOG', filterEvent.tagName);
   });
 
   test('displays event types', async () => {
     await microtasksFinished();
     const checkboxes = filterEvent.shadowRoot.querySelectorAll('cr-checkbox');
     // We expect at least the common ones: Update, Install, Uninstall
-    expect(checkboxes.length).to.be.at.least(3);
+    assertGE(checkboxes.length, 3);
 
     // Check for common events headers
     const headers =
         filterEvent.shadowRoot.querySelectorAll('.filter-menu-section-header');
-    expect(headers.length).to.equal(2);
-    expect(headers[0]!.textContent).to.equal('Common');
-    expect(headers[1]!.textContent).to.equal('Other');
+    assertEquals(2, headers.length);
+    assertEquals('Common', headers[0]!.textContent);
+    assertEquals('Other', headers[1]!.textContent);
   });
 
   test('initializes with selections', async () => {
@@ -42,8 +42,8 @@ suite('EventDialogElement', () => {
     const installCheckbox =
         filterEvent.shadowRoot.querySelector<CrCheckboxElement>(
             'cr-checkbox[data-event-type="INSTALL"]');
-    expect(installCheckbox).to.not.be.null;
-    expect(installCheckbox!.checked).to.be.true;
+    assertNotEquals(null, installCheckbox);
+    assertTrue(installCheckbox!.checked);
   });
 
   test('fires filter-change event on apply', async () => {
@@ -60,14 +60,14 @@ suite('EventDialogElement', () => {
 
     const footerElement =
         filterEvent.shadowRoot?.querySelector('filter-dialog-footer');
-    expect(footerElement).to.not.be.null;
+    assertNotEquals(null, footerElement);
     const applyButton = footerElement!.shadowRoot?.querySelector<HTMLElement>(
         '.action-button')!;
     applyButton.click();
     await microtasksFinished();
 
-    expect(capturedEvent).to.not.be.null;
-    expect(capturedEvent!.detail.has('UPDATE')).to.be.true;
+    assertNotEquals(null, capturedEvent);
+    assertTrue(capturedEvent!.detail.has('UPDATE'));
   });
 
   test('fires close event on cancel', async () => {
@@ -78,19 +78,19 @@ suite('EventDialogElement', () => {
 
     const footerElement =
         filterEvent.shadowRoot?.querySelector('filter-dialog-footer');
-    expect(footerElement).to.not.be.null;
+    assertNotEquals(null, footerElement);
     const cancelButton = footerElement!.shadowRoot?.querySelector<HTMLElement>(
         '.cancel-button')!;
     cancelButton.click();
     await microtasksFinished();
 
-    expect(closeFired).to.be.true;
+    assertTrue(closeFired);
   });
 
   test('focuses first checkbox on load', async () => {
     await microtasksFinished();
     const checkbox =
         filterEvent.shadowRoot.querySelector<HTMLElement>('.filter-menu-item');
-    expect(checkbox).to.equal(filterEvent.shadowRoot.activeElement);
+    assertEquals(filterEvent.shadowRoot.activeElement, checkbox);
   });
 });

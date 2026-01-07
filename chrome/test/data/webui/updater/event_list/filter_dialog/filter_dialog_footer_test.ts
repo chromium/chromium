@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {expect} from '//webui-test/chai.js';
 import {FilterDialogFooterElement} from 'chrome://updater/event_list/filter_dialog/filter_dialog_footer.js';
+import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('FilterDialogFooterElement', () => {
@@ -16,8 +16,8 @@ suite('FilterDialogFooterElement', () => {
   });
 
   test('renders correctly', () => {
-    expect(filterDialogFooter instanceof HTMLElement).to.be.true;
-    expect(filterDialogFooter.tagName).to.equal('FILTER-DIALOG-FOOTER');
+    assertTrue(filterDialogFooter instanceof HTMLElement);
+    assertEquals('FILTER-DIALOG-FOOTER', filterDialogFooter.tagName);
   });
 
   test('fires cancel-click event', async () => {
@@ -33,7 +33,7 @@ suite('FilterDialogFooterElement', () => {
     cancelButton.click();
     await microtasksFinished();
 
-    expect(capturedEvent).to.not.be.null;
+    assertNotEquals(null, capturedEvent);
   });
 
   test('fires apply-click event', async () => {
@@ -49,6 +49,6 @@ suite('FilterDialogFooterElement', () => {
     applyButton.click();
     await microtasksFinished();
 
-    expect(capturedEvent).to.not.be.null;
+    assertNotEquals(null, capturedEvent);
   });
 });

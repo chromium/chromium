@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {expect} from '//webui-test/chai.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {AppDialogElement} from 'chrome://updater/event_list/filter_dialog/app_dialog.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('AppDialogElement', () => {
@@ -25,16 +25,16 @@ suite('AppDialogElement', () => {
   });
 
   test('renders correctly', () => {
-    expect(filterApp instanceof HTMLElement).to.be.true;
-    expect(filterApp.tagName).to.equal('APP-DIALOG');
+    assertTrue(filterApp instanceof HTMLElement);
+    assertEquals('APP-DIALOG', filterApp.tagName);
   });
 
   test('displays known apps', async () => {
     await microtasksFinished();
     const checkboxes = filterApp.shadowRoot.querySelectorAll('cr-checkbox');
-    expect(checkboxes.length).to.equal(2);
-    expect(checkboxes[0]!.textContent.trim()).to.equal('Google Chrome');
-    expect(checkboxes[1]!.textContent.trim()).to.equal('Google Chrome Beta');
+    assertEquals(2, checkboxes.length);
+    assertEquals('Google Chrome', checkboxes[0]!.textContent.trim());
+    assertEquals('Google Chrome Beta', checkboxes[1]!.textContent.trim());
   });
 
   test('filters apps by search', async () => {
@@ -45,9 +45,9 @@ suite('AppDialogElement', () => {
     await microtasksFinished();
 
     const checkboxes = filterApp.shadowRoot.querySelectorAll('cr-checkbox');
-    expect(checkboxes.length).to.equal(2);
-    expect(checkboxes[0]!.textContent.trim()).to.equal('Google Chrome Beta');
-    expect(checkboxes[1]!.textContent.trim()).to.equal('Beta');
+    assertEquals(2, checkboxes.length);
+    assertEquals('Google Chrome Beta', checkboxes[0]!.textContent.trim());
+    assertEquals('Beta', checkboxes[1]!.textContent.trim());
   });
 
   test('initializes with selections', async () => {
@@ -55,8 +55,8 @@ suite('AppDialogElement', () => {
     await microtasksFinished();
 
     const checkboxes = filterApp.shadowRoot.querySelectorAll('cr-checkbox');
-    expect(checkboxes[0]!.checked).to.be.true;
-    expect(checkboxes[1]!.checked).to.be.false;
+    assertTrue(checkboxes[0]!.checked);
+    assertFalse(checkboxes[1]!.checked);
   });
 
   test('fires filter-change event on apply', async () => {
@@ -72,15 +72,15 @@ suite('AppDialogElement', () => {
 
     const footerElement =
         filterApp.shadowRoot?.querySelector('filter-dialog-footer');
-    expect(footerElement).to.not.be.null;
+    assertNotEquals(null, footerElement);
     const applyButton = footerElement!.shadowRoot?.querySelector<HTMLElement>(
         '.action-button')!;
     applyButton.click();
     await microtasksFinished();
 
-    expect(capturedEvent).to.not.be.null;
-    expect(capturedEvent!.detail.has('Google Chrome')).to.be.true;
-    expect(capturedEvent!.detail.size).to.equal(1);
+    assertNotEquals(null, capturedEvent);
+    assertTrue(capturedEvent!.detail.has('Google Chrome'));
+    assertEquals(1, capturedEvent!.detail.size);
   });
 
   test('fires close event on cancel', async () => {
@@ -91,19 +91,19 @@ suite('AppDialogElement', () => {
 
     const footerElement =
         filterApp.shadowRoot?.querySelector('filter-dialog-footer');
-    expect(footerElement).to.not.be.null;
+    assertNotEquals(null, footerElement);
     const cancelButton = footerElement!.shadowRoot?.querySelector<HTMLElement>(
         '.cancel-button')!;
     cancelButton.click();
     await microtasksFinished();
 
-    expect(closeFired).to.be.true;
+    assertTrue(closeFired);
   });
 
   test('focuses input on load', async () => {
     await microtasksFinished();
     const input =
         filterApp.shadowRoot.querySelector<HTMLElement>('.filter-menu-input');
-    expect(input).to.equal(filterApp.shadowRoot.activeElement);
+    assertEquals(filterApp.shadowRoot.activeElement, input);
   });
 });

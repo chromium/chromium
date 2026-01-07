@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import type {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import {expect} from '//webui-test/chai.js';
 import {OutcomeDialogElement} from 'chrome://updater/event_list/filter_dialog/outcome_dialog.js';
+import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('OutcomeDialogElement', () => {
@@ -17,15 +17,15 @@ suite('OutcomeDialogElement', () => {
   });
 
   test('renders correctly', () => {
-    expect(filterOutcome instanceof HTMLElement).to.be.true;
-    expect(filterOutcome.tagName).to.equal('OUTCOME-DIALOG');
+    assertTrue(filterOutcome instanceof HTMLElement);
+    assertEquals('OUTCOME-DIALOG', filterOutcome.tagName);
   });
 
   test('displays update outcomes', async () => {
     await microtasksFinished();
     const checkboxes = filterOutcome.shadowRoot.querySelectorAll('cr-checkbox');
     // UPDATED, NO_UPDATE, UPDATE_ERROR
-    expect(checkboxes.length).to.equal(3);
+    assertEquals(3, checkboxes.length);
   });
 
   test('initializes with selections', async () => {
@@ -35,8 +35,8 @@ suite('OutcomeDialogElement', () => {
     const updatedCheckbox =
         filterOutcome.shadowRoot.querySelector<CrCheckboxElement>(
             'cr-checkbox[data-outcome="UPDATED"]');
-    expect(updatedCheckbox).to.not.be.null;
-    expect(updatedCheckbox!.checked).to.be.true;
+    assertNotEquals(null, updatedCheckbox);
+    assertTrue(updatedCheckbox!.checked);
   });
 
   test('fires filter-change event on apply', async () => {
@@ -53,20 +53,20 @@ suite('OutcomeDialogElement', () => {
 
     const footerElement =
         filterOutcome.shadowRoot?.querySelector('filter-dialog-footer');
-    expect(footerElement).to.not.be.null;
+    assertNotEquals(null, footerElement);
     const applyButton = footerElement!.shadowRoot?.querySelector<HTMLElement>(
         '.action-button')!;
     applyButton.click();
     await microtasksFinished();
 
-    expect(capturedEvent).to.not.be.null;
-    expect(capturedEvent!.detail.has('UPDATED')).to.be.true;
+    assertNotEquals(null, capturedEvent);
+    assertTrue(capturedEvent!.detail.has('UPDATED'));
   });
 
   test('focuses first checkbox on load', async () => {
     await microtasksFinished();
     const checkbox = filterOutcome.shadowRoot.querySelector<HTMLElement>(
         '.filter-menu-item');
-    expect(checkbox).to.equal(filterOutcome.shadowRoot.activeElement);
+    assertEquals(checkbox, filterOutcome.shadowRoot.activeElement);
   });
 });

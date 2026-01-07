@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {expect} from '//webui-test/chai.js';
 import {FilterDialogElement} from 'chrome://updater/event_list/filter_dialog/filter_dialog.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('FilterDialogElement', () => {
@@ -16,8 +16,8 @@ suite('FilterDialogElement', () => {
   test('renders correctly', () => {
     filterDialog = new FilterDialogElement();
     document.body.appendChild(filterDialog);
-    expect(filterDialog instanceof HTMLElement).to.be.true;
-    expect(filterDialog.tagName).to.equal('FILTER-DIALOG');
+    assertTrue(filterDialog instanceof HTMLElement);
+    assertEquals('FILTER-DIALOG', filterDialog.tagName);
   });
 
   test('positions dialog relative to parent by default', async () => {
@@ -35,8 +35,8 @@ suite('FilterDialogElement', () => {
     await microtasksFinished();
 
     const dialog = filterDialog.$.dialog;
-    expect(dialog.style.top).to.equal('204px');
-    expect(dialog.style.left).to.equal('100px');
+    assertEquals('204px', dialog.style.top);
+    assertEquals('100px', dialog.style.left);
   });
 
   test('positions dialog relative to anchorElement if set', async () => {
@@ -55,8 +55,8 @@ suite('FilterDialogElement', () => {
     await microtasksFinished();
 
     const dialog = filterDialog.$.dialog;
-    expect(dialog.style.top).to.equal('254px');
-    expect(dialog.style.left).to.equal('200px');
+    assertEquals('254px', dialog.style.top);
+    assertEquals('200px', dialog.style.left);
   });
 
   test('repositions dialog when anchorElement changes', async () => {
@@ -75,8 +75,8 @@ suite('FilterDialogElement', () => {
     await microtasksFinished();
 
     let dialog = filterDialog.$.dialog;
-    expect(dialog.style.top).to.equal('34px');  // 10 + 20 + 4
-    expect(dialog.style.left).to.equal('10px');
+    assertEquals('34px', dialog.style.top);  // 10 + 20 + 4
+    assertEquals('10px', dialog.style.left);
 
     const newAnchor = document.createElement('div');
     newAnchor.style.position = 'absolute';
@@ -90,7 +90,7 @@ suite('FilterDialogElement', () => {
     await microtasksFinished();
 
     dialog = filterDialog.$.dialog;
-    expect(dialog.style.top).to.equal('344px');  // 300 + 40 + 4
-    expect(dialog.style.left).to.equal('300px');
+    assertEquals('344px', dialog.style.top);  // 300 + 40 + 4
+    assertEquals('300px', dialog.style.left);
   });
 });

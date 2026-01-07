@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {expect} from '//webui-test/chai.js';
 import {DateDialogElement} from 'chrome://updater/event_list/filter_dialog/date_dialog.js';
+import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('DateDialogElement', () => {
@@ -16,15 +16,15 @@ suite('DateDialogElement', () => {
   });
 
   test('renders correctly', () => {
-    expect(filterDate instanceof HTMLElement).to.be.true;
-    expect(filterDate.tagName).to.equal('DATE-DIALOG');
+    assertTrue(filterDate instanceof HTMLElement);
+    assertEquals('DATE-DIALOG', filterDate.tagName);
   });
 
   test('displays date inputs', async () => {
     await microtasksFinished();
     const inputs =
         filterDate.shadowRoot.querySelectorAll('input[type="datetime-local"]');
-    expect(inputs.length).to.equal(2);
+    assertEquals(2, inputs.length);
   });
 
   test('initializes with dates', async () => {
@@ -40,8 +40,8 @@ suite('DateDialogElement', () => {
         filterDate.shadowRoot.querySelector<HTMLInputElement>('#end-date')!;
 
     // valueAsNumber returns milliseconds
-    expect(startInput.valueAsNumber).to.equal(start.getTime());
-    expect(endInput.valueAsNumber).to.equal(end.getTime());
+    assertEquals(start.getTime(), startInput.valueAsNumber);
+    assertEquals(end.getTime(), endInput.valueAsNumber);
   });
 
   test('fires filter-change event on apply', async () => {
@@ -60,22 +60,23 @@ suite('DateDialogElement', () => {
 
     const footerElement =
         filterDate.shadowRoot?.querySelector('filter-dialog-footer');
-    expect(footerElement).to.not.be.null;
+    assertNotEquals(null, footerElement);
     const applyButton = footerElement!.shadowRoot?.querySelector<HTMLElement>(
         '.action-button')!;
     applyButton.click();
     await microtasksFinished();
 
-    expect(capturedEvent).to.not.be.null;
-    expect(capturedEvent!.detail.start).to.not.be.null;
-    expect(capturedEvent!.detail.start!.getTime())
-        .to.equal(new Date('2025-01-01T00:00').getTime());
+    assertNotEquals(null, capturedEvent);
+    assertNotEquals(null, capturedEvent!.detail.start);
+    assertEquals(
+        new Date('2025-01-01T00:00').getTime(),
+        capturedEvent!.detail.start!.getTime());
   });
 
   test('focuses start date input on load', async () => {
     await microtasksFinished();
     const input = filterDate.shadowRoot.querySelector<HTMLElement>(
         '.filter-menu-date-inputs input');
-    expect(input).to.equal(filterDate.shadowRoot.activeElement);
+    assertEquals(filterDate.shadowRoot.activeElement, input);
   });
 });
