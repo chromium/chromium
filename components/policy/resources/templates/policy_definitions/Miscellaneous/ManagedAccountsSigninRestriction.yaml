@@ -1,6 +1,7 @@
 caption: Add restrictions on managed accounts
 default: none
-desc: |2-
+desc: |-
+  This policy is deprecated. Please use <ph name="POLICY_VALUE_PROFILE_SEPARATION_SETTINGS_NAME">ProfileSeparationSettings</ph> instead.
 
   Default behavior (Policy unset)
   When an account is added in the content area a small dialog may appear asking the user to create a new profile. This dialog is dismissable.
@@ -22,6 +23,7 @@ desc: |2-
 
   <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME">ManagedAccountsSigninRestriction</ph> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA">'primary_account_strict_keep_existing_data'</ph>
   This is the same behavior as <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA">'primary_account_keep_existing_data'</ph> except the newly created profile is not allowed to have secondary accounts.
+deprecated: true
 example_value: primary_account
 features:
   dynamic_refresh: false
