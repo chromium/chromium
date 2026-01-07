@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/updater/updater_page_handler.h"
 
+#include <algorithm>
 #include <iterator>
 #include <optional>
 #include <string>
@@ -14,6 +15,8 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
@@ -61,17 +64,18 @@ UpdaterPageHandler::~UpdaterPageHandler() = default;
 
 void UpdaterPageHandler::GetAllUpdaterEvents(
     GetAllUpdaterEventsCallback callback) {
-  std::vector<std::string> all_messages;
-  for (const base::FilePath& directory : GetUpdaterDirectories()) {
-    for (const std::string_view filename :
-         {"updater_history.jsonl", "updater_history.jsonl.old"}) {
-      std::vector<std::string> messages =
-          ReadUpdaterEvents(directory.AppendASCII(filename));
-      all_messages.reserve(all_messages.size() + messages.size());
-      all_messages.insert(all_messages.end(),
-                          std::make_move_iterator(messages.begin()),
-                          std::make_move_iterator(messages.end()));
-    }
-  }
-  std::move(callback).Run(all_messages);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()}, base::BindOnce([] {
+        std::vector<std::string> all_messages;
+        for (const base::FilePath& directory : GetUpdaterDirectories()) {
+          for (const std::string_view filename :
+               {"updater_history.jsonl", "updater_history.jsonl.old"}) {
+            std::ranges::move(
+                ReadUpdaterEvents(directory.AppendASCII(filename)),
+                std::back_inserter(all_messages));
+          }
+        }
+        return all_messages;
+      }),
+      std::move(callback));
 }
