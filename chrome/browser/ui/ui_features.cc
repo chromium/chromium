@@ -93,53 +93,6 @@ BASE_FEATURE(kShowTabGroupsMacSystemMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSideBySide, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSideBySideDropTargetNudge, base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE_PARAM(int,
-                   kSideBySideDropTargetNudgeMinWidth,
-                   &kSideBySideDropTargetNudge,
-                   "drop_target_nudge_min_width",
-                   80);
-BASE_FEATURE_PARAM(int,
-                   kSideBySideDropTargetNudgeMaxWidth,
-                   &kSideBySideDropTargetNudge,
-                   "drop_target_nudge_max_width",
-                   200);
-BASE_FEATURE_PARAM(int,
-                   kSideBySideDropTargetNudgeTargetWidthPercentage,
-                   &kSideBySideDropTargetNudge,
-                   "drop_target_nudge_width_percentage",
-                   5);
-BASE_FEATURE_PARAM(int,
-                   kSideBySideDropTargetNudgeToFullMinWidth,
-                   &kSideBySideDropTargetNudge,
-                   "drop_target_nudge_to_full_min_width",
-                   120);
-BASE_FEATURE_PARAM(int,
-                   kSideBySideDropTargetNudgeToFullMaxWidth,
-                   &kSideBySideDropTargetNudge,
-                   "drop_target_nudge_to_full_max_width",
-                   360);
-BASE_FEATURE_PARAM(int,
-                   kSideBySideDropTargetNudgeToFullTargetWidthPercentage,
-                   &kSideBySideDropTargetNudge,
-                   "drop_target_nudge_to_full_width_percentage",
-                   15);
-BASE_FEATURE_PARAM(double,
-                   kSideBySideDropTargetNudgeShowRatio,
-                   &kSideBySideDropTargetNudge,
-                   "drop_target_nudge_show_ratio",
-                   0.4f);
-BASE_FEATURE_PARAM(int,
-                   kSideBySideDropTargetNudgeShownLimit,
-                   &kSideBySideDropTargetNudge,
-                   "drop_target_nudge_shown_limit",
-                   6);
-BASE_FEATURE_PARAM(int,
-                   kSideBySideDropTargetNudgeUsedLimit,
-                   &kSideBySideDropTargetNudge,
-                   "drop_target_nudge_used_limit",
-                   1);
 
 BASE_FEATURE(kSideBySideLinkMenuNewBadge, base::FEATURE_ENABLED_BY_DEFAULT);
 

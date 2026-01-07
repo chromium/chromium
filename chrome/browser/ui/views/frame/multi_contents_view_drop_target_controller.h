@@ -37,6 +37,9 @@ class MultiContentsViewDropTargetController final
       base::Milliseconds(500);
   static constexpr base::TimeDelta kShowDropTargetForLinkAfterHideDelay =
       base::Milliseconds(3000);
+  static constexpr double kNudgeShowRatio = 0.4;
+  static constexpr int kNudgeShownLimit = 6;
+  static constexpr int kNudgeUsedLimit = 1;
 
   // Delegate for handling the drop callback.
   class DropDelegate {

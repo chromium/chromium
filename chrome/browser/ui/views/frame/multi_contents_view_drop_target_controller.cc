@@ -252,8 +252,7 @@ void MultiContentsViewDropTargetController::OnWebContentsDragUpdate(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kSideBySideDropTargetNudge) &&
-      ShouldShowNudge() && drop_target_view_->ShouldShowAnimation()) {
+  if (ShouldShowNudge() && drop_target_view_->ShouldShowAnimation()) {
     HandleDragUpdateForNudge(point);
   } else {
     HandleDragUpdate(point, MultiContentsDropTargetView::DragType::kLink);
@@ -312,11 +311,10 @@ void MultiContentsViewDropTargetController::HandleDragUpdateForNudge(
     const gfx::Point& point_in_view) {
   CHECK_LE(0, point_in_view.x());
   CHECK_LE(point_in_view.x(), drop_target_parent_view_->width());
-  CHECK(base::FeatureList::IsEnabled(features::kSideBySideDropTargetNudge));
   const bool is_rtl = base::i18n::IsRTL();
   const float point_ratio =
       (1.0f * point_in_view.x()) / drop_target_parent_view_->width();
-  const float nudge_ratio = features::kSideBySideDropTargetNudgeShowRatio.Get();
+  const float nudge_ratio = kNudgeShowRatio;
 
   // Either hide or show the drop target if the drag is in the trigger area.
   if (point_ratio > nudge_ratio && point_ratio < 1.0f - nudge_ratio) {
@@ -472,8 +470,6 @@ void MultiContentsViewDropTargetController::
 }
 
 bool MultiContentsViewDropTargetController::ShouldShowNudge() {
-  return nudge_shown_count_ <
-             features::kSideBySideDropTargetNudgeShownLimit.Get() &&
-         nudge_used_count_ <
-             features::kSideBySideDropTargetNudgeUsedLimit.Get();
+  return nudge_shown_count_ < kNudgeShownLimit &&
+         nudge_used_count_ < kNudgeUsedLimit;
 }

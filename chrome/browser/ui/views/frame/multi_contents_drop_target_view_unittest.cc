@@ -387,13 +387,12 @@ TEST_F(DropTargetViewTest, GetPreferredWidthWithStates) {
              MultiContentsDropTargetView::DropTargetState::kNudge,
              MultiContentsDropTargetView::DragType::kLink);
   EXPECT_TRUE(view->GetVisible());
-  EXPECT_EQ(features::kSideBySideDropTargetNudgeMinWidth.Get(),
+  EXPECT_EQ(MultiContentsDropTargetView::kNudgeMinWidth,
             view->GetPreferredWidth(800));
-  EXPECT_EQ(features::kSideBySideDropTargetNudgeMaxWidth.Get(),
+  EXPECT_EQ(MultiContentsDropTargetView::kNudgeMaxWidth,
             view->GetPreferredWidth(5000));
   EXPECT_EQ(
-      2000 * features::kSideBySideDropTargetNudgeTargetWidthPercentage.Get() /
-          100,
+      2000 * MultiContentsDropTargetView::kNudgeTargetWidthPercentage / 100,
       view->GetPreferredWidth(2000));
 
   // Test nudge to full state.
@@ -401,13 +400,12 @@ TEST_F(DropTargetViewTest, GetPreferredWidthWithStates) {
              MultiContentsDropTargetView::DropTargetState::kNudgeToFull,
              MultiContentsDropTargetView::DragType::kLink);
   EXPECT_TRUE(view->GetVisible());
-  EXPECT_EQ(features::kSideBySideDropTargetNudgeToFullMinWidth.Get(),
+  EXPECT_EQ(MultiContentsDropTargetView::kNudgeToFullMinWidth,
             view->GetPreferredWidth(400));
-  EXPECT_EQ(features::kSideBySideDropTargetNudgeToFullMaxWidth.Get(),
+  EXPECT_EQ(MultiContentsDropTargetView::kNudgeToFullMaxWidth,
             view->GetPreferredWidth(3000));
   EXPECT_EQ(1000 *
-                features::kSideBySideDropTargetNudgeToFullTargetWidthPercentage
-                    .Get() /
+                MultiContentsDropTargetView::kNudgeToFullTargetWidthPercentage /
                 100,
             view->GetPreferredWidth(1000));
 
@@ -451,19 +449,17 @@ TEST_F(DropTargetViewTest, AnimateFromNudgeToFull) {
   animation.Step(now + base::Seconds(kDelayedAnimationDuration));
   const int nudge_width = view->GetPreferredWidth(kContentsWidth);
   view->SetSize(gfx::Size(nudge_width, view->size().height()));
-  EXPECT_EQ(
-      kContentsWidth *
-          features::kSideBySideDropTargetNudgeTargetWidthPercentage.Get() / 100,
-      nudge_width);
+  EXPECT_EQ(kContentsWidth *
+                MultiContentsDropTargetView::kNudgeTargetWidthPercentage / 100,
+            nudge_width);
 
   // Transition to nudge-to-full state with an animation.
   view->Show(MultiContentsDropTargetView::DropSide::START,
              MultiContentsDropTargetView::DropTargetState::kNudgeToFull,
              MultiContentsDropTargetView::DragType::kLink);
-  EXPECT_EQ(
-      kContentsWidth *
-          features::kSideBySideDropTargetNudgeTargetWidthPercentage.Get() / 100,
-      view->GetPreferredWidth(kContentsWidth));
+  EXPECT_EQ(kContentsWidth *
+                MultiContentsDropTargetView::kNudgeTargetWidthPercentage / 100,
+            view->GetPreferredWidth(kContentsWidth));
 
   // Step the animation to the middle.
   animation.Step(now + base::Seconds(kDelayedAnimationDuration / 2));
@@ -473,8 +469,7 @@ TEST_F(DropTargetViewTest, AnimateFromNudgeToFull) {
   // width.
   const int nudge_to_full_width =
       kContentsWidth *
-      features::kSideBySideDropTargetNudgeToFullTargetWidthPercentage.Get() /
-      100;
+      MultiContentsDropTargetView::kNudgeToFullTargetWidthPercentage / 100;
   const int current_width = view->GetPreferredWidth(kContentsWidth);
   EXPECT_GT(current_width, nudge_width);
   EXPECT_LT(current_width, nudge_to_full_width);
@@ -509,7 +504,7 @@ TEST_F(DropTargetViewTest, AnimateFromNudgeToFullMidAnimation) {
 
   const int nudge_width =
       kContentsWidth *
-      features::kSideBySideDropTargetNudgeTargetWidthPercentage.Get() / 100;
+      MultiContentsDropTargetView::kNudgeTargetWidthPercentage / 100;
   const int nudge_mid_animation_width = view->GetPreferredWidth(kContentsWidth);
   EXPECT_GT(nudge_mid_animation_width, 0);
   EXPECT_LT(nudge_mid_animation_width, nudge_width);
@@ -526,8 +521,7 @@ TEST_F(DropTargetViewTest, AnimateFromNudgeToFullMidAnimation) {
   // Check that the width is between the nudge and nudge-to-full widths.
   const int nudge_to_full_width =
       kContentsWidth *
-      features::kSideBySideDropTargetNudgeToFullTargetWidthPercentage.Get() /
-      100;
+      MultiContentsDropTargetView::kNudgeToFullTargetWidthPercentage / 100;
   const int full_mid_animation_width = view->GetPreferredWidth(kContentsWidth);
   EXPECT_GT(full_mid_animation_width, nudge_mid_animation_width);
   EXPECT_LT(full_mid_animation_width, nudge_to_full_width);

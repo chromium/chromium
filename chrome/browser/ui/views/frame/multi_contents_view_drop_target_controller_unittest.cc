@@ -187,9 +187,10 @@ class MultiContentsViewDropTargetControllerTest : public ChromeViewsTestBase {
     ASSERT_EQ(0,
               prefs()->GetInteger(prefs::kSplitViewDragAndDropNudgeShownCount));
 
-    // Show the nudge the first kSideBySideDropTargetNudgeShownLimit times.
+    // Show the nudge the first kNudgeShownLimit times.
     for (int expected_count = 1;
-         expected_count <= features::kSideBySideDropTargetNudgeShownLimit.Get();
+         expected_count <=
+         MultiContentsViewDropTargetController::kNudgeShownLimit;
          ++expected_count) {
       DragURLTo(kDragPointForStartDropTargetShow);
       FastForward(MultiContentsViewDropTargetController::
@@ -216,9 +217,9 @@ class MultiContentsViewDropTargetControllerTest : public ChromeViewsTestBase {
     EXPECT_TRUE(drop_target_view().GetVisible());
     EXPECT_EQ(drop_target_view().state().value(),
               MultiContentsDropTargetView::DropTargetState::kFull);
-    EXPECT_EQ(features::kSideBySideDropTargetNudgeShownLimit.Get(),
+    EXPECT_EQ(MultiContentsViewDropTargetController::kNudgeShownLimit,
               user_action_tester.GetActionCount(kNudgeShownUserActionName));
-    EXPECT_EQ(features::kSideBySideDropTargetNudgeShownLimit.Get(),
+    EXPECT_EQ(MultiContentsViewDropTargetController::kNudgeShownLimit,
               prefs()->GetInteger(prefs::kSplitViewDragAndDropNudgeShownCount));
 
     reset_nudge();
@@ -444,9 +445,9 @@ TEST_F(MultiContentsViewDropTargetControllerTest, NudgeUsedLimit) {
   ASSERT_EQ(0, user_action_tester.GetActionCount(kNudgeUsedUserActionName));
   ASSERT_EQ(0, prefs()->GetInteger(prefs::kSplitViewDragAndDropNudgeUsedCount));
 
-  // The first kSideBySideDropTargetNudgeUsedLimit drags should show the nudge.
+  // The first kNudgeUsedLimit drags should show the nudge.
   for (int expected_count = 1;
-       expected_count <= features::kSideBySideDropTargetNudgeUsedLimit.Get();
+       expected_count <= MultiContentsViewDropTargetController::kNudgeUsedLimit;
        ++expected_count) {
     DragURLTo(kDragPointForStartDropTargetShow);
     FastForward(MultiContentsViewDropTargetController::
@@ -488,9 +489,9 @@ TEST_F(MultiContentsViewDropTargetControllerTest, NudgeUsedLimit) {
   DropLink();
   FastForward(kHideDropTargetDelay + kHideDropTargetAnimation);
   EXPECT_FALSE(drop_target_view().GetVisible());
-  EXPECT_EQ(features::kSideBySideDropTargetNudgeUsedLimit.Get(),
+  EXPECT_EQ(MultiContentsViewDropTargetController::kNudgeUsedLimit,
             user_action_tester.GetActionCount(kNudgeUsedUserActionName));
-  EXPECT_EQ(features::kSideBySideDropTargetNudgeUsedLimit.Get(),
+  EXPECT_EQ(MultiContentsViewDropTargetController::kNudgeUsedLimit,
             prefs()->GetInteger(prefs::kSplitViewDragAndDropNudgeUsedCount));
 }
 
@@ -654,8 +655,6 @@ TEST_F(MultiContentsViewDropTargetControllerTest, DragDelegateMethods) {
 
 TEST_F(MultiContentsViewDropTargetControllerTest,
        ShowsFullDropTargetWhenAnimationsDisabled) {
-  ASSERT_TRUE(
-      base::FeatureList::IsEnabled(features::kSideBySideDropTargetNudge));
   auto animation_mode_reset = gfx::AnimationTestApi::SetRichAnimationRenderMode(
       gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
   ASSERT_FALSE(drop_target_view().ShouldShowAnimation());

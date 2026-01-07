@@ -144,25 +144,6 @@ BASE_DECLARE_FEATURE(kScrimForBrowserWindowModal);
 
 BASE_DECLARE_FEATURE(kSideBySide);
 
-// Feature and params to control the "nudge" behavior of drop targets.
-BASE_DECLARE_FEATURE(kSideBySideDropTargetNudge);
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetNudgeMinWidth);
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetNudgeMaxWidth);
-BASE_DECLARE_FEATURE_PARAM(int,
-                           kSideBySideDropTargetNudgeTargetWidthPercentage);
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetNudgeToFullMinWidth);
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetNudgeToFullMaxWidth);
-BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kSideBySideDropTargetNudgeToFullTargetWidthPercentage);
-// The ratio of window width that will trigger a nudge to show/hide.
-BASE_DECLARE_FEATURE_PARAM(double, kSideBySideDropTargetNudgeShowRatio);
-// The total amount of times the nudge may be shown before we stop showing it.
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetNudgeShownLimit);
-// The total amount of times the drop target may be used with a link before we
-// stop showing the nudge.
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetNudgeUsedLimit);
-
 BASE_DECLARE_FEATURE(kSideBySideLinkMenuNewBadge);
 
 enum class SidePanelRelativeAlignment {
