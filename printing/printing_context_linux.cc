@@ -50,13 +50,14 @@ PrintingContextLinux::PrintingContextLinux(
 
 PrintingContextLinux::~PrintingContextLinux() = default;
 
-void PrintingContextLinux::EnsurePrintDialog() {
+void PrintingContextLinux::EnsurePrintDialog(bool show_system_dialog) {
   if (print_dialog_) {
     return;
   }
 
   if (g_print_dialog_factory) {
-    print_dialog_ = g_print_dialog_factory->CreatePrintDialog(this);
+    print_dialog_ =
+        g_print_dialog_factory->CreatePrintDialog(this, show_system_dialog);
   }
 }
 
@@ -77,7 +78,7 @@ void PrintingContextLinux::AskUserForSettings(int max_pages,
 mojom::ResultCode PrintingContextLinux::UseDefaultSettings() {
   DCHECK(!in_print_job_);
 
-  EnsurePrintDialog();
+  EnsurePrintDialog(/*show_system_dialog=*/true);
 
   if (print_dialog_) {
     print_dialog_->UseDefaultSettings();
@@ -99,7 +100,7 @@ mojom::ResultCode PrintingContextLinux::UpdatePrinterSettings(
   DCHECK(!printer_settings.show_system_dialog);
   DCHECK(!in_print_job_);
 
-  EnsurePrintDialog();
+  EnsurePrintDialog(/*show_system_dialog=*/false);
 
   if (print_dialog_) {
     // PrintDialogGtk::UpdateSettings() calls InitWithSettings() so settings_

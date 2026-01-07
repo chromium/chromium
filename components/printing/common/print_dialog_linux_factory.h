@@ -24,7 +24,8 @@ class PrintDialogLinuxFactory
 
   // PrintingContextLinux::PrintDialogFactory:
   std::unique_ptr<PrintDialogLinuxInterface> CreatePrintDialog(
-      PrintingContextLinux* context) override;
+      PrintingContextLinux* context,
+      bool show_system_dialog) override;
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
   std::unique_ptr<PrintDialogLinuxInterface> CreatePrintDialogForSettings(
       PrintingContextLinux* context,
