@@ -134,9 +134,9 @@ public class AccessorySheetCoordinator implements AccessorySheetVisualStateProvi
     /**
      * Sets the height of the accessory sheet (i.e. adapts to keyboard heights).
      *
-     * @param height The height of the sheet in pixels.
+     * @param height The height of the sheet in pixels or WRAP_CONTENT (-2).
      */
-    public void setHeight(@Px int height) {
+    public void setHeight(int height) {
         mMediator.setHeight(height);
     }
 

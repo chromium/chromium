@@ -109,4 +109,9 @@ class AccessoryPagerAdapter extends PagerAdapter
             ListModel<Tab> model, ViewPager view, int index, int count, @Nullable Void payload) {
         notifyDataSetChanged();
     }
+
+    @Nullable View getView(int position) {
+        if (position < 0 || position >= mTabList.size()) return null;
+        return mViews.get(mTabList.get(position));
+    }
 }
