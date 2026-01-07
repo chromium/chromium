@@ -414,7 +414,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Apps.AppList.AnnotationStorage.DatabaseSize" units="MB"
     expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
-  <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Record the size of the SQLite database in MB. Emitted when tha database
@@ -438,7 +437,6 @@ chromium-metrics-reviews@google.com.
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.ImageContentAnnotator.NumberOfRetries"
     units="count" expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
-  <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Records the number of retries that has taken place before ICA DLC is ready.
@@ -450,7 +448,6 @@ chromium-metrics-reviews@google.com.
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.ImageContentAnnotator.Status"
     enum="ImageContentAnnotatorStatus" expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
-  <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     To track the errors that may occur during the DLC installation. Logged once
@@ -462,7 +459,6 @@ chromium-metrics-reviews@google.com.
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.IndexingStatus"
     enum="ImageAnnotationWorkerIndexingStatus" expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
-  <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     Records status of image annotation worker indexing. Logged when the indexing

@@ -1822,7 +1822,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.PlayStoreSearch.QueryTime" units="ms"
     expires_after="2026-07-05">
-  <owner>ypitsishin@chromium.org</owner>
   <owner>chenjih@google.com</owner>
   <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
@@ -1836,7 +1835,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.PlayStoreSearch.ReturnedAppsTotalV2" units="apps"
     expires_after="2026-05-01">
-  <owner>ypitsishin@chromium.org</owner>
   <owner>chenjih@google.com</owner>
   <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
@@ -1849,7 +1847,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.PlayStoreSearch.ReturnedInstantAppsV2" units="apps"
     expires_after="2025-01-15">
-  <owner>ypitsishin@chromium.org</owner>
   <owner>chenjih@google.com</owner>
   <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
@@ -1862,7 +1859,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.PlayStoreSearch.ReturnedUninstalledAppsV2" units="apps"
     expires_after="2025-01-15">
-  <owner>ypitsishin@chromium.org</owner>
   <owner>chenjih@google.com</owner>
   <owner>chrome-knowledge-eng@google.com</owner>
   <summary>
