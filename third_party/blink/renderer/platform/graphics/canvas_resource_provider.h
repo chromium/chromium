@@ -212,8 +212,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual base::ByteSize EstimatedSizeInBytes() const {
     return base::ByteSize(format_.EstimatedSizeInBytes(size_));
   }
-  // Returns true if the resource can be used by the display compositor.
-  virtual bool SupportsDirectCompositing() const = 0;
   uint32_t ContentUniqueID() const;
 
   bool IsGpuContextLost() const override;
@@ -367,7 +365,6 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
 
   bool IsValid() const override { return GetSkSurface(); }
   bool IsAccelerated() const override { return false; }
-  bool SupportsDirectCompositing() const override { return false; }
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault) override;
 
@@ -501,7 +498,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   }
   bool IsAccelerated() const final { return is_accelerated_; }
   base::ByteSize EstimatedSizeInBytes() const override;
-  bool SupportsDirectCompositing() const override { return true; }
 
   // Use Snapshot() for capturing a frame that is intended to be displayed via
   // the compositor. Cases that are destined to be transferred via a
