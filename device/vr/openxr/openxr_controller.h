@@ -74,7 +74,7 @@ class OpenXrController {
   // data.
   XrResult UpdateInteractionProfile();
 
-  XrResult Update(XrSpace base_space, XrTime predicted_display_time);
+  void Update(XrSpace base_space, XrTime predicted_display_time);
 
  private:
   XrResult InitializeControllerActions();
