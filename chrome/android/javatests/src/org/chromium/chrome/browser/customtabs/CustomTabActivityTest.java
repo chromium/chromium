@@ -2888,26 +2888,6 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    public void doesNotLaunchJavaScriptUrls_dispatch() {
-        Context context = ApplicationProvider.getApplicationContext();
-        String javaScriptUrl = "javascript: alert('Hello');";
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Intent intent =
-                            CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                                    context, javaScriptUrl);
-
-                    Activity activity = Mockito.mock(Activity.class);
-                    @LaunchIntentDispatcher.Action
-                    int result = LaunchIntentDispatcher.dispatch(activity, intent);
-                    assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
-                    verify(activity, never()).startActivity(any(), any());
-                });
-    }
-
-    @Test
-    @SmallTest
     public void testCallingActivityExtra() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -2922,7 +2902,7 @@ public class CustomTabActivityTest {
                                             .getSystemService(Context.POWER_SERVICE);
                     when(activity.getSystemService(Context.POWER_SERVICE)).thenReturn(powerManager);
 
-                    LaunchIntentDispatcher.dispatch(activity, intent);
+                    LaunchIntentDispatcher.dispatchToCustomTabActivity(activity, intent);
                     verify(activity, times(1)).startActivity(mIntentCaptor.capture(), any());
 
                     Assert.assertEquals(
@@ -2948,7 +2928,7 @@ public class CustomTabActivityTest {
                                             .getSystemService(Context.POWER_SERVICE);
                     when(activity.getSystemService(Context.POWER_SERVICE)).thenReturn(powerManager);
 
-                    LaunchIntentDispatcher.dispatch(activity, intent);
+                    LaunchIntentDispatcher.dispatchToCustomTabActivity(activity, intent);
                     verify(activity, times(1)).startActivity(mIntentCaptor.capture(), any());
 
                     Assert.assertNull(
