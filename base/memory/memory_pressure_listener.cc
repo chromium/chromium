@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/memory_pressure_listener_registry.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/interned_args_helper.h"
@@ -21,6 +22,22 @@
 #include "base/tracing_buildflags.h"
 
 namespace base {
+
+namespace {
+
+int GetMemoryLimitForMemoryPressureLevel(MemoryPressureLevel level) {
+  switch (level) {
+    case MEMORY_PRESSURE_LEVEL_NONE:
+      return 100;
+    case MEMORY_PRESSURE_LEVEL_MODERATE:
+      return 50;
+    case MEMORY_PRESSURE_LEVEL_CRITICAL:
+      return 0;
+  }
+  NOTREACHED();
+}
+
+}  // namespace
 
 // MemoryPressureListener ------------------------------------------------------
 
@@ -48,6 +65,14 @@ void MemoryPressureListener::SimulatePressureNotificationAsync(
     OnceClosure on_notification_sent_callback) {
   MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
       memory_pressure_level, std::move(on_notification_sent_callback));
+}
+
+int MemoryPressureListener::GetMemoryLimit() const {
+  return GetMemoryLimitForMemoryPressureLevel(memory_pressure_level_);
+}
+
+double MemoryPressureListener::GetMemoryLimitRatio() const {
+  return GetMemoryLimit() / 100.0;
 }
 
 void MemoryPressureListener::SetInitialMemoryPressureLevel(

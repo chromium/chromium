@@ -142,4 +142,24 @@ TEST(MemoryPressureListenerTest, SyncCallbackDeletesListener) {
   MemoryPressureListener::NotifyMemoryPressure(MEMORY_PRESSURE_LEVEL_CRITICAL);
 }
 
+TEST(MemoryPressureListenerTest, MemoryLimit) {
+  MemoryPressureListenerRegistry registry;
+  RegisteredMockMemoryPressureListener listener;
+
+  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_NONE);
+  EXPECT_EQ(listener.GetMemoryLimit(), 100);
+
+  MemoryPressureListenerRegistry::NotifyMemoryPressure(
+      MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_MODERATE);
+  EXPECT_EQ(listener.GetMemoryLimit(), 50);
+
+  MemoryPressureListenerRegistry::NotifyMemoryPressure(
+      MEMORY_PRESSURE_LEVEL_CRITICAL);
+
+  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_CRITICAL);
+  EXPECT_EQ(listener.GetMemoryLimit(), 0);
+}
+
 }  // namespace base

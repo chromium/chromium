@@ -155,6 +155,19 @@ class BASE_EXPORT MemoryPressureListener : public CheckedObserver {
     return memory_pressure_level_;
   }
 
+  // Returns the allowed memory limit usage, expressed as a percentage. Each
+  // memory pressure level is assigned a specific limit.
+  // - MEMORY_PRESSURE_LEVEL_NONE: 100%
+  // - MEMORY_PRESSURE_LEVEL_MODERATE: 50%
+  // - MEMORY_PRESSURE_LEVEL_CRITICAL: 0%
+  // See base/memory_coordinator/memory_consumer.h for more details on the
+  // memory limit. This is a helper function to facilitate the migration to
+  // MemoryConsumer.
+  int GetMemoryLimit() const;
+
+  // Same as `GetMemoryLimit()`, but expressed as a ratio.
+  double GetMemoryLimitRatio() const;
+
  protected:
   virtual void OnMemoryPressure(MemoryPressureLevel memory_pressure_level) = 0;
 
