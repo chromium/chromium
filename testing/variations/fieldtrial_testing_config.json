@@ -1186,6 +1186,21 @@
             ]
         }
     ],
+    "AndroidSwipeToSwitchPane": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260106",
+                    "enable_features": [
+                        "EnableSwipeToSwitchPane"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidSystemTracing": [
         {
             "platforms": [
