@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/service/shared_image/compound_image_backing.h"
 
+#include <ostream>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -671,6 +673,28 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::Create(
       std::move(copy_manager), std::move(buffer_usage)));
 }
 
+std::unique_ptr<SharedImageBacking> CompoundImageBacking::WrapExternalBacking(
+    SharedImageFactory* shared_image_factory,
+    scoped_refptr<SharedImageCopyManager> copy_manager,
+    std::unique_ptr<SharedImageBacking> backing) {
+  if (!backing) {
+    return nullptr;
+  }
+
+  // We don't wrap an existing CompoundImageBacking which consists of a shm and
+  // a gpu backing.
+  CHECK_NE(backing->GetType(), SharedImageBackingType::kCompound);
+
+  backing->SetNotRefCounted();
+
+  auto si_usage =
+      shared_image_factory->IsSharedBetweenThreads(backing->usage());
+  auto buffer_usage = backing->buffer_usage();
+  return base::WrapUnique(new CompoundImageBacking(
+      std::move(si_usage), std::move(buffer_usage), std::move(backing),
+      std::move(copy_manager), shared_image_factory->GetWeakPtr()));
+}
+
 // static
 std::unique_ptr<SharedImageBacking>
 CompoundImageBacking::CreateSharedMemoryForTesting(
@@ -792,6 +816,48 @@ CompoundImageBacking::CompoundImageBacking(
                      base::Unretained(this), std::move(gpu_backing_factory),
                      std::move(debug_label));
   elements_.push_back(std::move(gpu_element));
+}
+
+CompoundImageBacking::CompoundImageBacking(
+    bool is_thread_safe,
+    std::optional<gfx::BufferUsage> buffer_usage,
+    std::unique_ptr<SharedImageBacking> backing,
+    scoped_refptr<SharedImageCopyManager> copy_manager,
+    base::WeakPtr<SharedImageFactory> shared_image_factory)
+    : ClearTrackingSharedImageBacking(backing->mailbox(),
+                                      backing->format(),
+                                      backing->size(),
+                                      backing->color_space(),
+                                      backing->surface_origin(),
+                                      backing->alpha_type(),
+                                      backing->usage(),
+                                      backing->debug_label(),
+                                      backing->GetEstimatedSize(),
+                                      is_thread_safe,
+                                      std::move(buffer_usage)),
+      shared_image_factory_(std::move(shared_image_factory)),
+      copy_manager_(std::move(copy_manager)) {
+  // Create the element from the backing.
+  ElementHolder element;
+  if (backing->GetType() == SharedImageBackingType::kSharedMemory) {
+    element.access_streams = kMemoryStreamSet;
+  } else {
+    element.access_streams =
+        base::Difference(AccessStreamSet::All(), kMemoryStreamSet);
+  }
+
+  // |backing| may have a cleared rect set (e.g. from initial pixel data).
+  // Propagate this to the CompoundImageBacking to keep them in sync.
+  ClearTrackingSharedImageBacking::SetClearedRect(backing->ClearedRect());
+
+  // The backing is already created, so this is not a lazy initialization.
+  element.backing = std::move(backing);
+
+  // Mark the backing as having the latest content since it's the only one
+  // created so far.
+  element.content_id_ = latest_content_id_;
+  elements_.push_back(std::move(element));
+  CHECK_EQ(elements_.size(), 1u);
 }
 
 CompoundImageBacking::~CompoundImageBacking() {
@@ -1293,7 +1359,7 @@ SharedImageBacking* CompoundImageBacking::GetOrAllocateBacking(
     }
   }
 
-  LOG(ERROR) << "Could not find or create a backing for representation.";
+  LOG(ERROR) << "Could not find or create a backing for stream " << stream;
   return nullptr;
 }
 
@@ -1384,6 +1450,38 @@ void CompoundImageBacking::ElementHolder::CreateBackingIfNecessary() {
 SharedImageBacking* CompoundImageBacking::ElementHolder::GetBacking() {
   CreateBackingIfNecessary();
   return backing.get();
+}
+
+GPU_GLES2_EXPORT std::ostream& operator<<(
+    std::ostream& os,
+    gpu::SharedImageAccessStream access_stream) {
+  switch (access_stream) {
+    case gpu::SharedImageAccessStream::kSkia:
+      os << "kSkia";
+      break;
+    case gpu::SharedImageAccessStream::kOverlay:
+      os << "kOverlay";
+      break;
+    case gpu::SharedImageAccessStream::kGL:
+      os << "kGL";
+      break;
+    case gpu::SharedImageAccessStream::kDawn:
+      os << "kDawn";
+      break;
+    case gpu::SharedImageAccessStream::kDawnBuffer:
+      os << "kDawnBuffer";
+      break;
+    case gpu::SharedImageAccessStream::kMemory:
+      os << "kMemory";
+      break;
+    case gpu::SharedImageAccessStream::kVaapi:
+      os << "kVaapi";
+      break;
+    case gpu::SharedImageAccessStream::kWebNNTensor:
+      os << "kWebNNTensor";
+      break;
+  }
+  return os;
 }
 
 }  // namespace gpu

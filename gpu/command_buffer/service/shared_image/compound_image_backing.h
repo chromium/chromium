@@ -42,6 +42,10 @@ enum class SharedImageAccessStream {
   kWebNNTensor
 };
 
+GPU_GLES2_EXPORT std::ostream& operator<<(
+    std::ostream& os,
+    SharedImageAccessStream access_stream);
+
 // Used to represent what access streams a backing can be used for.
 using AccessStreamSet = base::EnumSet<SharedImageAccessStream,
                                       SharedImageAccessStream::kSkia,
@@ -152,6 +156,19 @@ class GPU_GLES2_EXPORT CompoundImageBacking
       SharedImageUsageSet usage,
       std::string debug_label,
       gfx::BufferUsage buffer_usage);
+
+  // Wraps a backing in a CompoundImageBacking. This is used to enable
+  // CompoundImageBacking as the default, where it serves as the sole backing.
+  // To achieve this, SharedImageFactory creates the standard backing and then
+  // wraps it using this method.
+  // TODO(crbug.com/448962784): Once CompoundImageBacking is fully enabled by
+  // default, it will be directly creating underlying backing itself and
+  // SharedImageFactory will be refactored to move most of backing creation
+  // logic inside CompoundImageBacking.
+  static std::unique_ptr<SharedImageBacking> WrapExternalBacking(
+      SharedImageFactory* shared_image_factory,
+      scoped_refptr<SharedImageCopyManager> copy_manager,
+      std::unique_ptr<SharedImageBacking> backing);
 
   ~CompoundImageBacking() override;
 
@@ -321,6 +338,12 @@ class GPU_GLES2_EXPORT CompoundImageBacking
       base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory,
       scoped_refptr<SharedImageCopyManager> copy_manager,
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
+
+  CompoundImageBacking(bool is_thread_safe,
+                       std::optional<gfx::BufferUsage> buffer_usage,
+                       std::unique_ptr<SharedImageBacking> backing,
+                       scoped_refptr<SharedImageCopyManager> copy_manager,
+                       base::WeakPtr<SharedImageFactory> shared_image_factory);
 
   base::trace_event::MemoryAllocatorDump* OnMemoryDump(
       const std::string& dump_name,
