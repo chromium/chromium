@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-
 #include <algorithm>
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 
 GlobalBrowserCollection::GlobalBrowserCollection() = default;
 

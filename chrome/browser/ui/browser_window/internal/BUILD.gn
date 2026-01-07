@@ -38,14 +38,14 @@ source_set("internal") {
     ]
   } else {
     sources += [
-      "browser_collection.cc",
+      "browser_collection_non_android.cc",
       "browser_window_features.cc",
       "browser_window_interface_iterator_non_android.cc",
       "create_browser_window_non_android.cc",
       "desktop_browser_window_capabilities.cc",
       "embedder_browser_window_features.cc",
-      "global_browser_collection.cc",
-      "profile_browser_collection.cc",
+      "global_browser_collection_non_android.cc",
+      "profile_browser_collection_non_android.cc",
     ]
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
@@ -156,7 +156,7 @@ source_set("unit_tests") {
       "//ui/base",
     ]
   } else {
-    sources += [ "browser_collection_unittest.cc" ]
+    sources += [ "browser_collection_non_android_unittest.cc" ]
     deps += [
       "//chrome/browser/ui:test_support",
       "//chrome/browser/ui/browser_window",
