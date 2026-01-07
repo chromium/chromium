@@ -113,7 +113,7 @@ public class UiUtils {
      *     false} otherwise.
      */
     public static boolean isRecentlyClosedTabsAndWindowsEnabled() {
-        return ChromeFeatureList.sRecentlyClosedTabsAndWindows.isEnabled();
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS);
     }
 
     /**

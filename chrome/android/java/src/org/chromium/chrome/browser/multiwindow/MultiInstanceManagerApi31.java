@@ -1106,8 +1106,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                 : "To filter both ACTIVE and INACTIVE instance types, use"
                         + " PersistedInstanceType.ANY.";
         for (Integer id : allIds) {
-            Activity activity =
-                    UiUtils.isRecentlyClosedTabsAndWindowsEnabled() ? getActivityById(id) : null;
+            Activity activity = getActivityById(id);
             // Since activity destruction is asynchronous and lacks a reliable completion callback.
             // we will preemptively clean up the TaskId and update lastAccessedTime to ensure
             // surfaces like the Recent Tabs page receive an accurate list of inactive instances in
