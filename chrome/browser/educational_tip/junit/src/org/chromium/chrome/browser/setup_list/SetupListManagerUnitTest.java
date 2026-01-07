@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.setup_list;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -22,21 +21,22 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/** Test relating to {@link SetupListModuleUtils} */
+/** Test relating to {@link SetupListManager} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowAppCompatResources.class})
-public class SetupListModuleUtilsUnitTest {
+@Features.EnableFeatures(ChromeFeatureList.ANDROID_SETUP_LIST)
+public class SetupListManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
 
@@ -46,52 +46,59 @@ public class SetupListModuleUtilsUnitTest {
     @Before
     public void setUp() {
         mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        FirstRunStatus.setFirstRunTriggeredForTesting(false);
+    }
+
+    @Test
+    @SmallTest
+    @Features.DisableFeatures(ChromeFeatureList.ANDROID_SETUP_LIST)
+    public void testIsSetupListActive_ReturnsFalseWhenFeatureDisabled() {
+        // Re-create instance after feature flag is disabled.
+        SetupListManager.setInstanceForTesting(new SetupListManager());
+        assertFalse(SetupListManager.getInstance().isSetupListActive());
     }
 
     @Test
     @SmallTest
     public void testIsSetupListActive_ReturnsFalseDuringFirstRun() {
         FirstRunStatus.setFirstRunTriggeredForTesting(true);
+        // Re-create instance after FirstRunStatus is set.
+        SetupListManager.setInstanceForTesting(new SetupListManager());
         mSharedPreferencesManager.writeLong(
                 ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP, TimeUtils.currentTimeMillis());
-        assertFalse(SetupListModuleUtils.isSetupListActive());
+        assertFalse(SetupListManager.getInstance().isSetupListActive());
     }
 
     @Test
     @SmallTest
     public void testIsSetupListActive_ReturnsFalseWhenNoTimestamp() {
-        FirstRunStatus.setFirstRunTriggeredForTesting(false);
         mSharedPreferencesManager.removeKey(ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP);
-        assertFalse(SetupListModuleUtils.isSetupListActive());
+        // Re-create instance after shared pref is removed.
+        SetupListManager.setInstanceForTesting(new SetupListManager());
+        assertFalse(SetupListManager.getInstance().isSetupListActive());
     }
 
     @Test
     @SmallTest
     public void testIsSetupListActive_ReturnsTrueWithinActiveWindow() {
-        FirstRunStatus.setFirstRunTriggeredForTesting(false);
         mSharedPreferencesManager.writeLong(
                 ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP, TimeUtils.currentTimeMillis());
         mFakeTime.advanceMillis(
-                SetupListModuleUtils.SETUP_LIST_ACTIVE_WINDOW_MILLIS - ONE_MINUTE_IN_MILLIS);
-        assertTrue(SetupListModuleUtils.isSetupListActive());
+                SetupListManager.SETUP_LIST_ACTIVE_WINDOW_MILLIS - ONE_MINUTE_IN_MILLIS);
+        // Re-create instance after time is advanced.
+        SetupListManager.setInstanceForTesting(new SetupListManager());
+        assertTrue(SetupListManager.getInstance().isSetupListActive());
     }
 
     @Test
     @SmallTest
     public void testIsSetupListActive_ReturnsFalseOutsideActiveWindow() {
-        FirstRunStatus.setFirstRunTriggeredForTesting(false);
         mSharedPreferencesManager.writeLong(
                 ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP, TimeUtils.currentTimeMillis());
         mFakeTime.advanceMillis(
-                SetupListModuleUtils.SETUP_LIST_ACTIVE_WINDOW_MILLIS + ONE_MINUTE_IN_MILLIS);
-        assertFalse(SetupListModuleUtils.isSetupListActive());
-    }
-
-    @Test
-    @SmallTest
-    public void testGetRankedModuleTypes_ReturnsCorrectOrder() {
-        List<Integer> rankedModules = SetupListModuleUtils.getRankedModuleTypes();
-        assertEquals(ModuleType.ENHANCED_SAFE_BROWSING_PROMO, (int) rankedModules.get(0));
-        assertEquals(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO, (int) rankedModules.get(1));
+                SetupListManager.SETUP_LIST_ACTIVE_WINDOW_MILLIS + ONE_MINUTE_IN_MILLIS);
+        // Re-create instance after time is advanced.
+        SetupListManager.setInstanceForTesting(new SetupListManager());
+        assertFalse(SetupListManager.getInstance().isSetupListActive());
     }
 }

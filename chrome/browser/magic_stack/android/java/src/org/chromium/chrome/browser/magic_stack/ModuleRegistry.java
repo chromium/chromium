@@ -16,7 +16,9 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** A class which is responsible for registering module builders {@link ModuleProviderBuilder}. */
@@ -113,6 +115,22 @@ public class ModuleRegistry {
 
         ModuleProviderBuilder builder = mModuleBuildersMap.get(moduleType);
         return builder.build(moduleDelegate, onModuleBuiltCallback);
+    }
+
+    /**
+     * Returns the builder {@link ModuleProviderBuilder} for a given module type.
+     *
+     * @param moduleType The type of the module.
+     * @return The object of the module builder.
+     */
+    public ModuleProviderBuilder getModuleProviderBuilder(@ModuleType int moduleType) {
+        assert mModuleBuildersMap.containsKey(moduleType);
+        return mModuleBuildersMap.get(moduleType);
+    }
+
+    /** Returns a list of all registered module types. */
+    public List<Integer> getAllRegisteredModuleTypes() {
+        return new ArrayList<>(mModuleBuildersMap.keySet());
     }
 
     /** Destroys the registry. */

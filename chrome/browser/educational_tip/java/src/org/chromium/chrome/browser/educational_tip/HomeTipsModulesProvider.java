@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.educational_tip;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
@@ -29,7 +28,8 @@ public class HomeTipsModulesProvider {
      */
     public static void registerTipModules(
             EducationTipModuleActionDelegate actionDelegate, ModuleRegistry moduleRegistry) {
-        Collection<Integer> modulesToRegister = getModuleTypesToRegister();
+        boolean isSetupListActive = SetupListModuleUtils.isSetupListActive();
+        Collection<Integer> modulesToRegister = getModuleTypesToRegister(isSetupListActive);
 
         for (@ModuleType int moduleType : modulesToRegister) {
             EducationalTipModuleBuilder moduleBuilder =
@@ -39,9 +39,8 @@ public class HomeTipsModulesProvider {
     }
 
     @VisibleForTesting
-    static Collection<Integer> getModuleTypesToRegister() {
-        if (ChromeFeatureList.sAndroidSetupList.isEnabled()
-                && SetupListModuleUtils.isSetupListActive()) {
+    static Collection<Integer> getModuleTypesToRegister(boolean isSetupListActive) {
+        if (isSetupListActive) {
             // If the "Set Up List" feature is active, return its ranked modules.
             return SetupListModuleUtils.getRankedModuleTypes();
         } else {

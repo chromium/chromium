@@ -17,6 +17,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.client_util.HomeModulesRankingHelper;
+import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.PredictionOptions;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -102,9 +103,12 @@ public class HomeModulesMediator {
         long segmentationServiceCallTimeMs = SystemClock.elapsedRealtime();
         Profile profile = mProfileSupplier.get();
         assert profile != null;
+        List<Integer> rankedModules = new ArrayList<>();
+        InputContext inputContext = createInputContextForRanking(rankedModules);
+
         HomeModulesRankingHelper.fetchModulesRank(
                 profile,
-                mModuleRegistry.createInputContext(),
+                inputContext,
                 (orderedLabels) -> {
                     // It is possible that the result is received after the magic stack has been
                     // hidden, exit now.
@@ -112,12 +116,38 @@ public class HomeModulesMediator {
                         return;
                     }
                     long durationMs = SystemClock.elapsedRealtime() - segmentationServiceCallTimeMs;
+                    List<Integer> modulesToShow =
+                            getCombinedRankedModules(orderedLabels, rankedModules);
                     buildModulesAndShow(
-                            filterEnabledModuleList(orderedLabels, getFilteredEnabledModuleSet()),
+                            modulesToShow,
                             moduleDelegate,
                             onHomeModulesChangedCallback,
                             durationMs);
                 });
+    }
+
+    /**
+     * Creates an InputContext for the segmentation platform, excluding manually ranked modules.
+     *
+     * @param manuallyRankedModules A list to which the {@link ModuleType}s of manually ranked
+     *     modules will be added.
+     * @return An {@link InputContext} containing signals from non-manually ranked modules.
+     */
+    InputContext createInputContextForRanking(List<Integer> manuallyRankedModules) {
+        InputContext inputContext = new InputContext();
+        if (mModuleDelegateHost.getTrackingTab() != null) {
+            return inputContext;
+        }
+        for (@ModuleType int moduleType : mModuleRegistry.getAllRegisteredModuleTypes()) {
+            ModuleProviderBuilder builder = mModuleRegistry.getModuleProviderBuilder(moduleType);
+            if (builder.hasManualOrdering()) {
+                manuallyRankedModules.add(moduleType);
+            } else {
+                // inputContext is only required modules that need to be ranked
+                inputContext.mergeFrom(builder.createInputContext());
+            }
+        }
+        return inputContext;
     }
 
     /** Called to notify that a module view is created. */
@@ -612,6 +642,24 @@ public class HomeModulesMediator {
                 }
             }
         }
+    }
+
+    /**
+     * Combines manually ranked modules with segmentation platform ranked modules.
+     *
+     * @param orderedLabels A list of module labels ordered by the segmentation platform.
+     * @param manuallyRankedModules A list of {@link ModuleType}s that have manual ordering.
+     * @return A single list with manually ranked modules first, followed by enabled modules from
+     *     orderedLabels.
+     */
+    @VisibleForTesting
+    List<Integer> getCombinedRankedModules(
+            List<String> orderedLabels, List<Integer> manuallyRankedModules) {
+        List<Integer> combinedList = new ArrayList<>(manuallyRankedModules);
+        List<Integer> filteredEnabledModules =
+                filterEnabledModuleList(orderedLabels, getFilteredEnabledModuleSet());
+        combinedList.addAll(filteredEnabledModules);
+        return combinedList;
     }
 
     /**

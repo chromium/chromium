@@ -43,6 +43,14 @@ public interface ModuleProviderBuilder {
      */
     void bind(PropertyModel model, ViewGroup view, PropertyKey propertyKey);
 
+    /**
+     * @return Whether this module has manual ordering for its content and bypasses segmentation
+     *     ranking.
+     */
+    default boolean hasManualOrdering() {
+        return false;
+    }
+
     /** Destroys the builder. This is called when ModuleRegistry is destroyed. */
     default void destroy() {}
 

@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -69,6 +70,7 @@ public class EducationalTipModuleBuilderUnitTest {
     @Mock private TabModel mIncognitoModel;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManagerMock;
+    @Mock private SetupListManager mSetupListManager;
 
     private ObservableSupplier<Profile> mProfileSupplier;
     private EducationalTipModuleBuilder mModuleBuilder;
@@ -97,6 +99,7 @@ public class EducationalTipModuleBuilderUnitTest {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
+        when(mSetupListManager.isSetupListActive()).thenReturn(false);
 
         mModuleBuilder =
                 new EducationalTipModuleBuilder(ModuleType.QUICK_DELETE_PROMO, mActionDelegate);
@@ -186,5 +189,30 @@ public class EducationalTipModuleBuilderUnitTest {
         assertNotNull(inputContextForTest.getEntryValue("tab_group_exists"));
         assertNotNull(inputContextForTest.getEntryValue("number_of_tabs"));
         assertNotNull(inputContextForTest.getEntryValue("is_user_signed_in"));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_SETUP_LIST})
+    public void testHasManualOrdering_ReturnsTrueForSetupListModuleWhenActive() {
+        when(mSetupListManager.isSetupListActive()).thenReturn(true);
+        SetupListManager.setInstanceForTesting(mSetupListManager);
+
+        EducationalTipModuleBuilder builder =
+                new EducationalTipModuleBuilder(
+                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO, mActionDelegate);
+        assertTrue(builder.hasManualOrdering());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_SETUP_LIST})
+    public void testHasManualOrdering_ReturnsFalseForNonSetupListModuleWhenActive() {
+        when(mSetupListManager.isSetupListActive()).thenReturn(true);
+        SetupListManager.setInstanceForTesting(mSetupListManager);
+
+        EducationalTipModuleBuilder builder =
+                new EducationalTipModuleBuilder(ModuleType.QUICK_DELETE_PROMO, mActionDelegate);
+        assertFalse(builder.hasManualOrdering());
     }
 }

@@ -27,6 +27,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/educational_tip/cards/TabGroupPromoCoordinator.java",
     "java/src/org/chromium/chrome/browser/educational_tip/cards/TabGroupSyncPromoCoordinator.java",
     "java/src/org/chromium/chrome/browser/educational_tip/cards/TipsNotificationsPromoCoordinator.java",
+    "java/src/org/chromium/chrome/browser/setup_list/SetupListManager.java",
     "java/src/org/chromium/chrome/browser/setup_list/SetupListModuleUtils.java",
   ]
   deps = [
@@ -109,7 +110,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/educational_tip/QuickDeletePromoCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/TabGroupPromoCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/TabGroupSyncPromoCoordinatorUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/setup_list/SetupListModuleUtilsUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/setup_list/SetupListManagerUnitTest.java",
   ]
 
   deps = [

@@ -49,11 +49,14 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.client_util.HomeModulesRankingHelper;
 import org.chromium.chrome.browser.segmentation_platform.client_util.HomeModulesRankingHelperJni;
 import org.chromium.components.segmentation_platform.ClassificationResult;
+import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.PredictionOptions;
+import org.chromium.components.segmentation_platform.ProcessedValue;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -714,6 +717,68 @@ public class HomeModulesMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void testCreateInputContextForRanking() {
+        when(mModuleDelegateHost.getTrackingTab()).thenReturn(null);
+        when(mModuleRegistry.getAllRegisteredModuleTypes())
+                .thenReturn(
+                        List.of(
+                                ModuleType.SINGLE_TAB, // Segmentation
+                                ModuleType.PRICE_CHANGE, // Segmentation
+                                ModuleType.ENHANCED_SAFE_BROWSING_PROMO, // Manual
+                                ModuleType.ADDRESS_BAR_PLACEMENT_PROMO // Manual
+                                ));
+
+        // Mock Builders
+        ModuleProviderBuilder singleTabBuilder = Mockito.mock(ModuleProviderBuilder.class);
+        when(singleTabBuilder.hasManualOrdering()).thenReturn(false);
+        InputContext singleTabContext = new InputContext();
+        singleTabContext.addEntry("single_tab", ProcessedValue.fromString("st_value"));
+        when(singleTabBuilder.createInputContext()).thenReturn(singleTabContext);
+        when(mModuleRegistry.getModuleProviderBuilder(ModuleType.SINGLE_TAB))
+                .thenReturn(singleTabBuilder);
+
+        ModuleProviderBuilder priceChangeBuilder = Mockito.mock(ModuleProviderBuilder.class);
+        when(priceChangeBuilder.hasManualOrdering()).thenReturn(false);
+        InputContext priceChangeContext = new InputContext();
+        priceChangeContext.addEntry("price_change", ProcessedValue.fromString("pc_value"));
+        when(priceChangeBuilder.createInputContext()).thenReturn(priceChangeContext);
+        when(mModuleRegistry.getModuleProviderBuilder(ModuleType.PRICE_CHANGE))
+                .thenReturn(priceChangeBuilder);
+
+        ModuleProviderBuilder enhancedSafeBrowsingBuilder =
+                Mockito.mock(ModuleProviderBuilder.class);
+        when(enhancedSafeBrowsingBuilder.hasManualOrdering()).thenReturn(true);
+        when(mModuleRegistry.getModuleProviderBuilder(ModuleType.ENHANCED_SAFE_BROWSING_PROMO))
+                .thenReturn(enhancedSafeBrowsingBuilder);
+
+        ModuleProviderBuilder addressBarBuilder = Mockito.mock(ModuleProviderBuilder.class);
+        when(addressBarBuilder.hasManualOrdering()).thenReturn(true);
+        when(mModuleRegistry.getModuleProviderBuilder(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO))
+                .thenReturn(addressBarBuilder);
+
+        List<Integer> manuallyRankedModules = new ArrayList<>();
+        InputContext resultContext = mMediator.createInputContextForRanking(manuallyRankedModules);
+
+        // Assertions
+        assertEquals(2, manuallyRankedModules.size());
+        assertTrue(manuallyRankedModules.contains(ModuleType.ENHANCED_SAFE_BROWSING_PROMO));
+        assertTrue(manuallyRankedModules.contains(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO));
+        assertFalse(manuallyRankedModules.contains(ModuleType.SINGLE_TAB));
+        assertFalse(manuallyRankedModules.contains(ModuleType.PRICE_CHANGE));
+
+        assertEquals("st_value", resultContext.getEntryValue("single_tab").stringValue);
+        assertEquals("pc_value", resultContext.getEntryValue("price_change").stringValue);
+        assertNull(resultContext.getEntryValue("ENHANCED_SAFE_BROWSING_PROMO"));
+        assertNull(resultContext.getEntryValue("ADDRESS_BAR_PLACEMENT_PROMO"));
+
+        verify(enhancedSafeBrowsingBuilder, never()).createInputContext();
+        verify(addressBarBuilder, never()).createInputContext();
+        verify(singleTabBuilder).createInputContext();
+        verify(priceChangeBuilder).createInputContext();
+    }
+
+    @Test
+    @SmallTest
     public void testOnModuleViewCreated() {
         @ModuleType int moduleType1 = ModuleType.TAB_GROUP_PROMO;
         @ModuleType int moduleType2 = ModuleType.TAB_GROUP_SYNC_PROMO;
@@ -745,6 +810,42 @@ public class HomeModulesMediatorUnitTest {
                     .thenReturn(false);
         }
         assertEquals(Set.of(), mMediator.getFilteredEnabledModuleSet());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetCombinedRankedModules() {
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
+
+        // Register mock checkers for the modules we are testing.
+        ModuleConfigChecker checker = Mockito.mock(ModuleConfigChecker.class);
+        when(checker.isEligible()).thenReturn(true);
+        mHomeModulesConfigManager.registerModuleEligibilityChecker(ModuleType.SINGLE_TAB, checker);
+        mHomeModulesConfigManager.registerModuleEligibilityChecker(
+                ModuleType.PRICE_CHANGE, checker);
+        mHomeModulesConfigManager.registerModuleEligibilityChecker(
+                ModuleType.ENHANCED_SAFE_BROWSING_PROMO, checker);
+        mHomeModulesConfigManager.registerModuleEligibilityChecker(
+                ModuleType.ADDRESS_BAR_PLACEMENT_PROMO, checker);
+
+        // Segmentation-ranked modules.
+        List<String> orderedLabels = List.of("PriceChange", "SingleTab");
+        // Manually ranked modules.
+        List<Integer> manuallyRankedModules =
+                List.of(
+                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
+                        ModuleType.ADDRESS_BAR_PLACEMENT_PROMO);
+
+        List<Integer> result =
+                mMediator.getCombinedRankedModules(orderedLabels, manuallyRankedModules);
+
+        assertEquals(4, result.size());
+        // Manual modules should be at the start.
+        assertEquals(ModuleType.ENHANCED_SAFE_BROWSING_PROMO, (int) result.get(0));
+        assertEquals(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO, (int) result.get(1));
+        // Segmentation modules follow.
+        assertTrue(result.subList(2, 4).contains(ModuleType.PRICE_CHANGE));
+        assertTrue(result.subList(2, 4).contains(ModuleType.SINGLE_TAB));
     }
 
     /**
