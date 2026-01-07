@@ -243,8 +243,7 @@
 
 // Starts the validation flow.
 - (void)startValidation {
-  if (base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError) &&
-      self.selectedIdentity && !self.selectedIdentity.hasValidAuth) {
+  if (self.selectedIdentity && !self.selectedIdentity.hasValidAuth) {
     [self startReauthFlowWithIdentity:self.selectedIdentity];
     return;
   }

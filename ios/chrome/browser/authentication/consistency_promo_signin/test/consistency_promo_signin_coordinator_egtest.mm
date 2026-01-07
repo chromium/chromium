@@ -35,16 +35,6 @@
 
 @implementation ConsistencyPromoSigninCoordinatorTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-
-  if ([self isRunningTest:@selector(testFromSettingsWithAuthError)]) {
-    config.features_enabled.push_back(switches::kEnableIdentityInAuthError);
-  }
-
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   // Resets the number of dismissals for web sign-in.

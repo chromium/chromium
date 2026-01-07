@@ -3762,15 +3762,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-identity-in-auth-error",
-    "owners": [
-      "bsazonov@chromium.org",
-      "jlebel@chromium.org",
-      "chrome-signin-team@google.com"
-    ],
-    "expiry_milestone": 138
-  },
-  {
     "name": "enable-immersive-fullscreen-toolbar",
     "owners": [ "bur@chromium.org", "chrome-mac-dev@google.com" ],
     "expiry_milestone": 135

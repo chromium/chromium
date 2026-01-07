@@ -113,10 +113,7 @@ AccountErrorUIInfo* GetAccountErrorUIInfo(syncer::SyncService* sync_service) {
 
   switch (sync_service->GetUserActionableError()) {
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
-      if (base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError)) {
-        return GetUIInfoForAuthenticationError();
-      }
-      break;
+      return GetUIInfoForAuthenticationError();
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:
       return GetUIInfoForPassphraseError();
     case syncer::SyncService::UserActionableError::

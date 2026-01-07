@@ -122,8 +122,6 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
   // Needed for the initialization of authentication service.
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 
-  base::test::ScopedFeatureList feature_list_;
-
   raw_ptr<syncer::TestSyncService, DanglingUntriaged> sync_service_;
   std::unique_ptr<TestProfileIOS> profile_;
 
@@ -246,7 +244,6 @@ TEST_F(ManageSyncSettingsMediatorTest,
 // Tests that a persistent auth error is displayed as a text button at the top
 // of the page for a signed in account.
 TEST_F(ManageSyncSettingsMediatorTest, TestAuthErrorForSignedInAccount) {
-  feature_list_.InitAndEnableFeature(switches::kEnableIdentityInAuthError);
   CreateManageSyncSettingsMediator();
   sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service_->SetPersistentAuthError();
