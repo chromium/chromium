@@ -1546,6 +1546,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"benefitsTermsTagForCreditCardListEntry",
        IDS_AUTOFILL_SETTINGS_PAGE_BENEFITS_TERMS_TAG_FOR_CREDIT_CARD_LIST_ENTRY},
       {"cardBenefitsLabel", IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_LABEL},
+      {"autofillAiAuthenticationToggleTitle",
+       IDS_SETTINGS_AUTOFILL_AI_AUTHENTICATION_TOGGLE_TITLE},
+      {"autofillAiAuthenticationToggleSubtitle",
+       IDS_SETTINGS_AUTOFILL_AI_AUTHENTICATION_TOGGLE_SUBTITLE},
       {"autofillAiPageTitle", IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE},
       {"autofillAiDescription", IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION},
       {"autofillAiDescriptionFeatureOn",
@@ -1778,6 +1782,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                          chrome::kGoogleAccountWorkAddressURL);
   html_source->AddString("googleAccountNameEmailAddressEditUrl",
                          chrome::kGoogleAccountNameEmailAddressEditURL);
+
+  html_source->AddBoolean("autofillAiReauthOnViewingSensitiveDataEnabled",
+                          base::FeatureList::IsEnabled(
+                              autofill::features::kAutofillAiReauthRequired));
 }
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,

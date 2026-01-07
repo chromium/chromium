@@ -76,6 +76,19 @@ export class SettingsAutofillAiSectionElement extends
       },
 
       /**
+       * Indicates whether the feature `kAutofillAiReauthRequired` is enabled.
+       */
+      // <if expr="is_win or is_macosx or is_chromeos">
+      autofillAiReauthOnViewingSensitiveDataEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'autofillAiReauthOnViewingSensitiveDataEnabled');
+        },
+      },
+      // </if>
+
+      /**
          A "fake" preference object that reflects the state of the opt-in
          toggle and the presence/absence of an enterprise policy.
          This allows leveraging the settings-toggle-button component
@@ -131,6 +144,9 @@ export class SettingsAutofillAiSectionElement extends
   }
 
   declare ineligibleUser: boolean;
+  // <if expr="is_win or is_macosx or is_chromeos">
+  declare private autofillAiReauthOnViewingSensitiveDataEnabled_: boolean;
+  // </if>
   declare private optedIn_: chrome.settingsPrivate.PrefObject;
   declare private isWalletServerStorageEnabled_: boolean;
   declare private isUserEligibleForWalletablePassDetection_: boolean;

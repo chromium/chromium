@@ -230,7 +230,9 @@ BASE_FEATURE(kAutofillAiNationalIdCard, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillAiPreferModelResponseOverHeuristics,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, AutofillAi requires re-auth when filling obfuscated fields.
+// If enabled, AutofillAi requires re-auth when filling/viewing sensitive
+// fields. As part of this feature sensitive fields are also obfuscated during
+// suggestion generation time.
 // TODO(crbug.com/468236932): Remove once feature is launched.
 BASE_FEATURE(kAutofillAiReauthRequired, base::FEATURE_DISABLED_BY_DEFAULT);
 

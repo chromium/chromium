@@ -7,6 +7,9 @@ import 'chrome://settings/settings.js';
 
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+// <if expr="is_win or is_macosx or is_chromeos">
+import {isVisible} from 'chrome://webui-test/test_util.js';
+// </if>
 import {CrSettingsPrefs, loadTimeData, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
 import type {SettingsAiLoggingInfoBullet, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import type {SettingsAutofillAiSectionElement} from 'chrome://settings/lazy_load.js';
@@ -190,6 +193,11 @@ suite('AutofillAiSectionUiTest', function() {
   let testEntityInstance: chrome.autofillPrivate.EntityInstance;
   let testEntityTypes: chrome.autofillPrivate.EntityType[];
   let settingsPrefs: SettingsPrefsElement;
+  // Note that authentication is not available on linux.
+  // <if expr="is_win or is_macosx or is_chromeos">
+  const authenticationPref =
+      'prefs.autofill.autofill_ai.reauth_before_viewing_sensitive_data';
+  // </if>
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -398,4 +406,68 @@ suite('AutofillAiSectionUiTest', function() {
         '#walletablePassDetectionToggle');
     assertFalse(!!component);
   });
+
+  // <if expr="is_win or is_macosx or is_chromeos">
+  test('AutofillAiReauthToggleHiddenWhenFeatureDisabled', async function() {
+    loadTimeData.overrideValues(
+        {autofillAiReauthOnViewingSensitiveDataEnabled: false});
+    await createSection();
+    const toggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#optInAuthenticationToggle');
+    assertFalse(isVisible(toggle));
+  });
+
+  test('AutofillAiReauthToggleVisibleWhenFeatureEnabled', async function() {
+    loadTimeData.overrideValues(
+        {autofillAiReauthOnViewingSensitiveDataEnabled: true});
+    await createSection();
+    await flushTasks();
+
+    const toggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#optInAuthenticationToggle');
+    assertTrue(isVisible(toggle));
+  });
+
+  test('AutofillAiReauthToggleUpdatesPref', async function() {
+    loadTimeData.overrideValues(
+        {autofillAiReauthOnViewingSensitiveDataEnabled: true});
+    await createSection();
+    await flushTasks();
+
+    const toggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#optInAuthenticationToggle');
+    assertTrue(!!toggle);
+
+    section.set(authenticationPref, {
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    });
+    await flushTasks();
+    assertFalse(toggle.checked);
+
+    toggle.click();
+    await flushTasks();
+    assertTrue(toggle.checked);
+    assertTrue(section.get(`${authenticationPref}.value`));
+  });
+
+  test('AutofillAiReauthToggleDisabledWhenUserIneligible', async function() {
+    loadTimeData.overrideValues({
+      autofillAiReauthOnViewingSensitiveDataEnabled: true,
+      userEligibleForAutofillAi: false,
+    });
+    await createSection();
+    section.set('ineligibleUser', true);
+    await flushTasks();
+
+    const toggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#optInAuthenticationToggle');
+    assertTrue(!!toggle);
+    assertTrue(toggle.disabled);
+  });
+  // </if>
 });

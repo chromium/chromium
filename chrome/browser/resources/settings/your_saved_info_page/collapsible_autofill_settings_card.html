@@ -6,6 +6,10 @@
   #expandedContent {
     border-top: var(--cr-separator-line);
   }
+
+  #optInAuthenticationToggle {
+    border-top: var(--cr-separator-line);
+  }
 </style>
 
 <cr-expand-button class="cr-row first" expanded="{{expanded_}}">
@@ -68,6 +72,17 @@
       </ul>
     </div>
   </div>
+
+  <template is="dom-if" if="[[autofillAiReauthOnViewingSensitiveDataEnabled_]]"
+      restamp>
+  <settings-toggle-button id="optInAuthenticationToggle"
+      disabled="[[!enhancedAutofillEligibleUser_]]"
+      pref="{{prefs.autofill.autofill_ai.reauth_before_viewing_sensitive_data}}"
+      no-extension-indicator
+      label="$i18n{autofillAiAuthenticationToggleTitle}"
+      sub-label="$i18n{autofillAiAuthenticationToggleSubtitle}">
+  </settings-toggle-button>
+  </template>
 
   <template is="dom-if" if="[[isUserEligibleForWalletablePassDetection_]]"
       restamp>

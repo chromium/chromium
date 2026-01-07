@@ -29,6 +29,11 @@ function setupDefaultPrefs(settingsPrefs: SettingsPrefsElement) {
 suite('CollapsibleAutofillSettingsCard', function() {
   let entityDataManager: TestEntityDataManagerProxy;
   let settingsPrefs: SettingsPrefsElement;
+  // Note that authentication is not available on linux.
+  // <if expr="is_win or is_macosx or is_chromeos">
+  const authenticationPref =
+      'prefs.autofill.autofill_ai.reauth_before_viewing_sensitive_data';
+  // </if>
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -381,4 +386,63 @@ suite('CollapsibleAutofillSettingsCard', function() {
         '#walletablePassDetectionToggle');
     assertFalse(!!component);
   });
+
+  // <if expr="is_win or is_macosx or is_chromeos">
+  test('AutofillAiReauthToggleHiddenWhenFeatureDisabled', async function() {
+    loadTimeData.overrideValues(
+        {autofillAiReauthOnViewingSensitiveDataEnabled: false});
+    const card = await createCollapsibleAutofillSettingsCard();
+    const toggle = card.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#optInAuthenticationToggle');
+    assertFalse(isVisible(toggle));
+  });
+
+  test('AutofillAiReauthToggleVisibleWhenFeatureEnabled', async function() {
+    loadTimeData.overrideValues(
+        {autofillAiReauthOnViewingSensitiveDataEnabled: true});
+    const card = await createCollapsibleAutofillSettingsCard();
+    await flushTasks();
+
+    const expandButton = card.shadowRoot!.querySelector('cr-expand-button');
+    assertTrue(!!expandButton);
+    expandButton.click();
+    await flushTasks();
+
+    const toggle = card.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#optInAuthenticationToggle');
+    assertTrue(isVisible(toggle));
+  });
+
+  test('AutofillAiReauthToggleUpdatesPref', async function() {
+    loadTimeData.overrideValues(
+        {autofillAiReauthOnViewingSensitiveDataEnabled: true});
+    const card = await createCollapsibleAutofillSettingsCard();
+    const toggle = card.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#optInAuthenticationToggle');
+    assertTrue(!!toggle);
+
+    card.set(authenticationPref, {
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    });
+    await flushTasks();
+    assertFalse(toggle.checked);
+
+    toggle.click();
+    await flushTasks();
+    assertTrue(toggle.checked);
+    assertTrue(card.get(`${authenticationPref}.value`));
+  });
+
+  test('AutofillAiReauthToggleDisabledWhenUserIneligible', async function() {
+    loadTimeData.overrideValues(
+        {autofillAiReauthOnViewingSensitiveDataEnabled: true});
+    const card = await createCollapsibleAutofillSettingsCard(
+        /*eligibleUser=*/ false);
+    const toggle = card.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#optInAuthenticationToggle');
+    assertTrue(!!toggle);
+    assertTrue(toggle.disabled);
+  });
+  // </if>
 });

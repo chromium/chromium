@@ -65,6 +65,17 @@
   </div>
 </div>
 
+<template is="dom-if" if="[[autofillAiReauthOnViewingSensitiveDataEnabled_]]"
+    restamp>
+  <settings-toggle-button id="optInAuthenticationToggle"
+      disabled="[[ineligibleUser]]"
+      pref="{{prefs.autofill.autofill_ai.reauth_before_viewing_sensitive_data}}"
+      no-extension-indicator
+      label="$i18n{autofillAiAuthenticationToggleTitle}"
+      sub-label="$i18n{autofillAiAuthenticationToggleSubtitle}">
+  </settings-toggle-button>
+</template>
+
 <settings-autofill-ai-entries-list
     list-title="$i18n{autofillAiEntityInstancesHeader}"
     prefs="{{prefs}}">
