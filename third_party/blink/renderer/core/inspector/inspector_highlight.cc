@@ -55,9 +55,17 @@ namespace blink {
 namespace {
 
 inline LayoutBox* ContentLayoutBoxFromNode(Node* node) {
-  auto* block = To<LayoutBlock>(node->GetLayoutObject())->ContentLayoutBox();
-  DCHECK(block) << "Node " << node->nodeName() << " has no content layout box.";
-  return block;
+  LayoutObject* layout_object = node->GetLayoutObject();
+  if (!layout_object) {
+    return nullptr;
+  }
+  if (auto* block = DynamicTo<LayoutBlock>(layout_object)) {
+    auto* content_layout_box = block->ContentLayoutBox();
+    DCHECK(content_layout_box)
+        << "Node " << node->nodeName() << " has no content layout box.";
+    return content_layout_box;
+  }
+  return nullptr;
 }
 
 class HighlightPathBuilder {
