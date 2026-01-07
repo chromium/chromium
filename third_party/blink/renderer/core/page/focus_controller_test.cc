@@ -10,6 +10,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
@@ -1223,6 +1224,58 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrderInTabsMode) {
   EXPECT_EQ(before_second_child,
             FindFocusableElementAfter(*before_second_scroll_marker,
                                       mojom::blink::FocusType::kForward));
+}
+
+TEST_F(FocusControllerTest, InsideInactiveColumnTab) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #scroller {
+        scroll-marker-group: after tabs;
+        overflow-x: auto;
+        columns: 1;
+        height: 100px;
+        scroll-snap-type: x mandatory;
+      }
+
+      #scroller::column {
+        scroll-snap-align: center;
+      }
+
+      #scroller::column::scroll-marker {
+        content: "*";
+      }
+
+      .spacer {
+        height: 100px;
+      }
+    </style>
+    <div id="scroller">
+      <a id="target" href="#">target</a>
+      <div class="spacer"></div>
+      <a id="after" href="#">after</a>
+      <div class="spacer"></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetElementById("target");
+  Element* scroller = GetElementById("scroller");
+  auto* scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
+      scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter));
+  const ColumnPseudoElement* first_column =
+      scroller->GetColumnPseudoElements()->front();
+  Element* first_scroller_marker =
+      first_column->GetPseudoElement(kPseudoIdScrollMarker);
+
+  GetFocusController().SetActive(true);
+  GetFocusController().SetFocused(true);
+  scroll_marker_group->ActivateScrollMarker(
+      To<ScrollMarkerPseudoElement>(first_scroller_marker));
+
+  Element* next =
+      FindFocusableElementAfter(*target, mojom::blink::FocusType::kForward);
+  EXPECT_EQ(next, nullptr);
 }
 
 }  // namespace blink

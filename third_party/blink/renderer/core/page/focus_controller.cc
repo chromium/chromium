@@ -84,6 +84,14 @@ namespace blink {
 
 namespace {
 
+// Returns true if the element is inside an inactive column tab.
+// Inside inactive column tab meaning being wrapped by a ::column
+// pseudo-element whose ::scroll-marker is not selected.
+bool InsideInactiveColumnTab(const Element& element) {
+  return element.GetLayoutObject() &&
+         element.GetLayoutObject()->InsideInactiveColumnTab();
+}
+
 // Start of carousel helpers for focus navigation.
 bool ElementHasScrollButton(const Element& element) {
   return element.GetPseudoElement(kPseudoIdScrollButtonBlockStart) ||
@@ -463,7 +471,8 @@ class FocusNavigation final {
       // DOM order is different from carousel focus order.
       while (next &&
              (!IsOwnedByRoot(*next) || next->IsScrollMarkerPseudoElement() ||
-              next->IsScrollMarkerGroupAfterPseudoElement())) {
+              next->IsScrollMarkerGroupAfterPseudoElement() ||
+              InsideInactiveColumnTab(*next))) {
         next = ElementTraversal::NextIncludingPseudo(*next, root_);
       }
       next = PostAdjustNextForCarouselFocusOrder(current, next);
@@ -504,7 +513,8 @@ class FocusNavigation final {
       // DOM order is different from carousel focus order.
       while (previous && (!IsOwnedByRoot(*previous) ||
                           previous->IsScrollMarkerPseudoElement() ||
-                          previous->IsScrollMarkerGroupAfterPseudoElement())) {
+                          previous->IsScrollMarkerGroupAfterPseudoElement() ||
+                          InsideInactiveColumnTab(*previous))) {
         previous = ElementTraversal::PreviousIncludingPseudo(*previous, root_);
       }
       previous = PostAdjustPreviousForCarouselFocusOrder(current, previous);
