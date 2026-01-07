@@ -261,7 +261,7 @@ void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
   const std::string& callback_id = args[0].GetString();
   const std::string& url_str = args[1].GetString();
 
-  GURL url = url_formatter::FixupURL(url_str, std::string());
+  GURL url = url_formatter::FixupURL(url_str);
   if (!url.is_valid()) {
     return;
   }

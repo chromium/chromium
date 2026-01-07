@@ -2839,8 +2839,7 @@ void TemplateURLService::AddTabToSearchVisit(const TemplateURL& t_url) {
     return;
   }
 
-  GURL url(url_formatter::FixupURL(base::UTF16ToUTF8(t_url.keyword()),
-                                   std::string()));
+  GURL url(url_formatter::FixupURL(base::UTF16ToUTF8(t_url.keyword())));
   if (!url.is_valid()) {
     return;
   }

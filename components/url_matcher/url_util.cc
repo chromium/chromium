@@ -172,7 +172,7 @@ class EmbeddedURLExtractor {
       if (net::GetValueForKeyInQuery(url, "u", &embedded)) {
         // The embedded URL may or may not include a scheme. Fix it if
         // necessary.
-        return url_formatter::FixupURL(embedded, /*desired_tld=*/std::string());
+        return url_formatter::FixupURL(embedded);
       }
     }
 

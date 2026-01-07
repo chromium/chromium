@@ -42,7 +42,7 @@ bool WillHandleWebBrowserAboutURL(GURL* url, web::BrowserState* browser_state) {
   // phase that determines the virtual URL, by including it in an initial
   // URLHandler.  This prevents minor changes from producing a virtual URL,
   // which could lead to a URL spoof.
-  *url = url_formatter::FixupURL(url->possibly_invalid_spec(), std::string());
+  *url = url_formatter::FixupURL(url->possibly_invalid_spec());
 
   // Check that about: URLs are fixed up to chrome: by url_formatter::FixupURL.
   // 'about:blank' and 'about:srcdoc' are special-cased in various places in the

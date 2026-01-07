@@ -104,7 +104,7 @@ base::Value::List ManagedBookmarksPolicyHandler::FilterBookmarks(
     } else {
       // Make sure the URL is valid before passing a bookmark to the pref.
       dict.Remove(ManagedBookmarksTracker::kChildren);
-      GURL gurl = url_formatter::FixupURL(*url, std::string());
+      GURL gurl = url_formatter::FixupURL(*url);
       if (!gurl.is_valid()) {
         LOG_POLICY(ERROR, POLICY_PROCESSING)
             << "Invalid bookmark URL: " << *url;

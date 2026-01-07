@@ -38,8 +38,8 @@ static ScopedJavaLocalRef<jobject> JNI_UrlFormatter_FixupUrl(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& url) {
   DCHECK(url);
-  GURL fixed_url = url_formatter::FixupURL(
-      base::android::ConvertJavaStringToUTF8(env, url), std::string());
+  GURL fixed_url =
+      url_formatter::FixupURL(base::android::ConvertJavaStringToUTF8(env, url));
 
   return url::GURLAndroid::FromNativeGURL(env, fixed_url);
 }

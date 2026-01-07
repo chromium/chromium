@@ -447,8 +447,7 @@ GURL BookmarkEditorView::GetInputURL() const {
   if (!url_tf_) {
     return GURL();
   }
-  return url_formatter::FixupURL(base::UTF16ToUTF8(url_tf_->GetText()),
-                                 std::string());
+  return url_formatter::FixupURL(base::UTF16ToUTF8(url_tf_->GetText()));
 }
 
 void BookmarkEditorView::UserInputChanged() {

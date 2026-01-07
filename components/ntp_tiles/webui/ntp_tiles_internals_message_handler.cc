@@ -128,7 +128,7 @@ void NTPTilesInternalsMessageHandler::HandleUpdate(
       prefs->ClearPref(ntp_tiles::prefs::kPopularSitesOverrideURL);
     } else {
       prefs->SetString(ntp_tiles::prefs::kPopularSitesOverrideURL,
-                       url_formatter::FixupURL(*url, std::string()).spec());
+                       url_formatter::FixupURL(*url).spec());
     }
 
     const std::string* directory =

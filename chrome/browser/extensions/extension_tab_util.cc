@@ -1129,7 +1129,7 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
   // entered into the Omnibox), but some extensions rely on the legacy behavior
   // where all navigations were subject to the "fixing".  See also
   // https://crbug.com/1145381.
-  url = url_formatter::FixupURL(url.spec(), "" /* = desired_tld */);
+  url = url_formatter::FixupURL(url.spec());
 
   // Reject invalid URLs.
   if (!url.is_valid()) {

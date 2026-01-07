@@ -54,7 +54,7 @@ bool CanImportURL(const GURL& url) {
       return true;
     }
 
-    GURL fixed_url(url_formatter::FixupURL(url.spec(), std::string()));
+    GURL fixed_url(url_formatter::FixupURL(url.spec()));
     const base::span<const base::cstring_view> hosts = chrome::ChromeURLHosts();
     for (const base::cstring_view host : hosts) {
       if (fixed_url.DomainIs(host)) {

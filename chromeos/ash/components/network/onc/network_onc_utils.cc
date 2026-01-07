@@ -379,7 +379,7 @@ std::optional<base::Value::Dict> ConvertOncProxySettingsToProxyConfig(
   }
   if (type == ::onc::proxy::kPAC) {
     std::string pac_url = GetString(onc_proxy_settings, ::onc::proxy::kPAC);
-    GURL url(url_formatter::FixupURL(pac_url, std::string()));
+    GURL url(url_formatter::FixupURL(pac_url));
     return ProxyConfigDictionary::CreatePacScript(
         url.is_valid() ? url.spec() : std::string(), false);
   }

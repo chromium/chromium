@@ -1542,7 +1542,7 @@ settings_private::SetPrefResult PrefsUtil::SetPref(const std::string& pref_name,
 
       std::string_view string_value = value->GetString();
       if (IsPrefTypeURL(pref_name)) {
-        GURL fixed = url_formatter::FixupURL(string_value, "");
+        GURL fixed = url_formatter::FixupURL(string_value);
         if (fixed.is_valid()) {
           string_value = fixed.spec();
         } else {

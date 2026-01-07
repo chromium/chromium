@@ -469,7 +469,7 @@ struct FixupCase {
 
 TEST(URLFixerTest, FixupURL) {
   for (const auto& value : fixup_cases) {
-    GURL actual_output = FixupURL(value.input, std::string());
+    GURL actual_output = FixupURL(value.input);
     EXPECT_EQ(value.output, actual_output.possibly_invalid_spec())
         << "input: " << value.input;
 
@@ -540,7 +540,7 @@ TEST(URLFixerTest, FixupFile) {
   GURL golden(net::FilePathToFileURL(original));
 
   // c:\foo\bar.txt -> file:///c:/foo/bar.txt (basic)
-  GURL fixedup(FixupURL(original.AsUTF8Unsafe(), std::string()));
+  GURL fixedup(FixupURL(original.AsUTF8Unsafe(), ""));
   EXPECT_EQ(golden, fixedup);
 
   // TODO(port): Make some equivalent tests for posix.
@@ -549,7 +549,7 @@ TEST(URLFixerTest, FixupFile) {
   std::string cur(base::WideToUTF8(original.value()));
   EXPECT_EQ(':', cur[1]);
   cur[1] = '|';
-  EXPECT_EQ(golden, FixupURL(cur, std::string()));
+  EXPECT_EQ(golden, FixupURL(cur, ""));
 
   FixupCase cases[] = {
       {"c:\\Non-existent%20file.txt", "file:///C:/Non-existent%2520file.txt"},
@@ -604,8 +604,7 @@ TEST(URLFixerTest, FixupFile) {
 #endif
 
   for (const auto& value : cases) {
-    EXPECT_EQ(value.output,
-              FixupURL(value.input, std::string()).possibly_invalid_spec());
+    EXPECT_EQ(value.output, FixupURL(value.input, "").possibly_invalid_spec());
   }
 
   EXPECT_TRUE(base::DeleteFile(original));

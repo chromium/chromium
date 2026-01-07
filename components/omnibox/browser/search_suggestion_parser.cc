@@ -850,8 +850,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
     if ((match_type == AutocompleteMatchType::NAVSUGGEST) ||
         (match_type == AutocompleteMatchType::NAVSUGGEST_PERSONALIZED)) {
       // Do not blindly trust the URL coming from the server to be valid.
-      GURL url(url_formatter::FixupURL(base::UTF16ToUTF8(suggestion),
-                                       std::string()));
+      GURL url(url_formatter::FixupURL(base::UTF16ToUTF8(suggestion)));
       if (url.is_valid()) {
         std::u16string title;
         // 3rd element: optional descriptions list

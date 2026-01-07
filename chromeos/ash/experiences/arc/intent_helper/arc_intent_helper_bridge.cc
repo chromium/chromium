@@ -183,7 +183,7 @@ void ArcIntentHelperBridge::OnOpenDownloads() {
 void ArcIntentHelperBridge::OnOpenUrl(const std::string& url) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Converts |url| to a fixed-up one and checks validity.
-  const GURL gurl(url_formatter::FixupURL(url, /*desired_tld=*/std::string()));
+  const GURL gurl(url_formatter::FixupURL(url));
   if (!gurl.is_valid()) {
     return;
   }
@@ -199,7 +199,7 @@ void ArcIntentHelperBridge::OnOpenCustomTab(const std::string& url,
                                             OnOpenCustomTabCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Converts |url| to a fixed-up one and checks validity.
-  const GURL gurl(url_formatter::FixupURL(url, /*desired_tld=*/std::string()));
+  const GURL gurl(url_formatter::FixupURL(url));
   if (!gurl.is_valid() || allowed_arc_schemes_.find(gurl.GetScheme()) ==
                               allowed_arc_schemes_.end()) {
     std::move(callback).Run(mojo::NullRemote());
@@ -235,7 +235,7 @@ void ArcIntentHelperBridge::OpenVolumeControl() {
 void ArcIntentHelperBridge::OnOpenWebApp(const std::string& url) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Converts |url| to a fixed-up one and checks validity.
-  const GURL gurl(url_formatter::FixupURL(url, /*desired_tld=*/std::string()));
+  const GURL gurl(url_formatter::FixupURL(url));
 
   // Web app launches should only be invoked on HTTPS URLs.
   if (CanOpenWebAppForUrl(gurl)) {

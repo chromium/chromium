@@ -22,7 +22,7 @@ namespace {
 
 // Calls url_formatter::FixupURL.
 GURL FixUrl(const std::string& url_spec) {
-  return url_formatter::FixupURL(url_spec, std::string());
+  return url_formatter::FixupURL(url_spec);
 }
 
 }  // namespace

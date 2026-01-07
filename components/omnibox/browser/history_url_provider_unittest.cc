@@ -892,7 +892,7 @@ TEST_F(HistoryURLProviderTest, IntranetURLsWithPaths) {
       RunTest(ASCIIToUTF16(test_cases[i].input), std::string(), false, {});
     } else {
       const UrlAndLegalDefault output[] = {
-          {url_formatter::FixupURL(test_cases[i].input, std::string()).spec(),
+          {url_formatter::FixupURL(test_cases[i].input).spec(),
            test_cases[i].allowed_to_be_default_match}};
       ASSERT_NO_FATAL_FAILURE(RunTest(ASCIIToUTF16(test_cases[i].input),
                                       std::string(), false, output));
@@ -1248,8 +1248,7 @@ TEST_F(HistoryURLProviderTest, HUPScoringExperiment) {
       }
       output[max_matches].url =
           url_formatter::FixupURL(
-              UNSAFE_TODO(test_cases[i].matches[max_matches]).url,
-              std::string())
+              UNSAFE_TODO(test_cases[i].matches[max_matches]).url)
               .spec();
       output[max_matches].allowed_to_be_default_match = true;
     }
