@@ -304,6 +304,11 @@ void WebContentsFrameTracker::WebContentsDestroyed() {
   OnPossibleTargetChange();
 }
 
+void WebContentsFrameTracker::OnVisibilityChanged(Visibility visibility) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  OnPossibleTargetChange();
+}
+
 void WebContentsFrameTracker::CaptureTargetChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   OnPossibleTargetChange();
@@ -419,18 +424,26 @@ void WebContentsFrameTracker::OnPossibleTargetChange() {
   // Note: MouseCursorOverlayController runs on the UI thread. SetTargetView()
   // must be called synchronously since the NativeView pointer is not valid
   // across task switches, cf. https://crbug.com/818679
-  SetTargetView(capture_target.view);
+  //
+  // We only want to do a mouse overlay if this not a background tab, so
+  // we disregard the view if it is. This is only needed if multiple tabs
+  // share the same native view (which happens with SecureEmbed).
+  SetTargetView(web_contents()->GetVisibility() != Visibility::HIDDEN
+                    ? capture_target.view
+                    : gfx::NativeView());
 }
 
 void WebContentsFrameTracker::SetTargetView(gfx::NativeView view) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // We don't have to worry about web_contents() changing other than to null
+  // since SetWebContentsAndContextFromRoutingId() is only called once.
   if (view == target_native_view_) {
     return;
   }
   target_native_view_ = view;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (cursor_controller_) {
-    cursor_controller_->SetTargetView(view);
+    cursor_controller_->SetTargetView(view, web_contents());
   }
 #endif
 }

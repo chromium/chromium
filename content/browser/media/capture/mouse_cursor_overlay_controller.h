@@ -27,6 +27,8 @@ class TickClock;
 
 namespace content {
 
+class WebContents;
+
 // MouseCursorOverlayController is used by FrameSinkVideoCaptureDevice to manage
 // the mouse cursor overlay in the viz::FrameSinkVideoCapturer session based on
 // the behavior of the mouse cursor reported by the windowing system.
@@ -48,7 +50,10 @@ class CONTENT_EXPORT MouseCursorOverlayController {
   ~MouseCursorOverlayController();
 
   // Sets a new target view to monitor for mouse cursor updates.
-  void SetTargetView(gfx::NativeView view);
+  // If `restrict_to` is set, will only report events if they correspond to
+  // the portion of `view` corresponding to `restrict_to`.
+  void SetTargetView(gfx::NativeView view,
+                     content::WebContents* restrict_to = 0);
 
   // If the target view is not a gfx::NativeView (which is the case when
   // capturing a NSWindow on macOS), this function may be used to set the size

@@ -11,8 +11,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
+#include "content/public/browser/web_contents.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "ui/base/cocoa/tracking_area.h"
+#include "ui/gfx/mac/coordinate_conversion.h"
 
 namespace {
 using LocationUpdateCallback = base::RepeatingCallback<void(const NSPoint&)>;
@@ -92,8 +94,10 @@ namespace content {
 
 class MouseCursorOverlayController::Observer {
  public:
-  explicit Observer(MouseCursorOverlayController* controller, NSView* view)
-      : controller_(controller), view_(view) {
+  explicit Observer(MouseCursorOverlayController* controller,
+                    NSView* view,
+                    base::WeakPtr<WebContents> restrict_to)
+      : controller_(controller), view_(view), restrict_to_(restrict_to) {
     DCHECK(controller_);
     DCHECK(view_);
     controller_->OnMouseHasGoneIdle();
@@ -123,6 +127,13 @@ class MouseCursorOverlayController::Observer {
     return nil;
   }
 
+  static WebContents* GetRestrictTo(const std::unique_ptr<Observer>& observer) {
+    if (observer) {
+      return observer->restrict_to_.get();
+    }
+    return nullptr;
+  }
+
  private:
   void OnMouseMoved(const NSPoint& location_in_window) {
     // Ignore mouse movements if the window is inactive or the view is hidden.
@@ -133,7 +144,7 @@ class MouseCursorOverlayController::Observer {
       return;
     }
 
-    const bool cursor_within_surface =
+    bool cursor_within_surface =
         NSPointInRect(location_in_window, NSRectFromCGRect([view_ bounds]));
 
     // Compute the location within the view using Aura conventions: (0,0) is the
@@ -144,6 +155,27 @@ class MouseCursorOverlayController::Observer {
     if (![view_ isFlipped]) {
       location_aura.y = NSHeight([view_ bounds]) - location_aura.y;
     }
+
+    if (restrict_to_) {
+      // Translate the point to be with respect to `restrict_to_`, and
+      // clip to it.
+
+      gfx::Rect subwindow_rect = restrict_to_->GetViewBounds();
+      NSRect ns_view_rect = [view_ convertRect:[view_ bounds] toView:nil];
+      ns_view_rect.origin =
+          [[view_ window] convertPointToScreen:ns_view_rect.origin];
+      gfx::Rect view_rect = gfx::ScreenRectFromNSRect(ns_view_rect);
+
+      location_aura.x -= (subwindow_rect.x() - view_rect.x());
+      location_aura.y -= (subwindow_rect.y() - view_rect.y());
+
+      if (location_aura.x < 0 || location_aura.y < 0 ||
+          location_aura.x >= subwindow_rect.width() ||
+          location_aura.y >= subwindow_rect.height()) {
+        cursor_within_surface = false;
+      }
+    }
+
     controller_->OnMouseMoved(gfx::PointF(location_aura.x, location_aura.y));
     if (controller_->ShouldSendMouseEvents()) {
       controller_->OnMouseCoordinatesUpdated(
@@ -155,6 +187,7 @@ class MouseCursorOverlayController::Observer {
 
   const raw_ptr<MouseCursorOverlayController> controller_;
   NSView* __strong view_;
+  base::WeakPtr<WebContents> restrict_to_;
   MouseCursorOverlayTracker* __strong mouse_tracker_;
 };
 
@@ -179,12 +212,16 @@ MouseCursorOverlayController::~MouseCursorOverlayController() {
   Stop();
 }
 
-void MouseCursorOverlayController::SetTargetView(gfx::NativeView view) {
+void MouseCursorOverlayController::SetTargetView(
+    gfx::NativeView view,
+    content::WebContents* restrict_to) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 
   observer_.reset();
   if (view) {
-    observer_ = std::make_unique<Observer>(this, view.GetNativeNSView());
+    observer_ = std::make_unique<Observer>(
+        this, view.GetNativeNSView(),
+        restrict_to ? restrict_to->GetWeakPtr() : base::WeakPtr<WebContents>());
   }
 }
 
@@ -208,6 +245,9 @@ gfx::RectF MouseCursorOverlayController::ComputeRelativeBoundsForOverlay(
   if (NSView* view = Observer::GetTargetView(observer_)) {
     const NSRect view_bounds = [view bounds];
     target_size = gfx::Size(NSWidth(view_bounds), NSHeight(view_bounds));
+    if (WebContents* restrict_to = Observer::GetRestrictTo(observer_)) {
+      target_size = restrict_to->GetViewBounds().size();
+    }
   } else {
     // The target for capture can be a views::Widget, which is an NSWindow,
     // not a NSView. This path is used in that case.
