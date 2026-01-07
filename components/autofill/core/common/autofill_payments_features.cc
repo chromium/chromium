@@ -58,7 +58,12 @@ BASE_FEATURE(kAutofillEnableBuyNowPayLater,
 // When enabled, additional steps are required to autofill buy now pay later
 // (BNPL) issuers that are externally linked.
 BASE_FEATURE(kAutofillEnableBuyNowPayLaterForExternallyLinked,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // When enabled, buy now pay later (BNPL) for Klarna in Autofill will be
 // offered.
