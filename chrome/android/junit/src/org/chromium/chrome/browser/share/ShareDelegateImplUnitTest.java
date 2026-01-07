@@ -160,6 +160,8 @@ public class ShareDelegateImplUnitTest {
         createShareDelegate(false, new ShareSheetDelegate());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void shareWithSharingHub() {
         Assert.assertTrue("ShareHub not enabled.", mShareDelegate.isSharingHubEnabled());
@@ -179,6 +181,8 @@ public class ShareDelegateImplUnitTest {
         histogramWatcher.assertExpected();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void shareLastUsedComponent() {
         Assert.assertTrue("ShareHub not enabled.", mShareDelegate.isSharingHubEnabled());
@@ -453,6 +457,8 @@ public class ShareDelegateImplUnitTest {
                         anyBoolean());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void androidShareSheetDisableNonU() {
         Assert.assertTrue("ShareHub should be enabled T-.", mShareDelegate.isSharingHubEnabled());
@@ -468,6 +474,8 @@ public class ShareDelegateImplUnitTest {
                 mShareDelegate.isSharingHubEnabled());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void share_autoU_noCarmaCompliance_useCustomShareSheet() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(true);

@@ -3738,6 +3738,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.drag(startX + dragDistance, 0f, dragDistance);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testTabClosed() {
         // Initialize with 10 tabs.

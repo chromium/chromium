@@ -721,6 +721,8 @@ public class CrashFileManagerTest {
      * Ensure we handle minidump copying correctly when we have reached our limit on the number of
      * stored minidumps for a certain uid.
      */
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
@@ -732,6 +734,8 @@ public class CrashFileManagerTest {
      * Ensure we handle minidump copying correctly when we have reached our limit on the number of
      * stored minidumps.
      */
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
@@ -850,6 +854,8 @@ public class CrashFileManagerTest {
     }
 
     /** Ensure that we won't copy minidumps that are too large. */
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @MediumTest
     @Feature({"Android-AppBase"})

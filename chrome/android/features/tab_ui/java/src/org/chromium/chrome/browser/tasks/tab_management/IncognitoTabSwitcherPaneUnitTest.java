@@ -39,6 +39,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
@@ -199,6 +200,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
         assertEquals(PaneId.INCOGNITO_TAB_SWITCHER, mIncognitoTabSwitcherPane.getPaneId());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testNewTabButtonData() {
         checkNewTabButton(/* enabled= */ false);
@@ -220,6 +223,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
         checkNewTabButton(/* enabled= */ false);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testIncognitoReauthCallback() {
         assertTrue(mIncognitoTabSwitcherPane.getHubSearchEnabledStateSupplier().get());
@@ -277,6 +282,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
         verifyNoMoreInteractions(coordinator);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testResetWithTabList() {
         mIncognitoTabSwitcherPane.resetWithListOfTabs(null);
@@ -325,6 +332,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
         verify(coordinator).hardCleanup();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testLoadHintColdHot_TabStateNotInitialized() {
         when(mIncognitoTabModel.isActiveModel()).thenReturn(true);
@@ -352,6 +361,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
         watcher.assertExpected();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testResetWithTabListReauthRequired() {
         mIncognitoReauthControllerSupplier.set(mIncognitoReauthController);

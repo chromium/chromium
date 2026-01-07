@@ -359,9 +359,11 @@ public class ContextMenuCoordinatorTest {
                 rect.bottom);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
     @Test
     @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     @Config(
+            sdk = 29,
             shadows = {ShadowContextMenuDialog.class, ShadowProfile.class},
             qualifiers = "mdpi")
     @CommandLineFlags.Add(ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP)

@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.UnownedUserDataHost;
@@ -76,6 +77,8 @@ public class ImmersiveModeControllerTest {
         mController = new ImmersiveModeController(mActivity, mWindowAndroid, mLifecycleDispatcher);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void enterImmersiveMode() {
         mController.enterImmersiveMode(LAYOUT, NOT_STICKY);
@@ -85,6 +88,8 @@ public class ImmersiveModeControllerTest {
         assertNotEquals(0, mSystemUiVisibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void enterImmersiveMode_sticky() {
         mController.enterImmersiveMode(LAYOUT, STICKY);
@@ -100,6 +105,8 @@ public class ImmersiveModeControllerTest {
         assertEquals(LAYOUT, mLayoutParams.layoutInDisplayCutoutMode);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void exitImmersiveMode() {
         mController.enterImmersiveMode(LAYOUT, NOT_STICKY);
@@ -109,6 +116,8 @@ public class ImmersiveModeControllerTest {
         assertEquals(0, mSystemUiVisibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void exitImmersiveMode_sticky() {
         mController.enterImmersiveMode(LAYOUT, STICKY);

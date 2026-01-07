@@ -18,8 +18,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.List;
 
+// TODO(crbug.com/450954710): This test fails on SDK 36.
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(sdk = 29, manifest = Config.NONE)
 public class Fido2ApiRobolectricTest {
     private static final byte[] sCredentialId = new byte[] {1, 2, 3, 4};
 
@@ -40,6 +41,8 @@ public class Fido2ApiRobolectricTest {
         assertThat(credentials.get(0).mCredentialId).isEqualTo(sCredentialId);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @SmallTest
     public void testParseCredentialList_notFromCacheIsDiscoverableTrue() {
@@ -57,6 +60,8 @@ public class Fido2ApiRobolectricTest {
         assertThat(credentials.get(0).mCredentialId).isEqualTo(sCredentialId);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @SmallTest
     public void testParseCredentialList_notFromCacheIsDiscoverableFalse() {

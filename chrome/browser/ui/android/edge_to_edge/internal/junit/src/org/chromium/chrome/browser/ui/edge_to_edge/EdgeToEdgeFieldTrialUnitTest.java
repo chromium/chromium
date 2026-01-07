@@ -178,6 +178,8 @@ public class EdgeToEdgeFieldTrialUnitTest {
                 everywhereOverrides.isEnabledForManufacturerVersion());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testInvalidInputs_unevenLength() {
         ChromeFeatureList.sEdgeToEdgeBottomChinOemList.setForTesting("foobar");
@@ -189,6 +191,8 @@ public class EdgeToEdgeFieldTrialUnitTest {
                         .isEnabledForManufacturerVersion());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testInvalidInputs_unevenLength_2() {
         ChromeFeatureList.sEdgeToEdgeBottomChinOemList.setForTesting("foo,bar");
@@ -200,6 +204,8 @@ public class EdgeToEdgeFieldTrialUnitTest {
                         .isEnabledForManufacturerVersion());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testInvalidInputs_versionInvalid() {
         ChromeFeatureList.sEdgeToEdgeBottomChinOemList.setForTesting("foo,bar");

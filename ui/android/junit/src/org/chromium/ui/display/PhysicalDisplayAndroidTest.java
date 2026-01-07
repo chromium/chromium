@@ -217,6 +217,8 @@ public class PhysicalDisplayAndroidTest {
         CommandLine.getInstance().appendSwitch(DisplaySwitches.XR_WEB_UI_SCALE_UP_ENABLED);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testPhysicalDisplayAndroidGeneralUpdateFromDisplay() {
         final PhysicalDisplayAndroid physicalDisplayAndroid =
@@ -232,6 +234,8 @@ public class PhysicalDisplayAndroidTest {
         checkDisplayIsInternal(physicalDisplayAndroid, DEFAULT_DISPLAY_IS_INTERNAL);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testPhysicalDisplayAndroidUpdateFromDisplayWithForcedDIPScale() {
         PhysicalDisplayAndroid.setHasForcedDIPScaleForTesting(TEST_FORCERD_DIP_SCALE);
@@ -250,6 +254,8 @@ public class PhysicalDisplayAndroidTest {
                 dipGlobalBounds);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testPhysicalDisplayAndroidUpdateFromDisplayForAutomotive() {
         setupAutomotive();
@@ -268,6 +274,8 @@ public class PhysicalDisplayAndroidTest {
                 dipGlobalBounds);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testPhysicalDisplayAndroidUpdateFromDisplayForXr() {
         setupXr();

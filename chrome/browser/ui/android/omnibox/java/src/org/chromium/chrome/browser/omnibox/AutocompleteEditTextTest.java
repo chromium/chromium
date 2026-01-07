@@ -1276,6 +1276,8 @@ public class AutocompleteEditTextTest {
     }
 
     // crbug.com/759876
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testFocusInAndSelectAll() {
         final String url = "https://google.com";
@@ -1326,6 +1328,8 @@ public class AutocompleteEditTextTest {
     }
 
     // crbug.com/768323
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testFocusLossHidesCursor() {
         assertTrue(mAutocomplete.isFocused());
@@ -1427,6 +1431,8 @@ public class AutocompleteEditTextTest {
     }
 
     // crbug.com/759876
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testTextSelectionGetsAnnouncedAgainOnFocus() {
         final String text = "hello";

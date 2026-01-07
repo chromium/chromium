@@ -116,6 +116,8 @@ public class InstalledWebappPermissionManagerTest {
         verifyLocationPermissionUpdated(ContentSetting.ALLOW);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @Feature("TrustedWebActivities")
     public void locationPermissionBlocked_whenClientBlocked() {

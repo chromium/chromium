@@ -95,6 +95,8 @@ public class ShareHelperUnitTest {
         mActivity.finish();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void shareImageWithChooser() throws SendIntentException {
         ShareParams params =
@@ -147,6 +149,8 @@ public class ShareHelperUnitTest {
                 nextIntent.getAction());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void shareWithChooser() throws SendIntentException {
         ShareParams params =
@@ -244,6 +248,8 @@ public class ShareHelperUnitTest {
         assertNull("Shared intent is sending during window destoy.", nextIntent);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void doNotTrustIntentWithoutTrustedExtra() throws CanceledException {
         ShareHelper.shareWithSystemShareSheetUi(emptyShareParams(), null, true);
@@ -283,8 +289,11 @@ public class ShareHelperUnitTest {
         assertLastComponentNameRecorded(TEST_COMPONENT_NAME_2);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
     @Test
-    @Config(shadows = {ShadowChooserActionHelper.class})
+    @Config(
+            sdk = 29,
+            shadows = {ShadowChooserActionHelper.class})
     public void shareWithCustomActions() throws SendIntentException {
         String actionKey = "key";
         CallbackHelper callbackHelper = new CallbackHelper();

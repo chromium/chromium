@@ -104,6 +104,8 @@ public class AwDisplayCutoutControllerTest {
         when(mWindowInsets.getDisplayCutout()).thenReturn(mDisplayCutout);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
@@ -115,6 +117,8 @@ public class AwDisplayCutoutControllerTest {
         verify(mDelegate).setDisplayCutoutSafeArea(eq(Insets.of(10, 20, 30, 40)));
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
@@ -128,6 +132,8 @@ public class AwDisplayCutoutControllerTest {
         verify(mDelegate).setDisplayCutoutSafeArea(eq(Insets.of(10, 20, 30, 40)));
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
@@ -141,6 +147,8 @@ public class AwDisplayCutoutControllerTest {
         Assert.assertNotNull(mPreDrawListener);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})

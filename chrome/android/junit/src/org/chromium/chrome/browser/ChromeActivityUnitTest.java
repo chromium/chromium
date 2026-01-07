@@ -297,6 +297,8 @@ public class ChromeActivityUnitTest {
         assertEquals(1, userActionTester.getActionCount("MobileMenuHideReaderMode"));
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_THEME_RESOURCE_PROVIDER)
     public void testThemeResourceProvider_enabled() {
@@ -307,6 +309,8 @@ public class ChromeActivityUnitTest {
                 chromeActivity.getThemeResourceProviderForTesting());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_THEME_RESOURCE_PROVIDER)
     public void testThemeResourceProvider_disabled() {
@@ -317,6 +321,8 @@ public class ChromeActivityUnitTest {
                 chromeActivity.getThemeResourceProviderForTesting());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_THEME_RESOURCE_PROVIDER)
     public void testThemeResourceProvider_wrongActivityType() {

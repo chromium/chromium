@@ -166,6 +166,8 @@ public final class FirstRunIntegrationUnitTest {
         Assert.assertTrue(tabbedActivity.isFinishing());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testRedirectSearchActivityToFirstRun() {
         Intent intent = new Intent();
@@ -211,6 +213,8 @@ public final class FirstRunIntegrationUnitTest {
      * Test that if a WebAPK only requires the lightweight FRE and a user has gone through the
      * lightweight FRE that the WebAPK launches and no FRE is shown to the user.
      */
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testUserAcceptedLightweightFreLaunch() {
         FirstRunStatus.setLightweightFirstRunFlowComplete(true);

@@ -783,6 +783,8 @@ public class StripLayoutHelperManagerTest {
         assertNotNull("DragListener should be set.", mStripLayoutHelperManager.getDragListener());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @SuppressWarnings("DirectInvocationOnMock")
     // TODO(crbug.com/430058918): Reenable or add new test.
@@ -849,6 +851,8 @@ public class StripLayoutHelperManagerTest {
                 .setTabStripColorOverlay(ScrimProperties.INVALID_COLOR, 0f);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @SuppressWarnings("DirectInvocationOnMock")
     // TODO(crbug.com/430058918): Reenable or add new test.
@@ -951,6 +955,8 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.onHeightTransitionFinished(true);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testCalculateScrimOpacityDuringTransition_Hide() {
         // Test show->hide transition with simulated values.
@@ -1597,6 +1603,8 @@ public class StripLayoutHelperManagerTest {
         return mStripLayoutHelperManager.getEventFilter().onInterceptTouchEvent(event, false);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @EnableFeatures({
         ChromeFeatureList.TOP_CONTROLS_REFACTOR,

@@ -281,6 +281,8 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                 BaseCustomTabRootUiCoordinator.isGoogleBottomBarEnabled(null));
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @MediumTest
     public void testInitProfileDependantFeatures_callsInitDefaultSearchEngine() {

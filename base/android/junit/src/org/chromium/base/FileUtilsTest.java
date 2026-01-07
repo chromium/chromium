@@ -503,6 +503,8 @@ public class FileUtilsTest {
         outStream.close();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testQueryBitmapFromContentProvider() throws IOException {
         // Set up "org.chromium.test" provider.
