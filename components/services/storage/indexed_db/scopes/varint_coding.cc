@@ -7,12 +7,11 @@
 #include <array>
 
 #include "base/check_op.h"
-#include "base/not_fatal_until.h"
 
 namespace content::indexed_db {
 
 void EncodeVarInt(int64_t from, std::string* into) {
-  CHECK_GE(from, 0, base::NotFatalUntil::M146);
+  DCHECK_GE(from, 0);
   // A temporary array is used to amortize the costs of the string modification.
   static constexpr size_t kMaxBytesForUInt64VarInt = 10;
   std::array<char, kMaxBytesForUInt64VarInt> temp;
@@ -23,7 +22,7 @@ void EncodeVarInt(int64_t from, std::string* into) {
     n >>= 7;
     if (n)
       c |= 0x80;
-    CHECK_LT(temp_index, kMaxBytesForUInt64VarInt, base::NotFatalUntil::M146);
+    DCHECK_LT(temp_index, kMaxBytesForUInt64VarInt);
     temp[temp_index] = c;
     ++temp_index;
   } while (n);
