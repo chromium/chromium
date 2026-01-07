@@ -129,9 +129,10 @@ void GlicActorTaskIconManager::ProcessRowInTaskListBubble(
 void GlicActorTaskIconManager::UpdateTaskListBubble(actor::TaskId task_id) {
   const auto state =
       actor_service_->GetActorUiStateManager()->GetActorTaskState(task_id);
-  if (!state.has_value()) {
+  if (!state.has_value() || state.value() == ActorTask::State::kCancelled) {
     // If there is no value for the state, this means the task does not exist so
     // we should remove it.
+    // If the task was cancelled, it should also be removed from the bubble.
     actor_task_list_bubble_rows_.erase(task_id);
   } else {
     const bool icon_v3_enabled =
