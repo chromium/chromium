@@ -112,18 +112,6 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="No text"/>
 </enum>
 
-<enum name="PageFlipResult">
-  <int value="0" label="Success">
-    Indicates that the page flip was committed successfully.
-  </int>
-  <int value="1" label="Failed plane assignment">
-    Indicates that the page flip failed because we could not assign planes.
-  </int>
-  <int value="2" label="Failed commit">
-    Indicates that we assigned planes but the DRM commit failed.
-  </int>
-</enum>
-
 <enum name="PropertyMutation">
   <int value="0" label="Transform"/>
   <int value="1" label="Opacity"/>
