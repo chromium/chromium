@@ -14,6 +14,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/fre/glic_fre_dialog_view.h"
@@ -185,6 +187,11 @@ void GlicE2ETest::LoginTestAccountOrForceFakeSignin() {
     // Sign in to opted in test account.
     CHECK(test_account.has_value());
     sign_in_functions.TurnOnSync(*test_account, 0);
+    if (running_actor_tests_) {
+      actor::ActorKeyedService::Get(browser()->profile())
+          ->GetPolicyChecker()
+          .set_act_on_web_for_testing(true);
+    }
   } else {
     SigninWithPrimaryAccount(browser()->profile());
     SetGlicCapability(browser()->profile(), true);
