@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_proxying_url_loader_factory.h"
 #include "chrome/browser/enterprise/platform_auth/url_session_helper.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_version.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -57,6 +58,10 @@ void URLSessionURLLoader::Start(
   DCHECK(ProxyingURLLoaderFactory::IsOktaSSORequest(request))
       << "URLSessionURLLoader is meant to be used only for Okta SSO.";
 
+  VLOG_POLICY(2, EXTENSIBLE_SSO)
+      << "[OktaEnterpriseSSO] Starting a URLSession request to "
+      << request.url.spec();
+
   client_.Bind(std::move(client_info_remote));
   receiver_.Bind(std::move(loader));
 
@@ -86,6 +91,9 @@ void URLSessionURLLoader::Start(
         completionHandler:^(NSData* data, NSURLResponse* response,
                             NSError* error) {
           if (error) {
+            LOG_POLICY(ERROR, EXTENSIBLE_SSO)
+                << "[OktaEnterpriseSSO] URLSession request failed with code: "
+                << error.code;
             SSORequestFailReason reason = error.code == NSURLErrorTimedOut
                                               ? SSORequestFailReason::kTimeout
                                               : SSORequestFailReason::kOsError;
@@ -93,6 +101,9 @@ void URLSessionURLLoader::Start(
                 FROM_HERE, base::BindOnce(&URLSessionURLLoader::OnRequestFailed,
                                           weak_ptr, reason));
           } else if (!response) {
+            LOG_POLICY(ERROR, EXTENSIBLE_SSO)
+                << "[OktaEnterpriseSSO] URLSession request didn't fail but "
+                   "didn't return a response";
             task_runner->PostTask(
                 FROM_HERE,
                 base::BindOnce(&URLSessionURLLoader::OnRequestFailed, weak_ptr,
@@ -126,6 +137,9 @@ void URLSessionURLLoader::OnRequestComplete(NSURLResponse* response,
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   if (ns_data && ns_data.length > 0) {
     if (ns_data.length > kDataSizeLimit.InBytes()) {
+      LOG_POLICY(ERROR, EXTENSIBLE_SSO)
+          << "[OktaEnterpriseSSO] URLSession response body too big. Received "
+          << ns_data.length << " bytes.";
       OnRequestFailed(SSORequestFailReason::kResponseTooBig);
       return;
     }
@@ -135,16 +149,24 @@ void URLSessionURLLoader::OnRequestComplete(NSURLResponse* response,
     int mojo_result =
         mojo::CreateDataPipe(data.size(), producer_handle, consumer_handle);
     if (mojo_result != MOJO_RESULT_OK) {
+      LOG_POLICY(ERROR, EXTENSIBLE_SSO)
+          << "[OktaEnterpriseSSO] Mojo data pipe creation failed with code: "
+          << mojo_result;
       OnRequestFailed(SSORequestFailReason::kOther);
       return;
     }
     mojo_result = producer_handle->WriteAllData(data);
     if (mojo_result != MOJO_RESULT_OK) {
+      LOG_POLICY(ERROR, EXTENSIBLE_SSO)
+          << "[OktaEnterpriseSSO] Writing to the mojo pipe failed with code "
+          << mojo_result;
       OnRequestFailed(SSORequestFailReason::kOther);
       return;
     }
   }
 
+  VLOG_POLICY(2, EXTENSIBLE_SSO)
+      << "[OktaEnterpriseSSO] URLSession request completed successfully";
   RecordSuccessMetrics();
   client_->OnReceiveResponse(std::move(head), std::move(consumer_handle),
                              std::nullopt);
