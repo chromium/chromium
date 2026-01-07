@@ -1,4 +1,5 @@
 {
+  "Dawn Mac arm64 Builder": {},
   "Dawn Mac arm64 Experimental Release (Apple M2)": {
     "isolated_scripts": [
       {

@@ -199,7 +199,11 @@ gpu.ci.linux_builder(
             "x64",
         ],
     ),
-    targets = targets.bundle(),
+    targets = targets.bundle(
+        targets = [
+            "dawn_standalone_tests_compile_only",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Linux|Builder",
         short_name = "x64",
@@ -476,9 +480,9 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
+            "dawn_chromium_isolated_scripts",
+            "gpu_common_gtests_passthrough",
             "gpu_dawn_compat_telemetry_tests",
-            "gpu_dawn_integration_gtests_passthrough",
-            "gpu_dawn_isolated_scripts",
         ],
         mixins = [
             "linux_intel_uhd_630_stable",
@@ -546,9 +550,9 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
+            "dawn_chromium_isolated_scripts",
+            "gpu_common_gtests_passthrough",
             "gpu_dawn_compat_telemetry_tests",
-            "gpu_dawn_integration_gtests_passthrough",
-            "gpu_dawn_isolated_scripts",
         ],
         mixins = [
             "linux_nvidia_gtx_1660_stable",
@@ -1320,6 +1324,7 @@ gpu.ci.mac_builder(
             "mac",
         ],
     ),
+    targets = targets.bundle(),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Mac|Builder",
         short_name = "arm64",
@@ -1356,6 +1361,11 @@ gpu.ci.mac_builder(
             "mac",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "dawn_standalone_tests_compile_only",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Mac|Builder",
         short_name = "arm64",
@@ -1386,9 +1396,9 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
+            "dawn_chromium_isolated_scripts",
+            "gpu_common_gtests_passthrough",
             "gpu_dawn_telemetry_tests",
-            "gpu_dawn_integration_gtests_passthrough",
-            "gpu_dawn_isolated_scripts",
         ],
         mixins = [
             "mac_arm64_apple_m2_retina_gpu_stable",
@@ -1567,7 +1577,11 @@ gpu.ci.mac_builder(
             "mac",
         ],
     ),
-    targets = targets.bundle(),
+    targets = targets.bundle(
+        targets = [
+            "dawn_standalone_tests_compile_only",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Mac|Builder",
         short_name = "x64",
@@ -1601,9 +1615,9 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
+            "dawn_chromium_isolated_scripts",
+            "gpu_common_gtests_passthrough",
             "gpu_dawn_telemetry_tests",
-            "gpu_dawn_integration_gtests_passthrough",
-            "gpu_dawn_isolated_scripts",
         ],
         mixins = [
             "mac_retina_amd_gpu_stable",
@@ -1655,9 +1669,9 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
+            "dawn_chromium_isolated_scripts",
+            "gpu_common_gtests_passthrough",
             "gpu_dawn_telemetry_tests",
-            "gpu_dawn_integration_gtests_passthrough",
-            "gpu_dawn_isolated_scripts",
         ],
         mixins = [
             "mac_mini_intel_gpu_stable",
@@ -2194,7 +2208,11 @@ gpu.ci.windows_builder(
             "x64",
         ],
     ),
-    targets = targets.bundle(),
+    targets = targets.bundle(
+        targets = [
+            "dawn_standalone_tests_compile_only",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Windows|Builder",
         short_name = "x64",
@@ -2237,6 +2255,9 @@ gpu.ci.windows_builder(
         ],
     ),
     targets = targets.bundle(
+        # TODO(crbug.com/452840618): Change this to just dawn_standalone_tests_compile_only
+        # once tests are enabled on Snapdragon X Elite devices in both Dawn and
+        # Chromium.
         additional_compile_targets = [
             "dawn_end2end_tests",
             "dawn_perf_tests",
@@ -2285,6 +2306,9 @@ gpu.ci.windows_builder(
         ],
     ),
     targets = targets.bundle(
+        # TODO(crbug.com/452840618): Change this to just dawn_standalone_tests_compile_only
+        # once tests are enabled on Snapdragon X Elite devices in both Dawn and
+        # Chromium.
         additional_compile_targets = [
             "dawn_end2end_tests",
             "dawn_perf_tests",
@@ -2364,9 +2388,9 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
+            "dawn_chromium_isolated_scripts",
+            "gpu_common_gtests_passthrough",
             "gpu_dawn_telemetry_win_x64_tests",
-            "gpu_dawn_integration_gtests_passthrough_win_x64",
-            "gpu_dawn_isolated_scripts",
         ],
         mixins = [
             "win10_intel_uhd_630_stable",
@@ -2426,9 +2450,9 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
+            "dawn_chromium_isolated_scripts",
+            "gpu_common_gtests_passthrough",
             "gpu_dawn_telemetry_win_x64_tests",
-            "gpu_dawn_integration_gtests_passthrough_win_x64",
-            "gpu_dawn_isolated_scripts",
         ],
         mixins = [
             "win10_nvidia_gtx_1660_stable",
@@ -2803,7 +2827,11 @@ gpu.ci.windows_builder(
             "win",
         ],
     ),
-    targets = targets.bundle(),
+    targets = targets.bundle(
+        targets = [
+            "dawn_standalone_tests_compile_only",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Windows|Builder",
         short_name = "x86",
@@ -2837,9 +2865,9 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
+            "dawn_chromium_isolated_scripts",
+            "gpu_common_gtests_passthrough",
             "gpu_dawn_telemetry_tests_fxc",
-            "gpu_dawn_integration_gtests_passthrough",
-            "gpu_dawn_isolated_scripts",
         ],
         mixins = [
             "win10_intel_uhd_630_stable",
@@ -2890,9 +2918,9 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
+            "dawn_chromium_isolated_scripts",
+            "gpu_common_gtests_passthrough",
             "gpu_dawn_telemetry_tests_fxc",
-            "gpu_dawn_integration_gtests_passthrough",
-            "gpu_dawn_isolated_scripts",
         ],
         mixins = [
             "win10_nvidia_gtx_1660_stable",

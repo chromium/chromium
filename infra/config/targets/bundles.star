@@ -2658,6 +2658,18 @@ targets.bundle(
     ],
 )
 
+# This compiles tests which are run on Dawn standalone builders, which allows
+# us to keep compile coverage of all tests in gpu_dawn_integration_gtests_passthrough
+# and gpu_dawn_isolated_scripts even if we use gpu_common_gtests_passthrough
+# and gpu_dawn_telemetry_tests for testing.
+targets.bundle(
+    name = "dawn_standalone_tests_compile_only",
+    additional_compile_targets = [
+        "dawn_end2end_tests",
+        "dawn_perf_tests",
+    ],
+)
+
 targets.bundle(
     name = "desktop_chromium_isolated_scripts",
     targets = [
