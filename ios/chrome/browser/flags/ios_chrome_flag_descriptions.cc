@@ -1485,10 +1485,6 @@ const char kSafetyCheckNotificationsName[] =
 const char kSafetyCheckNotificationsDescription[] =
     "Enables push notifications for important Safety Check findings.";
 
-const char kScreenTimeIntegrationName[] = "Enables ScreenTime Integration";
-const char kScreenTimeIntegrationDescription[] =
-    "Enables integration with ScreenTime in iOS 14.0 and above.";
-
 const char kSegmentationPlatformEphemeralCardRankerName[] =
     "Enable Segmentation Ranking for Ephemeral Cards";
 const char kSegmentationPlatformEphemeralCardRankerDescription[] =

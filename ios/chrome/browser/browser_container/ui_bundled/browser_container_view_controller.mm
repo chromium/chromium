@@ -41,11 +41,9 @@
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
 
-  // OverlayContainerView should cover all subviews of BrowserContainerView. The
-  // ScreenTime container must be above the WebContentArea overlay container.
+  // OverlayContainerView should cover all subviews of BrowserContainerView.
   [self.view
       bringSubviewToFront:self.webContentsOverlayContainerViewController.view];
-  [self.view bringSubviewToFront:self.screenTimeViewController.view];
 }
 
 - (void)dismissViewControllerAnimated:(BOOL)animated

@@ -894,9 +894,6 @@ extern const char kSafeBrowsingTrustedURLDescription[];
 extern const char kSafetyCheckNotificationsName[];
 extern const char kSafetyCheckNotificationsDescription[];
 
-extern const char kScreenTimeIntegrationName[];
-extern const char kScreenTimeIntegrationDescription[];
-
 extern const char kSegmentationPlatformEphemeralCardRankerName[];
 extern const char kSegmentationPlatformEphemeralCardRankerDescription[];
 

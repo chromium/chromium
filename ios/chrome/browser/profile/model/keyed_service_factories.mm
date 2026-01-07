@@ -136,7 +136,6 @@
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
-#import "ios/chrome/browser/screen_time/model/screen_time_buildflags.h"
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_triggering_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_fetcher_factory.h"
@@ -198,10 +197,6 @@
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
 #import "ios/chrome/browser/credential_provider/model/credential_provider_service_factory.h"
-#endif
-
-#if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
-#import "ios/chrome/browser/screen_time/model/screen_time_history_deleter_factory.h"
 #endif
 
 // This method gets the instance of each ServiceFactory. This is done so that
@@ -405,10 +400,6 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
   CredentialProviderServiceFactory::GetInstance();
-#endif
-
-#if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
-  ScreenTimeHistoryDeleterFactory::GetInstance();
 #endif
 
   // Call other "Ensure...FactoriesBuilt" functions as necessary.

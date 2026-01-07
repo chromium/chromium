@@ -4329,12 +4329,6 @@ const char kChromeAppStoreUrl[] =
     [overlays addObject:presentedOverlayViewController.view];
   }
 
-  UIView* screenTimeView =
-      browserContainerViewController.screenTimeViewController.view;
-  if (screenTimeView) {
-    [overlays addObject:screenTimeView];
-  }
-
   UIView* childOverlayView =
       overlayContainerViewController.childViewControllers.firstObject.view;
   if (childOverlayView) {

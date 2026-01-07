@@ -19,10 +19,6 @@
 @property(nonatomic, strong)
     UIViewController* webContentsOverlayContainerViewController;
 
-// The UIViewController used to display the ScreenTime blocker above the web
-// content area.
-@property(nonatomic, strong) UIViewController* screenTimeViewController;
-
 // The delegate that hendles the edit menu.
 @property(nonatomic, weak) id<BrowserContainerViewControllerDelegate> delegate;
 

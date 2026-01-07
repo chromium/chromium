@@ -74,9 +74,6 @@ declare_args() {
   # The API key to query Google services in the Credential Provider Extension.
   ios_credential_provider_extension_api_key = ""
 
-  # Controls whether ScreenTime API is used.
-  ios_enable_screen_time = false
-
   # Enable background fetch mode for app refresh.
   ios_enable_background_mode = true
 
@@ -134,10 +131,6 @@ if (target_environment == "catalyst") {
   ios_enable_prebuilt_widget_kit_extension = false
   ios_enable_open_extension = false
   ios_enable_push_notification_service_extension = false
-
-  # ScreenTime framework is not available in the iOS support libraries provided
-  # by "catalyst" environment.
-  ios_enable_screen_time = false
 }
 
 if (ios_chrome_generate_order_file) {

@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator.h"
 #import "ios/chrome/browser/partial_translate/ui_bundled/partial_translate_mediator.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
-#import "ios/chrome/browser/screen_time/model/screen_time_buildflags.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/search_with/ui_bundled/search_with_mediator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -39,11 +38,6 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/common/features.h"
 #import "url/gurl.h"
-
-#if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
-#import "ios/chrome/browser/screen_time/model/features.h"
-#import "ios/chrome/browser/screen_time/ui_bundled/screen_time_coordinator.h"
-#endif
 
 @interface BrowserContainerCoordinator () <
     BrowserContainerViewControllerDelegate,
@@ -62,8 +56,6 @@
   AlertCoordinator* _alertCoordinator;
   // The mediator used for the Search With feature.
   SearchWithMediator* _searchWithMediator;
-  // The coodinator that manages ScreenTime.
-  ChromeCoordinator* _screenTimeCoordinator;
   // The overlay container coordinator for OverlayModality::kWebContentArea.
   OverlayContainerCoordinator* _webContentAreaOverlayContainerCoordinator;
   // The mediator used for the Partial Translate feature.
@@ -167,8 +159,6 @@
 
   _mediator.consumer = self.viewController;
 
-  [self setUpScreenTimeIfEnabled];
-
   [super start];
 }
 
@@ -179,7 +169,6 @@
   [self dismissAlertCoordinator];
   _started = NO;
   [_webContentAreaOverlayContainerCoordinator stop];
-  [_screenTimeCoordinator stop];
   [_partialTranslateMediator shutdown];
   [_searchWithMediator shutdown];
   self.viewController = nil;
@@ -241,25 +230,6 @@
 }
 
 #pragma mark - Private methods
-
-// Sets up the ScreenTime coordinator, which installs and manages the ScreenTime
-// blocking view.
-- (void)setUpScreenTimeIfEnabled {
-#if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
-  if (!IsScreenTimeIntegrationEnabled()) {
-    return;
-  }
-
-  ScreenTimeCoordinator* screenTimeCoordinator = [[ScreenTimeCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  [screenTimeCoordinator start];
-  self.viewController.screenTimeViewController =
-      screenTimeCoordinator.viewController;
-  _screenTimeCoordinator = screenTimeCoordinator;
-
-#endif
-}
 
 - (void)dismissAlertCoordinator {
   [_alertCoordinator stop];

@@ -113,7 +113,6 @@
 #import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
-#import "ios/chrome/browser/screen_time/model/screen_time_buildflags.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -130,10 +129,6 @@
 #import "ios/web/common/features.h"
 #import "ios/web/common/user_agent.h"
 #import "ios/web/common/web_view_creation_util.h"
-
-#if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
-#import "ios/chrome/browser/screen_time/model/features.h"
-#endif
 
 using flags_ui::FeatureEntry;
 
@@ -1604,12 +1599,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"shared-highlighting-ios", flag_descriptions::kSharedHighlightingIOSName,
      flag_descriptions::kSharedHighlightingIOSDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSharedHighlightingIOS)},
-#if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
-    {"screen-time-integration-ios",
-     flag_descriptions::kScreenTimeIntegrationName,
-     flag_descriptions::kScreenTimeIntegrationDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kScreenTimeIntegration)},
-#endif
     {"ios-reactivation-notifications",
      flag_descriptions::kIOSReactivationNotificationsName,
      flag_descriptions::kIOSReactivationNotificationsDescription,

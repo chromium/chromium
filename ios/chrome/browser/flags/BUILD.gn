@@ -100,7 +100,6 @@ source_set("flags") {
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/promos_manager/model:features",
     "//ios/chrome/browser/reader_mode/model:features",
-    "//ios/chrome/browser/screen_time/model:buildflags",
     "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public:features",
     "//ios/chrome/browser/settings/ui_bundled/password:features",
     "//ios/chrome/browser/shared/public/features",
@@ -119,10 +118,6 @@ source_set("flags") {
     "//ios/web/common:web_view_creation_util",
     "//ios/web/public",
   ]
-
-  if (ios_enable_screen_time) {
-    deps += [ "//ios/chrome/browser/screen_time/model:feature_flags" ]
-  }
 }
 
 source_set("system_flags") {

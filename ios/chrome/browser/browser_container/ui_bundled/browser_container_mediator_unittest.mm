@@ -29,7 +29,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 @property(nonatomic, strong) UIViewController* contentViewController;
 @property(nonatomic, strong)
     UIViewController* webContentsOverlayContainerViewController;
-@property(nonatomic, strong) UIViewController* screenTimeViewController;
 @property(nonatomic, assign, getter=isContentBlocked) BOOL contentBlocked;
 @end
 
