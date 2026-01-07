@@ -137,6 +137,7 @@ source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "tab_collection_node_interactive_uitest.cc",
     "vertical_tab_drag_interactive_uitest.cc",
     "vertical_tab_strip_bottom_container_interactive_uitest.cc",
     "vertical_tab_strip_controller_interactive_uitest.cc",
