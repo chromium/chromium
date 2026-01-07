@@ -3620,12 +3620,12 @@ gfx::ColorSpace WebGLRenderingContextWebGPUBase::GetColorSpace() const {
   return gfx::ColorSpace::CreateSRGB();
 }
 
-int WebGLRenderingContextWebGPUBase::AllocatedBufferCountPerPixel() const {
-  // Front and back buffers.
-  // TODO(413078308): Add support configuring MSAA and depth-stencil.
-  // Note: If/once this class creates a CanvasResourceProvider it should track
-  // the memory of the provider here as well.
-  return 2;
+base::ByteSize WebGLRenderingContextWebGPUBase::AllocatedBufferSize() const {
+  base::ByteSize result;
+  if (swap_buffers_) {
+    result += swap_buffers_->EstimatedSizeInBytes();
+  }
+  return result;
 }
 
 bool WebGLRenderingContextWebGPUBase::isContextLost() const {
@@ -3785,6 +3785,7 @@ void WebGLRenderingContextWebGPUBase::EnsureDefaultFramebuffer() {
 
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       swap_buffers_->GetNewTexture(texDesc, GetAlphaType());
+  Host()->UpdateMemoryUsage();
   mailbox_texture->SetNeedsPresent(true);
 
   current_swap_buffer_ = mailbox_texture->GetTexture();

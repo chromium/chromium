@@ -300,15 +300,7 @@ class CORE_EXPORT CanvasRenderingContext
   virtual void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {}
   virtual void Reshape(int width, int height) {}
 
-  virtual base::ByteSize AllocatedBufferSize() const;
-  virtual int AllocatedBufferCountPerPixel() const { return 1; }
-  virtual gfx::Size DrawingBufferSize() const {
-    const CanvasRenderingContextHost* host = Host();
-    if (host == nullptr) [[unlikely]] {
-      return gfx::Size();
-    }
-    return Host()->Size();
-  }
+  virtual base::ByteSize AllocatedBufferSize() const = 0;
 
   // OffscreenCanvas-specific methods.
   virtual bool PushFrame() { return false; }

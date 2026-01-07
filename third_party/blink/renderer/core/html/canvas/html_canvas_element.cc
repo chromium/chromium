@@ -901,7 +901,6 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
 
   if ((IsWebGL() && old_size != Size()) || IsWebGPU()) {
     context_->Reshape(width(), height());
-    UpdateMemoryUsage();
   }
 
   if (LayoutObject* layout_object = GetLayoutObject()) {

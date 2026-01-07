@@ -162,6 +162,8 @@ void GPUCanvasContext::Reshape(int width, int height) {
   // 1. Replace the drawing buffer of context.
   ReplaceDrawingBuffer(/* destroy_swap_buffers */ false);
 
+  Host()->UpdateMemoryUsage();
+
   // 2. Let configuration be context.[[configuration]]
   // 3. If configuration is not null:
   //   1. Set context.[[textureDescriptor]] to the GPUTextureDescriptor for the

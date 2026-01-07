@@ -2194,12 +2194,6 @@ bool WebGLRenderingContextBase::CopyRenderingResultsToVideoFrame(
                                           dst_color_space, std::move(callback));
 }
 
-gfx::Size WebGLRenderingContextBase::DrawingBufferSize() const {
-  if (isContextLost())
-    return gfx::Size(0, 0);
-  return GetDrawingBuffer()->Size();
-}
-
 scoped_refptr<StaticBitmapImage>
 WebGLRenderingContextBase::GetRGBAUnacceleratedStaticBitmapImage(
     SourceDrawingBuffer source_buffer) {
@@ -2259,6 +2253,8 @@ void WebGLRenderingContextBase::Reshape(int width, int height) {
   GetDrawingBuffer()->set_low_latency_enabled(Host()->LowLatencyEnabled());
   GetDrawingBuffer()->Resize(gfx::Size(width, height));
   GetDrawingBuffer()->MarkContentsChanged();
+
+  Host()->UpdateMemoryUsage();
 
   if (buffer) {
     ContextGL()->BindBuffer(GL_PIXEL_UNPACK_BUFFER,

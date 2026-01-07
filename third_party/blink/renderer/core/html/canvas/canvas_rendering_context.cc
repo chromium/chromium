@@ -71,19 +71,6 @@ CanvasRenderingContext::CanvasRenderingContext(
   CHECK(host_);
 }
 
-base::ByteSize CanvasRenderingContext::AllocatedBufferSize() const {
-  if (!Host() || isContextLost()) {
-    return base::ByteSize(0);
-  }
-  const gfx::Size& size = DrawingBufferSize();
-  if (size.IsEmpty()) {
-    return base::ByteSize(0);
-  }
-  int buffer_count = AllocatedBufferCountPerPixel();
-  return buffer_count *
-         base::ByteSize(GetSharedImageFormat().EstimatedSizeInBytes(size));
-}
-
 void CanvasRenderingContext::Dispose() {
   RenderTaskEnded();
 

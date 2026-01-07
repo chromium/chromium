@@ -169,8 +169,6 @@ void OffscreenCanvas::SetSize(gfx::Size size) {
   if (context_) {
     if (context_->IsWebGL() || IsWebGPU()) {
       context_->Reshape(Size().width(), Size().height());
-      // Reshape() affects memory usage for the context.
-      UpdateMemoryUsage();
     } else if (context_->IsRenderingContext2D() ||
                context_->IsImageBitmapRenderingContext()) {
       context_->Reset();

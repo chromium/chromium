@@ -683,11 +683,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   // Returns approximate gpu memory allocated.
   base::ByteSize AllocatedBufferSize() const override;
-  int AllocatedBufferCountPerPixel() const override { NOTREACHED(); }
 
-  // Returns the drawing buffer size after it is, probably, has scaled down
-  // to the maximum supported canvas size.
-  gfx::Size DrawingBufferSize() const override;
   DrawingBuffer* GetDrawingBuffer() const;
 
   class TextureUnitState {
