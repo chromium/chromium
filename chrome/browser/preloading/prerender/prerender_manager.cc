@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/headless/headless_mode_util.h"
@@ -436,6 +437,10 @@ PrerenderManager::PrewarmDecision PrerenderManager::ShouldPrewarm(
   }
   if (!base::FeatureList::IsEnabled(features::kPrewarm)) {
     return PrewarmDecision::kDisabled;
+  }
+  if (static_cast<uint64_t>(features::kMinMemoryThresholdMb.Get()) >
+      base::SysInfo::AmountOfTotalPhysicalMemory().InMiB()) {
+    return PrewarmDecision::kLowMemory;
   }
   if (headless::IsHeadlessMode()) {
     return PrewarmDecision::kInHeadlessMode;
