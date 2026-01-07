@@ -1547,8 +1547,7 @@ public class ManualFillingControllerTest {
 
         when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign))
                 .thenReturn(barHeight);
-        when(mMockResources.getDimensionPixelSize(
-                        R.dimen.keyboard_accessory_dynamic_positioning_padding))
+        when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_notch_height))
                 .thenReturn(paddingForNotch);
 
         mController.show(
@@ -1560,8 +1559,9 @@ public class ManualFillingControllerTest {
         KeyboardAccessoryStyle style = mStyleCaptor.getValue();
         assertFalse(style.isDocked());
         assertTrue(style.getMaxWidth() > 0);
+        assertEquals(KeyboardAccessoryStyle.NotchPosition.TOP, style.getNotchPosition());
 
-        assertEquals(bottomBound * density + paddingForNotch, style.getVerticalOffset());
+        assertEquals(bottomBound * density, style.getVerticalOffset());
         assertEquals(leftBound * density, style.getHorizontalOffset());
     }
 
@@ -1586,8 +1586,7 @@ public class ManualFillingControllerTest {
 
         when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign))
                 .thenReturn(barHeight);
-        when(mMockResources.getDimensionPixelSize(
-                        R.dimen.keyboard_accessory_dynamic_positioning_padding))
+        when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_notch_height))
                 .thenReturn(paddingForNotch);
 
         mController.show(
@@ -1599,6 +1598,7 @@ public class ManualFillingControllerTest {
         KeyboardAccessoryStyle style = mStyleCaptor.getValue();
         assertFalse(style.isDocked());
         assertTrue(style.getMaxWidth() > 0);
+        assertEquals(KeyboardAccessoryStyle.NotchPosition.BOTTOM, style.getNotchPosition());
 
         assertEquals(topBound * density - paddingForNotch - barHeight, style.getVerticalOffset());
         assertEquals(leftBound * density, style.getHorizontalOffset());

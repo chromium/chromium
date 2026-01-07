@@ -57,6 +57,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import androidx.annotation.DimenRes;
+import androidx.annotation.Px;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.RootMatchers;
@@ -1014,23 +1015,66 @@ public class KeyboardAccessoryViewTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
-    public void testUndockedStyleWithDynamicPositioning() throws InterruptedException {
+    public void testUndockedStyleWithDynamicPositioning_BottomNotch() throws InterruptedException {
         ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         KeyboardAccessoryView view = mKeyboardAccessoryView.take();
 
-        int horizontalOffset = 10;
-        int verticalOffset = 20;
-        KeyboardAccessoryStyle style =
-                KeyboardAccessoryStyle.createUndockedKeyboardAccessoryStyle(
-                        horizontalOffset, verticalOffset, /* maxWidth= */ 100);
+        final @Px int horizontalOffset = 10;
+        final @Px int verticalOffset = 20;
+        final @Px int maxWidth = 100;
 
-        ThreadUtils.runOnUiThreadBlocking(() -> view.setStyle(style));
+        // Bottom notch style.
+        KeyboardAccessoryStyle bottomNotchStyle =
+                KeyboardAccessoryStyle.createUndockedKeyboardAccessoryStyle(
+                        horizontalOffset,
+                        verticalOffset,
+                        maxWidth,
+                        KeyboardAccessoryStyle.NotchPosition.BOTTOM);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> view.setStyle(bottomNotchStyle));
 
         CoordinatorLayout.LayoutParams params =
                 (CoordinatorLayout.LayoutParams) view.getLayoutParams();
         assertEquals(android.view.Gravity.LEFT | android.view.Gravity.TOP, params.gravity);
         assertEquals(horizontalOffset, params.leftMargin);
         assertEquals(verticalOffset, params.topMargin);
+        assertEquals(0, view.getPaddingTop());
+        assertEquals(
+                view.getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_notch_height),
+                view.getPaddingBottom());
+        assertTrue(view.getClipToOutline());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
+    public void testUndockedStyleWithDynamicPositioning_TopNotch() throws InterruptedException {
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        KeyboardAccessoryView view = mKeyboardAccessoryView.take();
+
+        final @Px int horizontalOffset = 10;
+        final @Px int verticalOffset = 20;
+        final @Px int maxWidth = 100;
+
+        // Top notch style.
+        KeyboardAccessoryStyle topNotchStyle =
+                KeyboardAccessoryStyle.createUndockedKeyboardAccessoryStyle(
+                        horizontalOffset,
+                        verticalOffset,
+                        maxWidth,
+                        KeyboardAccessoryStyle.NotchPosition.TOP);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> view.setStyle(topNotchStyle));
+        CoordinatorLayout.LayoutParams params =
+                (CoordinatorLayout.LayoutParams) view.getLayoutParams();
+        assertEquals(android.view.Gravity.LEFT | android.view.Gravity.TOP, params.gravity);
+        assertEquals(horizontalOffset, params.leftMargin);
+        assertEquals(verticalOffset, params.topMargin);
+        assertEquals(0, view.getPaddingBottom());
+        assertEquals(
+                view.getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_notch_height),
+                view.getPaddingTop());
+        assertTrue(view.getClipToOutline());
     }
 
     /**
