@@ -10,6 +10,7 @@
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/tabs/glic_actor_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -51,14 +52,21 @@ GlicActorTaskIcon::GlicActorTaskIcon(TabStripController* tab_strip_controller,
       tab_strip_controller_(tab_strip_controller) {
   SetProperty(views::kElementIdentifierKey, kGlicActorTaskIconElementId);
 
-    // Explicitly overwrite the horizontal margins. The underlying
-    // TabStripNudgeButton calculates defaults that account for a close button,
-    // which is not present here.
-    label()->SetProperty(views::kMarginsKey,
-                         gfx::Insets().set_left_right(kActorNudgeLabelMargin,
-                                                      kActorNudgeLabelMargin));
+  // Explicitly overwrite the horizontal margins. The underlying
+  // TabStripNudgeButton calculates defaults that account for a close button,
+  // which is not present here.
+  label()->SetProperty(views::kMarginsKey,
+                       gfx::Insets().set_left_right(kActorNudgeLabelMargin,
+                                                    kActorNudgeLabelMargin));
 
   SetTaskIconToDefault();
+
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
+    // The task icon will only ever be shown with the GlicButton, so can always
+    // set the corner radii for split button styling.
+    SetLeftRightCornerRadii(kSplitButtonFlatEdgeRadius,
+                            kSplitButtonRoundedEdgeRadius);
+  }
   UpdateColors();
 
   SetFocusBehavior(FocusBehavior::ALWAYS);

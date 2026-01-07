@@ -114,6 +114,11 @@ class GlicButton : public TabStripNudgeButton,
   // Updates the background painter to match the current border insets.
   void RefreshBackground();
 
+  // Show or hide the split button styling, used when the task indicator is
+  // present.
+  void SetSplitButtonCornerStyling();
+  void ResetSplitButtonCornerStyling();
+
  private:
   // views::LabelButton:
   void SetText(std::u16string_view text) override;

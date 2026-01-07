@@ -5444,6 +5444,7 @@ static_library("ui") {
 
   if (enable_glic) {
     sources += [
+      "views/tabs/glic_actor_constants.h",
       "views/tabs/glic_actor_task_icon.cc",
       "views/tabs/glic_actor_task_icon.h",
       "views/tabs/glic_button.cc",

@@ -712,6 +712,7 @@ void TabStripActionContainer::ShowGlicActorTaskIcon() {
   glic_actor_button_container_->SetVisible(true);
   if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
     glic_button_->Collapse();
+    glic_button_->SetSplitButtonCornerStyling();
   }
   UpdateGlicActorButtonContainerBorders();
 #else
@@ -737,6 +738,7 @@ void TabStripActionContainer::HideGlicActorTaskIcon() {
   glic_actor_button_container_->SetVisible(false);
   if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator)) {
     glic_button_->Expand();
+    glic_button_->ResetSplitButtonCornerStyling();
   }
   UpdateGlicActorButtonContainerBorders();
 #if !BUILDFLAG(IS_MAC)

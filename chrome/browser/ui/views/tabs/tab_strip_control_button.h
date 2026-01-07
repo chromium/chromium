@@ -73,6 +73,18 @@ class TabStripControlButton : public views::LabelButton,
   virtual int GetFlatCornerRadius() const;
   float GetScaledCornerRadius(float initial_radius, Edge edge) const;
 
+  // Optionally set the left and right corner radius individually and update the
+  // background. Both default to the value set in GetCornerRadius if not set.
+  void SetLeftRightCornerRadii(int left, int right);
+
+  int GetLeftCornerRadius() const {
+    return left_corner_radius_.value_or(GetCornerRadius());
+  }
+
+  int GetRightCornerRadius() const {
+    return right_corner_radius_.value_or(GetCornerRadius());
+  }
+
   Edge animated_flat_edge() { return animated_flat_edge_; }
   float flat_edge_factor_for_testing() { return flat_edge_factor_; }
 
@@ -145,6 +157,10 @@ class TabStripControlButton : public views::LabelButton,
   ui::ColorId foreground_frame_inactive_color_id_;
   ui::ColorId background_frame_active_color_id_;
   ui::ColorId background_frame_inactive_color_id_;
+
+  // Optional radii for setting different edges on each side of the button.
+  std::optional<int> left_corner_radius_;
+  std::optional<int> right_corner_radius_;
 
   base::CallbackListSubscription paint_as_active_subscription_;
 };

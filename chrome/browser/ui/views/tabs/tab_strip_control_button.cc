@@ -40,11 +40,10 @@ class ControlButtonHighlightPathGenerator
     gfx::Rect rect(view->GetContentsBounds());
 
     SkPath path;
-    const int corner_radius = control_button_->GetCornerRadius();
-    const SkScalar left_radius =
-        control_button_->GetScaledCornerRadius(corner_radius, Edge::kLeft);
-    const SkScalar right_radius =
-        control_button_->GetScaledCornerRadius(corner_radius, Edge::kRight);
+    const SkScalar left_radius = control_button_->GetScaledCornerRadius(
+        control_button_->GetLeftCornerRadius(), Edge::kLeft);
+    const SkScalar right_radius = control_button_->GetScaledCornerRadius(
+        control_button_->GetRightCornerRadius(), Edge::kRight);
     const SkVector radii[4] = {{left_radius,  left_radius},
                                {right_radius, right_radius},
                                {right_radius, right_radius},
@@ -227,9 +226,9 @@ void TabStripControlButton::UpdateBackground() {
     SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
   } else {
     const float right_corner_radius =
-        GetScaledCornerRadius(GetCornerRadius(), Edge::kRight);
+        GetScaledCornerRadius(GetRightCornerRadius(), Edge::kRight);
     const float left_corner_radius =
-        GetScaledCornerRadius(GetCornerRadius(), Edge::kLeft);
+        GetScaledCornerRadius(GetLeftCornerRadius(), Edge::kLeft);
     SetBackground(views::CreateBackgroundFromPainter(
         views::Painter::CreateSolidRoundRectPainterWithVariableRadius(
             color_provider->GetColor(GetBackgroundColor()),
@@ -279,20 +278,24 @@ void TabStripControlButton::OnThemeChanged() {
 bool TabStripControlButton::GetHitTestMask(SkPath* mask) const {
   const bool extend_to_top = tab_strip_controller_->IsFrameCondensed();
 
-  const SkScalar bottom_radius = GetCornerRadius();
-  const SkScalar top_radius = extend_to_top ? 0.0f : bottom_radius;
-  const SkScalar bottom_left_radius =
-      GetScaledCornerRadius(bottom_radius, Edge::kLeft);
-  const SkScalar bottom_right_radius =
-      GetScaledCornerRadius(bottom_radius, Edge::kRight);
-  const SkScalar top_left_radius =
-      GetScaledCornerRadius(top_radius, Edge::kLeft);
-  const SkScalar top_right_radius =
-      GetScaledCornerRadius(top_radius, Edge::kRight);
-  const SkVector radii[4] = {{top_left_radius,     top_left_radius},
-                             {top_right_radius,    top_right_radius},
-                             {bottom_right_radius, bottom_right_radius},
-                             {bottom_left_radius,  bottom_left_radius}};
+  const SkScalar bottom_left_radius = GetLeftCornerRadius();
+  const SkScalar bottom_right_radius = GetRightCornerRadius();
+  const SkScalar top_left_radius = extend_to_top ? 0.0f : bottom_left_radius;
+  const SkScalar top_right_radius = extend_to_top ? 0.0f : bottom_right_radius;
+
+  const SkScalar scaled_bottom_left_radius =
+      GetScaledCornerRadius(bottom_left_radius, Edge::kLeft);
+  const SkScalar scaled_bottom_right_radius =
+      GetScaledCornerRadius(bottom_right_radius, Edge::kRight);
+  const SkScalar scaled_top_left_radius =
+      GetScaledCornerRadius(top_left_radius, Edge::kLeft);
+  const SkScalar scaled_top_right_radius =
+      GetScaledCornerRadius(top_right_radius, Edge::kRight);
+  const SkVector radii[4] = {
+      {scaled_top_left_radius, scaled_top_left_radius},
+      {scaled_top_right_radius, scaled_top_right_radius},
+      {scaled_bottom_right_radius, scaled_bottom_right_radius},
+      {scaled_bottom_left_radius, scaled_bottom_left_radius}};
 
   gfx::Rect rect = GetContentsBounds();
   if (extend_to_top) {
@@ -336,6 +339,12 @@ void TabStripControlButton::AnimateToStateForTesting(
 bool TabStripControlButton::IsWidgetAlive() const {
   const views::Widget* widget = GetWidget();
   return widget && !widget->IsClosed();
+}
+
+void TabStripControlButton::SetLeftRightCornerRadii(int left, int right) {
+  left_corner_radius_ = left;
+  right_corner_radius_ = right;
+  UpdateBackground();
 }
 
 BEGIN_METADATA(TabStripControlButton)
