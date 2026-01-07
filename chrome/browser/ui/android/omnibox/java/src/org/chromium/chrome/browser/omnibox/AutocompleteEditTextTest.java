@@ -39,7 +39,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowAccessibilityManager;
-import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -250,9 +249,7 @@ public class AutocompleteEditTextTest {
         }
     }
 
-    public AutocompleteEditTextTest() {
-        if (DEBUG) ShadowLog.stream = System.out;
-    }
+    public AutocompleteEditTextTest() {}
 
     @Before
     public void setUp() {

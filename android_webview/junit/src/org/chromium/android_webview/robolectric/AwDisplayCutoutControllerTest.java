@@ -29,7 +29,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.android_webview.AwDisplayCutoutController;
 import org.chromium.base.Log;
@@ -57,9 +56,7 @@ public class AwDisplayCutoutControllerTest {
 
     private AwDisplayCutoutController mController;
 
-    public AwDisplayCutoutControllerTest() {
-        if (DEBUG) ShadowLog.stream = System.out; // allows logging
-    }
+    public AwDisplayCutoutControllerTest() {}
 
     @Before
     public void setUp() {

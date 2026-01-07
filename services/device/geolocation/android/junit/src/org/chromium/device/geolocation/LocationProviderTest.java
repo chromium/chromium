@@ -39,7 +39,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRule;
@@ -86,7 +85,6 @@ public class LocationProviderTest {
 
     @Before
     public void setUp() {
-        ShadowLog.stream = System.out;
         MockitoAnnotations.initMocks(this);
     }
 

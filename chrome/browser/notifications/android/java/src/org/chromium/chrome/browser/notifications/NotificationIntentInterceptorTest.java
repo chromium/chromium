@@ -25,7 +25,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
-import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowNotificationManager;
 import org.robolectric.shadows.ShadowPendingIntent;
 
@@ -77,7 +76,6 @@ public class NotificationIntentInterceptorTest {
 
     @Before
     public void setUp() throws Exception {
-        ShadowLog.stream = System.out;
         mContext = RuntimeEnvironment.application;
         mShadowNotificationManager =
                 shadowOf(

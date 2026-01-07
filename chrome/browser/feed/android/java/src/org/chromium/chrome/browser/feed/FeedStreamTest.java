@@ -47,7 +47,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
-import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -206,7 +205,6 @@ public class FeedStreamTest {
         when(mRenderer.getAdapter()).thenReturn(mAdapter);
 
         // Print logs to stdout.
-        ShadowLog.stream = System.out;
     }
 
     @Test

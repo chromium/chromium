@@ -26,7 +26,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowPackageManager;
 import org.robolectric.shadows.ShadowSystemClock;
 
@@ -99,7 +98,6 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
 
     @Before
     public void setUp() {
-        ShadowLog.stream = System.out;
 
         ShadowPostTask.setTestImpl(
                 new ShadowPostTask.TestImpl() {

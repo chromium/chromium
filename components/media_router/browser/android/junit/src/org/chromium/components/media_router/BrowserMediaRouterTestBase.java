@@ -12,7 +12,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 import org.junit.Before;
-import org.robolectric.shadows.ShadowLog;
 
 /** Robolectric test base class for BrowserMediaRouter. */
 public class BrowserMediaRouterTestBase {
@@ -47,7 +46,6 @@ public class BrowserMediaRouterTestBase {
 
     @Before
     public void setUp() {
-        ShadowLog.stream = System.out;
         mBrowserMediaRouter = spy(new BrowserMediaRouter(0));
         mRouteProvider = mock(MediaRouteProvider.class);
         doReturn(true).when(mRouteProvider).supportsSource(anyString());

@@ -49,7 +49,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
@@ -290,7 +289,6 @@ public class FeedSurfaceCoordinatorTest {
         mCoordinator.setMediatorForTesting(mMediatorSpy);
 
         // Print logs to stdout.
-        ShadowLog.stream = System.out;
 
         mBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         mBackgroundImageInfo =

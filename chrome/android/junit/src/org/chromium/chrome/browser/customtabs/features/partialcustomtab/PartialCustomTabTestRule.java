@@ -48,7 +48,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
@@ -145,7 +144,6 @@ public class PartialCustomTabTestRule implements TestRule {
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
     private void setUp() {
-        ShadowLog.stream = System.out;
         MockitoAnnotations.initMocks(this);
         SemanticColorUtils.setDividerLineBgColorForTesting(Color.LTGRAY);
         when(mActivity.getWindow()).thenReturn(mWindow);

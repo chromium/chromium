@@ -131,7 +131,6 @@ public class CastSessionControllerTest {
 
     @Test
     public void testUpdateNamespaces() throws Exception {
-        org.robolectric.shadows.ShadowLog.stream = System.out;
 
         mController.attachToCastSession(mCastSession);
 

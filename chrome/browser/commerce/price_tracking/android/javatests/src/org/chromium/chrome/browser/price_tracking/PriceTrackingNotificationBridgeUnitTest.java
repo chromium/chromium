@@ -21,7 +21,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -66,7 +65,6 @@ public class PriceTrackingNotificationBridgeUnitTest {
 
     @Before
     public void setUp() {
-        ShadowLog.stream = System.out;
         CurrencyFormatter.Natives currencyFormatterJniMock =
                 Mockito.mock(CurrencyFormatter.Natives.class);
         CurrencyFormatterJni.setInstanceForTesting(currencyFormatterJniMock);

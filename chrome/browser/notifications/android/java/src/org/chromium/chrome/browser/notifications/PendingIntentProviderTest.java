@@ -16,7 +16,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
@@ -30,7 +29,6 @@ public class PendingIntentProviderTest {
 
     @Before
     public void setUp() throws Exception {
-        ShadowLog.stream = System.out;
         mContext = ApplicationProvider.getApplicationContext();
     }
 

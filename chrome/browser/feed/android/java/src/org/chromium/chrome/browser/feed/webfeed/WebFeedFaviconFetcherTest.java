@@ -20,7 +20,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -58,7 +57,6 @@ public class WebFeedFaviconFetcherTest {
     @Before
     public void setUp() {
         // Print logs to stdout.
-        ShadowLog.stream = System.out;
 
         mActivity = Robolectric.setupActivity(Activity.class);
         mBitmapFromImageFetcher =

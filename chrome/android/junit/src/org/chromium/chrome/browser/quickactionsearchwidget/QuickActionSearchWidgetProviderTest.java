@@ -64,7 +64,6 @@ public class QuickActionSearchWidgetProviderTest {
 
     @Before
     public void setUp() {
-        ShadowLog.stream = System.out;
         mContext = Mockito.spy(ApplicationProvider.getApplicationContext());
         mOptionsWidgetA = new Bundle();
         mOptionsWidgetB = new Bundle();

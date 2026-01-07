@@ -39,7 +39,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -126,7 +125,6 @@ public class FeedSurfaceMediatorTest {
     @SuppressWarnings("DirectInvocationOnMock")
     public void setUp() {
         // Print logs to stdout.
-        ShadowLog.stream = System.out;
 
         mActivity = Robolectric.buildActivity(Activity.class).get();
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);

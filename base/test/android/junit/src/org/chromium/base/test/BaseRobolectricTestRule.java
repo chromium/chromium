@@ -15,6 +15,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.robolectric.Shadows;
 import org.robolectric.android.util.concurrent.PausedExecutorService;
+import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BundleUtils;
@@ -94,6 +95,7 @@ public class BaseRobolectricTestRule implements TestRule {
         JniTestInstancesSnapshot.clearAllForTesting();
         FeatureList.setDisableNativeForTesting(true);
         CommandLineFlags.ensureInitialized();
+        ShadowLog.stream = System.out;
         UmaRecorderHolder.setUpNativeUmaRecorder(false);
         UmaRecorderHolder.resetForTesting();
         ContextUtils.initApplicationContextForTests(ApplicationProvider.getApplicationContext());
@@ -141,6 +143,7 @@ public class BaseRobolectricTestRule implements TestRule {
             Locale.setDefault(ORIG_LOCALE);
             TimeZone.setDefault(ORIG_TIMEZONE);
             ResettersForTesting.afterHooksDidExecute();
+            ShadowLog.stream = null;
             // Run assertions only when the test has not already failed so as to not mask
             // failures. https://crbug.com/1466313
             if (testFailed) {
