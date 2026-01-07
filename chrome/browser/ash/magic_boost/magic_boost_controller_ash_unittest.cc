@@ -25,13 +25,12 @@ constexpr char kTestUrl[] = "https://www.google.com";
 
 }  // namespace
 
-class MagicBoostControllerAshTest : public ChromeAshTestBase {
+class MagicBoostControllerTest : public ChromeAshTestBase {
  public:
-  MagicBoostControllerAshTest() = default;
-  MagicBoostControllerAshTest(const MagicBoostControllerAshTest&) = delete;
-  MagicBoostControllerAshTest& operator=(const MagicBoostControllerAshTest&) =
-      delete;
-  ~MagicBoostControllerAshTest() override = default;
+  MagicBoostControllerTest() = default;
+  MagicBoostControllerTest(const MagicBoostControllerTest&) = delete;
+  MagicBoostControllerTest& operator=(const MagicBoostControllerTest&) = delete;
+  ~MagicBoostControllerTest() override = default;
 
   // ChromeAshTestBase:
   void SetUp() override {
@@ -69,7 +68,7 @@ class MagicBoostControllerAshTest : public ChromeAshTestBase {
   MagicBoostControllerImpl controller;
 };
 
-TEST_F(MagicBoostControllerAshTest, DisclaimerWidget) {
+TEST_F(MagicBoostControllerTest, DisclaimerWidget) {
   EXPECT_FALSE(controller.disclaimer_widget_for_test());
 
   auto histogram_tester = std::make_unique<base::HistogramTester>();
@@ -95,7 +94,7 @@ TEST_F(MagicBoostControllerAshTest, DisclaimerWidget) {
                                       DisclaimerViewAction::kShow, 1);
 }
 
-TEST_F(MagicBoostControllerAshTest, OnDisclaimerAcceptButtonPressed) {
+TEST_F(MagicBoostControllerTest, OnDisclaimerAcceptButtonPressed) {
   auto histogram_tester = std::make_unique<base::HistogramTester>();
   histogram_tester->ExpectTotalCount(kHistogramName + "Total", 0);
   histogram_tester->ExpectTotalCount(kHistogramName + "HmrOnly", 0);
@@ -128,8 +127,7 @@ TEST_F(MagicBoostControllerAshTest, OnDisclaimerAcceptButtonPressed) {
       kHistogramName + "Total", DisclaimerViewAction::kAcceptButtonPressed, 1);
 }
 
-TEST_F(MagicBoostControllerAshTest,
-       OnDisclaimerAcceptButtonPressedIncludeOrca) {
+TEST_F(MagicBoostControllerTest, OnDisclaimerAcceptButtonPressedIncludeOrca) {
   auto histogram_tester = std::make_unique<base::HistogramTester>();
   histogram_tester->ExpectTotalCount(kHistogramName + "Total", 0);
   histogram_tester->ExpectTotalCount(kHistogramName + "OrcaAndHmr", 0);
@@ -162,7 +160,7 @@ TEST_F(MagicBoostControllerAshTest,
       kHistogramName + "Total", DisclaimerViewAction::kAcceptButtonPressed, 1);
 }
 
-TEST_F(MagicBoostControllerAshTest,
+TEST_F(MagicBoostControllerTest,
        OnDisclaimerAcceptButtonPressedIncludeOrcaAndTriggerEditorUI) {
   mock_magic_boost_state_->set_editor_panel_manager_for_test(
       &mock_editor_panel_manager_);
@@ -189,7 +187,7 @@ TEST_F(MagicBoostControllerAshTest,
   testing::Mock::VerifyAndClearExpectations(&mock_editor_panel_manager());
 }
 
-TEST_F(MagicBoostControllerAshTest, OnDisclaimerDeclineButtonPressed) {
+TEST_F(MagicBoostControllerTest, OnDisclaimerDeclineButtonPressed) {
   auto histogram_tester = std::make_unique<base::HistogramTester>();
   histogram_tester->ExpectTotalCount(kHistogramName + "Total", 0);
   histogram_tester->ExpectTotalCount(kHistogramName + "HmrOnly", 0);
@@ -222,8 +220,7 @@ TEST_F(MagicBoostControllerAshTest, OnDisclaimerDeclineButtonPressed) {
       kHistogramName + "Total", DisclaimerViewAction::kDeclineButtonPressed, 1);
 }
 
-TEST_F(MagicBoostControllerAshTest,
-       OnDisclaimerDeclineButtonPressedIncludeOrca) {
+TEST_F(MagicBoostControllerTest, OnDisclaimerDeclineButtonPressedIncludeOrca) {
   auto histogram_tester = std::make_unique<base::HistogramTester>();
   histogram_tester->ExpectTotalCount(kHistogramName + "Total", 0);
   histogram_tester->ExpectTotalCount(kHistogramName + "OrcaAndHmr", 0);
@@ -256,7 +253,7 @@ TEST_F(MagicBoostControllerAshTest,
       kHistogramName + "Total", DisclaimerViewAction::kDeclineButtonPressed, 1);
 }
 
-TEST_F(MagicBoostControllerAshTest, ClickingOnLinkClosesWidget) {
+TEST_F(MagicBoostControllerTest, ClickingOnLinkClosesWidget) {
   controller.ShowDisclaimerUi(display::Screen::Get()->GetPrimaryDisplay().id(),
                               magic_boost::TransitionAction::kDoNothing,
                               magic_boost::OptInFeatures::kOrcaAndHmr);

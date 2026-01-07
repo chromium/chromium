@@ -11,8 +11,8 @@
 
 namespace ash {
 
-// A class that mocks `MagicBoostStateAsh` to use in tests.
-class MockMagicBoostState : public MagicBoostStateAsh {
+// A class that mocks `MagicBoostState` to use in tests.
+class MockMagicBoostState : public MagicBoostState {
  public:
   MockMagicBoostState();
 

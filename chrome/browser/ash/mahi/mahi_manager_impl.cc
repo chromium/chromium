@@ -804,7 +804,7 @@ void MahiManagerImpl::InterrputRequestHandlingWithDisclaimerView(
               .Then(reset_observer_closure),
           /*on_declined_closure=*/reset_observer_closure);
 
-  ash::MagicBoostControllerAsh::Get()->ShowDisclaimerUi(
+  ash::MagicBoostController::Get()->ShowDisclaimerUi(
       display_id, magic_boost::TransitionAction::kDoNothing,
       chromeos::MagicBoostState::Get()->ShouldIncludeOrcaInOptInSync()
           ? magic_boost::OptInFeatures::kOrcaAndHmr

@@ -620,7 +620,7 @@ QuickAnswersRequest QuickAnswersControllerImpl::BuildRequest() {
 void QuickAnswersControllerImpl::ShowMagicBoostDisclaimerView() {
   // Display the magic boost disclaimer view in the display that most
   // closely matches the anchor bounds.
-  ash::MagicBoostControllerAsh::Get()->ShowDisclaimerUi(
+  ash::MagicBoostController::Get()->ShowDisclaimerUi(
       display::Screen::Get()->GetDisplayMatching(anchor_bounds()).id(),
       ash::magic_boost::TransitionAction::kDoNothing,
       ash::magic_boost::OptInFeatures::kOrcaAndHmr);

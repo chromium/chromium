@@ -27,21 +27,21 @@ class SessionController;
 class Shell;
 
 // A class that holds MagicBoost related prefs and states.
-class MagicBoostStateAsh : public chromeos::MagicBoostState,
-                           public ash::SessionObserver,
-                           public ash::ShellObserver {
+class MagicBoostState : public chromeos::MagicBoostState,
+                        public ash::SessionObserver,
+                        public ash::ShellObserver {
  public:
   using InjectActiveProfileForTestingCallback =
       base::RepeatingCallback<Profile*()>;
 
-  MagicBoostStateAsh();
-  explicit MagicBoostStateAsh(InjectActiveProfileForTestingCallback
-                                  inject_active_profile_for_testing_callback);
+  MagicBoostState();
+  explicit MagicBoostState(InjectActiveProfileForTestingCallback
+                               inject_active_profile_for_testing_callback);
 
-  MagicBoostStateAsh(const MagicBoostStateAsh&) = delete;
-  MagicBoostStateAsh& operator=(const MagicBoostStateAsh&) = delete;
+  MagicBoostState(const MagicBoostState&) = delete;
+  MagicBoostState& operator=(const MagicBoostState&) = delete;
 
-  ~MagicBoostStateAsh() override;
+  ~MagicBoostState() override;
 
   // MagicBoostState:
   bool CanShowNoticeBannerForHMR() override;
@@ -70,7 +70,7 @@ class MagicBoostStateAsh : public chromeos::MagicBoostState,
   IsUserEligibleForGenAIFeaturesExpected() const override;
 
  private:
-  friend class MagicBoostStateAshTest;
+  friend class MagicBoostStateTest;
 
   Profile* GetActiveUserProfile();
 

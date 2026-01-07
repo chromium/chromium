@@ -49,7 +49,7 @@ namespace ash {
 
 namespace {
 
-// A class that mocks `MagicBoostStateAsh` to use in tests.
+// A class that mocks `MagicBoostState` to use in tests.
 class TestMagicBoostState : public chromeos::MagicBoostState {
  public:
   TestMagicBoostState() { UpdateUserEligibleForGenAIFeatures(true); }

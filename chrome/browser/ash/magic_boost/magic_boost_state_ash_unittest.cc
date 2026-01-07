@@ -62,12 +62,12 @@ class TestMagicBoostStateObserver : public MagicBoostState::Observer {
 
 }  // namespace
 
-class MagicBoostStateAshTest : public ChromeAshTestBase {
+class MagicBoostStateTest : public ChromeAshTestBase {
  protected:
-  MagicBoostStateAshTest() = default;
-  MagicBoostStateAshTest(const MagicBoostStateAshTest&) = delete;
-  MagicBoostStateAshTest& operator=(const MagicBoostStateAshTest&) = delete;
-  ~MagicBoostStateAshTest() override = default;
+  MagicBoostStateTest() = default;
+  MagicBoostStateTest(const MagicBoostStateTest&) = delete;
+  MagicBoostStateTest& operator=(const MagicBoostStateTest&) = delete;
+  ~MagicBoostStateTest() override = default;
 
   // ChromeAshTestBase:
   void SetUp() override {
@@ -76,7 +76,7 @@ class MagicBoostStateAshTest : public ChromeAshTestBase {
     prefs_ = static_cast<TestingPrefServiceSimple*>(
         ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService());
 
-    magic_boost_state_ = std::make_unique<MagicBoostStateAsh>(
+    magic_boost_state_ = std::make_unique<MagicBoostState>(
         base::BindRepeating([]() { return static_cast<Profile*>(nullptr); }));
     magic_boost_state_->set_editor_panel_manager_for_test(
         &mock_editor_manager_);
@@ -95,18 +95,18 @@ class MagicBoostStateAshTest : public ChromeAshTestBase {
 
   TestMagicBoostStateObserver* observer() { return observer_.get(); }
 
-  MagicBoostStateAsh* magic_boost_state() { return magic_boost_state_.get(); }
+  MagicBoostState* magic_boost_state() { return magic_boost_state_.get(); }
 
   MockEditorPanelManager& mock_editor_manager() { return mock_editor_manager_; }
 
  private:
   raw_ptr<TestingPrefServiceSimple> prefs_;
   std::unique_ptr<TestMagicBoostStateObserver> observer_;
-  std::unique_ptr<MagicBoostStateAsh> magic_boost_state_;
+  std::unique_ptr<MagicBoostState> magic_boost_state_;
   testing::NiceMock<MockEditorPanelManager> mock_editor_manager_;
 };
 
-TEST_F(MagicBoostStateAshTest, UpdateMagicBoostEnabledState) {
+TEST_F(MagicBoostStateTest, UpdateMagicBoostEnabledState) {
   MagicBoostState::Get()->AddObserver(observer());
 
   prefs()->SetBoolean(ash::prefs::kMagicBoostEnabled, false);
@@ -136,7 +136,7 @@ TEST_F(MagicBoostStateAshTest, UpdateMagicBoostEnabledState) {
   MagicBoostState::Get()->RemoveObserver(observer());
 }
 
-TEST_F(MagicBoostStateAshTest, UpdateHMREnabledState) {
+TEST_F(MagicBoostStateTest, UpdateHMREnabledState) {
   MagicBoostState::Get()->AddObserver(observer());
 
   // The observer class should get an notification when the pref value
@@ -154,7 +154,7 @@ TEST_F(MagicBoostStateAshTest, UpdateHMREnabledState) {
   MagicBoostState::Get()->RemoveObserver(observer());
 }
 
-TEST_F(MagicBoostStateAshTest, UpdateHMRConsentStatus) {
+TEST_F(MagicBoostStateTest, UpdateHMRConsentStatus) {
   MagicBoostState::Get()->AddObserver(observer());
 
   EXPECT_EQ(MagicBoostState::Get()->hmr_consent_status(),
@@ -179,7 +179,7 @@ TEST_F(MagicBoostStateAshTest, UpdateHMRConsentStatus) {
   MagicBoostState::Get()->RemoveObserver(observer());
 }
 
-TEST_F(MagicBoostStateAshTest, UpdateHMRConsentStatusWhenEnableStateChanged) {
+TEST_F(MagicBoostStateTest, UpdateHMRConsentStatusWhenEnableStateChanged) {
   MagicBoostState::Get()->AsyncWriteHMREnabled(false);
   MagicBoostState::Get()->AsyncWriteConsentStatus(HMRConsentStatus::kDeclined);
 
@@ -223,7 +223,7 @@ TEST_F(MagicBoostStateAshTest, UpdateHMRConsentStatusWhenEnableStateChanged) {
             HMRConsentStatus::kApproved);
 }
 
-TEST_F(MagicBoostStateAshTest, UpdateHMRConsentWindowDismissCount) {
+TEST_F(MagicBoostStateTest, UpdateHMRConsentWindowDismissCount) {
   EXPECT_EQ(MagicBoostState::Get()->hmr_consent_window_dismiss_count(), 0);
 
   prefs()->SetInteger(ash::prefs::kHMRConsentWindowDismissCount, 1);
@@ -233,7 +233,7 @@ TEST_F(MagicBoostStateAshTest, UpdateHMRConsentWindowDismissCount) {
   EXPECT_EQ(MagicBoostState::Get()->hmr_consent_window_dismiss_count(), 2);
 }
 
-TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInFunctionCall) {
+TEST_F(MagicBoostStateTest, ShouldIncludeOrcaInOptInFunctionCall) {
   // `ShouldIncludeOrcaInOptIn` should fetch panel context from
   // `EditorPanelManagerImpl` to see if opt-in is needed for Orca.
   EXPECT_CALL(mock_editor_manager(), GetEditorPanelContext);
@@ -242,7 +242,7 @@ TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInFunctionCall) {
   testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
 }
 
-TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInBlocked) {
+TEST_F(MagicBoostStateTest, ShouldIncludeOrcaInOptInBlocked) {
   ON_CALL(mock_editor_manager(), GetEditorPanelContext)
       .WillByDefault(
           [](base::OnceCallback<void(
@@ -261,7 +261,7 @@ TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInBlocked) {
   testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
 }
 
-TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInConsentStatusSettled) {
+TEST_F(MagicBoostStateTest, ShouldIncludeOrcaInOptInConsentStatusSettled) {
   ON_CALL(mock_editor_manager(), GetEditorPanelContext)
       .WillByDefault(
           [](base::OnceCallback<void(
@@ -279,8 +279,7 @@ TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInConsentStatusSettled) {
   testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
 }
 
-TEST_F(MagicBoostStateAshTest,
-       ShouldIncludeOrcaInOptInConsentStatusNotSettled) {
+TEST_F(MagicBoostStateTest, ShouldIncludeOrcaInOptInConsentStatusNotSettled) {
   ON_CALL(mock_editor_manager(), GetEditorPanelContext)
       .WillByDefault(
           [](base::OnceCallback<void(
@@ -299,7 +298,7 @@ TEST_F(MagicBoostStateAshTest,
   testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
 }
 
-TEST_F(MagicBoostStateAshTest, DisableOrcaFeature) {
+TEST_F(MagicBoostStateTest, DisableOrcaFeature) {
   // `DisableOrcaFeature` should trigger the correct functions from
   // `EditorPanelManagerImpl`.
   EXPECT_CALL(mock_editor_manager(), OnMagicBoostPromoCardDeclined);
@@ -308,7 +307,7 @@ TEST_F(MagicBoostStateAshTest, DisableOrcaFeature) {
   testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
 }
 
-TEST_F(MagicBoostStateAshTest, EnableOrcaFeature) {
+TEST_F(MagicBoostStateTest, EnableOrcaFeature) {
   // `EnableOrcaFeature` should trigger the correct functions from
   // `EditorPanelManagerImpl`.
   EXPECT_CALL(mock_editor_manager(), OnConsentApproved);
@@ -317,7 +316,7 @@ TEST_F(MagicBoostStateAshTest, EnableOrcaFeature) {
   testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
 }
 
-TEST_F(MagicBoostStateAshTest, DisableLobsterSettings) {
+TEST_F(MagicBoostStateTest, DisableLobsterSettings) {
   ASSERT_TRUE(prefs()->GetBoolean(ash::prefs::kLobsterEnabled));
 
   magic_boost_state()->DisableLobsterSettings();
@@ -333,7 +332,7 @@ struct MagicBoostHmrCardShowConditionTestCase {
 };
 
 class MagicBoostHmrCardShowConditionTest
-    : public MagicBoostStateAshTest,
+    : public MagicBoostStateTest,
       public testing::WithParamInterface<
           MagicBoostHmrCardShowConditionTestCase> {};
 

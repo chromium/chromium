@@ -21,8 +21,8 @@ MagicBoostNoticeHandler::~MagicBoostNoticeHandler() = default;
 
 void MagicBoostNoticeHandler::ShowNotice() {
   if (chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures() &&
-      ash::MagicBoostControllerAsh::Get()) {
-    ash::MagicBoostControllerAsh::Get()->ShowDisclaimerUi(
+      ash::MagicBoostController::Get()) {
+    ash::MagicBoostController::Get()->ShowDisclaimerUi(
         display::Screen::Get()->GetPrimaryDisplay().id(),
         magic_boost::TransitionAction::kDoNothing,
         magic_boost::OptInFeatures::kOrcaAndHmr);

@@ -67,12 +67,12 @@ class RefreshTokensLoadedBarrier : public signin::IdentityManager::Observer {
 
 }  // namespace
 
-MagicBoostStateAsh::MagicBoostStateAsh()
-    : MagicBoostStateAsh(
-          MagicBoostStateAsh::InjectActiveProfileForTestingCallback()) {}
+MagicBoostState::MagicBoostState()
+    : MagicBoostState(
+          MagicBoostState::InjectActiveProfileForTestingCallback()) {}
 
-MagicBoostStateAsh::MagicBoostStateAsh(
-    MagicBoostStateAsh::InjectActiveProfileForTestingCallback
+MagicBoostState::MagicBoostState(
+    MagicBoostState::InjectActiveProfileForTestingCallback
         inject_active_profile_for_testing_callback)
     : inject_active_profile_for_testing_callback_(
           inject_active_profile_for_testing_callback) {
@@ -95,11 +95,11 @@ MagicBoostStateAsh::MagicBoostStateAsh(
   }
 }
 
-MagicBoostStateAsh::~MagicBoostStateAsh() {
+MagicBoostState::~MagicBoostState() {
   editor_manager_for_test_ = nullptr;
 }
 
-Profile* MagicBoostStateAsh::GetActiveUserProfile() {
+Profile* MagicBoostState::GetActiveUserProfile() {
   if (!inject_active_profile_for_testing_callback_.is_null()) {
     CHECK_IS_TEST();
     return inject_active_profile_for_testing_callback_.Run();
@@ -110,12 +110,12 @@ Profile* MagicBoostStateAsh::GetActiveUserProfile() {
           user_manager::UserManager::Get()->GetActiveUser()));
 }
 
-void MagicBoostStateAsh::OnActiveUserPrefServiceChanged(
+void MagicBoostState::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   RegisterPrefChanges(pref_service);
 }
 
-bool MagicBoostStateAsh::CanShowNoticeBannerForHMR() {
+bool MagicBoostState::CanShowNoticeBannerForHMR() {
   PrefService* pref = pref_change_registrar_->prefs();
 
   // TODO(b:397521071): now the kHmrEnabled is not managed, this logic needs to
@@ -129,24 +129,24 @@ bool MagicBoostStateAsh::CanShowNoticeBannerForHMR() {
          hmr_consent_status().value() == chromeos::HMRConsentStatus::kDeclined;
 }
 
-int32_t MagicBoostStateAsh::AsyncIncrementHMRConsentWindowDismissCount() {
+int32_t MagicBoostState::AsyncIncrementHMRConsentWindowDismissCount() {
   int32_t incremented_count = hmr_consent_window_dismiss_count() + 1;
   pref_change_registrar_->prefs()->SetInteger(
       ash::prefs::kHMRConsentWindowDismissCount, incremented_count);
   return incremented_count;
 }
 
-void MagicBoostStateAsh::AsyncWriteConsentStatus(
+void MagicBoostState::AsyncWriteConsentStatus(
     chromeos::HMRConsentStatus consent_status) {
   pref_change_registrar_->prefs()->SetInteger(
       ash::prefs::kHMRConsentStatus, std::to_underlying(consent_status));
 }
 
-void MagicBoostStateAsh::AsyncWriteHMREnabled(bool enabled) {
+void MagicBoostState::AsyncWriteHMREnabled(bool enabled) {
   pref_change_registrar_->prefs()->SetBoolean(ash::prefs::kHmrEnabled, enabled);
 }
 
-void MagicBoostStateAsh::ShouldIncludeOrcaInOptIn(
+void MagicBoostState::ShouldIncludeOrcaInOptIn(
     base::OnceCallback<void(bool)> callback) {
   GetEditorPanelManager()->GetEditorPanelContext(base::BindOnce(
       [](base::OnceCallback<void(bool)> callback,
@@ -162,27 +162,27 @@ void MagicBoostStateAsh::ShouldIncludeOrcaInOptIn(
       std::move(callback)));
 }
 
-bool MagicBoostStateAsh::ShouldIncludeOrcaInOptInSync() {
+bool MagicBoostState::ShouldIncludeOrcaInOptInSync() {
   return GetEditorPanelManager()->ShouldOptInEditor();
 }
 
-void MagicBoostStateAsh::DisableOrcaFeature() {
+void MagicBoostState::DisableOrcaFeature() {
   GetEditorPanelManager()->OnMagicBoostPromoCardDeclined();
 }
 
-void MagicBoostStateAsh::DisableLobsterSettings() {
+void MagicBoostState::DisableLobsterSettings() {
   pref_change_registrar_->prefs()->SetBoolean(ash::prefs::kLobsterEnabled,
                                               false);
 }
 
-void MagicBoostStateAsh::EnableOrcaFeature() {
+void MagicBoostState::EnableOrcaFeature() {
   // Note that we just need to change consent status to enable the Orca feature,
   // since when Orca consent status is unset, `kOrcaEnabled` should be enabled
   // by default.
   GetEditorPanelManager()->OnConsentApproved();
 }
 
-input_method::EditorPanelManager* MagicBoostStateAsh::GetEditorPanelManager() {
+input_method::EditorPanelManager* MagicBoostState::GetEditorPanelManager() {
   if (editor_manager_for_test_) {
     return editor_manager_for_test_;
   }
@@ -192,12 +192,12 @@ input_method::EditorPanelManager* MagicBoostStateAsh::GetEditorPanelManager() {
       ->panel_manager();
 }
 
-void MagicBoostStateAsh::OnShellDestroying() {
+void MagicBoostState::OnShellDestroying() {
   session_observation_.Reset();
   shell_observation_.Reset();
 }
 
-void MagicBoostStateAsh::RegisterPrefChanges(PrefService* pref_service) {
+void MagicBoostState::RegisterPrefChanges(PrefService* pref_service) {
   pref_change_registrar_.reset();
 
   if (!pref_service) {
@@ -207,24 +207,24 @@ void MagicBoostStateAsh::RegisterPrefChanges(PrefService* pref_service) {
   pref_change_registrar_->Init(pref_service);
   pref_change_registrar_->Add(
       ash::prefs::kMagicBoostEnabled,
-      base::BindRepeating(&MagicBoostStateAsh::OnMagicBoostEnabledUpdated,
+      base::BindRepeating(&MagicBoostState::OnMagicBoostEnabledUpdated,
                           base::Unretained(this)));
   pref_change_registrar_->Add(
       ash::prefs::kHmrEnabled,
-      base::BindRepeating(&MagicBoostStateAsh::OnHMREnabledUpdated,
+      base::BindRepeating(&MagicBoostState::OnHMREnabledUpdated,
                           base::Unretained(this)));
   pref_change_registrar_->Add(
       ash::prefs::kHmrManagedSettings,
-      base::BindRepeating(&MagicBoostStateAsh::OnHMREnabledUpdated,
+      base::BindRepeating(&MagicBoostState::OnHMREnabledUpdated,
                           base::Unretained(this)));
   pref_change_registrar_->Add(
       ash::prefs::kHMRConsentStatus,
-      base::BindRepeating(&MagicBoostStateAsh::OnHMRConsentStatusUpdated,
+      base::BindRepeating(&MagicBoostState::OnHMRConsentStatusUpdated,
                           base::Unretained(this)));
   pref_change_registrar_->Add(
       ash::prefs::kHMRConsentWindowDismissCount,
       base::BindRepeating(
-          &MagicBoostStateAsh::OnHMRConsentWindowDismissCountUpdated,
+          &MagicBoostState::OnHMRConsentWindowDismissCountUpdated,
           base::Unretained(this)));
 
   // Initializes the `magic_boost_enabled_` based on the current prefs settings.
@@ -258,12 +258,12 @@ void MagicBoostStateAsh::RegisterPrefChanges(PrefService* pref_service) {
   // is loaded.
   refresh_tokens_loaded_barrier_.reset(new RefreshTokensLoadedBarrier(
       profile, identity_manager,
-      base::BindOnce(&MagicBoostStateAsh::OnRefreshTokensReady,
+      base::BindOnce(&MagicBoostState::OnRefreshTokensReady,
                      base::Unretained(this))));
 }
 
 base::expected<bool, chromeos::MagicBoostState::Error>
-MagicBoostStateAsh::IsUserEligibleForGenAIFeaturesExpected() const {
+MagicBoostState::IsUserEligibleForGenAIFeaturesExpected() const {
   return mahi_availability::IsMahiAvailable().transform_error(
       [](mahi_availability::Error error) {
         // Use switch statement to get a compile error if new error types are
@@ -276,13 +276,13 @@ MagicBoostStateAsh::IsUserEligibleForGenAIFeaturesExpected() const {
       });
 }
 
-void MagicBoostStateAsh::OnRefreshTokensReady() {
+void MagicBoostState::OnRefreshTokensReady() {
   ASSIGN_OR_RETURN(bool available, IsUserEligibleForGenAIFeaturesExpected(),
                    [](auto) {});
   UpdateUserEligibleForGenAIFeatures(available);
 }
 
-void MagicBoostStateAsh::OnMagicBoostEnabledUpdated() {
+void MagicBoostState::OnMagicBoostEnabledUpdated() {
   bool enabled = pref_change_registrar_->prefs()->GetBoolean(
       ash::prefs::kMagicBoostEnabled);
 
@@ -297,7 +297,7 @@ void MagicBoostStateAsh::OnMagicBoostEnabledUpdated() {
                                               enabled);
 }
 
-void MagicBoostStateAsh::OnHMREnabledUpdated() {
+void MagicBoostState::OnHMREnabledUpdated() {
   // Looks up both the enterprise policy controlled pref and the user controlled
   // pref.
   PrefService* prefs = pref_change_registrar_->prefs();
@@ -321,7 +321,7 @@ void MagicBoostStateAsh::OnHMREnabledUpdated() {
   }
 }
 
-void MagicBoostStateAsh::OnHMRConsentStatusUpdated() {
+void MagicBoostState::OnHMRConsentStatusUpdated() {
   auto consent_status = static_cast<chromeos::HMRConsentStatus>(
       pref_change_registrar_->prefs()->GetInteger(
           ash::prefs::kHMRConsentStatus));
@@ -329,7 +329,7 @@ void MagicBoostStateAsh::OnHMRConsentStatusUpdated() {
   UpdateHMRConsentStatus(consent_status);
 }
 
-void MagicBoostStateAsh::OnHMRConsentWindowDismissCountUpdated() {
+void MagicBoostState::OnHMRConsentWindowDismissCountUpdated() {
   UpdateHMRConsentWindowDismissCount(
       pref_change_registrar_->prefs()->GetInteger(
           ash::prefs::kHMRConsentWindowDismissCount));

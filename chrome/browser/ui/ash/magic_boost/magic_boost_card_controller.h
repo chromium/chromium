@@ -68,8 +68,7 @@ class MagicBoostCardController
   void SetOptInFeature(const ash::magic_boost::OptInFeatures& features);
   const ash::magic_boost::OptInFeatures& GetOptInFeatures() const;
 
-  void SetMagicBoostControllerForTesting(
-      ash::MagicBoostControllerAsh* delegate);
+  void SetMagicBoostControllerForTesting(ash::MagicBoostController* delegate);
 
   base::WeakPtr<MagicBoostCardController> GetWeakPtr();
 

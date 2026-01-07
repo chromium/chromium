@@ -308,7 +308,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<MisconfiguredUserCleaner> misconfigured_user_cleaner_;
 
-  std::unique_ptr<ash::MagicBoostControllerImpl> magic_boost_controller_ash_;
+  std::unique_ptr<ash::MagicBoostControllerImpl> magic_boost_controller_;
 
   std::unique_ptr<parent_access::ParentAccessService> parent_access_service_;
 

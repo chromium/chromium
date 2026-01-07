@@ -10,7 +10,7 @@
 
 namespace chromeos {
 
-class MockMagicBoostController : public ash::MagicBoostControllerAsh {
+class MockMagicBoostController : public ash::MagicBoostController {
  public:
   MockMagicBoostController();
   ~MockMagicBoostController() override;

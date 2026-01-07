@@ -76,14 +76,13 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase {
     testing_profile_ =
         profile_manager_.CreateTestingProfile(chrome::kInitialProfile);
 
-    // In production a shared instance of MagicBoostControllerAsh is initialized
+    // In production a shared instance of MagicBoostController is initialized
     // by ChromeBrowserMainPartsAsh in its PreProfileInit().
-    magic_boost_controller_ash_ =
-        std::make_unique<ash::MagicBoostControllerImpl>();
+    magic_boost_controller_ = std::make_unique<ash::MagicBoostControllerImpl>();
 
     // `ReadWriteCardsManagerImpl` will initialize `QuickAnswersState`
     // indirectly. `QuickAnswersState` depends on `MagicBoostState`.
-    magic_boost_state_ = std::make_unique<ash::MagicBoostStateAsh>(
+    magic_boost_state_ = std::make_unique<ash::MagicBoostState>(
         base::BindRepeating([]() { return static_cast<Profile*>(nullptr); }));
     manager_ = std::make_unique<ReadWriteCardsManagerImpl>(
         TestingBrowserProcess::GetGlobal()
@@ -95,7 +94,7 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase {
   void TearDown() override {
     manager_.reset();
     magic_boost_state_.reset();
-    magic_boost_controller_ash_.reset();
+    magic_boost_controller_.reset();
     testing_profile_ = nullptr;
     profile_manager_.DeleteTestingProfile(chrome::kInitialProfile);
     ChromeAshTestBase::TearDown();
@@ -147,7 +146,7 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase {
   }
 
  protected:
-  std::unique_ptr<ash::MagicBoostStateAsh> magic_boost_state_;
+  std::unique_ptr<ash::MagicBoostState> magic_boost_state_;
   std::unique_ptr<ReadWriteCardsManagerImpl> manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
   // Providing a mock MahiMediaAppEvnetsProxy to satisfy MahiMenuController.
@@ -156,7 +155,7 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase {
   chromeos::ScopedMahiMediaAppEventsProxySetter
       scoped_mahi_media_app_events_proxy_{&mock_mahi_media_app_events_proxy_};
 
-  std::unique_ptr<ash::MagicBoostControllerImpl> magic_boost_controller_ash_;
+  std::unique_ptr<ash::MagicBoostControllerImpl> magic_boost_controller_;
   raw_ptr<TestingProfile> testing_profile_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
 };

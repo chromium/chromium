@@ -19,7 +19,7 @@ namespace ash {
 
 namespace {
 
-MagicBoostControllerAsh* g_instance = nullptr;
+MagicBoostController* g_instance = nullptr;
 
 // The disclaimer terms of service and learn more urls.
 constexpr char kDisclaimerTOSURL[] = "https://policies.google.com/terms";
@@ -29,16 +29,16 @@ constexpr char kLearnMoreURL[] =
 }  // namespace
 
 // static
-MagicBoostControllerAsh* MagicBoostControllerAsh::Get() {
+MagicBoostController* MagicBoostController::Get() {
   return g_instance;
 }
 
-MagicBoostControllerAsh::MagicBoostControllerAsh() {
+MagicBoostController::MagicBoostController() {
   DCHECK(!g_instance);
   g_instance = this;
 }
 
-MagicBoostControllerAsh::~MagicBoostControllerAsh() {
+MagicBoostController::~MagicBoostController() {
   DCHECK_EQ(this, g_instance);
   g_instance = nullptr;
 }
@@ -87,7 +87,7 @@ void MagicBoostControllerImpl::OnDisclaimerAcceptButtonPressed(
     int64_t display_id,
     magic_boost::TransitionAction action) {
   auto* magic_boost_state =
-      static_cast<MagicBoostStateAsh*>(chromeos::MagicBoostState::Get());
+      static_cast<MagicBoostState*>(chromeos::MagicBoostState::Get());
   if (opt_in_features_ == magic_boost::OptInFeatures::kOrcaAndHmr) {
     magic_boost_state->EnableOrcaFeature();
   }

@@ -1090,8 +1090,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   crosapi_manager_ = std::make_unique<crosapi::CrosapiManager>();
   browser_manager_ = std::make_unique<crosapi::BrowserManager>();
 
-  magic_boost_controller_ash_ =
-      std::make_unique<ash::MagicBoostControllerImpl>();
+  magic_boost_controller_ = std::make_unique<ash::MagicBoostControllerImpl>();
 
   chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
 
@@ -1786,7 +1785,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
     TokenHandleStoreFactory::Get()->DestroyTokenHandleStore();
   }
 
-  magic_boost_controller_ash_.reset();
+  magic_boost_controller_.reset();
 
   // BrowserManager and CrosapiManager need to outlive the Profile, which
   // is destroyed inside ChromeBrowserMainPartsLinux::PostMainMessageLoopRun().

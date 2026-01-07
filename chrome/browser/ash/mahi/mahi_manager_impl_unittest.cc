@@ -138,7 +138,7 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         chromeos::switches::kMahiRestrictionsOverride);
 
-    magic_boost_state_ = std::make_unique<MagicBoostStateAsh>(
+    magic_boost_state_ = std::make_unique<MagicBoostState>(
         base::BindRepeating([]() { return static_cast<Profile*>(nullptr); }));
     mahi_manager_impl_ = std::make_unique<MahiManagerImpl>();
     mahi_manager_impl_->mahi_provider_ = CreateMahiProvider();
@@ -221,7 +221,7 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
             &test_url_loader_factory_),
         identity_test_env_.identity_manager());
   }
-  std::unique_ptr<MagicBoostStateAsh> magic_boost_state_;
+  std::unique_ptr<MagicBoostState> magic_boost_state_;
   std::unique_ptr<MahiManagerImpl> mahi_manager_impl_;
   base::test::ScopedFeatureList feature_list_;
 

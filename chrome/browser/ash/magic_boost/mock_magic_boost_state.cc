@@ -10,7 +10,7 @@
 namespace ash {
 
 MockMagicBoostState::MockMagicBoostState()
-    : MagicBoostStateAsh(base::BindRepeating(
+    : MagicBoostState(base::BindRepeating(
           []() { return static_cast<Profile*>(nullptr); })) {}
 
 MockMagicBoostState::~MockMagicBoostState() = default;

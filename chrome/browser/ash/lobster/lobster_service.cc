@@ -117,7 +117,7 @@ void LobsterService::QueueInsertion(const std::string& image_bytes,
 
 void LobsterService::ShowDisclaimerUI() {
   if (chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures()) {
-    ash::MagicBoostControllerAsh::Get()->ShowDisclaimerUi(
+    ash::MagicBoostController::Get()->ShowDisclaimerUi(
         display::Screen::Get()->GetPrimaryDisplay().id(),
         ash::magic_boost::TransitionAction::kShowLobsterPanel,
         ash::magic_boost::OptInFeatures::kOrcaAndHmr);

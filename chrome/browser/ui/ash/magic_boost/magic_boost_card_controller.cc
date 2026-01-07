@@ -23,14 +23,14 @@ namespace chromeos {
 
 namespace {
 
-ash::MagicBoostControllerAsh* g_instance_for_testing = nullptr;
+ash::MagicBoostController* g_instance_for_testing = nullptr;
 
-ash::MagicBoostControllerAsh& GetMagicBoostControllerAsh() {
+ash::MagicBoostController& GetMagicBoostController() {
   if (g_instance_for_testing) {
     CHECK_IS_TEST();
     return CHECK_DEREF(g_instance_for_testing);
   }
-  return CHECK_DEREF(ash::MagicBoostControllerAsh::Get());
+  return CHECK_DEREF(ash::MagicBoostController::Get());
 }
 
 }  // namespace
@@ -129,12 +129,12 @@ void MagicBoostCardController::CloseOptInUi() {
 }
 
 void MagicBoostCardController::ShowDisclaimerUi(int64_t display_id) {
-  GetMagicBoostControllerAsh().ShowDisclaimerUi(display_id, transition_action_,
-                                                opt_in_features_);
+  GetMagicBoostController().ShowDisclaimerUi(display_id, transition_action_,
+                                             opt_in_features_);
 }
 
 void MagicBoostCardController::CloseDisclaimerUi() {
-  GetMagicBoostControllerAsh().CloseDisclaimerUi();
+  GetMagicBoostController().CloseDisclaimerUi();
 }
 
 void MagicBoostCardController::SetOptInFeature(
@@ -152,7 +152,7 @@ base::WeakPtr<MagicBoostCardController> MagicBoostCardController::GetWeakPtr() {
 }
 
 void MagicBoostCardController::SetMagicBoostControllerForTesting(
-    ash::MagicBoostControllerAsh* delegate) {
+    ash::MagicBoostController* delegate) {
   g_instance_for_testing = delegate;
 }
 

@@ -11,12 +11,12 @@
 
 namespace ash {
 
-// `MagicBoostControllerAsh` is the central point to deal with the ChromeOS -
+// `MagicBoostController` is the central point to deal with the ChromeOS -
 // Chrome browser communication. it is responsible for showing the disclaimer UI
 // and connect with Orca services in ash.
-class MagicBoostControllerAsh {
+class MagicBoostController {
  public:
-  static MagicBoostControllerAsh* Get();
+  static MagicBoostController* Get();
 
   virtual void ShowDisclaimerUi(int64_t display_id,
                                 magic_boost::TransitionAction action,
@@ -25,13 +25,13 @@ class MagicBoostControllerAsh {
   virtual void CloseDisclaimerUi() = 0;
 
  protected:
-  MagicBoostControllerAsh();
-  MagicBoostControllerAsh(const MagicBoostControllerAsh&) = delete;
-  MagicBoostControllerAsh& operator=(const MagicBoostControllerAsh&) = delete;
-  virtual ~MagicBoostControllerAsh();
+  MagicBoostController();
+  MagicBoostController(const MagicBoostController&) = delete;
+  MagicBoostController& operator=(const MagicBoostController&) = delete;
+  virtual ~MagicBoostController();
 };
 
-class MagicBoostControllerImpl : public MagicBoostControllerAsh {
+class MagicBoostControllerImpl : public MagicBoostController {
  public:
   MagicBoostControllerImpl();
   ~MagicBoostControllerImpl() override;
@@ -47,7 +47,7 @@ class MagicBoostControllerImpl : public MagicBoostControllerAsh {
   }
 
  private:
-  friend class MagicBoostControllerAshTest;
+  friend class MagicBoostControllerTest;
 
   // Called when the disclaimer view's accept button is clicked. `display_id`
   // indicates the display where the disclaimer view shows. `action` specifies
