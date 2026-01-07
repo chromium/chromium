@@ -184,8 +184,7 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParsedPolicy(
                             parsed_policy)
           : CreateAllowlistsAndReportingEndpoints(parsed_policy);
   for (const auto& [feature, unused] : features) {
-    if (base::Contains(allow_lists_and_reporting_endpoints.allowlists_,
-                       feature) &&
+    if (allow_lists_and_reporting_endpoints.allowlists_.contains(feature) &&
         allow_lists_and_reporting_endpoints.allowlists_[feature].Contains(
             origin)) {
       inherited_policies.Add(feature);
@@ -221,7 +220,7 @@ bool PermissionsPolicy::IsFeatureEnabledForOrigin(
     network::mojom::PermissionsPolicyFeature feature,
     const url::Origin& origin,
     bool override_default_policy_to_all) const {
-  DCHECK(base::Contains(*feature_list_, feature));
+  DCHECK(feature_list_->contains(feature));
   DCHECK(!override_default_policy_to_all ||
          base::Contains(kDefinedOptInFeatures, feature));
 
@@ -279,7 +278,7 @@ bool PermissionsPolicy::GetFeatureValueForOrigin(
     network::mojom::PermissionsPolicyFeature feature,
     network::PermissionsPolicyFeatureDefault default_policy,
     const url::Origin& origin) const {
-  DCHECK(base::Contains(*feature_list_, feature));
+  DCHECK(feature_list_->contains(feature));
 
   // 9.8.2 If policy’s inherited policy for feature is "Disabled", return
   // "Disabled".
@@ -345,7 +344,7 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForDevTools(
 // calculation method.
 const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForFeature(
     network::mojom::PermissionsPolicyFeature feature) const {
-  DCHECK(base::Contains(*feature_list_, feature));
+  DCHECK(feature_list_->contains(feature));
   // Return an empty allowlist when disabled through inheritance.
   if (!IsFeatureEnabledByInheritedPolicy(feature)) {
     return PermissionsPolicy::Allowlist();

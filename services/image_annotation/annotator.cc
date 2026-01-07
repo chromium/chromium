@@ -643,8 +643,8 @@ void Annotator::AnnotateImage(
                      true /* canceled */));
 
   // Don't start local work if it would duplicate some already-ongoing work.
-  if (base::Contains(local_processors_, request_key) ||
-      base::Contains(pending_requests_, request_key)) {
+  if (local_processors_.contains(request_key) ||
+      pending_requests_.contains(request_key)) {
     return;
   }
 
