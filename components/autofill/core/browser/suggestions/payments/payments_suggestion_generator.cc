@@ -294,8 +294,8 @@ std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
     bool is_card_number_field_empty,
     const payments::AmountExtractionStatus& amount_extraction_status) {
   std::vector<Suggestion> suggestions;
-  if (base::FindOrNull(suggestion_data,
-                       SuggestionDataSource::kSaveAndFillPromo)) {
+  if (base::Contains(suggestion_data,
+                     SuggestionDataSource::kSaveAndFillPromo)) {
     bool display_gpay_logo = false;
     suggestions.push_back(
         CreateSaveAndFillSuggestion(client, display_gpay_logo));
@@ -306,8 +306,8 @@ std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
             display_gpay_logo, amount_extraction_status),
         std::back_inserter(suggestions));
     return suggestions;
-  } else if (base::FindOrNull(suggestion_data,
-                              SuggestionDataSource::kVirtualStandaloneCvc)) {
+  } else if (base::Contains(suggestion_data,
+                            SuggestionDataSource::kVirtualStandaloneCvc)) {
     // Only trigger GetVirtualCreditCardsForStandaloneCvcField if it's
     // standalone CVC field.
     base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
