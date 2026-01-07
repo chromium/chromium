@@ -1063,6 +1063,7 @@ public class FeedSurfaceMediator
             if (mStreamHolder != null) {
                 assumeNonNull(mStreamContentChangedListener);
                 mStreamHolder.removeOnContentChangedListener(mStreamContentChangedListener);
+                mStreamHolder.destroy();
                 mStreamHolder = null;
             }
         }
