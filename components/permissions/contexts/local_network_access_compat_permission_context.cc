@@ -19,8 +19,8 @@ LocalNetworkAccessCompatPermissionContext::
     : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::LOCAL_NETWORK_ACCESS,
-          // TODO(crbug.com/465491626): figure out if we should specify
-          // kLocalNetworkAccess here.
+          // Permission policy check is special-cased, see
+          // PermissionAllowedByPermissionsPolicy() below.
           network::mojom::PermissionsPolicyFeature::kNotFound) {}
 
 LocalNetworkAccessCompatPermissionContext::
@@ -87,6 +87,27 @@ void LocalNetworkAccessCompatPermissionContext::RequestPermission(
     std::unique_ptr<PermissionRequestData> request_data,
     BrowserPermissionCallback callback) {
   NOTREACHED();
+}
+
+// If something is looking for the local-network-access permission policy,
+// delegate to the local-network or loopback-network permission policy. This is
+// unlikely to be needed as when
+// network::features::kLocalNetworkAccessChecksSplitPermissions is enabled
+// (which is the only time this class should be used), local-network or
+// loopback-network should be checked in the Chromium implementation, but is
+// done 1) as a defense-in-depth measure, and 2) to ensure web-facing backward
+// compatibility so that the result of permission.query({name:
+// 'local-network-access'}) is mostly correctly feature-policy gated.
+//
+// Note that
+// services/network/public/cpp/permissions_policy/permissions_policy.cc also
+// delegates as well.
+bool LocalNetworkAccessCompatPermissionContext::
+    PermissionAllowedByPermissionsPolicy(content::RenderFrameHost* rfh) const {
+  return rfh->IsFeatureEnabled(
+             network::mojom::PermissionsPolicyFeature::kLocalNetwork) ||
+         rfh->IsFeatureEnabled(
+             network::mojom::PermissionsPolicyFeature::kLoopbackNetwork);
 }
 
 }  // namespace permissions

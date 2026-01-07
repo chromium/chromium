@@ -260,6 +260,11 @@ class PermissionContextBase : public content_settings::Observer {
   // TODO(crbug.com/40220500): This should return a url::Origin instead.
   virtual GURL GetEffectiveEmbedderOrigin(content::RenderFrameHost* rfh) const;
 
+  // Implementors can override this method to use a custom Permission Policy
+  // check.
+  virtual bool PermissionAllowedByPermissionsPolicy(
+      content::RenderFrameHost* rfh) const;
+
   base::ObserverList<permissions::Observer> permission_observers_;
 
   // Set by subclasses to inform the base class that they will handle adding
@@ -273,9 +278,6 @@ class PermissionContextBase : public content_settings::Observer {
 
  private:
   friend class PermissionContextBaseTests;
-
-  bool PermissionAllowedByPermissionsPolicy(
-      content::RenderFrameHost* rfh) const;
 
   // Called when a request is no longer used so it can be cleaned up.
   void CleanUpRequest(content::WebContents* web_contents,

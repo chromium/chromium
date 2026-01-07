@@ -6,6 +6,7 @@
 #define COMPONENTS_PERMISSIONS_CONTEXTS_LOCAL_NETWORK_ACCESS_COMPAT_PERMISSION_CONTEXT_H_
 
 #include "components/permissions/content_setting_permission_context_base.h"
+#include "content/public/browser/render_frame_host.h"
 
 namespace content {
 class BrowserContext;
@@ -44,6 +45,9 @@ class LocalNetworkAccessCompatPermissionContext
       const permissions::PermissionRequestData& request_data,
       ContentSetting content_setting,
       bool is_one_time) override;
+
+  bool PermissionAllowedByPermissionsPolicy(
+      content::RenderFrameHost* rfh) const override;
 };
 
 }  // namespace permissions
