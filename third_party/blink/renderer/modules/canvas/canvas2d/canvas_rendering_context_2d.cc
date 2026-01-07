@@ -240,8 +240,11 @@ bool CanvasRenderingContext2D::IsComposited() const {
     return false;
   }
 
-  return resource_provider_->SupportsDirectCompositing() &&
-         !element->LowLatencyEnabled();
+  if (!resource_provider_->AsSharedImageProvider()) {
+    return false;
+  }
+
+  return !element->LowLatencyEnabled();
 }
 
 void CanvasRenderingContext2D::Stop() {

@@ -729,16 +729,20 @@ TEST_P(CanvasRenderingContext2DTest,
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
 }
 
-TEST_P(CanvasRenderingContext2DTestAccelerated,
+TEST_P(CanvasRenderingContext2DTest,
        DisplayedPaintableNonCompositedCanvasIsNotRateLimited) {
   CreateContext(kNonOpaque);
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
 
   // Install a CanvasResourceProvider that does not support direct compositing.
   gfx::Size size = CanvasElement().Size();
-  auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      size, RasterModeHint::kPreferGPU, &CanvasElement(),
-      CompositingMode::kDoesNotSupportDirectCompositing);
+  auto provider = Canvas2DResourceProviderBitmap::CreateForTesting(
+      size,
+      Canvas2DColorParams(PredefinedColorSpace::kSRGB,
+                          CanvasPixelFormat::kUint8,
+                          /*has_alpha=*/true),
+      CanvasResourceProvider::ShouldInitialize::kNo);
+
   Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
 
   CanvasElement().SetIsDisplayed(true);
@@ -749,6 +753,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   Context2D()->FinalizeFrame(FlushReason::kCanvasPushFrame);
   Context2D()->FinalizeFrame(FlushReason::kCanvasPushFrame);
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
+  Context2D()->ResetResourceProvider();
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
