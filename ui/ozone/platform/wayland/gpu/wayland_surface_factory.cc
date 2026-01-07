@@ -326,7 +326,7 @@ bool WaylandSurfaceFactory::SupportsNativePixmaps() const {
 
 std::optional<viz::SharedImageFormat>
 WaylandSurfaceFactory::GetPreferredFormatForSolidColor() const {
-  if (!buffer_manager_->SupportsFormat(gfx::BufferFormat::RGBA_8888)) {
+  if (!buffer_manager_->SupportsFormat(viz::SinglePlaneFormat::kRGBA_8888)) {
     return viz::SinglePlaneFormat::kBGRA_8888;
   }
   return viz::SinglePlaneFormat::kRGBA_8888;

@@ -377,8 +377,9 @@ uint32_t WaylandBufferManagerGpu::AllocateBufferID() {
 }
 
 bool WaylandBufferManagerGpu::SupportsFormat(
-    gfx::BufferFormat buffer_format) const {
-  return supported_buffer_formats_with_modifiers_.contains(buffer_format);
+    viz::SharedImageFormat format) const {
+  return supported_buffer_formats_with_modifiers_.contains(
+      viz::SharedImageFormatToBufferFormat(format));
 }
 
 void WaylandBufferManagerGpu::BindHostInterface(

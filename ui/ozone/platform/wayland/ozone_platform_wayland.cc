@@ -202,7 +202,7 @@ class OzonePlatformWayland : public OzonePlatform,
     // |supported_buffer_formats_| is empty. Supported buffer formats are sent
     // to |buffer_manager_| via IPC after gpu service init in that case.
     if (buffer_manager_) {
-      if (!buffer_manager_->SupportsFormat(format)) {
+      if (!buffer_manager_->SupportsFormat(viz::GetSharedImageFormat(format))) {
         return false;
       }
       // Return false here if creating buffers for certain formats is not
