@@ -17559,7 +17559,7 @@
             ]
         }
     ],
-    "OnBeginFrameThrottleVideo": [
+    "OnBeginFrameThrottleVideoDesktop": [
         {
             "platforms": [
                 "chromeos",
