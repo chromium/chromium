@@ -32,13 +32,39 @@ void SetUpSpaceBuilderForPageBox(LogicalSize available_size,
 LogicalSize DesiredPageContainingBlockSize(const Document&,
                                            const ComputedStyle&);
 
+// Return the safe printable inset from print parameters.
+//
+// Each of the four paper edges may have its own inset, but since the printer
+// may rotate the output at its own discretion, there's no reliable way of
+// telling which edge will end up where, so here we'll just return the larger of
+// the four values.
+LayoutUnit CalculateSafePrintableInset(const Document&);
+
 // Calculate the FragmentGeometry for the given page container or page border
 // box, and optionally its margins. page_containing_block_size is typically the
 // @page size returned from DesiredPageContainingBlockSize().
 void ResolvePageBoxGeometry(const BlockNode& page_box,
                             LogicalSize page_containing_block_size,
+                            LayoutUnit safe_printable_inset,
                             FragmentGeometry*,
                             BoxStrut* margins = nullptr);
+
+// Calculate the FragmentGeometry for the given page container, and optionally
+// its margins. page_containing_block_size is typically the @page size returned
+// from DesiredPageContainingBlockSize().
+void ResolvePageContainerGeometry(const BlockNode& page_container,
+                                  LogicalSize page_containing_block_size,
+                                  FragmentGeometry*,
+                                  BoxStrut* margins = nullptr);
+
+// Calculate the FragmentGeometry for the given page border box, and optionally
+// its margins. page_containing_block_size is typically the @page size returned
+// from DesiredPageContainingBlockSize().
+void ResolvePageBorderBoxGeometry(const BlockNode& page_border_box,
+                                  LogicalSize page_containing_block_size,
+                                  LayoutUnit safe_printable_inset,
+                                  FragmentGeometry*,
+                                  BoxStrut* margins = nullptr);
 
 // Calculate the initial containing block size to use when paginating (to be
 // used by viewport units, out-of-flow positioning, etc.). This is defined as
@@ -64,12 +90,15 @@ LogicalSize FittedPageContainerSize(const Document& document,
                                     LogicalSize source_margin_box_size);
 
 // Calculate the page border-box rectangle in the target coordinate system
-// (which fits on paper, if needed).
+// (which fits on paper, if needed). `out_scale` is optionally set to the scale
+// factor needed in order to scale down the page so that it fits on the target
+// paper size.
 LogicalRect TargetPageBorderBoxLogicalRect(
     const Document& document,
     const ComputedStyle& page_style,
     const LogicalSize& source_margin_box_size,
-    const BoxStrut& margins);
+    const BoxStrut& margins,
+    float* out_scale = nullptr);
 
 // Return the total number of pages. Only to be called on a document that has
 // been laid out for pagination.

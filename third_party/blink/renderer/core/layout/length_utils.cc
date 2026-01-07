@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
+#include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -1404,6 +1405,43 @@ LayoutUnit ColumnInlineProgression(const ComputedStyle& style,
                                    LayoutUnit available_size) {
   return ResolveUsedColumnInlineSize(style, available_size) +
          ResolveColumnGapForMulticol(style, available_size);
+}
+
+void AdjustMarginsForPaperEdge(const ConstraintSpace& constraint_space,
+                               const ComputedStyle& style,
+                               BoxStrut* margins) {
+  if (style.GetPageMarginSafety() == EPageMarginSafety::kNone) {
+    return;
+  }
+
+  LogicalBoxSides edge_adjacency = constraint_space.PaperEdgeAdjacentSides();
+  if (edge_adjacency == LogicalBoxSides(false)) {
+    // No side is adjacent to the paper edge.
+    return;
+  }
+
+  LayoutUnit safe_inset = constraint_space.SafePrintableInset();
+  auto adjust_margin = [&style, &safe_inset](LayoutUnit& margin) {
+    if (style.GetPageMarginSafety() == EPageMarginSafety::kClamp) {
+      margin = std::max(margin, safe_inset);
+    } else {
+      DCHECK_EQ(style.GetPageMarginSafety(), EPageMarginSafety::kAdd);
+      margin += safe_inset;
+    }
+  };
+
+  if (edge_adjacency.inline_start && !style.MarginInlineStart().IsAuto()) {
+    adjust_margin(margins->inline_start);
+  }
+  if (edge_adjacency.inline_end && !style.MarginInlineEnd().IsAuto()) {
+    adjust_margin(margins->inline_end);
+  }
+  if (edge_adjacency.block_start && !style.MarginBlockStart().IsAuto()) {
+    adjust_margin(margins->block_start);
+  }
+  if (edge_adjacency.block_end && !style.MarginBlockEnd().IsAuto()) {
+    adjust_margin(margins->block_end);
+  }
 }
 
 PhysicalBoxStrut ComputePhysicalMargins(

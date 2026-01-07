@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>page-margin-safety: add</title>
+<title>page-margin-safety: clamp</title>
 <script>
   if (window.testRunner) {
     testRunner.setPrinting();
@@ -11,9 +11,9 @@
 <style>
   @page {
     margin: 0;
-    margin-top: 30px;
-    margin-right: 30px;
-    page-margin-safety: add;
+    margin-top: 80px;
+    margin-right: 80px;
+    page-margin-safety: clamp;
   }
   body {
     background: yellow;

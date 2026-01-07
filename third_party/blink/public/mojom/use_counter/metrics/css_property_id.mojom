@@ -979,6 +979,7 @@ enum CSSSampleId {
     kRowRuleInteriorInset = 913,
     kRuleEdgeInset = 914,
     kRuleInteriorInset = 915,
+    kPageMarginSafety = 916,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

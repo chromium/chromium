@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<script>
+  if (window.testRunner) {
+    testRunner.setPrinting();
+    testRunner.setSafePrintableInset(0);
+    testRunner.setPrintingSize(640, 400);
+    testRunner.setShouldCenterAndShrinkToFitPaper(true);
+    if (window.internals)
+      internals.settings.setShouldPrintBackgrounds(true);
+  }
+</script>
+<style>
+  @page {
+    margin: 0;
+  }
+  body {
+    margin: 0;
+  }
+  .page {
+    break-after: page;
+    margin: 0;
+    padding: 20px;
+    font-size: 2em;
+  }
+  .square {
+    width: 20px;
+    height: 20px;
+    background: green;
+  }
+</style>
+<div style="display:grid; position:fixed; left:0; top:0; right:0; bottom:0; grid-template-columns:1fr 20px 1fr; grid-template-rows:1fr 20px 1fr;">
+  <div style="margin-top:40px; width:0; white-space:nowrap;">
+    There should be four green squares in the margin area on all pages.<br>
+    The squares should all have the same size.
+  </div>
+  <div class="square"></div>
+  <div></div>
+  <div class="square"></div>
+  <div></div>
+  <div class="square" style="justify-self:end;"></div>
+  <div></div>
+  <div class="square" style="align-self:end;"></div>
+  <div></div>
+</div>
+<div class="page">
+  <br>
+</div>
+<div class="page">
+  <br>
+</div>
+<div class="page">
+  <br>
+</div>
+<div class="page">
+  <br>
+</div>

@@ -287,6 +287,18 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
     }
   }
 
+  void SetPaperEdgeAdjacentSides(LogicalBoxSides sides) {
+    auto* rare_data = EnsureRareData();
+    rare_data->is_adjacent_to_paper_edge_inline_start = sides.inline_start;
+    rare_data->is_adjacent_to_paper_edge_inline_end = sides.inline_end;
+    rare_data->is_adjacent_to_paper_edge_block_start = sides.block_start;
+    rare_data->is_adjacent_to_paper_edge_block_end = sides.block_end;
+  }
+
+  void SetSafePrintableInset(LayoutUnit inset) {
+    EnsureRareData()->safe_printable_inset = inset;
+  }
+
   void SetRequiresContentBeforeBreaking(bool b) {
     if (!b && !space_.rare_data_) {
       return;

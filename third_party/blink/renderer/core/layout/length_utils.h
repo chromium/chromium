@@ -451,6 +451,12 @@ LayoutUnit ResolveItemToleranceForGridLanes(const ComputedStyle&,
 CORE_EXPORT LayoutUnit ColumnInlineProgression(const ComputedStyle&,
                                                LayoutUnit available_size);
 
+// Only for printing: Adjust `margins` to honor the `page-margin-safety`
+// property.
+void AdjustMarginsForPaperEdge(const ConstraintSpace&,
+                               const ComputedStyle&,
+                               BoxStrut* margins);
+
 // Compute physical margins.
 CORE_EXPORT PhysicalBoxStrut
 ComputePhysicalMargins(const ComputedStyle&,
@@ -522,8 +528,13 @@ inline BoxStrut ComputeMarginsForSelf(const ConstraintSpace& constraint_space,
     return BoxStrut();
   LogicalSize percentage_resolution_size =
       constraint_space.MarginPaddingPercentageResolutionSize();
-  return ComputePhysicalMargins(style, percentage_resolution_size)
-      .ConvertToLogical(style.GetWritingDirection());
+  BoxStrut margins = ComputePhysicalMargins(style, percentage_resolution_size)
+                         .ConvertToLogical(style.GetWritingDirection());
+
+  if (style.GetPageMarginSafety() != EPageMarginSafety::kNone) {
+    AdjustMarginsForPaperEdge(constraint_space, style, &margins);
+  }
+  return margins;
 }
 
 // Compute line logical margins for the style owner.

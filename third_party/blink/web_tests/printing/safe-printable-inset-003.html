@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<title>Page margin safety on page that has been shrunk to better fit on paper</title>
+<script>
+  if (window.testRunner) {
+    testRunner.setPrinting();
+    testRunner.setSafePrintableInset(20);
+    testRunner.setPrintingSize(640, 400);
+    testRunner.setShouldCenterAndShrinkToFitPaper(true);
+    if (window.internals)
+      internals.settings.setShouldPrintBackgrounds(true);
+  }
+</script>
+<style>
+  @page {
+    size: 1280px 800px;
+    margin: 0;
+    page-margin-safety: add;
+    @top-center {
+      width: 20px;
+      background: green;
+      content: "";
+    }
+    @bottom-center {
+      width: 20px;
+      background: green;
+      content: "";
+    }
+    @left-middle {
+      height: 20px;
+      background: green;
+      content: "";
+    }
+    @right-middle {
+      height: 20px;
+      background: green;
+      content: "";
+    }
+    /* Using a page-margin box for the pass condition, so that it's unaffected by page area shrinking. */
+    @left-top {
+      text-align: left;
+      vertical-align: top;
+      white-space: pre;
+      margin-top: 20px;
+      content: "There should be four green squares in the margin area on all pages.\a"
+               "The squares should all have the same size.";
+    }
+  }
+  @page normal {
+    size: auto;
+  }
+  @page small {
+    size: 320px 200px;
+  }
+  body {
+    margin: 0;
+    font-size: 2em;
+  }
+</style>
+<br>
+<div style="page:normal;">
+  <br>
+</div>
+<div style="page:small;">
+  <br>
+</div>
+<!-- This one is 25% larger than the page size defined. -->
+<div style="width:1550px;">
+  <br>
+</div>

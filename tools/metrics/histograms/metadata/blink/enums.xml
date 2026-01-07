@@ -8231,6 +8231,7 @@ Called by update_use_counter_css.py.-->
   <int value="913" label="row-rule-interior-inset"/>
   <int value="914" label="rule-edge-inset"/>
   <int value="915" label="rule-interior-inset"/>
+  <int value="916" label="page-margin-safety"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

@@ -1309,6 +1309,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kAvoid ||
              value_id == CSSValueID::kAvoidPage ||
              value_id == CSSValueID::kAvoidColumn;
+    case CSSPropertyID::kPageMarginSafety:
+      return value_id == CSSValueID::kNone || value_id == CSSValueID::kClamp ||
+             value_id == CSSValueID::kAdd;
     case CSSPropertyID::kPageOrientation:
       return value_id == CSSValueID::kUpright ||
              value_id == CSSValueID::kRotateLeft ||
@@ -1775,6 +1778,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kBreakAfter,
     CSSPropertyID::kBreakBefore,
     CSSPropertyID::kBreakInside,
+    CSSPropertyID::kPageMarginSafety,
     CSSPropertyID::kPageOrientation,
     CSSPropertyID::kPointerEvents,
     CSSPropertyID::kPosition,

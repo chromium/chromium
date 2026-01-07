@@ -668,6 +668,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.PaddingTop() == b.PaddingTop();
     case CSSPropertyID::kPage:
       return a.Page() == b.Page();
+    case CSSPropertyID::kPageMarginSafety:
+      return a.GetPageMarginSafety() == b.GetPageMarginSafety();
     case CSSPropertyID::kPageOrientation:
       return a.GetPageOrientation() == b.GetPageOrientation();
     case CSSPropertyID::kPaintOrder:

@@ -3392,6 +3392,15 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     }
   }
 
+  void SetPageMarginSafety(EPageMarginSafety v) {
+    if (GetPageMarginSafety() != v) {
+      if (v != EPageMarginSafety::kNone) {
+        SetMayHaveMargin();
+      }
+      SetPageMarginSafetyInternal(v);
+    }
+  }
+
   // perspective-origin
   void SetPerspectiveOriginX(const Length& v) {
     SetPerspectiveOrigin(LengthPoint(v, PerspectiveOrigin().Y()));

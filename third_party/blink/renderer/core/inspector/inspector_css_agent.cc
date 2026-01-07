@@ -1675,8 +1675,7 @@ protocol::Response InspectorCSSAgent::getEnvironmentVariables(
                     UADefinedVariable::kTitlebarAreaY,
                     UADefinedVariable::kTitlebarAreaWidth,
                     UADefinedVariable::kTitlebarAreaHeight,
-                    UADefinedVariable::kPreferredTextScale,
-                    UADefinedVariable::kSafePrintableInset};
+                    UADefinedVariable::kPreferredTextScale};
   // LINT.ThenChange(//third_party/blink/renderer/core/css/style_environment_variables.h:UADefinedVariable)
 
   for (auto variable : variables) {
