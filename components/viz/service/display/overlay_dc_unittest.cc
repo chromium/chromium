@@ -155,10 +155,11 @@ TextureDrawQuad* CreateTextureQuadAt(
   quad->SetNew(shared_quad_state, rect, /*visible_rect=*/rect,
                /*needs_blending=*/false, resource_id,
                /*top_left=*/gfx::PointF(0, 0),
-               /*bottom_right=*/gfx::PointF(1, 1),
+               /*bottom_right=*/gfx::PointF(rect.width(), rect.height()),
                /*background=*/SkColors::kBlack,
                /*nearest=*/false, /*secure_output=*/false,
-               gfx::ProtectedVideoType::kClear);
+               gfx::ProtectedVideoType::kClear,
+               /*is_tex_coords_normalized=*/false);
   return quad;
 }
 
@@ -178,10 +179,11 @@ TextureDrawQuad* CreateLowLatencyTextureQuadAt(
   quad->SetNew(shared_quad_state, rect, /*visible_rect=*/rect,
                /*needs_blending=*/false, resource_id,
                /*top_left=*/gfx::PointF(0, 0),
-               /*bottom_right=*/gfx::PointF(1, 1),
+               /*bottom_right=*/gfx::PointF(rect.width(), rect.height()),
                /*background=*/SkColors::kBlack,
                /*nearest=*/false, /*secure_output=*/false,
-               gfx::ProtectedVideoType::kClear);
+               gfx::ProtectedVideoType::kClear,
+               /*is_tex_coords_normalized=*/false);
   return quad;
 }
 
@@ -218,10 +220,13 @@ TextureDrawQuad* CreateYUVTextureQuadAt(
                        /*visible_rect=*/quad_rect,
                        /*needs_blending=*/false, resource_id,
                        /*top_left=*/gfx::PointF(0, 0),
-                       /*bottom_right=*/gfx::PointF(1, 1),
+                       /*bottom_right=*/
+                       gfx::PointF(resource_size_in_pixels.width(),
+                                   resource_size_in_pixels.height()),
                        /*background=*/SkColors::kBlack,
                        /*nearest=*/false, /*secure_output=*/false,
-                       gfx::ProtectedVideoType::kClear);
+                       gfx::ProtectedVideoType::kClear,
+                       /*is_tex_coords_normalized=*/false);
   // Content is video frame type.
   overlay_quad->is_video_frame = true;
 

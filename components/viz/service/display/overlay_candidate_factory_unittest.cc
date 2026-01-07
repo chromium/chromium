@@ -68,7 +68,9 @@ class OverlayCandidateFactoryTestBase : public testing::Test {
     child_resource_provider_.ReleaseAllExportedResources(true);
   }
 
-  ResourceId CreateResource(bool is_overlay_candidate, GrSurfaceOrigin origin) {
+  ResourceId CreateResource(bool is_overlay_candidate,
+                            GrSurfaceOrigin origin,
+                            gfx::Size size) {
     scoped_refptr<RasterContextProvider> child_context_provider =
         TestContextProvider::CreateGLES();
 
@@ -80,8 +82,8 @@ class OverlayCandidateFactoryTestBase : public testing::Test {
     }
     auto resource = TransferableResource::Make(
         gpu::ClientSharedImage::CreateForTesting(
-            {SinglePlaneFormat::kRGBA_8888, gfx::Size(1, 1), gfx::ColorSpace(),
-             origin, kPremul_SkAlphaType, usage},
+            {SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(), origin,
+             kPremul_SkAlphaType, usage},
             GL_TEXTURE_2D),
         TransferableResource::ResourceSource::kTest, gpu::SyncToken());
 
@@ -368,10 +370,12 @@ class OverlayCandidateFactoryArbitraryTransformTest
     SharedQuadState* sqs = render_pass.CreateAndAppendSharedQuadState();
     sqs->quad_to_target_transform = quad_to_target_transform;
     TextureDrawQuad quad;
-    quad.SetNew(sqs, quad_rect, quad_rect, false,
-                CreateResource(/*is_overlay_candidate=*/true, origin),
-                gfx::PointF(), gfx::PointF(1, 1), SkColors::kTransparent, false,
-                false, gfx::ProtectedVideoType::kClear);
+    quad.SetNew(
+        sqs, quad_rect, quad_rect, false,
+        CreateResource(/*is_overlay_candidate=*/true, origin, quad_rect.size()),
+        gfx::PointF(), gfx::PointF(quad_rect.width(), quad_rect.height()),
+        SkColors::kTransparent, false, false, gfx::ProtectedVideoType::kClear,
+        /*is_tex_coords_normalized=*/false);
     return quad;
   }
 };
@@ -776,11 +780,15 @@ class TransformedOverlayClipRectTest : public OverlayCandidateFactoryTestBase {
     sqs->quad_to_target_transform = quad_to_target_transform;
     sqs->clip_rect = clip_rect;
     TextureDrawQuad quad;
-    quad.SetNew(
-        sqs, quad_rect, quad_rect, false,
-        CreateResource(/*is_overlay_candidate=*/true, kTopLeft_GrSurfaceOrigin),
-        quad_uv_rect.origin(), quad_uv_rect.bottom_right(),
-        SkColors::kTransparent, false, false, gfx::ProtectedVideoType::kClear);
+    const gfx::RectF tex_coord_rect =
+        gfx::ScaleRect(quad_uv_rect, quad_rect.width(), quad_rect.height());
+    quad.SetNew(sqs, quad_rect, quad_rect, false,
+                CreateResource(/*is_overlay_candidate=*/true,
+                               kTopLeft_GrSurfaceOrigin, quad_rect.size()),
+                tex_coord_rect.origin(), tex_coord_rect.bottom_right(),
+                SkColors::kTransparent, false, false,
+                gfx::ProtectedVideoType::kClear,
+                /*is_tex_coords_normalized=*/false);
 
     return quad;
   }

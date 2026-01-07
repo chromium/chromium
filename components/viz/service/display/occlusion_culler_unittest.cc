@@ -107,7 +107,8 @@ class OcclusionCullerTest : public testing::Test {
         shared_quad_state, rect, rect, needs_blending, resource_id,
         /*top_left=*/gfx::PointF(),
         /*bottom_right=*/gfx::PointF(), SkColors::kBlack, nearest_neighbor,
-        /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+        /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
+        /*is_tex_coords_normalized=*/false);
 
     return overlay_quad;
   }

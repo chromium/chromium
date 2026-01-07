@@ -465,11 +465,16 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     auto* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
     const gfx::PointF kUVTopLeft(0.1f, 0.2f);
     const gfx::PointF kUVBottomRight(1.0f, 1.0f);
+
+    gfx::RectF tex_coord_rect = gfx::BoundingRect(kUVTopLeft, kUVBottomRight);
+    tex_coord_rect.Scale(output_rect.width(), output_rect.height());
+
     quad->SetNew(shared_state, output_rect, output_rect,
-                 false /*needs_blending*/, ResourceId(1), kUVTopLeft,
-                 kUVBottomRight, SkColors::kTransparent,
-                 false /*nearest_neighbor*/, false /*secure_output_only*/,
-                 gfx::ProtectedVideoType::kClear);
+                 false /*needs_blending*/, ResourceId(1),
+                 tex_coord_rect.origin(), tex_coord_rect.bottom_right(),
+                 SkColors::kTransparent, false /*nearest_neighbor*/,
+                 false /*secure_output_only*/, gfx::ProtectedVideoType::kClear,
+                 /*is_tex_coords_normalized=*/false);
 
     if (per_quad_damage_output) {
       quad->damage_rect = output_rect;
@@ -5888,7 +5893,8 @@ CompositorFrame BuildCompositorFrameWithResources(
         gfx::ProtectedVideoType::kClear;
     quad->SetAll(sqs, rect, visible_rect, needs_blending, resource_id,
                  uv_top_left, uv_bottom_right, background_color,
-                 nearest_neighbor, secure_output_only, protected_video_type);
+                 nearest_neighbor, secure_output_only, protected_video_type,
+                 /*is_tex_coords_normalized=*/false);
   }
   frame.render_pass_list.push_back(std::move(pass));
   return frame;
@@ -7852,11 +7858,17 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, PerQuadDamageSameSharedQuadState) {
 
     const gfx::PointF kUVTopLeft(0.1f, 0.2f);
     const gfx::PointF kUVBottomRight(1.0f, 1.0f);
+
+    gfx::RectF tex_coord_rect = gfx::BoundingRect(kUVTopLeft, kUVBottomRight);
+    tex_coord_rect.Scale(quad_rects[i].size().width(),
+                         quad_rects[i].size().height());
+
     texure_quad->SetNew(
         sqs, quad_rects[i], quad_rects[i], false /*needs_blending*/,
-        ResourceId(1), kUVTopLeft, kUVBottomRight, SkColors::kTransparent,
-        false /*nearest_neighbor*/, false /*secure_output_only*/,
-        gfx::ProtectedVideoType::kClear);
+        ResourceId(1), tex_coord_rect.origin(), tex_coord_rect.bottom_right(),
+        SkColors::kTransparent, false /*nearest_neighbor*/,
+        false /*secure_output_only*/, gfx::ProtectedVideoType::kClear,
+        /*is_tex_coords_normalized=*/false);
 
     texure_quad->damage_rect = damage_rects[i];
   }
