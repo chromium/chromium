@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
 #include "components/tabs/public/tab_collection_types.h"
@@ -194,6 +195,16 @@ void VerticalTabStripController::ToggleTabGroupCollapsedState(
           base::UserMetricsAction("TabGroups_TabGroupHeader_Collapsed"));
     }
   }
+}
+
+views::Widget* VerticalTabStripController::ShowGroupEditorBubble(
+    const tab_groups::TabGroupId& group_id,
+    views::View* anchor_view,
+    bool stop_context_menu_propagation) {
+  return TabGroupEditorBubbleView::Show(
+      browser_view_->browser(), group_id,
+      /*anchor_view=*/anchor_view, /*anchor_rect=*/std::nullopt,
+      /*stop_context_menu_propagation=*/stop_context_menu_propagation);
 }
 
 bool VerticalTabStripController::IsCollapsed() {

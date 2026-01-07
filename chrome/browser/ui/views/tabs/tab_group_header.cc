@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_tracker.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_style.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
@@ -123,8 +124,16 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
       group_title_(u""),
       color_(tab_slot_controller_->GetPaintedGroupColor(
           tab_slot_controller_->GetGroupColorId(group))),
-      is_collapsed_(tab_slot_controller_->IsGroupCollapsed(group)),
-      editor_bubble_tracker_(tab_slot_controller) {}
+      is_collapsed_(tab_slot_controller_->IsGroupCollapsed(group)) {
+  editor_bubble_opened_subscription_ =
+      editor_bubble_tracker_.RegisterOnBubbleOpened(
+          base::BindRepeating(&TabSlotController::NotifyTabstripBubbleOpened,
+                              base::Unretained(tab_slot_controller_)));
+  editor_bubble_closed_subscription_ =
+      editor_bubble_tracker_.RegisterOnBubbleClosed(
+          base::BindRepeating(&TabSlotController::NotifyTabstripBubbleClosed,
+                              base::Unretained(tab_slot_controller_)));
+}
 
 TabGroupHeader::~TabGroupHeader() = default;
 
@@ -708,10 +717,6 @@ void TabGroupHeader::CreateHeaderWithTitle() {
   }
 }
 
-void TabGroupHeader::RemoveObserverFromWidget(views::Widget* widget) {
-  widget->RemoveObserver(&editor_bubble_tracker_);
-}
-
 bool TabGroupHeader::GetShowingAttentionIndicator() {
   // Attention should only be shown if the group is collapsed.
   return is_collapsed_ && needs_attention_;
@@ -732,37 +737,6 @@ void TabGroupHeader::SetTabGroupNeedsAttention(bool needs_attention) {
 BEGIN_METADATA(TabGroupHeader)
 ADD_READONLY_PROPERTY_METADATA(int, DesiredWidth)
 END_METADATA
-
-TabGroupHeader::EditorBubbleTracker::EditorBubbleTracker(
-    TabSlotController& tab_slot_controller)
-    : tab_slot_controller_(tab_slot_controller) {}
-
-TabGroupHeader::EditorBubbleTracker::~EditorBubbleTracker() {
-  if (is_open_ && widget_) {
-    widget_->RemoveObserver(this);
-    widget_->Close();
-    tab_slot_controller_->NotifyTabstripBubbleClosed();
-  }
-  CHECK(!IsInObserverList());
-}
-
-void TabGroupHeader::EditorBubbleTracker::Opened(views::Widget* bubble_widget) {
-  DCHECK(bubble_widget);
-  DCHECK(!is_open_);
-  widget_ = bubble_widget;
-  is_open_ = true;
-  bubble_widget->AddObserver(this);
-  tab_slot_controller_->NotifyTabstripBubbleOpened();
-}
-
-void TabGroupHeader::EditorBubbleTracker::OnWidgetDestroying(
-    views::Widget* bubble_widget) {
-  CHECK(widget_ == bubble_widget);
-  is_open_ = false;
-  widget_->RemoveObserver(this);
-  widget_ = nullptr;
-  tab_slot_controller_->NotifyTabstripBubbleClosed();
-}
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabGroupHeader,
                                       kAttentionIndicatorViewElementId);

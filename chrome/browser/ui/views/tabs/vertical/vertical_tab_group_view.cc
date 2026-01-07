@@ -54,10 +54,8 @@ VerticalTabGroupView::VerticalTabGroupView(TabCollectionNode* collection_node)
       tab_group_visual_data_(
           *GetTabGroupFromNode(collection_node_)->visual_data()),
       group_header_(AddChildView(std::make_unique<VerticalTabGroupHeaderView>(
-          &tab_group_visual_data_,
-          base::BindRepeating(
-              &VerticalTabGroupView::ToggleTabGroupCollapsedState,
-              base::Unretained(this))))),
+          this,
+          &tab_group_visual_data_))),
       group_line_(AddChildView(std::make_unique<views::View>())) {
   SetLayoutManager(std::make_unique<TabCollectionAnimatingLayoutManager>(
       std::make_unique<views::DelegatingLayoutManager>(this)));
@@ -161,6 +159,19 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
   return layouts;
 }
 
+void VerticalTabGroupView::ToggleCollapsedState(
+    ToggleTabGroupCollapsedStateOrigin origin) {
+  collection_node_->GetController()->ToggleTabGroupCollapsedState(
+      GetTabGroupFromNode(collection_node_), origin);
+}
+
+views::Widget* VerticalTabGroupView::ShowGroupEditorBubble(
+    bool stop_context_menu_propagation) {
+  return collection_node_->GetController()->ShowGroupEditorBubble(
+      GetTabGroupFromNode(collection_node_)->id(), group_header_,
+      stop_context_menu_propagation);
+}
+
 void VerticalTabGroupView::ResetCollectionNode() {
   collection_node_ = nullptr;
 }
@@ -181,12 +192,6 @@ void VerticalTabGroupView::OnDataChanged() {
                                     kGroupLineCornerRadius, 0)));
   }
   InvalidateLayout();
-}
-
-void VerticalTabGroupView::ToggleTabGroupCollapsedState(
-    ToggleTabGroupCollapsedStateOrigin origin) {
-  collection_node_->GetController()->ToggleTabGroupCollapsedState(
-      GetTabGroupFromNode(collection_node_), origin);
 }
 
 void VerticalTabGroupView::UpdateChildVisibilityForCollapseState(

@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_header_view.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/delegating_layout_manager.h"
@@ -17,7 +18,9 @@ class TabCollectionNode;
 class VerticalTabGroupHeaderView;
 
 // Container for a tab group in the vertical tabstrip.
-class VerticalTabGroupView : public views::View, public views::LayoutDelegate {
+class VerticalTabGroupView : public views::View,
+                             public views::LayoutDelegate,
+                             public VerticalTabGroupHeaderView::Delegate {
   METADATA_HEADER(VerticalTabGroupView, views::View)
 
  public:
@@ -33,9 +36,12 @@ class VerticalTabGroupView : public views::View, public views::LayoutDelegate {
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
 
-  void OnDataChanged();
+  // VerticalTabGroupHeaderView::Delegate:
+  void ToggleCollapsedState(ToggleTabGroupCollapsedStateOrigin origin) override;
+  views::Widget* ShowGroupEditorBubble(
+      bool stop_context_menu_propagation) override;
 
-  void ToggleTabGroupCollapsedState(ToggleTabGroupCollapsedStateOrigin origin);
+  void OnDataChanged();
 
   VerticalTabGroupHeaderView* group_header_for_testing() {
     return group_header_;

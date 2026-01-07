@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_tracker.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -19,7 +20,6 @@
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/view_targeter_delegate.h"
-#include "ui/views/widget/widget_observer.h"
 
 class TabSlotController;
 class TabGroupStyle;
@@ -84,9 +84,6 @@ class TabGroupHeader : public TabSlotView,
   void VisualsChanged();
 
   int GetCollapsedHeaderWidth() const;
-
-  // Removes {editor_bubble_tracker_} from observing the widget.
-  void RemoveObserverFromWidget(views::Widget* widget);
 
   // Enables or disables attention indicator on a tab group.
   void SetTabGroupNeedsAttention(bool needs_attention);
@@ -167,29 +164,9 @@ class TabGroupHeader : public TabSlotView,
 
   base::CallbackListSubscription title_text_changed_subscription_;
 
-  // Tracks whether our editor bubble is open. At most one can be open
-  // at once.
-  class EditorBubbleTracker : public views::WidgetObserver {
-   public:
-    explicit EditorBubbleTracker(TabSlotController& tab_slot_controller);
-    ~EditorBubbleTracker() override;
-
-    void Opened(views::Widget* bubble_widget);
-    bool is_open() const { return is_open_; }
-    views::Widget* widget() const { return widget_; }
-
-    // views::WidgetObserver:
-    void OnWidgetDestroying(views::Widget* widget) override;
-
-   private:
-    bool is_open_ = false;
-    raw_ptr<views::Widget, AcrossTasksDanglingUntriaged> widget_;
-    // Outlives this because it's a dependency inversion interface for the
-    // header's parent View.
-    raw_ref<TabSlotController> tab_slot_controller_;
-  };
-
-  EditorBubbleTracker editor_bubble_tracker_;
+  TabGroupEditorBubbleTracker editor_bubble_tracker_;
+  base::CallbackListSubscription editor_bubble_opened_subscription_;
+  base::CallbackListSubscription editor_bubble_closed_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_HEADER_H_
