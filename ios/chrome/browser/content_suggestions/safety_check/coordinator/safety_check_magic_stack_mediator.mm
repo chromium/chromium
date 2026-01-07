@@ -109,13 +109,10 @@ int ImpressionsCount(const base::Value::List& impressions,
     _profileState = profileState;
     [_profileState addObserver:self];
 
-    if (IsSafetyCheckNotificationsEnabled()) {
-      _notificationsObserver = [[NotificationsSettingsObserver alloc]
-          initWithPrefService:userState
-                   localState:localState];
-
-      _notificationsObserver.delegate = self;
-    }
+    _notificationsObserver =
+        [[NotificationsSettingsObserver alloc] initWithPrefService:userState
+                                                        localState:localState];
+    _notificationsObserver.delegate = self;
 
     if (!safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_userState)) {
       if (!_prefObserverBridge) {
@@ -206,12 +203,8 @@ int ImpressionsCount(const base::Value::List& impressions,
                   passwordState:PasswordSafetyCheckState::kDefault
               safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
                    runningState:RunningSafetyCheckState::kDefault];
-
-  if (IsSafetyCheckNotificationsEnabled()) {
-    _safetyCheckState.showNotificationsOptIn =
-        [self shouldShowNotificationsOptIn];
-  }
-
+  _safetyCheckState.showNotificationsOptIn =
+      [self shouldShowNotificationsOptIn];
   _safetyCheckState.delegate = self;
   _safetyCheckState.audience = self;
   _safetyCheckState.safetyCheckConsumerSource = self;
@@ -314,26 +307,22 @@ int ImpressionsCount(const base::Value::List& impressions,
     return;
   }
 
-  if (IsSafetyCheckNotificationsEnabled()) {
-    CHECK(_localState);
+  CHECK(_localState);
 
-    base::Value::List impressions =
-        _localState->GetList(prefs::kMagicStackSafetyCheckNotificationsShown)
-            .Clone();
+  base::Value::List impressions =
+      _localState->GetList(prefs::kMagicStackSafetyCheckNotificationsShown)
+          .Clone();
 
-    impressions.Append(static_cast<int>(index));
+  impressions.Append(static_cast<int>(index));
 
-    _localState->SetList(prefs::kMagicStackSafetyCheckNotificationsShown,
-                         std::move(impressions));
-  }
+  _localState->SetList(prefs::kMagicStackSafetyCheckNotificationsShown,
+                       std::move(impressions));
 }
 
 #pragma mark - NotificationsSettingsObserverDelegate
 
 - (void)notificationsSettingsDidChangeForClient:
     (PushNotificationClientId)clientID {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
   if (clientID == PushNotificationClientId::kSafetyCheck) {
     // When Safety Check notification permissions change, refresh the Magic
     // Stack module. This ensures the Safety Check container accurately reflects
@@ -437,15 +426,10 @@ int ImpressionsCount(const base::Value::List& impressions,
   }
 
   state.lastRunTime = [self latestSafetyCheckRunTimestamp];
-
   state.runningState = CanRunSafetyCheck(state.lastRunTime)
                            ? RunningSafetyCheckState::kRunning
                            : RunningSafetyCheckState::kDefault;
-
-  if (IsSafetyCheckNotificationsEnabled()) {
-    state.showNotificationsOptIn = [self shouldShowNotificationsOptIn];
-  }
-
+  state.showNotificationsOptIn = [self shouldShowNotificationsOptIn];
   state.audience = self;
   state.safetyCheckConsumerSource = self;
 
@@ -489,8 +473,6 @@ int ImpressionsCount(const base::Value::List& impressions,
 
 // Returns `YES` if the notifications opt-in button should be displayed.
 - (BOOL)shouldShowNotificationsOptIn {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
   BOOL isOptedIn = push_notification_settings::
       GetMobileNotificationPermissionStatusForClient(
           PushNotificationClientId::kSafetyCheck, GaiaId());

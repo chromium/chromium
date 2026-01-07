@@ -186,18 +186,14 @@ NSString* GetContextMenuHideDescriptionForType(
 - (NSArray<UIMenuElement*>*)menuElements {
   NSMutableArray<UIAction*>* actions = [[NSMutableArray alloc] init];
 
-  BOOL canShowTipsNotificationsOptIn = IsTipsModuleType(self.type);
-
-  BOOL canShowSafetyCheckNotificationsOptIn =
-      self.type == ContentSuggestionsModuleType::kSafetyCheck &&
-      IsSafetyCheckNotificationsEnabled();
-
-  if (canShowTipsNotificationsOptIn || canShowSafetyCheckNotificationsOptIn) {
+  // Currently, only Tips and Safety Check modules support the notifications
+  // opt-in/out toggle.
+  if (IsTipsModuleType(self.type) ||
+      self.type == ContentSuggestionsModuleType::kSafetyCheck) {
     [actions addObject:[self toggleNotificationsActionForModuleType:self.type]];
   }
 
   [actions addObject:[self hideAction]];
-
   [actions addObject:[self customizeCardAction]];
 
   return actions;
