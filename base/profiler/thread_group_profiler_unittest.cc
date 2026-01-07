@@ -58,8 +58,10 @@ class MockProfileBuilder : public ProfileBuilder {
     std::move(completed_callback_).Run();
   }
   ModuleCache* GetModuleCache() override { return &module_cache_; }
-  MOCK_METHOD2(OnSampleCompleted,
-               void(std::vector<Frame> frames, TimeTicks sample_timestamp));
+  MOCK_METHOD(void,
+              OnSampleCompleted,
+              (std::vector<Frame> frames, TimeTicks sample_timestamp),
+              (override));
 
  protected:
   ModuleCache module_cache_;

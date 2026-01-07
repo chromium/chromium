@@ -197,8 +197,10 @@ class MockCertificateReceiver : public CertificateReceiver {
   MockCertificateReceiver(const MockCertificateReceiver&) = delete;
   MockCertificateReceiver& operator=(const MockCertificateReceiver&) = delete;
 
-  MOCK_METHOD3(OnCertificate,
-               bool(uint16_t, uint16_t, base::span<const uint8_t>));
+  MOCK_METHOD(bool,
+              OnCertificate,
+              (uint16_t, uint16_t, base::span<const uint8_t>),
+              (override));
 };
 
 struct CertificateTestData {

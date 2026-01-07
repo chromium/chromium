@@ -32,7 +32,7 @@ constexpr TimeDelta kLeeway = base::kDefaultLeeway;
 
 class MockCallback {
  public:
-  MOCK_METHOD0(Run, void());
+  MOCK_METHOD(void, Run, ());
 };
 
 void PostTaskNow(Task task) {

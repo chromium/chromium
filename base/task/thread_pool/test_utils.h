@@ -43,8 +43,8 @@ class MockWorkerThreadObserver : public WorkerThreadObserver {
   void WaitCallsOnMainExit();
 
   // WorkerThreadObserver:
-  MOCK_METHOD0(OnWorkerThreadMainEntry, void());
-  // This doesn't use MOCK_METHOD0 because some tests need to wait for all calls
+  MOCK_METHOD(void, OnWorkerThreadMainEntry, (), (override));
+  // This doesn't use MOCK_METHOD because some tests need to wait for all calls
   // to happen, which isn't possible with gmock.
   void OnWorkerThreadMainExit() override;
 

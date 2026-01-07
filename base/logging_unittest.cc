@@ -84,14 +84,15 @@ class LoggingTest : public testing::Test {
 
 class MockLogSource {
  public:
-  MOCK_METHOD0(Log, const char*());
+  MOCK_METHOD(const char*, Log, ());
 };
 
 class MockLogAssertHandler {
  public:
-  MOCK_METHOD4(
+  MOCK_METHOD(
+      void,
       HandleLogAssert,
-      void(const char*, int, const std::string_view, const std::string_view));
+      (const char*, int, const std::string_view, const std::string_view));
 };
 
 TEST_F(LoggingTest, BasicLogging) {

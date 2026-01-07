@@ -566,7 +566,7 @@ class MockedControllableCleanupDelegate : public ControllableCleanupDelegate {
   ~MockedControllableCleanupDelegate() override = default;
 
   // WorkerThread::Delegate:
-  MOCK_METHOD1(OnMainEntry, void(WorkerThread* worker));
+  MOCK_METHOD(void, OnMainEntry, (WorkerThread * worker), (override));
 };
 
 }  // namespace

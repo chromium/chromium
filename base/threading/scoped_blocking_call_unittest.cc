@@ -41,9 +41,9 @@ class MockBlockingObserver : public internal::BlockingObserver {
   MockBlockingObserver(const MockBlockingObserver&) = delete;
   MockBlockingObserver& operator=(const MockBlockingObserver&) = delete;
 
-  MOCK_METHOD1(BlockingStarted, void(BlockingType));
-  MOCK_METHOD0(BlockingTypeUpgraded, void());
-  MOCK_METHOD0(BlockingEnded, void());
+  MOCK_METHOD(void, BlockingStarted, (BlockingType), (override));
+  MOCK_METHOD(void, BlockingTypeUpgraded, (), (override));
+  MOCK_METHOD(void, BlockingEnded, (), (override));
 };
 
 class ScopedBlockingCallTest : public testing::Test {

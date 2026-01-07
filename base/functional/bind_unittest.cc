@@ -49,14 +49,14 @@ class NoRef {
   // Particularly important in this test to ensure no copies are made.
   NoRef& operator=(const NoRef&) = delete;
 
-  MOCK_METHOD0(VoidMethod0, void());
-  MOCK_CONST_METHOD0(VoidConstMethod0, void());
+  MOCK_METHOD(void, VoidMethod0, ());
+  MOCK_METHOD(void, VoidConstMethod0, (), (const));
 
-  MOCK_METHOD0(IntMethod0, int());
-  MOCK_CONST_METHOD0(IntConstMethod0, int());
+  MOCK_METHOD(int, IntMethod0, ());
+  MOCK_METHOD(int, IntConstMethod0, (), (const));
 
-  MOCK_METHOD1(VoidMethodWithIntArg, void(int));
-  MOCK_METHOD0(UniquePtrMethod0, std::unique_ptr<int>());
+  MOCK_METHOD(void, VoidMethodWithIntArg, (int));
+  MOCK_METHOD(std::unique_ptr<int>, UniquePtrMethod0, ());
 };
 
 class HasRef : public NoRef {
@@ -66,9 +66,9 @@ class HasRef : public NoRef {
   // Particularly important in this test to ensure no copies are made.
   HasRef& operator=(const HasRef&) = delete;
 
-  MOCK_CONST_METHOD0(AddRef, void());
-  MOCK_CONST_METHOD0(Release, bool());
-  MOCK_CONST_METHOD0(HasAtLeastOneRef, bool());
+  MOCK_METHOD(void, AddRef, (), (const));
+  MOCK_METHOD(bool, Release, (), (const));
+  MOCK_METHOD(bool, HasAtLeastOneRef, (), (const));
 };
 
 class HasRefPrivateDtor : public HasRef {

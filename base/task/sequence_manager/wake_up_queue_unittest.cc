@@ -71,7 +71,7 @@ class MockWakeUpQueue : public WakeUpQueue {
     return wake_up_queue_.top().wake_up.time;
   }
 
-  MOCK_METHOD1(OnNextWakeUpChanged_TimeTicks, void(TimeTicks time));
+  MOCK_METHOD(void, OnNextWakeUpChanged_TimeTicks, (TimeTicks time));
 };
 
 class WakeUpQueueTest : public testing::Test {

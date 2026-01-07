@@ -937,9 +937,10 @@ TYPED_TEST(ObserverListTest, AddObserverInTheLastObserve) {
 
 class MockLogAssertHandler {
  public:
-  MOCK_METHOD4(
+  MOCK_METHOD(
+      void,
       HandleLogAssert,
-      void(const char*, int, const std::string_view, const std::string_view));
+      (const char*, int, const std::string_view, const std::string_view));
 };
 
 #if DCHECK_IS_ON()

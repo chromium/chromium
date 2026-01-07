@@ -82,32 +82,41 @@ class MockTestLauncher : public TestLauncher {
 
   void CreateAndStartThreadPool(size_t parallel_jobs) override {}
 
-  MOCK_METHOD4(LaunchChildGTestProcess,
-               void(scoped_refptr<TaskRunner> task_runner,
-                    const std::vector<std::string>& test_names,
-                    const FilePath& task_temp_dir,
-                    const FilePath& child_temp_dir));
+  MOCK_METHOD(void,
+              LaunchChildGTestProcess,
+              (scoped_refptr<TaskRunner> task_runner,
+               const std::vector<std::string>& test_names,
+               const FilePath& task_temp_dir,
+               const FilePath& child_temp_dir),
+              (override));
 };
 
 // Simple TestLauncherDelegate mock to test TestLauncher flow.
 class MockTestLauncherDelegate : public TestLauncherDelegate {
  public:
-  MOCK_METHOD1(GetTests, bool(std::vector<TestIdentifier>* output));
-  MOCK_METHOD2(WillRunTest,
-               bool(const std::string& test_case_name,
-                    const std::string& test_name));
-  MOCK_METHOD2(ProcessTestResults,
-               void(std::vector<TestResult>& test_names,
-                    TimeDelta elapsed_time));
-  MOCK_METHOD3(GetCommandLine,
-               CommandLine(const std::vector<std::string>& test_names,
-                           const FilePath& temp_dir_,
-                           FilePath* output_file_));
-  MOCK_METHOD1(IsPreTask, bool(const std::vector<std::string>& test_names));
-  MOCK_METHOD0(GetWrapper, std::string());
-  MOCK_METHOD0(GetLaunchOptions, int());
-  MOCK_METHOD0(GetTimeout, TimeDelta());
-  MOCK_METHOD0(GetBatchSize, size_t());
+  MOCK_METHOD(bool,
+              GetTests,
+              (std::vector<TestIdentifier> * output),
+              (override));
+  MOCK_METHOD(bool,
+              WillRunTest,
+              (const std::string& test_case_name,
+               const std::string& test_name));
+  MOCK_METHOD(void,
+              ProcessTestResults,
+              (std::vector<TestResult> & test_names, TimeDelta elapsed_time),
+              (override));
+  MOCK_METHOD(CommandLine,
+              GetCommandLine,
+              (const std::vector<std::string>& test_names,
+               const FilePath& temp_dir_,
+               FilePath* output_file_),
+              (override));
+  MOCK_METHOD(bool, IsPreTask, (const std::vector<std::string>& test_names));
+  MOCK_METHOD(std::string, GetWrapper, (), (override));
+  MOCK_METHOD(int, GetLaunchOptions, (), (override));
+  MOCK_METHOD(TimeDelta, GetTimeout, (), (override));
+  MOCK_METHOD(size_t, GetBatchSize, (), (override));
 };
 
 class MockResultWatcher : public ResultWatcher {

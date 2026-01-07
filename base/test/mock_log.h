@@ -65,12 +65,13 @@ class MockLog {
   // destinations (if any).  The method should return true to signal that it
   // handled the message and the message should not be sent to other log
   // destinations.
-  MOCK_METHOD5(Log,
-               bool(int severity,
-                    const char* file,
-                    int line,
-                    size_t message_start,
-                    const std::string& str));
+  MOCK_METHOD(bool,
+              Log,
+              (int severity,
+               const char* file,
+               int line,
+               size_t message_start,
+               const std::string& str));
 
  private:
   // The currently active mock log.

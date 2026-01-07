@@ -35,10 +35,10 @@ class Mock {
   Mock(const Mock&) = delete;
   Mock& operator=(const Mock&) = delete;
 
-  MOCK_METHOD0(ReadableCallback, void());
-  MOCK_METHOD0(WritableCallback, void());
-  MOCK_METHOD0(ReadableCallback2, void());
-  MOCK_METHOD0(WritableCallback2, void());
+  MOCK_METHOD(void, ReadableCallback, ());
+  MOCK_METHOD(void, WritableCallback, ());
+  MOCK_METHOD(void, ReadableCallback2, ());
+  MOCK_METHOD(void, WritableCallback2, ());
 };
 
 enum class FileDescriptorWatcherTestType {
