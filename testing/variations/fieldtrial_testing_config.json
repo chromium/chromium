@@ -11493,23 +11493,6 @@
             ]
         }
     ],
-    "GlicDefaultTabContextSetting": [
-        {
-            "platforms": [
-                "mac",
-                "windows",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GlicDefaultTabContextSetting"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicDogfood": [
         {
             "platforms": [
@@ -11530,6 +11513,7 @@
     "GlicEnableMultiInstanceBasedOnTier": [
         {
             "platforms": [
+                "linux",
                 "mac",
                 "windows"
             ],
@@ -11537,7 +11521,12 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "GlicEnableMultiInstanceBasedOnTier"
+                        "GlicDaisyChainNewTabs",
+                        "GlicDefaultTabContextSetting",
+                        "GlicEnableMultiInstanceBasedOnTier",
+                        "GlicMultiInstance",
+                        "GlicMultiTab",
+                        "GlicMultitabUnderlines"
                     ]
                 }
             ]
@@ -11766,25 +11755,6 @@
                     "enable_features": [
                         "AnnotatedPageContentWithMediaData",
                         "HeadlessLiveCaption"
-                    ]
-                }
-            ]
-        }
-    ],
-    "GlicMultiInstance": [
-        {
-            "platforms": [
-                "mac",
-                "linux",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GlicMultiInstance",
-                        "GlicMultiTab",
-                        "GlicMultitabUnderlines"
                     ]
                 }
             ]
