@@ -284,10 +284,11 @@ void FilesRequestHandler::FinishRequestEarly(
   // We add the request here in case we never actually uploaded anything, so it
   // wasn't added in OnGetRequestData
   safe_browsing::WebUIContentInfoSingleton::GetInstance()
-      ->AddToDeepScanRequests(request->per_profile_request(),
-                              /*access_token*/ "", /*upload_info*/ "",
-                              /*upload_url=*/"",
-                              request->content_analysis_request());
+      ->AddToDeepScanRequests(
+          request->per_profile_request(),
+          /*access_token*/ "",
+          /*upload_info*/ ScanRequestUploadResultToString(result),
+          /*upload_url=*/"", request->content_analysis_request());
   safe_browsing::WebUIContentInfoSingleton::GetInstance()
       ->AddToDeepScanResponses(
           /*token=*/"", ScanRequestUploadResultToString(result),

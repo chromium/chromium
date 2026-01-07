@@ -227,12 +227,13 @@ bool EnterpriseResultIsFailure(
 void RecordEnterpriseScan(
     std::unique_ptr<FileAnalysisRequest> request,
     enterprise_connectors::ScanRequestUploadResult result) {
-  const std::string result_info =
-      enterprise_connectors::ScanRequestUploadResultToString(result);
+  const std::string result_info = base::StrCat(
+      {"Skipped - ",
+       enterprise_connectors::ScanRequestUploadResultToString(result)});
   safe_browsing::WebUIContentInfoSingleton::GetInstance()
       ->AddToDeepScanRequests(
           request->per_profile_request(), /*access_token*/ "",
-          /*upload_info*/ base::StrCat({"Skipped - ", result_info}),
+          /*upload_info*/ result_info,
           /*upload_url*/ "", request->content_analysis_request());
   safe_browsing::WebUIContentInfoSingleton::GetInstance()
       ->AddToDeepScanResponses(
