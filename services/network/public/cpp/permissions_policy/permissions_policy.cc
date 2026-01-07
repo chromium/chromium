@@ -420,6 +420,62 @@ PermissionsPolicy::CreateAllowlistsAndReportingEndpoints(
       allow_lists_and_reporting_endpoints.reporting_endpoints_.insert(
           {feature, parsed_declaration.reporting_endpoint.value()});
     }
+
+    // Special handling for "local-network-access" forwards compatibility,
+    // when included in permissions policy headers. Container policies are
+    // handled in CreateFromParentPolicy() below.
+    //
+    // If "local-network-access" is in the parsed policy, apply that same parsed
+    // declaration to the new "local-network" and "loopback-network" features,
+    // if they are not already set by earlier policy declarations.
+    //
+    // NOTE: Specifying both old and new features in a policy is not supported
+    // -- if the old feature is declared, then that declaration will be copied
+    // to the new features, regardless of any later declaration for the new
+    // feature, and vice versa.
+    //
+    // For example, if the document has a header policy
+    //
+    //   Permissions-Policy: local-network-access=(self)
+    //   Permissions-Policy: loopback-network=()
+    //
+    // then the "local-network-access" declaration will overrule the disabled
+    // "local-network" one, and all three features will be enabled for the
+    // document.
+    //
+    // Conversely, if the document has a header policy
+    //
+    //   Permissions-Policy: local-network-access=()
+    //   Permissions-Policy: loopback-network=(self)
+    //
+    // then the empty "local-network-access" takes precedence, setting the keys
+    // for "loopback-network" and "local-network", and the second header value
+    // will have no effect and the document will have none of the features
+    // enabled.
+    //
+    // As one final example, if the document has a header policy in the
+    // opposite order from the first example
+    //
+    //   Permissions-Policy: loopback-network=()
+    //   Permissions-Policy: local-network-access=(self)
+    //
+    // then the first declaration will set the key for "loopback-network",
+    // and the second will only affect "local-network-access" and
+    // "local-network", as "loopback-network" had already been set. This would
+    // result in the document having only the "local-network-access" and
+    // "local-network" features enabled.
+    if (base::FeatureList::IsEnabled(
+            features::kLocalNetworkAccessChecksSplitPermissions)) {
+      if (feature ==
+          network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess) {
+        allow_lists_and_reporting_endpoints.allowlists_.emplace(
+            network::mojom::PermissionsPolicyFeature::kLocalNetwork,
+            Allowlist::FromDeclaration(parsed_declaration));
+        allow_lists_and_reporting_endpoints.allowlists_.emplace(
+            network::mojom::PermissionsPolicyFeature::kLoopbackNetwork,
+            Allowlist::FromDeclaration(parsed_declaration));
+      }
+    }
   }
   return allow_lists_and_reporting_endpoints;
 }
@@ -604,8 +660,45 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParentPolicy(
     if (InheritedValueForFeature(origin, parent_policy,
                                  {feature, default_value}, container_policy)) {
       inherited_policies.Add(feature);
+
+      // Special handling for "local-network-access" forwards compatibility,
+      // when included in container policies. Policy headers are handles in
+      // CreateAllowlistsAndReportingEndpoints() above.
+      //
+      // If "local-network-access" is in the bitset of inherited features, also
+      // add the new "local-network" and "loopback-network" features.
+      //
+      // NOTE: Specifying both old and new features in an allowlist is not
+      // supported -- if the old feature is enabled, then both new features
+      // will be enabled, regardless of the declaration for the new feature.
+      //
+      // For example, if an iframe has a policy
+      //
+      //   allow="local-network-access; local-network 'none';"
+      //
+      // then the "local-network-access" feature will overrule the disabled
+      // "local-network" feature, and all three features will be enabled in
+      // the iframe.
+      //
+      // Conversely, if an iframe has a policy
+      //
+      //   allow="local-network-access 'none'; local-network;"
+      //
+      // then, since inherited policy computation is purely additive here, the
+      // subframe will have the "local-network" feature enabled.
+      if (base::FeatureList::IsEnabled(
+              features::kLocalNetworkAccessChecksSplitPermissions)) {
+        if (feature ==
+            network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess) {
+          inherited_policies.Add(
+              network::mojom::PermissionsPolicyFeature::kLocalNetwork);
+          inherited_policies.Add(
+              network::mojom::PermissionsPolicyFeature::kLoopbackNetwork);
+        }
+      }
     }
   }
+
   return base::WrapUnique(new PermissionsPolicy(
       origin, CreateAllowlistsAndReportingEndpoints(header_policy),
       std::move(inherited_policies), features, headerless));
