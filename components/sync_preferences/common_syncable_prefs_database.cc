@@ -158,6 +158,7 @@ enum {
   kShowAiModeOmniboxButton = 109,
   kAutofillAiSyncedOptInStatus = 110,
   kIOSPromoReminder = 111,
+  kAutofillAiReauthBeforeViewingSensitiveData = 112,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -189,6 +190,12 @@ constexpr auto kCommonSyncablePrefsAllowlist =
         {autofill::prefs::kAutofillAiTravelEntitiesEnabled,
          {syncable_prefs_ids::kAutofillAiTravelEntitiesEnabled,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_CHROMEOS)
+        {autofill::prefs::kAutofillAiReauthBeforeViewingSensitiveData,
+         {syncable_prefs_ids::kAutofillAiReauthBeforeViewingSensitiveData,
+          syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+#endif
         {autofill::prefs::kAutofillAiSyncedOptInStatus,
          {syncable_prefs_ids::kAutofillAiSyncedOptInStatus, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},

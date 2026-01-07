@@ -48,6 +48,13 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       kAutofillAiTravelEntitiesEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_CHROMEOS)
+  registry->RegisterBooleanPref(
+      kAutofillAiReauthBeforeViewingSensitiveData, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_CHROMEOS)
   registry->RegisterBooleanPref(
       kAutofillHasSeenIban, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -253,6 +260,22 @@ bool IsAutofillAiSyncedOptInStatusEnabled(const PrefService* prefs) {
 
 void SetAutofillAiSyncedOptInStatus(PrefService* prefs, bool enabled) {
   prefs->SetBoolean(kAutofillAiSyncedOptInStatus, enabled);
+}
+
+bool IsAutofillAiReauthBeforeFillingEnabled(const PrefService* prefs) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_CHROMEOS)
+  return prefs->GetBoolean(kAutofillAiReauthBeforeViewingSensitiveData);
+#else
+  return false;
+#endif
+}
+
+void SetAutofillAiReauthBeforeFillingEnabled(PrefService* prefs, bool enabled) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_CHROMEOS)
+  prefs->SetBoolean(kAutofillAiReauthBeforeViewingSensitiveData, enabled);
+#endif
 }
 
 bool IsPaymentMethodsMandatoryReauthEnabled(const PrefService* prefs) {
