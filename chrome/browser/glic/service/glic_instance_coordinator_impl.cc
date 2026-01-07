@@ -741,7 +741,7 @@ void GlicInstanceCoordinatorImpl::OnMemoryPressure(
   }
 
   GlicInstanceImpl* least_recently_active_instance = nullptr;
-  base::TimeDelta oldest_active_time = base::TimeDelta::Max();
+  base::TimeDelta max_inactive_duration = base::TimeDelta::Min();
 
   for (auto const& [id, instance] : instances_) {
     // Safeguard: Do not hibernate actuating or already hibernated instances.
@@ -749,8 +749,8 @@ void GlicInstanceCoordinatorImpl::OnMemoryPressure(
       continue;
     }
 
-    if (instance->GetTimeSinceLastActive() < oldest_active_time) {
-      oldest_active_time = instance->GetTimeSinceLastActive();
+    if (instance->GetTimeSinceLastActive() > max_inactive_duration) {
+      max_inactive_duration = instance->GetTimeSinceLastActive();
       least_recently_active_instance = instance.get();
     }
   }
