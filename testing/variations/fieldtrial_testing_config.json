@@ -26615,6 +26615,26 @@
             ]
         }
     ],
+    "V8DisableEagerAllocationFailures": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8Flag_disable_eager_allocation_failures"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8DisableScavengerUpdatesAllocationLimit": [
         {
             "platforms": [
