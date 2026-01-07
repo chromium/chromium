@@ -30,6 +30,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.ui.base.ActivityResultTracker;
@@ -163,6 +164,9 @@ public class ActivityResultTrackerIntegrationTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/437039516")
+    // TODO(https://crbug.com/437039516): Find a solution for when the same component is reused
+    // multiple times in the same activity.
     public void testRegister_throwIfKeyDuplicated() throws TimeoutException {
         new ActivityResultTester(mTracker, KEY);
         Assert.assertThrows(

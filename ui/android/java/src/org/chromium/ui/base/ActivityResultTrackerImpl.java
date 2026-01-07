@@ -133,10 +133,8 @@ public class ActivityResultTrackerImpl implements ActivityResultTracker {
 
     @Override
     public void register(String key, ActivityResultCallback<ActivityResult> callback) {
-        if (mCallbacks.containsKey(key)) {
-            throw new IllegalStateException(
-                    "Callback should be registered before starting activity for result.");
-        }
+        // TODO(https://crbug.com/437039516): Find a solution for when the same component is reused
+        // multiple times in the same activity.
         mCallbacks.put(key, callback);
 
         ActivityResult result = mPendingResults.remove(key);
