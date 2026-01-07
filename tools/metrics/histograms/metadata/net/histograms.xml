@@ -424,6 +424,7 @@ chromium-metrics-reviews@google.com.
   <token key="Operation">
     <variant name="MessageSigning" summary="signing"/>
     <variant name="NewKeyCreation" summary="new key creation"/>
+    <variant name="SelectAlgorithm" summary="select algorithm"/>
     <variant name="WrappedKeyCreation" summary="wrapped key creation"/>
     <variant name="WrappedKeyExport" summary="wrapped key export"/>
   </token>
