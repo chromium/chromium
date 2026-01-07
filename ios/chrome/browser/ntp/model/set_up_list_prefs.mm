@@ -19,7 +19,6 @@ const char kAutofillItemState[] = "set_up_list.autofill_item.state";
 const char kNotificationsItemState[] =
     "set_up_list.content_notification_item.state";
 const char kAllItemsComplete[] = "set_up_list.all_items_complete";
-const char kDisabled[] = "set_up_list.disabled";
 const char kLastInteraction[] = "set_up_list.last_interaction";
 
 void RegisterPrefs(PrefRegistrySimple* registry) {
@@ -28,7 +27,6 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kAutofillItemState, unknown);
   registry->RegisterIntegerPref(kNotificationsItemState, unknown);
   registry->RegisterBooleanPref(kAllItemsComplete, false);
-  registry->RegisterBooleanPref(kDisabled, false);
   registry->RegisterTimePref(kLastInteraction, base::Time());
 }
 

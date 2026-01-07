@@ -33,9 +33,6 @@ extern const char kTabResumptionWithPriceDropUrlImpressions[];
 // trackabel URL has been rendered on a per URL basis.
 extern const char kTabResumptionWithPriceTrackableUrlImpressions[];
 
-// Registers the local state prefs associated with the tab resumption tile.
-void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
-
 // Registers the profile prefs associated with the tab resumption tile.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 

@@ -30,12 +30,6 @@ const char kTabResumptionWithPriceDropUrlImpressions[] =
 const char kTabResumptionWithPriceTrackableUrlImpressions[] =
     "tab_resumption.price_trackable.url_impressions";
 
-void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  // TODO(crbug.com/395840133): Remove `kTabResumptionDisabledPref` registration
-  // from local-state Prefs after successfully migrating to profile Prefs.
-  registry->RegisterBooleanPref(kTabResumptionDisabledPref, false);
-}
-
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(kTabResumptionLastOpenedTabURLPref,
                                std::string());
