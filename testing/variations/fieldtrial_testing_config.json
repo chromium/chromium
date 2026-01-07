@@ -21443,6 +21443,22 @@
             ]
         }
     ],
+    "RestrictMainThreadBigCoreAffinity": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RestrictBigCoreThreadAffinity",
+                        "RestrictMainThreadBigCoreAffinity"
+                    ]
+                }
+            ]
+        }
+    ],
     "RestrictPendingInputEventTypeToBlockMainThread": [
         {
             "platforms": [
