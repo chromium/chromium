@@ -74,7 +74,7 @@
       'codesearch-gen-chromium-linux': 'codesearch_gen_chromium_bot_remoteexec',
       'codesearch-gen-chromium-mac': 'codesearch_gen_chromium_mac_bot_remoteexec',
       'codesearch-gen-chromium-webview': 'codesearch_gen_chromium_android_bot_remoteexec',
-      'codesearch-gen-chromium-win': 'codesearch_gen_chromium_win_bot_remoteexec',
+      'codesearch-gen-chromium-win': 'codesearch_gen_chromium_bot_remoteexec',
     },
 
     'chromium.perf': {
@@ -398,10 +398,6 @@
 
     'codesearch_gen_chromium_mac_bot_remoteexec': [
       'codesearch_remoteexec', 'mac',
-    ],
-
-    'codesearch_gen_chromium_win_bot_remoteexec': [
-      'codesearch_win_remoteexec',
     ],
 
     'debug_bot_blink': [
@@ -834,13 +830,6 @@
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
       'mixins': ['remoteexec', 'clang', 'shared', 'debug', 'minimal_symbols',
                  'blink_enable_generated_code_formatting', 'use_system_headers'],
-    },
-
-    # Settings similar to regular codesearch builder but tweaked for Windows.
-    'codesearch_win_remoteexec': {
-      'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
-      'mixins': ['remoteexec', 'clang', 'shared', 'debug', 'minimal_symbols',
-                 'blink_enable_generated_code_formatting'],
     },
 
     'codesigning_identity': {
