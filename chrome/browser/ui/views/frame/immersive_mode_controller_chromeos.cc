@@ -95,10 +95,6 @@ bool ImmersiveModeControllerChromeos::IsEnabled() const {
   return controller_.IsEnabled();
 }
 
-bool ImmersiveModeControllerChromeos::ShouldHideTopViews() const {
-  return controller_.IsEnabled() && !controller_.IsRevealed();
-}
-
 bool ImmersiveModeControllerChromeos::IsRevealed() const {
   return controller_.IsRevealed();
 }

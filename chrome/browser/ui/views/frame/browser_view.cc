@@ -2213,21 +2213,11 @@ void BrowserView::SetFocusToLocationBar(bool is_user_initiated) {
     return;
   }
 #endif
-  LocationBarView* location_bar = GetLocationBarView();
-
-  // Focusing the omnibox by a user action (e.g. ctrl-l) in immersive mode
-  // should reveal topchrome.  Make sure the omnibox is focusable.
-  if (overlay_view_tracker_ && is_user_initiated) {
-    overlay_view_tracker_.view()->SetVisible(true);
-    toolbar_->SetVisible(true);
-    location_bar->omnibox_view()->SetFocusBehavior(
-        views::View::FocusBehavior::ALWAYS);
-  }
-
   if (!IsLocationBarVisible()) {
     return;
   }
 
+  LocationBarView* location_bar = GetLocationBarView();
   location_bar->FocusLocation(is_user_initiated);
   if (!location_bar->omnibox_view()->HasFocus()) {
     // If none of location bar got focus, then clear focus.
@@ -3009,9 +2999,6 @@ bool BrowserView::IsBookmarkBarVisible() const {
   }
   auto* const immersive_mode_controller =
       ImmersiveModeController::From(browser());
-  if (immersive_mode_controller->ShouldHideTopViews()) {
-    return false;
-  }
   if (immersive_mode_controller->IsEnabled() &&
       !immersive_mode_controller->IsRevealed()) {
     return false;
@@ -3043,9 +3030,7 @@ bool BrowserView::IsToolbarVisible() const {
     }
   }
 #endif
-  if (ImmersiveModeController::From(browser())->ShouldHideTopViews()) {
-    return false;
-  }
+
   // It's possible to reach here before we've been notified of being added to a
   // widget, so |toolbar_| is still null.  Return false in this case so callers
   // don't assume they can access the toolbar yet.

@@ -185,13 +185,11 @@ ImmersiveFocusWatcher::~ImmersiveFocusWatcher() {
 
 void ImmersiveFocusWatcher::UpdateFocusRevealedLock() {
   views::Widget* widget = GetWidget();
-  views::View* top_container =
-      immersive_fullscreen_controller_->top_container();
-  bool hold_lock = false;
+  bool should_acquire_lock = false;
   if (widget->IsActive()) {
     views::View* focused_view = widget->GetFocusManager()->GetFocusedView();
-    if (top_container->Contains(focused_view))
-      hold_lock = true;
+    should_acquire_lock =
+        immersive_fullscreen_controller_->ShouldRevealTopChrome(focused_view);
   } else {
     aura::Window* native_window = GetWidgetWindow();
     aura::Window* active_window =
@@ -216,12 +214,12 @@ void ImmersiveFocusWatcher::UpdateFocusRevealedLock() {
       // reactivated.
       if (immersive_fullscreen_controller_->IsRevealed() &&
           IsWindowTransientChildOf(active_window, native_window)) {
-        hold_lock = true;
+        should_acquire_lock = true;
       }
     }
   }
 
-  if (hold_lock) {
+  if (should_acquire_lock) {
     if (!lock_.get()) {
       lock_.reset(immersive_fullscreen_controller_->GetRevealedLock(
           ImmersiveFullscreenController::ANIMATE_REVEAL_YES));
@@ -276,8 +274,9 @@ void ImmersiveFocusWatcher::OnTransientChildWindowAdded(
     aura::Window* window,
     aura::Window* transient) {
   views::View* anchor = GetAnchorView(transient);
+
   if (anchor &&
-      immersive_fullscreen_controller_->top_container()->Contains(anchor)) {
+      immersive_fullscreen_controller_->ShouldRevealTopChrome(anchor)) {
     // Observe the aura::Window because the BubbleDelegateView may not be
     // parented to the widget's root view yet so |bubble_delegate->GetWidget()|
     // may still return null.

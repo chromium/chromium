@@ -21,10 +21,6 @@ bool ImmersiveModeControllerStub::IsEnabled() const {
   return false;
 }
 
-bool ImmersiveModeControllerStub::ShouldHideTopViews() const {
-  return false;
-}
-
 bool ImmersiveModeControllerStub::IsRevealed() const {
   return false;
 }

@@ -941,8 +941,77 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, PopupHasNoToolbar) {
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
-                       FocusOmniboxRevealTopChrome) {
+                       ShortcutRevealTopChromeExceptForZoom) {
   EnterImmersiveFullscreenMode(browser());
+
+  enum Shortcut { kToolbar, kOmnibox, kBookmark, kMultitaskMenu };
+  for (auto shortcut : {kToolbar, kOmnibox, kMultitaskMenu}) {
+    auto* const immersive_mode_controller =
+        ImmersiveModeController::From(browser());
+    EXPECT_TRUE(immersive_mode_controller->IsEnabled());
+    // TODO(crbug.com/463559714): Replace the loop with EXPECT_TRUE, when the
+    // mechanism to disable gfx::Animation is added.
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() -> bool { return !immersive_mode_controller->IsRevealed(); }));
+
+    ui::test::EventGenerator generator(
+        browser()->window()->GetNativeWindow()->GetRootWindow());
+
+    switch (shortcut) {
+      case kOmnibox: {
+        SCOPED_TRACE("Omnibox");
+        // Ctrl-L focuses the omnibox.
+        generator.PressKey(ui::KeyboardCode::VKEY_CONTROL, 0);
+        generator.PressKey(ui::KeyboardCode::VKEY_L, ui::EF_CONTROL_DOWN);
+        generator.ReleaseKey(ui::KeyboardCode::VKEY_L, ui::EF_CONTROL_DOWN);
+        generator.ReleaseKey(ui::KeyboardCode::VKEY_CONTROL, 0);
+      } break;
+      case kToolbar: {
+        SCOPED_TRACE("Toolbar");
+        // Shift-Alt-T focuses the first item on toolbar.
+        generator.PressKey(ui::KeyboardCode::VKEY_SHIFT, 0);
+        generator.PressKey(ui::KeyboardCode::VKEY_MENU, ui::EF_SHIFT_DOWN);
+        generator.PressKey(ui::KeyboardCode::VKEY_T,
+                           ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
+        generator.ReleaseKey(ui::KeyboardCode::VKEY_T,
+                             ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
+        generator.ReleaseKey(ui::KeyboardCode::VKEY_MENU, ui::EF_SHIFT_DOWN);
+        generator.ReleaseKey(ui::KeyboardCode::VKEY_SHIFT, 0);
+      } break;
+      case kBookmark: {
+        SCOPED_TRACE("Bookmark");
+        generator.PressKey(ui::KeyboardCode::VKEY_MENU, 0);
+        generator.PressKey(ui::KeyboardCode::VKEY_D, ui::EF_ALT_DOWN);
+        generator.ReleaseKey(ui::KeyboardCode::VKEY_D, ui::EF_ALT_DOWN);
+        generator.ReleaseKey(ui::KeyboardCode::VKEY_MENU, 0);
+      } break;
+      case kMultitaskMenu: {
+        SCOPED_TRACE("MultitaskMenu");
+        generator.PressKey(ui::KeyboardCode::VKEY_COMMAND, 0);
+        generator.PressKey(ui::KeyboardCode::VKEY_Z, ui::EF_COMMAND_DOWN);
+        generator.ReleaseKey(ui::KeyboardCode::VKEY_Z, ui::EF_COMMAND_DOWN);
+        generator.ReleaseKey(ui::KeyboardCode::VKEY_COMMAND, 0);
+      } break;
+    }
+    // We need to wait here because the keysequence maybe be handled on
+    // unhandled case.
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return immersive_mode_controller->IsRevealed(); }));
+
+    generator.MoveMouseToCenterOf(browser()->window()->GetNativeWindow());
+    generator.ClickLeftButton();
+
+    // TODO(crbug.com/463559714): Replace the loop with EXPECT_TRUE, when the
+    // mechanism to disable gfx::Animation is added.
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return !immersive_mode_controller->IsRevealed(); }));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
+                       ZoomShortcutShouldNotRevealTopChrome) {
+  EnterImmersiveFullscreenMode(browser());
+
   auto* const immersive_mode_controller =
       ImmersiveModeController::From(browser());
   EXPECT_TRUE(immersive_mode_controller->IsEnabled());
@@ -953,12 +1022,17 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
 
   ui::test::EventGenerator generator(
       browser()->window()->GetNativeWindow()->GetRootWindow());
-  // Focus omnibox using shortcut.
+
+  SCOPED_TRACE("Zoom");
   generator.PressKey(ui::KeyboardCode::VKEY_CONTROL, 0);
-  generator.PressKey(ui::KeyboardCode::VKEY_L, ui::EF_CONTROL_DOWN);
-  generator.ReleaseKey(ui::KeyboardCode::VKEY_L, ui::EF_CONTROL_DOWN);
+  generator.PressKey(ui::KeyboardCode::VKEY_OEM_PLUS, ui::EF_CONTROL_DOWN);
+  generator.ReleaseKey(ui::KeyboardCode::VKEY_OEM_PLUS, ui::EF_CONTROL_DOWN);
   generator.ReleaseKey(ui::KeyboardCode::VKEY_CONTROL, 0);
-  EXPECT_TRUE(immersive_mode_controller->IsRevealed());
+  // Zoom bubble shouldn't reveal the immersive frame.
+  auto* zoom_bubble_coordinator = ZoomBubbleCoordinator::From(browser());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !!zoom_bubble_coordinator->bubble(); }));
+  EXPECT_FALSE(immersive_mode_controller->IsRevealed());
 }
 
 // Test the normal type browser's kTopViewInset is always 0.

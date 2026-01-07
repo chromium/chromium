@@ -1197,11 +1197,7 @@ bool BrowserFrameViewChromeOS::GetHideCaptionButtonsForFullscreen() const {
       ImmersiveModeController::From(GetBrowserView()->browser());
 
   // In fullscreen view, but not in immersive mode. Hide the caption buttons.
-  if (!immersive_controller || !immersive_controller->IsEnabled()) {
-    return true;
-  }
-
-  return immersive_controller->ShouldHideTopViews();
+  return !immersive_controller || !immersive_controller->IsEnabled();
 }
 
 void BrowserFrameViewChromeOS::OnUpdateFrameColor() {

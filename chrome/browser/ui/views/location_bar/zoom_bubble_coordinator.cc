@@ -39,10 +39,14 @@ views::View* GetAnchorView(BrowserView* browser_view) {
     return nullptr;
   }
 #endif
+  auto* immersive_mode_controller =
+      ImmersiveModeController::From(browser_view->browser());
 
+  // We intentionally do not show the immersive frame for zoom bubble.
   if (!browser_view->GetWidget()->IsFullscreen() ||
-      browser_view->IsToolbarVisible() ||
-      ImmersiveModeController::From(browser_view->browser())->IsRevealed()) {
+      (browser_view->IsToolbarVisible() &&
+       (!immersive_mode_controller->IsEnabled() ||
+        immersive_mode_controller->IsRevealed()))) {
     return browser_view->toolbar_button_provider()->GetAnchorView(
         kActionZoomNormal);
   }

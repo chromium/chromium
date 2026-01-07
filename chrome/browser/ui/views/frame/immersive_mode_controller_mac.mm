@@ -263,16 +263,6 @@ bool ImmersiveModeControllerMac::IsEnabled() const {
   return enabled_;
 }
 
-bool ImmersiveModeControllerMac::ShouldHideTopViews() const {
-  // Always return false to ensure the top UI is pre-rendered and ready for
-  // display. We don't have full control over the visibility of the top UI. For
-  // instance, in auto-hide mode, the top UI is revealed when the user hovers
-  // over the screen's upper border. Notifications about this visibility change
-  // arrive only after the UI is already displayed, so it's crucial to have the
-  // top UI fully rendered by then.
-  return false;
-}
-
 bool ImmersiveModeControllerMac::IsRevealed() const {
   return enabled_ && is_revealed_;
 }
