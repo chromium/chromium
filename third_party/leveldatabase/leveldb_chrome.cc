@@ -9,7 +9,6 @@
 #include <set>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/byte_size.h"
 #include "base/feature_list.h"
@@ -187,7 +186,7 @@ class ChromeMemEnv : public leveldb::EnvWrapper {
     leveldb::Status s = leveldb::EnvWrapper::RemoveFile(fname);
     if (s.ok()) {
       base::AutoLock lock(files_lock_);
-      DCHECK(base::Contains(file_names_, fname));
+      DCHECK(file_names_.contains(fname));
       file_names_.erase(fname);
     }
     return s;
