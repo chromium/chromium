@@ -146,7 +146,6 @@ class NodeRareData : public GarbageCollected<NodeRareData> {
 
   void RegisterScrollTimeline(ScrollTimeline*);
   void UnregisterScrollTimeline(ScrollTimeline*);
-  void InvalidateAssociatedAnimationEffects();
 
   void AddDOMPart(Part& part);
   void RemoveDOMPart(Part& part);

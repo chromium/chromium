@@ -4471,9 +4471,6 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
       }
     }
 
-    NodeRareData* node_data = RareData();
-    node_data->InvalidateAssociatedAnimationEffects();
-
     if (auto* context = data->GetDisplayLockContext()) {
       context->ElementDisconnected();
     }
