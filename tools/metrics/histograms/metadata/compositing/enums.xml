@@ -26,13 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="AttemptingMultipleOverlays">
-  <int value="0" label="Yes"/>
-  <int value="1" label="No, feature is disabled"/>
-  <int value="2" label="No, candidate requires an overlay"/>
-  <int value="3" label="No, candidate uses an unsupported strategy"/>
-</enum>
-
 <!--LINT.IfChange(BeginImplFrameDeadlineMode) -->
 
 <enum name="BeginImplFrameDeadlineMode">
@@ -129,13 +122,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failed commit">
     Indicates that we assigned planes but the DRM commit failed.
   </int>
-</enum>
-
-<enum name="PromotingMaskCandidates">
-  <int value="0" label="Yes"/>
-  <int value="1" label="No, mask candidate does not need overlays"/>
-  <int value="2" label="No, multiple overlays is disabled"/>
-  <int value="3" label="No, mask candidate rejected by DRM"/>
 </enum>
 
 <enum name="PropertyMutation">
