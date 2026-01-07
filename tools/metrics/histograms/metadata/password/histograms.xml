@@ -2474,7 +2474,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.PasskeyRetrievalWaitDuration" units="ms"
-    expires_after="2025-12-31">
+    expires_after="2026-06-30">
   <owner>kenrb@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -3614,7 +3614,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.PredictionWaitResult"
-    enum="PasswordFormPredictionWaitResult" expires_after="2025-12-31">
+    enum="PasswordFormPredictionWaitResult" expires_after="2026-06-30">
   <owner>kenrb@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
