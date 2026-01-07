@@ -8,6 +8,7 @@
 #include <Foundation/Foundation.h>
 
 #include "base/containers/span.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -57,11 +58,25 @@ class URLSessionURLLoader : public network::mojom::URLLoader {
   void Start(
       const network::ResourceRequest& request,
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client_info_remote);
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client_info_remote,
+      base::TimeDelta timeout = kTimeout);
 
   void OnRequestComplete(NSURLResponse* response, NSData* data);
 
-  void OnRequestFailed();
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(SSORequestFailReason)
+  enum class SSORequestFailReason {
+    kOther = 0,
+    kOsError = 1,
+    kTimeout = 2,
+    kResponseTooBig = 3,
+    kMaxValue = kResponseTooBig,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:OktaSSOFailureReason)
+
+  void OnRequestFailed(SSORequestFailReason reason);
 
   void OnClientDisconnect();
 
@@ -69,12 +84,17 @@ class URLSessionURLLoader : public network::mojom::URLLoader {
 
   void DisconnectAndDelete();
 
+  void RecordSuccessMetrics();
+
+  void RecordFailureMetrics(SSORequestFailReason reason);
+
   inline void OverrideSessionForTesting(NSURLSession* session) {
     session_override_ = session;
   }
 
- private:
   friend URLSessionURLLoaderTest;
+
+  static constexpr base::TimeDelta kTimeout = base::Seconds(30);
 
   mojo::Receiver<network::mojom::URLLoader> receiver_{this};
   mojo::Remote<network::mojom::URLLoaderClient> client_;

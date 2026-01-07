@@ -17,8 +17,10 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/current_thread.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/test/test_suite.h"
+#include "base/time/time.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -40,6 +42,14 @@ namespace {
 
 constexpr char kBody[] = "payload";
 const std::string kTooBigPayload = std::string(1 << 21, 'a');
+constexpr std::string_view kOktaResultHistogram =
+    "Enterprise.ExtensibleEnterpriseSSO.Okta.Result";
+constexpr std::string_view kOktaSuccessDurationHistogram =
+    "Enterprise.ExtensibleEnterpriseSSO.Okta.Success.Duration";
+constexpr std::string_view kOktaFailureDurationHistogram =
+    "Enterprise.ExtensibleEnterpriseSSO.Okta.Failure.Duration";
+constexpr std::string_view kOktaFailureReasonHistogram =
+    "Enterprise.ExtensibleEnterpriseSSO.Okta.Failure.Reason";
 
 struct ResponseConfig {
   std::optional<std::string> body;
@@ -178,12 +188,13 @@ class URLSessionURLLoaderTest : public testing::Test {
   // Should be called at most once per test instance.
   // The behaviour of the network is controlled by the url used, see the
   // anonymous namespace for details.
-  void StartRequest(const std::string& url) {
+  void StartRequest(const std::string& url,
+                    base::TimeDelta timeout = base::TimeDelta::Max()) {
     network::ResourceRequest request;
     request.url = GURL(url);
     request.method = "POST";
     url_loader_->Start(request, loader_remote_.BindNewPipeAndPassReceiver(),
-                       std::move(client_remote_));
+                       std::move(client_remote_), timeout);
   }
 
   void WaitForLoaderToDisconnectAndDestroy() {
@@ -203,6 +214,15 @@ class URLSessionURLLoaderTest : public testing::Test {
   }
 
   mojo::Remote<network::mojom::URLLoader> loader_remote_;
+  base::HistogramTester histogram_tester_;
+
+  static constexpr URLSessionURLLoader::SSORequestFailReason
+      kFailReasonTimeout = URLSessionURLLoader::SSORequestFailReason::kTimeout;
+  static constexpr URLSessionURLLoader::SSORequestFailReason
+      kFailReasonResponseTooBig =
+          URLSessionURLLoader::SSORequestFailReason::kResponseTooBig;
+  static constexpr URLSessionURLLoader::SSORequestFailReason
+      kFailReasonOSError = URLSessionURLLoader::SSORequestFailReason::kOsError;
 
  private:
   static NSURLSession* CreateMockURLSession() {
@@ -253,6 +273,9 @@ TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithBody) {
 
   StartRequest(url);
   WaitForLoaderToDisconnectAndDestroy();
+
+  histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, true, 1);
+  histogram_tester_.ExpectTotalCount(kOktaSuccessDurationHistogram, 1);
 }
 
 TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithEmptyBody) {
@@ -275,6 +298,11 @@ TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithEmptyBody) {
 
   StartRequest(url);
   WaitForLoaderToDisconnectAndDestroy();
+
+  histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, true, 1);
+  histogram_tester_.ExpectTotalCount(kOktaSuccessDurationHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kOktaFailureReasonHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kOktaFailureDurationHistogram, 0);
 }
 
 TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithNoBody) {
@@ -296,6 +324,11 @@ TEST_F(URLSessionURLLoaderTest, SuccessfulResponseWithNoBody) {
 
   StartRequest(url);
   WaitForLoaderToDisconnectAndDestroy();
+
+  histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, true, 1);
+  histogram_tester_.ExpectTotalCount(kOktaSuccessDurationHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kOktaFailureReasonHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kOktaFailureDurationHistogram, 0);
 }
 
 TEST_F(URLSessionURLLoaderTest, RejectsTooBigBodies) {
@@ -311,6 +344,12 @@ TEST_F(URLSessionURLLoaderTest, RejectsTooBigBodies) {
 
   StartRequest(url);
   WaitForLoaderToDisconnectAndDestroy();
+
+  histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, false, 1);
+  histogram_tester_.ExpectUniqueSample(kOktaFailureReasonHistogram,
+                                       kFailReasonResponseTooBig, 1);
+  histogram_tester_.ExpectTotalCount(kOktaFailureDurationHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kOktaSuccessDurationHistogram, 0);
 }
 
 TEST_F(URLSessionURLLoaderTest, DestroysItselfOnDisconnect) {
@@ -331,6 +370,11 @@ TEST_F(URLSessionURLLoaderTest, DestroysItselfOnDisconnect) {
 
   DisconnectAndWaitForLoadersDestruction();
   EXPECT_TRUE(stopped_future.Wait());
+
+  histogram_tester_.ExpectTotalCount(kOktaResultHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kOktaFailureReasonHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kOktaFailureDurationHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kOktaSuccessDurationHistogram, 0);
 }
 
 TEST_F(URLSessionURLLoaderTest, HandlesErrorGently) {
@@ -346,6 +390,12 @@ TEST_F(URLSessionURLLoaderTest, HandlesErrorGently) {
 
   StartRequest(url);
   WaitForLoaderToDisconnectAndDestroy();
+
+  histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, false, 1);
+  histogram_tester_.ExpectUniqueSample(kOktaFailureReasonHistogram,
+                                       kFailReasonOSError, 1);
+  histogram_tester_.ExpectTotalCount(kOktaFailureDurationHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kOktaSuccessDurationHistogram, 0);
 }
 
 TEST_F(URLSessionURLLoaderTest, RequestCanceledOnDestruction) {
@@ -365,6 +415,11 @@ TEST_F(URLSessionURLLoaderTest, RequestCanceledOnDestruction) {
   EXPECT_TRUE(started_future.Wait());
   DisconnectAndWaitForLoadersDestruction();
   EXPECT_TRUE(cancel_future.Wait());
+
+  histogram_tester_.ExpectTotalCount(kOktaResultHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kOktaFailureReasonHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kOktaFailureDurationHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kOktaSuccessDurationHistogram, 0);
 }
 
 TEST_F(URLSessionURLLoaderTest, WorksWithoutReceiver) {
@@ -393,6 +448,34 @@ TEST_F(URLSessionURLLoaderTest, WorksWithoutReceiver) {
 
   StartRequest(url);
   WaitForLoaderToDisconnectAndDestroy();
+
+  histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, true, 1);
+  histogram_tester_.ExpectTotalCount(kOktaSuccessDurationHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kOktaFailureReasonHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kOktaFailureDurationHistogram, 0);
+}
+
+TEST_F(URLSessionURLLoaderTest, Timeout) {
+  ResponseConfig config;
+  config.hang = true;
+  const std::string url = ResponseRegistry::Get()->Register(std::move(config));
+
+  MockClient& mock_client = GetMockClient();
+  EXPECT_CALL(mock_client, OnReceiveResponse(_, _, _)).Times(0);
+
+  EXPECT_CALL(mock_client, OnComplete(testing::Field(
+                               &network::URLLoaderCompletionStatus::error_code,
+                               net::ERR_TIMED_OUT)))
+      .Times(1);
+
+  StartRequest(url, base::Seconds(1));
+  WaitForLoaderToDisconnectAndDestroy();
+
+  histogram_tester_.ExpectUniqueSample(kOktaResultHistogram, false, 1);
+  histogram_tester_.ExpectTotalCount(kOktaSuccessDurationHistogram, 0);
+  histogram_tester_.ExpectUniqueSample(kOktaFailureReasonHistogram,
+                                       kFailReasonTimeout, 1);
+  histogram_tester_.ExpectTotalCount(kOktaFailureDurationHistogram, 1);
 }
 
 }  // namespace enterprise_auth

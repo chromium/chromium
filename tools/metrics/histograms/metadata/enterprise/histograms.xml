@@ -2384,6 +2384,45 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.ExtensibleEnterpriseSSO.Okta.Failure.Reason"
+    enum="OktaSSOFailureReason" expires_after="2026-06-01">
+  <owner>ssolarewicz@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Records the reason for which an authentication URL request has failed for
+    Okta SSO. Emitted in enterprise_auth::URLSessionURLLoader::OnRequestFailed
+    if the request fails for any reason.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.ExtensibleEnterpriseSSO.Okta.Result"
+    enum="BooleanSuccess" expires_after="2026-06-01">
+  <owner>ssolarewicz@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Records whether a URLSession request made to perform Okta SSO authentication
+    was successful. Emitted in
+    enterprise_auth::URLSessionURLLoader::OnRequestComplete or OnRequestFailed
+    upon completion or failure of the request.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.ExtensibleEnterpriseSSO.Okta.{Status}.Duration"
+    units="ms" expires_after="2026-06-01">
+  <owner>ssolarewicz@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    The duration of a {Status} URLSession request made to perform SSO
+    authentication for Okta services. Emitted in
+    enterprise_auth::URLSessionURLLoader::OnRequestComplete or OnRequestFailed
+    upon completion or failure of the request.
+  </summary>
+  <token key="Status">
+    <variant name="Failure" summary="unsuccessful"/>
+    <variant name="Success" summary="successful"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.ExtensibleEnterpriseSSO.Supported.Result"
     enum="Boolean" expires_after="2026-06-21">
   <owner>ydago@chromium.org</owner>

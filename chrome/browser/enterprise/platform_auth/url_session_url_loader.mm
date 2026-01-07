@@ -6,8 +6,6 @@
 
 #include <Foundation/Foundation.h>
 
-#include <cstdint>
-
 #include "base/apple/foundation_util.h"
 #include "base/byte_size.h"
 #include "base/check.h"
@@ -15,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_proxying_url_loader_factory.h"
@@ -27,7 +26,6 @@ namespace enterprise_auth {
 
 namespace {
 
-constexpr base::TimeDelta kTimeout = base::Seconds(30);
 constexpr base::ByteSize kDataSizeLimit = base::KiBU(128);
 
 }  // namespace
@@ -54,7 +52,8 @@ void URLSessionURLLoader::CreateAndStart(
 void URLSessionURLLoader::Start(
     const network::ResourceRequest& request,
     mojo::PendingReceiver<network::mojom::URLLoader> loader,
-    mojo::PendingRemote<network::mojom::URLLoaderClient> client_info_remote) {
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client_info_remote,
+    base::TimeDelta timeout) {
   DCHECK(ProxyingURLLoaderFactory::IsOktaSSORequest(request))
       << "URLSessionURLLoader is meant to be used only for Okta SSO.";
 
@@ -70,7 +69,7 @@ void URLSessionURLLoader::Start(
   request_start_ = base::TimeTicks::Now();
 
   NSURLRequest* ns_request =
-      url_session_helper::ConvertResourceRequest(request, kTimeout);
+      url_session_helper::ConvertResourceRequest(request, timeout);
   NSURLSession* session = [NSURLSession sharedSession];
   if (session_override_) {
     CHECK_IS_TEST();
@@ -86,10 +85,18 @@ void URLSessionURLLoader::Start(
       dataTaskWithRequest:ns_request
         completionHandler:^(NSData* data, NSURLResponse* response,
                             NSError* error) {
-          if (error || !response) {
+          if (error) {
+            SSORequestFailReason reason = error.code == NSURLErrorTimedOut
+                                              ? SSORequestFailReason::kTimeout
+                                              : SSORequestFailReason::kOsError;
             task_runner->PostTask(
                 FROM_HERE, base::BindOnce(&URLSessionURLLoader::OnRequestFailed,
-                                          weak_ptr));
+                                          weak_ptr, reason));
+          } else if (!response) {
+            task_runner->PostTask(
+                FROM_HERE,
+                base::BindOnce(&URLSessionURLLoader::OnRequestFailed, weak_ptr,
+                               SSORequestFailReason::kOther));
           } else {
             task_runner->PostTask(
                 FROM_HERE,
@@ -119,41 +126,55 @@ void URLSessionURLLoader::OnRequestComplete(NSURLResponse* response,
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   if (ns_data && ns_data.length > 0) {
     if (ns_data.length > kDataSizeLimit.InBytes()) {
-      client_->OnComplete(
-          network::URLLoaderCompletionStatus(net::ERR_FILE_TOO_BIG));
-      DisconnectAndDelete();
+      OnRequestFailed(SSORequestFailReason::kResponseTooBig);
       return;
     }
 
     const base::span<const uint8_t> data = base::apple::NSDataToSpan(ns_data);
     mojo::ScopedDataPipeProducerHandle producer_handle;
-    if (mojo::CreateDataPipe(data.size(), producer_handle, consumer_handle) !=
-        MOJO_RESULT_OK) {
-      client_->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
-      DisconnectAndDelete();
+    int mojo_result =
+        mojo::CreateDataPipe(data.size(), producer_handle, consumer_handle);
+    if (mojo_result != MOJO_RESULT_OK) {
+      OnRequestFailed(SSORequestFailReason::kOther);
       return;
     }
-    if (producer_handle->WriteAllData(data) != MOJO_RESULT_OK) {
-      client_->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
-      DisconnectAndDelete();
+    mojo_result = producer_handle->WriteAllData(data);
+    if (mojo_result != MOJO_RESULT_OK) {
+      OnRequestFailed(SSORequestFailReason::kOther);
       return;
     }
   }
 
+  RecordSuccessMetrics();
   client_->OnReceiveResponse(std::move(head), std::move(consumer_handle),
                              std::nullopt);
   client_->OnComplete(network::URLLoaderCompletionStatus(net::OK));
   DisconnectAndDelete();
 }
 
-void URLSessionURLLoader::OnRequestFailed() {
+void URLSessionURLLoader::OnRequestFailed(SSORequestFailReason reason) {
+  RecordFailureMetrics(reason);
+
   task_ = nil;
   if (!client_) {
     // At this point, it is possible for |client_| to have disconnected, but
     // the callback might still be pending in the task queue.
     return;
   }
-  client_->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
+  int error_code;
+  switch (reason) {
+    case SSORequestFailReason::kTimeout:
+      error_code = net::ERR_TIMED_OUT;
+      break;
+    case SSORequestFailReason::kResponseTooBig:
+      error_code = net::ERR_FILE_TOO_BIG;
+      break;
+    case SSORequestFailReason::kOsError:
+    case SSORequestFailReason::kOther:
+      error_code = net::ERR_FAILED;
+      break;
+  }
+  client_->OnComplete(network::URLLoaderCompletionStatus(error_code));
   DisconnectAndDelete();
 }
 
@@ -171,6 +192,24 @@ void URLSessionURLLoader::DisconnectAndDelete() {
   client_.reset();
   receiver_.reset();
   delete this;
+}
+
+void URLSessionURLLoader::RecordSuccessMetrics() {
+  base::UmaHistogramBoolean("Enterprise.ExtensibleEnterpriseSSO.Okta.Result",
+                            true);
+  base::TimeDelta duration = base::TimeTicks::Now() - request_start_;
+  base::UmaHistogramTimes(
+      "Enterprise.ExtensibleEnterpriseSSO.Okta.Success.Duration", duration);
+}
+
+void URLSessionURLLoader::RecordFailureMetrics(SSORequestFailReason reason) {
+  base::UmaHistogramBoolean("Enterprise.ExtensibleEnterpriseSSO.Okta.Result",
+                            false);
+  base::UmaHistogramEnumeration(
+      "Enterprise.ExtensibleEnterpriseSSO.Okta.Failure.Reason", reason);
+  base::TimeDelta duration = base::TimeTicks::Now() - request_start_;
+  base::UmaHistogramTimes(
+      "Enterprise.ExtensibleEnterpriseSSO.Okta.Failure.Duration", duration);
 }
 
 // We let URLSession follow redirects and only get the final result.

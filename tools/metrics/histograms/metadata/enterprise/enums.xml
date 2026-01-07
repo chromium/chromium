@@ -2685,6 +2685,13 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Profile ID mismatch with registration request"/>
 </enum>
 
+<enum name="OktaSSOFailureReason">
+  <int value="0" label="An unexpected error has occurred."/>
+  <int value="1" label="URLSession has failed with an OS error."/>
+  <int value="2" label="URLSession request has timed out."/>
+  <int value="3" label="URLSession response body size over the limit."/>
+</enum>
+
 <enum name="OsSuite">
   <int value="0" label="Windows Home Edition (or unknown)"/>
   <int value="1" label="Windows Professional/Ultimate Editions"/>
