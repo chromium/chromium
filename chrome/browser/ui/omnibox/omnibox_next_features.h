@@ -88,8 +88,12 @@ extern const base::FeatureParam<bool> kShowRecentTabChip;
 extern const base::FeatureParam<bool> kShowSmartCompose;
 // Whether to show the submit button in the composebox.
 extern const base::FeatureParam<bool> kShowSubmit;
-// Whether to show the tools and models picker in the composebox.
+// Whether to show the tools and models in the composebox.
 extern const base::FeatureParam<bool> kShowToolsAndModels;
+// Whether to show canvas in the composebox.
+extern const base::FeatureParam<bool> kShowCanvas;
+// Whether to show the model picker in the composebox.
+extern const base::FeatureParam<bool> kShowModelPicker;
 // Whether to show the voice search button in steady state composebox.
 extern const base::FeatureParam<bool> kShowVoiceSearchInSteadyComposebox;
 // Whether to show the voice search button in expanded composebox.

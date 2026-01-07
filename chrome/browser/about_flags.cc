@@ -1641,6 +1641,11 @@ const FeatureEntry::FeatureParam kShowToolsAndModels[] = {
     {"ShowContextMenu", "true"},     {"ShowToolsAndModels", "true"},
     {"ShowComposeboxZps", "true"},   {"ShowComposeboxTypedSuggest", "true"},
 };
+const FeatureEntry::FeatureParam kShowCanvasAndModelPicker[] = {
+    {"ShowContextMenu", "true"},   {"ShowToolsAndModels", "true"},
+    {"ShowCanvas", "true"},        {"ShowModelPicker", "true"},
+    {"ShowComposeboxZps", "true"}, {"ShowComposeboxTypedSuggest", "true"},
+};
 const FeatureEntry::FeatureParam kShowCreateImageTool[] = {
     {"ShowContextMenu", "true"},
     {"ShowToolsAndModels", "true"},
@@ -1694,7 +1699,6 @@ const FeatureEntry::FeatureParam kComposeboxNextForRealboxNext[] = {
     {"ShowSubmit", "true"},
     {"EnableEphemeralContextMenuDescription", "true"}};
 
-
 const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
     {"- Show Contextual Input Menu and Suggest, 5 File Limit",
      kComposeboxShowContextMenuAndSuggestMultiFile,
@@ -1713,6 +1717,8 @@ const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
     {"- Show Contextual Input Menu and Suggest with Tools and Models including "
      "Create Images",
      kShowCreateImageTool, std::size(kShowCreateImageTool), nullptr},
+    {"- Show Contextual Input Menu with Canvas and Model Picker",
+     kShowCanvasAndModelPicker, std::size(kShowCanvasAndModelPicker), nullptr},
     {"- Next Experience", kComposeboxNext, std::size(kComposeboxNext), nullptr},
     {"- Next Experience Single Context", kComposeboxNextSingleContext,
      std::size(kComposeboxNextSingleContext), nullptr},
