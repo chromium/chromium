@@ -292,7 +292,9 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       case 'siteSettingsJavascriptOptimizer':
       case 'siteSettingsKeyboardLock':
       case 'siteSettingsLocalFonts':
+      case 'siteSettingsLocalNetwork':
       case 'siteSettingsLocalNetworkAccess':
+      case 'siteSettingsLoopbackNetwork':
       case 'siteSettingsLocation':
       case 'siteSettingsMicrophone':
       case 'siteSettingsMidiDevices':
