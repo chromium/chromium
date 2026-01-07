@@ -18,4 +18,7 @@ found in the LICENSE file.
     <color name="ntp_color_rose_primary">@color/ntp_color_rose_primary_dark</color>
     <color name="ntp_color_fuchsia_primary">@color/ntp_color_fuchsia_primary_dark</color>
     <color name="ntp_color_violet_primary">@color/ntp_color_violet_primary_dark</color>
+
+    <!-- Ntp customization preview dialog theme color. -->
+    <color name="ntp_upload_image_preview_dialog_color_list">@color/default_text_color_list</color>
 </resources>
