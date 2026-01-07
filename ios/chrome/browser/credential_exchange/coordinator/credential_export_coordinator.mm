@@ -150,10 +150,10 @@
 
 - (void)fetchTrustedVaultKeysWithCompletion:
     (void (^)(NSArray<NSData*>*))completion {
+  CHECK(completion);
   bool metricsReportingEnabled =
       GetApplicationContext()->GetLocalState()->GetBoolean(
           metrics::prefs::kMetricsReportingEnabled);
-
   _passkeyKeychainProviderBridge = [[PasskeyKeychainProviderBridge alloc]
         initWithEnableLogging:metricsReportingEnabled
          navigationController:_baseNavigationController
@@ -165,15 +165,14 @@
   CoreAccountInfo account =
       IdentityManagerFactory::GetForProfile(self.profile)
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-
+  __weak __typeof(self) weakSelf = self;
   [_passkeyKeychainProviderBridge
       fetchTrustedVaultKeysForGaia:account.gaia.ToNSString()
                         credential:nil
                            purpose:webauthn::ReauthenticatePurpose::kDecrypt
                         completion:^(NSArray<NSData*>* trustedVaultKeys) {
-                          if (completion) {
-                            completion(trustedVaultKeys);
-                          }
+                          [weakSelf onTrustedVaultKeysFetched:trustedVaultKeys
+                                                   completion:completion];
                         }];
 }
 
@@ -231,6 +230,20 @@
   [_viewController presentViewController:viewController
                                 animated:YES
                               completion:nil];
+}
+
+// Called when fetching trusted vault keys for passkeys finishes. Dismisses
+// screens that were presented for the fetching (if any). Calls `completion` if
+// any keys were fetched.
+- (void)onTrustedVaultKeysFetched:(NSArray<NSData*>*)trustedVaultKeys
+                       completion:(void (^)(NSArray<NSData*>*))completion {
+  CHECK(completion);
+  [_baseNavigationController popToViewController:_viewController animated:YES];
+  // TODO(crbug.com/444112223): Differentiate between error and user cancelling
+  // the flow, display error for the former.
+  if (trustedVaultKeys.count != 0) {
+    completion(trustedVaultKeys);
+  }
 }
 
 @end
