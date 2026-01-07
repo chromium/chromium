@@ -9,14 +9,18 @@
 
 void GetGeneralPasteboard(bool asynchronous, PasteboardCallback callback) {
   if (asynchronous) {
-    scoped_refptr<base::SequencedTaskRunner> task_runner =
-        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
-    task_runner->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce(^{
-          return UIPasteboard.generalPasteboard;
-        }),
-        std::move(callback));
+    GetGeneralPasteboard(std::move(callback));
   } else {
     std::move(callback).Run(UIPasteboard.generalPasteboard);
   }
+}
+
+void GetGeneralPasteboard(PasteboardCallback callback) {
+  scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+  task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(^{
+        return UIPasteboard.generalPasteboard;
+      }),
+      std::move(callback));
 }
