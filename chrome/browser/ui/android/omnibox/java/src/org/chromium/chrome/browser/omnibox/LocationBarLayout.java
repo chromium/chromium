@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -71,6 +72,8 @@ public class LocationBarLayout extends ConstraintLayout {
     private boolean mShowLensButton;
     private boolean mShowDeleteButton;
     private boolean mShowNavigateButton;
+
+    private Runnable mOnSizeChangedRunnable = CallbackUtils.emptyRunnable();
 
     public LocationBarLayout(Context context, AttributeSet attrs) {
         this(context, attrs, R.layout.location_bar);
@@ -125,6 +128,16 @@ public class LocationBarLayout extends ConstraintLayout {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         checkUrlContainerWidth();
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        mOnSizeChangedRunnable.run();
+    }
+
+    protected void setOnSizeChangedRunnable(Runnable onSizeChangedRunnable) {
+        mOnSizeChangedRunnable = onSizeChangedRunnable;
     }
 
     /**

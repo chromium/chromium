@@ -10,6 +10,7 @@ import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocusOnFirstFoc
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -475,6 +476,12 @@ public class ToolbarPhone extends ToolbarLayout
                                 }
                             });
             mLocationBar.getContainerView().setClipToOutline(true);
+            mLocationBar.setOnSizeChangedRunnable(
+                    () -> {
+                        updateLocationBarBackgroundBounds(
+                                mLocationBarBackgroundBounds, mVisualState);
+                        updateLocationBarBackgroundViewBounds();
+                    });
         }
     }
 
@@ -1026,7 +1033,7 @@ public class ToolbarPhone extends ToolbarLayout
             // NTP. We want to update the location bar's state, but suppress the associated
             // animations, so allow the transition to start, then immediately end it here.
             if (oldScrollFraction == UNINITIALIZED_FRACTION) {
-                endFocusTransition(/* hasFocus= */ false);
+                endFocusTransition();
             }
             return;
         }
@@ -2131,7 +2138,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     private void endUrlFocusAnimation() {
         if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
-            endFocusTransition(/* hasFocus= */ false);
+            endFocusTransition();
         } else if (mUrlFocusLayoutAnimator != null && mUrlFocusLayoutAnimator.isRunning()) {
             mUrlFocusLayoutAnimator.end();
             mUrlFocusLayoutAnimator = null;
@@ -2564,11 +2571,27 @@ public class ToolbarPhone extends ToolbarLayout
         }
     }
 
+    @Override
+    public void beginEmbeddedDelayedTransition(ViewGroup sceneRoot, Transition transition) {
+        createAndRunFocusAnimatorRefactored(
+                urlHasFocus(), transition, transition.getInterpolator(), transition.getDuration());
+    }
+
     private void createAndRunFocusAnimatorRefactored(boolean hasFocus) {
-        int toolbarBtnTransitionDuration =
-                hasFocus && animatingSuggestionsListOnNtp()
-                        ? 0
-                        : URL_FOCUS_CHANGE_ANIMATION_DURATION_MS;
+        createAndRunFocusAnimatorRefactored(
+                hasFocus,
+                /* embeddedTransition= */ null,
+                Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR,
+                URL_FOCUS_CHANGE_ANIMATION_DURATION_MS);
+    }
+
+    private void createAndRunFocusAnimatorRefactored(
+            boolean hasFocus,
+            @Nullable Transition embeddedTransition,
+            TimeInterpolator interpolator,
+            long duration) {
+        long toolbarBtnTransitionDuration =
+                hasFocus && animatingSuggestionsListOnNtp() ? 0 : duration;
         TransitionSet buttonsTransition =
                 new TransitionSet()
                         .addTransition(
@@ -2593,13 +2616,14 @@ public class ToolbarPhone extends ToolbarLayout
                                         .addTarget(mActiveLocationBarBackgroundView))
                         .addTransition(new Fade().addTarget(getToolbarShadow()))
                         .addTransition(new BackgroundDrawableTransition())
-                        .setDuration(URL_FOCUS_CHANGE_ANIMATION_DURATION_MS)
-                        .setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
+                        .setDuration(duration)
+                        .setInterpolator(interpolator);
 
         TransitionSet transition =
                 new TransitionSet()
                         .addTransition(buttonsTransition)
                         .addTransition(locationBarTransition);
+        if (embeddedTransition != null) transition.addTransition(embeddedTransition);
 
         transition.addListener(
                 new TransitionListenerAdapter() {
@@ -2618,7 +2642,7 @@ public class ToolbarPhone extends ToolbarLayout
                     @Override
                     public void onTransitionEnd(Transition transition) {
                         super.onTransitionEnd(transition);
-                        onFocusTransitionEnd(hasFocus);
+                        onFocusTransitionEnd();
                     }
                 });
 
@@ -2736,7 +2760,7 @@ public class ToolbarPhone extends ToolbarLayout
         mActiveLocationBarBackgroundView.setAlpha(1.f);
     }
 
-    private void onFocusTransitionEnd(boolean hasFocus) {
+    private void onFocusTransitionEnd() {
         if (mLocationBar.isDestroyed()) return;
 
         mUrlFocusChangeInProgress = false;
@@ -2749,7 +2773,7 @@ public class ToolbarPhone extends ToolbarLayout
             if (mNtpSearchBoxScrollFraction != 1.f) {
                 NewTabPageDelegate ntpDelegate = getToolbarDataProvider().getNewTabPageDelegate();
                 ntpDelegate.setSearchBoxAlpha(1.f);
-                if (!hasFocus) {
+                if (!urlHasFocus()) {
                     // When unfocusing, the NTP state may be reset. If that is the case, we need to
                     // update the scroll translation here.
                     updateLocationBarTranslationOnScroll();
@@ -2761,7 +2785,7 @@ public class ToolbarPhone extends ToolbarLayout
             }
         }
         mRefactoredLocationBarTranslating = false;
-        mLocationBar.finishUrlFocusChange(hasFocus, hasFocus);
+        mLocationBar.finishUrlFocusChange(urlHasFocus(), urlHasFocus());
     }
 
     /**
@@ -2771,13 +2795,11 @@ public class ToolbarPhone extends ToolbarLayout
      * off the delayed transitions. As a result, the {@link TransitionListener} events
      * (onTransitionStart, etc.) also are skipped. Our implementation relies on these events being
      * called, so manually call them when ending the focus transitions early.
-     *
-     * @param hasFocus {@code True} if the URL bar has focus at the end of the transition.
      */
-    private void endFocusTransition(boolean hasFocus) {
+    private void endFocusTransition() {
         onFocusTransitionStart();
         TransitionManager.endTransitions(getSceneRoot());
-        onFocusTransitionEnd(hasFocus);
+        onFocusTransitionEnd();
     }
 
     private ViewGroup getSceneRoot() {
@@ -3334,7 +3356,7 @@ public class ToolbarPhone extends ToolbarLayout
             if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
                 mOptionalButtonCoordinator.setOnBeforeDelayedTransitionCallback(
                         () -> {
-                            if (mUrlFocusChangeInProgress) endFocusTransition(urlHasFocus());
+                            if (mUrlFocusChangeInProgress) endFocusTransition();
                         });
                 mOptionalButtonCoordinator.setOnBeforeShowTransitionCallback(
                         () -> {
@@ -3444,7 +3466,7 @@ public class ToolbarPhone extends ToolbarLayout
         if (mUrlFocusLayoutAnimator != null && mUrlFocusLayoutAnimator.isRunning()) {
             mUrlFocusLayoutAnimator.cancel();
         } else {
-            endFocusTransition(urlHasFocus());
+            endFocusTransition();
         }
 
         if (mBrandColorTransitionAnimation != null && mBrandColorTransitionAnimation.isRunning()) {
