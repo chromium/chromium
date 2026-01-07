@@ -128,6 +128,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that a custom color can be set.
 - (void)testCustomizeColor {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/474141910): Re-enable when fixed.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test is flaky on iPhone device.");
+  }
+#endif
+
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kNTPCustomizationMenuButtonIdentifier)]
