@@ -83,7 +83,7 @@ FetchCreditCardOrCvcFieldSuggestionDataSync(
   std::vector<SuggestionData> suggestion_data = base::ToVector(
       cards_to_suggest,
       [](auto& card) { return SuggestionData(std::move(card)); });
-  return {SuggestionDataSource::kCreditCard, suggestion_data};
+  return {SuggestionDataSource::kCreditCard, std::move(suggestion_data)};
 }
 
 std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
@@ -161,7 +161,8 @@ FetchVirtualCardStandaloneCvcFieldSuggestionDataSync(
   std::vector<SuggestionData> suggestion_data = base::ToVector(
       cards_to_suggest,
       [](auto& card) { return SuggestionData(std::move(card)); });
-  return {SuggestionDataSource::kVirtualStandaloneCvc, suggestion_data};
+  return {SuggestionDataSource::kVirtualStandaloneCvc,
+          std::move(suggestion_data)};
 }
 
 std::vector<Suggestion> GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
@@ -350,7 +351,8 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
   return GenerateCreditCardSuggestionsSync(
       client, trigger_field, trigger_field_type, summary,
       should_show_scan_credit_card, four_digit_combinations_in_dom,
-      {suggestion_data}, is_card_number_field_empty, amount_extraction_status);
+      {std::move(suggestion_data)}, is_card_number_field_empty,
+      amount_extraction_status);
 }
 
 }  // namespace autofill
