@@ -3382,7 +3382,7 @@ template("libmonochrome_tmpl") {
       never_omit_switch_num = true
     }
 
-    is_monochrome = true
+    is_trichrome = true
     module_descs = chrome_module_descs
 
     forward_variables_from(invoker, "*", [ "deps" ])

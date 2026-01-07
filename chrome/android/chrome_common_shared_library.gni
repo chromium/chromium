@@ -14,11 +14,12 @@ import("//device/vr/buildflags/buildflags.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 # This template contains all common configuration for native shared libraries,
-# including libchrome, monochrome, standalone webview (also called monochrome),
-# and libchromefortest (used by chrome_public_test_apk).
+# including libchrome, libmonochrome (used for Trichrome), libwebviewchromium
+# (for standalone WebView), and libchromefortest (used by
+# chrome_public_test_apk).
 #
 # Variables:
-#    is_monochrome: Optional. If set, the library is for use in monochrome.
+#    is_trichrome: Optional. If set, the library is for use in Trichrome.
 #    is_webview: If true, the library is for webview, and browser-specific
 #      config is skipped.
 #    module_descs: Optional. Descriptors of feature modules for which library
@@ -30,7 +31,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 #      the descriptor format.
 template("chrome_common_shared_library") {
   forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-  _is_monochrome = defined(invoker.is_monochrome) && invoker.is_monochrome
+  _is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
   _is_webview = defined(invoker.is_webview) && invoker.is_webview
   _use_webview_orderfile =
       defined(invoker.use_webview_orderfile) && invoker.use_webview_orderfile
@@ -138,7 +139,7 @@ template("chrome_common_shared_library") {
       }
     }
 
-    if ((_is_monochrome || _is_webview || chromium_linker_supported) &&
+    if ((_is_trichrome || _is_webview || chromium_linker_supported) &&
         target_cpu != "mipsel" && target_cpu != "mips64el") {
       # By default, the static linker will create ELF executables with both
       # SysV and GNU hash tables. Now that the chromium linker supports the GNU
