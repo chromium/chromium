@@ -267,8 +267,7 @@ bool AllowListIncludedTransport(const CtapGetAssertionRequest& request,
   return std::ranges::any_of(
       request.allow_list,
       [transport](const PublicKeyCredentialDescriptor& cred) {
-        return cred.transports.empty() ||
-               base::Contains(cred.transports, transport);
+        return cred.transports.empty() || cred.transports.contains(transport);
       });
 }
 

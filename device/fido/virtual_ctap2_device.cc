@@ -351,8 +351,7 @@ CtapDeviceResponseCode VerifyPINUVAuthToken(
   }
   std::optional<PINUVAuthProtocol> protocol =
       ToPINUVAuthProtocol(pin_protocol_it->second.GetUnsigned());
-  if (!protocol ||
-      !base::Contains(*authenticator_info.pin_protocols, *protocol)) {
+  if (!protocol || !authenticator_info.pin_protocols->contains(*protocol)) {
     return CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid;
   }
   const auto pinauth_it = request_map.find(pin_auth_map_key);
@@ -945,8 +944,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::CheckUserVerification(
   // and the pinProtocol is not supported, return CTAP2_ERR_PIN_AUTH_INVALID
   // error."
   if (supports_pin && pin_auth &&
-      (!pin_protocol ||
-       !base::Contains(*supported_pin_protocols, *pin_protocol))) {
+      (!pin_protocol || !supported_pin_protocols->contains(*pin_protocol))) {
     return CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid;
   }
 
@@ -1508,7 +1506,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
   // technically permissible to send an empty allow_list when asking for
   // discoverable credentials, but some authenticators in practice don't take it
   // that way. Thus this code mirrors that to better reflect reality.
-  if (!base::Contains(request_map, cbor::Value(3))) {
+  if (!request_map.contains(cbor::Value(3))) {
     DCHECK(config_.resident_key_support);
     for (auto& registration : mutable_state()->registrations) {
       if (registration.second.is_resident &&
@@ -1993,11 +1991,10 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
       PinUvAuthTokenPermissions permissions;
       if (subcommand ==
           static_cast<int>(device::pin::Subcommand::kGetPINToken)) {
-        if (base::Contains(request_map, cbor::Value(static_cast<int>(
-                                            pin::RequestKey::kPermissions))) ||
-            base::Contains(request_map,
-                           cbor::Value(static_cast<int>(
-                               pin::RequestKey::kPermissionsRPID)))) {
+        if (request_map.contains(
+                cbor::Value(static_cast<int>(pin::RequestKey::kPermissions))) ||
+            request_map.contains(cbor::Value(
+                static_cast<int>(pin::RequestKey::kPermissionsRPID)))) {
           return CtapDeviceResponseCode::kCtap1ErrInvalidParameter;
         }
         // Set default PinUvAuthToken permissions.
@@ -2309,7 +2306,7 @@ CtapDeviceResponseCode VirtualCtap2Device::OnCredentialManagement(
       if (!credential_id) {
         return CtapDeviceResponseCode::kCtap2ErrCBORUnexpectedType;
       }
-      if (!base::Contains(mutable_state()->registrations, credential_id->id)) {
+      if (!mutable_state()->registrations.contains(credential_id->id)) {
         return CtapDeviceResponseCode::kCtap2ErrNoCredentials;
       }
       mutable_state()->registrations.erase(credential_id->id);
@@ -2351,7 +2348,7 @@ CtapDeviceResponseCode VirtualCtap2Device::OnCredentialManagement(
       if (!credential_id) {
         return CtapDeviceResponseCode::kCtap2ErrMissingParameter;
       }
-      if (!base::Contains(mutable_state()->registrations, credential_id->id)) {
+      if (!mutable_state()->registrations.contains(credential_id->id)) {
         return CtapDeviceResponseCode::kCtap2ErrNoCredentials;
       }
 
@@ -2781,7 +2778,7 @@ void VirtualCtap2Device::InitPendingRPs() {
     DCHECK(!registration.second.is_u2f);
     DCHECK(registration.second.user);
     DCHECK(registration.second.rp);
-    if (!base::Contains(rp_ids, registration.second.rp->id)) {
+    if (!rp_ids.contains(registration.second.rp->id)) {
       rp_ids.insert(registration.second.rp->id);
       request_state_.pending_rps.push_back(*registration.second.rp);
     }

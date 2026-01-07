@@ -25,7 +25,7 @@ bool MayFallbackToU2fWithAppIdExtension(
     const CtapGetAssertionRequest& request) {
   bool ctap2_device_supports_u2f =
       device.device_info() &&
-      base::Contains(device.device_info()->versions, ProtocolVersion::kU2f);
+      device.device_info()->versions.contains(ProtocolVersion::kU2f);
   return request.alternative_application_parameter &&
          ctap2_device_supports_u2f && !request.allow_list.empty();
 }

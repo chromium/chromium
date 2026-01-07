@@ -894,12 +894,10 @@ TEST_F(BluetoothFlossTest, StartLowEnergyScanSessionWithScanResult) {
 
   // Simulate OnScannerRegistered.
   RegisterScanner(device::BluetoothUUID(kTestUuidStr), kTestScannerId);
-  EXPECT_TRUE(
-      base::Contains(GetFakeLEScanClient()->scanner_ids_, kTestScannerId));
+  EXPECT_TRUE(GetFakeLEScanClient()->scanner_ids_.contains(kTestScannerId));
   EXPECT_EQ(1, delegate.sessions_started_);
   RegisterScanner(device::BluetoothUUID(kTestUuidStr2), kTestScannerId2);
-  EXPECT_TRUE(
-      base::Contains(GetFakeLEScanClient()->scanner_ids_, kTestScannerId2));
+  EXPECT_TRUE(GetFakeLEScanClient()->scanner_ids_.contains(kTestScannerId2));
   EXPECT_EQ(1, delegate2.sessions_started_);
 
   // Simulate a scan result event

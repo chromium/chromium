@@ -541,7 +541,7 @@ BluetoothAdapterBlueZ::RetrieveGattConnectedDevicesWithDiscoveryFilter(
 
       UUIDSet intersection;
       for (const BluetoothUUID& uuid : filter_uuids) {
-        if (base::Contains(device_uuids, uuid)) {
+        if (device_uuids.contains(uuid)) {
           intersection.insert(uuid);
         }
       }

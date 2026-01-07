@@ -67,7 +67,7 @@ void FakeBluetoothBatteryClient::ChangeBatteryPercentage(
     const dbus::ObjectPath& path,
     uint8_t percentage) {
   DCHECK(base::Contains(battery_list_, path));
-  DCHECK(base::Contains(properties_map_, path));
+  DCHECK(properties_map_.contains(path));
 
   properties_map_[path]->percentage.ReplaceValue(percentage);
 
