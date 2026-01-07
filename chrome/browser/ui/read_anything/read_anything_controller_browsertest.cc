@@ -17,7 +17,9 @@
 #include "chrome/browser/ui/read_anything/read_anything_service_factory.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
@@ -33,6 +35,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 class MockReadAnythingLifecycleObserver : public ReadAnythingLifecycleObserver {
  public:
@@ -1207,6 +1210,48 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   AssertOverlayVisibility(/*visible=*/false);
   ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       ShowImmersiveUI_SetsMainPageAccessibility) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::View* contents_view =
+      browser_view->GetContentsContainerViewFor(tab->GetContents())
+          ->GetViewByID(VIEW_ID_TAB_CONTAINER);
+  ASSERT_TRUE(contents_view);
+
+  // 1) Before IRM is open, main webpage is accessible to accessibility
+  // technology and keyboard focus.
+  ASSERT_FALSE(contents_view->GetViewAccessibility().GetIsIgnored());
+  ASSERT_TRUE(contents_view->GetViewAccessibility().IsAccessibilityFocusable());
+  EXPECT_TRUE(contents_view->IsFocusable());
+
+  // 2) Show Immersive UI
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  AssertOverlayVisibility(/*visible=*/true);
+
+  // Main webpage is NOT accessible to accessibility technology or keyboard
+  // focus while IRM is open.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return contents_view->GetViewAccessibility().GetIsIgnored(); }));
+  ASSERT_FALSE(
+      contents_view->GetViewAccessibility().IsAccessibilityFocusable());
+  ASSERT_FALSE(contents_view->IsFocusable());
+
+  // 3) Close Immersive UI
+  controller->CloseImmersiveUI();
+  AssertOverlayVisibility(/*visible=*/false);
+
+  // Main webpage is accessible again
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !contents_view->GetViewAccessibility().GetIsIgnored(); }));
+  ASSERT_TRUE(contents_view->GetViewAccessibility().IsAccessibilityFocusable());
+  ASSERT_TRUE(contents_view->IsFocusable());
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,

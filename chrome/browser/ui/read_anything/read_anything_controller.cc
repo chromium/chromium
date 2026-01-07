@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -24,6 +25,7 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // WebContentsObserverInstance
@@ -121,6 +123,11 @@ ReadAnythingController::~ReadAnythingController() {
   // doesn't seem to be reliably called when a tab is closed, so we need to do
   // this here too.
   ReleaseMainContentsCapture();
+
+  // In case this is in an odd state where this controller is getting destructed
+  // while we've set the main webpage as inaccessibile, reset the webpage to be
+  // accessible.
+  SetMainContentsAccessible(/*should_be_accessible=*/true);
 
   // This method is transiently used to reset features that do not handle tab
   // discarding themselves.
@@ -400,10 +407,17 @@ void ReadAnythingController::OnReadAnythingVisibilityChanged(
     // again after being occluded, we tell the renderer that the main webpage
     // needs to be treated as visible even though it's occluded, so it can
     // generate accessibility events we need for RM to function.
+    // We also set the underlying web contents to be not accessible while IRM is
+    // open, so that it won't receive screen reader focus or be navigatable by
+    // keyboard.
     if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
+      SetMainContentsAccessible(/*should_be_accessible=*/false);
       CaptureMainContentsAsVisible();
     }
   } else {
+    // We want the main web contents to be accessible again if IRM is closed and
+    // the main webpage is now visible.
+    SetMainContentsAccessible(/*should_be_accessible=*/true);
     // We don't need the main web contents treated as visible anymore because
     // Reading Mode is hidden or occluded.
     ReleaseMainContentsCapture();
@@ -427,4 +441,34 @@ void ReadAnythingController::CaptureMainContentsAsVisible() {
 
 void ReadAnythingController::ReleaseMainContentsCapture() {
   main_contents_capturer_handle_.RunAndReset();
+}
+
+void ReadAnythingController::SetMainContentsAccessible(
+    bool should_be_accessible) {
+  if (!tab_) {
+    return;
+  }
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(tab_->GetBrowserWindowInterface());
+  if (!browser_view || !browser_view->GetActiveContentsContainerView()) {
+    return;
+  }
+  ContentsContainerView* contents_container_view =
+      browser_view->GetContentsContainerViewFor(tab_->GetContents());
+  if (!contents_container_view) {
+    return;
+  }
+
+  // The contents view is the main web contents view, which is the child of the
+  // ContentsContainerView, and a sibling of the Immersive Overlay.
+  views::View* contents_view =
+      contents_container_view->GetViewByID(VIEW_ID_TAB_CONTAINER);
+  if (contents_view) {
+    // Enable/disable accessibility technology for the main web contents.
+    contents_view->GetViewAccessibility().SetIsIgnored(!should_be_accessible);
+    // Enable/disable keyboard focusability for the main web contents.
+    contents_view->SetFocusBehavior(should_be_accessible
+                                        ? views::View::FocusBehavior::ALWAYS
+                                        : views::View::FocusBehavior::NEVER);
+  }
 }

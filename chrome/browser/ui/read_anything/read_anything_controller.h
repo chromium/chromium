@@ -219,6 +219,12 @@ class ReadAnythingController {
   // Reset the main contents capturer handle_ when we no longer need to force
   // the main webpage to be treated as visible for IRM purposes.
   void ReleaseMainContentsCapture();
+
+  // Sets the accessibility status of the view of the main webpage. If IRM is
+  // open and covering the page, we don't want the main webpage to be accessible
+  // to screen readers and keyboard navigation.
+  void SetMainContentsAccessible(bool should_be_accessible);
+
   // The handle returned by web_contents_->IncrementCapturerCount. This is used
   // to release the capture when the ReadAnythingController is destroyed.
   // Note: Do not access this directly. Use CaptureMainContentsAsVisible() and
