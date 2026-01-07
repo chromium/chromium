@@ -570,7 +570,7 @@ class AutofillClient {
 
   // Returns whether there is an active actor task for this client's tab (if
   // one exists).
-  virtual bool IsActorTaskActive() const;
+  virtual bool IsTabInActorMode() const;
 
   // Returns true if either Profile or CreditCard Autofill is enabled.
   virtual bool IsAutofillEnabled() const = 0;

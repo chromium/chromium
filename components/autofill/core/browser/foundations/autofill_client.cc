@@ -209,7 +209,7 @@ void AutofillClient::TriggerAutofillAiSavePromptSurvey(
   NOTIMPLEMENTED();
 }
 
-bool AutofillClient::IsActorTaskActive() const {
+bool AutofillClient::IsTabInActorMode() const {
   return false;
 }
 

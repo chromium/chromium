@@ -847,7 +847,7 @@ class MockAutofillClient : public TestAutofillClient {
               ShowPlusAddressEmailOverrideNotification,
               (const std::string&, AutofillClient::EmailOverrideUndoCallback),
               (override));
-  MOCK_METHOD(bool, IsActorTaskActive, (), (const override));
+  MOCK_METHOD(bool, IsTabInActorMode, (), (const override));
   MOCK_METHOD(AutofillAiManager*, GetAutofillAiManager, (), (override));
 };
 
@@ -5009,7 +5009,7 @@ TEST_F(BrowserAutofillManagerTest, NoSaveToAutocompleteWhenActorIsActive) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillActorSuppressImport};
 
-  EXPECT_CALL(autofill_client(), IsActorTaskActive).WillOnce(Return(true));
+  EXPECT_CALL(autofill_client(), IsTabInActorMode).WillOnce(Return(true));
   FormData form = CreateTestAddressFormData();
   EXPECT_CALL(single_field_fill_router(), OnWillSubmitForm).Times(0);
   FormSubmitted(form);
@@ -5027,7 +5027,7 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedActorActive) {
       AutofillFormAndGetResults(form, form.fields()[0], kElvisProfileGuid);
   ExpectFilledAddressFormElvis(response_data, false);
 
-  EXPECT_CALL(autofill_client(), IsActorTaskActive).WillOnce(Return(true));
+  EXPECT_CALL(autofill_client(), IsTabInActorMode).WillOnce(Return(true));
   TestAddressDataManager& adm = personal_data().test_address_data_manager();
   adm.ClearProfiles();
   // Auto-accept for import is enabled for this test, so if import were on,

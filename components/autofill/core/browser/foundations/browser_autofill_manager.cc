@@ -1023,7 +1023,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
             << "source: " << SubmissionSourceToString(source) << Br{} << form;
       };
   if (base::FeatureList::IsEnabled(features::kAutofillActorSuppressImport) &&
-      client().IsActorTaskActive()) {
+      client().IsTabInActorMode()) {
     log_submission(LogMessage::kFormSubmissionDetectedButIgnoredDueToActorTask);
     return;
   }

@@ -1046,20 +1046,13 @@ void ChromeAutofillClient::TriggerAutofillAiSavePromptSurvey(
 #endif
 }
 
-bool ChromeAutofillClient::IsActorTaskActive() const {
-#if !BUILDFLAG(IS_ANDROID)
-  actor::ActorKeyedService* actor_service =
-      actor::ActorKeyedService::Get(GetProfile());
-  if (!actor_service) {
-    return false;
-  }
-
-  const tabs::TabInterface* tab_interface =
-      tabs::TabInterface::MaybeGetFromContents(web_contents());
-  return tab_interface && actor_service->IsActiveOnTab(*tab_interface);
-#else
+bool ChromeAutofillClient::IsTabInActorMode() const {
+  // TODO(crbug.com/469428128) Enable on android once crrev.com/c/7298488 lands.
+#if BUILDFLAG(IS_ANDROID)
   return false;
-#endif
+#else
+  return active_actor_task_.has_value();
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool ChromeAutofillClient::IsAutofillEnabled() const {
