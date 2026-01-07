@@ -20,8 +20,7 @@ ReaderModeModelFactory* ReaderModeModelFactory::GetInstance() {
 }
 
 ReaderModeModelFactory::ReaderModeModelFactory()
-    : ProfileKeyedServiceFactoryIOS("ReaderModeModel",
-                                    ProfileSelection::kRedirectedInIncognito) {}
+    : ProfileKeyedServiceFactoryIOS("ReaderModeModel") {}
 
 ReaderModeModelFactory::~ReaderModeModelFactory() = default;
 
