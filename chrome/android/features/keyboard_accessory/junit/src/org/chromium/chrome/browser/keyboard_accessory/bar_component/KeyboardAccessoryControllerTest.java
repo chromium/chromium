@@ -853,10 +853,7 @@ public class KeyboardAccessoryControllerTest {
         when(mMockIsLargeFormFactorSupplier.get()).thenReturn(true);
         mCoordinator.setStyle(
                 KeyboardAccessoryStyle.createUndockedKeyboardAccessoryStyle(
-                        /* horizontalOffset= */ 1,
-                        /* verticalOffset= */ 1,
-                        /* maxWidth= */ 1,
-                        KeyboardAccessoryStyle.NotchPosition.TOP));
+                        /* horizontalOffset= */ 1, /* verticalOffset= */ 1, /* maxWidth= */ 1));
         // The suggestions should not be grouped because the style was changed to undocked.
         // TODO: crbug.com/431185714 - Mediator should remove the sheet opener when the style is
         // changed to undocked.

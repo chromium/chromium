@@ -29,7 +29,6 @@ public class KeyboardAccessoryStyle {
     private final int mHorizontalOffset;
     private final int mVerticalOffset;
     private final int mMaxWidth;
-    private final @NotchPosition int mNotchPosition;
 
     @IntDef({
         NotchPosition.TOP,
@@ -44,16 +43,11 @@ public class KeyboardAccessoryStyle {
     }
 
     private KeyboardAccessoryStyle(
-            boolean isDocked,
-            @Px int horizontalOffset,
-            @Px int verticalOffset,
-            @Px int maxWidth,
-            @NotchPosition int notchPosition) {
+            boolean isDocked, @Px int horizontalOffset, @Px int verticalOffset, @Px int maxWidth) {
         this.mIsDocked = isDocked;
         this.mHorizontalOffset = horizontalOffset;
         this.mVerticalOffset = verticalOffset;
         this.mMaxWidth = maxWidth;
-        this.mNotchPosition = notchPosition;
     }
 
     /**
@@ -64,7 +58,7 @@ public class KeyboardAccessoryStyle {
      */
     public static KeyboardAccessoryStyle createDockedKeyboardAccessoryStyle(
             @Px int verticalOffset) {
-        return new KeyboardAccessoryStyle(true, 0, verticalOffset, 0, NotchPosition.HIDDEN);
+        return new KeyboardAccessoryStyle(true, 0, verticalOffset, 0);
     }
 
     /**
@@ -73,18 +67,11 @@ public class KeyboardAccessoryStyle {
      * @param horizontalOffset The horizontal offset in pixels from the left.
      * @param verticalOffset The vertical offset in pixels from the top.
      * @param maxWidth The maximum width in pixels. 0 means no max width.
-     * @param notchPosition Position of the notch used for the dynamic positioning. Only TOP and
-     *     BOTTOM is allowed.
      * @return A new {@link KeyboardAccessoryStyle} instance for an undocked accessory.
      */
     public static KeyboardAccessoryStyle createUndockedKeyboardAccessoryStyle(
-            @Px int horizontalOffset,
-            @Px int verticalOffset,
-            @Px int maxWidth,
-            @NotchPosition int notchPosition) {
-        assert notchPosition != NotchPosition.HIDDEN;
-        return new KeyboardAccessoryStyle(
-                false, horizontalOffset, verticalOffset, maxWidth, notchPosition);
+            @Px int horizontalOffset, @Px int verticalOffset, @Px int maxWidth) {
+        return new KeyboardAccessoryStyle(false, horizontalOffset, verticalOffset, maxWidth);
     }
 
     /**
@@ -116,12 +103,5 @@ public class KeyboardAccessoryStyle {
      */
     public @Px int getMaxWidth() {
         return mMaxWidth;
-    }
-
-    /**
-     * @return Returns the position (TOP/BOTTOM/HIDDEN) of the notch pointing to the field.
-     */
-    public @NotchPosition int getNotchPosition() {
-        return mNotchPosition;
     }
 }
