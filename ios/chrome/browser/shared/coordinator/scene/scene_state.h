@@ -20,6 +20,7 @@
 @class SceneController;
 @class SceneState;
 class SigninInProgress;
+@class TabGridState;
 
 // During profile switching, it is possible that an animation is displayed
 // over the SceneState until the transition is complete. In that case the
@@ -122,6 +123,9 @@ class SigninInProgress;
 // YES if sign-in is in progress which covers the authentication flow and the
 // sign-in prompt UI.
 @property(nonatomic, readonly) BOOL signinInProgress;
+
+// Object containing the state of the tab grid.
+@property(nonatomic, strong, readonly) TabGridState* tabGridState;
 
 // Adds an observer to this scene state. The observers will be notified about
 // scene state changes per SceneStateObserver protocol.

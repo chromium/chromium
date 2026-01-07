@@ -63,6 +63,7 @@
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -98,7 +99,6 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/model/synced_sessions_util.h"
-#import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator/tab_grid_scene_agent.h"
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui/base_grid_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
@@ -419,7 +419,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [_mediator setActivePage:page];
 
   SceneState* sceneState = self.regularBrowser->GetSceneState();
-  [[TabGridSceneAgent agentFromScene:sceneState] willEnterTabGrid];
+  sceneState.tabGridState.tabGridVisible = YES;
 
   BOOL animated = !self.animationsDisabledForTesting;
 
@@ -573,7 +573,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   DCHECK(viewController || self.bvcContainer);
 
   SceneState* sceneState = self.regularBrowser->GetSceneState();
-  [[TabGridSceneAgent agentFromScene:sceneState] willExitTabGrid];
+  sceneState.tabGridState.tabGridVisible = NO;
 
   __weak TabGridCoordinator* weakSelf = self;
 
@@ -931,8 +931,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                    GetForProfile(profile)
                     modeHolder:_modeHolder];
 
-  _mediator.sceneAgent =
-      [TabGridSceneAgent agentFromScene:_regularBrowser->GetSceneState()];
+  _mediator.tabGridState = _regularBrowser->GetSceneState().tabGridState;
 
   id<SceneCommands> sceneHandler =
       HandlerForProtocol(self.dispatcher, SceneCommands);

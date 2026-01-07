@@ -74,7 +74,7 @@
   [self updateConsumer];
 }
 
-#pragma mark - TabGridObserving
+#pragma mark - TabGridStateObserver
 
 - (void)willEnterTabGrid {
   [self.consumer willEnterTabGrid];

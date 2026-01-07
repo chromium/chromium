@@ -8,13 +8,13 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
-#import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator/tab_grid_observing.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 
 @protocol AppBarConsumer;
 class WebStateList;
 
 // Mediator for the app bar coordinator.
-@interface AppBarMediator : NSObject <AppBarMutator, TabGridObserving>
+@interface AppBarMediator : NSObject <AppBarMutator, TabGridStateObserver>
 
 // The consumer of this mediator.
 @property(nonatomic, weak) id<AppBarConsumer> consumer;

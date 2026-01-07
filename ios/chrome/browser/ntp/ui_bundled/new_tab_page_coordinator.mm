@@ -97,6 +97,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -131,8 +132,6 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/supervised_user/model/family_link_user_capabilities_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator/tab_grid_observing.h"
-#import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator/tab_grid_scene_agent.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/fakebox_focuser.h"
 #import "ios/chrome/browser/toolbar/tab_group/coordinator/tab_group_indicator_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -168,7 +167,7 @@
                                      OverscrollActionsControllerDelegate,
                                      ProfileStateObserver,
                                      SceneStateObserver,
-                                     TabGridObserving,
+                                     TabGridStateObserver,
                                      FamilyLinkUserCapabilitiesObserving,
                                      NewTabPageShortcutsHandler> {
   // Observes changes in the IdentityManager.
@@ -331,7 +330,7 @@
   [sceneState addObserver:self];
 
   if (IsNTPBackgroundCustomizationEnabled()) {
-    [[TabGridSceneAgent agentFromScene:sceneState] addObserver:self];
+    [sceneState.tabGridState addObserver:self];
   }
 
   // Configures incognito NTP if user is in incognito mode.
@@ -398,7 +397,7 @@
   [sceneState removeObserver:self];
 
   if (IsNTPBackgroundCustomizationEnabled()) {
-    [[TabGridSceneAgent agentFromScene:sceneState] removeObserver:self];
+    [sceneState.tabGridState removeObserver:self];
   }
 
   if (self.isOffTheRecord) {
@@ -1861,7 +1860,7 @@
   [sceneHandler openURLInNewTab:command];
 }
 
-#pragma mark - TabGridObserving
+#pragma mark - TabGridStateObserver
 
 - (void)willEnterTabGrid {
   [self clearPresentedState];
