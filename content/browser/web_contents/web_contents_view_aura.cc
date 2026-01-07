@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
@@ -105,6 +106,17 @@ std::unique_ptr<WebContentsView> CreateWebContentsView(
 class ScopedAllowBlockingForViewAura : public base::ScopedAllowBlocking {};
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(DragAndDropSurface)
+enum class DragAndDropSurface {
+  kDragBrowserDropSamePage = 0,
+  kDragBrowserDropOutOfPage = 1,
+  kDragSystemDropBrowser = 2,
+  kMaxValue = kDragSystemDropBrowser
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/event/enums.xml:DragAndDropSurface)
 
 using ::ui::mojom::DragOperation;
 
@@ -828,6 +840,15 @@ void WebContentsViewAura::EndDrag(
             &transformed_point);
   }
 
+  if (op != DragOperation::kNone) {
+    // TODO(crbug.com/467379870): Implement in non-aura platforms.
+    base::UmaHistogramEnumeration(
+        "Event.DragDrop.Surface",
+        (dropped_in_this_web_contents_
+             ? DragAndDropSurface::kDragBrowserDropSamePage
+             : DragAndDropSurface::kDragBrowserDropOutOfPage));
+  }
+
   web_contents_->DragSourceEndedAt(transformed_point.x(), transformed_point.y(),
                                    screen_loc.x(), screen_loc.y(), op,
                                    source_rwh);
@@ -1373,6 +1394,7 @@ void WebContentsViewAura::DragEnteredCallback(
     base::WeakPtr<RenderWidgetHostViewBase> target,
     std::optional<gfx::PointF> transformed_pt) {
   drag_in_progress_ = true;
+  dropped_in_this_web_contents_ = false;
   if (!target) {
     return;
   }
@@ -1764,6 +1786,14 @@ WebContentsViewAura::GetDropCallback(const ui::DropTargetEvent& event) {
 
 void WebContentsViewAura::CompleteDrop(OnPerformingDropContext drop_context) {
   web_contents_->Focus();
+
+  dropped_in_this_web_contents_ = true;
+  // Drops that originated in a renderer process will be reported by the
+  // drag initiator.
+  if (!drop_context.drop_data->did_originate_from_renderer) {
+    base::UmaHistogramEnumeration("Event.DragDrop.Surface",
+                                  DragAndDropSurface::kDragSystemDropBrowser);
+  }
 
   const int key_modifiers =
       ui::EventFlagsToWebEventModifiers(drop_context.drop_metadata.flags);

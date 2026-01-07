@@ -415,6 +415,10 @@ class CONTENT_EXPORT WebContentsViewAura
   // drop happens or drag exits.
   bool drag_in_progress_;
 
+  // Used to determine which enum value to fire for the "Event.DragDrop.Surface"
+  // histogram.
+  bool dropped_in_this_web_contents_ = false;
+
   bool init_rwhv_with_null_parent_for_testing_;
 
   // Non-null when the WebContents is being captured for video.

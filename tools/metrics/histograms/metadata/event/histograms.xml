@@ -135,6 +135,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Event.DragDrop.Surface" enum="DragAndDropSurface"
+    expires_after="2026-08-01">
+  <owner>mustaq@chromium.org</owner>
+  <owner>gastonr@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Records the completion of a drag and drop operation and the surface on which
+    the drag started and the drop occurred. Only drop operations that produced
+    an effect will be recorded. Meaning, only when the result of a drop is
+    kMove, kLink or kCopy will this histogram be fired. A drag can start on the
+    browser, or outside of it, and can end on either the same page, a different
+    page on the same browser or an external surface within the OS. Drags that
+    started and ended outside of the browser are not recorded, even if the drag
+    went over the browser at any point.
+
+    Currently only recorded in Aura platforms.
+  </summary>
+</histogram>
+
 <histogram name="Event.DragDrop.Tool" enum="DragAndDropToolType"
     expires_after="2026-08-01">
   <owner>mustaq@chromium.org</owner>
