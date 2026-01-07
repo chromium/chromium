@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/app_restore_utils.h"
@@ -39,7 +38,7 @@ void ArcSaveHandler::SaveAppLaunchInfo(AppLaunchInfoPtr app_launch_info) {
 
   // If the ghost window has been created for `session_id`, and the launch info
   // hasn't been added yet, add `app_launch_info` to the restore data.
-  if (base::Contains(ghost_window_session_id_to_app_id_, session_id)) {
+  if (ghost_window_session_id_to_app_id_.contains(session_id)) {
     if (!FullRestoreSaveHandler::GetInstance()->HasAppRestoreData(
             profile_path_, app_launch_info->app_id, session_id)) {
       app_launch_info->window_id = session_id;
@@ -91,7 +90,7 @@ void ArcSaveHandler::ModifyWindowInfo(
 
 void ArcSaveHandler::OnWindowInitialized(aura::Window* window) {
   int32_t task_id = window->GetProperty(app_restore::kWindowIdKey);
-  if (!base::Contains(task_id_to_app_id_, task_id)) {
+  if (!task_id_to_app_id_.contains(task_id)) {
     // Check `session_id` to see whether this is a ghost window.
     int32_t session_id =
         window->GetProperty(app_restore::kGhostWindowSessionIdKey);

@@ -1024,8 +1024,8 @@ TEST_F(ClusterManagerTest, TabClosedWhenGetComparableProducts) {
   GetComparableProducts(info, &result_info);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(result_info->similar_candidate_products.size(), 2u);
-  ASSERT_TRUE(base::Contains(result_info->similar_candidate_products, foo1));
-  ASSERT_TRUE(base::Contains(result_info->similar_candidate_products, foo2));
+  ASSERT_TRUE(result_info->similar_candidate_products.contains(foo1));
+  ASSERT_TRUE(result_info->similar_candidate_products.contains(foo2));
   ASSERT_EQ(result_info->title, kClusterTitle);
 }
 
@@ -1052,8 +1052,8 @@ TEST_F(ClusterManagerTest, GetComparableProductsWithPartialProductsComparable) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(result_info->similar_candidate_products.size(), 2u);
-  ASSERT_TRUE(base::Contains(result_info->similar_candidate_products, foo1));
-  ASSERT_TRUE(base::Contains(result_info->similar_candidate_products, foo2));
+  ASSERT_TRUE(result_info->similar_candidate_products.contains(foo1));
+  ASSERT_TRUE(result_info->similar_candidate_products.contains(foo2));
   ASSERT_EQ(result_info->title, kClusterTitle);
 }
 

@@ -6,7 +6,6 @@
 
 #include <dbus/dbus-shared.h>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "components/dbus/properties/success_barrier_callback.h"
@@ -137,7 +136,7 @@ void DbusProperties::OnGetAllProperties(
       dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());
 
-  if (base::Contains(properties_, interface)) {
+  if (properties_.contains(interface)) {
     dbus::MessageWriter array_writer(nullptr);
     dbus::MessageWriter dict_entry_writer(nullptr);
     writer.OpenArray("{sv}", &array_writer);
@@ -171,8 +170,8 @@ void DbusProperties::OnGetProperty(
   std::string interface;
   std::string property_name;
   if (!reader.PopString(&interface) || !reader.PopString(&property_name) ||
-      !base::Contains(properties_, interface) ||
-      !base::Contains(properties_[interface], property_name)) {
+      !properties_.contains(interface) ||
+      !properties_[interface].contains(property_name)) {
     std::move(response_sender).Run(nullptr);
     return;
   }

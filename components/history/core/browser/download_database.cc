@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
@@ -509,7 +508,7 @@ void DownloadDatabase::QueryDownloads(std::vector<DownloadRow>* results) {
       dropped_reason = DROPPED_REASON_BAD_DANGER_TYPE;
     }
     if (dropped_reason == DROPPED_REASON_MAX) {
-      DCHECK(!base::Contains(info_map, info->id));
+      DCHECK(!info_map.contains(info->id));
       uint32_t id = info->id;
       info_map[id] = info.release();
     }
@@ -533,7 +532,7 @@ void DownloadDatabase::QueryDownloads(std::vector<DownloadRow>* results) {
 
     // Confirm the id has already been seen--if it hasn't, discard the
     // record.
-    if (!base::Contains(info_map, id)) {
+    if (!info_map.contains(id)) {
       continue;
     }
 

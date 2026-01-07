@@ -6,7 +6,6 @@
 
 #include <set>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/levenshtein_distance.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,7 +40,7 @@ TEST(FeatureListTest, ConsistencyCheck) {
 
   for (const auto& entry : kIPHDemoModeChoiceVariations) {
     const char* const given_name = entry.params[0].param_value;
-    if (!base::Contains(known_feature_names, given_name)) {
+    if (!known_feature_names.contains(given_name)) {
       errors.emplace(given_name, FindClosest(given_name, known_feature_names));
     }
   }

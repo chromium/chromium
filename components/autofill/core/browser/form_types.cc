@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/form_types.h"
 
-#include "base/containers/contains.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_util.h"

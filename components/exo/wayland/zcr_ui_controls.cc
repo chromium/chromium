@@ -75,7 +75,7 @@ base::OnceClosure UpdateStateAndBindEmitProcessed(struct wl_resource* resource,
 
   return base::BindLambdaForTesting([=]() {
     // Ensure |resource| hasn't been destroyed in the meantime.
-    if (base::Contains(state->pending_request_ids_, resource)) {
+    if (state->pending_request_ids_.contains(resource)) {
       zcr_ui_controls_v1_send_request_processed(resource, id);
       state->pending_request_ids_[resource].erase(id);
 

@@ -16,7 +16,6 @@
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/debug/crash_logging.h"
@@ -1344,7 +1343,7 @@ void HostContentSettingsMap::UpdateExpiryEnforcementTimer(
 
   base::TimeDelta next_run = base::TimeDelta::Max();
 
-  if (!base::Contains(expiration_enforcement_timers_, content_type)) {
+  if (!expiration_enforcement_timers_.contains(content_type)) {
     expiration_enforcement_timers_[content_type] =
         std::make_unique<base::OneShotTimer>();
   }
@@ -1416,7 +1415,7 @@ void HostContentSettingsMap::DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(
     const base::TimeDelta next_run = std::max(
         base::Seconds(0), next_expiry - clock_->Now() - kEagerExpiryBuffer);
 
-    if (!base::Contains(expiration_enforcement_timers_, content_setting_type)) {
+    if (!expiration_enforcement_timers_.contains(content_setting_type)) {
       expiration_enforcement_timers_[content_setting_type] =
           std::make_unique<base::OneShotTimer>();
     }

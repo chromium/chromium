@@ -6,7 +6,6 @@
 
 #include <variant>
 
-#include "base/containers/contains.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"

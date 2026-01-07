@@ -248,11 +248,9 @@ void MediaItemUIView::OnVisibleActionsChanged(
     const base::flat_set<media_session::mojom::MediaSessionAction>& actions) {
   has_many_actions_ =
       (actions.size() >= kMinVisibleActionsForExpanding ||
-       base::Contains(
-           actions,
+       actions.contains(
            media_session::mojom::MediaSessionAction::kEnterPictureInPicture) ||
-       base::Contains(
-           actions,
+       actions.contains(
            media_session::mojom::MediaSessionAction::kExitPictureInPicture));
   ForceExpandedState();
 

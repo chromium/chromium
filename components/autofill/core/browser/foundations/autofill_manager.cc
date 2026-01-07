@@ -13,7 +13,6 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
@@ -601,7 +600,7 @@ void AutofillManager::ParseFormsAsync(
   std::vector<FormData> parseable_forms;
   parseable_forms.reserve(forms.size());
   for (const FormData& form : forms) {
-    bool is_new_form = !base::Contains(form_structures_, form.global_id());
+    bool is_new_form = !form_structures_.contains(form.global_id());
     if (num_managed_forms + is_new_form > kAutofillManagerMaxFormCacheSize) {
       LOG_AF(log_manager()) << LoggingScope::kAbortParsing
                             << LogMessage::kAbortParsingTooManyForms << form;
@@ -627,7 +626,7 @@ void AutofillManager::ParseFormAsync(
     base::OnceCallback<void(AutofillManager&, const FormData&)> callback) {
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormAsync");
 
-  bool is_new_form = !base::Contains(form_structures_, form.global_id());
+  bool is_new_form = !form_structures_.contains(form.global_id());
   if (form_structures_.size() + is_new_form >
       kAutofillManagerMaxFormCacheSize) {
     LOG_AF(log_manager()) << LoggingScope::kAbortParsing

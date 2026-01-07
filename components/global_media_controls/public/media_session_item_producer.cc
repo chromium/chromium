@@ -4,7 +4,6 @@
 
 #include "components/global_media_controls/public/media_session_item_producer.h"
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "components/global_media_controls/public/media_item_manager.h"
@@ -293,8 +292,8 @@ void MediaSessionItemProducer::OnFocusLost(
     return;
 
   // If we're not currently showing this item, then we can just remove it.
-  if (!base::Contains(active_controllable_session_ids_, id) &&
-      !base::Contains(frozen_session_ids_, id)) {
+  if (!active_controllable_session_ids_.contains(id) &&
+      !frozen_session_ids_.contains(id)) {
     RemoveItem(id);
     return;
   }
@@ -369,7 +368,7 @@ bool MediaSessionItemProducer::IsItemActivelyPlaying(const std::string& id) {
 
 void MediaSessionItemProducer::ActivateItem(const std::string& id) {
   DCHECK(HasSession(id));
-  if (base::Contains(inactive_session_ids_, id))
+  if (inactive_session_ids_.contains(id))
     return;
 
   active_controllable_session_ids_.insert(id);
@@ -393,14 +392,14 @@ void MediaSessionItemProducer::RemoveItem(const std::string& id) {
 
 void MediaSessionItemProducer::RefreshItem(const std::string& id) {
   DCHECK(HasSession(id));
-  if (base::Contains(inactive_session_ids_, id))
+  if (inactive_session_ids_.contains(id))
     return;
 
   item_manager_->RefreshItem(id);
 }
 
 bool MediaSessionItemProducer::HasSession(const std::string& id) const {
-  return base::Contains(sessions_, id);
+  return sessions_.contains(id);
 }
 
 void MediaSessionItemProducer::LogMediaSessionActionButtonPressed(
@@ -455,7 +454,7 @@ MediaSessionItemProducer::Session* MediaSessionItemProducer::GetSession(
 }
 
 void MediaSessionItemProducer::OnSessionBecameActive(const std::string& id) {
-  DCHECK(base::Contains(inactive_session_ids_, id));
+  DCHECK(inactive_session_ids_.contains(id));
 
   auto it = sessions_.find(id);
   CHECK(it != sessions_.end());
@@ -472,7 +471,7 @@ void MediaSessionItemProducer::OnSessionBecameActive(const std::string& id) {
 
 void MediaSessionItemProducer::OnSessionBecameInactive(const std::string& id) {
   // If this session is already marked inactive, then there's nothing to do.
-  if (base::Contains(inactive_session_ids_, id))
+  if (inactive_session_ids_.contains(id))
     return;
 
   inactive_session_ids_.insert(id);

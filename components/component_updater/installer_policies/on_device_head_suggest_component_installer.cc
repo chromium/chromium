@@ -47,7 +47,8 @@ std::string GetNormalizedLocale(const std::string& raw_locale) {
   }
 
   locale = raw_locale;
-  std::erase_if(locale, [](const auto c) { return base::Contains("-_", c); });
+  std::erase_if(locale,
+                [](const auto c) { return std::string("-_").contains(c); });
 
   std::ranges::transform(locale, locale.begin(),
                          [](char c) { return base::ToUpperASCII(c); });

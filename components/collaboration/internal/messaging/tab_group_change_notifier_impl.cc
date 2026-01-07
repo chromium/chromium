@@ -6,7 +6,6 @@
 
 #include <unordered_map>
 
-#include "base/containers/contains.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
@@ -299,12 +298,12 @@ void TabGroupChangeNotifierImpl::OnTabSelected(
   std::set<tab_groups::LocalTabID> selection_removed;
   std::set<tab_groups::LocalTabID> selection_added;
   for (const auto& tab : last_selected_tabs_) {
-    if (!base::Contains(selected_tabs, tab)) {
+    if (!selected_tabs.contains(tab)) {
       selection_removed.insert(tab);
     }
   }
   for (const auto& tab : selected_tabs) {
-    if (!base::Contains(last_selected_tabs_, tab)) {
+    if (!last_selected_tabs_.contains(tab)) {
       selection_added.insert(tab);
     }
   }
@@ -495,7 +494,7 @@ void TabGroupChangeNotifierImpl::ProcessTabGroupUpdates(
       for (auto& tab : removed_tabs) {
         bool is_selected =
             tab.local_tab_id().has_value() &&
-            base::Contains(last_selected_tabs_, tab.local_tab_id().value());
+            last_selected_tabs_.contains(tab.local_tab_id().value());
         observer.OnTabRemoved(tab, source, is_selected);
       }
     }
@@ -507,9 +506,9 @@ void TabGroupChangeNotifierImpl::ProcessTabGroupUpdates(
   if (!updated_tab_pairs.empty()) {
     for (auto& observer : observers_) {
       for (auto& [before_tab, after_tab] : updated_tab_pairs) {
-        bool is_selected = after_tab.local_tab_id().has_value() &&
-                           base::Contains(last_selected_tabs_,
-                                          after_tab.local_tab_id().value());
+        bool is_selected =
+            after_tab.local_tab_id().has_value() &&
+            last_selected_tabs_.contains(after_tab.local_tab_id().value());
         observer.OnTabUpdated(before_tab, after_tab, source, is_selected);
       }
     }

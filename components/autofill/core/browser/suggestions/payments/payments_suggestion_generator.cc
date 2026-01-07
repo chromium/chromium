@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 
-#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -115,7 +114,7 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
     Suggestion suggestion = CreateCreditCardSuggestion(
         credit_card, client, trigger_field_type,
         credit_card.record_type() == CreditCard::RecordType::kVirtualCard,
-        base::Contains(card_linked_offers_map, credit_card.guid()),
+        card_linked_offers_map.contains(credit_card.guid()),
         summary.metadata_logging_context);
     suggestions.push_back(suggestion);
   }
@@ -288,8 +287,7 @@ std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
         suggestion_data,
     bool is_card_number_field_empty,
     const payments::AmountExtractionStatus& amount_extraction_status) {
-  if (base::Contains(suggestion_data,
-                     SuggestionDataSource::kSaveAndFillPromo)) {
+  if (suggestion_data.contains(SuggestionDataSource::kSaveAndFillPromo)) {
     std::vector<Suggestion> suggestions;
     bool display_gpay_logo = false;
     suggestions.push_back(
@@ -303,8 +301,7 @@ std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
     return suggestions;
   }
 
-  if (base::Contains(suggestion_data,
-                     SuggestionDataSource::kVirtualStandaloneCvc)) {
+  if (suggestion_data.contains(SuggestionDataSource::kVirtualStandaloneCvc)) {
     // Only trigger GetVirtualCreditCardsForStandaloneCvcField if it's
     // standalone CVC field.
     base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>

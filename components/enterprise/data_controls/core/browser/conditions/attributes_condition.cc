@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "components/url_matcher/url_util.h"
 
@@ -92,7 +91,7 @@ bool AttributesCondition::ComponentMatches(Component component) const {
 
   // With components to match, `component` needs to be in the set to pass the
   // condition.
-  return base::Contains(components_, component);
+  return components_.contains(component);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

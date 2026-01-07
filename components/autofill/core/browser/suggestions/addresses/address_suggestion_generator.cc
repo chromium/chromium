@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"

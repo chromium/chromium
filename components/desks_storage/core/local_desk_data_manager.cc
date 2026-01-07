@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/desk_template.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_util.h"
@@ -647,7 +646,7 @@ void LocalDeskDataManager::OnDeleteEntry(
 ash::DeskTemplateType LocalDeskDataManager::GetDeskTypeOfUuid(
     const base::Uuid uuid) const {
   for (const auto& [desk_type, saved_desk] : saved_desks_list_) {
-    if (base::Contains(saved_desk, uuid))
+    if (saved_desk.contains(uuid))
       return desk_type;
   }
   return ash::DeskTemplateType::kUnknown;

@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
@@ -459,7 +458,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
       data.set_child_frames(std::move(child_frames));
 
       if (!form_info.name.empty()) {
-        CHECK(!base::Contains(forms_, form_info.name));
+        CHECK(!forms_.contains(form_info.name));
         forms_.emplace(form_info.name, data.global_id());
       }
       forms.push_back(data);

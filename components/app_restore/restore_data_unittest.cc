@@ -9,7 +9,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/values.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/app_constants/constants.h"
@@ -445,10 +444,10 @@ TEST_F(RestoreDataTest, ModifyWindowId) {
   EXPECT_EQ(2u, launch_list_it1->second.size());
 
   // Verify the restore data for |kAppId1| and |kWindowId1| still exists.
-  EXPECT_TRUE(base::Contains(launch_list_it1->second, kWindowId1));
+  EXPECT_TRUE(launch_list_it1->second.contains(kWindowId1));
 
   // Verify the restore data for |kAppId1| and |kWindowId2| doesn't exist.
-  EXPECT_FALSE(base::Contains(launch_list_it1->second, kWindowId2));
+  EXPECT_FALSE(launch_list_it1->second.contains(kWindowId2));
 
   // Verify the restore data for |kWindowId2| is migrated to |kWindowId4|.
   const auto app_restore_data_it4 = launch_list_it1->second.find(kWindowId4);
@@ -490,15 +489,15 @@ TEST_F(RestoreDataTest, RemoveAppRestoreData) {
   EXPECT_TRUE(launch_list_it1 != app_id_to_launch_list().end());
   EXPECT_EQ(1u, launch_list_it1->second.size());
 
-  EXPECT_FALSE(base::Contains(launch_list_it1->second, kWindowId1));
-  EXPECT_TRUE(base::Contains(launch_list_it1->second, kWindowId2));
+  EXPECT_FALSE(launch_list_it1->second.contains(kWindowId1));
+  EXPECT_TRUE(launch_list_it1->second.contains(kWindowId2));
 
   // Verify for |kAppId2|.
   auto launch_list_it2 = app_id_to_launch_list().find(kAppId2);
   EXPECT_TRUE(launch_list_it2 != app_id_to_launch_list().end());
   EXPECT_EQ(1u, launch_list_it2->second.size());
 
-  EXPECT_TRUE(base::Contains(launch_list_it2->second, kWindowId3));
+  EXPECT_TRUE(launch_list_it2->second.contains(kWindowId3));
 
   EXPECT_TRUE(restore_data().HasAppRestoreData(kAppId1, kWindowId2));
 
@@ -510,14 +509,14 @@ TEST_F(RestoreDataTest, RemoveAppRestoreData) {
   EXPECT_EQ(1u, app_id_to_launch_list().size());
 
   // Verify for |kAppId1|.
-  EXPECT_FALSE(base::Contains(app_id_to_launch_list(), kAppId1));
+  EXPECT_FALSE(app_id_to_launch_list().contains(kAppId1));
 
   // Verify for |kAppId2|.
   launch_list_it2 = app_id_to_launch_list().find(kAppId2);
   EXPECT_TRUE(launch_list_it2 != app_id_to_launch_list().end());
   EXPECT_EQ(1u, launch_list_it2->second.size());
 
-  EXPECT_TRUE(base::Contains(launch_list_it2->second, kWindowId3));
+  EXPECT_TRUE(launch_list_it2->second.contains(kWindowId3));
 
   EXPECT_TRUE(restore_data().HasAppRestoreData(kAppId2, kWindowId3));
 

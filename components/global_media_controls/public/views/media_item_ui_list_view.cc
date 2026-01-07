@@ -4,7 +4,6 @@
 
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
 
-#include "base/containers/contains.h"
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -75,7 +74,7 @@ MediaItemUIListView::~MediaItemUIListView() = default;
 
 void MediaItemUIListView::ShowItem(const std::string& id,
                                    std::unique_ptr<MediaItemUIView> item) {
-  DCHECK(!base::Contains(items_, id));
+  DCHECK(!items_.contains(id));
   DCHECK_NE(nullptr, item.get());
 
   bool use_updated_ui = true;
@@ -106,7 +105,7 @@ void MediaItemUIListView::ShowItem(const std::string& id,
 }
 
 void MediaItemUIListView::HideItem(const std::string& id) {
-  if (!base::Contains(items_, id))
+  if (!items_.contains(id))
     return;
 
   // If we're removing the topmost item and there are others, then we need to
@@ -130,7 +129,7 @@ MediaItemUIView* MediaItemUIListView::GetItem(const std::string& id) {
 void MediaItemUIListView::ShowUpdatedItem(
     const std::string& id,
     std::unique_ptr<MediaItemUIUpdatedView> item) {
-  CHECK(!base::Contains(updated_items_, id));
+  CHECK(!updated_items_.contains(id));
   CHECK(item.get());
 
   updated_items_[id] = contents()->AddChildView(std::move(item));
@@ -140,7 +139,7 @@ void MediaItemUIListView::ShowUpdatedItem(
 }
 
 void MediaItemUIListView::HideUpdatedItem(const std::string& id) {
-  if (!base::Contains(updated_items_, id)) {
+  if (!updated_items_.contains(id)) {
     return;
   }
 

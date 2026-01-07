@@ -4,7 +4,6 @@
 
 #include "components/app_restore/app_restore_info.h"
 
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "components/account_id/account_id.h"
 
@@ -29,7 +28,7 @@ void AppRestoreInfo::RemoveObserver(Observer* observer) {
 }
 
 bool AppRestoreInfo::CanPerformRestore(const AccountId& account_id) {
-  return base::Contains(restore_prefs_, account_id);
+  return restore_prefs_.contains(account_id);
 }
 
 void AppRestoreInfo::SetRestorePref(const AccountId& account_id,

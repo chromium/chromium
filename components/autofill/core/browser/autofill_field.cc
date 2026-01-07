@@ -11,7 +11,6 @@
 #include <ranges>
 #include <variant>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -177,8 +176,8 @@ bool PreferHeuristicOverHtml(FieldType heuristic_type,
     return true;
   }
 
-  return base::Contains(kAutofillHeuristicsVsHtmlOverrides,
-                        std::make_pair(heuristic_type, html_type));
+  return kAutofillHeuristicsVsHtmlOverrides.contains(
+      std::make_pair(heuristic_type, html_type));
 }
 
 // Returns whether the `heuristic_type` should be preferred over the
@@ -200,8 +199,8 @@ bool PreferHeuristicOverServer(FieldType heuristic_type,
     return true;
   }
 
-  if (base::Contains(kAutofillHeuristicsVsServerOverrides,
-                     std::make_pair(heuristic_type, server_type))) {
+  if (kAutofillHeuristicsVsServerOverrides.contains(
+          std::make_pair(heuristic_type, server_type))) {
     return true;
   }
 

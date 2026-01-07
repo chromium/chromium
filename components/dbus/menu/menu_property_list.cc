@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notimplemented.h"
@@ -150,7 +149,7 @@ void ComputeMenuPropertyChanges(const MenuItemProperties& old_properties,
   // Compute added properties.
   for (const auto& pair : new_properties) {
     const std::string& key = pair.first;
-    if (!base::Contains(old_properties, key)) {
+    if (!old_properties.contains(key)) {
       item_updated_props->push_back(key);
     }
   }

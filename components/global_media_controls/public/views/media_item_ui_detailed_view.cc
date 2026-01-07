@@ -590,8 +590,8 @@ void MediaItemUIDetailedView::UpdateActionButtonsVisibility() {
   bool should_invalidate_layout = false;
 
   for (views::Button* button : action_buttons_) {
-    bool should_show = base::Contains(
-        enabled_actions_, static_cast<MediaSessionAction>(button->GetID()));
+    bool should_show = enabled_actions_.contains(
+        static_cast<MediaSessionAction>(button->GetID()));
 
     if (button == picture_in_picture_button_) {
       // Force the picture-in-picture button to be visible if the media is

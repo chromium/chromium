@@ -34,7 +34,7 @@ constexpr auto kRetryableHttpErrors =
 bool IsHttpErrorNonRetryable(
     std::optional<net::HttpStatusCode> response_code_optional) {
   return response_code_optional.has_value() &&
-         !base::Contains(kRetryableHttpErrors, response_code_optional.value());
+         !kRetryableHttpErrors.contains(response_code_optional.value());
 }
 }  // namespace
 // static

@@ -6,7 +6,6 @@
 
 #include <cstddef>
 
-#include "base/containers/contains.h"
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -865,7 +864,7 @@ void EventReportValidatorBase::ValidateMimeType(
     const std::set<std::string>* expected_mimetypes) {
   const std::string* type = value->FindString(kKeyContentType);
   if (expected_mimetypes) {
-    EXPECT_TRUE(base::Contains(*expected_mimetypes, *type))
+    EXPECT_TRUE(expected_mimetypes->contains(*type))
         << *type << " is not an expected mimetype";
   } else {
     EXPECT_EQ(nullptr, type);

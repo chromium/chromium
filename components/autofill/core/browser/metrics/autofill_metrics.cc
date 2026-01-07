@@ -9,7 +9,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -647,16 +646,16 @@ void AutofillMetrics::LogFormFillDurationFromInteraction(
     parent_metric = "Autofill.FillDuration.FromInteraction.WithoutAutofill";
   }
   LogFormFillDuration(parent_metric, duration);
-  if (base::Contains(form_types, FormType::kCreditCardForm)) {
+  if (form_types.contains(FormType::kCreditCardForm)) {
     LogFormFillDuration(parent_metric + ".CreditCard", duration);
   }
-  if (base::Contains(form_types, FormType::kAddressForm)) {
+  if (form_types.contains(FormType::kAddressForm)) {
     LogFormFillDuration(parent_metric + ".Address", duration);
   }
-  if (base::Contains(form_types, FormType::kPasswordForm)) {
+  if (form_types.contains(FormType::kPasswordForm)) {
     LogFormFillDuration(parent_metric + ".Password", duration);
   }
-  if (base::Contains(form_types, FormType::kUnknownFormType)) {
+  if (form_types.contains(FormType::kUnknownFormType)) {
     LogFormFillDuration(parent_metric + ".Unknown", duration);
   }
 }

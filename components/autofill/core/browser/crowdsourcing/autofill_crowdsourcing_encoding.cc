@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
@@ -951,7 +950,7 @@ EncodeAutofillPageQueryRequest(
   // the original form signature.
   std::set<FormSignature> processed_forms;
   for (const FormStructure* form : forms) {
-    if (base::Contains(processed_forms, form->form_signature())) {
+    if (processed_forms.contains(form->form_signature())) {
       continue;
     }
     UMA_HISTOGRAM_COUNTS_1000("Autofill.FieldCount", form->field_count());

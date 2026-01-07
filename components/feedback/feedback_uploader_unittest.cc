@@ -7,7 +7,6 @@
 #include <memory>
 #include <set>
 
-#include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -86,7 +85,7 @@ class MockFeedbackUploader final : public FeedbackUploader {
 
   // FeedbackUploaderChrome:
   void StartDispatchingReport() override {
-    if (base::Contains(dispatched_reports_, report_being_dispatched()->data()))
+    if (dispatched_reports_.contains(report_being_dispatched()->data()))
       dispatched_reports_[report_being_dispatched()->data()]++;
     else
       dispatched_reports_[report_being_dispatched()->data()] = 1;

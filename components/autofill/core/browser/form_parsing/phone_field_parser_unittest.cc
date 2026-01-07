@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"

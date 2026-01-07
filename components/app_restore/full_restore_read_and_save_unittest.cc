@@ -501,7 +501,7 @@ TEST_F(FullRestoreReadAndSaveTest, SaveAndReadRestoreData) {
               testing::Optional(kActivationIndex1));
 
   // Verify the restore data for |kId2| doesn't exist.
-  EXPECT_FALSE(base::Contains(launch_list_it->second, kId2));
+  EXPECT_FALSE(launch_list_it->second.contains(kId2));
 
   // Verify the restore data for |kId2| is moved to |kId3|.
   const auto app_restore_data_it3 = launch_list_it->second.find(kId3);

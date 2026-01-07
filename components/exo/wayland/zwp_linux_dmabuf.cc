@@ -8,7 +8,6 @@
 #include <drm_fourcc.h>
 #include <linux-dmabuf-unstable-v1-server-protocol.h>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
@@ -110,7 +109,7 @@ bool ValidateLinuxBufferParams(wl_resource* resource,
 
   // Validate that we have planes 0..num_planes-1
   for (uint32_t i = 0; i < num_planes; ++i) {
-    if (!base::Contains(linux_buffer_params->planes, i)) {
+    if (!linux_buffer_params->planes.contains(i)) {
       wl_resource_post_error(resource,
                              ZWP_LINUX_BUFFER_PARAMS_V1_ERROR_INCOMPLETE,
                              "missing a plane");

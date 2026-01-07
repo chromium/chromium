@@ -7,7 +7,6 @@
 #include <iterator>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -400,7 +399,7 @@ void GroupDataModel::NotifyObserversAboutChangedMembers(
 
   std::vector<std::pair<GaiaId, base::Time>> added_members;
   for (const auto& new_pair : new_members) {
-    if (!base::Contains(old_members_gaia_ids, new_pair.first)) {
+    if (!old_members_gaia_ids.contains(new_pair.first)) {
       added_members.push_back(new_pair);
     }
   }

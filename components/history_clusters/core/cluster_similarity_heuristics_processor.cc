@@ -8,7 +8,6 @@
 #include <unordered_set>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
 #include "components/history_clusters/core/similar_visit.h"
@@ -80,7 +79,7 @@ void ClusterSimilarityHeuristicsProcessor::ProcessClusters(
 
         bool has_full_set_membership = true;
         for (const auto& visit : smaller_cluster_visits) {
-          if (!base::Contains(larger_cluster_visits, SimilarVisit(visit))) {
+          if (!larger_cluster_visits.contains(SimilarVisit(visit))) {
             has_full_set_membership = false;
             break;
           }

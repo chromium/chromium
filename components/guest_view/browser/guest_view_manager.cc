@@ -7,7 +7,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
@@ -141,7 +140,7 @@ void GuestViewManager::AttachGuest(content::ChildProcessId embedder_process_id,
 
   // If there is an existing guest attached to the element, then the embedder is
   // misbehaving.
-  if (base::Contains(instance_id_map_, key)) {
+  if (instance_id_map_.contains(key)) {
     bad_message::ReceivedBadMessage(embedder_process_id,
                                     bad_message::GVM_INVALID_ATTACH);
     return;
@@ -568,7 +567,7 @@ void GuestViewManager::RegisterGuestViewType(
   // if it was registered elsewhere, then we do not want to overwrite it. Note
   // that it is possible for tests to have special test factory methods
   // registered here.
-  if (base::Contains(guest_view_registry_, type))
+  if (guest_view_registry_.contains(type))
     return;
 
   guest_view_registry_.insert({type, {create_function, cleanup_function}});
@@ -636,7 +635,7 @@ bool GuestViewManager::CanEmbedderAccessInstanceIDMaybeKill(
 bool GuestViewManager::CanUseGuestInstanceID(int guest_instance_id) {
   if (guest_instance_id <= last_instance_id_removed_)
     return false;
-  return !base::Contains(removed_instance_ids_, guest_instance_id);
+  return !removed_instance_ids_.contains(guest_instance_id);
 }
 
 bool GuestViewManager::CanEmbedderAccessInstanceID(

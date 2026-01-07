@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -1057,8 +1056,8 @@ TEST(URLRequestContextConfigTest, SetQuicHostWhitelist) {
   const net::HttpNetworkSessionParams* params =
       context->GetNetworkSessionParams();
 
-  EXPECT_TRUE(base::Contains(params->quic_host_allowlist, "www.example.com"));
-  EXPECT_TRUE(base::Contains(params->quic_host_allowlist, "www.example.org"));
+  EXPECT_TRUE(params->quic_host_allowlist.contains("www.example.com"));
+  EXPECT_TRUE(params->quic_host_allowlist.contains("www.example.org"));
 }
 
 TEST(URLRequestContextConfigTest, SetQuicMaxTimeBeforeCryptoHandshake) {

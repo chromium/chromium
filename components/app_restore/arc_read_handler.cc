@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/app_restore_utils.h"
@@ -39,8 +38,7 @@ void ArcReadHandler::AddRestoreData(const std::string& app_id,
 }
 
 void ArcReadHandler::AddArcWindowCandidate(aura::Window* window) {
-  if (!base::Contains(task_id_to_window_id_,
-                      window->GetProperty(kWindowIdKey))) {
+  if (!task_id_to_window_id_.contains(window->GetProperty(kWindowIdKey))) {
     // Check `session_id` to see whether this is a ghost window.
     int32_t session_id = window->GetProperty(kGhostWindowSessionIdKey);
     if (session_id >= kArcSessionIdOffsetForRestoredLaunching)
@@ -99,7 +97,7 @@ void ArcReadHandler::OnTaskDestroyed(int32_t task_id) {
 }
 
 bool ArcReadHandler::HasRestoreData(int32_t window_id) {
-  return base::Contains(window_id_to_app_id_, window_id);
+  return window_id_to_app_id_.contains(window_id);
 }
 
 std::unique_ptr<AppLaunchInfo> ArcReadHandler::GetArcAppLaunchInfo(
@@ -153,7 +151,7 @@ int32_t ArcReadHandler::GetArcRestoreWindowIdForTaskId(int32_t task_id) {
   // launched. If `not_restored_task_ids_` has `task_id`, that means the ARC app
   // window is not restored.
   if (session_id_to_window_id_.empty() ||
-      base::Contains(not_restored_task_ids_, task_id)) {
+      not_restored_task_ids_.contains(task_id)) {
     return 0;
   }
 
