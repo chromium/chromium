@@ -1936,7 +1936,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.UnhandledExceptionCountInMainThread" enum="BooleanOccurred"
-    expires_after="2026-02-01">
+    expires_after="2026-12-01">
   <owner>chikamune@chromium.org</owner>
   <owner>sisidovski@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
@@ -1951,7 +1951,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.UnhandledExceptionCountInWorker" enum="BooleanOccurred"
-    expires_after="2026-02-01">
+    expires_after="2026-12-01">
   <owner>chikamune@chromium.org</owner>
   <owner>sisidovski@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
