@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -194,10 +195,10 @@ public class AutoPiPTabModelObserverHelperTest {
         assertFalse(mOnActivationChangedCallbackHelper.isActivated());
     }
 
-    /** Tests that closing the observed tab does not trigger a callback. */
+    /** Tests that closing the observed tab via tab switcher does not trigger a callback. */
     @Test
     @MediumTest
-    public void testCloseTab() throws TimeoutException {
+    public void testCloseTabViaTabSwitcher() throws TimeoutException {
         int callCount = startObservingAndAssertInitialCallback(/* expectedIsActivated= */ true);
 
         // Open a second tab and switch to it
@@ -213,6 +214,38 @@ public class AutoPiPTabModelObserverHelperTest {
         // Close the active tab should not trigger a callback
         RegularTabSwitcherStation regularTabSwitcher = page.openRegularTabSwitcher();
         regularTabSwitcher = regularTabSwitcher.closeTabAtIndex(0, RegularTabSwitcherStation.class);
+        assertEquals(
+                "Closing the observed tab should not trigger a callback.",
+                callCount,
+                mOnActivationChangedCallbackHelper.getCallCount());
+    }
+
+    /** Tests that closing the observed tab via tab remover does not trigger a callback. */
+    @Test
+    @MediumTest
+    public void testCloseTabViaTabRemover() throws TimeoutException {
+        int callCount = startObservingAndAssertInitialCallback(/* expectedIsActivated= */ true);
+
+        // Open a second tab and switch to it
+        CtaPageStation page = mInitialPage.openNewTabFast();
+        mOnActivationChangedCallbackHelper.waitForCallback(callCount++);
+        assertFalse(mOnActivationChangedCallbackHelper.isActivated());
+
+        // Switch back to the original tab
+        page = page.openRegularTabSwitcher().selectTabAtIndex(0, WebPageStation.newBuilder());
+        mOnActivationChangedCallbackHelper.waitForCallback(callCount++);
+        assertTrue(mOnActivationChangedCallbackHelper.isActivated());
+
+        // Close the active tab directly
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mInitialActivity
+                            .getCurrentTabModel()
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(mInitialTab).build(),
+                                    /* allowDialog= */ false);
+                });
         assertEquals(
                 "Closing the observed tab should not trigger a callback.",
                 callCount,

@@ -120,13 +120,6 @@ void AutoPictureInPictureTabModelObserverHelper::WillCloseTab(TabAndroid* tab) {
   // skip checking the activation status, effectively freezing the state until
   // the tab is destroyed. It's required because when closing a tab via
   // WillCloseTab, Clank doesn't immediately remove the tab from the TabModel.
-
-  // TODO(crbug.com/469150172): The `check_tab_activation` flag alone is
-  // insufficient to fully resolve the Auto-PiP on tab closure issue due to
-  // TabModelObserver behavior quirks. This is benign for video Auto-PiP as
-  // Android's native PiP likely performs additional checks on the WebContents'
-  // existence. For document Auto-PiP, we must either fix TabModelObserver or
-  // implement a similar check in DocumentPictureInPictureActivity.
   ReevaluateObservedModelAndState(false);
 }
 
