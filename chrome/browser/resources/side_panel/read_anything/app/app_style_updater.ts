@@ -189,7 +189,10 @@ export class AppStyleUpdater {
         this.getEmptyStateBodyColor_(colorSuffix));
     this.setStyle_('--link-color', `${LINK_DEFAULT}${colorSuffix})`);
     this.setStyle_('--visited-link-color', `${LINK_VISITED}${colorSuffix})`);
-    this.setStyle_('--line-focus-bg', this.getLineFocusColor_(colorSuffix));
+    const lineFocusBg = this.app_.style.getPropertyValue('--line-focus-bg');
+    if (lineFocusBg !== LINE_FOCUS_BG_WINDOW) {
+      this.setStyle_('--line-focus-bg', this.getLineFocusColor_(colorSuffix));
+    }
 
     document.documentElement.style.setProperty(
         '--selection-color', this.getSelectionColor_(colorSuffix));

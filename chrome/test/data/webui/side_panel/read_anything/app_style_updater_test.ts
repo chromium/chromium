@@ -429,6 +429,7 @@ suite('AppStyleUpdater', () => {
           expectedSepiaLightLinkVisited,
       '--color-read-anything-link-visited-sepia-dark':
           expectedSepiaDarkLinkVisited,
+      '--line-focus-bg': expectedLightLineFocus,
     });
     chrome.readingMode.onHighlightGranularityChanged(
         chrome.readingMode.autoHighlighting);
@@ -594,6 +595,34 @@ suite('AppStyleUpdater', () => {
     assertEquals(
         expectedSepiaDarkLinkVisited, computeStyle('--visited-link-color'));
     assertEquals(expectedDarkLineFocus, computeStyle('--line-focus-bg'));
+  });
+
+  test('setTheme with line focus window does not update color', () => {
+    const lineFocusColor = 'rgb(50, 21, 0)';
+    const expectedLineFocusBg = 'none';
+    updateStyles({
+      '--color-read-anything-line-focus': lineFocusColor,
+      '--color-read-anything-line-focus-yellow': lineFocusColor,
+      '--color-read-anything-line-focus-dark': lineFocusColor,
+      '--color-read-anything-line-focus-light': lineFocusColor,
+      '--color-read-anything-line-focus-high-contrast': lineFocusColor,
+      '--color-read-anything-line-focus-low-contrast': lineFocusColor,
+      '--color-read-anything-line-focus-sepia-light': lineFocusColor,
+      '--color-read-anything-line-focus-sepia-dark': lineFocusColor,
+      '--line-focus-bg': expectedLineFocusBg,
+    });
+
+    chrome.readingMode.colorTheme = chrome.readingMode.sepiaDarkTheme;
+    updater.setTheme();
+    assertEquals(expectedLineFocusBg, computeStyle('--line-focus-bg'));
+
+    chrome.readingMode.colorTheme = chrome.readingMode.blueTheme;
+    updater.setTheme();
+    assertEquals(expectedLineFocusBg, computeStyle('--line-focus-bg'));
+
+    chrome.readingMode.colorTheme = chrome.readingMode.defaultTheme;
+    updater.setTheme();
+    assertEquals(expectedLineFocusBg, computeStyle('--line-focus-bg'));
   });
 
   test('setAllTextStyles updates all text styles', () => {
