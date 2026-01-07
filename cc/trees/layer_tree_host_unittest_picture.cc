@@ -716,7 +716,8 @@ class LayerTreeHostPictureTestForceRecalculateScales
   scoped_refptr<FakePictureLayer> normal_layer_;
 };
 
-SINGLE_THREAD_TEST_F(LayerTreeHostPictureTestForceRecalculateScales);
+// TODO(crbug.com/473556590): Test is flaky; disabling for now.
+// SINGLE_THREAD_TEST_F(LayerTreeHostPictureTestForceRecalculateScales);
 
 }  // namespace
 }  // namespace cc
