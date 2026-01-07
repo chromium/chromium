@@ -19,7 +19,7 @@
 namespace updater {
 
 std::string BrowserUpdaterClient::GetAppId() {
-  return std::string(base::apple::BaseBundleID());
+  return base::ToLowerASCII(base::apple::BaseBundleID());
 }
 
 base::FilePath BrowserUpdaterClient::GetExpectedEcp() {

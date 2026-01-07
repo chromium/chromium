@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_util_win.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/version.h"
 #include "chrome/browser/google/google_brand.h"
@@ -19,7 +20,7 @@ namespace updater {
 
 std::string BrowserUpdaterClient::GetAppId() {
   return base::SysWideToUTF8(
-      std::wstring(install_static::InstallDetails::Get().app_guid()));
+      base::ToLowerASCII(install_static::InstallDetails::Get().app_guid()));
 }
 
 base::FilePath BrowserUpdaterClient::GetExpectedEcp() {
