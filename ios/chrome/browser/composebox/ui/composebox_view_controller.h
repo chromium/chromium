@@ -23,7 +23,8 @@
 // View Controller that contains the composebox, presenting it modally.
 @interface ComposeboxViewController
     : UIViewController <ComposeboxNavigationConsumer,
-                        OmniboxPopupPresenterDelegate>
+                        OmniboxPopupPresenterDelegate,
+                        UIAdaptivePresentationControllerDelegate>
 
 // Creates an instance with the theme of the input plate.
 - (instancetype)initWithTheme:(ComposeboxTheme*)theme;
@@ -34,9 +35,6 @@
 // The delegate to proxy OmniboxPopupPresenterDelegate calls to.
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate>
     proxiedPresenterDelegate;
-
-// Whether the close button should be hidden.
-@property(nonatomic, assign) BOOL hidesCloseButton;
 
 // The close button.
 @property(nonatomic, readonly) UIButton* closeButton;

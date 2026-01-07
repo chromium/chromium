@@ -87,10 +87,6 @@
   if (self.isOffTheRecord) {
     _viewController.view.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
   }
-  if (IsComposeboxIpadEnabled() &&
-      [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-    _viewController.hidesCloseButton = YES;
-  }
   _viewController.delegate = self;
 
   if ([self.baseViewController
@@ -220,7 +216,7 @@
     controller.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
     controller.browserCoordinatorHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-
+    controller.delegate = _viewController;
     return controller;
   }
   return nil;
@@ -283,6 +279,8 @@
 - (ComposeboxInputPlatePosition)inputPlatePositionPreference {
   if (IsComposeboxIpadEnabled() &&
       [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+    // TODO(crbug.com/469368394): Should only return this if regular horizontal
+    // size class.
     return ComposeboxInputPlatePosition::kiPad;
   }
 

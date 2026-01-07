@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/composebox/ui/presentation/composebox_ipad_presentation_controller.h"
 
+#import "ios/chrome/browser/composebox/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -75,6 +76,7 @@ const CGFloat kComposeboxCornerRadius = 16.0f;
     [dimmingView removeFromSuperview];
   }
 }
+
 - (CGRect)frameOfPresentedViewInContainerView {
   UIView* containerView = self.containerView;
   if (!containerView) {
@@ -84,13 +86,18 @@ const CGFloat kComposeboxCornerRadius = 16.0f;
   LayoutGuideCenter* layoutGuideCenter = self.layoutGuideCenter;
   UIView* topOmnibox =
       [layoutGuideCenter referencedViewUnderName:kTopOmniboxGuide];
-  CGRect omniboxFrame = [topOmnibox convertRect:topOmnibox.bounds toView:nil];
+  CGRect omniboxFrame = [topOmnibox convertRect:topOmnibox.bounds
+                                         toView:containerView];
 
-  // TODO(crbug.com/469368394): Use real values.
   CGFloat top = CGRectGetMinY(omniboxFrame) - 4.0;
   CGFloat width = containerView.bounds.size.width * 0.75;
   CGFloat x = (containerView.bounds.size.width - width) / 2.0;
-  CGFloat height = (containerView.bounds.size.height - top) * 0.75;
+
+  CGFloat preferredHeight =
+      self.presentedViewController.preferredContentSize.height;
+  CGFloat maxHeight = (containerView.bounds.size.height - top) * 0.75;
+  CGFloat height =
+      preferredHeight > 0 ? MIN(preferredHeight, maxHeight) : kOmniboxMinHeight;
 
   return CGRectMake(x, top, width, height);
 }
@@ -100,6 +107,18 @@ const CGFloat kComposeboxCornerRadius = 16.0f;
   _dimmingView.frame = self.containerView.bounds;
   self.presentedView.frame = [self frameOfPresentedViewInContainerView];
   self.presentedView.layer.cornerRadius = kComposeboxCornerRadius;
+  self.presentedView.clipsToBounds = YES;
+}
+
+#pragma mark - UIContentContainer
+
+- (void)preferredContentSizeDidChangeForChildContentContainer:
+    (id<UIContentContainer>)container {
+  [super preferredContentSizeDidChangeForChildContentContainer:container];
+  if (container == self.presentedViewController) {
+    [self.containerView setNeedsLayout];
+    [self.containerView layoutIfNeeded];
+  }
 }
 
 #pragma mark - Private

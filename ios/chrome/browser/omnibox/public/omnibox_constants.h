@@ -40,4 +40,7 @@ extern const CGFloat kOmniboxTextFieldLeadingOffsetImage;
 // kOmniboxLeadingImageSize, and kOmniboxTextFieldLeadingOffsetImage.
 extern const CGFloat kOmniboxEditOffset;
 
+// The top padding of the omnibox popup tableview.
+extern const CGFloat kOmniboxPopupTopPadding;
+
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_PUBLIC_OMNIBOX_CONSTANTS_H_

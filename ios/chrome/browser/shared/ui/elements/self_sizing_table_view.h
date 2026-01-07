@@ -7,10 +7,19 @@
 
 #import <UIKit/UIKit.h>
 
+// Delegate to respond to changes of the SelfSizingTableView size.
+@protocol SelfSizingTableViewDelegate
+// Called when the tablview's `contentSize` changed.
+- (void)tableViewContentSizeDidChange:(CGSize)contentSize;
+@end
+
 // A table view that calculates its intrinsic content height and exposes it
 // through intrinsicContentSize property. The intrinsic size is invalidated
 // automatically whenever the table view content is changed.
 @interface SelfSizingTableView : UITableView
+
+@property(nonatomic, weak) id<SelfSizingTableViewDelegate> contentSizeDelegate;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_ELEMENTS_SELF_SIZING_TABLE_VIEW_H_
