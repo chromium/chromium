@@ -343,7 +343,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   EXPECT_EQ(future.Get().intent, "");
   EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
   EXPECT_EQ(future.Get().no_info_reason,
-            IntelligentScanInfo::ON_DEVICE_MODEL_OUTPUT_MISSING);
+            IntelligentScanInfo::SERVER_SIDE_MODEL_OUTPUT_MISSING);
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.ServerSideModelExecutionSuccess", false, 1);
   histogram_tester_.ExpectUniqueSample(
@@ -366,7 +366,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   EXPECT_FALSE(future.Get().execution_success);
   EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
   EXPECT_EQ(future.Get().no_info_reason,
-            IntelligentScanInfo::ON_DEVICE_MODEL_UNAVAILABLE);
+            IntelligentScanInfo::SERVER_SIDE_MODEL_UNAVAILABLE);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
@@ -417,7 +417,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
     EXPECT_FALSE(future.Get().execution_success);
     EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
     EXPECT_EQ(future.Get().no_info_reason,
-              IntelligentScanInfo::ON_DEVICE_MODEL_UNAVAILABLE);
+              IntelligentScanInfo::SERVER_SIDE_MODEL_EXCEED_QUOTA);
   }
   histogram_tester_.ExpectBucketCount(
       "SBClientPhishing.ServerSideModelHitQuotaAtInquiryTime", true, 1);
@@ -463,7 +463,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
     EXPECT_FALSE(future.Get().execution_success);
     EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
     EXPECT_EQ(future.Get().no_info_reason,
-              IntelligentScanInfo::ON_DEVICE_MODEL_OUTPUT_MISSING);
+              IntelligentScanInfo::SERVER_SIDE_MODEL_OUTPUT_MISSING);
   }
 
   // Next scan should fail due to quota.
@@ -477,7 +477,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
     EXPECT_FALSE(future.Get().execution_success);
     EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
     EXPECT_EQ(future.Get().no_info_reason,
-              IntelligentScanInfo::ON_DEVICE_MODEL_UNAVAILABLE);
+              IntelligentScanInfo::SERVER_SIDE_MODEL_EXCEED_QUOTA);
   }
 }
 

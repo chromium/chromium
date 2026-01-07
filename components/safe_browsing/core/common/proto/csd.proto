@@ -200,6 +200,13 @@ message IntelligentScanInfo {
     // The length of texts on the page is too short and will likely cause
     // hallucination.
     TEXT_TOO_SHORT = 5;
+    // The server side model is unavailable, which can be from a few reasons
+    // such as insufficient capacity.
+    SERVER_SIDE_MODEL_UNAVAILABLE = 6;
+    // The server side model could not create an output due to internal error.
+    SERVER_SIDE_MODEL_OUTPUT_MISSING = 7;
+    // The user has sent too many requests and has exceeded the daily quota.
+    SERVER_SIDE_MODEL_EXCEED_QUOTA = 8;
   }
   optional NoInfoReason no_info_reason = 3;
 
