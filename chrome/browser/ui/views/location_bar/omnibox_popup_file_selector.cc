@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
@@ -120,8 +121,8 @@ void OmniboxPopupFileSelector::OnFileDataReady(
 
   std::string image_data_url;
   if (mime_type == lens::MimeType::kImage) {
-    image_data_url = "data:" + file_data->mime_type + ";base64," +
-                     base::Base64Encode(file_data->bytes);
+    image_data_url = base::StrCat({"data:", file_data->mime_type, ";base64,",
+                                   base::Base64Encode(file_data->bytes)});
   }
 
   if (auto* webui = web_contents_->GetWebUI()) {
