@@ -104,6 +104,8 @@ export interface SettingsPrefs {
   font: string;
   highlightGranularity: number;
   lineFocus: number;
+  linksEnabled: boolean;
+  imagesEnabled: boolean;
 }
 export const DEFAULT_SETTINGS: SettingsPrefs = {
   letterSpacing: 0,
@@ -113,6 +115,8 @@ export const DEFAULT_SETTINGS: SettingsPrefs = {
   font: '',
   highlightGranularity: 0,
   lineFocus: 0,
+  linksEnabled: false,
+  imagesEnabled: false,
 };
 
 export interface ShowAtConfigPrefs {

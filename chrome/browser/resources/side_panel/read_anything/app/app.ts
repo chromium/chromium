@@ -210,6 +210,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
       font: chrome.readingMode.fontName,
       highlightGranularity: chrome.readingMode.highlightGranularity,
       lineFocus: chrome.readingMode.lineFocus,
+      linksEnabled: chrome.readingMode.linksEnabled,
+      imagesEnabled: chrome.readingMode.imagesEnabled,
     };
 
     document.onselectionchange = () => {
@@ -521,7 +523,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.voiceLanguageController_.restoreFromPrefs();
     }
     this.settingsPrefs_ = {
-      ...this.settingsPrefs_,
       letterSpacing: chrome.readingMode.letterSpacing,
       lineSpacing: chrome.readingMode.lineSpacing,
       theme: chrome.readingMode.colorTheme,
@@ -529,6 +530,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
       font: chrome.readingMode.fontName,
       highlightGranularity: chrome.readingMode.highlightGranularity,
       lineFocus: chrome.readingMode.lineFocus,
+      linksEnabled: chrome.readingMode.linksEnabled,
+      imagesEnabled: chrome.readingMode.imagesEnabled,
     };
     this.styleUpdater_.setAllTextStyles();
     if (chrome.readingMode.isLineFocusEnabled) {

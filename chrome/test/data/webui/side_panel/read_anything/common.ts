@@ -22,6 +22,8 @@ export const TEST_RANDOM_VALUE_SETTINGS: SettingsPrefs = {
   font: 'font',
   highlightGranularity: 105,
   lineFocus: 106,
+  linksEnabled: true,
+  imagesEnabled: false,
 };
 
 export async function createApp(): Promise<AppElement> {
