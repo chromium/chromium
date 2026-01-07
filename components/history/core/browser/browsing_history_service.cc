@@ -799,33 +799,30 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
     has_synced_results_ = true;
 
     state->remote_results.reserve(state->remote_results.size() +
-                                  query_history_result->events.size());
+                                  query_history_result->visits.size());
     std::string host_name_utf8 = base::UTF16ToUTF8(state->search_text);
-    for (const WebHistoryService::QueryHistoryResult::Event& event :
-         query_history_result->events) {
+    for (const WebHistoryService::QueryHistoryResult::Visit& visit :
+         query_history_result->visits) {
       if (state->original_options.host_only) {
         // Do post filtering to skip entries that do not have the correct
         // hostname.
-        if (event.url.GetHost() != host_name_utf8) {
+        if (visit.url.GetHost() != host_name_utf8) {
           continue;
         }
       }
 
       // Ignore any URLs that should not be shown in the history page.
-      if (driver_->ShouldHideWebHistoryUrl(event.url)) {
+      if (driver_->ShouldHideWebHistoryUrl(visit.url)) {
         continue;
       }
 
-      for (const WebHistoryService::QueryHistoryResult::Event::Visit& visit :
-           event.visits) {
-        state->remote_results.emplace_back(
-            HistoryEntry::REMOTE_ENTRY, event.url,
-            base::UTF8ToUTF16(event.title), visit.timestamp, visit.client_id,
-            !state->search_text.empty(), std::u16string(),
-            /*blocked_visit=*/false, event.favicon_url, 0, 0,
-            /*is_actor_visit=*/false,
-            /*app_id=*/std::nullopt);
-      }
+      state->remote_results.emplace_back(
+          HistoryEntry::REMOTE_ENTRY, visit.url, base::UTF8ToUTF16(visit.title),
+          visit.timestamp, visit.client_id, !state->search_text.empty(),
+          std::u16string(),
+          /*blocked_visit=*/false, visit.favicon_url, 0, 0,
+          /*is_actor_visit=*/false,
+          /*app_id=*/std::nullopt);
     }
     state->remote_status = query_history_result->has_more_results
                                ? MORE_RESULTS

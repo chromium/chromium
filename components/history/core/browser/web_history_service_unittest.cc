@@ -244,15 +244,14 @@ TEST_F(WebHistoryServiceTest, QueryHistoryValid) {
       QueryHistorySynchronous("google", QueryOptions());
 
   ASSERT_TRUE(result.has_value());
-  ASSERT_EQ(1u, result->events.size());
-  EXPECT_EQ("https://www.google.com/", result->events[0].url.spec());
-  EXPECT_EQ("Google", result->events[0].title);
+  ASSERT_EQ(1u, result->visits.size());
+  EXPECT_EQ("https://www.google.com/", result->visits[0].url.spec());
+  EXPECT_EQ("Google", result->visits[0].title);
   EXPECT_EQ("https://www.google.com/favicon.ico",
-            result->events[0].favicon_url.spec());
-  EXPECT_EQ(1u, result->events[0].visits.size());
+            result->visits[0].favicon_url.spec());
   EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(12.345),
-            result->events[0].visits[0].timestamp);
-  EXPECT_EQ("id1", result->events[0].visits[0].client_id);
+            result->visits[0].timestamp);
+  EXPECT_EQ("id1", result->visits[0].client_id);
 }
 
 TEST_F(WebHistoryServiceTest, QueryHistoryError) {
@@ -282,7 +281,7 @@ TEST_F(WebHistoryServiceTest, QueryHistoryInvalidOrMissingFields) {
         QueryHistorySynchronous("", QueryOptions());
 
     ASSERT_TRUE(result.has_value());
-    EXPECT_TRUE(result->events.empty());
+    EXPECT_TRUE(result->visits.empty());
   }
 
   // An event with no "result" list.
@@ -293,7 +292,7 @@ TEST_F(WebHistoryServiceTest, QueryHistoryInvalidOrMissingFields) {
         QueryHistorySynchronous("", QueryOptions());
 
     ASSERT_TRUE(result.has_value());
-    EXPECT_TRUE(result->events.empty());
+    EXPECT_TRUE(result->visits.empty());
   }
 
   // A result with no "url".
@@ -305,7 +304,7 @@ TEST_F(WebHistoryServiceTest, QueryHistoryInvalidOrMissingFields) {
         QueryHistorySynchronous("", QueryOptions());
 
     ASSERT_TRUE(result.has_value());
-    EXPECT_TRUE(result->events.empty());
+    EXPECT_TRUE(result->visits.empty());
   }
 
   // A result with no "id" (visit) list.
@@ -318,7 +317,7 @@ TEST_F(WebHistoryServiceTest, QueryHistoryInvalidOrMissingFields) {
         QueryHistorySynchronous("", QueryOptions());
 
     ASSERT_TRUE(result.has_value());
-    EXPECT_TRUE(result->events.empty());
+    EXPECT_TRUE(result->visits.empty());
   }
 
   // A visit with no "timestamp_usec".
@@ -333,7 +332,7 @@ TEST_F(WebHistoryServiceTest, QueryHistoryInvalidOrMissingFields) {
         QueryHistorySynchronous("", QueryOptions());
 
     ASSERT_TRUE(result.has_value());
-    EXPECT_TRUE(result->events.empty());
+    EXPECT_TRUE(result->visits.empty());
   }
 
   // A visit with an invalid "timestamp_usec".
@@ -348,7 +347,7 @@ TEST_F(WebHistoryServiceTest, QueryHistoryInvalidOrMissingFields) {
         QueryHistorySynchronous("", QueryOptions());
 
     ASSERT_TRUE(result.has_value());
-    EXPECT_TRUE(result->events.empty());
+    EXPECT_TRUE(result->visits.empty());
   }
 }
 

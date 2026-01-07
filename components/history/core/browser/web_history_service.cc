@@ -333,7 +333,7 @@ WebHistoryService::QueryHistoryResult ParseQueryResponse(
   WebHistoryService::QueryHistoryResult query_history_result;
 
   if (const base::Value::List* events = response.FindList("event")) {
-    query_history_result.events.reserve(events->size());
+    query_history_result.visits.reserve(events->size());
 
     for (const base::Value& event : *events) {
       const base::Value::Dict* event_dict = event.GetIfDict();
@@ -348,8 +348,8 @@ WebHistoryService::QueryHistoryResult ParseQueryResponse(
       if (!result) {
         continue;
       }
-      const std::string* url = result->FindString("url");
-      if (!url) {
+      const std::string* url_str = result->FindString("url");
+      if (!url_str) {
         continue;
       }
       const base::Value::List* ids = result->FindList("id");
@@ -357,22 +357,16 @@ WebHistoryService::QueryHistoryResult ParseQueryResponse(
         continue;
       }
 
-      WebHistoryService::QueryHistoryResult::Event result_event;
-      result_event.url = GURL(*url);
+      GURL url(*url_str);
 
       // Title is optional.
-      if (const std::string* title = result->FindString("title")) {
-        result_event.title = *title;
-      }
+      const std::string* title = result->FindString("title");
 
       // Favicon URL is optional.
-      if (const std::string* favicon_url = result->FindString("favicon_url")) {
-        result_event.favicon_url = GURL(*favicon_url);
-      }
+      const std::string* favicon_url = result->FindString("favicon_url");
 
       // Extract the timestamps of all the visits to this URL.
       // They are referred to as "IDs" by the server.
-      result_event.visits.reserve(ids->size());
       for (const base::Value& id : *ids) {
         const base::Value::Dict* id_dict = id.GetIfDict();
         const std::string* timestamp_string;
@@ -383,7 +377,15 @@ WebHistoryService::QueryHistoryResult ParseQueryResponse(
           continue;
         }
 
-        WebHistoryService::QueryHistoryResult::Event::Visit result_visit;
+        WebHistoryService::QueryHistoryResult::Visit result_visit;
+
+        result_visit.url = url;
+        if (title) {
+          result_visit.title = *title;
+        }
+        if (favicon_url) {
+          result_visit.favicon_url = GURL(*favicon_url);
+        }
 
         // The timestamp on the server is a Unix time in microseconds.
         result_visit.timestamp =
@@ -394,16 +396,8 @@ WebHistoryService::QueryHistoryResult ParseQueryResponse(
           result_visit.client_id = *client_id;
         }
 
-        result_event.visits.push_back(std::move(result_visit));
+        query_history_result.visits.push_back(std::move(result_visit));
       }
-
-      // In rare cases, it may happen that all of the visits were invalid /
-      // couldn't be parsed. In that case, the entire event is invalid.
-      if (result_event.visits.empty()) {
-        continue;
-      }
-
-      query_history_result.events.push_back(std::move(result_event));
     }
   }
   const std::string* continuation_token =
@@ -426,10 +420,10 @@ WebHistoryService::QueryHistoryResult::QueryHistoryResult(
     QueryHistoryResult&&) = default;
 WebHistoryService::QueryHistoryResult::~QueryHistoryResult() = default;
 
-WebHistoryService::QueryHistoryResult::Event::Event() = default;
-WebHistoryService::QueryHistoryResult::Event::Event(const Event&) = default;
-WebHistoryService::QueryHistoryResult::Event::Event(Event&&) = default;
-WebHistoryService::QueryHistoryResult::Event::~Event() = default;
+WebHistoryService::QueryHistoryResult::Visit::Visit() = default;
+WebHistoryService::QueryHistoryResult::Visit::Visit(const Visit&) = default;
+WebHistoryService::QueryHistoryResult::Visit::Visit(Visit&&) = default;
+WebHistoryService::QueryHistoryResult::Visit::~Visit() = default;
 
 WebHistoryService::WebHistoryService(
     signin::IdentityManager* identity_manager,
