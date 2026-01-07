@@ -63,6 +63,9 @@ CWV_EXPORT
 // credit card network icon.
 @property(nonatomic, readonly, nullable) UIImage* icon;
 
+// Indicates whether the suggestion has a custom card art image.
+@property(assign, readonly, nonatomic) BOOL hasCustomCardArtImage;
+
 // The type of the suggestion.
 @property(nonatomic, readonly) CWVSuggestionType suggestionType;
 
