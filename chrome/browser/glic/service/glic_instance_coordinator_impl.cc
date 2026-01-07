@@ -83,7 +83,7 @@ constexpr base::FeatureParam<base::MemoryPressureLevel>
                                      &kGlicMemoryPressureResponseLevelOptions};
 
 base::TimeDelta GetTimeSinceLastActive(GlicInstanceImpl* instance) {
-  return base::TimeTicks::Now() - instance->GetLastActiveTime();
+  return instance->GetTimeSinceLastActive();
 }
 }  // namespace
 
@@ -631,7 +631,8 @@ GlicInstanceCoordinatorImpl::GetRecentlyActiveConversations() {
 
   std::sort(sorted_instances.begin(), sorted_instances.end(),
             [](GlicInstanceImpl* a, GlicInstanceImpl* b) {
-              return a->GetLastActiveTime() > b->GetLastActiveTime();
+              return a->GetLastActivationTimestamp() >
+                     b->GetLastActivationTimestamp();
             });
 
   std::vector<glic::mojom::ConversationInfoPtr> result;
@@ -740,7 +741,7 @@ void GlicInstanceCoordinatorImpl::OnMemoryPressure(
   }
 
   GlicInstanceImpl* least_recently_active_instance = nullptr;
-  base::TimeTicks oldest_active_time = base::TimeTicks::Max();
+  base::TimeDelta oldest_active_time = base::TimeDelta::Max();
 
   for (auto const& [id, instance] : instances_) {
     // Safeguard: Do not hibernate actuating or already hibernated instances.
@@ -748,8 +749,8 @@ void GlicInstanceCoordinatorImpl::OnMemoryPressure(
       continue;
     }
 
-    if (instance->GetLastActiveTime() < oldest_active_time) {
-      oldest_active_time = instance->GetLastActiveTime();
+    if (instance->GetTimeSinceLastActive() < oldest_active_time) {
+      oldest_active_time = instance->GetTimeSinceLastActive();
       least_recently_active_instance = instance.get();
     }
   }

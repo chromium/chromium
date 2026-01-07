@@ -226,7 +226,8 @@ GlicInstanceImpl::GlicInstanceImpl(
               this,
               contextual_cueing_service)),
       actor_task_manager_(std::make_unique<GlicActorTaskManager>(profile)),
-      last_active_time_(base::TimeTicks::Now()) {
+      last_activation_timestamp_(base::Time::Now()),
+      last_deactivation_timestamp_(base::TimeTicks::Now()) {
   browser_collection_observation_.Observe(
       GlobalBrowserCollection::GetInstance());
   host_.SetDelegate(&empty_embedder_delegate_);
@@ -1102,11 +1103,11 @@ void GlicInstanceImpl::NotifyInstanceActivationChanged(bool is_active) {
   is_active_ = is_active;
   instance_metrics_.OnActivationChanged(is_active);
   if (is_active) {
-    last_active_time_ = base::TimeTicks::Now();
+    last_activation_timestamp_ = base::Time::Now();
     inactivity_timer_.Stop();
     remove_blank_instance_timer_.Stop();
   } else {
-    last_active_time_ = base::TimeTicks::Now();
+    last_deactivation_timestamp_ = base::TimeTicks::Now();
     inactivity_timer_.Start(
         FROM_HERE, base::Hours(23),
         base::BindOnce(&GlicInstanceImpl::Hibernate, base::Unretained(this)));
@@ -1123,8 +1124,15 @@ bool GlicInstanceImpl::IsActive() {
   return is_active_;
 }
 
-base::TimeTicks GlicInstanceImpl::GetLastActiveTime() const {
-  return last_active_time_;
+base::Time GlicInstanceImpl::GetLastActivationTimestamp() const {
+  return last_activation_timestamp_;
+}
+
+base::TimeDelta GlicInstanceImpl::GetTimeSinceLastActive() const {
+  if (is_active_) {
+    return base::TimeDelta();
+  }
+  return base::TimeTicks::Now() - last_deactivation_timestamp_;
 }
 
 bool GlicInstanceImpl::IsHibernated() const {

@@ -147,8 +147,8 @@ GlicInstanceCoordinatorMetrics::GetMostRecentlyActiveConversationId(
     if (!instance->conversation_id().has_value()) {
       continue;
     }
-    if (!most_recent ||
-        instance->GetLastActiveTime() > most_recent->GetLastActiveTime()) {
+    if (!most_recent || instance->GetLastActivationTimestamp() >
+                            most_recent->GetLastActivationTimestamp()) {
       most_recent = instance;
     }
   }

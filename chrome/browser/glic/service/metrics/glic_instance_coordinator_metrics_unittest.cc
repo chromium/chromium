@@ -39,7 +39,8 @@ class MockGlicInstance : public GlicInstance {
               conversation_id,
               (),
               (const, override));
-  MOCK_METHOD(base::TimeTicks, GetLastActiveTime, (), (const, override));
+  MOCK_METHOD(base::Time, GetLastActivationTimestamp, (), (const, override));
+  MOCK_METHOD(base::TimeDelta, GetTimeSinceLastActive, (), (const, override));
   MOCK_METHOD(GlicInstanceMetrics*, instance_metrics, (), (override));
 };
 
@@ -163,8 +164,8 @@ TEST_F(GlicInstanceCoordinatorMetricsTest, SwitchConversation_New) {
   MockGlicInstance instance1;
   EXPECT_CALL(instance1, conversation_id())
       .WillRepeatedly(Return(std::string("A")));
-  EXPECT_CALL(instance1, GetLastActiveTime())
-      .WillRepeatedly(Return(base::TimeTicks::Now()));
+  EXPECT_CALL(instance1, GetLastActivationTimestamp())
+      .WillRepeatedly(Return(base::Time::Now()));
 
   // Setup DataProvider to return instance1
   EXPECT_CALL(provider_, GetInstances())
@@ -186,20 +187,20 @@ TEST_F(GlicInstanceCoordinatorMetricsTest, SwitchConversation_Existing) {
   MockGlicInstance instance1;
   EXPECT_CALL(instance1, conversation_id())
       .WillRepeatedly(Return(std::string("A")));
-  EXPECT_CALL(instance1, GetLastActiveTime())
-      .WillRepeatedly(Return(base::TimeTicks::Now()));
+  EXPECT_CALL(instance1, GetLastActivationTimestamp())
+      .WillRepeatedly(Return(base::Time::Now()));
 
   MockGlicInstance instance2;
   EXPECT_CALL(instance2, conversation_id())
       .WillRepeatedly(Return(std::string("B")));
-  EXPECT_CALL(instance2, GetLastActiveTime())
-      .WillRepeatedly(Return(base::TimeTicks::Now() - base::Seconds(10)));
+  EXPECT_CALL(instance2, GetLastActivationTimestamp())
+      .WillRepeatedly(Return(base::Time::Now() - base::Seconds(10)));
 
   MockGlicInstance instance3;
   EXPECT_CALL(instance3, conversation_id())
       .WillRepeatedly(Return(std::string("C")));
-  EXPECT_CALL(instance3, GetLastActiveTime())
-      .WillRepeatedly(Return(base::TimeTicks::Now() - base::Seconds(5)));
+  EXPECT_CALL(instance3, GetLastActivationTimestamp())
+      .WillRepeatedly(Return(base::Time::Now() - base::Seconds(5)));
 
   EXPECT_CALL(provider_, GetInstances())
       .WillRepeatedly(Return(
@@ -220,8 +221,8 @@ TEST_F(GlicInstanceCoordinatorMetricsTest,
   MockGlicInstance instance1;
   EXPECT_CALL(instance1, conversation_id())
       .WillRepeatedly(Return(std::string("A")));
-  EXPECT_CALL(instance1, GetLastActiveTime())
-      .WillRepeatedly(Return(base::TimeTicks::Now()));
+  EXPECT_CALL(instance1, GetLastActivationTimestamp())
+      .WillRepeatedly(Return(base::Time::Now()));
 
   MockGlicInstance instance2;
   // Instance 2 does not yet have the conversation B.
@@ -243,8 +244,8 @@ TEST_F(GlicInstanceCoordinatorMetricsTest, SwitchConversation_Resume) {
   MockGlicInstance instance1;
   EXPECT_CALL(instance1, conversation_id())
       .WillRepeatedly(Return(std::string("A")));
-  EXPECT_CALL(instance1, GetLastActiveTime())
-      .WillRepeatedly(Return(base::TimeTicks::Now() - base::Seconds(10)));
+  EXPECT_CALL(instance1, GetLastActivationTimestamp())
+      .WillRepeatedly(Return(base::Time::Now() - base::Seconds(10)));
 
   MockGlicInstance instanceNew;
   EXPECT_CALL(instanceNew, conversation_id())
@@ -264,8 +265,8 @@ TEST_F(GlicInstanceCoordinatorMetricsTest, SwitchConversation_Resume) {
 
   // 3. User is now on "New". Activation changed (simulated by making New more
   // recent).
-  EXPECT_CALL(instanceNew, GetLastActiveTime())
-      .WillRepeatedly(Return(base::TimeTicks::Now()));
+  EXPECT_CALL(instanceNew, GetLastActivationTimestamp())
+      .WillRepeatedly(Return(base::Time::Now()));
 
   // 4. User clicks back to "A".
   metrics_->RecordSwitchConversationTarget("A", instance1.conversation_id(),
@@ -280,8 +281,8 @@ TEST_F(GlicInstanceCoordinatorMetricsTest, SwitchConversation_NewToOther) {
   EXPECT_CALL(instance1, conversation_id())
       .WillRepeatedly(Return(std::string("A")));
   // Make instance1 ("A") the most recent one.
-  EXPECT_CALL(instance1, GetLastActiveTime())
-      .WillRepeatedly(Return(base::TimeTicks::Now() - base::Seconds(5)));
+  EXPECT_CALL(instance1, GetLastActivationTimestamp())
+      .WillRepeatedly(Return(base::Time::Now() - base::Seconds(5)));
 
   MockGlicInstance instanceNew;
   EXPECT_CALL(instanceNew, conversation_id())
@@ -293,8 +294,8 @@ TEST_F(GlicInstanceCoordinatorMetricsTest, SwitchConversation_NewToOther) {
   EXPECT_CALL(instance2, conversation_id())
       .WillRepeatedly(Return(std::string("B")));
   // instance2 ("B") is older than instance1.
-  EXPECT_CALL(instance2, GetLastActiveTime())
-      .WillRepeatedly(Return(base::TimeTicks::Now() - base::Seconds(10)));
+  EXPECT_CALL(instance2, GetLastActivationTimestamp())
+      .WillRepeatedly(Return(base::Time::Now() - base::Seconds(10)));
 
   EXPECT_CALL(provider_, GetInstances())
       .WillRepeatedly(Return(
@@ -315,15 +316,15 @@ TEST_F(GlicInstanceCoordinatorMetricsTest,
   MockGlicInstance instance1;
   EXPECT_CALL(instance1, conversation_id())
       .WillRepeatedly(Return(std::string("A")));
-  EXPECT_CALL(instance1, GetLastActiveTime())
-      .WillRepeatedly(Return(base::TimeTicks::Now() - base::Seconds(10)));
+  EXPECT_CALL(instance1, GetLastActivationTimestamp())
+      .WillRepeatedly(Return(base::Time::Now() - base::Seconds(10)));
 
   MockGlicInstance instance2;
   EXPECT_CALL(instance2, conversation_id())
       .WillRepeatedly(Return(std::string("B")));
   // User switches windows to instance 2 (which has B).
-  EXPECT_CALL(instance2, GetLastActiveTime())
-      .WillRepeatedly(Return(base::TimeTicks::Now()));
+  EXPECT_CALL(instance2, GetLastActivationTimestamp())
+      .WillRepeatedly(Return(base::Time::Now()));
 
   EXPECT_CALL(provider_, GetInstances())
       .WillRepeatedly(

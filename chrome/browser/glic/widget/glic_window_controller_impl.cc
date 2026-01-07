@@ -1352,8 +1352,12 @@ std::optional<std::string> GlicWindowControllerImpl::conversation_id() const {
   return std::nullopt;
 }
 
-base::TimeTicks GlicWindowControllerImpl::GetLastActiveTime() const {
-  return base::TimeTicks();
+base::Time GlicWindowControllerImpl::GetLastActivationTimestamp() const {
+  return base::Time();
+}
+
+base::TimeDelta GlicWindowControllerImpl::GetTimeSinceLastActive() const {
+  return base::TimeDelta();
 }
 
 base::CallbackListSubscription GlicWindowControllerImpl::RegisterStateChange(
