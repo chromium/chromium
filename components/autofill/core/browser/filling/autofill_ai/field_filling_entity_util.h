@@ -16,6 +16,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/autofill/core/common/unique_ids.h"
 
+class PrefService;
 namespace autofill {
 
 class AddressNormalizer;
@@ -49,15 +50,16 @@ std::u16string GetFillValueForEntity(
 // Returns whether the suggestion's main text should be obfuscated.
 bool ShouldFieldBeObfuscated(const EntityInstance& entity,
                              const AutofillFieldWithAttributeType& f,
-                             const std::string& app_locale);
+                             const std::string& app_locale,
+                             const PrefService& prefs);
 
 // Returns whether the user should re-auth before filling a form with Autofill
 // AI data.
 bool ShouldReauthBeforeFilling(
     const EntityInstance& entity,
     base::span<const AutofillFieldWithAttributeType> fields,
-    const std::string& app_locale);
-
+    const std::string& app_locale,
+    const PrefService& prefs);
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_AUTOFILL_AI_FIELD_FILLING_ENTITY_UTIL_H_

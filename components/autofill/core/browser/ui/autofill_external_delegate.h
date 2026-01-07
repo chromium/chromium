@@ -238,7 +238,7 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   // Authenticates the user and runs `callback` is the authentication is
   // completed. `reauth_message` specified the string displayed in the re-auth
   // dialog.
-  void MaybeAuthenticateBeforeFilling(const std::u16string reauth_message,
+  void MaybeAuthenticateBeforeFilling(const std::u16string& reauth_message,
                                       base::OnceClosure callback);
 
   // If non-negative, OnSuggestionsReturned() passes one of the suggestions

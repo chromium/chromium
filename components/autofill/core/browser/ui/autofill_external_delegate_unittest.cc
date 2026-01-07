@@ -75,6 +75,7 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -1405,6 +1406,8 @@ TEST_F(AutofillExternalDelegateTest, FillAutofillAiFillsFullForm) {
   external_delegate().DidAcceptSuggestion(fill_suggestion, {});
 }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_CHROMEOS)
 // Tests that when accepting a `kFillAutofillAi` suggestion that requires
 // re-authentication, the re-authentication flow is triggered and the form is
 // filled upon success.
@@ -1413,6 +1416,8 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_ReauthAccepted) {
   scoped_feature_list.InitWithFeatures({features::kAutofillAiWithDataSchema,
                                         features::kAutofillAiReauthRequired},
                                        {});
+  autofill_client().GetPrefs()->SetBoolean(
+      prefs::kAutofillAiReauthBeforeViewingSensitiveData, true);
 
   EntityInstance vehicle = test::GetVehicleEntityInstanceWithRandomGuid();
   autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(vehicle);
@@ -1446,6 +1451,8 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_ReauthRejected) {
   scoped_feature_list.InitWithFeatures({features::kAutofillAiWithDataSchema,
                                         features::kAutofillAiReauthRequired},
                                        {});
+  autofill_client().GetPrefs()->SetBoolean(
+      prefs::kAutofillAiReauthBeforeViewingSensitiveData, true);
 
   EntityInstance vehicle = test::GetVehicleEntityInstanceWithRandomGuid();
   autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(vehicle);
@@ -1475,6 +1482,8 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_NoAuthenticator) {
   scoped_feature_list.InitWithFeatures({features::kAutofillAiWithDataSchema,
                                         features::kAutofillAiReauthRequired},
                                        {});
+  autofill_client().GetPrefs()->SetBoolean(
+      prefs::kAutofillAiReauthBeforeViewingSensitiveData, true);
 
   EntityInstance vehicle = test::GetVehicleEntityInstanceWithRandomGuid();
   autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(vehicle);
@@ -1493,6 +1502,61 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_NoAuthenticator) {
   fill_suggestion.payload = Suggestion::AutofillAiPayload(vehicle.guid());
   external_delegate().DidAcceptSuggestion(fill_suggestion, {});
 }
+
+// Tests that no authentication is required when filling `kFillAutofillAi` and
+// the feature flag is off.
+TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_FlagOff) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillAiWithDataSchema};
+  autofill_client().GetPrefs()->SetBoolean(
+      prefs::kAutofillAiReauthBeforeViewingSensitiveData, true);
+
+  EntityInstance vehicle = test::GetVehicleEntityInstanceWithRandomGuid();
+  autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(vehicle);
+  webdata_helper().WaitUntilIdle();
+  // Create form with a VIN, which triggers obfuscation and thus re-auth.
+  IssueOnQuery({.fields = {{.role = VEHICLE_VIN}}});
+
+  EXPECT_CALL(autofill_client(), GetDeviceAuthenticator).Times(0);
+  EXPECT_CALL(autofill_manager(),
+              FillOrPreviewForm(mojom::ActionPersistence::kFill,
+                                HasQueriedFormId(), IsQueriedFieldId(), _,
+                                AutofillTriggerSource::kAutofillAi));
+
+  Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
+  fill_suggestion.payload = Suggestion::AutofillAiPayload(vehicle.guid());
+  external_delegate().DidAcceptSuggestion(fill_suggestion, {});
+}
+
+// Tests that when accepting a `kFillAutofillAi` suggestion that requires
+// re-authentication, the form IS filled without re-authentication if the pref
+// is disabled.
+TEST_F(AutofillExternalDelegateTest,
+       AutofillAiReauthFlow_ReauthNotRequiredWhenPrefIsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kAutofillAiWithDataSchema,
+                                        features::kAutofillAiReauthRequired},
+                                       {});
+  autofill_client().GetPrefs()->SetBoolean(
+      prefs::kAutofillAiReauthBeforeViewingSensitiveData, false);
+
+  EntityInstance vehicle = test::GetVehicleEntityInstanceWithRandomGuid();
+  autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(vehicle);
+  webdata_helper().WaitUntilIdle();
+  // Create form with a VIN, which triggers obfuscation and thus re-auth.
+  IssueOnQuery({.fields = {{.role = VEHICLE_VIN}}});
+
+  EXPECT_CALL(autofill_client(), GetDeviceAuthenticator).Times(0);
+  EXPECT_CALL(autofill_manager(),
+              FillOrPreviewForm(mojom::ActionPersistence::kFill,
+                                HasQueriedFormId(), IsQueriedFieldId(), _,
+                                AutofillTriggerSource::kAutofillAi));
+
+  Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
+  fill_suggestion.payload = Suggestion::AutofillAiPayload(vehicle.guid());
+  external_delegate().DidAcceptSuggestion(fill_suggestion, {});
+}
+#endif
 
 TEST_F(AutofillExternalDelegateTest, AcceptManageAutofillAi) {
   Suggestion manage_suggestion =

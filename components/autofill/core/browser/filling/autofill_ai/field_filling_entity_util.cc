@@ -25,8 +25,10 @@
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/prefs/pref_service.h"
 
 namespace autofill {
 
@@ -286,19 +288,22 @@ std::u16string GetFillValueForEntity(
 bool ShouldReauthBeforeFilling(
     const EntityInstance& entity,
     base::span<const AutofillFieldWithAttributeType> fields,
-    const std::string& app_locale) {
+    const std::string& app_locale,
+    const PrefService& prefs) {
   return std::ranges::any_of(
       fields, [&](const AutofillFieldWithAttributeType& f) {
-        return ShouldFieldBeObfuscated(entity, f, app_locale);
+        return ShouldFieldBeObfuscated(entity, f, app_locale, prefs);
       });
 }
 
 bool ShouldFieldBeObfuscated(const EntityInstance& entity,
                              const AutofillFieldWithAttributeType& f,
-                             const std::string& app_locale) {
+                             const std::string& app_locale,
+                             const PrefService& prefs) {
   base::optional_ref<const AttributeInstance> attribute =
       entity.attribute(f.type);
-  return entity.type() == f.type.entity_type() && attribute &&
+  return prefs::IsAutofillAiReauthBeforeFillingEnabled(&prefs) &&
+         entity.type() == f.type.entity_type() && attribute &&
          attribute->type().is_obfuscated() &&
          !attribute
               ->GetInfo(f.field->Type().GetAutofillAiType(entity.type()),
