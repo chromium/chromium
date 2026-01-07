@@ -2123,11 +2123,160 @@ domain Network
       # See comments on `net::device_bound_sessions::Session::allowed_refresh_initiators_`.
       array of string allowedRefreshInitiators
 
+  # A unique identifier for a device bound session event.
+  experimental type DeviceBoundSessionEventId extends string
+
+  # A fetch result for a device bound session creation or refresh.
+  experimental type DeviceBoundSessionFetchResult extends string
+    enum
+      Success
+      KeyError
+      SigningError
+      ServerRequestedTermination
+      InvalidSessionId
+      InvalidChallenge
+      TooManyChallenges
+      InvalidFetcherUrl
+      InvalidRefreshUrl
+      TransientHttpError
+      ScopeOriginSameSiteMismatch
+      RefreshUrlSameSiteMismatch
+      MismatchedSessionId
+      MissingScope
+      NoCredentials
+      SubdomainRegistrationWellKnownUnavailable
+      SubdomainRegistrationUnauthorized
+      SubdomainRegistrationWellKnownMalformed
+      SessionProviderWellKnownUnavailable
+      RelyingPartyWellKnownUnavailable
+      FederatedKeyThumbprintMismatch
+      InvalidFederatedSessionUrl
+      InvalidFederatedKey
+      TooManyRelyingOriginLabels
+      BoundCookieSetForbidden
+      NetError
+      ProxyError
+      EmptySessionConfig
+      InvalidCredentialsConfig
+      InvalidCredentialsType
+      InvalidCredentialsEmptyName
+      InvalidCredentialsCookie
+      PersistentHttpError
+      RegistrationAttemptedChallenge
+      InvalidScopeOrigin
+      ScopeOriginContainsPath
+      RefreshInitiatorNotString
+      RefreshInitiatorInvalidHostPattern
+      InvalidScopeSpecification
+      MissingScopeSpecificationType
+      EmptyScopeSpecificationDomain
+      EmptyScopeSpecificationPath
+      InvalidScopeSpecificationType
+      InvalidScopeIncludeSite
+      MissingScopeIncludeSite
+      FederatedNotAuthorizedByProvider
+      FederatedNotAuthorizedByRelyingParty
+      SessionProviderWellKnownMalformed
+      SessionProviderWellKnownHasProviderOrigin
+      RelyingPartyWellKnownMalformed
+      RelyingPartyWellKnownHasRelyingOrigins
+      InvalidFederatedSessionProviderSessionMissing
+      InvalidFederatedSessionWrongProviderOrigin
+      InvalidCredentialsCookieCreationTime
+      InvalidCredentialsCookieName
+      InvalidCredentialsCookieParsing
+      InvalidCredentialsCookieUnpermittedAttribute
+      InvalidCredentialsCookieInvalidDomain
+      InvalidCredentialsCookiePrefix
+      InvalidScopeRulePath
+      InvalidScopeRuleHostPattern
+      ScopeRuleOriginScopedHostPatternMismatch
+      ScopeRuleSiteScopedHostPatternMismatch
+      SigningQuotaExceeded
+      InvalidConfigJson
+      InvalidFederatedSessionProviderFailedToRestoreKey
+      FailedToUnwrapKey
+      SessionDeletedDuringRefresh
+
+  # Session event details specific to creation.
+  experimental type CreationEventDetails extends object
+    properties
+      # The result of the fetch attempt.
+      DeviceBoundSessionFetchResult fetchResult
+      # The session if there was a newly created session. This is populated for
+      # all successful creation events.
+      optional DeviceBoundSession newSession
+
+  # Session event details specific to refresh.
+  experimental type RefreshEventDetails extends object
+    properties
+      # The result of a refresh.
+      enum refreshResult
+        Refreshed
+        InitializedService
+        Unreachable
+        ServerError
+        RefreshQuotaExceeded
+        FatalError
+        SigningQuotaExceeded
+      # If there was a fetch attempt, the result of that.
+      optional DeviceBoundSessionFetchResult fetchResult
+      # The session display if there was a newly created session. This is populated
+      # for any refresh event that modifies the session config.
+      optional DeviceBoundSession newSession
+      # See comments on `net::device_bound_sessions::RefreshEventResult::was_fully_proactive_refresh`.
+      boolean wasFullyProactiveRefresh
+
+  # Session event details specific to termination.
+  experimental type TerminationEventDetails extends object
+    properties
+      # The reason for a session being deleted.
+      enum deletionReason
+        Expired
+        FailedToRestoreKey
+        FailedToUnwrapKey
+        StoragePartitionCleared
+        ClearBrowsingData
+        ServerRequested
+        InvalidSessionParams
+        RefreshFatalError
+
+  # Session event details specific to challenges.
+  experimental type ChallengeEventDetails extends object
+    properties
+      # The result of a challenge.
+      enum challengeResult
+        Success
+        NoSessionId
+        NoSessionMatch
+        CantSetBoundCookie
+      # The challenge set.
+      string challenge
+
   # Triggered when the initial set of device bound sessions is added.
   experimental event deviceBoundSessionsAdded
     parameters
       # The device bound sessions.
       array of DeviceBoundSession sessions
+
+  # Triggered when a device bound session event occurs.
+  experimental event deviceBoundSessionEventOccurred
+    parameters
+      # A unique identifier for this session event.
+      DeviceBoundSessionEventId eventId
+      # The site this session event is associated with.
+      string site
+      # Whether this event was considered successful.
+      boolean succeeded
+      # The session ID this event is associated with. May not be populated for
+      # failed events.
+      optional string sessionId
+
+      # The below are the different session event type details. Exactly one is populated.
+      optional CreationEventDetails creationEventDetails
+      optional RefreshEventDetails refreshEventDetails
+      optional TerminationEventDetails terminationEventDetails
+      optional ChallengeEventDetails challengeEventDetails
 
   # Sets up tracking device bound sessions and fetching of initial set of sessions.
   experimental command enableDeviceBoundSessions

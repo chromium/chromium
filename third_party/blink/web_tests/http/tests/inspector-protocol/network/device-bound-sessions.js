@@ -25,8 +25,61 @@
         }
       }
 
-      // TODO(crbug.com/471017387): Once event listeners exist, check populated
-      // set of sessions as well.
+      testRunner.log('\n--- Creation event ---');
+      {
+        page.navigate(
+            'http://localhost:8080/inspector-protocol/network/resources/dbsc/initiate-dbsc.php');
+        const creationEvent =
+            await dp.Network.onceDeviceBoundSessionEventOccurred();
+        testRunner.log(
+            creationEvent.params,
+            'Creation event: ', ['expiryDate', 'eventId']);
+      }
+
+      testRunner.log('\n--- Reset tracking device bound session events ---');
+      {
+        await dp.Network.enableDeviceBoundSessions({enable: false});
+        testRunner.log('Device Bound Sessions disabled in DevTools.');
+      }
+
+      testRunner.log('\n--- Checking new set of sessions has one session ---');
+      {
+        dp.Network.enableDeviceBoundSessions({enable: true});
+        testRunner.log('Re-enabling Device Bound Sessions in DevTools.');
+
+        const sessionAddedEvent =
+            await dp.Network.onceDeviceBoundSessionsAdded();
+        testRunner.log(
+            sessionAddedEvent.params, 'New sessions: ', ['expiryDate']);
+      }
+
+      testRunner.log('\n--- Trigger refresh event ---');
+      {
+        session.evaluate(
+            'fetch("/inspector-protocol/network/resources/dbsc/protected-resource.php")');
+        const refreshEvent =
+            await dp.Network.onceDeviceBoundSessionEventOccurred();
+        testRunner.log(refreshEvent.params, 'Refresh event: ', ['eventId']);
+      }
+
+      testRunner.log('\n--- Trigger challenge event ---');
+      {
+        session.evaluate(
+            'fetch("/inspector-protocol/network/resources/dbsc/challenge.php")');
+        const challengeEvent =
+            await dp.Network.onceDeviceBoundSessionEventOccurred();
+        testRunner.log(challengeEvent.params, 'Challenge event: ', ['eventId']);
+      }
+
+      testRunner.log('\n--- Trigger termination event ---');
+      {
+        session.evaluate(
+            'fetch("/inspector-protocol/network/resources/dbsc/termination.php")');
+        const terminationEvent =
+            await dp.Network.onceDeviceBoundSessionEventOccurred();
+        testRunner.log(
+            terminationEvent.params, 'Termination event: ', ['eventId']);
+      }
     },
 
     async function testFetchSchemefulSite() {

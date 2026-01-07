@@ -6,6 +6,127 @@ Running test: testSessionsAndEvents
 Received deviceBoundSessionsAdded event.
 No sessions when initialized.
 
+--- Creation event ---
+Creation event: {
+    creationEventDetails : {
+        fetchResult : Success
+        newSession : {
+            allowedRefreshInitiators : [
+                [0] : localhost
+            ]
+            cookieCravings : [
+                [0] : {
+                    domain : localhost
+                    httpOnly : true
+                    name : dbsc-cookie
+                    path : /
+                    sameSite : Lax
+                    secure : true
+                }
+            ]
+            expiryDate : <number>
+            inclusionRules : {
+                includeSite : false
+                origin : http://localhost:8080
+                urlRules : [
+                    [0] : {
+                        hostPattern : localhost
+                        pathPrefix : /inspector-protocol/network/resources/dbsc/refresh.php
+                        ruleType : Exclude
+                    }
+                ]
+            }
+            key : {
+                id : dbsc-session-id
+                site : http://localhost
+            }
+            refreshUrl : http://localhost:8080/inspector-protocol/network/resources/dbsc/refresh.php
+        }
+    }
+    eventId : <string>
+    sessionId : dbsc-session-id
+    site : http://localhost
+    succeeded : true
+}
+
+--- Reset tracking device bound session events ---
+Device Bound Sessions disabled in DevTools.
+
+--- Checking new set of sessions has one session ---
+Re-enabling Device Bound Sessions in DevTools.
+New sessions: {
+    sessions : [
+        [0] : {
+            allowedRefreshInitiators : [
+                [0] : localhost
+            ]
+            cookieCravings : [
+                [0] : {
+                    domain : localhost
+                    httpOnly : true
+                    name : dbsc-cookie
+                    path : /
+                    sameSite : Lax
+                    secure : true
+                }
+            ]
+            expiryDate : <number>
+            inclusionRules : {
+                includeSite : false
+                origin : http://localhost:8080
+                urlRules : [
+                    [0] : {
+                        hostPattern : localhost
+                        pathPrefix : /inspector-protocol/network/resources/dbsc/refresh.php
+                        ruleType : Exclude
+                    }
+                ]
+            }
+            key : {
+                id : dbsc-session-id
+                site : http://localhost
+            }
+            refreshUrl : http://localhost:8080/inspector-protocol/network/resources/dbsc/refresh.php
+        }
+    ]
+}
+
+--- Trigger refresh event ---
+Refresh event: {
+    eventId : <string>
+    refreshEventDetails : {
+        fetchResult : Success
+        refreshResult : Refreshed
+        wasFullyProactiveRefresh : false
+    }
+    sessionId : dbsc-session-id
+    site : http://localhost
+    succeeded : true
+}
+
+--- Trigger challenge event ---
+Challenge event: {
+    challengeEventDetails : {
+        challenge : new challenge
+        challengeResult : Success
+    }
+    eventId : <string>
+    sessionId : dbsc-session-id
+    site : http://localhost
+    succeeded : true
+}
+
+--- Trigger termination event ---
+Termination event: {
+    eventId : <string>
+    sessionId : dbsc-session-id
+    site : http://localhost
+    succeeded : true
+    terminationEventDetails : {
+        deletionReason : StoragePartitionCleared
+    }
+}
+
 Running test: testFetchSchemefulSite
 {
     schemefulSite : https://google.com
