@@ -1102,6 +1102,14 @@ void PaymentsDataManager::SetAutofillHasSeenBnpl() {
 
 bool PaymentsDataManager::IsAutofillAmountExtractionAiTermsSeenPrefEnabled()
     const {
+  // The testing flag acts as a testing override to force the "AI terms not
+  // seen" flow.
+  if (base::FeatureList::IsEnabled(
+          features::
+              kAutofillAiBasedAmountExtractionIgnoreSeenTermsForTesting)) {
+    return false;
+  }
+
   return base::FeatureList::IsEnabled(
              features::kAutofillEnableAiBasedAmountExtraction) &&
          prefs::AmountExtractionAiTermsSeen(pref_service_);

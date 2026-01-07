@@ -4185,6 +4185,19 @@ TEST_F(PaymentsDataManagerTest, SetAutofillAmountExtractionAiTermsSeen) {
                   .IsAutofillAmountExtractionAiTermsSeenPrefEnabled());
 }
 
+TEST_F(PaymentsDataManagerTest,
+       AutofillAmountExtractionAiTermsNotSeen_WhenTestFlagEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillAiBasedAmountExtractionIgnoreSeenTermsForTesting};
+  EXPECT_FALSE(payments_data_manager()
+                   .IsAutofillAmountExtractionAiTermsSeenPrefEnabled());
+
+  payments_data_manager().SetAutofillAmountExtractionAiTermsSeen();
+
+  EXPECT_FALSE(payments_data_manager()
+                   .IsAutofillAmountExtractionAiTermsSeenPrefEnabled());
+}
+
 // Tests that Buy-now-pay-later issuers are loaded when the
 // `kAutofillBnplEnabled` pref is turned on.
 TEST_F(

@@ -2138,10 +2138,10 @@ TEST_F(
       /*final_checkout_amount=*/std::nullopt,
       /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
 
-  EXPECT_TRUE(autofill_client()
-                  .GetPersonalDataManager()
-                  .payments_data_manager()
-                  .IsAutofillAmountExtractionAiTermsSeenPrefEnabled());
+  EXPECT_FALSE(autofill_client()
+                   .GetPersonalDataManager()
+                   .payments_data_manager()
+                   .IsAutofillAmountExtractionAiTermsSeenPrefEnabled());
   EXPECT_FALSE(test_api(*bnpl_manager_).HasSeenAmountExtractionAiTerms());
 }
 
