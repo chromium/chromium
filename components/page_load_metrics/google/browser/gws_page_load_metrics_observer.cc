@@ -138,6 +138,11 @@ const char kHistogramGWSAdvertisedAltSvcState[] =
 const char kHistogramGWSHttpNetworkSessionQuicEnabled[] =
     HISTOGRAM_PREFIX "HttpNetworkSessionQuicEnabled";
 
+// Suffix for navigation.activationType variants.
+const char kTraverseNavigation[] = ".TraverseNavigation";
+const char kRestoreNavigation[] = ".Restored";
+const char kNonRestoreNavigation[] = ".NotRestored";
+
 // Prerender related histograms.
 const char kHistogramPrerenderHostReused[] =
     HISTOGRAM_PREFIX "Prerender.HostReused";
@@ -279,6 +284,19 @@ std::string GetProtocolSuffix(
       {".", net::HttpConnectionInfoCoarseToString(http_connection_info)});
 }
 
+void ReportMetricForTraverseNavigation(bool is_restore_navigation,
+                                       std::string_view histogram_base_name,
+                                       base::TimeDelta latency) {
+  auto traverse_histogram_name =
+      base::StrCat({histogram_base_name, internal::kTraverseNavigation});
+  PAGE_LOAD_HISTOGRAM(traverse_histogram_name, latency);
+  auto restore_histogram_name =
+      base::StrCat({traverse_histogram_name,
+                    is_restore_navigation ? internal::kRestoreNavigation
+                                          : internal::kNonRestoreNavigation});
+  PAGE_LOAD_HISTOGRAM(restore_histogram_name, latency);
+}
+
 }  // namespace
 
 GWSPageLoadMetricsObserver::GWSPageLoadMetricsObserver() {
@@ -315,6 +333,10 @@ GWSPageLoadMetricsObserver::OnStart(
   if (!started_in_foreground) {
     source_type_ = GetBackgroundedState(source_type_);
   }
+
+  is_traverse_navigation_ = navigation_handle->IsHistory();
+  is_restore_navigation_ =
+      navigation_handle->GetRestoreType() == content::RestoreType::kRestored;
 
   return CONTINUE_OBSERVING;
 }
@@ -705,9 +727,16 @@ void GWSPageLoadMetricsObserver::LogMetricsOnComplete() {
     }
 
     // We record pre navigation time here as well.
-    PAGE_LOAD_HISTOGRAM(
-        internal::kHistogramGWSAFTEndWithPreNavigationLatency,
-        base_time + prenavigation_time.value_or(base::TimeDelta()));
+    const auto aft_end_with_prenavigation_latency =
+        base_time + prenavigation_time.value_or(base::TimeDelta());
+    PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSAFTEndWithPreNavigationLatency,
+                        aft_end_with_prenavigation_latency);
+    if (is_traverse_navigation_) {
+      ReportMetricForTraverseNavigation(
+          is_restore_navigation_,
+          internal::kHistogramGWSAFTEndWithPreNavigationLatency,
+          aft_end_with_prenavigation_latency);
+    }
   }
 
   if (!WasStartedInForegroundOptionalEventInForeground(
@@ -719,6 +748,11 @@ void GWSPageLoadMetricsObserver::LogMetricsOnComplete() {
   RecordNavigationTimingHistograms();
   PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSLargestContentfulPaint,
                       all_frames_largest_contentful_paint.Time().value());
+  if (is_traverse_navigation_) {
+    ReportMetricForTraverseNavigation(
+        is_restore_navigation_, internal::kHistogramGWSLargestContentfulPaint,
+        all_frames_largest_contentful_paint.Time().value());
+  }
 }
 
 void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {

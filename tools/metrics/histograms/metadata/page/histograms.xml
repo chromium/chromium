@@ -260,6 +260,12 @@ chromium-metrics-reviews@google.com.
   <variant name=".FromNewTabPage" summary="navigation from new tab page"/>
 </variants>
 
+<variants name="TraverseRestoreType">
+  <variant name="" summary="All traverse page loads"/>
+  <variant name=".NotRestored" summary="Traverse but non-restore page loads"/>
+  <variant name=".Restored" summary="Restored page loads"/>
+</variants>
+
 <variants name="WebUIHost">
   <variant name=""/>
   <variant name=".access-code-cast"/>
@@ -1778,6 +1784,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.PaintTiming.AFTEndWithPreNavigationLatency.TraverseNavigation{TraverseRestoreType}"
+    units="ms" expires_after="2026-04-12">
+  <owner>lingqi@chromium.org</owner>
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Similar to
+    PageLoad.Clients.GoogleSearch.PaintTiming.AFTEndWithPreNavigationLatency,
+    but only track traverse navigations, with the breakdown of
+    {TraverseRestoreType}.
+  </summary>
+  <token key="TraverseRestoreType" variants="TraverseRestoreType"/>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch.PaintTiming.NavigationToFirstContentfulPaint{SyntheticResponseSuffix}"
     units="ms" expires_after="2026-06-21">
   <owner>spelchat@chromium.org</owner>
@@ -1809,6 +1831,22 @@ chromium-metrics-reviews@google.com.
     navigations that happen entirely in the foreground. The metric is emitted
     when the navigation is completed or the app is backgrounded on Android.
   </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.PaintTiming.NavigationToLargestContentfulPaint.TraverseNavigation{TraverseRestoreType}"
+    units="ms" expires_after="2026-04-12">
+  <owner>lingqi@chromium.org</owner>
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Similar to
+    PageLoad.Clients.GoogleSearch.PaintTiming.NavigationToLargestContentfulPaint,
+    but only track traverse navigations, with the breakdown of
+    {TraverseRestoreType}.
+  </summary>
+  <token key="TraverseRestoreType" variants="TraverseRestoreType"/>
 </histogram>
 
 <histogram
