@@ -76,11 +76,6 @@ void AuthenticatorImpl::MakeCredential(
 void AuthenticatorImpl::GetCredential(
     blink::mojom::GetCredentialOptionsPtr options,
     GetCredentialCallback callback) {
-  if (!options->public_key) {
-    std::move(callback).Run(MakeGetAssertionResponse(
-        blink::mojom::AuthenticatorStatus::NOT_IMPLEMENTED, nullptr, nullptr));
-    return;
-  }
   authenticator_common_impl_->GetCredential(origin(), std::move(options),
                                             /*payment_options=*/nullptr,
                                             std::move(callback));

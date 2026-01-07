@@ -162,8 +162,7 @@ class ChromeAuthenticatorRequestDelegate
       base::span<const device::CableDiscoveryData> pairings_from_extension,
       bool is_enclave_authenticator_available,
       device::FidoDiscoveryFactory* discovery_factory) override;
-  void SetHints(
-      const AuthenticatorRequestClientDelegate::Hints& hints) override;
+  void SetHints(const Hints& hints) override;
   void SelectAccount(
       std::vector<device::AuthenticatorGetAssertionResponse> responses,
       base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
@@ -214,6 +213,8 @@ class ChromeAuthenticatorRequestDelegate
   content::RenderFrameHost* GetRenderFrameHost() const;
 
  private:
+  void MaybeStartPasswordFetch(const url::Origin& origin, bool synthesize_tai);
+
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegatePrivateTest,
                            DaysSinceDate);
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegatePrivateTest,

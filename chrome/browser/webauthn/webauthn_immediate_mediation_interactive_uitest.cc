@@ -55,6 +55,8 @@ const DeepQuery kGetImmediateUvRequiredButton{
     "#get-immediate-uv-required-button"};
 const DeepQuery kGetImmediateUvDiscouragedButton{
     "#get-immediate-uv-discouraged-button"};
+const DeepQuery kGetImmediatePasswordOnlyButton{
+    "#get-immediate-password-only-button"};
 const DeepQuery kSuccess{"#success-message"};
 const DeepQuery kError{"#error-message"};
 const DeepQuery kMessage{"#message-container"};
@@ -106,6 +108,20 @@ class WebAuthnImmediateMediationTest : public Fixture {
                  WaitForElementWithText(kTabId, kMessage, "NotAllowedError"));
   }
 
+  void AddPassword(const std::string& username, const std::string& password) {
+    password_manager::PasswordForm form;
+    form.username_value = base::ASCIIToUTF16(username);
+    form.password_value = base::ASCIIToUTF16(password);
+    form.signon_realm = GetHttpsURL().DeprecatedGetOriginAsURL().spec();
+    form.url = GetHttpsURL().DeprecatedGetOriginAsURL();
+    form.match_type = password_manager::PasswordForm::MatchType::kExact;
+
+    scoped_refptr<password_manager::PasswordStoreInterface> password_store =
+        ProfilePasswordStoreFactory::GetForProfile(
+            browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
+    password_store->AddLogin(form);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -124,26 +140,29 @@ IN_PROC_BROWSER_TEST_F(WebAuthnImmediateMediationTest,
       GetNotAllowedSteps());
 }
 
+IN_PROC_BROWSER_TEST_F(WebAuthnImmediateMediationTest,
+                       ImmediateMediationPasswordOnly) {
+  AddPassword(kUsername, kPassword);
+  RunTestSequence(
+      GetStepsUntilButtonClick(kGetImmediatePasswordOnlyButton),
+      WaitForShow(CombinedSelectorSheetView::kCombinedSelectorSheetViewId),
+      PressButton(views::DialogClientView::kOkButtonElementId),
+      WaitForElementVisible(kTabId, kSuccess));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthnImmediateMediationTest,
+                       ImmediateMediationPasswordOnlyNotAllowed) {
+  RunTestSequence(GetStepsUntilButtonClick(kGetImmediatePasswordOnlyButton),
+                  WaitForElementVisible(kTabId, kError),
+                  WaitForElementWithText(kTabId, kMessage, "NotAllowedError"));
+}
+
 class WebAuthnImmediateMediationWithBootstrappedEnclaveTest
     : public WebAuthnImmediateMediationTest {
  protected:
   void SetUpOnMainThread() override {
     WebAuthnImmediateMediationTest::SetUpOnMainThread();
     SimulateSuccessfulGpmPinCreation("123456");
-  }
-
-  void AddPassword(const std::string& username, const std::string& password) {
-    password_manager::PasswordForm form;
-    form.username_value = base::ASCIIToUTF16(username);
-    form.password_value = base::ASCIIToUTF16(password);
-    form.signon_realm = GetHttpsURL().DeprecatedGetOriginAsURL().spec();
-    form.url = GetHttpsURL().DeprecatedGetOriginAsURL();
-    form.match_type = password_manager::PasswordForm::MatchType::kExact;
-
-    scoped_refptr<password_manager::PasswordStoreInterface> password_store =
-        ProfilePasswordStoreFactory::GetForProfile(
-            browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
-    password_store->AddLogin(form);
   }
 
   void AddPasskey(const std::string& username,

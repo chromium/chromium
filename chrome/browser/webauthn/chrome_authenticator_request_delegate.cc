@@ -489,6 +489,13 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     return;
   }
 
+  // If the discovery factory is not provided, it means that the request is
+  // for passwords only.
+  if (!discovery_factory) {
+    MaybeStartPasswordFetch(origin, /*synthesize_tai=*/true);
+    return;
+  }
+
   // Configure the enclave authenticator.
   if (browser_provided_passkeys_available && !IsVirtualEnvironmentEnabled() &&
       request_source == RequestSource::kWebAuthentication) {
@@ -628,21 +635,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   ConfigureICloudKeychain(request_source, rp_id);
 #endif
 
-  if (PasswordsUsable(credential_types_,
-                      dialog_controller_->ui_presentation()) &&
-      GetRenderFrameHost()->IsInPrimaryMainFrame()) {
-    if (!password_ui_controller_) {
-      password_ui_controller_ =
-          std::make_unique<PasswordCredentialUIController>(
-              render_frame_host_id_, dialog_model_.get());
-    }
-    password_fetcher_ = PasswordCredentialFetcher::Create(GetRenderFrameHost());
-    password_fetcher_->FetchPasswords(
-        origin.GetURL(),
-        base::BindOnce(
-            &ChromeAuthenticatorRequestDelegate::OnPasswordCredentialsReceived,
-            AsWeakPtr()));
-  }
+  MaybeStartPasswordFetch(origin, /*synthesize_tai=*/false);
 }
 
 void ChromeAuthenticatorRequestDelegate::SetHints(
@@ -651,6 +644,44 @@ void ChromeAuthenticatorRequestDelegate::SetHints(
     g_observer->HintsSet(hints);
   }
   dialog_controller_->SetHints(hints);
+}
+
+void ChromeAuthenticatorRequestDelegate::MaybeStartPasswordFetch(
+    const url::Origin& origin,
+    bool synthesize_tai) {
+  if (PasswordsUsable(credential_types_,
+                      dialog_controller_->ui_presentation()) &&
+      GetRenderFrameHost()->IsInPrimaryMainFrame()) {
+    if (!password_ui_controller_) {
+      password_ui_controller_ =
+          std::make_unique<PasswordCredentialUIController>(
+              render_frame_host_id_, dialog_model_.get());
+      if (password_selected_callback_) {
+        password_ui_controller_->SetPasswordSelectedCallback(
+            base::BindRepeating(
+                &ChromeAuthenticatorRequestDelegate::OnPasswordSelected,
+                weak_ptr_factory_.GetWeakPtr()));
+      }
+    }
+    password_fetcher_ = PasswordCredentialFetcher::Create(GetRenderFrameHost());
+    password_fetcher_->FetchPasswords(
+        origin.GetURL(),
+        base::BindOnce(
+            &ChromeAuthenticatorRequestDelegate::OnPasswordCredentialsReceived,
+            AsWeakPtr()));
+
+    if (synthesize_tai) {
+      // The UI logic currently waits for both the password fetch and the
+      // transport availability enumeration to complete before showing. In
+      // password-only requests, there is no FidoRequestHandler to provide the
+      // transport availability, so we must synthesize a default one to unblock
+      // the UI.
+      // TODO(crbug.com/473447690): Decouple the UI layer from TAI.
+      TransportAvailabilityInfo tai;
+      tai.request_type = device::FidoRequestType::kGetAssertion;
+      OnTransportAvailabilityEnumerated(std::move(tai));
+    }
+  }
 }
 
 void ChromeAuthenticatorRequestDelegate::SelectAccount(
