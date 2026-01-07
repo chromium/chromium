@@ -821,8 +821,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FbPreprocessor.Pseudonymization.DumpType"
-    enum="Platform.FbPreprocessor.FirmwareType" expires_after="2026-01-11">
-  <owner>norvez@chromium.org</owner>
+    enum="Platform.FbPreprocessor.FirmwareType" expires_after="2026-12-31">
+  <owner>jintaolin@chromium.org</owner>
+  <owner>yichenyu@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Type of the firmware dump that is submitted for pseudonymization. Emitted
@@ -833,8 +834,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.FbPreprocessor.{FirmwareType}.Collection.Allowed"
     enum="Platform.FbPreprocessor.CollectionAllowedStatus"
-    expires_after="2026-05-17">
-  <owner>norvez@chromium.org</owner>
+    expires_after="2026-12-31">
+  <owner>jintaolin@chromium.org</owner>
+  <owner>yichenyu@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Reports whether the collection of {FirmwareType} firmware dumps is allowed
@@ -845,8 +847,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FbPreprocessor.{FirmwareType}.Output.Number"
-    units="count" expires_after="2026-03-15">
-  <owner>norvez@chromium.org</owner>
+    units="count" expires_after="2026-12-31">
+  <owner>jintaolin@chromium.org</owner>
+  <owner>yichenyu@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Number of firmware dumps of type {FirmwareType} that are available for
@@ -859,8 +862,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Platform.FbPreprocessor.{FirmwareType}.Pseudonymization.Result"
     enum="Platform.FbPreprocessor.PseudonymizationResult"
-    expires_after="2026-01-11">
-  <owner>norvez@chromium.org</owner>
+    expires_after="2026-12-31">
+  <owner>jintaolin@chromium.org</owner>
+  <owner>yichenyu@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Result of the pseudonymization operations of firmware dumps of type
