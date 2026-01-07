@@ -113,7 +113,6 @@
   color: var(--foreground-color);
   font-family: var(--font-family);
   font-size: var(--font-size);
-  height:100%; /* Keeps content within containerParent */
   letter-spacing: var(--letter-spacing);
   line-height: var(--line-height);
   margin: 0 auto;
