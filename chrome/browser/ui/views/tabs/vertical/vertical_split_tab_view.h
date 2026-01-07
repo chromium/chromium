@@ -12,6 +12,7 @@
 #include "ui/views/view.h"
 
 class TabCollectionNode;
+class GlowHoverController;
 
 // Container for the vertical tabstrip's split tabs.
 class VerticalSplitTabView : public views::View, public views::LayoutDelegate {
@@ -27,17 +28,29 @@ class VerticalSplitTabView : public views::View, public views::LayoutDelegate {
   void OnThemeChanged() override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
+  void OnMouseMoved(const ui::MouseEvent& event) override;
 
   // LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
 
+  // Used by children to sync their animation values with the parent.
+  double GetHoverAnimationValue() const;
+  GlowHoverController* hover_controller() const {
+    return hover_controller_.get();
+  }
+
  private:
   void ResetCollectionNode();
   void OnDataChanged();
   void UpdateBorder();
+  void UpdateHovered(bool hovered);
 
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
+  bool hovered_ = false;
+  std::unique_ptr<GlowHoverController> hover_controller_;
 
   base::CallbackListSubscription data_changed_subscription_;
   base::CallbackListSubscription node_destroyed_subscription_;

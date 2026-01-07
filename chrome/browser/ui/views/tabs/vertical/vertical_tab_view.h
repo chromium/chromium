@@ -51,8 +51,9 @@ class VerticalTabView : public views::View,
   void UpdateHovered(bool hovered);
 
   void OnTabDragOver();
-
+  const TabStyle* tab_style() { return tab_style_; }
   TabCloseButton* close_button_for_testing() { return close_button_; }
+  float radial_highlight_opacity() { return radial_highlight_opacity_; }
 
  private:
   // views::View
@@ -61,9 +62,9 @@ class VerticalTabView : public views::View,
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseMoved(const ui::MouseEvent& event) override;
-  bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+  bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;

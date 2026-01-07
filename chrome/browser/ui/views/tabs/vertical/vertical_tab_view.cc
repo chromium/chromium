@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/common/buildflags.h"
@@ -226,7 +227,7 @@ void VerticalTabView::UpdateHovered(bool hovered) {
   }
 
   hovered_ = hovered;
-  if (hover_controller_) {
+  if (hover_controller_ && !split_) {
     if (hovered_) {
       hover_controller_->SetSubtleOpacityScale(radial_highlight_opacity_);
       hover_controller_->Show(TabStyle::ShowHoverStyle::kSubtle);
@@ -309,23 +310,38 @@ void VerticalTabView::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void VerticalTabView::OnMouseMoved(const ui::MouseEvent& event) {
+  // Hover state is handled by the parent if it is split.
+  if (split_) {
+    return;
+  }
+
   // Linux enter/leave events are sometimes flaky, so we don't want to "miss"
   // an enter event and fail to hover the tab.
   UpdateHovered(true);
+}
+
+void VerticalTabView::OnMouseEntered(const ui::MouseEvent& event) {
+  // Hover state is handled by the parent if it is split.
+  if (split_) {
+    return;
+  }
+
+  UpdateHovered(true);
+}
+
+void VerticalTabView::OnMouseExited(const ui::MouseEvent& event) {
+  // Hover state is handled by the parent if it is split.
+  if (split_) {
+    return;
+  }
+
+  UpdateHovered(false);
 }
 
 bool VerticalTabView::OnMouseDragged(const ui::MouseEvent& event) {
   auto* controller = collection_node_->GetController();
   CHECK(controller);
   return controller->GetDragHandler().ContinueDrag(*this, event);
-}
-
-void VerticalTabView::OnMouseEntered(const ui::MouseEvent& event) {
-  UpdateHovered(true);
-}
-
-void VerticalTabView::OnMouseExited(const ui::MouseEvent& event) {
-  UpdateHovered(false);
 }
 
 void VerticalTabView::OnPaint(gfx::Canvas* canvas) {
@@ -528,14 +544,24 @@ void VerticalTabView::CloseButtonPressed(const ui::Event& event) {
 }
 
 bool VerticalTabView::IsHoverAnimationActive() const {
+  if (split_) {
+    auto* split_view = views::AsViewClass<VerticalSplitTabView>(parent());
+    // Ask the parent if its hover animation is running.
+    return split_view &&
+           (hovered_ || (split_view->hover_controller() &&
+                         split_view->hover_controller()->ShouldDraw()));
+  }
+
   return hovered_ || (hover_controller_ && hover_controller_->ShouldDraw());
 }
-
 double VerticalTabView::GetHoverAnimationValue() const {
-  if (!hover_controller_) {
-    return hovered_ ? 1.0 : 0.0;
+  if (split_) {
+    if (auto* split_view = views::AsViewClass<VerticalSplitTabView>(parent())) {
+      return split_view->GetHoverAnimationValue();
+    }
   }
-  return hover_controller_->GetAnimationValue();
+  return hover_controller_ ? hover_controller_->GetAnimationValue()
+                           : (hovered_ ? 1.0 : 0.0);
 }
 
 float VerticalTabView::GetHoverOpacity() const {
