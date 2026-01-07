@@ -45,9 +45,6 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
     manager_ = [[PushNotificationAccountContextManager alloc]
         initWithProfileManager:&profile_manager_];
     fake_id_ = [FakeSystemIdentity fakeIdentity1];
-    // TODO(b/318863934): Remove flag when enabled by default.
-    feature_list_.InitWithFeatures({/*enabled=*/kSafetyCheckNotifications},
-                                   {/*disabled=*/});
     AddTestCasesToManager(manager_, profile_attributes_storage(),
                           fake_id_.gaiaId, profile_name);
   }

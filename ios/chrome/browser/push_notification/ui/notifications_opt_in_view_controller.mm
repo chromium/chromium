@@ -171,13 +171,9 @@ bool TooNarrowForBanner(UIView* view) {
   }
   [snapshot appendItemsWithIdentifiers:@[
     @(NotificationsOptInItemIdentifier::kTips),
-    @(NotificationsOptInItemIdentifier::kPriceTracking)
+    @(NotificationsOptInItemIdentifier::kPriceTracking),
+    @(NotificationsOptInItemIdentifier::kSafetyCheck)
   ]];
-  if (IsSafetyCheckNotificationsEnabled()) {
-    [snapshot appendItemsWithIdentifiers:@[
-      @(NotificationsOptInItemIdentifier::kSafetyCheck),
-    ]];
-  }
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
