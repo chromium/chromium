@@ -794,16 +794,19 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
               *browser_, browser_, std::move(container_overlay_view_pairs));
     }
 
+    if (features::HasTabSearchToolbarButton()) {
+      tab_search_toolbar_button_controller_ =
+          std::make_unique<TabSearchToolbarButtonController>(browser_view);
+    }
+  }
+
+  if (browser_->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL ||
+      browser_->GetType() == BrowserWindowInterface::Type::TYPE_POPUP) {
     data_protection_ui_controller_ =
         GetUserDataFactory()
             .CreateInstance<
                 enterprise_data_protection::DataProtectionUIController>(
                 *browser_view->browser(), browser_view);
-
-    if (features::HasTabSearchToolbarButton()) {
-      tab_search_toolbar_button_controller_ =
-          std::make_unique<TabSearchToolbarButtonController>(browser_view);
-    }
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
