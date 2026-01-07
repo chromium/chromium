@@ -2,32 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/span.h"
-
-
 #include <stddef.h>
 
 #include <array>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/run_until.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
 
 using content::NavigationController;
 
@@ -860,5 +865,70 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, FocusMenuBarByAltKey) {
   ASSERT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
 }
 #endif
+
+// Regression test for crbug.com/407601713. When the content area is in focus,
+// hiding and then re-showing the browser window should restore the focus. The
+// test sends keyboard events to the browser window and verifies that the
+// webpage receives the keystrokes.
+IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, FocusAfterHideAndShow) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/407601713): This test is failing on Mac 12.
+  if (base::mac::MacOSVersion() < 13'00'00) {
+    GTEST_SKIP();
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
+  static const KeyEventTestData kTestKeystrokes = {
+      ui::VKEY_A,
+      false,
+      false,
+      false,
+      false,  // modifiers
+      false,
+      false,
+      false,
+      false,  // suppress
+      3,      // result length
+      {"D 65 0 false false false false", "P 97 97 false false false false",
+       "U 65 0 false false false false"}};
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  GURL url = embedded_test_server()->GetURL(kTestingPage);
+
+  // Open the 2nd tab. This is critical to reproduce the loss of focus issue.
+  // On macOS, the issue happens because the RenderWidgetHostViewCocoa
+  // incorrectly loses focus (aka resign from first responder) when the window
+  // is hidden or miniaturized. If there is no 2nd tab, there is no 2nd RWHV to
+  // focus, hence the 1st RWHV won't lose focus.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  ASSERT_NO_FATAL_FAILURE(ClickOnView(VIEW_ID_TAB_CONTAINER));
+  ASSERT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
+
+  int tab_index = browser()->tab_strip_model()->active_index();
+
+  // Verify initial key event.
+  EXPECT_NO_FATAL_FAILURE(TestKeyEvent(tab_index, kTestKeystrokes));
+
+  // Hide the window.
+  gfx::NativeWindow window = browser()->window()->GetNativeWindow();
+  ui_test_utils::HideNativeWindow(window);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return browser()
+               ->tab_strip_model()
+               ->GetWebContentsAt(tab_index)
+               ->GetVisibility() != content::Visibility::VISIBLE;
+  }));
+
+  // Show and focus the window.
+  ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(window));
+
+  // Verify key event after hide/show.
+  EXPECT_NO_FATAL_FAILURE(TestKeyEvent(tab_index, kTestKeystrokes));
+}
 
 }  // namespace
