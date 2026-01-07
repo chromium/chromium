@@ -768,7 +768,7 @@ void BrowserThemePack::BuildFromExtension(
 // static
 scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
     const base::FilePath& path,
-    const std::string& expected_id) {
+    std::string_view expected_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Allow IO on UI thread due to deep-seated theme design issues.
   // (see http://crbug.com/80206)
@@ -808,7 +808,8 @@ scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
   // TODO(erg): Check endianess once DataPack works on the other endian.
   std::string theme_id(reinterpret_cast<char*>(pack->header_->theme_id),
                        crx_file::id_util::kIdSize);
-  std::string truncated_id = expected_id.substr(0, crx_file::id_util::kIdSize);
+  std::string_view truncated_id =
+      expected_id.substr(0, crx_file::id_util::kIdSize);
   if (theme_id != truncated_id) {
     DLOG(ERROR) << "Wrong id: " << theme_id << " vs " << expected_id;
     return nullptr;

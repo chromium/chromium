@@ -77,7 +77,7 @@ class BrowserThemePack : public CustomThemeSupplier {
   // pointer swizzling. Returns NULL on any error attempting to read |path|.
   static scoped_refptr<BrowserThemePack> BuildFromDataPack(
       const base::FilePath& path,
-      const std::string& expected_id);
+      std::string_view expected_id);
 
   // Returns whether the specified identifier is one of the images we persist
   // in the data pack.
