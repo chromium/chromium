@@ -121,19 +121,16 @@ void AAudioInputStream::Close() {
   audio_manager_->ReleaseInputStream(this);
 }
 
-bool AAudioInputStream::OnAudioDataRequested(void* audio_data,
-                                             int32_t num_frames) {
-  CHECK_EQ(num_frames, audio_bus_->frames());
-
+bool AAudioInputStream::OnAudioDataRequested(base::span<float> audio_data) {
   base::AutoLock al(lock_);
   if (!callback_) {
     // Stop() might have already been called, but there can still be pending
     // data callbacks in flight.
+    std::ranges::fill(audio_data, 0.0);
     return false;
   }
 
-  audio_bus_->FromInterleaved<Float32SampleTypeTraits>(
-      reinterpret_cast<float*>(audio_data), num_frames);
+  audio_bus_->FromInterleaved<Float32SampleTypeTraits>(audio_data);
 
   peak_detector_.FindPeak(audio_bus_.get());
 

@@ -48,7 +48,7 @@ class AAudioOutputStream : public MuteableAudioOutputStream,
   void SetMute(bool muted) override;
 
   // AAudioStreamWrapper::DataCallback implementation.
-  bool OnAudioDataRequested(void* audio_data, int32_t num_frames) override;
+  bool OnAudioDataRequested(base::span<float> audio_data) override;
   void OnError() override;
   void OnDeviceChange() override;
 
