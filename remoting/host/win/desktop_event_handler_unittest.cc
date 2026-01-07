@@ -65,6 +65,8 @@ class TestDelegate : public DesktopEventHandler::Delegate {
     }
   }
 
+  void OnWorkerThreadStopping() override {}
+
   void OnEvent(DWORD event, LONG object_id) override {}
 
  private:

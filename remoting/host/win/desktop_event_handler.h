@@ -41,6 +41,9 @@ class DesktopEventHandler {
     // gap.
     virtual void OnWorkerThreadStarted() = 0;
 
+    // Called right before the worker thread is about to stop.
+    virtual void OnWorkerThreadStopping() = 0;
+
     // Called whenever an event between [min_event, max_event] is triggered.
     // Note that this method will be called for every object in the desktop, as
     // long as the event constant is within the registered range, so you should

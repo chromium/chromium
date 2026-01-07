@@ -19,6 +19,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -26,6 +28,19 @@
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
 namespace remoting {
+
+namespace {
+
+// Poll cursor image at 100 Hz. webrtc::MouseCursorMonitorWin will not load the
+// cursor bitmap if the handle is unchanged, so the call should not be
+// expensive. https://devblogs.microsoft.com/oldnewthing/20151116-00/?p=92091
+// suggests watching for `EVENT_OBJECT_NAMECHANGE` for cursor image changes.
+// This appears to work on Windows 11 23H2, but no longer works on and after
+// 24H2. See http://crbug.com/469831346. EVENT_OBJECT_LOCATIONCHANGE still
+// works, so it remains event driven.
+constexpr base::TimeDelta kCursorImagePollingInterval = base::Hertz(100);
+
+}  // namespace
 
 // The delegate runs on DesktopEventHandler's internal sequence, and its
 // lifetime is managed by DesktopEventHandler. It runs capturing jobs on the
@@ -42,6 +57,7 @@ class MouseCursorMonitorWin::Delegate : public DesktopEventHandler::Delegate,
 
   // DesktopEventHandler::Delegate implementation.
   void OnWorkerThreadStarted() override;
+  void OnWorkerThreadStopping() override;
   void OnEvent(DWORD event, LONG object_id) override;
 
  private:
@@ -53,6 +69,7 @@ class MouseCursorMonitorWin::Delegate : public DesktopEventHandler::Delegate,
 
   // This is only used to capture the cursor image.
   std::unique_ptr<webrtc::MouseCursorMonitor> webrtc_monitor_;
+  base::RepeatingTimer capture_cursor_image_timer_;
   scoped_refptr<base::SequencedTaskRunner> caller_task_runner_;
   // Bound to the sequence of `caller_task_runner_`.
   base::WeakPtr<MouseCursorMonitorWin> monitor_;
@@ -71,9 +88,16 @@ void MouseCursorMonitorWin::Delegate::OnWorkerThreadStarted() {
       webrtc::DesktopCaptureOptions::CreateDefault());
   webrtc_monitor_->Init(this, webrtc::MouseCursorMonitor::SHAPE_ONLY);
 
+  capture_cursor_image_timer_.Start(FROM_HERE, kCursorImagePollingInterval,
+                                    this, &Delegate::CaptureCursorImage);
+
   // Capture the initial cursor image and position.
   CaptureCursorImage();
   CaptureCursorPosition();
+}
+
+void MouseCursorMonitorWin::Delegate::OnWorkerThreadStopping() {
+  capture_cursor_image_timer_.Stop();
 }
 
 void MouseCursorMonitorWin::Delegate::OnEvent(DWORD event, LONG object_id) {
@@ -85,9 +109,15 @@ void MouseCursorMonitorWin::Delegate::OnEvent(DWORD event, LONG object_id) {
     case EVENT_OBJECT_LOCATIONCHANGE:
       CaptureCursorPosition();
       break;
-    case EVENT_OBJECT_NAMECHANGE:
-      CaptureCursorImage();
+    case EVENT_OBJECT_NAMECHANGE: {
+      static bool logged_once = false;
+      LOG_IF(INFO, !logged_once)
+          << "EVENT_OBJECT_NAMECHANGE fired. See: crbug.com/474129133";
+      logged_once = true;
       break;
+    }
+    default:
+      LOG(WARNING) << "Unknown event: " << event;
   }
 }
 
@@ -129,7 +159,8 @@ void MouseCursorMonitorWin::Init(Callback* callback) {
   callback_ = callback;
   display_monitor_->Start();
   event_handler_.Start(
-      EVENT_OBJECT_LOCATIONCHANGE, EVENT_OBJECT_NAMECHANGE,
+      /*min_event=*/EVENT_OBJECT_LOCATIONCHANGE,
+      /*max_event=*/EVENT_OBJECT_NAMECHANGE,
       std::make_unique<Delegate>(weak_ptr_factory_.GetWeakPtr()));
 }
 

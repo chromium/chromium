@@ -244,6 +244,12 @@ void DesktopEventHandler::Core::CheckInputDesktop() {
 void DesktopEventHandler::Core::DestroyWorkerThread() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
 
+  {
+    base::AutoLock lock(delegate_lock_);
+    if (delegate_) {
+      delegate_->OnWorkerThreadStopping();
+    }
+  }
   check_input_desktop_timer_.Stop();
   if (win_event_hook_) {
     UnhookWinEvent(win_event_hook_);
