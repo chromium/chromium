@@ -2,12 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/web/public/js_messaging/compile_ts.gni")
 import("//ios/web/public/js_messaging/optimize_ts.gni")
+
+compile_ts("page_content_types_ts") {
+  sources = [ "resources/page_content_types.ts" ]
+}
 
 optimize_ts("page_context_extractor_js") {
   visibility = [ ":page_context_extractor_feature" ]
   sources = [ "resources/page_context_extractor.ts" ]
-  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
+  deps = [
+    ":page_content_types_ts",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
 }
 
 source_set("page_context_extractor_feature") {
