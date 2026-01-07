@@ -65,8 +65,7 @@ export class InputHandler {
     this.trackingMouse_ = false;
   }
 
-  private onClipboardPaste_(content: String): void {
-    // @ts-ignore: TODO(crbug.com/270623046): clipboardData can be null.
+  private onClipboardPaste_(content: string): void {
     this.callbacks_.onTextReceived(content);
   }
 
