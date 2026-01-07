@@ -12186,10 +12186,8 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
                                                      preloading_attempt);
 
   if (prerender_host_id) {
-    FrameTreeNodeId frame_tree_node_id =
-        PrerenderHost::GetFrameTreeNodeIdForId(prerender_host_id);
     return std::make_unique<PrerenderHandleImpl>(
-        GetPrerenderHostRegistry()->GetWeakPtr(), frame_tree_node_id,
+        GetPrerenderHostRegistry()->GetWeakPtr(), prerender_host_id,
         prerendering_url, std::move(no_vary_search_hint));
   }
   return nullptr;
