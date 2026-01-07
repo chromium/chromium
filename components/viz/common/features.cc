@@ -279,6 +279,18 @@ BASE_FEATURE(kEnableADPFWorkloadReset, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableADPFScrollNoRendererMain,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Chrome sends an ADPF(Android Dynamic Performance Framework)
+// timing report with a fake actual durarion > target duration only if there
+// were no frame timing reports for `adpf_boost_rate_limit_min_wait`, instead
+// of doing it for every touch start input.
+// The goal is to avoid boosts during continuous user input to reduce power
+// consumption.
+BASE_FEATURE(kEnableADPFBoostRateLimit, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta> kAdpfBoostRateLimitMinWait{
+    &kEnableADPFBoostRateLimit, "adpf_boost_rate_limit_min_wait",
+    base::Milliseconds(50)};
+
 // If enabled, we immediately send acks to clients when a viz surface
 // activates. This effectively removes back-pressure. This can result in wasted
 // work and contention, but should regularize the timing of client rendering.
