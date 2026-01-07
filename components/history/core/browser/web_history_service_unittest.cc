@@ -237,8 +237,7 @@ TEST_F(WebHistoryServiceTest, QueryHistoryValid) {
   "url":"https://www.google.com/",
   "title":"Google",
   "favicon_url":"https://www.google.com/favicon.ico",
-  "id":[{"timestamp_usec":"12345"}],
-  "client_id":"id1"
+  "id":[{"timestamp_usec":"12345", "client_id":"id1"}]
 }]}]})");
 
   std::optional<WebHistoryService::QueryHistoryResult> result =

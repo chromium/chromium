@@ -390,7 +390,7 @@ WebHistoryService::QueryHistoryResult ParseQueryResponse(
             base::Time::UnixEpoch() + base::Microseconds(timestamp_usec);
 
         // Get the ID of the client that this visit came from.
-        if (const std::string* client_id = result->FindString("client_id")) {
+        if (const std::string* client_id = id_dict->FindString("client_id")) {
           result_visit.client_id = *client_id;
         }
 
