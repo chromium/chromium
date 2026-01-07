@@ -276,11 +276,6 @@ BASE_FEATURE(kOmniboxMobileParityUpdate, ENABLED);
 // Android and iOS, V2.
 BASE_FEATURE(kOmniboxMobileParityUpdateV2, ENABLED);
 
-#if BUILDFLAG(IS_IOS)
-// Updates the search engine logo on NTP. iOS only.
-BASE_FEATURE(kOmniboxMobileParityUpdateV3, ENABLED);
-#endif  // BUILDFLAG(IS_IOS)
-
 // The features below allow tuning number of suggestions offered to users in
 // specific contexts. These features are default enabled and are used to control
 // related fieldtrial parameters.

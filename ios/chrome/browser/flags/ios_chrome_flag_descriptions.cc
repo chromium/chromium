@@ -1251,11 +1251,6 @@ const char kOmniboxMobileParityUpdateV2Description[] =
     "When set, applies certain assets to match Desktop visuals and "
     "descriptions";
 
-const char kOmniboxMobileParityUpdateV3Name[] =
-    "Omnibox Mobile parity update V3";
-const char kOmniboxMobileParityUpdateV3Description[] =
-    "When set, shows the search engine logo in the NTP";
-
 const char kOmniboxOnClobberFocusTypeOnIOSName[] =
     "Omnibox On Clobber Focus Type On IOS";
 const char kOmniboxOnClobberFocusTypeOnIOSDescription[] =
