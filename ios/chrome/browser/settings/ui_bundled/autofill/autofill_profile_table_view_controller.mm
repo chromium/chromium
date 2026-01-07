@@ -84,6 +84,27 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypePlusAddressFooter
 };
 
+// Returns the fallback detail text for a local profile when its detail text is
+// empty.
+NSString* GetFallbackDetailTextForLocalProfile(
+    const autofill::AutofillProfile& autofill_profile,
+    const std::string& locale) {
+  const autofill::FieldType fallback_types[] = {
+      autofill::ADDRESS_HOME_CITY, autofill::ADDRESS_HOME_STATE,
+      autofill::ADDRESS_HOME_ZIP, autofill::ADDRESS_HOME_COUNTRY};
+
+  NSString* detail_text;
+
+  for (const autofill::FieldType& type : fallback_types) {
+    detail_text =
+        base::SysUTF16ToNSString(autofill_profile.GetInfo(type, locale));
+    if ([detail_text length] != 0) {
+      return detail_text;
+    }
+  }
+  return @"";
+}
+
 }  // namespace
 
 #pragma mark - AutofillProfileTableViewController
@@ -334,6 +355,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
       } else {
         // This is a local profile.
         item.autofillProfileRecordType = AutofillLocalProfile;
+        if ([item.detailText length] == 0) {
+          item.detailText =
+              GetFallbackDetailTextForLocalProfile(autofillProfile, locale);
+        }
         if ([self shouldShowCloudOffIconForProfile:autofillProfile]) {
           item.showMigrateToAccountButton = YES;
           item.localProfileIconShown = YES;
