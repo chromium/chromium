@@ -101,6 +101,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
+#include "base/android/device_info.h"
 #include "base/android/path_utils.h"
 #include "base/process/process_handle.h"
 #include "chrome/browser/android/tab_android.h"
@@ -177,8 +178,6 @@
 #include "components/enterprise/connectors/core/reporting_event_router.h"
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
-
-#include "base/android/device_info.h"
 
 using content::BrowserThread;
 using content::DownloadManager;
