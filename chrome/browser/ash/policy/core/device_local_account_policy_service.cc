@@ -11,7 +11,6 @@
 
 #include "ash/constants/ash_paths.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -59,7 +58,7 @@ void DeleteOrphanedCaches(const base::FilePath& cache_root_dir,
   for (base::FilePath path = enumerator.Next(); !path.empty();
        path = enumerator.Next()) {
     const std::string subdirectory(path.BaseName().MaybeAsASCII());
-    if (!base::Contains(subdirectories_to_keep, subdirectory)) {
+    if (!subdirectories_to_keep.contains(subdirectory)) {
       base::DeletePathRecursively(path);
     }
   }

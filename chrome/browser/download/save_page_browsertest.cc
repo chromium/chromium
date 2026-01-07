@@ -1745,7 +1745,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveHTMLWithDlp) {
   }
 
   for (const auto& expected_path : expected_paths) {
-    EXPECT_TRUE(base::Contains(actual_paths, expected_path));
+    EXPECT_TRUE(actual_paths.contains(expected_path));
   }
 }
 

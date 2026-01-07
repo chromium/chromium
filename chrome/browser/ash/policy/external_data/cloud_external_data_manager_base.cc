@@ -15,7 +15,6 @@
 
 #include "base/callback_list.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -270,7 +269,7 @@ void CloudExternalDataManagerBase::Backend::Fetch(
     return;
   }
 
-  const bool has_pending_download = base::Contains(pending_downloads_, key);
+  const bool has_pending_download = pending_downloads_.contains(key);
   if (!has_pending_download && external_data_store_) {
     auto data = std::make_unique<std::string>();
     const base::FilePath file_path =
@@ -308,7 +307,7 @@ void CloudExternalDataManagerBase::Backend::FetchAll() {
   for (const auto& it : metadata_) {
     const MetadataKey& key = it.first;
     std::unique_ptr<std::string> data(new std::string);
-    if (base::Contains(pending_downloads_, key) ||
+    if (pending_downloads_.contains(key) ||
         (external_data_store_ &&
          !external_data_store_
               ->Load(key.ToString(), it.second.hash,
@@ -356,7 +355,7 @@ void CloudExternalDataManagerBase::Backend::RunCallback(
 void CloudExternalDataManagerBase::Backend::StartDownload(
     const MetadataKey& key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::Contains(pending_downloads_, key));
+  DCHECK(pending_downloads_.contains(key));
   if (!updater_)
     return;
 

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/printing/printers_map.h"
 
-#include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/containers/map_util.h"
 
@@ -144,7 +143,7 @@ void PrintersMap::Remove(PrinterClass printer_class,
 bool PrintersMap::IsPrinterInClass(PrinterClass printer_class,
                                    const std::string& printer_id) const {
   auto* printers_map = FindPrintersInClassOrNull(printer_class);
-  return printers_map ? base::Contains(*printers_map, printer_id) : false;
+  return printers_map ? printers_map->contains(printer_id) : false;
 }
 
 bool PrintersMap::IsExistingPrinter(const std::string& printer_id) const {

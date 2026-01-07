@@ -9,7 +9,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -127,7 +126,7 @@ class ServerPrintersProviderImpl : public ServerPrintersProvider {
     fetchers_.erase(it);
     // When old and new printers are empty and there is no change in
     // completeness status we leave here.
-    DCHECK(base::Contains(servers_, server_url));
+    DCHECK(servers_.contains(server_url));
     if (servers_.at(server_url).printers.empty() && printers.empty() &&
         previous_complete == IsComplete()) {
       return;

@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -133,7 +132,7 @@ DlpContentManager* DlpContentManager::Get() {
 
 DlpContentRestrictionSet DlpContentManager::GetConfidentialRestrictions(
     content::WebContents* web_contents) const {
-  if (!base::Contains(confidential_web_contents_, web_contents)) {
+  if (!confidential_web_contents_.contains(web_contents)) {
     return DlpContentRestrictionSet();
   }
   return confidential_web_contents_.at(web_contents);

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
 
-#include "base/containers/contains.h"
 #include "components/content_settings/common/content_settings_agent.mojom.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_thread.h"
@@ -42,7 +41,7 @@ void MixedContentSettingsTabHelper::AllowRunningOfInsecureContent(
     RenderFrameHost& render_frame_host) {
   DCHECK(!render_frame_host.IsNestedWithinFencedFrame());
   auto* main_frame = render_frame_host.GetOutermostMainFrame();
-  if (!base::Contains(settings_, main_frame->GetSiteInstance())) {
+  if (!settings_.contains(main_frame->GetSiteInstance())) {
     settings_[main_frame->GetSiteInstance()] =
         std::make_unique<SiteSettings>(main_frame);
   }

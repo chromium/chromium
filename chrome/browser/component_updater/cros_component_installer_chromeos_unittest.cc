@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "ash/constants/ash_paths.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -85,8 +84,8 @@ class TestUpdater : public OnDemandUpdater {
 
   // Whether has a pending update request (either foreground or background).
   bool HasPendingUpdate(const std::string& name) {
-    return base::Contains(background_updates_, name) ||
-           base::Contains(foreground_updates_, name);
+    return background_updates_.contains(name) ||
+           foreground_updates_.contains(name);
   }
 
   // Finishes a foreground update request. Returns false if there is no pending

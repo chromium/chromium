@@ -5,7 +5,6 @@
 // This file tests that Web Workers (a Content feature) work in the Chromium
 // embedder.
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -75,7 +74,7 @@ class ChromeWorkerBrowserTest : public InProcessBrowserTest {
       ASSERT_TRUE(ui_test_utils::NavigateToURL(
           browser(), embedded_test_server()->GetURL(test_url)));
       run_loop.Run();
-      EXPECT_FALSE(base::Contains(header_map_, "Cookie"));
+      EXPECT_FALSE(header_map_.contains("Cookie"));
     }
 
     // Set a cookie.
@@ -90,7 +89,7 @@ class ChromeWorkerBrowserTest : public InProcessBrowserTest {
       ASSERT_TRUE(ui_test_utils::NavigateToURL(
           browser(), embedded_test_server()->GetURL(test_url)));
       run_loop.Run();
-      EXPECT_TRUE(base::Contains(header_map_, "Cookie"));
+      EXPECT_TRUE(header_map_.contains("Cookie"));
       EXPECT_EQ(kCookie, header_map_["Cookie"]);
     }
   }

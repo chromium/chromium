@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -72,7 +71,7 @@ struct ResponseTemplate {
 std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     std::map<std::string, ResponseTemplate> templates,
     const net::test_server::HttpRequest& request) {
-  if (!base::Contains(templates, request.relative_url)) {
+  if (!templates.contains(request.relative_url)) {
     return std::make_unique<net::test_server::HungResponse>();
   }
 

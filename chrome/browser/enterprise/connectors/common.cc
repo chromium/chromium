@@ -552,8 +552,8 @@ void ReportDataMaskingEvent(
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client->GetReportingSettings();
   if (!settings.has_value() ||
-      !base::Contains(settings->enabled_event_names,
-                      enterprise_connectors::kKeySensitiveDataEvent)) {
+      !settings->enabled_event_names.contains(
+          enterprise_connectors::kKeySensitiveDataEvent)) {
     return;
   }
 

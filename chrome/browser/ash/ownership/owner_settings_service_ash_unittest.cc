@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -100,7 +99,7 @@ class PrefsChecker : public ownership::OwnerSettingsService::Observer {
 bool FindInListValue(const std::string& needle, const base::Value* haystack) {
   if (!haystack->is_list())
     return false;
-  return base::Contains(haystack->GetList(), base::Value(needle));
+  return haystack->GetList().contains(needle);
 }
 
 }  // namespace

@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
@@ -288,8 +287,7 @@ size_t DlpRulesManagerImpl::GetClipboardCheckSizeLimitInBytes() const {
 bool DlpRulesManagerImpl::IsFilesPolicyEnabled() const {
   return base::FeatureList::IsEnabled(
              features::kDataLeakPreventionFilesRestriction) &&
-         base::Contains(restrictions_map_,
-                        DlpRulesManager::Restriction::kFiles) &&
+         restrictions_map_.contains(DlpRulesManager::Restriction::kFiles) &&
          chromeos::DlpClient::Get() && chromeos::DlpClient::Get()->IsAlive();
 }
 
@@ -445,7 +443,7 @@ void DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate() {
 
   src_url_matcher_->AddConditionSets(src_conditions_);
   dst_url_matcher_->AddConditionSets(dst_conditions_);
-  if (base::Contains(restrictions_map_, Restriction::kClipboard) ||
+  if (restrictions_map_.contains(Restriction::kClipboard) ||
       (base::FeatureList::IsEnabled(
            features::kDataLeakPreventionFilesRestriction) &&
        request_to_daemon.rules_size() > 0)) {

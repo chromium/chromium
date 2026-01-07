@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -111,7 +110,7 @@ class ScopedLogMessageWatcher {
                              size_t message_start,
                              const std::string& str) {
     CHECK(current_handler_ != nullptr);
-    if (base::Contains(str, kWebpageErrorMessage)) {
+    if (str.contains(kWebpageErrorMessage)) {
       current_handler_->callback_.Run();
     }
     if (current_handler_->previous_handler_ != nullptr) {

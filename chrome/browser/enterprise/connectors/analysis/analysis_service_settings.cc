@@ -4,7 +4,6 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/analysis_service_settings.h"
 
-#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/common.h"

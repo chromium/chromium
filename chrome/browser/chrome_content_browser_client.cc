@@ -19,7 +19,6 @@
 #include "base/byte_count.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/dcheck_is_on.h"
@@ -959,7 +958,7 @@ bool IsExtensionIdAllowedToUseIsolatedContext(std::string_view extension_id) {
           "bbobefdodiifgmhhdijgpelmkdaebfpn",  // Controlled Frame Service
                                                // Worker Test
       });
-  return base::Contains(kAllowedIsolatedContextExtensionIds, extension_id);
+  return kAllowedIsolatedContextExtensionIds.contains(extension_id);
 }
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)

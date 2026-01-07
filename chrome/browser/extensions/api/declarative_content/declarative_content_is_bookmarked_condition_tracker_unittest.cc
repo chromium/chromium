@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/to_string.h"
@@ -93,7 +92,7 @@ class DeclarativeContentIsBookmarkedConditionTrackerTest
 
     // ContentPredicateEvaluator::Delegate:
     void NotifyPredicateStateUpdated(content::WebContents* contents) override {
-      EXPECT_FALSE(base::Contains(evaluation_requests_, contents));
+      EXPECT_FALSE(evaluation_requests_.contains(contents));
       evaluation_requests_.insert(contents);
     }
 

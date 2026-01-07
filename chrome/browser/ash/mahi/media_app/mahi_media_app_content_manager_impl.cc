@@ -7,7 +7,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"

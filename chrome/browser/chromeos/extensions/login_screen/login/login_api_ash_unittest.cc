@@ -1416,8 +1416,8 @@ TEST_F(LoginApiUnittest, CallsOnRequestExternalLogout) {
 
   // Make sure events are routed to all profiles.
   for (const auto& observer : observers) {
-    EXPECT_TRUE(base::Contains(
-        observer->events(), api::login::OnRequestExternalLogout::kEventName));
+    EXPECT_TRUE(observer->events().contains(
+        api::login::OnRequestExternalLogout::kEventName));
   }
 }
 
@@ -1447,8 +1447,8 @@ TEST_F(LoginApiUnittest, CallsOnExternalLogoutDone) {
 
   // Make sure events are routed to all profiles.
   for (const auto& observer : observers) {
-    EXPECT_TRUE(base::Contains(observer->events(),
-                               api::login::OnExternalLogoutDone::kEventName));
+    EXPECT_TRUE(observer->events().contains(
+        api::login::OnExternalLogoutDone::kEventName));
   }
 }
 

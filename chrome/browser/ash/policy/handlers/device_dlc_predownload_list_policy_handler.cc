@@ -9,7 +9,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -72,7 +71,7 @@ DeviceDlcPredownloadListPolicyHandler::DecodeDeviceDlcPredownloadListPolicy(
       continue;
     }
     std::string_view dlc_id = policy_value_to_dlc_id.at(dlc_to_predownload);
-    if (!base::Contains(dlcs_to_predownload, dlc_id)) {
+    if (!dlcs_to_predownload.contains(dlc_id)) {
       // Silently ignore duplicate values.
       dlcs_to_predownload.Append(dlc_id);
     }

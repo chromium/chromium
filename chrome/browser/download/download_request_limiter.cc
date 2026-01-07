@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
@@ -723,7 +722,7 @@ void DownloadRequestLimiter::CanDownloadImpl(
 
 void DownloadRequestLimiter::Remove(TabDownloadState* state,
                                     content::WebContents* contents) {
-  DCHECK(base::Contains(state_map_, contents));
+  DCHECK(state_map_.contains(contents));
   state_map_.erase(contents);
   delete state;
 }

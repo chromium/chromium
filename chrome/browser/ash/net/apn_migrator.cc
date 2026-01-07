@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
-#include "base/containers/contains.h"
 #include "base/values.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
@@ -133,7 +132,7 @@ void ApnMigrator::NetworkListChanged() {
       // The network has already been updated in Shill with the correct logic
       // depending on if the flag is enabled or disabled. Finish early so we
       // don't redundantly update Shill.
-      if (base::Contains(shill_updated_iccids_, network->iccid())) {
+      if (shill_updated_iccids_.contains(network->iccid())) {
         continue;
       }
 
@@ -246,7 +245,7 @@ void ApnMigrator::MigrateNetwork(const NetworkState& network) {
   DCHECK(ash::features::IsApnRevampEnabled());
 
   // Return early if the network is already in the process of being migrated.
-  if (base::Contains(iccids_in_migration_, network.iccid())) {
+  if (iccids_in_migration_.contains(network.iccid())) {
     NET_LOG(DEBUG) << "Attempting to migrate network that already has a "
                    << "migration in progress, returning early: "
                    << network.iccid();

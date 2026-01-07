@@ -7,7 +7,6 @@
 #include <string.h>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -199,8 +198,8 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherBrowserTest, DoesNotKeepSpaces) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::string output;
   ASSERT_TRUE(base::ReadFileToString(temp_file, &output));
-  EXPECT_FALSE(base::Contains(output, ' '));
-  EXPECT_TRUE(base::Contains(output, "%20"));
+  EXPECT_FALSE(output.contains(' '));
+  EXPECT_TRUE(output.contains("%20"));
 }
 
 #if BUILDFLAG(IS_WIN)

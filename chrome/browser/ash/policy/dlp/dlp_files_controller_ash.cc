@@ -19,7 +19,6 @@
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"

@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
@@ -46,7 +45,7 @@ void OnGetProperties(base::queue<std::string> service_path_queue,
       DVLOG(1) << "Error: " << error.value();
     }
   } else {
-    CHECK(!base::Contains(path_rssi_map, service_path));
+    CHECK(!path_rssi_map.contains(service_path));
 
     std::optional<int> rssi =
         properties->FindDict(kWiFi)->FindInt(kSignalStrengthRssi);

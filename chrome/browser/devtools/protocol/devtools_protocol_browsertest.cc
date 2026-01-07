@@ -7,7 +7,6 @@
 
 #include "base/base64.h"
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -145,8 +144,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
       params.FindStringByDottedPath("visibleSecurityState.safetyTipInfo"));
   const base::Value* security_state_issue_ids =
       params.FindByDottedPath("visibleSecurityState.securityStateIssueIds");
-  EXPECT_TRUE(base::Contains(security_state_issue_ids->GetList(),
-                             base::Value("scheme-is-not-cryptographic")));
+  EXPECT_TRUE(security_state_issue_ids->GetList().contains(
+      "scheme-is-not-cryptographic"));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CreateDeleteContext) {

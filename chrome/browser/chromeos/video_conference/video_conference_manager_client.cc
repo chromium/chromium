@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -118,7 +117,7 @@ VideoConferenceManagerClientImpl::~VideoConferenceManagerClientImpl() {
 
 void VideoConferenceManagerClientImpl::RemoveMediaApp(
     const base::UnguessableToken& id) {
-  DCHECK(base::Contains(id_to_webcontents_, id));
+  DCHECK(id_to_webcontents_.contains(id));
   auto it = id_to_webcontents_.find(id);
   raw_ptr<content::WebContents> web_contents = it->second;
 

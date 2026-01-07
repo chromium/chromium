@@ -620,7 +620,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
 
   std::unique_ptr<net::test_server::HttpResponse> HandleTestURL(
       const net::test_server::HttpRequest& request) {
-    if (!base::Contains(path_keyed_response_bodies_, request.relative_url)) {
+    if (!path_keyed_response_bodies_.contains(request.relative_url)) {
       return nullptr;
     }
 

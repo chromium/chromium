@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -195,7 +194,7 @@ class FakeSyncedPrintersManager : public SyncedPrintersManager {
   void RemovePrinters(const std::unordered_set<std::string>& ids,
                       std::vector<Printer>* target) {
     std::erase_if(*target, [&ids](const Printer& printer) {
-      return base::Contains(ids, printer.id());
+      return ids.contains(printer.id());
     });
   }
 
@@ -247,7 +246,7 @@ class FakePrinterDetector : public PrinterDetector {
   // Remove printers that have ids in ids.
   void RemoveDetections(const std::unordered_set<std::string>& ids) {
     std::erase_if(detections_, [&ids](const DetectedPrinter& detection) {
-      return base::Contains(ids, detection.printer.id());
+      return ids.contains(detection.printer.id());
     });
     on_printers_found_callback_.Run(detections_);
   }

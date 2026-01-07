@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
@@ -75,7 +74,7 @@ bool IsGenericUsbDescription(const std::string& make_and_model) {
           "seiko epson usb mfp",
           "oki data corp usb device",
       });
-  return base::Contains(kGenericUsbModels, make_and_model);
+  return kGenericUsbModels.contains(make_and_model);
 }
 
 // Callback for device.mojom.UsbDevice.ControlTransferIn.

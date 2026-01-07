@@ -10,7 +10,6 @@
 #include <string_view>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
@@ -93,8 +92,9 @@ bool AppEventsObserver::AppInstallTracker::Contains(
     std::string_view app_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(profile_);
-  return base::Contains(
-      profile_->GetPrefs()->GetList(::ash::reporting::kAppsInstalled), app_id);
+  return profile_->GetPrefs()
+      ->GetList(::ash::reporting::kAppsInstalled)
+      .contains(app_id);
 }
 
 AppEventsObserver::AppEventsObserver(

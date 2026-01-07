@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
@@ -76,7 +75,7 @@ void NetworkEventsObserver::NetworkConnectionStateChanged(
   }
 
   const bool active_network =
-      base::Contains(active_connection_state_map_, network->guid());
+      active_connection_state_map_.contains(network->guid());
 
   // If network was not found in the map, this means either it was already
   // reported as NOT_CONNECTED or it is newly added in a disconnected state and
@@ -213,7 +212,7 @@ void NetworkEventsObserver::OnSignalStrengthChangedRssiValueReceived(
     base::flat_map<std::string, int> service_path_rssi_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!base::Contains(service_path_rssi_map, service_path)) {
+  if (!service_path_rssi_map.contains(service_path)) {
     DVLOG(1) << "Wifi signal RSSI not found in the service to signal "
                 "map for service: "
              << service_path << " with guid: " << guid;

@@ -5,7 +5,6 @@
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 
 #include "base/barrier_closure.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/numerics/safe_conversions.h"
@@ -167,8 +166,8 @@ void EventReportValidator::ExpectUnscannedFileEvents(
             auto unscanned_file_event =
                 request.events().Get(0).unscanned_file_event();
 
-            EXPECT_TRUE(base::Contains(*expected_mimetypes,
-                                       unscanned_file_event.content_type()));
+            EXPECT_TRUE(expected_mimetypes->contains(
+                unscanned_file_event.content_type()));
             EXPECT_EQ(filenames_and_hashes.at(unscanned_file_event.file_name()),
                       unscanned_file_event.download_digest_sha_256());
 
@@ -542,9 +541,8 @@ void EventReportValidator::
                 request.events().Get(0).dangerous_download_event();
 
             if (expected_mimetypes) {
-              EXPECT_TRUE(
-                  base::Contains(*expected_mimetypes,
-                                 dangerous_download_event.content_type()));
+              EXPECT_TRUE(expected_mimetypes->contains(
+                  dangerous_download_event.content_type()));
               // Reset the `content_type` field, so that we can check if the
               // rest of the fields match.
               dangerous_download_event.clear_content_type();
@@ -566,8 +564,8 @@ void EventReportValidator::
                 request.events().Get(0).sensitive_data_event();
 
             if (expected_mimetypes) {
-              EXPECT_TRUE(base::Contains(*expected_mimetypes,
-                                         sensitive_data_event.content_type()));
+              EXPECT_TRUE(expected_mimetypes->contains(
+                  sensitive_data_event.content_type()));
               // Reset the `content_type` field, so that we can check if the
               // rest of the fields match.
               sensitive_data_event.clear_content_type();
@@ -702,9 +700,8 @@ void EventReportValidator::ExpectDangerousDownloadEvent(
                 request.events().Get(0).dangerous_download_event();
 
             if (expected_mimetypes) {
-              EXPECT_TRUE(
-                  base::Contains(*expected_mimetypes,
-                                 dangerous_download_event.content_type()));
+              EXPECT_TRUE(expected_mimetypes->contains(
+                  dangerous_download_event.content_type()));
               // Reset the `content_type` field, so that we can check if the
               // rest of the fields match.
               dangerous_download_event.clear_content_type();
@@ -862,7 +859,7 @@ void EventReportValidator::ValidateIdentities(const base::Value::Dict* value) {
 void EventReportValidator::ValidateMimeType(const base::Value::Dict* value) {
   const std::string* type = value->FindString(kKeyContentType);
   if (mimetypes_) {
-    EXPECT_TRUE(base::Contains(*mimetypes_, *type))
+    EXPECT_TRUE(mimetypes_->contains(*type))
         << *type << " is not an expected mimetype";
   } else {
     EXPECT_EQ(nullptr, type);
@@ -914,7 +911,7 @@ void EventReportValidator::ValidateFilenameMappedAttributes(
 #if BUILDFLAG(IS_CHROMEOS)
     // TODO(crbug.com/40941444): To fix the tests for ChromeOS.
     // If filename is not found as expected, try the filename without path.
-    if (!base::Contains(filenames_and_hashes_, filename)) {
+    if (!filenames_and_hashes_.contains(filename)) {
       for (const auto& fh : filenames_and_hashes_) {
         filenames += fh.first + "; ";
         if (base::FilePath(fh.first).BaseName().AsUTF8Unsafe() == filename) {
@@ -924,7 +921,7 @@ void EventReportValidator::ValidateFilenameMappedAttributes(
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    ASSERT_TRUE(base::Contains(filenames_and_hashes_, filename))
+    ASSERT_TRUE(filenames_and_hashes_.contains(filename))
         << "Mismatch in field " << kKeyFileName
         << "\nActual filename: " << filename << "\nExpected one filename in: { "
         << filenames << "}";

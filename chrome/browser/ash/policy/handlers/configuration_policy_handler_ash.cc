@@ -17,7 +17,6 @@
 #include "ash/constants/geolocation_access_level.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"

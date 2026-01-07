@@ -600,7 +600,7 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
     InitializePreexistingState(history_service, site_data_manager,
                                profile->GetPath(), annotator.get());
 
-    DCHECK(!base::Contains(calculation_finish_waiters_, profile));
+    DCHECK(!calculation_finish_waiters_.contains(profile));
     calculation_finish_waiters_.emplace(profile,
                                         std::make_unique<base::RunLoop>());
 

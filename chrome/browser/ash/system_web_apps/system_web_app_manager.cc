@@ -21,7 +21,6 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/crash_logging.h"
@@ -369,7 +368,7 @@ void SystemWebAppManager::Start() {
       provider_->policy_manager().GetDisabledSystemWebApps();
 
   for (const auto& app : system_app_delegates_) {
-    bool is_disabled = base::Contains(disabled_system_apps, app.first);
+    bool is_disabled = disabled_system_apps.contains(app.first);
     install_options_list.push_back(CreateInstallOptionsForSystemApp(
         app.first, *app.second, should_force_install_apps, is_disabled));
   }

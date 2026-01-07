@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/api/declarative_content/declarative_content_page_url_condition_tracker.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
@@ -191,7 +190,7 @@ void DeclarativeContentPageUrlConditionTracker::TrackForWebContents(
 void DeclarativeContentPageUrlConditionTracker::OnWebContentsNavigation(
     content::WebContents* contents,
     content::NavigationHandle* navigation_handle) {
-  DCHECK(base::Contains(per_web_contents_tracker_, contents));
+  DCHECK(per_web_contents_tracker_.contains(contents));
   per_web_contents_tracker_[contents]->UpdateMatchesForCurrentUrl(true);
 }
 
@@ -209,8 +208,8 @@ bool DeclarativeContentPageUrlConditionTracker::EvaluatePredicate(
   CHECK(loc != per_web_contents_tracker_.end());
   const std::set<base::MatcherStringPattern::ID>& web_contents_id_matches =
       loc->second->matches();
-  return base::Contains(web_contents_id_matches,
-                        typed_predicate->url_matcher_condition_set()->id());
+  return web_contents_id_matches.contains(
+      typed_predicate->url_matcher_condition_set()->id());
 }
 
 bool DeclarativeContentPageUrlConditionTracker::IsEmpty() const {
@@ -219,7 +218,7 @@ bool DeclarativeContentPageUrlConditionTracker::IsEmpty() const {
 
 void DeclarativeContentPageUrlConditionTracker::DeletePerWebContentsTracker(
     content::WebContents* contents) {
-  DCHECK(base::Contains(per_web_contents_tracker_, contents));
+  DCHECK(per_web_contents_tracker_.contains(contents));
   per_web_contents_tracker_.erase(contents);
 }
 

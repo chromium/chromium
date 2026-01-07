@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/system_logs/shill_log_source.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -45,7 +44,7 @@ void ScrubDictionary(base::Value::Dict& dict) {
     base::Value& value = entry.second;
     if (value.is_dict()) {
       ScrubDictionary(entry.second.GetDict());
-    } else if (base::Contains(system_logs::kShillPIIMaskedMap, entry.first) &&
+    } else if (system_logs::kShillPIIMaskedMap.contains(entry.first) &&
                system_logs::kShillPIIMaskedMap.at(entry.first) !=
                    redaction::PIIType::kNone &&
                (!value.is_string() || !value.GetString().empty())) {

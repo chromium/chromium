@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
@@ -399,7 +398,7 @@ bool DelayedDownloadWarningHatsLauncher::TryScheduleTask(
     download::DownloadItem* download) {
   CHECK(download);
   TaskKey key = GetTaskKey(download);
-  if (base::Contains(tasks_, key)) {
+  if (tasks_.contains(key)) {
     return false;
   }
 

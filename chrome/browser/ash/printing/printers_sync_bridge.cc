@@ -7,7 +7,6 @@
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -232,8 +231,7 @@ std::optional<syncer::ModelError> PrintersSyncBridge::MergeFullSyncData(
       // Clean up invalid ppd references (crbug.com/987869).
       bool resolved = ResolveInvalidPpdReference(entry.second.get());
 
-      if (migrated || resolved ||
-          !base::Contains(sync_entity_ids, local_entity_id)) {
+      if (migrated || resolved || !sync_entity_ids.contains(local_entity_id)) {
         // Only local objects which were not updated are uploaded.  Objects for
         // which there was a remote copy are overwritten.
         change_processor()->Put(local_entity_id,

@@ -14,7 +14,6 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -353,7 +352,7 @@ void BackgroundModeManager::RegisterPrefs(PrefRegistrySimple* registry) {
 
 void BackgroundModeManager::RegisterProfile(Profile* profile) {
   // We don't want to register multiple times for one profile.
-  DCHECK(!base::Contains(background_mode_data_, profile));
+  DCHECK(!background_mode_data_.contains(profile));
   auto bmd = std::make_unique<BackgroundModeData>(this, profile,
                                                   &command_id_handler_vector_);
   BackgroundModeData* bmd_ptr = bmd.get();

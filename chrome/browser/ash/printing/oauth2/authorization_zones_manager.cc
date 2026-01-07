@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zone.h"
@@ -105,12 +104,12 @@ class AuthorizationZonesManagerImpl
     std::unique_ptr<AuthorizationZone> auth_zone =
         auth_zone_creator_.Run(auth_server, client_ids_database_.get());
     if (sync_bridge_->IsInitialized()) {
-      if (!base::Contains(servers_, auth_server)) {
+      if (!servers_.contains(auth_server)) {
         servers_.emplace(auth_server, std::move(auth_zone));
         sync_bridge_->AddAuthorizationServer(auth_server);
       }
     } else {
-      if (!base::Contains(waiting_servers_, auth_server)) {
+      if (!waiting_servers_.contains(auth_server)) {
         waiting_servers_[auth_server].server = std::move(auth_zone);
       }
     }
@@ -147,7 +146,7 @@ class AuthorizationZonesManagerImpl
 
     AuthorizationZone* zone = GetAuthorizationZone(auth_server);
     if (!zone) {
-      const StatusCode code = base::Contains(waiting_servers_, auth_server)
+      const StatusCode code = waiting_servers_.contains(auth_server)
                                   ? StatusCode::kAuthorizationNeeded
                                   : StatusCode::kUntrustedAuthorizationServer;
       std::move(callback).Run(code, "");
@@ -167,7 +166,7 @@ class AuthorizationZonesManagerImpl
 
     AuthorizationZone* zone = GetAuthorizationZone(auth_server);
     if (!zone) {
-      const StatusCode code = base::Contains(waiting_servers_, auth_server)
+      const StatusCode code = waiting_servers_.contains(auth_server)
                                   ? StatusCode::kAuthorizationNeeded
                                   : StatusCode::kUntrustedAuthorizationServer;
       std::move(callback).Run(code, "");
@@ -244,7 +243,7 @@ class AuthorizationZonesManagerImpl
       auth_zone->MarkAuthorizationZoneAsUntrusted();
     }
     for (const GURL& url : added) {
-      if (!base::Contains(servers_, url)) {
+      if (!servers_.contains(url)) {
         servers_.emplace(
             url, auth_zone_creator_.Run(url, client_ids_database_.get()));
       }

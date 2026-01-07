@@ -62,9 +62,9 @@ class DesktopDataControlsDialogTest : public InProcessBrowserTest,
     ASSERT_EQ(delegate->GetDefaultDialogButton(),
               static_cast<int>(ui::mojom::DialogButton::kOk));
 
-    ASSERT_FALSE(base::Contains(delegates_, dialog));
-    ASSERT_FALSE(base::Contains(dialog_close_loops_, dialog));
-    ASSERT_FALSE(base::Contains(dialog_close_callbacks_, dialog));
+    ASSERT_FALSE(delegates_.contains(dialog));
+    ASSERT_FALSE(dialog_close_loops_.contains(dialog));
+    ASSERT_FALSE(dialog_close_callbacks_.contains(dialog));
 
     delegates_[dialog] = delegate;
     dialog_close_loops_[dialog] = std::make_unique<base::RunLoop>();
@@ -74,9 +74,9 @@ class DesktopDataControlsDialogTest : public InProcessBrowserTest,
 
   void OnDestructed(DesktopDataControlsDialog* dialog) override {
     ASSERT_TRUE(dialog);
-    ASSERT_TRUE(base::Contains(delegates_, dialog));
-    ASSERT_TRUE(base::Contains(dialog_close_loops_, dialog));
-    ASSERT_TRUE(base::Contains(dialog_close_callbacks_, dialog));
+    ASSERT_TRUE(delegates_.contains(dialog));
+    ASSERT_TRUE(dialog_close_loops_.contains(dialog));
+    ASSERT_TRUE(dialog_close_callbacks_.contains(dialog));
 
     std::move(dialog_close_callbacks_[dialog]).Run();
   }

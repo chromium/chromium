@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate.h"
@@ -169,7 +168,7 @@ void FakeBluetoothGattCharacteristic::StartNotifySession(
 void FakeBluetoothGattCharacteristic::StopNotifySession(
     BluetoothGattNotifySession::Id session,
     base::OnceClosure callback) {
-  EXPECT_TRUE(base::Contains(active_notify_sessions_, session));
+  EXPECT_TRUE(active_notify_sessions_.contains(session));
   std::move(callback).Run();
 }
 

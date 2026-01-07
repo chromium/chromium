@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/notifications/echo_dialog_view.h"
 
-#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/notifications/echo_dialog_listener.h"
 #include "chrome/grit/generated_resources.h"
@@ -37,10 +36,10 @@ class TestEchoDialogListener : public EchoDialogListener {
 
 bool IsLabelWithText(const views::View* view, const std::u16string& text) {
   if (const auto* label = views::AsViewClass<views::Label>(view)) {
-    return base::Contains(label->GetText(), text);
+    return label->GetText().contains(text);
   }
   if (const auto* styled_label = views::AsViewClass<views::StyledLabel>(view)) {
-    return base::Contains(styled_label->GetText(), text);
+    return styled_label->GetText().contains(text);
   }
   return false;
 }

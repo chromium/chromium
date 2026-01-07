@@ -10,7 +10,6 @@
 
 #include "base/callback_list.h"
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -251,7 +250,7 @@ class ClearBrowsingDataAction : public Action,
     };
     uint64_t result = 0;
     for (const auto& [action_type, mask] : entries) {
-      if (base::Contains(action_types_, action_type)) {
+      if (action_types_.contains(action_type)) {
         result |= mask;
       }
     }
@@ -261,12 +260,11 @@ class ClearBrowsingDataAction : public Action,
   uint64_t GetOriginTypeMask() const {
     using content::BrowsingDataRemover;
     uint64_t result = 0;
-    if (base::Contains(action_types_,
-                       ActionType::kClearCookiesAndOtherSiteData)) {
+    if (action_types_.contains(ActionType::kClearCookiesAndOtherSiteData)) {
       result |= BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB;
     }
 #if !BUILDFLAG(IS_ANDROID)
-    if (base::Contains(action_types_, ActionType::kClearHostedAppData)) {
+    if (action_types_.contains(ActionType::kClearHostedAppData)) {
       result |= BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB;
     }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -345,7 +343,7 @@ class ShowBubbleAction : public Action {
     profile->GetPrefs()->SetBoolean(prefs::kIdleTimeoutShowBubbleOnStartup,
                                     true);
     if (bwi && bwi->IsActive() && bwi->GetProfile() == profile &&
-        !base::Contains(action_types_, ActionType::kCloseBrowsers)) {
+        !action_types_.contains(ActionType::kCloseBrowsers)) {
       // A browser for this profile has focus. Show the bubble there.
       ShowIdleBubble(
           bwi, IdleServiceFactory::GetForBrowserContext(profile)->GetTimeout(),

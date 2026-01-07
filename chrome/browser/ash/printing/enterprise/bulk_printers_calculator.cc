@@ -7,7 +7,6 @@
 #include <optional>
 #include <set>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -194,14 +193,14 @@ class Restrictions : public base::RefCountedThreadSafe<Restrictions> {
         NOTREACHED();
       case BulkPrintersCalculator::ALLOWLIST_ONLY:
         for (const auto& printer : *printers_cache_) {
-          if (base::Contains(allowlist_, printer->id())) {
+          if (allowlist_.contains(printer->id())) {
             task_data->printers.insert({printer->id(), *printer});
           }
         }
         break;
       case BulkPrintersCalculator::BLOCKLIST_ONLY:
         for (const auto& printer : *printers_cache_) {
-          if (!base::Contains(blocklist_, printer->id())) {
+          if (!blocklist_.contains(printer->id())) {
             task_data->printers.insert({printer->id(), *printer});
           }
         }

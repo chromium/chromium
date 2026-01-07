@@ -14,7 +14,6 @@
 #include "base/base64url.h"
 #include "base/cancelable_callback.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
@@ -313,7 +312,7 @@ bool FillFormSplitCache(const AutofillPageQueryRequest& query_request,
     std::string key = base::NumberToString(query_form.signature());
     // If already stored a respones for this key, then just advance the
     // current_field by that offset and continue.
-    if (base::Contains((*cache_to_fill), key)) {
+    if (cache_to_fill->contains(key)) {
       VLOG(2) << "Already added key: " << key;
       continue;
     }
@@ -702,7 +701,7 @@ bool GetResponseForQuery(const ServerCacheReplayer& cache_replayer,
   bool split_requests_by_form = cache_replayer.split_requests_by_form();
   std::string combined_key = GetKeyFromQuery(query);
 
-  if (base::Contains(cache, combined_key)) {
+  if (cache.contains(combined_key)) {
     VLOG(1) << "Retrieving response for " << combined_key;
     std::string decompressed_http_response;
     if (!RetrieveAndDecompressStoredHTTP(cache, combined_key,
@@ -725,7 +724,7 @@ bool GetResponseForQuery(const ServerCacheReplayer& cache_replayer,
   bool first_loop = true;
   for (const auto& form : GetFormsRef(query)) {
     std::string key = base::NumberToString(form.signature());
-    if (!base::Contains(cache, key)) {
+    if (!cache.contains(key)) {
       VLOG(2) << "Stubbing in fields for uncached key `" << key << "`.";
       CreateEmptyResponseForFormQuery(form, &combined_form_response);
       continue;

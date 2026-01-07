@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
-#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/auth/legacy_fingerprint_engine.h"
 #include "chrome/browser/profiles/profile_manager.h"

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
@@ -88,7 +87,7 @@ void BackgroundFetchDelegateImpl::UpdateUI(
   if (title && job_details->fetch_description->title != *title)
     job_details->fetch_description->title = *title;
 
-  DCHECK(base::Contains(ui_state_map_, job_id));
+  DCHECK(ui_state_map_.contains(job_id));
   UiState& ui_state = ui_state_map_[job_id];
 
   if (icon) {
@@ -225,7 +224,7 @@ BackgroundFetchDelegateImpl::GetDownloadService() {
 
 void BackgroundFetchDelegateImpl::OnJobDetailsCreated(
     const std::string& job_id) {
-  DCHECK(!base::Contains(ui_state_map_, job_id));
+  DCHECK(!ui_state_map_.contains(job_id));
   UiState& ui_state = ui_state_map_[job_id];
   offline_items_collection::OfflineItem offline_item(
       offline_items_collection::ContentId(provider_namespace_, job_id));

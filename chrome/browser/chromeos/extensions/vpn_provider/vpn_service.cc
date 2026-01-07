@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -332,7 +331,7 @@ void VpnService::OnGetShillProperties(
     return;
   }
 
-  if (!base::Contains(vpn_extensions_, *extension_id)) {
+  if (!vpn_extensions_.contains(*extension_id)) {
     return;
   }
 

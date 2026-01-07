@@ -507,7 +507,7 @@ void ContextualTasksSidePanelCoordinator::CleanUpUnusedWebContents() {
     bool found = false;
     for (auto tab_id :
          contextual_tasks_service_->GetTabsAssociatedWithTask(task_id)) {
-      if (base::Contains(tab_ids, tab_id)) {
+      if (tab_ids.contains(tab_id)) {
         found = true;
         break;
       }

@@ -6,7 +6,6 @@
 #include <memory>
 #include <set>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/path_service.h"
@@ -128,8 +127,8 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
     EXPECT_TRUE(ack);
 
     ++ack_count_;
-    ASSERT_TRUE(base::Contains(request_tokens_to_final_actions_,
-                               ack->ack().request_token()));
+    ASSERT_TRUE(
+        request_tokens_to_final_actions_.contains(ack->ack().request_token()));
     ASSERT_EQ(ack->ack().final_action(),
               request_tokens_to_final_actions_.at(ack->ack().request_token()));
   }

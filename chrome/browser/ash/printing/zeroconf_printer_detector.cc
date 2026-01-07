@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -393,7 +392,7 @@ class ZeroconfPrinterDetectorImpl : public ZeroconfPrinterDetector {
         this, discovery_client_.get(), service_type);
     lister->Start();
     lister->DiscoverNewDevices();
-    DCHECK(!base::Contains(device_listers_, service_type));
+    DCHECK(!device_listers_.contains(service_type));
     device_listers_[service_type] = std::move(lister);
   }
 
@@ -431,7 +430,7 @@ class ZeroconfPrinterDetectorImpl : public ZeroconfPrinterDetector {
   bool IsPrintersEmpty() const {
     printers_lock_.AssertAcquired();
     for (const char* service_type : kServiceNames) {
-      DCHECK(base::Contains(printers_, service_type));
+      DCHECK(printers_.contains(service_type));
       if (!printers_.at(service_type).empty()) {
         return false;
       }

@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
@@ -441,7 +440,7 @@ class FakeAndroidUsbManager : public FakeUsbDeviceManager {
       mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
       mojo::PendingRemote<device::mojom::UsbDeviceClient> device_client)
       override {
-    DCHECK(base::Contains(devices(), guid));
+    DCHECK(devices().contains(guid));
     FakeAndroidUsbDevice::Create(devices()[guid], std::move(device_receiver),
                                  std::move(device_client));
   }
