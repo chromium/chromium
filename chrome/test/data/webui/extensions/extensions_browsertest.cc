@@ -280,6 +280,10 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, Layout) {
   RunTestCase("Layout");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, BackButton) {
+  RunTestCase("BackButton");
+}
+
 IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, LayoutSource) {
   RunTestCase("LayoutSource");
 }
