@@ -22,6 +22,7 @@ source_set("ios") {
 
 compile_ts("compile_bookmark_parser") {
   sources = [ "resources/bookmark_parser.ts" ]
+  tsconfig_base = "tsconfig_base.json"
 }
 
 action("strip_comments") {

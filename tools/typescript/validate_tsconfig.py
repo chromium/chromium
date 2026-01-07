@@ -44,6 +44,8 @@ _allowed_compiler_options = {
     'allowUmdGlobalAccess': None,
     'isolatedModules': None,
     'lib': None,
+    'module': ['NodeNext', 'preserve'],
+    'moduleResolution': ['NodeNext', 'bundler'],
     'noPropertyAccessFromIndexSignature': None,
     'noUncheckedIndexedAccess': None,
     'noUncheckedSideEffectImports': None,
