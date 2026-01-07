@@ -2192,7 +2192,7 @@
     {
       // crbug.com/420857717
       name: "EmojiMonochromeRendering",
-      status: "experimental"
+      status: "stable"
     },
     {
       name: "EndpointInclusiveCommitStyles",
