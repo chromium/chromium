@@ -8,7 +8,6 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/magic_stack/CirclePagerIndicatorDecoration.java",
     "java/src/org/chromium/chrome/browser/magic_stack/HomeModulesConfigManager.java",
-    "java/src/org/chromium/chrome/browser/magic_stack/HomeModulesConfigSettings.java",
     "java/src/org/chromium/chrome/browser/magic_stack/HomeModulesContextMenuManager.java",
     "java/src/org/chromium/chrome/browser/magic_stack/HomeModulesCoordinator.java",
     "java/src/org/chromium/chrome/browser/magic_stack/HomeModulesMediator.java",
@@ -79,7 +78,6 @@ robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/chrome/browser/magic_stack/CirclePagerIndicatorDecorationUnitTest.java",
     "junit/src/org/chromium/chrome/browser/magic_stack/HomeModulesConfigManagerUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/magic_stack/HomeModulesConfigSettingsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/magic_stack/HomeModulesContextMenuManagerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/magic_stack/HomeModulesCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/magic_stack/HomeModulesMediatorUnitTest.java",

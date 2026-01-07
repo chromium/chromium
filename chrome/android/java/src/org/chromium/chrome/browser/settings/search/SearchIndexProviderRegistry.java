@@ -113,8 +113,6 @@ public final class SearchIndexProviderRegistry {
                             .FinancialAccountsManagementFragment.SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.sync.settings.GoogleServicesSettings
                             .SEARCH_INDEX_DATA_PROVIDER,
-                    org.chromium.chrome.browser.magic_stack.HomeModulesConfigSettings
-                            .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.ssl.HttpsFirstModeSettingsFragment
                             .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.language.settings.LanguageSettings

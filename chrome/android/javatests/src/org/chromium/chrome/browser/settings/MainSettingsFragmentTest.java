@@ -91,8 +91,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.language.settings.LanguageSettings;
-import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
-import org.chromium.chrome.browser.magic_stack.HomeModulesConfigSettings;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
@@ -190,7 +188,6 @@ public class MainSettingsFragmentTest {
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
 
     @Mock private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
-    @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
 
     @Mock private Tracker mTestTracker;
     @Mock private DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;
@@ -741,43 +738,6 @@ public class MainSettingsFragmentTest {
         intended(IntentMatchers.hasData("https://test.plusaddresses.google.com"));
     }
 
-    /**
-     * Verifies that when the feature flag is enabled, the PREF_HOME_MODULES_CONFIG is removed from
-     * the settings page.
-     */
-    // TODO(crbug.com/376238770): Remove @EnableFeatures once the feature flag is turned on by
-    // default.
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION)
-    public void testHomeModulesConfigSettingsWithCustomizableModuleWhileFeatureTurnOn() {
-        when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(true);
-        HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
-        startSettings();
-        assertSettingsNotExists(MainSettings.PREF_HOME_MODULES_CONFIG);
-    }
-
-    /**
-     * Verifies that when the feature flag is turned off, the PREF_HOME_MODULES_CONFIG is removed
-     * from the settings page, only if hasModuleShownInSettings returns false.
-     */
-    // TODO(crbug.com/376238770): Removes this test when the feature flag is turned on by default.
-    @Test
-    @SmallTest
-    @DisableFeatures("NewTabPageCustomization")
-    public void testHomeModulesConfigSettingsWithCustomizableModuleWhileFeatureTurnOff() {
-        when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(true);
-        HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
-        startSettings();
-        assertSettingsExists(
-                MainSettings.PREF_HOME_MODULES_CONFIG, HomeModulesConfigSettings.class);
-
-        when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(false);
-        HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
-        startSettings();
-        assertSettingsNotExists(MainSettings.PREF_HOME_MODULES_CONFIG);
-    }
-
     @Test
     @SmallTest
     public void testTabsSettingsOn() {
@@ -945,11 +905,6 @@ public class MainSettingsFragmentTest {
             throw new AssertionError("Pref fragment <" + pref.getFragment() + "> is not found.");
         }
         return pref;
-    }
-
-    private void assertSettingsNotExists(String prefKey) {
-        Preference pref = mMainSettings.findPreference(prefKey);
-        Assert.assertNull(pref);
     }
 
     private boolean supportAddressBarSettings() {

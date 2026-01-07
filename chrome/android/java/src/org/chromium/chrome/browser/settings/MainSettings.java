@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
-import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
@@ -118,7 +117,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_PASSWORDS = "passwords";
     public static final String PREF_TABS = "tabs";
     public static final String PREF_HOMEPAGE = "homepage";
-    public static final String PREF_HOME_MODULES_CONFIG = "home_modules_config";
     public static final String PREF_TOOLBAR_SHORTCUT = "toolbar_shortcut";
     public static final String PREF_UI_THEME = "ui_theme";
     public static final String PREF_AUTOFILL_SECTION = "autofill_section";
@@ -506,12 +504,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
         Preference homepagePref = addPreferenceIfAbsent(PREF_HOMEPAGE);
         setOnOffSummary(homepagePref, HomepageManager.getInstance().isHomepageEnabled());
 
-        if (shouldShowHomeModulePref()) {
-            addPreferenceIfAbsent(PREF_HOME_MODULES_CONFIG);
-        } else {
-            removePreferenceIfPresent(PREF_HOME_MODULES_CONFIG);
-        }
-
         if (shouldShowDeveloperSettings()) {
             addPreferenceIfAbsent(PREF_DEVELOPER);
         } else {
@@ -529,11 +521,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
         assumeNonNull(signinManager);
         return signinManager.isSigninSupported(/* requireUpdatedPlayServices= */ false);
-    }
-
-    private static boolean shouldShowHomeModulePref() {
-        return !ChromeFeatureList.isEnabled(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION)
-                && HomeModulesConfigManager.getInstance().hasModuleShownInSettings();
     }
 
     private static boolean shouldShowDeveloperSettings() {
@@ -986,9 +973,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     }
                     if (!shouldShowSignInPref(profile)) {
                         indexData.removeEntry(getUniqueId(PREF_SIGN_IN));
-                    }
-                    if (!shouldShowHomeModulePref()) {
-                        indexData.removeEntry(getUniqueId(PREF_HOME_MODULES_CONFIG));
                     }
                     if (!shouldShowDeveloperSettings()) {
                         indexData.removeEntry(getUniqueId(PREF_DEVELOPER));

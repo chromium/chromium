@@ -63,7 +63,6 @@ import org.chromium.chrome.browser.feed.FeedSurfaceProvider.RestoringState;
 import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.NtpFeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -1586,17 +1585,13 @@ public class NewTabPage
 
     @Override
     public void customizeSettings() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION)) {
-            NtpCustomizationCoordinatorFactory.getInstance()
-                    .create(
-                            mContext,
-                            mBottomSheetController,
-                            mTab::getProfile,
-                            NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS)
-                    .showBottomSheet();
-        } else {
-            HomeModulesConfigManager.getInstance().onMenuClick(mContext);
-        }
+        NtpCustomizationCoordinatorFactory.getInstance()
+                .create(
+                        mContext,
+                        mBottomSheetController,
+                        mTab::getProfile,
+                        NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS)
+                .showBottomSheet();
     }
 
     @Override
