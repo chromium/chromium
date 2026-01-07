@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
 #import "ios/chrome/browser/autofill/ui_bundled/branding/branding_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_view_controller_delegate.h"
@@ -215,6 +216,14 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
       showGroup:[self hasSingleManualFillButton:suggestions.count > 0]
                     ? FormInputAccessoryViewSubitemGroup::kExpandButton
                     : FormInputAccessoryViewSubitemGroup::kManualFillButtons];
+
+  if (suggestions.count > kKeyboardAccessorySuggestionsLimit &&
+      base::FeatureList::IsEnabled(
+          kIOSKeyboardAccessorySuggestionsCutOffLimit)) {
+    suggestions = [suggestions
+        subarrayWithRange:NSMakeRange(0, kKeyboardAccessorySuggestionsLimit)];
+  }
+
   [self updateFormSuggestionView:suggestions];
 }
 

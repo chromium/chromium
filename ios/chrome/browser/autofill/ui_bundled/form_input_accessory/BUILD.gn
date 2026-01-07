@@ -82,6 +82,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "form_input_accessory_mediator_unittest.mm",
+    "form_input_accessory_view_controller+testing.h",
     "form_input_accessory_view_controller_unittest.mm",
   ]
   deps = [

@@ -14,6 +14,9 @@
 @class LayoutGuideCenter;
 @protocol FormInputAccessoryViewControllerDelegate;
 
+// The maximum number of suggestions to show in the keyboard accessory.
+inline constexpr NSUInteger kKeyboardAccessorySuggestionsLimit = 30;
+
 // Creates and manages a custom input accessory view while the user is
 // interacting with a form.
 @interface FormInputAccessoryViewController

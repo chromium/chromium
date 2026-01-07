@@ -8,10 +8,16 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
+#import "base/time/time.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/branding/branding_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_view_controller+testing.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 namespace {
 
@@ -52,31 +58,43 @@ FormSuggestion* SimpleFormSuggestion(std::u16string value,
                               requiresReauth:NO];
 }
 
+// Returns an array of `count` simple form suggestions.
+NSArray<FormSuggestion*>* SimpleFormSuggestions(int count) {
+  NSMutableArray<FormSuggestion*>* suggestions = [NSMutableArray array];
+  for (int i = 0; i < count; i++) {
+    [suggestions
+        addObject:SimpleFormSuggestion(
+                      u"", autofill::SuggestionType::kAutocompleteEntry)];
+  }
+  return suggestions;
+}
+
 }  // namespace
 
-using FormInputAccessoryViewControllerTest = PlatformTest;
+class FormInputAccessoryViewControllerTest : public PlatformTest {
+ public:
+  FormInputAccessoryViewControllerTest() {}
 
-// Tests FormInputAccessoryViewController can be initiliazed.
-TEST_F(FormInputAccessoryViewControllerTest, Init) {
-  FormInputAccessoryViewController* view_controller =
-      [[FormInputAccessoryViewController alloc]
-          initWithFormInputAccessoryViewControllerDelegate:nil];
-  EXPECT_TRUE(view_controller);
-}
+ protected:
+  void SetUp() override {
+    PlatformTest::SetUp();
+
+    view_controller_ = [[FormInputAccessoryViewController alloc]
+        initWithFormInputAccessoryViewControllerDelegate:nil];
+    view_controller_.brandingViewController =
+        [[BrandingViewController alloc] init];
+    [view_controller_ loadView];
+  }
+
+  FormInputAccessoryViewController* view_controller_;
+};
 
 // Tests FormInputAccessoryViewController can press the manual fill button with
 // any filling product that's available on iOS when that button is accessible.
 TEST_F(FormInputAccessoryViewControllerTest, ManualFillButtonPress) {
-  FormInputAccessoryViewController* view_controller =
-      [[FormInputAccessoryViewController alloc]
-          initWithFormInputAccessoryViewControllerDelegate:nil];
-  EXPECT_TRUE(view_controller);
-
-  view_controller.brandingViewController =
-      [[BrandingViewController alloc] init];
-  [view_controller loadView];
   FormInputAccessoryView* accessory_view =
-      base::apple::ObjCCastStrict<FormInputAccessoryView>(view_controller.view);
+      base::apple::ObjCCastStrict<FormInputAccessoryView>(
+          view_controller_.view);
 
   NSArray<FormSuggestion*>* suggestions = @[ SimpleFormSuggestion(
       u"", autofill::SuggestionType::kAutocompleteEntry) ];
@@ -86,12 +104,79 @@ TEST_F(FormInputAccessoryViewControllerTest, ManualFillButtonPress) {
     autofill::FillingProduct filling_product =
         static_cast<autofill::FillingProduct>(i);
     if (IsAvailableOnIos(filling_product)) {
-      view_controller.mainFillingProduct = filling_product;
-      [view_controller showAccessorySuggestions:suggestions];
+      view_controller_.mainFillingProduct = filling_product;
+      [view_controller_ showAccessorySuggestions:suggestions];
       if (accessory_view.currentGroup ==
           FormInputAccessoryViewSubitemGroup::kExpandButton) {
-        [view_controller manualFillButtonPressed:nil];
+        [view_controller_ manualFillButtonPressed:nil];
       }
     }
   }
+}
+
+// Tests that the number of suggestions to show is capped at
+// kKeyboardAccessorySuggestionsLimit when
+// kIOSKeyboardAccessorySuggestionsCutOffLimit is enabled.
+TEST_F(FormInputAccessoryViewControllerTest,
+       ShowAccessorySuggestions_CutOffLimitEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      kIOSKeyboardAccessorySuggestionsCutOffLimit);
+
+  id mock_view_controller = OCMPartialMock(view_controller_);
+
+  NSArray<FormSuggestion*>* manySuggestions =
+      SimpleFormSuggestions(kKeyboardAccessorySuggestionsLimit + 1);
+
+  OCMExpect([mock_view_controller
+      updateFormSuggestionView:[OCMArg checkWithBlock:^BOOL(
+                                           NSArray* suggestions) {
+        return suggestions.count == kKeyboardAccessorySuggestionsLimit;
+      }]]);
+
+  [mock_view_controller showAccessorySuggestions:manySuggestions];
+
+  EXPECT_OCMOCK_VERIFY(mock_view_controller);
+}
+
+// Tests that the number of suggestions shown is NOT capped when
+// kIOSKeyboardAccessorySuggestionsCutOffLimit is disabled.
+TEST_F(FormInputAccessoryViewControllerTest,
+       ShowAccessorySuggestions_CutOffLimitDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kIOSKeyboardAccessorySuggestionsCutOffLimit);
+
+  id mock_view_controller = OCMPartialMock(view_controller_);
+
+  NSArray<FormSuggestion*>* manySuggestions =
+      SimpleFormSuggestions(kKeyboardAccessorySuggestionsLimit + 1);
+
+  OCMExpect([mock_view_controller
+      updateFormSuggestionView:[OCMArg checkWithBlock:^BOOL(
+                                           NSArray* suggestions) {
+        return suggestions.count == manySuggestions.count;
+      }]]);
+
+  [mock_view_controller showAccessorySuggestions:manySuggestions];
+
+  EXPECT_OCMOCK_VERIFY(mock_view_controller);
+}
+
+// Tests that updateFormSuggestionView takes less than a threshold with the
+// amount of suggestions we intend to support. Updating suggestions should be
+// done within this threshold to maintain smooth UI animations.
+TEST_F(FormInputAccessoryViewControllerTest,
+       UpdateFormSuggestionViewPerformance) {
+  // 20ms is 1/60 of a second rounding up to the nearest tenth of a second.
+  // 5ms is added to account for slower testing computers.
+  base::TimeDelta threshold = base::Milliseconds(25);
+
+  NSArray<FormSuggestion*>* suggestions =
+      SimpleFormSuggestions(kKeyboardAccessorySuggestionsLimit);
+
+  base::TimeTicks start = base::TimeTicks::Now();
+  [view_controller_ updateFormSuggestionView:suggestions];
+  base::TimeDelta duration = base::TimeTicks::Now() - start;
+
+  EXPECT_LT(duration, threshold);
 }
