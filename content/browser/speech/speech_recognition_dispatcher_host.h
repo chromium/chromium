@@ -26,7 +26,6 @@ class Origin;
 
 namespace content {
 
-class RenderFrameHost;
 class SpeechRecognitionManager;
 struct SpeechRecognitionSessionConfig;
 struct SpeechRecognitionAudioForwarderConfig;
@@ -46,7 +45,7 @@ class SpeechRecognitionDispatcherHost : public media::mojom::SpeechRecognizer {
   ~SpeechRecognitionDispatcherHost() override;
   static void Create(
       int render_process_id,
-      RenderFrameHost* host,
+      int render_frame_id,
       mojo::PendingReceiver<media::mojom::SpeechRecognizer> receiver);
   base::WeakPtr<SpeechRecognitionDispatcherHost> AsWeakPtr();
 

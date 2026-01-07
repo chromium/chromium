@@ -710,61 +710,6 @@ void BindRenderFrameHostImpl(RenderFrameHost* host,
 
 // Documents/frames
 void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
-  map->Add<handwriting::mojom::HandwritingRecognitionService>(
-      &CreateHandwritingRecognitionService);
-
-  if (base::FeatureList::IsEnabled(
-          webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
-    map->Add<webnn::mojom::WebNNContextProvider>(base::BindRepeating(
-        &BindWebNNContextProviderForRenderFrame, base::Unretained(host)));
-  }
-
-  map->Add<blink::mojom::WebBluetoothService>(base::BindRepeating(
-      &WebBluetoothServiceImpl::BindIfAllowed, base::Unretained(host)));
-
-  map->Add<blink::mojom::PushMessaging>(base::BindRepeating(
-      &RenderFrameHostImpl::GetPushMessaging, base::Unretained(host)));
-
-  map->Add<blink::mojom::WebTransportConnector>(
-      base::BindRepeating(&RenderFrameHostImpl::CreateWebTransportConnector,
-                          base::Unretained(host)));
-
-  // BrowserMainLoop::GetInstance() may be null on unit tests.
-  if (BrowserMainLoop::GetInstance()) {
-    // BrowserMainLoop, which owns MediaStreamManager, is alive for the lifetime
-    // of Mojo communication (see BrowserMainLoop::ShutdownThreadsAndCleanUp(),
-    // which shuts down Mojo). Hence, passing that MediaStreamManager instance
-    // as a raw pointer here is safe.
-    MediaStreamManager* media_stream_manager =
-        BrowserMainLoop::GetInstance()->media_stream_manager();
-
-    map->Add<blink::mojom::MediaDevicesDispatcherHost>(
-        base::BindRepeating(&MediaDevicesDispatcherHost::Create,
-                            host->GetMainFrame()->GetGlobalFrameToken(),
-                            host->GetGlobalId(),
-                            base::Unretained(media_stream_manager)),
-        GetIOThreadTaskRunner({}));
-
-    map->Add<blink::mojom::MediaStreamDispatcherHost>(
-        base::BindRepeating(&MediaStreamDispatcherHost::Create,
-                            host->GetGlobalId(),
-                            base::Unretained(media_stream_manager)),
-        GetIOThreadTaskRunner({}));
-
-    map->Add<media::mojom::VideoCaptureHost>(
-        base::BindRepeating(&VideoCaptureHost::Create, host->GetGlobalId(),
-                            base::Unretained(media_stream_manager)),
-        GetIOThreadTaskRunner({}));
-  }
-
-  map->Add<blink::mojom::RendererAudioInputStreamFactory>(
-      base::BindRepeating(&RenderFrameHostImpl::CreateAudioInputStreamFactory,
-                          base::Unretained(host)));
-
-  map->Add<blink::mojom::RendererAudioOutputStreamFactory>(
-      base::BindRepeating(&RenderFrameHostImpl::CreateAudioOutputStreamFactory,
-                          base::Unretained(host)));
-
   map->Add<media::mojom::ImageCapture>(
       base::BindRepeating(&ImageCaptureImpl::Create, base::Unretained(host)));
 
@@ -1081,7 +1026,8 @@ void PopulateBinderMapWithContext(
 
   map->Add<media::mojom::SpeechRecognizer>(
       base::BindRepeating(&SpeechRecognitionDispatcherHost::Create,
-                          host->GetProcess()->GetDeprecatedID()),
+                          host->GetProcess()->GetDeprecatedID(),
+                          host->GetRoutingID()),
       GetIOThreadTaskRunner({}));
 
   map->Add<blink::mojom::SpeechSynthesis>(
@@ -1113,14 +1059,8 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::FileChooser>(&FileChooserImpl::Create);
 
   map->Add<blink::mojom::FileUtilitiesHost>(
-      base::BindRepeating(
-          [](ChildProcessId id, RenderFrameHost*,
-             mojo::PendingReceiver<blink::mojom::FileUtilitiesHost> receiver) {
-            // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-            FileUtilitiesHostImpl::Create(id.GetUnsafeValue(),
-                                          std::move(receiver));
-          },
-          host->GetProcess()->GetID()),
+      base::BindRepeating(&FileUtilitiesHostImpl::Create,
+                          host->GetProcess()->GetDeprecatedID()),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
 
@@ -1131,6 +1071,61 @@ void PopulateBinderMapWithContext(
 
   map->Add<payments::mojom::PaymentManager>(
       &BindRenderFrameHostImpl<&RenderFrameHostImpl::CreatePaymentManager>);
+
+  map->Add<handwriting::mojom::HandwritingRecognitionService>(
+      &CreateHandwritingRecognitionService);
+
+  if (base::FeatureList::IsEnabled(
+          webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
+    map->Add<webnn::mojom::WebNNContextProvider>(
+        &BindWebNNContextProviderForRenderFrame);
+  }
+
+  map->Add<blink::mojom::WebBluetoothService>(
+      &WebBluetoothServiceImpl::BindIfAllowed);
+
+  map->Add<blink::mojom::PushMessaging>(
+      &BindRenderFrameHostImpl<&RenderFrameHostImpl::GetPushMessaging>);
+
+  map->Add<blink::mojom::WebTransportConnector>(
+      &BindRenderFrameHostImpl<
+          &RenderFrameHostImpl::CreateWebTransportConnector>);
+
+  // BrowserMainLoop::GetInstance() may be null on unit tests.
+  if (BrowserMainLoop::GetInstance()) {
+    // BrowserMainLoop, which owns MediaStreamManager, is alive for the lifetime
+    // of Mojo communication (see BrowserMainLoop::ShutdownThreadsAndCleanUp(),
+    // which shuts down Mojo). Hence, passing that MediaStreamManager instance
+    // as a raw pointer here is safe.
+    MediaStreamManager* media_stream_manager =
+        BrowserMainLoop::GetInstance()->media_stream_manager();
+
+    map->Add<blink::mojom::MediaDevicesDispatcherHost>(
+        base::BindRepeating(&MediaDevicesDispatcherHost::Create,
+                            host->GetMainFrame()->GetGlobalFrameToken(),
+                            host->GetGlobalId(),
+                            base::Unretained(media_stream_manager)),
+        GetIOThreadTaskRunner({}));
+
+    map->Add<blink::mojom::MediaStreamDispatcherHost>(
+        base::BindRepeating(&MediaStreamDispatcherHost::Create,
+                            host->GetGlobalId(),
+                            base::Unretained(media_stream_manager)),
+        GetIOThreadTaskRunner({}));
+
+    map->Add<media::mojom::VideoCaptureHost>(
+        base::BindRepeating(&VideoCaptureHost::Create, host->GetGlobalId(),
+                            base::Unretained(media_stream_manager)),
+        GetIOThreadTaskRunner({}));
+  }
+
+  map->Add<blink::mojom::RendererAudioInputStreamFactory>(
+      &BindRenderFrameHostImpl<
+          &RenderFrameHostImpl::CreateAudioInputStreamFactory>);
+
+  map->Add<blink::mojom::RendererAudioOutputStreamFactory>(
+      &BindRenderFrameHostImpl<
+          &RenderFrameHostImpl::CreateAudioOutputStreamFactory>);
 
   map->Add<blink::mojom::BackgroundFetchService>(
       &BackgroundFetchServiceImpl::CreateForFrame);

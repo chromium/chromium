@@ -20,6 +20,7 @@
 namespace content {
 
 void CreateHandwritingRecognitionService(
+    RenderFrameHost*,  // Required for BinderMapWithContext interface.
     mojo::PendingReceiver<handwriting::mojom::HandwritingRecognitionService>
         pending_receiver) {
 #if BUILDFLAG(IS_CHROMEOS)
