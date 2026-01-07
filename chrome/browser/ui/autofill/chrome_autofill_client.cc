@@ -408,27 +408,6 @@ void LaunchPlusAddressUserPerceptionSurvey(
       /*failure_callback=*/base::DoNothing());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-bool IsActorMode(actor::ActorTask::State state) {
-  using enum actor::ActorTask::State;
-  switch (state) {
-    // TODO(crbug.com/469428128): Evaluate whether `kCreated` state should
-    // trigger the actor mode.
-    case kCreated:
-    case kActing:
-    case kReflecting:
-    case kPausedByActor:
-    case kPausedByUser:
-    case kWaitingOnUser:
-      return true;
-    case kCancelled:
-    case kFinished:
-    case kFailed:
-      return false;
-  }
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 }  // namespace
 
 // static
@@ -1466,16 +1445,31 @@ void ChromeAutofillClient::ShowEntityImportBubble(
 void ChromeAutofillClient::OnActorTaskStateChange(
     actor::TaskId task_id,
     actor::ActorTask::State state) {
+  if (active_actor_task_ && *active_actor_task_ != task_id) {
+    // The update is for an actor that isn't working on the current tab.
+    return;
+  }
+
+  // The actor task on this tab has finished.
+  // TODO(crbug.com/472336281): The state changes leading to the task
+  // completion should be issued before the `ActorTask` gets removed.
+  if (actor::ActorTask::IsCompletedState(state)) {
+    active_actor_task_.reset();
+    return;
+  }
+
   const actor::ActorTask* task =
       actor::ActorKeyedService::Get(GetProfile())->GetTask(task_id);
+  // Since the callbacks are asynchronous and can be executed in any order. It
+  // may happen that the update notification is issued for a task that already
+  // finished.
   if (!task) {
-    // TODO(crbug.com/469428128): Store active `task_id` relevant for this tab
-    // in `ChromeAutofillClient`, as during `kFailed`, `kFinished` and
-    // `kCancelled` states the `ActorTask` does no longer exist when this
-    // callback is called.
-    // TODO(crbug.com/472336281): The state changes leading to the task
-    // completion should be issued before the `ActorTask` gets removed.
-    is_actor_mode_ = false;
+    // Given the early return earlier in the function, it is guaranteed that if
+    // the `active_actor_task_` is set, its value is the same as `task_id`.
+    // Since fetching the `ActorTask` for `task_id` did not return any valid
+    // object and the `task_id`s are unique, the `ActorTask` that was active on
+    // this tab must have finished by now.
+    active_actor_task_.reset();
     return;
   }
 
@@ -1487,7 +1481,9 @@ void ChromeAutofillClient::OnActorTaskStateChange(
     return;
   }
 
-  is_actor_mode_ = IsActorMode(state);
+  // TODO(crbug.com/469428128): Evaluate whether
+  // `actor::ActorTask::State::kCreated` state should enable the actor mode.
+  active_actor_task_ = task_id;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -353,12 +353,17 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<EmailVerifierDelegate> email_verifier_delegate_;
   std::unique_ptr<ChromeOtpPhishGuardDelegate> otp_phish_guard_delegate_;
 
-  // Responsible for keeping track if an actor is interacting with the current
-  // tab. When enabled some parts of Autofill may behave differently.
-  // TODO(crbug.com/469428128): Handle actor mode in the relevant flows.
-  bool is_actor_mode_ = false;
+#if !BUILDFLAG(IS_ANDROID)
   // Removes the subscription when the `ChromeAutofillClient` is destroyed.
   base::CallbackListSubscription actor_task_state_changed_subscription_;
+
+  // Responsible for keeping track if (and which) actor is interacting with
+  // the current tab. When present, some parts of Autofill may behave
+  // differently. There can be at most one actor on a given tab. If there is no
+  // actor interacting with the current tab it is `std::nullopt`.
+  // TODO(crbug.com/469428128): Handle actor mode in the relevant flows.
+  std::optional<actor::TaskId> active_actor_task_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   base::WeakPtrFactory<ChromeAutofillClient> weak_ptr_factory_{this};
 };
