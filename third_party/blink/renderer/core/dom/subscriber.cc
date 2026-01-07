@@ -194,7 +194,7 @@ void Subscriber::ConsumerUnsubscribe(
   // Now that the abort algorithm has run, clear the
   // `AbortSignal::AlgorithmHandle` associated with `associated_observer` that's
   // keeping it alive.
-  DCHECK(base::Contains(consumer_abort_algorithms_, associated_observer));
+  DCHECK(consumer_abort_algorithms_.Contains(associated_observer));
   consumer_abort_algorithms_.erase(associated_observer);
 
   // Also remove `associated_observer` from `internal_observers_`, since it no

@@ -304,7 +304,7 @@ bool ResourceLoadScheduler::IsPendingRequestEffectivelyEmpty(
     // the request is canceled, or Release() is called before firing its Run(),
     // the entry for the request remains in |pending_request_| until it is
     // popped in GetNextPendingRequest().
-    if (base::Contains(pending_request_map_, client.client_id)) {
+    if (pending_request_map_.Contains(client.client_id)) {
       return false;
     }
   }

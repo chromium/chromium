@@ -64,7 +64,7 @@ void XRPlaneManager::ProcessPlaneInformation(
     // If the plane was already updated, there is nothing to do as it was
     // already moved to |updated_planes|. If it's not updated, just copy it over
     // as-is.
-    if (!base::Contains(updated_planes, plane_id)) {
+    if (!updated_planes.Contains(plane_id)) {
       auto it = plane_ids_to_planes_.find(plane_id);
       CHECK(it != plane_ids_to_planes_.end());
       updated_planes.insert(plane_id, it->value);

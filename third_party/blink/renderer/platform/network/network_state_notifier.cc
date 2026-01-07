@@ -357,7 +357,7 @@ void NetworkStateNotifier::RemoveObserver(
 
   base::AutoLock locker(lock_);
   ObserverListMap& map = GetObserverMapFor(type);
-  DCHECK(base::Contains(map, observer));
+  DCHECK(map.Contains(observer));
   map.erase(observer);
 }
 

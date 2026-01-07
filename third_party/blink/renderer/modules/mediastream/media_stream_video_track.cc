@@ -577,7 +577,7 @@ void MediaStreamVideoTrack::FrameDeliverer::
         CrossThreadOnceClosure callback) {
   DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
   CHECK_NE(capture_version, media::CaptureVersion());
-  CHECK(!base::Contains(capture_version_callbacks_, capture_version));
+  CHECK(!capture_version_callbacks_.Contains(capture_version));
 
   capture_version_callbacks_.Set(capture_version, std::move(callback));
 }

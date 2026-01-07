@@ -384,7 +384,7 @@ std::unique_ptr<blink::FrameScheduler> PageSchedulerImpl::CreateFrameScheduler(
 }
 
 void PageSchedulerImpl::Unregister(FrameSchedulerImpl* frame_scheduler) {
-  DCHECK(base::Contains(frame_schedulers_, frame_scheduler));
+  DCHECK(frame_schedulers_.Contains(frame_scheduler));
   frame_schedulers_.erase(frame_scheduler);
 }
 

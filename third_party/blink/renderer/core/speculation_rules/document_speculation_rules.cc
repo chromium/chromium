@@ -957,10 +957,10 @@ void DocumentSpeculationRules::DocumentPropertyChanged() {
 void DocumentSpeculationRules::AddLink(HTMLAnchorElementBase* link) {
   DCHECK(initialized_);
   DCHECK(link->IsLink());
-  DCHECK(!base::Contains(unmatched_links_, link));
-  DCHECK(!base::Contains(matched_links_, link));
-  DCHECK(!base::Contains(pending_links_, link));
-  DCHECK(!base::Contains(stale_links_, link));
+  DCHECK(!unmatched_links_.Contains(link));
+  DCHECK(!matched_links_.Contains(link));
+  DCHECK(!pending_links_.Contains(link));
+  DCHECK(!stale_links_.Contains(link));
 
   pending_links_.insert(link);
   // We don't check LockedAncestorPreventingStyle here because this
@@ -976,8 +976,8 @@ void DocumentSpeculationRules::RemoveLink(HTMLAnchorElementBase* link) {
 
   if (auto it = matched_links_.find(link); it != matched_links_.end()) {
     matched_links_.erase(it);
-    DCHECK(!base::Contains(unmatched_links_, link));
-    DCHECK(!base::Contains(pending_links_, link));
+    DCHECK(!unmatched_links_.Contains(link));
+    DCHECK(!pending_links_.Contains(link));
     return;
   }
   // TODO(crbug.com/1371522): Removing a link that doesn't match anything isn't
@@ -985,7 +985,7 @@ void DocumentSpeculationRules::RemoveLink(HTMLAnchorElementBase* link) {
   // QueueUpdateSpeculationCandidates in this scenario.
   if (auto it = unmatched_links_.find(link); it != unmatched_links_.end()) {
     unmatched_links_.erase(it);
-    DCHECK(!base::Contains(pending_links_, link));
+    DCHECK(!pending_links_.Contains(link));
     return;
   }
   auto it = pending_links_.find(link);
@@ -999,7 +999,7 @@ void DocumentSpeculationRules::InvalidateLink(HTMLAnchorElementBase* link) {
   pending_links_.insert(link);
   if (auto it = matched_links_.find(link); it != matched_links_.end()) {
     matched_links_.erase(it);
-    DCHECK(!base::Contains(unmatched_links_, link));
+    DCHECK(!unmatched_links_.Contains(link));
     return;
   }
   if (auto it = unmatched_links_.find(link); it != unmatched_links_.end())

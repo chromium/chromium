@@ -199,7 +199,7 @@ void HTMLSlotElement::Assign(const HeapVector<Member<Node>>& nodes) {
 
   HeapLinkedHashSet<WeakMember<Node>> removed_nodes;
   for (Node* node : manually_assigned_nodes_) {
-    if (!base::Contains(added_nodes, node)) {
+    if (!added_nodes.Contains(node)) {
       removed_nodes.insert(node);
     }
   }

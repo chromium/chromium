@@ -43,7 +43,7 @@ Image* GeneratedImageCache::GetImage(const gfx::SizeF& size) const {
     return nullptr;
   }
 
-  DCHECK(base::Contains(sizes_, size));
+  DCHECK(sizes_.Contains(size));
   GeneratedImageMap::const_iterator image_iter = images_.find(size);
   if (image_iter == images_.end()) {
     return nullptr;
@@ -64,10 +64,10 @@ void GeneratedImageCache::AddSize(const gfx::SizeF& size) {
 
 void GeneratedImageCache::RemoveSize(const gfx::SizeF& size) {
   DCHECK(!size.IsEmpty());
-  SECURITY_DCHECK(base::Contains(sizes_, size));
+  SECURITY_DCHECK(sizes_.Contains(size));
   bool fully_erased = sizes_.erase(size);
   if (fully_erased) {
-    DCHECK(base::Contains(images_, size));
+    DCHECK(images_.Contains(size));
     images_.erase(images_.find(size));
   }
 }

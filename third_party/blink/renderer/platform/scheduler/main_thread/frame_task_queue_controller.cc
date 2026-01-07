@@ -113,7 +113,7 @@ void FrameTaskQueueController::TaskQueueCreated(
   all_task_queues_and_voters_.push_back(
       TaskQueueAndEnabledVoterPair(task_queue.get(), voter.get()));
 
-  DCHECK(!base::Contains(task_queue_enabled_voters_, task_queue));
+  DCHECK(!task_queue_enabled_voters_.Contains(task_queue));
   task_queue_enabled_voters_.insert(task_queue, std::move(voter));
 }
 

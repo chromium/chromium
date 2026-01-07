@@ -156,7 +156,7 @@ void ServiceWorkerEventQueue::EndEvent(int event_id) {
 }
 
 bool ServiceWorkerEventQueue::HasEvent(int event_id) const {
-  return base::Contains(all_events_, event_id);
+  return all_events_.Contains(event_id);
 }
 
 bool ServiceWorkerEventQueue::HasEventInQueue(int event_id) const {

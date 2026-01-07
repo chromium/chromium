@@ -212,7 +212,7 @@ HashSet<device::HitTestSubscriptionId> GetIdsOfUnusedHitTestSources(
   // Gather all IDs of unused hit test sources:
   HashSet<device::HitTestSubscriptionId> unused_hit_test_source_ids;
   for (auto& id : all_ids) {
-    if (!base::Contains(id_to_hit_test_source, id)) {
+    if (!id_to_hit_test_source.Contains(id)) {
       unused_hit_test_source_ids.insert(id);
     }
   }
@@ -2573,14 +2573,14 @@ void XRSession::OnExitPresent() {
 bool XRSession::ValidateHitTestSourceExists(
     XRHitTestSource* hit_test_source) const {
   DCHECK(hit_test_source);
-  return base::Contains(hit_test_source_ids_, hit_test_source->id());
+  return hit_test_source_ids_.Contains(hit_test_source->id());
 }
 
 bool XRSession::ValidateHitTestSourceExists(
     XRTransientInputHitTestSource* hit_test_source) const {
   DCHECK(hit_test_source);
-  return base::Contains(hit_test_source_for_transient_input_ids_,
-                        hit_test_source->id());
+  return hit_test_source_for_transient_input_ids_.Contains(
+      hit_test_source->id());
 }
 
 bool XRSession::RemoveHitTestSource(XRHitTestSource* hit_test_source) {
@@ -2588,7 +2588,7 @@ bool XRSession::RemoveHitTestSource(XRHitTestSource* hit_test_source) {
 
   DCHECK(hit_test_source);
 
-  if (!base::Contains(hit_test_source_ids_, hit_test_source->id())) {
+  if (!hit_test_source_ids_.Contains(hit_test_source->id())) {
     DVLOG(2) << __func__
              << ": hit test source was already removed, hit_test_source->id()="
              << hit_test_source->id();
@@ -2626,8 +2626,8 @@ bool XRSession::RemoveHitTestSource(
 
   DCHECK(hit_test_source);
 
-  if (!base::Contains(hit_test_source_for_transient_input_ids_,
-                      hit_test_source->id())) {
+  if (!hit_test_source_for_transient_input_ids_.Contains(
+          hit_test_source->id())) {
     DVLOG(2) << __func__
              << ": hit test source was already removed, hit_test_source->id()="
              << hit_test_source->id();

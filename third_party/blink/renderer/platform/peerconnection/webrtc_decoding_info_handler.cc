@@ -63,7 +63,7 @@ void WebrtcDecodingInfoHandler::DecodingInfo(
   if (sdp_audio_format) {
     const String codec_name =
         String::FromUTF8(sdp_audio_format->name).LowerASCII();
-    supported = base::Contains(supported_audio_codecs_, codec_name);
+    supported = supported_audio_codecs_.Contains(codec_name);
     // Audio is always assumed to be power efficient whenever it is
     // supported.
     power_efficient = supported;

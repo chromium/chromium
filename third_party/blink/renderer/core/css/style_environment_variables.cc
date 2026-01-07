@@ -301,8 +301,7 @@ void StyleEnvironmentVariables::ParentInvalidatedVariable(
     const AtomicString& name) {
   // If we have not overridden the variable then we should invalidate it
   // locally.
-  if (!base::Contains(data_, name) &&
-      !base::Contains(two_dimension_data_, name)) {
+  if (!data_.Contains(name) && !two_dimension_data_.Contains(name)) {
     InvalidateVariable(name);
   }
 }

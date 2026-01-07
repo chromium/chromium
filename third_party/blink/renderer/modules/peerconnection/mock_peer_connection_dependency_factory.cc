@@ -131,7 +131,7 @@ webrtc::scoped_refptr<VideoTrackInterface> MockMediaStream::FindVideoTrack(
 }
 
 void MockMediaStream::RegisterObserver(ObserverInterface* observer) {
-  DCHECK(!base::Contains(observers_, observer));
+  DCHECK(!observers_.Contains(observer));
   observers_.insert(observer);
 }
 
@@ -188,12 +188,12 @@ bool MockWebRtcAudioTrack::set_enabled(bool enable) {
 }
 
 void MockWebRtcAudioTrack::RegisterObserver(ObserverInterface* observer) {
-  DCHECK(!base::Contains(observers_, observer));
+  DCHECK(!observers_.Contains(observer));
   observers_.insert(observer);
 }
 
 void MockWebRtcAudioTrack::UnregisterObserver(ObserverInterface* observer) {
-  DCHECK(base::Contains(observers_, observer));
+  DCHECK(observers_.Contains(observer));
   observers_.erase(observer);
 }
 
@@ -261,12 +261,12 @@ bool MockWebRtcVideoTrack::set_enabled(bool enable) {
 }
 
 void MockWebRtcVideoTrack::RegisterObserver(ObserverInterface* observer) {
-  DCHECK(!base::Contains(observers_, observer));
+  DCHECK(!observers_.Contains(observer));
   observers_.insert(observer);
 }
 
 void MockWebRtcVideoTrack::UnregisterObserver(ObserverInterface* observer) {
-  DCHECK(base::Contains(observers_, observer));
+  DCHECK(observers_.Contains(observer));
   observers_.erase(observer);
 }
 

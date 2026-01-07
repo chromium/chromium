@@ -2416,7 +2416,7 @@ void MainThreadSchedulerImpl::AddPageScheduler(
 
 void MainThreadSchedulerImpl::RemovePageScheduler(
     PageSchedulerImpl* page_scheduler) {
-  DCHECK(base::Contains(main_thread_only().page_schedulers, page_scheduler));
+  DCHECK(main_thread_only().page_schedulers.Contains(page_scheduler));
   main_thread_only().page_schedulers.erase(page_scheduler);
   if (page_scheduler->IsOrdinary()) {
     memory_purge_manager_.OnPageDestroyed(

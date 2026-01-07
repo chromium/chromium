@@ -162,7 +162,7 @@ static KeyValueMap RetrieveKeyValuePairs(SharedBufferChunkReader* buffer) {
     }
     // New key/value, store the previous one if any.
     if (!key.empty()) {
-      if (base::Contains(key_value_pairs, key)) {
+      if (key_value_pairs.Contains(key)) {
         DVLOG(1) << "Key duplicate found in MIME header. Key is '" << key
                  << "', previous value replaced.";
       }

@@ -506,7 +506,7 @@ bool AdTracker::IsFirstCallOfApiFromNonAdScript(v8::Isolate* isolate,
   }
 
   // The heuristic only applies on the first call to an API within a task.
-  if (base::Contains(ad_monkey_patch_calls_in_scope_, api)) {
+  if (ad_monkey_patch_calls_in_scope_.Contains(api)) {
     return false;
   }
 

@@ -1598,10 +1598,10 @@ void XRSystem::FinishSessionCreation(
 
   if (query->mode() == device::mojom::blink::XRSessionMode::kImmersiveVr ||
       query->mode() == device::mojom::blink::XRSessionMode::kImmersiveAr) {
-    const bool anchors_enabled = base::Contains(
-        enabled_features, device::mojom::XRSessionFeature::ANCHORS);
-    const bool hit_test_enabled = base::Contains(
-        enabled_features, device::mojom::XRSessionFeature::HIT_TEST);
+    const bool anchors_enabled =
+        enabled_features.Contains(device::mojom::XRSessionFeature::ANCHORS);
+    const bool hit_test_enabled =
+        enabled_features.Contains(device::mojom::XRSessionFeature::HIT_TEST);
     const bool environment_integration = hit_test_enabled || anchors_enabled;
     if (environment_integration) {
       // See Task Sources spreadsheet for more information:
@@ -1622,7 +1622,7 @@ void XRSystem::FinishSessionCreation(
     auto dom_overlay_feature = device::mojom::XRSessionFeature::DOM_OVERLAY;
     if (query->mode() == device::mojom::blink::XRSessionMode::kImmersiveAr &&
         query->HasFeature(dom_overlay_feature) &&
-        base::Contains(enabled_features, dom_overlay_feature)) {
+        enabled_features.Contains(dom_overlay_feature)) {
       DCHECK(query->DOMOverlayElement());
       // The session is using DOM overlay mode. At this point the overlay
       // element is already in fullscreen mode, and the session can proceed.

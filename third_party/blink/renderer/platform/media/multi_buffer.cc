@@ -256,7 +256,7 @@ void MultiBuffer::CleanupWriters(const BlockId& pos) {
 bool MultiBuffer::Contains(const BlockId& pos) const {
   DCHECK(present_[pos] == 0 || present_[pos] == 1)
       << " pos = " << pos << " present_[pos] " << present_[pos];
-  DCHECK_EQ(present_[pos], base::Contains(data_, pos) ? 1 : 0);
+  DCHECK_EQ(present_[pos], data_.Contains(pos) ? 1 : 0);
   return !!present_[pos];
 }
 
@@ -544,7 +544,7 @@ void MultiBuffer::PinRange(const BlockId& from,
         for (BlockId block = present_transitioned_range.end - 1;
              block >= present_transitioned_range.begin; --block) {
           DCHECK_GE(block, 0);
-          DCHECK(base::Contains(data_, block));
+          DCHECK(data_.Contains(block));
           if (pin) {
             DCHECK(pinned_[block]);
             lru_->Remove(this, block);

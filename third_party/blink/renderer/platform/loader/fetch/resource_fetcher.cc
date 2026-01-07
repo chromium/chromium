@@ -1958,7 +1958,7 @@ void ResourceFetcher::InsertAsPreloadIfNecessary(Resource* resource,
     return;
   }
   PreloadKey key(params.Url(), type);
-  if (base::Contains(preloads_, key)) {
+  if (preloads_.Contains(key)) {
     return;
   }
 

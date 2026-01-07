@@ -161,8 +161,7 @@ XRViewData::XRViewData(
       index_(index),
       eye_(view->eye),
       viewport_(view->viewport) {
-  if (base::Contains(enabled_feature_set,
-                     device::mojom::XRSessionFeature::DEPTH)) {
+  if (enabled_feature_set.Contains(device::mojom::XRSessionFeature::DEPTH)) {
     if (!device_config.depth_configuration) {
       DCHECK(false)
           << "The session reports that depth sensing is supported but "

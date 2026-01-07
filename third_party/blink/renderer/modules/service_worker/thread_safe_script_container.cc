@@ -32,7 +32,7 @@ void ThreadSafeScriptContainer::AddOnIOThread(
     const KURL& url,
     std::unique_ptr<RawScriptData> data) {
   base::AutoLock locker(lock_);
-  DCHECK(!base::Contains(script_data_, url));
+  DCHECK(!script_data_.Contains(url));
   ScriptStatus status = data ? ScriptStatus::kReceived : ScriptStatus::kFailed;
   script_data_.Set(url, std::make_pair(status, std::move(data)));
   if (url == waiting_url_)
@@ -58,7 +58,7 @@ bool ThreadSafeScriptContainer::WaitOnWorkerThread(const KURL& url) {
   DCHECK(!waiting_url_.IsValid())
       << "The script container is unexpectedly shared among worker threads.";
   waiting_url_ = url;
-  while (!base::Contains(script_data_, url)) {
+  while (!script_data_.Contains(url)) {
     // If waiting script hasn't been added yet though all data are received,
     // that means something went wrong.
     if (are_all_data_added_) {

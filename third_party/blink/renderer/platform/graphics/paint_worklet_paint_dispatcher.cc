@@ -50,7 +50,7 @@ void PaintWorkletPaintDispatcher::RegisterPaintWorkletPainter(
                "PaintWorkletPaintDispatcher::RegisterPaintWorkletPainter");
 
   int worklet_id = painter->GetWorkletId();
-  DCHECK(!base::Contains(painter_map_, worklet_id));
+  DCHECK(!painter_map_.Contains(worklet_id));
   painter_map_.insert(worklet_id, std::make_pair(painter, painter_runner));
 }
 
@@ -60,7 +60,7 @@ void PaintWorkletPaintDispatcher::UnregisterPaintWorkletPainter(
   TRACE_EVENT0("cc",
                "PaintWorkletPaintDispatcher::"
                "UnregisterPaintWorkletPainter");
-  DCHECK(base::Contains(painter_map_, worklet_id));
+  DCHECK(painter_map_.Contains(worklet_id));
   painter_map_.erase(worklet_id);
 }
 

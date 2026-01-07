@@ -102,7 +102,7 @@ v8::Isolate* AgentGroupSchedulerImpl::Isolate() {
 }
 
 void AgentGroupSchedulerImpl::AddAgent(Agent* agent) {
-  DCHECK(!base::Contains(agents_, agent));
+  DCHECK(!agents_.Contains(agent));
   agents_.insert(agent);
 }
 
@@ -127,7 +127,7 @@ void AgentGroupSchedulerImpl::Trace(Visitor* visitor) const {
 void AgentGroupSchedulerImpl::AddPageSchedulerForTesting(
     PageSchedulerImpl* page_scheduler) {
   CHECK(!is_updating_policy_);
-  CHECK(!base::Contains(page_schedulers_, page_scheduler));
+  CHECK(!page_schedulers_.Contains(page_scheduler));
   page_schedulers_.insert(page_scheduler);
 }
 

@@ -183,7 +183,7 @@ TEST_F(FrameTaskQueueControllerTest, CreateAllTaskQueues) {
     auto [task_queue_ptr, voter] = task_queue_and_voter;
 
     EXPECT_NE(task_queue_ptr, nullptr);
-    EXPECT_TRUE(base::Contains(all_task_queues, task_queue_ptr));
+    EXPECT_TRUE(all_task_queues.Contains(task_queue_ptr));
     // Make sure we don't get the same queue twice.
     auto it = all_task_queues.find(task_queue_ptr);
     EXPECT_FALSE(it == all_task_queues.end());

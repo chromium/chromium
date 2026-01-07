@@ -183,7 +183,7 @@ void PointerEventFactoryTestBase::CheckNonHoveringPointers(
       pointer_event_factory_->GetPointerIdsOfNonHoveringPointers();
   EXPECT_EQ(pointers.size(), expected_pointers.size());
   for (int p : pointers) {
-    EXPECT_TRUE(base::Contains(expected_pointers, p));
+    EXPECT_TRUE(expected_pointers.Contains(p));
   }
 }
 

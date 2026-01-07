@@ -1568,7 +1568,7 @@ bool RuleSet::CanIgnoreEntireList(base::span<const RuleData> list,
   }
   if (list.size() < GetMinimumRulesetSizeForSubstringMatcher()) {
     // Too small to build up a tree, so always check.
-    DCHECK(!base::Contains(attr_substring_matchers_, key));
+    DCHECK(!attr_substring_matchers_.Contains(key));
     return false;
   }
 

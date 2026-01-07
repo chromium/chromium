@@ -1591,7 +1591,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   } else {
     axid = GenerateAXID();
   }
-  DCHECK(!base::Contains(objects_, axid));
+  DCHECK(!objects_.Contains(axid));
 
   // Create the new AXObject.
   AXObject* new_obj = nullptr;
@@ -2536,7 +2536,7 @@ void AXObjectCacheImpl::TextChanged(const LayoutObject* layout_object) {
       RemoveAXObjectsInLayoutSubtree(node->GetLayoutObject());
     } else if (AXID node_id = static_cast<AXID>(node->GetDomNodeId())) {
       // Text changed is redundant with children changed on the same node.
-      if (base::Contains(nodes_with_pending_children_changed_, node_id)) {
+      if (nodes_with_pending_children_changed_.Contains(node_id)) {
         return;
       }
     }
@@ -6266,7 +6266,7 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
       continue;
     }
 
-    if (!base::Contains(already_serialized_ids, event.id)) {
+    if (!already_serialized_ids.Contains(event.id)) {
       // Node no longer exists or could not be serialized.
       // Kept here for convenient debugging:
       // DVLOG(1) << "Dropped AXEvent: " << event.event_type << " on "

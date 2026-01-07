@@ -560,8 +560,7 @@ void PeerConnectionTracker::OnSuspend() {
       peer_connection_local_id_map_;
   for (const auto& pair : peer_connection_map_copy) {
     RTCPeerConnectionHandler* peer_connection_handler = pair.key;
-    if (!base::Contains(peer_connection_local_id_map_,
-                        peer_connection_handler)) {
+    if (!peer_connection_local_id_map_.Contains(peer_connection_handler)) {
       // Skip peer connections that have been unregistered during this method
       // call. Avoids use-after-free.
       continue;

@@ -230,7 +230,7 @@ void WorkerThreadScheduler::RegisterWorkerScheduler(
 
 void WorkerThreadScheduler::UnregisterWorkerScheduler(
     WorkerSchedulerImpl* worker_scheduler) {
-  DCHECK(base::Contains(worker_schedulers_, worker_scheduler));
+  DCHECK(worker_schedulers_.Contains(worker_scheduler));
   worker_schedulers_.erase(worker_scheduler);
 }
 

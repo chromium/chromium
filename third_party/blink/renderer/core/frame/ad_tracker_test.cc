@@ -153,7 +153,7 @@ class TestAdTracker : public AdTracker {
   void SetSimTest() { sim_test_ = true; }
 
   void WaitForSubresource(const String& url) {
-    if (base::Contains(is_ad_, url)) {
+    if (is_ad_.Contains(url)) {
       return;
     }
     url_to_wait_for_ = url;
