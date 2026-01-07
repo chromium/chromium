@@ -5,6 +5,7 @@
 #define NET_DEVICE_BOUND_SESSIONS_SESSION_EVENT_H_
 
 #include <optional>
+#include <variant>
 
 #include "base/unguessable_token.h"
 #include "net/base/net_export.h"
@@ -17,17 +18,76 @@
 
 namespace net::device_bound_sessions {
 
+struct NET_EXPORT CreationEventDetails {
+  CreationEventDetails();
+  CreationEventDetails(SessionError::ErrorType fetch_error,
+                       std::optional<SessionDisplay> new_session_display);
+  CreationEventDetails(const CreationEventDetails&);
+  CreationEventDetails& operator=(const CreationEventDetails&);
+  ~CreationEventDetails();
+  CreationEventDetails(CreationEventDetails&& other);
+  CreationEventDetails& operator=(CreationEventDetails&& other);
+
+  SessionError::ErrorType fetch_error = SessionError::ErrorType::kSuccess;
+  std::optional<SessionDisplay> new_session_display;
+};
+
+struct NET_EXPORT RefreshEventDetails {
+  RefreshEventDetails();
+  RefreshEventDetails(RefreshResult refresh_result,
+                      bool was_fully_proactive_refresh,
+                      std::optional<SessionError::ErrorType> fetch_error,
+                      std::optional<SessionDisplay> new_session_display);
+  RefreshEventDetails(const RefreshEventDetails&);
+  RefreshEventDetails& operator=(const RefreshEventDetails&);
+  ~RefreshEventDetails();
+  RefreshEventDetails(RefreshEventDetails&& other);
+  RefreshEventDetails& operator=(RefreshEventDetails&& other);
+
+  RefreshResult refresh_result = RefreshResult::kRefreshed;
+  // Proactive refresh refers to refreshes triggered before cookie expiry. A
+  // fully proactive refresh means the refresh completed before any requests had
+  // to be deferred.
+  bool was_fully_proactive_refresh = false;
+  std::optional<SessionError::ErrorType> fetch_error;
+  std::optional<SessionDisplay> new_session_display;
+};
+
+struct NET_EXPORT ChallengeEventDetails {
+  ChallengeEventDetails();
+  ChallengeEventDetails(ChallengeResult challenge_result,
+                        std::string challenge);
+  ChallengeEventDetails(const ChallengeEventDetails&);
+  ChallengeEventDetails& operator=(const ChallengeEventDetails&);
+  ~ChallengeEventDetails();
+  ChallengeEventDetails(ChallengeEventDetails&& other);
+  ChallengeEventDetails& operator=(ChallengeEventDetails&& other);
+
+  ChallengeResult challenge_result = ChallengeResult::kSuccess;
+  std::string challenge;
+};
+
+struct NET_EXPORT TerminationEventDetails {
+  TerminationEventDetails();
+  explicit TerminationEventDetails(DeletionReason deletion_reason);
+  TerminationEventDetails(const TerminationEventDetails&);
+  TerminationEventDetails& operator=(const TerminationEventDetails&);
+  ~TerminationEventDetails();
+  TerminationEventDetails(TerminationEventDetails&& other);
+  TerminationEventDetails& operator=(TerminationEventDetails&& other);
+
+  DeletionReason deletion_reason = DeletionReason::kExpired;
+};
+
+// LINT.IfChange(SessionEventTypeDetails)
+using SessionEventTypeDetails = std::variant<CreationEventDetails,
+                                             RefreshEventDetails,
+                                             TerminationEventDetails,
+                                             ChallengeEventDetails>;
+// LINT.ThenChange(//services/network/public/cpp/device_bound_sessions_mojom_traits.h:SessionEventTypeDetails)
+
 struct NET_EXPORT SessionEvent {
  public:
-  // LINT.IfChange(DeviceBoundSessionEventType)
-  enum class EventType {
-    kCreation,
-    kRefresh,
-    kChallenge,
-    kTermination,
-  };
-  // LINT.ThenChange(//services/network/public/mojom/device_bound_sessions.mojom:DeviceBoundSessionEventType)
-
   static SessionEvent MakeCreationEvent(
       SchemefulSite site,
       std::optional<std::string> session_id,
@@ -65,24 +125,11 @@ struct NET_EXPORT SessionEvent {
   base::UnguessableToken event_id = base::UnguessableToken::Create();
   SchemefulSite site;
   std::optional<std::string> session_id;
-  EventType event_type = EventType::kCreation;
   bool succeeded = false;
-
-  // TODO(crbug.com/471021582): Add additional fields.
-  std::optional<SessionError::ErrorType> fetch_error;
-  std::optional<SessionDisplay> new_session_display;
-  std::optional<RefreshResult> refresh_result;
-  // Proactive refresh refers to refreshes triggered before cookie expiry. A
-  // fully proactive refresh means the refresh completed before any requests had
-  // to be deferred.
-  std::optional<bool> was_fully_proactive_refresh;
-  std::optional<ChallengeResult> challenge_result;
-  std::optional<std::string> challenge;
-  std::optional<DeletionReason> deletion_reason;
+  SessionEventTypeDetails event_type_details;
 
  private:
-  SessionEvent(EventType event_type,
-               SchemefulSite site,
+  SessionEvent(SchemefulSite site,
                std::optional<std::string> session_id,
                bool succeeded);
 };

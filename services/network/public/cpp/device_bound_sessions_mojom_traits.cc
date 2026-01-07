@@ -469,47 +469,85 @@ bool EnumTraits<network::mojom::DeviceBoundSessionChallengeResult,
 }
 
 // static
-network::mojom::DeviceBoundSessionEventType
-EnumTraits<network::mojom::DeviceBoundSessionEventType,
-           net::device_bound_sessions::SessionEvent::EventType>::
-    ToMojom(net::device_bound_sessions::SessionEvent::EventType input) {
-  using EventType = net::device_bound_sessions::SessionEvent::EventType;
-  using MojomEventType = network::mojom::DeviceBoundSessionEventType;
-  switch (input) {
-    case EventType::kCreation:
-      return MojomEventType::kCreation;
-    case EventType::kRefresh:
-      return MojomEventType::kRefresh;
-    case EventType::kChallenge:
-      return MojomEventType::kChallenge;
-    case EventType::kTermination:
-      return MojomEventType::kTermination;
-  }
-  NOTREACHED();
+bool StructTraits<network::mojom::DeviceBoundSessionCreationDetailsDataView,
+                  net::device_bound_sessions::CreationEventDetails>::
+    Read(network::mojom::DeviceBoundSessionCreationDetailsDataView data,
+         net::device_bound_sessions::CreationEventDetails* out) {
+  return data.ReadFetchError(&out->fetch_error) &&
+         data.ReadNewSessionDisplay(&out->new_session_display);
 }
 
 // static
-bool EnumTraits<network::mojom::DeviceBoundSessionEventType,
-                net::device_bound_sessions::SessionEvent::EventType>::
-    FromMojom(network::mojom::DeviceBoundSessionEventType input,
-              net::device_bound_sessions::SessionEvent::EventType* output) {
-  using EventType = net::device_bound_sessions::SessionEvent::EventType;
-  using MojomEventType = network::mojom::DeviceBoundSessionEventType;
-  switch (input) {
-    case MojomEventType::kCreation:
-      *output = EventType::kCreation;
+bool StructTraits<network::mojom::DeviceBoundSessionRefreshDetailsDataView,
+                  net::device_bound_sessions::RefreshEventDetails>::
+    Read(network::mojom::DeviceBoundSessionRefreshDetailsDataView data,
+         net::device_bound_sessions::RefreshEventDetails* out) {
+  out->was_fully_proactive_refresh = data.was_fully_proactive_refresh();
+  return data.ReadRefreshResult(&out->refresh_result) &&
+         data.ReadFetchError(&out->fetch_error) &&
+         data.ReadNewSessionDisplay(&out->new_session_display);
+}
+
+// static
+bool StructTraits<network::mojom::DeviceBoundSessionTerminationDetailsDataView,
+                  net::device_bound_sessions::TerminationEventDetails>::
+    Read(network::mojom::DeviceBoundSessionTerminationDetailsDataView data,
+         net::device_bound_sessions::TerminationEventDetails* out) {
+  return data.ReadDeletionReason(&out->deletion_reason);
+}
+
+// static
+bool StructTraits<network::mojom::DeviceBoundSessionChallengeDetailsDataView,
+                  net::device_bound_sessions::ChallengeEventDetails>::
+    Read(network::mojom::DeviceBoundSessionChallengeDetailsDataView data,
+         net::device_bound_sessions::ChallengeEventDetails* out) {
+  return data.ReadChallengeResult(&out->challenge_result) &&
+         data.ReadChallenge(&out->challenge);
+}
+
+// static
+bool UnionTraits<network::mojom::DeviceBoundSessionEventTypeDetailsDataView,
+                 net::device_bound_sessions::SessionEventTypeDetails>::
+    Read(network::mojom::DeviceBoundSessionEventTypeDetailsDataView data,
+         net::device_bound_sessions::SessionEventTypeDetails* out) {
+  switch (data.tag()) {
+    case network::mojom::DeviceBoundSessionEventTypeDetailsDataView::Tag::
+        kCreation: {
+      net::device_bound_sessions::CreationEventDetails details;
+      if (!data.ReadCreation(&details)) {
+        return false;
+      }
+      *out = std::move(details);
       return true;
-    case MojomEventType::kRefresh:
-      *output = EventType::kRefresh;
+    }
+    case network::mojom::DeviceBoundSessionEventTypeDetailsDataView::Tag::
+        kRefresh: {
+      net::device_bound_sessions::RefreshEventDetails details;
+      if (!data.ReadRefresh(&details)) {
+        return false;
+      }
+      *out = std::move(details);
       return true;
-    case MojomEventType::kChallenge:
-      *output = EventType::kChallenge;
+    }
+    case network::mojom::DeviceBoundSessionEventTypeDetailsDataView::Tag::
+        kTermination: {
+      net::device_bound_sessions::TerminationEventDetails details;
+      if (!data.ReadTermination(&details)) {
+        return false;
+      }
+      *out = std::move(details);
       return true;
-    case MojomEventType::kTermination:
-      *output = EventType::kTermination;
+    }
+    case network::mojom::DeviceBoundSessionEventTypeDetailsDataView::Tag::
+        kChallenge: {
+      net::device_bound_sessions::ChallengeEventDetails details;
+      if (!data.ReadChallenge(&details)) {
+        return false;
+      }
+      *out = std::move(details);
       return true;
+    }
   }
-  return false;
 }
 
 // static
@@ -537,14 +575,6 @@ StructTraits<network::mojom::DeviceBoundSessionEventDataView,
 }
 
 // static
-net::device_bound_sessions::SessionEvent::EventType
-StructTraits<network::mojom::DeviceBoundSessionEventDataView,
-             net::device_bound_sessions::SessionEvent>::
-    event_type(const net::device_bound_sessions::SessionEvent& event) {
-  return event.event_type;
-}
-
-// static
 bool StructTraits<network::mojom::DeviceBoundSessionEventDataView,
                   net::device_bound_sessions::SessionEvent>::
     succeeded(const net::device_bound_sessions::SessionEvent& event) {
@@ -552,59 +582,90 @@ bool StructTraits<network::mojom::DeviceBoundSessionEventDataView,
 }
 
 // static
+const net::device_bound_sessions::SessionEventTypeDetails&
+StructTraits<network::mojom::DeviceBoundSessionEventDataView,
+             net::device_bound_sessions::SessionEvent>::
+    event_type_details(const net::device_bound_sessions::SessionEvent& event) {
+  return event.event_type_details;
+}
+
+// static
+net::device_bound_sessions::SessionError::ErrorType
+StructTraits<network::mojom::DeviceBoundSessionCreationDetailsDataView,
+             net::device_bound_sessions::CreationEventDetails>::
+    fetch_error(
+        const net::device_bound_sessions::CreationEventDetails& event_details) {
+  return event_details.fetch_error;
+}
+
+// static
 const std::optional<net::device_bound_sessions::SessionError::ErrorType>&
-StructTraits<network::mojom::DeviceBoundSessionEventDataView,
-             net::device_bound_sessions::SessionEvent>::
-    fetch_error(const net::device_bound_sessions::SessionEvent& event) {
-  return event.fetch_error;
+StructTraits<network::mojom::DeviceBoundSessionRefreshDetailsDataView,
+             net::device_bound_sessions::RefreshEventDetails>::
+    fetch_error(
+        const net::device_bound_sessions::RefreshEventDetails& event_details) {
+  return event_details.fetch_error;
 }
 
 // static
-const std::optional<net::device_bound_sessions::RefreshResult>&
-StructTraits<network::mojom::DeviceBoundSessionEventDataView,
-             net::device_bound_sessions::SessionEvent>::
-    refresh_result(const net::device_bound_sessions::SessionEvent& event) {
-  return event.refresh_result;
+net::device_bound_sessions::RefreshResult
+StructTraits<network::mojom::DeviceBoundSessionRefreshDetailsDataView,
+             net::device_bound_sessions::RefreshEventDetails>::
+    refresh_result(
+        const net::device_bound_sessions::RefreshEventDetails& event_details) {
+  return event_details.refresh_result;
 }
 
 // static
-const std::optional<bool>&
-StructTraits<network::mojom::DeviceBoundSessionEventDataView,
-             net::device_bound_sessions::SessionEvent>::
+bool StructTraits<network::mojom::DeviceBoundSessionRefreshDetailsDataView,
+                  net::device_bound_sessions::RefreshEventDetails>::
     was_fully_proactive_refresh(
-        const net::device_bound_sessions::SessionEvent& event) {
-  return event.was_fully_proactive_refresh;
+        const net::device_bound_sessions::RefreshEventDetails& event_details) {
+  return event_details.was_fully_proactive_refresh;
 }
 
 // static
-const std::optional<net::device_bound_sessions::ChallengeResult>&
-StructTraits<network::mojom::DeviceBoundSessionEventDataView,
-             net::device_bound_sessions::SessionEvent>::
-    challenge_result(const net::device_bound_sessions::SessionEvent& event) {
-  return event.challenge_result;
+net::device_bound_sessions::ChallengeResult
+StructTraits<network::mojom::DeviceBoundSessionChallengeDetailsDataView,
+             net::device_bound_sessions::ChallengeEventDetails>::
+    challenge_result(const net::device_bound_sessions::ChallengeEventDetails&
+                         event_details) {
+  return event_details.challenge_result;
 }
 
 // static
-const std::optional<std::string>&
-StructTraits<network::mojom::DeviceBoundSessionEventDataView,
-             net::device_bound_sessions::SessionEvent>::
-    challenge(const net::device_bound_sessions::SessionEvent& event) {
-  return event.challenge;
+const std::string&
+StructTraits<network::mojom::DeviceBoundSessionChallengeDetailsDataView,
+             net::device_bound_sessions::ChallengeEventDetails>::
+    challenge(const net::device_bound_sessions::ChallengeEventDetails&
+                  event_details) {
+  return event_details.challenge;
 }
 
 // static
-const std::optional<net::device_bound_sessions::DeletionReason>&
-StructTraits<network::mojom::DeviceBoundSessionEventDataView,
-             net::device_bound_sessions::SessionEvent>::
-    deletion_reason(const net::device_bound_sessions::SessionEvent& event) {
-  return event.deletion_reason;
+net::device_bound_sessions::DeletionReason
+StructTraits<network::mojom::DeviceBoundSessionTerminationDetailsDataView,
+             net::device_bound_sessions::TerminationEventDetails>::
+    deletion_reason(const net::device_bound_sessions::TerminationEventDetails&
+                        event_details) {
+  return event_details.deletion_reason;
 }
 
 // static
 const std::optional<net::device_bound_sessions::SessionDisplay>&
-StructTraits<network::mojom::DeviceBoundSessionEventDataView,
-             net::device_bound_sessions::SessionEvent>::
-    new_session_display(const net::device_bound_sessions::SessionEvent& obj) {
+StructTraits<network::mojom::DeviceBoundSessionCreationDetailsDataView,
+             net::device_bound_sessions::CreationEventDetails>::
+    new_session_display(
+        const net::device_bound_sessions::CreationEventDetails& obj) {
+  return obj.new_session_display;
+}
+
+// static
+const std::optional<net::device_bound_sessions::SessionDisplay>&
+StructTraits<network::mojom::DeviceBoundSessionRefreshDetailsDataView,
+             net::device_bound_sessions::RefreshEventDetails>::
+    new_session_display(
+        const net::device_bound_sessions::RefreshEventDetails& obj) {
   return obj.new_session_display;
 }
 
@@ -613,17 +674,10 @@ bool StructTraits<network::mojom::DeviceBoundSessionEventDataView,
                   net::device_bound_sessions::SessionEvent>::
     Read(network::mojom::DeviceBoundSessionEventDataView data,
          net::device_bound_sessions::SessionEvent* out) {
-  out->was_fully_proactive_refresh = data.was_fully_proactive_refresh();
   out->succeeded = data.succeeded();
   return data.ReadEventId(&out->event_id) && data.ReadSite(&out->site) &&
          data.ReadSessionId(&out->session_id) &&
-         data.ReadEventType(&out->event_type) &&
-         data.ReadFetchError(&out->fetch_error) &&
-         data.ReadRefreshResult(&out->refresh_result) &&
-         data.ReadChallengeResult(&out->challenge_result) &&
-         data.ReadChallenge(&out->challenge) &&
-         data.ReadNewSessionDisplay(&out->new_session_display) &&
-         data.ReadDeletionReason(&out->deletion_reason);
+         data.ReadEventTypeDetails(&out->event_type_details);
 }
 
 }  // namespace mojo

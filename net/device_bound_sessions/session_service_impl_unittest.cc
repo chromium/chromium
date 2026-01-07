@@ -479,13 +479,18 @@ TEST_F(SessionServiceImplTest, EventObserverOnRegistrationSuccess) {
   base::CallbackListSubscription subscription =
       service().AddEventObserver(event_callback.Get());
   EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
-    EXPECT_EQ(event.event_type, SessionEvent::EventType::kCreation);
+    EXPECT_TRUE(
+        std::holds_alternative<CreationEventDetails>(event.event_type_details));
     EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
     EXPECT_EQ(event.session_id, kSessionId);
     EXPECT_TRUE(event.succeeded);
-    EXPECT_EQ(event.fetch_error, SessionError::kSuccess);
-    ASSERT_TRUE(event.new_session_display.has_value());
-    EXPECT_EQ(event.new_session_display->key.id.value(), kSessionId);
+    ASSERT_TRUE(
+        std::holds_alternative<CreationEventDetails>(event.event_type_details));
+    const auto& details =
+        std::get<CreationEventDetails>(event.event_type_details);
+    EXPECT_EQ(details.fetch_error, SessionError::kSuccess);
+    ASSERT_TRUE(details.new_session_display.has_value());
+    EXPECT_EQ(details.new_session_display->key.id.value(), kSessionId);
   });
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
@@ -503,12 +508,17 @@ TEST_F(SessionServiceImplTest, EventObserverOnRegistrationFailure) {
   base::CallbackListSubscription subscription =
       service().AddEventObserver(event_callback.Get());
   EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
-    EXPECT_EQ(event.event_type, SessionEvent::EventType::kCreation);
+    EXPECT_TRUE(
+        std::holds_alternative<CreationEventDetails>(event.event_type_details));
     EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
     EXPECT_EQ(event.session_id, std::nullopt);
     EXPECT_FALSE(event.succeeded);
-    EXPECT_EQ(event.fetch_error, SessionError::kInvalidFetcherUrl);
-    ASSERT_FALSE(event.new_session_display.has_value());
+    ASSERT_TRUE(
+        std::holds_alternative<CreationEventDetails>(event.event_type_details));
+    const auto& details =
+        std::get<CreationEventDetails>(event.event_type_details);
+    EXPECT_EQ(details.fetch_error, SessionError::kInvalidFetcherUrl);
+    ASSERT_FALSE(details.new_session_display.has_value());
   });
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
@@ -537,13 +547,18 @@ TEST_F(SessionServiceImplTest, EventObserverOnAddSession) {
   std::vector<uint8_t> wrapped_key = key_service()->GetWrappedKey(key).value();
 
   EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
-    EXPECT_EQ(event.event_type, SessionEvent::EventType::kCreation);
+    EXPECT_TRUE(
+        std::holds_alternative<CreationEventDetails>(event.event_type_details));
     EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
     EXPECT_EQ(event.session_id, kSessionId);
     EXPECT_TRUE(event.succeeded);
-    EXPECT_EQ(event.fetch_error, SessionError::kSuccess);
-    ASSERT_TRUE(event.new_session_display.has_value());
-    EXPECT_EQ(event.new_session_display->key.id.value(), kSessionId);
+    ASSERT_TRUE(
+        std::holds_alternative<CreationEventDetails>(event.event_type_details));
+    const auto& details =
+        std::get<CreationEventDetails>(event.event_type_details);
+    EXPECT_EQ(details.fetch_error, SessionError::kSuccess);
+    ASSERT_TRUE(details.new_session_display.has_value());
+    EXPECT_EQ(details.new_session_display->key.id.value(), kSessionId);
   });
 
   SessionParams::Scope scope;
@@ -600,14 +615,19 @@ TEST_F(SessionServiceImplTest, EventObserverOnRefresh) {
   base::CallbackListSubscription subscription =
       service().AddEventObserver(event_callback.Get());
   EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
-    EXPECT_EQ(event.event_type, SessionEvent::EventType::kRefresh);
+    EXPECT_TRUE(
+        std::holds_alternative<RefreshEventDetails>(event.event_type_details));
     EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
     EXPECT_EQ(event.session_id, kSessionId);
     EXPECT_TRUE(event.succeeded);
-    EXPECT_EQ(event.fetch_error, SessionError::kSuccess);
-    ASSERT_TRUE(event.new_session_display.has_value());
-    EXPECT_EQ(event.new_session_display->key.id.value(), kSessionId);
-    EXPECT_FALSE(event.was_fully_proactive_refresh.value());
+    ASSERT_TRUE(
+        std::holds_alternative<RefreshEventDetails>(event.event_type_details));
+    const auto& details =
+        std::get<RefreshEventDetails>(event.event_type_details);
+    EXPECT_EQ(details.fetch_error, SessionError::kSuccess);
+    ASSERT_TRUE(details.new_session_display.has_value());
+    EXPECT_EQ(details.new_session_display->key.id.value(), kSessionId);
+    EXPECT_FALSE(details.was_fully_proactive_refresh);
   });
 
   base::test::TestFuture<RefreshResult> future;
@@ -640,13 +660,18 @@ TEST_F(SessionServiceImplTest, EventObserverOnRefreshNoSessionChange) {
   base::CallbackListSubscription subscription =
       service().AddEventObserver(event_callback.Get());
   EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
-    EXPECT_EQ(event.event_type, SessionEvent::EventType::kRefresh);
+    EXPECT_TRUE(
+        std::holds_alternative<RefreshEventDetails>(event.event_type_details));
     EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
     EXPECT_EQ(event.session_id, kSessionId);
     EXPECT_TRUE(event.succeeded);
-    EXPECT_EQ(event.fetch_error, SessionError::kSuccess);
-    ASSERT_FALSE(event.new_session_display.has_value());
-    EXPECT_FALSE(event.was_fully_proactive_refresh.value());
+    ASSERT_TRUE(
+        std::holds_alternative<RefreshEventDetails>(event.event_type_details));
+    const auto& details =
+        std::get<RefreshEventDetails>(event.event_type_details);
+    EXPECT_EQ(details.fetch_error, SessionError::kSuccess);
+    ASSERT_FALSE(details.new_session_display.has_value());
+    EXPECT_FALSE(details.was_fully_proactive_refresh);
   });
 
   base::test::TestFuture<RefreshResult> future;
@@ -685,20 +710,31 @@ TEST_F(SessionServiceImplTest, EventObserverOnRefreshTermination) {
       service().AddEventObserver(event_callback.Get());
   EXPECT_CALL(event_callback, Run(_))
       .WillOnce([](const SessionEvent& event) {
-        EXPECT_EQ(event.event_type, SessionEvent::EventType::kTermination);
+        EXPECT_TRUE(std::holds_alternative<TerminationEventDetails>(
+            event.event_type_details));
         EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
         EXPECT_EQ(event.session_id, kSessionId);
         EXPECT_TRUE(event.succeeded);
-        EXPECT_EQ(event.deletion_reason, DeletionReason::kServerRequested);
+        ASSERT_TRUE(std::holds_alternative<TerminationEventDetails>(
+            event.event_type_details));
+        const auto& details =
+            std::get<TerminationEventDetails>(event.event_type_details);
+        EXPECT_EQ(details.deletion_reason, DeletionReason::kServerRequested);
       })
       .WillOnce([](const SessionEvent& event) {
-        EXPECT_EQ(event.event_type, SessionEvent::EventType::kRefresh);
+        EXPECT_TRUE(std::holds_alternative<RefreshEventDetails>(
+            event.event_type_details));
         EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
         EXPECT_EQ(event.session_id, kSessionId);
         EXPECT_FALSE(event.succeeded);
-        EXPECT_EQ(event.fetch_error, SessionError::kServerRequestedTermination);
-        ASSERT_FALSE(event.new_session_display.has_value());
-        EXPECT_FALSE(event.was_fully_proactive_refresh.value());
+        ASSERT_TRUE(std::holds_alternative<RefreshEventDetails>(
+            event.event_type_details));
+        const auto& details =
+            std::get<RefreshEventDetails>(event.event_type_details);
+        EXPECT_EQ(details.fetch_error,
+                  SessionError::kServerRequestedTermination);
+        ASSERT_FALSE(details.new_session_display.has_value());
+        EXPECT_FALSE(details.was_fully_proactive_refresh);
       });
 
   base::test::TestFuture<RefreshResult> future;
@@ -731,13 +767,18 @@ TEST_F(SessionServiceImplTest, EventObserverOnRefreshTransientError) {
   base::CallbackListSubscription subscription =
       service().AddEventObserver(event_callback.Get());
   EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
-    EXPECT_EQ(event.event_type, SessionEvent::EventType::kRefresh);
+    EXPECT_TRUE(
+        std::holds_alternative<RefreshEventDetails>(event.event_type_details));
     EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
     EXPECT_EQ(event.session_id, kSessionId);
     EXPECT_FALSE(event.succeeded);
-    EXPECT_EQ(event.fetch_error, SessionError::kTransientHttpError);
-    ASSERT_FALSE(event.new_session_display.has_value());
-    EXPECT_FALSE(event.was_fully_proactive_refresh.value());
+    ASSERT_TRUE(
+        std::holds_alternative<RefreshEventDetails>(event.event_type_details));
+    const auto& details =
+        std::get<RefreshEventDetails>(event.event_type_details);
+    EXPECT_EQ(details.fetch_error, SessionError::kTransientHttpError);
+    ASSERT_FALSE(details.new_session_display.has_value());
+    EXPECT_FALSE(details.was_fully_proactive_refresh);
   });
 
   base::test::TestFuture<RefreshResult> future;
@@ -786,13 +827,18 @@ TEST_F(SessionServiceImplTest, EventObserverOnProactiveRefresh) {
   base::CallbackListSubscription subscription =
       service().AddEventObserver(event_callback.Get());
   EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
-    EXPECT_EQ(event.event_type, SessionEvent::EventType::kRefresh);
+    EXPECT_TRUE(
+        std::holds_alternative<RefreshEventDetails>(event.event_type_details));
     EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
     EXPECT_EQ(event.session_id, kSessionId);
     EXPECT_TRUE(event.succeeded);
-    EXPECT_EQ(event.fetch_error, SessionError::kSuccess);
-    ASSERT_FALSE(event.new_session_display.has_value());
-    EXPECT_TRUE(event.was_fully_proactive_refresh.value());
+    ASSERT_TRUE(
+        std::holds_alternative<RefreshEventDetails>(event.event_type_details));
+    const auto& details =
+        std::get<RefreshEventDetails>(event.event_type_details);
+    EXPECT_EQ(details.fetch_error, SessionError::kSuccess);
+    ASSERT_FALSE(details.new_session_display.has_value());
+    EXPECT_TRUE(details.was_fully_proactive_refresh);
   });
 
   tracker.ResolvePendingRefresh(
@@ -848,13 +894,18 @@ TEST_F(SessionServiceImplTest, EventObserverOnProactiveAndDeferredRefresh) {
   base::CallbackListSubscription subscription =
       service().AddEventObserver(event_callback.Get());
   EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
-    EXPECT_EQ(event.event_type, SessionEvent::EventType::kRefresh);
+    EXPECT_TRUE(
+        std::holds_alternative<RefreshEventDetails>(event.event_type_details));
     EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
     EXPECT_EQ(event.session_id, kSessionId);
     EXPECT_TRUE(event.succeeded);
-    EXPECT_EQ(event.fetch_error, SessionError::kSuccess);
-    ASSERT_FALSE(event.new_session_display.has_value());
-    EXPECT_FALSE(event.was_fully_proactive_refresh.value());
+    ASSERT_TRUE(
+        std::holds_alternative<RefreshEventDetails>(event.event_type_details));
+    const auto& details =
+        std::get<RefreshEventDetails>(event.event_type_details);
+    EXPECT_EQ(details.fetch_error, SessionError::kSuccess);
+    ASSERT_FALSE(details.new_session_display.has_value());
+    EXPECT_FALSE(details.was_fully_proactive_refresh);
   });
 
   tracker.ResolvePendingRefresh(
@@ -884,12 +935,17 @@ TEST_F(SessionServiceImplTest, EventObserverOnChallenge) {
   base::CallbackListSubscription subscription =
       service().AddEventObserver(event_callback.Get());
   EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
-    EXPECT_EQ(event.event_type, SessionEvent::EventType::kChallenge);
+    EXPECT_TRUE(std::holds_alternative<ChallengeEventDetails>(
+        event.event_type_details));
     EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
     EXPECT_EQ(event.session_id, kSessionId);
     EXPECT_TRUE(event.succeeded);
-    EXPECT_EQ(event.challenge_result, ChallengeResult::kSuccess);
-    EXPECT_EQ(event.challenge, "challenge");
+    ASSERT_TRUE(std::holds_alternative<ChallengeEventDetails>(
+        event.event_type_details));
+    const auto& details =
+        std::get<ChallengeEventDetails>(event.event_type_details);
+    EXPECT_EQ(details.challenge_result, ChallengeResult::kSuccess);
+    EXPECT_EQ(details.challenge, "challenge");
   });
 
   service().SetChallengeForBoundSession(base::DoNothing(), dbsc_request,
@@ -916,12 +972,17 @@ TEST_F(SessionServiceImplTest, EventObserverOnChallenge_NoSessionId) {
   base::CallbackListSubscription subscription =
       service().AddEventObserver(event_callback.Get());
   EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
-    EXPECT_EQ(event.event_type, SessionEvent::EventType::kChallenge);
+    EXPECT_TRUE(std::holds_alternative<ChallengeEventDetails>(
+        event.event_type_details));
     EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
     EXPECT_FALSE(event.session_id.has_value());
     EXPECT_FALSE(event.succeeded);
-    EXPECT_EQ(event.challenge_result, ChallengeResult::kNoSessionId);
-    EXPECT_EQ(event.challenge, "challenge");
+    ASSERT_TRUE(std::holds_alternative<ChallengeEventDetails>(
+        event.event_type_details));
+    const auto& details =
+        std::get<ChallengeEventDetails>(event.event_type_details);
+    EXPECT_EQ(details.challenge_result, ChallengeResult::kNoSessionId);
+    EXPECT_EQ(details.challenge, "challenge");
   });
 
   service().SetChallengeForBoundSession(base::DoNothing(), dbsc_request,
@@ -949,12 +1010,17 @@ TEST_F(SessionServiceImplTest, EventObserverOnChallenge_NoSessionMatch) {
   base::CallbackListSubscription subscription =
       service().AddEventObserver(event_callback.Get());
   EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
-    EXPECT_EQ(event.event_type, SessionEvent::EventType::kChallenge);
+    EXPECT_TRUE(std::holds_alternative<ChallengeEventDetails>(
+        event.event_type_details));
     EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
     EXPECT_EQ(event.session_id, "SessionId2");
     EXPECT_FALSE(event.succeeded);
-    EXPECT_EQ(event.challenge_result, ChallengeResult::kNoSessionMatch);
-    EXPECT_EQ(event.challenge, "challenge");
+    ASSERT_TRUE(std::holds_alternative<ChallengeEventDetails>(
+        event.event_type_details));
+    const auto& details =
+        std::get<ChallengeEventDetails>(event.event_type_details);
+    EXPECT_EQ(details.challenge_result, ChallengeResult::kNoSessionMatch);
+    EXPECT_EQ(details.challenge, "challenge");
   });
 
   service().SetChallengeForBoundSession(base::DoNothing(), dbsc_request,
@@ -982,12 +1048,17 @@ TEST_F(SessionServiceImplTest, EventObserverOnChallenge_CantSetBoundCookie) {
   base::CallbackListSubscription subscription =
       service().AddEventObserver(event_callback.Get());
   EXPECT_CALL(event_callback, Run(_)).WillOnce([](const SessionEvent& event) {
-    EXPECT_EQ(event.event_type, SessionEvent::EventType::kChallenge);
+    EXPECT_TRUE(std::holds_alternative<ChallengeEventDetails>(
+        event.event_type_details));
     EXPECT_EQ(event.site, SchemefulSite(kTestUrl));
     EXPECT_EQ(event.session_id, kSessionId);
     EXPECT_FALSE(event.succeeded);
-    EXPECT_EQ(event.challenge_result, ChallengeResult::kCantSetBoundCookie);
-    EXPECT_EQ(event.challenge, "challenge");
+    ASSERT_TRUE(std::holds_alternative<ChallengeEventDetails>(
+        event.event_type_details));
+    const auto& details =
+        std::get<ChallengeEventDetails>(event.event_type_details);
+    EXPECT_EQ(details.challenge_result, ChallengeResult::kCantSetBoundCookie);
+    EXPECT_EQ(details.challenge, "challenge");
   });
 
   service().SetChallengeForBoundSession(base::DoNothing(), dbsc_request,

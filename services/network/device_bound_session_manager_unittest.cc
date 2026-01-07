@@ -605,8 +605,10 @@ TEST_F(DeviceBoundSessionManagerTest, OnSessionCreatedEvent) {
   EXPECT_THAT(
       event_observer.events(),
       ElementsAre(AllOf(
-          Field(&SessionEvent::event_type,
-                net::device_bound_sessions::SessionEvent::EventType::kCreation),
+          Field(&SessionEvent::event_type_details,
+                testing::VariantWith<
+                    net::device_bound_sessions::CreationEventDetails>(
+                    testing::_)),
           Field(&SessionEvent::site, net::SchemefulSite(url)),
           Field(&SessionEvent::session_id, testing::Optional(session_id)))));
 }

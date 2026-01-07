@@ -1017,10 +1017,6 @@ mojom("url_loader_base") {
           cpp = "::net::device_bound_sessions::RefreshResult"
         },
         {
-          mojom = "network.mojom.DeviceBoundSessionEventType"
-          cpp = "::net::device_bound_sessions::SessionEvent::EventType"
-        },
-        {
           mojom = "network.mojom.DeviceBoundSessionChallengeResult"
           cpp = "::net::device_bound_sessions::ChallengeResult"
         },
@@ -1032,6 +1028,26 @@ mojom("url_loader_base") {
           mojom = "network.mojom.DeviceBoundSessionParams"
           cpp = "::net::device_bound_sessions::SessionParams"
           move_only = true
+        },
+        {
+          mojom = "network.mojom.DeviceBoundSessionCreationDetails"
+          cpp = "::net::device_bound_sessions::CreationEventDetails"
+        },
+        {
+          mojom = "network.mojom.DeviceBoundSessionRefreshDetails"
+          cpp = "::net::device_bound_sessions::RefreshEventDetails"
+        },
+        {
+          mojom = "network.mojom.DeviceBoundSessionChallengeDetails"
+          cpp = "::net::device_bound_sessions::ChallengeEventDetails"
+        },
+        {
+          mojom = "network.mojom.DeviceBoundSessionTerminationDetails"
+          cpp = "::net::device_bound_sessions::TerminationEventDetails"
+        },
+        {
+          mojom = "network.mojom.DeviceBoundSessionEventTypeDetails"
+          cpp = "::net::device_bound_sessions::SessionEventTypeDetails"
         },
         {
           mojom = "network.mojom.DeviceBoundSessionEvent"

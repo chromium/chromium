@@ -218,16 +218,6 @@ enum DeviceBoundSessionChallengeResult {
 
 // LINT.ThenChange(//net/device_bound_sessions/challenge_result.h:DeviceBoundSessionChallengeResult)
 
-// LINT.IfChange(DeviceBoundSessionEventType)
-enum DeviceBoundSessionEventType {
-  kCreation = 0,
-  kRefresh = 1,
-  kChallenge = 2,
-  kTermination = 3,
-};
-
-// LINT.ThenChange(//net/device_bound_sessions/session_event.h:DeviceBoundSessionEventType)
-
 // DeviceBoundSessionManager is a privileged interface that should only
 // be used in trusted processes.
 [RequireContext=sandbox.mojom.Context.kBrowser]
@@ -352,6 +342,55 @@ struct DeviceBoundSessionDisplay {
   array<string> allowed_refresh_initiators;
 };
 
+// Session event details specific to creation.
+struct DeviceBoundSessionCreationDetails {
+  // The result of the fetch attempt.
+  DeviceBoundSessionError fetch_error;
+  // The session display if there was a newly created session. This is populated
+  // for all successful creation events.
+  DeviceBoundSessionDisplay? new_session_display;
+};
+
+// Session event details specific to refresh.
+struct DeviceBoundSessionRefreshDetails {
+  // The result of a refresh. Populated only for refresh events.
+  DeviceBoundSessionRefreshResult refresh_result;
+  // If there was a fetch attempt, the result of that.
+  DeviceBoundSessionError? fetch_error;
+  // The session display if there was a newly created session. This is populated
+  // for any refresh event that modifies the session config.
+  DeviceBoundSessionDisplay? new_session_display;
+  // See comments on
+  // `net::device_bound_sessions::RefreshEventResult::was_fully_proactive_refresh`.
+  bool was_fully_proactive_refresh;
+};
+
+// Session event details specific to termination.
+struct DeviceBoundSessionTerminationDetails {
+  // The reason for a session being deleted.
+  DeviceBoundSessionDeletionReason deletion_reason;
+};
+
+// Session event details specific to challenges.
+struct DeviceBoundSessionChallengeDetails {
+  // The result of a challenge.
+  DeviceBoundSessionChallengeResult challenge_result;
+  // The challenge set, if any.
+  string challenge;
+};
+
+// Any one of the different session event type details.
+union DeviceBoundSessionEventTypeDetails {
+  // Session event details specific to creation.
+  DeviceBoundSessionCreationDetails creation;
+  // Session event details specific to refresh.
+  DeviceBoundSessionRefreshDetails refresh;
+  // Session event details specific to termination.
+  DeviceBoundSessionTerminationDetails termination;
+  // Session event details specific to challenges.
+  DeviceBoundSessionChallengeDetails challenge;
+};
+
 // Session event details sent to DevTools.
 struct DeviceBoundSessionEvent {
   // A unique identifier for this session event.
@@ -361,29 +400,10 @@ struct DeviceBoundSessionEvent {
   // The session ID this event is associated with. May not be populated for
   // failed events.
   string? session_id;
-  // The type of session event.
-  DeviceBoundSessionEventType event_type;
   // Whether this event was considered successful.
   bool succeeded;
-  // If there was a fetch attempt for creation and refresh event types, the
-  // result of that.
-  DeviceBoundSessionError? fetch_error;
-  // The session display if there was a newly created session. This is populated
-  // for all successful creation events and
-  // any refresh event that modifies the session config.
-  DeviceBoundSessionDisplay? new_session_display;
-  // The result of a refresh. Populated only for refresh events.
-  DeviceBoundSessionRefreshResult? refresh_result;
-  // See comments on
-  // `net::device_bound_sessions::SessionEvent::was_fully_proactive_refresh`.
-  bool? was_fully_proactive_refresh;
-  // The result of a challenge. Populated only for challenge events.
-  DeviceBoundSessionChallengeResult? challenge_result;
-  // The challenge set. Populated only for challenge events.
-  string? challenge;
-  // The reason for a session being deleted. Populated only for termination
-  // events.
-  DeviceBoundSessionDeletionReason? deletion_reason;
+  // Results specific to the event type.
+  DeviceBoundSessionEventTypeDetails event_type_details;
 };
 
 // An observer that is notified about session events including displays. Used
