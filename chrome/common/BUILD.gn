@@ -250,7 +250,6 @@ static_library("common_lib") {
     "//ui/base",
     "//ui/gfx/ipc",
     "//ui/gfx/ipc/geometry",
-    "//ui/gfx/ipc/skia",
     "//ui/gl",
     "//ui/message_center/public/cpp",
     "//ui/native_theme",

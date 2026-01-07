@@ -589,7 +589,6 @@ static_library("common") {
     "//ui/gfx/geometry",
     "//ui/gfx/ipc",
     "//ui/gfx/ipc/geometry",
-    "//ui/gfx/ipc/skia",
     "//url",
   ]
 

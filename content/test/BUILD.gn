@@ -3399,7 +3399,6 @@ test("content_unittests") {
     "//ui/gfx/geometry:geometry_skia",
     "//ui/gfx/geometry/mojom:mojom_traits",
     "//ui/gfx/ipc",
-    "//ui/gfx/ipc/skia",
     "//ui/gl",
     "//ui/gl:gl_headers",
     "//ui/gl:test_support",

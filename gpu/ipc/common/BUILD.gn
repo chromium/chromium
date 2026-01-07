@@ -58,7 +58,6 @@ source_set("command_buffer_traits_sources") {
   deps = [
     "//base",
     "//ui/gfx/ipc/geometry",
-    "//ui/gfx/ipc/skia",
   ]
 }
 
@@ -141,7 +140,6 @@ source_set("ipc_common_sources") {
     "//ui/gfx/ipc",
     "//ui/gfx/ipc/color",
     "//ui/gfx/ipc/geometry",
-    "//ui/gfx/ipc/skia",
     "//ui/gl",
   ]
 

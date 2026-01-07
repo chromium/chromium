@@ -300,7 +300,6 @@ source_set("common_sources") {
     "//ui/gfx/ipc",
     "//ui/gfx/ipc/color",
     "//ui/gfx/ipc/geometry",
-    "//ui/gfx/ipc/skia",
   ]
 
   if (use_aura) {
