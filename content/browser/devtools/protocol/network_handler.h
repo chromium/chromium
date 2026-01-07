@@ -32,6 +32,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -462,7 +463,7 @@ class NetworkHandler : public DevToolsDomainHandler,
            base::UniquePtrComparator>
       loaders_;
   std::optional<std::set<net::SourceStreamType>> accepted_stream_types_;
-  std::unordered_map<String, std::pair<String, bool>> received_body_data_;
+  absl::flat_hash_map<String, std::pair<String, bool>> received_body_data_;
   bool did_modifications_ = false;
   base::OnceClosure cleanup_after_modifications_callback_;
   const raw_ref<DevToolsSession> root_session_;

@@ -107,6 +107,7 @@
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
@@ -305,7 +306,7 @@ class CookieRetrieverNetworkService
   }
 
   std::unique_ptr<GetCookiesCallback> callback_;
-  std::unordered_map<std::string, net::CanonicalCookie> all_cookies_;
+  absl::flat_hash_map<std::string, net::CanonicalCookie> all_cookies_;
 };
 
 namespace {
