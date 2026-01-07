@@ -3903,6 +3903,12 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
       EGL_FALSE,
       EGL_CONTEXT_OPENGL_BACKWARDS_COMPATIBLE_ANGLE,
       EGL_FALSE,
+      EGL_CONTEXT_CLIENT_ARRAYS_ENABLED_ANGLE,
+      EGL_FALSE,
+      EGL_CONTEXT_BIND_GENERATES_RESOURCE_CHROMIUM,
+      EGL_FALSE,
+      EGL_ROBUST_RESOURCE_INITIALIZATION_ANGLE,
+      EGL_TRUE,
       EGL_NONE,
   };
   context_ = driver_egl_.fn.eglCreateContextFn(display_, EGL_NO_CONFIG_KHR,
