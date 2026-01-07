@@ -969,6 +969,59 @@ public class ClientHintsTest extends AwParameterizedTest {
         Assert.assertEquals("Linux; Android 10; K; wv", uaMatcher.group(1));
     }
 
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @SkipMutations(reason = "This test is about a feature flag and not settings.")
+    @CommandLineFlags.Add({"enable-features=ReduceUserAgentMinorVersion"})
+    public void testNavigatorPlatformWithReduceUserAgentMinorVersionEnabled() throws Throwable {
+        verifyNavigatorPlatform("Linux armv81");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @SkipMutations(reason = "This test is about a feature flag and not settings.")
+    public void testNavigatorPlatformWithReduceUserAgentMinorVersionDisabled() throws Throwable {
+        verifyNavigatorPlatform(getUnreducedPlatform());
+    }
+
+    private String getUnreducedPlatform() {
+        // Mirror the implementation of NavigatorID::platform().
+        // See third_party/blink/renderer/core/frame/navigator_id.cc.
+        return System.getProperty("os.name") + " " + System.getProperty("os.arch");
+    }
+
+    private void verifyNavigatorPlatform(String expectedPlatform) throws Throwable {
+        final TestAwContentsClient contentClient = new TestAwContentsClient();
+        final AwContents contents =
+                mActivityTestRule
+                        .createAwTestContainerViewOnMainSync(contentClient)
+                        .getAwContents();
+        AwActivityTestRule.enableJavaScriptOnUiThread(contents);
+        contents.getSettings().setJavaScriptEnabled(true);
+
+        final AwEmbeddedTestServer server =
+                AwEmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getTargetContext());
+        try {
+            // A simple page is enough, use client_hints.html as it's known to exist.
+            final String url = server.getURL("/android_webview/test/data/client_hints.html");
+            loadUrlSync(contents, contentClient.getOnPageFinishedHelper(), url);
+
+            String platform =
+                    JSUtils.executeJavaScriptAndWaitForResult(
+                            InstrumentationRegistry.getInstrumentation(),
+                            contents,
+                            contentClient.getOnEvaluateJavaScriptResultHelper(),
+                            "navigator.platform");
+
+            Assert.assertEquals("\"" + expectedPlatform + "\"", platform);
+        } finally {
+            server.stopAndDestroyServer();
+        }
+    }
+
     private void verifyOverrideUaAndOverrideUaMetadata(String overrideUserAgent) throws Throwable {
         ClientHintsTestResult clientHintsResult =
                 getClientHintsWithOverrides(
@@ -1298,8 +1351,8 @@ public class ClientHintsTest extends AwParameterizedTest {
             String actualTitle = mActivityTestRule.getTitleOnUiThread(contents);
             String[] uaItems = actualTitle.split("\\|");
             // 3 navigator.userAgentData priorities.
-            int expect_total_hints = 3;
-            Assert.assertEquals(expect_total_hints, uaItems.length);
+            int expectTotalHints = 3;
+            Assert.assertEquals(expectTotalHints, uaItems.length);
 
             // System default low-entropy user-agent client hints will always be available in
             // Javascript API even if users change the user-agent to a totally different value.
