@@ -495,10 +495,10 @@ void ResetAuthentication() {
 // running. The name is extracted from the string for the test's name property,
 // e.g. "-[DemographicsTestCase testSomething]".
 - (NSString*)currentTestMethodName {
-  int testNameStart = [self.name rangeOfString:@"test"].location;
-  return [self.name
-      substringWithRange:NSMakeRange(testNameStart,
-                                     self.name.length - testNameStart - 1)];
+  NSCharacterSet* set =
+      [NSCharacterSet characterSetWithCharactersInString:@" ]"];
+  NSArray* parts = [self.name componentsSeparatedByCharactersInSet:set];
+  return (parts.count >= 2) ? parts[1] : self.name;
 }
 
 #pragma mark - Handling system alerts
