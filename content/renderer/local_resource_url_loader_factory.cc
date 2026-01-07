@@ -290,6 +290,10 @@ LocalResourceURLLoaderFactory::GetResource(
     const std::string& mime_type) {
   // Get resource.
   std::string_view path = url.path().substr(1);
+  SCOPED_CRASH_KEY_STRING256("Bug470579309", "url", url.spec());
+  SCOPED_CRASH_KEY_STRING256("Bug470579309", "path", path);
+  SCOPED_CRASH_KEY_NUMBER("Bug470579309", "resource_map_size",
+                          source->path_to_resource_map.size());
   auto resource_it = source->path_to_resource_map.find(std::string(path));
   // CanServe should have been called before this point, which would have
   // confirmed that there exists a resource corresponding to the URL path.
