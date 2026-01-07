@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -115,7 +114,7 @@ BrowserWindowInterface* WaitForBrowserNotInSet(
   if (!new_browser) {
     new_browser = WaitForBrowserToOpen();
     // The new browser should never be in |excluded_browsers|.
-    DCHECK(!base::Contains(excluded_browsers, new_browser));
+    DCHECK(!excluded_browsers.contains(new_browser));
   }
   return new_browser;
 }

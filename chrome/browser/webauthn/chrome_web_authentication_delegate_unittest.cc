@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
 #include "base/test/metrics/histogram_tester.h"

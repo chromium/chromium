@@ -11,7 +11,6 @@
 
 #include "base/check_is_test.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
@@ -257,7 +256,7 @@ void ManifestUpdateManager::MaybeUpdate(
     return;
   }
 
-  if (base::Contains(update_stages_, *app_id)) {
+  if (update_stages_.contains(*app_id)) {
     return;
   }
 
@@ -472,7 +471,7 @@ bool ManifestUpdateManager::IsUpdateConsumed(const webapps::AppId& app_id,
 
 bool ManifestUpdateManager::IsUpdateCommandPending(
     const webapps::AppId& app_id) {
-  return base::Contains(update_stages_, app_id);
+  return update_stages_.contains(app_id);
 }
 
 // WebAppInstallManager:
@@ -485,7 +484,7 @@ void ManifestUpdateManager::OnWebAppWillBeUninstalled(
                  ManifestUpdateResult::kAppUninstalling);
     update_stages_.erase(it);
   }
-  CHECK(!base::Contains(update_stages_, app_id));
+  CHECK(!update_stages_.contains(app_id));
 
   // Clear any data necessary for throttling updates for the current web app.
   last_update_check_.erase(app_id);

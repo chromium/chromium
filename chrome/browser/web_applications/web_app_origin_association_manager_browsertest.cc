@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -109,11 +108,10 @@ class WebAppOriginAssociationManagerTest : public WebAppBrowserTestBase {
             /*has_origin_wildcard*/ valid_and_invalid_app_scope_extension_
                 ->has_origin_wildcard);
 
-    EXPECT_TRUE(base::Contains(result.scope_extensions,
-                               std::move(valid_app_scope_extension)));
     EXPECT_TRUE(
-        base::Contains(result.scope_extensions,
-                       std::move(valid_and_invalid_app_scope_extension)));
+        result.scope_extensions.contains(std::move(valid_app_scope_extension)));
+    EXPECT_TRUE(result.scope_extensions.contains(
+        std::move(valid_and_invalid_app_scope_extension)));
 
     if (callback_count_ == expected_callback_count) {
       callback_count_ = 0;

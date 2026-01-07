@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/pattern.h"
@@ -644,8 +643,8 @@ TEST(ParseCapabilities, ExcludeSwitches) {
   ASSERT_TRUE(status.IsOk());
   ASSERT_EQ(2u, capabilities.exclude_switches.size());
   const std::set<std::string>& switches = capabilities.exclude_switches;
-  ASSERT_TRUE(base::Contains(switches, "switch1"));
-  ASSERT_TRUE(base::Contains(switches, "switch2"));
+  ASSERT_TRUE(switches.contains("switch1"));
+  ASSERT_TRUE(switches.contains("switch2"));
 }
 
 TEST(ParseCapabilities, UseRemoteBrowserHostName) {

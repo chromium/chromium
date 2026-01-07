@@ -591,7 +591,7 @@ void WebInstallServiceImpl::OnInstallInfoFromInstallUrlFetched(
   // crbug.com/423906188 for more information. Regardless of OS, we expect an
   // icon of size 32x32 to be available.
   DialogImageInfo dialog_info = install_info->GetIconBitmapsForSecureSurfaces();
-  CHECK(base::Contains(dialog_info.bitmaps, kIconSizeForLaunchDialog));
+  CHECK(dialog_info.bitmaps.contains(kIconSizeForLaunchDialog));
   SkBitmap icon_bitmap_to_use = dialog_info.bitmaps[kIconSizeForLaunchDialog];
 
   // Name to display in the dialog.

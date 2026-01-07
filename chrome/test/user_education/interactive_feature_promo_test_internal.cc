@@ -8,7 +8,6 @@
 #include <optional>
 #include <variant>
 
-#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -211,7 +210,7 @@ void InteractiveFeaturePromoTestPrivate::MaybeWaitForTrackerInitialization(
 void InteractiveFeaturePromoTestPrivate::CreateServicesCallback(
     content::BrowserContext* context) {
   auto* const profile = Profile::FromBrowserContext(context);
-  if (base::Contains(profile_data_, profile)) {
+  if (profile_data_.contains(profile)) {
     return;
   }
   profile_data_.emplace(profile, ProfileData());

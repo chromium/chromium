@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/metrics/user_metrics.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -196,7 +195,7 @@ bool UserUninstalledPreinstalledWebAppPrefs::AppIdContainsAllUrls(
       continue;
 
     for (const GURL& url_to_insert : it.second.install_urls) {
-      if (!base::Contains(existing_urls, url_to_insert.spec())) {
+      if (!existing_urls.contains(url_to_insert.spec())) {
         return false;
       }
     }

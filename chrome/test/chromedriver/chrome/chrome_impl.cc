@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -158,7 +157,7 @@ Status ChromeImpl::GetTopLevelWebViewIds(std::list<std::string>* web_view_ids,
 }
 
 bool ChromeImpl::IsBrowserWindow(const WebViewInfo& view) const {
-  return base::Contains(window_types_, view.type);
+  return window_types_.contains(view.type);
 }
 
 Status ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,

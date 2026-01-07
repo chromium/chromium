@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -46,7 +45,7 @@ void ValidateAllIconsWithURLsArePresent(
   for (const auto& bitmap : bitmaps_to_check) {
     bool found = false;
     int width = bitmap.width();
-    if (base::Contains(size_map, width)) {
+    if (size_map.contains(width)) {
       const SkBitmap& mapped_icon = size_map.at(width);
       if (mapped_icon.width() == width)
         found = true;

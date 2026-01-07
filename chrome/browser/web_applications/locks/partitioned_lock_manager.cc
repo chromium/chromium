@@ -9,7 +9,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -135,7 +134,7 @@ void PartitionedLockManager::UpgradeToExclusive(
     const PartitionedLockId& lock_id,
     base::OnceClosure upgrade_complete,
     const base::Location& location) {
-  CHECK(base::Contains(locks_, lock_id));
+  CHECK(locks_.contains(lock_id));
   auto lock_it = std::find_if(
       locks_holder.locks_.begin(), locks_holder.locks_.end(),
       [&](PartitionedLock& lock) { return lock.lock_id() == lock_id; });
@@ -145,8 +144,7 @@ void PartitionedLockManager::UpgradeToExclusive(
   Lock& lock = locks_[partitioned_lock.lock_id()];
 
   CHECK_GT(lock.acquired_count, 0);
-  CHECK(base::Contains(lock.request_locations,
-                       partitioned_lock.request_location()));
+  CHECK(lock.request_locations.contains(partitioned_lock.request_location()));
 
   if (lock.lock_mode == LockType::kExclusive) {
     // Exit early, as it's already exclusive.

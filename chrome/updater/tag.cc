@@ -15,7 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -628,7 +627,7 @@ ErrorCode ParseAppInstallerDataArgs(std::string_view app_installer_data_args,
 
 // Checks that |args| does not contain |kDisallowedCharInTag|.
 bool IsValidArgs(std::string_view args) {
-  return !base::Contains(args, kDisallowedCharInTag);
+  return !args.contains(kDisallowedCharInTag);
 }
 
 // Returns a `uint16_t` value as big-endian bytes.

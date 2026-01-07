@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -70,7 +69,7 @@ class CountDownLatchTest : public testing::Test {
       const base::UnguessableToken& id,
       const Exception::Value& expected_exception) {
     base::AutoLock al(map_lock_);
-    ASSERT_TRUE(base::Contains(id_to_result_map_, id));
+    ASSERT_TRUE(id_to_result_map_.contains(id));
     ASSERT_TRUE(id_to_result_map_[id]);
     EXPECT_EQ(expected_exception, id_to_result_map_[id]->exception());
   }
@@ -78,7 +77,7 @@ class CountDownLatchTest : public testing::Test {
   void VerifyBoolResultForAttemptId(const base::UnguessableToken& id,
                                     bool expected_result) {
     base::AutoLock al(map_lock_);
-    ASSERT_TRUE(base::Contains(id_to_result_map_, id));
+    ASSERT_TRUE(id_to_result_map_.contains(id));
     ASSERT_TRUE(id_to_result_map_[id]);
     EXPECT_EQ(expected_result, id_to_result_map_[id]->ok());
     EXPECT_EQ(expected_result, id_to_result_map_[id]->result());

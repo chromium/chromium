@@ -11,7 +11,6 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -527,8 +526,8 @@ bool DoesTestMatchFileConfig(std::string_view full_test_params,
       TupleItemToParamString<LinkCapturing>(file_config);
   std::string display_mode_name =
       TupleItemToParamString<AppUserDisplayMode>(file_config);
-  return base::Contains(full_test_params, link_capturing_name) &&
-         base::Contains(full_test_params, display_mode_name);
+  return full_test_params.contains(link_capturing_name) &&
+         full_test_params.contains(display_mode_name);
 }
 
 // Removes all of the parameters from the `full_test_params` that are handled by
@@ -929,7 +928,7 @@ class NavCaptureParameterizedBrowserTest
     // redirection happening on the way from a source to a destination url.
     // Prevent multiple redirections from being triggered which causes a Chrome
     // error page to show up, cancelling the navigation.
-    if (base::Contains(request.GetURL().query(), "redirect")) {
+    if (request.GetURL().query().contains("redirect")) {
       return nullptr;
     }
 
@@ -942,7 +941,7 @@ class NavCaptureParameterizedBrowserTest
     const GURL& final_request_url =
         request.GetURL().ReplaceComponents(request_replacements);
 
-    if (!base::Contains(final_request_url.spec(), "/destination.html")) {
+    if (!final_request_url.spec().contains("/destination.html")) {
       return nullptr;  // Only redirect for destination pages.
     }
 
@@ -1524,8 +1523,7 @@ class NavCaptureParameterizedBrowserTest
     for (int i = 0; i < unit_test->total_test_suite_count(); ++i) {
       const testing::TestSuite* test_suite = unit_test->GetTestSuite(i);
       // We only care about link capturing parameterized tests.
-      if (!base::Contains(std::string(test_suite->name()),
-                          GetTestClassName())) {
+      if (!(std::string(test_suite->name())).contains(GetTestClassName())) {
         continue;
       }
       for (int j = 0; j < test_suite->total_test_count(); ++j) {
@@ -1836,8 +1834,8 @@ class NavCaptureParameterizedBrowserTest
     }
 
     // Skip tests that are disabled because they are flaky.
-    if (base::Contains(disabled_flaky_tests, TupleToParamString(param.param)) ||
-        base::Contains(disabled_flaky_tests, "*")) {
+    if (disabled_flaky_tests.contains(TupleToParamString(param.param)) ||
+        disabled_flaky_tests.contains("*")) {
       return true;
     }
 
@@ -1900,10 +1898,9 @@ class NavCaptureParameterizedBrowserTest
     // Cleanup tests will call this with every combination of file
     // configuration, and if no tests exist then the load will fail.
     if (!ShouldRebaseline() &&
-        !base::Contains(std::string(::testing::UnitTest::GetInstance()
-                                        ->current_test_info()
-                                        ->name()),
-                        "Cleanup")) {
+        !(std::string(
+              ::testing::UnitTest::GetInstance()->current_test_info()->name()))
+             .contains("Cleanup")) {
       ASSERT_TRUE(file_read_success_)
           << "Failed to read test baselines from "
           << GetExpectationsFile(file_config).value()

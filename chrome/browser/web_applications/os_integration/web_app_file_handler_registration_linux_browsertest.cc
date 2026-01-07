@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
@@ -140,8 +139,8 @@ IN_PROC_BROWSER_TEST_F(
   // the update-desktop-database call.
   EXPECT_TRUE(base::StartsWith(xdg_commands_called[1].xdg_command,
                                "update-desktop-database"));
-  EXPECT_TRUE(base::Contains(xdg_commands_called[1].xdg_command,
-                             GetUserApplicationsDir().value()));
+  EXPECT_TRUE(xdg_commands_called[1].xdg_command.contains(
+      GetUserApplicationsDir().value()));
 }
 
 }  // namespace web_app

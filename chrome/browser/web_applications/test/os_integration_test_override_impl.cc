@@ -147,7 +147,7 @@ std::optional<SkBitmap> IconManagerReadIconForSize(
       app_id, {size_px}, IconPurpose::ANY,
       base::BindLambdaForTesting([&](IconMetadataFromDisk icon_metadata) {
         SizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
-        CHECK(base::Contains(icon_bitmaps, size_px));
+        CHECK(icon_bitmaps.contains(size_px));
         result = icon_bitmaps[size_px];
         run_loop.Quit();
       }));
@@ -437,12 +437,11 @@ bool OsIntegrationTestOverrideImpl::IsFileExtensionHandled(
   base::FilePath user_applications_dir = applications();
   bool database_update_called = false;
   for (const LinuxFileRegistration& command : linux_file_registration_) {
-    if (base::Contains(command.xdg_command, app_id) &&
-        base::Contains(command.xdg_command,
-                       profile->GetPath().BaseName().value())) {
+    if (command.xdg_command.contains(app_id) &&
+        command.xdg_command.contains(profile->GetPath().BaseName().value())) {
       if (base::StartsWith(command.xdg_command, "xdg-mime install")) {
-        is_file_handled = base::Contains(command.file_contents,
-                                         "\"*" + file_extension + "\"");
+        is_file_handled =
+            command.file_contents.contains("\"*" + file_extension + "\"");
       } else {
         CHECK(base::StartsWith(command.xdg_command, "xdg-mime uninstall"))
             << command.xdg_command;
@@ -454,7 +453,7 @@ bool OsIntegrationTestOverrideImpl::IsFileExtensionHandled(
     // web_app_file_handler_registration_linux.cc for more information.
     if (base::StartsWith(command.xdg_command, "update-desktop-database")) {
       database_update_called =
-          base::Contains(command.xdg_command, user_applications_dir.value());
+          command.xdg_command.contains(user_applications_dir.value());
     }
   }
   is_file_handled = is_file_handled && database_update_called;
