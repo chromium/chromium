@@ -661,6 +661,8 @@ class PageContextFetcher : public content::WebContentsObserver {
       }
     }
 
+    RedactAndEncodeScreenshotIfNeeded();
+
     RunCallbackIfComplete();
   }
 
@@ -737,7 +739,7 @@ std::string ToString(FetchPageContextError error) {
 BASE_FEATURE(kGlicTabScreenshotExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicScreenshotPasswordRedaction,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kMaxScreenshotWidthParam{
     &kGlicTabScreenshotExperiment, "max_screenshot_width", 0};

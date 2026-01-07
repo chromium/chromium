@@ -9,12 +9,15 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/optimization_guide/content/browser/no_response_ai_page_content_agent.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "content/public/browser/web_contents.h"
@@ -501,6 +504,53 @@ IN_PROC_BROWSER_TEST_F(
   options.screenshot_options =
       ScreenshotOptions::ViewportOnly(/*paint_preview_options=*/std::nullopt);
   FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                       future.Take());
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->screenshot_result.has_value());
+
+  ScreenshotResult& screenshot = result->screenshot_result.value();
+  EXPECT_FALSE(screenshot.dimensions.IsZero());
+  ASSERT_GT(screenshot.screenshot_data.size(), 0);
+  ASSERT_EQ(screenshot.mime_type, "image/jpeg");
+
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot.screenshot_data);
+
+  EXPECT_FALSE(bitmap.isNull());
+  EXPECT_FALSE(bitmap.empty());
+  EXPECT_THAT(bitmap.getColor(10, 10),
+              IsColorWithinTolerance(SK_ColorBLACK, 0x20));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PasswordRedactionMultiSourcePageContextFetcherBrowserTest,
+    RedactionWhenScreenshotReceivedFirst) {
+  base::HistogramTester histograms;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GetURL(kHostA, "/password.html")));
+
+  optimization_guide::NoResponseAIPageContentAgent interceptor(
+      web_contents()->GetPrimaryMainFrame());
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+  FetchPageContextOptions options;
+  options.annotated_page_content_options =
+      optimization_guide::DefaultAIPageContentOptions(true);
+  options.screenshot_options =
+      ScreenshotOptions::ViewportOnly(/*paint_preview_options=*/std::nullopt);
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
+
+  // Wait until the screenshot is received.
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return histograms.GetTotalSum("Glic.PageContextFetcher.GetScreenshot") > 0;
+  }));
+
+  EXPECT_FALSE(future.IsReady());
+
+  interceptor.Respond();
 
   ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
                        future.Take());
