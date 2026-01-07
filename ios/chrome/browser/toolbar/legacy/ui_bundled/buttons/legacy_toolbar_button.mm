@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_button.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button.h"
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -22,7 +22,7 @@ const CGFloat kBlueDotSize = 6;
 const CGFloat kButtonImageInset = 3;
 }  // namespace
 
-@interface ToolbarButton () {
+@interface LegacyToolbarButton () {
   // The image loader used to load `_image` when the button is updated to
   // visible.
   ToolbarButtonImageLoader _imageLoader;
@@ -41,7 +41,7 @@ const CGFloat kButtonImageInset = 3;
 @property(nonatomic, strong) UIView* blueDotView;
 @end
 
-@implementation ToolbarButton
+@implementation LegacyToolbarButton
 
 - (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader {
   return [self initWithImageLoader:imageLoader IPHHighlightedImageLoader:nil];

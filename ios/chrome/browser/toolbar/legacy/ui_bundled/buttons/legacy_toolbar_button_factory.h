@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_BUTTONS_TOOLBAR_BUTTON_FACTORY_H_
-#define IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_BUTTONS_TOOLBAR_BUTTON_FACTORY_H_
+#ifndef IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_BUTTONS_LEGACY_TOOLBAR_BUTTON_FACTORY_H_
+#define IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_BUTTONS_LEGACY_TOOLBAR_BUTTON_FACTORY_H_
 
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_style.h"
 
-@class ToolbarButton;
+@class LegacyToolbarButton;
 @class ToolbarButtonActionsHandler;
 @class ToolbarButtonVisibilityConfiguration;
 @class ToolbarConfiguration;
@@ -24,10 +24,10 @@ enum class ToolbarCancelButtonStyle {
   kXCircle = 2,
 };
 
-// ToolbarButton Factory protocol to create ToolbarButton objects with certain
-// style and configuration, depending of the implementation.
-// A dispatcher is used to send the commands associated with the buttons.
-@interface ToolbarButtonFactory : NSObject
+// LegacyToolbarButton Factory protocol to create LegacyToolbarButton objects
+// with certain style and configuration, depending of the implementation. A
+// dispatcher is used to send the commands associated with the buttons.
+@interface LegacyToolbarButtonFactory : NSObject
 
 - (instancetype)initWithStyle:(ToolbarStyle)style NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
@@ -43,26 +43,26 @@ enum class ToolbarCancelButtonStyle {
 @property(nonatomic, strong)
     ToolbarButtonVisibilityConfiguration* visibilityConfiguration;
 
-// Back ToolbarButton.
-- (ToolbarButton*)backButton;
-// Forward ToolbarButton.
-- (ToolbarButton*)forwardButton;
-// Tab Grid ToolbarButton.
+// Back LegacyToolbarButton.
+- (LegacyToolbarButton*)backButton;
+// Forward LegacyToolbarButton.
+- (LegacyToolbarButton*)forwardButton;
+// Tab Grid LegacyToolbarButton.
 - (ToolbarTabGridButton*)tabGridButton;
-// Tools Menu ToolbarButton.
-- (ToolbarButton*)toolsMenuButton;
-// Share ToolbarButton.
-- (ToolbarButton*)shareButton;
-// Reload ToolbarButton.
-- (ToolbarButton*)reloadButton;
-// Stop ToolbarButton.
-- (ToolbarButton*)stopButton;
-// ToolbarButton to create a new tab.
-- (ToolbarButton*)openNewTabButton;
+// Tools Menu LegacyToolbarButton.
+- (LegacyToolbarButton*)toolsMenuButton;
+// Share LegacyToolbarButton.
+- (LegacyToolbarButton*)shareButton;
+// Reload LegacyToolbarButton.
+- (LegacyToolbarButton*)reloadButton;
+// Stop LegacyToolbarButton.
+- (LegacyToolbarButton*)stopButton;
+// LegacyToolbarButton to create a new tab.
+- (LegacyToolbarButton*)openNewTabButton;
 // Button to cancel the edit of the location bar.
 - (UIButton*)cancelButton;
 - (UIButton*)cancelButtonWithStyle:(ToolbarCancelButtonStyle)style;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_BUTTONS_TOOLBAR_BUTTON_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_BUTTONS_LEGACY_TOOLBAR_BUTTON_FACTORY_H_

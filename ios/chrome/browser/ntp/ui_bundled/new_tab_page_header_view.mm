@@ -39,7 +39,7 @@
 #import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_button_factory.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_utils.h"
@@ -404,8 +404,8 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   self.omnibox = omnibox;
 
   // Cancel button, used in animation.
-  ToolbarButtonFactory* factory =
-      [[ToolbarButtonFactory alloc] initWithStyle:ToolbarStyle::kNormal];
+  LegacyToolbarButtonFactory* factory =
+      [[LegacyToolbarButtonFactory alloc] initWithStyle:ToolbarStyle::kNormal];
   self.cancelButton = [factory cancelButton];
   [searchField addSubview:self.cancelButton];
   self.cancelButton.translatesAutoresizingMaskIntoConstraints = NO;

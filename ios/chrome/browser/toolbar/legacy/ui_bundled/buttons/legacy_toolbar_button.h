@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_BUTTONS_TOOLBAR_BUTTON_H_
-#define IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_BUTTONS_TOOLBAR_BUTTON_H_
+#ifndef IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_BUTTONS_LEGACY_TOOLBAR_BUTTON_H_
+#define IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_BUTTONS_LEGACY_TOOLBAR_BUTTON_H_
 
 #import <UIKit/UIKit.h>
 
@@ -16,16 +16,17 @@
 using ToolbarButtonImageLoader = UIImage* (^)(void);
 
 // UIButton subclass used as a Toolbar component.
-@interface ToolbarButton : UIButton
+@interface LegacyToolbarButton : UIButton
 
 // Configuration object used to get colors.
 @property(nonatomic, weak) ToolbarConfiguration* toolbarConfiguration;
 // Bitmask used for SizeClass visibility.
 @property(nonatomic, assign) ToolbarComponentVisibility visibilityMask;
-// Returns true if the ToolbarButton should be hidden in the current SizeClass.
+// Returns true if the LegacyToolbarButton should be hidden in the current
+// SizeClass.
 @property(nonatomic, assign) BOOL hiddenInCurrentSizeClass;
-// Returns true if the ToolbarButton should be hidden due to a current UI state
-// or WebState.
+// Returns true if the LegacyToolbarButton should be hidden due to a current UI
+// state or WebState.
 @property(nonatomic, assign) BOOL hiddenInCurrentState;
 // Name of the layout guide this button should be constrained to, if not nil.
 // The constraints to the layout guide are only valid when the button is
@@ -43,18 +44,19 @@ using ToolbarButtonImageLoader = UIImage* (^)(void);
 // Whether this button has blue dot promo.
 @property(nonatomic, assign) BOOL hasBlueDot;
 
-// Returns a ToolbarButton with a type system, using the `imageLoader` to load
-// the image for normal state. Can only be used when
+// Returns a LegacyToolbarButton with a type system, using the `imageLoader` to
+// load the image for normal state. Can only be used when
 // `kEnableStartupImprovements` is enabled.
 - (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader;
-// Returns a ToolbarButton using the `imageLoader` to build image for normal
-// state and `IPHHighlightedImageLoader` to load image for IPHHighlightedImage
-// state. Can only be used when`kEnableStartupImprovements` is enabled.
+// Returns a LegacyToolbarButton using the `imageLoader` to build image for
+// normal state and `IPHHighlightedImageLoader` to load image for
+// IPHHighlightedImage state. Can only be used when`kEnableStartupImprovements`
+// is enabled.
 - (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader
           IPHHighlightedImageLoader:
               (ToolbarButtonImageLoader)IPHHighlightedImageLoader;
 
-// Checks if the ToolbarButton should be visible in the current SizeClass,
+// Checks if the LegacyToolbarButton should be visible in the current SizeClass,
 // afterwards it calls setHiddenForCurrentStateAndSizeClass if needed.
 - (void)updateHiddenInCurrentSizeClass;
 
@@ -65,4 +67,4 @@ using ToolbarButtonImageLoader = UIImage* (^)(void);
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_BUTTONS_TOOLBAR_BUTTON_H_
+#endif  // IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_BUTTONS_LEGACY_TOOLBAR_BUTTON_H_

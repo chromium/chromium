@@ -36,9 +36,9 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/adaptive_toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/adaptive_toolbar_view_controller.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/adaptive_toolbar_view_controller_delegate.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_button.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_button_actions_handler.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_button_visibility_configuration.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
@@ -208,7 +208,7 @@ using tab_groups::VersioningMessageController;
 
 #pragma mark - Protected
 
-- (ToolbarButtonFactory*)buttonFactoryWithType:(ToolbarType)type {
+- (LegacyToolbarButtonFactory*)buttonFactoryWithType:(ToolbarType)type {
   BOOL isIncognito = self.isOffTheRecord;
   ToolbarStyle style =
       isIncognito ? ToolbarStyle::kIncognito : ToolbarStyle::kNormal;
@@ -233,8 +233,8 @@ using tab_groups::VersioningMessageController;
 
   self.actionHandler = actionHandler;
 
-  ToolbarButtonFactory* buttonFactory =
-      [[ToolbarButtonFactory alloc] initWithStyle:style];
+  LegacyToolbarButtonFactory* buttonFactory =
+      [[LegacyToolbarButtonFactory alloc] initWithStyle:style];
   buttonFactory.actionHandler = actionHandler;
   buttonFactory.visibilityConfiguration =
       [[ToolbarButtonVisibilityConfiguration alloc] initWithType:type];

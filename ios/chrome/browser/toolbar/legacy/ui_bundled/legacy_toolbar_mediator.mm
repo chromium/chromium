@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/toolbar_mediator.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/legacy_toolbar_mediator.h"
 
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/field_trial_params.h"
@@ -30,9 +30,9 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
-@interface ToolbarMediator () <BooleanObserver,
-                               CRWWebStateObserver,
-                               WebStateListObserving>
+@interface LegacyToolbarMediator () <BooleanObserver,
+                                     CRWWebStateObserver,
+                                     WebStateListObserving>
 
 /// Type of toolbar containing the omnibox. Unlike
 /// `steadyStateOmniboxPosition`, this tracks the omnibox position at all
@@ -45,7 +45,7 @@
 
 @end
 
-@implementation ToolbarMediator {
+@implementation LegacyToolbarMediator {
   /// Bridges C++ WebStateObserver methods to this mediator.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
 

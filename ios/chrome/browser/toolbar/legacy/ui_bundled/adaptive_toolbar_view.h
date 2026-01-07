@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-@class ToolbarButton;
+@class LegacyToolbarButton;
 @class ToolbarProgressBar;
 @class ToolbarTabGridButton;
 @class ToolbarToolsMenuButton;
@@ -19,26 +19,27 @@ enum class ToolbarTabGroupState;
 // Button to cancel the edit of the location bar.
 @property(nonatomic, strong, readonly) UIButton* cancelButton;
 // Property to get all the buttons in this view.
-@property(nonatomic, strong, readonly) NSArray<ToolbarButton*>* allButtons;
+@property(nonatomic, strong, readonly)
+    NSArray<LegacyToolbarButton*>* allButtons;
 
 // Progress bar displayed below the toolbar.
 @property(nonatomic, strong, readonly) ToolbarProgressBar* progressBar;
 // Button to navigate back.
-@property(nonatomic, strong, readonly) ToolbarButton* backButton;
+@property(nonatomic, strong, readonly) LegacyToolbarButton* backButton;
 // Buttons to navigate forward.
-@property(nonatomic, strong, readonly) ToolbarButton* forwardButton;
+@property(nonatomic, strong, readonly) LegacyToolbarButton* forwardButton;
 // Button to display the TabGrid.
 @property(nonatomic, strong, readonly) ToolbarTabGridButton* tabGridButton;
 // Button to stop the loading of the page.
-@property(nonatomic, strong, readonly) ToolbarButton* stopButton;
+@property(nonatomic, strong, readonly) LegacyToolbarButton* stopButton;
 // Button to reload the page.
-@property(nonatomic, strong, readonly) ToolbarButton* reloadButton;
+@property(nonatomic, strong, readonly) LegacyToolbarButton* reloadButton;
 // Button to display the share menu.
-@property(nonatomic, strong, readonly) ToolbarButton* shareButton;
+@property(nonatomic, strong, readonly) LegacyToolbarButton* shareButton;
 // Button to display the tools menu.
-@property(nonatomic, strong, readonly) ToolbarButton* toolsMenuButton;
+@property(nonatomic, strong, readonly) LegacyToolbarButton* toolsMenuButton;
 // Button to create a new tab.
-@property(nonatomic, strong, readonly) ToolbarButton* openNewTabButton;
+@property(nonatomic, strong, readonly) LegacyToolbarButton* openNewTabButton;
 // Separator between the toolbar and the content.
 @property(nonatomic, strong, readonly) UIView* separator;
 

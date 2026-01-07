@@ -5,15 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_BUTTONS_TOOLBAR_TAB_GRID_BUTTON_H_
 #define IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_BUTTONS_TOOLBAR_TAB_GRID_BUTTON_H_
 
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_button.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button.h"
 
 enum class ToolbarTabGroupState;
 
 using ToolbarTabGridButtonImageLoader =
     UIImage* (^)(ToolbarTabGroupState tabGroupState);
 
-// ToolbarButton for displaying the number of tab.
-@interface ToolbarTabGridButton : ToolbarButton
+// LegacyToolbarButton for displaying the number of tab.
+@interface ToolbarTabGridButton : LegacyToolbarButton
 
 // Sets the number of tabs displayed by this button to `tabCount`. If `tabCount`
 // is more than 99, it shows a smiley instead. But the value stored in tabCount

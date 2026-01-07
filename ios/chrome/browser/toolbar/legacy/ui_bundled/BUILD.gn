@@ -9,6 +9,8 @@ source_set("coordinator") {
     "adaptive_toolbar_coordinator.mm",
     "adaptive_toolbar_mediator.h",
     "adaptive_toolbar_mediator.mm",
+    "legacy_toolbar_mediator.h",
+    "legacy_toolbar_mediator.mm",
     "primary_toolbar_coordinator.h",
     "primary_toolbar_coordinator.mm",
     "primary_toolbar_mediator.h",
@@ -18,8 +20,6 @@ source_set("coordinator") {
     "secondary_toolbar_mediator.h",
     "secondary_toolbar_mediator.mm",
     "toolbar_coordinatee.h",
-    "toolbar_mediator.h",
-    "toolbar_mediator.mm",
   ]
 
   deps = [
@@ -130,6 +130,7 @@ source_set("ui") {
     "adaptive_toolbar_view_controller_delegate.h",
     "banner_promo_view.h",
     "banner_promo_view.mm",
+    "legacy_toolbar_consumer.h",
     "primary_toolbar_consumer.h",
     "primary_toolbar_view.h",
     "primary_toolbar_view.mm",
@@ -142,7 +143,6 @@ source_set("ui") {
     "secondary_toolbar_view.mm",
     "secondary_toolbar_view_controller.h",
     "secondary_toolbar_view_controller.mm",
-    "toolbar_consumer.h",
     "toolbar_progress_bar.h",
     "toolbar_progress_bar.mm",
   ]

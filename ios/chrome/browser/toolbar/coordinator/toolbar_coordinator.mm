@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/adaptive_toolbar_view_controller.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/legacy_toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/primary_toolbar_coordinator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/primary_toolbar_view_controller_delegate.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/omnibox_position_util.h"
@@ -41,7 +42,6 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_utils.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/secondary_toolbar_coordinator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/toolbar_coordinatee.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/toolbar_mediator.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/web_state.h"
@@ -71,7 +71,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
     SecondaryToolbarCoordinator* secondaryToolbarCoordinator;
 
 /// Mediator observing WebStateList for toolbars.
-@property(nonatomic, strong) ToolbarMediator* toolbarMediator;
+@property(nonatomic, strong) LegacyToolbarMediator* legacyToolbarMediator;
 /// Orchestrator for the omnibox focus animation.
 @property(nonatomic, strong) OmniboxFocusOrchestrator* orchestrator;
 /// Whether the omnibox is currently focused.
@@ -158,11 +158,12 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDispatcherForProfile(browser->GetProfile());
   }
-  self.toolbarMediator = [[ToolbarMediator alloc]
+  self.legacyToolbarMediator = [[LegacyToolbarMediator alloc]
       initWithWebStateList:browser->GetWebStateList()
                isIncognito:browser->GetProfile()->IsOffTheRecord()];
-  self.toolbarMediator.delegate = self;
-  self.toolbarMediator.deviceSwitcherResultDispatcher = deviceSwitcherResult;
+  self.legacyToolbarMediator.delegate = self;
+  self.legacyToolbarMediator.deviceSwitcherResultDispatcher =
+      deviceSwitcherResult;
 
   self.locationBarCoordinator =
       [[LocationBarCoordinator alloc] initWithBrowser:browser];
@@ -171,7 +172,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   self.locationBarCoordinator.popupPresenterDelegate =
       self.popupPresenterDelegate;
   [self.locationBarCoordinator start];
-  self.toolbarMediator.omniboxConsumer =
+  self.legacyToolbarMediator.omniboxConsumer =
       self.locationBarCoordinator.toolbarOmniboxConsumer;
 
   self.primaryToolbarCoordinator.viewControllerDelegate = self;
@@ -191,7 +192,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   [self updateOrchestratorAnimatee];
 
   if (IsBottomOmniboxAvailable()) {
-    [self.toolbarMediator setInitialOmniboxPosition];
+    [self.legacyToolbarMediator setInitialOmniboxPosition];
   } else {
     [self.primaryToolbarCoordinator
         setLocationBarViewController:self.locationBarCoordinator
@@ -229,11 +230,11 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   self.locationBarCoordinator.popupPresenterDelegate = nil;
   self.locationBarCoordinator = nil;
 
-  [self.toolbarMediator disconnect];
-  self.toolbarMediator.omniboxConsumer = nil;
-  self.toolbarMediator.delegate = nil;
-  self.toolbarMediator.deviceSwitcherResultDispatcher = nullptr;
-  self.toolbarMediator = nil;
+  [self.legacyToolbarMediator disconnect];
+  self.legacyToolbarMediator.omniboxConsumer = nil;
+  self.legacyToolbarMediator.delegate = nil;
+  self.legacyToolbarMediator.deviceSwitcherResultDispatcher = nullptr;
+  self.legacyToolbarMediator = nil;
 
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   self.started = NO;
@@ -330,7 +331,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
       UIUserInterfaceSizeClassUnspecified) {
     return;
   }
-  [self.toolbarMediator locationBarFocusChangedTo:focused];
+  [self.legacyToolbarMediator locationBarFocusChangedTo:focused];
 
   // Disable toolbar animations when focusing the omnibox on secondary toolbar.
   ToolbarType editStatePosition;
@@ -390,7 +391,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 }
 
 - (void)setBottomOmniboxOffsetForPopup:(CGFloat)bottomOffset {
-  [self.toolbarMediator setBottomOmniboxOffsetForPopup:bottomOffset];
+  [self.legacyToolbarMediator setBottomOmniboxOffsetForPopup:bottomOffset];
 }
 
 - (ToolbarType)omniboxPosition {
@@ -506,7 +507,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 }
 
 - (void)didNavigateToNTPOnActiveWebState {
-  [self.toolbarMediator didNavigateToNTPOnActiveWebState];
+  [self.legacyToolbarMediator didNavigateToNTPOnActiveWebState];
 }
 
 #pragma mark - OmniboxStateProvider
@@ -568,8 +569,8 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 }
 
 - (ToolbarCancelButtonStyle)styleForCancelButtonInToolbar {
-  BOOL userPreferenceBottom =
-      _toolbarMediator.preferredOmniboxPosition == ToolbarType::kSecondary;
+  BOOL userPreferenceBottom = _legacyToolbarMediator.preferredOmniboxPosition ==
+                              ToolbarType::kSecondary;
   BOOL followSteadyState =
       omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition();
   BOOL forcedBottomInEditState = omnibox::ForceBottomOmniboxInEditState();
@@ -800,7 +801,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 /// Updates toolbars layout whith current omnibox focus state and trait
 /// collection.
 - (void)updateToolbarsLayout {
-  [self.toolbarMediator
+  [self.legacyToolbarMediator
       toolbarTraitCollectionChangedTo:self.traitEnvironment.traitCollection];
   BOOL omniboxFocused = [self inEditState];
   [self.orchestrator

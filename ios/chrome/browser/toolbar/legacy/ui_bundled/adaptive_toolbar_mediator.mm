@@ -34,7 +34,7 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_tab_group_state.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/toolbar_consumer.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/legacy_toolbar_consumer.h"
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -355,7 +355,7 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
   }
 }
 
-- (void)setConsumer:(id<ToolbarConsumer>)consumer {
+- (void)setConsumer:(id<LegacyToolbarConsumer>)consumer {
   _consumer = consumer;
   [_consumer setVoiceSearchEnabled:ios::provider::IsVoiceSearchEnabled()];
   if (self.webState) {
@@ -442,7 +442,7 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
 - (void)updateNavigationBackAndForwardStateForWebState:
     (web::WebState*)webState {
   DCHECK(webState);
-  const id<ToolbarConsumer> consumer = self.consumer;
+  const id<LegacyToolbarConsumer> consumer = self.consumer;
   WebNavigationBrowserAgent* navigationBrowserAgent =
       self.navigationBrowserAgent;
   if (navigationBrowserAgent) {

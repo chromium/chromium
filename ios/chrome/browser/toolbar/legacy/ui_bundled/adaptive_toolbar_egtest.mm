@@ -69,7 +69,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Returns a matcher for the visible share button.
 id<GREYMatcher> ShareButton() {
-  return grey_allOf(grey_accessibilityID(kToolbarShareButtonIdentifier),
+  return grey_allOf(grey_accessibilityID(kLegacyToolbarShareButtonIdentifier),
                     grey_sufficientlyVisible(), nil);
 }
 

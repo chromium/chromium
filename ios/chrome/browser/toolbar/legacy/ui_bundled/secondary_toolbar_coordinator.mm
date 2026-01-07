@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/adaptive_toolbar_coordinator+subclassing.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_button_factory.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/secondary_toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/secondary_toolbar_view_controller.h"

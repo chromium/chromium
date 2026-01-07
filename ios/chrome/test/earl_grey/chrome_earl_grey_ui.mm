@@ -177,7 +177,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
                 chrome_test_util::WindowWithNumber(windowNumber)];
   // TODO(crbug.com/41271107): Add logic to ensure the app is in the correct
   // state, for example DCHECK if no tabs are displayed.
-  chrome_test_util::TapAtOffsetOf(kToolbarToolsMenuButtonIdentifier,
+  chrome_test_util::TapAtOffsetOf(kLegacyToolbarToolsMenuButtonIdentifier,
                                   windowNumber, CGVectorMake(0.5, 0.5));
 }
 

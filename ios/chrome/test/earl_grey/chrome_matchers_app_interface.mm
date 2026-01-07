@@ -669,8 +669,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)toolsMenuButton {
-  return grey_allOf(grey_accessibilityID(kToolbarToolsMenuButtonIdentifier),
-                    grey_sufficientlyVisible(), nil);
+  return grey_allOf(
+      grey_accessibilityID(kLegacyToolbarToolsMenuButtonIdentifier),
+      grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)openNewTabButton {
@@ -704,7 +705,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)tabShareButton {
   return grey_allOf(
-      grey_anyOf(grey_accessibilityID(kToolbarShareButtonIdentifier),
+      grey_anyOf(grey_accessibilityID(kLegacyToolbarShareButtonIdentifier),
                  grey_accessibilityID(kOmniboxShareButtonIdentifier), nil),
       grey_sufficientlyVisible(), nil);
 }

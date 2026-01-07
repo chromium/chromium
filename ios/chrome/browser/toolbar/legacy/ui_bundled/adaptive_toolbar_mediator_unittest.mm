@@ -37,8 +37,8 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/legacy_toolbar_consumer.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/test/toolbar_test_navigation_manager.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/toolbar_consumer.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/providers/voice_search/test_voice_search.h"
@@ -125,8 +125,8 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
                                              scenario:kTestMenuScenario];
     mediator_.templateURLService =
         ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
-    consumer_ = OCMProtocolMock(@protocol(ToolbarConsumer));
-    strict_consumer_ = OCMStrictProtocolMock(@protocol(ToolbarConsumer));
+    consumer_ = OCMProtocolMock(@protocol(LegacyToolbarConsumer));
+    strict_consumer_ = OCMStrictProtocolMock(@protocol(LegacyToolbarConsumer));
     SetUpWebStateList();
 
     mock_scene_handler_ = OCMStrictProtocolMock(@protocol(SceneCommands));

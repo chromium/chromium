@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_button_factory.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button_factory.h"
 
 #import "base/ios/ios_util.h"
 #import "components/strings/grit/components_strings.h"
@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_button.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_button_actions_handler.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_button_visibility_configuration.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_configuration.h"
@@ -41,7 +41,7 @@ const CGFloat kCloseButtonAlpha = 0.6f;
 
 }  // namespace
 
-@implementation ToolbarButtonFactory
+@implementation LegacyToolbarButtonFactory
 
 - (instancetype)initWithStyle:(ToolbarStyle)style {
   self = [super init];
@@ -54,15 +54,15 @@ const CGFloat kCloseButtonAlpha = 0.6f;
 
 #pragma mark - Buttons
 
-- (ToolbarButton*)backButton {
+- (LegacyToolbarButton*)backButton {
   auto loadImageBlock = ^UIImage* {
     UIImage* backImage =
         DefaultSymbolWithPointSize(kBackSymbol, kSymbolToolbarPointSize);
     return [backImage imageFlippedForRightToLeftLayoutDirection];
   };
 
-  ToolbarButton* backButton =
-      [[ToolbarButton alloc] initWithImageLoader:loadImageBlock];
+  LegacyToolbarButton* backButton =
+      [[LegacyToolbarButton alloc] initWithImageLoader:loadImageBlock];
 
   [self configureButton:backButton width:kAdaptiveToolbarButtonWidth];
   backButton.accessibilityLabel = l10n_util::GetNSString(IDS_ACCNAME_BACK);
@@ -76,15 +76,15 @@ const CGFloat kCloseButtonAlpha = 0.6f;
 }
 
 // Returns a forward button without visibility mask configured.
-- (ToolbarButton*)forwardButton {
+- (LegacyToolbarButton*)forwardButton {
   auto loadImageBlock = ^UIImage* {
     UIImage* forwardImage =
         DefaultSymbolWithPointSize(kForwardSymbol, kSymbolToolbarPointSize);
     return [forwardImage imageFlippedForRightToLeftLayoutDirection];
   };
 
-  ToolbarButton* forwardButton =
-      [[ToolbarButton alloc] initWithImageLoader:loadImageBlock];
+  LegacyToolbarButton* forwardButton =
+      [[LegacyToolbarButton alloc] initWithImageLoader:loadImageBlock];
 
   [self configureButton:forwardButton width:kAdaptiveToolbarButtonWidth];
   forwardButton.visibilityMask =
@@ -128,7 +128,7 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   return tabGridButton;
 }
 
-- (ToolbarButton*)toolsMenuButton {
+- (LegacyToolbarButton*)toolsMenuButton {
   auto loadImageBlock = ^UIImage* {
     return DefaultSymbolWithPointSize(kMenuSymbol, kSymbolToolbarPointSize);
   };
@@ -141,12 +141,12 @@ const CGFloat kCloseButtonAlpha = 0.6f;
                                   kSymbolToolbarPointSize),
         @[ [UIColor colorNamed:kGrey600Color], locationBarBackgroundColor ]);
   };
-  ToolbarButton* toolsMenuButton =
-      [[ToolbarButton alloc] initWithImageLoader:loadImageBlock
-                       IPHHighlightedImageLoader:loadIPHHighlightedImageBlock];
+  LegacyToolbarButton* toolsMenuButton = [[LegacyToolbarButton alloc]
+            initWithImageLoader:loadImageBlock
+      IPHHighlightedImageLoader:loadIPHHighlightedImageBlock];
 
   SetA11yLabelAndUiAutomationName(toolsMenuButton, IDS_IOS_TOOLBAR_SETTINGS,
-                                  kToolbarToolsMenuButtonIdentifier);
+                                  kLegacyToolbarToolsMenuButtonIdentifier);
 
   [self configureButton:toolsMenuButton width:kAdaptiveToolbarButtonWidth];
   [toolsMenuButton.heightAnchor
@@ -160,7 +160,7 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   return toolsMenuButton;
 }
 
-- (ToolbarButton*)shareButton {
+- (LegacyToolbarButton*)shareButton {
   auto loadImageBlock = ^UIImage* {
     UIImage* image =
         DefaultSymbolWithPointSize(kShareSymbol, kSymbolToolbarPointSize);
@@ -184,12 +184,12 @@ const CGFloat kCloseButtonAlpha = 0.6f;
         }];
   };
 
-  ToolbarButton* shareButton =
-      [[ToolbarButton alloc] initWithImageLoader:loadImageBlock];
+  LegacyToolbarButton* shareButton =
+      [[LegacyToolbarButton alloc] initWithImageLoader:loadImageBlock];
 
   [self configureButton:shareButton width:kAdaptiveToolbarButtonWidth];
   SetA11yLabelAndUiAutomationName(shareButton, IDS_IOS_TOOLS_MENU_SHARE,
-                                  kToolbarShareButtonIdentifier);
+                                  kLegacyToolbarShareButtonIdentifier);
   shareButton.titleLabel.text = @"Share";
   [shareButton addTarget:self.actionHandler
                   action:@selector(shareAction)
@@ -199,14 +199,14 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   return shareButton;
 }
 
-- (ToolbarButton*)reloadButton {
+- (LegacyToolbarButton*)reloadButton {
   auto loadImageBlock = ^UIImage* {
     return CustomSymbolWithPointSize(kArrowClockWiseSymbol,
                                      kSymbolToolbarPointSize);
   };
 
-  ToolbarButton* reloadButton =
-      [[ToolbarButton alloc] initWithImageLoader:loadImageBlock];
+  LegacyToolbarButton* reloadButton =
+      [[LegacyToolbarButton alloc] initWithImageLoader:loadImageBlock];
 
   [self configureButton:reloadButton width:kAdaptiveToolbarButtonWidth];
   reloadButton.accessibilityLabel =
@@ -219,13 +219,13 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   return reloadButton;
 }
 
-- (ToolbarButton*)stopButton {
+- (LegacyToolbarButton*)stopButton {
   auto loadImageBlock = ^UIImage* {
     return DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolToolbarPointSize);
   };
 
-  ToolbarButton* stopButton =
-      [[ToolbarButton alloc] initWithImageLoader:loadImageBlock];
+  LegacyToolbarButton* stopButton =
+      [[LegacyToolbarButton alloc] initWithImageLoader:loadImageBlock];
 
   [self configureButton:stopButton width:kAdaptiveToolbarButtonWidth];
   stopButton.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ACCNAME_STOP);
@@ -236,7 +236,7 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   return stopButton;
 }
 
-- (ToolbarButton*)openNewTabButton {
+- (LegacyToolbarButton*)openNewTabButton {
   UIColor* locationBarBackgroundColor =
       [self.toolbarConfiguration locationBarBackgroundColorWithVisibility:1];
   UIColor* buttonsTintColorIPHHighlighted =
@@ -262,9 +262,9 @@ const CGFloat kCloseButtonAlpha = 0.6f;
                              ]);
   };
 
-  ToolbarButton* newTabButton =
-      [[ToolbarButton alloc] initWithImageLoader:loadImageBlock
-                       IPHHighlightedImageLoader:loadIPHHighlightedImageBlock];
+  LegacyToolbarButton* newTabButton = [[LegacyToolbarButton alloc]
+            initWithImageLoader:loadImageBlock
+      IPHHighlightedImageLoader:loadIPHHighlightedImageBlock];
 
   [newTabButton addTarget:self.actionHandler
                    action:@selector(newTabAction:)
@@ -342,7 +342,7 @@ const CGFloat kCloseButtonAlpha = 0.6f;
 // there is a conflict when the buttons are hidden as the stack view is setting
 // their width to 0. Setting the priority to UILayoutPriorityDefaultHigh doesn't
 // work as they would have a lower priority than other elements.
-- (void)configureButton:(ToolbarButton*)button width:(CGFloat)width {
+- (void)configureButton:(LegacyToolbarButton*)button width:(CGFloat)width {
   NSLayoutConstraint* constraint =
       [button.widthAnchor constraintEqualToConstant:width];
   constraint.priority = UILayoutPriorityRequired - 1;

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_TOOLBAR_CONSUMER_H_
-#define IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_TOOLBAR_CONSUMER_H_
+#ifndef IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_LEGACY_TOOLBAR_CONSUMER_H_
+#define IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_LEGACY_TOOLBAR_CONSUMER_H_
 
 #import <UIKit/UIKit.h>
 
 enum class ToolbarTabGroupState;
 
-// ToolbarConsumer sets the current appearance of the Toolbar.
-@protocol ToolbarConsumer
+// LegacyToolbarConsumer sets the current appearance of the Toolbar.
+@protocol LegacyToolbarConsumer
 // Updates the toolbar with the current forward navigation state.
 - (void)setCanGoForward:(BOOL)canGoForward;
 // Updates the toolbar with the current back navigation state.
@@ -35,4 +35,4 @@ enum class ToolbarTabGroupState;
 - (void)setTabGridButtonBlueDot:(BOOL)hasBlueDot;
 @end
 
-#endif  // IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_TOOLBAR_CONSUMER_H_
+#endif  // IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_LEGACY_TOOLBAR_CONSUMER_H_

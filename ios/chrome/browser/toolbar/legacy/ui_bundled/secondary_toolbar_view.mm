@@ -9,8 +9,8 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_button.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_button_factory.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_tab_grid_button.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_tab_group_state.h"
@@ -33,7 +33,7 @@ UIButton* SecondaryToolbarCollapsedToolbarButton() {
 
 // Container for the location bar view.
 UIView* SecondaryToolbarLocationBarContainerView(
-    ToolbarButtonFactory* buttonFactory) {
+    LegacyToolbarButtonFactory* buttonFactory) {
   UIView* locationBarContainer = [[UIView alloc] init];
   locationBarContainer.translatesAutoresizingMaskIntoConstraints = NO;
   locationBarContainer.backgroundColor = [buttonFactory.toolbarConfiguration
@@ -48,10 +48,11 @@ UIView* SecondaryToolbarLocationBarContainerView(
 
 @interface SecondaryToolbarView ()
 // Factory used to create the buttons.
-@property(nonatomic, strong) ToolbarButtonFactory* buttonFactory;
+@property(nonatomic, strong) LegacyToolbarButtonFactory* buttonFactory;
 
 // Redefined as readwrite
-@property(nonatomic, strong, readwrite) NSArray<ToolbarButton*>* allButtons;
+@property(nonatomic, strong, readwrite)
+    NSArray<LegacyToolbarButton*>* allButtons;
 
 // Separator above the toolbar, redefined as readwrite.
 @property(nonatomic, strong, readwrite) UIView* separator;
@@ -62,15 +63,15 @@ UIView* SecondaryToolbarLocationBarContainerView(
 @property(nonatomic, strong, readwrite) UIStackView* buttonStackView;
 
 // Button to navigate back, redefined as readwrite.
-@property(nonatomic, strong, readwrite) ToolbarButton* backButton;
+@property(nonatomic, strong, readwrite) LegacyToolbarButton* backButton;
 // Buttons to navigate forward, redefined as readwrite.
-@property(nonatomic, strong, readwrite) ToolbarButton* forwardButton;
+@property(nonatomic, strong, readwrite) LegacyToolbarButton* forwardButton;
 // Button to display the tools menu, redefined as readwrite.
-@property(nonatomic, strong, readwrite) ToolbarButton* toolsMenuButton;
+@property(nonatomic, strong, readwrite) LegacyToolbarButton* toolsMenuButton;
 // Button to display the tab grid, redefined as readwrite.
 @property(nonatomic, strong, readwrite) ToolbarTabGridButton* tabGridButton;
 // Button to create a new tab, redefined as readwrite.
-@property(nonatomic, strong, readwrite) ToolbarButton* openNewTabButton;
+@property(nonatomic, strong, readwrite) LegacyToolbarButton* openNewTabButton;
 // Separator below the location bar. Used when collapsed above the keyboard,
 // redefined as readwrite.
 @property(nonatomic, strong, readwrite) UIView* bottomSeparator;
@@ -121,7 +122,7 @@ UIView* SecondaryToolbarLocationBarContainerView(
 
 #pragma mark - Public
 
-- (instancetype)initWithButtonFactory:(ToolbarButtonFactory*)factory {
+- (instancetype)initWithButtonFactory:(LegacyToolbarButtonFactory*)factory {
   self = [super initWithFrame:CGRectZero];
   if (self) {
     _buttonFactory = factory;
@@ -321,15 +322,15 @@ UIView* SecondaryToolbarLocationBarContainerView(
 
 #pragma mark - AdaptiveToolbarView
 
-- (ToolbarButton*)stopButton {
+- (LegacyToolbarButton*)stopButton {
   return nil;
 }
 
-- (ToolbarButton*)reloadButton {
+- (LegacyToolbarButton*)reloadButton {
   return nil;
 }
 
-- (ToolbarButton*)shareButton {
+- (LegacyToolbarButton*)shareButton {
   return nil;
 }
 

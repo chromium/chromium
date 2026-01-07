@@ -8,13 +8,13 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/adaptive_toolbar_coordinator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_type.h"
 
-@class ToolbarButtonFactory;
+@class LegacyToolbarButtonFactory;
 
 // Protected interface of the AdaptiveToolbarCoordinator.
 @interface AdaptiveToolbarCoordinator (Subclassing)
 
 // Returns a button factory.
-- (ToolbarButtonFactory*)buttonFactoryWithType:(ToolbarType)type;
+- (LegacyToolbarButtonFactory*)buttonFactoryWithType:(ToolbarType)type;
 
 // Whether the toolbar shows the tab grid button. Base class implementation
 // returns NO. Subclasses can override this value.

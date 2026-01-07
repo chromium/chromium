@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_TOOLBAR_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_TOOLBAR_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_LEGACY_TOOLBAR_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_LEGACY_TOOLBAR_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
@@ -18,7 +18,7 @@ class DeviceSwitcherResultDispatcher;
 @protocol ToolbarOmniboxConsumer;
 class WebStateList;
 
-/// Delegate for events in `ToolbarMediator`.
+/// Delegate for events in `LegacyToolbarMediator`.
 @protocol ToolbarMediatorDelegate <NSObject>
 
 /// Updates toolbar appearance.
@@ -36,9 +36,9 @@ class WebStateList;
 
 @end
 
-@interface ToolbarMediator : NSObject
+@interface LegacyToolbarMediator : NSObject
 
-/// Delegate for events in `ToolbarMediator`.
+/// Delegate for events in `LegacyToolbarMediator`.
 @property(nonatomic, weak) id<ToolbarMediatorDelegate> delegate;
 /// The omnibox consumer for this object.
 @property(nonatomic, weak) id<ToolbarOmniboxConsumer> omniboxConsumer;
@@ -80,4 +80,4 @@ class WebStateList;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_TOOLBAR_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_LEGACY_TOOLBAR_MEDIATOR_H_

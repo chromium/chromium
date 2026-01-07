@@ -22,8 +22,8 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/adaptive_toolbar_view_controller+subclassing.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/banner_promo_view.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_button.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_button_factory.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/primary_toolbar_view.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/primary_toolbar_view_controller_delegate.h"
@@ -280,13 +280,13 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
 }
 
 - (void)showControlButtons {
-  for (ToolbarButton* button in self.view.allButtons) {
+  for (LegacyToolbarButton* button in self.view.allButtons) {
     button.alpha = 1;
   }
 }
 
 - (void)hideControlButtons {
-  for (ToolbarButton* button in self.view.allButtons) {
+  for (LegacyToolbarButton* button in self.view.allButtons) {
     button.alpha = 0;
   }
 }

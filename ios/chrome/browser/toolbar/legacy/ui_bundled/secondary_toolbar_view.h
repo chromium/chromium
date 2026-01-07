@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/adaptive_toolbar_view.h"
 
-@class ToolbarButtonFactory;
+@class LegacyToolbarButtonFactory;
 
 // View for the secondary part of the adaptive toolbar. It is the part
 // containing the controls displayed only on specific size classes.
@@ -24,7 +24,7 @@
 @property(nonatomic, strong) NSLayoutConstraint* locationBarTopConstraint;
 
 // Initialize this View with the button `factory`.
-- (instancetype)initWithButtonFactory:(ToolbarButtonFactory*)factory
+- (instancetype)initWithButtonFactory:(LegacyToolbarButtonFactory*)factory
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;

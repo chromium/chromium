@@ -4,12 +4,12 @@
 
 source_set("buttons") {
   sources = [
-    "toolbar_button.h",
-    "toolbar_button.mm",
+    "legacy_toolbar_button.h",
+    "legacy_toolbar_button.mm",
+    "legacy_toolbar_button_factory.h",
+    "legacy_toolbar_button_factory.mm",
     "toolbar_button_actions_handler.h",
     "toolbar_button_actions_handler.mm",
-    "toolbar_button_factory.h",
-    "toolbar_button_factory.mm",
     "toolbar_button_visibility_configuration.h",
     "toolbar_button_visibility_configuration.mm",
     "toolbar_component_options.h",

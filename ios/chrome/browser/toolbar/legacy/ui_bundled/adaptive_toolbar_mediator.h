@@ -20,7 +20,7 @@ class WebState;
 @class BrowserActionFactory;
 class OverlayPresenter;
 class TemplateURLService;
-@protocol ToolbarConsumer;
+@protocol LegacyToolbarConsumer;
 class WebNavigationBrowserAgent;
 class WebStateList;
 
@@ -37,7 +37,7 @@ class WebStateList;
 
 /// The consumer for this object. This can change during the lifetime of this
 /// object and may be nil.
-@property(nonatomic, strong) id<ToolbarConsumer> consumer;
+@property(nonatomic, strong) id<LegacyToolbarConsumer> consumer;
 
 /// The overlay presenter for OverlayModality::kWebContentArea.  This mediator
 /// listens for overlay presentation events to determine whether the share

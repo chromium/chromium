@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/banner_promo_view.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_button.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_button_factory.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_tab_grid_button.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_tab_group_state.h"
@@ -38,7 +38,7 @@ const CGFloat kPaddingForXCircleCancelIcon = 20;
 @interface PrimaryToolbarView () <TabGroupIndicatorViewDelegate>
 
 // Factory used to create the buttons.
-@property(nonatomic, strong) ToolbarButtonFactory* buttonFactory;
+@property(nonatomic, strong) LegacyToolbarButtonFactory* buttonFactory;
 
 // ContentView of the vibrancy effect if there is one, self otherwise.
 @property(nonatomic, strong) UIView* contentView;
@@ -47,12 +47,14 @@ const CGFloat kPaddingForXCircleCancelIcon = 20;
 // should only contain ToolbarButtons. Redefined as readwrite.
 @property(nonatomic, strong, readwrite) UIStackView* leadingStackView;
 // Buttons from the leading stack view.
-@property(nonatomic, strong) NSArray<ToolbarButton*>* leadingStackViewButtons;
+@property(nonatomic, strong)
+    NSArray<LegacyToolbarButton*>* leadingStackViewButtons;
 // StackView containing the trailing buttons (relative to the location bar). It
 // should only contain ToolbarButtons. Redefined as readwrite.
 @property(nonatomic, strong, readwrite) UIStackView* trailingStackView;
 // Buttons from the trailing stack view.
-@property(nonatomic, strong) NSArray<ToolbarButton*>* trailingStackViewButtons;
+@property(nonatomic, strong)
+    NSArray<LegacyToolbarButton*>* trailingStackViewButtons;
 
 // Progress bar displayed below the toolbar, redefined as readwrite.
 @property(nonatomic, strong, readwrite) ToolbarProgressBar* progressBar;
@@ -62,21 +64,21 @@ const CGFloat kPaddingForXCircleCancelIcon = 20;
 
 #pragma mark** Buttons in the leading stack view. **
 // Button to navigate back, redefined as readwrite.
-@property(nonatomic, strong, readwrite) ToolbarButton* backButton;
+@property(nonatomic, strong, readwrite) LegacyToolbarButton* backButton;
 // Button to navigate forward, redefined as readwrite.
-@property(nonatomic, strong, readwrite) ToolbarButton* forwardButton;
+@property(nonatomic, strong, readwrite) LegacyToolbarButton* forwardButton;
 // Button to display the TabGrid, redefined as readwrite.
 @property(nonatomic, strong, readwrite) ToolbarTabGridButton* tabGridButton;
 // Button to stop the loading of the page, redefined as readwrite.
-@property(nonatomic, strong, readwrite) ToolbarButton* stopButton;
+@property(nonatomic, strong, readwrite) LegacyToolbarButton* stopButton;
 // Button to reload the page, redefined as readwrite.
-@property(nonatomic, strong, readwrite) ToolbarButton* reloadButton;
+@property(nonatomic, strong, readwrite) LegacyToolbarButton* reloadButton;
 
 #pragma mark** Buttons in the trailing stack view. **
 // Button to display the share menu, redefined as readwrite.
-@property(nonatomic, strong, readwrite) ToolbarButton* shareButton;
+@property(nonatomic, strong, readwrite) LegacyToolbarButton* shareButton;
 // Button to display the tools menu, redefined as readwrite.
-@property(nonatomic, strong, readwrite) ToolbarButton* toolsMenuButton;
+@property(nonatomic, strong, readwrite) LegacyToolbarButton* toolsMenuButton;
 
 // Button to cancel the edit of the location bar, redefined as readwrite.
 @property(nonatomic, strong, readwrite) UIButton* cancelButton;
@@ -183,7 +185,7 @@ const CGFloat kPaddingForXCircleCancelIcon = 20;
 
 #pragma mark - Public
 
-- (instancetype)initWithButtonFactory:(ToolbarButtonFactory*)factory {
+- (instancetype)initWithButtonFactory:(LegacyToolbarButtonFactory*)factory {
   self = [super initWithFrame:CGRectZero];
   if (self) {
     _buttonFactory = factory;
@@ -816,7 +818,7 @@ const CGFloat kPaddingForXCircleCancelIcon = 20;
   self.tabGridButton.tabGroupState = tabGroupState;
 }
 
-- (NSArray<ToolbarButton*>*)allButtons {
+- (NSArray<LegacyToolbarButton*>*)allButtons {
   if (!_allButtons) {
     _allButtons = [self.leadingStackViewButtons
         arrayByAddingObjectsFromArray:self.trailingStackViewButtons];
@@ -824,7 +826,7 @@ const CGFloat kPaddingForXCircleCancelIcon = 20;
   return _allButtons;
 }
 
-- (ToolbarButton*)openNewTabButton {
+- (LegacyToolbarButton*)openNewTabButton {
   return nil;
 }
 
