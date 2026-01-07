@@ -448,12 +448,9 @@ bool GlicKeyedService::IsWindowShowing() const {
     return GetSingleInstanceWindowController().IsShowing();
   }
 #endif
-
-  for (const auto* instance : window_controller().GetInstances()) {
-    if (instance && instance->IsShowing()) {
-      return true;
-    }
-  }
+  // TODO: Investigate if this is needed for multi-instance.
+  NOTIMPLEMENTED_LOG_ONCE()
+      << "IsWindowShowing not implemented for multi-instance.";
   return false;
 }
 

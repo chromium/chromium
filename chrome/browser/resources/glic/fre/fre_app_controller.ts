@@ -167,6 +167,19 @@ export class FreAppController {
       });
     });
 
+    this.freContainer.addEventListener('keydown', (ev: KeyboardEvent) => {
+      if (ev.code === 'Escape') {
+        ev.stopPropagation();
+        ev.preventDefault();
+        const visiblePanel = this.freContainer.querySelector<HTMLElement>(
+            '.panel:not([hidden])');
+        if (visiblePanel) {
+          chrome.metricsPrivate.recordUserAction('Glic.Fre.CloseWithEsc');
+          this.dismissFre(this.panelIdToEnum(visiblePanel.id));
+        }
+      }
+    });
+
     if (navigator.onLine) {
       this.setState(FreWebUiState.kBeginLoading);
     } else {
