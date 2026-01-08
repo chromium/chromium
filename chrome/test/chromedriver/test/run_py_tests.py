@@ -7407,15 +7407,15 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
     driver = self.CreateDriver(
         mobile_emulation = {'deviceName': 'iPhone X'})
     driver.Load(self._http_server.GetUrl() + '/userAgent')
-    self.assertEqual('', driver.ExecuteScript(
+    self.assertEqual('iOS', driver.ExecuteScript(
         'return navigator.userAgentData.platform'))
     self.assertEqual(True, driver.ExecuteScript(
         'return navigator.userAgentData.mobile'))
     hints = self.getHighEntropyClientHints(driver)
     self.assertEqual('', hints['architecture'])
     self.assertEqual('', hints['bitness'])
-    self.assertEqual('', hints['model'])
-    self.assertEqual('', hints['platformVersion'])
+    self.assertEqual('iPhone', hints['model'])
+    self.assertEqual('13.2.3', hints['platformVersion'])
     self.assertEqual(False, hints['wow64'])
     expected_ua = ''.join(('Mozilla/5.0 ',
                            '(iPhone; CPU iPhone OS 13_2_3 like Mac OS X) ',
@@ -7429,15 +7429,15 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
     driver = self.CreateDriver(
         mobile_emulation = {'deviceName': 'iPad'})
     driver.Load(self._http_server.GetUrl() + '/userAgent')
-    self.assertEqual('', driver.ExecuteScript(
+    self.assertEqual('iOS', driver.ExecuteScript(
         'return navigator.userAgentData.platform'))
-    self.assertEqual(False, driver.ExecuteScript(
+    self.assertEqual(True, driver.ExecuteScript(
         'return navigator.userAgentData.mobile'))
     hints = self.getHighEntropyClientHints(driver)
     self.assertEqual('', hints['architecture'])
     self.assertEqual('', hints['bitness'])
-    self.assertEqual('', hints['model'])
-    self.assertEqual('', hints['platformVersion'])
+    self.assertEqual('iPad', hints['model'])
+    self.assertEqual('11.0', hints['platformVersion'])
     self.assertEqual(False, hints['wow64'])
     expected_ua = ''.join(('Mozilla/5.0 (iPad; CPU OS 11_0 like Mac OS X) ',
                            'AppleWebKit/604.1.34 (KHTML, like Gecko) ',
