@@ -456,28 +456,19 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         assert mContentView != null : "Menu view should not be null";
 
         ListView listView = mContentView.findViewById(R.id.tab_group_action_menu_list);
-        listView.setScrollContainer(false);
 
         ListAdapter listAdapter = listView.getAdapter();
         if (listAdapter == null) {
             return;
         }
 
-        int totalHeight = 0;
-        for (int i = 0; i < listAdapter.getCount(); i++) {
-            View listItem = listAdapter.getView(i, null, listView);
-            listItem.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
-            totalHeight += listItem.getMeasuredHeight();
-        }
-
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
-        params.height = totalHeight + listView.getPaddingTop() + listView.getPaddingBottom();
-        listView.setLayoutParams(params);
+        setScrollabilityAndSize(listView, listAdapter);
 
         listAdapter.registerDataSetObserver(
                 new DataSetObserver() {
                     @Override
                     public void onChanged() {
+                        setScrollabilityAndSize(listView, listAdapter);
                         boolean shouldShowTitleEditor =
                                 (listAdapter.getItemViewType(0) != SUBMENU_HEADER);
                         if (mGroupTitleEditText != null) {
@@ -491,6 +482,21 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                         }
                     }
                 });
+    }
+
+    private void setScrollabilityAndSize(ListView listView, ListAdapter listAdapter) {
+        boolean isInSubmenu = (listAdapter.getItemViewType(0) == SUBMENU_HEADER);
+        listView.setScrollContainer(isInSubmenu);
+
+        int totalHeight = 0;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            listItem.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + listView.getPaddingTop() + listView.getPaddingBottom();
+        listView.setLayoutParams(params);
     }
 
     private int getMenuItemIndex(ModelList itemList, int menuItemId) {
