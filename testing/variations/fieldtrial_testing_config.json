@@ -14105,43 +14105,6 @@
             ]
         }
     ],
-    "IOSStartTimeBrowserBackgroundRemediations": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithUpdateFeedRefresh",
-                    "params": {
-                        "ios-startup-remediations-avoid-ntp-cleanup": "false",
-                        "ios-startup-remediations-update-feed-refresh": "true"
-                    },
-                    "enable_features": [
-                        "IOSStartTimeBrowserBackgroundRemediations"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSStartTimeStartupRemediations": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithSaveNTPWebState",
-                    "params": {
-                        "ios-startup-remediations-save-ntp-web-state": "true"
-                    },
-                    "enable_features": [
-                        "IOSStartTimeStartupRemediations"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSStatelessFormSuggestionController": [
         {
             "platforms": [

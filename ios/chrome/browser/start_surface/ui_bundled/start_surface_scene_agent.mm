@@ -123,8 +123,7 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   }
   if (level == SceneActivationLevelBackground &&
       self.previousActivationLevel > SceneActivationLevelBackground) {
-    if (base::FeatureList::IsEnabled(kRemoveExcessNTPs) &&
-        !IsAvoidNTPCleanupOnBackgroundEnabled()) {
+    if (base::FeatureList::IsEnabled(kRemoveExcessNTPs)) {
       // Remove duplicate NTP pages upon background event.
       [self removeExcessNTPs];
     }
@@ -184,11 +183,8 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 
   base::RecordAction(base::UserMetricsAction("IOS.StartSurface.Show"));
   StartSurfaceRecentTabBrowserAgent::FromBrowser(browser)->SaveMostRecentTab();
-
-  StartupRemediationsType startUpRemediationFeatureType =
-      GetIOSStartTimeStartupRemediationsEnabledType();
   WebStateList* webStateList = browser->GetWebStateList();
-  if (startUpRemediationFeatureType == StartupRemediationsType::kDisabled) {
+
     // Iterate through the WebStateList and activate the existing NTP tab for
     // the Start surface (if any).
     for (int i = webStateList->count() - 1; i >= 0; --i) {
@@ -196,21 +192,6 @@ bool IsEmptyNTP(const web::WebState* web_state) {
         return;
       }
     }
-  } else if (startUpRemediationFeatureType ==
-             StartupRemediationsType::kSaveNewNTPWebState) {
-    // If the tab at index kIOSLastKnownNTPWebStateIndex is still a valid
-    // ungrouped NTP page, activate it and return early.
-    PrefService* prefService = browser->GetProfile()->GetPrefs();
-    int knownNTPWebStateIndex =
-        prefService->GetInteger(prefs::kIOSLastKnownNTPWebStateIndex);
-    prefService->ClearPref(prefs::kIOSLastKnownNTPWebStateIndex);
-    if (webStateList->ContainsIndex(knownNTPWebStateIndex)) {
-      if ([self activateUngroupedNTPForWebStateList:webStateList
-                                            atIndex:knownNTPWebStateIndex]) {
-        return;
-      }
-    }
-  }
 
   // Create a new NTP since there is no existing one.
   TabInsertionBrowserAgent* insertion_agent =

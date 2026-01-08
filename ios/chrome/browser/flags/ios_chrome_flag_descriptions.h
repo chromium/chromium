@@ -513,12 +513,6 @@ extern const char kIOSSaveToDriveClientFolderDescription[];
 extern const char kIOSSoftLockName[];
 extern const char kIOSSoftLockDescription[];
 
-extern const char kIOSStartTimeBrowserBackgroundRemediationsName[];
-extern const char kIOSStartTimeBrowserBackgroundRemediationsDescription[];
-
-extern const char kIOSStartTimeStartupRemediationsName[];
-extern const char kIOSStartTimeStartupRemediationsDescription[];
-
 extern const char kIOSSyncedSetUpName[];
 extern const char kIOSSyncedSetUpDescription[];
 

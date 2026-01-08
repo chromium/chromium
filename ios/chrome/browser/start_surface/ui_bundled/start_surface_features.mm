@@ -14,26 +14,11 @@ constexpr base::TimeDelta kDefaultShowTabGroupInGridInactiveDuration =
 
 BASE_FEATURE(kShowTabGroupInGridOnStart, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSStartTimeBrowserBackgroundRemediations,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kIOSStartTimeStartupRemediations,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 const char kShowTabGroupInGridInactiveDurationInSeconds[] =
     "ShowTabGridInactiveDurationInSeconds";
 
 const char kReturnToStartSurfaceInactiveDurationInSeconds[] =
     "ReturnToStartSurfaceInactiveDurationInSeconds";
-
-const char kIOSStartTimeBackgroundRemediationsAvoidNTPCleanup[] =
-    "ios-startup-remediations-avoid-ntp-cleanup";
-
-const char kIOSStartTimeBrowserBackgroundRemediationsUpdateFeedRefresh[] =
-    "ios-startup-remediations-update-feed-refresh";
-
-const char kIOSStartTimeStartupRemediationsSaveNTPWebState[] =
-    "ios-startup-remediations-save-ntp-web-state";
 
 bool IsShowTabGroupInGridOnStartEnabled() {
   return base::FeatureList::IsEnabled(kShowTabGroupInGridOnStart);
@@ -43,26 +28,4 @@ base::TimeDelta GetReturnToTabGroupInGridDuration() {
   return base::Seconds(base::GetFieldTrialParamByFeatureAsDouble(
       kShowTabGroupInGridOnStart, kShowTabGroupInGridInactiveDurationInSeconds,
       kDefaultShowTabGroupInGridInactiveDuration.InSecondsF()));
-}
-StartupRemediationsType GetIOSStartTimeStartupRemediationsEnabledType() {
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          kIOSStartTimeStartupRemediations,
-          kIOSStartTimeStartupRemediationsSaveNTPWebState, false)) {
-    return StartupRemediationsType::kSaveNewNTPWebState;
-  }
-  return base::FeatureList::IsEnabled(kIOSStartTimeStartupRemediations)
-             ? StartupRemediationsType::kOpenNewNTPTab
-             : StartupRemediationsType::kDisabled;
-}
-
-bool IsAvoidNTPCleanupOnBackgroundEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kIOSStartTimeBrowserBackgroundRemediations,
-      kIOSStartTimeBackgroundRemediationsAvoidNTPCleanup, false);
-}
-
-bool IsAvoidFeedRefreshOnBackgroundEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kIOSStartTimeBrowserBackgroundRemediations,
-      kIOSStartTimeBrowserBackgroundRemediationsUpdateFeedRefresh, false);
 }

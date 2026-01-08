@@ -6340,16 +6340,6 @@
     "expiry_milestone": 144
   },
   {
-    "name": "ios-start-time-browser-background-remediations",
-    "owners": [ "hiramahmood@google.com", "bling-pandamonium@google.com"],
-    "expiry_milestone": 136
-  },
-  {
-    "name": "ios-start-time-startup-remediations",
-    "owners": [ "hiramahmood@google.com", "bling-pandamonium@google.com"],
-    "expiry_milestone": 136
-  },
-  {
     "name": "ios-synced-set-up",
     "owners": [
       "bwwilliams@google.com",

@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
@@ -62,13 +61,6 @@ KeepWebStateDecision ShouldKeepWebState(
   }
 
   const int navigation_item_count = web_state->GetNavigationItemCount();
-
-  if (IsAvoidNTPCleanupOnBackgroundEnabled()) {
-    if (IsUrlNtp(web_state->GetVisibleURL())) {
-      return navigation_item_count <= 1 ? KeepWebStateDecision::kDiscardNTP
-                                        : KeepWebStateDecision::kKeepNTP;
-    }
-  }
 
   if (navigation_item_count) {
     // WebState has navigation history, keep.

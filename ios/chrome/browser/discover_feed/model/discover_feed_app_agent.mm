@@ -17,10 +17,6 @@
 #pragma mark - ObservingAppAgent
 
 - (void)appDidEnterBackground {
-  if (IsAvoidFeedRefreshOnBackgroundEnabled()) {
-    return;
-  }
-
   for (const auto& [_, helper] : _helpers) {
     [helper refreshFeedInBackground];
   }

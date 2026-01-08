@@ -842,20 +842,6 @@ const char kIOSSaveToDriveClientFolderDescription[] =
 const char kIOSSoftLockName[] = "Soft Lock on iOS";
 const char kIOSSoftLockDescription[] = "Enables experimental Soft Lock on iOS.";
 
-const char kIOSStartTimeBrowserBackgroundRemediationsName[] =
-    "Browser Background Termination remediations for the Bling Start 4 hour "
-    "reduction";
-const char kIOSStartTimeBrowserBackgroundRemediationsDescription[] =
-    "Enables potential remediations for Browser Background Termination "
-    "regressions caused by the reduction of Bling Start time from 6 hours to "
-    "4.";
-
-const char kIOSStartTimeStartupRemediationsName[] =
-    "Startup remediations for the Bling Start 4 hour reduction";
-const char kIOSStartTimeStartupRemediationsDescription[] =
-    "Enables potential remediations for startup regressions caused by the "
-    "reduction of Bling Start time from 6 hours to 4.";
-
 const char kIOSSyncedSetUpName[] = "Synced Set Up";
 const char kIOSSyncedSetUpDescription[] =
     "Enables the Synced Set Up experience, allowing the user to locally apply "

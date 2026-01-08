@@ -912,17 +912,6 @@ const FeatureEntry::FeatureVariation kIOSSoftLockVariations[] = {
     {" - No delay", kIOSSoftLockNoDelay, std::size(kIOSSoftLockNoDelay),
      nullptr}};
 
-const FeatureEntry::FeatureParam
-    kIOSStartTimeStartupRemediationsSaveNTPWebStateArm[] = {
-        {kIOSStartTimeStartupRemediationsSaveNTPWebState, "true"},
-};
-const FeatureEntry::FeatureVariation
-    kIOSStartTimeStartupRemediationsVariations[] = {
-        {" - Save NTP Web State",
-         kIOSStartTimeStartupRemediationsSaveNTPWebStateArm,
-         std::size(kIOSStartTimeStartupRemediationsSaveNTPWebStateArm),
-         nullptr}};
-
 constexpr flags_ui::FeatureEntry::FeatureParam
     kAutofillThrottleDocFormScanShortPeriodParam[] = {{"period-ms", "250"}};
 constexpr flags_ui::FeatureEntry::FeatureParam
@@ -957,26 +946,6 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
          nullptr},
         {"Long period", kAutofillThrottleFilteredDocFormScanLongPeriodParam,
          std::size(kAutofillThrottleFilteredDocFormScanLongPeriodParam),
-         nullptr}};
-
-const FeatureEntry::FeatureParam
-    kIOSStartTimeBackgroundRemediationsAvoidNTPCleanupArm[] = {
-        {kIOSStartTimeBackgroundRemediationsAvoidNTPCleanup, "true"},
-        {kIOSStartTimeBrowserBackgroundRemediationsUpdateFeedRefresh, "false"}};
-const FeatureEntry::FeatureParam
-    kIOSStartTimeBrowserBackgroundRemediationsUpdateFeedRefreshArm[] = {
-        {kIOSStartTimeBrowserBackgroundRemediationsUpdateFeedRefresh, "true"},
-        {kIOSStartTimeBackgroundRemediationsAvoidNTPCleanup, "false"}};
-const FeatureEntry::FeatureVariation
-    kIOSStartTimeBrowserBackgroundRemediationsVariations[] = {
-        {" - Avoid NTP Cleanup",
-         kIOSStartTimeBackgroundRemediationsAvoidNTPCleanupArm,
-         std::size(kIOSStartTimeBackgroundRemediationsAvoidNTPCleanupArm),
-         nullptr},
-        {" - Update Feed Refresh",
-         kIOSStartTimeBrowserBackgroundRemediationsUpdateFeedRefreshArm,
-         std::size(
-             kIOSStartTimeBrowserBackgroundRemediationsUpdateFeedRefreshArm),
          nullptr}};
 
 const FeatureEntry::FeatureParam kUpdatedFirstRunSequenceArm1[] = {
@@ -2065,13 +2034,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kProvisionalNotificationAlertName,
      flag_descriptions::kProvisionalNotificationAlertDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kProvisionalNotificationAlert)},
-    {"ios-start-time-startup-remediations",
-     flag_descriptions::kIOSStartTimeStartupRemediationsName,
-     flag_descriptions::kIOSStartTimeStartupRemediationsDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSStartTimeStartupRemediations,
-                                    kIOSStartTimeStartupRemediationsVariations,
-                                    "IOSStartTimeStartupRemediations")},
     {"autofill-throttle-doc-form-scans",
      flag_descriptions::kAutofillThrottleDocumentFormScanName,
      flag_descriptions::kAutofillThrottleDocumentFormScanDescription,
@@ -2091,14 +2053,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAutofillPaymentsSheetV2Name,
      flag_descriptions::kAutofillPaymentsSheetV2Description, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAutofillPaymentsSheetV2Ios)},
-    {"ios-start-time-browser-background-remediations",
-     flag_descriptions::kIOSStartTimeBrowserBackgroundRemediationsName,
-     flag_descriptions::kIOSStartTimeBrowserBackgroundRemediationsDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         kIOSStartTimeBrowserBackgroundRemediations,
-         kIOSStartTimeBrowserBackgroundRemediationsVariations,
-         "IOSStartTimeStartupRemediations")},
     {"lens-unary-http-transport-enabled",
      flag_descriptions::kLensUnaryHttpTransportEnabledName,
      flag_descriptions::kLensUnaryHttpTransportEnabledDescription,
