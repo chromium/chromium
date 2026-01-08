@@ -2394,6 +2394,15 @@ select:-internal-select-has-slotted-button::-internal-select-button-slot {
     padding-inline: 0;
   }
 
+  /* TODO(https://crbug.com/406566432): Should this be a descendant combinator
+   * instead? */
+  menulist > hr {
+    color: inherit;
+    margin-inline: 0;
+    border: none;
+    border-block-start: 1px solid currentColor;
+  }
+
   menuitem::checkmark {
     content: '\2713';
   }
@@ -2401,9 +2410,6 @@ select:-internal-select-has-slotted-button::-internal-select-button-slot {
   menuitem:not(:checked)::checkmark {
     visibility: hidden;
   }
-
-  /* TODO(https://crbug.com/406566432): Add `menulist > hr` styles for
-   * separating items and fieldsets into functional groups. */
 
   /* We can use the direct child selector for menuitems in menubars, because the
    * menubar content model does not allow for fieldset as an intermediate to
