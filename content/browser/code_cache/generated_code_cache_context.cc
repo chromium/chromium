@@ -194,6 +194,7 @@ void GeneratedCodeCacheContext::Shutdown() {
 
 void GeneratedCodeCacheContext::ClearAndDeletePersistentCacheCollection() {
 #if !BUILDFLAG(IS_FUCHSIA)
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (persistent_cache_collection_) {
     persistent_cache_collection_->DeleteAllFiles();
   }
@@ -204,6 +205,8 @@ void GeneratedCodeCacheContext::ClearAndDeletePersistentCacheCollection() {
 std::optional<persistent_cache::PendingBackend>
 GeneratedCodeCacheContext::ShareReadOnlyConnection(
     const std::string& context_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (persistent_cache_collection_) {
     return persistent_cache_collection_->ShareReadOnlyConnection(context_key);
   }
@@ -216,6 +219,8 @@ void GeneratedCodeCacheContext::InsertIntoPersistentCacheCollection(
     std::string_view url,
     base::span<const uint8_t> content,
     persistent_cache::EntryMetadata metadata) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!persistent_cache_collection_) {
     return;
   }
@@ -240,6 +245,8 @@ std::optional<GeneratedCodeCacheContext::MetadataAndContent>
 GeneratedCodeCacheContext::FindInPersistentCacheCollection(
     const std::string& context_key,
     std::string_view url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!persistent_cache_collection_) {
     return std::nullopt;
   }
