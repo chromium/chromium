@@ -410,13 +410,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, OnUpdated) {
   ASSERT_TRUE(RunExtensionTest("tabs/on_updated")) << message_;
 }
 
-// TODO(crbug.com/378027647) Failing on ChromeOS and Linux
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_OnUpdated DISABLED_OnUpdated
-#else
-#define MAYBE_OnUpdated OnUpdated
-#endif
-IN_PROC_BROWSER_TEST_P(ExtensionApiTabBackForwardCacheTest, MAYBE_OnUpdated) {
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabBackForwardCacheTest, OnUpdated) {
   ASSERT_TRUE(RunExtensionTest("tabs/backForwardCache/on_updated")) << message_;
 }
 

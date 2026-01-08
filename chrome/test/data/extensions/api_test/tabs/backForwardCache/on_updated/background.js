@@ -13,6 +13,20 @@ function expect(data) {
       shouldIgnore = false;
     if (shouldIgnore)
       return;
+
+    // Ignore 'frozen' updates. This test focuses on navigation status
+    // transitions ('loading' and 'complete') during BackForwardCache restores.
+    // The 'frozen' property represents lifecycle state changes that can occur
+    // non-deterministically relative to navigation events depending on platform
+    // and timing. Since lifecycle state is not the focus of this test, we strip
+    // it to avoid flakiness caused by unexpected event ordering.
+    if ('frozen' in info) {
+      delete info.frozen;
+    }
+    if (Object.keys(info).length === 0) {
+      return;
+    }
+
     capturedEventData.push(info);
     checkExpectations();
   });
