@@ -1230,10 +1230,12 @@
       status: "stable",
     },
     {
-      // Experimental support for requesting SecurityInfo
-      // in WebRequest API for controlled frames.
+      // Enable support for requesting SecurityInfo in WebRequest API
+      // for controlled frames. See
+      // https://wicg.github.io/controlled-frame/#dictdef-securityinfo for more
+      // info.
       name: "ControlledFrameWebRequestSecurityInfo",
-      status: "test",
+      status: "stable",
       depends_on: ["ControlledFrame"],
     },
     {
