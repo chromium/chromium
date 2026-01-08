@@ -599,6 +599,7 @@ public final class ProductionSupportedFlagList {
                 "Use buffer size from AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER for "
                         + "optimal output frame size."),
         Flag.baseFeature("AudioDecoderAudioFileReader"),
+        Flag.baseFeature("SymphoniaAudioDecoding"),
         Flag.baseFeature(
                 "AudioInputConfirmReadsViaShmem",
                 "Enables an audio input optimization that uses shared memory instead of"
