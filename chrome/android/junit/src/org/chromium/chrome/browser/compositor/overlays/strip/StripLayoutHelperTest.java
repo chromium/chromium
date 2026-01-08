@@ -118,6 +118,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.MediaState;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -742,6 +743,42 @@ public class StripLayoutHelperTest {
                 "There should be one animation for the newly created tab width",
                 1,
                 animationList.size());
+    }
+
+    @Test
+    public void testRebuildStripTabs_MediaState() {
+        // Initialize with 2 tabs.
+        initializeTest(false, false, 0, 2);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+
+        // Update media state for tabs.
+        Tab tab0 = mModel.getTabAt(0);
+        Tab tab1 = mModel.getTabAt(1);
+        when(tab0.getMediaState()).thenReturn(MediaState.AUDIBLE);
+        when(tab1.getMediaState()).thenReturn(MediaState.RECORDING);
+        mStripLayoutHelper.onMediaStateChanged(tab0, tab0.getMediaState());
+        mStripLayoutHelper.onMediaStateChanged(tab1, tab1.getMediaState());
+
+        // Verify initial state.
+        assertEquals(MediaState.AUDIBLE, tabs[0].getMediaState());
+        assertEquals(MediaState.RECORDING, tabs[1].getMediaState());
+
+        // Force rebuild.
+        mStripLayoutHelper.setStripLayoutTabsForTesting(new StripLayoutTab[0]);
+        mStripLayoutHelper.rebuildStripTabsForTesting();
+
+        // Verify the StripLayoutTabs are new instances.
+        StripLayoutTab[] newTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        assertNotEquals(tabs[0], newTabs[0]);
+        assertNotEquals(tabs[1], newTabs[1]);
+
+        // Verify media state is persistent.
+        assertEquals(
+                "Media state should be preserved.", MediaState.AUDIBLE, newTabs[0].getMediaState());
+        assertEquals(
+                "Media state should be preserved.",
+                MediaState.RECORDING,
+                newTabs[1].getMediaState());
     }
 
     @Test
