@@ -260,7 +260,10 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
                           gfx::VectorIcon::EmptyIcon(),
                           /*show_close_button=*/true),
       menu_model_(CreateMenuModel()),
-      tab_strip_controller_(tab_strip_controller),
+      profile_(
+          tab_strip_controller->GetBrowserWindowInterface()
+              ? tab_strip_controller->GetBrowserWindowInterface()->GetProfile()
+              : nullptr),
       hovered_callback_(std::move(hovered_callback)),
       mouse_down_callback_(std::move(mouse_down_callback)),
       normal_icon_(GetNormalIcon()),
@@ -312,8 +315,7 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
       views::BoxLayout::MainAxisAlignment::kStart);
 
   // Subscribe to changes in state of glic FRE dialog and glic window.
-  glic::GlicKeyedService* service =
-      glic::GlicKeyedService::Get(tab_strip_controller_->GetProfile());
+  glic::GlicKeyedService* const service = glic::GlicKeyedService::Get(profile_);
   glic_window_activation_subscription_ =
       service->window_controller().AddWindowActivationChangedCallback(
           base::BindRepeating(&GlicButton::PanelStateChanged,
@@ -428,8 +430,7 @@ void GlicButton::PanelStateChanged(bool active) {
 }
 
 void GlicButton::UpdateTooltipText() {
-  GlicKeyedService* service =
-      GlicKeyedService::Get(tab_strip_controller_->GetProfile());
+  GlicKeyedService* const service = GlicKeyedService::Get(profile_);
   // Set tooltip and accessibility text based on whether any glic UI (window or
   // FRE) is open.
   std::u16string tooltip_text = l10n_util::GetStringUTF16(
@@ -551,7 +552,7 @@ void GlicButton::ShowContextMenuForViewImpl(
     View* source,
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type) {
-  if (!profile_prefs()->GetBoolean(glic::prefs::kGlicPinnedToTabstrip)) {
+  if (!GetPrefService()->GetBoolean(glic::prefs::kGlicPinnedToTabstrip)) {
     return;
   }
 
@@ -572,7 +573,7 @@ void GlicButton::ShowContextMenuForViewImpl(
 
 void GlicButton::ExecuteCommand(int command_id, int event_flags) {
   CHECK(command_id == IDC_GLIC_TOGGLE_PIN);
-  profile_prefs()->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, false);
+  GetPrefService()->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, false);
 }
 
 void GlicButton::SetText(std::u16string_view text) {
@@ -613,6 +614,10 @@ void GlicButton::AnnounceNudgeShown() {
       IDS_GLIC_CONTEXTUAL_CUEING_ANNOUNCEMENT,
       GlicLauncherConfiguration::GetGlobalHotkey().GetShortcutText());
   GetViewAccessibility().AnnounceAlert(announcement);
+}
+
+PrefService* GlicButton::GetPrefService() {
+  return profile_->GetPrefs();
 }
 
 void GlicButton::SetDefaultColors() {

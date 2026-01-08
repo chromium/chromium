@@ -120,7 +120,6 @@ class BrowserTabStripController : public TabStripController,
   std::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
-  Profile* GetProfile() const override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
   Browser* GetBrowser() override;
 #if BUILDFLAG(IS_CHROMEOS)

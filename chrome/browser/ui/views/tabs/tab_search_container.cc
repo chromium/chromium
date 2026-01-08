@@ -216,7 +216,7 @@ TabSearchContainer::TabSearchContainer(
       this);
 
   tab_organization_service_ = TabOrganizationServiceFactory::GetForProfile(
-      tab_strip_controller->GetProfile());
+      browser_window_interface->GetProfile());
   if (tab_organization_service_) {
     tab_organization_observation_.Observe(tab_organization_service_);
   }

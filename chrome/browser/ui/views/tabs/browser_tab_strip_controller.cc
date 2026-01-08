@@ -299,7 +299,8 @@ void BrowserTabStripController::RecordMetricsOnTabSelectionChange(
   }
 
   tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(GetProfile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          GetBrowserWindowInterface()->GetProfile());
 
   if (!tab_group_service) {
     return;
@@ -710,10 +711,6 @@ std::u16string BrowserTabStripController::GetAccessibleTabName(
       tabstrip_->GetModelIndexOf(tab).value(), /*is_for_tab=*/true);
 }
 
-Profile* BrowserTabStripController::GetProfile() const {
-  return model_->profile();
-}
-
 BrowserWindowInterface* BrowserTabStripController::GetBrowserWindowInterface() {
   return GetBrowser();
 }
@@ -1061,8 +1058,8 @@ bool BrowserTabStripController::GetContextMenuAccelerator(
   auto* system_app = browser->app_controller()
                          ? browser->app_controller()->system_app()
                          : nullptr;
-  if (system_app &&
-      !system_app->ShouldShowTabContextMenuShortcut(GetProfile(), command_id)) {
+  if (system_app && !system_app->ShouldShowTabContextMenuShortcut(
+                        browser->profile(), command_id)) {
     return false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

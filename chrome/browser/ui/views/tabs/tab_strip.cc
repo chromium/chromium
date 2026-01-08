@@ -1231,7 +1231,10 @@ void TabStrip::AddTabsAt(const std::vector<AddTabData>& tabs_datas) {
     drag_context_->TabWasAdded();
   }
 
-  Profile* profile = controller_->GetProfile();
+  // BrowserWindowInterface can be null during unit tests.
+  Profile* const profile = GetBrowserWindowInterface()
+                               ? GetBrowserWindowInterface()->GetProfile()
+                               : nullptr;
   if (profile) {
     if (profile->IsGuestSession()) {
       base::UmaHistogramCounts100("Tab.Count.Guest", GetTabCount());
@@ -1851,13 +1854,13 @@ bool TabStrip::IsFocusInTabs() const {
 }
 
 bool TabStrip::ShouldCompactLeadingEdge() const {
-  return !controller_->GetBrowser()
-              ->window()
+  Browser* const browser = controller_->GetBrowser();
+  return !browser->window()
               ->AsBrowserView()
               ->browser_widget()
               ->GetFrameView()
               ->CaptionButtonsOnLeadingEdge() &&
-         (tabs::GetTabSearchPosition(controller_->GetProfile()) ==
+         (tabs::GetTabSearchPosition(browser->profile()) ==
           tabs::TabSearchPosition::kTrailingHorizontalTabstrip);
 }
 

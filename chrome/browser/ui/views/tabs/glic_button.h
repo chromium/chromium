@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/browser_ui/glic_button_controller_delegate.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/common/buildflags.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -20,6 +19,7 @@
 
 class BrowserWindowInterface;
 class PrefService;
+class Profile;
 
 namespace glic {
 
@@ -134,9 +134,7 @@ class GlicButton : public TabStripNudgeButton,
   // announcement.
   void AnnounceNudgeShown();
 
-  PrefService* profile_prefs() {
-    return tab_strip_controller_->GetProfile()->GetPrefs();
-  }
+  PrefService* GetPrefService();
 
   void UpdateTextAndBackgroundColors();
   void UpdateIcon();
@@ -194,8 +192,8 @@ class GlicButton : public TabStripNudgeButton,
   // Menu runner for the context menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
-  // Tab strip that contains this button.
-  raw_ptr<TabStripController> tab_strip_controller_;
+  // Profile corresponding to the browser that this button is on.
+  raw_ptr<Profile> profile_;
 
   // Callback which is invoked when the button is hovered (i.e., the user is
   // more likely to interact with it soon).

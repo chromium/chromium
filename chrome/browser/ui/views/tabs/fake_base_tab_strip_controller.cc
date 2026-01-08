@@ -321,10 +321,6 @@ void FakeBaseTabStripController::SetFocusedGroup(
   focused_group_ = group;
 }
 
-Profile* FakeBaseTabStripController::GetProfile() const {
-  return nullptr;
-}
-
 BrowserWindowInterface*
 FakeBaseTabStripController::GetBrowserWindowInterface() {
   return nullptr;

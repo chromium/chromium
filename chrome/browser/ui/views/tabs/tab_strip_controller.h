@@ -240,9 +240,6 @@ class TabStripController {
   // Returns the accessible tab name.
   virtual std::u16string GetAccessibleTabName(const Tab* tab) const = 0;
 
-  // Returns the profile associated with the Tabstrip.
-  virtual Profile* GetProfile() const = 0;
-
   // Returns the interface for the browser hosting the tab strip.
   virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
 

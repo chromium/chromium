@@ -30,6 +30,7 @@ namespace glic {
 class GlicButton;
 class GlicActorTaskIcon;
 }
+class BrowserWindowInterface;
 class ProductSpecificationsButton;
 
 class TabStripActionContainer : public views::View,
@@ -90,6 +91,7 @@ class TabStripActionContainer : public views::View,
     // track animations to delay posting calls that might delete this class.
     bool is_executing_show_or_hide_ = false;
   };
+
   explicit TabStripActionContainer(
       TabStripController* tab_strip_controller,
       tabs::TabDeclutterController* tab_declutter_controller,
@@ -245,7 +247,7 @@ class TabStripActionContainer : public views::View,
 
   raw_ptr<const Browser> browser_;
 
-  const raw_ptr<TabStripController> tab_strip_controller_ = nullptr;
+  const raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
 
   // Timer for hiding tab_strip_nudge_button_ after show.
   base::OneShotTimer hide_tab_strip_nudge_timer_;
