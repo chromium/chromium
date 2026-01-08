@@ -15,7 +15,6 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/platform_window/platform_window.h"
@@ -323,8 +322,8 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   // management is supported, null otherwise.
   virtual PlatformSessionManager* GetSessionManager();
 
-  // Returns true if the specified format is supported.
-  virtual bool IsNativePixmapConfigSupported(viz::SharedImageFormat format,
+  // Returns true if the specified buffer format is supported.
+  virtual bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
                                              gfx::BufferUsage usage) const;
 
   // Whether the platform supports compositing windows with transparency.

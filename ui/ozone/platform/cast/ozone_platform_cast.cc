@@ -115,9 +115,9 @@ class OzonePlatformCast : public OzonePlatform {
     return std::make_unique<InputMethodMinimal>(ime_key_event_dispatcher);
   }
 
-  bool IsNativePixmapConfigSupported(viz::SharedImageFormat format,
+  bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
                                      gfx::BufferUsage usage) const override {
-    return format == viz::SharedImageFormat::kBGRA_8888 &&
+    return format == gfx::BufferFormat::BGRA_8888 &&
            usage == gfx::BufferUsage::SCANOUT;
   }
 

@@ -212,10 +212,10 @@ class OzonePlatformFlatland : public OzonePlatform,
         base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
-  bool IsNativePixmapConfigSupported(viz::SharedImageFormat format,
+  bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
                                      gfx::BufferUsage usage) const override {
-    return FlatlandSysmemBufferCollection::IsNativePixmapConfigSupported(format,
-                                                                         usage);
+    return FlatlandSysmemBufferCollection::IsNativePixmapConfigSupported(
+        viz::GetSharedImageFormat(format), usage);
   }
 
   bool IsWindowCompositingSupported() const override { return true; }

@@ -260,7 +260,7 @@ TYPED_TEST_P(MappableBufferTest, CreateFromHandle) {
 #if BUILDFLAG(IS_OZONE)
       if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
           !ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
-              format, usage)) {
+              viz::SharedImageFormatToBufferFormat(format), usage)) {
         continue;
       }
 #endif
@@ -289,7 +289,7 @@ TYPED_TEST_P(MappableBufferTest, CreateFromHandleSmallBuffer) {
 #if BUILDFLAG(IS_OZONE)
       if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
           !ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
-              format, usage)) {
+              viz::SharedImageFormatToBufferFormat(format), usage)) {
         continue;
       }
 #endif
@@ -331,7 +331,8 @@ TYPED_TEST_P(MappableBufferTest, Map) {
 #if BUILDFLAG(IS_OZONE)
     if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
         !ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
-            format, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
+            viz::SharedImageFormatToBufferFormat(format),
+            gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
       continue;
     }
 #endif
@@ -399,7 +400,8 @@ TYPED_TEST_P(MappableBufferTest, PersistentMap) {
 #if BUILDFLAG(IS_OZONE)
     if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
         !ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
-            format, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
+            viz::SharedImageFormatToBufferFormat(format),
+            gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
       continue;
     }
 #endif
@@ -483,7 +485,7 @@ TYPED_TEST_P(MappableBufferTest, SerializeAndDeserialize) {
 #if BUILDFLAG(IS_OZONE)
       if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
           !ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
-              format, usage)) {
+              viz::SharedImageFormatToBufferFormat(format), usage)) {
         continue;
       }
 #endif

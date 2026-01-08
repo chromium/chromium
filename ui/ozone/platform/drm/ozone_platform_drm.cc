@@ -173,7 +173,7 @@ class OzonePlatformDrm : public OzonePlatform {
     return std::make_unique<ash::InputMethodAsh>(ime_key_event_dispatcher);
   }
 
-  bool IsNativePixmapConfigSupported(viz::SharedImageFormat format,
+  bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
                                      gfx::BufferUsage usage) const override {
     return gfx::ClientNativePixmapDmaBuf::IsConfigurationSupported(format,
                                                                    usage);

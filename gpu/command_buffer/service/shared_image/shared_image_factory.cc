@@ -450,8 +450,9 @@ bool SharedImageFactory::IsNativeBufferSupported(
   }
   NOTREACHED();
 #elif BUILDFLAG(IS_OZONE)
-  return ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(format,
-                                                                         usage);
+  auto buffer_format = viz::SharedImageFormatToBufferFormat(format);
+  return ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
+      buffer_format, usage);
 #elif BUILDFLAG(IS_WIN)
   switch (usage) {
     case gfx::BufferUsage::GPU_READ:
