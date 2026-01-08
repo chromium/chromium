@@ -23,7 +23,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/gfx/linux/dmabuf_uapi.h"
 #include "ui/gfx/switches.h"
 
@@ -100,14 +99,6 @@ ClientNativePixmapDmaBuf::MapPlane(const NativePixmapPlane& plane) {
   return UNSAFE_BUFFERS(
       base::HeapArray<uint8_t, PlaneDeleter>::FromOwningPointer(
           static_cast<uint8_t*>(data), size_to_map, PlaneDeleter{size_to_map}));
-}
-
-// static
-bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
-    viz::SharedImageFormat format,
-    gfx::BufferUsage usage) {
-  return IsConfigurationSupported(viz::SharedImageFormatToBufferFormat(format),
-                                  usage);
 }
 
 // static

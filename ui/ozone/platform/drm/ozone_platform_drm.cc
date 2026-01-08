@@ -175,8 +175,8 @@ class OzonePlatformDrm : public OzonePlatform {
 
   bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
                                      gfx::BufferUsage usage) const override {
-    return gfx::ClientNativePixmapDmaBuf::IsConfigurationSupported(format,
-                                                                   usage);
+    return gfx::ClientNativePixmapDmaBuf::IsConfigurationSupported(
+        viz::SharedImageFormatToBufferFormat(format), usage);
   }
 
   bool IsWindowCompositingSupported() const override { return true; }
