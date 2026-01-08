@@ -247,6 +247,7 @@ message PendingMigrationInfo {
 // app_id is a hash of launch_url. app_id is the client tag for sync system.
 // app_id is the storage key in DataTypeStore.
 message WebApp {
+  // LINT.IfChange(MemberVariables)
   reserved "handle_links", "is_in_sync_install", "is_placeholder",
       "file_handler_os_integration_state",
       "run_on_os_login_os_integration_state", "url_handlers", "update_token";
@@ -557,4 +558,6 @@ message WebApp {
   // List of apps that this app can migrate to. This is populated by checking
   // the validated_migration_sources of other installed apps.
   repeated PendingMigrationInfo pending_migration_info = 81;
+
+  // LINT.ThenChange(//chrome/browser/web_applications/web_app.h)
 }

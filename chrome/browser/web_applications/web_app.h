@@ -602,6 +602,7 @@ class WebApp {
   friend std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app);
   friend std::ostream& operator<<(std::ostream&, const WebApp&);
 
+  // LINT.IfChange(MemberVariables)
   webapps::AppId app_id_;
 
   // This set always contains at least one source.
@@ -717,6 +718,7 @@ class WebApp {
   std::vector<proto::WebAppMigrationSource> unvalidated_migration_sources_;
   std::vector<proto::WebAppMigrationSource> validated_migration_sources_;
   std::vector<proto::PendingMigrationInfo> pending_migration_info_;
+  // LINT.ThenChange(//chrome/browser/web_applications/proto/web_app.proto)
 
   // New fields must be added to:
   //  - |operator==|
