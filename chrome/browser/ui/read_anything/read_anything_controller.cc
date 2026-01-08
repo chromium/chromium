@@ -33,10 +33,12 @@
 WebContentsObserverInstance::WebContentsObserverInstance(
     content::WebContents* web_contents,
     base::RepeatingClosure primary_page_changed_callback,
+    base::RepeatingClosure renderer_crashed_callback,
     base::RepeatingCallback<void(content::Visibility)>
         visibility_changed_callback)
     : content::WebContentsObserver(web_contents),
       primary_page_changed_callback_(primary_page_changed_callback),
+      renderer_crashed_callback_(renderer_crashed_callback),
       visibility_changed_callback_(visibility_changed_callback) {}
 
 WebContentsObserverInstance::~WebContentsObserverInstance() = default;
@@ -49,6 +51,16 @@ void WebContentsObserverInstance::PrimaryPageChanged(content::Page& page) {
 void WebContentsObserverInstance::OnVisibilityChanged(
     content::Visibility visibility) {
   visibility_changed_callback_.Run(visibility);
+}
+
+void WebContentsObserverInstance::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
+  renderer_crashed_callback_.Run();
+}
+
+void WebContentsObserverInstance::OnRendererUnresponsive(
+    content::RenderProcessHost* render_process_host) {
+  renderer_crashed_callback_.Run();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -94,6 +106,7 @@ ReadAnythingController::ReadAnythingController(
       /*primary_page_changed_callback=*/
       base::BindRepeating(&ReadAnythingController::OnMainPagePrimaryPageChanged,
                           base::Unretained(this)),
+      /*renderer_crashed_callback=*/base::DoNothing(),
       /*visibility_changed_callback=*/base::DoNothing());
 }
 
@@ -224,7 +237,8 @@ std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
 ReadAnythingController::GetOrCreateWebUIWrapper(
     PresentationState web_ui_new_presentation_state) {
   SetPresentationState(web_ui_new_presentation_state);
-  if (!web_ui_wrapper_) {
+  if (should_recreate_web_ui_ || !web_ui_wrapper_) {
+    should_recreate_web_ui_ = false;
     Profile* profile = tab_->GetBrowserWindowInterface()->GetProfile();
     web_ui_wrapper_ =
         std::make_unique<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>(
@@ -233,16 +247,38 @@ ReadAnythingController::GetOrCreateWebUIWrapper(
             /*esc_closes_ui=*/false);
 
     ra_web_ui_observer_ = std::make_unique<WebContentsObserverInstance>(
-        /*web_contents=*/web_ui_wrapper_->web_contents(), base::DoNothing(),
-        /*primary_page_changed_callback=*/
+        /*web_contents=*/web_ui_wrapper_->web_contents(),
+        /*primary_page_changed_callback=*/base::DoNothing(),
+        /*renderer_crashed_callback=*/
+        base::BindRepeating(&ReadAnythingController::OnRendererCrashed,
+                            base::Unretained(this)),
+        /*visibility_changed_callback=*/
         base::BindRepeating(
             &ReadAnythingController::OnReadAnythingVisibilityChanged,
-            /*visibility_changed_callback=*/base::Unretained(this)));
+            base::Unretained(this)));
 
     ReadAnythingControllerGlue::CreateForWebContents(
         web_ui_wrapper_->web_contents(), this);
   }
   return std::move(web_ui_wrapper_);
+}
+
+void ReadAnythingController::OnRendererCrashed() {
+  // If we determine that the renderer crashed, we need to recreate the WebUI
+  // wrapper and ra_web_ui_observer_ the next time it's accessed. Closing the
+  // WebUI ensures everything is shut down properly so that reopening will
+  // then recreate without issues. This is also how WebUIContentsWrapper handles
+  // crashes (see WebUIContentsWrapper::PrimaryMainFrameRenderProcessGone).
+  should_recreate_web_ui_ = true;
+  if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
+    CloseImmersiveUI();
+  } else if (GetPresentationState() == PresentationState::kInSidePanel) {
+    if (SidePanelUI* side_panel_ui = GetSidePanelUI()) {
+      side_panel_ui->Close(SidePanelEntry::PanelType::kContent,
+                           SidePanelEntryHideReason::kSidePanelClosed,
+                           /*suppress_animations=*/true);
+    }
+  }
 }
 
 void ReadAnythingController::SetWebUIWrapperForTest(
