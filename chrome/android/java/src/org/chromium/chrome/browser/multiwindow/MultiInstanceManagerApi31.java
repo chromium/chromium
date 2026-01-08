@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.multiwindow;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.INVALID_TASK_ID;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.isRestorableInstance;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
@@ -56,9 +55,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceStateObserver;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceState.MultiInstanceStateObserver;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -1416,9 +1412,40 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                 // startup of that instance.
                 cleanupSyncedTabGroupsIfLastInstance();
             }
+
+            notifyInstanceClosed(instanceId, shouldPermanentlyDelete);
         }
+    }
+
+    /**
+     * Notifies {@link InstanceStateObserver}s of an instance closure. This method is expected to be
+     * called upon initial reception of a user, system or app initiated signal to close an instance.
+     *
+     * @param instanceId The id of the instance that was closed.
+     * @param isPermanentDeletion Whether the instance is permanently deleted.
+     */
+    private void notifyInstanceClosed(int instanceId, boolean isPermanentDeletion) {
+        // Note that instance state (for e.g. taskId) may not be updated if a live activity for the
+        // closed instance was finished, because activity destruction is asynchronous.
+        // InstanceStateObserver's will receive an InstanceInfo that is created synchronously so
+        // they have adequate information about the closed instance without relying on completion of
+        // an asynchronous activity destruction that may be initiated during this time.
+        InstanceInfo instanceInfo =
+                new InstanceInfo(
+                        instanceId,
+                        /* taskId= */ INVALID_TASK_ID,
+                        InstanceInfo.Type.OTHER,
+                        assumeNonNull(MultiInstancePersistentStore.readActiveTabUrl(instanceId)),
+                        assumeNonNull(MultiInstancePersistentStore.readActiveTabTitle(instanceId)),
+                        MultiInstancePersistentStore.readCustomTitle(instanceId),
+                        MultiInstancePersistentStore.readNormalTabCount(instanceId),
+                        MultiInstancePersistentStore.readIncognitoTabCount(instanceId),
+                        MultiInstancePersistentStore.readIncognitoSelected(instanceId),
+                        MultiInstancePersistentStore.readLastAccessedTime(instanceId),
+                        !isPermanentDeletion);
+
         for (InstanceStateObserver instanceStateObserver : mInstanceStateObservers) {
-            instanceStateObserver.onInstanceClosed();
+            instanceStateObserver.onInstanceClosed(instanceInfo, isPermanentDeletion);
         }
     }
 

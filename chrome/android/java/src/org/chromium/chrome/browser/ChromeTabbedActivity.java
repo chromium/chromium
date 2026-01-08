@@ -3429,7 +3429,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         if (mTabDelegateFactory == null) {
             assert getStartupMetricsTracker() != null;
             mRecentlyClosedEntriesManager =
-                    new RecentlyClosedEntriesManager(mMultiInstanceManager, mTabModelSelector);
+                    RecentlyClosedEntriesManagerTrackerFactory.getInstance()
+                            .obtainManager(mMultiInstanceManager, mTabModelSelector);
             mTabDelegateFactory =
                     new TabbedModeTabDelegateFactory(
                             this,
@@ -4506,8 +4507,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         }
 
         if (mRecentlyClosedEntriesManager != null) {
-            mRecentlyClosedEntriesManager.destroy();
-            mRecentlyClosedEntriesManager = null;
+            RecentlyClosedEntriesManagerTrackerFactory.getInstance()
+                    .destroy(mRecentlyClosedEntriesManager);
         }
 
         super.onDestroyInternal();

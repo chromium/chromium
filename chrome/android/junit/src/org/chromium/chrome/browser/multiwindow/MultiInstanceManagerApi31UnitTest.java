@@ -910,7 +910,15 @@ public class MultiInstanceManagerApi31UnitTest {
                 1, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE).size());
 
         // Verify InstanceStateObserver is invoked.
-        verify(instanceStateObserver).onInstanceClosed();
+        ArgumentCaptor<InstanceInfo> captor = ArgumentCaptor.forClass(InstanceInfo.class);
+        verify(instanceStateObserver).onInstanceClosed(captor.capture(), eq(false));
+
+        // Verify the captured InstanceInfo.
+        InstanceInfo closedInstanceInfo = captor.getValue();
+        assertEquals("Instance ID should be 1.", 1, closedInstanceInfo.instanceId);
+        assertTrue(
+                "markedForDeletion should be true for soft closure.",
+                closedInstanceInfo.markedForDeletion);
 
         // Verify the soft-closed instance is correctly marked for deletion.
         for (InstanceInfo instanceInfo :

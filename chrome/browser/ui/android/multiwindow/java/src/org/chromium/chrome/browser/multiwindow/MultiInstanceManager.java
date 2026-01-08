@@ -482,10 +482,14 @@ public abstract class MultiInstanceManager {
     /** Observer interface to notify about instance closure events. */
     public interface InstanceStateObserver {
         /**
-         * Notifies when an instance is closed due to activity destruction and / or an explicit user
-         * request.
+         * Notifies when an instance is closed. Closure can be system-initiated (for e.g. low-memory
+         * kill), app-initiated (for e.g. instance retention expiration) or user-initiated (for e.g.
+         * window manager closure).
+         *
+         * @param instanceInfo The {@link InstanceInfo} for the closed instance.
+         * @param isPermanentDeletion Whether the closed instance is permanently deleted.
          */
-        void onInstanceClosed();
+        void onInstanceClosed(InstanceInfo instanceInfo, boolean isPermanentDeletion);
     }
 
     /**

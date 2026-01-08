@@ -23,9 +23,11 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
+import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -55,7 +57,9 @@ public class RecentlyClosedEntriesManagerUnitTest {
     @Mock TabModelSelector mTabModelSelector;
     @Mock TabModel mTabModel;
     @Mock Profile mProfile;
-    RecentlyClosedEntriesManager mRecentlyClosedEntriesManager;
+
+    private RecentlyClosedEntriesManager mRecentlyClosedEntriesManager;
+    private final CallbackHelper mEntriesUpdatedCallbackHelper = new CallbackHelper();
 
     @Before
     public void setup() {
@@ -63,7 +67,10 @@ public class RecentlyClosedEntriesManagerUnitTest {
         when(mTabModelSelector.getModel(/* incognito= */ false)).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         mRecentlyClosedEntriesManager =
-                new RecentlyClosedEntriesManager(mMultiInstanceManager, mTabModelSelector);
+                RecentlyClosedEntriesManagerTrackerFactory.getInstance()
+                        .obtainManager(mMultiInstanceManager, mTabModelSelector);
+        mRecentlyClosedEntriesManager.setEntriesUpdatedCallback(
+                result -> mEntriesUpdatedCallbackHelper.notifyCalled());
     }
 
     @Test
@@ -513,6 +520,83 @@ public class RecentlyClosedEntriesManagerUnitTest {
         mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(NewWindowAppSource.OTHER);
         verify(mTabModel).openMostRecentlyClosedEntry();
         verify(mMultiInstanceManager, never()).openWindow(anyInt(), anyInt());
+    }
+
+    @Test
+    public void testOnWindowClosed_NotPermanentDeletion_AddsWindow() {
+        createRecentlyClosedWindows(/* numOfWindows= */ 1);
+        mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
+        RecentlyClosedWindow window =
+                new RecentlyClosedWindow(
+                        /* timestamp= */ 10,
+                        /* instanceId= */ 4,
+                        /* url= */ "url",
+                        /* title= */ "title",
+                        /* activeTabTitle= */ "tab title",
+                        /* tabCount= */ 1);
+        int callbackCount = mEntriesUpdatedCallbackHelper.getCallCount();
+
+        mRecentlyClosedEntriesManager.onWindowClosed(window, /* isPermanentDeletion= */ false);
+
+        List<RecentlyClosedEntry> entries =
+                mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
+        assertEquals(2, entries.size());
+        assertEquals(window, entries.get(0));
+        assertEquals(callbackCount + 1, mEntriesUpdatedCallbackHelper.getCallCount());
+    }
+
+    @Test
+    public void testOnWindowClosed_PermanentDeletion_RemovesWindow() {
+        RecentlyClosedWindow window =
+                new RecentlyClosedWindow(
+                        /* timestamp= */ 10,
+                        /* instanceId= */ 2,
+                        /* url= */ "url",
+                        /* title= */ "title",
+                        /* activeTabTitle= */ "tab title",
+                        /* tabCount= */ 1);
+        mRecentlyClosedEntriesManager.onWindowClosed(window, /* isPermanentDeletion= */ false);
+        assertEquals(1, mRecentlyClosedEntriesManager.getRecentlyClosedEntries().size());
+        int callbackCount = mEntriesUpdatedCallbackHelper.getCallCount();
+
+        mRecentlyClosedEntriesManager.onWindowClosed(window, /* isPermanentDeletion= */ true);
+
+        assertEquals(0, mRecentlyClosedEntriesManager.getRecentlyClosedEntries().size());
+        assertEquals(callbackCount + 1, mEntriesUpdatedCallbackHelper.getCallCount());
+    }
+
+    @Test
+    public void testOnWindowClosed_MovesExistingWindowToTop() {
+        createRecentlyClosedWindows(/* numOfWindows= */ 2);
+        mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
+        List<RecentlyClosedEntry> entries =
+                mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
+        RecentlyClosedWindow olderWindow = (RecentlyClosedWindow) entries.get(1);
+        int callbackCount = mEntriesUpdatedCallbackHelper.getCallCount();
+
+        mRecentlyClosedEntriesManager.onWindowClosed(olderWindow, /* isPermanentDeletion= */ false);
+
+        entries = mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
+        assertEquals(2, entries.size());
+        assertEquals(olderWindow, entries.get(0));
+        assertEquals(callbackCount + 1, mEntriesUpdatedCallbackHelper.getCallCount());
+    }
+
+    @Test
+    public void testOpenRecentlyClosedWindow_RemovesEntry() {
+        createRecentlyClosedWindows(/* numOfWindows= */ 1);
+        mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
+        List<RecentlyClosedEntry> entries =
+                mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
+        assertEquals(1, entries.size());
+        RecentlyClosedWindow window = (RecentlyClosedWindow) entries.get(0);
+        int callbackCount = mEntriesUpdatedCallbackHelper.getCallCount();
+
+        mRecentlyClosedEntriesManager.openRecentlyClosedEntry(window);
+
+        verify(mMultiInstanceManager).openWindow(2, NewWindowAppSource.RECENT_TABS);
+        assertEquals(0, mRecentlyClosedEntriesManager.getRecentlyClosedEntries().size());
+        assertEquals(callbackCount + 1, mEntriesUpdatedCallbackHelper.getCallCount());
     }
 
     /**
