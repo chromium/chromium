@@ -160,3 +160,12 @@ export function assertStringExcludes(expected: string, excludes: string): void {
 export function assertNull(value: any, message?: string) {
   assert.isNull(value, message);
 }
+
+/*
+ * Asserts that set1 and set2 don’t have the same members in the same order.
+ * Uses a strict equality check.
+ */
+export function assertNotSameOrderedMembers<T>(
+    set1: T[], set2: T[], message?: string) {
+  assert.notSameOrderedMembers(set1, set2, message);
+}
