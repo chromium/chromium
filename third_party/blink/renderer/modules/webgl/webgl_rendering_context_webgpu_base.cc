@@ -391,23 +391,17 @@ HTMLCanvasElement* WebGLRenderingContextWebGPUBase::canvas() const {
   return static_cast<HTMLCanvasElement*>(Host());
 }
 
-ScriptPromise<IDLUndefined> WebGLRenderingContextWebGPUBase::initAsync(
-    ScriptState* script_state) {
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
-  auto promise = resolver->Promise();
-
+bool WebGLRenderingContextWebGPUBase::Initialize(
+    ExecutionContext* execution_context,
+    String* error_msg) {
   // Synchronously connect to the GPU process to use WebGPU.
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   std::unique_ptr<WebGraphicsContext3DProvider> context_provider =
       Platform::Current()->CreateWebGPUGraphicsContext3DProvider(
-          execution_context->Url());
+          execution_context->Url(), Platform::WebGPUReplyThread::kIOThread);
 
   if (context_provider == nullptr) {
-    resolver->RejectWithDOMException(
-        DOMExceptionCode::kOperationError,
-        "Failed to create a WebGPU context provider");
-    return promise;
+    *error_msg = "Failed to create a WebGPU context provider";
+    return false;
   }
 
   // The context provider requires being bound on a single thread because it was
@@ -422,68 +416,56 @@ ScriptPromise<IDLUndefined> WebGLRenderingContextWebGPUBase::initAsync(
   dawn_control_client_ = DawnControlClientHolder::Create(
       std::move(context_provider),
       execution_context->GetTaskRunner(TaskType::kWebGPU));
+  instance_ = dawn_control_client_->GetWGPUInstance();
 
-  // Request the adapter, making it resolve the result promise when it is done.
-  auto* callback =
-      MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(blink::BindOnce(
-          &WebGLRenderingContextWebGPUBase::InitRequestAdapterCallback,
-          WrapPersistent(this), WrapPersistent(script_state))));
+  // Synchronously request the wgpu::Adapter.
+  auto adapter_future = instance_.RequestAdapter(
+      nullptr, wgpu::CallbackMode::AllowProcessEvents,
+      [&](wgpu::RequestAdapterStatus status, wgpu::Adapter adapter,
+          wgpu::StringView error_message) {
+        if (status != wgpu::RequestAdapterStatus::Success) {
+          *error_msg = String::FromUTF8WithLatin1Fallback(error_message);
+          return;
+        }
 
-  dawn_control_client_->GetWGPUInstance().RequestAdapter(
-      nullptr, wgpu::CallbackMode::AllowSpontaneous,
-      callback->UnboundCallback(), callback->AsUserdata());
-  dawn_control_client_->EnsureFlush(ToEventLoop(script_state));
+        adapter_ = std::move(adapter);
+      });
+  dawn_control_client_->Flush();
+  CHECK_EQ(
+      wgpu::WaitStatus::Success,
+      instance_.WaitAny(adapter_future, std::numeric_limits<uint64_t>::max()));
 
-  return promise;
-}
-
-void WebGLRenderingContextWebGPUBase::InitRequestAdapterCallback(
-    ScriptState* script_state,
-    ScriptPromiseResolver<IDLUndefined>* resolver,
-    wgpu::RequestAdapterStatus status,
-    wgpu::Adapter adapter,
-    wgpu::StringView error_message) {
-  if (status != wgpu::RequestAdapterStatus::Success) {
-    resolver->RejectWithDOMException(
-        DOMExceptionCode::kOperationError,
-        String::FromUTF8WithLatin1Fallback(error_message));
-    return;
+  if (!adapter_) {
+    return false;
   }
 
-  adapter_ = std::move(adapter);
+  // Synchronously request the wgpu::Device.
+  auto device_future = adapter_.RequestDevice(
+      nullptr, wgpu::CallbackMode::AllowProcessEvents,
+      [&](wgpu::RequestDeviceStatus status, wgpu::Device device,
+          wgpu::StringView error_message) {
+        if (status != wgpu::RequestDeviceStatus::Success) {
+          *error_msg = String::FromUTF8WithLatin1Fallback(error_message);
+          return;
+        }
 
-  // Request the device.
-  auto* callback = MakeWGPUOnceCallback(blink::BindOnce(
-      &WebGLRenderingContextWebGPUBase::InitRequestDeviceCallback,
-      WrapPersistent(this), WrapPersistent(script_state),
-      WrapPersistent(resolver)));
+        device_ = std::move(device);
+      });
+  dawn_control_client_->Flush();
+  CHECK_EQ(
+      wgpu::WaitStatus::Success,
+      instance_.WaitAny(device_future, std::numeric_limits<uint64_t>::max()));
 
-  adapter_.RequestDevice(nullptr, wgpu::CallbackMode::AllowSpontaneous,
-                         callback->UnboundCallback(), callback->AsUserdata());
-  dawn_control_client_->EnsureFlush(ToEventLoop(script_state));
-}
-
-void WebGLRenderingContextWebGPUBase::InitRequestDeviceCallback(
-    ScriptState* script_state,
-    ScriptPromiseResolver<IDLUndefined>* resolver,
-    wgpu::RequestDeviceStatus status,
-    wgpu::Device device,
-    wgpu::StringView error_message) {
-  if (status != wgpu::RequestDeviceStatus::Success) {
-    resolver->RejectWithDOMException(
-        DOMExceptionCode::kOperationError,
-        String::FromUTF8WithLatin1Fallback(error_message));
-    return;
+  if (!device_) {
+    return false;
   }
-
-  device_ = std::move(device);
 
   InitializeContext();
 
   // We are required to present to the compositor on context creation.
   EnsureDefaultFramebuffer();
 
-  resolver->Resolve();
+  return true;
 }
 
 // ****************************************************************************

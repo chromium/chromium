@@ -9,11 +9,6 @@
     Exposed=(Window,Worker),
     RuntimeEnabled=WebGLOnWebGPU
 ] interface WebGL2RenderingContextWebGPU {
-    // TODO(https://issues.chromium.org/413078308): Asynchronous initialization
-    // is needed because it is not possible to synchronously wait for WebGPU
-    // requestAdapter/Device in the renderer process. Once this capability is
-    // added, the initAsync should be removed.
-    [CallWith=ScriptState] Promise<undefined> initAsync();
 };
 WebGL2RenderingContextWebGPU includes WebGLRenderingContextBase;
 WebGL2RenderingContextWebGPU includes WebGL2RenderingContextBase;

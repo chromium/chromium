@@ -65,11 +65,10 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   WebGLRenderingContextWebGPUBase& operator=(
       const WebGLRenderingContextWebGPUBase&) = delete;
 
-  HTMLCanvasElement* canvas() const;
+  // Returns true on success, false and an error_msg on failure.
+  bool Initialize(ExecutionContext*, String* error_msg);
 
-  // Extra Web-exposed initAsync while until Dawn operations can be made
-  // blocking in the renderer process.
-  ScriptPromise<IDLUndefined> initAsync(ScriptState* script_state);
+  HTMLCanvasElement* canvas() const;
 
   // **************************************************************************
   // Start of WebGLRenderingContextBase's IDL methods
@@ -1391,17 +1390,6 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
                       const GLchar* message);
 
  private:
-  void InitRequestAdapterCallback(ScriptState* script_state,
-                                  ScriptPromiseResolver<IDLUndefined>* resolver,
-                                  wgpu::RequestAdapterStatus status,
-                                  wgpu::Adapter adapter,
-                                  wgpu::StringView error_message);
-  void InitRequestDeviceCallback(ScriptState* script_state,
-                                 ScriptPromiseResolver<IDLUndefined>* resolver,
-                                 wgpu::RequestDeviceStatus status,
-                                 wgpu::Device device,
-                                 wgpu::StringView error_message);
-
   // Must be called when an operation happens that should cause the drawing
   // buffer to be present to the compositor. See WebGL spec Section 2.2 The
   // Drawing Buffer.
@@ -1483,6 +1471,7 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   WebGLFramebuffer* GetBoundFramebuffer(GLenum target) const;
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
+  wgpu::Instance instance_;
   wgpu::Adapter adapter_;
   wgpu::Device device_;
   std::unique_ptr<gpu::gles2::GLES2Interface> gles2_for_objects_;

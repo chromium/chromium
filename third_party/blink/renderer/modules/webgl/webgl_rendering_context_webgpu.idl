@@ -12,10 +12,5 @@
 
     [RuntimeEnabled=WebGLDrawingBufferStorage] const GLenum RGB8   = 0x8051;
     [RuntimeEnabled=WebGLDrawingBufferStorage] const GLenum RGBA8  = 0x8058;
-    // TODO(https://issues.chromium.org/413078308): Asynchronous initialization
-    // is needed because it is not possible to synchronously wait for WebGPU
-    // requestAdapter/Device in the renderer process. Once this capability is
-    // added, the initAsync should be removed.
-    [CallWith=ScriptState] Promise<undefined> initAsync();
 };
 WebGLRenderingContextWebGPU includes WebGLRenderingContextBase;
