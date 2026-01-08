@@ -25,12 +25,9 @@ struct ActorTaskNudgeState {
     kMaxValue = kCompleteTasks,
   };
   Text text = Text::kDefault;
-  // TODO(mjenn): Remove task list size and replace with
-  // GetActorTaskListBubbleRows() size checks.
-  int task_list_size = 0;
 
   bool operator==(const ActorTaskNudgeState& other) const {
-    return text == other.text && task_list_size == other.task_list_size;
+    return text == other.text;
   }
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:TaskNudgeState)

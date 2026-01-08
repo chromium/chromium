@@ -142,8 +142,7 @@ TEST_F(GlicActorTaskIconManagerTest,
        PausedTaskUpdatesNudgeAndBubbleSubscribers) {
   EXPECT_CALL(mock_nudge_subscriber_,
               OnStateChanged(ActorTaskNudgeState{
-                  .text = ActorTaskNudgeState::Text::kNeedsAttention,
-                  .task_list_size = 1}));
+                  .text = ActorTaskNudgeState::Text::kNeedsAttention}));
   EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged());
 
   TaskId task_id_1 = actor_service()->CreateTaskForTesting();
@@ -159,13 +158,11 @@ TEST_F(GlicActorTaskIconManagerTest,
        RemovingTaskFromBubbleAlsoUpdatesTaskNudge) {
   EXPECT_CALL(mock_nudge_subscriber_,
               OnStateChanged(ActorTaskNudgeState{
-                  .text = ActorTaskNudgeState::Text::kNeedsAttention,
-                  .task_list_size = 1}));
+                  .text = ActorTaskNudgeState::Text::kNeedsAttention}));
   EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged());
-  EXPECT_CALL(
-      mock_nudge_subscriber_,
-      OnStateChanged(ActorTaskNudgeState{
-          .text = ActorTaskNudgeState::Text::kDefault, .task_list_size = 0}));
+  EXPECT_CALL(mock_nudge_subscriber_,
+              OnStateChanged(ActorTaskNudgeState{
+                  .text = ActorTaskNudgeState::Text::kDefault}));
 
   TaskId task_id_1 = actor_service()->CreateTaskForTesting();
   actor_service()->GetTask(task_id_1)->Pause(/*from_actor=*/true);

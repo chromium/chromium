@@ -60,8 +60,11 @@ void GlicActorNudgeController::OnStateUpdateImpl(
     ActorTaskNudgeState actor_task_nudge_state) {
   // If the task icon is inactive, hide it and perform no additional style
   // changes.
+  GlicActorTaskIconManager* manager =
+      GlicActorTaskIconManagerFactory::GetForProfile(profile_);
+  DCHECK(manager);
   if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator) &&
-      actor_task_nudge_state.task_list_size < 1) {
+      manager->GetActorTaskListBubbleRows().empty()) {
     tab_strip_action_container_->HideGlicActorTaskIcon();
     CloseBubble();
     return;
@@ -82,7 +85,7 @@ void GlicActorNudgeController::OnStateUpdateImpl(
     case ActorTaskNudgeState::Text::kNeedsAttention:
       UpdateNudgeLabelOrRetrigger(l10n_util::GetPluralStringFUTF16(
           IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL,
-          actor_task_nudge_state.task_list_size));
+          manager->GetActorTaskListBubbleRows().size()));
       break;
       // TODO(crbug.com/458391262) revisit or cleanup implementation here for
       // m144.

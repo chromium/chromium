@@ -85,9 +85,6 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
 
   ActorTaskNudgeState old_state = current_actor_task_nudge_state_;
 
-  current_actor_task_nudge_state_.task_list_size =
-      actor_task_list_bubble_rows_.size();
-
   // TODO(crbug.com/469817191): Separate tasks that need attention from those
   // that are stopped.
   bool has_unprocessed_tasks = std::any_of(
@@ -107,7 +104,11 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
     current_actor_task_nudge_state_.text = ActorTaskNudgeState::Text::kDefault;
   }
 
-  if (old_state != current_actor_task_nudge_state_) {
+  // If either the state or number of tasks in the bubble changes, we want to
+  // notify the nudge.
+  if (old_state != current_actor_task_nudge_state_ ||
+      stored_bubble_row_task_count_ != actor_task_list_bubble_rows_.size()) {
+    stored_bubble_row_task_count_ = actor_task_list_bubble_rows_.size();
     task_nudge_state_change_callback_list_.Notify(
         current_actor_task_nudge_state_);
   }

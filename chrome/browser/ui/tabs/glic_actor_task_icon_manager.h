@@ -80,6 +80,7 @@ class GlicActorTaskIconManager : public KeyedService {
   TaskListBubbleChangeCallbackList task_list_bubble_change_callback_list_;
 
   actor::ui::ActorTaskNudgeState current_actor_task_nudge_state_;
+  size_t stored_bubble_row_task_count_ = 0;
 
   raw_ptr<Profile> profile_;
   raw_ptr<actor::ActorKeyedService> actor_service_;
