@@ -8,8 +8,6 @@
 #include <utility>
 
 #include "base/functional/callback.h"
-#include "base/memory/memory_pressure_listener.h"
-#include "base/memory/memory_pressure_monitor.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -89,7 +87,10 @@ PaintPreviewTabService::PaintPreviewTabService(
     : PaintPreviewBaseService(std::move(file_mixin),
                               std::move(policy),
                               is_off_the_record),
-      cache_ready_(false) {
+      cache_ready_(false),
+      memory_pressure_listener_registration_(
+          base::MemoryPressureListenerTag::kPaintPreviewTabService,
+          this) {
   GetFileMixin()->GetTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&FileManager::ListUsedKeys,
@@ -132,11 +133,7 @@ void PaintPreviewTabService::CaptureTab(int tab_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If the system is under memory pressure don't try to capture.
-  auto* memory_monitor = base::MemoryPressureMonitor::Get();
-  if (memory_monitor &&
-      memory_monitor->GetCurrentPressureLevel(
-          base::MemoryPressureMonitorTag::kPaintPreviewTabService) >=
-          base::MEMORY_PRESSURE_LEVEL_MODERATE) {
+  if (memory_pressure_level() >= base::MEMORY_PRESSURE_LEVEL_MODERATE) {
     return;
   }
 
