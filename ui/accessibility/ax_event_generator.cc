@@ -428,7 +428,7 @@ void AXEventGenerator::OnIgnoredChanged(AXTree* tree,
   // whether nodes are known to the AT. In fact, a node can be invisible and
   // have visible descendants.
   const bool was_in_invisible_subtree =
-      !base::Contains(nodes_to_suppress_parent_changed_on_, node->id());
+      !nodes_to_suppress_parent_changed_on_.contains(node->id());
   if (was_in_invisible_subtree) {
     for (auto iter = node->UnignoredChildrenBegin(),
               end = node->UnignoredChildrenEnd();
@@ -1088,7 +1088,7 @@ void AXEventGenerator::TrimEventsDueToAncestorIgnoredChanged(
   // |ancestor_ignored_changed_map|, if |node|'s ancestors have become ignored
   // and the ancestor's ignored changed results have not been cached.
   if (node->parent() &&
-      !base::Contains(ancestor_ignored_changed_map, node->parent())) {
+      !ancestor_ignored_changed_map.contains(node->parent())) {
     TrimEventsDueToAncestorIgnoredChanged(node->parent(),
                                           ancestor_ignored_changed_map);
   }
@@ -1221,8 +1221,8 @@ void AXEventGenerator::PostprocessEvents() {
     // existing node's parent has changed on the platform.
     if (HasEvent(node_events, Event::PARENT_CHANGED)) {
       while (parent && (tree_events_.find(parent->id()) != tree_events_.end() ||
-                        base::Contains(removed_parent_changed_nodes, parent))) {
-        if ((base::Contains(removed_parent_changed_nodes, parent) ||
+                        removed_parent_changed_nodes.contains(parent))) {
+        if ((removed_parent_changed_nodes.contains(parent) ||
              HasEvent(tree_events_[parent->id()], Event::PARENT_CHANGED)) &&
             !HasEvent(tree_events_[parent->id()], Event::SUBTREE_CREATED)) {
           RemoveEvent(&node_events, Event::PARENT_CHANGED);
@@ -1245,10 +1245,9 @@ void AXEventGenerator::PostprocessEvents() {
     // subtree created.
     parent = node->GetUnignoredParent();
     if (HasEvent(node_events, Event::SUBTREE_CREATED)) {
-      while (parent &&
-             (tree_events_.find(parent->id()) != tree_events_.end() ||
-              base::Contains(removed_subtree_created_nodes, parent))) {
-        if (base::Contains(removed_subtree_created_nodes, parent) ||
+      while (parent && (tree_events_.find(parent->id()) != tree_events_.end() ||
+                        removed_subtree_created_nodes.contains(parent))) {
+        if (removed_subtree_created_nodes.contains(parent) ||
             HasEvent(tree_events_[parent->id()], Event::SUBTREE_CREATED)) {
           RemoveEvent(&node_events, Event::SUBTREE_CREATED);
           removed_subtree_created_nodes.insert(node);
@@ -1479,7 +1478,7 @@ bool MaybeParseGeneratedEvent(const char* attribute,
          i <= static_cast<int>(AXEventGenerator::Event::MAX_VALUE); i++) {
       auto attr = static_cast<AXEventGenerator::Event>(i);
       std::string str = ToString(attr);
-      if (!base::Contains(*attr_map, str))
+      if (!attr_map->contains(str))
         (*attr_map)[str] = attr;
     }
   }

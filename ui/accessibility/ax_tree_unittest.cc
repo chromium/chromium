@@ -1889,7 +1889,7 @@ TEST(AXTreeTest, IntReverseRelations) {
   auto reverse_active_descendant =
       tree.GetReverseRelations(ax::mojom::IntAttribute::kActivedescendantId, 2);
   ASSERT_EQ(1U, reverse_active_descendant.size());
-  EXPECT_TRUE(base::Contains(reverse_active_descendant, 1));
+  EXPECT_TRUE(reverse_active_descendant.contains(1));
 
   reverse_active_descendant =
       tree.GetReverseRelations(ax::mojom::IntAttribute::kActivedescendantId, 1);
@@ -1919,7 +1919,7 @@ TEST(AXTreeTest, IntReverseRelations) {
   reverse_active_descendant =
       tree.GetReverseRelations(ax::mojom::IntAttribute::kActivedescendantId, 5);
   ASSERT_EQ(1U, reverse_active_descendant.size());
-  EXPECT_TRUE(base::Contains(reverse_active_descendant, 1));
+  EXPECT_TRUE(reverse_active_descendant.contains(1));
 
   reverse_member_of =
       tree.GetReverseRelations(ax::mojom::IntAttribute::kMemberOfId, 1);
@@ -1955,7 +1955,7 @@ TEST(AXTreeTest, DeletingNodeUpdatesReverseRelations) {
   auto reverse_active_descendant =
       tree.GetReverseRelations(ax::mojom::IntAttribute::kActivedescendantId, 2);
   ASSERT_EQ(1U, reverse_active_descendant.size());
-  EXPECT_TRUE(base::Contains(reverse_active_descendant, 3));
+  EXPECT_TRUE(reverse_active_descendant.contains(3));
 
   AXTreeUpdate update;
   update.root_id = 1;
@@ -3101,12 +3101,12 @@ TEST(AXTreeTest, ChildTreeIds) {
 
   auto child_tree_2_nodes = tree.GetNodeIdsForChildTreeId(tree_id_2);
   EXPECT_EQ(1U, child_tree_2_nodes.size());
-  EXPECT_TRUE(base::Contains(child_tree_2_nodes, 2));
+  EXPECT_TRUE(child_tree_2_nodes.contains(2));
 
   auto child_tree_3_nodes = tree.GetNodeIdsForChildTreeId(tree_id_3);
   EXPECT_EQ(2U, child_tree_3_nodes.size());
-  EXPECT_TRUE(base::Contains(child_tree_3_nodes, 3));
-  EXPECT_TRUE(base::Contains(child_tree_3_nodes, 4));
+  EXPECT_TRUE(child_tree_3_nodes.contains(3));
+  EXPECT_TRUE(child_tree_3_nodes.contains(4));
 
   AXTreeUpdate update = initial_state;
   update.nodes[2].string_attributes.clear();
@@ -3117,8 +3117,8 @@ TEST(AXTreeTest, ChildTreeIds) {
 
   child_tree_2_nodes = tree.GetNodeIdsForChildTreeId(tree_id_2);
   EXPECT_EQ(2U, child_tree_2_nodes.size());
-  EXPECT_TRUE(base::Contains(child_tree_2_nodes, 2));
-  EXPECT_TRUE(base::Contains(child_tree_2_nodes, 3));
+  EXPECT_TRUE(child_tree_2_nodes.contains(2));
+  EXPECT_TRUE(child_tree_2_nodes.contains(3));
 
   child_tree_3_nodes = tree.GetNodeIdsForChildTreeId(tree_id_3);
   EXPECT_EQ(0U, child_tree_3_nodes.size());

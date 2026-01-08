@@ -239,7 +239,7 @@ FakeDrmDevice::ConnectorProperties& FakeDrmDevice::AddConnector() {
   connector_property.id = next_connector_id;
   for (const auto& pair : kConnectorRequiredPropertyNames) {
     connector_property.properties.push_back({.id = pair.first, .value = 0});
-    if (!base::Contains(drm_state_.property_names, pair.first)) {
+    if (!drm_state_.property_names.contains(pair.first)) {
       drm_state_.property_names.emplace(pair.first, pair.second);
     }
   }
@@ -264,7 +264,7 @@ FakeDrmDevice::CrtcProperties& FakeDrmDevice::AddCrtc() {
   crtc_property.id = next_crtc_id;
   for (const auto& pair : kCrtcRequiredPropertyNames) {
     crtc_property.properties.push_back({.id = pair.first, .value = 0});
-    if (!base::Contains(drm_state_.property_names, pair.first)) {
+    if (!drm_state_.property_names.contains(pair.first)) {
       drm_state_.property_names.emplace(pair.first, pair.second);
     }
   }
@@ -309,7 +309,7 @@ FakeDrmDevice::PlaneProperties& FakeDrmDevice::AddPlane(
   plane.crtc_mask = crtc_mask;
   for (const auto& pair : kPlaneRequiredPropertyNames) {
     plane.properties.push_back({.id = pair.first, .value = 0});
-    if (!base::Contains(drm_state_.property_names, pair.first)) {
+    if (!drm_state_.property_names.contains(pair.first)) {
       drm_state_.property_names.emplace(pair.first, pair.second);
     }
   }
@@ -1091,7 +1091,7 @@ bool FakeDrmDevice::ValidatePropertyValue(uint32_t id, uint64_t value) {
   std::vector<std::string> blob_properties = {"CTM", "DEGAMMA_LUT", "GAMMA_LUT",
                                               "PLANE_CTM"};
   if (base::Contains(blob_properties, it->second))
-    return base::Contains(allocated_blobs_, value);
+    return allocated_blobs_.contains(value);
 
   return true;
 }

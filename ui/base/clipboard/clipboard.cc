@@ -108,7 +108,7 @@ void Clipboard::SetClipboardForCurrentThread(
 
   ClipboardMap* clipboard_map = ClipboardMapPtr();
   // This shouldn't happen. The clipboard should not already exist.
-  DCHECK(!base::Contains(*clipboard_map, id));
+  DCHECK(!clipboard_map->contains(id));
   clipboard_map->insert({id, std::move(platform_clipboard)});
 }
 

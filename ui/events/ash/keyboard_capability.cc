@@ -593,7 +593,7 @@ std::optional<KeyboardCode> KeyboardCapability::ConvertToKeyboardCode(
 
 // static
 bool KeyboardCapability::IsSixPackKey(const KeyboardCode& key_code) {
-  return base::Contains(kSixPackKeyToSearchSystemKeyMap, key_code);
+  return kSixPackKeyToSearchSystemKeyMap.contains(key_code);
 }
 
 std::optional<KeyboardCode> KeyboardCapability::GetMappedFKeyIfExists(
