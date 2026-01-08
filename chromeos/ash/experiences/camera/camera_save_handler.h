@@ -24,6 +24,7 @@ class Image;
 }  // namespace gfx
 
 class CameraUploadNotification;
+class CancelCameraUploadDialog;
 
 // Browser-side handler for camera save operations.
 class CameraSaveHandler : public base::SupportsUserData::Data {
@@ -139,6 +140,12 @@ class CameraSaveHandler : public base::SupportsUserData::Data {
   // Creates, modifies or resets the progress notification based on current
   // upload progress.
   void UpdateProgressNotification() VALID_CONTEXT_REQUIRED(sequence_checker_);
+  // TODO(crbug.com/454152412): Add unit tests for cancel upload dialog.
+  // Shows a dialog to confirm cancellation of ongoing uploads.
+  void ShowCancelDialog();
+  // Handles user action on the cancel upload confirmation dialog.
+  void OnCancelDialogClicked(bool cancel, bool skip_dialog_next_time)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
   // Cancels all ongoing uploads and resets progress tracking.
   void CancelUploads() VALID_CONTEXT_REQUIRED(sequence_checker_);
   // Gets called for each file when its upload progress is updated.
@@ -155,6 +162,7 @@ class CameraSaveHandler : public base::SupportsUserData::Data {
   // Map from file base name to its upload tracking data.
   std::map<base::FilePath, std::unique_ptr<Upload>> uploads_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<CancelCameraUploadDialog> cancel_dialog_;
   // Total bytes that have been uploaded so far across all uploads.
   int64_t total_bytes_uploaded_ = 0;
   // Total size of all uploads in bytes.

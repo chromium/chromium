@@ -10,14 +10,19 @@ source_set("camera_save_handler") {
     "camera_save_handler.h",
     "camera_upload_notification.cc",
     "camera_upload_notification.h",
+    "cancel_camera_upload_dialog.cc",
+    "cancel_camera_upload_dialog.h",
   ]
 
   deps = [
+    "//ash",
     "//base",
     "//chromeos/ui/vector_icons",
+    "//components/constrained_window",
     "//components/strings:components_strings",
     "//ui/base",
     "//ui/gfx",
     "//ui/message_center",
+    "//ui/views",
   ]
 }

@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/experiences/camera/camera_save_handler.h"
 
+#include "ash/system/camera/camera_app_prefs.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
@@ -14,6 +15,7 @@
 #include "base/notimplemented.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/experiences/camera/camera_upload_notification.h"
+#include "chromeos/ash/experiences/camera/cancel_camera_upload_dialog.h"
 #include "ui/gfx/image/image.h"
 
 namespace {
@@ -181,6 +183,8 @@ void CameraSaveHandler::UpdateProgressNotification() {
   if (uploads_.empty()) {
     CHECK_EQ(total_bytes_uploaded_, 0);
     CHECK_EQ(total_size_of_uploads_, 0);
+    // Close the cancel upload confirmation dialog because all uploads are done.
+    cancel_dialog_.reset();
     progress_notification_.reset();
     return;
   }
@@ -191,11 +195,28 @@ void CameraSaveHandler::UpdateProgressNotification() {
   if (!progress_notification_) {
     progress_notification_ = std::make_unique<CameraUploadNotification>(
         delegate_->GetDestination(),
-        // TODO(crbug.com/454152412) Implement cancel upload dialog
-        base::BindOnce(&CameraSaveHandler::CancelUploads,
+        base::BindOnce(ash::camera_app_prefs::ShouldSkipCancelUploadDialog()
+                           ? &CameraSaveHandler::CancelUploads
+                           : &CameraSaveHandler::ShowCancelDialog,
                        weak_ptr_factory_.GetWeakPtr()));
   }
   progress_notification_->UpdateProgress(progress, uploads_.size());
+}
+
+void CameraSaveHandler::ShowCancelDialog() {
+  cancel_dialog_ = std::make_unique<CancelCameraUploadDialog>(
+      base::BindRepeating(&CameraSaveHandler::OnCancelDialogClicked,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CameraSaveHandler::OnCancelDialogClicked(bool cancel,
+                                              bool skip_dialog_next_time) {
+  if (cancel) {
+    CancelUploads();
+  }
+  if (skip_dialog_next_time) {
+    ash::camera_app_prefs::SetSkipCancelUploadDialog();
+  }
 }
 
 void CameraSaveHandler::CancelUploads() {

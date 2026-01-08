@@ -2069,6 +2069,11 @@ inline constexpr char kAutozoomNudges[] = "ash.camera.autozoom_nudges";
 inline constexpr char kCameraAppDevToolsOpen[] =
     "ash.camera.cca_dev_tools_open";
 
+// Boolean pref to record if the cancel upload confirmation dialog should be
+// skipped when the user tries to cancel camera file upload to cloud.
+inline constexpr char kCameraAppSkipCancelUploadDialog[] =
+    "ash.camera.skip_cancel_upload_dialog";
+
 // A string pref that is set by enterprise policy when admin forces a custom
 // path to save camera photos.
 inline constexpr char kCameraSaveLocation[] = "ash.camera.save_location";

@@ -1395,6 +1395,21 @@ Additional details:
   <message name="IDS_POLICY_SKYVAULT_CAMERA_MULTI_UPLOAD_GOOGLE_DRIVE_MESSAGE" desc="The message of the notification which shows up informing the user that multiple files are being saved to Google Drive.">
     Uploading <ph name="COUNT">$1<ex>2</ex></ph> files to Google Drive
   </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_CANCEL_UPLOAD_TITLE" desc="The title of the notification dialog which asks the user whether to cancel upload to cloud storage.">
+    Cancel saving file?
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_CANCEL_UPLOAD_MESSAGE" desc="The message of the notification dialog which asks the user whether to cancel upload to cloud storage.">
+    You will lose the file permanently
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_CANCEL_UPLOAD_SKIP_CHECKBOX" desc="The checkbox to skip the notification dialog which asks the user whether to cancel upload to cloud storage next time.">
+    Do not show this dialog next time
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_CANCEL_UPLOAD_CANCEL_BUTTON" desc="The cancel button in the notification dialog which asks the user whether to cancel upload to cloud storage.">
+    Yes, I want to cancel
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_CANCEL_UPLOAD_CLOSE_BUTTON" desc="The close button in the notification dialog which asks the user whether to cancel upload to cloud storage.">
+    Close
+  </message>
   <message name="IDS_POLICY_SKYVAULT_DOWNLOAD_SIGN_IN_TITLE" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the camera upload.">
     Sign in to OneDrive to continue downloading
   </message>
