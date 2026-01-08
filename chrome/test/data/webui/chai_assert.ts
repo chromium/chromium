@@ -4,6 +4,9 @@
 
 /** @fileoverview Assertion helper functions wrapping the chaijs API. */
 
+// WebUI tests should depend on the assertion helper functions in this file instead of on Chai
+// directly. This file is the only allowed import of chai.js.
+// eslint-disable-next-line no-restricted-imports
 import {assert, expect} from '//webui-test/chai.js';
 
 /**
