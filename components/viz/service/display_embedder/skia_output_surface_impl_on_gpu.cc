@@ -2474,11 +2474,10 @@ void SkiaOutputSurfaceImplOnGpu::DidSwapBuffersCompleteInternal(
     const gfx::Size& pixel_size,
     gfx::GpuFenceHandle release_fence) {
   if (params.swap_response.result ==
-          gfx::SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED &&
-      !base::FeatureList::IsEnabled(features::kHandleOverlaysSwapFailure)) {
+      gfx::SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED) {
     DLOG(WARNING)
-        << "Receiving gfx::SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED when "
-           "the kHandleOverlaysSwapFailure is disabled is not expected as it "
+        << "Receiving gfx::SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED is not "
+           "expected as it "
            "requires special treatment on the OverlayProcessor level.";
     params.swap_response.result = gfx::SwapResult::SWAP_FAILED;
   }

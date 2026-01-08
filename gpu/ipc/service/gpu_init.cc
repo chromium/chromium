@@ -476,8 +476,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   params.single_process = false;
   params.enable_native_gpu_memory_buffers =
       gpu_preferences_.enable_native_gpu_memory_buffers;
-  params.handle_overlays_swap_failure =
-      base::FeatureList::IsEnabled(features::kHandleOverlaysSwapFailure);
 
 #if BUILDFLAG(IS_CHROMEOS)
   params.allow_sync_and_real_buffer_page_flip_testing = true;
@@ -1012,8 +1010,6 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
-  params.handle_overlays_swap_failure =
-      base::FeatureList::IsEnabled(features::kHandleOverlaysSwapFailure);
 
 #if BUILDFLAG(IS_CHROMEOS)
   params.allow_sync_and_real_buffer_page_flip_testing = true;

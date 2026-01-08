@@ -419,10 +419,6 @@ BASE_FEATURE(kD3DBackingUploadWithUpdateSubresource,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// This feature allows viz to handle overlays' swap failures instead of loosing a context and
-// restarting a gpu service.
-BASE_FEATURE(kHandleOverlaysSwapFailure, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // This feature allows enabling specific entries in
 // software_rendering_list.json, via experimentation. The entries must have
 // test_group property and test_group feature parameter should be set in the
