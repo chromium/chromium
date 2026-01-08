@@ -59,6 +59,7 @@ if (enable_service_discovery) {
 uncompiled_sources_ = [
   "action.json",
   "browsing_data.json",
+  "commands.json",
   "extension.json",
   "top_sites.json",
 ]

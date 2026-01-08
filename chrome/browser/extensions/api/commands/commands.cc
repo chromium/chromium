@@ -26,7 +26,7 @@ base::Value::Dict CreateCommandValue(const ui::Command& command, bool active) {
 
 }  // namespace
 
-ExtensionFunction::ResponseAction GetAllCommandsFunction::Run() {
+ExtensionFunction::ResponseAction CommandsGetAllFunction::Run() {
   base::Value::List command_list;
 
   extensions::CommandService* command_service =
