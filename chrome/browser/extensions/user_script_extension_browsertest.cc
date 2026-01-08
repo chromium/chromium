@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/extensions/convert_user_script.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/convert_user_script.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_user_script_loader.h"
 #include "extensions/browser/permissions/permissions_updater.h"

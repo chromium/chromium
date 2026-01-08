@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/convert_user_script.h"
+#include "extensions/browser/convert_user_script.h"
 
 #include <stddef.h>
 
@@ -19,7 +19,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/common/chrome_paths.h"
 #include "crypto/hash.h"
 #include "extensions/browser/extension_user_script_loader.h"
 #include "extensions/buildflags/buildflags.h"
@@ -81,10 +80,11 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   // Create the manifest
   base::Value::Dict root;
   std::string script_name;
-  if (!script.name().empty() && !script.name_space().empty())
+  if (!script.name().empty() && !script.name_space().empty()) {
     script_name = script.name_space() + "/" + script.name();
-  else
+  } else {
     script_name = original_url.spec();
+  }
 
   // Create the public key.
   // User scripts are not signed, but the public key for an extension doubles as
@@ -114,10 +114,11 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
 
   // Not all scripts have a version, but we need one. Default to 1.0 if it is
   // missing.
-  if (!script.version().empty())
+  if (!script.version().empty()) {
     root.Set(manifest_keys::kVersion, script.version());
-  else
+  } else {
     root.Set(manifest_keys::kVersion, "1.0");
+  }
 
   root.Set(manifest_keys::kDescription, script.description());
   root.Set(manifest_keys::kPublicKey, key);
@@ -128,8 +129,9 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   std::vector<std::string> matches;
   if (!script.url_patterns().is_empty()) {
     matches.reserve(script.url_patterns().size());
-    for (const URLPattern& pattern : script.url_patterns())
+    for (const URLPattern& pattern : script.url_patterns()) {
       matches.push_back(pattern.GetAsString());
+    }
   } else {
     // TODO(aa): Derive tighter matches where possible.
     matches.push_back("http://*/*");
@@ -139,8 +141,9 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   // Read the exclude matches, if any are present.
   std::vector<std::string> exclude_matches;
   exclude_matches.reserve(script.exclude_url_patterns().size());
-  for (const URLPattern& pattern : script.exclude_url_patterns())
+  for (const URLPattern& pattern : script.exclude_url_patterns()) {
     exclude_matches.push_back(pattern.GetAsString());
+  }
 
   ContentScript content_script;
   content_script.matches = std::move(matches);

@@ -265,8 +265,6 @@ source_set("extensions") {
     "context_menu_helpers.h",
     "context_menu_matcher.cc",
     "context_menu_matcher.h",
-    "convert_user_script.cc",
-    "convert_user_script.h",
     "corrupted_extension_reinstaller.cc",
     "corrupted_extension_reinstaller.h",
     "corrupted_extension_reinstaller_factory.cc",

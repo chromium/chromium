@@ -254,6 +254,8 @@ source_set("browser_sources") {
     "content_verifier/content_verify_job.cc",
     "content_verifier/content_verify_job.h",
     "content_verifier/scoped_uma_recorder.h",
+    "convert_user_script.cc",
+    "convert_user_script.h",
     "crx_file_info.cc",
     "crx_file_info.h",
     "deferred_start_render_host.h",
