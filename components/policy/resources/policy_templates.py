@@ -56,13 +56,13 @@ SENSITIVE_POLICY_NOTICES = {
     'name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, '
     'joined to <ph name="MS_AAD_NAME">Microsoft® Azure® Active '
     'Directory®</ph> or enrolled in <ph '
-    'name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Enterprise '
+    'name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise '
     'Core</ph>.'),
   'mac':
   ('On <ph name="MAC_OS_NAME">macOS</ph>, this policy is only '
    'available on instances that are managed via MDM, joined to a '
    'domain via MCX or enrolled in <ph '
-   'name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Enterprise '
+   'name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise '
    'Core</ph>.')
 }
 # LINT.ThenChange(/docs/enterprise/description_guidelines.md:sensitive_policy_notices)
