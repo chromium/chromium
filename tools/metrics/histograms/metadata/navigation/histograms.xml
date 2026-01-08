@@ -1186,21 +1186,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.FencedFrameTopNavigation"
-    enum="FencedFrameNavigationState" expires_after="2026-01-02">
-  <owner>lbrady@google.com</owner>
-  <owner>shivanisha@chromium.org</owner>
-  <owner>chrome-fenced-frames-core@google.com</owner>
-  <summary>
-    This records top-level navigations that originated from a fenced frame or
-    URN iframe. At navigation start, a 'Begin' is logged. If the navigation
-    commits (i.e. doesn't fail at some point in the navigation process), a
-    'Commit' is logged. To get the percentage of top-level navigations
-    originating from a fenced frame or URN iframe that successfully commit,
-    divide the number of 'Commit' logs by the number of 'Begin' logs.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.GestureTransition.CacheHitOrMissReason"
     enum="NavigationTransitionCacheHitOrMissReason" expires_after="2026-06-14">
   <owner>liuwilliam@google.com</owner>

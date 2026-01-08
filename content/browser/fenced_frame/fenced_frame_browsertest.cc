@@ -9522,12 +9522,6 @@ class FencedFrameAutomaticBeaconBrowserTest
     histogram_tester_.ExpectUniqueSample(
         blink::kAutomaticBeaconOutcomeHistogram,
         blink::AutomaticBeaconOutcome::kSuccess, 1);
-    histogram_tester_.ExpectBucketCount(
-        blink::kFencedFrameTopNavigationHistogram,
-        blink::FencedFrameNavigationState::kBegin, 1);
-    histogram_tester_.ExpectBucketCount(
-        blink::kFencedFrameTopNavigationHistogram,
-        blink::FencedFrameNavigationState::kCommit, 1);
   }
 
  private:

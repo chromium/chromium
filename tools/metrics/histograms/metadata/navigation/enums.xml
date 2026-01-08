@@ -306,11 +306,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="reserved.top_navigation_commit"/>
 </enum>
 
-<enum name="FencedFrameNavigationState">
-  <int value="0" label="Begin"/>
-  <int value="1" label="Commit"/>
-</enum>
-
 <!-- LINT.IfChange(HistoryNavigationDirection) -->
 
 <enum name="HistoryNavigationDirection">
