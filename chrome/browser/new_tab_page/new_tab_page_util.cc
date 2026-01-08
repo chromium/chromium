@@ -425,3 +425,12 @@ void DisableModuleAutoRemoval(Profile* profile, const std::string& module_id) {
                               ntp_prefs::kNtpModulesAutoRemovalDisabledDict);
   update->Set(module_id, true);
 }
+
+void DisableModuleListAutoRemoval(Profile* profile,
+                                  const std::vector<std::string>& module_ids) {
+  ScopedDictPrefUpdate update(profile->GetPrefs(),
+                              ntp_prefs::kNtpModulesAutoRemovalDisabledDict);
+  for (const auto& module_id : module_ids) {
+    update->Set(module_id, true);
+  }
+}

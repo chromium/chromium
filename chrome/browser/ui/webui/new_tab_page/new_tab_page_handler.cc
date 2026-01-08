@@ -681,25 +681,10 @@ void NewTabPageHandler::SetModulesVisible(bool visible) {
   profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesVisible, visible);
 }
 
-void NewTabPageHandler::SetModuleDisabled(const std::string& module_id,
-                                          bool disabled) {
-  ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
-  base::Value::List& list = update.Get();
-  if (disabled) {
-    if (!list.contains(module_id)) {
-      list.Append(module_id);
-    }
-  } else {
-    list.EraseValue(base::Value(module_id));
-  }
-
-  RecordModuleInteraction(module_id);
-  MaybeLaunchInteractionSurvey(kDisableInteraction, module_id);
-}
-
 void NewTabPageHandler::SetModulesDisabled(
     const std::vector<std::string>& module_ids,
-    bool disabled) {
+    bool disabled,
+    bool is_user_action) {
   if (module_ids.empty()) {
     return;
   }
@@ -710,10 +695,21 @@ void NewTabPageHandler::SetModulesDisabled(
     if (disabled) {
       if (!list.contains(module_id)) {
         list.Append(module_id);
-        DisableModuleAutoRemoval(profile_, module_id);
       }
     } else {
       list.EraseValue(base::Value(module_id));
+    }
+  }
+
+  DisableModuleListAutoRemoval(profile_, module_ids);
+
+  // We're not recording a user interaction if the modules were disabled due to
+  // feature optimization auto removal.
+  if (is_user_action) {
+    for (const auto& module_id : module_ids) {
+      IncrementDictPrefKeyCount(prefs::kNtpModulesInteractedCountDict,
+                                module_id);
+      MaybeLaunchInteractionSurvey(kDisableInteraction, module_id);
     }
   }
 }

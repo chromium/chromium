@@ -136,9 +136,9 @@ class NewTabPageHandler
   void OnDismissModule(const std::string& module_id) override;
   void OnRestoreModule(const std::string& module_id) override;
   void SetModulesVisible(bool visible) override;
-  void SetModuleDisabled(const std::string& module_id, bool disabled) override;
   void SetModulesDisabled(const std::vector<std::string>& module_ids,
-                          bool disabled) override;
+                          bool disabled,
+                          bool is_user_action) override;
   void UpdateDisabledModules() override;
   void UpdateFooterVisibility() override;
   void OnModulesLoadedWithData(

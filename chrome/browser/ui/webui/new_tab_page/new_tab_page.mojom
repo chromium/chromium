@@ -229,8 +229,6 @@ interface PageHandler {
   OnRestoreModule(string module_id);
   // If |visible| the modules will be shown.
   SetModulesVisible(bool visible);
-  // Disables module with ID |module_id| if |disabled|. Enables otherwise.
-  SetModuleDisabled(string module_id, bool disabled);
   // Triggers a call to |SetDisabledModules|.
   UpdateDisabledModules();
   // Called when at least one module has loaded with data.
@@ -252,7 +250,10 @@ interface PageHandler {
   // Triggers a call to |SetModulesLoadable|.
   UpdateModulesLoadable();
   // Disables modules with IDs |module_ids| if |disabled|. Enables otherwise.
-  SetModulesDisabled(array<string> module_ids, bool disabled);
+  // `is_user_action` is true if the action was triggered by a user action.
+  SetModulesDisabled(array<string> module_ids,
+                     bool disabled,
+                     bool is_user_action);
   // Updates the visibility of the action chips in the NTP on any pref changes.
   UpdateActionChipsVisibility();
   // Triggers a call to |FooterVisibilityUpdated|.

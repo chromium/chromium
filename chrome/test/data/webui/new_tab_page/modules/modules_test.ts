@@ -333,7 +333,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
 
               // Assert.
               assertDeepEquals(
-                  ['foo', true], handler.getArgs('setModuleDisabled')[0]);
+                  [['foo'], /*disabled=*/ true, /*is_user_action=*/ true],
+                  handler.getArgs('setModulesDisabled')[0]);
 
               // Act.
               callbackRouterRemote.setDisabledModules(false, [moduleId]);
@@ -369,7 +370,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
 
               // Assert.
               assertDeepEquals(
-                  ['foo', false], handler.getArgs('setModuleDisabled')[1]);
+                  [['foo'], /*disabled=*/ false, /*is_user_action=*/ true],
+                  handler.getArgs('setModulesDisabled')[1]);
 
               // Act.
               callbackRouterRemote.setDisabledModules(false, []);
@@ -587,7 +589,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
                 },
               }));
           assertDeepEquals(
-              ['foo', true], handler.getArgs('setModuleDisabled')[0]);
+              [['foo'], /*disabled=*/ true, /*is_user_action=*/ true],
+              handler.getArgs('setModulesDisabled')[0]);
           callbackRouterRemote.setDisabledModules(false, ['foo']);
           await callbackRouterRemote.$.flushForTesting();
           await microtasksFinished();
@@ -767,7 +770,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
       // Assert.
       assertEquals(1, handler.getCallCount('setModulesDisabled'));
       assertDeepEquals(
-          [removedModuleIds, true], handler.getArgs('setModulesDisabled')[0]);
+          [removedModuleIds, /*disabled=*/ true, /*is_user_action=*/ false],
+          handler.getArgs('setModulesDisabled')[0]);
       assertNotEquals(null, autoRemovalListener.event);
       assertEquals(
           'Single module has been removed',
@@ -782,7 +786,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
       // Assert.
       assertEquals(2, handler.getCallCount('setModulesDisabled'));
       assertDeepEquals(
-          [removedModuleIds, false], handler.getArgs('setModulesDisabled')[1]);
+          [removedModuleIds, /*disabled=*/ false, /*is_user_action=*/ true],
+          handler.getArgs('setModulesDisabled')[1]);
       assertAutoRemovalMetrics(
           removedModuleIds, /*disabled=*/ false, /*expectedCount=*/ 1);
     });
@@ -833,7 +838,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
       // Assert.
       assertEquals(1, handler.getCallCount('setModulesDisabled'));
       assertDeepEquals(
-          [removedModuleIds, true], handler.getArgs('setModulesDisabled')[0]);
+          [removedModuleIds, /*disabled=*/ true, /*is_user_action=*/ false],
+          handler.getArgs('setModulesDisabled')[0]);
       assertNotEquals(null, autoRemovalListener.event);
       assertEquals(
           'Multiple modules have been removed',
@@ -848,7 +854,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
       // Assert.
       assertEquals(2, handler.getCallCount('setModulesDisabled'));
       assertDeepEquals(
-          [removedModuleIds, false], handler.getArgs('setModulesDisabled')[1]);
+          [removedModuleIds, /*disabled=*/ false, /*is_user_action=*/ true],
+          handler.getArgs('setModulesDisabled')[1]);
       assertAutoRemovalMetrics(
           removedModuleIds, /*disabled=*/ false, /*expectedCount=*/ 1);
     });

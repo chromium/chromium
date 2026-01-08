@@ -1282,7 +1282,7 @@ TEST_F(NewTabPageHandlerModuleRemovalTest,
   EXPECT_TRUE(base::Contains(removed_modules, ntp_modules::kDriveModuleId));
 }
 
-TEST_F(NewTabPageHandlerTest, SetModulesDisabledTrue) {
+TEST_F(NewTabPageHandlerTest, SetModulesDisabledTrueDisabledAndTrueUserAction) {
   // Arrange.
   ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
   base::Value::List& initial_disabled_modules_list = update.Get();
@@ -1299,22 +1299,34 @@ TEST_F(NewTabPageHandlerTest, SetModulesDisabledTrue) {
   expected_disabled_modules_list.Append(ntp_modules::kGoogleCalendarModuleId);
 
   // Act.
-  handler_->SetModulesDisabled(set_disabled_modules_true, /*disabled=*/true);
+  handler_->SetModulesDisabled(set_disabled_modules_true, /*disabled=*/true,
+                               /*is_user_action=*/true);
 
   // Assert.
   EXPECT_EQ(expected_disabled_modules_list,
             profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules));
-  EXPECT_TRUE(profile_->GetPrefs()
-                  ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
-                  .FindBool(ntp_modules::kDriveModuleId)
+
+  const base::Value::Dict& removal_disabled_dict =
+      profile_->GetPrefs()->GetDict(
+          ntp_prefs::kNtpModulesAutoRemovalDisabledDict);
+  EXPECT_TRUE(removal_disabled_dict.FindBool(ntp_modules::kDriveModuleId)
                   .value_or(false));
-  EXPECT_TRUE(profile_->GetPrefs()
-                  ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
-                  .FindBool(ntp_modules::kGoogleCalendarModuleId)
-                  .value_or(false));
+  EXPECT_TRUE(
+      removal_disabled_dict.FindBool(ntp_modules::kGoogleCalendarModuleId)
+          .value_or(false));
+
+  const base::Value::Dict& interacted_count_dict =
+      profile_->GetPrefs()->GetDict(prefs::kNtpModulesInteractedCountDict);
+  EXPECT_EQ(
+      1,
+      interacted_count_dict.FindInt(ntp_modules::kDriveModuleId).value_or(0));
+  EXPECT_EQ(1,
+            interacted_count_dict.FindInt(ntp_modules::kGoogleCalendarModuleId)
+                .value_or(0));
 }
 
-TEST_F(NewTabPageHandlerTest, SetModulesDisabledFalse) {
+TEST_F(NewTabPageHandlerTest,
+       SetModulesDisabledFalseDisabledAndTrueUserAction) {
   // Arrange.
   ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
   base::Value::List& initial_disabled_modules_list = update.Get();
@@ -1331,11 +1343,117 @@ TEST_F(NewTabPageHandlerTest, SetModulesDisabledFalse) {
   expected_disabled_modules_list.Append(ntp_modules::kOutlookCalendarModuleId);
 
   // Act.
-  handler_->SetModulesDisabled(set_disabled_modules_false, /*disabled=*/false);
+  handler_->SetModulesDisabled(set_disabled_modules_false, /*disabled=*/false,
+                               /*is_user_action=*/true);
 
   // Assert.
   EXPECT_EQ(expected_disabled_modules_list,
             profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules));
+  const base::Value::Dict& removal_disabled_dict =
+      profile_->GetPrefs()->GetDict(
+          ntp_prefs::kNtpModulesAutoRemovalDisabledDict);
+  EXPECT_TRUE(removal_disabled_dict.FindBool(ntp_modules::kDriveModuleId)
+                  .value_or(false));
+  EXPECT_TRUE(
+      removal_disabled_dict.FindBool(ntp_modules::kGoogleCalendarModuleId)
+          .value_or(false));
+
+  const base::Value::Dict& interacted_count_dict =
+      profile_->GetPrefs()->GetDict(prefs::kNtpModulesInteractedCountDict);
+  EXPECT_EQ(
+      1,
+      interacted_count_dict.FindInt(ntp_modules::kDriveModuleId).value_or(0));
+  EXPECT_EQ(1,
+            interacted_count_dict.FindInt(ntp_modules::kGoogleCalendarModuleId)
+                .value_or(0));
+}
+
+TEST_F(NewTabPageHandlerTest,
+       SetModulesDisabledTrueDisabledAndFalseUserAction) {
+  // Arrange.
+  ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
+  base::Value::List& initial_disabled_modules_list = update.Get();
+  initial_disabled_modules_list.Append(ntp_modules::kOutlookCalendarModuleId);
+
+  std::vector<std::string> set_disabled_modules_true = {
+      ntp_modules::kDriveModuleId,
+      ntp_modules::kGoogleCalendarModuleId,
+  };
+
+  base::Value::List expected_disabled_modules_list;
+  expected_disabled_modules_list.Append(ntp_modules::kOutlookCalendarModuleId);
+  expected_disabled_modules_list.Append(ntp_modules::kDriveModuleId);
+  expected_disabled_modules_list.Append(ntp_modules::kGoogleCalendarModuleId);
+
+  // Act.
+  handler_->SetModulesDisabled(set_disabled_modules_true, /*disabled=*/true,
+                               /*is_user_action=*/false);
+
+  // Assert.
+  EXPECT_EQ(expected_disabled_modules_list,
+            profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules));
+
+  const base::Value::Dict& removal_disabled_dict =
+      profile_->GetPrefs()->GetDict(
+          ntp_prefs::kNtpModulesAutoRemovalDisabledDict);
+  EXPECT_TRUE(removal_disabled_dict.FindBool(ntp_modules::kDriveModuleId)
+                  .value_or(false));
+  EXPECT_TRUE(
+      removal_disabled_dict.FindBool(ntp_modules::kGoogleCalendarModuleId)
+          .value_or(false));
+
+  const base::Value::Dict& interacted_count_dict =
+      profile_->GetPrefs()->GetDict(prefs::kNtpModulesInteractedCountDict);
+  EXPECT_EQ(
+      0,
+      interacted_count_dict.FindInt(ntp_modules::kDriveModuleId).value_or(0));
+  EXPECT_EQ(0,
+            interacted_count_dict.FindInt(ntp_modules::kGoogleCalendarModuleId)
+                .value_or(0));
+}
+
+TEST_F(NewTabPageHandlerTest,
+       SetModulesDisabledFalseDisabledAndFalseUserAction) {
+  // Arrange.
+  ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
+  base::Value::List& initial_disabled_modules_list = update.Get();
+  initial_disabled_modules_list.Append(ntp_modules::kOutlookCalendarModuleId);
+  initial_disabled_modules_list.Append(ntp_modules::kDriveModuleId);
+  initial_disabled_modules_list.Append(ntp_modules::kGoogleCalendarModuleId);
+
+  std::vector<std::string> set_disabled_modules_false = {
+      ntp_modules::kDriveModuleId,
+      ntp_modules::kGoogleCalendarModuleId,
+  };
+
+  base::Value::List expected_disabled_modules_list;
+  expected_disabled_modules_list.Append(ntp_modules::kOutlookCalendarModuleId);
+
+  // Act.
+  handler_->SetModulesDisabled(set_disabled_modules_false, /*disabled=*/false,
+                               /*is_user_action=*/false);
+
+  // Assert.
+  EXPECT_EQ(expected_disabled_modules_list,
+            profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules));
+
+  const base::Value::Dict& removal_disabled_dict =
+      profile_->GetPrefs()->GetDict(
+          ntp_prefs::kNtpModulesAutoRemovalDisabledDict);
+  EXPECT_TRUE(removal_disabled_dict.FindBool(ntp_modules::kDriveModuleId)
+                  .value_or(false));
+  EXPECT_TRUE(
+      removal_disabled_dict.FindBool(ntp_modules::kGoogleCalendarModuleId)
+          .value_or(false));
+
+  const base::Value::Dict& interacted_count_dict =
+      profile_->GetPrefs()->GetDict(prefs::kNtpModulesInteractedCountDict);
+  EXPECT_EQ(
+      0,
+      interacted_count_dict.FindInt(ntp_modules::kDriveModuleId).value_or(0));
+  EXPECT_EQ(0,
+            interacted_count_dict.FindInt(ntp_modules::kGoogleCalendarModuleId)
+                .value_or(0));
 }
 
 TEST_F(NewTabPageHandlerTest, SetModulesDisabledEmptyList) {
@@ -1349,7 +1467,8 @@ TEST_F(NewTabPageHandlerTest, SetModulesDisabledEmptyList) {
   std::vector<std::string> set_disabled_modules_empty = {};
 
   // Act.
-  handler_->SetModulesDisabled(set_disabled_modules_empty, /*disabled=*/true);
+  handler_->SetModulesDisabled(set_disabled_modules_empty, /*disabled=*/true,
+                               /*is_user_action=*/true);
 
   // Assert.
   EXPECT_EQ(initial_disabled_modules_list,
@@ -1410,7 +1529,9 @@ TEST_F(NewTabPageHandlerTest, SetModuleDisabled) {
   EXPECT_EQ(disabled_modules_list,
             profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules));
 
-  handler_->SetModuleDisabled(ntp_modules::kDriveModuleId, true);
+  std::vector<std::string> module_ids = {ntp_modules::kDriveModuleId};
+  handler_->SetModulesDisabled(module_ids, /*disabled=*/true,
+                               /*is_user_action=*/true);
   EXPECT_CALL(mock_page_, SetDisabledModules).Times(1);
   mock_page_.FlushForTesting();
 
@@ -1418,11 +1539,10 @@ TEST_F(NewTabPageHandlerTest, SetModuleDisabled) {
   EXPECT_EQ(disabled_modules_list,
             profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules));
 
-  const std::optional<bool> drive_module_auto_removal_disabled =
-      profile_->GetPrefs()
-          ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
-          .FindBool(ntp_modules::kDriveModuleId);
-  EXPECT_TRUE(drive_module_auto_removal_disabled.value_or(false));
+  EXPECT_TRUE(profile_->GetPrefs()
+                  ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
+                  .FindBool(ntp_modules::kDriveModuleId)
+                  .value_or(false));
 }
 
 TEST_F(NewTabPageHandlerTest, SetModuleHiddenAndDisabled) {
@@ -1447,7 +1567,9 @@ TEST_F(NewTabPageHandlerTest, SetModuleHiddenAndDisabled) {
   EXPECT_EQ(1u, disabled_module_ids.size());
   EXPECT_EQ(disabled_module_ids[0], ntp_modules::kDriveModuleId);
 
-  handler_->SetModuleDisabled(ntp_modules::kDriveModuleId, true);
+  std::vector<std::string> module_ids = {ntp_modules::kDriveModuleId};
+  handler_->SetModulesDisabled(module_ids, /*disabled=*/true,
+                               /*is_user_action=*/true);
   mock_page_.FlushForTesting();
   // Ensure |disabled_module_ids| still only has one entry for
   // `ntp_modules::kDriveModuleId`.
@@ -1455,11 +1577,10 @@ TEST_F(NewTabPageHandlerTest, SetModuleHiddenAndDisabled) {
   EXPECT_EQ(1u, disabled_module_ids.size());
   EXPECT_EQ(disabled_module_ids[0], ntp_modules::kDriveModuleId);
 
-  const std::optional<bool> drive_module_auto_removal_disabled =
-      profile_->GetPrefs()
-          ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
-          .FindBool(ntp_modules::kDriveModuleId);
-  EXPECT_TRUE(drive_module_auto_removal_disabled.value_or(false));
+  EXPECT_TRUE(profile_->GetPrefs()
+                  ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
+                  .FindBool(ntp_modules::kDriveModuleId)
+                  .value_or(false));
 }
 
 TEST_F(NewTabPageHandlerTest, SetModuleHiddenAndDisabledCardsManagedVisible) {
@@ -1478,7 +1599,9 @@ TEST_F(NewTabPageHandlerTest, SetModuleHiddenAndDisabledCardsManagedVisible) {
   mock_page_.FlushForTesting();
 
   // Managed card visibility should ignore disabling of cards.
-  handler_->SetModuleDisabled(ntp_modules::kDriveModuleId, true);
+  std::vector<std::string> module_ids = {ntp_modules::kDriveModuleId};
+  handler_->SetModulesDisabled(module_ids, /*disabled=*/true,
+                               /*is_user_action=*/true);
   mock_page_.FlushForTesting();
   EXPECT_FALSE(all);
   EXPECT_TRUE(disabled_module_ids.empty());
@@ -1494,11 +1617,10 @@ TEST_F(NewTabPageHandlerTest, SetModuleHiddenAndDisabledCardsManagedVisible) {
   EXPECT_EQ(1u, disabled_module_ids.size());
   EXPECT_EQ(disabled_module_ids[0], ntp_modules::kDriveModuleId);
 
-  const std::optional<bool> drive_module_auto_removal_disabled =
-      profile_->GetPrefs()
-          ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
-          .FindBool(ntp_modules::kDriveModuleId);
-  EXPECT_TRUE(drive_module_auto_removal_disabled.value_or(false));
+  EXPECT_TRUE(profile_->GetPrefs()
+                  ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
+                  .FindBool(ntp_modules::kDriveModuleId)
+                  .value_or(false));
 }
 
 TEST_F(NewTabPageHandlerTest,
@@ -1527,16 +1649,17 @@ TEST_F(NewTabPageHandlerTest,
   EXPECT_TRUE(all);
   EXPECT_TRUE(disabled_module_ids.empty());
 
-  handler_->SetModuleDisabled(ntp_modules::kDriveModuleId, true);
+  std::vector<std::string> module_ids = {ntp_modules::kDriveModuleId};
+  handler_->SetModulesDisabled(module_ids, /*disabled=*/true,
+                               /*is_user_action=*/true);
   mock_page_.FlushForTesting();
   EXPECT_TRUE(all);
   EXPECT_TRUE(disabled_module_ids.empty());
 
-  const std::optional<bool> drive_module_auto_removal_disabled =
-      profile_->GetPrefs()
-          ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
-          .FindBool(ntp_modules::kDriveModuleId);
-  EXPECT_TRUE(drive_module_auto_removal_disabled.value_or(false));
+  EXPECT_TRUE(profile_->GetPrefs()
+                  ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
+                  .FindBool(ntp_modules::kDriveModuleId)
+                  .value_or(false));
 }
 
 TEST_F(NewTabPageHandlerTest, SetModulesVisible) {
@@ -1668,7 +1791,8 @@ TEST_F(NewTabPageHandlerHaTSTest, ModuleInteractionTriggersHaTS) {
                         testing::Return(true)));
 
     if (interaction == "disable") {
-      handler_->SetModuleDisabled(kSampleModuleId, true);
+      handler_->SetModulesDisabled({kSampleModuleId}, /*disabled=*/true,
+                                   /*is_user_action=*/true);
     } else if (interaction == "dismiss") {
       handler_->OnDismissModule(kSampleModuleId);
     } else if (interaction == "use") {

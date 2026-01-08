@@ -370,12 +370,14 @@ export class ModulesElement extends CrLitElement {
           loadTimeData.getString('modulesInactivityRemovalMsg');
 
       this.pendingAutoRemovedModules_ = moduleIds;
-      this.pageHandler_.setModulesDisabled(moduleIds, /*disabled=*/ true);
+      this.pageHandler_.setModulesDisabled(
+          moduleIds, /*disabled=*/ true, /*is_user_action=*/ false);
       this.recordModuleAutoRemovalMetrics_(moduleIds, /*disabled=*/ true);
       this.fire('modules-auto-removed', {
         message: undoToastMessage,
         undo: () => {
-          this.pageHandler_.setModulesDisabled(moduleIds, /*disabled=*/ false);
+          this.pageHandler_.setModulesDisabled(
+              moduleIds, /*disabled=*/ false, /*is_user_action=*/ true);
           this.recordModuleAutoRemovalMetrics_(moduleIds, /*disabled=*/ false);
         },
       });
@@ -514,14 +516,16 @@ export class ModulesElement extends CrLitElement {
         if (restoreCallback) {
           restoreCallback();
         }
-        this.pageHandler_.setModuleDisabled(id, false);
+        this.pageHandler_.setModulesDisabled(
+            [id], /*disabled=*/ false, /*is_user_action=*/ true);
         recordSparseValueWithPersistentHash('NewTabPage.Modules.Enabled', id);
         recordSparseValueWithPersistentHash(
             'NewTabPage.Modules.Enabled.Toast', id);
       },
     };
 
-    this.pageHandler_.setModuleDisabled(id, true);
+    this.pageHandler_.setModulesDisabled(
+        [id], /*disabled=*/ true, /*is_user_action=*/ true);
     this.$.undoToast.show();
     recordSparseValueWithPersistentHash(METRIC_NAME_MODULE_DISABLED, id);
     recordSparseValueWithPersistentHash(

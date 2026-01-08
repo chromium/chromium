@@ -66,4 +66,8 @@ void DisableShortcutsAutoRemoval(Profile* profile);
 // Sets the kNtpModulesAutoRemovalDisabledDict pref to true for the module.
 void DisableModuleAutoRemoval(Profile* profile, const std::string& module_id);
 
+// Sets the kNtpModulesAutoRemovalDisabledDict pref to true for the modules.
+void DisableModuleListAutoRemoval(Profile* profile,
+                                  const std::vector<std::string>& module_ids);
+
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_NEW_TAB_PAGE_UTIL_H_
