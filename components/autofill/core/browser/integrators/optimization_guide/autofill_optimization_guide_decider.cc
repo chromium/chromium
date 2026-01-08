@@ -111,6 +111,12 @@ void AddCreditCardOptimizationTypes(
     const PaymentsDataManager& payments_data_manager,
     base::flat_set<optimization_guide::proto::OptimizationType>&
         optimization_types) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillActorRewriteCreditCardTriggerField)) {
+    optimization_types.insert(
+        optimization_guide::proto::AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST);
+  }
+
   for (const CreditCard* card : payments_data_manager.GetServerCreditCards()) {
     auto vcn_merchant_opt_out_optimization_type =
         GetVcnMerchantOptOutOptimizationTypeForCard(*card);
