@@ -1,0 +1,268 @@
+This is a testharness.js-based test.
+Found 132 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] CSS Transitions: property <text-indent> from [0px hanging] to [50px hanging] at (-0.3) should be [-15px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px hanging] to [50px hanging] at (0) should be [0 hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px hanging] to [50px hanging] at (0.3) should be [15px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px hanging] to [50px hanging] at (0.6) should be [30px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px hanging] to [50px hanging] at (1) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px hanging] to [50px hanging] at (1.5) should be [75px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px hanging] to [50px hanging] at (-0.3) should be [-15px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px hanging] to [50px hanging] at (0) should be [0 hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px hanging] to [50px hanging] at (0.3) should be [15px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px hanging] to [50px hanging] at (0.6) should be [30px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px hanging] to [50px hanging] at (1) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px hanging] to [50px hanging] at (1.5) should be [75px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px hanging] to [50px hanging] at (-0.3) should be [-15px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px hanging] to [50px hanging] at (0) should be [0 hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px hanging] to [50px hanging] at (0.3) should be [15px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px hanging] to [50px hanging] at (0.6) should be [30px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px hanging] to [50px hanging] at (1) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px hanging] to [50px hanging] at (1.5) should be [75px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px hanging] to [50px hanging] at (-0.3) should be [-15px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px hanging] to [50px hanging] at (0) should be [0 hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px hanging] to [50px hanging] at (0.3) should be [15px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px hanging] to [50px hanging] at (0.6) should be [30px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px hanging] to [50px hanging] at (1) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px hanging] to [50px hanging] at (1.5) should be [75px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (-0.3) should be [-15px hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (0) should be [0 hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (0.3) should be [15px hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (0.6) should be [30px hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (1) should be [50px hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (1.5) should be [75px hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (-0.3) should be [-15px hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (0) should be [0 hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (0.3) should be [15px hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (0.6) should be [30px hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (1) should be [50px hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (1.5) should be [75px hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (-0.3) should be [-15px hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (0) should be [0 hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (0.3) should be [15px hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (0.6) should be [30px hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (1) should be [50px hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (1.5) should be [75px hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (-0.3) should be [-15px hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (0) should be [0 hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (0.3) should be [15px hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (0.6) should be [30px hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (1) should be [50px hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px hanging each-line] to [50px each-line hanging] at (1.5) should be [75px hanging each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <text-indent> from [0px each-line] to [50px hanging] at (-0.3) should be [0px each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <text-indent> from [0px each-line] to [50px hanging] at (0) should be [0px each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <text-indent> from [0px each-line] to [50px hanging] at (0.3) should be [0px each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <text-indent> from [0px each-line] to [50px hanging] at (0.5) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <text-indent> from [0px each-line] to [50px hanging] at (0.6) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <text-indent> from [0px each-line] to [50px hanging] at (1) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <text-indent> from [0px each-line] to [50px hanging] at (1.5) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <text-indent> from [0px each-line] to [50px hanging] at (-0.3) should be [0px each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <text-indent> from [0px each-line] to [50px hanging] at (0) should be [0px each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <text-indent> from [0px each-line] to [50px hanging] at (0.3) should be [0px each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <text-indent> from [0px each-line] to [50px hanging] at (0.5) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <text-indent> from [0px each-line] to [50px hanging] at (0.6) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <text-indent> from [0px each-line] to [50px hanging] at (1) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <text-indent> from [0px each-line] to [50px hanging] at (1.5) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px each-line] to [50px hanging] at (-0.3) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px each-line] to [50px hanging] at (0) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px each-line] to [50px hanging] at (0.3) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px each-line] to [50px hanging] at (0.5) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px each-line] to [50px hanging] at (0.6) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px each-line] to [50px hanging] at (1) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px each-line] to [50px hanging] at (1.5) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px each-line] to [50px hanging] at (-0.3) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px each-line] to [50px hanging] at (0) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px each-line] to [50px hanging] at (0.3) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px each-line] to [50px hanging] at (0.5) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px each-line] to [50px hanging] at (0.6) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px each-line] to [50px hanging] at (1) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px each-line] to [50px hanging] at (1.5) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px each-line] to [50px hanging] at (-0.3) should be [0px each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px each-line] to [50px hanging] at (0) should be [0px each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px each-line] to [50px hanging] at (0.3) should be [0px each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px each-line] to [50px hanging] at (0.5) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px each-line] to [50px hanging] at (0.6) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px each-line] to [50px hanging] at (1) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px each-line] to [50px hanging] at (1.5) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px each-line] to [50px hanging] at (-0.3) should be [0px each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px each-line] to [50px hanging] at (0) should be [0px each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px each-line] to [50px hanging] at (0.3) should be [0px each-line]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px each-line] to [50px hanging] at (0.5) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px each-line] to [50px hanging] at (0.6) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px each-line] to [50px hanging] at (1) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px each-line] to [50px hanging] at (1.5) should be [50px hanging]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <text-indent> from [0px] to [50px each-line hanging] at (-0.3) should be [0px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <text-indent> from [0px] to [50px each-line hanging] at (0) should be [0px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <text-indent> from [0px] to [50px each-line hanging] at (0.3) should be [0px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <text-indent> from [0px] to [50px each-line hanging] at (0.5) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <text-indent> from [0px] to [50px each-line hanging] at (0.6) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <text-indent> from [0px] to [50px each-line hanging] at (1) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <text-indent> from [0px] to [50px each-line hanging] at (1.5) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <text-indent> from [0px] to [50px each-line hanging] at (-0.3) should be [0px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <text-indent> from [0px] to [50px each-line hanging] at (0) should be [0px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <text-indent> from [0px] to [50px each-line hanging] at (0.3) should be [0px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <text-indent> from [0px] to [50px each-line hanging] at (0.5) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <text-indent> from [0px] to [50px each-line hanging] at (0.6) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <text-indent> from [0px] to [50px each-line hanging] at (1) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <text-indent> from [0px] to [50px each-line hanging] at (1.5) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px] to [50px each-line hanging] at (-0.3) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px] to [50px each-line hanging] at (0) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px] to [50px each-line hanging] at (0.3) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px] to [50px each-line hanging] at (0.5) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px] to [50px each-line hanging] at (0.6) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px] to [50px each-line hanging] at (1) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <text-indent> from [0px] to [50px each-line hanging] at (1.5) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px] to [50px each-line hanging] at (-0.3) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px] to [50px each-line hanging] at (0) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px] to [50px each-line hanging] at (0.3) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px] to [50px each-line hanging] at (0.5) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px] to [50px each-line hanging] at (0.6) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px] to [50px each-line hanging] at (1) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <text-indent> from [0px] to [50px each-line hanging] at (1.5) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px] to [50px each-line hanging] at (-0.3) should be [0px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px] to [50px each-line hanging] at (0) should be [0px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px] to [50px each-line hanging] at (0.3) should be [0px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px] to [50px each-line hanging] at (0.5) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px] to [50px each-line hanging] at (0.6) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px] to [50px each-line hanging] at (1) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <text-indent> from [0px] to [50px each-line hanging] at (1.5) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px] to [50px each-line hanging] at (-0.3) should be [0px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px] to [50px each-line hanging] at (0) should be [0px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px] to [50px each-line hanging] at (0.3) should be [0px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px] to [50px each-line hanging] at (0.5) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px] to [50px each-line hanging] at (0.6) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px] to [50px each-line hanging] at (1) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <text-indent> from [0px] to [50px each-line hanging] at (1.5) should be [50px each-line hanging]
+  assert_true: 'to' value should be supported expected true got false
+Harness: the test ran to completion.
+

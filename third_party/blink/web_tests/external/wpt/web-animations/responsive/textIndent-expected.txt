@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] textIndent responsive to style changes
+  assert_not_equals: got disallowed value "0px"
+[FAIL] textIndent responsive to inherited textIndent changes
+  assert_equals: expected "150px hanging each-line" but got "0px"
+Harness: the test ran to completion.
+

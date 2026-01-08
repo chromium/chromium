@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Property text-indent value '10px hanging'
+  assert_true: '10px hanging' is a supported value for text-indent. expected true got false
+[FAIL] Property text-indent value '20% each-line'
+  assert_true: '20% each-line' is a supported value for text-indent. expected true got false
+[FAIL] Property text-indent value 'calc(50% + 60px) hanging each-line'
+  assert_true: 'calc(50% + 60px) hanging each-line' is a supported value for text-indent. expected true got false
+[FAIL] Property text-indent value 'each-line hanging calc(10px + 0.5em)'
+  assert_true: 'each-line hanging calc(10px + 0.5em)' is a supported value for text-indent. expected true got false
+Harness: the test ran to completion.
+
