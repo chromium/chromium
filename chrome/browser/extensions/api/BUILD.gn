@@ -22,6 +22,8 @@ group("api") {
 }
 
 # The collection of API implementations.
+# TODO(crbug.com/40245282): Add API implementations here as we detangle them
+# so that they can be separate GN targets.
 group("api_implementations") {
   # APIs supported on Win/Mac/Linux and desktop Android go here.
   # TODO(https://crbug.com/356905053): Add more APIs here.
@@ -62,7 +64,6 @@ group("api_implementations") {
 
   if (enable_extensions) {
     # APIs supported on Win/Mac/Linux but NOT desktop Android go here.
-    # TODO(crbug.com/40245282): Add more API implementations here.
     public_deps += [
       "//chrome/browser/extensions/api/autofill_private",
       "//chrome/browser/extensions/api/braille_display_private",
