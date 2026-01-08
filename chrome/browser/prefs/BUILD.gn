@@ -63,6 +63,7 @@ source_set("impl") {
     "//chrome/browser:flags",
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/devtools",
+    "//chrome/browser/gcm",
     "//chrome/browser/media/prefs",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",

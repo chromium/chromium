@@ -520,6 +520,7 @@ source_set("extensions") {
     "//chrome/browser/extensions:external_loader",
     "//chrome/browser/extensions/api:api_registration",
     "//chrome/browser/favicon",
+    "//chrome/browser/gcm",
     "//chrome/browser/google",
     "//chrome/browser/history",
     "//chrome/browser/infobars",

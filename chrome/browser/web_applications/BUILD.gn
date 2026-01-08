@@ -1225,6 +1225,7 @@ source_set("web_applications_browser_tests") {
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/devtools:test_support",
+    "//chrome/browser/gcm",
     "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_navigator_params_headers",

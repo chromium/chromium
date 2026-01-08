@@ -1,0 +1,39 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("gcm") {
+  sources = [
+    "gcm_product_util.cc",
+    "gcm_product_util.h",
+    "gcm_profile_service_factory.cc",
+    "gcm_profile_service_factory.h",
+    "instance_id/instance_id_profile_service_factory.cc",
+    "instance_id/instance_id_profile_service_factory.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles",
+    "//components/gcm_driver",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/image_fetcher",
+    "//chrome/browser/signin",
+    "//chrome/common:constants",
+    "//chrome/common:version_header",
+    "//components/gcm_driver/instance_id",
+    "//components/offline_pages/buildflags",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/version_info",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
+}
