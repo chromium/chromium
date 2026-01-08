@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/hid_detection/hid_detection_manager_impl.h"
 
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "chromeos/ash/components/hid_detection/bluetooth_hid_detector_impl.h"
 #include "chromeos/ash/components/hid_detection/hid_detection_utils.h"
@@ -112,7 +111,7 @@ void HidDetectionManagerImpl::InputDeviceAdded(
 }
 
 void HidDetectionManagerImpl::InputDeviceRemoved(const std::string& id) {
-  if (!base::Contains(device_id_to_device_map_, id)) {
+  if (!device_id_to_device_map_.contains(id)) {
     // Some devices may be removed that were not registered in
     // InputDeviceAdded() or OnGetDevicesAndSetClient().
     HID_LOG(EVENT)

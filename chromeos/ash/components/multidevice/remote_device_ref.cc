@@ -7,7 +7,6 @@
 #include <sstream>
 
 #include "base/base64.h"
-#include "base/containers/contains.h"
 
 namespace ash::multidevice {
 
@@ -31,7 +30,7 @@ RemoteDeviceRef::~RemoteDeviceRef() = default;
 
 SoftwareFeatureState RemoteDeviceRef::GetSoftwareFeatureState(
     const SoftwareFeature& software_feature) const {
-  if (!base::Contains(remote_device_->software_features, software_feature))
+  if (!remote_device_->software_features.contains(software_feature))
     return SoftwareFeatureState::kNotSupported;
 
   return remote_device_->software_features.at(software_feature);

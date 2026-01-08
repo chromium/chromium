@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/test/scoped_feature_list.h"
@@ -348,7 +347,7 @@ class DeviceSyncCryptAuthDeviceSyncerImplTest : public testing::Test {
               expected_unencrypted_group_private_key);
 
       id_to_unencrypted_metadata_map[metadata.device_id()] =
-          base::Contains(device_ids_to_fail, metadata.device_id())
+          device_ids_to_fail.contains(metadata.device_id())
               ? std::nullopt
               : std::make_optional<std::string>(DecryptFakeEncryptedString(
                     metadata.encrypted_metadata(),

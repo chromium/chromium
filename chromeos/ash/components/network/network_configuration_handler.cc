@@ -9,7 +9,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -437,7 +436,7 @@ void NetworkConfigurationHandler::RemoveConfigurationFromProfile(
     network_handler::ErrorCallback error_callback) {
   // Service.Remove is not reliable. Instead, request the profile entries
   // for the service and remove each entry.
-  if (base::Contains(profile_entry_deleters_, service_path)) {
+  if (profile_entry_deleters_.contains(service_path)) {
     InvokeErrorCallback(service_path, std::move(error_callback),
                         "RemoveConfigurationInProgress");
     return;

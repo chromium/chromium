@@ -7,7 +7,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -27,7 +26,7 @@ void FakeImageLoaderClient::SetMountPathForComponent(
 }
 
 bool FakeImageLoaderClient::IsLoaded(const std::string& name) const {
-  return base::Contains(loaded_components_, name);
+  return loaded_components_.contains(name);
 }
 
 base::FilePath FakeImageLoaderClient::GetComponentInstallPath(

@@ -6,7 +6,6 @@
 
 #include <ostream>
 
-#include "base/containers/contains.h"
 
 namespace ash::device_sync {
 
@@ -42,7 +41,7 @@ bool CryptAuthDeviceRegistry::AddDevice(const CryptAuthDevice& device) {
 }
 
 bool CryptAuthDeviceRegistry::DeleteDevice(const std::string& instance_id) {
-  if (!base::Contains(instance_id_to_device_map_, instance_id)) {
+  if (!instance_id_to_device_map_.contains(instance_id)) {
     return false;
   }
 

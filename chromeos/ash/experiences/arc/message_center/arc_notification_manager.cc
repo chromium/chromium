@@ -14,7 +14,6 @@
 #include "ash/system/notification_center/message_view_factory.h"
 #include "ash/system/notification_center/metrics_utils.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -457,7 +456,7 @@ void ArcNotificationManager::SendNotificationRemovedFromChrome(
 
 void ArcNotificationManager::SendNotificationClickedOnChrome(
     const std::string& key) {
-  if (!base::Contains(items_, key)) {
+  if (!items_.contains(key)) {
     VLOG(3) << "Chrome requests to fire a click event on notification (key: "
             << key << "), but it is gone.";
     return;
@@ -480,7 +479,7 @@ void ArcNotificationManager::SendNotificationClickedOnChrome(
 void ArcNotificationManager::SendNotificationActivatedInChrome(
     const std::string& key,
     bool activated) {
-  if (!base::Contains(items_, key)) {
+  if (!items_.contains(key)) {
     VLOG(3)
         << "Chrome requests to fire an activation event on notification (key: "
         << key << "), but it is gone.";
@@ -506,7 +505,7 @@ void ArcNotificationManager::SendNotificationButtonClickedOnChrome(
     const std::string& key,
     const int button_index,
     const std::string& input) {
-  if (!base::Contains(items_, key)) {
+  if (!items_.contains(key)) {
     VLOG(3) << "Chrome requests to fire a click event on notification (key: "
             << key << "), but it is gone.";
     return;
@@ -526,7 +525,7 @@ void ArcNotificationManager::SendNotificationButtonClickedOnChrome(
 }
 
 void ArcNotificationManager::CreateNotificationWindow(const std::string& key) {
-  if (!base::Contains(items_, key)) {
+  if (!items_.contains(key)) {
     VLOG(3) << "Chrome requests to create window on notification (key: " << key
             << "), but it is gone.";
     return;
@@ -542,7 +541,7 @@ void ArcNotificationManager::CreateNotificationWindow(const std::string& key) {
 }
 
 void ArcNotificationManager::CloseNotificationWindow(const std::string& key) {
-  if (!base::Contains(items_, key)) {
+  if (!items_.contains(key)) {
     VLOG(3) << "Chrome requests to close window on notification (key: " << key
             << "), but it is gone.";
     return;
@@ -558,7 +557,7 @@ void ArcNotificationManager::CloseNotificationWindow(const std::string& key) {
 }
 
 void ArcNotificationManager::OpenNotificationSettings(const std::string& key) {
-  if (!base::Contains(items_, key)) {
+  if (!items_.contains(key)) {
     DVLOG(3) << "Chrome requests to fire a click event on the notification "
              << "settings button (key: " << key << "), but it is gone.";
     return;
@@ -576,7 +575,7 @@ void ArcNotificationManager::OpenNotificationSettings(const std::string& key) {
 }
 
 void ArcNotificationManager::DisableNotification(const std::string& key) {
-  if (!base::Contains(items_, key)) {
+  if (!items_.contains(key)) {
     DVLOG(3) << "Chrome requests to fire a DisableNotification event on the "
              << "notification  (key: " << key << "), but it is gone.";
     return;
@@ -595,7 +594,7 @@ void ArcNotificationManager::DisableNotification(const std::string& key) {
 
 void ArcNotificationManager::OpenNotificationSnoozeSettings(
     const std::string& key) {
-  if (!base::Contains(items_, key)) {
+  if (!items_.contains(key)) {
     DVLOG(3) << "Chrome requests to show a snooze setting gut on the"
              << "notification (key: " << key << "), but it is gone.";
     return;
@@ -620,7 +619,7 @@ bool ArcNotificationManager::IsOpeningSettingsSupported() const {
 
 void ArcNotificationManager::SendNotificationToggleExpansionOnChrome(
     const std::string& key) {
-  if (!base::Contains(items_, key)) {
+  if (!items_.contains(key)) {
     VLOG(3) << "Chrome requests to fire a click event on notification (key: "
             << key << "), but it is gone.";
     return;

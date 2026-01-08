@@ -7,7 +7,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -187,8 +186,8 @@ TEST_F(SecureChannelClientChannelImplTest, TestSendMessage) {
   CallSendMessageCallback(std::move(sent_messages[0].second));
   CallSendMessageCallback(std::move(sent_messages[1].second));
 
-  EXPECT_TRUE(base::Contains(message_counters_received_, message_1_counter));
-  EXPECT_TRUE(base::Contains(message_counters_received_, message_2_counter));
+  EXPECT_TRUE(message_counters_received_.contains(message_1_counter));
+  EXPECT_TRUE(message_counters_received_.contains(message_2_counter));
 }
 
 TEST_F(SecureChannelClientChannelImplTest, TestReceiveMessage) {

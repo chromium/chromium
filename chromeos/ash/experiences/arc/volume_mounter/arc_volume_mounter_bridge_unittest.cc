@@ -78,7 +78,7 @@ class FakeArcVolumeMounterBridgeDelegate
   }
 
   bool is_watching(const std::string& mount_path) {
-    return base::Contains(watched_removable_media_, mount_path);
+    return watched_removable_media_.contains(mount_path);
   }
 
  private:

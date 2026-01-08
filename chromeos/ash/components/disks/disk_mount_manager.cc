@@ -19,7 +19,6 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
@@ -1297,7 +1296,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   }
 
   bool IsPendingPartitioningDisk(const std::string& device_path) {
-    if (base::Contains(pending_partitioning_disks_, device_path)) {
+    if (pending_partitioning_disks_.contains(device_path)) {
       return true;
     }
 

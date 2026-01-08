@@ -5,7 +5,6 @@
 
 #include "chromeos/ash/components/tether/fake_tether_availability_operation.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 
@@ -41,7 +40,7 @@ void FakeTetherAvailabilityOperation::Initializer::send_result(
 
 bool FakeTetherAvailabilityOperation::Initializer::
     has_active_operation_for_device(const TetherHost& tether_host) {
-  return base::Contains(pending_callbacks_, tether_host.GetDeviceId());
+  return pending_callbacks_.contains(tether_host.GetDeviceId());
 }
 
 void FakeTetherAvailabilityOperation::Initializer::OnOperationDestroyed(

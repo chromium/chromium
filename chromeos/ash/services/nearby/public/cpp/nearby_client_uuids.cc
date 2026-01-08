@@ -7,7 +7,6 @@
 #include <set>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 
 namespace ash {
@@ -40,7 +39,7 @@ bool IsNearbyClientUuid(const device::BluetoothUUID& uuid) {
   static const base::NoDestructor<std::set<device::BluetoothUUID>>
       kAllowedUuidSet(std::begin(GetNearbyClientUuids()),
                       std::end(GetNearbyClientUuids()));
-  return base::Contains(*kAllowedUuidSet, uuid);
+  return kAllowedUuidSet->contains(uuid);
 }
 
 }  // namespace nearby

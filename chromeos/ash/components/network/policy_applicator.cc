@@ -9,7 +9,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -319,7 +318,7 @@ void PolicyApplicator::ApplyOncPolicy(const std::string& entry_identifier,
                            options_.reset_recommended_managed_configs &&
                            policy_util::HasAnyRecommendedField(new_policy);
   const bool policy_contents_changed =
-      base::Contains(remaining_policy_guids_, new_guid);
+      remaining_policy_guids_.contains(new_guid);
   remaining_policy_guids_.erase(new_guid);
 
   if (!policy_guid_changed && !policy_contents_changed && !force_reset) {

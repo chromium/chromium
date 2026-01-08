@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
 
-#include "base/containers/contains.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/hotspot_allowed_flag_handler.h"
 #include "chromeos/ash/components/network/hotspot_util.h"
@@ -203,7 +202,7 @@ void HotspotCapabilitiesProvider::UpdateHotspotCapabilities(
     return;
   }
 
-  if (!base::Contains(*upstream_technologies, shill::kTypeCellular)) {
+  if (!upstream_technologies->contains(shill::kTypeCellular)) {
     SetHotspotAllowStatus(HotspotAllowStatus::kDisallowedNoCellularUpstream);
     return;
   }
@@ -218,7 +217,7 @@ void HotspotCapabilitiesProvider::UpdateHotspotCapabilities(
     return;
   }
 
-  if (!base::Contains(*downstream_technologies, shill::kTypeWifi)) {
+  if (!downstream_technologies->contains(shill::kTypeWifi)) {
     SetHotspotAllowStatus(HotspotAllowStatus::kDisallowedNoWiFiDownstream);
     return;
   }

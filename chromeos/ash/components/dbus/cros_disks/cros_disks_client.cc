@@ -16,7 +16,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -492,7 +491,7 @@ class CrosDisksClientImpl : public CrosDisksClient {
       return;
     }
 
-    if (base::Contains(format_start_time_, device_path)) {
+    if (format_start_time_.contains(device_path)) {
       base::UmaHistogramMediumTimes(
           "CrosDisksClient.FormatTime",
           base::TimeTicks::Now() - format_start_time_[device_path]);

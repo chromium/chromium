@@ -77,7 +77,7 @@ static constexpr auto FwupdStatusStringMap =
          {FwupdStatus::kWaitingForUser, "Waiting for user action"}});
 
 const char* GetFwupdStatusString(FwupdStatus enum_val) {
-  DCHECK(base::Contains(FwupdStatusStringMap, enum_val));
+  DCHECK(FwupdStatusStringMap.contains(enum_val));
   return FwupdStatusStringMap.at(enum_val);
 }
 
@@ -871,7 +871,7 @@ void FirmwareUpdateManager::OnDeviceListResponse(FwupdDeviceList* devices) {
 void FirmwareUpdateManager::ShowNotificationIfRequired() {
   for (const auto& update : updates_) {
     if (update->priority == firmware_update::mojom::UpdatePriority::kCritical &&
-        !base::Contains(devices_already_notified_, update->device_id)) {
+        !devices_already_notified_.contains(update->device_id)) {
       devices_already_notified_.insert(update->device_id);
       NotifyCriticalFirmwareUpdateReceived();
     }
@@ -881,7 +881,7 @@ void FirmwareUpdateManager::ShowNotificationIfRequired() {
 void FirmwareUpdateManager::OnUpdateListResponse(const std::string& device_id,
                                                  FwupdUpdateList* updates) {
   DCHECK(updates);
-  DCHECK(base::Contains(devices_pending_update_, device_id));
+  DCHECK(devices_pending_update_.contains(device_id));
 
   // If there are updates, then choose the first one.
   if (!updates->empty()) {

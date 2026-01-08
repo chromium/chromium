@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
@@ -63,7 +62,7 @@ void TokenKeyFinder::HandleOneResult(Token token,
   }
 
   if (!result.has_value()) {
-    CHECK(!base::Contains(errors_, token));
+    CHECK(!errors_.contains(token));
     errors_[token] = result.error();
   }
 

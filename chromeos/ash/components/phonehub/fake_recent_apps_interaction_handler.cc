@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 
@@ -22,7 +21,7 @@ FakeRecentAppsInteractionHandler::~FakeRecentAppsInteractionHandler() = default;
 void FakeRecentAppsInteractionHandler::NotifyRecentAppClicked(
     const Notification::AppMetadata& app_metadata,
     eche_app::mojom::AppStreamLaunchEntryPoint entrypoint) {
-  if (base::Contains(package_name_to_click_count_, app_metadata.package_name)) {
+  if (package_name_to_click_count_.contains(app_metadata.package_name)) {
     package_name_to_click_count_.at(app_metadata.package_name)++;
     return;
   }

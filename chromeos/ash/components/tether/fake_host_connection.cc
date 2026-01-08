@@ -20,7 +20,7 @@ void FakeHostConnection::Factory::ScanForTetherHostAndCreateConnection(
     raw_ptr<PayloadListener> payload_listener,
     OnDisconnectionCallback on_disconnection,
     OnConnectionCreatedCallback on_connection_attempt_finished) {
-  if (base::Contains(pending_connection_attempts_, device_id)) {
+  if (pending_connection_attempts_.contains(device_id)) {
     if (pending_connection_attempts_.at(device_id)) {
       pending_connection_attempts_.at(device_id)->set_payload_listener(
           payload_listener);
@@ -65,7 +65,7 @@ void FakeHostConnection::Factory::SetupConnectionAttempt(
 
 FakeHostConnection* FakeHostConnection::Factory::GetPendingConnectionAttempt(
     const std::string& device_id) {
-  if (!base::Contains(pending_connection_attempts_, device_id)) {
+  if (!pending_connection_attempts_.contains(device_id)) {
     return nullptr;
   }
 
@@ -74,7 +74,7 @@ FakeHostConnection* FakeHostConnection::Factory::GetPendingConnectionAttempt(
 
 FakeHostConnection* FakeHostConnection::Factory::GetActiveConnection(
     const std::string& device_id) {
-  if (!base::Contains(active_connections_, device_id)) {
+  if (!active_connections_.contains(device_id)) {
     return nullptr;
   }
 

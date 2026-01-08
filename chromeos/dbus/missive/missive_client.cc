@@ -10,7 +10,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -91,7 +90,7 @@ bool IsApiKeyAccepted(std::string_view api_key) {
   }
   const std::string lowercase_api_key = base::ToLowerASCII(api_key);
   for (auto key : kBlockListedKeys) {
-    if (base::Contains(lowercase_api_key, key)) {
+    if (lowercase_api_key.contains(key)) {
       LOG(ERROR) << "API Key is block-listed: " << api_key;
       return false;
     }

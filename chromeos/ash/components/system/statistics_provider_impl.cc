@@ -14,7 +14,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -546,7 +545,7 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
     // Use the write-protect value from crossystem only if it hasn't been loaded
     // from any other source, since the result of crossystem is less reliable
     // for this key.
-    if (!base::Contains(machine_info_, kFirmwareWriteProtectCurrentKey) &&
+    if (!machine_info_.contains(kFirmwareWriteProtectCurrentKey) &&
         !crossystem_wpsw.empty()) {
       LOG(WARNING) << "wpsw_cur missing from machine_info, using value: "
                    << crossystem_wpsw;
@@ -745,7 +744,7 @@ void StatisticsProviderImpl::LoadRegionsFile(const base::FilePath& filename,
 
 std::optional<std::string_view> StatisticsProviderImpl::GetRegionalInformation(
     std::string_view name) const {
-  if (!base::Contains(machine_info_, kRegionKey)) {
+  if (!machine_info_.contains(kRegionKey)) {
     return std::nullopt;
   }
 

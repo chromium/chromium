@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/nearby/common/connections_manager/fake_nearby_connections_manager.h"
 
-#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/types/optional_util.h"
@@ -302,7 +301,7 @@ void FakeNearbyConnectionsManager::SetIncomingPayload(int64_t payload_id,
 
 bool FakeNearbyConnectionsManager::WasPayloadCanceled(
     const int64_t& payload_id) const {
-  return base::Contains(canceled_payload_ids_, payload_id);
+  return canceled_payload_ids_.contains(payload_id);
 }
 
 std::optional<base::FilePath>

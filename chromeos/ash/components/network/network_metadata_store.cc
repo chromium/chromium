@@ -10,7 +10,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -336,7 +335,7 @@ void NetworkMetadataStore::UpdateExternalModifications(
     const std::string& field) {
   const base::Value::List* fields =
       GetListPref(network_guid, kExternalModifications);
-  const bool contains_field = fields && base::Contains(*fields, field);
+  const bool contains_field = fields && fields->contains(field);
   if (GetIsCreatedByUser(network_guid)) {
     if (contains_field) {
       base::Value::List writeable_fields = CreateOrCloneListValue(fields);
@@ -502,7 +501,7 @@ bool NetworkMetadataStore::GetIsFieldExternallyModified(
     const std::string& field) {
   const base::Value::List* fields =
       GetListPref(network_guid, kExternalModifications);
-  return fields && base::Contains(*fields, field);
+  return fields && fields->contains(field);
 }
 
 bool NetworkMetadataStore::GetHasBadPassword(const std::string& network_guid) {

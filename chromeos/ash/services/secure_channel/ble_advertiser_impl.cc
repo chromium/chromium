@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/services/secure_channel/ble_advertiser_impl.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -81,7 +80,7 @@ void BleAdvertiserImpl::AddAdvertisementRequest(
     ConnectionPriority connection_priority) {
   requests_already_removed_due_to_failed_advertisement_.erase(request);
 
-  if (base::Contains(all_requests_, request)) {
+  if (all_requests_.contains(request)) {
     NOTREACHED() << "BleAdvertiserImpl::AddAdvertisementRequest(): Tried to "
                  << "add advertisement request which was already present. "
                  << "Request: " << request
@@ -104,11 +103,10 @@ void BleAdvertiserImpl::AddAdvertisementRequest(
 void BleAdvertiserImpl::UpdateAdvertisementRequestPriority(
     const DeviceIdPair& request,
     ConnectionPriority connection_priority) {
-  if (base::Contains(requests_already_removed_due_to_failed_advertisement_,
-                     request))
+  if (requests_already_removed_due_to_failed_advertisement_.contains(request))
     return;
 
-  if (!base::Contains(all_requests_, request)) {
+  if (!all_requests_.contains(request)) {
     NOTREACHED() << "BleAdvertiserImpl::UpdateAdvertisementRequestPriority(): "
                  << "Tried to update request priority for a request, but that "
                  << "request was not present. Request: " << request
@@ -168,7 +166,7 @@ void BleAdvertiserImpl::RemoveAdvertisementRequest(
     return;
   }
 
-  if (!base::Contains(all_requests_, request)) {
+  if (!all_requests_.contains(request)) {
     NOTREACHED() << "BleAdvertiserImpl::RemoveAdvertisementRequest(): Tried "
                  << "to remove an advertisement request, but that request was "
                  << "not present. Request: " << request;
@@ -374,8 +372,8 @@ void BleAdvertiserImpl::AttemptToNotifyFailureToGenerateAdvertisement(
   // If the request is not found, then that request has either been removed
   // again or re-scheduled after it failed to generate an advertisement, but
   // before this task could execute.
-  if (!base::Contains(requests_already_removed_due_to_failed_advertisement_,
-                      device_id_pair)) {
+  if (!requests_already_removed_due_to_failed_advertisement_.contains(
+          device_id_pair)) {
     return;
   }
 

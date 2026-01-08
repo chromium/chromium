@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -420,7 +419,7 @@ class DeviceSyncCryptAuthV2EnrollerImplTest
              name_key_pair : expected_new_keys) {
       const CryptAuthKeyBundle::Name& bundle_name = name_key_pair.first;
       const CryptAuthKey& key = *name_key_pair.second;
-      ASSERT_TRUE(base::Contains(key_creator()->keys_to_create(), bundle_name));
+      ASSERT_TRUE(key_creator()->keys_to_create().contains(bundle_name));
       const CryptAuthKeyCreator::CreateKeyData& create_key_data =
           key_creator()->keys_to_create().find(bundle_name)->second;
 

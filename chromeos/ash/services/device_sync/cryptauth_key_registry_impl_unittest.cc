@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/services/device_sync/cryptauth_key_registry_impl.h"
 
-#include "base/containers/contains.h"
 #include "chromeos/ash/services/device_sync/cryptauth_enrollment_constants.h"
 #include "chromeos/ash/services/device_sync/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -187,8 +186,8 @@ TEST_F(DeviceSyncCryptAuthKeyRegistryImplTest, DeleteKey) {
       key_registry()->GetKeyBundle(CryptAuthKeyBundle::Name::kLegacyAuthzenKey);
   ASSERT_TRUE(key_bundle);
 
-  EXPECT_FALSE(base::Contains(key_bundle->handle_to_key_map(), "sym-handle"));
-  EXPECT_TRUE(base::Contains(key_bundle->handle_to_key_map(), "asym-handle"));
+  EXPECT_FALSE(key_bundle->handle_to_key_map().contains("sym-handle"));
+  EXPECT_TRUE(key_bundle->handle_to_key_map().contains("asym-handle"));
 
   CryptAuthKeyBundle expected_bundle(
       CryptAuthKeyBundle::Name::kLegacyAuthzenKey);

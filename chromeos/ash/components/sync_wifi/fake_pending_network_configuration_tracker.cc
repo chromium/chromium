@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/sync_wifi/fake_pending_network_configuration_tracker.h"
 
-#include "base/containers/contains.h"
 #include "base/uuid.h"
 #include "chromeos/ash/components/sync_wifi/pending_network_configuration_update.h"
 
@@ -31,7 +30,7 @@ std::string FakePendingNetworkConfigurationTracker::TrackPendingUpdate(
 void FakePendingNetworkConfigurationTracker::MarkComplete(
     const std::string& change_guid,
     const NetworkIdentifier& id) {
-  if (base::Contains(id_to_pending_update_map_, id) &&
+  if (id_to_pending_update_map_.contains(id) &&
       id_to_pending_update_map_.at(id).change_guid() == change_guid) {
     id_to_pending_update_map_.erase(id);
   }
@@ -60,7 +59,7 @@ std::optional<PendingNetworkConfigurationUpdate>
 FakePendingNetworkConfigurationTracker::GetPendingUpdate(
     const std::string& change_guid,
     const NetworkIdentifier& id) {
-  if (!base::Contains(id_to_pending_update_map_, id) ||
+  if (!id_to_pending_update_map_.contains(id) ||
       id_to_pending_update_map_.at(id).change_guid() != change_guid) {
     return std::nullopt;
   }
@@ -71,7 +70,7 @@ FakePendingNetworkConfigurationTracker::GetPendingUpdate(
 PendingNetworkConfigurationUpdate*
 FakePendingNetworkConfigurationTracker::GetPendingUpdateById(
     const NetworkIdentifier& id) {
-  if (!base::Contains(id_to_pending_update_map_, id))
+  if (!id_to_pending_update_map_.contains(id))
     return nullptr;
 
   return &id_to_pending_update_map_.at(id);

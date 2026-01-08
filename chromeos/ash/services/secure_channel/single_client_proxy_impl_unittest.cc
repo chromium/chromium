@@ -8,7 +8,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -161,7 +160,7 @@ class SecureChannelSingleClientProxyImplTest : public testing::Test {
   }
 
   bool WasMessageSent(int message_counter) {
-    return base::Contains(sent_message_counters_, message_counter);
+    return sent_message_counters_.contains(message_counter);
   }
 
   void DisconnectFromClientSide() {

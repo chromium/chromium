@@ -10,7 +10,6 @@
 #include <sys/ioctl.h>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -148,7 +147,7 @@ void FakePermissionBrokerClient::OpenPathAndRegisterClient(
   std::string client_id;
   do {
     client_id = base::UnguessableToken::Create().ToString();
-  } while (base::Contains(clients_, client_id));
+  } while (clients_.contains(client_id));
 
   base::ScopedFD dup_lifeline_fd(HANDLE_EINTR(dup(lifeline_fd)));
   if (!dup_lifeline_fd.is_valid()) {

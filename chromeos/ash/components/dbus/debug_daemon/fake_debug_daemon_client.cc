@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
@@ -284,7 +283,7 @@ void FakeDebugDaemonClient::CupsRemovePrinter(
     const std::string& name,
     CupsRemovePrinterCallback callback,
     base::OnceClosure error_callback) {
-  const bool has_printer = base::Contains(printers_, name);
+  const bool has_printer = printers_.contains(name);
   if (has_printer)
     printers_.erase(name);
 

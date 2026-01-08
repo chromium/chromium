@@ -10,7 +10,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
@@ -140,7 +139,7 @@ void CellularESimProfileHandlerImpl::AutoRefreshEuiccsIfNecessary() {
 
   base::flat_set<std::string> paths_needing_auto_refresh;
   for (const auto& euicc_path : euicc_paths_from_hermes) {
-    if (!base::Contains(auto_refreshed_euicc_paths, euicc_path))
+    if (!auto_refreshed_euicc_paths.contains(euicc_path))
       paths_needing_auto_refresh.insert(euicc_path);
   }
 

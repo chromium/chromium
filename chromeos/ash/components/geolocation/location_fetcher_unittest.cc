@@ -166,12 +166,11 @@ TEST_F(LocationFetcherTest, InvalidResponse) {
   SetRequestRetryInterval(retry_interval);
   WaitUntilRequestDone();
 
-  EXPECT_TRUE(base::Contains(
-      position_.ToString(),
+  EXPECT_TRUE(position_.ToString().contains(
       "latitude=200.000000, longitude=200.000000, accuracy=-1.000000, "
       "error_code=0, error_message='SystemLocationProvider at "
       "'https://localhost/' : JSONReader failed:"));
-  EXPECT_TRUE(base::Contains(position_.ToString(), "status=4 (TIMEOUT)"));
+  EXPECT_TRUE(position_.ToString().contains("status=4 (TIMEOUT)"));
   EXPECT_TRUE(server_error_);
 
   // Number of retries should be within [-1,+1] range of expected_retries.

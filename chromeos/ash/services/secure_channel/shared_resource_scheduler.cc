@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/services/secure_channel/shared_resource_scheduler.h"
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -55,7 +54,7 @@ SharedResourceScheduler::~SharedResourceScheduler() = default;
 void SharedResourceScheduler::ScheduleRequest(
     const DeviceIdPair& request,
     ConnectionPriority connection_priority) {
-  if (base::Contains(request_to_priority_map_, request)) {
+  if (request_to_priority_map_.contains(request)) {
     NOTREACHED() << "SharedResourceScheduler::ScheduleRequest(): Tried to "
                  << "schedule a request which was already scheduled. Request: "
                  << request << ", Priority: " << connection_priority;
@@ -68,7 +67,7 @@ void SharedResourceScheduler::ScheduleRequest(
 void SharedResourceScheduler::UpdateRequestPriority(
     const DeviceIdPair& request,
     ConnectionPriority connection_priority) {
-  if (!base::Contains(request_to_priority_map_, request)) {
+  if (!request_to_priority_map_.contains(request)) {
     NOTREACHED() << "SharedResourceScheduler::UpdateRequestPriority(): Tried "
                  << "to update priority for a request which was not "
                  << "scheduled. Request: " << request
@@ -96,7 +95,7 @@ void SharedResourceScheduler::UpdateRequestPriority(
 
 void SharedResourceScheduler::RemoveScheduledRequest(
     const DeviceIdPair& request) {
-  if (!base::Contains(request_to_priority_map_, request)) {
+  if (!request_to_priority_map_.contains(request)) {
     NOTREACHED() << "SharedResourceScheduler::RemoveScheduledRequest(): Tried "
                  << "to remove a scheduled request, but that request was not "
                  << "actually scheduled. Request: " << request;

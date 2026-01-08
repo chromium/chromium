@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -108,7 +107,7 @@ std::optional<CryptAuthKeyBundle> CryptAuthKeyBundle::FromDictionary(
     }
 
     // Return nullopt if duplicate handles exist.
-    if (base::Contains(bundle.handle_to_key_map(), key->handle()))
+    if (bundle.handle_to_key_map().contains(key->handle()))
       return std::nullopt;
 
     bundle.AddKey(*key);
@@ -166,7 +165,7 @@ void CryptAuthKeyBundle::SetActiveKey(const std::string& handle) {
 }
 
 void CryptAuthKeyBundle::DeleteKey(const std::string& handle) {
-  DCHECK(base::Contains(handle_to_key_map_, handle));
+  DCHECK(handle_to_key_map_.contains(handle));
   handle_to_key_map_.erase(handle);
 }
 

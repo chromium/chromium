@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_split.h"
 #include "chromeos/ash/components/disks/disk.h"
@@ -185,7 +184,7 @@ bool FakeDiskMountManager::AddDiskForTest(std::unique_ptr<Disk> disk) {
 
 bool FakeDiskMountManager::AddMountPointForTest(const MountPoint& mount_point) {
   if (mount_point.mount_type == MountType::kDevice &&
-      !base::Contains(disks_, mount_point.source_path)) {
+      !disks_.contains(mount_point.source_path)) {
     // Device mount point must have a disk entry.
     return false;
   }

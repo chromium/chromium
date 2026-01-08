@@ -8,7 +8,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -54,7 +53,7 @@ const char* const kBlocklistedConfigOptions[] = {
 // non-allowlisted keywords. Returns true if no blocklisted items are contained.
 bool ValidateConfigLine(const std::string& line) {
   for (const char* option : kBlocklistedConfigOptions) {
-    if (base::Contains(line, option)) {
+    if (line.contains(option)) {
       return false;
     }
   }
@@ -163,7 +162,7 @@ void FakeKerberosClient::ClearAccounts(
     keep_list.insert(request.principal_names_to_ignore(n));
 
   for (auto it = accounts_.begin(); it != accounts_.end(); /* empty */) {
-    if (base::Contains(keep_list, it->principal_name)) {
+    if (keep_list.contains(it->principal_name)) {
       ++it;
       continue;
     }

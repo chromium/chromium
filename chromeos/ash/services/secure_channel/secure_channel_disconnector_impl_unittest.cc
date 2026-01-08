@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/unguessable_token.h"
@@ -56,7 +55,7 @@ class SecureChannelSecureChannelDisconnectorImplTest : public testing::Test {
   }
 
   bool HasChannelBeenDeleted(const base::UnguessableToken id) {
-    return base::Contains(deleted_request_ids_, id);
+    return deleted_request_ids_.contains(id);
   }
 
  private:

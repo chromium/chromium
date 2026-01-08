@@ -7,7 +7,6 @@
 #include <array>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -100,14 +99,14 @@ ConvertFeatureStatusesToSoftwareFeatureMap(
       continue;
     }
 
-    if (base::Contains(GetSupportedCryptAuthFeatureTypes(), *feature_type) &&
+    if (GetSupportedCryptAuthFeatureTypes().contains(*feature_type) &&
         status.enabled()) {
       marked_supported.insert(
           CryptAuthFeatureTypeToSoftwareFeature(*feature_type));
       continue;
     }
 
-    if (base::Contains(GetEnabledCryptAuthFeatureTypes(), *feature_type) &&
+    if (GetEnabledCryptAuthFeatureTypes().contains(*feature_type) &&
         status.enabled()) {
       marked_enabled.insert(
           CryptAuthFeatureTypeToSoftwareFeature(*feature_type));
@@ -117,8 +116,8 @@ ConvertFeatureStatusesToSoftwareFeatureMap(
 
   CryptAuthFeatureStatusGetter::SoftwareFeatureStateMap feature_states;
   for (const multidevice::SoftwareFeature& feature : kAllSoftwareFeatures) {
-    bool is_marked_supported = base::Contains(marked_supported, feature);
-    bool is_marked_enabled = base::Contains(marked_enabled, feature);
+    bool is_marked_supported = marked_supported.contains(feature);
+    bool is_marked_enabled = marked_enabled.contains(feature);
     bool is_unsupported_feature_marked_enabled =
         !is_marked_supported && is_marked_enabled;
 
@@ -247,7 +246,7 @@ void CryptAuthFeatureStatusGetterImpl::OnBatchGetFeatureStatusesSuccess(
        feature_response.device_feature_statuses()) {
     const std::string& id = device_feature_status.device_id();
 
-    bool was_id_requested = base::Contains(input_device_ids, id);
+    bool was_id_requested = input_device_ids.contains(id);
     base::UmaHistogramBoolean(
         "CryptAuth.DeviceSyncV2.FeatureStatusGetter."
         "WasDeviceInResponseRequested",
@@ -259,8 +258,7 @@ void CryptAuthFeatureStatusGetterImpl::OnBatchGetFeatureStatusesSuccess(
       continue;
     }
 
-    bool is_duplicate_id =
-        base::Contains(id_to_device_software_feature_info_map_, id);
+    bool is_duplicate_id = id_to_device_software_feature_info_map_.contains(id);
     base::UmaHistogramBoolean(
         "CryptAuth.DeviceSyncV2.FeatureStatusGetter.IsDuplicateDeviceId",
         is_duplicate_id);

@@ -13,7 +13,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/check_is_test.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
@@ -437,7 +436,7 @@ bool LanguagePackManager::IsPackAvailable(const std::string& feature_id,
 
   // We search in the static list for the given Pack spec.
   const PackSpecPair spec(feature_id, locale);
-  return base::Contains(GetAllLanguagePackDlcIds(), spec);
+  return GetAllLanguagePackDlcIds().contains(spec);
 }
 
 void LanguagePackManager::InstallPack(const std::string& feature_id,

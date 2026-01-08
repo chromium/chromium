@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/network/hotspot_configuration_handler.h"
 
-#include "base/containers/contains.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/hotspot_util.h"
 #include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"

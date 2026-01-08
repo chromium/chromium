@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/secure_channel/authenticated_channel.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
@@ -55,7 +54,7 @@ void NearbyConnectionManager::AttemptNearbyInitiatorConnection(
     const SecureChannelStateChangeCallback& secure_channel_change_callback,
     ConnectionSuccessCallback success_callback,
     const FailureCallback& failure_callback) {
-  if (base::Contains(id_pair_to_initiator_metadata_map_, device_id_pair)) {
+  if (id_pair_to_initiator_metadata_map_.contains(device_id_pair)) {
     NOTREACHED() << "Tried to add Nearby initiator connection attempt, but "
                  << "one was already active. Device IDs: " << device_id_pair;
   }
@@ -96,7 +95,7 @@ NearbyConnectionManager::GetDeviceIdPairsForRemoteDevice(
 
 bool NearbyConnectionManager::DoesAttemptExist(
     const DeviceIdPair& device_id_pair) {
-  return base::Contains(id_pair_to_initiator_metadata_map_, device_id_pair);
+  return id_pair_to_initiator_metadata_map_.contains(device_id_pair);
 }
 
 void NearbyConnectionManager::NotifyNearbyInitiatorFailure(

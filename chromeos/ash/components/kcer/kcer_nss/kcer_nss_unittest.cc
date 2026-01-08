@@ -1771,8 +1771,7 @@ TEST_F(KcerNssImportPkcs12Test, CertWithRsaKeySuccess) {
         SpanEqual(private_key_map[CKA_EXPONENT_2]->value(), kExponent2));
     EXPECT_TRUE(
         SpanEqual(private_key_map[CKA_COEFFICIENT]->value(), kCoefficient));
-    EXPECT_FALSE(
-        base::Contains(private_key_map, chaps::kForceSoftwareAttribute));
+    EXPECT_FALSE(private_key_map.contains(chaps::kForceSoftwareAttribute));
   }
 
   {
@@ -1794,8 +1793,7 @@ TEST_F(KcerNssImportPkcs12Test, CertWithRsaKeySuccess) {
     EXPECT_TRUE(SpanEqual(public_key_map[CKA_MODULUS]->value(), kModulus));
     EXPECT_TRUE(SpanEqual(public_key_map[CKA_PUBLIC_EXPONENT]->value(),
                           kPublicExponent));
-    EXPECT_FALSE(
-        base::Contains(public_key_map, chaps::kForceSoftwareAttribute));
+    EXPECT_FALSE(public_key_map.contains(chaps::kForceSoftwareAttribute));
   }
 
   {
@@ -2039,8 +2037,7 @@ TEST_F(KcerNssImportPkcs12Test, ImportPkcs12CertEcSuccess) {
     EXPECT_TRUE(
         SpanEqual(private_key_map[CKA_VALUE]->value(), kPrivateKeyValue));
 
-    EXPECT_FALSE(
-        base::Contains(private_key_map, chaps::kForceSoftwareAttribute));
+    EXPECT_FALSE(private_key_map.contains(chaps::kForceSoftwareAttribute));
   }
 
   {
@@ -2061,8 +2058,7 @@ TEST_F(KcerNssImportPkcs12Test, ImportPkcs12CertEcSuccess) {
     EXPECT_TRUE(SpanEqual(public_key_map[CKA_EC_POINT]->value(), kEcPoint));
     EXPECT_TRUE(SpanEqual(public_key_map[CKA_ID]->value(), kPkcs11Id));
 
-    EXPECT_FALSE(
-        base::Contains(public_key_map, chaps::kForceSoftwareAttribute));
+    EXPECT_FALSE(public_key_map.contains(chaps::kForceSoftwareAttribute));
   }
 
   {

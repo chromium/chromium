@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -193,7 +192,7 @@ class SecureChannelMultiplexedChannelImplTest : public testing::Test {
   }
 
   bool HasMessageBeenSent(int message_counter) {
-    return base::Contains(sent_message_counters_, message_counter);
+    return sent_message_counters_.contains(message_counter);
   }
 
   void DisconnectClientAndVerifyState(FakeSingleClientProxy* sending_proxy,
@@ -206,7 +205,7 @@ class SecureChannelMultiplexedChannelImplTest : public testing::Test {
     base::UnguessableToken proxy_id = sending_proxy->GetProxyId();
 
     // All relevant parties should still indicate that the connection is valid.
-    EXPECT_TRUE(base::Contains(id_to_active_proxy_map(), proxy_id));
+    EXPECT_TRUE(id_to_active_proxy_map().contains(proxy_id));
     EXPECT_FALSE(
         fake_authenticated_channel_->has_disconnection_been_requested());
     EXPECT_FALSE(multiplexed_channel_->IsDisconnecting());
@@ -215,7 +214,7 @@ class SecureChannelMultiplexedChannelImplTest : public testing::Test {
 
     // Disconnecting the client should result in the proxy being deleted.
     sending_proxy->NotifyClientDisconnected();
-    EXPECT_FALSE(base::Contains(id_to_active_proxy_map(), proxy_id));
+    EXPECT_FALSE(id_to_active_proxy_map().contains(proxy_id));
 
     if (!is_last_client)
       return;

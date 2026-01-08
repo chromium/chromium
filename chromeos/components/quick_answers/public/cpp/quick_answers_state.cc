@@ -7,7 +7,6 @@
 #include <cstdint>
 
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"

@@ -12,7 +12,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -238,9 +237,8 @@ const std::vector<const char*>& GetValidManagedVPNTypes() {
 }
 
 void AddKeyToList(const char* key, base::Value::List* list) {
-  base::Value key_value(key);
-  if (!base::Contains(*list, key_value)) {
-    list->Append(std::move(key_value));
+  if (!list->contains(key)) {
+    list->Append(key);
   }
 }
 
@@ -270,7 +268,7 @@ base::flat_set<std::string> GetStringsFromDicts(const base::Value::List& dicts,
 bool FieldIsRecommended(const base::Value::Dict& object,
                         const std::string& field_name) {
   const base::Value::List* recommended = object.FindList(::onc::kRecommended);
-  return recommended && base::Contains(*recommended, base::Value(field_name));
+  return recommended && recommended->contains(field_name);
 }
 
 bool FieldIsSetToValueOrRecommended(const base::Value::Dict& object,

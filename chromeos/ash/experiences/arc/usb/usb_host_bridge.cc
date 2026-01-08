@@ -7,7 +7,6 @@
 #include <unordered_set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -358,7 +357,7 @@ void ArcUsbHostBridge::OnDeviceAdded(
   DCHECK(device_info);
 
   // Update the device list.
-  DCHECK(!base::Contains(devices_, device_info->guid));
+  DCHECK(!devices_.contains(device_info->guid));
   std::string guid = device_info->guid;
   devices_.insert(std::make_pair(guid, std::move(device_info)));
 

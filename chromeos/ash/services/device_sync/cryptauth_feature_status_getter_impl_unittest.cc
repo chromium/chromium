@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
@@ -68,7 +67,7 @@ cryptauthv2::DeviceFeatureStatus ConvertDeviceToDeviceFeatureStatus(
   int64_t last_modified_time_offset_millis = 0;
   for (CryptAuthFeatureType feature_type : feature_types) {
     bool is_supported_feature_type =
-        base::Contains(GetSupportedCryptAuthFeatureTypes(), feature_type);
+        GetSupportedCryptAuthFeatureTypes().contains(feature_type);
 
     const auto it = device.feature_states.find(
         CryptAuthFeatureTypeToSoftwareFeature(feature_type));
@@ -94,8 +93,7 @@ cryptauthv2::DeviceFeatureStatus ConvertDeviceToDeviceFeatureStatus(
     if (is_supported_feature_type) {
       feature_status->set_enabled(is_supported);
     } else {
-      EXPECT_TRUE(
-          base::Contains(GetEnabledCryptAuthFeatureTypes(), feature_type));
+      EXPECT_TRUE(GetEnabledCryptAuthFeatureTypes().contains(feature_type));
       feature_status->set_enabled(is_enabled);
     }
   }

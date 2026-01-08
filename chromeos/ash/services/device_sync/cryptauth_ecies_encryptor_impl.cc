@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -108,7 +107,7 @@ void CryptAuthEciesEncryptorImpl::OnSingleOutputFinished(
     const std::string& id,
     const std::optional<std::string>& output) {
   DCHECK_GT(remaining_batch_size_, 0u);
-  DCHECK(base::Contains(id_to_input_map_, id));
+  DCHECK(id_to_input_map_.contains(id));
   DCHECK(!output || !output->empty());
 
   id_to_output_map_.insert_or_assign(id, output);

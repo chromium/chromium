@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -127,8 +126,8 @@ bool OnTaskBlocklist::MaybeSetURLRestrictionLevel(
   }
 
   // Don't let unintended update of restrictions level for tabs.
-  if (base::Contains(parent_tab_to_nav_filters_, tab_id) ||
-      base::Contains(child_tab_to_nav_filters_, tab_id)) {
+  if (parent_tab_to_nav_filters_.contains(tab_id) ||
+      child_tab_to_nav_filters_.contains(tab_id)) {
     return false;
   } else {
     child_tab_to_nav_filters_[tab_id] = restriction_level;
@@ -183,13 +182,13 @@ void OnTaskBlocklist::RefreshForUrlBlocklist(content::WebContents* tab) {
   // rewritten (ex. google drive home page to user authenticated google drive
   // home page.). Note: The navigation throttler is responsible for updating the
   // web contents and their restriction levels.
-  if (base::Contains(child_tab_to_nav_filters_, tab_id)) {
+  if (child_tab_to_nav_filters_.contains(tab_id)) {
     restriction_level = child_tab_to_nav_filters_[tab_id];
     blocklist_source =
         std::make_unique<OnTaskBlocklistSource>(url, restriction_level);
     current_page_restriction_level_ = restriction_level;
 
-  } else if (base::Contains(parent_tab_to_nav_filters_, tab_id)) {
+  } else if (parent_tab_to_nav_filters_.contains(tab_id)) {
     restriction_level = parent_tab_to_nav_filters_[tab_id];
     blocklist_source =
         std::make_unique<OnTaskBlocklistSource>(url, restriction_level);
@@ -225,14 +224,14 @@ void OnTaskBlocklist::RefreshForUrlBlocklist(content::WebContents* tab) {
 
 void OnTaskBlocklist::RemoveParentFilter(content::WebContents* tab) {
   const SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
-  if (tab_id.is_valid() && base::Contains(parent_tab_to_nav_filters_, tab_id)) {
+  if (tab_id.is_valid() && parent_tab_to_nav_filters_.contains(tab_id)) {
     parent_tab_to_nav_filters_.erase(tab_id);
   }
 }
 
 void OnTaskBlocklist::RemoveChildFilter(content::WebContents* tab) {
   const SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
-  if (tab_id.is_valid() && base::Contains(child_tab_to_nav_filters_, tab_id)) {
+  if (tab_id.is_valid() && child_tab_to_nav_filters_.contains(tab_id)) {
     child_tab_to_nav_filters_.erase(tab_id);
   }
 }
@@ -254,8 +253,7 @@ bool OnTaskBlocklist::CanPerformOneLevelNavigation(content::WebContents* tab) {
   // committed URL is in the same domain as the original URL that was being
   // tracked. This helps us determine if we have already navigated 1LD.
   const SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
-  if (tab_id.is_valid() &&
-      base::Contains(one_level_deep_original_url_, tab_id)) {
+  if (tab_id.is_valid() && one_level_deep_original_url_.contains(tab_id)) {
     const GURL one_level_deep_original_url =
         one_level_deep_original_url_[tab_id];
     const GURL last_committed_url = tab->GetLastCommittedURL();
@@ -277,7 +275,7 @@ bool OnTaskBlocklist::IsParentTab(content::WebContents* tab) {
     return false;
   }
 
-  return base::Contains(parent_tab_to_nav_filters_, tab_id);
+  return parent_tab_to_nav_filters_.contains(tab_id);
 }
 
 const policy::URLBlocklistManager* OnTaskBlocklist::url_blocklist_manager() {

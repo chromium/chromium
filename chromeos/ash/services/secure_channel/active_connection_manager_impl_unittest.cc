@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -196,9 +195,9 @@ class SecureChannelActiveConnectionManagerImplTest : public testing::Test {
       const std::string& device_id) {
     ConnectionDetails connection_details(device_id,
                                          ConnectionMedium::kBluetoothLowEnergy);
-    if (!base::Contains(fake_multiplexed_channel_factory_
-                            ->connection_details_to_active_channel_map(),
-                        connection_details)) {
+    if (!fake_multiplexed_channel_factory_
+             ->connection_details_to_active_channel_map()
+             .contains(connection_details)) {
       return nullptr;
     }
 

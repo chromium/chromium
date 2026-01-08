@@ -345,7 +345,7 @@ void FakeSessionManagerClient::LoginScreenStorageRetrieve(
     LoginScreenStorageRetrieveCallback callback) {
   // Default value which is checked in tests.
   std::string data = "Test";
-  if (base::Contains(login_screen_storage_, key)) {
+  if (login_screen_storage_.contains(key)) {
     data = login_screen_storage_[key];
   }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

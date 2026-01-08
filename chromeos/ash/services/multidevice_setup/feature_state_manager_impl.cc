@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -393,7 +392,7 @@ mojom::FeatureState FeatureStateManagerImpl::ComputeFeatureState(
 bool FeatureStateManagerImpl::IsAllowedByPolicy(mojom::Feature feature) {
   // If no policy preference exists for this feature, the feature is implicitly
   // allowed.
-  if (!base::Contains(feature_to_allowed_pref_name_map_, feature)) {
+  if (!feature_to_allowed_pref_name_map_.contains(feature)) {
     return true;
   }
 
@@ -560,7 +559,7 @@ mojom::FeatureState FeatureStateManagerImpl::GetEnabledOrDisabledState(
                 : mojom::FeatureState::kDisabledByUser);
   }
 
-  if (!base::Contains(feature_to_enabled_pref_name_map_, feature)) {
+  if (!feature_to_enabled_pref_name_map_.contains(feature)) {
     NOTREACHED() << "FeatureStateManagerImpl::GetEnabledOrDisabledState(): "
                  << "Feature not present in \"enabled pref\" map: " << feature;
   }
