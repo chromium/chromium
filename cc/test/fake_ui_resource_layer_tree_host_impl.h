@@ -26,6 +26,8 @@ class FakeUIResourceLayerTreeHostImpl : public FakeLayerTreeHostImpl {
 
   viz::ResourceId ResourceIdForUIResource(UIResourceId uid) const override;
 
+  gfx::Size GetUIResourceSize(UIResourceId uid) const override;
+
   bool IsUIResourceOpaque(UIResourceId uid) const override;
 
  private:

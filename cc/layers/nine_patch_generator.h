@@ -118,6 +118,7 @@ class CC_EXPORT NinePatchGenerator {
       viz::CompositorRenderPass* render_pass,
       viz::SharedQuadState* shared_quad_state,
       const std::vector<Patch>& patches,
+      const gfx::Size& resource_size,
       const gfx::Vector2d& offset = gfx::Vector2d());
 
   void AsValueInto(base::trace_event::TracedValue* state) const;
