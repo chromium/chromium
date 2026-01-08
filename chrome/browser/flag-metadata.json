@@ -320,6 +320,11 @@
     "expiry_milestone": 147
   },
   {
+    "name": "android-media-picker",
+    "owners": [ "hscham@chromium.org", "mbujak@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "android-no-surface-sync-for-browser-controls",
     "owners": ["peilinwang@google.com"],
     "expiry_milestone": 130
@@ -10340,6 +10345,11 @@
     "name": "user-education-experience-v2",
     "owners": [ "dfried@chromium.org", "mickeyburks@chromium.org", "kayceh@chromium.org", "estalin@chromium.org" ],
     "expiry_milestone": 130
+  },
+  {
+    "name": "user-media-screen-capturing",
+    "owners": [ "hscham@chromium.org", "mbujak@google.com" ],
+    "expiry_milestone": 160
   },
   {
     "name": "user-value-default-browser-strings",

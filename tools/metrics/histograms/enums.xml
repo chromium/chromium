@@ -10131,6 +10131,7 @@ from previous Chrome versions.
   <int value="-1440152291" label="disable-gesture-typing"/>
   <int value="-1439701253"
       label="EnableExternalKeyboardsInDiagnosticsApp:enabled"/>
+  <int value="-1439195250" label="AndroidMediaPicker:disabled"/>
   <int value="-1438279809" label="GamepadExtensions:disabled"/>
   <int value="-1437913839" label="AndroidAppIntegrationSafeSearch:disabled"/>
   <int value="-1437526584" label="HelpAppReleaseNotes:enabled"/>
@@ -11553,6 +11554,7 @@ from previous Chrome versions.
       label="WebViewCpuAffinityRestrictToLittleCores:enabled"/>
   <int value="-950384924" label="OmniboxDisableInstantExtendedLimit:enabled"/>
   <int value="-949956361" label="ControlledFrame:disabled"/>
+  <int value="-949663155" label="AndroidMediaPicker:enabled"/>
   <int value="-949289795" label="PdfInk2:disabled"/>
   <int value="-949178861" label="enable-new-avatar-menu"/>
   <int value="-949137285" label="EnableRootNsDnsProxy:enabled"/>
