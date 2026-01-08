@@ -652,6 +652,11 @@ VISIT_PROTO_FIELDS(const sync_pb::DeviceInfoSpecifics& proto) {
   VISIT_ENUM(device_form_factor);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::DesktopToMobilePromoMessage& proto) {
+  VISIT(push_notification);
+  VISIT(promo_type);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::EligiblePriceRange& proto) {
   VISIT(currency);
   VISIT(min_price_in_micros);
@@ -1244,6 +1249,22 @@ VISIT_PROTO_FIELDS(const sync_pb::PrintersAuthorizationServerSpecifics& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::PriorityPreferenceSpecifics& proto) {
   VISIT(preference);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::PushNotificationMessage& proto) {
+  VISIT(title);
+  VISIT(text);
+  VISIT_REP(icon);
+  VISIT(favicon);
+  VISIT(destination_url);
+  VISIT(placeholder_title);
+  VISIT(placeholder_body);
+  VISIT(push_notification_client_id);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::PushNotificationMessage::Image& proto) {
+  VISIT(url);
+  VISIT(alt_text);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ReadingListSpecifics& proto) {

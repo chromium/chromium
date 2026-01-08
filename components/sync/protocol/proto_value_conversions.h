@@ -33,6 +33,7 @@ class CookieSpecifics;
 class CrossUserSharingPublicKey;
 class DebugEventInfo;
 class DebugInfo;
+class DesktopToMobilePromoMessage;
 class DeviceDetails;
 class DeviceInfoSpecifics;
 class DictionarySpecifics;
@@ -65,6 +66,7 @@ class PrinterSpecifics;
 class PrintersAuthorizationServerSpecifics;
 class PriorityPreferenceSpecifics;
 class ProductComparisonSpecifics;
+class PushNotificationMessage;
 class ReadingListSpecifics;
 class SavedTabGroupSpecifics;
 class SearchEngineSpecifics;
@@ -162,6 +164,10 @@ base::Value DebugEventInfoToValue(const sync_pb::DebugEventInfo& proto);
 
 base::Value DebugInfoToValue(const sync_pb::DebugInfo& proto);
 
+base::Value DesktopToMobilePromoMessageToValue(
+    const sync_pb::DesktopToMobilePromoMessage&
+        desktop_to_mobile_promo_message);
+
 base::Value DeviceDetailsToValue(const sync_pb::DeviceDetails& device_details);
 
 base::Value DeviceInfoSpecificsToValue(
@@ -255,6 +261,9 @@ base::Value PriorityPreferenceSpecificsToValue(
 
 base::Value ProductComparisonSpecificsToValue(
     const sync_pb::ProductComparisonSpecifics& product_comparison_specifics);
+
+base::Value PushNotificationMessageToValue(
+    const sync_pb::PushNotificationMessage& push_notification_message);
 
 base::Value CrossUserSharingPublicKeyToValue(
     const sync_pb::CrossUserSharingPublicKey& proto);

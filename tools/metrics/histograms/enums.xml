@@ -24943,6 +24943,8 @@ Called by update_net_error_codes.py.-->
   <int value="9" label="DiscoveryRequest"/>
   <int value="10" label="WebRTCSignalingFrame"/>
   <int value="11" label="OptimizationGuidePushNotification"/>
+  <int value="12" label="SendTabToSelfPushNotification"/>
+  <int value="13" label="DesktopToMobilePromoPushNotification"/>
 </enum>
 
 <enum name="SharingScreenshotAction">

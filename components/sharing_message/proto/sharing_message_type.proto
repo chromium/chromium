@@ -16,6 +16,7 @@ option optimize_for = LITE_RUNTIME;
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Keep this in sync with
 // SharingMessageType in enums.xml.
+// LINT.IfChange(MessageType)
 enum MessageType {
   UNKNOWN_MESSAGE = 0;
   PING_MESSAGE = 1;
@@ -30,4 +31,6 @@ enum MessageType {
   WEB_RTC_SIGNALING_FRAME = 10;
   OPTIMIZATION_GUIDE_PUSH_NOTIFICATION = 11;
   SEND_TAB_TO_SELF_PUSH_NOTIFICATION = 12;
+  DESKTOP_TO_MOBILE_PROMO_PUSH_NOTIFICATION = 13;
 }
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:SharingMessageType)
