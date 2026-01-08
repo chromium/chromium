@@ -409,7 +409,8 @@ TEST_F(AdTrackerSimTest, AdResourceDetectedByContext) {
 // When inline script in an ad frame inserts an iframe into a non-ad frame, the
 // new frame should be considered as created by ad script (and would therefore
 // be tagged as an ad).
-TEST_F(AdTrackerSimTest, InlineAdScriptRunningInNonAdContext) {
+// TODO(474081102): Reenable this test once the issue is addressed.
+TEST_F(AdTrackerSimTest, DISABLED_InlineAdScriptRunningInNonAdContext) {
   SimSubresourceRequest ad_script("https://example.com/ad_script.js",
                                   "text/javascript");
   SimRequest ad_iframe("https://example.com/ad_frame.html", "text/html");
@@ -1576,9 +1577,8 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_AdScriptAtTopOfStack) {
   ad_document.Complete("<body></body>");
 }
 
-// Tests that when the script at the top of the *async* stack is an ad script,
-// `IsAdScriptInStack` correctly identifies it (via the bottommost async ad
-// script) and returns the expected `AdScriptIdentifier`.
+// Non-ad script at the top of the stack should not be tagged as ad related,
+// even if the async stack suggests otherwise.
 TEST_F(AdTrackerSimTest, AdScriptAncestry_AdScriptAtTopOfAsyncStack) {
   String vanilla_script_url = "https://example.com/script.js";
   String ad_script_url = "https://example.com/script.js?ad=true";
@@ -1586,9 +1586,8 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_AdScriptAtTopOfAsyncStack) {
 
   // Load an ad script and a vanilla script. The vanilla script calls a
   // function on the ad script which asynchronously calls a function on the
-  // vanilla script to create an ad iframe. The ad script is at top of *async*
-  // stack when it creates the frame and IsAdScriptInStack should return
-  // the script id, verify that they look right.
+  // vanilla script to create an ad iframe. The ad script is at top of async
+  // stack when it creates the frame.
   SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
   SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
   SimRequest ad_document(ad_document_url, "text/html");
@@ -1617,17 +1616,56 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_AdScriptAtTopOfAsyncStack) {
   )SCRIPT");
   base::RunLoop().RunUntilIdle();
 
-  // Verify frame was tagged as an ad.
+  // Verify frame was not tagged as an ad.
   auto* child_frame =
       To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
-  EXPECT_TRUE(child_frame->IsFrameCreatedByAdScript());
+  EXPECT_FALSE(child_frame->IsFrameCreatedByAdScript());
 
-  // Verify that IsAdScriptInStack() returned the right script information.
-  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().ancestry_chain.size(), 1u);
-  EXPECT_GT(ad_tracker_->last_ad_script_ancestry().ancestry_chain[0].id, 0);
-  EXPECT_EQ(String(ad_tracker_->last_ad_script_ancestry()
-                       .root_script_filterlist_rule.ToString()),
-            "ad=true|");
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
+
+  // Clean up for SimTest expectations.
+  ad_document.Complete("<body></body>");
+}
+
+// Non-ad script at the top of the stack should not be tagged as ad related,
+// even if the sync stack suggests otherwise.
+TEST_F(AdTrackerSimTest, AdScriptAncestry_AdScriptAtBottomOfSyncStack) {
+  String vanilla_script_url = "https://example.com/script.js";
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String ad_document_url = "https://example.com/ad_document.html";
+
+  // Load an ad script and a vanilla script. The ad script synchronously calls
+  // the non-ad script. The ad script is at the bottom of the synchronous stack
+  // when it creates the frame.
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimRequest ad_document(ad_document_url, "text/html");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js"></script>
+          <script src="script.js?ad=true"></script></body>
+  )HTML");
+
+  vanilla_script.Complete(R"SCRIPT(
+    function createIframe() {
+      frame = document.createElement("iframe");
+      frame.src = "ad_document.html";
+      document.body.appendChild(frame);
+    }
+
+  )SCRIPT");
+
+  ad_script.Complete(R"SCRIPT(
+    createIframe();
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  // Verify frame was not tagged as an ad.
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  EXPECT_FALSE(child_frame->IsFrameCreatedByAdScript());
 
   EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
   EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));

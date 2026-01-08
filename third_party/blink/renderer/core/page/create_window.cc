@@ -259,7 +259,7 @@ static void MaybeLogWindowOpen(LocalFrame& opener_frame) {
 
   bool is_ad_frame = opener_frame.IsAdFrame();
   bool is_ad_script_in_stack =
-      ad_tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
+      ad_tracker->IsAdScriptInStack(AdTracker::StackType::kTopOnly);
 
   // Log to UKM.
   ukm::UkmRecorder* ukm_recorder = opener_frame.GetDocument()->UkmRecorder();

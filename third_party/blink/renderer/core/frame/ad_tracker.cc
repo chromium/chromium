@@ -226,7 +226,7 @@ void AdTracker::Will(const probe::ExecuteScript& probe) {
   // probe::AsyncTasks.
   std::optional<AdScriptIdentifier> ancestor_ad_script;
   if (!is_ad && is_inline_script &&
-      IsAdScriptInStackHelper(StackType::kBottomAndTop,
+      IsAdScriptInStackHelper(StackType::kTopOnly,
                               /*ignore_monkey_patch=*/MonkeyPatchableApi::kNone,
                               &ancestor_ad_script)) {
     AdProvenance ad_provenance;
@@ -325,7 +325,7 @@ bool AdTracker::CalculateIfAdSubresource(
   if (scan_stack_for_ads) {
     known_ad =
         known_ad || IsAdScriptInStackHelper(
-                        StackType::kBottomAndTop,
+                        StackType::kTopOnly,
                         /*ignore_monkey_patch=*/MonkeyPatchableApi::kNone,
                         &ancestor_ad_script);
   }
@@ -357,7 +357,7 @@ bool AdTracker::CalculateIfAdSubresource(
 void AdTracker::DidCreateAsyncTask(probe::AsyncTaskContext* task_context) {
   DCHECK(task_context);
   std::optional<AdScriptIdentifier> id;
-  if (IsAdScriptInStackHelper(StackType::kBottomAndTop,
+  if (IsAdScriptInStackHelper(StackType::kTopOnly,
                               /*ignore_monkey_patch=*/MonkeyPatchableApi::kNone,
                               &id)) {
     task_context->SetAdTask(id);
@@ -366,23 +366,12 @@ void AdTracker::DidCreateAsyncTask(probe::AsyncTaskContext* task_context) {
 
 void AdTracker::DidStartAsyncTask(probe::AsyncTaskContext* task_context) {
   DCHECK(task_context);
-  CHECK(task_context->IsAdTask());
-  if (running_ad_async_tasks_ == 0) {
-    DCHECK(!bottom_most_async_ad_script_.has_value());
-    bottom_most_async_ad_script_ = task_context->ad_identifier();
-  }
-
-  running_ad_async_tasks_ += 1;
+  async_script_stack_.push_back(task_context->ad_identifier());
 }
 
 void AdTracker::DidFinishAsyncTask(probe::AsyncTaskContext* task_context) {
   DCHECK(task_context);
-  CHECK(task_context->IsAdTask());
-  DCHECK_GE(running_ad_async_tasks_, 1);
-  running_ad_async_tasks_ -= 1;
-  if (running_ad_async_tasks_ == 0) {
-    bottom_most_async_ad_script_.reset();
-  }
+  async_script_stack_.pop_back();
 }
 
 bool AdTracker::IsAdScriptInStack(StackType stack_type,
@@ -411,8 +400,9 @@ bool AdTracker::IsAdScriptInStackHelper(
     std::optional<AdScriptIdentifier>* out_ad_script) {
   v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
   ExecutionContext* execution_context = GetCurrentExecutionContext(isolate);
-  if (!execution_context)
+  if (!execution_context) {
     return false;
+  }
 
   // If we're in an ad context, then no matter what the executing script is it's
   // considered an ad. To enhance traceability, we attempt to return the
@@ -430,58 +420,68 @@ bool AdTracker::IsAdScriptInStackHelper(
     return true;
   }
 
-  // We check this after checking for an ad context because we don't keep track
-  // of script ids for ad frames.
-  if (bottom_most_ad_script_.has_value()) {
-    if (out_ad_script) {
-      auto it = ad_script_data_.find(bottom_most_ad_script_.value());
-      if (it != ad_script_data_.end()) {
-        *out_ad_script = it->value.id;
+  if (stack_type == StackType::kBottomOnly) {
+    // We check this after checking for an ad context because we don't keep
+    // track of script ids for ad frames.
+    if (bottom_most_ad_script_.has_value()) {
+      if (out_ad_script) {
+        auto it = ad_script_data_.find(bottom_most_ad_script_.value());
+        if (it != ad_script_data_.end()) {
+          *out_ad_script = it->value.id;
+        }
+      }
+      return true;
+    }
+
+    // We check if async is on stack after sync, because sync is likely easier
+    // to reason about.
+    for (auto& script : async_script_stack_) {
+      if (script.has_value()) {
+        if (out_ad_script) {
+          *out_ad_script = *script;
+        }
+        return true;
       }
     }
-    return true;
-  }
-
-  // We check if async is on stack after sync, because sync is likely easier to
-  // reason about.
-  if (running_ad_async_tasks_ > 0) {
-    if (out_ad_script) {
-      *out_ad_script = bottom_most_async_ad_script_;
-    }
-    return true;
-  }
-
-  if (stack_type == StackType::kBottomOnly)
     return false;
+  }
 
-  // If we're not aware of any ad scripts at all, or any scripts in this
-  // context, don't bother looking at the stack.
+  // If we're not aware of any ad scripts at all don't bother looking at the
+  // stack.
   if (ad_script_data_.empty()) {
     return false;
   }
-  if (auto it = context_known_ad_scripts_.find(execution_context);
-      it == context_known_ad_scripts_.end() || it->value.empty()) {
-    return false;
-  }
 
-  // The stack scanned by the AdTracker contains entry points into the stack
-  // (e.g., when v8 is executed) but not the entire stack. For a small cost we
-  // can also check the top of the stack (this is much cheaper than getting the
-  // full stack from v8).
   int top_script_id = v8::StackTrace::CurrentScriptId(isolate);
   if (top_script_id <= 0) {
+    // There is nothing on the v8 stack. This means that we're in some
+    // asynchronous continuation in blink code. Fall back on the async stack.
+    if (!async_script_stack_.empty() &&
+        async_script_stack_.back().has_value()) {
+      if (out_ad_script) {
+        *out_ad_script = async_script_stack_.back();
+      }
+      return true;
+    }
+
     return false;
   }
 
   auto script_it = ad_script_data_.find(top_script_id);
   if (script_it == ad_script_data_.end()) {
+    // The top of the stack is not registered ad script. Is it from an ad frame?
+
+    // If the top of the stack is non-ad, then we consider the stack to be
+    // non-ad related, as publisher script may be running an event callback.
+    // TODO(jkarlin): Address publisher monkeypatch methods that are merely
+    // passively invoking the ad's intent.
     return false;
   }
 
-  // Heuristic to avoid misattributing calls due to monkey patching. If the top
-  // script is an ad script but not the bottom, then determine if the API call
-  // was initiated by ad script or not. If it wasn't initiated by ad script,
-  // then let it through once.
+  // The top of the stack is an ad script. This heuristic avoids misattributing
+  // calls due to monkey patching. If the top script is an ad script but not the
+  // bottom, then determine if the API call was initiated by ad script or not.
+  // If it wasn't initiated by ad script, then let it through once.
   if (ignore_monkey_patch != MonkeyPatchableApi::kNone &&
       IsFirstCallOfApiFromNonAdScript(isolate, ignore_monkey_patch)) {
     return false;
@@ -598,8 +598,9 @@ bool AdTracker::IsKnownAdScript(ExecutionContext* execution_context,
   if (!execution_context)
     return false;
 
-  if (IsKnownAdExecutionContext(execution_context))
+  if (IsKnownAdExecutionContext(execution_context)) {
     return true;
+  }
 
   if (url.empty()) {
     return false;

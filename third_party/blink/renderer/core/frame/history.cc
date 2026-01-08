@@ -75,7 +75,7 @@ void MaybeRecordHistoryPushStateUkm(LocalDOMWindow* window) {
 
   bool from_ad = window->GetFrame()->IsAdFrame() ||
                  ad_tracker->IsAdScriptInStack(
-                     AdTracker::StackType::kBottomAndTop,
+                     AdTracker::StackType::kTopOnly,
                      /*ignore_monkey_patch=*/
                      AdTracker::MonkeyPatchableApi::kHistoryPushState,
                      /*out_ad_script_ancestry=*/nullptr);

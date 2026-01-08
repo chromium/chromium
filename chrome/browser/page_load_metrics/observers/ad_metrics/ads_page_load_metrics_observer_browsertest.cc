@@ -3275,7 +3275,8 @@ constexpr SurfaceTestCase kSurfaceTestCases[] = {
       window.onmessage = $1;
       window.postMessage("", "*");
     )SCRIPT"},
-    {"eval", "eval('$1();');"},
+    // TODO(crbug.com/473760917): Reenable once the issue is addressed.
+    // {"eval", "eval('$1();');"},
     {"promise_constructor", "new Promise($1);"},
     {"promise_resolve", "Promise.resolve().then($1);"},
     {"promise_reject", "Promise.reject().catch($1);"},

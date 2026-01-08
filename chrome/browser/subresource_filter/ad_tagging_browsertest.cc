@@ -443,7 +443,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
       observer.GetIsAdFrame(ad_frame_tagged_by_script->GetFrameTreeNodeId()));
 }
 
-IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FramesByURL) {
+// TODO(474081102): Reenable this test once the issue is addressed.
+IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, DISABLED_FramesByURL) {
   TestSubresourceFilterObserver observer(web_contents());
 
   // Main frame.

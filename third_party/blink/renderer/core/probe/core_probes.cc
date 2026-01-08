@@ -67,9 +67,8 @@ AsyncTask::AsyncTask(ExecutionContext* context,
                                    : nullptr),
       task_context_(task_context),
       recurring_(step),
-      ad_tracker_(enabled && task_context->IsAdTask()
-                      ? AdTracker::FromExecutionContext(context)
-                      : nullptr) {
+      ad_tracker_(enabled ? AdTracker::FromExecutionContext(context)
+                          : nullptr) {
   // TODO(crbug.com/1275875): Verify that `task_context` was scheduled, but
   // not yet canceled. Currently we don't have enough confidence that such
   // a CHECK wouldn't break blink.

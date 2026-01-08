@@ -2044,7 +2044,7 @@ LocalFrame::LocalFrame(
   is_frame_created_by_ad_script_ =
       !IsMainFrame() && ad_tracker_ &&
       ad_tracker_->IsAdScriptInStack(
-          AdTracker::StackType::kBottomAndTop,
+          AdTracker::StackType::kTopOnly,
           /*ignore_monkey_patch=*/AdTracker::MonkeyPatchableApi::kNone,
           &ad_script_ancestry_);
 
@@ -2753,7 +2753,7 @@ void LocalFrame::SetAdEvidence(const FrameAdEvidence& ad_evidence) {
 
 bool LocalFrame::IsAdScriptInStack() const {
   return ad_tracker_ &&
-         ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
+         ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kTopOnly);
 }
 
 std::optional<AdScriptIdentifier> LocalFrame::CreationAdScript() const {
