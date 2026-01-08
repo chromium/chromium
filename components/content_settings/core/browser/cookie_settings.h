@@ -39,15 +39,14 @@ namespace content_settings {
 // This enum is used in prefs, do not change values.
 // The enum needs to correspond to CookieControlsMode in enums.xml.
 // This enum needs to be kept in sync with the enum of the same name in
-// browser/resources/settings/site_settings/constants.js.
+// chrome/browser/resources/settings/site_settings/constants.ts.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.content_settings
 // LINT.IfChange(CookieControlsMode)
 enum class CookieControlsMode {
-  kOff = 0,
+  kOff = 0,  // Behaviorally equivalent to `kIncognitoOnly` as of June 2025.
   kBlockThirdParty = 1,
   kIncognitoOnly = 2,
-  kLimited = 3,
-  kMaxValue = kLimited,
+  kMaxValue = kIncognitoOnly,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:CookieControlsMode, //chrome/browser/resources/settings/site_settings/constants.ts:CookieControlsMode)
 

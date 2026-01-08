@@ -112,7 +112,6 @@ export enum CookieControlsMode {
   OFF = 0,
   BLOCK_THIRD_PARTY = 1,
   INCOGNITO_ONLY = 2,
-  LIMITED = 3,
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:CookieControlsMode, //components/content_settings/core/browser/cookie_settings.h:CookieControlsMode)
 

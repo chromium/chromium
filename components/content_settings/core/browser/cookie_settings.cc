@@ -343,7 +343,6 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() const {
 
   switch (mode) {
     case CookieControlsMode::kBlockThirdParty:
-    case CookieControlsMode::kLimited:
       return true;
     case CookieControlsMode::kIncognitoOnly:
     case CookieControlsMode::kOff:
