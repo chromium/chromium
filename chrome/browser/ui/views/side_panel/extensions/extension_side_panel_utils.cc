@@ -176,10 +176,19 @@ void CloseGlobalExtensionSidePanel(BrowserWindowInterface* browser_window,
 // Declared in extension_side_panel_utils.h
 void CloseContextualExtensionSidePanel(BrowserWindowInterface* browser_window,
                                        content::WebContents* web_contents,
-                                       const ExtensionId& extension_id,
-                                       std::optional<int> window_id) {
+                                       const ExtensionId& extension_id) {
   const SidePanelEntry::Key extension_key(SidePanelEntry::Id::kExtension,
                                           extension_id);
+
+  // Get the registry for the specific tab (whether active or inactive).
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
+  SidePanelRegistry* contextual_registry =
+      tab->GetTabFeatures()->side_panel_registry();
+
+  // Check if this extension is specifically active in this tab's registry.
+  if (!IsKeyActiveInRegistry(contextual_registry, extension_key)) {
+    return;
+  }
 
   // Determine the active web contents in the window.
   content::WebContents* active_web_contents =
@@ -197,25 +206,10 @@ void CloseContextualExtensionSidePanel(BrowserWindowInterface* browser_window,
     return;
   }
 
-  // If an inactive tab is specified, check whether it has an open contextual
-  // panel belonging to this extension. If it does, reset that panel (so it
-  // doesn’t reopen when you switch back to the tab).
-  if (web_contents) {
-    tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
-    SidePanelRegistry* contextual_registry =
-        tab->GetTabFeatures()->side_panel_registry();
-    if (IsKeyActiveInRegistry(contextual_registry, extension_key)) {
-      contextual_registry->ResetActiveEntryFor(
-          ExtensionSidePanelCoordinator::GetPanelType());
-      return;
-    }
-  }
-
-  // No contextual panel for this extension is open, close/reset global panel if
-  // `window_id` is provided.
-  if (window_id.has_value()) {
-    CloseGlobalExtensionSidePanel(browser_window, extension_id);
-  }
+  // If an inactive tab is specified, reset that panel (so it doesn’t reopen
+  // when you switch back to the tab).
+  contextual_registry->ResetActiveEntryFor(
+      ExtensionSidePanelCoordinator::GetPanelType());
 }
 
 }  // namespace extensions::side_panel_util

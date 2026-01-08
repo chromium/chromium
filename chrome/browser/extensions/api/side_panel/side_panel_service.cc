@@ -78,6 +78,25 @@ bool SidePanelService::HasSidePanelAvailableForTab(const Extension& extension,
          options.path.has_value();
 }
 
+bool SidePanelService::HasContextualPanelAvailableForTab(
+    const Extension& extension,
+    TabId tab_id,
+    bool verify_options) {
+  auto panels_iter = panels_.find(extension.id());
+  if (panels_iter != panels_.end()) {
+    auto tab_panels_iter = panels_iter->second.find(tab_id);
+    if (tab_panels_iter != panels_iter->second.end()) {
+      const auto& options = tab_panels_iter->second;
+      if (verify_options) {
+        CHECK(options.path && options.enabled && *options.enabled);
+      }
+      return options.path.has_value() && options.enabled.has_value() &&
+             options.enabled.value();
+    }
+  }
+  return false;
+}
+
 api::side_panel::PanelOptions SidePanelService::GetOptions(
     const Extension& extension,
     std::optional<TabId> id) {
@@ -286,22 +305,9 @@ base::expected<bool, std::string> SidePanelService::OpenSidePanelForTab(
         base::StringPrintf("No active side panel for tabId: %d", tab_id));
   }
 
-  // If we do have an active panel, check if it's a contextual panel.
-  bool has_contextual_panel = false;
-  auto panels_iter = panels_.find(extension.id());
-  if (panels_iter != panels_.end()) {
-    auto tab_panels_iter = panels_iter->second.find(tab_id);
-    if (tab_panels_iter != panels_iter->second.end()) {
-      auto& options = tab_panels_iter->second;
-      CHECK(options.path);
-      CHECK(options.enabled.has_value());
-      CHECK(options.enabled.value());
-      has_contextual_panel = true;
-    }
-  }
-
   // Open the appropriate panel.
-  if (has_contextual_panel) {
+  if (HasContextualPanelAvailableForTab(extension, tab_id,
+                                        /*verify_options=*/true)) {
     side_panel_util::OpenContextualExtensionSidePanel(
         *browser_window, *web_contents, extension.id());
   } else {
@@ -375,15 +381,15 @@ base::expected<bool, std::string> SidePanelService::CloseSidePanelForTab(
         "The specified tab does not belong to the specified window.");
   }
 
-  // Verify that an active side panel (contextual or global) exists for the tab.
-  api::side_panel::PanelOptions panel_options = GetOptions(extension, tab_id);
-  if (!panel_options.path || !panel_options.enabled.value_or(false)) {
-    return base::unexpected(
-        base::StringPrintf("No active side panel for tabId: %d", tab_id));
+  // Verify that an active contextual side panel exists for the tab.
+  if (!HasContextualPanelAvailableForTab(extension, tab_id,
+                                         /*verify_options=*/false)) {
+    return base::unexpected(base::StringPrintf(
+        "No active tab-specific side panel for tabId: %d", tab_id));
   }
 
   side_panel_util::CloseContextualExtensionSidePanel(
-      browser_window, web_contents, extension.id(), window_id);
+      browser_window, web_contents, extension.id());
   return true;
 }
 

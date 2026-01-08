@@ -174,6 +174,12 @@ class SidePanelService : public BrowserContextKeyedAPI,
   // Returns if there is an extension side panel for `tab_id`.
   bool HasSidePanelAvailableForTab(const Extension& extension, TabId tab_id);
 
+  // Returns whether there is an extension contextual panel for `tab_id`.
+  // `verify_options`: If true, ensure that .path and .enabled are truthy.
+  bool HasContextualPanelAvailableForTab(const Extension& extension,
+                                         TabId tab_id,
+                                         bool verify_options);
+
   // Remove extension id and associated options from `panels_`.
   void RemoveExtensionOptions(const ExtensionId& id);
 
