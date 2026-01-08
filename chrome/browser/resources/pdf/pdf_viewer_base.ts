@@ -20,7 +20,6 @@ import {PluginController, PluginControllerEventType} from './controller.js';
 import {record, recordFitTo, UserAction} from './metrics.js';
 import type {OpenPdfParams} from './open_pdf_params_parser.js';
 import {OpenPdfParamsParser} from './open_pdf_params_parser.js';
-import type {SerializedKeyEvent} from './pdf_scripting_api.js';
 import {LoadState} from './pdf_scripting_api.js';
 import type {DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
 import {Viewport} from './viewport.js';
@@ -39,8 +38,6 @@ function getScrollbarWidth(): number {
   div.parentNode!.removeChild(div);
   return result;
 }
-
-export type KeyEventData = MessageData&{keyEvent: SerializedKeyEvent};
 
 const HelpBubbleCrLitElementBase = HelpBubbleMixinLit(CrLitElement);
 
