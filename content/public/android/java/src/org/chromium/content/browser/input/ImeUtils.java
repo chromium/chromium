@@ -15,6 +15,7 @@ import android.view.inputmethod.EditorInfo;
 
 import androidx.core.view.inputmethod.EditorInfoCompat;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -58,6 +59,11 @@ public class ImeUtils {
             EditorInfo outAttrs) {
         outAttrs.inputType =
                 EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT;
+
+        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+        if (delegate != null) {
+            delegate.setTextFlagEnableTextSuggestionSelected(outAttrs);
+        }
 
         if ((inputFlags & WebTextInputFlags.AUTOCOMPLETE_OFF) != 0) {
             outAttrs.inputType |= EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS;

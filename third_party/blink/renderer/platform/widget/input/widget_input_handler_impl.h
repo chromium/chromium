@@ -53,6 +53,7 @@ class WidgetInputHandlerImpl : public mojom::blink::WidgetInputHandler {
                          const gfx::Range& range,
                          int32_t start,
                          int32_t end,
+                         mojom::blink::ImeState ime_state,
                          ImeSetCompositionCallback callback) override;
   void ImeCommitText(const String& text,
                      const Vector<ui::ImeTextSpan>& ime_text_spans,

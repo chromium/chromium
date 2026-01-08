@@ -310,7 +310,8 @@ void ImeAdapterAndroid::SetComposingText(JNIEnv* env,
                                          const JavaRef<jobject>& obj,
                                          const JavaRef<jobject>& text,
                                          const JavaRef<jstring>& text_str,
-                                         int relative_cursor_pos) {
+                                         int relative_cursor_pos,
+                                         bool is_text_suggestion_selected) {
   RenderWidgetHostImpl* rwhi = GetFocusedWidget();
   if (!rwhi)
     return;
@@ -336,7 +337,10 @@ void ImeAdapterAndroid::SetComposingText(JNIEnv* env,
     relative_cursor_pos = text16.length() + relative_cursor_pos - 1;
 
   rwhi->ImeSetComposition(text16, ime_text_spans, gfx::Range::InvalidRange(),
-                          relative_cursor_pos, relative_cursor_pos);
+                          relative_cursor_pos, relative_cursor_pos,
+                          is_text_suggestion_selected
+                              ? blink::mojom::ImeState::kTextSuggestionSelected
+                              : blink::mojom::ImeState::kNone);
 }
 
 void ImeAdapterAndroid::CommitText(JNIEnv* env,

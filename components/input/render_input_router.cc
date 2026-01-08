@@ -60,6 +60,7 @@ class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
                          const gfx::Range& range,
                          int32_t start,
                          int32_t end,
+                         blink::mojom::ImeState ime_state,
                          ImeSetCompositionCallback callback) override {
     DLOG(WARNING) << "Input request on unbound interface";
   }

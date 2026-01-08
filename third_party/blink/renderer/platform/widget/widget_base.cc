@@ -1504,7 +1504,8 @@ void WidgetBase::ImeSetComposition(
     const Vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& replacement_range,
     int selection_start,
-    int selection_end) {
+    int selection_end,
+    mojom::blink::ImeState ime_state) {
   if (!ShouldHandleImeEvents())
     return;
 
@@ -1520,7 +1521,8 @@ void WidgetBase::ImeSetComposition(
 
   ImeEventGuard guard(weak_ptr_factory_.GetWeakPtr());
   if (!frame_widget->SetComposition(text, ime_text_spans, replacement_range,
-                                    selection_start, selection_end)) {
+                                    selection_start, selection_end,
+                                    ime_state)) {
     // If we failed to set the composition text, then we need to let the browser
     // process to cancel the input method's ongoing composition session, to make
     // sure we are in a consistent state.

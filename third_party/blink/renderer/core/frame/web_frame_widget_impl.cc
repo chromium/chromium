@@ -3934,7 +3934,8 @@ bool WebFrameWidgetImpl::SetComposition(
     const Vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& replacement_range,
     int selection_start,
-    int selection_end) {
+    int selection_end,
+    mojom::blink::ImeState ime_state) {
   WebInputMethodController* controller = GetActiveWebInputMethodController();
   if (!controller)
     return false;
@@ -3945,7 +3946,7 @@ bool WebFrameWidgetImpl::SetComposition(
           ? WebRange(base::checked_cast<int>(replacement_range.start()),
                      base::checked_cast<int>(replacement_range.length()))
           : WebRange(),
-      selection_start, selection_end);
+      selection_start, selection_end, ime_state);
 }
 
 void WebFrameWidgetImpl::CommitText(

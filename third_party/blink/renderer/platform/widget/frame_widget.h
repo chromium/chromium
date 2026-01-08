@@ -197,7 +197,8 @@ class PLATFORM_EXPORT FrameWidget {
                               const Vector<ui::ImeTextSpan>& ime_text_spans,
                               const gfx::Range& replacement_range,
                               int selection_start,
-                              int selection_end) = 0;
+                              int selection_end,
+                              mojom::blink::ImeState ime_state) = 0;
 
   // This message deletes the current composition, inserts specified text, and
   // moves the cursor.

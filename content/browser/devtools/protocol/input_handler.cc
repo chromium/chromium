@@ -1309,7 +1309,8 @@ void InputHandler::ImeSetComposition(
 
   widget_host->GetWidgetInputHandler()->ImeSetComposition(
       text16, std::vector<ui::ImeTextSpan>(), replacement_range,
-      selection_start, selection_end, std::move(closure));
+      selection_start, selection_end, blink::mojom::ImeState::kNone,
+      std::move(closure));
 }
 
 void InputHandler::DispatchMouseEvent(

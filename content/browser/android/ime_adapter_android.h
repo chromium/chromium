@@ -64,7 +64,8 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
                         const base::android::JavaRef<jobject>& obj,
                         const base::android::JavaRef<jobject>& text,
                         const base::android::JavaRef<jstring>& text_str,
-                        int relative_cursor_pos);
+                        int relative_cursor_pos,
+                        bool is_text_suggestion_selected);
   void CommitText(JNIEnv* env,
                   const base::android::JavaRef<jobject>& obj,
                   const base::android::JavaRef<jobject>& text,

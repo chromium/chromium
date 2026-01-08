@@ -467,7 +467,8 @@ bool EditContext::SetComposition(
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const WebRange& replacement_range,
     int selection_start,
-    int selection_end) {
+    int selection_end,
+    mojom::blink::ImeState ime_state) {
   TRACE_EVENT2(
       "ime", "EditContext::SetComposition", "start, end",
       std::to_string(selection_start) + ", " + std::to_string(selection_end),
@@ -524,6 +525,17 @@ bool EditContext::SetComposition(
   DispatchCharacterBoundsUpdateEvent(composition_range_start_,
                                      composition_range_end_);
   return true;
+}
+
+bool EditContext::SetComposition(
+    const WebString& text,
+    const std::vector<ui::ImeTextSpan>& ime_text_spans,
+    const WebRange& replacement_range,
+    int selection_start,
+    int selection_end) {
+  return SetComposition(text, ime_text_spans, replacement_range,
+                        selection_start, selection_end,
+                        mojom::blink::ImeState::kNone);
 }
 
 void EditContext::ClearCompositionState() {

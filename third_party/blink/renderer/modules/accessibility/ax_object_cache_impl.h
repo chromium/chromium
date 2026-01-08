@@ -33,6 +33,7 @@
 #include <utility>
 
 #include "base/gtest_prod_util.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom-blink.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache_base.h"
@@ -106,13 +107,15 @@ struct TextChangedOperation {
   ax::mojom::blink::Command op;
 };
 
-// Represents the current IME (Input Method Editor) state for a given AXObject
+// Contains the current IME (Input Method Editor) context for a given AXObject
 // associated with a text field.
 // This struct is used to track whether a text field has an active composition
-// or any text committed by the IME, which is crucial for providing accurate
-// accessibility feedback for text changes.
-struct ImeState {
+// or there is a text suggestion selected by the IME or any text committed by
+// the IME, which is crucial for providing accurate accessibility feedback for
+// text changes.
+struct ImeContext {
   bool has_composition = false;
+  mojom::blink::ImeState ime_state = mojom::blink::ImeState::kNone;
   int committed_text_length = 0;
 };
 
@@ -348,7 +351,8 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // stored for the given object, returns an empty `AriaNotifications`.
   AriaNotifications RetrieveAriaNotifications(const AXObject*) override;
 
-  void HandleSetComposition(Node* node) override;
+  void HandleSetComposition(Node* node,
+                            mojom::blink::ImeState ime_state) override;
   void HandleCommitText(Node* node, int committed_text_length) override;
 
   void SetCanvasObjectBounds(HTMLCanvasElement*,
@@ -679,12 +683,12 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // Clears the map after each call, should be called after each serialization.
   void ClearTextOperationInNodeIdMap();
 
-  // Returns the `ImeState` for a given AXObject. Returns nullptr if the given
-  // AXObject's id is not equal to `ime_state_axid_`.
-  ImeState* GetImeState(const AXObject* obj);
+  // Returns the `ImeContext` for a given AXObject. Returns nullptr if the given
+  // AXObject's id is not equal to `ime_context_axid_`.
+  ImeContext* GetImeContext(const AXObject* obj);
 
-  // Clears stored IME state. It should be called after each serialization.
-  void ClearImeState();
+  // Clears stored IME context. It should be called after each serialization.
+  void ClearImeContext();
 
   // Adds an event to the list of pending_events_ and mark the object as dirty
   // via AXObjectCache::AddDirtyObjectToSerializationQueue. If
@@ -1324,11 +1328,11 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   HashMap<AXID, AriaNotifications> aria_notifications_;
 
   // Stores the AXID of the object currently undergoing IME composition or
-  // commit. This is kInvalidAXID if no active ime state.
-  AXID ime_state_axid_ = ui::AXNodeData::kInvalidAXID;
-  // Stores the IME state details for the object identified by
-  // `ime_state_axid_`.
-  ImeState ime_state_;
+  // commit. This is kInvalidAXID if no active ime context.
+  AXID ime_context_axid_ = ui::AXNodeData::kInvalidAXID;
+  // Stores the IME context details for the object identified by
+  // `ime_context_axid_`.
+  ImeContext ime_context_;
 
   // The source of the event that is currently being handled.
   ax::mojom::blink::EventFrom active_event_from_ =

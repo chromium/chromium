@@ -2326,11 +2326,12 @@ void RenderWidgetHostImpl::ImeSetComposition(
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& replacement_range,
     int selection_start,
-    int selection_end) {
+    int selection_end,
+    blink::mojom::ImeState ime_state) {
   // Passing null callback since it is only needed for Devtools
   GetWidgetInputHandler()->ImeSetComposition(
       text, ime_text_spans, replacement_range, selection_start, selection_end,
-      base::OnceClosure());
+      ime_state, base::OnceClosure());
 #if BUILDFLAG(IS_ANDROID)
   for (auto& observer : ime_input_event_observers_) {
     observer.OnImeSetComposingTextEvent(text);
@@ -2367,7 +2368,8 @@ void RenderWidgetHostImpl::ImeCancelComposition() {
   // Passing null callback since it is only needed for Devtools
   GetWidgetInputHandler()->ImeSetComposition(
       std::u16string(), std::vector<ui::ImeTextSpan>(),
-      gfx::Range::InvalidRange(), 0, 0, base::OnceClosure());
+      gfx::Range::InvalidRange(), 0, 0, blink::mojom::ImeState::kNone,
+      base::OnceClosure());
 }
 
 void RenderWidgetHostImpl::RejectPointerLockOrUnlockIfNecessary(

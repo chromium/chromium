@@ -30,6 +30,7 @@ import android.view.inputmethod.TextAttribute;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -322,32 +323,65 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
      */
     @Override
     public boolean setComposingText(final CharSequence text, final int newCursorPosition) {
-        if (DEBUG_LOGS) Log.i(TAG, "setComposingText [%s] [%d]", text, newCursorPosition);
+        return setComposingText(text, newCursorPosition, null);
+    }
+
+    /**
+     * @see InputConnection#setComposingText(java.lang.CharSequence, int,
+     *     android.view.inputmethod.TextAttribute)
+     */
+    @Override
+    public boolean setComposingText(
+            final CharSequence text,
+            final int newCursorPosition,
+            @Nullable TextAttribute textAttribute) {
+        boolean isTextSuggestionSelected = false;
+        if (AconfigFlaggedApiDelegate.getInstance() != null) {
+            isTextSuggestionSelected =
+                    AconfigFlaggedApiDelegate.getInstance().isTextSuggestionSelected(textAttribute);
+        }
+        if (DEBUG_LOGS) {
+            Log.i(
+                    TAG,
+                    "setComposingText [%s] [%d] [isTextSuggestionSelected=%b]",
+                    text,
+                    newCursorPosition,
+                    isTextSuggestionSelected);
+        }
         if (text == null) return false;
-        return updateComposingText(text, newCursorPosition, false);
+
+        return updateComposingText(text, newCursorPosition, false, isTextSuggestionSelected);
     }
 
     /** Sends composing update to the InputMethodManager. */
     @VisibleForTesting
     public boolean updateComposingText(
-            final CharSequence text, final int newCursorPosition, final boolean isPendingAccent) {
+            final CharSequence text,
+            final int newCursorPosition,
+            final boolean isPendingAccent,
+            final boolean isTextSuggestionSelected) {
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
                 new Runnable() {
                     @Override
                     public void run() {
-                        updateComposingTextOnUiThread(text, newCursorPosition, isPendingAccent);
+                        updateComposingTextOnUiThread(
+                                text, newCursorPosition, isPendingAccent, isTextSuggestionSelected);
                     }
                 });
         return true;
     }
 
     private void updateComposingTextOnUiThread(
-            CharSequence text, int newCursorPosition, boolean isPendingAccent) {
+            CharSequence text,
+            int newCursorPosition,
+            boolean isPendingAccent,
+            boolean isTextSuggestionSelected) {
         int accentToSend =
                 isPendingAccent ? (mPendingAccent | KeyCharacterMap.COMBINING_ACCENT) : 0;
         cancelCombiningAccentOnUiThread();
-        mImeAdapter.sendCompositionToNative(text, newCursorPosition, false, accentToSend);
+        mImeAdapter.sendCompositionToNative(
+                text, newCursorPosition, false, accentToSend, isTextSuggestionSelected);
     }
 
     /**

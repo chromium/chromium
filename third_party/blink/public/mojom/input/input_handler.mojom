@@ -236,6 +236,12 @@ enum PanAction {
   kStylusWritable,
 };
 
+// An enumeration that describes IME state.
+enum ImeState {
+  kNone,
+  kTextSuggestionSelected,
+};
+
 // Interface exposed by the browser to the renderer.
 interface WidgetInputHandlerHost {
   // When the renderer's main thread computes the touch action, send this to the
@@ -485,7 +491,8 @@ interface WidgetInputHandler {
                     array<ui.mojom.ImeTextSpan> ime_text_spans,
                     gfx.mojom.Range range,
                     int32 start,
-                    int32 end) => ();
+                    int32 end,
+                    ImeState ime_state) => ();
 
   // This message deletes the current composition, inserts specified text, and
   // moves the cursor.

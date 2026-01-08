@@ -2873,22 +2873,27 @@ void AXObject::SerializeTextInsertionDeletionOffsetAttributes(
 
 void AXObject::SerializeTextChangeTypesAttributes(
     ui::AXNodeData* node_data) const {
-  ImeState* ime_state = AXObjectCache().GetImeState(this);
-  if (!ime_state) {
+  ImeContext* ime_context = AXObjectCache().GetImeContext(this);
+  if (!ime_context) {
     return;
   }
 
-  if (ime_state->committed_text_length > 0) {
+  if (ime_context->committed_text_length > 0) {
     node_data->AddIntAttribute(
         ax::mojom::blink::IntAttribute::kCommittedTextLength,
-        ime_state->committed_text_length);
-  } else if (ime_state->has_composition) {
+        ime_context->committed_text_length);
+  } else if (ime_context->has_composition) {
     node_data->AddBoolAttribute(
         ax::mojom::blink::BoolAttribute::kHasComposition, true);
+    if (ime_context->ime_state ==
+        mojom::blink::ImeState::kTextSuggestionSelected) {
+      node_data->AddBoolAttribute(
+          ax::mojom::blink::BoolAttribute::kTextSuggestionSelectedByIME, true);
+    }
   } else {
     NOTREACHED();
   }
-  AXObjectCache().ClearImeState();
+  AXObjectCache().ClearImeContext();
 }
 
 bool AXObject::IsAXNodeObject() const {

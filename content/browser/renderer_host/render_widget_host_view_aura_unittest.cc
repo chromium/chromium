@@ -1388,7 +1388,8 @@ TEST_F(RenderWidgetHostViewAuraTest, SetCompositionText) {
       events[0]->ToIME();
   EXPECT_TRUE(ime_message);
   EXPECT_TRUE(ime_message->Matches(composition_text.text, ime_text_spans,
-                                   gfx::Range::InvalidRange(), 4, 4));
+                                   gfx::Range::InvalidRange(), 4, 4,
+                                   blink::mojom::ImeState::kNone));
 
   view_->ImeCancelComposition();
   EXPECT_FALSE(view_->has_composition_text_);
@@ -6407,8 +6408,8 @@ TEST_F(InputMethodResultAuraTest, CommitTextBeforeCursor) {
     MockWidgetInputHandler::DispatchedIMEMessage* ime_message =
         events[0]->ToIME();
     EXPECT_TRUE(ime_message);
-    EXPECT_TRUE(
-        ime_message->Matches(u"hello", {}, gfx::Range::InvalidRange(), -5, -5));
+    EXPECT_TRUE(ime_message->Matches(u"hello", {}, gfx::Range::InvalidRange(),
+                                     -5, -5, blink::mojom::ImeState::kNone));
   }
 }
 

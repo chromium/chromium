@@ -85,7 +85,7 @@ public class ThreadedInputConnectionTest {
     public void testComposeGetTextFinishGetText() {
         // IME app calls setComposingText().
         mConnection.setComposingText("hello", 1);
-        mInOrder.verify(mImeAdapter).sendCompositionToNative("hello", 1, false, 0);
+        mInOrder.verify(mImeAdapter).sendCompositionToNative("hello", 1, false, 0, false);
 
         // Renderer updates states asynchronously.
         mConnection.updateStateOnUiThread("hello", 5, 5, 0, 5, true, false);
@@ -122,10 +122,10 @@ public class ThreadedInputConnectionTest {
     public void testPressingDeadKey() {
         // On default keyboard "Alt+i" produces a dead key '\u0302'.
         mConnection.setCombiningAccentOnUiThread(0x0302);
-        mConnection.updateComposingText("\u0302", 1, true);
+        mConnection.updateComposingText("\u0302", 1, true, false);
         mInOrder.verify(mImeAdapter)
                 .sendCompositionToNative(
-                        "\u0302", 1, false, 0x0302 | KeyCharacterMap.COMBINING_ACCENT);
+                        "\u0302", 1, false, 0x0302 | KeyCharacterMap.COMBINING_ACCENT, false);
     }
 
     @Test

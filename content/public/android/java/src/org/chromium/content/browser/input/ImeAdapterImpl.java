@@ -1131,6 +1131,16 @@ public class ImeAdapterImpl
 
     boolean sendCompositionToNative(
             CharSequence text, int newCursorPosition, boolean isCommit, int unicodeFromKeyEvent) {
+        return sendCompositionToNative(
+                text, newCursorPosition, isCommit, unicodeFromKeyEvent, false);
+    }
+
+    boolean sendCompositionToNative(
+            CharSequence text,
+            int newCursorPosition,
+            boolean isCommit,
+            int unicodeFromKeyEvent,
+            boolean isTextSuggestionSelected) {
         if (!isValid()) return false;
         onImeEvent();
         long timestampMs = SystemClock.uptimeMillis();
@@ -1209,7 +1219,8 @@ public class ImeAdapterImpl
                             ImeAdapterImpl.this,
                             text,
                             text.toString(),
-                            newCursorPosition);
+                            newCursorPosition,
+                            isTextSuggestionSelected);
         }
 
         ImeAdapterImplJni.get()
@@ -1903,7 +1914,8 @@ public class ImeAdapterImpl
                 ImeAdapterImpl self,
                 CharSequence text,
                 String textStr,
-                int newCursorPosition);
+                int newCursorPosition,
+                boolean isTextSuggestionSelected);
 
         void commitText(
                 long nativeImeAdapterAndroid,

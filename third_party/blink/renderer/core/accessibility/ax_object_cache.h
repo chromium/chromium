@@ -29,6 +29,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/stack_allocated.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/accessibility/axid.h"
 #include "third_party/blink/renderer/core/accessibility/blink_ax_event_intent.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -156,7 +157,8 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void HandleEventListenerRemoved(Node& node,
                                           const AtomicString& event_type) = 0;
   virtual void HandleReferenceTargetChanged(Element&) = 0;
-  virtual void HandleSetComposition(Node*) = 0;
+  virtual void HandleSetComposition(Node*,
+                                    mojom::blink::ImeState ime_state) = 0;
   virtual void HandleCommitText(Node*, int committed_text_length) = 0;
 
   // Handle any notifications which arrived while layout was dirty.

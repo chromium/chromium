@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.Window;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.TextAttribute;
 import android.webkit.WebViewDelegate;
 
@@ -170,6 +171,16 @@ public interface AconfigFlaggedApiDelegate {
     default boolean isTextSuggestionSelected(@Nullable TextAttribute textAttribute) {
         return false;
     }
+
+    /**
+     * Sets {@link
+     * android.view.inputmethod.EditorInfo.TYPE_TEXT_FLAG_ENABLE_TEXT_SUGGESTION_SELECTED} if
+     * supported.
+     *
+     * @param outAttrs The {@link android.view.inputmethod.EditorInfo} object used to describe the
+     *     attributes of the input connection being created.
+     */
+    default void setTextFlagEnableTextSuggestionSelected(EditorInfo outAttrs) {}
 
     /**
      * Calls the {@link android.content.Context#rebindService(ServiceConnection, BindServiceFlags)}

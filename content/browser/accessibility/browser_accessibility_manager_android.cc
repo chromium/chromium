@@ -508,6 +508,11 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
             text_change_types |=
                 ANDROID_ACCESSIBILITY_EVENT_TEXT_CHANGE_TYPE_IN_COMPOSITION;
           }
+          if (android_node->GetBoolAttribute(
+                  ax::mojom::BoolAttribute::kTextSuggestionSelectedByIME)) {
+            text_change_types |=
+                ANDROID_ACCESSIBILITY_EVENT_TEXT_CHANGE_TYPE_CONVERSION_SUGGESTION_SELECTED_BY_IME;
+          }
           if (android_node->GetIntAttribute(
                   ax::mojom::IntAttribute::kCommittedTextLength) > 0) {
             text_change_types |=
