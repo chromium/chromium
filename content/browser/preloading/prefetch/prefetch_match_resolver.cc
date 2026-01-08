@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
@@ -183,6 +184,12 @@ void PrefetchMatchResolver::FindPrefetchInternal1(
         serving_page_metrics_container,
     Callback callback,
     perfetto::Flow flow) {
+  // TODO(crbug.com/342089123): Remove it when we don't need it.
+  if (is_nav_prerender) {
+    base::trace_event::EmitNamedTrigger(
+        "prefetch-matching-start-for-prerender");
+  }
+
   // See the comment of `self_`.
   auto prefetch_match_resolver = base::WrapUnique(new PrefetchMatchResolver(
       std::move(navigation_request), prefetch_service.GetWeakPtr(),
