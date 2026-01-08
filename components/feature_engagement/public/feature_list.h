@@ -530,69 +530,6 @@ DEFINE_VARIATION_PARAM(kIPHGoogleOneOfferNotificationFeature,
                        "IPH_GoogleOneOfferNotification");
 DEFINE_VARIATION_PARAM(kIPHLauncherSearchHelpUiFeature,
                        "IPH_LauncherSearchHelpUi");
-DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedOneFeature,
-                       "IPH_ScalableIphTimerBasedOne");
-DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedTwoFeature,
-                       "IPH_ScalableIphTimerBasedTwo");
-DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedThreeFeature,
-                       "IPH_ScalableIphTimerBasedThree");
-DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedFourFeature,
-                       "IPH_ScalableIphTimerBasedFour");
-DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedFiveFeature,
-                       "IPH_ScalableIphTimerBasedFive");
-DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedSixFeature,
-                       "IPH_ScalableIphTimerBasedSix");
-DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedSevenFeature,
-                       "IPH_ScalableIphTimerBasedSeven");
-DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedEightFeature,
-                       "IPH_ScalableIphTimerBasedEight");
-DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedNineFeature,
-                       "IPH_ScalableIphTimerBasedNine");
-DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedTenFeature,
-                       "IPH_ScalableIphTimerBasedTen");
-DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedOneFeature,
-                       "IPH_ScalableIphUnlockedBasedOne");
-DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedTwoFeature,
-                       "IPH_ScalableIphUnlockedBasedTwo");
-DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedThreeFeature,
-                       "IPH_ScalableIphUnlockedBasedThree");
-DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedFourFeature,
-                       "IPH_ScalableIphUnlockedBasedFour");
-DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedFiveFeature,
-                       "IPH_ScalableIphUnlockedBasedFive");
-DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedSixFeature,
-                       "IPH_ScalableIphUnlockedBasedSix");
-DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedSevenFeature,
-                       "IPH_ScalableIphUnlockedBasedSeven");
-DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedEightFeature,
-                       "IPH_ScalableIphUnlockedBasedEight");
-DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedNineFeature,
-                       "IPH_ScalableIphUnlockedBasedNine");
-DEFINE_VARIATION_PARAM(kIPHScalableIphUnlockedBasedTenFeature,
-                       "IPH_ScalableIphUnlockedBasedTen");
-DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedNudgeFeature,
-                       "IPH_ScalableIphHelpAppBasedNudge");
-DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedOneFeature,
-                       "IPH_ScalableIphHelpAppBasedOne");
-DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedTwoFeature,
-                       "IPH_ScalableIphHelpAppBasedTwo");
-DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedThreeFeature,
-                       "IPH_ScalableIphHelpAppBasedThree");
-DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedFourFeature,
-                       "IPH_ScalableIphHelpAppBasedFour");
-DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedFiveFeature,
-                       "IPH_ScalableIphHelpAppBasedFive");
-DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedSixFeature,
-                       "IPH_ScalableIphHelpAppBasedSix");
-DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedSevenFeature,
-                       "IPH_ScalableIphHelpAppBasedSeven");
-DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedEightFeature,
-                       "IPH_ScalableIphHelpAppBasedEight");
-DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedNineFeature,
-                       "IPH_ScalableIphHelpAppBasedNine");
-DEFINE_VARIATION_PARAM(kIPHScalableIphHelpAppBasedTenFeature,
-                       "IPH_ScalableIphHelpAppBasedTen");
-DEFINE_VARIATION_PARAM(kIPHScalableIphGamingFeature, "IPH_ScalableIphGaming");
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -887,38 +824,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHGrowthFramework),
         VARIATION_ENTRY(kIPHGoogleOneOfferNotificationFeature),
         VARIATION_ENTRY(kIPHLauncherSearchHelpUiFeature),
-        VARIATION_ENTRY(kIPHScalableIphTimerBasedOneFeature),
-        VARIATION_ENTRY(kIPHScalableIphTimerBasedTwoFeature),
-        VARIATION_ENTRY(kIPHScalableIphTimerBasedThreeFeature),
-        VARIATION_ENTRY(kIPHScalableIphTimerBasedFourFeature),
-        VARIATION_ENTRY(kIPHScalableIphTimerBasedFiveFeature),
-        VARIATION_ENTRY(kIPHScalableIphTimerBasedSixFeature),
-        VARIATION_ENTRY(kIPHScalableIphTimerBasedSevenFeature),
-        VARIATION_ENTRY(kIPHScalableIphTimerBasedEightFeature),
-        VARIATION_ENTRY(kIPHScalableIphTimerBasedNineFeature),
-        VARIATION_ENTRY(kIPHScalableIphTimerBasedTenFeature),
-        VARIATION_ENTRY(kIPHScalableIphUnlockedBasedOneFeature),
-        VARIATION_ENTRY(kIPHScalableIphUnlockedBasedTwoFeature),
-        VARIATION_ENTRY(kIPHScalableIphUnlockedBasedThreeFeature),
-        VARIATION_ENTRY(kIPHScalableIphUnlockedBasedFourFeature),
-        VARIATION_ENTRY(kIPHScalableIphUnlockedBasedFiveFeature),
-        VARIATION_ENTRY(kIPHScalableIphUnlockedBasedSixFeature),
-        VARIATION_ENTRY(kIPHScalableIphUnlockedBasedSevenFeature),
-        VARIATION_ENTRY(kIPHScalableIphUnlockedBasedEightFeature),
-        VARIATION_ENTRY(kIPHScalableIphUnlockedBasedNineFeature),
-        VARIATION_ENTRY(kIPHScalableIphUnlockedBasedTenFeature),
-        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedNudgeFeature),
-        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedOneFeature),
-        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedTwoFeature),
-        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedThreeFeature),
-        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedFourFeature),
-        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedFiveFeature),
-        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedSixFeature),
-        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedSevenFeature),
-        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedEightFeature),
-        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedNineFeature),
-        VARIATION_ENTRY(kIPHScalableIphHelpAppBasedTenFeature),
-        VARIATION_ENTRY(kIPHScalableIphGamingFeature),
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
