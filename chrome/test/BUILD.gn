@@ -10716,6 +10716,11 @@ test("unit_tests") {
         "../browser/ui/views/sync/one_click_signin_dialog_view_unittest.cc",
         "../browser/ui/webui/settings/settings_default_browser_handler_unittest.cc",
       ]
+
+      deps += [
+        "../browser/default_browser",
+        "../browser/default_browser:test_support",
+      ]
     }
     if (is_linux || is_win || is_mac) {
       sources += [ "../browser/ui/views/global_media_controls/media_dialog_view_unittest.cc" ]

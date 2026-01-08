@@ -7,8 +7,9 @@ assert(!is_android && !is_chromeos,
 
 source_set("default_browser") {
   friend = [
-    ":unit_tests",
     ":browser_tests",
+    ":test_support",
+    ":unit_tests",
   ]
 
   public = [
@@ -50,6 +51,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "test_support/fake_default_browser_setter.cc",
+    "test_support/fake_default_browser_setter.h",
     "test_support/fake_shell_delegate.cc",
     "test_support/fake_shell_delegate.h",
   ]

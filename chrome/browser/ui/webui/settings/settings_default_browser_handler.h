@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_DEFAULT_BROWSER_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_DEFAULT_BROWSER_HANDLER_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -12,6 +14,10 @@
 
 namespace content {
 class WebUI;
+}
+
+namespace default_browser {
+class DefaultBrowserController;
 }
 
 namespace settings {
@@ -72,9 +78,11 @@ class DefaultBrowserHandler : public SettingsPageUIHandler {
                               bool can_pin,
                               shell_integration::DefaultWebClientState state);
 
-  // Reference to a background worker that handles default browser settings.
-  scoped_refptr<shell_integration::DefaultBrowserWorker>
-      default_browser_worker_;
+  // Tracks whether user interacted with the "Set as Default" button.
+  bool did_user_interact_ = false;
+
+  std::unique_ptr<default_browser::DefaultBrowserController>
+      default_browser_controller_;
 
   // Used to listen for changes to if the default browser setting is managed.
   PrefChangeRegistrar local_state_pref_registrar_;
