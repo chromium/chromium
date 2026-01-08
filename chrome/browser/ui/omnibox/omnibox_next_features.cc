@@ -196,14 +196,13 @@ bool IsCreateImagesEnabled(Profile* profile) {
     return false;
   }
 
-  if (kShowToolsAndModels.Get() && kShowCreateImageTool.Get()) {
+  if (kShowToolsAndModels.Get()) {
     return true;
   }
 
   AimEligibilityService* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
-  return kShowToolsAndModels.Get() && kShowCreateImageTool.Get() &&
-         aim_eligibility_service &&
+  return kShowToolsAndModels.Get() && aim_eligibility_service &&
          aim_eligibility_service->IsCreateImagesEligible();
 }
 
@@ -287,10 +286,6 @@ const base::FeatureParam<bool> kShowContextMenuDescription(
 const base::FeatureParam<bool> kShowContextMenuTabPreviews(
     &internal::kWebUIOmniboxAimPopup,
     "ShowContextMenuTabPreviews",
-    true);
-const base::FeatureParam<bool> kShowCreateImageTool(
-    &internal::kWebUIOmniboxAimPopup,
-    "ShowCreateImageTool",
     true);
 const base::FeatureParam<bool> kShowLensSearchChip(
     &internal::kWebUIOmniboxAimPopup,
