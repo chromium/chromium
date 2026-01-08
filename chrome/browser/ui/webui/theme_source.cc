@@ -73,10 +73,6 @@ bool IsNewTabCssPath(const std::string& path) {
 ////////////////////////////////////////////////////////////////////////////////
 // ThemeSource, public:
 
-// static
-const char ThemeSource::kThemeColorsCssUrl[] =
-    "chrome://theme/colors.css?sets=ui,chrome";
-
 ThemeSource::ThemeSource(Profile* profile)
     : profile_(profile), serve_untrusted_(false) {}
 

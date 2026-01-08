@@ -23,9 +23,6 @@ class ThemeSource : public content::URLDataSource {
 
   ~ThemeSource() override;
 
-  // TODO(crbug.com/457618790): Move this into a profile service.
-  static const char kThemeColorsCssUrl[];
-
   // Generates the CSS content for theme colors.
   //
   // This function parses the `sets` query parameter from `url` to determine

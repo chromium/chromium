@@ -13,10 +13,13 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/webui/reload_button/reload_button.mojom.h"
 #include "chrome/browser/ui/webui/reload_button/reload_button_test_utils.h"
+#include "chrome/browser/ui/webui/theme_colors_source_manager.h"
+#include "chrome/browser/ui/webui/theme_colors_source_manager_factory.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_ui.h"
@@ -67,7 +70,12 @@ class MockReloadButtonPageHandlerFactory {
 // Test fixture for ReloadButtonUI.
 class ReloadButtonUITest : public ChromeViewsTestBase {
  public:
-  ReloadButtonUITest() = default;
+  ReloadButtonUITest() {
+    feature_list_.InitWithFeatures(
+        {features::kInitialWebUI, features::kWebUIReloadButton,
+         features::kWebUIInProcessResourceLoadingV2},
+        {});
+  }
   ~ReloadButtonUITest() override = default;
 
   // Not movable or copyable.
@@ -76,9 +84,6 @@ class ReloadButtonUITest : public ChromeViewsTestBase {
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
-
-    feature_list_.InitWithFeatures(
-        {features::kInitialWebUI, features::kWebUIReloadButton}, {});
 
     profile_ = std::make_unique<TestingProfile>();
 
@@ -105,6 +110,7 @@ class ReloadButtonUITest : public ChromeViewsTestBase {
 
   ReloadButtonUI* ui() { return ui_.get(); }
   content::WebContents* web_contents() { return web_contents_.get(); }
+  Profile* profile() { return profile_.get(); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -161,18 +167,27 @@ TEST_F(ReloadButtonUITest, CreatePageHandler_NullCommandUpdater) {
 
 // Tests that PopulateLocalResourceLoaderConfig provides the theme source.
 TEST_F(ReloadButtonUITest, PopulateLocalResourceLoaderConfig) {
+  // Create a mock ColorProvider.
   ui::ColorProvider color_provider;
-  ui()->SetColorProviderForTesting(&color_provider);
 
-  auto config = blink::mojom::LocalResourceLoaderConfig::New();
+  // Set the ColorProvider for testing via ThemeColorsSourceManager.
+  auto* theme_colors_manager =
+      ThemeColorsSourceManagerFactory::GetForProfile(profile());
+  ASSERT_THAT(theme_colors_manager, testing::NotNull());
+  theme_colors_manager->SetColorProviderForTesting(&color_provider);
+
+  blink::mojom::LocalResourceLoaderConfig config;
   ui()->PopulateLocalResourceLoaderConfig(
-      config.get(), url::Origin::Create(GURL("chrome://reload-button/")));
+      &config, url::Origin::Create(GURL("chrome://reload-button/")));
 
-  auto origin = url::Origin::Create(GURL("chrome://theme"));
+  // Verify that the color CSS is added.
+  url::Origin theme_origin = url::Origin::Create(GURL("chrome://theme/"));
+  auto source_it = config.sources.find(theme_origin);
+  ASSERT_TRUE(source_it != config.sources.end());
 
-  ASSERT_TRUE(config->sources.contains(origin));
-  EXPECT_TRUE(
-      config->sources[origin]->path_to_resource_map.contains("colors.css"));
+  auto resource_it = source_it->second->path_to_resource_map.find("colors.css");
+  ASSERT_TRUE(resource_it != source_it->second->path_to_resource_map.end());
+  EXPECT_TRUE(resource_it->second->is_response_body());
 }
 
 // Test fixture for ReloadButtonUIConfig.

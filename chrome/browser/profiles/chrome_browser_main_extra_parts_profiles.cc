@@ -360,6 +360,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_state_manager.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_service_factory.h"
+#include "chrome/browser/ui/webui/theme_colors_source_manager_factory.h"
 #include "chrome/browser/usb/usb_connection_tracker_factory.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service_factory.h"
@@ -1390,6 +1391,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   TemplateURLPrepopulateData::ResolverFactory::GetInstance();
   TemplateURLServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
+  ThemeColorsSourceManagerFactory::GetInstance();
   ThemeServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_ANDROID)

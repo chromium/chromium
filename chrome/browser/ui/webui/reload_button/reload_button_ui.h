@@ -53,9 +53,6 @@ class ReloadButtonUI : public TopChromeWebUIController,
   // Sets a custom CommandUpdater for testing purposes.
   void SetCommandUpdaterForTesting(CommandUpdater* command_updater);
 
-  // Sets a custom ColorProvider for testing purposes.
-  void SetColorProviderForTesting(const ui::ColorProvider* color_provider);
-
  private:
   // reload_button::mojom::PageHandlerFactory:
   void CreatePageHandler(
@@ -71,9 +68,6 @@ class ReloadButtonUI : public TopChromeWebUIController,
 
   // Initialized only in tests by SetCommandUpdaterForTesting().
   raw_ptr<CommandUpdater> command_updater_for_testing_ = nullptr;
-
-  // Initialized only in tests by SetColorProviderForTesting().
-  raw_ptr<const ui::ColorProvider> color_provider_for_testing_ = nullptr;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
