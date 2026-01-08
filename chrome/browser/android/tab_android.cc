@@ -482,6 +482,10 @@ void TabAndroid::SendWillDeactivateUpdate(JNIEnv* env) {
   will_deactivate_callback_list_.Notify(this);
 }
 
+void TabAndroid::SendDidInsertUpdate(JNIEnv* env) {
+  did_insert_callback_list_.Notify(this);
+}
+
 namespace {
 void WillRemoveWebContentsFromTab(content::WebContents* contents,
                                   bool clear_delegate) {
@@ -706,11 +710,9 @@ base::CallbackListSubscription TabAndroid::RegisterWillDetach(
   return base::CallbackListSubscription();
 }
 
-// TODO(crbug.com/409366905): Finish TabInterface implementation.
 base::CallbackListSubscription TabAndroid::RegisterDidInsert(
     DidInsertCallback callback) {
-  NOTIMPLEMENTED();
-  return base::CallbackListSubscription();
+  return did_insert_callback_list_.Add(std::move(callback));
 }
 
 base::CallbackListSubscription TabAndroid::RegisterPinnedStateChanged(

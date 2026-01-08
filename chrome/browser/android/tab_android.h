@@ -190,6 +190,7 @@ class TabAndroid : public tabs::TabInterface,
       const base::android::JavaRef<jobject>& jcontext_menu_populator_factory);
   void SendDidActivateUpdate(JNIEnv* env);
   void SendWillDeactivateUpdate(JNIEnv* env);
+  void SendDidInsertUpdate(JNIEnv* env);
   void DestroyWebContents();
   void ReleaseWebContents();
   bool IsPhysicalBackingSizeEmpty(
@@ -311,6 +312,7 @@ class TabAndroid : public tabs::TabInterface,
   base::RepeatingCallbackList<void(TabInterface*)> did_activate_callback_list_;
   base::RepeatingCallbackList<void(TabInterface*)>
       will_deactivate_callback_list_;
+  base::RepeatingCallbackList<void(TabInterface*)> did_insert_callback_list_;
 
   const base::WeakPtr<Profile> profile_;
   ui::UnownedUserDataHost unowned_user_data_host_;

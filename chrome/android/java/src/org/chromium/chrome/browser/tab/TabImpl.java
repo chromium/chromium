@@ -351,13 +351,16 @@ class TabImpl implements Tab {
 
                 mWasLastActive = active;
 
-                if (!active) return;
+                if (!active || mNativeTabAndroid == 0) return;
                 TabImplJni.get().sendDidActivateUpdate(mNativeTabAndroid);
             };
 
     private final Callback<@Nullable Tab> mActiveTabLookAheadObserver =
             (activeTab) -> {
-                if (mWasLastActive == null || !mWasLastActive) return;
+                if (mWasLastActive == null || !mWasLastActive || mNativeTabAndroid == 0) {
+                    return;
+                }
+
                 TabImplJni.get().sendWillDeactivateUpdate(mNativeTabAndroid);
             };
 
@@ -2945,6 +2948,10 @@ class TabImpl implements Tab {
 
         mCurrentTabSupplier.addObserver(mActiveTabObserver);
         mCurrentTabSupplier.addLookAheadObserver(mActiveTabLookAheadObserver);
+
+        if (mNativeTabAndroid != 0) {
+            TabImplJni.get().sendDidInsertUpdate(mNativeTabAndroid);
+        }
     }
 
     @Override
@@ -3053,6 +3060,8 @@ class TabImpl implements Tab {
         void sendDidActivateUpdate(long nativeTabAndroid);
 
         void sendWillDeactivateUpdate(long nativeTabAndroid);
+
+        void sendDidInsertUpdate(long nativeTabAndroid);
     }
 
     @VisibleForTesting
