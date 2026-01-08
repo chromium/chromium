@@ -5,7 +5,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation_traits.h"
@@ -384,7 +383,7 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     AppRegistryCache& cache =
         AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache();
     ASSERT_TRUE(cache.IsAppTypeInitialized(app_type));
-    ASSERT_TRUE(base::Contains(cache.InitializedAppTypes(), app_type));
+    ASSERT_TRUE(cache.InitializedAppTypes().contains(app_type));
   }
 
   void VerifyCapabilityAccess(const std::string& app_id,

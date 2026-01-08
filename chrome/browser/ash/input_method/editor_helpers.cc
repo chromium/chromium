@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -30,8 +29,7 @@ std::string GetSystemLocale() {
 bool ShouldUseL10nStrings() {
   return chromeos::features::IsOrcaUseL10nStringsEnabled() ||
          (chromeos::features::IsOrcaInternationalizeEnabled() &&
-          base::Contains(kAllowedLanguagesForShowingL10nStrings,
-                         GetSystemLocale()));
+          kAllowedLanguagesForShowingL10nStrings.contains(GetSystemLocale()));
 }
 
 }  // namespace ash::input_method

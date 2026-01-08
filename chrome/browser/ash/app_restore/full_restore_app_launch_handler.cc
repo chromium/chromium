@@ -515,8 +515,8 @@ void FullRestoreAppLaunchHandler::MaybeStartSaveTimer() {
     return;
   }
 
-  if (base::Contains(restore_data()->app_id_to_launch_list(),
-                     app_constants::kChromeAppId)) {
+  if (restore_data()->app_id_to_launch_list().contains(
+          app_constants::kChromeAppId)) {
     // If the browser hasn't been restored yet, Wait for the browser
     // restoration. LaunchBrowser will call this function again to start the
     // save timer after restore the browser sessions.

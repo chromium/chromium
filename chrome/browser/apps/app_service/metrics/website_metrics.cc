@@ -6,7 +6,6 @@
 
 #include <random>
 
-#include "base/containers/contains.h"
 #include "base/json/values_util.h"
 #include "base/rand_util.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
@@ -222,7 +221,7 @@ void WebsiteMetrics::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   DCHECK(tab_strip_model);
   auto* window = GetWindowWithTabStripModel(tab_strip_model);
-  if (!window || !base::Contains(window_to_web_contents_, window)) {
+  if (!window || !window_to_web_contents_.contains(window)) {
     // Skip the app browser window.
     return;
   }
@@ -275,7 +274,7 @@ void WebsiteMetrics::OnHistoryDeletions(
 }
 
 void WebsiteMetrics::OnWindowDestroying(aura::Window* window) {
-  if (base::Contains(window_to_web_contents_, window)) {
+  if (window_to_web_contents_.contains(window)) {
     window_to_web_contents_.erase(window);
   }
   observed_windows_.RemoveObservation(window);
@@ -305,7 +304,7 @@ void WebsiteMetrics::OnTwoHours() {
 
   std::map<GURL, UrlInfo> url_infos;
   for (const auto& it : webcontents_to_ukm_key_) {
-    if (!base::Contains(url_infos, it.second) && !it.second.is_empty() &&
+    if (!url_infos.contains(it.second) && !it.second.is_empty() &&
         it.second.SchemeIsHTTPOrHTTPS()) {
       url_infos[it.second] = std::move(url_infos_[it.second]);
     }
@@ -374,7 +373,7 @@ void WebsiteMetrics::OnTabStripModelChangeInsert(
   for (const auto& inserted_tab : insert.contents) {
     content::WebContents* contents = inserted_tab.contents;
     // The tab is new.
-    if (!base::Contains(webcontents_to_observer_map_, contents)) {
+    if (!webcontents_to_observer_map_.contains(contents)) {
       webcontents_to_observer_map_[contents] =
           std::make_unique<WebsiteMetrics::ActiveTabWebContentsObserver>(
               contents, this);
@@ -437,7 +436,7 @@ void WebsiteMetrics::OnActiveTabChanged(aura::Window* window,
     // not be called, so `webcontents_to_ukm_key_` doesn't include
     // `new_contents`. So call PrimaryPageChanged to update web contents and add
     // the website url.
-    if (!base::Contains(webcontents_to_ukm_key_, new_contents)) {
+    if (!webcontents_to_ukm_key_.contains(new_contents)) {
       auto it = webcontents_to_observer_map_.find(new_contents);
       if (it != webcontents_to_observer_map_.end()) {
         it->second->OnPrimaryPageChanged();

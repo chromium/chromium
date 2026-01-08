@@ -137,7 +137,7 @@ class AppServicePromiseAppItemBrowserTest
     // Mock a response to ensure that the test does not stay hanging for an
     // Almanac response. It will be a failure response so the promise app will
     // fall back to a placeholder icon.
-    if (base::Contains(request.relative_url, "v1/promise-app/")) {
+    if (request.relative_url.contains("v1/promise-app/")) {
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
       response->set_content_type("application/x-protobuf");

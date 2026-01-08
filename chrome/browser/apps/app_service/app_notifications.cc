@@ -4,7 +4,6 @@
 
 #include "chrome/browser/apps/app_service/app_notifications.h"
 
-#include "base/containers/contains.h"
 
 namespace apps {
 
@@ -49,7 +48,7 @@ void AppNotifications::RemoveNotificationsForApp(const std::string& app_id) {
 }
 
 bool AppNotifications::HasNotification(const std::string& app_id) {
-  return base::Contains(app_id_to_notification_ids_, app_id);
+  return app_id_to_notification_ids_.contains(app_id);
 }
 
 std::set<std::string> AppNotifications::GetAppIdsForNotification(

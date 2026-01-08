@@ -591,7 +591,7 @@ bool UpdateScreen::CheckIfOptOutIsEnabled() {
   if (!country.has_value()) {
     return false;
   }
-  return base::Contains(kEUCountriesSet, country.value());
+  return kEUCountriesSet.contains(country.value());
 }
 
 }  // namespace ash

@@ -500,8 +500,7 @@ void CopyOrMoveIOTaskPolicyImpl::IsTransferAllowed(
   // If a file is blocked by DLP, skip Enterprise Connectors scanning for it
   // since Enterprise Connectors won't be able to scan it anyway. The file be
   // blocked by the DLP daemon later.
-  if (result.IsAllowed() ||
-      base::Contains(dlp_blocked_files_, source_url.path())) {
+  if (result.IsAllowed() || dlp_blocked_files_.contains(source_url.path())) {
     std::move(callback).Run(base::File::FILE_OK);
     return;
   }

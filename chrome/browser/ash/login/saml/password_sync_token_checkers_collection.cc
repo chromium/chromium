@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_login_checker.h"
 #include "chrome/browser/browser_process.h"
 #include "components/user_manager/known_user.h"
@@ -47,7 +46,7 @@ void PasswordSyncTokenCheckersCollection::StartPasswordSyncCheckers(
     const std::string* sync_token =
         known_user.GetPasswordSyncToken(user->GetAccountId());
     if (sync_token && !sync_token->empty() &&
-        !base::Contains(sync_token_checkers_, *sync_token)) {
+        !sync_token_checkers_.contains(*sync_token)) {
       sync_token_checkers_.insert(
           {*sync_token,
            std::make_unique<PasswordSyncTokenLoginChecker>(
@@ -67,7 +66,7 @@ void PasswordSyncTokenCheckersCollection::OnInvalidSyncToken(
   const std::string* sync_token = known_user.GetPasswordSyncToken(account_id);
   if (!sync_token)
     return;
-  if (base::Contains(sync_token_checkers_, *sync_token)) {
+  if (sync_token_checkers_.contains(*sync_token)) {
     sync_token_checkers_.erase(*sync_token);
   }
 }

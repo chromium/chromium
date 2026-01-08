@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/time_limit_override.h"
@@ -2932,7 +2931,7 @@ TEST_F(UsageTimeLimitProcessorTest, UpdatedPolicyTypesDifferentUsageLimit) {
   std::set<PolicyType> updated_policies =
       UpdatedPolicyTypes(old_policy, new_policy);
   ASSERT_EQ(updated_policies.size(), 1u);
-  EXPECT_TRUE(base::Contains(updated_policies, PolicyType::kUsageLimit));
+  EXPECT_TRUE(updated_policies.contains(PolicyType::kUsageLimit));
 }
 
 // Tests UpdatedPolicyTypes with different time window limits.
@@ -2965,7 +2964,7 @@ TEST_F(UsageTimeLimitProcessorTest, UpdatedPolicyTypesDifferentWindowLimit) {
   std::set<PolicyType> updated_policies =
       UpdatedPolicyTypes(old_policy, new_policy);
   ASSERT_EQ(updated_policies.size(), 1u);
-  EXPECT_TRUE(base::Contains(updated_policies, PolicyType::kFixedLimit));
+  EXPECT_TRUE(updated_policies.contains(PolicyType::kFixedLimit));
 }
 
 // Tests UpdatedPolicyTypes with different overrides with duration.
@@ -2999,7 +2998,7 @@ TEST_F(UsageTimeLimitProcessorTest,
   std::set<PolicyType> updated_policies =
       UpdatedPolicyTypes(old_policy, new_policy);
   ASSERT_EQ(updated_policies.size(), 1u);
-  EXPECT_TRUE(base::Contains(updated_policies, PolicyType::kOverride));
+  EXPECT_TRUE(updated_policies.contains(PolicyType::kOverride));
 }
 
 // Tests UpdatedPolicyTypes with different time window limits, time usage
@@ -3036,9 +3035,9 @@ TEST_F(UsageTimeLimitProcessorTest,
   std::set<PolicyType> updated_policies =
       UpdatedPolicyTypes(old_policy, new_policy);
   ASSERT_EQ(updated_policies.size(), 3u);
-  EXPECT_TRUE(base::Contains(updated_policies, PolicyType::kUsageLimit));
-  EXPECT_TRUE(base::Contains(updated_policies, PolicyType::kFixedLimit));
-  EXPECT_TRUE(base::Contains(updated_policies, PolicyType::kOverride));
+  EXPECT_TRUE(updated_policies.contains(PolicyType::kUsageLimit));
+  EXPECT_TRUE(updated_policies.contains(PolicyType::kFixedLimit));
+  EXPECT_TRUE(updated_policies.contains(PolicyType::kOverride));
 }
 
 }  // namespace usage_time_limit

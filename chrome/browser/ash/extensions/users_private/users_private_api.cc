@@ -9,7 +9,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -128,9 +127,9 @@ base::Value::List GetUsersList(content::BrowserContext* browser_context) {
 
   const user_manager::UserList& users = user_manager->GetPersistedUsers();
   for (const user_manager::User* user : users) {
-    base::Value email_value(user->GetAccountId().GetUserEmail());
-    if (!base::Contains(email_list, email_value)) {
-      email_list.Append(std::move(email_value));
+    std::string email_value(user->GetAccountId().GetUserEmail());
+    if (!email_list.contains(email_value)) {
+      email_list.Append(email_value);
     }
   }
 

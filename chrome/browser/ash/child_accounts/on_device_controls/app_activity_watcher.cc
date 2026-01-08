@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/containers/contains.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/child_accounts/on_device_controls/blocked_app_registry.h"
 
@@ -53,7 +52,7 @@ void AppActivityWatcher::OnInstanceUpdate(const apps::InstanceUpdate& update) {
     return;
   }
 
-  if (base::Contains(blocking_instance_ids_, update.InstanceId())) {
+  if (blocking_instance_ids_.contains(update.InstanceId())) {
     return;
   }
 

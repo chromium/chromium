@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -376,16 +375,16 @@ TEST_F(KerberosCredentialsManagerTest, GetDefaultKerberosConfig) {
   const std::string default_config = mgr_->GetDefaultKerberosConfig();
 
   // Enforce strong crypto.
-  EXPECT_TRUE(base::Contains(default_config, "default_tgs_enctypes"));
-  EXPECT_TRUE(base::Contains(default_config, "default_tkt_enctypes"));
-  EXPECT_TRUE(base::Contains(default_config, "permitted_enctypes"));
-  EXPECT_TRUE(base::Contains(default_config, "aes256"));
-  EXPECT_TRUE(base::Contains(default_config, "aes128"));
-  EXPECT_FALSE(base::Contains(default_config, "des"));
-  EXPECT_FALSE(base::Contains(default_config, "rc4"));
+  EXPECT_TRUE(default_config.contains("default_tgs_enctypes"));
+  EXPECT_TRUE(default_config.contains("default_tkt_enctypes"));
+  EXPECT_TRUE(default_config.contains("permitted_enctypes"));
+  EXPECT_TRUE(default_config.contains("aes256"));
+  EXPECT_TRUE(default_config.contains("aes128"));
+  EXPECT_FALSE(default_config.contains("des"));
+  EXPECT_FALSE(default_config.contains("rc4"));
 
   // Allow forwardable tickets.
-  EXPECT_TRUE(base::Contains(default_config, "forwardable = true"));
+  EXPECT_TRUE(default_config.contains("forwardable = true"));
 }
 
 // The prefs::kKerberosEnabled pref toggles IsKerberosEnabled().

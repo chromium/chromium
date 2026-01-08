@@ -13,7 +13,6 @@
 #include "ash/public/cpp/login_screen_model.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
@@ -656,7 +655,7 @@ void ScreenLocker::ScheduleDeletion() {
 
 bool ScreenLocker::IsAuthTemporarilyDisabledForUser(
     const AccountId& account_id) {
-  return base::Contains(users_with_temporarily_disabled_auth_, account_id);
+  return users_with_temporarily_disabled_auth_.contains(account_id);
 }
 
 void ScreenLocker::SetAuthenticatorsForTesting(
@@ -846,7 +845,7 @@ void ScreenLocker::OnAuthScanDone(
   }
 
   UserContext user_context(*primary_user);
-  if (!base::Contains(matches, primary_user->username_hash())) {
+  if (!matches.contains(primary_user->username_hash())) {
     LOG(ERROR) << "Fingerprint unlock failed because it does not match primary"
                << " user's record";
     OnFingerprintAuthFailure(*primary_user);

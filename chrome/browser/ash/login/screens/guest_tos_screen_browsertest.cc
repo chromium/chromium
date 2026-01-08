@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/login/screens/guest_tos_screen.h"
 
 #include "ash/constants/ash_switches.h"
-#include "base/containers/contains.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/test/fake_eula_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -78,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(GuestTosScreenTest, GoogleEula) {
   test::OobeJS().CreateVisibilityWaiter(true, kGoogleEulaDialog)->Wait();
   const std::string webview_contents =
       test::GetWebViewContents(kGoogleEulaWebview);
-  EXPECT_TRUE(base::Contains(webview_contents, FakeEulaMixin::kFakeOnlineEula));
+  EXPECT_TRUE(webview_contents.contains(FakeEulaMixin::kFakeOnlineEula));
   test::OobeJS().ClickOnPath(kGoogleEulaOkButton);
   test::OobeJS().CreateVisibilityWaiter(true, kOverviewDialog)->Wait();
 }
@@ -90,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(GuestTosScreenTest, CrosEula) {
   test::OobeJS().CreateVisibilityWaiter(true, kCrosEulaDialog)->Wait();
   const std::string webview_contents =
       test::GetWebViewContents(kCrosEulaWebview);
-  EXPECT_TRUE(base::Contains(webview_contents, FakeEulaMixin::kFakeOnlineEula));
+  EXPECT_TRUE(webview_contents.contains(FakeEulaMixin::kFakeOnlineEula));
   test::OobeJS().ClickOnPath(kCrosEulaOkButton);
   test::OobeJS().CreateVisibilityWaiter(true, kOverviewDialog)->Wait();
 }

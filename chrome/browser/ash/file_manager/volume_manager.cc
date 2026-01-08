@@ -1091,7 +1091,7 @@ void VolumeManager::OnExternalStorageDisabledChangedUnmountCallback(
   while (!remaining_mount_paths.empty()) {
     std::string mount_path = remaining_mount_paths.back();
     remaining_mount_paths.pop_back();
-    if (!base::Contains(disk_mount_manager_->mount_points(), mount_path)) {
+    if (!disk_mount_manager_->mount_points().contains(mount_path)) {
       // The mount point could have already been removed for another reason
       // (i.e. the disk was removed by the user).
       continue;

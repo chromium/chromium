@@ -10,7 +10,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"

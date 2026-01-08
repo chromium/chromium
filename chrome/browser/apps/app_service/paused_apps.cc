@@ -4,7 +4,6 @@
 
 #include "chrome/browser/apps/app_service/paused_apps.h"
 
-#include "base/containers/contains.h"
 
 namespace apps {
 
@@ -30,7 +29,7 @@ bool PausedApps::MaybeRemoveApp(const std::string& app_id) {
 }
 
 bool PausedApps::IsPaused(const std::string& app_id) {
-  return base::Contains(paused_apps_, app_id);
+  return paused_apps_.contains(app_id);
 }
 
 }  // namespace apps

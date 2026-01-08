@@ -6,7 +6,6 @@
 #include <optional>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_split.h"
@@ -164,7 +163,7 @@ class FakeAnnotator : public image_annotation::mojom::Annotator {
     // clean-up happens correctly when combining annotation strings.
     std::string image_filename = GURL(image_id).ExtractFileName();
     std::string label_text;
-    if (base::Contains(custom_label_result_mapping_, image_filename)) {
+    if (custom_label_result_mapping_.contains(image_filename)) {
       label_text = custom_label_result_mapping_[image_filename];
     } else {
       label_text = image_filename + " '" + description_language_tag + "' Label";

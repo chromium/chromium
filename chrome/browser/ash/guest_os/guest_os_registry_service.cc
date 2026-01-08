@@ -11,7 +11,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -114,7 +113,7 @@ bool AppHandlesProtocol(const GuestOsRegistryService::Registration& app,
       !borealis::IsExternalURLAllowed(url)) {
     return false;
   }
-  return base::Contains(app.MimeTypes(), "x-scheme-handler/" + url.GetScheme());
+  return app.MimeTypes().contains("x-scheme-handler/" + url.GetScheme());
 }
 
 // This prefix is used when generating the crostini app list id.

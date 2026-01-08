@@ -17,7 +17,6 @@
 #include "ash/webui/boca_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/wm/screen_pinning_controller.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"

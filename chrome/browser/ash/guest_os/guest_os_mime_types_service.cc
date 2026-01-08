@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/nix/mime_util_xdg.h"
 #include "base/strings/string_util.h"
@@ -101,7 +100,7 @@ GuestOsMimeTypesService::GetExtensionTypesFromMimeTypes(
 
   std::vector<std::string> extension_types;
   for (auto entry : *extension_to_mime) {
-    if (base::Contains(supported_mime_types, entry.second.GetString())) {
+    if (supported_mime_types.contains(entry.second.GetString())) {
       extension_types.push_back(entry.first);
     }
   }

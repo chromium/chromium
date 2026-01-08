@@ -8,7 +8,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
@@ -41,7 +40,7 @@ bool HasPolicyValue(const PrefService& pref_service,
     default:
       return false;
   }
-  return base::Contains(*factors, base::Value(value));
+  return factors->contains(value);
 }
 
 // Check if fingerprint is disabled for a specific purpose (so not including

@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "base/uuid.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
@@ -104,7 +103,7 @@ void AppListSyncModelSanitizer::SanitizePageBreaks(
     // could also unexpectedly create partially filled pages where they did not
     // previously exist (for example, if sync contains items that are not
     // installed on a portion of the user's devices).
-    if (!base::Contains(top_level_items, item_id)) {
+    if (!top_level_items.contains(item_id)) {
       last_valid_position = item_ordinal;
       continue;
     }

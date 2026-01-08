@@ -147,9 +147,9 @@ TEST(FileManagerFileTasksTest, BaseContainsFindsTaskDescriptors) {
   tasks.insert(task_2);
   tasks.insert(task_3);
 
-  ASSERT_TRUE(base::Contains(tasks, task_1));
-  ASSERT_TRUE(base::Contains(tasks, task_2));
-  ASSERT_TRUE(base::Contains(tasks, task_3));
+  ASSERT_TRUE(tasks.contains(task_1));
+  ASSERT_TRUE(tasks.contains(task_2));
+  ASSERT_TRUE(tasks.contains(task_3));
 }
 
 TEST(FileManagerFileTasksTest, EqualTaskDescriptors) {

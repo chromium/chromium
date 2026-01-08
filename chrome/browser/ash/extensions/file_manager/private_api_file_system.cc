@@ -1369,7 +1369,7 @@ void FileManagerPrivateInternalSearchFilesFunction::OnSearchByPatternDone(
   std::set<base::FilePath> found;
   for (const auto& results : all_results) {
     for (const auto& [file_path, is_directory] : results) {
-      if (base::Contains(found, file_path)) {
+      if (found.contains(file_path)) {
         continue;
       }
       found.insert(file_path);

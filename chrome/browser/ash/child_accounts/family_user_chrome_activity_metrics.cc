@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/child_accounts/family_user_chrome_activity_metrics.h"
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_utils.h"
@@ -92,7 +91,7 @@ void FamilyUserChromeActivityMetrics::OnAppInactive(
   // OnAppInactive might get called for the same instance multiple times. The
   // |instance| might have already been removed from
   // |active_browser_instances_|.
-  if (!base::Contains(active_browser_instances_, instance_id)) {
+  if (!active_browser_instances_.contains(instance_id)) {
     return;
   }
 

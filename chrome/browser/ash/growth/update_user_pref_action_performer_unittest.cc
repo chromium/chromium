@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -125,7 +124,7 @@ class UpdateUserPrefActionPerformerTest : public testing::Test {
 
   bool VerifyListPrefsContainsValue(const std::string& value) {
     auto* prefs_ = ProfileManager::GetActiveUserProfile()->GetPrefs();
-    return base::Contains(prefs_->GetList(kListPref), value);
+    return prefs_->GetList(kListPref).contains(value);
   }
 
  private:

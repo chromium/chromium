@@ -11,7 +11,6 @@
 #include <unordered_set>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -200,7 +199,7 @@ void CertProvisioningSchedulerImpl::ScheduleRenewal(
     base::TimeDelta delay) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (base::Contains(scheduled_renewals_, profile_id)) {
+  if (scheduled_renewals_.contains(profile_id)) {
     return;
   }
 
@@ -408,7 +407,7 @@ void CertProvisioningSchedulerImpl::UpdateWorkerListWithExistingCerts(
   }
 
   for (const auto& profile : profiles) {
-    if (base::Contains(failed_cert_profiles_, profile.profile_id)) {
+    if (failed_cert_profiles_.contains(profile.profile_id)) {
       continue;
     }
 

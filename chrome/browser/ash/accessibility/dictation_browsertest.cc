@@ -346,7 +346,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, GetAllSupportedLocales) {
       EXPECT_TRUE(installed);
     } else {
       EXPECT_FALSE(installed) << " for locale " << locale;
-      if (base::Contains(kOfflineNotSupportedLocaleSet, locale)) {
+      if (kOfflineNotSupportedLocaleSet.contains(locale)) {
         EXPECT_FALSE(works_offline) << " for locale " << locale;
       }
     }
@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, GetAllSupportedLocales) {
       EXPECT_FALSE(installed);
     } else {
       EXPECT_FALSE(installed) << " for locale " << locale;
-      if (base::Contains(kOfflineNotSupportedLocaleSet, locale)) {
+      if (kOfflineNotSupportedLocaleSet.contains(locale)) {
         EXPECT_FALSE(works_offline) << " for locale " << locale;
       }
     }

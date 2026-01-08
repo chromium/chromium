@@ -11,7 +11,6 @@
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
@@ -914,7 +913,7 @@ void ArcApps::GetMenuModel(const std::string& app_id,
   MenuItems menu_items;
 
   // Add Open item if the app is not opened and not suspended.
-  if (!base::Contains(app_id_to_task_ids_, app_id) && !app_info->suspended) {
+  if (!app_id_to_task_ids_.contains(app_id) && !app_info->suspended) {
     AddCommandItem(ash::LAUNCH_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
                    menu_items);
   }
@@ -931,8 +930,7 @@ void ArcApps::GetMenuModel(const std::string& app_id,
                    menu_items);
   }
 
-  if (menu_type == MenuType::kShelf &&
-      base::Contains(app_id_to_task_ids_, app_id)) {
+  if (menu_type == MenuType::kShelf && app_id_to_task_ids_.contains(app_id)) {
     AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, menu_items);
   }
 
@@ -1011,7 +1009,7 @@ void ArcApps::UnpauseApp(const std::string& app_id) {
 }
 
 void ArcApps::BlockApp(const std::string& app_id) {
-  if (base::Contains(blocked_app_ids_, app_id)) {
+  if (blocked_app_ids_.contains(app_id)) {
     return;
   }
 
@@ -1033,7 +1031,7 @@ void ArcApps::BlockApp(const std::string& app_id) {
 }
 
 void ArcApps::UnblockApp(const std::string& app_id) {
-  if (!base::Contains(blocked_app_ids_, app_id)) {
+  if (!blocked_app_ids_.contains(app_id)) {
     return;
   }
 
@@ -1160,7 +1158,7 @@ void ArcApps::OnAppRemoved(const std::string& app_id) {
   paused_apps_.MaybeRemoveApp(app_id);
   blocked_app_ids_.erase(app_id);
 
-  if (base::Contains(app_id_to_task_ids_, app_id)) {
+  if (app_id_to_task_ids_.contains(app_id)) {
     for (int task_id : app_id_to_task_ids_[app_id]) {
       task_id_to_app_id_.erase(task_id);
     }
@@ -1240,7 +1238,7 @@ void ArcApps::OnTaskDestroyed(int32_t task_id) {
 
   const std::string app_id = it->second;
   task_id_to_app_id_.erase(it);
-  DCHECK(base::Contains(app_id_to_task_ids_, app_id));
+  DCHECK(app_id_to_task_ids_.contains(app_id));
   app_id_to_task_ids_[app_id].erase(task_id);
   if (app_id_to_task_ids_[app_id].empty()) {
     app_id_to_task_ids_.erase(app_id);
@@ -1608,7 +1606,7 @@ void ArcApps::SetIconEffect(const std::string& app_id) {
 }
 
 void ArcApps::CloseTasks(const std::string& app_id) {
-  if (!base::Contains(app_id_to_task_ids_, app_id)) {
+  if (!app_id_to_task_ids_.contains(app_id)) {
     return;
   }
 
@@ -1830,7 +1828,7 @@ Readiness ArcApps::GetReadiness(const std::string& app_id,
     return Readiness::kDisabledByPolicy;
   }
 
-  if (base::Contains(blocked_app_ids_, app_id)) {
+  if (blocked_app_ids_.contains(app_id)) {
     return Readiness::kDisabledByLocalSettings;
   }
 

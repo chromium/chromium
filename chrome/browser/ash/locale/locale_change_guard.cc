@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
@@ -223,7 +222,7 @@ bool LocaleChangeGuard::ShouldShowLocaleChangeNotification(
   if (from_lang != to_lang)
     return true;
 
-  return !base::Contains(kSkipShowNotificationLanguages, from_lang);
+  return !kSkipShowNotificationLanguages.contains(from_lang);
 }
 
 // static

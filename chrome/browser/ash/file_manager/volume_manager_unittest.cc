@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"

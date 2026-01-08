@@ -14,7 +14,6 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -2516,7 +2515,7 @@ void ArcAppListPrefs::OnPackageListRefreshed(
   for (const auto& package : packages) {
     AddOrUpdatePackagePrefs(*package,
                             UpdatePackagePrefsReason::kOnPackageListRefreshed);
-    if (!base::Contains(old_packages, package->package_name)) {
+    if (!old_packages.contains(package->package_name)) {
       for (auto& observer : observer_list_)
         observer.OnPackageInstalled(*package);
     } else {
@@ -2527,7 +2526,7 @@ void ArcAppListPrefs::OnPackageListRefreshed(
   }
 
   for (const auto& package_name : old_packages) {
-    if (!base::Contains(current_packages, package_name)) {
+    if (!current_packages.contains(package_name)) {
       RemovePackageFromPrefs(package_name);
       for (auto& observer : observer_list_)
         observer.OnPackageRemoved(package_name, false);

@@ -10,7 +10,6 @@
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
@@ -68,9 +67,9 @@ void LoginManagerTest::SetUpOnMainThread() {
 void LoginManagerTest::RegisterUser(const AccountId& account_id) {
   ScopedListPrefUpdate users_pref(g_browser_process->local_state(),
                                   "LoggedInUsers");
-  base::Value email_value(account_id.GetUserEmail());
-  if (!base::Contains(users_pref.Get(), email_value)) {
-    users_pref->Append(std::move(email_value));
+  std::string email_value(account_id.GetUserEmail());
+  if (!users_pref.Get().contains(email_value)) {
+    users_pref->Append(email_value);
   }
   if (user_manager::UserManager::IsInitialized()) {
     user_manager::KnownUser(g_browser_process->local_state())

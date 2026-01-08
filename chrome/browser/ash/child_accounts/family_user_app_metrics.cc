@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -150,7 +149,7 @@ void FamilyUserAppMetrics::OnNewDay() {
 }
 
 void FamilyUserAppMetrics::OnAppTypeInitialized(apps::AppType app_type) {
-  DCHECK(!base::Contains(ready_app_types_, app_type));
+  DCHECK(!ready_app_types_.contains(app_type));
   // Skip the extension app type, because extensions are recorded separately,
   // and AppService only has some extensions with file browser handlers.
   if (app_type == apps::AppType::kExtension)
@@ -170,7 +169,7 @@ void FamilyUserAppMetrics::OnAppRegistryCacheWillBeDestroyed(
 void FamilyUserAppMetrics::OnAppUpdate(const apps::AppUpdate& update) {}
 
 bool FamilyUserAppMetrics::IsAppTypeReady(apps::AppType app_type) const {
-  return base::Contains(ready_app_types_, app_type);
+  return ready_app_types_.contains(app_type);
 }
 
 void FamilyUserAppMetrics::RecordInstalledExtensionsCount() {

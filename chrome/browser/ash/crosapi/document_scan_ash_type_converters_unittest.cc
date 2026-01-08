@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/crosapi/document_scan_ash_type_converters.h"
 
-#include "base/containers/contains.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -542,8 +541,8 @@ TEST(DocumentScanAshTypeConvertersTest,
   ASSERT_TRUE(output->scanner_handle.has_value());
   EXPECT_EQ(output->scanner_handle.value(), "12345");
   ASSERT_TRUE(output->options.has_value());
-  EXPECT_TRUE(base::Contains(output->options.value(), "option1-name"));
-  EXPECT_TRUE(base::Contains(output->options.value(), "option2-name"));
+  EXPECT_TRUE(output->options.value().contains("option1-name"));
+  EXPECT_TRUE(output->options.value().contains("option2-name"));
 }
 
 TEST(DocumentScanAshTypeConvertersTest,

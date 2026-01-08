@@ -12,7 +12,6 @@
 
 #include "app_controls_metrics_utils.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/containers/contains.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -95,7 +94,7 @@ TEST_F(BlockedAppRegistryTest, AddApp) {
 
   std::set<std::string> blocked_apps = registry()->GetBlockedApps();
   for (const auto& app_id : app_ids) {
-    EXPECT_TRUE(base::Contains(blocked_apps, app_id));
+    EXPECT_TRUE(blocked_apps.contains(app_id));
   }
 }
 

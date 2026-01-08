@@ -208,7 +208,7 @@ void AppPlatformInputMetrics::OnInstanceUpdate(const InstanceUpdate& update) {
   // For apps, not opened with browser windows, the app id and app type should
   // not change. So if we have the app info for the window, we don't need to
   // update it.
-  if (base::Contains(window_to_app_info_, window) &&
+  if (window_to_app_info_.contains(window) &&
       !IsAppOpenedWithBrowserWindow(profile_, app_type, app_id)) {
     return;
   }

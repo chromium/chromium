@@ -16,7 +16,6 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -1246,7 +1245,7 @@ void AppListSyncableService::PruneEmptySyncFolders() {
     if (sync_item->item_id == ash::kOemFolderId)
       continue;
 
-    if (!base::Contains(parent_ids, sync_item->item_id)) {
+    if (!parent_ids.contains(sync_item->item_id)) {
       DeleteSyncItem(sync_item->item_id);
     }
   }
@@ -1679,11 +1678,11 @@ AppListSyncableService::SyncItem* AppListSyncableService::CreateSyncItem(
     const std::string& item_id,
     sync_pb::AppListSpecifics::AppListItemType item_type,
     bool is_new) {
-  DCHECK(!base::Contains(sync_items_, item_id));
+  DCHECK(!sync_items_.contains(item_id));
   sync_items_[item_id] = std::make_unique<SyncItem>(item_id, item_type, is_new);
 
   // In case we have pending attributes to apply, process it asynchronously.
-  if (base::Contains(pending_transfer_map_, item_id)) {
+  if (pending_transfer_map_.contains(item_id)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&AppListSyncableService::ApplyAppAttributes,
                                   weak_ptr_factory_.GetWeakPtr(), item_id,

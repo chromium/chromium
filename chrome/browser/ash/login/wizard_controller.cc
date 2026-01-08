@@ -19,7 +19,6 @@
 #include "ash/public/cpp/login_types.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
@@ -1080,7 +1079,7 @@ void WizardController::ShowSignInFatalErrorScreen(
 
 void WizardController::OnSignInFatalErrorScreenExit() {
   OnScreenExit(SignInFatalErrorView::kScreenId, kDefaultExitReason);
-  if (base::Contains(previous_screens_, current_screen_) &&
+  if (previous_screens_.contains(current_screen_) &&
       IsContextNeededForScreen(
           previous_screens_[current_screen_]->screen_id())) {
     // If the last screen user have visited before reaching SignInFatalError
@@ -2902,7 +2901,7 @@ void WizardController::OnResetScreenExit() {
 
 void WizardController::OnDeviceModificationCanceled() {
   BaseScreen* previous_screen = nullptr;
-  if (base::Contains(previous_screens_, current_screen_)) {
+  if (previous_screens_.contains(current_screen_)) {
     previous_screen = previous_screens_[current_screen_];
   }
 
@@ -3199,7 +3198,7 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
 
   // Check if we didn't come here via the previous screen logic.
   if (current_screen_ && new_current &&
-      (!base::Contains(previous_screens_, current_screen_) ||
+      (!previous_screens_.contains(current_screen_) ||
        previous_screens_[current_screen_] != new_current)) {
     previous_screens_[new_current] = current_screen_;
   }
@@ -3728,7 +3727,7 @@ void WizardController::ShowEnrollmentScreenIfEligible() {
 
 bool WizardController::MaybeSetToPreviousScreen() {
   DCHECK(current_screen_);
-  if (!base::Contains(previous_screens_, current_screen_)) {
+  if (!previous_screens_.contains(current_screen_)) {
     return false;
   }
   auto* old_current_screen = current_screen_.get();

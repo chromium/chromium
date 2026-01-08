@@ -20,7 +20,6 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/barrier_callback.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
@@ -154,8 +153,8 @@ void UpdateDebugBaseValue(const TaskDescriptor& task,
 void RecordChangesInDefaultPdfApp(const std::string& new_default_app_id,
                                   const std::set<std::string>& mime_types,
                                   const std::set<std::string>& suffixes) {
-  bool hasPdfMimeType = base::Contains(mime_types, kPdfMimeType);
-  bool hasPdfSuffix = base::Contains(suffixes, kPdfFileExtension);
+  bool hasPdfMimeType = mime_types.contains(kPdfMimeType);
+  bool hasPdfSuffix = suffixes.contains(kPdfFileExtension);
   if (!hasPdfMimeType || !hasPdfSuffix) {
     return;
   }
@@ -193,7 +192,7 @@ void RemoveFileManagerInternalActions(const std::set<std::string>& actions,
   std::erase_if(*tasks, [&actions](const auto& task) {
     const auto& td = task.task_descriptor;
     return IsFilesAppId(td.app_id) &&
-           base::Contains(actions, ParseFilesAppActionId(td.action_id));
+           actions.contains(ParseFilesAppActionId(td.action_id));
   });
 }
 
@@ -267,7 +266,7 @@ bool IsFallbackFileHandler(const FullTaskDescriptor& task) {
       // clang-format on
   });
 
-  return base::Contains(kBuiltInApps, task.task_descriptor.app_id);
+  return kBuiltInApps.contains(task.task_descriptor.app_id);
 }
 
 // Gets the profile in which a file task owned by |extension| should be
@@ -347,7 +346,7 @@ bool ShouldBeOpenedWithBrowser(const std::string& extension_id,
           // clang-format on
       });
   return IsFilesAppId(extension_id) &&
-         base::Contains(kOpenWithBrowserActions, action_id);
+         kOpenWithBrowserActions.contains(action_id);
 }
 
 // Opens the files specified by |file_urls| with the browser for |profile|.
@@ -630,13 +629,13 @@ void UpdateDefaultTask(Profile* profile,
   // In the special case where we are setting the default for one type of Office
   // file only, set defaults for the entire group as well.
   if (mime_types.size() == 1 && suffixes.size() == 1) {
-    if (base::Contains(WordGroupExtensions(), *suffixes.begin())) {
+    if (WordGroupExtensions().contains(*suffixes.begin())) {
       suffixes_to_set = WordGroupExtensions();
       mime_types_to_set = WordGroupMimeTypes();
-    } else if (base::Contains(ExcelGroupExtensions(), *suffixes.begin())) {
+    } else if (ExcelGroupExtensions().contains(*suffixes.begin())) {
       suffixes_to_set = ExcelGroupExtensions();
       mime_types_to_set = ExcelGroupMimeTypes();
-    } else if (base::Contains(PowerPointGroupExtensions(), *suffixes.begin())) {
+    } else if (PowerPointGroupExtensions().contains(*suffixes.begin())) {
       suffixes_to_set = PowerPointGroupExtensions();
       mime_types_to_set = PowerPointGroupMimeTypes();
     }
@@ -1024,7 +1023,7 @@ void ChooseAndSetDefaultTask(Profile* profile,
   // default task. If found, pick and set it as default and return.
   for (FullTaskDescriptor& task : tasks) {
     DCHECK(!task.is_default);
-    if (base::Contains(default_tasks, task.task_descriptor)) {
+    if (default_tasks.contains(task.task_descriptor)) {
       task.is_default = true;
       return;
     }

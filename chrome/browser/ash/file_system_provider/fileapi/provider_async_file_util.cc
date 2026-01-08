@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -124,10 +123,9 @@ void OnReadDirectory(storage::AsyncFileUtil::ReadDirectoryCallback callback,
   std::erase_if(entry_list, [](const filesystem::mojom::DirectoryEntry& entry) {
     return !filesystem::mojom::IsKnownEnumValue(entry.type) ||
            entry.name.empty() || entry.name.value() == "." ||
-           entry.name.value() == ".." ||
-           base::Contains(entry.name.value(), '\0') ||
-           base::Contains(entry.name.value(), '/') ||
-           base::Contains(entry.name.value(), '\\');
+           entry.name.value() == ".." || entry.name.value().contains('\0') ||
+           entry.name.value().contains('/') ||
+           entry.name.value().contains('\\');
   });
 
   content::GetIOThreadTaskRunner({})->PostTask(

@@ -185,7 +185,7 @@ class AppServiceArcAppIconTest : public ArcAppsIconFactoryTest,
   // ArcAppListPrefs::Observer:
   void OnAppIconUpdated(const std::string& app_id,
                         const ArcAppIconDescriptor& descriptor) override {
-    if (base::Contains(waiting_icon_updates_, app_id)) {
+    if (waiting_icon_updates_.contains(app_id)) {
       std::move(waiting_icon_updates_[app_id]).Run();
       waiting_icon_updates_.erase(app_id);
     }

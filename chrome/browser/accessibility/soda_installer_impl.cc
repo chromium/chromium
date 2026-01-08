@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -245,7 +244,7 @@ void SodaInstallerImpl::UpdateAndNotifyOnSodaProgress(
   int downloaded_bytes = 0;
   speech::LanguageCode soda_code = speech::LanguageCode::kNone;
 
-  if (base::Contains(downloading_components_, soda_code)) {
+  if (downloading_components_.contains(soda_code)) {
     total_bytes += downloading_components_[soda_code].total_bytes;
     downloaded_bytes += downloading_components_[soda_code].downloaded_bytes;
   }

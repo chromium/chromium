@@ -653,8 +653,8 @@ class FileTransferConnectorFilesAppBrowserTestBase {
 
         auto file_name = path.BaseName().AsUTF8Unsafe();
 
-        bool should_block = base::Contains(file_name, "blocked");
-        bool should_warn = base::Contains(file_name, "warned");
+        bool should_block = file_name.contains("blocked");
+        bool should_warn = file_name.contains("warned");
         CHECK(!(should_block && should_warn))
             << "A file shouldn't be both blocked and warned.";
         if (!should_block && !should_warn) {
@@ -729,10 +729,10 @@ class FileTransferConnectorFilesAppBrowserTestBase {
 
           chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
           triggered_rule.set_rule_name("rule");
-          if (base::Contains(file_name, "blocked")) {
+          if (file_name.contains("blocked")) {
             triggered_rule.set_action(
                 chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
-          } else if (base::Contains(file_name, "warned")) {
+          } else if (file_name.contains("warned")) {
             triggered_rule.set_action(
                 chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
           }
@@ -839,12 +839,12 @@ class FileTransferConnectorFilesAppBrowserTestBase {
       const base::FilePath& path) {
     enterprise_connectors::ContentAnalysisResponse response;
     // We return a block verdict if the basename contains "blocked".
-    if (base::Contains(path.BaseName().value(), "blocked")) {
+    if (path.BaseName().value().contains("blocked")) {
       response = enterprise_connectors::test::FakeContentAnalysisDelegate::
           FakeContentAnalysisDelegate::DlpResponse(
               enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS,
               "rule", enterprise_connectors::TriggeredRule::BLOCK);
-    } else if (base::Contains(path.BaseName().value(), "warned")) {
+    } else if (path.BaseName().value().contains("warned")) {
       response = enterprise_connectors::test::FakeContentAnalysisDelegate::
           FakeContentAnalysisDelegate::DlpResponse(
               enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS,

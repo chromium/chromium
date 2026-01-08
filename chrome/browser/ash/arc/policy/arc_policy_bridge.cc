@@ -324,7 +324,7 @@ void FilterAppsOnReven(base::Value::Dict* arc_policy,
       return true;
     }
 
-    bool is_allowed = base::Contains(allowed_packages, *package_name);
+    bool is_allowed = allowed_packages.contains(*package_name);
     bool is_zscaler = package_name->find("zscaler.com.") == 0;
     return !is_allowed && !is_zscaler;
   });

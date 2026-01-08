@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
-#include "base/containers/contains.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_package_install_priority_handler.h"
 #include "chrome/browser/ash/app_list/arc/arc_package_syncable_service_factory.h"
@@ -174,7 +173,7 @@ ArcPackageSyncableService::MergeDataAndStartSyncing(
     if (!ShouldSyncPackage(package_name))
       continue;
 
-    if (!base::Contains(local_package_set, package_name)) {
+    if (!local_package_set.contains(package_name)) {
       pending_install_items_[package_name] = std::move(sync_item);
       if (base::FeatureList::IsEnabled(arc::kSyncInstallPriority)) {
         prefs_->GetInstallPriorityHandler()->InstallSyncedPacakge(
@@ -195,7 +194,7 @@ ArcPackageSyncableService::MergeDataAndStartSyncing(
   // Creates sync items for local unsynced packages.
   syncer::SyncChangeList change_list;
   for (const auto& local_package_name : local_packages) {
-    if (base::Contains(sync_items_, local_package_name)) {
+    if (sync_items_.contains(local_package_name)) {
       continue;
     }
 

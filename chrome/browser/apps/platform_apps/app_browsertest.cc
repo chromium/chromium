@@ -9,7 +9,6 @@
 #include "apps/launcher.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -1332,7 +1331,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppIncognitoBrowserTest,
                                    true /* prefer_container */),
                apps::LaunchSource::kFromTest);
 
-  while (!base::Contains(opener_app_ids_, file_manager->id())) {
+  while (!opener_app_ids_.contains(file_manager->id())) {
     content::RunAllPendingInMessageLoop();
   }
 }

@@ -1970,8 +1970,8 @@ TEST_F(AppPlatformInputMetricsTest, KeyEvents) {
     counts.insert(
         *(test_ukm_recorder()->GetEntryMetric(entry, "AppInputEventCount")));
   }
-  EXPECT_TRUE(base::Contains(counts, 1));
-  EXPECT_TRUE(base::Contains(counts, 2));
+  EXPECT_TRUE(counts.contains(1));
+  EXPECT_TRUE(counts.contains(2));
 }
 
 TEST_F(AppPlatformInputMetricsTest, MultipleEvents) {

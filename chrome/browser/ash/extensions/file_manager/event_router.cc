@@ -17,7 +17,6 @@
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -442,7 +441,7 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
         DriveIntegrationServiceFactory::FindForProfile(profile_)
             ->GetMountPointPath();
     return base::FilePath("/").AppendRelativePath(path, &absolute_path) &&
-           base::Contains(*file_watchers_, absolute_path);
+           file_watchers_->contains(absolute_path);
   }
 
   void BroadcastEvent(extensions::events::HistogramValue histogram_value,

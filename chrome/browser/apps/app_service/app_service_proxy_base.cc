@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -209,7 +208,7 @@ void AppServiceProxyBase::OnSupportedLinksPreferenceChanged(
     const std::string& app_id,
     bool open_in_app) {
   AppType app_type = AppRegistryCache().GetAppType(app_id);
-  if (!base::Contains(publishers_, app_type)) {
+  if (!publishers_.contains(app_type)) {
     return;
   }
 

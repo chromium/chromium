@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
 
-#include "base/containers/contains.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
@@ -96,7 +95,7 @@ void AppServiceAppIconLoader::FetchImage(const std::string& id) {
 
 void AppServiceAppIconLoader::ClearImage(const std::string& id) {
   const std::string app_id = GetAppId(profile(), id);
-  if (base::Contains(shelf_app_id_map_, app_id)) {
+  if (shelf_app_id_map_.contains(app_id)) {
     shelf_app_id_map_[app_id].erase(id);
     if (shelf_app_id_map_[app_id].empty()) {
       shelf_app_id_map_.erase(app_id);
@@ -188,7 +187,7 @@ void AppServiceAppIconLoader::OnLoadIcon(const std::string& app_id,
 }
 
 bool AppServiceAppIconLoader::Exist(const std::string& app_id) {
-  if (!base::Contains(shelf_app_id_map_, app_id)) {
+  if (!shelf_app_id_map_.contains(app_id)) {
     return false;
   }
 
