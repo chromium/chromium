@@ -262,19 +262,6 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
-<histogram name="Settings.Cookies.TrackingProtectionRedirect"
-    enum="BooleanRedirected" expires_after="2026-05-31">
-  <owner>mjenn@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Whether or not navigations to the cookies page occured because the user was
-    redirected from the deprecated tracking protections page. Records true on
-    redirect from chrome://settings/trackingProtection to
-    chrome://settings/cookies. Records false on standard navigation to
-    chrome://settings/cookies.
-  </summary>
-</histogram>
-
 <histogram name="Settings.DefaultBrowserFromSource"
     enum="IOSDefaultBrowserSettingsPageSource" expires_after="2026-05-10">
   <owner>gayane@google.com</owner>

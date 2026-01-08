@@ -6991,22 +6991,6 @@ bool ChromeContentBrowserClient::HandleWebUI(
   }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Redirect from deprecated trackingProtection subpage to cookies.
-  if (url->SchemeIs(content::kChromeUIScheme) &&
-      url->GetHost() == chrome::kChromeUISettingsHost &&
-      url->GetPath() == chrome::kTrackingProtectionSubPagePath) {
-    GURL::Replacements replacements;
-    replacements.SetPathStr(chrome::kCookiesSubPagePath);
-    *url = url->ReplaceComponents(replacements);
-    base::UmaHistogramBoolean("Settings.Cookies.TrackingProtectionRedirect",
-                              true);
-  } else if (url->GetPath() == chrome::kCookiesSubPagePath) {
-    base::UmaHistogramBoolean("Settings.Cookies.TrackingProtectionRedirect",
-                              false);
-  }
-#endif
-
   if (IsDisabledInternalWebUI(*url)) {
     GURL::Replacements replacements;
     std::string query("host=" + url->spec());
