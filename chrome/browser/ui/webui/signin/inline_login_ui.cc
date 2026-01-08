@@ -17,7 +17,6 @@
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
-#include "chrome/browser/ui/webui/test_files_request_filter.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -131,15 +130,6 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
   source->AddResourcePaths(kEduCoexistenceResources);
   source->AddResourcePaths(kSupervisionResources);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-  // Only add a filter when runing as test.
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  const bool is_running_test = command_line->HasSwitch(::switches::kTestName) ||
-                               command_line->HasSwitch(::switches::kTestType);
-  if (is_running_test) {
-    source->SetRequestFilter(test::GetTestShouldHandleRequest(),
-                             test::GetTestFilesRequestFilter());
-  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   static constexpr webui::ResourcePath kResources[] = {

@@ -194,8 +194,6 @@ static_library("ui") {
     "webui/sync_internals/chrome_sync_internals_message_handler.h",
     "webui/sync_internals/sync_internals_ui.cc",
     "webui/sync_internals/sync_internals_ui.h",
-    "webui/test_files_request_filter.cc",
-    "webui/test_files_request_filter.h",
     "webui/top_chrome/webui_url_utils.cc",
     "webui/top_chrome/webui_url_utils.h",
     "webui/translate_internals/chrome_translate_internals_handler.cc",
