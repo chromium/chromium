@@ -34,6 +34,7 @@ suite('PrivacyPageIndex', function() {
           enableHandTrackingContentSetting: false,
           enableKeyboardLockPrompt: false,
           enableLocalNetworkAccessSetting: false,
+          enableLocalNetworkAccessSplitPermissions: false,
           enablePaymentHandlerContentSetting: false,
           enablePersistentPermissions: false,
           enableSafeBrowsingSubresourceFilter: false,
@@ -529,12 +530,39 @@ suite('PrivacyPageIndex', function() {
 
     test('RoutingLocalNetworkAccess', async function() {
       assertFalse(loadTimeData.getBoolean('enableLocalNetworkAccessSetting'));
+      assertFalse(
+          loadTimeData.getBoolean('enableLocalNetworkAccessSplitPermissions'));
       await createPrivacyPageIndex({enableLocalNetworkAccessSetting: true});
 
       return testViewsForRoute(
           routes.SITE_SETTINGS_LOCAL_NETWORK_ACCESS,
           ['siteSettingsLocalNetworkAccess'], 'privacy');
     });
+
+    test('RoutingLocalNetwork', async function() {
+      assertFalse(loadTimeData.getBoolean('enableLocalNetworkAccessSetting'));
+      assertFalse(
+          loadTimeData.getBoolean('enableLocalNetworkAccessSplitPermissions'));
+      await createPrivacyPageIndex(
+          {enableLocalNetworkAccessSplitPermissions: true});
+
+      return testViewsForRoute(
+          routes.SITE_SETTINGS_LOCAL_NETWORK, ['siteSettingsLocalNetwork'],
+          'privacy');
+    });
+
+    test('RoutingLoopbackNetwork', async function() {
+      assertFalse(loadTimeData.getBoolean('enableLocalNetworkAccessSetting'));
+      assertFalse(
+          loadTimeData.getBoolean('enableLocalNetworkAccessSplitPermissions'));
+      await createPrivacyPageIndex(
+          {enableLocalNetworkAccessSplitPermissions: true});
+
+      return testViewsForRoute(
+          routes.SITE_SETTINGS_LOOPBACK_NETWORK,
+          ['siteSettingsLoopbackNetwork'], 'privacy');
+    });
+
 
     test('RoutingPaymentHandler', async function() {
       assertFalse(
