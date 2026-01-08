@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "base/process/memory.h"
@@ -699,7 +694,7 @@ TEST_F(OutOfMemoryHandledTest, UncheckedCalloc) {
   EXPECT_TRUE(ptr != nullptr);
   const char* bytes = static_cast<const char*>(ptr);
   for (size_t i = 0; i < kSafeMallocSize; ++i) {
-    EXPECT_EQ(0, bytes[i]);
+    EXPECT_EQ(0, UNSAFE_TODO(bytes[i]));
   }
   base::UncheckedFree(ptr);
 
@@ -707,7 +702,7 @@ TEST_F(OutOfMemoryHandledTest, UncheckedCalloc) {
   EXPECT_TRUE(ptr != nullptr);
   bytes = static_cast<const char*>(ptr);
   for (size_t i = 0; i < (kSafeCallocItems * kSafeCallocSize); ++i) {
-    EXPECT_EQ(0, bytes[i]);
+    EXPECT_EQ(0, UNSAFE_TODO(bytes[i]));
   }
   base::UncheckedFree(ptr);
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/metrics/field_trial.h"
 
 #include <algorithm>
@@ -15,6 +10,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
@@ -937,8 +933,8 @@ void FieldTrialList::ClearParamsFromSharedMemoryForTesting() {
     pickle.WriteBool(is_overridden);
 
     if (prev_entry->pickle_size == pickle.size() &&
-        memcmp(prev_entry->GetPickledDataPtr(), pickle.data(), pickle.size()) ==
-            0) {
+        UNSAFE_TODO(memcmp(prev_entry->GetPickledDataPtr(), pickle.data(),
+                           pickle.size())) == 0) {
       // If the new entry is going to be the exact same as the existing one,
       // then simply keep the existing one to avoid taking extra space in the
       // allocator. This should mean that this trial has no params.
@@ -961,7 +957,8 @@ void FieldTrialList::ClearParamsFromSharedMemoryForTesting() {
 
     // TODO(lawrencewu): Modify base::Pickle to be able to write over a section
     // in memory, so we can avoid this memcpy.
-    memcpy(new_entry->GetPickledDataPtr(), pickle.data(), pickle.size());
+    UNSAFE_TODO(
+        memcpy(new_entry->GetPickledDataPtr(), pickle.data(), pickle.size()));
 
     // Update the ref on the field trial and add it to the list to be made
     // iterable.
@@ -1159,7 +1156,7 @@ void FieldTrialList::AddToAllocatorWhileLocked(
 
   // TODO(lawrencewu): Modify base::Pickle to be able to write over a section in
   // memory, so we can avoid this memcpy.
-  memcpy(entry->GetPickledDataPtr(), pickle.data(), pickle.size());
+  UNSAFE_TODO(memcpy(entry->GetPickledDataPtr(), pickle.data(), pickle.size()));
 
   allocator->MakeIterable(ref);
   field_trial->ref_ = ref;

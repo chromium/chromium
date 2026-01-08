@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/linux_util.h"
 
 #include <dirent.h>
@@ -23,6 +18,7 @@
 #include <string_view>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -201,8 +197,8 @@ pid_t FindThreadIDWithSyscall(pid_t pid,
       continue;
     }
 
-    if (0 == strncmp(expected_data.c_str(), syscall_data.data(),
-                     expected_data.size())) {
+    if (0 == UNSAFE_TODO(strncmp(expected_data.c_str(), syscall_data.data(),
+                                 expected_data.size()))) {
       return tid;
     }
   }

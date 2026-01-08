@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/metrics/histogram_samples.h"
 
 #include <limits>
@@ -226,7 +221,7 @@ bool HistogramSamples::AtomicSingleSample::IsDisabled() const {
 HistogramSamples::LocalMetadata::LocalMetadata() {
   // This is the same way it's done for persistent metadata since no ctor
   // is called for the data members in that case.
-  memset(this, 0, sizeof(*this));
+  UNSAFE_TODO(memset(this, 0, sizeof(*this)));
 }
 
 HistogramSamples::HistogramSamples(uint64_t id, Metadata* meta) : meta_(meta) {

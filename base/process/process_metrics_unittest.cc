@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/process/process_metrics.h"
 
 #include <stddef.h>
@@ -22,6 +17,7 @@
 
 #include "base/byte_size.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -1048,7 +1044,7 @@ TEST(ProcessMetricsTestLinux, GetPageFaultCounts) {
     WritableSharedMemoryMapping mapping = region.Map();
     ASSERT_TRUE(mapping.IsValid());
 
-    memset(mapping.memory(), 42, kMappedSize);
+    UNSAFE_TODO(memset(mapping.memory(), 42, kMappedSize));
   }
 
   PageFaultCounts counts_after;

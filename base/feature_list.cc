@@ -3,10 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include <stddef.h>
 
@@ -19,6 +15,7 @@
 #include "base/base_switches.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -164,17 +161,19 @@ struct FeatureEntry {
   uint64_t pickle_size;
 
   // Return a pointer to the pickled data area immediately following the entry.
-  uint8_t* GetPickledDataPtr() { return reinterpret_cast<uint8_t*>(this + 1); }
+  uint8_t* GetPickledDataPtr() {
+    return reinterpret_cast<uint8_t*>(UNSAFE_TODO(this + 1));
+  }
   const uint8_t* GetPickledDataPtr() const {
-    return reinterpret_cast<const uint8_t*>(this + 1);
+    return reinterpret_cast<const uint8_t*>(UNSAFE_TODO(this + 1));
   }
 
   // Reads the feature and trial name from the pickle. Calling this is only
   // valid on an initialized entry that's in shared memory.
   bool GetFeatureAndTrialName(std::string_view* feature_name,
                               std::string_view* trial_name) const {
-    Pickle pickle = Pickle::WithUnownedBuffer(
-        span(GetPickledDataPtr(), checked_cast<size_t>(pickle_size)));
+    Pickle pickle = Pickle::WithUnownedBuffer(UNSAFE_TODO(
+        span(GetPickledDataPtr(), checked_cast<size_t>(pickle_size))));
     PickleIterator pickle_iter(pickle);
     if (!pickle_iter.ReadStringPiece(feature_name)) {
       return false;
@@ -446,7 +445,8 @@ void FeatureList::AddFeaturesToAllocator(PersistentMemoryAllocator* allocator) {
 
     entry->override_state = override.second.overridden_state;
     entry->pickle_size = pickle.size();
-    memcpy(entry->GetPickledDataPtr(), pickle.data(), pickle.size());
+    UNSAFE_TODO(
+        memcpy(entry->GetPickledDataPtr(), pickle.data(), pickle.size()));
 
     allocator->MakeIterable(entry);
   }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/posix/unix_domain_socket.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -118,7 +114,7 @@ TEST(UnixDomainSocketTest, RecvPid) {
   const ssize_t nread = UnixDomainSocket::RecvMsgWithPid(
       recv_sock.get(), buf, sizeof(buf), &fd_vec, &sender_pid);
   ASSERT_EQ(sizeof(kHello), static_cast<size_t>(nread));
-  ASSERT_EQ(0, memcmp(buf, kHello, sizeof(kHello)));
+  ASSERT_EQ(0, UNSAFE_TODO(memcmp(buf, kHello, sizeof(kHello))));
   ASSERT_EQ(0U, fd_vec.size());
 
   ASSERT_EQ(getpid(), sender_pid);
@@ -147,7 +143,7 @@ TEST(UnixDomainSocketTest, RecvPidWithMaxDescriptors) {
   const ssize_t nread = UnixDomainSocket::RecvMsgWithPid(
       recv_sock.get(), buf, sizeof(buf), &recv_fds, &sender_pid);
   ASSERT_EQ(sizeof(kHello), static_cast<size_t>(nread));
-  ASSERT_EQ(0, memcmp(buf, kHello, sizeof(kHello)));
+  ASSERT_EQ(0, UNSAFE_TODO(memcmp(buf, kHello, sizeof(kHello))));
   ASSERT_EQ(UnixDomainSocket::kMaxFileDescriptors, recv_fds.size());
 
   ASSERT_EQ(getpid(), sender_pid);

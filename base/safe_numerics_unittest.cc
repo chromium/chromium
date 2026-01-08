@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -221,10 +216,10 @@ void TestStrictPointerMath() {
   Dst dummy_value = 0;
   Dst* dummy_ptr = &dummy_value;
   static const Dst kDummyOffset = 2;  // Don't want to go too far.
-  EXPECT_EQ(dummy_ptr + kDummyOffset,
-            dummy_ptr + StrictNumeric<Dst>(kDummyOffset));
-  EXPECT_EQ(dummy_ptr - kDummyOffset,
-            dummy_ptr - StrictNumeric<Dst>(kDummyOffset));
+  EXPECT_EQ(UNSAFE_TODO(dummy_ptr + kDummyOffset),
+            UNSAFE_TODO(dummy_ptr + StrictNumeric<Dst>(kDummyOffset)));
+  EXPECT_EQ(UNSAFE_TODO(dummy_ptr - kDummyOffset),
+            UNSAFE_TODO(dummy_ptr - StrictNumeric<Dst>(kDummyOffset)));
   EXPECT_NE(dummy_ptr, dummy_ptr + StrictNumeric<Dst>(kDummyOffset));
   EXPECT_NE(dummy_ptr, dummy_ptr - StrictNumeric<Dst>(kDummyOffset));
   EXPECT_DEATH_IF_SUPPORTED(

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/posix/unix_domain_socket.h"
 
 #include <errno.h>
@@ -17,6 +12,7 @@
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -86,7 +82,7 @@ bool UnixDomainSocket::SendMsg(int fd,
 #else
     cmsg->cmsg_len = CMSG_LEN(sizeof(int) * fds.size());
 #endif
-    memcpy(CMSG_DATA(cmsg), &fds[0], sizeof(int) * fds.size());
+    UNSAFE_TODO(memcpy(CMSG_DATA(cmsg), &fds[0], sizeof(int) * fds.size()));
     msg.msg_controllen = cmsg->cmsg_len;
   }
 
@@ -154,12 +150,13 @@ ssize_t UnixDomainSocket::RecvMsgWithFlags(int fd,
 
   if (msg.msg_controllen > 0) {
     struct cmsghdr* cmsg;
-    for (cmsg = CMSG_FIRSTHDR(&msg); cmsg; cmsg = CMSG_NXTHDR(&msg, cmsg)) {
+    for (cmsg = CMSG_FIRSTHDR(&msg); cmsg;
+         cmsg = UNSAFE_TODO(CMSG_NXTHDR(&msg, cmsg))) {
       const size_t payload_len = cmsg->cmsg_len - CMSG_LEN(0);
       if (cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SCM_RIGHTS) {
         DCHECK_EQ(payload_len % sizeof(int), 0u);
         DCHECK_EQ(wire_fds, static_cast<void*>(nullptr));
-        wire_fds = reinterpret_cast<int*>(CMSG_DATA(cmsg));
+        wire_fds = reinterpret_cast<int*>(UNSAFE_TODO(CMSG_DATA(cmsg)));
         wire_fds_len = payload_len / sizeof(int);
       }
 #if !BUILDFLAG(IS_APPLE)
@@ -168,7 +165,8 @@ ssize_t UnixDomainSocket::RecvMsgWithFlags(int fd,
           cmsg->cmsg_type == SCM_CREDENTIALS) {
         DCHECK_EQ(payload_len, sizeof(struct ucred));
         DCHECK_EQ(pid, -1);
-        pid = reinterpret_cast<struct ucred*>(CMSG_DATA(cmsg))->pid;
+        pid =
+            reinterpret_cast<struct ucred*>(UNSAFE_TODO(CMSG_DATA(cmsg)))->pid;
       }
 #endif  // !BUILDFLAG(IS_APPLE)
     }
@@ -181,7 +179,7 @@ ssize_t UnixDomainSocket::RecvMsgWithFlags(int fd,
                  << msg.msg_controllen;
     }
     for (size_t i = 0; i < wire_fds_len; ++i) {
-      close(wire_fds[i]);
+      close(UNSAFE_TODO(wire_fds[i]));
     }
     errno = EMSGSIZE;
     return -1;
@@ -189,7 +187,7 @@ ssize_t UnixDomainSocket::RecvMsgWithFlags(int fd,
 
   if (wire_fds) {
     for (size_t i = 0; i < wire_fds_len; ++i) {
-      fds->emplace_back(wire_fds[i]);
+      fds->emplace_back(UNSAFE_TODO(wire_fds[i]));
     }
   }
 
