@@ -488,23 +488,45 @@ public class RecentTabsPageTest {
     @Feature({"RecentTabsPage", "RenderTest"})
     // Disable sign-in to suppress sign-in promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
-    public void testRecentlyClosedWindow() throws Exception {
+    public void testRecentlyClosedWindows() throws Exception {
         mPage = loadRecentTabsPage();
         long time = 904881600000L;
-        String title = "Window 1";
-        String activeTabUrl = "https://www.google.com";
+        String title1 = "Window 1";
+        String activeTabTitle1 = "Google";
+        String activeTabUrl1 = "https://www.google.com";
+        String title2 = "Window 2";
+        String activeTabTitle2 = "Experiments";
+        String activeTabUrl2 = "chrome://flags";
         int tabCount = 3;
-        // Set a recently closed window event and confirm a view is rendered for it.
-        final RecentlyClosedWindow window =
-                new RecentlyClosedWindow(time, 0, activeTabUrl, title, tabCount);
-        setRecentlyClosedEntries(Collections.singletonList(window));
-        assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
+        // Set recently closed window events and confirm views are rendered for them.
+        final RecentlyClosedWindow window1 =
+                new RecentlyClosedWindow(
+                        time,
+                        /* instanceId= */ 0,
+                        activeTabUrl1,
+                        title1,
+                        activeTabTitle1,
+                        tabCount);
+        final RecentlyClosedWindow window2 =
+                new RecentlyClosedWindow(
+                        time,
+                        /* instanceId= */ 1,
+                        activeTabUrl2,
+                        title2,
+                        activeTabTitle2,
+                        tabCount);
+        setRecentlyClosedEntries(Arrays.asList(window1, window2));
+        assertEquals(2, mManager.getRecentlyClosedEntries(2).size());
 
-        final String eventDescriptionString = "google.com and " + (tabCount - 1) + " other tabs";
-        waitForView(title);
-        waitForView(eventDescriptionString);
+        final String eventDescriptionString1 = "google.com and " + (tabCount - 1) + " other tabs";
+        final String eventDescriptionString2 =
+                activeTabTitle2 + " and " + (tabCount - 1) + " other tabs";
+        waitForView(title1);
+        waitForView(eventDescriptionString1);
+        waitForView(title2);
+        waitForView(eventDescriptionString2);
 
-        mRenderTestRule.render(mPage.getView(), "recently_closed_window");
+        mRenderTestRule.render(mPage.getView(), "recently_closed_windows");
 
         final int groupIdx = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity) ? 0 : 1;
         ThreadUtils.runOnUiThreadBlocking(
@@ -512,11 +534,11 @@ public class RecentTabsPageTest {
                     mPage.onChildClick(null, null, groupIdx, 0, 0);
                 });
 
-        // Confirm the recently closed window is gone.
+        // Verify that the entry for the restored window is removed.
         RecentlyClosedEntriesManager recentlyClosedEntriesManager =
                 mActivity.getRecentlyClosedEntriesManagerForTesting();
-        assertEquals(0, recentlyClosedEntriesManager.getRecentlyClosedEntries().size());
-        waitForViewToDisappear(eventDescriptionString);
+        assertEquals(1, recentlyClosedEntriesManager.getRecentlyClosedEntries().size());
+        waitForViewToDisappear(eventDescriptionString1);
     }
 
     @Test
@@ -528,11 +550,13 @@ public class RecentTabsPageTest {
     public void testRemoveAllRecentlyClosedEntries() throws Exception {
         mPage = loadRecentTabsPage();
         String windowTitle = "Window 1";
+        String activeTabTitle = "Google";
         String activeTabUrl = "https://www.google.com";
         int tabCount = 3;
         // Set a recently closed tab and a window event and confirm views are rendered.
         final RecentlyClosedWindow window =
-                new RecentlyClosedWindow(904881600000L, 0, activeTabUrl, windowTitle, tabCount);
+                new RecentlyClosedWindow(
+                        904881600000L, 0, activeTabUrl, windowTitle, activeTabTitle, tabCount);
         final RecentlyClosedTab tab =
                 new RecentlyClosedTab(
                         0, 0, "Tab Title", new GURL("https://www.example.com/"), null);

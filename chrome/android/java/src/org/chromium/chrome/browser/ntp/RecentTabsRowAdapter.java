@@ -681,6 +681,10 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 viewHolder.textView.setText(recentlyClosedWindow.getTitle());
                 String activeTabDomain =
                         UrlUtilities.getDomainAndRegistry(recentlyClosedWindow.getUrl(), false);
+                String activeTabInfo =
+                        TextUtils.isEmpty(activeTabDomain)
+                                ? recentlyClosedWindow.getActiveTabTitle()
+                                : activeTabDomain;
                 int inactiveTabCount = recentlyClosedWindow.getTabCount() - 1;
                 final String description;
                 if (inactiveTabCount > 0) {
@@ -688,10 +692,10 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                             res.getQuantityString(
                                     R.plurals.recent_tabs_window_closure_domain_text,
                                     inactiveTabCount,
-                                    activeTabDomain,
+                                    activeTabInfo,
                                     inactiveTabCount);
                 } else {
-                    description = activeTabDomain;
+                    description = activeTabInfo;
                 }
                 viewHolder.domainView.setText(description);
                 viewHolder.domainView.setVisibility(View.VISIBLE);

@@ -319,6 +319,7 @@ public class RecentlyClosedEntriesManager {
                             info.instanceId,
                             info.url,
                             info.customTitle,
+                            info.title,
                             info.tabCount));
         }
         return recentlyClosedWindows;
