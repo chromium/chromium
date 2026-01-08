@@ -287,21 +287,24 @@ bool ClientSideDetectionIntelligentScanDelegateAndroid::
          verdict->llama_forced_trigger_info().intelligent_scan();
 }
 
-bool ClientSideDetectionIntelligentScanDelegateAndroid::
-    IsIntelligentScanAvailable(bool log_failed_eligibility_reason) {
+ModelType
+ClientSideDetectionIntelligentScanDelegateAndroid::GetIntelligentScanModelType(
+    bool log_failed_eligibility_reason) {
   if (!is_feature_enabled_) {
-    return false;
+    return is_server_model_enabled_ ? ModelType::kNotSupportedServerSide
+                                    : ModelType::kNotSupportedOnDevice;
   }
   if (is_server_model_enabled_) {
-    return !!remote_model_executor_;
+    return !!remote_model_executor_ ? ModelType::kServerSide
+                                    : ModelType::kNotSupportedServerSide;
   }
   if (!model_broker_client_) {
-    return false;
+    return ModelType::kNotSupportedOnDevice;
   }
   // The HasSubscriber check is required because GetSubscriber may start model
   // download.
   if (!model_broker_client_->HasSubscriber(kScamDetection)) {
-    return false;
+    return ModelType::kNotSupportedOnDevice;
   }
 
   auto reason =
@@ -312,21 +315,21 @@ bool ClientSideDetectionIntelligentScanDelegateAndroid::
           "SBClientPhishing.OnDeviceModelUnavailableReasonAtInquiry.Android",
           reason.value());
     }
-    return false;
+    return ModelType::kNotSupportedOnDevice;
   }
 
-  return true;
+  return ModelType::kOnDevice;
 }
 
 std::optional<base::UnguessableToken>
 ClientSideDetectionIntelligentScanDelegateAndroid::StartIntelligentScan(
     std::string rendered_texts,
     IntelligentScanDoneCallback callback) {
-  if (!IsIntelligentScanAvailable(/*log_failed_eligibility_reason=*/false)) {
+  ModelType model_type =
+      GetIntelligentScanModelType(/*log_failed_eligibility_reason=*/false);
+  if (!IntelligentScanDelegate::IsIntelligentScanAvailable(model_type)) {
     std::move(callback).Run(IntelligentScanResult::Failure(
-        IntelligentScanResult::kModelVersionUnavailable,
-        is_server_model_enabled_ ? ModelType::kServerSide
-                                 : ModelType::kOnDevice,
+        IntelligentScanResult::kModelVersionUnavailable, model_type,
         is_server_model_enabled_
             ? IntelligentScanInfo::SERVER_SIDE_MODEL_UNAVAILABLE
             : IntelligentScanInfo::ON_DEVICE_MODEL_UNAVAILABLE));

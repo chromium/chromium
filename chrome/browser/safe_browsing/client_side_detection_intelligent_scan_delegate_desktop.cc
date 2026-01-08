@@ -20,6 +20,7 @@
 namespace {
 using ScamDetectionRequest = optimization_guide::proto::ScamDetectionRequest;
 using ScamDetectionResponse = optimization_guide::proto::ScamDetectionResponse;
+using ModelType = safe_browsing::IntelligentScanDelegate::ModelType;
 
 // Intelligent scan is always performed on the on-device model on desktop.
 constexpr auto kOnDeviceModelType =
@@ -218,12 +219,14 @@ bool ClientSideDetectionIntelligentScanDelegateDesktop::
   return is_keyboard_lock_requested || is_intelligent_scan_requested;
 }
 
-bool ClientSideDetectionIntelligentScanDelegateDesktop::
-    IsIntelligentScanAvailable(bool log_failed_eligibility_reason) {
+ModelType
+ClientSideDetectionIntelligentScanDelegateDesktop::GetIntelligentScanModelType(
+    bool log_failed_eligibility_reason) {
   if (log_failed_eligibility_reason && !on_device_model_available_) {
     LogOnDeviceModelEligibilityReason();
   }
-  return on_device_model_available_;
+  return on_device_model_available_ ? ModelType::kOnDevice
+                                    : ModelType::kNotSupportedOnDevice;
 }
 
 bool ClientSideDetectionIntelligentScanDelegateDesktop::ShouldShowScamWarning(
@@ -261,7 +264,9 @@ ClientSideDetectionIntelligentScanDelegateDesktop::StartIntelligentScan(
     IntelligentScanDoneCallback callback) {
   // We have checked the model availability prior to calling this function, but
   // we want to check one last time before creating a session.
-  if (!IsIntelligentScanAvailable(/*log_failed_eligibility_reason=*/false)) {
+  if (!IntelligentScanDelegate::IsIntelligentScanAvailable(
+          GetIntelligentScanModelType(
+              /*log_failed_eligibility_reason=*/false))) {
     std::move(callback).Run(IntelligentScanResult::Failure(
         IntelligentScanResult::kModelVersionUnavailable, kOnDeviceModelType,
         IntelligentScanInfo::ON_DEVICE_MODEL_UNAVAILABLE));

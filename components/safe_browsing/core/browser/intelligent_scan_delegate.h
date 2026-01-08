@@ -22,9 +22,10 @@ class IntelligentScanDelegate : public KeyedService {
  public:
   // The model type that the client uses to perform intelligent scan.
   enum class ModelType {
-    kNotSupported = 0,
-    kOnDevice = 1,
-    kServerSide = 2,
+    kNotSupportedOnDevice = 0,
+    kNotSupportedServerSide = 1,
+    kOnDevice = 2,
+    kServerSide = 3,
   };
 
   // Represents the result of an intelligent scan.
@@ -53,14 +54,18 @@ class IntelligentScanDelegate : public KeyedService {
   using IntelligentScanDoneCallback =
       base::OnceCallback<void(IntelligentScanResult)>;
 
+  // Returns whether intelligent scan is available for the given model type.
+  static bool IsIntelligentScanAvailable(ModelType model_type);
+
   ~IntelligentScanDelegate() override = default;
 
   // Determines if an intelligent scan should be requested based on the
   // verdict. Called from Client Side Detection.
   virtual bool ShouldRequestIntelligentScan(ClientPhishingRequest* verdict) = 0;
-  // Returns the availability of intelligent scan. Also logs failed
-  // eligibility reason histograms if |log_failed_eligibility_reason| is true.
-  virtual bool IsIntelligentScanAvailable(
+  // Returns the model type that the client uses to perform intelligent scan.
+  // Also logs failed eligibility reason histograms if
+  // |log_failed_eligibility_reason| is true.
+  virtual ModelType GetIntelligentScanModelType(
       bool log_failed_eligibility_reason) = 0;
   // Gets the intelligent scan result. The callback
   // will return an empty optional if intelligent scan is not available.

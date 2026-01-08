@@ -46,4 +46,16 @@ IntelligentScanDelegate::IntelligentScanResult&
 IntelligentScanDelegate::IntelligentScanResult::operator=(
     const IntelligentScanResult& other) = default;
 
+// static
+bool IntelligentScanDelegate::IsIntelligentScanAvailable(ModelType model_type) {
+  switch (model_type) {
+    case ModelType::kNotSupportedOnDevice:
+    case ModelType::kNotSupportedServerSide:
+      return false;
+    case ModelType::kOnDevice:
+    case ModelType::kServerSide:
+      return true;
+  }
+}
+
 }  // namespace safe_browsing

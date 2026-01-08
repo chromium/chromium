@@ -268,6 +268,17 @@ source_set("intelligent_scan_delegate") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
+source_set("intelligent_scan_delegate_unittest") {
+  testonly = true
+  sources = [ "intelligent_scan_delegate_unittest.cc" ]
+  deps = [
+    ":intelligent_scan_delegate",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
 source_set("safe_browsing_metrics_collector") {
   sources = [
     "safe_browsing_metrics_collector.cc",

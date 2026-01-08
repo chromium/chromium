@@ -1655,9 +1655,11 @@ void ClientSideDetectionHost::MaybeStartIntelligentScanForScamDetection(
       return;
     }
 
-    bool intelligent_scan_eligible =
-        intelligent_scan_delegate_->IsIntelligentScanAvailable(
+    IntelligentScanDelegate::ModelType model_type =
+        intelligent_scan_delegate_->GetIntelligentScanModelType(
             /*log_failed_eligibility_reason=*/true);
+    bool intelligent_scan_eligible =
+        IntelligentScanDelegate::IsIntelligentScanAvailable(model_type);
 
     // TODO(crbug.com/462643935): Remove the OnDevice* histograms once the new
     // IntelligentScan* histograms is in Stable. Update chirp alerts to use the
@@ -1679,10 +1681,19 @@ void ClientSideDetectionHost::MaybeStartIntelligentScanForScamDetection(
 
     if (!intelligent_scan_eligible) {
       IntelligentScanInfo intelligent_scan_info;
-      // TODO(crbug.com/462643935): Add a new reason for
-      // SERVER_MODEL_UNAVAILABLE.
-      intelligent_scan_info.set_no_info_reason(
-          IntelligentScanInfo::ON_DEVICE_MODEL_UNAVAILABLE);
+      switch (model_type) {
+        case IntelligentScanDelegate::ModelType::kNotSupportedOnDevice:
+          intelligent_scan_info.set_no_info_reason(
+              IntelligentScanInfo::ON_DEVICE_MODEL_UNAVAILABLE);
+          break;
+        case IntelligentScanDelegate::ModelType::kNotSupportedServerSide:
+          intelligent_scan_info.set_no_info_reason(
+              IntelligentScanInfo::SERVER_SIDE_MODEL_UNAVAILABLE);
+          break;
+        case IntelligentScanDelegate::ModelType::kOnDevice:
+        case IntelligentScanDelegate::ModelType::kServerSide:
+          NOTREACHED();
+      }
       *verdict->mutable_intelligent_scan_info() =
           std::move(intelligent_scan_info);
       MaybeGetAccessToken(std::move(verdict),
@@ -1778,7 +1789,8 @@ void ClientSideDetectionHost::OnIntelligentScanDone(
     intelligent_scan_info.set_model_version(response.model_version);
   }
   switch (response.model_type) {
-    case IntelligentScanDelegate::ModelType::kNotSupported:
+    case IntelligentScanDelegate::ModelType::kNotSupportedOnDevice:
+    case IntelligentScanDelegate::ModelType::kNotSupportedServerSide:
       intelligent_scan_info.set_model_type(
           IntelligentScanModelType::NOT_SUPPORTED);
       break;
