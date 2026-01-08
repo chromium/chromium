@@ -1342,7 +1342,35 @@ Additional details:
   <message name="IDS_POLICY_GEN_AI_DEFAULT_SETTINGS_NO_CONTROL_MESSAGE" desc="Text stating that no GenAI policies have their default behavior controlled by GenAiDefaultSettings.">
     This policy is not controlling the default behavior of any other policies.
   </message>
-  <message name="IDS_POLICY_SKYVAULT_DOWNLOAD_SIGN_IN_TITLE" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the download flow.">
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_DISPLAY_SOURCE"
+                 desc="The name of the notification source, which is camera. Shown in the notification header.">
+          Camera
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_TITLE_PHOTO" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the camera upload.">
+    Can't save photo to OneDrive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_TITLE_VIDEO" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the camera upload.">
+    Can't save video to OneDrive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_TITLE_SCAN" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the camera upload.">
+    Can't save scan to OneDrive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_MESSAGE_PHOTO" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the camera upload.">
+    Sign in to save your photo
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_MESSAGE_VIDEO" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the camera upload.">
+    Sign in to save your video
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_MESSAGE_SCAN" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the camera upload.">
+    Sign in to save your scan
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_BUTTON" desc="Label for the button that starts the sign-in flow to Microsoft OneDrive.">
+    Sign in
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_CANCEL_BUTTON" desc="Cancel button for the notification asking the user to sign-in to Microsoft OneDrive.">
+    Cancel
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DOWNLOAD_SIGN_IN_TITLE" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the camera upload.">
     Sign in to OneDrive to continue downloading
   </message>
   <message name="IDS_POLICY_SKYVAULT_DOWNLOAD_SIGN_IN_BUTTON" desc="Label for the button that starts the sign-in flow to Microsoft OneDrive.">
