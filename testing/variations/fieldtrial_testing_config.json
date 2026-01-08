@@ -2066,62 +2066,6 @@
             ]
         }
     ],
-    "AttributionReportNavigationBasedRetry": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_third_retry",
-                    "params": {
-                        "navigation_retry_attempt": "third_retry"
-                    },
-                    "enable_features": [
-                        "AttributionReportNavigationBasedRetry"
-                    ]
-                },
-                {
-                    "name": "Enabled_second_retry",
-                    "params": {
-                        "navigation_retry_attempt": "second_retry"
-                    },
-                    "enable_features": [
-                        "AttributionReportNavigationBasedRetry"
-                    ]
-                },
-                {
-                    "name": "Enabled_first_retry",
-                    "params": {
-                        "navigation_retry_attempt": "first_retry"
-                    },
-                    "enable_features": [
-                        "AttributionReportNavigationBasedRetry"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AttributionReportObserveAppState": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AttributionReportObserveAppState"
-                    ]
-                }
-            ]
-        }
-    ],
     "AudioDecoderAudioFileReader": [
         {
             "platforms": [
