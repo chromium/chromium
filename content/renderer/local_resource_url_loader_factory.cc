@@ -293,7 +293,13 @@ LocalResourceURLLoaderFactory::GetResource(
   auto resource_it = source->path_to_resource_map.find(std::string(path));
   // CanServe should have been called before this point, which would have
   // confirmed that there exists a resource corresponding to the URL path.
-  CHECK(resource_it != source->path_to_resource_map.end());
+  if (resource_it == source->path_to_resource_map.end()) {
+    SCOPED_CRASH_KEY_STRING256("Bug470579309", "url", url.spec());
+    SCOPED_CRASH_KEY_STRING256("Bug470579309", "path", path);
+    SCOPED_CRASH_KEY_NUMBER("Bug470579309", "resource_map_size",
+                            source->path_to_resource_map.size());
+    NOTREACHED();
+  }
   if (resource_it->second->is_response_body()) {
     // The resource is a direct response. Note that this should already be
     // handled earlier for callers from `GetResourceAndRespond()`, so this path
