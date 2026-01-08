@@ -419,6 +419,7 @@ TrustStoreChrome::TrustStoreChrome(
         }
       }
     }
+    mtc_metadata_update_time_ = mtc_metadata->update_time();
   }
 
   constraints_ = base::flat_map(std::move(constraints));

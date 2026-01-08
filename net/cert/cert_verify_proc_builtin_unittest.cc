@@ -235,7 +235,21 @@ class MockSystemTrustStore : public SystemTrustStore {
     return mock_is_locally_trusted_root_;
   }
 
-  int64_t chrome_root_store_version() const override { return 0; }
+  void SetMockCRSVersion(int64_t crs_version) {
+    mock_crs_version_ = crs_version;
+  }
+
+  int64_t chrome_root_store_version() const override {
+    return mock_crs_version_;
+  }
+
+  void SetMockMtcMetadataUpdateTime(std::optional<base::Time> update_time) {
+    mock_mtc_metadata_update_time_ = update_time;
+  }
+
+  std::optional<base::Time> mtc_metadata_update_time() const override {
+    return mock_mtc_metadata_update_time_;
+  }
 
   base::span<const ChromeRootCertConstraints> GetChromeRootConstraints(
       const bssl::ParsedCertificate* cert) const override {
@@ -265,6 +279,8 @@ class MockSystemTrustStore : public SystemTrustStore {
   bool mock_is_known_root_ = false;
   bool mock_is_known_mtc_anchor_ = false;
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  int64_t mock_crs_version_ = 0;
+  std::optional<base::Time> mock_mtc_metadata_update_time_;
   bool mock_is_locally_trusted_root_ = false;
   std::vector<ChromeRootCertConstraints> mock_chrome_root_constraints_;
   bssl::TrustStoreInMemory eutl_trust_store_;
@@ -486,6 +502,14 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
   void SetMockIsLocallyTrustedRoot(bool is_locally_trusted_root) {
     mock_system_trust_store_->SetMockIsLocallyTrustedRoot(
         is_locally_trusted_root);
+  }
+
+  void SetMockCRSVersion(int64_t crs_version) {
+    mock_system_trust_store_->SetMockCRSVersion(crs_version);
+  }
+
+  void SetMockMtcMetadataUpdateTime(std::optional<base::Time> update_time) {
+    mock_system_trust_store_->SetMockMtcMetadataUpdateTime(update_time);
   }
 
   void SetMockChromeRootConstraints(
@@ -1551,6 +1575,52 @@ TEST_F(CertVerifyProcBuiltinTest, EVNoOCSPRevocationChecks) {
 #endif  // defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+TEST_F(CertVerifyProcBuiltinTest, ChromeRootStoreVersionNetLog) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509Certificate();
+  ASSERT_TRUE(chain.get());
+
+  InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+
+  for (const bool has_crs_ver : {false, true}) {
+    SCOPED_TRACE(has_crs_ver);
+    for (const bool has_mtc_metadata_time : {false, true}) {
+      SCOPED_TRACE(has_mtc_metadata_time);
+
+      const int64_t expected_crs_ver = has_crs_ver ? 42 : 0;
+
+      SetMockCRSVersion(expected_crs_ver);
+      SetMockMtcMetadataUpdateTime(
+          has_mtc_metadata_time
+              ? std::make_optional(
+                    base::Time::FromMillisecondsSinceUnixEpoch(987000))
+              : std::nullopt);
+
+      RecordingNetLogObserver net_log_observer(NetLogCaptureMode::kDefault);
+      CertVerifyResult verify_result;
+      NetLogSource verify_net_log_source;
+      TestCompletionCallback verify_callback;
+      Verify(chain.get(), "www.example.com",
+             /*flags=*/0, &verify_result, &verify_net_log_source,
+             verify_callback.callback());
+      EXPECT_THAT(verify_callback.WaitForResult(), IsOk());
+      auto events = net_log_observer.GetEntriesWithType(
+          NetLogEventType::CERT_VERIFY_PROC_CHROME_ROOT_STORE_VERSION);
+      if (!has_crs_ver && !has_mtc_metadata_time) {
+        ASSERT_EQ(0U, events.size());
+      } else {
+        ASSERT_EQ(1U, events.size());
+        ASSERT_TRUE(events[0].HasParams());
+        EXPECT_EQ(expected_crs_ver, events[0].params.FindInt("version_major"));
+        EXPECT_EQ(
+            has_mtc_metadata_time ? std::make_optional(987) : std::nullopt,
+            events[0].params.FindInt("mtc_metadata_update_time"));
+      }
+    }
+  }
+}
 
 scoped_refptr<ct::SignedCertificateTimestamp> MakeSct(base::Time t,
                                                       std::string_view log_id) {

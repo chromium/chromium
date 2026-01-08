@@ -163,6 +163,10 @@ class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
     return trust_store_chrome_->version();
   }
 
+  std::optional<base::Time> mtc_metadata_update_time() const override {
+    return trust_store_chrome_->mtc_metadata_update_time();
+  }
+
   base::span<const ChromeRootCertConstraints> GetChromeRootConstraints(
       const bssl::ParsedCertificate* cert) const override {
     return trust_store_chrome_->GetConstraintsForCert(cert);

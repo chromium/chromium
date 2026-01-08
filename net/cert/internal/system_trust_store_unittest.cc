@@ -6,6 +6,7 @@
 
 #include "base/strings/string_view_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "net/base/features.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -149,6 +150,15 @@ TEST(SystemTrustStoreChrome, SystemLeafTrustDoesNotOverrideChromeTrust) {
                    .IsTrustLeaf());
 }
 
+TEST(SystemTrustStoreChrome, DefaultVersions) {
+  std::unique_ptr<SystemTrustStore> system_trust_store =
+      CreateChromeOnlySystemTrustStore(std::make_unique<TrustStoreChrome>());
+
+  EXPECT_EQ(system_trust_store->chrome_root_store_version(),
+            net::CompiledChromeRootStoreVersion());
+  EXPECT_EQ(system_trust_store->mtc_metadata_update_time(), std::nullopt);
+}
+
 TEST(SystemTrustStoreChrome, KnownRootsFromRootStoreProto) {
   base::test::ScopedFeatureList scoped_feature_list{features::kVerifyMTCs};
 
@@ -171,9 +181,10 @@ TEST(SystemTrustStoreChrome, KnownRootsFromRootStoreProto) {
       ChromeRootStoreData::CreateFromRootStoreProto(root_store_proto);
   ASSERT_TRUE(root_store_data);
 
+  const int64_t update_time_sec =
+      base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000;
   chrome_root_store::MtcMetadata mtc_metadata_proto;
-  mtc_metadata_proto.set_update_time_seconds(
-      base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000);
+  mtc_metadata_proto.set_update_time_seconds(update_time_sec);
   chrome_root_store::MtcAnchorData* mtc_anchor_metadata =
       mtc_metadata_proto.add_mtc_anchor_data();
   mtc_anchor_metadata->set_log_id(base::as_string_view(kMtcLogId));
@@ -197,6 +208,10 @@ TEST(SystemTrustStoreChrome, KnownRootsFromRootStoreProto) {
   std::unique_ptr<SystemTrustStore> system_trust_store =
       CreateChromeOnlySystemTrustStore(std::make_unique<TrustStoreChrome>(
           &*root_store_data, &*mtc_metadata));
+
+  EXPECT_EQ(system_trust_store->chrome_root_store_version(), crs_version);
+  EXPECT_EQ(system_trust_store->mtc_metadata_update_time(),
+            base::Time::FromMillisecondsSinceUnixEpoch(update_time_sec * 1000));
 
   {
     // The traditional anchor and MTC anchor that were added from the protos

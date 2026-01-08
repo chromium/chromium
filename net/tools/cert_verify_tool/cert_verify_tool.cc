@@ -220,6 +220,10 @@ class DummySystemTrustStore : public net::SystemTrustStore {
 
   int64_t chrome_root_store_version() const override { return 0; }
 
+  std::optional<base::Time> mtc_metadata_update_time() const override {
+    return std::nullopt;
+  }
+
   base::span<const net::ChromeRootCertConstraints> GetChromeRootConstraints(
       const bssl::ParsedCertificate* cert) const override {
     return {};

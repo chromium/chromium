@@ -291,6 +291,9 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
       const bssl::ParsedCertificate* cert) const;
 
   int64_t version() const { return version_; }
+  std::optional<base::Time> mtc_metadata_update_time() const {
+    return mtc_metadata_update_time_;
+  }
 
   // Parses a string specifying constraint overrides, in the format expected by
   // the `kTestCrsConstraintsSwitch` command line switch.
@@ -330,6 +333,8 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
   bssl::TrustStoreInMemory eutl_trust_store_;
 
   int64_t version_;
+
+  std::optional<base::Time> mtc_metadata_update_time_;
 };
 
 // Returns the version # of the Chrome Root Store that was compiled into the
