@@ -49,6 +49,8 @@ class CAPTURE_EXPORT VideoCaptureBufferPoolImpl
   std::unique_ptr<VideoCaptureBufferHandle> GetHandleForInProcessAccess(
       int buffer_id) override;
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle(int buffer_id) override;
+  media::mojom::VideoBufferHandlePtr GetVideoBufferHandle(
+      int buffer_id) override;
 
   VideoCaptureBufferType GetBufferType(int buffer_id) override;
 

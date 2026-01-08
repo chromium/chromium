@@ -121,6 +121,8 @@ component("capture_lib") {
     "video/create_video_capture_device_factory.cc",
     "video/create_video_capture_device_factory.h",
     "video/scoped_buffer_pool_reservation.h",
+    "video/shared_image_buffer_tracker.cc",
+    "video/shared_image_buffer_tracker.h",
     "video/shared_memory_buffer_tracker.cc",
     "video/shared_memory_buffer_tracker.h",
     "video/video_capture_buffer_pool.h",

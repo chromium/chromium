@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/token.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
@@ -24,6 +25,14 @@ CapturedExternalVideoBuffer::CapturedExternalVideoBuffer(
     VideoCaptureFormat format,
     gfx::ColorSpace color_space)
     : handle(std::move(handle)),
+      format(std::move(format)),
+      color_space(std::move(color_space)) {}
+
+CapturedExternalVideoBuffer::CapturedExternalVideoBuffer(
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
+    VideoCaptureFormat format,
+    gfx::ColorSpace color_space)
+    : client_shared_image(std::move(shared_image)),
       format(std::move(format)),
       color_space(std::move(color_space)) {}
 
@@ -42,6 +51,7 @@ CapturedExternalVideoBuffer::CapturedExternalVideoBuffer(
 CapturedExternalVideoBuffer::CapturedExternalVideoBuffer(
     CapturedExternalVideoBuffer&& other)
     : handle(std::move(other.handle)),
+      client_shared_image(std::move(other.client_shared_image)),
       format(std::move(other.format)),
       color_space(std::move(other.color_space)) {
 #if BUILDFLAG(IS_WIN)
@@ -52,6 +62,7 @@ CapturedExternalVideoBuffer::CapturedExternalVideoBuffer(
 CapturedExternalVideoBuffer& CapturedExternalVideoBuffer::operator=(
     CapturedExternalVideoBuffer&& other) {
   handle = std::move(other.handle);
+  client_shared_image = std::move(other.client_shared_image);
   format = std::move(other.format);
   color_space = std::move(other.color_space);
 #if BUILDFLAG(IS_WIN)

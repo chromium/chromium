@@ -56,7 +56,8 @@ enum class PowerLineFrequency {
 enum class VideoCaptureBufferType {
   kSharedMemory,
   kMailboxHolder,
-  kGpuMemoryBuffer
+  kGpuMemoryBuffer,
+  kSharedImage,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

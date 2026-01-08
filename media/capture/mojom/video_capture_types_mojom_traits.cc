@@ -309,6 +309,8 @@ EnumTraits<media::mojom::VideoCaptureBufferType,
       return media::mojom::VideoCaptureBufferType::kMailboxHolder;
     case media::VideoCaptureBufferType::kGpuMemoryBuffer:
       return media::mojom::VideoCaptureBufferType::kGpuMemoryBuffer;
+    case media::VideoCaptureBufferType::kSharedImage:
+      return media::mojom::VideoCaptureBufferType::kSharedImage;
   }
   NOTREACHED();
 }
@@ -330,6 +332,9 @@ bool EnumTraits<media::mojom::VideoCaptureBufferType,
       return true;
     case media::mojom::VideoCaptureBufferType::kGpuMemoryBuffer:
       *output = media::VideoCaptureBufferType::kGpuMemoryBuffer;
+      return true;
+    case media::mojom::VideoCaptureBufferType::kSharedImage:
+      *output = media::VideoCaptureBufferType::kSharedImage;
       return true;
   }
   NOTREACHED();

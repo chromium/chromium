@@ -75,6 +75,11 @@ struct CAPTURE_EXPORT CapturedExternalVideoBuffer {
                               VideoCaptureFormat format,
                               gfx::ColorSpace color_space);
 
+  CapturedExternalVideoBuffer(
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
+      VideoCaptureFormat format,
+      gfx::ColorSpace color_space);
+
 #if BUILDFLAG(IS_WIN)
   CapturedExternalVideoBuffer(Microsoft::WRL::ComPtr<IMFMediaBuffer> imf_buffer,
                               gfx::GpuMemoryBufferHandle handle,
@@ -95,6 +100,7 @@ struct CAPTURE_EXPORT CapturedExternalVideoBuffer {
   Microsoft::WRL::ComPtr<IMFMediaBuffer> imf_buffer;
 #endif
   gfx::GpuMemoryBufferHandle handle;
+  scoped_refptr<gpu::ClientSharedImage> client_shared_image;
   VideoCaptureFormat format;
   gfx::ColorSpace color_space;
 };

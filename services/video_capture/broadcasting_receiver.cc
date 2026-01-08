@@ -156,6 +156,8 @@ BroadcastingReceiver::BufferContext::CloneBufferHandle(
 #else
       NOTREACHED() << "Unexpected GpuMemoryBuffer handle type";
 #endif
+    case media::VideoCaptureBufferType::kSharedImage:
+      NOTREACHED() << "Unexpected SharedImage handle type";
   }
   return media::mojom::VideoBufferHandlePtr();
 }

@@ -100,7 +100,8 @@ enum VideoCaptureBufferType {
   kSharedMemory,
   kSharedMemoryViaRawFileDescriptor_DEPRECATED,  // DEPRECATED, DO NOT USE
   kMailboxHolder,
-  kGpuMemoryBuffer
+  kGpuMemoryBuffer,
+  kSharedImage
 };
 
 // Represents capture device's support for different controls.
