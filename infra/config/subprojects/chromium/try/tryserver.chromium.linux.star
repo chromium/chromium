@@ -30,6 +30,7 @@ try_.defaults.set(
     orchestrator_cores = 2,
     orchestrator_siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     service_account = try_constants.DEFAULT_SERVICE_ACCOUNT,
+    siso_keep_going = siso.KEEP_GOING,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
     siso_remote_linking = True,
 )
@@ -418,8 +419,6 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
         # crbug/940930
         "chromium.enable_cleandead": 100,
-        # TODO(crbug.com/442618066): ramp experiment and apply to more builders
-        "siso.keep_going_limited": 50,
     },
     main_list_view = "try",
     # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
@@ -937,7 +936,7 @@ try_.builder(
     ssd = True,
     contact_team_email = "chrome-build-team@google.com",
     execution_timeout = 6 * time.hour,
-    siso_keep_going = True,
+    siso_keep_going = 0,
 )
 
 try_.builder(

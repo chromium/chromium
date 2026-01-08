@@ -17,4 +17,5 @@ siso = struct(
         # Calculated based on the number of CPUs inside Siso.
         HIGH_JOBS_FOR_CQ = -1,
     ),
+    KEEP_GOING = 3,
 )
