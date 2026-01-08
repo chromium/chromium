@@ -58,7 +58,6 @@ public class MediaCapturePickerInvoker {
             return;
         }
 
-        ScreenCapture.onPick(webContents, result);
         if (action == CaptureAction.CAPTURE_WINDOW) {
             WebContents tabWebContents = impl.getPickedWebContents();
             if (tabWebContents != null) {
@@ -66,6 +65,7 @@ public class MediaCapturePickerInvoker {
                 delegate.onPickTab(tabWebContents, impl.shouldShareAudio());
             } else {
                 // User selected a window or screen.
+                ScreenCapture.onPick(webContents, result);
                 delegate.onPickWindow();
             }
         } else if (action == CaptureAction.CAPTURE_SCREEN) {
