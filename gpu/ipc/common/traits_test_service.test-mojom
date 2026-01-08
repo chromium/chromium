@@ -7,7 +7,6 @@ module gpu.mojom;
 import "gpu/ipc/common/gpu_info.mojom";
 import "gpu/ipc/common/gpu_preferences.mojom";
 import "gpu/ipc/common/mailbox.mojom";
-import "gpu/ipc/common/mailbox_holder.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 
 // All functions on this interface echo their arguments to test StructTraits
@@ -22,9 +21,6 @@ interface TraitsTestService {
 
   [Sync]
   EchoMailbox(Mailbox m) => (Mailbox pass);
-
-  [Sync]
-  EchoMailboxHolder(MailboxHolder m) => (MailboxHolder pass);
 
   [Sync]
   EchoSyncToken(SyncToken s) => (SyncToken pass);

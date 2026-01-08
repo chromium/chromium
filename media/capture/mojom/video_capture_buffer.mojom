@@ -4,7 +4,6 @@
 
 module media.mojom;
 
-import "gpu/ipc/common/mailbox_holder.mojom";
 import "gpu/ipc/common/exported_shared_image.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 import "media/capture/mojom/video_capture_types.mojom";

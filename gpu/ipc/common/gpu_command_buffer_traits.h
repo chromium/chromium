@@ -12,7 +12,6 @@
 
 namespace gpu {
 struct Mailbox;
-struct MailboxHolder;
 struct SyncToken;
 struct VulkanYCbCrInfo;
 }
@@ -31,15 +30,6 @@ struct GPU_IPC_COMMON_EXPORT ParamTraits<gpu::SyncToken> {
 template <>
 struct GPU_IPC_COMMON_EXPORT ParamTraits<gpu::Mailbox> {
   using param_type = gpu::Mailbox;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* p);
-};
-
-template <>
-struct GPU_IPC_COMMON_EXPORT ParamTraits<gpu::MailboxHolder> {
-  using param_type = gpu::MailboxHolder;
   static void Write(base::Pickle* m, const param_type& p);
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,

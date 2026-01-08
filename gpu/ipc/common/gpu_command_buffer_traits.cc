@@ -10,7 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
+#include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 
 // Generate param traits write methods.
@@ -74,22 +74,6 @@ bool ParamTraits<gpu::Mailbox>::Read(const base::Pickle* m,
     return false;
   DCHECK(bytes);
   UNSAFE_TODO(memcpy(p->name, bytes, sizeof(p->name)));
-  return true;
-}
-
-void ParamTraits<gpu::MailboxHolder>::Write(base::Pickle* m,
-                                            const param_type& p) {
-  WriteParam(m, p.mailbox);
-  WriteParam(m, p.sync_token);
-  WriteParam(m, p.texture_target);
-}
-
-bool ParamTraits<gpu::MailboxHolder>::Read(const base::Pickle* m,
-                                           base::PickleIterator* iter,
-                                           param_type* p) {
-  if (!ReadParam(m, iter, &p->mailbox) || !ReadParam(m, iter, &p->sync_token) ||
-      !ReadParam(m, iter, &p->texture_target))
-    return false;
   return true;
 }
 

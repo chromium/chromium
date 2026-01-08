@@ -308,7 +308,6 @@ mojom("interfaces") {
     "gpu_info.mojom",
     "gpu_peak_memory.mojom",
     "mailbox.mojom",
-    "mailbox_holder.mojom",
     "memory_stats.mojom",
     "shared_image_capabilities.mojom",
     "shared_image_metadata.mojom",
@@ -473,16 +472,6 @@ mojom("interfaces") {
     {
       types = [
         {
-          mojom = "gpu.mojom.MailboxHolder"
-          cpp = "::gpu::MailboxHolder"
-        },
-      ]
-      traits_headers = [ "mailbox_holder_mojom_traits.h" ]
-      traits_public_deps = [ ":mojom_traits" ]
-    },
-    {
-      types = [
-        {
           mojom = "gpu.mojom.SharedImageCapabilities"
           cpp = "::gpu::SharedImageCapabilities"
         },
@@ -606,15 +595,6 @@ mojom("interfaces") {
         },
       ]
       traits_headers = [ "mailbox_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
-          mojom = "gpu.mojom.MailboxHolder"
-          cpp = "::gpu::MailboxHolder"
-        },
-      ]
-      traits_headers = [ "mailbox_holder_mojom_traits.h" ]
     },
     {
       types = [
@@ -796,7 +776,6 @@ source_set("mojom_traits") {
   sources = [
     "context_result_mojom_traits.h",
     "gpu_peak_memory_mojom_traits.h",
-    "mailbox_holder_mojom_traits.h",
     "mailbox_mojom_traits.cc",
     "mailbox_mojom_traits.h",
     "memory_stats_mojom_traits.h",

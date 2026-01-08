@@ -48,11 +48,6 @@ class StructTraitsTest : public testing::Test, public mojom::TraitsTestService {
     std::move(callback).Run(m);
   }
 
-  void EchoMailboxHolder(const MailboxHolder& r,
-                         EchoMailboxHolderCallback callback) override {
-    std::move(callback).Run(r);
-  }
-
   void EchoSyncToken(const SyncToken& s,
                      EchoSyncTokenCallback callback) override {
     std::move(callback).Run(s);
@@ -299,35 +294,6 @@ TEST_F(StructTraitsTest, Mailbox) {
   gpu::Mailbox test_mailbox;
   test_mailbox.SetName(mailbox_name);
   EXPECT_EQ(test_mailbox, output);
-}
-
-TEST_F(StructTraitsTest, MailboxHolder) {
-  gpu::MailboxHolder input;
-
-  const int8_t mailbox_name[GL_MAILBOX_SIZE_CHROMIUM] = {
-      0, 9, 8, 7, 6, 5, 4, 3, 2, 1, 9, 7, 5, 3, 1, 2};
-  gpu::Mailbox mailbox;
-  mailbox.SetName(mailbox_name);
-
-  const gpu::CommandBufferNamespace namespace_id = gpu::IN_PROCESS;
-  const gpu::CommandBufferId command_buffer_id(
-      gpu::CommandBufferId::FromUnsafeValue(0xdeadbeef));
-  const uint64_t release_count = 0xdeadbeefdeadL;
-  gpu::SyncToken sync_token(namespace_id, command_buffer_id, release_count);
-  sync_token.SetVerifyFlush();
-
-  const uint32_t texture_target = 1337;
-
-  input.mailbox = mailbox;
-  input.sync_token = sync_token;
-  input.texture_target = texture_target;
-
-  mojo::Remote<mojom::TraitsTestService> remote = GetTraitsTestRemote();
-  gpu::MailboxHolder output;
-  remote->EchoMailboxHolder(input, &output);
-  EXPECT_EQ(mailbox, output.mailbox);
-  EXPECT_EQ(sync_token, output.sync_token);
-  EXPECT_EQ(texture_target, output.texture_target);
 }
 
 TEST_F(StructTraitsTest, SyncToken) {

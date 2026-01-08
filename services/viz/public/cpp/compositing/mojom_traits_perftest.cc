@@ -14,7 +14,6 @@
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/test/compositor_frame_helpers.h"
-#include "gpu/ipc/common/mailbox_holder_mojom_traits.h"
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "services/viz/public/cpp/compositing/compositor_frame_mojom_traits.h"
