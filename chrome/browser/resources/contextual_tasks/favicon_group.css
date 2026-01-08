@@ -10,7 +10,7 @@
 
 :host {
   align-items: center;
-  background-color: var(--cr-fallback-color-surface);
+  background-color: var(--toolbar-background-color);
   border-radius: 20px;
   cursor: pointer;
   display: flex;
@@ -19,7 +19,7 @@
 }
 
 :host(:hover) {
-  background-color: var(--cr-hover-background-color);
+  background-color: rgba(var(--cr-hover-background-color), 0.7);
 }
 
 .favicon-item {
@@ -43,7 +43,7 @@
 }
 
 .more-items {
-  color: var(--cr-secondary-text-color);
+  color: var(toolbar-text-color);
   font-size: 12px;
   margin-inline-start: 6px; /* Spacing between last icon and text */
   padding-inline-start: 2px;
