@@ -1236,7 +1236,8 @@ export class ComposeboxElement extends I18nMixinLit
         // Query autocomplete to get contextual suggestions for files.
         this.queryAutocomplete(/* clearMatches= */ true);
       }
-      if (file.status === FileUploadStatus.kProcessing) {
+      if (file.status === FileUploadStatus.kProcessing ||
+          file.status === FileUploadStatus.kProcessingSuggestSignalsReady) {
         this.pendingUploads_.add(file.uuid);
       }
       const isFinished = file?.status === FileUploadStatus.kValidationFailed ||

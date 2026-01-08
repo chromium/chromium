@@ -7,9 +7,12 @@ import 'chrome://contextual-tasks/app.js';
 import type {ContextualTasksAppElement} from 'chrome://contextual-tasks/app.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
+import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {FileUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
+import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {AutocompleteMatch, AutocompleteResult} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, type PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -19,6 +22,7 @@ import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
+import {assertStyle, installMock} from './test_utils.js';
 
 const ADD_FILE_CONTEXT_FN = 'addFileContext';
 const FAKE_TOKEN_STRING = '00000000000000001234567890ABCDEF';
@@ -84,6 +88,69 @@ function createAutocompleteResult(modifiers: Partial<AutocompleteResult> = {}):
   return Object.assign(base, modifiers);
 }
 
+class MockSpeechRecognition {
+  voiceSearchInProgress: boolean = false;
+  onresult:
+      ((this: MockSpeechRecognition,
+        ev: SpeechRecognitionEvent) => void)|null = null;
+  onend: (() => void)|null = null;
+  onerror:
+      ((this: MockSpeechRecognition,
+        ev: SpeechRecognitionErrorEvent) => void)|null = null;
+  interimResults = true;
+  continuous = false;
+  constructor() {
+    mockSpeechRecognition = this;
+  }
+  start() {
+    this.voiceSearchInProgress = true;
+  }
+  stop() {
+    this.voiceSearchInProgress = false;
+  }
+  abort() {
+    this.voiceSearchInProgress = false;
+    if (this.onend) {
+      this.onend();
+    }
+  }
+}
+
+let mockSpeechRecognition: MockSpeechRecognition;
+
+function createResults(n: number): globalThis.SpeechRecognitionEvent {
+  return {
+    results: Array.from(Array(n)).map(() => {
+      return {
+        isFinal: false,
+        0: {
+          transcript: 'foo',
+          confidence: 1,
+        },
+      } as unknown as SpeechRecognitionResult;
+    }),
+    resultIndex: 0,
+  } as unknown as SpeechRecognitionEvent;
+}
+
+function getVoiceSearchButton(composeboxElement: ComposeboxElement):
+    HTMLElement|null {
+  const contextElement = composeboxElement.$.context;
+  return contextElement.shadowRoot.querySelector<HTMLElement>(
+      '#voiceSearchButton');
+}
+
+function getTransitionEndPromise(
+    element: HTMLElement, property?: string): Promise<void> {
+  return new Promise<void>(
+      resolve =>
+          element.addEventListener('transitionend', (e: TransitionEvent) => {
+            if (!property || e.propertyName === property) {
+              resolve();
+            }
+          }));
+}
+
 function simulateUserInput(inputElement: HTMLInputElement, value: string) {
   inputElement.value = value;
   inputElement.dispatchEvent(
@@ -98,6 +165,7 @@ suite('ContextualTasksComposeboxTest', () => {
   let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>;
   let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>;
   let searchboxCallbackRouterRemote: SearchboxPageRemote;
+  let windowProxy: TestMock<WindowProxy>;
   let mockTimer: MockTimer;
 
   async function setupAutocompleteResults(
@@ -172,6 +240,11 @@ suite('ContextualTasksComposeboxTest', () => {
     document.body.appendChild(contextualTasksApp);
     await microtasksFinished();
     composebox = contextualTasksApp.$.composebox.$.composebox;
+
+    windowProxy = installMock(WindowProxy);
+    windowProxy.setResultFor('setTimeout', 0);
+    window.webkitSpeechRecognition =
+        MockSpeechRecognition as unknown as typeof SpeechRecognition;
 
     assertTrue(
         MockResizeObserver.instances.length >= 1,
@@ -270,15 +343,6 @@ suite('ContextualTasksComposeboxTest', () => {
           composed: true,
         }));
     await microtasksFinished();
-  }
-
-  function assertStyle(
-      element: Element|null, name: string, expected: string,
-      error: string = '') {
-    assertTrue(!!element, `Element is null`);
-    const actual =
-        window.getComputedStyle(element).getPropertyValue(name).trim();
-    assertEquals(expected, actual, error);
   }
 
   function getSubmitContainer(): HTMLElement|null {
@@ -591,6 +655,7 @@ suite('ContextualTasksComposeboxTest', () => {
 
     assertEquals(1, composebox.getRemainingFilesToUpload().size);
   });
+
   test('clear all (cancel) works for uploading set', async () => {
     const token = FAKE_TOKEN_STRING;
     await uploadFileAndVerify(
@@ -847,5 +912,154 @@ suite('ContextualTasksComposeboxTest', () => {
   test('ExpandAnimationState', function() {
     contextualTasksApp.$.composebox.startExpandAnimation();
     assertEquals('expanding', composebox.animationState);
+  });
+
+  test('voice search starts as hidden', () => {
+    const composebox = contextualTasksApp.$.composebox.$.composebox;
+    const voiceSearchElement = (composebox as any).$.voiceSearch;
+    assertStyle(voiceSearchElement, 'display', 'none');
+  });
+
+  test(
+      'clicking voice search starts speech recognition, hides the composebox',
+      async () => {
+        const composeboxDiv =
+            contextualTasksApp.$.composebox.$.composebox.$.composebox;
+        const composebox = contextualTasksApp.$.composebox.$.composebox;
+        const hidePromise = getTransitionEndPromise(composeboxDiv, 'opacity');
+        const voiceSearchButton = getVoiceSearchButton(composebox);
+        voiceSearchButton!.click();
+        await microtasksFinished();
+        await hidePromise;
+
+        assertTrue(mockSpeechRecognition.voiceSearchInProgress);
+        assertStyle(composeboxDiv, 'opacity', '0');
+        assertStyle(composebox.$.voiceSearch, 'display', 'inline');
+        assertEquals(composebox.animationState, GlowAnimationState.LISTENING);
+      });
+
+  test('on voice search result updates the searchbox input', async () => {
+    const composebox = contextualTasksApp.$.composebox.$.composebox;
+
+    const voiceSearchButton = getVoiceSearchButton(composebox);
+    voiceSearchButton!.click();
+    await microtasksFinished();
+
+    const result = createResults(2);
+    Object.assign(result.results[0]![0]!, {transcript: 'hello'});
+    Object.assign(result.results[1]![0]!, {transcript: 'world'});
+
+    mockSpeechRecognition.onresult!(result);
+    await microtasksFinished();
+
+    const voiceSearchElement = (composebox as any).$.voiceSearch;
+    const voiceSearchInput = voiceSearchElement.$.input;
+
+
+    assertEquals('helloworld', voiceSearchInput.value);
+
+    voiceSearchInput.value = 'test';
+    voiceSearchInput.dispatchEvent(new Event('input'));
+    assertEquals('test', voiceSearchInput.value);
+    await microtasksFinished();
+
+    const result2 = createResults(2);
+    Object.assign(result2.results[0]![0]!, {transcript: 'hello'});
+    Object.assign(result2.results[1]![0]!, {transcript: 'goodbye'});
+
+    mockSpeechRecognition.onresult!(result2);
+    await microtasksFinished();
+
+    assertEquals('hellogoodbye', voiceSearchInput.value);
+  });
+
+  test('on error shows error container for NOT_ALLOWED', async () => {
+    const composeboxDiv =
+        contextualTasksApp.$.composebox.$.composebox.$.composebox;
+    const composebox = contextualTasksApp.$.composebox.$.composebox;
+    const voiceSearchButton = getVoiceSearchButton(composebox);
+    voiceSearchButton!.click();
+    await microtasksFinished();
+
+    const hidePromise = getTransitionEndPromise(composeboxDiv, 'opacity');
+
+    mockSpeechRecognition.onerror!
+        ({error: 'not-allowed'} as SpeechRecognitionErrorEvent);
+    await microtasksFinished();
+    await hidePromise;
+
+    const voiceSearchElement = composebox.$.voiceSearch;
+    const errorContainer =
+        voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
+            '#error-container');
+    const inputElement =
+        voiceSearchElement.shadowRoot.querySelector<HTMLTextAreaElement>(
+            '#input');
+
+    assertTrue(!!errorContainer);
+    assertFalse(errorContainer.hidden);
+    assertTrue(inputElement!.hidden);
+    assertStyle(composeboxDiv, 'opacity', '0');
+    assertStyle(composebox.$.voiceSearch, 'display', 'inline');
+    assertEquals(composebox.animationState, GlowAnimationState.LISTENING);
+  });
+
+  test('on voice search error shows error and then hides overlay', async () => {
+    const composeboxDiv =
+        contextualTasksApp.$.composebox.$.composebox.$.composebox;
+    const composebox = contextualTasksApp.$.composebox.$.composebox;
+    composebox.$.voiceSearch.start();
+    await microtasksFinished();
+
+    mockSpeechRecognition.onerror!
+        ({error: 'network'} as SpeechRecognitionErrorEvent);
+    await microtasksFinished();
+
+    const voiceSearchElement = composebox.$.voiceSearch;
+    const errorContainer =
+        voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
+            '#error-container');
+    assertTrue(!!errorContainer);
+    assertTrue(errorContainer.hidden);
+
+    const [callback] = await windowProxy.whenCalled('setTimeout');
+    callback();
+    await microtasksFinished();
+    assertStyle(voiceSearchElement, 'display', 'none');
+    assertStyle(composeboxDiv, 'display', 'flex');
+  });
+
+  test(
+      'on focus out does not set animation state as none \
+      when submitting or listening',
+      async () => {
+        const composebox = contextualTasksApp.$.composebox.$.composebox;
+
+        composebox.animationState = GlowAnimationState.SUBMITTING;
+        composebox.dispatchEvent(new CustomEvent('composebox-focus-out', {
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+        assertEquals(composebox.animationState, GlowAnimationState.SUBMITTING);
+
+        composebox.animationState = GlowAnimationState.LISTENING;
+        composebox.dispatchEvent(new CustomEvent('composebox-focus-out', {
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+        assertEquals(composebox.animationState, GlowAnimationState.LISTENING);
+      });
+
+  test('on focus out sets animation state as none otherewise', async () => {
+    const composebox = contextualTasksApp.$.composebox.$.composebox;
+    composebox.animationState = GlowAnimationState.EXPANDING;
+    composebox.dispatchEvent(new CustomEvent('composebox-focus-out', {
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+    assertEquals(composebox.animationState, GlowAnimationState.NONE);
   });
 });
