@@ -70,6 +70,23 @@ class DeviceStatisticsTracker {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:SyncDeviceStatisticsSuccess)
 
+  // LINT.IfChange(SyncDeviceStatisticsOutcome)
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class AccountsHaveOtherDevicesSummary {
+    kPrimaryYesNonPrimaryNA = 0,
+    kPrimaryNoNonPrimaryNA = 1,
+    kPrimaryYesNonPrimaryYes = 2,
+    kPrimaryYesNonPrimaryNo = 3,
+    kPrimaryNoNonPrimaryYes = 4,
+    kPrimaryNoNonPrimaryNo = 5,
+    kMaxValue = kPrimaryNoNonPrimaryNo
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:SyncDeviceStatisticsOutcome)
+
+  // LINT.IfChange(SyncDeviceStatisticsPlatform)
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class Platform {
     kWindows = 0,
     kMac = 1,
@@ -79,12 +96,14 @@ class DeviceStatisticsTracker {
     kIOS = 5,
     kMaxValue = kIOS
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:SyncDeviceStatisticsPlatform)
 
  private:
   void RequestDoneForGaiaId(const GaiaId& gaia);
   void AllRequestsDone();
 
   RequestsCompletedSuccess GetOverallSuccess() const;
+  AccountsHaveOtherDevicesSummary GetOverallOutcome() const;
 
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<signin::IdentityManager> identity_manager_;

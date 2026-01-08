@@ -27,10 +27,53 @@ namespace {
 
 constexpr char kLastRecordedPref[] = "sync.device_statistics_timestamp";
 
+// A device is considered active if it has been used within this amount of time.
+constexpr base::TimeDelta kDeviceActivityTimeRange = base::Days(28);
+
 std::string GenerateCacheGUID() {
   // Generate a GUID with 128 bits of randomness.
   constexpr int kGuidBytes = 128 / 8;
   return base::Base64Encode(base::RandBytesAsVector(kGuidBytes));
+}
+
+bool ShouldRecordOutcomeMetrics(
+    DeviceStatisticsTracker::RequestsCompletedSuccess success) {
+  using RequestsCompletedSuccess =
+      DeviceStatisticsTracker::RequestsCompletedSuccess;
+  switch (success) {
+    case RequestsCompletedSuccess::kAllSucceeded:
+    case RequestsCompletedSuccess::kPrimarySucceededButNonPrimaryFailed:
+      return true;
+    case RequestsCompletedSuccess::kPrimaryFailedButNonPrimarySucceeded:
+    case RequestsCompletedSuccess::kAllFailed:
+    case RequestsCompletedSuccess::kPrimaryAccountChangedOrRemoved:
+      return false;
+  }
+  NOTREACHED();
+}
+
+std::optional<DeviceStatisticsTracker::Platform> PlatformFromProto(
+    const sync_pb::DeviceInfoSpecifics& device) {
+  switch (device.os_type()) {
+    case sync_pb::SyncEnums::OsType::SyncEnums_OsType_OS_TYPE_WINDOWS:
+      return DeviceStatisticsTracker::Platform::kWindows;
+    case sync_pb::SyncEnums::OsType::SyncEnums_OsType_OS_TYPE_MAC:
+      return DeviceStatisticsTracker::Platform::kMac;
+    case sync_pb::SyncEnums::OsType::SyncEnums_OsType_OS_TYPE_LINUX:
+      return DeviceStatisticsTracker::Platform::kLinux;
+    case sync_pb::SyncEnums::OsType::SyncEnums_OsType_OS_TYPE_CHROME_OS_ASH:
+      return DeviceStatisticsTracker::Platform::kChromeOS;
+    case sync_pb::SyncEnums::OsType::SyncEnums_OsType_OS_TYPE_ANDROID:
+      return DeviceStatisticsTracker::Platform::kAndroid;
+    case sync_pb::SyncEnums::OsType::SyncEnums_OsType_OS_TYPE_IOS:
+      return DeviceStatisticsTracker::Platform::kIOS;
+    case sync_pb::SyncEnums::OsType::SyncEnums_OsType_OS_TYPE_CHROME_OS_LACROS:
+    case sync_pb::SyncEnums::OsType::SyncEnums_OsType_OS_TYPE_FUCHSIA:
+    case sync_pb::SyncEnums::OsType::SyncEnums_OsType_OS_TYPE_UNSPECIFIED:
+      // Unknown, deprecated, or not interesting.
+      return std::nullopt;
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -115,10 +158,41 @@ void DeviceStatisticsTracker::RequestDoneForGaiaId(const GaiaId& gaia) {
   CHECK(request);
   requests_.erase(gaia);
 
+  const base::Time now = base::Time::Now();
+
   if (request->GetState() == DeviceStatisticsRequest::State::kComplete) {
     other_devices_by_gaia_[gaia] = std::vector<Platform>();
-    // TODO(crbug.com/465716865): Populate `other_devices_by_gaia_[gaia]` from
-    // `result->GetResults()`.
+    for (const sync_pb::DeviceInfoSpecifics& device : request->GetResults()) {
+      // Only consider Chrome devices (not Google Play Services).
+      if (!device.has_chrome_version_info()) {
+        continue;
+      }
+
+      // Don't consider the current device.
+      if (base::Contains(current_device_cache_guids_, device.cache_guid())) {
+        continue;
+      }
+
+      // Only consider recently-used devices.
+      base::Time last_updated_time =
+          ProtoTimeToTime(device.last_updated_timestamp());
+      if (now - last_updated_time > kDeviceActivityTimeRange) {
+        continue;
+      }
+
+      // Figure out the platform/OS of the other device, and skip
+      // unknown/uninteresting ones.
+      std::optional<Platform> platform = PlatformFromProto(device);
+      if (!platform) {
+        continue;
+      }
+
+      // TODO(crbug.com/465716865): Implement activity-time-range based deduping
+      // logic as in DeviceInfoSyncBridge::CountActiveDevicesByType(). This will
+      // require plumbing the ctime/mtime from the SyncEntity here.
+
+      other_devices_by_gaia_[gaia]->push_back(*platform);
+    }
   } else {
     other_devices_by_gaia_[gaia] = base::unexpected(kRequestFailed);
   }
@@ -136,8 +210,34 @@ void DeviceStatisticsTracker::AllRequestsDone() {
   base::UmaHistogramEnumeration(
       "Sync.DeviceStatistics.RequestsCompletedSuccess", success);
 
-  // TODO(crbug.com/465716865): Record detailed metrics based on
-  // `other_devices_by_gaia_`.
+  if (ShouldRecordOutcomeMetrics(success)) {
+    base::UmaHistogramEnumeration("Sync.DeviceStatistics.Outcome.Overall",
+                                  GetOverallOutcome());
+
+    for (const auto& [gaia, other_devices] : other_devices_by_gaia_) {
+      if (!other_devices.has_value()) {
+        continue;
+      }
+
+      bool is_primary = (gaia == primary_account_.gaia);
+      std::string_view infix =
+          is_primary ? "PrimaryAccount" : "NonPrimaryAccount";
+
+      base::UmaHistogramCounts100(
+          absl::StrFormat(
+              "Sync.DeviceStatistics.Outcome.%s.NumberOfAdditionalClients",
+              infix),
+          other_devices->size());
+
+      for (Platform platform : *other_devices) {
+        base::UmaHistogramEnumeration(
+            absl::StrFormat(
+                "Sync.DeviceStatistics.Outcome.%s.PlatformOfAdditionalClient",
+                infix),
+            platform);
+      }
+    }
+  }
 
   std::move(callback_).Run();
   // NOTE: `this` may be destroyed now; don't do anything else!
@@ -173,6 +273,40 @@ DeviceStatisticsTracker::GetOverallSuccess() const {
     return RequestsCompletedSuccess::kPrimaryFailedButNonPrimarySucceeded;
   } else {
     return RequestsCompletedSuccess::kPrimarySucceededButNonPrimaryFailed;
+  }
+}
+
+DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary
+DeviceStatisticsTracker::GetOverallOutcome() const {
+  bool primary_account_has_other_devices = false;
+  bool non_primary_account_has_other_devices = false;
+  for (const auto& [gaia, other_devices] : other_devices_by_gaia_) {
+    if (other_devices.has_value() && !other_devices->empty()) {
+      if (gaia == primary_account_.gaia) {
+        primary_account_has_other_devices = true;
+      } else {
+        non_primary_account_has_other_devices = true;
+      }
+    }
+  }
+  // At least the primary account must always exist.
+  CHECK_GE(other_devices_by_gaia_.size(), 1u);
+  bool has_non_primary_account = other_devices_by_gaia_.size() > 1;
+
+  if (has_non_primary_account) {
+    if (non_primary_account_has_other_devices) {
+      return primary_account_has_other_devices
+                 ? AccountsHaveOtherDevicesSummary::kPrimaryYesNonPrimaryYes
+                 : AccountsHaveOtherDevicesSummary::kPrimaryNoNonPrimaryYes;
+    } else {
+      return primary_account_has_other_devices
+                 ? AccountsHaveOtherDevicesSummary::kPrimaryYesNonPrimaryNo
+                 : AccountsHaveOtherDevicesSummary::kPrimaryNoNonPrimaryNo;
+    }
+  } else {
+    return primary_account_has_other_devices
+               ? AccountsHaveOtherDevicesSummary::kPrimaryYesNonPrimaryNA
+               : AccountsHaveOtherDevicesSummary::kPrimaryNoNonPrimaryNA;
   }
 }
 

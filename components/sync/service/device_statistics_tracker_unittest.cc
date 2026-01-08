@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -93,6 +94,7 @@ TEST_F(DeviceStatisticsTrackerTest, DoesNotStartRequestIfPrefIsRecent) {
       "Sync.DeviceStatistics.RequestsStartedCount", 0);
   histogram_tester.ExpectTotalCount(
       "Sync.DeviceStatistics.RequestsCompletedSuccess", 0);
+  histogram_tester.ExpectTotalCount("Sync.DeviceStatistics.Outcome.Overall", 0);
 }
 
 TEST_F(DeviceStatisticsTrackerTest, StartsRequestIfPrefIsOld) {
@@ -126,6 +128,450 @@ TEST_F(DeviceStatisticsTrackerTest, StartsRequestIfPrefIsOld) {
       /*sample=*/
       DeviceStatisticsTracker::RequestsCompletedSuccess::kAllSucceeded,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall",
+      /*sample=*/
+      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryNoNonPrimaryNo,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(DeviceStatisticsTrackerTest,
+       RecordsOutcomeWhenPrimarySucceedsAndSecondaryFails) {
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo secondary =
+      identity_test_env_.MakeAccountAvailable("secondary@example.com");
+
+  pref_service_.SetTime("sync.device_statistics_timestamp",
+                        base::Time::Now() - base::Hours(25));
+
+  base::HistogramTester histogram_tester;
+
+  DeviceStatisticsTracker tracker(
+      &pref_service_, identity_test_env_.identity_manager(),
+      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+
+  base::test::TestFuture<void> future;
+  tracker.Start(future.GetCallback());
+
+  ASSERT_EQ(fake_requests_.size(), 2u);
+  fake_requests_[primary.gaia]->SimulateSuccess({});
+  fake_requests_[secondary.gaia]->SimulateFailure();
+  EXPECT_TRUE(future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsStartedCount", /*sample=*/2,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsCompletedSuccess",
+      /*sample=*/
+      DeviceStatisticsTracker::RequestsCompletedSuccess::
+          kPrimarySucceededButNonPrimaryFailed,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall",
+      /*sample=*/
+      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryNoNonPrimaryNo,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(DeviceStatisticsTrackerTest,
+       RecordsNoOutcomeWhenPrimaryFailsAndSecondarySucceeds) {
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo secondary =
+      identity_test_env_.MakeAccountAvailable("secondary@example.com");
+
+  pref_service_.SetTime("sync.device_statistics_timestamp",
+                        base::Time::Now() - base::Hours(25));
+
+  base::HistogramTester histogram_tester;
+
+  DeviceStatisticsTracker tracker(
+      &pref_service_, identity_test_env_.identity_manager(),
+      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+
+  base::test::TestFuture<void> future;
+  tracker.Start(future.GetCallback());
+
+  ASSERT_EQ(fake_requests_.size(), 2u);
+  fake_requests_[primary.gaia]->SimulateFailure();
+  fake_requests_[secondary.gaia]->SimulateSuccess({});
+  EXPECT_TRUE(future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsStartedCount", /*sample=*/2,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsCompletedSuccess",
+      /*sample=*/
+      DeviceStatisticsTracker::RequestsCompletedSuccess::
+          kPrimaryFailedButNonPrimarySucceeded,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount("Sync.DeviceStatistics.Outcome.Overall", 0);
+}
+
+TEST_F(DeviceStatisticsTrackerTest, RecordsNoOutcomeWhenAllRequestsFail) {
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo secondary =
+      identity_test_env_.MakeAccountAvailable("secondary@example.com");
+
+  pref_service_.SetTime("sync.device_statistics_timestamp",
+                        base::Time::Now() - base::Hours(25));
+
+  base::HistogramTester histogram_tester;
+
+  DeviceStatisticsTracker tracker(
+      &pref_service_, identity_test_env_.identity_manager(),
+      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+
+  base::test::TestFuture<void> future;
+  tracker.Start(future.GetCallback());
+
+  ASSERT_EQ(fake_requests_.size(), 2u);
+  fake_requests_[primary.gaia]->SimulateFailure();
+  fake_requests_[secondary.gaia]->SimulateFailure();
+  EXPECT_TRUE(future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsStartedCount", /*sample=*/2,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsCompletedSuccess",
+      /*sample=*/DeviceStatisticsTracker::RequestsCompletedSuccess::kAllFailed,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount("Sync.DeviceStatistics.Outcome.Overall", 0);
+}
+
+// On ChromeOS, the primary account cannot change.
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(DeviceStatisticsTrackerTest, RecordsNoOutcomeWhenPrimaryAccountChanges) {
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo secondary =
+      identity_test_env_.MakeAccountAvailable("secondary@example.com");
+
+  pref_service_.SetTime("sync.device_statistics_timestamp",
+                        base::Time::Now() - base::Hours(25));
+
+  base::HistogramTester histogram_tester;
+
+  DeviceStatisticsTracker tracker(
+      &pref_service_, identity_test_env_.identity_manager(),
+      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+
+  base::test::TestFuture<void> future;
+  tracker.Start(future.GetCallback());
+
+  ASSERT_EQ(fake_requests_.size(), 2u);
+
+  identity_test_env_.ClearPrimaryAccount();
+  identity_test_env_.MakePrimaryAccountAvailable("another@example.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  fake_requests_[primary.gaia]->SimulateSuccess({});
+  fake_requests_[secondary.gaia]->SimulateSuccess({});
+  EXPECT_TRUE(future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsStartedCount", /*sample=*/2,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsCompletedSuccess",
+      /*sample=*/
+      DeviceStatisticsTracker::RequestsCompletedSuccess::
+          kPrimaryAccountChangedOrRemoved,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount("Sync.DeviceStatistics.Outcome.Overall", 0);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(DeviceStatisticsTrackerTest, RecordsOutcomeWhenPrimaryHasOtherDevices) {
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+
+  pref_service_.SetTime("sync.device_statistics_timestamp",
+                        base::Time::Now() - base::Hours(25));
+
+  base::HistogramTester histogram_tester;
+
+  DeviceStatisticsTracker tracker(
+      &pref_service_, identity_test_env_.identity_manager(),
+      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+
+  base::test::TestFuture<void> future;
+  tracker.Start(future.GetCallback());
+
+  ASSERT_EQ(fake_requests_.size(), 1u);
+  fake_requests_[primary.gaia]->SimulateSuccess(
+      CreateDeviceInfos({sync_pb::SyncEnums_OsType_OS_TYPE_WINDOWS}));
+  EXPECT_TRUE(future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsStartedCount", /*sample=*/1,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsCompletedSuccess",
+      /*sample=*/
+      DeviceStatisticsTracker::RequestsCompletedSuccess::kAllSucceeded,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall",
+      /*sample=*/
+      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryYesNonPrimaryNA,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(DeviceStatisticsTrackerTest,
+       RecordsOutcomeWhenPrimaryHasNoOtherDevices) {
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+
+  pref_service_.SetTime("sync.device_statistics_timestamp",
+                        base::Time::Now() - base::Hours(25));
+
+  base::HistogramTester histogram_tester;
+
+  DeviceStatisticsTracker tracker(
+      &pref_service_, identity_test_env_.identity_manager(),
+      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+
+  base::test::TestFuture<void> future;
+  tracker.Start(future.GetCallback());
+
+  ASSERT_EQ(fake_requests_.size(), 1u);
+  fake_requests_[primary.gaia]->SimulateSuccess({});
+  EXPECT_TRUE(future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsStartedCount", /*sample=*/1,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsCompletedSuccess",
+      /*sample=*/
+      DeviceStatisticsTracker::RequestsCompletedSuccess::kAllSucceeded,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall",
+      /*sample=*/
+      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryNoNonPrimaryNA,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(DeviceStatisticsTrackerTest,
+       RecordsOutcomeWhenBothPrimaryAndSecondaryHaveOtherDevices) {
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo secondary =
+      identity_test_env_.MakeAccountAvailable("secondary@example.com");
+
+  pref_service_.SetTime("sync.device_statistics_timestamp",
+                        base::Time::Now() - base::Hours(25));
+
+  base::HistogramTester histogram_tester;
+
+  DeviceStatisticsTracker tracker(
+      &pref_service_, identity_test_env_.identity_manager(),
+      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+
+  base::test::TestFuture<void> future;
+  tracker.Start(future.GetCallback());
+
+  ASSERT_EQ(fake_requests_.size(), 2u);
+  fake_requests_[primary.gaia]->SimulateSuccess(
+      CreateDeviceInfos({sync_pb::SyncEnums_OsType_OS_TYPE_WINDOWS}));
+  fake_requests_[secondary.gaia]->SimulateSuccess(
+      CreateDeviceInfos({sync_pb::SyncEnums_OsType_OS_TYPE_MAC}));
+  EXPECT_TRUE(future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsStartedCount", /*sample=*/2,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsCompletedSuccess",
+      /*sample=*/
+      DeviceStatisticsTracker::RequestsCompletedSuccess::kAllSucceeded,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall",
+      /*sample=*/
+      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryYesNonPrimaryYes,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(DeviceStatisticsTrackerTest,
+       RecordsOutcomeWhenOnlyPrimaryHasOtherDevices) {
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo secondary =
+      identity_test_env_.MakeAccountAvailable("secondary@example.com");
+
+  pref_service_.SetTime("sync.device_statistics_timestamp",
+                        base::Time::Now() - base::Hours(25));
+
+  base::HistogramTester histogram_tester;
+
+  DeviceStatisticsTracker tracker(
+      &pref_service_, identity_test_env_.identity_manager(),
+      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+
+  base::test::TestFuture<void> future;
+  tracker.Start(future.GetCallback());
+
+  ASSERT_EQ(fake_requests_.size(), 2u);
+  fake_requests_[primary.gaia]->SimulateSuccess(
+      CreateDeviceInfos({sync_pb::SyncEnums_OsType_OS_TYPE_WINDOWS}));
+  fake_requests_[secondary.gaia]->SimulateSuccess({});
+  EXPECT_TRUE(future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsStartedCount", /*sample=*/2,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsCompletedSuccess",
+      /*sample=*/
+      DeviceStatisticsTracker::RequestsCompletedSuccess::kAllSucceeded,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall",
+      /*sample=*/
+      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryYesNonPrimaryNo,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(DeviceStatisticsTrackerTest,
+       RecordsOutcomeWhenOnlySecondaryHasOtherDevices) {
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo secondary =
+      identity_test_env_.MakeAccountAvailable("secondary@example.com");
+
+  pref_service_.SetTime("sync.device_statistics_timestamp",
+                        base::Time::Now() - base::Hours(25));
+
+  base::HistogramTester histogram_tester;
+
+  DeviceStatisticsTracker tracker(
+      &pref_service_, identity_test_env_.identity_manager(),
+      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+
+  base::test::TestFuture<void> future;
+  tracker.Start(future.GetCallback());
+
+  ASSERT_EQ(fake_requests_.size(), 2u);
+  fake_requests_[primary.gaia]->SimulateSuccess({});
+  fake_requests_[secondary.gaia]->SimulateSuccess(
+      CreateDeviceInfos({sync_pb::SyncEnums_OsType_OS_TYPE_MAC}));
+  EXPECT_TRUE(future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsStartedCount", /*sample=*/2,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsCompletedSuccess",
+      /*sample=*/
+      DeviceStatisticsTracker::RequestsCompletedSuccess::kAllSucceeded,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall",
+      /*sample=*/
+      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryNoNonPrimaryYes,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(DeviceStatisticsTrackerTest, RecordsOutcomeWhenNobodyHasOtherDevices) {
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo secondary =
+      identity_test_env_.MakeAccountAvailable("secondary@example.com");
+
+  pref_service_.SetTime("sync.device_statistics_timestamp",
+                        base::Time::Now() - base::Hours(25));
+
+  base::HistogramTester histogram_tester;
+
+  DeviceStatisticsTracker tracker(
+      &pref_service_, identity_test_env_.identity_manager(),
+      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+
+  base::test::TestFuture<void> future;
+  tracker.Start(future.GetCallback());
+
+  ASSERT_EQ(fake_requests_.size(), 2u);
+  fake_requests_[primary.gaia]->SimulateSuccess({});
+  fake_requests_[secondary.gaia]->SimulateSuccess({});
+  EXPECT_TRUE(future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsStartedCount", /*sample=*/2,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.RequestsCompletedSuccess",
+      /*sample=*/
+      DeviceStatisticsTracker::RequestsCompletedSuccess::kAllSucceeded,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall",
+      /*sample=*/
+      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryNoNonPrimaryNo,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(DeviceStatisticsTrackerTest, RecordsOtherPlatformsMetrics) {
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo secondary =
+      identity_test_env_.MakeAccountAvailable("secondary@example.com");
+
+  pref_service_.SetTime("sync.device_statistics_timestamp",
+                        base::Time::Now() - base::Hours(25));
+
+  base::HistogramTester histogram_tester;
+
+  DeviceStatisticsTracker tracker(
+      &pref_service_, identity_test_env_.identity_manager(),
+      GURL("https://example.com/"), CreateRequestFactory(), {"test_guid"});
+
+  base::test::TestFuture<void> future;
+  tracker.Start(future.GetCallback());
+
+  ASSERT_EQ(fake_requests_.size(), 2u);
+  fake_requests_[primary.gaia]->SimulateSuccess(
+      CreateDeviceInfos({sync_pb::SyncEnums_OsType_OS_TYPE_WINDOWS,
+                         sync_pb::SyncEnums_OsType_OS_TYPE_WINDOWS,
+                         sync_pb::SyncEnums_OsType_OS_TYPE_MAC}));
+  fake_requests_[secondary.gaia]->SimulateSuccess(
+      CreateDeviceInfos({sync_pb::SyncEnums_OsType_OS_TYPE_IOS,
+                         sync_pb::SyncEnums_OsType_OS_TYPE_LINUX}));
+  EXPECT_TRUE(future.Wait());
+
+  histogram_tester.ExpectBucketCount(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount.PlatformOfAdditionalClient",
+      DeviceStatisticsTracker::Platform::kWindows,
+      /*expected_count=*/2);
+  histogram_tester.ExpectBucketCount(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount.PlatformOfAdditionalClient",
+      DeviceStatisticsTracker::Platform::kMac,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Sync.DeviceStatistics.Outcome.NonPrimaryAccount."
+      "PlatformOfAdditionalClient",
+      DeviceStatisticsTracker::Platform::kIOS,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Sync.DeviceStatistics.Outcome.NonPrimaryAccount."
+      "PlatformOfAdditionalClient",
+      DeviceStatisticsTracker::Platform::kLinux,
+      /*expected_count=*/1);
 }
 
 }  // namespace

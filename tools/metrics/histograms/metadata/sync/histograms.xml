@@ -1133,6 +1133,67 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Sync.DeviceStatistics.Outcome.NonPrimaryAccount.NumberOfAdditionalClients"
+    units="clients" expires_after="2026-06-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the number of additional syncing clients (i.e.
+    not counting this client) of a non-primary account. Recorded at most once
+    per day for every non-primary account.
+  </summary>
+</histogram>
+
+<histogram
+    name="Sync.DeviceStatistics.Outcome.NonPrimaryAccount.PlatformOfAdditionalClient"
+    enum="SyncDeviceStatisticsPlatform" expires_after="2026-06-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the platform of each additional syncing client
+    (i.e. not counting this client) of each non-primary account. Multiple
+    clients with the same platform are recorded individually. Recorded at most
+    once per day (but with one sample per other client).
+  </summary>
+</histogram>
+
+<histogram name="Sync.DeviceStatistics.Outcome.Overall"
+    enum="SyncDeviceStatisticsOutcome" expires_after="2026-06-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the overall outcome, i.e. whether primary and/or
+    non-primary accounts have other syncing devices. Recorded at most once per
+    day.
+  </summary>
+</histogram>
+
+<histogram
+    name="Sync.DeviceStatistics.Outcome.PrimaryAccount.NumberOfAdditionalClients"
+    units="clients" expires_after="2026-06-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the number of additional syncing clients (i.e.
+    not counting this client) of the primary account. Recorded at most once per
+    day.
+  </summary>
+</histogram>
+
+<histogram
+    name="Sync.DeviceStatistics.Outcome.PrimaryAccount.PlatformOfAdditionalClient"
+    enum="SyncDeviceStatisticsPlatform" expires_after="2026-06-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the platform of each additional syncing client
+    (i.e. not counting this client) of the primary account. Multiple clients
+    with the same platform are recorded individually. Recorded at most once per
+    day (but with one sample per other client).
+  </summary>
+</histogram>
+
 <histogram name="Sync.DeviceStatistics.RequestsCompletedSuccess"
     enum="SyncDeviceStatisticsSuccess" expires_after="2026-06-30">
   <owner>treib@chromium.org</owner>

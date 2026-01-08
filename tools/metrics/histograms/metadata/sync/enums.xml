@@ -1021,6 +1021,44 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/base/data_type.h:SyncDataTypes) -->
 
+<!-- LINT.IfChange(SyncDeviceStatisticsOutcome) -->
+
+<enum name="SyncDeviceStatisticsOutcome">
+  <int value="0"
+      label="Primary account has other devices; no non-primary accounts"/>
+  <int value="1"
+      label="Primary account does not have other devices; no non-primary
+             accounts"/>
+  <int value="2"
+      label="Primary account has other devices; at least one non-primary
+             account has other devices"/>
+  <int value="3"
+      label="Primary account has other devices; at least one non-primary
+             account exists, but none of them have any other devices"/>
+  <int value="4"
+      label="Primary account does not have other devices; at least one
+             non-primary account has other devices"/>
+  <int value="5"
+      label="Primary account does not have other devices; at least one
+             non-primary account exists, but none of them have any other
+             devices"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/device_statistics_tracker.h:SyncDeviceStatisticsOutcome) -->
+
+<!-- LINT.IfChange(SyncDeviceStatisticsPlatform) -->
+
+<enum name="SyncDeviceStatisticsPlatform">
+  <int value="0" label="Windows"/>
+  <int value="1" label="Mac"/>
+  <int value="2" label="Linux"/>
+  <int value="3" label="ChromeOS"/>
+  <int value="4" label="Android"/>
+  <int value="5" label="iOS"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/device_statistics_tracker.h:SyncDeviceStatisticsPlatform) -->
+
 <!-- LINT.IfChange(SyncDeviceStatisticsSuccess) -->
 
 <enum name="SyncDeviceStatisticsSuccess">
