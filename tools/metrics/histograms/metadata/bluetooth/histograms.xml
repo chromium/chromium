@@ -1998,7 +1998,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bluetooth.Web.ConnectGATT.Outcome"
     enum="WebBluetoothConnectGATTOutcome" expires_after="2026-06-21">
-  <owner>chengweih@chromium.org</owner>
+  <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
     Records the result of a device.gatt.connect() call. Used to understand what
@@ -2020,7 +2020,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bluetooth.Web.GetCharacteristics.Characteristic"
     enum="GATTCharacteristicHash" expires_after="2026-06-21">
-  <owner>chengweih@chromium.org</owner>
+  <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
     Records the UUIDs used when getting characteristics. The recorded value is a
@@ -2031,7 +2031,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bluetooth.Web.GetPrimaryService.Services"
     enum="GATTServiceHash" expires_after="2026-06-08">
-  <owner>chengweih@chromium.org</owner>
+  <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
     Records what GATT Services are used when connected. The record value is a
@@ -2042,7 +2042,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bluetooth.Web.GetPrimaryServices.Services"
     enum="GATTServiceHash" expires_after="2026-06-08">
-  <owner>chengweih@chromium.org</owner>
+  <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
     Records what GATT Services are used when connected. The record value is a
@@ -2053,7 +2053,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bluetooth.Web.RequestDevice.RSSISignalStrength" units="dBm"
     expires_after="2026-04-25">
-  <owner>chengweih@chromium.org</owner>
+  <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
     Raw RSSI values provided to chooser, before processing them for display in
@@ -2066,7 +2066,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bluetooth.Web.RequestDevice.RSSISignalStrengthLevel"
     enum="WebBluetoothRSSISignalStrengthLevel" expires_after="2026-04-25">
-  <owner>chengweih@chromium.org</owner>
+  <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
     Displayed RSSI levels, after processing and as displayed to users in the Web
@@ -2076,7 +2076,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bluetooth.Web.RequestDevice.UnionOfServices.Services"
     enum="GATTServiceHash" expires_after="2026-06-08">
-  <owner>chengweih@chromium.org</owner>
+  <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
     Records what services are used from either required or optional sets. The
