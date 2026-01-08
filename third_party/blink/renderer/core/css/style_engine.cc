@@ -3769,7 +3769,8 @@ void StyleEngine::UpdateStyleAndLayoutTreeForSizeContainer(
   DCHECK(!container.NeedsStyleRecalc());
   DCHECK(!in_container_query_style_recalc_);
 
-  base::AutoReset<bool> cq_recalc(&in_container_query_style_recalc_, true);
+  std::optional<base::AutoReset<bool>> cq_recalc(
+      std::in_place, &in_container_query_style_recalc_, true);
 
   DCHECK(container.GetLayoutObject()) << "Containers must have a LayoutObject";
   const ComputedStyle& style = container.GetLayoutObject()->StyleRef();
@@ -3856,6 +3857,7 @@ void StyleEngine::UpdateStyleAndLayoutTreeForSizeContainer(
     GetStyleResolver().PropagateStyleToViewport();
   }
 
+  cq_recalc.reset();
   PostInterleavedRecalcUpdate(container);
 }
 
@@ -3901,7 +3903,8 @@ bool StyleEngine::UpdateStyleAndLayoutTreeForOutOfFlow(
   const CSSPropertyValueSet* try_tactics_set = try_value_flips_.FlipSet(
       try_tactics, abs_container_writing_direction.GetWritingMode());
 
-  base::AutoReset<bool> pt_recalc(&in_position_try_style_recalc_, true);
+  std::optional<base::AutoReset<bool>> pt_recalc(
+      std::in_place, &in_position_try_style_recalc_, true);
 
   NthIndexCache nth_index_cache(GetDocument());
   UpdateViewportSize();
@@ -3941,6 +3944,7 @@ bool StyleEngine::UpdateStyleAndLayoutTreeForOutOfFlow(
     RebuildLayoutTree(&element);
   }
 
+  pt_recalc.reset();
   PostInterleavedRecalcUpdate(element);
   return true;
 }
