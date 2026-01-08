@@ -18,6 +18,7 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/url_formatter/url_fixer.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_delegate.h"
 #import "ios/chrome/browser/content_suggestions/model/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
@@ -347,18 +348,27 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   return menuElements;
 }
 
-#pragma mark - PinnedSiteFormViewControllerDelegate
+#pragma mark - MostVisitedTilesPinnedSiteMutator
 
 - (BOOL)addPinnedSiteWithTitle:(NSString*)title URL:(NSString*)URL {
-  // TODO(crbug.com/469998604): Implement.
-  return NO;
+  GURL fixedUpURL =
+      url_formatter::FixupURL(base::SysNSStringToUTF8(URL), std::string());
+  return _mostVisitedSites->AddCustomLink(fixedUpURL,
+                                          base::SysNSStringToUTF16(title));
 }
 
 - (BOOL)editPinnedSiteForURL:(NSString*)oldURL
                    withTitle:(NSString*)title
                          URL:(NSString*)newURL {
-  // TODO(crbug.com/469998604): Implement.
-  return NO;
+  GURL oldKeyURL = GURL(base::SysNSStringToUTF8(oldURL));
+  GURL newKeyURL =
+      url_formatter::FixupURL(base::SysNSStringToUTF8(newURL), std::string());
+  if (oldKeyURL == newKeyURL) {
+    // Do not provide the new URL if only the title is changing.
+    newKeyURL = GURL();
+  }
+  return _mostVisitedSites->UpdateCustomLink(oldKeyURL, newKeyURL,
+                                             base::SysNSStringToUTF16(title));
 }
 
 #pragma mark - Private

@@ -94,7 +94,7 @@ BOOL IsInputValid(NSString* input) {
       initWithTitle:l10n_util::GetNSString(doneButtonTextId)
               style:UIBarButtonItemStyleDone
              target:self
-             action:@selector(applyChangesAndDismiss)];
+             action:@selector(onApplyButtonTap)];
   self.tableView.delegate = self;
   RegisterTableViewHeaderFooter<TableViewAttributedStringHeaderFooterView>(
       self.tableView);
@@ -191,17 +191,24 @@ BOOL IsInputValid(NSString* input) {
   [self updateApplyButtonState];
 }
 
-/// Applies the changes in the text fields and dismiss the modal.
-- (void)applyChangesAndDismiss {
+/// Handles the tap on the "Add" or "Save" button.
+- (void)onApplyButtonTap {
+  BOOL success;
   switch (_action) {
     case PinnedSiteAction::kCreate:
-      [self.mutator addPinnedSiteWithTitle:_name URL:_URL];
+      success = [self.mutator addPinnedSiteWithTitle:_name URL:_URL];
       break;
     case PinnedSiteAction::kModify:
-      [self.mutator editPinnedSiteForURL:_originalURL withTitle:_name URL:_URL];
+      success = [self.mutator editPinnedSiteForURL:_originalURL
+                                         withTitle:_name
+                                               URL:_URL];
       break;
   }
-  [self dismissModal];
+  if (success) {
+    [self dismissModal];
+  } else {
+    /// TODO(crbug.com/474064813): Show reason.
+  }
 }
 
 /// Enables or disables the top-right button that applies the changes. The

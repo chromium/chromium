@@ -13,6 +13,7 @@ source_set("coordinator") {
     "//components/ntp_tiles:pref_names",
     "//components/prefs",
     "//components/strings",
+    "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/coordinator:public",
     "//ios/chrome/browser/content_suggestions/model:metrics_recorder",

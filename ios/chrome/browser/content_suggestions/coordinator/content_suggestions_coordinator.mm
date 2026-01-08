@@ -673,8 +673,8 @@ using segmentation_platform::TipIdentifier;
   viewController.mutator = _mostVisitedTilesMediator;
   UINavigationController* navController = [[UINavigationController alloc]
       initWithRootViewController:viewController];
-  /// TODO(crbug.com/469998604): The modal presentation style is set as a
-  /// placeholder only. Configure detent height.
+  // TODO(crbug.com/473728173): The modal presentation style is set as a
+  // placeholder only. Configure detent height.
   navController.modalPresentationStyle = UIModalPresentationFormSheet;
   [self.contentSuggestionsViewController presentViewController:navController
                                                       animated:YES
