@@ -1780,11 +1780,6 @@ class LocationBarMediator
                         currentState.selectionStart, currentState.selectionEnd);
             }
         }
-
-        // Set zoom indicator tooltip
-        if (mPageZoomIndicatorCoordinator != null) {
-            mPageZoomIndicatorCoordinator.setTooltip();
-        }
     }
 
     @Override
@@ -1809,12 +1804,6 @@ class LocationBarMediator
         } else {
             updateUrl();
         }
-
-        // Set zoom indicator tooltip
-        if (mPageZoomIndicatorCoordinator != null) {
-            mPageZoomIndicatorCoordinator.setTooltip();
-        }
-
         updateOmniboxPrerender();
         updateButtonVisibility();
     }
