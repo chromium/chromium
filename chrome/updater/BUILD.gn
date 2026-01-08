@@ -876,6 +876,7 @@ if (is_win || is_mac || is_linux) {
       "installer_unittest.cc",
       "net/fallback_net_fetcher_unittest.cc",
       "net/network_unittest.cc",
+      "out_of_process_unzipper_unittest.cc",
       "persisted_data_unittest.cc",
       "policy/dm_policy_manager_unittest.cc",
       "policy/manager_unittest.cc",
