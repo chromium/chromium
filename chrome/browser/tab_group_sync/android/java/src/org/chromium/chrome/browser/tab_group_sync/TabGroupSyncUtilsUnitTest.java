@@ -50,7 +50,6 @@ public class TabGroupSyncUtilsUnitTest {
     private static final int TAB_ID_1 = 1;
     private static final int TAB_ID_2 = 2;
     private static final int TAB_ID_3 = 2;
-    private static final int ROOT_ID_1 = 1;
     private static final Token TOKEN_1 = new Token(2, 3);
     private static final Token TOKEN_2 = new Token(5, 8);
     private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 = new LocalTabGroupId(TOKEN_1);
@@ -73,7 +72,7 @@ public class TabGroupSyncUtilsUnitTest {
 
         mTab1 = mTabModel.addTab(TAB_ID_1);
         mTab2 = mTabModel.addTab(TAB_ID_2);
-        createTabGroup(List.of(mTab1, mTab2), ROOT_ID_1, TOKEN_1);
+        createTabGroup(List.of(mTab1, mTab2), TOKEN_1);
     }
 
     @Test
@@ -171,9 +170,8 @@ public class TabGroupSyncUtilsUnitTest {
                 TabGroupSyncUtils.getFilteredUrlAndTitle(new GURL(inputUrl), inputTitle));
     }
 
-    private void createTabGroup(List<Tab> tabs, int rootId, Token tabGroupId) {
+    private void createTabGroup(List<Tab> tabs, Token tabGroupId) {
         for (Tab tab : tabs) {
-            tab.setRootId(rootId);
             tab.setTabGroupId(tabGroupId);
         }
         when(mTabGroupModelFilter.getTabsInGroup(eq(tabGroupId))).thenReturn(tabs);

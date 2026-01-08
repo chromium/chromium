@@ -290,7 +290,6 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
         // Group tabs.
         mockTabGroup(
                 GROUP_ID1,
-                INTERACTING_VIEW_ID,
                 mModel.getTabById(INTERACTING_VIEW_ID),
                 mModel.getTabById(TAB_ID2));
         float initialBottomIndicatorWidth = mInteractingGroupTitle.getBottomIndicatorWidth();
@@ -490,7 +489,7 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
 
     private void mockTabInGroup(int id) {
         Tab tab = mModel.getTabById(id);
-        mockTabGroup(GROUP_ID1, tab.getId(), tab);
+        mockTabGroup(GROUP_ID1, tab);
     }
 
     private void setupDragDropState(boolean isGroupDrag) {

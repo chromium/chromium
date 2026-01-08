@@ -122,7 +122,6 @@ public class TabUngrouperImplUnitTest {
         Tab tab0 = mTabModel.addTab(id);
         Token tabGroupId = TAB_GROUP_ID.tabGroupId;
         tab0.setTabGroupId(tabGroupId);
-        tab0.setRootId(id);
         when(mTabGroupModelFilter.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab0));
         when(mTabGroupModelFilter.isTabInTabGroup(tab0)).thenReturn(true);
 
@@ -171,7 +170,6 @@ public class TabUngrouperImplUnitTest {
         Tab tab0 = mTabModel.addTab(id);
         Token tabGroupId = TAB_GROUP_ID.tabGroupId;
         tab0.setTabGroupId(tabGroupId);
-        tab0.setRootId(id);
         when(mTabGroupModelFilter.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab0));
         when(mTabGroupModelFilter.isTabInTabGroup(tab0)).thenReturn(true);
 
@@ -219,7 +217,6 @@ public class TabUngrouperImplUnitTest {
         Tab tab0 = mTabModel.addTab(id);
         Token tabGroupId = TAB_GROUP_ID.tabGroupId;
         tab0.setTabGroupId(tabGroupId);
-        tab0.setRootId(id);
         when(mTabGroupModelFilter.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab0));
         when(mTabGroupModelFilter.isTabInTabGroup(tab0)).thenReturn(true);
 

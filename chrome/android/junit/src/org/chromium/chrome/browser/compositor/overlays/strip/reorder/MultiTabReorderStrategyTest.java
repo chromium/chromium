@@ -96,8 +96,8 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
     @Override
     public void setup() {
         super.setup();
-        mockTabGroup(GROUP_ID1, TAB_ID2, mModel.getTabById(TAB_ID2), mModel.getTabById(TAB_ID3));
-        mockTabGroup(GROUP_ID2, TAB_ID4, mModel.getTabById(TAB_ID4));
+        mockTabGroup(GROUP_ID1, mModel.getTabById(TAB_ID2), mModel.getTabById(TAB_ID3));
+        mockTabGroup(GROUP_ID2, mModel.getTabById(TAB_ID4));
 
         mInReorderModeSupplier.set(false);
         when(mModel.isTabMultiSelected(anyInt()))
@@ -343,7 +343,6 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
         when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUnGrouper);
         mockTabGroup(
                 GROUP_ID1,
-                TAB_ID2,
                 mModel.getTabById(TAB_ID2),
                 mModel.getTabById(TAB_ID3),
                 mModel.getTabById(TAB_ID1));

@@ -59,7 +59,6 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabModelNotificationDotManagerUnitTest {
     private static final int EXISTING_TAB_ID = 5;
-    private static final int ROOT_ID = 6;
     private static final int NON_EXISTANT_TAB_ID = 7;
     private static final Token TAB_GROUP_ID = new Token(378L, 4378L);
     private static final String TITLE = "Vacation";
@@ -103,7 +102,6 @@ public class TabModelNotificationDotManagerUnitTest {
         when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mTabModel.getTabById(EXISTING_TAB_ID)).thenReturn(mTab);
-        when(mTab.getRootId()).thenReturn(ROOT_ID);
         when(mTab.getTabGroupId()).thenReturn(TAB_GROUP_ID);
 
         Context context = ApplicationProvider.getApplicationContext();

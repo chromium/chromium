@@ -47,7 +47,6 @@ public class TabUiUnitTestUtils {
     /** Returns a mocked and initialized tab with an id, title, and url. */
     public static Tab prepareTab(int id, String title, GURL url) {
         Tab tab = prepareTab(id);
-        doReturn(id).when(tab).getRootId();
         doReturn(title).when(tab).getTitle();
         doReturn(url).when(tab).getOriginalUrl();
         doReturn(url).when(tab).getUrl();
@@ -57,7 +56,6 @@ public class TabUiUnitTestUtils {
     /** Returns a mocked and initialized tab with an id and rootId. */
     public static Tab prepareTab(int tabId, int rootId) {
         Tab tab = prepareTab(tabId);
-        doReturn(rootId).when(tab).getRootId();
         doReturn(GURL.emptyGURL()).when(tab).getUrl();
         return tab;
     }

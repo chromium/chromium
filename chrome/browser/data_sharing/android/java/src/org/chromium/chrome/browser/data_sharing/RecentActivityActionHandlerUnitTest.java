@@ -43,7 +43,6 @@ public class RecentActivityActionHandlerUnitTest {
     private static final String SYNC_TAB_GROUP_ID = "sync_tab_group_1";
     private static final String SYNC_TAB_ID = "sync_tab_1";
     private static final Token TOKEN_1 = new Token(3, 5);
-    private static final int ROOT_ID_1 = 9;
     private static final int TAB_ID_1 = 9;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -61,7 +60,6 @@ public class RecentActivityActionHandlerUnitTest {
     public void setUp() {
         // Set up tab model with a single tab and as part of a tab group.
         when(mTab1.getId()).thenReturn(TAB_ID_1);
-        when(mTab1.getRootId()).thenReturn(ROOT_ID_1);
         when(mTab1.getTabGroupId()).thenReturn(TOKEN_1);
         when(mTabModel.getCount()).thenReturn(1);
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
@@ -69,10 +67,10 @@ public class RecentActivityActionHandlerUnitTest {
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModelSelector.getTabGroupModelFilter(false)).thenReturn(mTabGroupModelFilter);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabGroupModelFilter.getGroupLastShownTabId(TOKEN_1)).thenReturn(ROOT_ID_1);
+        when(mTabGroupModelFilter.getGroupLastShownTabId(TOKEN_1)).thenReturn(TAB_ID_1);
         List<Tab> relatedTabs = new ArrayList<>();
         relatedTabs.add(mTab1);
-        when(mTabGroupModelFilter.getRelatedTabList(ROOT_ID_1)).thenReturn(relatedTabs);
+        when(mTabGroupModelFilter.getRelatedTabList(TAB_ID_1)).thenReturn(relatedTabs);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
 
         // Setup saved tab group with a single tab.

@@ -139,14 +139,13 @@ public abstract class ReorderStrategyTestBase {
         view.setVisible(true);
     }
 
-    protected void mockTabGroup(Token groupId, int rootId, Tab... tabs) {
+    protected void mockTabGroup(Token groupId, Tab... tabs) {
         List<Tab> tabList = List.of(tabs);
         for (Tab tab : tabList) {
             when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(true);
             when(mTabGroupModelFilter.getRelatedTabList(tab.getId())).thenReturn(tabList);
             when(mTabGroupModelFilter.getTabsInGroup(groupId)).thenReturn(tabList);
             tab.setTabGroupId(groupId);
-            tab.setRootId(rootId);
         }
         when(mTabGroupModelFilter.getTabCountForGroup(groupId)).thenReturn(tabList.size());
         when(mTabGroupModelFilter.getGroupLastShownTabId(groupId))

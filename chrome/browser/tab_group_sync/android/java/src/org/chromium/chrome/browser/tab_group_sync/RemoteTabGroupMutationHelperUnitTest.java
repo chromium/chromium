@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,7 +45,6 @@ import java.util.List;
 public class RemoteTabGroupMutationHelperUnitTest {
     private static final int TAB_ID_1 = 1;
     private static final int TAB_ID_2 = 2;
-    private static final int ROOT_ID_1 = 1;
     private static final Token TOKEN_1 = new Token(2, 3);
     private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 = new LocalTabGroupId(TOKEN_1);
     private static final String TAB_TITLE_1 = "Tab Title";
@@ -62,22 +62,20 @@ public class RemoteTabGroupMutationHelperUnitTest {
     private RemoteTabGroupMutationHelper mRemoteMutationHelper;
     private @Captor ArgumentCaptor<SavedTabGroup> mSavedTabGroupCaptor;
 
-    private static Tab prepareTab(int tabId, int rootId) {
-        Tab tab = Mockito.mock(Tab.class);
-        Mockito.doReturn(tabId).when(tab).getId();
-        Mockito.doReturn(rootId).when(tab).getRootId();
-        Mockito.doReturn(TAB_URL_1).when(tab).getUrl();
-        Mockito.doReturn(TAB_TITLE_1).when(tab).getTitle();
+    private static Tab prepareTab(int tabId, Token tabGroupId) {
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(tabId);
+        when(tab.getTabGroupId()).thenReturn(tabGroupId);
+        when(tab.getUrl()).thenReturn(TAB_URL_1);
+        when(tab.getTitle()).thenReturn(TAB_TITLE_1);
         return tab;
     }
 
     @Before
     public void setUp() {
         mTabGroupSyncService = spy(new TestTabGroupSyncService());
-        mTab1 = prepareTab(TAB_ID_1, ROOT_ID_1);
-        mTab2 = prepareTab(TAB_ID_2, ROOT_ID_1);
-        Mockito.doReturn(TOKEN_1).when(mTab1).getTabGroupId();
-        Mockito.doReturn(TOKEN_1).when(mTab2).getTabGroupId();
+        mTab1 = prepareTab(TAB_ID_1, TOKEN_1);
+        mTab2 = prepareTab(TAB_ID_2, TOKEN_1);
 
         List<Tab> tabs = new ArrayList<>();
         tabs.add(mTab1);
@@ -96,20 +94,20 @@ public class RemoteTabGroupMutationHelperUnitTest {
         Mockito.doNothing().when(mTabGroupSyncService).addGroup(mSavedTabGroupCaptor.capture());
         mRemoteMutationHelper.createRemoteTabGroup(LOCAL_TAB_GROUP_ID_1);
         verify(mTabGroupSyncService).addGroup(any());
-        Assert.assertEquals(2, mSavedTabGroupCaptor.getValue().savedTabs.size());
-        Assert.assertEquals(LOCAL_TAB_GROUP_ID_1, mSavedTabGroupCaptor.getValue().localId);
+        assertEquals(2, mSavedTabGroupCaptor.getValue().savedTabs.size());
+        assertEquals(LOCAL_TAB_GROUP_ID_1, mSavedTabGroupCaptor.getValue().localId);
         SavedTabGroupTab savedTab1 = mSavedTabGroupCaptor.getValue().savedTabs.get(0);
         SavedTabGroupTab savedTab2 = mSavedTabGroupCaptor.getValue().savedTabs.get(1);
 
-        Assert.assertEquals(Integer.valueOf(TAB_ID_1), savedTab1.localId);
-        Assert.assertEquals(TAB_TITLE_1, savedTab1.title);
-        Assert.assertEquals(TAB_URL_1, savedTab1.url);
-        Assert.assertEquals(mSavedTabGroupCaptor.getValue().syncId, savedTab1.syncGroupId);
+        assertEquals(Integer.valueOf(TAB_ID_1), savedTab1.localId);
+        assertEquals(TAB_TITLE_1, savedTab1.title);
+        assertEquals(TAB_URL_1, savedTab1.url);
+        assertEquals(mSavedTabGroupCaptor.getValue().syncId, savedTab1.syncGroupId);
 
-        Assert.assertEquals(Integer.valueOf(TAB_ID_2), savedTab2.localId);
-        Assert.assertEquals(TAB_TITLE_1, savedTab2.title);
-        Assert.assertEquals(TAB_URL_1, savedTab2.url);
-        Assert.assertEquals(mSavedTabGroupCaptor.getValue().syncId, savedTab2.syncGroupId);
+        assertEquals(Integer.valueOf(TAB_ID_2), savedTab2.localId);
+        assertEquals(TAB_TITLE_1, savedTab2.title);
+        assertEquals(TAB_URL_1, savedTab2.url);
+        assertEquals(mSavedTabGroupCaptor.getValue().syncId, savedTab2.syncGroupId);
 
         verify(mTabGroupModelFilter).getTabsInGroup(eq(TOKEN_1));
     }

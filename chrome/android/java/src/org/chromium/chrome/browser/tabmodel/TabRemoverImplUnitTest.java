@@ -203,7 +203,6 @@ public class TabRemoverImplUnitTest {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
         tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
-        tab0.setRootId(id);
         when(mTabGroupModelFilter.getTabsInGroup(TAB_GROUP_ID.tabGroupId))
                 .thenReturn(List.of(tab0));
         TabClosureParams params =

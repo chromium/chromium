@@ -139,9 +139,6 @@ public class TabSwitcherPaneMediatorUnitTest {
         mUngroupedTab = mTabModel.getTabAt(0);
         mGroupedTab1 = mTabModel.getTabAt(1);
         mGroupedTab2 = mTabModel.getTabAt(2);
-        mUngroupedTab.setRootId(UNGROUPED_TAB_ID);
-        mGroupedTab1.setRootId(GROUPED_TAB_1_ID);
-        mGroupedTab2.setRootId(GROUPED_TAB_1_ID);
         mTabList = List.of(mUngroupedTab, mGroupedTab1);
         when(mTabGroupModelFilter.getRepresentativeTabList()).thenReturn(mTabList);
         when(mTabGroupModelFilter.getRelatedTabList(UNGROUPED_TAB_ID))

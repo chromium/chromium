@@ -110,7 +110,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                     buildStripTab(TAB_ID1, 0), buildStripTab(TAB_ID2, 0), buildStripTab(TAB_ID3, 0)
                 };
 
-        mockTabGroup(GROUP_ID1, TAB_ID1, mModel.getTabById(TAB_ID1));
+        mockTabGroup(GROUP_ID1, mModel.getTabById(TAB_ID1));
     }
 
     @Test
@@ -459,7 +459,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     public void testUpdateReorder_dragOutOfStripWithPrompt() {
         startTabReorder();
         // Last tab in group. Will not skip ungrouping.
-        mockTabGroup(GROUP_ID1, TAB_ID1, mTabForInteractingView);
+        mockTabGroup(GROUP_ID1, mTabForInteractingView);
         when(mActionConfirmationManager.willSkipUngroupTabAttempt()).thenReturn(false);
 
         // Call

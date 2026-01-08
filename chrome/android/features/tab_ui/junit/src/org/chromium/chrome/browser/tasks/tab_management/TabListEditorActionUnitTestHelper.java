@@ -59,10 +59,6 @@ public class TabListEditorActionUnitTestHelper {
             return mIsCollaboration ? getTabGroupId().toString() + "_collaboration" : null;
         }
 
-        int getRootId() {
-            return mTabIds[0];
-        }
-
         @Nullable
         Token getTabGroupId() {
             return mIsGroup ? new Token(1L, mTabIds[0]) : null;
@@ -138,7 +134,6 @@ public class TabListEditorActionUnitTestHelper {
             List<SavedTabGroupTab> savedTabs = new ArrayList<>();
             for (int tabId : group.getTabIds()) {
                 Tab tab = tabModel.addTab(tabId);
-                tab.setRootId(group.getRootId());
                 tab.setTabGroupId(group.getTabGroupId());
                 if (group.isSelected() && groupTabs.isEmpty()) {
                     selectedTabs.add(tab);
@@ -154,7 +149,6 @@ public class TabListEditorActionUnitTestHelper {
                 selectedItemIds.add(TabListEditorItemSelectionId.createTabId(group.getTabIdAt(0)));
                 selectedAndRelatedTabs.addAll(groupTabs);
             }
-            groupTabs.get(0).setRootId(group.getTabIdAt(0));
             when(filter.getRelatedTabList(group.getTabIdAt(0))).thenReturn(groupTabs);
             when(filter.getTabCountForGroup(group.getTabGroupId())).thenReturn(groupTabs.size());
 
