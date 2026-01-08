@@ -77,6 +77,12 @@ infrastructure.
     across a large group of builders. Any builder that runs builds in said
     pool is also referred to as being "builderless."
 
+* __Builderful__: The opposite of **Builderless** (see above). Any builder that
+    runs on a set of machines dedicated to just that builder is said to be
+    "builderful". This is enforced via the `builder:` Swarming dimension, whose
+    value is the name of the builder. Note that some builderful machines can be
+    dedicated to one or more builders.
+
 * __Builder Group__: A logical grouping of builders. For example, the
   "chromium.linux" builder group is a set of builders that test basic
   functionality of Chromium on Linux.
