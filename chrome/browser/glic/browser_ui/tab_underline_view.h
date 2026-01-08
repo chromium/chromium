@@ -17,7 +17,7 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace gfx {
 class Canvas;
@@ -43,7 +43,7 @@ class TabUnderlineView : public AnimatedEffectView {
    public:
     static std::unique_ptr<TabUnderlineView> Create(
         std::unique_ptr<TabUnderlineViewController> controller,
-        Browser* browser,
+        BrowserWindowInterface* browser_window_interface,
         tabs::TabHandle tab_handle);
     static void set_factory(Factory* factory) { factory_ = factory; }
 
@@ -54,7 +54,7 @@ class TabUnderlineView : public AnimatedEffectView {
     // For tests to override.
     virtual std::unique_ptr<TabUnderlineView> CreateUnderlineView(
         std::unique_ptr<TabUnderlineViewController> controller,
-        Browser* browser,
+        BrowserWindowInterface* browser_window_interface,
         tabs::TabHandle tab) = 0;
 
    private:
@@ -82,7 +82,7 @@ class TabUnderlineView : public AnimatedEffectView {
   friend class Factory;
   explicit TabUnderlineView(
       std::unique_ptr<TabUnderlineViewController> controller,
-      Browser* browser,
+      BrowserWindowInterface* browser_window_interface,
       tabs::TabHandle tab_handle,
       std::unique_ptr<Tester> tester);
 

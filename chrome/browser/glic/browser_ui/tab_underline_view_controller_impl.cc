@@ -40,15 +40,15 @@ TabUnderlineViewControllerImpl::~TabUnderlineViewControllerImpl() {
 // conflicting terminology.
 void TabUnderlineViewControllerImpl::Initialize(
     TabUnderlineView* underline_view,
-    Browser* browser,
+    BrowserWindowInterface* browser_window_interface,
     tabs::TabHandle tab_handle) {
   underline_view_ = underline_view;
-  browser_ = browser;
+  browser_window_interface_ = browser_window_interface;
   tab_handle_id_ = tab_handle.raw_value();
 
   if (ShouldUseSignalsForGlicUnderlines()) {
-    glic_service_ =
-        GlicKeyedServiceFactory::GetGlicKeyedService(browser_->GetProfile());
+    glic_service_ = GlicKeyedServiceFactory::GetGlicKeyedService(
+        browser_window_interface_->GetProfile());
 
     GlicSharingManager& sharing_manager = glic_service_->sharing_manager();
 
@@ -84,8 +84,8 @@ void TabUnderlineViewControllerImpl::Initialize(
 
   if (ShouldUseSignalsForContextualTasks()) {
     contextual_tasks::ActiveTaskContextProvider* active_task_context_provider =
-        browser_->browser_window_features()
-            ->contextual_tasks_active_task_context_provider();
+        browser_window_interface_->GetFeatures()
+            .contextual_tasks_active_task_context_provider();
     contextual_task_observation_.Observe(active_task_context_provider);
   }
 
@@ -433,7 +433,7 @@ bool TabUnderlineViewControllerImpl::IsGlicWindowShowing() const {
 
 bool TabUnderlineViewControllerImpl::IsTabInCurrentWindow(
     const content::WebContents* tab) const {
-  auto* model = browser_->GetTabStripModel();
+  auto* model = browser_window_interface_->GetTabStripModel();
   CHECK(model);
   int index = model->GetIndexOfWebContents(tab);
   return index != TabStripModel::kNoTab;
@@ -491,7 +491,8 @@ std::string TabUnderlineViewControllerImpl::UpdateReasonsToString() const {
 
 bool TabUnderlineViewControllerImpl::ShouldUseSignalsForGlicUnderlines() {
   return base::FeatureList::IsEnabled(features::kGlicMultitabUnderlines) &&
-         glic::GlicEnabling::IsProfileEligible(browser_->GetProfile());
+         glic::GlicEnabling::IsProfileEligible(
+             browser_window_interface_->GetProfile());
 }
 
 bool TabUnderlineViewControllerImpl::ShouldUseSignalsForContextualTasks() {

@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/tabs/public/tab_interface.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace glic {
 class TabUnderlineView;
@@ -19,7 +19,7 @@ class TabUnderlineViewController {
 
   // Initialization. Starts observing the state of the browser.
   virtual void Initialize(TabUnderlineView* underline_view,
-                          Browser* browser,
+                          BrowserWindowInterface* browser_window_interface,
                           tabs::TabHandle tab_handle) = 0;
 };
 

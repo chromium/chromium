@@ -65,6 +65,7 @@ source_set("glow_impl") {
     ":glow",
     "//chrome/browser/glic/resources:browser_resources",
     "//chrome/browser/themes",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
   ]
 }

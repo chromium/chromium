@@ -11,6 +11,7 @@
 #include "chrome/browser/glic/browser_ui/tab_underline_view_controller.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -45,22 +46,24 @@ TabUnderlineView::Factory* TabUnderlineView::Factory::factory_ = nullptr;
 
 std::unique_ptr<TabUnderlineView> TabUnderlineView::Factory::Create(
     std::unique_ptr<TabUnderlineViewController> controller,
-    Browser* browser,
+    BrowserWindowInterface* browser_window_interface,
     tabs::TabHandle tab_handle) {
   if (factory_) [[unlikely]] {
-    return factory_->CreateUnderlineView(std::move(controller), browser,
-                                         tab_handle);
+    return factory_->CreateUnderlineView(std::move(controller),
+                                         browser_window_interface, tab_handle);
   }
-  return base::WrapUnique(new TabUnderlineView(std::move(controller), browser,
+  return base::WrapUnique(new TabUnderlineView(std::move(controller),
+                                               browser_window_interface,
                                                tab_handle, /*tester=*/nullptr));
 }
 
 TabUnderlineView::TabUnderlineView(
     std::unique_ptr<TabUnderlineViewController> controller,
-    Browser* browser,
+    BrowserWindowInterface* browser_window_interface,
     tabs::TabHandle tab_handle,
     std::unique_ptr<Tester> tester)
-    : AnimatedEffectView(browser, std::move(tester)),
+    : AnimatedEffectView(browser_window_interface->GetProfile(),
+                         std::move(tester)),
       controller_(std::move(controller)),
       tab_handle_(tab_handle) {
   SetProperty(views::kElementIdentifierKey, kGlicTabUnderlineElementId);
@@ -75,7 +78,7 @@ TabUnderlineView::TabUnderlineView(
   // Post-initialization updates. Don't do the update in the controller's ctor
   // because at that time TabUnderlineView isn't fully initialized, which
   // can lead to undefined behavior.
-  controller_->Initialize(this, browser, tab_handle);
+  controller_->Initialize(this, browser_window_interface, tab_handle);
 }
 
 TabUnderlineView::~TabUnderlineView() = default;

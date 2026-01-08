@@ -66,15 +66,13 @@ std::vector<float> GetParameterizedFloats() {
 
 }  // namespace
 
-AnimatedEffectView::AnimatedEffectView(Browser* browser,
+AnimatedEffectView::AnimatedEffectView(Profile* profile,
                                        std::unique_ptr<Tester> tester)
-    : browser_(browser),
-      creation_time_(base::TimeTicks::Now()),
+    : creation_time_(base::TimeTicks::Now()),
       tester_(std::move(tester)),
       colors_(GetEffectColors()),
       floats_(GetParameterizedFloats()),
-      theme_service_(
-          ThemeServiceFactory::GetForProfile(browser->GetProfile())) {
+      theme_service_(ThemeServiceFactory::GetForProfile(profile)) {
   auto* gpu_data_manager = content::GpuDataManager::GetInstance();
   has_hardware_acceleration_ =
       gpu_data_manager->IsGpuRasterizationForUIEnabled();

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
 
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/tabs/tab_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "ui/views/view_utils.h"
@@ -135,6 +136,10 @@ SkColor FakeTabSlotController::GetPaintedGroupColor(
 }
 
 Browser* FakeTabSlotController::GetBrowser() {
+  return nullptr;
+}
+
+BrowserWindowInterface* FakeTabSlotController::GetBrowserWindowInterface() {
   return nullptr;
 }
 

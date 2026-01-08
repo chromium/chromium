@@ -17,6 +17,7 @@
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 class Browser;
+class BrowserWindowInterface;
 class Tab;
 class TabGroup;
 class TabSlotView;
@@ -246,6 +247,8 @@ class TabSlotController {
   virtual void ShiftGroupRight(const tab_groups::TabGroupId& group) = 0;
 
   virtual Browser* GetBrowser() = 0;
+
+  virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
 
   // See BrowserFrameView::IsFrameCondensed().
   virtual bool IsFrameCondensed() const = 0;

@@ -16,7 +16,7 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
-class Browser;
+class Profile;
 class ThemeService;
 
 namespace content {
@@ -81,7 +81,7 @@ class AnimatedEffectView : public views::View,
   Tester* tester() const { return tester_.get(); }
 
  protected:
-  AnimatedEffectView(Browser* browser, std::unique_ptr<Tester> tester);
+  AnimatedEffectView(Profile* profile, std::unique_ptr<Tester> tester);
 
   // Returns whether the current effect's animation has completed.
   virtual bool IsCycleDone(base::TimeTicks timestamp) = 0;
@@ -120,8 +120,6 @@ class AnimatedEffectView : public views::View,
 
   void SetDefaultColors(cc::PaintFlags& paint_flags,
                         const gfx::RectF& bounds) const;
-
-  raw_ptr<Browser> browser_ = nullptr;
 
   std::string shader_;
 

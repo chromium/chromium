@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -136,11 +137,11 @@ class TesterImpl : public TabUnderlineView::Tester {
 class TestUnderlineView : public TabUnderlineView {
  public:
   TestUnderlineView(std::unique_ptr<TabUnderlineViewController> controller,
-                    Browser* browser,
+                    BrowserWindowInterface* browser_window_interface,
                     tabs::TabHandle handle,
                     std::unique_ptr<Tester> tester)
       : TabUnderlineView(std::move(controller),
-                         browser,
+                         browser_window_interface,
                          handle,
                          std::move(tester)) {}
   ~TestUnderlineView() override = default;
@@ -154,10 +155,11 @@ class TestFactory : public TabUnderlineView::Factory {
  protected:
   std::unique_ptr<TabUnderlineView> CreateUnderlineView(
       std::unique_ptr<TabUnderlineViewController> controller,
-      Browser* browser,
+      BrowserWindowInterface* browser_window_interface,
       tabs::TabHandle handle) override {
-    TabUnderlineView* new_underline = new TestUnderlineView(
-        std::move(controller), browser, handle, std::make_unique<TesterImpl>());
+    TabUnderlineView* new_underline =
+        new TestUnderlineView(std::move(controller), browser_window_interface,
+                              handle, std::make_unique<TesterImpl>());
     TesterImpl* tester = static_cast<TesterImpl*>(new_underline->tester());
     tester->set_underline(new_underline);
     return base::WrapUnique(new_underline);
