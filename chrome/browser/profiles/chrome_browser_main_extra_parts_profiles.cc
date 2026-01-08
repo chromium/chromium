@@ -328,6 +328,7 @@
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/hid/hid_connection_tracker_factory.h"
+#include "chrome/browser/legion/token_service_factory.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service_factory.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service_factory.h"
 #include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_factory.h"
@@ -1008,6 +1009,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   LanguageDetectionModelServiceFactory::GetInstance();
   LanguageModelManagerFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
+  legion::TokenServiceFactory::GetInstance();
   LensKeyedServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_ANDROID)

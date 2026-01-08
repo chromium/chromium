@@ -2,16 +2,66 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("legion") {
+  sources = [
+    "token_service.cc",
+    "token_service.h",
+    "token_service_factory.cc",
+    "token_service_factory.h",
+  ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//components/legion/phosphor",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/contextual_cueing",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//components/keyed_service/core",
+    "//components/legion",
+    "//components/legion:proto",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//content/public/browser",
+    "//google_apis",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "token_service_factory_unittest.cc",
+    "token_service_unittest.cc",
+  ]
+  deps = [
+    ":legion",
+    "//base/test:test_support",
+    "//chrome/browser/profiles:test_support",
+    "//chrome/test:test_support",
+    "//components/legion:features",
+    "//components/legion/phosphor:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 if (!is_android) {
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
       "secure_session_async_impl_browsertest.cc",
+      "token_service_browsertest.cc",
       "websocket_client_browsertest.cc",
     ]
 
     deps = [
+      ":legion",
       "//base",
       "//base/test:test_support",
       "//chrome/browser",
@@ -21,7 +71,10 @@ if (!is_android) {
       "//components/legion:proto_extras",
       "//components/legion/crypto",
       "//components/legion/crypto:test_support",
+      "//components/legion/phosphor:test_support",
       "//content/test:test_support",
+      "//net/third_party/quiche:blind_sign_auth",
+      "//testing/gmock",
       "//third_party/oak:oak_proto",
       "//third_party/oak:oak_proto_extras",
       "//third_party/oak:oak_proto_test_extras",

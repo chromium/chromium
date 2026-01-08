@@ -2605,6 +2605,7 @@ static_library("browser") {
   if (!is_android) {
     deps += [
       "//chrome/browser/contextual_tasks:ui_impl",
+      "//chrome/browser/legion",
       "//chrome/browser/startup",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/webui/omnibox_popup/mojom",

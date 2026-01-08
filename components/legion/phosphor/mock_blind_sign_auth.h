@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/threading/platform_thread.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
@@ -36,6 +37,11 @@ class MockBlindSignAuth : public quiche::BlindSignAuthInterface {
       quiche::ProxyLayer layer,
       quiche::AttestationDataCallback attestation_data_callback,
       quiche::SignedTokenCallback token_callback) override;
+
+  // Sets a closure that runs when GetTokens is called.
+  void set_on_get_tokens_callback(base::OnceClosure callback) {
+    on_get_tokens_callback_ = std::move(callback);
+  }
 
   void set_tokens(std::vector<quiche::BlindSignToken> tokens) {
     tokens_ = std::move(tokens);
@@ -84,6 +90,9 @@ class MockBlindSignAuth : public quiche::BlindSignAuthInterface {
   // The tokens that will be returned from `GetTokens()` , if `status_` is not
   // `OkStatus`.
   std::vector<quiche::BlindSignToken> tokens_;
+
+  // If set, runs when `GetTokens()` is called.
+  base::OnceClosure on_get_tokens_callback_;
 };
 
 }  // namespace legion::phosphor

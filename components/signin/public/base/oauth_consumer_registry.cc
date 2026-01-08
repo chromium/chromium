@@ -117,6 +117,7 @@ constexpr char kAshScannerKeyedServiceName[] = "ash_scanner_keyed_service";
 constexpr char kAshAutotestPrivateApiName[] = "ash_autotest_private_api";
 constexpr char kSyncDeviceStatisticsMetricsName[] =
     "sync_device_statistics_metrics";
+constexpr char kLegionServiceName[] = "legion_service";
 
 }  // namespace
 
@@ -530,6 +531,10 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       return OAuthConsumer(
           /*name=*/kSyncDeviceStatisticsMetricsName,
           /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope});
+    case OAuthConsumerId::kLegionService:
+      return OAuthConsumer(
+          /*name=*/kLegionServiceName,
+          /*scopes=*/{GaiaConstants::kLegionAuthScope});
   }
 }
 

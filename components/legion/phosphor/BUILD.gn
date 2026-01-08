@@ -18,11 +18,11 @@ source_set("phosphor") {
     "token_manager_impl.cc",
     "token_manager_impl.h",
   ]
+  public_deps = [ "//net/third_party/quiche:blind_sign_auth" ]
   deps = [
     "//base",
     "//components/legion:features",
     "//components/legion:proto",
-    "//net/third_party/quiche:blind_sign_auth",
     "//services/network/public/cpp",
     "//url",
   ]

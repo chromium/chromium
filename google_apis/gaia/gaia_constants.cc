@@ -291,6 +291,9 @@ const char kMantaOAuth2Scope[] = "https://www.googleapis.com/auth/mdi.aratea";
 const char kWebHistoryOAuth2Scope[] =
     "https://www.googleapis.com/auth/webhistory";
 
+// OAuth2 scope for Legion.
+const char kLegionAuthScope[] = "https://www.googleapis.com/auth/paic-auth";
+
 // Used to build ClientOAuth requests.  These are the names of keys used when
 // building base::DictionaryValue that represent the json data that makes up
 // the ClientOAuth endpoint protocol.  The comment above each constant explains

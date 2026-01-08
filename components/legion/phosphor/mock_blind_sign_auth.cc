@@ -37,6 +37,11 @@ void MockBlindSignAuth::GetTokens(
   } else {
     std::move(callback)(status_);
   }
+
+  // Run the test callback if set.
+  if (on_get_tokens_callback_) {
+    std::move(on_get_tokens_callback_).Run();
+  }
 }
 
 void MockBlindSignAuth::GetAttestationTokens(
