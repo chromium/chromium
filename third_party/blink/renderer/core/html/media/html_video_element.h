@@ -104,6 +104,8 @@ class CORE_EXPORT HTMLVideoElement final
   // scaled to it, otherwise the image will be in its natural size. If
   // `reinterpret_as_srgb` is true, then reinterpret the video as thought it
   // is in sRGB color space.
+  // TODO(crbug.com/40170349): Remove `allow_accelerated_images` after M145 is
+  // stable and all callers are removed.
   scoped_refptr<StaticBitmapImage> CreateStaticBitmapImage(
       bool allow_accelerated_images = true,
       std::optional<gfx::Size> size = std::nullopt,
