@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_internal.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode_string.h"
@@ -522,54 +523,20 @@ scoped_refptr<StringImpl> StringImpl::Truncate(wtf_size_t length) {
   return Create(Span16().first(length));
 }
 
-namespace {
-
-using CharacterRange = std::pair<size_t, size_t>;
-
-template <class UCharPredicate>
-inline CharacterRange StrippedMatchedCharactersRange(const StringImpl& impl,
-                                                     UCharPredicate predicate) {
-  return VisitCharacters(impl, [predicate](auto characters) -> CharacterRange {
-    if (characters.empty()) {
-      return {0, 0};
-    }
-
-    size_t start = 0;
-    size_t end = characters.size() - 1;
-
-    // Skip white space from the start.
-    while (start <= end && predicate(characters[start])) {
-      ++start;
-    }
-
-    // String only contains matching characters.
-    if (start > end) {
-      return {0, 0};
-    }
-
-    // Skip white space from the end.
-    while (end && predicate(characters[end])) {
-      --end;
-    }
-    return {start, end + 1};
-  });
-}
-
-}  // namespace
-
 template <class UCharPredicate>
 inline scoped_refptr<StringImpl> StringImpl::StripMatchedCharacters(
     UCharPredicate predicate) {
-  const auto [start, end] = StrippedMatchedCharactersRange(*this, predicate);
-  if (start == end) {
-    return empty_;
-  }
-  if (start == 0 && end == length_) {
-    return this;
-  }
-  if (Is8Bit())
-    return Create(Span8().subspan(start, end - start));
-  return Create(Span16().subspan(start, end - start));
+  return VisitCharacters(*this, [&](auto chars) -> scoped_refptr<StringImpl> {
+    const auto [start, len] =
+        internal::StrippedMatchedCharactersRange(chars, predicate);
+    if (len == 0) {
+      return empty_;
+    }
+    if (start == 0 && len == length_) {
+      return this;
+    }
+    return Create(chars.subspan(start, len));
+  });
 }
 
 class UCharPredicate final {
@@ -595,9 +562,11 @@ class SpaceOrNewlinePredicate final {
 };
 
 wtf_size_t StringImpl::LengthWithStrippedWhiteSpace() const {
-  const auto [start, end] =
-      StrippedMatchedCharactersRange(*this, SpaceOrNewlinePredicate());
-  return static_cast<wtf_size_t>(end - start);
+  const auto [start, len] = VisitCharacters(*this, [](auto chars) {
+    return internal::StrippedMatchedCharactersRange(chars,
+                                                    SpaceOrNewlinePredicate());
+  });
+  return len;
 }
 
 scoped_refptr<StringImpl> StringImpl::StripWhiteSpace() {

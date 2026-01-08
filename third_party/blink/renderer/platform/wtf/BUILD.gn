@@ -152,6 +152,7 @@ component("wtf") {
     "text/string_hasher.h",
     "text/string_impl.cc",
     "text/string_impl.h",
+    "text/string_internal.h",
     "text/string_operators.h",
     "text/string_operators_atomic.h",
     "text/string_statics.cc",
