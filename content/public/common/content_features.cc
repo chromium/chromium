@@ -25,12 +25,6 @@ namespace features {
 BASE_FEATURE(kAbortNavigationsFromTabClosures,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Kill switch to guard additional security checks performed by the browser
-// process on opaque origins, such as when verifying source origins for
-// postMessage. See https://crbug.com/40109437.
-BASE_FEATURE(kAdditionalOpaqueOriginEnforcements,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Capture Android key event objects to send them to the web contents when the
 // IME sends composition texts.
 BASE_FEATURE(kAndroidCaptureKeyEvents, base::FEATURE_DISABLED_BY_DEFAULT);
