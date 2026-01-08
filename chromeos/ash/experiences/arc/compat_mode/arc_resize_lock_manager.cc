@@ -117,59 +117,7 @@ class WindowActivationObserver : public wm::ActivationChangeObserver,
   base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
 };
 
-// A self-deleting window property observer that runs the given callback when
-// its ash::kAppIDKey is set to non-null value.
-class AppIdObserver : public aura::WindowObserver {
- public:
-  AppIdObserver(const AppIdObserver&) = delete;
-  AppIdObserver& operator=(const AppIdObserver&) = delete;
 
-  static void RunOnReady(aura::Window* window,
-                         base::OnceCallback<void(aura::Window*)> on_ready) {
-    if (GetAppId(window)) {
-      std::move(on_ready).Run(window);
-      return;
-    }
-
-    // The following instance self-destructs when the window gets activated or
-    // destroyed before getting activated.
-    new AppIdObserver(window, std::move(on_ready));
-  }
-
-  // aura::WindowObserver:
-  void OnWindowDestroying(aura::Window* window) override {
-    DCHECK(observer_.IsObservingSource(window));
-    delete this;
-  }
-  void OnWindowPropertyChanged(aura::Window* window,
-                               const void* key,
-                               intptr_t old) override {
-    DCHECK(observer_.IsObservingSource(window));
-    if (key != ash::kAppIDKey) {
-      return;
-    }
-    if (!GetAppId(window)) {
-      return;
-    }
-    observer_.Reset();
-    std::move(on_ready_).Run(window);
-    delete this;
-  }
-
- private:
-  AppIdObserver(aura::Window* window,
-                base::OnceCallback<void(aura::Window*)> on_ready)
-      : window_(window), on_ready_(std::move(on_ready)) {
-    DCHECK(!on_ready_.is_null());
-    observer_.Observe(window_.get());
-  }
-
-  ~AppIdObserver() override { observer_.Reset(); }
-
-  const raw_ptr<aura::Window> window_;
-  base::OnceCallback<void(aura::Window*)> on_ready_;
-  base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
-};
 
 bool ShouldEnableResizeLock(ash::ArcResizeLockType type) {
   return type != ash::ArcResizeLockType::NONE &&
@@ -208,7 +156,7 @@ void ArcResizeLockManager::OnWindowInitialized(aura::Window* new_window) {
 
   window_observations_.AddObservation(new_window);
 
-  AppIdObserver::RunOnReady(
+  RunWhenAppIdReady(
       new_window,
       base::BindOnce(
           [](base::WeakPtr<ArcResizeLockManager> manager,
@@ -224,7 +172,7 @@ void ArcResizeLockManager::OnWindowInitialized(aura::Window* new_window) {
             RecordResizeLockStateHistogram(
                 ResizeLockStateHistogramType::InitialState, state);
           },
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), new_window));
 }
 
 void ArcResizeLockManager::OnWindowPropertyChanged(aura::Window* window,
@@ -240,6 +188,19 @@ void ArcResizeLockManager::OnWindowPropertyChanged(aura::Window* window,
     return;
   }
 
+  if (key == ash::kAppIDKey) {
+    if (GetAppId(window)) {
+      if (auto it = pending_app_id_callbacks_.find(window);
+          it != pending_app_id_callbacks_.end()) {
+        for (auto& callback : it->second) {
+          std::move(callback).Run();
+        }
+        pending_app_id_callbacks_.erase(it);
+      }
+    }
+    return;
+  }
+
   if (key != ash::kArcResizeLockTypeKey) {
     return;
   }
@@ -248,7 +209,7 @@ void ArcResizeLockManager::OnWindowPropertyChanged(aura::Window* window,
   const auto old_value = static_cast<ash::ArcResizeLockType>(old);
 
   if (new_value != old_value) {
-    AppIdObserver::RunOnReady(
+    RunWhenAppIdReady(
         window, base::BindOnce(
                     [](base::WeakPtr<ArcResizeLockManager> manager,
                        aura::Window* window) {
@@ -268,16 +229,17 @@ void ArcResizeLockManager::OnWindowPropertyChanged(aura::Window* window,
                       // RESIZE_ENABLED_TOGGLABLE)
                       manager->UpdateResizeLockState(window);
                     },
-                    weak_ptr_factory_.GetWeakPtr()));
+                    weak_ptr_factory_.GetWeakPtr(), window));
   }
 
   // We need to always trigger UpdateCompatModeButton regardless of value
   // change because it need to be called even when the property is set to
   // ArcResizeLockType::NONE, which is the the default value of
   // kArcResizeLockTypeKey, and the new value is the same as |old| in that case.
-  AppIdObserver::RunOnReady(
-      window, base::BindOnce(&CompatModeButtonController::Update,
-                             compat_mode_button_controller_->GetWeakPtr()));
+  RunWhenAppIdReady(
+      window,
+      base::BindOnce(&CompatModeButtonController::Update,
+                     compat_mode_button_controller_->GetWeakPtr(), window));
 }
 
 void ArcResizeLockManager::Shutdown() {
@@ -294,6 +256,7 @@ void ArcResizeLockManager::OnWindowBoundsChanged(
 }
 
 void ArcResizeLockManager::OnWindowDestroying(aura::Window* window) {
+  pending_app_id_callbacks_.erase(window);
   resize_lock_enabled_windows_.erase(window);
   if (window_observations_.IsObservingSource(window)) {
     window_observations_.RemoveObservation(window);
@@ -419,6 +382,15 @@ void ArcResizeLockManager::UpdateShadow(aura::Window* window) {
       ash::Shell::Get()->resize_shadow_controller()->HideShadow(window);
     }
   }
+}
+
+void ArcResizeLockManager::RunWhenAppIdReady(aura::Window* window,
+                                             base::OnceClosure callback) {
+  if (GetAppId(window)) {
+    std::move(callback).Run();
+    return;
+  }
+  pending_app_id_callbacks_[window].push_back(std::move(callback));
 }
 
 void ArcResizeLockManager::ShowSplashScreenDialog(aura::Window* window,
