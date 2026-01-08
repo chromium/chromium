@@ -16,11 +16,11 @@ namespace syncer {
 
 namespace {
 
-static_assert(59 == syncer::GetNumDataTypes(),
+static_assert(60 == syncer::GetNumDataTypes(),
               "When adding a new type, update enum SyncDataTypes in enums.xml "
               "and suffix SyncDataType in histograms.xml.");
 
-static_assert(59 == syncer::GetNumDataTypes(),
+static_assert(60 == syncer::GetNumDataTypes(),
               "When adding a new type, follow the integration checklist in "
               "https://www.chromium.org/developers/design-documents/sync/"
               "integration-checklist/");
@@ -116,6 +116,7 @@ constexpr kSpecificsFieldNumberToDataTypeMap specifics_field_number2data_type =
         {sync_pb::EntitySpecifics::kSharedCommentFieldNumber, SHARED_COMMENT},
         {sync_pb::EntitySpecifics::kAiThreadFieldNumber, AI_THREAD},
         {sync_pb::EntitySpecifics::kContextualTaskFieldNumber, CONTEXTUAL_TASK},
+        {sync_pb::EntitySpecifics::kSkillFieldNumber, SKILL},
         // ---- Control Types ----
         {sync_pb::EntitySpecifics::kNigoriFieldNumber, NIGORI},
     });
@@ -301,6 +302,9 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
     case CONTEXTUAL_TASK:
       specifics->mutable_contextual_task();
       break;
+    case SKILL:
+      specifics->mutable_skill();
+      break;
   }
 }
 
@@ -435,6 +439,8 @@ int GetSpecificsFieldNumberFromDataType(DataType data_type) {
       return sync_pb::EntitySpecifics::kContextualTaskFieldNumber;
     case NIGORI:
       return sync_pb::EntitySpecifics::kNigoriFieldNumber;
+    case SKILL:
+      return sync_pb::EntitySpecifics::kSkillFieldNumber;
   }
   NOTREACHED();
 }
@@ -451,7 +457,7 @@ void internal::GetDataTypeSetFromSpecificsFieldNumberListHelper(
 }
 
 DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  static_assert(59 == syncer::GetNumDataTypes(),
+  static_assert(60 == syncer::GetNumDataTypes(),
                 "When adding new protocol types, the following type lookup "
                 "logic must be updated.");
   if (specifics.has_bookmark()) {
@@ -628,6 +634,9 @@ DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
   if (specifics.has_contextual_task()) {
     return CONTEXTUAL_TASK;
   }
+  if (specifics.has_skill()) {
+    return SKILL;
+  }
 
   // This client version doesn't understand `specifics`.
   DVLOG(1) << "Unknown datatype in sync proto.";
@@ -650,7 +659,7 @@ DataTypeSet AlwaysPreferredUserTypes() {
 }
 
 DataTypeSet EncryptableUserTypes() {
-  static_assert(59 == syncer::GetNumDataTypes(),
+  static_assert(60 == syncer::GetNumDataTypes(),
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   DataTypeSet encryptable_user_types = UserTypes();
@@ -818,6 +827,8 @@ const char* DataTypeToDebugString(DataType data_type) {
       return "Contextual Task";
     case NIGORI:
       return "Encryption Keys";
+    case SKILL:
+      return "Skill";
   }
   NOTREACHED();
 }
@@ -943,6 +954,8 @@ const char* DataTypeToHistogramSuffix(DataType data_type) {
       return "NIGORI";
     case ACCOUNT_SETTING:
       return "ACCOUNT_SETTING";
+    case SKILL:
+      return "SKILL";
   }
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:DataTypeHistogramSuffix)
   NOTREACHED();
@@ -1068,6 +1081,8 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
       return DataTypeForHistograms::kContextualTask;
     case NIGORI:
       return DataTypeForHistograms::kNigori;
+    case SKILL:
+      return DataTypeForHistograms::kSkill;
   }
   NOTREACHED();
 }
@@ -1210,6 +1225,8 @@ const char* DataTypeToStableLowerCaseString(DataType data_type) {
       return "contextual_task";
     case NIGORI:
       return "nigori";
+    case SKILL:
+      return "skill";
   }
   // WARNING: existing strings must not be changed without migration, they
   // are persisted!

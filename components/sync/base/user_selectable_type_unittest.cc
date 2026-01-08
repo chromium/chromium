@@ -61,6 +61,10 @@ class UserSelectableTypeTest : public ::testing::Test {
     // selectable type or to a new one and remove it from here (unless it's
     // ambiguous).
     data_types.Put(CONTEXTUAL_TASK);
+    // TODO(crbug.com/471793686): In CL #3, map SKILL to an existing
+    // selectable type or to a new one and remove it from here (unless it's
+    // ambiguous).
+    data_types.Put(SKILL);
 
     return data_types;
   }

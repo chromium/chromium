@@ -115,6 +115,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(DataType data_type) {
     case SHARED_COMMENT:
     case AI_THREAD:
     case CONTEXTUAL_TASK:
+    case SKILL:
       return kMediumLocalChangeNudgeDelay;
     case UNSPECIFIED:
       NOTREACHED();
@@ -189,6 +190,7 @@ bool CanGetCommitsFromExtensions(DataType data_type) {
     case SHARED_COMMENT:
     case AI_THREAD:
     case CONTEXTUAL_TASK:
+    case SKILL:
       return false;
     case UNSPECIFIED:
       NOTREACHED();

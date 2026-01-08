@@ -103,7 +103,7 @@ class SyncServiceFactoryTest : public testing::Test {
 
   // Returns the collection of default datatypes.
   syncer::DataTypeSet DefaultDatatypes() {
-    static_assert(59 == syncer::GetNumDataTypes(),
+    static_assert(60 == syncer::GetNumDataTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled). Check similar "
                   "function in "
@@ -229,6 +229,10 @@ class SyncServiceFactoryTest : public testing::Test {
 
     if (base::FeatureList::IsEnabled(syncer::kSyncContextualTask)) {
       datatypes.Put(syncer::CONTEXTUAL_TASK);
+    }
+
+    if (base::FeatureList::IsEnabled(syncer::kSyncSkill)) {
+      datatypes.Put(syncer::SKILL);
     }
 
     return datatypes;

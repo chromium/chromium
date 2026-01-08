@@ -69,6 +69,7 @@ sync_protocol_sources = [
   "shared_tab_group_account_data_specifics.proto",
   "shared_tab_group_data_specifics.proto",
   "sharing_message_specifics.proto",
+  "skill_specifics.proto",
   "sync.proto",
   "sync_entity.proto",
   "sync_enums.proto",

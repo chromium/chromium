@@ -54,7 +54,10 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
   // TODO(crbug.com/445840788): In CL #3, map CONTEXTUAL_TASK to an existing
   // selectable type or to a new one. The first option should be trivial, the
   // second requires touching UI code across platforms.
-  static_assert(59 == syncer::GetNumDataTypes(),
+  // TODO(crbug.com/471793686): In CL #3, map SKILL to an existing selectable
+  // type or to a new one. The first option should be trivial, the second
+  // requires touching UI code across platforms.
+  static_assert(60 == syncer::GetNumDataTypes(),
                 "Almost always when adding a new Data, you must tie it to "
                 "a UserSelectableType below (new or existing) so the user can "
                 "disable syncing of that data. Today you must also update the "
