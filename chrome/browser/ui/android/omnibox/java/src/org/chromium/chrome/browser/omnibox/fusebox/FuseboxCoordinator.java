@@ -13,7 +13,6 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -146,7 +145,7 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
         var popup = new FuseboxPopup(mContext, popupWindowBuilder.build(), popupView);
         mViewHolder = new FuseboxViewHolder(parent, popup);
 
-        var adapter = new FuseboxAttachmentRecyclerViewAdapter(mModelList);
+        var adapter = mModelList.getAdapter();
         mViewHolder.attachmentsView.setAdapter(adapter);
 
         mModel =
@@ -403,7 +402,7 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
         }
 
         @Override
-        public void onConfigurationChanged(@NonNull Configuration configuration) {
+        public void onConfigurationChanged(Configuration configuration) {
             updateRect();
         }
 

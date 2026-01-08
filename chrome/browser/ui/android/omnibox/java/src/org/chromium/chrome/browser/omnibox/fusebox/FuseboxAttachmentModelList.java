@@ -9,6 +9,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.text.TextUtils;
 import android.util.ArraySet;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.google.errorprone.annotations.MustBeClosed;
 
 import org.chromium.base.ObserverList;
@@ -22,21 +24,28 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.contextual_search.FileUploadStatus;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
 /**
- * A specialized ModelList for Fusebox attachments that maintains tight coupling with
+ * A specialized container for Fusebox attachments that maintains tight coupling with
  * ComposeBoxQueryController, coordinating all operations with the backend to ensure consistent
  * state.
  */
 @NullMarked
-public class FuseboxAttachmentModelList extends ModelList implements FileUploadObserver {
+public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<FuseboxAttachment> {
+    private final ModelList mModelList = new ModelList();
+    private final SimpleRecyclerViewAdapter mAdapter =
+            new FuseboxAttachmentRecyclerViewAdapter(mModelList);
+
     static final int MAX_ATTACHMENTS = OmniboxFeatures.sMultiattachmentFusebox.getValue() ? 10 : 1;
     private final Set<Integer> mAttachedTabIds = new ArraySet<>();
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -85,6 +94,54 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
     /* package */ FuseboxAttachmentModelList(
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
+    }
+
+    /** Creates a new adapter for the attachments in this list. */
+    public SimpleRecyclerViewAdapter getAdapter() {
+        return mAdapter;
+    }
+
+    @Override
+    public Iterator<FuseboxAttachment> iterator() {
+        return new Iterator<FuseboxAttachment>() {
+            private int mIndex;
+
+            @Override
+            public boolean hasNext() {
+                return mIndex < mModelList.size();
+            }
+
+            @Override
+            public FuseboxAttachment next() {
+                return (FuseboxAttachment) mModelList.get(mIndex++);
+            }
+        };
+    }
+
+    /** Returns the size of the model list. */
+    public int size() {
+        return mModelList.size();
+    }
+
+    /** Returns whether the model list is empty. */
+    public boolean isEmpty() {
+        return mModelList.isEmpty();
+    }
+
+    /** Adds a list observer. */
+    public void addObserver(ListObserver<Void> observer) {
+        mModelList.addObserver(observer);
+    }
+
+    /** Removes a list observer. */
+    public void removeObserver(ListObserver<Void> observer) {
+        mModelList.removeObserver(observer);
+    }
+
+    /** Returns the index of the FuseboxAttachment in the list. */
+    @VisibleForTesting
+    /* package */ int indexOf(FuseboxAttachment attachment) {
+        return mModelList.indexOf(attachment);
     }
 
     /**
@@ -192,16 +249,10 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
 
         attachment.model.set(FuseboxAttachmentProperties.COLOR_SCHEME, mBrandedColorScheme);
         attachment.setOnRemoveCallback(() -> remove(attachment));
-        super.add(attachment);
+        mModelList.add(attachment);
 
         maybeEmitListChangedEvent(/* asResultOfChange= */ true);
         return true;
-    }
-
-    @Override
-    public void add(ListItem item) {
-        throw new IllegalArgumentException(
-                "Use the boolean add() version to ensure capacity constraints are respected.");
     }
 
     /**
@@ -211,7 +262,7 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
      * @param attachment The attachment to remove
      */
     public void remove(FuseboxAttachment attachment) {
-        super.remove(attachment);
+        mModelList.remove(attachment);
 
         if (attachment.type == FuseboxAttachmentType.ATTACHMENT_TAB) {
             mAttachedTabIds.remove(attachment.tabId);
@@ -262,20 +313,19 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
      * Removes all attachments from the model list and backend. This is the preferred method for
      * clearing all attachments.
      */
-    @Override
     public void clear() {
         if (isEmpty()) return;
 
         // We have previously added attachments, so the controller must be set.
         for (int index = 0; index < size(); index++) {
-            var attachment = (FuseboxAttachment) get(index);
+            var attachment = get(index);
             attachment.removeFromBackend(assumeNonNull(mComposeBoxQueryControllerBridge));
         }
 
         mAttachedTabIds.clear();
 
         assumeNonNull(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
-        super.clear();
+        mModelList.clear();
         maybeEmitListChangedEvent(/* asResultOfChange= */ true);
     }
 
@@ -285,9 +335,8 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
      * @param index index of the element to return.
      * @return the FuseboxAttachment at the specified position.
      */
-    @Override
     public FuseboxAttachment get(int index) {
-        return (FuseboxAttachment) super.get(index);
+        return (FuseboxAttachment) mModelList.get(index);
     }
 
     /** Returns a set of currently attached Tab IDs. */
@@ -325,7 +374,8 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
                 break;
             case FileUploadStatus.UPLOAD_SUCCESSFUL:
                 pendingAttachment.setUploadIsComplete();
-                notifyItemChanged(indexOf(pendingAttachment));
+                int index = indexOf(pendingAttachment);
+                mModelList.update(index, pendingAttachment);
                 break;
         }
 
