@@ -19,7 +19,6 @@
 #include "components/persistent_cache/backend_storage.h"
 #include "components/persistent_cache/backend_type.h"
 #include "components/persistent_cache/pending_backend.h"
-#include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
 #include "gpu/command_buffer/service/memory_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
