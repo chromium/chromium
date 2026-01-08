@@ -307,8 +307,7 @@ void FormTracker::TrackAutofilledElement(const WebFormControlElement& element) {
           form_util::GetFieldRendererId(element))) {
     return;
   }
-  blink::WebFormElement form_element = element.GetOwningFormForAutofill();
-  if (form_element) {
+  if (blink::WebFormElement form_element = element.GetOwningFormForAutofill()) {
     UpdateLastInteractedElement(form_util::GetFormRendererId(form_element));
   } else {
     UpdateLastInteractedElement(form_util::GetFieldRendererId(element));
@@ -401,24 +400,28 @@ void FormTracker::FormControlDidChangeImpl(FieldRendererId element_id,
   if (!form_util::IsOwnedByFrame(element, unsafe_render_frame())) {
     return;
   }
-  blink::WebFormElement form_element = element.GetOwningFormForAutofill();
-  if (form_element) {
-    UpdateLastInteractedElement(form_util::GetFormRendererId(form_element));
+  FormRendererId form_id =
+      form_util::GetFormRendererId(element.GetOwningFormForAutofill());
+
+  // Since this function can be called asynchronously, it can be the case that
+  // the owning form element was disconnected from the DOM, which is why we make
+  // sure it isn't the case by performing the FormElement -> DomNodeId ->
+  // FormElement conversion.
+  // TODO(crbug.com/376628389): Revisit after removing the underlying
+  // asynchronicity.
+  if (form_util::GetFormByRendererId(form_id)) {
+    UpdateLastInteractedElement(form_id);
   } else {
     UpdateLastInteractedElement(form_util::GetFieldRendererId(element));
   }
   switch (change_source) {
     case SaveFormReason::kTextFieldChanged:
       autofill_agent_->OnTextFieldValueChanged(
-          element,
-          SynchronousFormCache(form_util::GetFormRendererId(form_element),
-                               provisionally_saved_form()));
+          element, SynchronousFormCache(form_id, provisionally_saved_form()));
       break;
     case SaveFormReason::kSelectChanged:
       autofill_agent_->OnSelectControlSelectionChanged(
-          element,
-          SynchronousFormCache(form_util::GetFormRendererId(form_element),
-                               provisionally_saved_form()));
+          element, SynchronousFormCache(form_id, provisionally_saved_form()));
       break;
   }
 }
