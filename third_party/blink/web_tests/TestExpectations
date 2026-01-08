@@ -3889,7 +3889,6 @@ crbug.com/380314135 [ Mac13 ] virtual/threaded/external/wpt/css/css-backgrounds/
 crbug.com/380314135 [ Win10.20h2 ] virtual/threaded/external/wpt/css/css-backgrounds/background-image-centered-with-border-radius.html [ Failure ]
 crbug.com/380314135 [ Win11-arm64 ] virtual/threaded/external/wpt/css/css-backgrounds/background-image-centered-with-border-radius.html [ Failure ]
 crbug.com/380287135 [ Mac13 ] external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-width.html [ Crash ]
-crbug.com/380287135 [ Linux ] external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-width.html [ Crash ]
 crbug.com/380147868 [ Mac13 ] external/wpt/webrtc/simulcast/screenshare.https.html [ Skip Timeout ]
 crbug.com/380147868 [ Mac15-arm64 ] external/wpt/webrtc/simulcast/screenshare.https.html [ Skip Timeout ]
 crbug.com/380147868 [ Mac15 ] external/wpt/webrtc/simulcast/screenshare.https.html [ Skip Timeout ]
