@@ -642,7 +642,7 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
   auto iter = recorded_keyboards_.find(account_id);
 
   if (iter != recorded_keyboards_.end() &&
-      base::Contains(iter->second, keyboard.device_key)) {
+      iter->second.contains(keyboard.device_key)) {
     return;
   }
   recorded_keyboards_[account_id].insert(keyboard.device_key);
@@ -803,8 +803,7 @@ void InputDeviceSettingsMetricsManager::RecordMouseInitialMetrics(
       Shell::Get()->session_controller()->GetActiveAccountId();
   auto iter = recorded_mice_.find(account_id);
 
-  if (iter != recorded_mice_.end() &&
-      base::Contains(iter->second, mouse.device_key)) {
+  if (iter != recorded_mice_.end() && iter->second.contains(mouse.device_key)) {
     return;
   }
   recorded_mice_[account_id].insert(mouse.device_key);
@@ -940,7 +939,7 @@ void InputDeviceSettingsMetricsManager::RecordPointingStickInitialMetrics(
   auto iter = recorded_pointing_sticks_.find(account_id);
 
   if (iter != recorded_pointing_sticks_.end() &&
-      base::Contains(iter->second, pointing_stick.device_key)) {
+      iter->second.contains(pointing_stick.device_key)) {
     return;
   }
   recorded_pointing_sticks_[account_id].insert(pointing_stick.device_key);
@@ -1006,7 +1005,7 @@ void InputDeviceSettingsMetricsManager::RecordTouchpadInitialMetrics(
   auto iter = recorded_touchpads_.find(account_id);
 
   if (iter != recorded_touchpads_.end() &&
-      base::Contains(iter->second, touchpad.device_key)) {
+      iter->second.contains(touchpad.device_key)) {
     return;
   }
   recorded_touchpads_[account_id].insert(touchpad.device_key);
@@ -1128,7 +1127,7 @@ void InputDeviceSettingsMetricsManager::RecordGraphicsTabletInitialMetrics(
   auto iter = recorded_graphics_tablets_.find(account_id);
 
   if (iter != recorded_graphics_tablets_.end() &&
-      base::Contains(iter->second, graphics_tablet.device_key)) {
+      iter->second.contains(graphics_tablet.device_key)) {
     return;
   }
   recorded_graphics_tablets_[account_id].insert(graphics_tablet.device_key);
@@ -1321,7 +1320,7 @@ void InputDeviceSettingsMetricsManager::RecordCompanionAppAvailable(
       Shell::Get()->session_controller()->GetActiveAccountId();
   auto iter = recorded_companion_app_available_device_keys_.find(account_id);
   if (iter != recorded_companion_app_available_device_keys_.end() &&
-      base::Contains(iter->second, device_key)) {
+      iter->second.contains(device_key)) {
     return;
   }
 
@@ -1338,7 +1337,7 @@ void InputDeviceSettingsMetricsManager::RecordCompanionAppInstalled(
       Shell::Get()->session_controller()->GetActiveAccountId();
   auto iter = recorded_companion_app_installed_device_keys_.find(account_id);
   if (iter != recorded_companion_app_installed_device_keys_.end() &&
-      base::Contains(iter->second, device_key)) {
+      iter->second.contains(device_key)) {
     return;
   }
 

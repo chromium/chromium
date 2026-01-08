@@ -299,7 +299,7 @@ void SplitViewMetricsController::OnWindowParentChanged(aura::Window* window,
   if (parent && desks_util::IsDeskContainer(parent)) {
     if (parent->GetId() != current_desk_->container_id()) {
       RemoveObservedWindow(window);
-    } else if (base::Contains(no_state_observed_windows_, window)) {
+    } else if (no_state_observed_windows_.contains(window)) {
       WindowState::Get(window)->AddObserver(this);
       no_state_observed_windows_.erase(window);
     }

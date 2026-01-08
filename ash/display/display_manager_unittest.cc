@@ -158,7 +158,7 @@ class DisplayManagerObserverValidator : public display::DisplayObserver,
     EXPECT_EQ(changed_metrics_.size(),
               configuration_change.display_metrics_changes.size());
     for (const auto& change : configuration_change.display_metrics_changes) {
-      EXPECT_TRUE(base::Contains(changed_metrics_, change.display->id()));
+      EXPECT_TRUE(changed_metrics_.contains(change.display->id()));
       EXPECT_EQ(changed_metrics_[change.display->id()], change.changed_metrics);
     }
 
@@ -5338,11 +5338,11 @@ TEST_F(DisplayManagerTest, DisplayManagerObserverNestedChangesOrdering) {
 
       // If correctly ordered observers should be notified of added displays
       // before any changes to the metrics for these displays.
-      std::ranges::for_each(configuration_change.display_metrics_changes,
-                            [this](const auto& change) {
-                              EXPECT_TRUE(base::Contains(tracked_display_ids_,
-                                                         change.display->id()));
-                            });
+      std::ranges::for_each(
+          configuration_change.display_metrics_changes,
+          [this](const auto& change) {
+            EXPECT_TRUE(tracked_display_ids_.contains(change.display->id()));
+          });
 
       if (on_processed_cb_) {
         std::move(on_processed_cb_).Run();

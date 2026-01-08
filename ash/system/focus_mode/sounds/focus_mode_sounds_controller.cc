@@ -544,14 +544,14 @@ void FocusModeSoundsController::DownloadPlaylistsForType(
   }
 
   if (is_soundscape_type) {
-    if (!base::Contains(enabled_sound_sections_,
-                        focus_mode_util::SoundType::kSoundscape)) {
+    if (!enabled_sound_sections_.contains(
+            focus_mode_util::SoundType::kSoundscape)) {
       LOG(WARNING) << "Playlist download for Focus Sounds blocked by policy";
       return;
     }
   } else {
-    if (!base::Contains(enabled_sound_sections_,
-                        focus_mode_util::SoundType::kYouTubeMusic)) {
+    if (!enabled_sound_sections_.contains(
+            focus_mode_util::SoundType::kYouTubeMusic)) {
       LOG(WARNING)
           << "Playlist download for YouTube Music blocked by policy or flag";
       return;
@@ -676,7 +676,7 @@ void FocusModeSoundsController::SetIsMinorUserForTesting(bool is_minor_user) {
 
 bool FocusModeSoundsController::IsPlaylistAllowed(
     const focus_mode_util::SelectedPlaylist& playlist) const {
-  return base::Contains(enabled_sound_sections_, playlist.type);
+  return enabled_sound_sections_.contains(playlist.type);
 }
 
 void FocusModeSoundsController::SaveUserPref() {

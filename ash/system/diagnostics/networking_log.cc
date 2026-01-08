@@ -333,7 +333,7 @@ void NetworkingLog::UpdateNetworkState(mojom::NetworkPtr network) {
     return;
   }
 
-  if (!base::Contains(latest_network_states_, network->observer_guid)) {
+  if (!latest_network_states_.contains(network->observer_guid)) {
     LogNetworkAdded(network);
     latest_network_states_.emplace(network->observer_guid, std::move(network));
     return;
@@ -370,7 +370,7 @@ void NetworkingLog::LogNetworkRemoved(const mojom::NetworkPtr& network) {
 }
 
 void NetworkingLog::LogNetworkChanges(const mojom::NetworkPtr& new_state) {
-  DCHECK(base::Contains(latest_network_states_, new_state->observer_guid));
+  DCHECK(latest_network_states_.contains(new_state->observer_guid));
   const mojom::NetworkPtr& old_state =
       latest_network_states_.at(new_state->observer_guid);
 

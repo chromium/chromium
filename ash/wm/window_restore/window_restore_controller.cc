@@ -410,7 +410,7 @@ void WindowRestoreController::OnWindowPropertyChanged(aura::Window* window,
   windows_observation_.RemoveObservation(window);
   to_be_shown_windows_.erase(window);
 
-  if (base::Contains(restore_property_clear_callbacks_, window))
+  if (restore_property_clear_callbacks_.contains(window))
     CancelAndRemoveRestorePropertyClearCallback(window);
 }
 
@@ -449,7 +449,7 @@ void WindowRestoreController::OnWindowDestroying(aura::Window* window) {
   DCHECK(windows_observation_.IsObservingSource(window));
   windows_observation_.RemoveObservation(window);
 
-  if (base::Contains(restore_property_clear_callbacks_, window))
+  if (restore_property_clear_callbacks_.contains(window))
     ClearLaunchedKey(window);
 }
 
@@ -622,7 +622,7 @@ void WindowRestoreController::ClearLaunchedKey(aura::Window* window) {
 void WindowRestoreController::CancelAndRemoveRestorePropertyClearCallback(
     aura::Window* window) {
   DCHECK(window);
-  DCHECK(base::Contains(restore_property_clear_callbacks_, window));
+  DCHECK(restore_property_clear_callbacks_.contains(window));
 
   restore_property_clear_callbacks_[window].Cancel();
   restore_property_clear_callbacks_.erase(window);

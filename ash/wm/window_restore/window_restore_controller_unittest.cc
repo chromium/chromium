@@ -83,7 +83,7 @@ class WindowRestoreControllerTest : public AshTestBase,
   int GetSaveWindowsCount(aura::Window* window) const {
     const int32_t restore_window_id =
         window->GetProperty(app_restore::kRestoreWindowIdKey);
-    if (!base::Contains(fake_window_restore_file_, restore_window_id))
+    if (!fake_window_restore_file_.contains(restore_window_id))
       return 0;
     return fake_window_restore_file_.at(restore_window_id).call_count;
   }
@@ -109,7 +109,7 @@ class WindowRestoreControllerTest : public AshTestBase,
       aura::Window* window) const {
     const int32_t restore_window_id =
         window->GetProperty(app_restore::kRestoreWindowIdKey);
-    if (!base::Contains(fake_window_restore_file_, restore_window_id)) {
+    if (!fake_window_restore_file_.contains(restore_window_id)) {
       return std::nullopt;
     }
     return fake_window_restore_file_.at(restore_window_id).info;
