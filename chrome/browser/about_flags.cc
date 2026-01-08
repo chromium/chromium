@@ -890,6 +890,12 @@ const FeatureEntry::FeatureParam
         {"EnableContextDragAndDrop", "true"},
         {"ShowRecentTabChip", "true"},
 };
+const FeatureEntry::FeatureParam
+    kWebUIOmniboxAimPopupAddContextButtonNoContextualChips[] = {
+        {"AddContextButtonVariant", "below_results"},
+        {"ShowRecentTabChip", "false"},
+        {"ShowLensSearchChip", "false"},
+};
 
 const FeatureEntry::FeatureVariation kWebUIOmniboxAimPopupVariations[] = {
     {"- \"Add Context\" Button below results (Variant 1)",
@@ -903,7 +909,11 @@ const FeatureEntry::FeatureVariation kWebUIOmniboxAimPopupVariations[] = {
      std::size(kWebUIOmniboxAimPopupAddContextButtonInline), nullptr},
     {"- \"Add Context\" Button enable drag and drop",
      kWebUIOmniboxAimPopupAddContextButtonDragAndDrop,
-     std::size(kWebUIOmniboxAimPopupAddContextButtonDragAndDrop), nullptr}};
+     std::size(kWebUIOmniboxAimPopupAddContextButtonDragAndDrop), nullptr},
+    {"- \"Add Context\" No contextual chips (Entrypoint below results)",
+     kWebUIOmniboxAimPopupAddContextButtonNoContextualChips,
+     std::size(kWebUIOmniboxAimPopupAddContextButtonNoContextualChips),
+     nullptr}};
 
 const FeatureEntry::FeatureParam kWebUIOmniboxPopupDebugSxS[] = {
     {"SxS", "true"}};
