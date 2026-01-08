@@ -51,6 +51,12 @@ class WebAuthnClientAndroid {
   // Accessor for the client that has been set by the embedder.
   static WebAuthnClientAndroid* GetClient();
 
+  // Accessor that checks whether a client was initialized by the embedder.
+  static bool HasClient();
+
+  // Set the static instance of this client to nullptr. Only use in tests.
+  static void ClearClientForTesting();
+
   // Called when a Web Authentication request is received that can be handled
   // by the browser. This provides callbacks that will complete the request if
   // and when a user selects a credential from a selection dialog.
