@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -69,7 +70,8 @@ void EmitUkmMetricsForTab(tabs::TabInterface* tab) {
 #else
   interaction.captures_links = registrar.CapturesLinksInScope(*app_id);
 #endif
-  interaction.promotable = !registrar.IsDiyApp(*app_id);
+  interaction.promotable =
+      registrar.AppMatches(*app_id, WebAppFilter::IsCraftedApp());
 
   if (tab->IsActivated() && browser->IsActive()) {
     interaction.foreground_duration = base::Seconds(kTimerIntervalInSeconds);

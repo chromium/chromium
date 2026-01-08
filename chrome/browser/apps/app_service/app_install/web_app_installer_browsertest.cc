@@ -16,6 +16,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -490,10 +491,9 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallWebsite) {
         EXPECT_EQ(update.WindowMode(), apps::WindowMode::kBrowser);
       });
   ASSERT_TRUE(found);
-
-  EXPECT_TRUE(web_app::WebAppProvider::GetForWebApps(profile())
-                  ->registrar_unsafe()
-                  .IsDiyApp(app_id));
+  EXPECT_FALSE(web_app::WebAppProvider::GetForWebApps(profile())
+                   ->registrar_unsafe()
+                   .AppMatches(app_id, web_app::WebAppFilter::IsCraftedApp()));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
@@ -528,9 +528,9 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
       });
   ASSERT_TRUE(found);
 
-  EXPECT_TRUE(web_app::WebAppProvider::GetForWebApps(profile())
-                  ->registrar_unsafe()
-                  .IsDiyApp(app_id));
+  EXPECT_FALSE(web_app::WebAppProvider::GetForWebApps(profile())
+                   ->registrar_unsafe()
+                   .AppMatches(app_id, web_app::WebAppFilter::IsCraftedApp()));
 }
 
 }  // namespace apps

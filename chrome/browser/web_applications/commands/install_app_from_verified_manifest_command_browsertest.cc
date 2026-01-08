@@ -684,7 +684,8 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
       kDocumentUrl, kManifestUrl, manifest, expected_id,
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, /*is_diy_app=*/true);
 
-  EXPECT_TRUE(provider().registrar_unsafe().IsDiyApp(result_id));
+  EXPECT_FALSE(provider().registrar_unsafe().AppMatches(
+      result_id, WebAppFilter::IsCraftedApp()));
 }
 
 }  // namespace web_app

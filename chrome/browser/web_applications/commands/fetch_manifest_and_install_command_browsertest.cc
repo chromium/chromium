@@ -31,6 +31,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -572,8 +573,8 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandUniversalInstallTest,
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(os_integration);
   EXPECT_TRUE(os_integration->has_shortcut());
-  // TODO(crbug.com/291778116): Add more checks once DIY apps are supported.
-  EXPECT_TRUE(provider().registrar_unsafe().IsDiyApp(app_id));
+  EXPECT_FALSE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::IsCraftedApp()));
 }
 
 // Test for crbug.com/381069204, where triggering an install command on

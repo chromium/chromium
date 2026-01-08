@@ -65,6 +65,7 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -857,7 +858,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   EXPECT_TRUE(load_observer.AwaitCorrectPageLoaded());
   EXPECT_TRUE(GetManifestUpdateManager(browser()->profile())
                   .IsAppPendingPageAndManifestUrlLoadForTesting(app_id));
-  EXPECT_TRUE(GetProvider().registrar_unsafe().IsDiyApp(app_id));
+  EXPECT_FALSE(GetProvider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::IsCraftedApp()));
 
   // Inject new manifest into the page once DidFinishLoad() is triggered. This
   // should start the manifest checking command without the need for a refresh.
@@ -870,7 +872,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
             std::move(result_awaiter).AwaitNextResult());
   EXPECT_EQ(GetProvider().registrar_unsafe().GetAppManifestUrl(app_id),
             newly_loaded_manifest_url);
-  EXPECT_FALSE(GetProvider().registrar_unsafe().IsDiyApp(app_id));
+  EXPECT_TRUE(GetProvider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::IsCraftedApp()));
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,

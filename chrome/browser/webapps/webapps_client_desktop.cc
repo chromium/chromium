@@ -59,7 +59,8 @@ bool CheckNewWebAppConflictsWithExistingInstallation(
   base::flat_map<webapps::AppId, std::string> controlling_apps =
       provider->registrar_unsafe().GetAllAppsControllingUrl(start_url);
   for (const auto& [app_id, _] : controlling_apps) {
-    if (!provider->registrar_unsafe().IsDiyApp(app_id)) {
+    if (provider->registrar_unsafe().AppMatches(
+            app_id, web_app::WebAppFilter::IsCraftedApp())) {
       return true;
     }
   }

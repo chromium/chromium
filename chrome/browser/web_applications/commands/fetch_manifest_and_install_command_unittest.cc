@@ -39,6 +39,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -1200,7 +1201,8 @@ TEST_P(UniversalInstallComboTest, InstallStateValid) {
   EXPECT_THAT(bitmaps[icon_size::k256],
               gfx::test::EqualsBitmap(GenerateExpected256Icon()));
 
-  EXPECT_EQ(IsDiyApp(), provider()->registrar_unsafe().IsDiyApp(app_id));
+  EXPECT_NE(IsDiyApp(), provider()->registrar_unsafe().AppMatches(
+                            app_id, WebAppFilter::IsCraftedApp()));
 
   // TODO(https://crbug.com/385198125): Improve GetShortcutIcon to take a size
   // that is actually respected across all platforms.
