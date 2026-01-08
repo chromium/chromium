@@ -573,6 +573,30 @@ TEST_F(SecureChannelImplTest, GetAttestationRequestFails) {
       "Legion.SecureChannel.SendHandshakeRequestLatency.Error", 0);
 }
 
+// Tests that a response without an attestation response during attestation
+// fails.
+TEST_F(SecureChannelImplTest, AttestationResponseMissingFails) {
+  oak::session::v1::SessionRequest expected_attestation_request;
+  expected_attestation_request.mutable_attest_request();
+
+  EXPECT_CALL(*attestation_handler_, GetAttestationRequest())
+      .WillOnce(Return(expected_attestation_request.attest_request()));
+  EXPECT_CALL(*transport_,
+              Send(EqualsSessionRequest(expected_attestation_request)))
+      .WillOnce([&]() {
+        // Return an empty response.
+        response_callback_.Run(oak::session::v1::SessionResponse());
+      });
+
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future;
+  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
+  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
+
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kAttestationFailed);
+}
+
 // Tests a failure in processing the handshake response.
 TEST_F(SecureChannelImplTest, ProcessHandshakeResponseFails) {
   oak::session::v1::SessionRequest expected_attestation_request;
@@ -631,6 +655,28 @@ TEST_F(SecureChannelImplTest, ProcessHandshakeResponseFails) {
       "Legion.SecureChannel.GetHandshakeMessageLatency.Error", 0);
   histogram_tester_.ExpectTotalCount(
       "Legion.SecureChannel.SendHandshakeRequestLatency.Success", 0);
+}
+
+// Tests that a response without a handshake response during handshake fails.
+TEST_F(SecureChannelImplTest, HandshakeResponseMissingFails) {
+  SetUpAttestation();
+
+  oak::session::v1::SessionRequest expected_handshake_request;
+  expected_handshake_request.mutable_handshake_request();
+  EXPECT_CALL(*transport_,
+              Send(EqualsSessionRequest(expected_handshake_request)))
+      .WillOnce([&]() {
+        // Return an empty response.
+        response_callback_.Run(oak::session::v1::SessionResponse());
+      });
+
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future;
+  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
+  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
+
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kHandshakeFailed);
 }
 
 // Tests a failure to encrypt a request after the session is established.
@@ -704,7 +750,7 @@ TEST_F(SecureChannelImplTest, EmptyResponseFailsRequest) {
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ErrorCode::kNetworkError);
+  EXPECT_EQ(result.error(), ErrorCode::kDecryptionFailed);
 }
 
 // Tests that OnHandshakeMessageReady receiving std::nullopt results in

@@ -71,12 +71,15 @@ class SecureChannelImpl : public SecureChannel {
 
   // Callbacks for the asynchronous session establishment steps and for sending
   // encrypted requests.
-  void OnAttestationResponse(const oak::session::v1::AttestResponse& response);
+  void OnAttestationResponse(
+      const oak::session::v1::SessionResponse& session_response);
   void OnHandshakeMessageReady(
       std::optional<oak::session::v1::HandshakeRequest> handshake_request);
-  void OnHandshakeResponse(const oak::session::v1::HandshakeResponse& response);
+  void OnHandshakeResponse(
+      const oak::session::v1::SessionResponse& session_response);
   void OnHandshakeVerification(bool handshake_verified);
-  void OnEncryptedResponse(const oak::session::v1::EncryptedMessage& response);
+  void OnEncryptedResponse(
+      const oak::session::v1::SessionResponse& session_response);
   void OnDecryptedResponse(const std::optional<Request>& decrypted_response);
 
   SEQUENCE_CHECKER(sequence_checker_);
