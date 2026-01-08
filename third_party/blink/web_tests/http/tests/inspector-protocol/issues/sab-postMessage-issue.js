@@ -4,8 +4,8 @@
       `Verifies that post-messaging a SAB causes an issue.\n`);
 
   await dp.Audits.enable();
-  session.evaluate(`postMessage(new (new WebAssembly.Memory(
-         { shared:true, initial:0, maximum:0 }).buffer.constructor)());`);
+  session.evaluate(`postMessage(new WebAssembly.Memory(
+         { shared:true, initial:0, maximum:0 }).buffer);`);
   const issue1 = await dp.Audits.onceIssueAdded();
   const issue2 = await dp.Audits.onceIssueAdded();
   const issue3 = await dp.Audits.onceIssueAdded();

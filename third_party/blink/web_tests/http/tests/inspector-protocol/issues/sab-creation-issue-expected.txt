@@ -7,7 +7,7 @@ Inspector issue: {
             sharedArrayBufferIssueDetails : {
                 isWarning : true
                 sourceCodeLocation : {
-                    columnNumber : 14
+                    columnNumber : 1
                     lineNumber : 0
                     scriptId : <string>
                     url :
