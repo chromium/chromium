@@ -9,7 +9,6 @@
 #include <array>
 #include <map>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/containers/adapters.h"
@@ -20,15 +19,16 @@
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace heap_profiling {
 namespace {
 
 // Maps strings to integers for the JSON string table.
-using StringTable = std::unordered_map<std::string, int>;
+using StringTable = absl::flat_hash_map<std::string, int>;
 
 // Maps allocation site to node_id of the top frame.
-using AllocationToNodeId = std::unordered_map<const AllocationSite*, int>;
+using AllocationToNodeId = absl::flat_hash_map<const AllocationSite*, int>;
 
 constexpr int kAllocatorCount = static_cast<int>(AllocatorType::kMaxValue) + 1;
 
