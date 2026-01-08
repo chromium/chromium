@@ -8373,6 +8373,12 @@ inline constexpr char
     kEnableStandardBoundSessionCredentialsFederatedSessionsDescription[] =
         "Enables federated session registration for the official version of "
         "Device Bound Session Credentials.";
+inline constexpr char kEnableStandardBoundSessionDevToolsDebuggingName[] =
+    "Device Bound Session Credentials (Standard) DevTools Debugging";
+inline constexpr char
+    kEnableStandardBoundSessionDevToolsDebuggingDescription[] =
+        "Enables DevTools debugging for the official version of "
+        "Device Bound Session Credentials.";
 
 inline constexpr char kEnablePolicyPromotionBannerName[] =
     "Enable Policy Promotion Banner";

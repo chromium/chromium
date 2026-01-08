@@ -8896,6 +8896,7 @@ from previous Chrome versions.
   <int value="-1863962664" label="LockScreenNotifications:enabled"/>
   <int value="-1863893966" label="InstallPromptSegmentation:enabled"/>
   <int value="-1863249844" label="AccessibilityService:disabled"/>
+  <int value="-1863079830" label="DeviceBoundSessionsDevTools:enabled"/>
   <int value="-1863066403" label="MoveThemePrefsToSpecifics:disabled"/>
   <int value="-1863020461" label="PasswordChangeInSettings:enabled"/>
   <int value="-1862309711" label="ChromeNativeUrlOverriding:disabled"/>
@@ -11482,6 +11483,7 @@ from previous Chrome versions.
   <int value="-976421766" label="AutofillEnableManualFallbackIPH:enabled"/>
   <int value="-976400334"
       label="AutofillAndroidDesktopKeyboardAccessoryRevamp:disabled"/>
+  <int value="-976254939" label="DeviceBoundSessionsDevTools:disabled"/>
   <int value="-975787829" label="AutofillProfileServerValidation:enabled"/>
   <int value="-974882918" label="WebXRIncubations:disabled"/>
   <int value="-974749863" label="LiveCaptionMultiLanguage:disabled"/>

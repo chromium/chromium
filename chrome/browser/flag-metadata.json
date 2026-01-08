@@ -4398,6 +4398,11 @@
     "expiry_milestone": 146
   },
   {
+    "name": "enable-standard-device-bound-session-devtools-debugging",
+    "owners": [ "thefrog@chromium.org", "drubery@chromium.org"],
+    "expiry_milestone": 147
+  },
+  {
     "name": "enable-standard-device-bound-session-persistence",
     "owners": [ "anunoy@chromium.org", "drubery@chromium.org",  "thefrog@chromium.org"],
     "expiry_milestone": 146
