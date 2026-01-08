@@ -646,6 +646,10 @@ def add_android_options_group(parser: argparse.ArgumentParser):
                        action='store_true',
                        help=('Do not install packages to devices. '
                              'Use the packages preinstalled.'))
+    # Ignored, but can be passed to android builders as an arg.
+    group.add_argument('--use-persistent-shell',
+                       action='store_true',
+                       help=argparse.SUPPRESS)
     return group
 
 

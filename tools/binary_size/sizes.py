@@ -440,6 +440,10 @@ def main():
   parser.add_argument('--isolated-script-test-repeat', help=argparse.SUPPRESS)
   parser.add_argument('--isolated-script-test-launcher-retry-limit',
                       help=argparse.SUPPRESS)
+  # Ignored, but can be passed to android builders as an arg.
+  parser.add_argument('--use-persistent-shell',
+                      action='store_true',
+                      help=argparse.SUPPRESS)
 
   parser.add_argument(
       '--isolated-script-test-output',
