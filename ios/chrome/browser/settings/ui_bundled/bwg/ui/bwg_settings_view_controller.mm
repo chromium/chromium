@@ -34,6 +34,7 @@ namespace {
 // Section identifiers in the BWG settings table view.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierLocation = kSectionIdentifierEnumZero,
+  SectionIdentifierCamera,
   SectionIdentifierPageContent,
   SectionIdentifierActivity,
   SectionIdentifierExtensions,
@@ -41,10 +42,12 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeLocation = kItemTypeEnumZero,
+  ItemTypeCamera,
   ItemTypePageContentSharing,
   ItemTypeAppActivity,
   ItemTypeExtensions,
   ItemTypeLocationFooter,
+  ItemTypeCameraFooter,
   ItemTypePageContentSharingFooter,
   ItemTypeAppActivityFooter,
 };
@@ -55,6 +58,7 @@ NSString* const kBWGSettingsViewTableIdentifier =
 
 // Row identifiers.
 NSString* const kLocationCellId = @"LocationCellId";
+NSString* const kCameraCellId = @"CameraCellId";
 NSString* const kPageContentSharingCellId = @"PageContentSharingCellId";
 
 // Action identifier on a tap on links.
@@ -69,12 +73,16 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 @implementation BWGSettingsViewController {
   // Precise location item.
   TableViewMultiDetailTextItem* _preciseLocationItem;
+  // Camera item.
+  TableViewMultiDetailTextItem* _cameraItem;
   // Switch item for toggling page content sharing.
   TableViewSwitchItem* _pageContentSharingItem;
   // Location view controller shown when precise location row is tapped.
   BWGLocationViewController* _locationViewController;
   // Precise location preference value.
   BOOL _preciseLocationEnabled;
+  // Camera preference value.
+  BOOL _cameraEnabled;
   // Page content sharing preference value.
   BOOL _pageContentSharingEnabled;
   // Dynamic settings items.
@@ -102,6 +110,12 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
                                       IDS_IOS_BWG_SETTINGS_LOCATION_TITLE)
                trailingDetailText:[self preciseLocationTrailingDetailText]
           accessibilityIdentifier:kLocationCellId];
+  _cameraItem =
+      [self detailItemWithType:ItemTypeCamera
+                             text:l10n_util::GetNSString(
+                                      IDS_IOS_GEMINI_SETTINGS_CAMERA_TITLE)
+               trailingDetailText:[self cameraTrailingDetailText]
+          accessibilityIdentifier:kCameraCellId];
   _pageContentSharingItem = [self
            switchItemWithType:ItemTypePageContentSharing
                          text:
@@ -117,6 +131,11 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
                           text:l10n_util::GetNSString(
                                    IDS_IOS_BWG_SETTINGS_LOCATION_FOOTER_TEXT)
                        linkURL:GURL(kBWGPreciseLocationURL)];
+  TableViewLinkHeaderFooterItem* cameraFooterItem = [self
+      headerFooterItemWithType:ItemTypeCameraFooter
+                          text:l10n_util::GetNSString(
+                                   IDS_IOS_GEMINI_SETTINGS_CAMERA_FOOTER_TEXT)
+                       linkURL:GURL()];
   TableViewLinkHeaderFooterItem* pageContentSharingFooterItem = [self
       headerFooterItemWithType:ItemTypePageContentSharingFooter
                           text:
@@ -137,6 +156,13 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
         toSectionWithIdentifier:SectionIdentifierLocation];
     [model setFooter:locationFooterItem
         forSectionWithIdentifier:SectionIdentifierLocation];
+  }
+
+  if (IsGeminiImageRemixToolEnabled()) {
+    [model addSectionWithIdentifier:SectionIdentifierCamera];
+    [model addItem:_cameraItem toSectionWithIdentifier:SectionIdentifierCamera];
+    [model setFooter:cameraFooterItem
+        forSectionWithIdentifier:SectionIdentifierCamera];
   }
 
   [model addSectionWithIdentifier:SectionIdentifierPageContent];
@@ -250,6 +276,15 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 // pref value.
 - (NSString*)preciseLocationTrailingDetailText {
   if (_preciseLocationEnabled) {
+    return l10n_util::GetNSString(IDS_IOS_SETTING_ON);
+  }
+
+  return l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+}
+
+// Returns camera trailing detail text which depends on the related pref value.
+- (NSString*)cameraTrailingDetailText {
+  if (_cameraEnabled) {
     return l10n_util::GetNSString(IDS_IOS_SETTING_ON);
   }
 
