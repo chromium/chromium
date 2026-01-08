@@ -1,0 +1,51 @@
+From c6e04ad5516a829b4c0d99c95d148bbcffb6bd1a Mon Sep 17 00:00:00 2001
+From: Manish Goregaokar <manishearth@google.com>
+Date: Thu, 8 Jan 2026 16:53:26 +0000
+Subject: [PATCH] Fix Duration out of bounds crash
+
+Uplifts https://github.com/boa-dev/temporal/pull/667
+
+Change-Id: Id11872df36930b676bf24ad92e0753fd36f1cf6f
+---
+ .../temporal_rs-v0_1/src/builtins/core/duration.rs       | 7 ++++---
+ .../temporal_rs-v0_1/src/builtins/core/duration/tests.rs | 9 +++++++++
+ 2 files changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/duration.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/duration.rs
+index 9062e29dc1a01..e613f49763398 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/duration.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/duration.rs
+@@ -1549,9 +1549,10 @@ pub(crate) fn is_valid_duration(
+         + minutes as i128 * 60_000_000_000
+         + seconds as i128 * 1_000_000_000;
+     // Subseconds part
+-    let normalized_subseconds_parts = (milliseconds as i128).saturating_mul(1_000_000)
+-        + microseconds.saturating_mul(1_000)
+-        + nanoseconds;
++    let normalized_subseconds_parts = (milliseconds as i128)
++        .saturating_mul(1_000_000)
++        .saturating_add(microseconds.saturating_mul(1_000))
++        .saturating_add(nanoseconds);
+ 
+     let total_normalized_seconds =
+         normalized_nanoseconds.saturating_add(normalized_subseconds_parts);
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/duration/tests.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/duration/tests.rs
+index 51c88abb7097d..b7201fbcaf045 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/duration/tests.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/duration/tests.rs
+@@ -578,3 +578,12 @@ fn rounding_window() {
+     let result = d.round(options, Some(relative_to.into())).unwrap();
+     assert_eq!(result.years(), 1, "months rounding should no-op");
+ }
++
++// https://issues.chromium.org/issues/474201847
++#[test]
++fn out_of_bounds_duration_no_crash() {
++    let large = 9223372036854775807 * 9223372036854775807;
++    let duration = Duration::new(0, 0, 0, 0, 0, 0, 0, 0, large, large);
++
++    assert!(duration.is_err());
++}
+-- 
+2.52.0.351.gbe84eed79e-goog
+

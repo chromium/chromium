@@ -578,3 +578,12 @@ fn rounding_window() {
     let result = d.round(options, Some(relative_to.into())).unwrap();
     assert_eq!(result.years(), 1, "months rounding should no-op");
 }
+
+// https://issues.chromium.org/issues/474201847
+#[test]
+fn out_of_bounds_duration_no_crash() {
+    let large = 9223372036854775807 * 9223372036854775807;
+    let duration = Duration::new(0, 0, 0, 0, 0, 0, 0, 0, large, large);
+
+    assert!(duration.is_err());
+}
