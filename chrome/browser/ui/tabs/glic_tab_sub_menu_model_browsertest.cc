@@ -349,4 +349,88 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, RecentConversationsShown) {
   }
 }
 
+class TestMenuDelegate : public ui::SimpleMenuModel::Delegate {
+ public:
+  bool IsCommandIdChecked(int command_id) const override { return false; }
+  bool IsCommandIdEnabled(int command_id) const override { return true; }
+  void ExecuteCommand(int command_id, int event_flags) override {}
+};
+
+IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest,
+                       UnshareCommandHiddenWhenNothingIsPinned) {
+  // Ensure Glic is enabled for the profile.
+  EXPECT_TRUE(GlicEnabling::IsReadyForProfile(browser()->profile()));
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_GE(tab_strip_model->count(), 1);
+
+  // Select the first tab
+  tab_strip_model->ActivateTabAt(0);
+
+  // Open the context menu without pinning anything
+  TestMenuDelegate delegate;
+  auto menu = std::make_unique<TabMenuModel>(
+      &delegate, browser()->GetFeatures().tab_menu_model_delegate(),
+      tab_strip_model, /*index=*/0);
+
+  // Verify that the "Unshare with Gemini" command isn't shown
+  bool unshare_command_found = false;
+  for (size_t i = 0; i < menu->GetItemCount(); ++i) {
+    if (menu->GetCommandIdAt(i) == TabStripModel::CommandGlicUnshare) {
+      unshare_command_found = true;
+      break;
+    }
+  }
+  EXPECT_FALSE(unshare_command_found);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, UnshareCommandShown) {
+  // Ensure Glic is enabled for the profile.
+  EXPECT_TRUE(GlicEnabling::IsReadyForProfile(browser()->profile()));
+
+  // Add a second tab so we have one pinned and one unpinned.
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_GE(tab_strip_model->count(), 2);
+
+  // Select the first tab and pin it to a conversation.
+  tab_strip_model->ActivateTabAt(0);
+
+  GlicKeyedService* service = GlicKeyedService::Get(browser()->profile());
+  ASSERT_TRUE(service);
+
+  tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(0);
+
+  std::vector<tabs::TabHandle> handles_to_wait_for = {tab->GetHandle()};
+  glic::GlicTabPinningWaiter waiter(&service->sharing_manager(),
+                                    handles_to_wait_for);
+
+  service->window_controller().CreateNewConversationForTabs({tab});
+  waiter.Wait();
+
+  // Select both tabs and open the context menu.
+  ui::ListSelectionModel selection;
+  selection.AddIndexToSelection(0);
+  selection.AddIndexToSelection(1);
+  selection.set_active(0);
+  tab_strip_model->SetSelectionFromModel(selection);
+
+  TestMenuDelegate delegate;
+  auto menu = std::make_unique<TabMenuModel>(
+      &delegate, browser()->GetFeatures().tab_menu_model_delegate(),
+      tab_strip_model, /*index=*/0);
+
+  // Verify that the "Unshare with Gemini" command is shown
+  int unshare_command_index = -1;
+  for (size_t i = 0; i < menu->GetItemCount(); ++i) {
+    if (menu->GetCommandIdAt(i) == TabStripModel::CommandGlicUnshare) {
+      unshare_command_index = i;
+      break;
+    }
+  }
+  EXPECT_NE(unshare_command_index, -1);
+  EXPECT_TRUE(menu->IsEnabledAt(unshare_command_index));
+}
+
 }  // namespace glic

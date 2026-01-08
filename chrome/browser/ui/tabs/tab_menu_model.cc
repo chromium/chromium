@@ -316,6 +316,17 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_GLIC_START_SHARE,
                                                 num_tabs),
                glic_tab_sub_menu_model_.get());
+
+    auto* service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+        tab_strip->profile());
+    CHECK(service);
+    if (std::ranges::any_of(indices, [&](int index) {
+          return service->sharing_manager().IsTabPinned(
+              tab_strip->GetTabAtIndex(index)->GetHandle());
+        })) {
+      AddItem(TabStripModel::CommandGlicUnshare,
+              l10n_util::GetStringUTF16(IDS_TAB_CXMENU_GLIC_UNSHARE));
+    }
   } else if (display_share_with_glic) {
     auto* service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
         tab_strip->profile());

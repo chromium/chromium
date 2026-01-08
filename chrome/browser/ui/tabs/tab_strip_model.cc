@@ -2542,6 +2542,8 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     case CommandGlicCreateNewChat:
     case CommandGlicSwitchToRecentConversation:
       return true;
+    case CommandGlicUnshare:
+      return true;
 #endif
 
     case CommandAddToNewComparisonTable:
@@ -2993,6 +2995,9 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     case CommandGlicCreateNewChat:
     case CommandGlicSwitchToRecentConversation:
       // These are handled by GlicTabSubMenuModel.
+      break;
+    case CommandGlicUnshare:
+      // TODO (crbug.com/469768350): Implement unsharing.
       break;
 #endif
 

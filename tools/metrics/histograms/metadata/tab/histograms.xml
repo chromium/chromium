@@ -77,6 +77,7 @@ chromium-metrics-reviews@google.com.
       summary="the Stop Sharing Tab with Gemini command"/>
   <variant name="GlicSwitchToRecentConversation"
       summary="the Switch to Recent Conversation command"/>
+  <variant name="GlicUnshare" summary="the Unshare with Gemini command"/>
   <variant name="GoBack" summary="the Go Back command"/>
   <variant name="MoveToExistingWindow"
       summary="the Move to existing window command"/>
