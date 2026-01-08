@@ -182,6 +182,8 @@ public class ToolbarProgressBarLayer implements TopControlLayer {
         // ToolbarPositionController. Avoid doing duplicate work.
         if (mIsToolbarPositionCustomizationEnabled) return;
 
+        if (mProgressBarContainer.getParent() == null) return;
+
         Runnable progressBarChangeRunnable =
                 () -> {
                     if (mControlsPositionSupplier.get() != ControlsPosition.TOP) return;
