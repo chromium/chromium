@@ -49,7 +49,7 @@ public class VersionSafeProxyOptionsTest {
     @Test
     @SmallTest
     public void testDirectProxy_correctlyCreatesProxyCallback() {
-        ProxyOptions proxyOptions = new ProxyOptions(Arrays.asList((Proxy) null));
+        ProxyOptions proxyOptions = ProxyOptions.fromProxyList(Arrays.asList((Proxy) null));
         VersionSafeProxyOptions safeProxyOptions = new VersionSafeProxyOptions(proxyOptions);
         List<VersionSafeProxyCallback> safeProxyCallbacks =
                 safeProxyOptions.createProxyCallbackList();
@@ -60,7 +60,7 @@ public class VersionSafeProxyOptionsTest {
     @Test
     @SmallTest
     public void testDirectProxy_correctlyCreatesProxyOptionsProto() {
-        ProxyOptions proxyOptions = new ProxyOptions(Arrays.asList((Proxy) null));
+        ProxyOptions proxyOptions = ProxyOptions.fromProxyList(Arrays.asList((Proxy) null));
         VersionSafeProxyOptions safeProxyOptions = new VersionSafeProxyOptions(proxyOptions);
         org.chromium.net.impl.proto.ProxyOptions proxyOptionsProto =
                 safeProxyOptions.createProxyOptionsProto();
@@ -78,9 +78,9 @@ public class VersionSafeProxyOptionsTest {
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testHttpProxy_correctlyCreatesProxyOptionsProto() {
         ProxyOptions proxyOptions =
-                new ProxyOptions(
+                ProxyOptions.fromProxyList(
                         Arrays.asList(
-                                new Proxy(
+                                Proxy.createHttpProxy(
                                         Proxy.SCHEME_HTTP,
                                         "not-existing-hostname",
                                         8080,
@@ -104,9 +104,9 @@ public class VersionSafeProxyOptionsTest {
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testHttpProxy_correctlyCreatesProxyCallback() {
         ProxyOptions proxyOptions =
-                new ProxyOptions(
+                ProxyOptions.fromProxyList(
                         Arrays.asList(
-                                new Proxy(
+                                Proxy.createHttpProxy(
                                         Proxy.SCHEME_HTTP,
                                         "not-existing-hostname",
                                         8080,
@@ -127,9 +127,9 @@ public class VersionSafeProxyOptionsTest {
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testHttpsProxy_correctlyCreatesProxyOptionsProto() {
         ProxyOptions proxyOptions =
-                new ProxyOptions(
+                ProxyOptions.fromProxyList(
                         Arrays.asList(
-                                new Proxy(
+                                Proxy.createHttpProxy(
                                         Proxy.SCHEME_HTTPS,
                                         "not-existing-hostname",
                                         8080,
@@ -153,9 +153,9 @@ public class VersionSafeProxyOptionsTest {
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testHttpsProxy_correctlyCreatesProxyCallback() {
         ProxyOptions proxyOptions =
-                new ProxyOptions(
+                ProxyOptions.fromProxyList(
                         Arrays.asList(
-                                new Proxy(
+                                Proxy.createHttpProxy(
                                         Proxy.SCHEME_HTTPS,
                                         "not-existing-hostname",
                                         8080,
@@ -179,15 +179,15 @@ public class VersionSafeProxyOptionsTest {
                 Mockito.mock(Proxy.HttpConnectCallback.class);
         Proxy.HttpConnectCallback httpProxyCallback = Mockito.mock(Proxy.HttpConnectCallback.class);
         ProxyOptions proxyOptions =
-                new ProxyOptions(
+                ProxyOptions.fromProxyList(
                         Arrays.asList(
-                                new Proxy(
+                                Proxy.createHttpProxy(
                                         Proxy.SCHEME_HTTPS,
                                         "not-existing-hostname",
                                         8080,
                                         Executors.newSingleThreadExecutor(),
                                         httpsProxyCallback),
-                                new Proxy(
+                                Proxy.createHttpProxy(
                                         Proxy.SCHEME_HTTP,
                                         "not-existing-hostname",
                                         8080,
