@@ -1599,7 +1599,7 @@ class CORE_EXPORT Document : public ContainerNode,
                                       Member<Node>& block_target,
                                       Member<Node>& inline_target);
 
-  void DispatchEventsForPrinting();
+  void DispatchMediaQueryListEvents();
 
   void exitPointerLock();
   Element* PointerLockElement() const;

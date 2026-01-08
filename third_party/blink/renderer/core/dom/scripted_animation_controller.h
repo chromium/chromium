@@ -93,7 +93,7 @@ class CORE_EXPORT ScriptedAnimationController
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState) final;
   void ContextDestroyed() final {}
 
-  void DispatchEventsAndCallbacksForPrinting();
+  void DispatchMediaQueryListEventsAndCallbacks();
 
   LocalDOMWindow* GetWindow() const;
   void ScheduleAnimationIfNeeded();

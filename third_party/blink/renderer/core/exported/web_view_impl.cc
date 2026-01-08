@@ -3269,7 +3269,7 @@ void WebViewImpl::WasMinimized() {
         // throttled. To ensure the listeners for `(display-state: minimized)`
         // change will get executed, we need to dispatch them instead of
         // enqueuing.
-        document->DispatchEventsForPrinting();
+        document->DispatchMediaQueryListEvents();
       }
     }
   }

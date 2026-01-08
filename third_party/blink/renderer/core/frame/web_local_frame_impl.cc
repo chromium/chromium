@@ -495,7 +495,7 @@ class ChromePrintContext : public PrintContext {
     }
 
     for (auto& doc : documents)
-      doc->DispatchEventsForPrinting();
+      doc->DispatchMediaQueryListEvents();
   }
 };
 
