@@ -44,6 +44,10 @@
   --cr-icon-color: var(--cr-secondary-text-color);
 }
 
+:host-context([dir='rtl']) .end-icon {
+  transform: scaleX(-1);
+}
+
 .menu-row cr-toggle {
   margin-inline-start: 16px;
 }
