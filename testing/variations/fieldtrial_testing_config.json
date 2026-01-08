@@ -15360,6 +15360,26 @@
             ]
         }
     ],
+    "LevelDBCacheSize": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LevelDBCacheSize"
+                    ]
+                }
+            ]
+        }
+    ],
     "LibraryPrefetcherMadvise": [
         {
             "platforms": [

@@ -1130,6 +1130,10 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.ACCESSIBILITY_ATOMIC_LIVE_REGIONS,
                 "When enabled, supports atomic announcements, meaning that when aria-atomic=true,"
                     + " the entire live region will be announced not just the node that changed."),
+        Flag.baseFeature(
+                "LevelDBCacheSize",
+                "Reduces the size of the LevelDB cache to reduce memory usage at no expected speed"
+                        + " cost"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
 
