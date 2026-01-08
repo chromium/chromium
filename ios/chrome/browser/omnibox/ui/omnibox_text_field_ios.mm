@@ -1064,14 +1064,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
          autocompleteLength == 0);
   }
   if (updateText) {
-    // TODO(crbug.com/330964534): Remove DUMP_WILL_BE_CHECK after investigating
-    // crash.
-    if (!self.endOfDocument || !self.beginningOfDocument) {
-      DUMP_WILL_BE_NOTREACHED()
-          << "autocomplete length: " << autocompleteLength
-          << " text length: " << text.length << " has text position: "
-          << (self.beginningOfDocument || self.endOfDocument);
-    } else {
+    if (self.endOfDocument && self.beginningOfDocument) {
       self.attributedText = fieldText;
 
       UITextPosition* endOfUserText =
@@ -1087,11 +1080,6 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
         // Preserve the cursor position at the end of the user input.
         self.selectedTextRange = [self textRangeFromPosition:endOfUserText
                                                   toPosition:endOfUserText];
-      } else {
-        DUMP_WILL_BE_NOTREACHED()
-            << "autocomplete length: " << autocompleteLength
-            << " text length: " << text.length
-            << " has endOfUserText: " << !!endOfUserText;
       }
     }
   }
