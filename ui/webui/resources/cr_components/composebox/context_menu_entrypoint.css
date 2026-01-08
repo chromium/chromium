@@ -259,11 +259,6 @@ cr-button#entrypoint.ai-mode-button {
   width: 36px;
 }
 
-#entrypoint:focus-visible {
-  outline: 2px solid var(--cr-focus-outline-color);
-  outline-offset: -2px;
-}
-
 #description {
   display: block;
   font-size: 13px;

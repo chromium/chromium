@@ -32,7 +32,6 @@
   margin-bottom: var(--contextual-entrypoint-and-carousel-context-menu-container-margin-bottom);
   min-height: var(--cr-icon-button-size);
   padding-inline-start: var(--contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start, 4px);
-  overflow: hidden;
   flex-wrap: nowrap;
 }
 
