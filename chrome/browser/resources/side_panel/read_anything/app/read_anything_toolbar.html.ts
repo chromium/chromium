@@ -6,6 +6,18 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 
+function getRateButtonHtml(this: ReadAnythingToolbarElement) {
+  return html`
+    <cr-button class="toolbar-button" id="rate"
+        tabindex="${this.getRateTabIndex_()}"
+        aria-label="${this.getVoiceSpeedLabel_()}"
+        title="$i18n{voiceSpeedLabel}"
+        aria-haspopup="menu"
+        @click="${this.onShowRateMenuClick_}">
+        ${this.getFormattedSpeechRate_()}
+    </cr-button>`;
+}
+
 function getToolbarAudioControlsHtml(this: ReadAnythingToolbarElement) {
   const shouldBeActive = this.isSpeechActive || this.isImmersiveEnabled_;
   const prevNextAreDisabled = !this.isReadAloudPlayable ||
@@ -53,15 +65,9 @@ function getToolbarAudioControlsHtml(this: ReadAnythingToolbarElement) {
         @click="${this.onNextGranularityClick_}">
     </cr-icon-button>
   </span>
+  ${this.isImmersiveEnabled_ ? getRateButtonHtml.call(this) : ''}
 </span>
-<cr-button class="toolbar-button" id="rate"
-    tabindex="${this.getRateTabIndex_()}"
-    aria-label="${this.getVoiceSpeedLabel_()}"
-    title="$i18n{voiceSpeedLabel}"
-    aria-haspopup="menu"
-    @click="${this.onShowRateMenuClick_}">
-    ${this.getFormattedSpeechRate_()}
-</cr-button>
+${!this.isImmersiveEnabled_ ? getRateButtonHtml.call(this) : ''}
 <rate-menu
     id="rateMenu"
     .settingsPrefs="${this.settingsPrefs}"
