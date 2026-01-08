@@ -916,9 +916,7 @@ DeferredTimeline* GetTimelineAttachment(
 }
 
 Element* ParentElementForTimelineTraversal(Node& node) {
-  return RuntimeEnabledFeatures::CSSTreeScopedTimelinesEnabled()
-             ? node.ParentOrShadowHostElement()
-             : LayoutTreeBuilderTraversal::ParentElement(node);
+  return LayoutTreeBuilderTraversal::ParentElement(node);
 }
 
 Element* ResolveReferenceElement(Document& document,
@@ -1359,47 +1357,17 @@ const CSSAnimations::TimelineData* CSSAnimations::GetTimelineData(
 
 namespace {
 
-// Assuming that `inner` is an inclusive descendant of `outer`, returns
-// the distance (in the number of TreeScopes) between `inner` and `outer`.
-//
-// Returns std::numeric_limits::max() if `inner` is not an inclusive
-// descendant of `outer`.
-size_t TreeScopeDistance(const TreeScope* outer, const TreeScope* inner) {
-  size_t distance = 0;
-
-  const TreeScope* current = inner;
-
-  do {
-    if (current == outer) {
-      return distance;
-    }
-    ++distance;
-  } while (current && (current = current->ParentTreeScope()));
-
-  return std::numeric_limits<size_t>::max();
-}
-
 // Update the matching timeline if the candidate is a more proximate match
 // than the existing match.
 template <typename TimelineType>
 void UpdateMatchingTimeline(const ScopedCSSName& target_name,
                             const ScopedCSSName& candidate_name,
                             TimelineType* candidate,
-                            TimelineType*& matching_timeline,
-                            size_t& matching_distance) {
+                            TimelineType*& matching_timeline) {
   if (target_name.GetName() != candidate_name.GetName()) {
     return;
   }
-  if (RuntimeEnabledFeatures::CSSTreeScopedTimelinesEnabled()) {
-    size_t distance = TreeScopeDistance(candidate_name.GetTreeScope(),
-                                        target_name.GetTreeScope());
-    if (distance < matching_distance) {
-      matching_timeline = candidate;
-      matching_distance = distance;
-    }
-  } else {
-    matching_timeline = candidate;
-  }
+  matching_timeline = candidate;
 }
 
 }  // namespace
@@ -1429,14 +1397,12 @@ TimelineType* CSSAnimations::FindTimelineForElement(
     const TimelineData* timeline_data,
     const CSSAnimationUpdate* update) {
   TimelineType* matching_timeline = nullptr;
-  size_t matching_distance = std::numeric_limits<size_t>::max();
-
   ForEachTimeline<TimelineType>(
       timeline_data, update,
-      [&target_name, &matching_timeline, &matching_distance](
-          const ScopedCSSName& name, TimelineType* candidate_timeline) {
+      [&target_name, &matching_timeline](const ScopedCSSName& name,
+                                         TimelineType* candidate_timeline) {
         UpdateMatchingTimeline(target_name, name, candidate_timeline,
-                               matching_timeline, matching_distance);
+                               matching_timeline);
       });
 
   return matching_timeline;
