@@ -222,6 +222,9 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
                                  const std::u16string& replacement_text);
   void ExecuteEditCommand(const std::string& command);
   void SendKeyEvent(const input::NativeWebKeyboardEvent& event);
+  void ForwardKeyboardEventWithCommands(
+      const input::NativeWebKeyboardEvent& key_event,
+      std::vector<blink::mojom::EditCommandPtr> commands);
 
   void StartAutoscrollForSelectionToPoint(const gfx::PointF& point);
   void StopAutoscroll();

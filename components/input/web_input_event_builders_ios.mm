@@ -270,7 +270,7 @@ blink::WebKeyboardEvent WebKeyboardEventBuilder::Build(gfx::NativeEvent event) {
 
   blink::WebKeyboardEvent result(
       is_key_up ? blink::WebInputEvent::Type::kKeyUp
-                : blink::WebInputEvent::Type::kKeyDown,
+                : blink::WebInputEvent::Type::kRawKeyDown,
       modifiers, ui::EventTimeStampFromSeconds(time_stamp_seconds));
 
   bool is_numeric_keypad_keycode =

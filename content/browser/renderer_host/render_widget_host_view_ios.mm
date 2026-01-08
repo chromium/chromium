@@ -992,6 +992,19 @@ void RenderWidgetHostViewIOS::SendKeyEvent(
   host->ForwardKeyboardEventWithLatencyInfo(event, latency_info);
 }
 
+void RenderWidgetHostViewIOS::ForwardKeyboardEventWithCommands(
+    const input::NativeWebKeyboardEvent& key_event,
+    std::vector<blink::mojom::EditCommandPtr> commands) {
+  auto* host = GetFocusedWidget();
+  if (!host) {
+    return;
+  }
+  ui::LatencyInfo latency_info;
+  latency_info.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_UI_COMPONENT);
+  host->ForwardKeyboardEventWithCommands(key_event, latency_info,
+                                         std::move(commands));
+}
+
 blink::mojom::FrameWidgetInputHandler*
 RenderWidgetHostViewIOS::GetFrameWidgetInputHandlerForFocusedWidget() {
   auto* focused_widget = GetFocusedWidget();
