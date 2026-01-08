@@ -1149,7 +1149,7 @@ interface XRPresentationProvider {
   SubmitFrameMissing(int16 frame_id, gpu.mojom.SyncToken sync_token);
 
   // XRPresentationTransportMethod SUBMIT_AS_MAILBOX_HOLDER
-  SubmitFrame(int16 frame_id, gpu.mojom.MailboxHolder mailbox_holder,
+  SubmitFrame(int16 frame_id,
               mojo_base.mojom.TimeDelta time_waited);
 
   // XRPresentationTransportMethod SUBMIT_AS_TEXTURE_HANDLE

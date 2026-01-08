@@ -150,7 +150,6 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   // XRPresentationProvider
   void SubmitFrameMissing(int16_t frame_index, const gpu::SyncToken&) override;
   void SubmitFrame(int16_t frame_index,
-                   const gpu::MailboxHolder& mailbox,
                    base::TimeDelta time_waited) override;
   void SubmitFrameDrawnIntoTexture(int16_t frame_index,
                                    const std::vector<LayerId>& layer_ids,

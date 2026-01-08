@@ -78,7 +78,6 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
       const gfx::Rect& copy_rect) = 0;
 
   virtual void EnsureSyncTokenVerified() { NOTREACHED(); }
-  virtual gpu::MailboxHolder GetMailboxHolder() const { NOTREACHED(); }
   virtual scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const {
     NOTREACHED();
   }

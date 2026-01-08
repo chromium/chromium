@@ -455,7 +455,6 @@ void CardboardRenderLoop::SubmitFrameMissing(int16_t frame_index,
 }
 
 void CardboardRenderLoop::SubmitFrame(int16_t frame_index,
-                                      const gpu::MailboxHolder& mailbox,
                                       base::TimeDelta time_waited) {
   NOTREACHED();
 }

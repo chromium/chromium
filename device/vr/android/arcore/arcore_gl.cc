@@ -1166,7 +1166,6 @@ void ArCoreGl::DidNotProduceVizFrame(int16_t frame_index) {
 }
 
 void ArCoreGl::SubmitFrame(int16_t frame_index,
-                           const gpu::MailboxHolder& mailbox,
                            base::TimeDelta time_waited) {
   NOTREACHED();
 }

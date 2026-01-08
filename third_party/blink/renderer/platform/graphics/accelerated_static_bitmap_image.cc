@@ -327,15 +327,6 @@ void AcceleratedStaticBitmapImage::EnsureSyncTokenVerified() {
   mailbox_ref_->set_sync_token(sync_token);
 }
 
-gpu::MailboxHolder AcceleratedStaticBitmapImage::GetMailboxHolder() const {
-  if (!IsValid()) {
-    return gpu::MailboxHolder();
-  }
-  return gpu::MailboxHolder(shared_image_->mailbox(),
-                            mailbox_ref_->sync_token(),
-                            shared_image_->GetTextureTarget());
-}
-
 scoped_refptr<gpu::ClientSharedImage>
 AcceleratedStaticBitmapImage::GetSharedImage() const {
   if (!IsValid()) {

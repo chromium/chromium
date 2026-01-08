@@ -887,13 +887,14 @@ bool OpenXrRenderLoop::SubmitCompositedFrame() {
 }
 
 void OpenXrRenderLoop::SubmitFrame(int16_t frame_index,
-                                   const gpu::MailboxHolder& mailbox,
                                    base::TimeDelta time_waited) {
   DVLOG(3) << __func__ << " frame_index=" << frame_index;
   CHECK(!graphics_binding_->IsUsingSharedImages());
   DCHECK(BUILDFLAG(IS_ANDROID));
+  // The sync token passed here is unused by OpenXR backend's implementation of
+  // SubmitFrameMissing.
   // TODO(crbug.com/40917172): Support non-shared buffer mode.
-  SubmitFrameMissing(frame_index, mailbox.sync_token);
+  SubmitFrameMissing(frame_index, gpu::SyncToken());
 }
 
 void OpenXrRenderLoop::SubmitFrameDrawnIntoTexture(
