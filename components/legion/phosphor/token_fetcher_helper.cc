@@ -90,9 +90,7 @@ TokenFetcherHelper::CreateBlindSignedAuthToken(
     return std::nullopt;
   }
 
-  const std::string& encoded_extensions =
-      privacy_pass_token_data.encoded_extensions();
-  if (!base::ContainsOnlyChars(encoded_extensions,
+  if (!base::ContainsOnlyChars(privacy_pass_token_data.encoded_extensions(),
                                "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                "abcdefghijklmnopqrstuvwxyz"
                                "0123456789+/=")) {
@@ -100,12 +98,10 @@ TokenFetcherHelper::CreateBlindSignedAuthToken(
     return std::nullopt;
   }
 
-  std::string token_header_value =
-      base::StrCat({"PrivateToken token=\"", privacy_pass_token_data.token(),
-                    "\", extensions=\"", encoded_extensions, "\""});
-
   return std::make_optional<BlindSignedAuthToken>(
-      {.token = std::move(token_header_value), .expiration = expiration});
+      {.token = privacy_pass_token_data.token(),
+       .encoded_extensions = privacy_pass_token_data.encoded_extensions(),
+       .expiration = expiration});
 }
 
 }  // namespace legion::phosphor
