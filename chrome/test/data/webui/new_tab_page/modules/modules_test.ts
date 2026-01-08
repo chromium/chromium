@@ -715,6 +715,18 @@ suite('NewTabPageModulesModulesV2Test', () => {
       };
     }
 
+    function assertAutoRemovalMetrics(
+        moduleIds: string[], disabled: boolean, expectedCount: number) {
+      const histogramBase = disabled ? 'NewTabPage.Modules.AutoRemoval' :
+                                       'NewTabPage.Modules.AutoRemovalUndone';
+
+      assertEquals(expectedCount, metrics.count(histogramBase, 1));
+      for (const moduleId of moduleIds) {
+        assertEquals(
+            expectedCount, metrics.count(`${histogramBase}ModuleId`, moduleId));
+      }
+    }
+
     test('ModulesAutoRemoval: Single module auto removed', async () => {
       // Arrange.
       setupModuleAutoRemovalTest();
@@ -761,6 +773,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
           'Single module has been removed',
           autoRemovalListener.event!.detail.message);
       assertFalse(modulesElement.$.undoToast.open);
+      assertAutoRemovalMetrics(
+          removedModuleIds, /*disabled=*/ true, /*expectedCount=*/ 1);
 
       // Act - Execute the undo callback.
       autoRemovalListener.event!.detail.undo();
@@ -769,6 +783,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
       assertEquals(2, handler.getCallCount('setModulesDisabled'));
       assertDeepEquals(
           [removedModuleIds, false], handler.getArgs('setModulesDisabled')[1]);
+      assertAutoRemovalMetrics(
+          removedModuleIds, /*disabled=*/ false, /*expectedCount=*/ 1);
     });
 
     test('ModulesAutoRemoval: Multiple modules auto removed', async () => {
@@ -823,6 +839,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
           'Multiple modules have been removed',
           autoRemovalListener.event!.detail.message);
       assertFalse(modulesElement.$.undoToast.open);
+      assertAutoRemovalMetrics(
+          removedModuleIds, /*disabled=*/ true, /*expectedCount=*/ 1);
 
       // Act - Execute the undo callback.
       autoRemovalListener.event!.detail.undo();
@@ -831,6 +849,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
       assertEquals(2, handler.getCallCount('setModulesDisabled'));
       assertDeepEquals(
           [removedModuleIds, false], handler.getArgs('setModulesDisabled')[1]);
+      assertAutoRemovalMetrics(
+          removedModuleIds, /*disabled=*/ false, /*expectedCount=*/ 1);
     });
 
     test(
@@ -871,6 +891,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
           assertEquals(0, handler.getCallCount('setModulesDisabled'));
           assertEquals(null, autoRemovalListener.event);
           assertFalse(modulesElement.$.undoToast.open);
+          assertAutoRemovalMetrics(
+              removedModuleIds, /*disabled=*/ true, /*expectedCount=*/ 0);
         });
 
     test(

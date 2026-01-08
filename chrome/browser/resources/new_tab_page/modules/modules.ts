@@ -337,6 +337,17 @@ export class ModulesElement extends CrLitElement {
     }
   }
 
+  private recordModuleAutoRemovalMetrics_(
+      moduleIds: string[], disabled: boolean) {
+    const histogramBase = disabled ? 'NewTabPage.Modules.AutoRemoval' :
+                                     'NewTabPage.Modules.AutoRemovalUndone';
+
+    recordOccurrence(histogramBase);
+    for (const moduleId of moduleIds) {
+      recordSparseValueWithPersistentHash(`${histogramBase}ModuleId`, moduleId);
+    }
+  }
+
   /**
    * Handles the the auto-removal of stale modules, which are defined as modules
    * that have not been interacted with by the user within a certain period of
@@ -360,10 +371,12 @@ export class ModulesElement extends CrLitElement {
 
       this.pendingAutoRemovedModules_ = moduleIds;
       this.pageHandler_.setModulesDisabled(moduleIds, /*disabled=*/ true);
+      this.recordModuleAutoRemovalMetrics_(moduleIds, /*disabled=*/ true);
       this.fire('modules-auto-removed', {
         message: undoToastMessage,
         undo: () => {
           this.pageHandler_.setModulesDisabled(moduleIds, /*disabled=*/ false);
+          this.recordModuleAutoRemovalMetrics_(moduleIds, /*disabled=*/ false);
         },
       });
     }

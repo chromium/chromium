@@ -462,14 +462,6 @@ const char NewTabPageHandler::kModuleDismissedHistogram[] =
     "NewTabPage.Modules.Dismissed";
 const char NewTabPageHandler::kModuleRestoredHistogram[] =
     "NewTabPage.Modules.Restored";
-const char NewTabPageHandler::kModuleAutoRemovalHistogram[] =
-    "NewTabPage.Modules.AutoRemoval";
-const char NewTabPageHandler::kModuleAutoRemovalUndoneHistogram[] =
-    "NewTabPage.Modules.AutoRemovalUndone";
-const char NewTabPageHandler::kModuleAutoRemovalModuleIdHistogram[] =
-    "NewTabPage.Modules.AutoRemovalModuleId";
-const char NewTabPageHandler::kModuleAutoRemovalUndoneModuleIdHistogram[] =
-    "NewTabPage.Modules.AutoRemovalUndoneModuleId";
 
 NewTabPageHandler::NewTabPageHandler(
     mojo::PendingReceiver<new_tab_page::mojom::PageHandler>
@@ -714,15 +706,6 @@ void NewTabPageHandler::SetModulesDisabled(
 
   ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
   base::Value::List& list = update.Get();
-  // Histogram for the total number of times auto removal/undo is triggered.
-  base::UmaHistogramExactLinear(disabled ? kModuleAutoRemovalHistogram
-                                         : kModuleAutoRemovalUndoneHistogram,
-                                1, 1);
-  // Sparse Histogram for the number of times auto removal/undo is triggered
-  // for each module.
-  const std::string sparse_histogram =
-      disabled ? kModuleAutoRemovalModuleIdHistogram
-               : kModuleAutoRemovalUndoneModuleIdHistogram;
   for (const auto& module_id : module_ids) {
     if (disabled) {
       if (!list.contains(module_id)) {
@@ -732,7 +715,6 @@ void NewTabPageHandler::SetModulesDisabled(
     } else {
       list.EraseValue(base::Value(module_id));
     }
-    base::UmaHistogramSparse(sparse_histogram, base::PersistentHash(module_id));
   }
 }
 
