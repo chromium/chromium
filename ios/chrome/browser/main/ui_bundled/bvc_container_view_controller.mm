@@ -53,7 +53,10 @@
   [self.view addSubview:bvc.view];
   [bvc didMoveToParentViewController:self];
 
-  DCHECK(self.currentBVC == bvc);
+  // This will fail if there's another child view controller added before `bvc`.
+  // If this happens during startup, it may be the BVC adding the launch screen
+  // as a child VC of this VC (BVC's parent).
+  CHECK(self.currentBVC == bvc, base::NotFatalUntil::M150);
 }
 
 #pragma mark - UIViewController methods
