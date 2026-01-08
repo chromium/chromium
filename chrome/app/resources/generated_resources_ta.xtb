@@ -575,6 +575,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{களவாடப்பட்ட கடவுச்சொற்கள் எதுவுமில்லை}=1{1 களவாடப்பட்ட கடவுச்சொல்}other{{NUM_COMPROMISED} களவாடப்பட்ட கடவுச்சொற்கள்}}</translation>
 <translation id="1380028686461971526">நெட்வொர்க்குடன் தானாக இணை</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> மொழியில் பேசியவை செயலாக்கத்திற்காக Googleளுக்கு அனுப்பப்படும்</translation>
+<translation id="1382174183118245544">கிரெடிட் கார்டு எண்கள்</translation>
 <translation id="1383065744946263511">கருவிப்பட்டியில் பின் செய்</translation>
 <translation id="1383381142702995121">இந்த நீட்டிப்பை நிர்வகியுங்கள்</translation>
 <translation id="1383597849754832576">உடனடி வசனத்தின் ஃபைல்களைப் பதிவிறக்க முடியவில்லை. பிறகு முயலவும்.</translation>
@@ -1703,6 +1704,7 @@
 <translation id="2133775869826239001">அமைப்பதற்கான கூடுதல் அம்சங்களைத் தேர்ந்தெடுங்கள்</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> ஐ மீண்டும் முயலும்</translation>
 <translation id="2134905185275441536">சிஸ்டம் CAக்கள்</translation>
+<translation id="2135420518376202233">புளூடூத் சாதனப் பெயர்கள்</translation>
 <translation id="21354425047973905">பின்களை மறைக்கும்</translation>
 <translation id="2135456203358955318">டாக் செய்யப்பட்ட பெரிதாக்கி</translation>
 <translation id="2135787500304447609">&amp;மீண்டும் தொடங்கு</translation>
@@ -2843,6 +2845,7 @@
 <translation id="2893180576842394309">Search மற்றும் பிற Google சேவைகளைப் பிரத்தியேகமாக்க, உங்களின் இதுவரையான செயல்பாடுகளை Google பயன்படுத்தக்கூடும்</translation>
 <translation id="2893318819023133318">காட்சிகளை இடமாற்று</translation>
 <translation id="2893701697603065178">மேனேஜ்டு டெவெலப்மெண்ட் என்விரான்மெண்ட்</translation>
+<translation id="2894596417096093634">சிதைவு அறிக்கை அடையாளங்காட்டிகள்</translation>
 <translation id="2894757982205307093">குழுவில் புதிய தாவல்</translation>
 <translation id="289695669188700754">விசை ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">மறைநிலைச் சாளரங்கள் அனைத்தையும் மூடினால் இந்தப் பிரத்தியேக அமைப்பு அகற்றப்படும்</translation>
@@ -3114,6 +3117,7 @@
 <translation id="3076966043108928831">இந்தச் சாதனத்தில் மட்டும் சேமியுங்கள்</translation>
 <translation id="3076977359333237641">உங்கள் உள்நுழைவுத் தரவு நீக்கப்பட்டது</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">ஒரு பயனருக்கான அப்டேட்டர்</translation>
 <translation id="3080933187214341848">உங்கள் கணக்குடன் இந்த நெட்வொர்க் ஒத்திசைக்கப்படவில்லை. <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">ஆப்ஸ் பெயர் அல்லது ஐடி</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4294,6 +4298,7 @@
 <translation id="3867831579565057323">டச்ஸ்கிரீனை மேப் செய்யுங்கள்</translation>
 <translation id="3867944738977021751">சான்றிதழ் புலங்கள்</translation>
 <translation id="3869564880668247983">எல்லாப் பக்கங்களையும் குழுவாக்கு</translation>
+<translation id="3869750789340473337">நினைவக டம்ப்கள்</translation>
 <translation id="3869917919960562512">தவறான பொருளடக்கம்.</translation>
 <translation id="3870626286046977643">சிஸ்டம் ஆடியோவையும் பகிர்</translation>
 <translation id="3870688298003434214"><ph name="BOOKMARK_TITLE" /> ஐத் தேர்வுநீக்கும்</translation>
@@ -7179,6 +7184,7 @@
 <translation id="5886009770935151472">விரல் 1</translation>
 <translation id="5886112770923972514">அருகிலுள்ள துரித இணைப்புச் சாதனங்களை இணைத்து விரைவாக அமைக்கலாம்</translation>
 <translation id="5886384907280980632">இப்போதே ஆஃப் செய்</translation>
+<translation id="5888337581644150257">சர்வதேச பேங்க் அக்கவுண்ட் எண்கள்</translation>
 <translation id="5888889603768021126">இதன் மூலம் உள்நுழைந்துள்ளீர்கள்:</translation>
 <translation id="5889282057229379085">அதிகபட்ச எண்ணிக்கையிலான இடைப்பட்ட CAகள்: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">எனது சொந்த <ph name="BEGIN_LINK" />ஒத்திசைவுக் கடவுச்சொற்றொடர்<ph name="END_LINK" /> மூலம் ஒத்திசைக்கப்பட்ட தரவை என்கிரிப்ட் செய். Google Payயிலுள்ள பேமெண்ட் முறைகளும் முகவரிகளும் என்க்ரிப்ஷன் செய்யப்படாது. Chrome உலாவியில் இதுவரை இணையத்தில் பார்த்தவை ஒத்திசைக்கப்படாது.</translation>
@@ -7460,6 +7466,7 @@
 <translation id="6082877069782862752">பட்டனை ஒதுக்குதல்</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - பெயரிடப்படாத குழுவின் ஒரு பகுதி</translation>
 <translation id="6086004606538989567">நீங்கள் சரிபார்த்த கணக்கு இந்தச் சாதனத்தை அணுக அங்கீகரிக்கப்படவில்லை.</translation>
+<translation id="6086350918562605938">ஒரு சிஸ்டத்திற்கான அப்டேட்டர்</translation>
 <translation id="6086418630711763366">எழுத்துக் கர்சரைப் பயன்படுத்தி பக்கம் முழுவதும் செல்லலாம். இதை முடக்க Ctrl + <ph name="KEY" /> அழுத்தவும்.</translation>
 <translation id="6086846494333236931">உங்கள் நிர்வாகி நிறுவினார்</translation>
 <translation id="6087286598828478206">குழுவைத் தடுத்துவிட்டு வெளியேற வேண்டுமா?</translation>

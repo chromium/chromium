@@ -575,6 +575,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{ကျိုးပေါက်ထားသည့် စကားဝှက်များ မရှိပါ}=1{ကျိုးပေါက်ထားသည့် စကားဝှက် 1 ခု}other{ကျိုးပေါက်ထားသည့် စကားဝှက် {NUM_COMPROMISED} ခု}}</translation>
 <translation id="1380028686461971526">ကွန်ရက်သို့ အော်တို ချိတ်ဆက်ရန်</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> စကားသံကို စီမံလုပ်ဆောင်ရန် Google သို့ ပို့ထားသည်</translation>
+<translation id="1382174183118245544">ခရက်ဒစ်ကတ်နံပါတ်များ</translation>
 <translation id="1383065744946263511">ကိရိယာဘားတွင် ပင်ထိုးရန်</translation>
 <translation id="1383381142702995121">ဤနောက်ဆက်တွဲကို စီမံရန်</translation>
 <translation id="1383597849754832576">တိုက်ရိုက်စာတန်းဖိုင်များကို ဒေါင်းလုဒ်လုပ်၍ မရပါ။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
@@ -1701,6 +1702,7 @@
 <translation id="2133775869826239001">စနစ်ထည့်သွင်းရန် နောက်ထပ်တူးလ်များ ရွေးပါ</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> ကို ထပ်စမ်းရန်</translation>
 <translation id="2134905185275441536">စနစ် CA များ</translation>
+<translation id="2135420518376202233">ဘလူးတုသ်သုံးစက်အမည်များ</translation>
 <translation id="21354425047973905">ပင်နံပါတ်များ ဖျောက်ထားရန်</translation>
 <translation id="2135456203358955318">နေရာချထားသည့် မှန်ဘီလူး</translation>
 <translation id="2135787500304447609">ပြန်လည် ရှေ့ဆက်မည်</translation>
@@ -2842,6 +2844,7 @@
 <translation id="2893180576842394309">Search နှင့် အခြား Google ဝန်ဆောင်မှုများအား ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် Google က သင့်မှတ်တမ်းကို သုံးနိုင်သည်</translation>
 <translation id="2893318819023133318">မြင်ကွင်းများကို ပြောင်းပြန်ပြုလုပ်ရန်</translation>
 <translation id="2893701697603065178">စီမံထားသော ဆော့ဖ်ဝဲရေးဆွဲမှု ပတ်ဝန်းကျင်</translation>
+<translation id="2894596417096093634">ပျက်စီးမှု အစီရင်ခံစာဆိုင်ရာ သတ်မှတ်မှုစနစ်များ</translation>
 <translation id="2894757982205307093">အုပ်စုတွင် တဘ်အသစ်ထည့်ရန်</translation>
 <translation id="289695669188700754">သော့ ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ရုပ်ဖျက် ဝင်ဒိုးအားလုံးကို ပိတ်လိုက်သောအခါ ဤစိတ်ကြိုက်ဆက်တင်ကို ဖယ်ရှားပါမည်</translation>
@@ -3113,6 +3116,7 @@
 <translation id="3076966043108928831">ဤစက်တွင်သာ သိမ်းရန်</translation>
 <translation id="3076977359333237641">သင်၏ လက်မှတ်ထိုးဝင်ခြင်းဒေတာများကို ဖျက်လိုက်ပါပြီ</translation>
 <translation id="3077734595579995578">shift ကီး</translation>
+<translation id="3080930813589868009">အသုံးပြုသူတစ်ဦးချင်း အပ်ဒိတ်လုပ်ပေးသည့်စနစ်</translation>
 <translation id="3080933187214341848">ဤကွန်ရက်ကို သင့်အကောင့်နှင့် စင့်ခ်လုပ်မထားပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">အက်ပ်အမည် (သို့) ID</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4293,6 +4297,7 @@
 <translation id="3867831579565057323">သင့်တို့ထိမျက်နှာပြင်ကို နေရာချရန်</translation>
 <translation id="3867944738977021751">လက်မှတ် အကွက်များ</translation>
 <translation id="3869564880668247983">တဘ်အားလုံးကို အုပ်စုဖွဲ့ရန်</translation>
+<translation id="3869750789340473337">မှတ်ဉာဏ် ဒေတာဖိုင်များ</translation>
 <translation id="3869917919960562512">အညွှန်း မှားနေ။</translation>
 <translation id="3870626286046977643">စနစ်အသံကိုလည်း မျှဝေနိုင်သည်</translation>
 <translation id="3870688298003434214"><ph name="BOOKMARK_TITLE" /> ကို မရွေးရန်</translation>
@@ -7177,6 +7182,7 @@
 <translation id="5886009770935151472">လက်ချောင်း ၁</translation>
 <translation id="5886112770923972514">အနီးရှိ ‘အမြန်တွဲချိတ်’ စက်များကို ချိတ်ဆက်ပြီး စနစ်အမြန်ထည့်သွင်းရန်</translation>
 <translation id="5886384907280980632">ယခု ပိတ်ရန်</translation>
+<translation id="5888337581644150257">အပြည်ပြည်ဆိုင်ရာ ဘဏ်အကောင့်နံပါတ်များ</translation>
 <translation id="5888889603768021126">အောက်ပါဖြင့် လက်မှတ်ထိုးဝင်ထားသည်</translation>
 <translation id="5889282057229379085">ကြားခံ CAများ၏ အများဆုံး အရေအတွက်: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">သင့်ကိုယ်ပိုင် <ph name="BEGIN_LINK" />စင့်ခ်လုပ်ရန် စကားဝှက်စာ<ph name="END_LINK" /> ဖြင့် စင့်ခ်လုပ်ထားသည့် ဒေတာများကို အသွင်ဝှက်ရန်။ Google Pay ရှိ ငွေပေးချေနည်းလမ်းနှင့် လိပ်စာများကို အသွင်ဝှက်မည်မဟုတ်ပါ။ Chrome ရှိ ကြည့်ရှုမှုမှတ်တမ်းကို စင့်ခ်လုပ်မည်မဟုတ်ပါ။</translation>
@@ -7456,6 +7462,7 @@
 <translation id="6082877069782862752">ကီးနေရာချခြင်း</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - အမည်ပေးမထားသော အုပ်စု၏ တစ်စိတ်တစ်ဒေသ</translation>
 <translation id="6086004606538989567">သင်အတည်ပြုလိုက်သောအကောင့်ကို ဤစက်အသုံးပြုရန် ခွင့်ပြုမထားပါ။</translation>
+<translation id="6086350918562605938">စနစ်တစ်ခုချင်း အပ်ဒိတ်လုပ်ပေးသည့်စနစ်</translation>
 <translation id="6086418630711763366">စာရိုက်သည့်ကာဆာဖြင့် စာမျက်နှာများကြား ရွှေ့ကြည့်နိုင်သည်။ ပိတ်ရန် Ctrl + <ph name="KEY" /> ကိုနှိပ်ပါ။</translation>
 <translation id="6086846494333236931">သင့်ကြီးကြပ်သူမှ ထည့်သွင်းခဲ့သည်</translation>
 <translation id="6087286598828478206">အုပ်စုကို ပိတ်ထားပြီး ထွက်မလား။</translation>

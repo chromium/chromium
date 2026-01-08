@@ -92,7 +92,6 @@
 <translation id="2020032459870799438">Untuk memeriksa apakah sandi Anda yang lain aman dari pelanggaran data dan masalah keamanan lainnya, <ph name="BEGIN_LINK" />login ke Chromium<ph name="END_LINK" />.</translation>
 <translation id="2039417478970545937">Setelan.</translation>
 <translation id="2049376729098081731">Pilih apakah akan menyertakan histori Chromium untuk mendapatkan pengalaman yang lebih dipersonalisasi di layanan Google</translation>
-<translation id="2054039611381840095">Untuk mendapatkan update Chromium berikutnya, Anda memerlukan macOS 12 atau yang lebih baru. Komputer ini menggunakan macOS 11.</translation>
 <translation id="2064856577282482477">Klik tombol Sesuaikan Chromium di Halaman Tab Baru untuk memberikan tampilan baru pada Chromium</translation>
 <translation id="2086476982681781442">Chromium memblokir download ini karena file tersebut tidak jujur dan dapat menyebabkan perubahan tidak terduga di perangkat Anda</translation>
 <translation id="208726765006323911">Anda akan melihat perintah untuk mencoba <ph name="FEATURE_NAME" /> saat berikutnya Anda membuka Chromium iOS.</translation>
@@ -151,7 +150,7 @@
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2629740064077610681">Organisasi Anda dapat melihat dan mengelola data penjelajahan, seperti bookmark, histori, dan sandi. Organisasi Anda tidak dapat melihat data penjelajahan di profil Chromium lain</translation>
 <translation id="2635452620547538388">Verifikasi diri Anda untuk menggunakan dan menyimpan data Chromium di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="2637732208198500597">{COUNT,plural, =0{Perlindungan Lanjutan mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update}=1{Perlindungan Lanjutan mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. Jendela Samaran Anda tidak akan dibuka kembali.}other{Perlindungan Lanjutan mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
+<translation id="2637732208198500597">{COUNT,plural, =0{Perlindungan Lanjutan mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update}=1{Perlindungan Lanjutan mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. Jendela Samaran tidak akan dibuka kembali.}other{Perlindungan Lanjutan mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. # jendela Samaran tidak akan dibuka kembali.}}</translation>
 <translation id="2648074677641340862">Terjadi error pada sistem operasi saat pemasangan berlangsung. Download Chromium lagi.</translation>
 <translation id="2661879430930417727">Jika Anda berbagi perangkat, teman dan keluarga dapat menjelajah secara terpisah dan menyiapkan Chromium sesuai keinginannya</translation>
 <translation id="2711502716910134313">Tab Chromium</translation>
@@ -717,6 +716,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="9148058034647219655">Keluar</translation>
 <translation id="9155105544013854680">Lanjutkan dari halaman terakhir yang dibuka: Chromium dapat memulihkan tab setiap kali Anda memulai ulang. Untuk mengaktifkannya, buka</translation>
 <translation id="9158494823179993217">Administrator sistem Anda telah mengonfigurasi Chromium untuk membuka browser alternatif guna mengakses <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="9183331186620388872">Tips Chromium: Telusuri Dengan Lens</translation>
 <translation id="9185526690718004400">Luncurkan kembali untuk mengupdate &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9206863043651638213">Dapatkan lebih banyak manfaat saat Anda login ke Chromium</translation>

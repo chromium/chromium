@@ -575,6 +575,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{చోరీకి గురైన పాస్‌వర్డ్‌లు ఏవీ లేవు}=1{1 చోరీకి గురైన పాస్‌వర్డ్}other{{NUM_COMPROMISED} చోరీకి గురైన పాస్‌వర్డ్‌లు}}</translation>
 <translation id="1380028686461971526">నెట్‌వర్క్‌కు ఆటోమేటిక్‌గా కనెక్ట్ చేయడం</translation>
 <translation id="1381567580865186407">ప్రాసెసింగ్ కోసం <ph name="LANGUAGE" /> స్పీచ్ Googleకు పంపబడింది</translation>
+<translation id="1382174183118245544">క్రెడిట్ కార్డ్ నంబర్‌లు</translation>
 <translation id="1383065744946263511">టూల్‌బార్‌కు పిన్ చేయండి</translation>
 <translation id="1383381142702995121">ఈ ఎక్స్‌టెన్షన్‌ను మేనేజ్ చేయండి</translation>
 <translation id="1383597849754832576">స్పీచ్ ఫైళ్లను డౌన్‌లోడ్ చేయడం సాధ్యం కాదు. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
@@ -1701,6 +1702,7 @@
 <translation id="2133775869826239001">సెటప్ చేయడానికి మరిన్ని ఫీచర్‌లను ఎంచుకోండి</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> ఫైల్‌ను మళ్లీ ట్రై చేయండి</translation>
 <translation id="2134905185275441536">సిస్టమ్ CAలు</translation>
+<translation id="2135420518376202233">బ్లూటూత్ ‌డివైజ్‌ల పేర్లు</translation>
 <translation id="21354425047973905">పిన్‌లను దాస్తుంది</translation>
 <translation id="2135456203358955318">డాక్ చేయబడిన మాగ్నిఫైయర్</translation>
 <translation id="2135787500304447609">&amp;మళ్ళీ ప్రారంభించండి</translation>
@@ -2841,6 +2843,7 @@
 <translation id="2893180576842394309">శోధన, ఇతర Google సేవలను వ్యక్తిగతీకరించడానికి Google మీ హిస్టరీని ఉపయోగించే అవకాశం ఉంటుంది</translation>
 <translation id="2893318819023133318">వీక్షణలను రివర్స్ చేయండి</translation>
 <translation id="2893701697603065178">మేనేజ్ చేయబడిన డెవలప్‌మెంట్ ఎన్విరాన్‌మెంట్</translation>
+<translation id="2894596417096093634">క్రాష్ రిపోర్ట్ ఐడెంటిఫయర్‌లు</translation>
 <translation id="2894757982205307093">గ్రూప్‌లో కొత్త ట్యాబ్</translation>
 <translation id="289695669188700754">కీ ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">మీరు మీ అన్ని అజ్ఞాత విండోలను మూసివేసినప్పుడు, ఈ అనుకూల సెట్టింగ్ తీసివేయబడుతుంది</translation>
@@ -3112,6 +3115,7 @@
 <translation id="3076966043108928831">ఈ పరికరంలో మాత్రమే సేవ్ చేయండి</translation>
 <translation id="3076977359333237641">మీ సైన్-ఇన్ డేటా తొలగించబడింది</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">ఒక్కో యూజర్‌కు అప్‌డేటర్</translation>
 <translation id="3080933187214341848">ఈ నెట్‌వర్క్ మీ ఖాతాతో సింక్ చేయబడలేదు. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">యాప్ పేరు లేదా ID</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4292,6 +4296,7 @@
 <translation id="3867831579565057323">మీ టచ్‌స్క్రీన్‌ను మ్యాప్ చేయండి</translation>
 <translation id="3867944738977021751">సర్టిఫికెట్ ఫీల్డ్‌లు</translation>
 <translation id="3869564880668247983">ట్యాబ్‌లన్నింటినీ గ్రూప్ చేయండి</translation>
+<translation id="3869750789340473337">మెమరీ డంప్స్</translation>
 <translation id="3869917919960562512">తప్పు సూచిక.</translation>
 <translation id="3870626286046977643">సిస్టమ్ ఆడియోను కూడా షేర్ చేయండి</translation>
 <translation id="3870688298003434214"><ph name="BOOKMARK_TITLE" /> ఎంపికను తొలగించండి</translation>
@@ -7175,6 +7180,7 @@
 <translation id="5886009770935151472">వేలు (ఫింగర్) 1</translation>
 <translation id="5886112770923972514">సమీపంలోని ఉన్న ఫాస్ట్ పెయిర్ పరికరాలకు త్వరితంగా కనెక్ట్ అయి, వాటిని సెటప్ చేయండి</translation>
 <translation id="5886384907280980632">ఇప్పుడే ఆఫ్ చేయండి</translation>
+<translation id="5888337581644150257">అంతర్జాతీయ బ్యాంక్ ఖాతా నంబర్‌లు</translation>
 <translation id="5888889603768021126">దీనితో సైన్ ఇన్ చేశారు</translation>
 <translation id="5889282057229379085">ఇంటర్మీడియట్ CAల అత్యధిక సంఖ్య: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">మీ స్వంత <ph name="BEGIN_LINK" />సింక్ రహస్య పదబంధం<ph name="END_LINK" />తో సింక్ చేయబడిన డేటాను ఎన్‌క్రిప్ట్ చేయండి. Google Pay నుండి పేమెంట్ ఆప్షన్‌లు, అడ్రస్‌లు ఎన్‌క్రిప్ట్ చేయబడవు. Chrome నుండి బ్రౌజింగ్ హిస్టరీ సింక్ చేయబడదు.</translation>
@@ -7456,6 +7462,7 @@
 <translation id="6082877069782862752">కీ మ్యాపింగ్</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - పేరు లేని గ్రూప్‌లో భాగం</translation>
 <translation id="6086004606538989567">మీరు వెరిఫై చేసిన ఖాతాకు ఈ పరికరాన్ని యాక్సెస్ చేసే అధికారం లేదు.</translation>
+<translation id="6086350918562605938">సిస్టమ్ వారీ అప్‌డేటర్</translation>
 <translation id="6086418630711763366">టెక్స్ట్ కర్సర్‌తో మీరు పేజీలను నావిగేట్ చేయవచ్చు. Ctrl + <ph name="KEY" />‌ను నొక్కి ఆఫ్ చేయండి.</translation>
 <translation id="6086846494333236931">మీ నిర్వాహకుడు ఇన్‌స్టాల్ చేశారు</translation>
 <translation id="6087286598828478206">బ్లాక్ చేసి గ్రూప్ నుండి నిష్క్రమించాలా?</translation>

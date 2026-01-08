@@ -576,6 +576,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{ಅಪಾಯಕ್ಕೀಡಾಗಬಹುದಾದ ಯಾವುದೇ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಲ್ಲ}=1{1 ಪಾಸ್‌ವರ್ಡ್ ಅಪಾಯಕ್ಕೀಡಾಗಿದೆ}one{{NUM_COMPROMISED} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}other{{NUM_COMPROMISED} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}}</translation>
 <translation id="1380028686461971526">ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> ಧ್ವನಿಯನ್ನು ಪ್ರಕ್ರಿಯೆಗಾಗಿ Google ಗೆ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
+<translation id="1382174183118245544">ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಗಳು</translation>
 <translation id="1383065744946263511">ಟೂಲ್‌ಬಾರ್‌ಗೆ ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="1383381142702995121">ಈ ವಿಸ್ತರಣೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1383597849754832576">ಧ್ವನಿ ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -1223,7 +1224,7 @@
 <translation id="18139523105317219">EDI ಪಾರ್ಟಿ ಹೆಸರು</translation>
 <translation id="1815083418640426271">ಸಾದಾ ಪಠ್ಯದಂತೆ ಅಂಟಿಸಿ</translation>
 <translation id="1815097521077272760">ಈ ಗೇಮ್‌ಗಾಗಿ ಕೀಬೋರ್ಡ್ ನಿಯಂತ್ರಣವನ್ನು ಪ್ರಯತ್ನಿಸಲು ನಿಮ್ಮನ್ನು ಆಹ್ವಾನಿಸಲಾಗಿದೆ.</translation>
-<translation id="1815181278146012280">ಸೈಟ್ HID ಸಾಧನಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ಬಯಸಿದಾಗ ಕೇಳಿ</translation>
+<translation id="1815181278146012280">ಸೈಟ್ HID ಸಾಧನಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಬಯಸಿದಾಗ ಕೇಳಿ</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> ಇನ್ನಷ್ಟು...</translation>
 <translation id="1816036116994822943">ಕೀಬೋರ್ಡ್ ಸ್ಕ್ಯಾನಿಂಗ್ ವೇಗ</translation>
 <translation id="1817871734039893258">Microsoft File Recovery</translation>
@@ -1696,6 +1697,7 @@
 <translation id="2133775869826239001">ಸೆಟಪ್ ಮಾಡಲು ಇನ್ನಷ್ಟು ಫೀಚರ್‌ಗಳನ್ನು ಆರಿಸಿ</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="2134905185275441536">ಸಿಸ್ಟಂ CA ಗಳು</translation>
+<translation id="2135420518376202233">ಬ್ಲೂಟೂತ್ ಸಾಧನದ ಹೆಸರುಗಳು</translation>
 <translation id="21354425047973905">ಪಿನ್‌ಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="2135456203358955318">ಡಾಕ್‌‌ ಮಾಡಿರುವ ವರ್ಧಕ</translation>
 <translation id="2135787500304447609">&amp;ಪುನರಾರಂಭಿಸು</translation>
@@ -2836,6 +2838,7 @@
 <translation id="2893180576842394309">ಹುಡುಕಾಟ ಮತ್ತು ಇತರ Google ಸೇವೆಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು Google ಬಳಸಬಹುದು.</translation>
 <translation id="2893318819023133318">ರಿವರ್ಸ್ ವೀಕ್ಷಣೆಗಳು</translation>
 <translation id="2893701697603065178">ನಿರ್ವಹಿಸಿದ ಅಭಿವೃದ್ಧಿ ಪರಿಸರ</translation>
+<translation id="2894596417096093634">ಕ್ರ್ಯಾಶ್ ವರದಿ ಗುರುತಿಸುವಿಕೆಗಳು</translation>
 <translation id="2894757982205307093">ಗುಂಪಿನಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್</translation>
 <translation id="289695669188700754">ಕೀಲಿ ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ನಿಮ್ಮ ಎಲ್ಲಾ ಅಜ್ಞಾತ ವಿಂಡೋಗಳನ್ನು ನೀವು ಮುಚ್ಚಿದಾಗ ಈ ಕಸ್ಟಮ್ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
@@ -3107,6 +3110,7 @@
 <translation id="3076966043108928831">ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="3076977359333237641">ನಿಮ್ಮ ಸೈನ್ ಇನ್ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">ಪ್ರತಿ-ಬಳಕೆದಾರರ ಅಪ್‌ಡೇಟರ್</translation>
 <translation id="3080933187214341848">ಈ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ನಿಮ್ಮ ಖಾತೆಗೆ ಸಿಂಕ್ ಮಾಡಲಾಗಿಲ್ಲ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">ಆ್ಯಪ್ ಹೆಸರು ಅಥವಾ ID</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4286,6 +4290,7 @@
 <translation id="3867831579565057323">ನಿಮ್ಮ ಟಚ್‌ಸ್ಕ್ರೀನ್ ಅನ್ನು ನಕ್ಷೆ ಮಾಡಿ</translation>
 <translation id="3867944738977021751">ಪ್ರಮಾಣಪತ್ರ ಕ್ಷೇತ್ರಗಳು</translation>
 <translation id="3869564880668247983">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಗುಂಪು ಮಾಡಿ</translation>
+<translation id="3869750789340473337">ಮೆಮೊರಿ ಡಂಪ್‌ಗಳು</translation>
 <translation id="3869917919960562512">ತಪ್ಪಾದ ವಿಷಯಸೂಚಿ. </translation>
 <translation id="3870626286046977643">ಸಿಸ್ಟಂ ಆಡಿಯೊವನ್ನು ಸಹ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="3870688298003434214"><ph name="BOOKMARK_TITLE" /> ಆಯ್ಕೆ ರದ್ದುಮಾಡಿ</translation>
@@ -6849,7 +6854,7 @@
 <translation id="5655823808357523308">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನ ಮೇಲೆ ಬಣ್ಣಗಳು ಹೇಗೆ ಗೋಚರಿಸುತ್ತವೆ ಎಂಬುದನ್ನು ಅಡ್ಜಸ್ಟ್ ಮಾಡಿ</translation>
 <translation id="5656845498778518563">Google ಗೆ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="5656944594833183876">ನಿಮ್ಮ ಕಾರ್ಯಗಳಿಗೆ ಸಂಬಂಧಿಸಿದಂತೆ ಸಹಾಯ ಪಡೆಯಿರಿ</translation>
-<translation id="5657667036353380798">ಬಾಹ್ಯ ವಿಸ್ತರಣೆಯನ್ನು ಸ್ಥಾಪಿಸಲು <ph name="MINIMUM_CHROME_VERSION" /> ನ chrome ಆವೃತ್ತಿ ಅಥವಾ ಹೆಚ್ಚಿನದು ನಿಮಗೆ ಅಗತ್ಯವಿದೆ.</translation>
+<translation id="5657667036353380798">ಬಾಹ್ಯ ವಿಸ್ತರಣೆಯನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು <ph name="MINIMUM_CHROME_VERSION" /> ನ Chrome ಆವೃತ್ತಿ ಅಥವಾ ಹೆಚ್ಚಿನದು ನಿಮಗೆ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="565899488479822148">ಇತ್ತೀಚಿನ ಅಪ್‌ಡೇಟ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5659593005791499971">ಇಮೇಲ್</translation>
 <translation id="5659964844710667266">ಈ <ph name="DEVICE_TYPE" /> ಗೆ ಪಾ‌ಸ್‌ವರ್ಡ್ ರಚಿಸಿ</translation>
@@ -7170,6 +7175,7 @@
 <translation id="5886009770935151472">ಬೆರಳು 1</translation>
 <translation id="5886112770923972514">ಸಮೀಪದಲ್ಲಿರುವ ಶೀಘ್ರ ಜೋಡಿಗೊಳಿಸುವಿಕೆ ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ ಹಾಗೂ ತ್ವರಿತವಾಗಿ ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="5886384907280980632">ಈಗ ಆಫ್ ಮಾಡಿ</translation>
+<translation id="5888337581644150257">ಅಂತರರಾಷ್ಟ್ರೀಯ ಬ್ಯಾಂಕ್ ಖಾತೆಯ ಸಂಖ್ಯೆಗಳು</translation>
 <translation id="5888889603768021126">ಇದನ್ನು ಬಳಸಿ ಸೈನ್‌ ಇನ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5889282057229379085">ಮಧ್ಯಂತರ CA ಗಳ ಗರಿಷ್ಠ ಸಂಖ್ಯೆ: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">ನಿಮ್ಮ ಸ್ವಂತ <ph name="BEGIN_LINK" />ಸಿಂಕ್ ಪಾಸ್‌ಫ್ರೇಸ್<ph name="END_LINK" /> ಮೂಲಕ ಸಿಂಕ್ ಮಾಡಲಾದ ಡೇಟಾವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿ. Google Pay ನಲ್ಲಿನ ಪಾವತಿ ವಿಧಾನಗಳು ಮತ್ತು ವಿಳಾಸಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ. Chrome ನ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವು ಸಿಂಕ್ ಆಗುವುದಿಲ್ಲ.</translation>
@@ -7451,6 +7457,7 @@
 <translation id="6082877069782862752">ಕೀ ಮ್ಯಾಪಿಂಗ್</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - ಹೆಸರಿಸದ ಗುಂಪಿಗೆ ಸೇರಿದೆ</translation>
 <translation id="6086004606538989567">ನೀವು ದೃಢೀಕರಿಸಿದ ಖಾತೆಗೆ ಈ ಸಾಧನವನ್ನು ಪ್ರವೇಶಿಸಲು ಅನುಮತಿಯಿಲ್ಲ.</translation>
+<translation id="6086350918562605938">ಪ್ರತಿ-ಸಿಸ್ಟಂ ಅಪ್‌ಡೇಟರ್</translation>
 <translation id="6086418630711763366">ನೀವು ಪಠ್ಯದ ಕರ್ಸರ್‌ನೊಂದಿಗೆ ಪುಟಗಳನ್ನು ನ್ಯಾವಿಗೇಟ್ ಮಾಡಬಹುದು. ಆಫ್ ಮಾಡಲು Ctrl + <ph name="KEY" /> ಒತ್ತಿರಿ.</translation>
 <translation id="6086846494333236931">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಸ್ಥಾಪಿಸಿದ್ದಾರೆ</translation>
 <translation id="6087286598828478206">ಗುಂಪನ್ನು ನಿರ್ಬಂಧಿಸಿ, ತೊರೆಯಬೇಕೇ?</translation>
@@ -7882,7 +7889,7 @@
 <translation id="6387674443318562538">ಲಂಬವಾಗಿ ವಿಭಜಿಸಿ</translation>
 <translation id="6388152137132427505">ಯಾವಾಗಲೂ ಜಾಣ್ಮೆಯೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಿ. ಲಿಂಕ್‌ಗಳ ಅವಧಿ 48 ಗಂಟೆಗಳಲ್ಲಿ ಮುಕ್ತಾಯವಾಗುತ್ತದೆ.</translation>
 <translation id="6388429472088318283">ಭಾಷೆಗಳನ್ನು ಹುಡುಕಾಡಿ</translation>
-<translation id="6388577073199278153">ನಿಮ್ಮ ಮೊಬೈಲ್ ಖಾತೆಯನ್ನು ಪ್ರವೇಶಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="6388577073199278153">ನಿಮ್ಮ ಮೊಬೈಲ್ ಖಾತೆಯನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="6390020764191254941">ಟ್ಯಾಬ್ ಅನ್ನು ಹೊಸ ವಿಂಡೋಗೆ ಸರಿಸಿ</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{ಯಾವುದೂ ಇಲ್ಲ}=1{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> ಮತ್ತು ಇನ್ನೂ 1 ಕ್ಕಾಗಿ}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, ಮತ್ತು ಇನ್ನೂ {COUNT} ಕ್ಕಾಗಿ}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, ಮತ್ತು ಇನ್ನೂ {COUNT} ಕ್ಕಾಗಿ}}</translation>
 <translation id="6391131092053186625">ನಿಮ್ಮ ಸಾಧನದ IMEI ಸಂಖ್ಯೆ <ph name="IMEI_NUMBER" /> ಆಗಿದೆ. ಸೇವೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡಲು ಈ ಸಂಖ್ಯೆಯನ್ನು ಬಳಸಬಹುದು.</translation>
@@ -11825,7 +11832,7 @@
 <translation id="9055842392047502565">ಈವೆಂಟ್ ಪ್ರಕಾರ</translation>
 <translation id="9056788090206401048">ಬೇರೆ ಸಾಧನದಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ಕೀ ಬಳಸಲು ಬ್ಲೂಟೂತ್ ಆನ್ ಮಾಡಿರಬೇಕು. ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನೀವು ಇದನ್ನು ಯಾವಾಗಲಾದರೂ ನಿರ್ವಹಿಸಬಹುದು.</translation>
 <translation id="9056810968620647706">ಯಾವುದೇ ಹೊಂದಾಣಿಕೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ.</translation>
-<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> ಅವರು ಈ ಕೆಳಗಿನ ವಿಷಯವನ್ನು ಪ್ರವೇಶಿಸಲು ಬಯಸುತ್ತಿದ್ದಾರೆ:</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> ಅವರು ಈ ಕೆಳಗಿನ ಕಂಟೆಂಟ್ ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಬಯಸುತ್ತಿದ್ದಾರೆ:</translation>
 <translation id="9057030985451135243">ಹಂಚಿಕೊಳ್ಳಲಾಗಿರುವ ಟ್ಯಾಬ್ ಗುಂಪುಗಳ ಕುರಿತು ತಿಳಿಯಿರಿ</translation>
 <translation id="9057354806206861646">ಅಪ್‌ಡೇಟ್ ವೇಳಾಪಟ್ಟಿ</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{ದಿನಕ್ಕೆ ಸುಮಾರು 1 ನೋಟಿಫಿಕೇಶನ್}one{ದಿನಕ್ಕೆ ಸುಮಾರು {NUM_NOTIFICATION} ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}other{ದಿನಕ್ಕೆ ಸುಮಾರು {NUM_NOTIFICATION} ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}}</translation>

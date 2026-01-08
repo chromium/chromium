@@ -575,6 +575,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{沒有任何密碼外洩}=1{1 組密碼外洩}other{{NUM_COMPROMISED} 組密碼外洩}}</translation>
 <translation id="1380028686461971526">自動連線至網路</translation>
 <translation id="1381567580865186407">系統會將<ph name="LANGUAGE" />語音內容傳送給 Google 處理</translation>
+<translation id="1382174183118245544">信用卡號</translation>
 <translation id="1383065744946263511">在工具列中固定</translation>
 <translation id="1383381142702995121">管理這項擴充功能</translation>
 <translation id="1383597849754832576">無法下載即時字幕檔案，請稍後再試。</translation>
@@ -1693,6 +1694,7 @@
 <translation id="2133775869826239001">選擇更多要設定的功能</translation>
 <translation id="2133857665503360653">重新嘗試下載「<ph name="FILE_NAME" />」</translation>
 <translation id="2134905185275441536">系統 CA</translation>
+<translation id="2135420518376202233">藍牙裝置名稱</translation>
 <translation id="21354425047973905">隱藏 PIN 碼</translation>
 <translation id="2135456203358955318">置頂放大鏡</translation>
 <translation id="2135787500304447609">繼續(&amp;R)</translation>
@@ -2830,6 +2832,7 @@
 <translation id="2893180576842394309">Google 可能會使用你的歷史記錄，為你提供個人化的 Google 搜尋和其他服務</translation>
 <translation id="2893318819023133318">對調畫面</translation>
 <translation id="2893701697603065178">受管理的開發環境</translation>
+<translation id="2894596417096093634">當機報告 ID</translation>
 <translation id="2894757982205307093">在群組中新增分頁</translation>
 <translation id="289695669188700754">金鑰識別碼：<ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">所有無痕視窗關閉後，這項自訂設定將會移除</translation>
@@ -3101,6 +3104,7 @@
 <translation id="3076966043108928831">只儲存在這部裝置上</translation>
 <translation id="3076977359333237641">已刪除你的登入資料</translation>
 <translation id="3077734595579995578">Shift</translation>
+<translation id="3080930813589868009">個別使用者更新工具</translation>
 <translation id="3080933187214341848">這個網路並未同步到你的帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">應用程式名稱或 ID</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4278,6 +4282,7 @@
 <translation id="3867831579565057323">對應觸控螢幕</translation>
 <translation id="3867944738977021751">憑證欄位</translation>
 <translation id="3869564880668247983">將所有分頁加入群組</translation>
+<translation id="3869750789340473337">記憶體 dump</translation>
 <translation id="3869917919960562512">錯誤的索引。</translation>
 <translation id="3870626286046977643">一併分享系統音訊</translation>
 <translation id="3870688298003434214">取消選取「<ph name="BOOKMARK_TITLE" />」</translation>
@@ -7154,6 +7159,7 @@
 <translation id="5886009770935151472">手指 1</translation>
 <translation id="5886112770923972514">連線並快速設定附近的快速配對裝置</translation>
 <translation id="5886384907280980632">立即關閉</translation>
+<translation id="5888337581644150257">國際銀行帳號</translation>
 <translation id="5888889603768021126">目前登入身分</translation>
 <translation id="5889282057229379085">中繼 CA 數目上限：<ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">使用你的<ph name="BEGIN_LINK" />同步通關密語<ph name="END_LINK" />加密同步的資料。系統將不會加密你在 Google Pay 中的付款方式和地址，也不會同步 Chrome 中的瀏覽記錄。</translation>
@@ -7433,6 +7439,7 @@
 <translation id="6082877069782862752">對應按鍵</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 屬於未命名群組</translation>
 <translation id="6086004606538989567">你驗證的帳戶未經授權，無法存取這部裝置。</translation>
+<translation id="6086350918562605938">個別系統更新程式</translation>
 <translation id="6086418630711763366">你可以使用文字游標瀏覽頁面。按下 Ctrl + <ph name="KEY" /> 鍵即可關閉這項功能。</translation>
 <translation id="6086846494333236931">由您的管理員安裝</translation>
 <translation id="6087286598828478206">要封鎖成員並退出群組嗎？</translation>

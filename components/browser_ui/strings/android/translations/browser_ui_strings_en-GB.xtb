@@ -64,6 +64,7 @@
 <translation id="1717996979683942279">When on, sites can ask to manage windows on all your displays. When off, sites can't manage windows on all your displays.</translation>
 <translation id="1738912554587725807">New tab page appearance theme collections bottom sheet</translation>
 <translation id="1743802530341753419">Ask before allowing sites to connect to a device (recommended)</translation>
+<translation id="1766455884659449403">Get Chrome tips notifications</translation>
 <translation id="1777815584158991902">Discover feed bottom sheet</translation>
 <translation id="1779089405699405702">Image decoder</translation>
 <translation id="1785415724048343560">Recommended for best experience</translation>
@@ -401,6 +402,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="5246825184569358663">This action will delete all local data, including cookies, and reset all permissions for <ph name="DOMAIN" /> and all sites under it</translation>
 <translation id="5264323282659631142">Remove '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Drag from top and touch the back button to exit full screen.</translation>
+<translation id="5286194356314741248">Scanning</translation>
 <translation id="5300589172476337783">Show</translation>
 <translation id="5301954838959518834">OK, got it</translation>
 <translation id="5317780077021120954">Save</translation>

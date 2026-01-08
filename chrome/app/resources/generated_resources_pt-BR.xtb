@@ -576,6 +576,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Nenhuma senha comprometida}=1{1 senha comprometida}one{{NUM_COMPROMISED} senha comprometida}other{{NUM_COMPROMISED} senhas comprometidas}}</translation>
 <translation id="1380028686461971526">Conectar-se automaticamente à rede</translation>
 <translation id="1381567580865186407">A fala em <ph name="LANGUAGE" /> será enviada ao Google para processamento</translation>
+<translation id="1382174183118245544">Números de cartões de crédito</translation>
 <translation id="1383065744946263511">Fixar na barra de ferramentas</translation>
 <translation id="1383381142702995121">Gerenciar extensão</translation>
 <translation id="1383597849754832576">Não foi possível baixar os arquivos de fala. Tente novamente mais tarde.</translation>
@@ -1704,6 +1705,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2133775869826239001">Escolher mais recursos para configurar</translation>
 <translation id="2133857665503360653">Tentar de novo: <ph name="FILE_NAME" /></translation>
 <translation id="2134905185275441536">CAs do sistema</translation>
+<translation id="2135420518376202233">Nomes de dispositivos Bluetooth</translation>
 <translation id="21354425047973905">Ocultar PINs</translation>
 <translation id="2135456203358955318">Lupa em área fixa</translation>
 <translation id="2135787500304447609">&amp;Retomar</translation>
@@ -2843,6 +2845,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2893180576842394309">O histórico será usado para personalizar a Pesquisa, anúncios e outros serviços do Google.</translation>
 <translation id="2893318819023133318">Inverter visualizações</translation>
 <translation id="2893701697603065178">Ambiente de desenvolvimento gerenciado</translation>
+<translation id="2894596417096093634">Identificadores de relatórios de erros</translation>
 <translation id="2894757982205307093">Nova guia no grupo</translation>
 <translation id="289695669188700754">ID da chave: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Esta configuração personalizada será removida quando você fechar todas as janelas anônimas</translation>
@@ -3114,6 +3117,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3076966043108928831">Salvar apenas neste dispositivo</translation>
 <translation id="3076977359333237641">Seus dados de login foram excluídos</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">Atualizador por usuário</translation>
 <translation id="3080933187214341848">A rede não está sincronizada com a conta. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Nome ou ID do app</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4295,6 +4299,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3867831579565057323">Mapear sua tela touch</translation>
 <translation id="3867944738977021751">Campos do certificado</translation>
 <translation id="3869564880668247983">Agrupar todas as guias</translation>
+<translation id="3869750789340473337">Despejos de memória</translation>
 <translation id="3869917919960562512">Índice incorreto.</translation>
 <translation id="3870626286046977643">Compartilhar também o áudio do sistema</translation>
 <translation id="3870688298003434214">Desmarcar <ph name="BOOKMARK_TITLE" /></translation>
@@ -7180,6 +7185,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5886009770935151472">Dedo 1</translation>
 <translation id="5886112770923972514">Conectar e configurar rapidamente os dispositivos próximos com pareamento rápido</translation>
 <translation id="5886384907280980632">Desativar agora</translation>
+<translation id="5888337581644150257">Números de contas bancárias internacionais</translation>
 <translation id="5888889603768021126">Login feito com</translation>
 <translation id="5889282057229379085">Número máximo de autoridades de certificação intermediárias: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Criptografar dados sincronizados com a <ph name="BEGIN_LINK" />senha longa de sincronização<ph name="END_LINK" />. As formas de pagamento e os endereços do Google Pay não vão ser criptografados. O histórico de navegação do Chrome não será sincronizado.</translation>
@@ -7461,6 +7467,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6082877069782862752">Mapa de atalhos</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" />: parte de grupo sem nome</translation>
 <translation id="6086004606538989567">A conta que você verificou não está autorizada a acessar este dispositivo.</translation>
+<translation id="6086350918562605938">Atualizador por sistema</translation>
 <translation id="6086418630711763366">Você pode navegar pelas páginas com um cursor de texto. Pressione Ctrl + <ph name="KEY" /> para desativar.</translation>
 <translation id="6086846494333236931">Instalada pelo administrador</translation>
 <translation id="6087286598828478206">Bloquear e sair do grupo?</translation>

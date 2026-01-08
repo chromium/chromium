@@ -456,6 +456,7 @@
 <translation id="2669454659051515572">Siapa pun yang menggunakan perangkat ini dapat melihat file yang didownload</translation>
 <translation id="2671423594960767771">Bagikan grup</translation>
 <translation id="2673508731173059946">Buka link yang disalin</translation>
+<translation id="2679659833697380">Info Anda disimpan ke perangkat Anda</translation>
 <translation id="2688535388040882469">Banner</translation>
 <translation id="2690858294534178585">Kamera sedang digunakan</translation>
 <translation id="2691653761409724435">Tidak tersedia secara offline</translation>
@@ -927,7 +928,6 @@
 <translation id="4601095002996233687">Pemindaian mendalam untuk download yang mencurigakan.</translation>
 <translation id="4606247758155004938">Browser dikelola oleh organisasi Anda.</translation>
 <translation id="4607887340472970274">Pemantauan Harga</translation>
-<translation id="461440297010471931">Menelusuri dengan Google</translation>
 <translation id="4619564267100705184">Verifikasi diri Anda</translation>
 <translation id="4621768135601674446">Buka opsi Mode baca</translation>
 <translation id="4627107755957573804">Izinkan situs dan aplikasi mengupgrade akun yang ada untuk menggunakan kunci sandi</translation>
@@ -2131,6 +2131,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8856643812068084733">Arsip</translation>
 <translation id="8863067612494559785">Mengirim ke <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Mendapatkan rute dan info lokal dari Google Maps</translation>
+<translation id="8867879594900082274">Pengeditan Anda hanya akan berlaku untuk situs yang disematkan di perangkat ini.</translation>
 <translation id="8871974300055371298">Setelan konten</translation>
 <translation id="8877788021141246043">Setel pengingat</translation>
 <translation id="8879604564928138696">Ketuk dua kali untuk mencoba</translation>

@@ -271,6 +271,7 @@
 <translation id="3885770153807205175">Kielivalitsin</translation>
 <translation id="3889417619312448367">Poista Google Chromen asennus</translation>
 <translation id="3892148308691398805">Kopioi teksti</translation>
+<translation id="3893985792899396936">Chrome-vinkki: Hae Lensilla</translation>
 <translation id="3906096710440765802">Kirjaudu Chromeen, jotta voit käyttää esimerkiksi salasanoja ja kirjanmerkkejä kaikilla laitteilla</translation>
 <translation id="3921132130819999051">Anna Chromen selata puolestasi</translation>
 <translation id="3941890832296813527">Asennusvirhe: Asennusohjelman tiedostonimi on virheellinen, tai sitä ei tueta.</translation>
@@ -312,7 +313,6 @@
 <translation id="4329315893554541805">Voit käyttää personointia ja muita ominaisuuksia, kun lisäät Chromen verkko- ja sovellustoimintaan ja linkitettyihin Googlen palveluihin</translation>
 <translation id="4334241893986177674">Hae tätä kuvakaappausta</translation>
 <translation id="4334294535648607276">Lataus on valmis.</translation>
-<translation id="4337324600316876133">Sinulla on oltava macOS 12 tai uudempi, jotta saat tulevia Google Chromen päivityksiä. Tällä tietokoneella on macOS 11.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> on lisätty Chromeen</translation>
 <translation id="4344128547036991536">Kun avaat Google Lensin, sivun otsikko, URL-osoite ja sisältö (mukaan lukien PDF-tiedostot) lähetetään automaattisesti Googlelle. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">Voit käyttää personointia, kun lisäät Chromen verkko- ja sovellustoimintaan</translation>

@@ -578,6 +578,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Pažeistų slaptažodžių nėra}=1{1 pažeistas slaptažodis}one{{NUM_COMPROMISED} pažeistas slaptažodis}few{{NUM_COMPROMISED} pažeisti slaptažodžiai}many{{NUM_COMPROMISED} pažeisto slaptažodžio}other{{NUM_COMPROMISED} pažeistų slaptažodžių}}</translation>
 <translation id="1380028686461971526">Automatiškai prisijungti prie tinklo</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> kalba siunčiama apdoroti į sistemą „Google“</translation>
+<translation id="1382174183118245544">Kredito kortelių numeriai</translation>
 <translation id="1383065744946263511">Prisegti prie įrankių juostos</translation>
 <translation id="1383381142702995121">Tvarkyti šį plėtinį</translation>
 <translation id="1383597849754832576">Nepavyko atsisiųsti kalbos failų. Vėliau bandykite dar kartą.</translation>
@@ -1706,6 +1707,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2133775869826239001">Pasirinkite daugiau nustatytinų funkcijų</translation>
 <translation id="2133857665503360653">Vėl bandyti atlikti veiksmą su <ph name="FILE_NAME" /></translation>
 <translation id="2134905185275441536">Sistemos CA</translation>
+<translation id="2135420518376202233">„Bluetooth“ įrenginių pavadinimai</translation>
 <translation id="21354425047973905">Slėpti PIN kodus</translation>
 <translation id="2135456203358955318">Prie doko prijungtas didintuvas</translation>
 <translation id="2135787500304447609">&amp;Atnaujinti</translation>
@@ -2846,6 +2848,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2893180576842394309">„Google“ gali naudoti jūsų istoriją, kad suasmenintų Paiešką ir kitas „Google“ paslaugas</translation>
 <translation id="2893318819023133318">Atvirkštiniai rodiniai</translation>
 <translation id="2893701697603065178">Valdoma kūrimo aplinka</translation>
+<translation id="2894596417096093634">Strigčių ataskaitų identifikatoriai</translation>
 <translation id="2894757982205307093">Naujas skirtukas grupėje</translation>
 <translation id="289695669188700754">Rakto ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Šis tinkintas nustatymas bus pašalintas, kai uždarysite visus inkognito langus</translation>
@@ -3117,6 +3120,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3076966043108928831">Išsaugoti tik šiame įrenginyje</translation>
 <translation id="3076977359333237641">Prisijungimo duomenys buvo ištrinti</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">Atnaujinimo priemonė vienam naudotojui</translation>
 <translation id="3080933187214341848">Šis tinklas nesinchronizuojamas su jūsų paskyra. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Programos pavadinimas arba ID</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4297,6 +4301,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3867831579565057323">Susieti jutiklinį ekraną</translation>
 <translation id="3867944738977021751">Sertifikato laukai</translation>
 <translation id="3869564880668247983">Grupuoti visus skirtukus</translation>
+<translation id="3869750789340473337">Atminties išklotinės</translation>
 <translation id="3869917919960562512">Neteisingas indeksas.</translation>
 <translation id="3870626286046977643">Taip pat bendrinti sistemos garso įrašą</translation>
 <translation id="3870688298003434214">Panaikinti „<ph name="BOOKMARK_TITLE" />“ pasirinkimą</translation>
@@ -7182,6 +7187,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5886009770935151472">Pirmas pirštas</translation>
 <translation id="5886112770923972514">Prisijunkite ir greitai nustatykite sparčiojo susiejimo įrenginius netoliese</translation>
 <translation id="5886384907280980632">Išjungti dabar</translation>
+<translation id="5888337581644150257">Tarptautiniai banko sąskaitų numeriai</translation>
 <translation id="5888889603768021126">Prisijungta naudojant</translation>
 <translation id="5889282057229379085">Didžiausias tarpinių CA skaičius: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Šifruokite sinchronizuojamus duomenis taikydami savo <ph name="BEGIN_LINK" />sinchronizavimo slaptafrazę<ph name="END_LINK" />. „Google Pay“ mokėjimo metodai ir adresai nebus šifruojami. Naršymo istorija iš „Chrome“ nebus sinchronizuojama.</translation>
@@ -7463,6 +7469,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6082877069782862752">Klavišų schemos</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – priklauso grupei be pavadinimo</translation>
 <translation id="6086004606538989567">Jūsų patvirtintai paskyrai neleidžiama pasiekti šio įrenginio.</translation>
+<translation id="6086350918562605938">Atnaujinimo priemonė vienai sistemai</translation>
 <translation id="6086418630711763366">Puslapius galite naršyti naudodami teksto žymeklį. Paspauskite „Ctrl“ + <ph name="KEY" />, kad išjungtumėte.</translation>
 <translation id="6086846494333236931">Įdiegė jūsų administratorius</translation>
 <translation id="6087286598828478206">Blokuoti ir išeiti iš grupės?</translation>

@@ -575,6 +575,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{გატეხილი პაროლები არ არის}=1{1 გატეხილი პაროლი}other{{NUM_COMPROMISED} გატეხილი პაროლი}}</translation>
 <translation id="1380028686461971526">ქსელთან ავტომატურად დაკავშირება</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> მეტყველება დასამუშავებლად გაეგზავნება Google-ს</translation>
+<translation id="1382174183118245544">საკრედიტო ბარათების ნომრები</translation>
 <translation id="1383065744946263511">ხელსაწყოთა ზოლში ჩამაგრება</translation>
 <translation id="1383381142702995121">ამ გაფართოების მართვა</translation>
 <translation id="1383597849754832576">მეტყველების ფაილების ჩამოტვირთვა ვერ მოხერხდა. ცადეთ მოგვიანებით.</translation>
@@ -1693,6 +1694,7 @@
 <translation id="2133775869826239001">აირჩიეთ მეტი ფუნქცია დასაყენებლად</translation>
 <translation id="2133857665503360653">ხელახლა ჩამოიტვირთოს <ph name="FILE_NAME" /></translation>
 <translation id="2134905185275441536">სისტემის CA-ები</translation>
+<translation id="2135420518376202233">Bluetooth მოწყობილობის სახელები</translation>
 <translation id="21354425047973905">PIN-კოდების დამალვა</translation>
 <translation id="2135456203358955318">ჩამაგრებული ლუპა</translation>
 <translation id="2135787500304447609">&amp;გაგრძელება</translation>
@@ -2830,6 +2832,7 @@
 <translation id="2893180576842394309">Google-მა შეიძლება გამოიყენოს თქვენი ისტორია Search-ისა და Google-ის სხვა სერვისების თქვენზე მოსარგებად</translation>
 <translation id="2893318819023133318">ხედების გაცვლა</translation>
 <translation id="2893701697603065178">შემუშავების მართული გარემო</translation>
+<translation id="2894596417096093634">ავარიულად გათიშვის ანგარიშის იდენტიფიკატორები</translation>
 <translation id="2894757982205307093">ახალი ჩანართი ჯგუფში</translation>
 <translation id="289695669188700754">გასაღების ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ეს მორგებული პარამეტრი გაუქმდება, როცა ყველა ინკოგნიტო ფანჯარას დახურავთ</translation>
@@ -3101,6 +3104,7 @@
 <translation id="3076966043108928831">მხოლოდ ამ მოწყობილობაზე შენახვა</translation>
 <translation id="3076977359333237641">თქვენი სისტემაში შესვლის მონაცემები წაიშალა</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">მომხმარებლის განმაახლებელი</translation>
 <translation id="3080933187214341848">ეს ქსელი არ არის სინქრონიზებული თქვენს ანგარიშთან. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">აპის სახელი ან ID</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4281,6 +4285,7 @@
 <translation id="3867831579565057323">სენსორული ეკრანის მიმაგრება</translation>
 <translation id="3867944738977021751">სერტიფიკატის ველები</translation>
 <translation id="3869564880668247983">ყველა ჩანართის დაჯგუფება</translation>
+<translation id="3869750789340473337">მეხსიერების საცავები</translation>
 <translation id="3869917919960562512">არასწორი ინდექსი.</translation>
 <translation id="3870626286046977643">გაზიარდეს სისტემის აუდიოც</translation>
 <translation id="3870688298003434214"><ph name="BOOKMARK_TITLE" />-ის არჩევის გაუქმება</translation>
@@ -7165,6 +7170,7 @@
 <translation id="5886009770935151472">თითის ანაბეჭდი 1</translation>
 <translation id="5886112770923972514">დააკავშირეთ და სწრაფად დააყენეთ სწრაფად დაწყვილებადი მოწყობილობები ახლომახლო</translation>
 <translation id="5886384907280980632">ახლავე გამორთვა</translation>
+<translation id="5888337581644150257">საერთაშორისო საბანკო ანგარიშების ნომრები</translation>
 <translation id="5888889603768021126">შესვლისთვის გამოყენებული იყო</translation>
 <translation id="5889282057229379085">შუალედური CA-ების მაქსიმალური რაოდენობა: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">დაშიფრეთ სინქრონიზებული მონაცემები თქვენი საკუთარი <ph name="BEGIN_LINK" />საიდუმლო ფრაზის<ph name="END_LINK" /> მეშვეობით. Google Pay-ში არსებული გადახდის მეთოდები და მისამართები არ დაიშიფრება. Chrome-ში არსებული დათვალიერების ისტორია არ სინქრონიზდება.</translation>
@@ -7446,6 +7452,7 @@
 <translation id="6082877069782862752">კლავიშების ასახვა</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> — უსახელო ჯგუფის ნაწილი</translation>
 <translation id="6086004606538989567">ანგარიშს, რომელიც დაადასტურეთ, არ აქვს ამ მოწყობილობაზე წვდომის უფლება.</translation>
+<translation id="6086350918562605938">სისტემის განმაახლებელი</translation>
 <translation id="6086418630711763366">გვერდებზე ნავიგაცია ტექსტური კურსორის მეშვეობით შეგიძლიათ. გამოსართავად დააჭირეთ კლავიშების კომბინაციას Ctrl + <ph name="KEY" />.</translation>
 <translation id="6086846494333236931">დაინსტალირებულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="6087286598828478206">გსურთ დაბლოკვა და ჯგუფიდან გასვლა?</translation>

@@ -576,6 +576,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Aucun mot de passe compromis}=1{1 mot de passe compromis}one{{NUM_COMPROMISED} mot de passe compromis}other{{NUM_COMPROMISED} mots de passe compromis}}</translation>
 <translation id="1380028686461971526">Connexion automatique à un réseau</translation>
 <translation id="1381567580865186407">Le fichier vocal en <ph name="LANGUAGE" /> est envoyé à Google aux fins de traitement</translation>
+<translation id="1382174183118245544">Numéros de carte de crédit</translation>
 <translation id="1383065744946263511">Épingler à la barre d'outils</translation>
 <translation id="1383381142702995121">Gérer cette extension</translation>
 <translation id="1383597849754832576">Impossible de télécharger les fichiers de synthèse textuelle. Réessayez plus tard.</translation>
@@ -1694,6 +1695,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2133775869826239001">Choisir plus de fonctionnalités à configurer</translation>
 <translation id="2133857665503360653">Réessayer <ph name="FILE_NAME" /></translation>
 <translation id="2134905185275441536">Autorités de certification système</translation>
+<translation id="2135420518376202233">Noms des appareils Bluetooth</translation>
 <translation id="21354425047973905">Masquer les NIP</translation>
 <translation id="2135456203358955318">Loupe en mode ancré</translation>
 <translation id="2135787500304447609">&amp;Reprendre</translation>
@@ -2833,6 +2835,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2893180576842394309">Google peut utiliser votre historique pour personnaliser la recherche et d'autres services Google</translation>
 <translation id="2893318819023133318">Inverser les affichages</translation>
 <translation id="2893701697603065178">Environnement de développement géré</translation>
+<translation id="2894596417096093634">Identifiants de rapport de plantage</translation>
 <translation id="2894757982205307093">Nouvel onglet dans le groupe</translation>
 <translation id="289695669188700754">Identifiant de la clé : <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Ce paramètre personnalisé sera retiré lorsque vous fermerez toutes vos fenêtres de navigation privée</translation>
@@ -3104,6 +3107,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3076966043108928831">Enregistrer uniquement sur cet appareil</translation>
 <translation id="3076977359333237641">Vos données de connexion ont été supprimées</translation>
 <translation id="3077734595579995578">majuscule</translation>
+<translation id="3080930813589868009">Outil de mise à jour par utilisateur</translation>
 <translation id="3080933187214341848">Ce réseau n'est pas synchronisé avec votre compte. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Nom ou identifiant de l'appli</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> — <ph name="PAGE_URL" /></translation>
@@ -4284,6 +4288,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="3867831579565057323">Mapper votre écran tactile</translation>
 <translation id="3867944738977021751">Champs de certificat</translation>
 <translation id="3869564880668247983">Regrouper tous les onglets</translation>
+<translation id="3869750789340473337">Images mémoire</translation>
 <translation id="3869917919960562512">Index erroné.</translation>
 <translation id="3870626286046977643">Partager également l'audio du système</translation>
 <translation id="3870688298003434214">Désélectionner <ph name="BOOKMARK_TITLE" /></translation>
@@ -7166,6 +7171,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5886009770935151472">Doigt 1</translation>
 <translation id="5886112770923972514">Connectez et configurez rapidement les appareils à association rapide à proximité</translation>
 <translation id="5886384907280980632">Désactiver maintenant</translation>
+<translation id="5888337581644150257">Numéros de compte bancaire internationaux</translation>
 <translation id="5888889603768021126">Connecté avec</translation>
 <translation id="5889282057229379085">Nombre maximal d'autorités de certification intermédiaires : <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Chiffrer les données synchronisées avec votre propre <ph name="BEGIN_LINK" />phrase de passe de synchronisation<ph name="END_LINK" />. Les modes de paiement et les adresses de Google Pay ne seront pas chiffrés. L'historique de navigation de Chrome ne se synchronisera pas.</translation>
@@ -7447,6 +7453,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6082877069782862752">Affectation des touches</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> : fait partie d'un groupe sans nom</translation>
 <translation id="6086004606538989567">Le compte que vous avez vérifié n'est pas autorisé à accéder à cet appareil.</translation>
+<translation id="6086350918562605938">Outil de mise à jour par système</translation>
 <translation id="6086418630711763366">Vous pouvez parcourir les pages à l'aide d'un curseur de texte. Appuyez sur Ctrl + <ph name="KEY" /> pour désactiver.</translation>
 <translation id="6086846494333236931">Élément installé par votre administrateur</translation>
 <translation id="6087286598828478206">Bloquer et quitter le groupe?</translation>

@@ -575,6 +575,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Geen gehackte wachtwoorden}=1{1 gehackt wachtwoord}other{{NUM_COMPROMISED} gehackte wachtwoorden}}</translation>
 <translation id="1380028686461971526">Automatisch verbinding maken met netwerk</translation>
 <translation id="1381567580865186407">Spraak in het <ph name="LANGUAGE" /> wordt voor verwerking naar Google gestuurd</translation>
+<translation id="1382174183118245544">Creditcardnummers</translation>
 <translation id="1383065744946263511">Vastzetten op werkbalk</translation>
 <translation id="1383381142702995121">Deze extensie beheren</translation>
 <translation id="1383597849754832576">Kan spraakbestanden niet downloaden. Probeer het later opnieuw.</translation>
@@ -1693,6 +1694,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2133775869826239001">Meer functies kiezen om in te stellen</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> opnieuw proberen</translation>
 <translation id="2134905185275441536">Systeem-CA's</translation>
+<translation id="2135420518376202233">Namen van Bluetooth-apparaten</translation>
 <translation id="21354425047973905">Pincodes verbergen</translation>
 <translation id="2135456203358955318">Vastgezet vergrootglas</translation>
 <translation id="2135787500304447609">He&amp;rvatten</translation>
@@ -2830,6 +2832,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2893180576842394309">Google kan je geschiedenis gebruiken om Google Zoeken en andere Google-services te personaliseren</translation>
 <translation id="2893318819023133318">Weergaven omkeren</translation>
 <translation id="2893701697603065178">Beheerde ontwikkelomgeving</translation>
+<translation id="2894596417096093634">ID's van crashrapporten</translation>
 <translation id="2894757982205307093">Nieuw tabblad in groep</translation>
 <translation id="289695669188700754">Sleutel-ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Deze aangepaste instelling wordt verwijderd als je al je incognitovensters sluit</translation>
@@ -3101,6 +3104,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3076966043108928831">Alleen opslaan op dit apparaat</translation>
 <translation id="3076977359333237641">Je inloggegevens zijn verwijderd</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">Updater per gebruiker</translation>
 <translation id="3080933187214341848">Dit netwerk is niet gesynchroniseerd met je account. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Naam of ID van app</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4279,6 +4283,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3867831579565057323">Je touchscreen toewijzen</translation>
 <translation id="3867944738977021751">Certificaatvelden</translation>
 <translation id="3869564880668247983">Alle tabbladen groeperen</translation>
+<translation id="3869750789340473337">Geheugendumps</translation>
 <translation id="3869917919960562512">Verkeerde index.</translation>
 <translation id="3870626286046977643">Systeemaudio ook delen</translation>
 <translation id="3870688298003434214"><ph name="BOOKMARK_TITLE" /> deselecteren</translation>
@@ -7158,6 +7163,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5886009770935151472">Vinger 1</translation>
 <translation id="5886112770923972514">Maak verbinding en stel apparaten in de buurt makkelijk in via Snel koppelen</translation>
 <translation id="5886384907280980632">Nu uitzetten</translation>
+<translation id="5888337581644150257">International Bank Account Numbers</translation>
 <translation id="5888889603768021126">Ingelogd met</translation>
 <translation id="5889282057229379085">Maximum aantal tussenliggende certificeringsinstanties: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Versleutel gesynchroniseerde gegevens met je eigen <ph name="BEGIN_LINK" />wachtwoordzin voor synchronisatie<ph name="END_LINK" />. Betaalmethoden en adressen van Google Pay worden niet versleuteld. De browsegeschiedenis in Chrome wordt niet gesynchroniseerd.</translation>
@@ -7438,6 +7444,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6082877069782862752">Toetstoewijzing</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - deel van naamloze groep</translation>
 <translation id="6086004606538989567">Het account dat je hebt geverifieerd, heeft geen toegangsrechten voor dit apparaat.</translation>
+<translation id="6086350918562605938">Updater per systeem</translation>
 <translation id="6086418630711763366">Je kunt navigeren op pagina's met een tekstcursor. Druk op Ctrl + <ph name="KEY" /> om dit uit te zetten.</translation>
 <translation id="6086846494333236931">Geïnstalleerd door je beheerder</translation>
 <translation id="6087286598828478206">Blokkeren en groep verlaten?</translation>

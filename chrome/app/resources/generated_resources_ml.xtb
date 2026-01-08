@@ -575,6 +575,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകൾ ഒന്നുമില്ല}=1{അപഹരിക്കപ്പെട്ട ഒരു പാസ്‌വേഡ്}other{അപഹരിക്കപ്പെട്ട {NUM_COMPROMISED} പാസ്‌വേഡുകൾ}}</translation>
 <translation id="1380028686461971526">നെറ്റ്‌വർക്കിലേക്ക് സ്വയമേവ കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> സംഭാഷണം പ്രോസസ് ചെയ്യുന്നതിന് Google-ലേക്ക് അയച്ചു</translation>
+<translation id="1382174183118245544">ക്രെഡിറ്റ് കാർഡ് നമ്പറുകൾ</translation>
 <translation id="1383065744946263511">ടൂൾബാറിൽ പിൻ ചെയ്യുക</translation>
 <translation id="1383381142702995121">ഈ വിപുലീകരണം മാനേജ് ചെയ്യുക</translation>
 <translation id="1383597849754832576">സംഭാഷണ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാനായില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -1690,6 +1691,7 @@
 <translation id="2133775869826239001">സജ്ജീകരിക്കാൻ കൂടുതൽ ഫീച്ചറുകൾ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="2134905185275441536">സിസ്റ്റം CA-കൾ</translation>
+<translation id="2135420518376202233">ബ്ലൂടൂത്ത് ഉപകരണങ്ങളുടെ പേരുകൾ</translation>
 <translation id="21354425047973905">പിന്നുകൾ മറയ്‌ക്കുക</translation>
 <translation id="2135456203358955318">ഡോക്ക് ചെയ്‌ത മാഗ്‌നിഫയർ</translation>
 <translation id="2135787500304447609">&amp;പുനരാരംഭിക്കുക</translation>
@@ -2827,6 +2829,7 @@
 <translation id="2893180576842394309">തിരയലും മറ്റ് Google സേവനങ്ങളും വ്യക്തിപരമാക്കാൻ Google നിങ്ങളുടെ ചരിത്രം ഉപയോഗിച്ചേക്കാം</translation>
 <translation id="2893318819023133318">കാഴ്‌ചകൾ റിവേഴ്‌സ് ചെയ്യൂ</translation>
 <translation id="2893701697603065178">മാനേജ് ചെയ്യുന്ന ഡെവലപ്പ്‌മെന്റ് പരിതസ്ഥിതി</translation>
+<translation id="2894596417096093634">ക്രാഷ് റിപ്പോർട്ട് ഐഡന്റിഫയറുകൾ</translation>
 <translation id="2894757982205307093">ഗ്രൂപ്പിലെ പുതിയ ടാബ്</translation>
 <translation id="289695669188700754">കീ ഐഡി: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">നിങ്ങളുടെ എല്ലാ അദൃശ്യ വിൻഡോകളും അടയ്‌ക്കുമ്പോൾ, ഈ ഇഷ്‌ടാനുസൃത ക്രമീകരണം നീക്കം ചെയ്യും</translation>
@@ -3098,6 +3101,7 @@
 <translation id="3076966043108928831">ഈ ഉപകരണത്തിൽ മാത്രം സംരക്ഷിക്കുക</translation>
 <translation id="3076977359333237641">നിങ്ങളുടെ സൈൻ ഇൻ ഡാറ്റ ഇല്ലാതാക്കി</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">ഓരോ ഉപയോക്താവിനുമുള്ള അപ്ഡേറ്റർ</translation>
 <translation id="3080933187214341848">ഈ നെറ്റ്‌വർക്ക് നിങ്ങളുടെ അക്കൗണ്ടിലേക്ക് സമന്വയിപ്പിച്ചിട്ടില്ല. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">ആപ്പിന്റെ പേര് അല്ലെങ്കിൽ ഐഡി</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4278,6 +4282,7 @@
 <translation id="3867831579565057323">നിങ്ങളുടെ ടച്ച്‌സ്‌ക്രീൻ മാപ്പ് ചെയ്യൂ</translation>
 <translation id="3867944738977021751">സര്‍‌ട്ടിഫിക്കറ്റ് ഫീല്‍‌ഡുകള്‍‌</translation>
 <translation id="3869564880668247983">എല്ലാ ടാബുകളും ഗ്രൂപ്പ് ചെയ്യൂ</translation>
+<translation id="3869750789340473337">മെമ്മറി ഡംപുകൾ</translation>
 <translation id="3869917919960562512">തെറ്റായ സൂചിക.</translation>
 <translation id="3870626286046977643">സിസ്റ്റം ഓഡിയോയും പങ്കിടുക</translation>
 <translation id="3870688298003434214"><ph name="BOOKMARK_TITLE" /> തിരഞ്ഞെടുത്തത് മാറ്റുക</translation>
@@ -7161,6 +7166,7 @@
 <translation id="5886009770935151472">വിരൽ 1</translation>
 <translation id="5886112770923972514">സമീപമുള്ള ഫാസ്‌റ്റ് പെയർ ഉപകരണങ്ങൾ കണക്‌റ്റ് ചെയ്‌ത് അതിവേഗം സജ്ജീകരിക്കുക</translation>
 <translation id="5886384907280980632">ഇപ്പോൾ ഓഫാക്കുക</translation>
+<translation id="5888337581644150257">ഇന്റർനാഷണൽ ബാങ്ക് അക്കൗണ്ട് നമ്പറുകൾ</translation>
 <translation id="5888889603768021126">ഇതുപയോഗിച്ച് സൈൻ ഇൻ ചെയ്തു</translation>
 <translation id="5889282057229379085">ഇന്‍റര്‍‌മീഡിയറ്റ് CAകളുടെ പരമാവധി എണ്ണം: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">നിങ്ങളുടെ സ്വന്തം <ph name="BEGIN_LINK" />പാസ്‌ഫ്രെയ്‌സ് സമന്വയിപ്പിക്കൽ<ph name="END_LINK" /> ഉപയോഗിച്ച്, സമന്വയിപ്പിച്ച വിവരങ്ങൾ എൻക്രി‌പ്‌റ്റ് ചെയ്യുക. Google Pay-യിൽ നിന്നുള്ള പേയ്‌മെന്റ് രീതികളും വിലാസങ്ങളും എൻക്രിപ്റ്റ് ചെയ്യപ്പെടില്ല. Chrome-ൽ നിന്നുള്ള ബ്രൗസിംഗ് ചരിത്രം സമന്വയിപ്പിക്കില്ല.</translation>
@@ -7442,6 +7448,7 @@
 <translation id="6082877069782862752">കീ മാപ്പിംഗ്</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - പേരില്ലാത്ത ഗ്രൂപ്പിന്റെ ഭാഗം</translation>
 <translation id="6086004606538989567">നിങ്ങൾ പരിശോധിച്ചുറപ്പിച്ച അക്കൗണ്ടിന് ഈ ഉപകരണം ആക്‌സസ് ചെയ്യാൻ അംഗീകാരമില്ല.</translation>
+<translation id="6086350918562605938">ഓരോ സിസ്റ്റത്തിനുമുള്ള അപ്‌ഡേറ്റർ</translation>
 <translation id="6086418630711763366">ടെക്‌സ്‌റ്റ് കഴ്‌സർ ഉപയോഗിച്ച് നിങ്ങൾക്ക് പേജുകൾ നാവിഗേറ്റ് ചെയ്യാനാകും. ഓഫാക്കാൻ Ctrl + <ph name="KEY" /> അമർത്തുക.</translation>
 <translation id="6086846494333236931">നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്റർ ഇൻസ്റ്റാൾ ചെയ്‌തു</translation>
 <translation id="6087286598828478206">ഗ്രൂപ്പ് ബ്ലോക്ക് ചെയ്ത് അതിൽ നിന്ന് പുറത്ത് കടക്കണോ?</translation>

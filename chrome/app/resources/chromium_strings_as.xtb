@@ -94,7 +94,6 @@
 <translation id="2020032459870799438">আপোনাৰ অন্য পাছৱৰ্ডসমূহ ডেটা উলংঘন আৰু আন সুৰক্ষা সম্পৰ্কীয় সমস্যাৰ পৰা নিৰাপদে আছেনে নাই পৰীক্ষা কৰিবলৈ <ph name="BEGIN_LINK" />Chromiumত ছাইন ইন কৰক<ph name="END_LINK" />।</translation>
 <translation id="2039417478970545937">ছেটিং।</translation>
 <translation id="2049376729098081731">Google সেৱাসমূহত অধিক ব্যক্তিগতকৃত অভিজ্ঞতা লাভ কৰিবলৈ Chromiumৰ ইতিহাস অন্তৰ্ভুক্ত কৰিবনে নকৰে সেয়া বাছনি কৰক</translation>
-<translation id="2054039611381840095">Chromiumৰ ভৱিষ্যতৰ আপডে’টসমূহ পাবলৈ আপোনাক macOS 12 অথবা তাৰ পাছৰ সংস্কৰণৰ আৱশ্যক হ’ব। এই কম্পিউটাৰটোৱে macOS 11 ব্যৱহাৰ কৰি আছে।</translation>
 <translation id="2064856577282482477">Chromiumক এটা নতুন ৰূপ দিবলৈ নতুন টেবৰ পৃষ্ঠাত থকা Chromium কাষ্টমাইজ কৰক বুটামটোত ক্লিক কৰক</translation>
 <translation id="2086476982681781442">এই ফাইলটো প্ৰতাৰণামূলক আৰু ই আপোনাৰ ডিভাইচত অপ্ৰত্যাশিত সালসলনিসমূহ কৰিব পাৰে বাবে Chromiumএ এই ডাউনল’ডটো অৱৰোধ কৰিছে</translation>
 <translation id="208726765006323911">আপুনি পৰৱৰ্তী সময়ত Chromium iOS খুলিলে <ph name="FEATURE_NAME" /> ব্যৱহাৰ কৰি চাবলৈ এটা প্ৰম্প্‌ট দেখা পাব।</translation>
@@ -719,6 +718,7 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="9148058034647219655">বাহিৰ হওক</translation>
 <translation id="9155105544013854680">আপুনি য’ত এৰিছিল তাৰ পৰা অব্যাহত ৰাখক: আপুনি প্ৰতিবাৰে ৰিষ্টাৰ্ট কৰোঁতে Chromiumএ আপোনাৰ টেবসমূহ পুনঃস্থাপন কৰিব পাৰে। এইটো অন কৰিবলৈ ইয়ালৈ যাওক</translation>
 <translation id="9158494823179993217">আপোনাৰ ছিষ্টেমৰ প্ৰশাসকে <ph name="TARGET_URL_HOSTNAME" /> এক্সেছ কৰিবলৈ Chromiumক এটা বিকল্প ব্ৰাউজাৰ খুলিবলৈ কনফিগাৰ কৰিছে।</translation>
+<translation id="9183331186620388872">Chromium সম্পৰ্কীয় কিটিপ: Lensৰ জৰিয়তে সন্ধান কৰক</translation>
 <translation id="9185526690718004400">&amp;Chromium আপডে'ট কৰিবলৈ পুনৰ লঞ্চ কৰক</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9206863043651638213">আপুনি Chromiumত ছাইন ইন কৰোঁতে আন বহুত সুবিধা লাভ কৰক</translation>

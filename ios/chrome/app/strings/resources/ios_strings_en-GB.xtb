@@ -456,6 +456,7 @@
 <translation id="2669454659051515572">Anyone using this device can see downloaded files</translation>
 <translation id="2671423594960767771">Share group</translation>
 <translation id="2673508731173059946">Visit copied link</translation>
+<translation id="2679659833697380">Your info is saved to your device</translation>
 <translation id="2688535388040882469">Banners</translation>
 <translation id="2690858294534178585">Camera is in use</translation>
 <translation id="2691653761409724435">Not available offline</translation>
@@ -927,7 +928,6 @@
 <translation id="4601095002996233687">In-depth scans for suspicious downloads.</translation>
 <translation id="4606247758155004938">Your browser is managed by your organisation.</translation>
 <translation id="4607887340472970274">Price tracking</translation>
-<translation id="461440297010471931">Searching with Google</translation>
 <translation id="4619564267100705184">Verify that it's you</translation>
 <translation id="4621768135601674446">Open reading mode options</translation>
 <translation id="4627107755957573804">Allow sites and apps to upgrade existing accounts to use passkeys</translation>
@@ -2131,6 +2131,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8856643812068084733">Archives</translation>
 <translation id="8863067612494559785">Sending to <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Get directions and local info from Google Maps</translation>
+<translation id="8867879594900082274">Your edits will only apply to your pinned sites on this device.</translation>
 <translation id="8871974300055371298">Content settings</translation>
 <translation id="8877788021141246043">Set a reminder</translation>
 <translation id="8879604564928138696">Double tap to try</translation>

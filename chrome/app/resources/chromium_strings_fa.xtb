@@ -92,7 +92,6 @@
 <translation id="2020032459870799438">‏برای بررسی اینکه از دیگر گذرواژه‌هایتان دربرابر نقض داده یا دیگر مشکلات امنیتی محافظت می‌شود، <ph name="BEGIN_LINK" />به سیستم Chromium وارد شوید<ph name="END_LINK" />.</translation>
 <translation id="2039417478970545937">تنظیمات.</translation>
 <translation id="2049376729098081731">‏انتخاب کنید که آیا سابقه Chromium برای تجربه‌های شخصی‌شده‌تر در سرویس‌های Google لحاظ شود یا نه</translation>
-<translation id="2054039611381840095">‏برای دریافت به‌روزرسانی‌های بعدی Chromium، باید macOS نسخه ۱۲ یا بالاتر داشته باشید. این رایانه از macOS نسخه ۱۱ استفاده می‌کند.</translation>
 <translation id="2064856577282482477">‏روی دکمه «سفارشی‌سازی Chromium» در «صفحه زبانه جدید» کلیک کنید و ظاهری جدید به Chromium ببخشید</translation>
 <translation id="2086476982681781442">‏‫Chromium این بارگیری را مسدود کرد زیرا این فایل فریب‌دهنده است و ممکن است تغییرات غیرمنتظره‌ای در دستگاهتان ایجاد کند</translation>
 <translation id="208726765006323911">‏دفعه بعد که Chromium iOS را باز می‌کنید، پیام‌واره‌ای برای امتحان کردن «<ph name="FEATURE_NAME" />» خواهید دید.</translation>
@@ -715,6 +714,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="9148058034647219655">خروج</translation>
 <translation id="9155105544013854680">‏کارتان را از جایی که متوقف کرده بودید ادامه دهید: Chromium می‌تواند هربار که آن را بازراه‌اندازی می‌کنید، زبانه‌هایتان را بازگرداند. برای روشن کردن این ویژگی، به اینجا بروید:</translation>
 <translation id="9158494823179993217">‏سرپرست سیستم شما برای باز شدن مرورگر جایگزین برای دسترسی به <ph name="TARGET_URL_HOSTNAME" />، Chromium را پیکربندی کرده است.</translation>
+<translation id="9183331186620388872">‏نکته Chromium: جستجو کردن با «لنز»</translation>
 <translation id="9185526690718004400">‏راه‌اندازی مجدد برای به‌روزرسانی Chromium</translation>
 <translation id="9190841055450128916">‏Chromium‏ (mDNS ورودی)</translation>
 <translation id="9206863043651638213">‏با ورود به سیستم Chromium، از مزایای بیشتری بهره‌مند شوید</translation>

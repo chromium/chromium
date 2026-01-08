@@ -94,7 +94,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2020032459870799438"><ph name="BEGIN_LINK" />Logga in i Chromium<ph name="END_LINK" /> om du vill kontrollera att dina andra lösenord skyddas från dataintrång och andra säkerhetsproblem.</translation>
 <translation id="2039417478970545937">Inställningar.</translation>
 <translation id="2049376729098081731">Välj om du vill inkludera Chromium-historiken och få en mer anpassad upplevelse i Googles tjänster</translation>
-<translation id="2054039611381840095">Du behöver macOS 12 eller senare för att få framtida uppdateringar av Chromium. På den här datorn används macOS 11.</translation>
 <translation id="2064856577282482477">Klicka på knappen Anpassa Chromium på sidan Ny flik för att ge Chromium ett nytt utseende</translation>
 <translation id="2086476982681781442">Den här nedladdningen blockerades av Chromium eftersom filen är bedräglig och kan göra oväntade ändringar på enheten</translation>
 <translation id="208726765006323911">Du får en uppmaning om att testa <ph name="FEATURE_NAME" /> nästa gång du öppnar Chromium för iOS.</translation>
@@ -719,6 +718,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="9148058034647219655">Avsluta</translation>
 <translation id="9155105544013854680">Fortsätt där du slutade: Chromium kan återställa dina flikar varje gång du startar om. Aktivera detta genom att öppna</translation>
 <translation id="9158494823179993217">Systemadministratören har konfigurerat Chromium så att <ph name="TARGET_URL_HOSTNAME" /> öppnas i en annan webbläsare.</translation>
+<translation id="9183331186620388872">Tips för Chromium: Sök med Lens</translation>
 <translation id="9185526690718004400">Starta om för att uppdatera &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9206863043651638213">Få mer när du är inloggad i Chromium</translation>

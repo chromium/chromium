@@ -64,6 +64,7 @@
 <translation id="1717996979683942279">Når denne indstilling er aktiveret, kan websites anmode om tilladelse til at administrere vinduer på alle dine skærme. Når denne indstilling er deaktiveret, kan websites ikke administrere vinduer på alle dine skærme.</translation>
 <translation id="1738912554587725807">Feltet i bunden med temasamlinger til udseendet af siden Ny fane</translation>
 <translation id="1743802530341753419">Spørg, før websites opretter forbindelse til en enhed (anbefales)</translation>
+<translation id="1766455884659449403">Få notifikationer med tips til Chrome</translation>
 <translation id="1777815584158991902">Felt i bunden med Discover-feedet</translation>
 <translation id="1779089405699405702">Værktøj til afkodning af billeder</translation>
 <translation id="1785415724048343560">Anbefales for at få den bedste oplevelse</translation>
@@ -401,6 +402,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="5246825184569358663">Denne handling sletter alle lokale data, herunder cookies, og nulstiller alle tilladelser for <ph name="DOMAIN" /> samt alle websites under domænet</translation>
 <translation id="5264323282659631142">Fjern "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Træk fra toppen, og tryk på tilbageknappen igen for at afslutte fuld skærm.</translation>
+<translation id="5286194356314741248">Søger</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5301954838959518834">OK, det er forstået</translation>
 <translation id="5317780077021120954">Gem</translation>

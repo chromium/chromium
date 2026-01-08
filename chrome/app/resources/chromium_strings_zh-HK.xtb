@@ -93,7 +93,6 @@
 <translation id="2020032459870799438">如要檢查其他密碼是否安全，且未受資料外洩或其他安全性問題影響，請<ph name="BEGIN_LINK" />登入 Chromium<ph name="END_LINK" />。</translation>
 <translation id="2039417478970545937">「設定」。</translation>
 <translation id="2049376729098081731">選擇是否包含 Chromium 記錄，以便在 Google 服務中享有更個人化的體驗</translation>
-<translation id="2054039611381840095">如要取得日後的 Chromium 更新，你需要 macOS 12 或以上版本。此電腦正在使用 macOS 11。</translation>
 <translation id="2064856577282482477">按一下「新分頁」上的「自訂 Chromium」按鈕，即可變更 Chromium 外觀</translation>
 <translation id="2086476982681781442">由於此檔案是欺詐檔案，可能會對裝置造成非預期的變更，因此 Chromium 已禁止下載</translation>
 <translation id="208726765006323911">下次開啟 iOS 版 Chromium 時，系統會提示你試用「<ph name="FEATURE_NAME" />」。</translation>
@@ -716,6 +715,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="9148058034647219655">結束</translation>
 <translation id="9155105544013854680">開啟上次瀏覽的內容：Chromium 可以在每次重新啟動後還原分頁。如要開啟此功能，請前往</translation>
 <translation id="9158494823179993217">系統管理員已設定 Chromium 開啟替代瀏覽器來存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
+<translation id="9183331186620388872">Chromium 提示：使用智慧鏡頭搜尋</translation>
 <translation id="9185526690718004400">重新啟動以更新 &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9206863043651638213">登入 Chromium 後可享更多功能</translation>

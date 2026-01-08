@@ -38,6 +38,7 @@
 <translation id="1140317858355046628">Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na "<ph name="GROUP_NAME" />," at made-delete ito sa lahat ng device.</translation>
 <translation id="1142732900304639782">Huwag mag-alok na isalin ang mga site na ito</translation>
 <translation id="1143193470214071120">Magsara ng window o pamahalaan ang mga window</translation>
+<translation id="1149725087019908252">Sina-scan ang <ph name="FILE_NAME" /></translation>
 <translation id="1150263420752757504">Bubukas ang <ph name="APP_NAME" /> sa Chrome. Sa pamamagitan ng pagpapatuloy, sumasang-ayon ka sa <ph name="BEGIN_LINK1" />Mga Tuntunin ng Serbisyo ng Google<ph name="END_LINK1" />, at sa <ph name="BEGIN_LINK2" />Mga Karagdagang Tuntunin ng Serbisyo ng Google Chrome at ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Wala kang naka-save na password sa Google Password Manager.</translation>
 <translation id="115483310321669804">Gamitin ang password na <ph name="PASSWORD" /></translation>
@@ -196,7 +197,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="1829244130665387512">Hanapin sa page</translation>
 <translation id="1832459821645506983">Oo, payag ako</translation>
 <translation id="1845958458910716240">Para protektahan ang iyong data, hayaan ang Chrome na alisin ang mga pahintulot sa mga site na hindi mo binisita kamakailan</translation>
-<translation id="1850996571200618383">{NUM_REVOKED_PERMISSIONS,plural, =1{Inihinto ng Chrome ang mga notification mula sa site na ito. Puwede mong suriin at pamahalaan.}one{Inihinto ng Chrome ang mga notification mula sa mga site na ito. Puwede mong suriin at pamahalaan.}other{Inihinto ng Chrome ang mga notification mula sa mga site na ito. Puwede mong suriin at pamahalaan.}}</translation>
 <translation id="1871098866036088250">Buksan sa Chrome browser</translation>
 <translation id="1877026089748256423">Luma na ang Chrome</translation>
 <translation id="1877073879466606884">Naka-sign in ka sa isang pinapamahalaang profile. Puwedeng remote na gumawa ng mga pagbabago sa mga setting ng profile mo, magsuri ng impormasyon tungkol sa browser sa pamamagitan ng pag-uulat, at gumawa ng iba pang kinakailangang gawain ang iyong administrator.</translation>

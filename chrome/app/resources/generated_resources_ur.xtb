@@ -575,6 +575,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{کوئی متاثرہ پاس ورڈ نہیں}=1{1 متاثرہ پاس ورڈ}other{{NUM_COMPROMISED} متاثرہ پاس ورڈز}}</translation>
 <translation id="1380028686461971526">نیٹ ورک سے خودکار طور پر منسلک ہوں</translation>
 <translation id="1381567580865186407">‏Google کو پروسیسنگ کے لیے <ph name="LANGUAGE" /> اسپیچ بھیجی جاتی ہے</translation>
+<translation id="1382174183118245544">کریڈٹ کارڈ نمبرز</translation>
 <translation id="1383065744946263511">ٹول بار پر پن کریں</translation>
 <translation id="1383381142702995121">اس ایکسٹینشن کا نظم کریں</translation>
 <translation id="1383597849754832576">اسپیچ فائلز ڈاؤن لوڈ نہیں کر سکتے۔ بعد میں دوبارہ کوشش کریں۔</translation>
@@ -1694,6 +1695,7 @@
 <translation id="2133775869826239001">سیٹ اپ کرنے کے لیے مزید خصوصیات کا انتخاب کریں</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> کو دوبارہ آزمائیں</translation>
 <translation id="2134905185275441536">‏سسٹم CAs</translation>
+<translation id="2135420518376202233">بلوٹوتھ آلہ کے نام</translation>
 <translation id="21354425047973905">‏PINs چھپائیں</translation>
 <translation id="2135456203358955318">ڈاک کردہ مکبّر</translation>
 <translation id="2135787500304447609">&amp;دوبارہ شروع کریں</translation>
@@ -2832,6 +2834,7 @@
 <translation id="2893180576842394309">‏تلاش اور Google کی دیگر سروسز کو ذاتی نوعیت کا بنانے کے لیے Google آپ کی سرگزشت کا استعمال کر سکتا ہے</translation>
 <translation id="2893318819023133318">مناظر ریورس کریں</translation>
 <translation id="2893701697603065178">نظم کردہ ڈیولپمنٹ ماحول</translation>
+<translation id="2894596417096093634">کریش رپورٹ شناخت کاران</translation>
 <translation id="2894757982205307093">گروپ میں نیا ٹیب</translation>
 <translation id="289695669188700754">‏کلید ‎ID: <ph name="KEY_ID" />‎</translation>
 <translation id="2897713966423243833">آپ کے اپنی سبھی پوشیدگی ونڈوز بند کرنے پر اس حسب ضرورت ترتیب کو ہٹا دیا جائے گا</translation>
@@ -3103,6 +3106,7 @@
 <translation id="3076966043108928831">صرف اس آلے پر محفوظ کریں</translation>
 <translation id="3076977359333237641">آپ کا سائن ان ڈیٹا حذف کر دیا گیا</translation>
 <translation id="3077734595579995578">شفٹ</translation>
+<translation id="3080930813589868009">فی صارف اپڈیٹر</translation>
 <translation id="3080933187214341848">یہ نیٹ ورک آپ کے اکاؤنٹ میں مطابقت پذیر نہیں ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">‏ایپ کا نام یا ID</translation>
 <translation id="3082374807674020857">‎<ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" />‎</translation>
@@ -4281,6 +4285,7 @@
 <translation id="3867831579565057323">اپنی ٹچ اسکرین کا نقشہ بنائیں</translation>
 <translation id="3867944738977021751">سرٹیفکیٹ فیلڈز</translation>
 <translation id="3869564880668247983">تمام ٹیبز کی گروپ بندی کریں</translation>
+<translation id="3869750789340473337">میموری ڈمپس</translation>
 <translation id="3869917919960562512">غلط انڈیکس۔</translation>
 <translation id="3870626286046977643">سسٹم آڈیو کا بھی اشتراک کریں</translation>
 <translation id="3870688298003434214"><ph name="BOOKMARK_TITLE" /> غیر منتخب کریں</translation>
@@ -7162,6 +7167,7 @@
 <translation id="5886009770935151472">انگلی 1</translation>
 <translation id="5886112770923972514">قریبی فاسٹ پئیر آلات سے منسلک ہوں اور آسانی سے سیٹ اپ کریں</translation>
 <translation id="5886384907280980632">ابھی آف کریں</translation>
+<translation id="5888337581644150257">انٹرنیشنل بینک اکاؤنٹ نمبرز</translation>
 <translation id="5888889603768021126">آپ درج ذیل شناخت فراہم کنندہ کے ساتھ سائن ان ہیں</translation>
 <translation id="5889282057229379085">‏انٹر میڈیٹ CAs کی زیادہ سے زیادہ تعداد: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">‏اپنے ذاتی مطابقت پذیر <ph name="BEGIN_LINK" />پاس فریز کے ساتھ مطابقت پذیر کردہ ڈیٹا کی مرموزکاری کریں<ph name="END_LINK" />۔ Google Pay سے ادائیگی کے طریقے اور پتے مرموز نہیں ہوں گے۔ Chrome سے براؤزنگ کی سرگزشت مطابقت پذیر نہیں ہوگی۔</translation>
@@ -7443,6 +7449,7 @@
 <translation id="6082877069782862752">کلید کی نقشہ سازی</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - بغیر نام والے گروپ کا حصہ</translation>
 <translation id="6086004606538989567">آپ کے توثیق کردہ اکاؤنٹ کو اس آلے تک رسائی حاصل کرنے کی اجازت نہیں ہے۔</translation>
+<translation id="6086350918562605938">فی سسٹم اپ ڈیٹر</translation>
 <translation id="6086418630711763366">‏آپ اپنے صفحات کو ٹیکسٹ کرسر سے نیویگیٹ کر سکتے ہیں۔ آف کرنے کے لیے Ctrl + <ph name="KEY" /> دبائیں۔</translation>
 <translation id="6086846494333236931">آپ کے منتظم نے انسٹال کیا ہے</translation>
 <translation id="6087286598828478206">مسدود کریں اور گروپ چھوڑ دیں؟</translation>

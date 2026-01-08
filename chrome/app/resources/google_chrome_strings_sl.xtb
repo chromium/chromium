@@ -275,6 +275,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3885770153807205175">Izbirnik jezika</translation>
 <translation id="3889417619312448367">Odstrani Google Chrome</translation>
 <translation id="3892148308691398805">Kopiraj besedilo</translation>
+<translation id="3893985792899396936">Nasvet za Chrome: Iščite z Googlom Lens</translation>
 <translation id="3906096710440765802">Prijavite se v Chrome, če želite dostopati do gesel, zaznamkov in drugega v vseh napravah</translation>
 <translation id="3921132130819999051">Naj Chrome brska za vas</translation>
 <translation id="3941890832296813527">Napaka pri namestitvi: Ime datoteke namestitvenega programa je neveljavno ali ni podprto.</translation>
@@ -316,7 +317,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4329315893554541805">Če želite uporabljati osebno prilagajanje in druge funkcije, vključite Chrome v dejavnost v spletu in aplikacijah ter povezane Googlove storitve</translation>
 <translation id="4334241893986177674">Iskanje po tem posnetku zaslona</translation>
 <translation id="4334294535648607276">Prenos končan.</translation>
-<translation id="4337324600316876133">Če želite prejemati prihodnje posodobitve Googla Chrome, potrebujete macOS 12 ali novejšo različico. V tem računalniku je nameščen macOS 11.</translation>
 <translation id="4343195214584226067">Razširitev <ph name="EXTENSION_NAME" /> je dodana v Chrome</translation>
 <translation id="4344128547036991536">Ko odprete Google Lens, se naslov strani, URL in vsebina, vključno z datotekami PDF, samodejno pošljejo Googlu. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">Če želite omogočiti osebno prilagajanje, vključite Chrome v dejavnost v spletu in aplikacijah</translation>

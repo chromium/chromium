@@ -576,6 +576,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{কোনো হেক হোৱা পাছৱৰ্ড নাই}=1{১ টা হেক হোৱা পাছৱৰ্ড}one{{NUM_COMPROMISED} টা হেক হোৱা পাছৱৰ্ড}other{{NUM_COMPROMISED} টা হেক হোৱা পাছৱৰ্ড}}</translation>
 <translation id="1380028686461971526">নেটৱৰ্কৰ সৈতে স্বয়ংক্ৰিয়ভাৱে সংযোগ কৰক</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" />ৰ কথন প্ৰক্ৰিয়াকৰণৰ বাবে Googleলৈ পঠিওৱা হয়</translation>
+<translation id="1382174183118245544">ক্ৰেডিট কাৰ্ডৰ নম্বৰ</translation>
 <translation id="1383065744946263511">টুলবাৰত পিন কৰক</translation>
 <translation id="1383381142702995121">ফাইলৰ এক্সটেনশ্বন পৰিচালনা কৰক</translation>
 <translation id="1383597849754832576">কথন ফাইল ডাউনল’ড কৰিব নোৱাৰি। পাছত পুনৰ চেষ্টা কৰক।</translation>
@@ -1701,6 +1702,7 @@
 <translation id="2133775869826239001">ছেট আপ কৰিবলৈ অধিক সুবিধা বাছনি কৰক</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> পুনৰ চেষ্টা কৰক</translation>
 <translation id="2134905185275441536">ছিষ্টেম CAs</translation>
+<translation id="2135420518376202233">ব্লুটুথ ডিভাইচৰ নাম</translation>
 <translation id="21354425047973905">পিনসমূহ লুকুৱাওক</translation>
 <translation id="2135456203358955318">ড’ক কৰা বিৱৰ্ধক</translation>
 <translation id="2135787500304447609">&amp;ৰখোৱাৰ পৰা আৰম্ভ কৰক</translation>
@@ -2841,6 +2843,7 @@
 <translation id="2893180576842394309">Googleএ Search আৰু অন্য Google সেৱাসমূহ ব্যক্তিগতকৰণ কৰিবলৈ আপোনাৰ ইতিহাস ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="2893318819023133318">ওলোটা ভিউ</translation>
 <translation id="2893701697603065178">পৰিচালিত উন্নয়ন পৰিৱেশ</translation>
+<translation id="2894596417096093634">ক্ৰেশ্ব ৰিপ’ৰ্ট চিনাক্তকাৰী</translation>
 <translation id="2894757982205307093">গোটটোত নতুন টেব</translation>
 <translation id="289695669188700754">চাবিৰ আইডি: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">আপুনি আটাইবোৰ ইনক'গনিট' ৱিণ্ড' বন্ধ কৰিলে এইটো কাষ্টম ছেটিং আঁতৰোৱা হ'ব</translation>
@@ -3112,6 +3115,7 @@
 <translation id="3076966043108928831">কেৱল এই ডিভাইচটোত ছেভ কৰক</translation>
 <translation id="3076977359333237641">আপোনাৰ ছাইন ইন ডেটা মচা হৈছিল</translation>
 <translation id="3077734595579995578">Shift+</translation>
+<translation id="3080930813589868009">প্ৰতিগৰাকী ব্যৱহাৰকাৰী অনুসৰি আপডে’ট কৰোঁতা</translation>
 <translation id="3080933187214341848">এই নেটৱর্কটো আপোনাৰ একাউণ্টৰ সৈতে ছিংক কৰা নাই। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">এপৰ নাম বা আইডি</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4292,6 +4296,7 @@
 <translation id="3867831579565057323">আপোনাৰ টাচ্চস্ক্ৰীন মেপ কৰক</translation>
 <translation id="3867944738977021751">প্ৰমাণপত্ৰৰ ক্ষেত্ৰ</translation>
 <translation id="3869564880668247983">আটাইবোৰ টেব গোটবদ্ধ কৰক</translation>
+<translation id="3869750789340473337">মেম’ৰী ডাম্প</translation>
 <translation id="3869917919960562512">ভুল সূচক।</translation>
 <translation id="3870626286046977643">ছিষ্টেমৰ অডিঅ’ও শ্বেয়াৰ কৰক</translation>
 <translation id="3870688298003434214"><ph name="BOOKMARK_TITLE" /> বাছনিৰ পৰা আঁতৰাওক</translation>
@@ -6956,7 +6961,7 @@
 <translation id="5740328398383587084">Nearby Share</translation>
 <translation id="5740709157181662145"><ph name="DEVICE_OS" />ৰ হাৰ্ডৱেৰ সম্পৰ্কীয় সহায়তা আৰু স্থিৰতা</translation>
 <translation id="574104302965107104">প্ৰতিবিম্বকৰণ দেখুৱাওক</translation>
-<translation id="574209121243317957">পিচ্চ</translation>
+<translation id="574209121243317957">পিটচ্‌</translation>
 <translation id="5742787970423162234">বৰ্ধিত সক্ষমতাৰ সৈতে পেকেজ কৰা ৱেব এপ্লিকেশ্বন। <ph name="BEGIN_LINK_LEARN_MORE" />অধিক জানক<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="5743501966138291117">স্বয়ংক্ৰিয়ভাৱে লক হোৱাৰ সুবিধাটো ব্যৱহাৰ কৰিবলৈ পিনটোত ১২ টা অথবা তাতকৈ কম অংক থাকিবই লাগিব</translation>
 <translation id="5746169159649715125">PDF হিচাপে ছেভ কৰক</translation>
@@ -7175,6 +7180,7 @@
 <translation id="5886009770935151472">আঙুলি ১</translation>
 <translation id="5886112770923972514">নিকটৱৰ্তী Fast Pair ডিভাইচৰ সৈতে সংযোগ কৰক আৰু দ্ৰুততাৰে ছেট আপ কৰক</translation>
 <translation id="5886384907280980632">এতিয়া অফ কৰক</translation>
+<translation id="5888337581644150257">আন্তঃৰাষ্ট্ৰীয় বেংক একাউণ্ট নম্বৰ</translation>
 <translation id="5888889603768021126">ইয়াৰ জৰিয়তে ছাইন ইন কৰা হৈছে</translation>
 <translation id="5889282057229379085">মধ্যৱৰ্তী CAৰ সর্বাধিক সংখ্যা: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">আপোনাৰ নিজৰ <ph name="BEGIN_LINK" />ছিংক কৰা পাছফ্ৰেজ<ph name="END_LINK" />ৰ সৈতে ছিংক কৰা ডেটা এনক্ৰিপ্ট কৰক। Google Payৰ পৰা পৰিশোধ পদ্ধতি আৰু ঠিকনা এনক্ৰিপ্ট কৰা নহ’ব। Chromeৰ পৰা ব্ৰাউজিঙৰ ইতিহাস ছিংক কৰা নহ’ব।</translation>
@@ -7456,6 +7462,7 @@
 <translation id="6082877069782862752">চাবি মেপ কৰা</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - নামবিহীন গোটৰ অংশ</translation>
 <translation id="6086004606538989567">আপুনি সত্যাপন কৰা একাউণ্টটোৰ এই ডিভাইচটো এক্সেছ কৰাৰ অনুমতি নাই।</translation>
+<translation id="6086350918562605938">প্ৰতিটো ছিষ্টেম অনুসৰি আপডে’ট কৰোঁতা</translation>
 <translation id="6086418630711763366">আপুনি পাঠৰ এটা কাৰ্ছৰৰ জৰিয়তে পৃষ্ঠাসমূহ নেভিগে’ট কৰিব পাৰে। অফ কৰিবলৈ Ctrl + <ph name="KEY" /> টিপক।</translation>
 <translation id="6086846494333236931">আপোনাৰ প্ৰশাসকে ইনষ্টল কৰিছে</translation>
 <translation id="6087286598828478206">অৱৰোধ কৰিব আৰু গোটৰ পৰা বাহিৰ ওলাবনে?</translation>

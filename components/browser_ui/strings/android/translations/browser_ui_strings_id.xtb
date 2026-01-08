@@ -64,6 +64,7 @@
 <translation id="1717996979683942279">Jika diaktifkan, situs dapat meminta untuk mengelola jendela di semua layar Anda. Jika dinonaktifkan, situs tidak dapat mengelola jendela di semua layar Anda.</translation>
 <translation id="1738912554587725807">Panel bawah kumpulan tema tampilan halaman tab baru</translation>
 <translation id="1743802530341753419">Tanya sebelum mengizinkan situs terhubung ke perangkat (disarankan)</translation>
+<translation id="1766455884659449403">Dapatkan notifikasi tips Chrome</translation>
 <translation id="1777815584158991902">Panel bawah feed Discover</translation>
 <translation id="1779089405699405702">Pendekode gambar</translation>
 <translation id="1785415724048343560">Direkomendasikan untuk mendapatkan pengalaman terbaik</translation>
@@ -401,6 +402,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="5246825184569358663">Tindakan ini akan menghapus semua data lokal, termasuk cookie, dan mereset semua izin untuk <ph name="DOMAIN" /> serta semua situs di bawahnya</translation>
 <translation id="5264323282659631142">Hapus '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Tarik dari atas dan ketuk tombol kembali untuk keluar dari mode layar penuh.</translation>
+<translation id="5286194356314741248">Memindai</translation>
 <translation id="5300589172476337783">Tampilkan</translation>
 <translation id="5301954838959518834">Oke, mengerti</translation>
 <translation id="5317780077021120954">Simpan</translation>

@@ -64,6 +64,7 @@
 <translation id="1717996979683942279">Ko je možnost vklopljena, lahko spletna mesta zahtevajo upravljanje oken na vseh prikazih. Ko je možnost izklopljena, spletna mesta ne morejo upravljati oken na vseh prikazih.</translation>
 <translation id="1738912554587725807">Razdelek na dnu zaslona z zbirkami tem za videz strani »Nov zavihek«</translation>
 <translation id="1743802530341753419">Prikaži poziv, preden se spletnim mestom dovoli povezovanje z napravo (priporočeno)</translation>
+<translation id="1766455884659449403">Prejemanje obvestil z nasveti za Chrome</translation>
 <translation id="1777815584158991902">Razdelek na dnu zaslona za vir Odkrivanje</translation>
 <translation id="1779089405699405702">Slikovni dekodirnik</translation>
 <translation id="1785415724048343560">Priporočljivo za najboljšo izkušnjo</translation>
@@ -401,6 +402,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="5246825184569358663">To dejanje bo izbrisalo vse lokalne podatke, vključno s piškotki, in ponastavilo vsa dovoljenja za spletno mesto <ph name="DOMAIN" /> ter vsa njegova podrejena spletna mesta</translation>
 <translation id="5264323282659631142">Odstranitev vnosa »<ph name="CHIP_LABEL" />«</translation>
 <translation id="528192093759286357">Povlecite z vrha in se dotaknite gumba za nazaj, če želite zapreti celozaslonski način.</translation>
+<translation id="5286194356314741248">Pregledovanje</translation>
 <translation id="5300589172476337783">Pokaži</translation>
 <translation id="5301954838959518834">V redu, razumem</translation>
 <translation id="5317780077021120954">Shrani</translation>

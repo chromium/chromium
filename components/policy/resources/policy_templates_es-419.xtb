@@ -747,44 +747,6 @@ Esta política dejará de estar disponible a partir de la versión 144 de <ph na
 <translation id="1542491165152947087">Permitir que los usuarios activen o desactiven la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> de temas de anuncios en sus dispositivos</translation>
 <translation id="1542958897137600427">Habilitar el aprovisionamiento de certificados de cliente</translation>
 <translation id="1548431234399786388">Configuración de los controles de los informes de eventos del navegador.</translation>
-<translation id="155018731031610976">Esta política proporciona una forma de anular la lista de conjuntos que el navegador utiliza para las funciones de los Conjuntos propios.
-
-Cada conjunto de la lista de Conjuntos propios del navegador debe cumplir los requisitos de un Conjunto propio.
-Un Conjunto propio debe contener un sitio principal y uno o más sitios miembros.
-Un conjunto también puede contener una lista de sitios de servicio de su propiedad, así como un mapa de un sitio a todas sus variantes de ccTLD.
-Consulta https://github.com/WICG/first-party-sets para obtener más información sobre los Conjuntos propios que usa <ph name="PRODUCT_NAME" />.
-
-Todos los sitios de un Conjunto propio deben ser un dominio registrable de HTTPS. Además, cada sitio en un Conjunto propio debe ser único.
-Esto quiere decir que un sitio no puede estar enumerado más de una vez en un Conjunto propio.
-
-Cuando se proporciona un diccionario vacío a la política, el navegador utiliza la lista pública de Conjuntos propios.
-
-Para todos los sitios de un Conjunto propio de la lista <ph name="REPLACEMENTS" />, si el sitio también está
-en un Conjunto propio de la lista del navegador, ese sitio se quitará del Conjunto propio del navegador.
-Luego de esto, el Conjunto propio de la política se agregará a la lista de Conjuntos propios del navegador.
-
-Para todos los sitios de un Conjunto propio de la lista <ph name="ADDITIONS" />, si el sitio también está
-en un Conjunto propio de la lista del navegador, ese conjunto se actualizará para que
-el nuevo Conjunto propio pueda agregarse a la lista del navegador. Una vez que se actualice la lista del navegador,
-el Conjunto propio de la política se agregará a la lista de Conjuntos propios del navegador.
-
-La lista de Conjuntos propios del navegador requiere que ningún sitio de la lista esté en
-más de un conjunto. Este también es un requisito para las listas <ph name="REPLACEMENTS" />
-y <ph name="ADDITIONS" />. De la misma manera, un sitio no puede estar al mismo tiempo en
-las listas <ph name="REPLACEMENTS" /> y <ph name="ADDITIONS" />.
-
-Los comodines (*) no se admiten como valor de la política, ni en ningún Conjunto propio en estas listas.
-
-Todos los conjuntos que brinda esta política deben ser Conjuntos propios válidos. De lo contrario, se
-producirá un error.
-
-En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Esto equivale a la política <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
-Se puede usar cualquiera de las políticas, pero esta dejará de estar disponible pronto, por lo que se prefiere la política <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
-Ambas tienen el mismo efecto en el comportamiento del navegador.</translation>
 <translation id="1550295162561011575">Si estableces esta política, los administradores podrán configurar la automatización de la ejecución de apps en dispositivos <ph name="PRODUCT_NAME" />. Estas apps se pueden ejecutar con el acceso del usuario, o los usuarios pueden ejecutarlas juntas desde el selector.</translation>
 <translation id="1551782388466447648">Habilitar el teclado virtual táctil en la pantalla de acceso</translation>
 <translation id="1552418937045050762">Si habilitas esta configuración, los usuarios podrán activar la función Compartir con Nearby, lo que les permitirá enviar archivos a personas cercanas y recibirlos.
@@ -3101,27 +3063,6 @@ Esta política solo se puede establecer como política del usuario basada en la 
 <translation id="3072847235228302527">Establecer las Condiciones del Servicio para la cuenta local del dispositivo</translation>
 <translation id="3074032542020543133">Canal de LTS</translation>
 <translation id="3074886258920642791">Habilitar el teclado virtual de accesibilidad en la pantalla de acceso</translation>
-<translation id="3077650998740742747">
-Comportamiento predeterminado (política no establecida)
-Cuando se agrega una cuenta en el área de contenido, puede aparecer un pequeño diálogo que le solicita al usuario crear un perfil nuevo. Este diálogo se puede descartar.
-
-<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />
-Si un usuario accede a un servicio de Google por primera vez en un navegador de <ph name="PRODUCT_NAME" />, aparece un diálogo que le solicita crear un perfil nuevo para su cuenta empresarial. El usuario puede hacer clic en Cancelar y salir, o en Continuar para crear un perfil nuevo. Los datos de navegación existentes no se agregarán al perfil nuevo. El perfil nuevo puede tener cuentas secundarias; por ejemplo, el usuario puede acceder a otra cuenta en el área de contenido.
-
-<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />
-Este es el mismo comportamiento que <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, excepto que el perfil nuevo no puede tener cuentas secundarias.
-
-<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />
-Este es el mismo comportamiento que <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, excepto que se agregará una casilla de verificación al diálogo para permitir que el usuario conserve los datos de navegación locales.
-Si el usuario marca la casilla, los datos de perfil existentes se asocian con la cuenta administrada.
-- Todos los datos de navegación existentes estarán en el nuevo perfil.
-- Estos datos incluyen favoritos, Historial, contraseña, datos autocompletados, pestañas abiertas, cookies, caché, almacenamiento web, extensiones, etc.
-Si el usuario no marca la casilla, sucederá lo siguiente:
-- El perfil anterior seguirá existiendo y no se perderán datos.
-- Se creará un nuevo perfil.
-
-<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
-Este es el mismo comportamiento que <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, excepto que el perfil nuevo no puede tener cuentas secundarias.</translation>
 <translation id="3083259245974004342">Protección de contraseñas</translation>
 <translation id="308356121098374167">WebSQL en contextos no seguros estará disponible.</translation>
 <translation id="3086995894968271156">Configura Cast Receiver en <ph name="PRODUCT_NAME" />.</translation>
@@ -4442,17 +4383,6 @@ Consideraciones:
       Si se habilita esta política, Respuestas rápidas podrá acceder al contenido seleccionado.
       Si se inhabilita, Respuestas rápidas no podrá acceder a ese contenido.
       Si no se configura esta política, los usuarios podrán decidir si permiten que Respuestas rápidas acceda al contenido seleccionado.</translation>
-<translation id="4016523784669365747">Esta política se utiliza como método para inhabilitar la función de Conjuntos propios.
-
-Si habilitas esta política o no la estableces, se habilitará la función de Conjuntos propios.
-
-Si la inhabilitas, se inhabilitará la función de Conjuntos propios.
-
-Controla si Chrome admite integraciones relacionadas con Conjuntos propios.
-
-Esto equivale a la política <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" />.
-Se puede usar cualquiera de las políticas, pero esta dejará de estar disponible pronto, por lo que se prefiere la política <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" />.
-Ambas tienen el mismo efecto en el comportamiento del navegador.</translation>
 <translation id="4016700865356669962">Si habilitas la política, los usuarios podrán usar las plantillas de diseño de escritorio.  Si inhabilitas la política o no la estableces, estas plantillas no estarán disponibles.</translation>
 <translation id="4018536413833147396">Permitir que los usuarios activen o desactiven el parámetro de configuración <ph name="IP_PROTECTION_NAME" /> en sus dispositivos. La función estará habilitada de forma predeterminada.</translation>
 <translation id="4020682745012723568">Las apps de Android no pueden acceder a las cookies transferidas al perfil del usuario.</translation>

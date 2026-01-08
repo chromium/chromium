@@ -94,7 +94,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2020032459870799438">To check if your other passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK" />sign in to Chromium<ph name="END_LINK" />.</translation>
 <translation id="2039417478970545937">Settings.</translation>
 <translation id="2049376729098081731">Choose whether to include Chromium history for more personalised experiences in Google services</translation>
-<translation id="2054039611381840095">To get future Chromium updates, you'll need macOS 12 or later. This computer is using macOS 11.</translation>
 <translation id="2064856577282482477">Click the Customise Chromium button on the new tab page to give Chromium a new look</translation>
 <translation id="2086476982681781442">Chromium blocked this download because the file is deceptive and may make unexpected changes to your device</translation>
 <translation id="208726765006323911">You'll see a prompt to try <ph name="FEATURE_NAME" /> next time you open Chromium iOS.</translation>
@@ -719,6 +718,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="9148058034647219655">Exit</translation>
 <translation id="9155105544013854680">Continue where you left off: Chromium can restore your tabs every time you restart. To turn this on, go to</translation>
 <translation id="9158494823179993217">Your system administrator has configured Chromium to open an alternative browser to access <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="9183331186620388872">Chromium tip: Search with Lens</translation>
 <translation id="9185526690718004400">Relaunch to update &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9206863043651638213">Get more when you're signed in to Chromium</translation>

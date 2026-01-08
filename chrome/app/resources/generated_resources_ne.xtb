@@ -575,6 +575,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{अरूले कुनै पनि पासवर्ड देखेका छैनन्}=1{अरूले देखेका एउटा पासवर्ड फेला पर्‍यो}other{अरूले देखेका {NUM_COMPROMISED} वटा पासवर्ड फेला परे}}</translation>
 <translation id="1380028686461971526">नेटवर्कमा स्वतः कनेक्ट गर्नुहोस्</translation>
 <translation id="1381567580865186407">प्रोसेस गर्ने प्रयोजनका लागि <ph name="LANGUAGE" /> भाषाको बोली Google मा पठाइन्छ</translation>
+<translation id="1382174183118245544">क्रेडिट कार्ड नम्बरहरू</translation>
 <translation id="1383065744946263511">टुलबारमा पिन गर्नुहोस्</translation>
 <translation id="1383381142702995121">यो एक्स्टेन्सन व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1383597849754832576">बोलीसम्बन्धी फाइलहरू डाउनलोड गर्न सकिएन। पछि फेरि प्रयास गर्नुहोस्।</translation>
@@ -1694,6 +1695,7 @@
 <translation id="2133775869826239001">आफूले सेटअप गर्न चाहेका थप सुविधाहरू छनौट गर्नुहोस्</translation>
 <translation id="2133857665503360653"><ph name="FILE_NAME" /> फेरि खोली हेर्नुहोस्</translation>
 <translation id="2134905185275441536">सिस्टम CA हरू</translation>
+<translation id="2135420518376202233">ब्लुटुथ डिभाइसका नामहरू</translation>
 <translation id="21354425047973905">PIN हरू लुकाउनुहोस्</translation>
 <translation id="2135456203358955318">डक गरिएको म्याग्निफायर</translation>
 <translation id="2135787500304447609">पुनः &amp;निरन्तरता दिनुहोस्</translation>
@@ -2831,6 +2833,7 @@
 <translation id="2893180576842394309">Google ले खोज र Google का अन्य सेवाहरूलाई पर्सनलाइज गर्न तपाईंको इतिहाससम्बन्धी जानकारी प्रयोग गर्न सक्छ</translation>
 <translation id="2893318819023133318">भ्यू उल्टाउनुहोस्</translation>
 <translation id="2893701697603065178">व्यवस्थापन गरिएको डेभलपमेन्ट इनभारमेन्ट</translation>
+<translation id="2894596417096093634">क्र्यास रिपोर्टका आइडेन्टिफायरहरू</translation>
 <translation id="2894757982205307093">समूहमा नयाँ ट्याब थप्नुहोस्</translation>
 <translation id="289695669188700754">कुञ्जी आइडी: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">तपाईंले सबै इन्कोग्निटो विन्डो बन्द गरेपछि तपाईंको रोजाइअनुसारको यो सेटिङ हटाइने छ</translation>
@@ -3103,6 +3106,7 @@
 <translation id="3076966043108928831">यो डिभाइसमा मात्र सुरक्षित गर्नुहोस्</translation>
 <translation id="3076977359333237641">तपाईंको साइन इन गर्न चाहिने डेटा मेटाइयो</translation>
 <translation id="3077734595579995578">शिफ्ट</translation>
+<translation id="3080930813589868009">प्रयोगकर्ताअनुसार अपडेट गर्ने सुविधा</translation>
 <translation id="3080933187214341848">यो नेटवर्क र तपाईंको खाता बिच सिंक भएको छैन। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">एपको नाम वा ID</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4281,6 +4285,7 @@
 <translation id="3867831579565057323">आफ्नो टचस्क्रिन म्याप गर्नुहोस्</translation>
 <translation id="3867944738977021751">प्रमाणपत्र क्षेत्रहरू</translation>
 <translation id="3869564880668247983">सबै ट्याबहरूको समूह बनाउनुहोस्</translation>
+<translation id="3869750789340473337">मेमोरी डम्पहरू</translation>
 <translation id="3869917919960562512">गलत सूचकांक।</translation>
 <translation id="3870626286046977643">सिस्टम अडियो पनि सेयर गर्नुहोस्</translation>
 <translation id="3870688298003434214"><ph name="BOOKMARK_TITLE" /> चयन रद्द गर्नुहोस्</translation>
@@ -7164,6 +7169,7 @@
 <translation id="5886009770935151472">औँला १</translation>
 <translation id="5886112770923972514">नजिकै रहेका फास्ट पेयर डिभाइसहरू कनेक्ट गर्नुहोस् तथा द्रुत रूपमा सेटअप गर्नुहोस्</translation>
 <translation id="5886384907280980632">अहिले नै अफ गर्नुहोस्</translation>
+<translation id="5888337581644150257">अन्तर्राष्ट्रिय बैंक खाता नम्बरहरू</translation>
 <translation id="5888889603768021126">यसमार्फत साइन इन गरिएको</translation>
 <translation id="5889282057229379085">मध्यवर्ती CA हरूको अधिकतम सङ्ख्या: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">आफ्नै <ph name="BEGIN_LINK" />सिंक पासफ्रेज<ph name="END_LINK" /> प्रयोग गरेर सिंक गरिएको जानकारी इन्क्रिप्ट गर्नुहोस्। Google Pay मा भएका भुक्तानी विधि र ठेगानाहरू इन्क्रिप्ट गरिने छैन। Chrome को ब्राउजिङ हिस्ट्री सिंक गरिने छैन।</translation>
@@ -7444,6 +7450,7 @@
 <translation id="6082877069782862752">की म्याप गर्ने सुविधा</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - नामविहीन समूहको अंश</translation>
 <translation id="6086004606538989567">तपाईंले पुष्टि गर्नुभएको खाता प्रयोग गरी यो डिभाइस चलाउन मिल्दैन।</translation>
+<translation id="6086350918562605938">सिस्टमअनुसार अपडेट गर्ने सुविधा</translation>
 <translation id="6086418630711763366">तपाईं टेक्स्ट कर्सर प्रयोग गरी पेजहरूमा नेभिगेट गर्न सक्नुहुन्छ। यसलाई अफ गर्न Ctrl + <ph name="KEY" /> थिच्नुहोस्।</translation>
 <translation id="6086846494333236931">तपाईँको प्रशासकद्वारा स्थापना गरियो</translation>
 <translation id="6087286598828478206">ब्लक गरेर समूह छाड्ने हो?</translation>

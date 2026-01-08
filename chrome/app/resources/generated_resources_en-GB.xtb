@@ -575,6 +575,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{No compromised passwords}=1{1 compromised password}other{{NUM_COMPROMISED} compromised passwords}}</translation>
 <translation id="1380028686461971526">Auto connect to network</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> speech is sent to Google for processing</translation>
+<translation id="1382174183118245544">Credit card numbers</translation>
 <translation id="1383065744946263511">Pin to Toolbar</translation>
 <translation id="1383381142702995121">Manage this extension</translation>
 <translation id="1383597849754832576">Can't download speech files. Try again later.</translation>
@@ -1703,6 +1704,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2133775869826239001">Choose more features to set up</translation>
 <translation id="2133857665503360653">Retry <ph name="FILE_NAME" /></translation>
 <translation id="2134905185275441536">System CAs</translation>
+<translation id="2135420518376202233">Bluetooth device names</translation>
 <translation id="21354425047973905">Hide PINs</translation>
 <translation id="2135456203358955318">Docked magnifier</translation>
 <translation id="2135787500304447609">&amp;Resume</translation>
@@ -2843,6 +2845,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2893180576842394309">Google may use your history to personalise Search and other Google services</translation>
 <translation id="2893318819023133318">Reverse views</translation>
 <translation id="2893701697603065178">Managed development environment</translation>
+<translation id="2894596417096093634">Crash report identifiers</translation>
 <translation id="2894757982205307093">New tab in group</translation>
 <translation id="289695669188700754">Key ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">This custom setting will be removed when you close all your incognito windows</translation>
@@ -3114,6 +3117,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3076966043108928831">Save only on this device</translation>
 <translation id="3076977359333237641">Your sign-in data was deleted</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">Per-user updater</translation>
 <translation id="3080933187214341848">This network is not synced to your account. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">App name or ID</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4294,6 +4298,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3867831579565057323">Map your touchscreen</translation>
 <translation id="3867944738977021751">Certificate Fields</translation>
 <translation id="3869564880668247983">Group all tabs</translation>
+<translation id="3869750789340473337">Memory dumps</translation>
 <translation id="3869917919960562512">Wrong index.</translation>
 <translation id="3870626286046977643">Also share system audio</translation>
 <translation id="3870688298003434214">Deselect <ph name="BOOKMARK_TITLE" /></translation>
@@ -7178,6 +7183,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5886009770935151472">Finger 1</translation>
 <translation id="5886112770923972514">Connect and quickly set up Fast Pair devices close by</translation>
 <translation id="5886384907280980632">Turn off now</translation>
+<translation id="5888337581644150257">International bank account numbers</translation>
 <translation id="5888889603768021126">Signed in with</translation>
 <translation id="5889282057229379085">Maximum number of intermediate CAs: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Encrypt synced data with your own <ph name="BEGIN_LINK" />sync passphrase<ph name="END_LINK" />. Payment methods and addresses from Google Pay won’t be encrypted. Browsing history from Chrome won’t sync.</translation>
@@ -7459,6 +7465,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6082877069782862752">Key mapping</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – Part of unnamed group</translation>
 <translation id="6086004606538989567">The account that you verified is not authorised to access this device.</translation>
+<translation id="6086350918562605938">Per-system updater</translation>
 <translation id="6086418630711763366">You can navigate pages with a text cursor. Press Ctrl + <ph name="KEY" /> to turn off.</translation>
 <translation id="6086846494333236931">Installed by your administrator</translation>
 <translation id="6087286598828478206">Block and leave group?</translation>

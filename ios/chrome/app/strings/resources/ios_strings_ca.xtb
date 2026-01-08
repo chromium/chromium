@@ -456,6 +456,7 @@
 <translation id="2669454659051515572">Qualsevol persona que utilitzi aquest dispositiu pot veure els fitxers baixats</translation>
 <translation id="2671423594960767771">Comparteix el grup</translation>
 <translation id="2673508731173059946">Ves a l'enllaç copiat</translation>
+<translation id="2679659833697380">La teva informació es desa al dispositiu</translation>
 <translation id="2688535388040882469">Bàners</translation>
 <translation id="2690858294534178585">La càmera s'està utilitzant</translation>
 <translation id="2691653761409724435">No disponible sense connexió</translation>
@@ -927,7 +928,6 @@
 <translation id="4601095002996233687">Anàlisis detallades per comprovar si hi ha baixades sospitoses.</translation>
 <translation id="4606247758155004938">La teva organització gestiona el navegador.</translation>
 <translation id="4607887340472970274">Seguiment de preus</translation>
-<translation id="461440297010471931">S'està cercant amb Google</translation>
 <translation id="4619564267100705184">Verifica la teva identitat</translation>
 <translation id="4621768135601674446">Obre les opcions del mode de lectura</translation>
 <translation id="4627107755957573804">Permet que els llocs web i les aplicacions actualitzin els comptes existents per utilitzar les claus d'accés</translation>
@@ -2131,6 +2131,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8856643812068084733">Arxius</translation>
 <translation id="8863067612494559785">S'està enviant a <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Obtén indicacions i informació local de Google Maps</translation>
+<translation id="8867879594900082274">Els canvis només s'aplicaran als llocs web fixats en aquest dispositiu.</translation>
 <translation id="8871974300055371298">Configuració del contingut</translation>
 <translation id="8877788021141246043">Configura un recordatori</translation>
 <translation id="8879604564928138696">Fes doble toc per provar-ho</translation>

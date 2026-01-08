@@ -576,6 +576,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{گذرواژه لورفته‌ای وجود ندارد}=1{۱ گذرواژه لورفته}one{{NUM_COMPROMISED} گذرواژه لورفته}other{{NUM_COMPROMISED} گذرواژه لورفته}}</translation>
 <translation id="1380028686461971526">اتصال خودکار به شبکه</translation>
 <translation id="1381567580865186407">‏گفتار <ph name="LANGUAGE" /> برای پردازش به Google ارسال می‌شود</translation>
+<translation id="1382174183118245544">شماره کارت اعتباری</translation>
 <translation id="1383065744946263511">سنجاق کردن به «نوارابزار»</translation>
 <translation id="1383381142702995121">مدیریت این افزونه</translation>
 <translation id="1383597849754832576">نمی‌توان فایل‌های گفتاری را بارگیری کرد. بعداً دوباره امتحان کنید.</translation>
@@ -1700,6 +1701,7 @@
 <translation id="2133775869826239001">ویژگی‌های بیشتری برای راه‌اندازی انتخاب کنید</translation>
 <translation id="2133857665503360653">امتحان مجدد <ph name="FILE_NAME" /></translation>
 <translation id="2134905185275441536">مراجع صدور گواهینامه سیستم</translation>
+<translation id="2135420518376202233">نام دستگاه بلوتوث</translation>
 <translation id="21354425047973905">پنهان کردن پین‌ها</translation>
 <translation id="2135456203358955318">ذره‌بین متصل</translation>
 <translation id="2135787500304447609">&amp;ازسرگیری</translation>
@@ -2840,6 +2842,7 @@
 <translation id="2893180576842394309">‏Google ممکن است از سابقه مرور شما برای شخصی کردن جستجو و سایر سرویس‌های Google استفاده کند</translation>
 <translation id="2893318819023133318">معکوس کردن نماها</translation>
 <translation id="2893701697603065178">محیط توسعه نرم‌افزار تحت‌مدیریت</translation>
+<translation id="2894596417096093634">شناسه گزارش خرابی</translation>
 <translation id="2894757982205307093">برگه جدید در گروه</translation>
 <translation id="289695669188700754">شناسه کلید: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">وقتی همه پنجره‌های ناشناس را ببندید، این تنظیم سفارشی برداشته خواهد شد</translation>
@@ -3111,6 +3114,7 @@
 <translation id="3076966043108928831">ذخیره فقط در این دستگاه</translation>
 <translation id="3076977359333237641">داده‌های ورود به سیستمتان حذف شد</translation>
 <translation id="3077734595579995578">تبدیل</translation>
+<translation id="3080930813589868009">به‌روزرسان در سطح کاربر</translation>
 <translation id="3080933187214341848">این شبکه با حسابتان همگام‌سازی نشده است. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">نام یا شناسه برنامه</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4291,6 +4295,7 @@
 <translation id="3867831579565057323">تخصیص دادن صفحه لمسی</translation>
 <translation id="3867944738977021751">فیلدهای گواهی</translation>
 <translation id="3869564880668247983">گروه‌بندی همه زبانه‌ها</translation>
+<translation id="3869750789340473337">رونوشت حافظه</translation>
 <translation id="3869917919960562512">فهرست اشتباه.</translation>
 <translation id="3870626286046977643">صدای سیستم نیز هم‌رسانی شود</translation>
 <translation id="3870688298003434214">لغو انتخاب <ph name="BOOKMARK_TITLE" /></translation>
@@ -7175,6 +7180,7 @@
 <translation id="5886009770935151472">انگشت ۱</translation>
 <translation id="5886112770923972514">به‌سرعت دستگاه‌های مجهز به «جفت‌سازی سریع» در اطرافتان را راه‌اندازی کنید و به آن‌ها متصل شوید</translation>
 <translation id="5886384907280980632">اکنون خاموش شود</translation>
+<translation id="5888337581644150257">شماره حساب بانک بین‌المللی</translation>
 <translation id="5888889603768021126">با این ارائه‌دهنده هویت به سیستم وارد شده‌اید:</translation>
 <translation id="5889282057229379085">‏حداکثر تعداد CA های متوسط: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">‏همه داده‌های همگام‌سازی‌شده را با <ph name="BEGIN_LINK" />گذرعبارت همگام‌سازی<ph name="END_LINK" /> رمزگذاری کنید. روش‌های پرداخت و نشانی‌های ذخیره‌شده در Google Pay رمزگذاری نخواهند شد. سابقه مرور Chrome همگام‌سازی نخواهد شد.</translation>
@@ -7456,6 +7462,7 @@
 <translation id="6082877069782862752">نگاشتن کلید</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - بخشی از گروه بدون نام</translation>
 <translation id="6086004606538989567">حسابی که به‌تأیید رساندید اجازه ندارد به این دستگاه دسترسی پیدا کند.</translation>
+<translation id="6086350918562605938">به‌روزرسان در سطح سیستم</translation>
 <translation id="6086418630711763366">‏با نشانگر نوشتار می‌توانید در صفحه‌ها پیمایش کنید. برای خاموش کردن، «Ctrl + <ph name="KEY" />» را فشار دهید.</translation>
 <translation id="6086846494333236931">سرپرست سیستم شما نصب کرده است.</translation>
 <translation id="6087286598828478206">گروه را مسدود و ترک می‌کنید؟</translation>

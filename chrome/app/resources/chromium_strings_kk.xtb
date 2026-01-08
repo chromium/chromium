@@ -93,7 +93,6 @@
 <translation id="2020032459870799438">Басқа құпия сөздеріңіздің ұрланудан және басқа да қауіпсіздік мәселелерінен қаншалықты қорғалғанын тексеру үшін <ph name="BEGIN_LINK" />Chromium браузеріне кіріңіз<ph name="END_LINK" />.</translation>
 <translation id="2039417478970545937">Параметрлер.</translation>
 <translation id="2049376729098081731">Google қызметтерінде жекелендірілген мүмкіндіктерді пайдалану үшін Chromium тарихын қосу-қоспау нұсқасын таңдаңыз.</translation>
-<translation id="2054039611381840095">Chromium-нің жаңа нұсқаларын алып тұру үшін macOS 12 не одан кейінгі операциялық жүйе керек болады. Бұл компьютерде macOS 11 нұсқасы орнатылған.</translation>
 <translation id="2064856577282482477">Chromium-ге жаңа көрініс беру үшін жаңа қойынды бетіндегі "Chromium-ді бейімдеу" түймесін басыңыз.</translation>
 <translation id="2086476982681781442">Chromium жүктеп алуды блоктады, себебі бұл – алдамшы файл және ол құрылғыңызға күтпеген өзгерістер енгізуі мүмкін.</translation>
 <translation id="208726765006323911">Chromium iOS браузерін келесіде ашқанда, <ph name="FEATURE_NAME" /> функциясын пайдаланып көру туралы нұсқауды көресіз.</translation>
@@ -643,7 +642,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="8254601181414348851">Chromium-ге жаңа профильмен кіру қажет пе?</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium сізге<ph name="END_LINK" /> қауіпті сайттар мен жүктеп алу әрекеттері туралы ескертеді</translation>
 <translation id="8295827201165805317">Жақында кірмедіңіз. Chromium <ph name="PERMISSION" /> рұқсатын өшірді.</translation>
-<translation id="8296236834352487533">Chromium iOS қолданбасында камерамен түсірген нәрселерді сатып алуға, аударуға және анықтауға болады.</translation>
+<translation id="8296236834352487533">Chromium iOS қолданбасында камера көмегімен нәрселерді сатып алуға, аударуға және анықтауға болады.</translation>
 <translation id="8313851650939857356">Іске қосу қатесі: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Ұйымыңыз Chromium-ді <ph name="TIMEOUT_DURATION" /> бойы пайдаланбаған кезде жабады.</translation>
 <translation id="8321888067342493336">Сурет түрінде сақтау</translation>

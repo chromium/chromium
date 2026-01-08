@@ -64,6 +64,7 @@
 <translation id="1717996979683942279">Kun tämä on päällä, sivustot voivat pyytää lupaa hallinnoida ikkunoita kaikilla näytöillä. Kun tämä on pois päältä, sivustot eivät voi hallinnoida ikkunoita kaikilla näytöillä.</translation>
 <translation id="1738912554587725807">Uusi välilehti ‐sivun ulkoasun teemakokoelmien alapaneeli</translation>
 <translation id="1743802530341753419">Pyydä lupaa, kun sivustot yrittävät yhdistää laitteeseen (suositus)</translation>
+<translation id="1766455884659449403">Chrome-vinkki-ilmoitusten vastaanottaminen</translation>
 <translation id="1777815584158991902">Discover-fiidin alapaneeli</translation>
 <translation id="1779089405699405702">Kuvien dekooderi</translation>
 <translation id="1785415724048343560">Suositellaan parhaan kokemuksen saamiseksi</translation>
@@ -401,6 +402,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="5246825184569358663">Tämä toiminto poistaa kaiken paikallisen datan, myös evästeet, ja nollaa kaikki luvat verkkotunnukselta <ph name="DOMAIN" /> ja kaikilta sen alaisilta sivustoilta</translation>
 <translation id="5264323282659631142">Poista <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Poistu koko näytön tilasta vetämällä näytön yläreunasta ja koskettamalla Takaisin-painiketta.</translation>
+<translation id="5286194356314741248">Etsitään</translation>
 <translation id="5300589172476337783">Näytä</translation>
 <translation id="5301954838959518834">Selvä</translation>
 <translation id="5317780077021120954">Tallenna</translation>

@@ -578,6 +578,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Нет раскрытых паролей}=1{1 раскрытый пароль}one{{NUM_COMPROMISED} раскрытый пароль}few{{NUM_COMPROMISED} раскрытых пароля}many{{NUM_COMPROMISED} раскрытых паролей}other{{NUM_COMPROMISED} раскрытого пароля}}</translation>
 <translation id="1380028686461971526">Автоподключение к сети</translation>
 <translation id="1381567580865186407">Записи с речью на этом языке (<ph name="LANGUAGE" />) передаются для обработки в Google</translation>
+<translation id="1382174183118245544">Номера кредитных карт</translation>
 <translation id="1383065744946263511">Закрепить на панели инструментов</translation>
 <translation id="1383381142702995121">Управлять расширением</translation>
 <translation id="1383597849754832576">Не удалось скачать файлы автоматических субтитров. Повторите попытку позже.</translation>
@@ -1695,6 +1696,7 @@
 <translation id="2133775869826239001">Выберите, что ещё вы хотите настроить</translation>
 <translation id="2133857665503360653">Попробовать скачать файл "<ph name="FILE_NAME" />" ещё раз</translation>
 <translation id="2134905185275441536">Системные центры сертификации</translation>
+<translation id="2135420518376202233">Названия устройств Bluetooth</translation>
 <translation id="21354425047973905">Скрыть PIN-коды</translation>
 <translation id="2135456203358955318">Закрепленная лупа</translation>
 <translation id="2135787500304447609">Возобновить</translation>
@@ -2832,6 +2834,7 @@
 <translation id="2893180576842394309">Google может использовать вашу историю, чтобы персонализировать Поиск и другие сервисы.</translation>
 <translation id="2893318819023133318">Поменять местами</translation>
 <translation id="2893701697603065178">Управляемая среда разработки</translation>
+<translation id="2894596417096093634">Идентификаторы отчетов о сбоях</translation>
 <translation id="2894757982205307093">Добавить вкладку в группу</translation>
 <translation id="289695669188700754">Идентификатор ключа: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Когда вы закроете все окна в режиме инкогнито, эта специальная настройка будет сброшена</translation>
@@ -3103,6 +3106,7 @@
 <translation id="3076966043108928831">Сохранить только на этом устройстве</translation>
 <translation id="3076977359333237641">Ваши учетные данные удалены</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">Обновление для каждого пользователя</translation>
 <translation id="3080933187214341848">Эта сеть не синхронизируется с вашим аккаунтом. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Название или идентификатор приложения</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4283,6 +4287,7 @@
 <translation id="3867831579565057323">Разметить сенсорный экран</translation>
 <translation id="3867944738977021751">Поля сертификата</translation>
 <translation id="3869564880668247983">Сгруппировать все вкладки</translation>
+<translation id="3869750789340473337">Снимки памяти</translation>
 <translation id="3869917919960562512">Неверный индекс.</translation>
 <translation id="3870626286046977643">Также предоставить доступ к аудиоданным системы</translation>
 <translation id="3870688298003434214">Отменить выбор закладки "<ph name="BOOKMARK_TITLE" />"</translation>
@@ -7166,6 +7171,7 @@
 <translation id="5886009770935151472">Отпечаток 1</translation>
 <translation id="5886112770923972514">Подключать и быстро настраивать устройства поблизости с помощью функции "Быстрое подключение"</translation>
 <translation id="5886384907280980632">Отключить</translation>
+<translation id="5888337581644150257">Международные номера банковских счетов</translation>
 <translation id="5888889603768021126">Выполнен вход через</translation>
 <translation id="5889282057229379085">Максимальное количество промежуточных ЦС: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Шифровать синхронизированные данные с помощью <ph name="BEGIN_LINK" />кодовой фразы<ph name="END_LINK" />. Сведения о способах оплаты и адресах из Google Pay не будут шифроваться. История браузера Chrome не будет синхронизироваться.</translation>
@@ -7447,6 +7453,7 @@
 <translation id="6082877069782862752">Привязка клавиш</translation>
 <translation id="608531959444400877">"<ph name="WINDOW_TITLE" />" – элемент группы без названия</translation>
 <translation id="6086004606538989567">У аккаунта, который вы подтвердили, нет доступа к этому устройству.</translation>
+<translation id="6086350918562605938">Обновление для каждой системы</translation>
 <translation id="6086418630711763366">Вы сможете использовать курсор для навигации по страницам. Чтобы выключить эту функцию, нажмите Ctrl + <ph name="KEY" />.</translation>
 <translation id="6086846494333236931">Установлено администратором</translation>
 <translation id="6087286598828478206">Заблокировать и выйти из группы?</translation>

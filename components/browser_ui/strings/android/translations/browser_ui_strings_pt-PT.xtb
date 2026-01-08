@@ -64,6 +64,7 @@
 <translation id="1717996979683942279">Quando esta opção está ativada, os sites podem pedir para gerir janelas em todos os seus ecrãs. Quando esta opção está desativada, os sites não podem gerir janelas em todos os seus ecrãs.</translation>
 <translation id="1738912554587725807">Secção inferior de coleções de temas de aspeto da página Novo separador</translation>
 <translation id="1743802530341753419">Perguntar antes de permitir a ligação de sites a um dispositivo (recomendado)</translation>
+<translation id="1766455884659449403">Receba notificações de dicas do Chrome</translation>
 <translation id="1777815584158991902">Secção inferior do feed do Discover</translation>
 <translation id="1779089405699405702">Descodificador de imagem</translation>
 <translation id="1785415724048343560">Recomendado para obter a melhor experiência</translation>
@@ -401,6 +402,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="5246825184569358663">Esta ação vai eliminar todos os dados locais, incluindo os cookies, e repor todas as autorizações de <ph name="DOMAIN" /> e todos os sites a este associados</translation>
 <translation id="5264323282659631142">Remover "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Arraste a partir da parte superior e toque no botão de retrocesso para sair do ecrã inteiro.</translation>
+<translation id="5286194356314741248">A procurar</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5301954838959518834">OK</translation>
 <translation id="5317780077021120954">Guardar</translation>

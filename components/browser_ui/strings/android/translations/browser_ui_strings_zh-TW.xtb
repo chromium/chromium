@@ -64,6 +64,7 @@
 <translation id="1717996979683942279">如果開啟，網站可以要求管理所有螢幕上的視窗；如果關閉，網站就無法管理所有螢幕上的視窗。</translation>
 <translation id="1738912554587725807">新分頁外觀主題系列底部功能表</translation>
 <translation id="1743802530341753419">允許網站連線至裝置前，必須先詢問你 (建議)</translation>
+<translation id="1766455884659449403">接收 Chrome 提示通知</translation>
 <translation id="1777815584158991902">「探索」動態消息底部功能表</translation>
 <translation id="1779089405699405702">影像解碼器</translation>
 <translation id="1785415724048343560">建議勾選以獲得最佳體驗</translation>
@@ -401,6 +402,7 @@
 <translation id="5246825184569358663">這項操作會刪除 Cookie 等所有本機資料，並重設 <ph name="DOMAIN" /> 和該網域中每個網站的所有權限</translation>
 <translation id="5264323282659631142">移除「<ph name="CHIP_LABEL" />」</translation>
 <translation id="528192093759286357">從頂端拖曳並輕觸返回按鈕即可結束全螢幕模式。</translation>
+<translation id="5286194356314741248">掃描中</translation>
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5301954838959518834">好，我知道了</translation>
 <translation id="5317780077021120954">儲存</translation>

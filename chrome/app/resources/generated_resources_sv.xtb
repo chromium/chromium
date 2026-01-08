@@ -575,6 +575,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Inga utsatta lösenord}=1{1 utsatt lösenord}other{{NUM_COMPROMISED} utsatta lösenord}}</translation>
 <translation id="1380028686461971526">Anslut till ett nätverk automatiskt</translation>
 <translation id="1381567580865186407">Tal på <ph name="LANGUAGE" /> skickas till Google för bearbetning</translation>
+<translation id="1382174183118245544">Kreditkortsnummer</translation>
 <translation id="1383065744946263511">Fäst i verktygsfältet</translation>
 <translation id="1383381142702995121">Hantera det här tillägget</translation>
 <translation id="1383597849754832576">Det gick inte att ladda ned röstfilerna. Försök igen senare.</translation>
@@ -1703,6 +1704,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2133775869826239001">Välj fler funktioner att ställa in</translation>
 <translation id="2133857665503360653">Försök åtgärden igen med <ph name="FILE_NAME" /></translation>
 <translation id="2134905185275441536">Systemcertifikatutfärdare</translation>
+<translation id="2135420518376202233">Bluetooth-enhetsnamn</translation>
 <translation id="21354425047973905">Dölj pinkoder</translation>
 <translation id="2135456203358955318">Dockad skärmförstoring</translation>
 <translation id="2135787500304447609">&amp;Återuppta</translation>
@@ -2843,6 +2845,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2893180576842394309">Google kan anpassa Sök och andra Google-tjänster utifrån historiken</translation>
 <translation id="2893318819023133318">Vänd på vyerna</translation>
 <translation id="2893701697603065178">Hanterad utvecklingsmiljö</translation>
+<translation id="2894596417096093634">Identifierare för felrapporter</translation>
 <translation id="2894757982205307093">Ny flik i grupp</translation>
 <translation id="289695669188700754">Nyckel-ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Den här anpassade inställningen tas bort när du stänger alla inkognitofönster</translation>
@@ -3114,6 +3117,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3076966043108928831">Spara endast på den här enheten</translation>
 <translation id="3076977359333237641">Inloggningsuppgifterna har raderats</translation>
 <translation id="3077734595579995578">skift</translation>
+<translation id="3080930813589868009">Uppdaterare per användare</translation>
 <translation id="3080933187214341848">Det här nätverket synkroniseras inte med ditt konto. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Appens namn eller id</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> – <ph name="PAGE_URL" /></translation>
@@ -4294,6 +4298,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3867831579565057323">Mappa pekskärmen</translation>
 <translation id="3867944738977021751">Certifikatfält</translation>
 <translation id="3869564880668247983">Gruppera alla flikar</translation>
+<translation id="3869750789340473337">Minnesdumpar</translation>
 <translation id="3869917919960562512">Fel index.</translation>
 <translation id="3870626286046977643">Dela även systemljud</translation>
 <translation id="3870688298003434214">Avmarkera <ph name="BOOKMARK_TITLE" /></translation>
@@ -7178,6 +7183,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5886009770935151472">Finger 1</translation>
 <translation id="5886112770923972514">Anslut och konfigurera snabbt enheter med Snabb parkoppling i närheten</translation>
 <translation id="5886384907280980632">Inaktivera nu</translation>
+<translation id="5888337581644150257">Internationella bankkontonummer (IBAN-nummer)</translation>
 <translation id="5888889603768021126">Inloggad med</translation>
 <translation id="5889282057229379085">Maximalt antal mellanliggande CU: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Kryptera synkroniserad data med en egen <ph name="BEGIN_LINK" />lösenfras för synkronisering<ph name="END_LINK" />. Betalningsmetoder och adresser från Google Pay krypteras inte. Webbhistorik från Chrome synkroniseras inte.</translation>
@@ -7459,6 +7465,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6082877069782862752">Tangentmappning</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – ingår i namnlös grupp</translation>
 <translation id="6086004606538989567">Kontot som du har verifierat har inte åtkomstbehörighet till den här enheten.</translation>
+<translation id="6086350918562605938">Uppdaterare per system</translation>
 <translation id="6086418630711763366">Du kan navigera på sidor med en textmarkör. Tryck på Ctrl + <ph name="KEY" /> för att inaktivera.</translation>
 <translation id="6086846494333236931">Har installerats av administratören</translation>
 <translation id="6087286598828478206">Vill du blockera och lämna gruppen?</translation>

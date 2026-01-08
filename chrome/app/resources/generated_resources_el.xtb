@@ -575,6 +575,7 @@
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Δεν υπάρχουν παραβιασμένοι κωδικοί πρόσβασης}=1{1 παραβιασμένος κωδικός πρόσβασης}other{{NUM_COMPROMISED} παραβιασμένοι κωδικοί πρόσβασης}}</translation>
 <translation id="1380028686461971526">Αυτόματη σύνδεση στο δίκτυο</translation>
 <translation id="1381567580865186407">Η ομιλία στα <ph name="LANGUAGE" /> αποστέλλεται στην Google για επεξεργασία</translation>
+<translation id="1382174183118245544">Αριθμοί πιστωτικών καρτών</translation>
 <translation id="1383065744946263511">Καρφίτσωμα στη γραμμή εργαλείων</translation>
 <translation id="1383381142702995121">Διαχείριση αυτής της επέκτασης</translation>
 <translation id="1383597849754832576">Δεν είναι δυνατή η λήψη αρχείων ομιλίας. Δοκιμάστε ξανά αργότερα.</translation>
@@ -1703,6 +1704,7 @@
 <translation id="2133775869826239001">Επιλέξτε περισσότερες λειτουργίες για ρύθμιση</translation>
 <translation id="2133857665503360653">Επανάληψη προσπάθειας για το αρχείο <ph name="FILE_NAME" /></translation>
 <translation id="2134905185275441536">CA συστήματος</translation>
+<translation id="2135420518376202233">Ονόματα συσκευών Bluetooth</translation>
 <translation id="21354425047973905">Απόκρυψη PIN</translation>
 <translation id="2135456203358955318">Μεγεθυντικός φακός σε παράθυρο</translation>
 <translation id="2135787500304447609">&amp;Συνέχιση</translation>
@@ -2843,6 +2845,7 @@
 <translation id="2893180576842394309">Η Google μπορεί να χρησιμοποιήσει το ιστορικό σας για την εξατομίκευση της Αναζήτησης και άλλων υπηρεσιών Google</translation>
 <translation id="2893318819023133318">Αντιστροφή προβολών</translation>
 <translation id="2893701697603065178">Διαχειριζόμενο περιβάλλον ανάπτυξης</translation>
+<translation id="2894596417096093634">Αναγνωριστικά αναφορών σφαλμάτων</translation>
 <translation id="2894757982205307093">Νέα καρτέλα στην ομάδα</translation>
 <translation id="289695669188700754">Αναγνωριστικό κλειδιού: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Αυτή η προσαρμοσμένη ρύθμιση θα καταργηθεί όταν κλείσετε όλα τα παράθυρα ανώνυμης περιήγησης</translation>
@@ -3114,6 +3117,7 @@
 <translation id="3076966043108928831">Αποθήκευση μόνο σε αυτήν τη συσκευή</translation>
 <translation id="3076977359333237641">Τα δεδομένα σύνδεσής σας διαγράφηκαν.</translation>
 <translation id="3077734595579995578">shift</translation>
+<translation id="3080930813589868009">Πρόγραμμα ενημέρωσης ανά χρήστη</translation>
 <translation id="3080933187214341848">Αυτό το δίκτυο δεν έχει συγχρονιστεί με τον λογαριασμό σας. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="3082077944141570429">Όνομα ή αναγνωριστικό εφαρμογής</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
@@ -4294,6 +4298,7 @@
 <translation id="3867831579565057323">Αντιστοίχιση οθόνης αφής</translation>
 <translation id="3867944738977021751">Πεδία πιστοποιητικού</translation>
 <translation id="3869564880668247983">Ομαδοποίηση όλων των καρτελών</translation>
+<translation id="3869750789340473337">Στιγμιότυπα μνήμης</translation>
 <translation id="3869917919960562512">Εσφαλμένος κατάλογος.</translation>
 <translation id="3870626286046977643">Να γίνει επίσης κοινοποίηση του ήχου συστήματος</translation>
 <translation id="3870688298003434214">Αποεπιλογή <ph name="BOOKMARK_TITLE" /></translation>
@@ -7179,6 +7184,7 @@
 <translation id="5886009770935151472">Δάκτυλο 1</translation>
 <translation id="5886112770923972514">Συνδεθείτε και ρυθμίστε γρήγορα κοντινές συσκευές Γρήγορης σύζευξης</translation>
 <translation id="5886384907280980632">Απενεργοποίηση τώρα</translation>
+<translation id="5888337581644150257">Διεθνείς αριθμοί τραπεζικών λογαριασμών (IBAN)</translation>
 <translation id="5888889603768021126">Σε σύνδεση με</translation>
 <translation id="5889282057229379085">Μέγιστος αριθμός ενδιάμεσων CA: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Κρυπτογράφηση συγχρονισμένων δεδομένων με τη δική σας <ph name="BEGIN_LINK" />φράση πρόσβασης συγχρονισμού<ph name="END_LINK" />. Οι τρόποι και οι διευθύνσεις πληρωμών από το Google Pay δεν θα κρυπτογραφούνται. Το ιστορικό περιήγησης από το Chrome δεν θα συγχρονίζεται.</translation>
@@ -7460,6 +7466,7 @@
 <translation id="6082877069782862752">Αντιστοίχιση πλήκτρων</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - Μέρος μια ομάδας χωρίς όνομα</translation>
 <translation id="6086004606538989567">Ο λογαριασμός που επαληθεύσατε δεν έχει εξουσιοδότηση για πρόσβαση σε αυτήν τη συσκευή.</translation>
+<translation id="6086350918562605938">Πρόγραμμα ενημέρωσης ανά σύστημα</translation>
 <translation id="6086418630711763366">Μπορείτε να πλοηγηθείτε σε σελίδες με δείκτη κειμένου. Πατήστε Ctrl + <ph name="KEY" /> για απενεργοποίηση.</translation>
 <translation id="6086846494333236931">Εγκαταστάθηκε από το διαχειριστή σας</translation>
 <translation id="6087286598828478206">Αποκλεισμός και αποχώρηση από την ομάδα;</translation>
