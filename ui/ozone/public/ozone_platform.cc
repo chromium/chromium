@@ -155,7 +155,7 @@ PlatformSessionManager* OzonePlatform::GetSessionManager() {
 }
 
 bool OzonePlatform::IsNativePixmapConfigSupported(
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage) const {
   // Platform that support NativePixmap must override this method.
   return false;

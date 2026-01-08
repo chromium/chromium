@@ -190,7 +190,7 @@ class OzonePlatformWayland : public OzonePlatform,
 
   WaylandUtils* GetPlatformUtils() override { return wayland_utils_.get(); }
 
-  bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
+  bool IsNativePixmapConfigSupported(viz::SharedImageFormat format,
                                      gfx::BufferUsage usage) const override {
 #if defined(WAYLAND_GBM)
     // If there is no drm render node device available, native pixmaps are not
@@ -202,7 +202,7 @@ class OzonePlatformWayland : public OzonePlatform,
     // |supported_formats_| is empty. Supported shared image formats are sent
     // to |buffer_manager_| via IPC after gpu service init in that case.
     if (buffer_manager_) {
-      if (!buffer_manager_->SupportsFormat(viz::GetSharedImageFormat(format))) {
+      if (!buffer_manager_->SupportsFormat(format)) {
         return false;
       }
       // Return false here if creating buffers for certain formats is not
@@ -211,12 +211,11 @@ class OzonePlatformWayland : public OzonePlatform,
       // imported as wl_buffer.
       auto* gbm_device = buffer_manager_->GetGbmDevice();
       if (!gbm_device || !gbm_device->CanCreateBufferForFormat(
-                             GetFourCCFormatFromBufferFormat(format))) {
+                             GetFourCCFormatFromSharedImageFormat(format))) {
         return false;
       }
     } else {
-      if (supported_formats_.find(viz::GetSharedImageFormat(format)) ==
-          supported_formats_.end()) {
+      if (supported_formats_.find(format) == supported_formats_.end()) {
         return false;
       }
     }
