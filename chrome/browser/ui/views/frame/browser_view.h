@@ -280,12 +280,12 @@ class BrowserView : public BrowserWindow,
   // automatically placed into VerticalTabs mode.
   VerticalTabStripRegionView* vertical_tab_strip_region_view_for_testing()
       const {
-    return vertical_tab_strip_container_.get();
+    return vertical_tab_strip_region_view_.get();
   }
 
   // Accessor for the TabStrip.
   TabStrip* horizontal_tab_strip_for_testing() {
-    return tab_strip_region_view_->tab_strip();
+    return horizontal_tab_strip_region_view_->tab_strip();
   }
 
   // Accessor for the WebUI tab strip.
@@ -1222,11 +1222,12 @@ class BrowserView : public BrowserWindow,
   raw_ptr<views::Label> web_app_window_title_ = nullptr;
 
   // The view that contains the tabstrip, new tab button, and grab handle space.
-  raw_ptr<HorizontalTabStripRegionView> tab_strip_region_view_ = nullptr;
+  raw_ptr<HorizontalTabStripRegionView> horizontal_tab_strip_region_view_ =
+      nullptr;
   // The insertion index of the HorizontalTabStripRegionView in the BrowserView
   // view tree. This is used to correctly reparent the tabstrip when exiting
   // fullscreen mode. See BrowserView::ReparentTopContainerForEndOfImmersive.
-  std::optional<size_t> tab_strip_region_insertion_index_;
+  std::optional<size_t> horizontal_tab_strip_region_insertion_index_;
 
   // The webui based tabstrip, when applicable. see https://crbug.com/989131.
   raw_ptr<WebUITabStripContainerView> webui_tab_strip_ = nullptr;
@@ -1300,7 +1301,7 @@ class BrowserView : public BrowserWindow,
   raw_ptr<views::View> contents_container_ = nullptr;
 
   // The view responsible for housing the contents of the vertical tab strip.
-  raw_ptr<VerticalTabStripRegionView> vertical_tab_strip_container_ = nullptr;
+  raw_ptr<VerticalTabStripRegionView> vertical_tab_strip_region_view_ = nullptr;
 
   // The view responsible for housing the contents of the projects panel.
   raw_ptr<ProjectsPanelView> projects_panel_container_ = nullptr;

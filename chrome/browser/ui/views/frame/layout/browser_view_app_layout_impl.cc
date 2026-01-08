@@ -100,9 +100,9 @@ gfx::Size BrowserViewAppLayoutImpl::GetMinimumSize(
           ? views().web_app_frame_toolbar->GetMinimumSize()
           : gfx::Size();
   const gfx::Size tabstrip_size =
-      views().tab_strip_region_view &&
-              views().tab_strip_region_view->GetVisible()
-          ? views().tab_strip_region_view->GetMinimumSize()
+      views().horizontal_tab_strip_region_view &&
+              views().horizontal_tab_strip_region_view->GetVisible()
+          ? views().horizontal_tab_strip_region_view->GetMinimumSize()
           : gfx::Size();
   const gfx::Size infobar_container_size =
       views().infobar_container->GetMinimumSize();
@@ -182,8 +182,9 @@ BrowserViewAppLayoutImpl::CalculateProposedLayout(
   // If certain views were not laid out, make sure they're hidden to avoid
   // visual artifacts.
   if (delegate().ShouldLayoutTabStrip() &&
-      IsParentedTo(views().tab_strip_region_view, views().browser_view)) {
-    layout.HideViewIfNotPresent(views().tab_strip_region_view);
+      IsParentedTo(views().horizontal_tab_strip_region_view,
+                   views().browser_view)) {
+    layout.HideViewIfNotPresent(views().horizontal_tab_strip_region_view);
   }
 
   return layout;
@@ -221,8 +222,9 @@ gfx::Rect BrowserViewAppLayoutImpl::CalculateTopContainerLayout(
 
   // Tabstrip must be hidden if it's not laid out.
   if (delegate().ShouldLayoutTabStrip() &&
-      IsParentedTo(views().tab_strip_region_view, views().top_container)) {
-    layout.HideViewIfNotPresent(views().tab_strip_region_view);
+      IsParentedTo(views().horizontal_tab_strip_region_view,
+                   views().top_container)) {
+    layout.HideViewIfNotPresent(views().horizontal_tab_strip_region_view);
   }
 
   return gfx::Rect(params.visual_client_area.x(), original_top,
@@ -250,8 +252,8 @@ void BrowserViewAppLayoutImpl::CalculateTitlebarLayout(
   CHECK(!tabstrip_enabled || !overlay_controls_enabled)
       << "Cannot enable both overlay and tabs at the same time.";
   if (tabstrip_enabled) {
-    full_titlebar_bounds.Union(
-        GetBoundsWithExclusion(params, views().tab_strip_region_view));
+    full_titlebar_bounds.Union(GetBoundsWithExclusion(
+        params, views().horizontal_tab_strip_region_view));
   }
 
   // Lay out the webapp toolbar.
@@ -309,7 +311,7 @@ void BrowserViewAppLayoutImpl::CalculateTitlebarLayout(
 
   // Lay out tabstrip if present.
   if (delegate().ShouldLayoutTabStrip()) {
-    CHECK_EQ(views().tab_strip_region_view->parent(),
+    CHECK_EQ(views().horizontal_tab_strip_region_view->parent(),
              views().web_app_frame_toolbar->parent())
         << "Always expect PWA toolbar and tabstrip to share the same "
            "coordinate basis.";
@@ -320,7 +322,7 @@ void BrowserViewAppLayoutImpl::CalculateTitlebarLayout(
                     full_titlebar_bounds.width() - toolbar_rect.width(),
                     full_titlebar_bounds.height());
     }
-    layout.AddChild(views().tab_strip_region_view, tab_strip_bounds,
+    layout.AddChild(views().horizontal_tab_strip_region_view, tab_strip_bounds,
                     tabstrip_enabled);
   }
 

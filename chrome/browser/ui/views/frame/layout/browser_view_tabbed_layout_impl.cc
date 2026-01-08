@@ -95,11 +95,12 @@ std::pair<gfx::Size, gfx::Size>
 BrowserViewTabbedLayoutImpl::GetMinimumTabStripSize() const {
   switch (GetTabStripType()) {
     case TabStripType::kHorizontal:
-      return std::make_pair(gfx::Size(),
-                            views().tab_strip_region_view->GetMinimumSize());
+      return std::make_pair(
+          gfx::Size(),
+          views().horizontal_tab_strip_region_view->GetMinimumSize());
     case TabStripType::kVertical: {
       const auto result =
-          views().vertical_tab_strip_container->GetMinimumSize();
+          views().vertical_tab_strip_region_view->GetMinimumSize();
       return std::make_pair(result, gfx::Size());
     }
     case TabStripType::kWebUi:
@@ -265,7 +266,8 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   }
 
   // Lay out horizontal tab strip region if present.
-  if (IsParentedTo(views().tab_strip_region_view, views().browser_view)) {
+  if (IsParentedTo(views().horizontal_tab_strip_region_view,
+                   views().browser_view)) {
     gfx::Rect tabstrip_bounds;
     if (tab_strip_type == TabStripType::kHorizontal) {
       // Inset the leading edge of the tabstrip by the size of the swoop of the
@@ -273,26 +275,26 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
       // space of the caption button margins and the edge of the tabstrip should
       // overlap. The trailing edge receives the usual treatment, as it is the
       // new tab button and not a tab.
-      tabstrip_bounds =
-          GetBoundsWithExclusion(params, views().tab_strip_region_view,
-                                 TabStyle::Get()->GetBottomCornerRadius());
+      tabstrip_bounds = GetBoundsWithExclusion(
+          params, views().horizontal_tab_strip_region_view,
+          TabStyle::Get()->GetBottomCornerRadius());
       params.SetTop(tabstrip_bounds.bottom() -
                     GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap));
       needs_exclusion = false;
     }
-    layout.AddChild(views().tab_strip_region_view, tabstrip_bounds,
+    layout.AddChild(views().horizontal_tab_strip_region_view, tabstrip_bounds,
                     tab_strip_type == TabStripType::kHorizontal);
   }
 
   // Lay out vertical tab strip if visible.
   int collapsed_vertical_tab_strip_adjustment = 0;
-  if (IsParentedTo(views().vertical_tab_strip_container,
+  if (IsParentedTo(views().vertical_tab_strip_region_view,
                    views().browser_view)) {
     gfx::Rect vertical_tab_strip_bounds;
     if (tab_strip_type == TabStripType::kVertical) {
       int vertical_tab_strip_relative_top = 0;
       int vertical_tab_strip_width =
-          views().vertical_tab_strip_container->GetPreferredSize().width();
+          views().vertical_tab_strip_region_view->GetPreferredSize().width();
       if (delegate().IsVerticalTabStripCollapsed()) {
         // Collapsed tabstrip sits underneath caption buttons when present.
         vertical_tab_strip_relative_top =
@@ -314,7 +316,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
           params.visual_client_area.height() - vertical_tab_strip_relative_top);
       params.InsetHorizontal(vertical_tab_strip_width, /*leading=*/true);
     }
-    layout.AddChild(views().vertical_tab_strip_container,
+    layout.AddChild(views().vertical_tab_strip_region_view,
                     vertical_tab_strip_bounds,
                     tab_strip_type == TabStripType::kVertical);
   }
@@ -624,7 +626,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     const auto toolbar_bounds =
         layout.GetBoundsFor(views().toolbar, views().browser_view);
     const auto tabstrip_bounds = layout.GetBoundsFor(
-        views().vertical_tab_strip_container, views().browser_view);
+        views().vertical_tab_strip_region_view, views().browser_view);
     CHECK(tabstrip_bounds);
 
     // Calculate the toolbar height adjacent to the tabstrip. This will be zero
@@ -635,7 +637,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
         toolbar_bounds
             ? std::max(0, toolbar_bounds->bottom() - tabstrip_bounds->y())
             : 0;
-    views().vertical_tab_strip_container->SetToolbarHeightForLayout(
+    views().vertical_tab_strip_region_view->SetToolbarHeightForLayout(
         toolbar_height);
 
     // If the toolbar is not in the browser, then the exclusion isn't either.
@@ -646,7 +648,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
                                               .width()) -
                               tabstrip_bounds->x())
             : 0;
-    views().vertical_tab_strip_container->SetExclusionWidthForLayout(
+    views().vertical_tab_strip_region_view->SetExclusionWidthForLayout(
         exclusion_width);
   }
 
@@ -677,7 +679,8 @@ gfx::Rect BrowserViewTabbedLayoutImpl::CalculateTopContainerLayout(
 
   // If the tabstrip is in the top container (which can happen in immersive
   // mode), ensure it is laid out here.
-  if (IsParentedTo(views().tab_strip_region_view, views().top_container)) {
+  if (IsParentedTo(views().horizontal_tab_strip_region_view,
+                   views().top_container)) {
     gfx::Rect tabstrip_bounds;
     if (tab_strip_type == TabStripType::kHorizontal) {
       // When there is an exclusion, inset the leading edge of the tabstrip by
@@ -685,14 +688,14 @@ gfx::Rect BrowserViewTabbedLayoutImpl::CalculateTopContainerLayout(
       // for Mac, where the negative space of the caption button margins and the
       // edge of the tabstrip should overlap. The trailing edge receives the
       // usual treatment, as it is the new tab button and not a tab.
-      tabstrip_bounds =
-          GetBoundsWithExclusion(params, views().tab_strip_region_view,
-                                 TabStyle::Get()->GetBottomCornerRadius());
+      tabstrip_bounds = GetBoundsWithExclusion(
+          params, views().horizontal_tab_strip_region_view,
+          TabStyle::Get()->GetBottomCornerRadius());
       params.SetTop(tabstrip_bounds.bottom() -
                     GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap));
       needs_exclusion = false;
     }
-    layout.AddChild(views().tab_strip_region_view, tabstrip_bounds,
+    layout.AddChild(views().horizontal_tab_strip_region_view, tabstrip_bounds,
                     tab_strip_type == TabStripType::kHorizontal);
   }
 

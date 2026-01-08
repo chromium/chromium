@@ -161,9 +161,9 @@ gfx::Size BrowserViewLayoutImplOld::GetMinimumSize(
 
   // TODO(crbug.com/437917495): Verify all callers have the correct bounds in
   // vertical and horizontal tabstrip modes.
-  gfx::Size tabstrip_size(has_tabstrip
-                              ? views().tab_strip_region_view->GetMinimumSize()
-                              : gfx::Size());
+  gfx::Size tabstrip_size(
+      has_tabstrip ? views().horizontal_tab_strip_region_view->GetMinimumSize()
+                   : gfx::Size());
   gfx::Size toolbar_size((has_toolbar || has_location_bar)
                              ? views().toolbar->GetMinimumSize()
                              : gfx::Size());
@@ -202,7 +202,7 @@ BrowserViewLayoutImplOld::CalculateContentsContainerLayout(
   gfx::Rect contents_container_bounds = available_bounds;
   int vertical_tab_offset = 0;
   if (delegate().ShouldDrawVerticalTabStrip()) {
-    vertical_tab_offset = views().vertical_tab_strip_container->width();
+    vertical_tab_offset = views().vertical_tab_strip_region_view->width();
     contents_container_bounds.set_width(available_bounds.width() -
                                         vertical_tab_offset);
   }
@@ -351,13 +351,13 @@ void BrowserViewLayoutImplOld::LayoutTitleBarForWebApp(
 
 void BrowserViewLayoutImplOld::LayoutVerticalTabStrip(
     gfx::Rect& available_bounds) {
-  if (views().vertical_tab_strip_container &&
-      views().vertical_tab_strip_container->GetVisible()) {
+  if (views().vertical_tab_strip_region_view &&
+      views().vertical_tab_strip_region_view->GetVisible()) {
     const int width =
-        views().vertical_tab_strip_container->GetPreferredSize().width();
-    views().vertical_tab_strip_container->SetBounds(available_bounds.x(),
-                                                    available_bounds.y(), width,
-                                                    available_bounds.height());
+        views().vertical_tab_strip_region_view->GetPreferredSize().width();
+    views().vertical_tab_strip_region_view->SetBounds(
+        available_bounds.x(), available_bounds.y(), width,
+        available_bounds.height());
     available_bounds.set_x(available_bounds.x() + width);
   }
 }
@@ -366,8 +366,8 @@ void BrowserViewLayoutImplOld::LayoutTabStripRegion(
     gfx::Rect& available_bounds) {
   TRACE_EVENT0("ui", "BrowserViewLayout::LayoutTabStripRegion");
   if (!delegate().ShouldDrawTabStrip()) {
-    SetViewVisibility(views().tab_strip_region_view, false);
-    views().tab_strip_region_view->SetBounds(0, 0, 0, 0);
+    SetViewVisibility(views().horizontal_tab_strip_region_view, false);
+    views().horizontal_tab_strip_region_view->SetBounds(0, 0, 0, 0);
     return;
   }
   // This retrieves the bounds for the tab strip based on whether or not we show
@@ -381,10 +381,11 @@ void BrowserViewLayoutImplOld::LayoutTabStripRegion(
   }
 
   if (delegate().ShouldDrawVerticalTabStrip()) {
-    SetViewVisibility(views().tab_strip_region_view, false);
+    SetViewVisibility(views().horizontal_tab_strip_region_view, false);
   } else {
-    SetViewVisibility(views().tab_strip_region_view, true);
-    views().tab_strip_region_view->SetBoundsRect(tab_strip_region_bounds);
+    SetViewVisibility(views().horizontal_tab_strip_region_view, true);
+    views().horizontal_tab_strip_region_view->SetBoundsRect(
+        tab_strip_region_bounds);
     available_bounds.set_y(
         tab_strip_region_bounds.bottom() -
         GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap));
@@ -417,7 +418,7 @@ void BrowserViewLayoutImplOld::LayoutToolbar(gfx::Rect& available_bounds) {
         delegate().GetBoundsForToolbarInVerticalTabBrowserView());
     toolbar_bounds.set_x(available_bounds.x());
     toolbar_bounds.set_width(toolbar_bounds.width() -
-                             views().vertical_tab_strip_container->width());
+                             views().vertical_tab_strip_region_view->width());
     views().toolbar->SetBoundsRect(toolbar_bounds);
   } else {
     int height =
