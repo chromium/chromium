@@ -116,7 +116,7 @@ export class ContextualTasksAppElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
-      showComposebox_: {type: Boolean},
+      isInBasicMode_: {type: Boolean, reflect: true},
       // Means no queries have been submitted in current AIM thread.
       isZeroState_: {
         type: Boolean,
@@ -124,7 +124,6 @@ export class ContextualTasksAppElement extends CrLitElement {
       },
       isAiPage_: {type: Boolean, reflect: true},
       isLensOverlayShowing_: {type: Boolean},
-      showComposeboxHeader_: {type: Boolean},
     };
   }
 
@@ -137,10 +136,9 @@ export class ContextualTasksAppElement extends CrLitElement {
   private pendingUrl_: string = '';
   protected accessor threadTitle_: string = '';
   protected accessor contextTabs_: Tab[] = [];
-  protected accessor showComposebox_: boolean = true;
+  protected accessor isInBasicMode_: boolean = false;
   protected accessor isErrorPageVisible_: boolean = false;
   protected accessor isZeroState_: boolean = false;
-  protected accessor showComposeboxHeader_: boolean = true;
 
   protected friendlyZeroStateSubtitle: string =
       loadTimeData.getString('friendlyZeroStateSubtitle');
@@ -199,13 +197,13 @@ export class ContextualTasksAppElement extends CrLitElement {
         this.oauthToken_ = oauthToken;
         this.maybeLoadPendingUrl_();
       }),
+      // TODO(crbug.com/474359572): Rename this to be more descriptive of what
+      // it actually does.
       callbackRouter.hideInput.addListener(() => {
-        this.showComposebox_ = false;
-        this.showComposeboxHeader_ = false;
+        this.isInBasicMode_ = true;
       }),
       callbackRouter.restoreInput.addListener(() => {
-        this.showComposebox_ = true;
-        this.showComposeboxHeader_ = true;
+        this.isInBasicMode_ = false;
       }),
       callbackRouter.setTaskDetails.addListener(updateTaskDetailsInUrl),
       callbackRouter.onZeroStateChange.addListener((isZeroState: boolean) => {

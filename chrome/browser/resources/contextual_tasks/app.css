@@ -249,7 +249,7 @@ error-page {
 }
 
 /* Pseudo element to cover the AIM filter bar while in zero state. */
-:host([is-zero-state_]) #toolbarOverlay::after {
+:host([is-zero-state_]:not([is-in-basic-mode_])) #toolbarOverlay::after {
   background-color: var(--search-background-color);
   content: '';
   display: block;
