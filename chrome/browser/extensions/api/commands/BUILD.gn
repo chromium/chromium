@@ -1,0 +1,24 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions_core,
+       "Cannot depend on extensions because enable_extensions_core=false.")
+
+source_set("commands") {
+  sources = [
+    "commands.cc",
+    "commands.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [
+    "//chrome/browser/extensions",
+    "//extensions/browser",
+    "//extensions/buildflags",
+    "//extensions/common",
+  ]
+}
