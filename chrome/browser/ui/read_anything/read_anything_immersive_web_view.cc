@@ -28,6 +28,12 @@ ReadAnythingImmersiveWebView::ReadAnythingImmersiveWebView(
 
 ReadAnythingImmersiveWebView::~ReadAnythingImmersiveWebView() = default;
 
+bool ReadAnythingImmersiveWebView::HandleContextMenu(
+    content::RenderFrameHost& render_frame_host,
+    const content::ContextMenuParams& params) {
+  return false;
+}
+
 std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
 ReadAnythingImmersiveWebView::CloseAndTakeContentsWrapper() {
   SetWebContents(nullptr);  // This is necessary to reset the web contents.

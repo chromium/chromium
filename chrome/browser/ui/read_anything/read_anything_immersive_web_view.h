@@ -41,6 +41,8 @@ class ReadAnythingImmersiveWebView : public views::WebView,
   // WebUIContentsWrapper::Host:
   void ShowUI() override;
   void CloseUI() override;
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
+                         const content::ContextMenuParams& params) override;
 
  private:
   std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
