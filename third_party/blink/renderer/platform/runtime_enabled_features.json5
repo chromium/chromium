@@ -5249,11 +5249,6 @@
       status: "stable",
     },
     {
-      // crbug.com/442551790
-      name: "TextareaLastLineRemovalFix",
-      status: "stable",
-    },
-    {
       // crbug.com/414858401
       name: "TextareaLineEndingsAsBr",
       status: "stable",
