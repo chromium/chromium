@@ -10,8 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 class Device;
 class DeviceMetadata;
@@ -45,7 +44,6 @@ class CompanionAppParser {
   base::WeakPtrFactory<CompanionAppParser> weak_pointer_factory_{this};
 };
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
 
 #endif  // ASH_QUICK_PAIR_COMPANION_APP_COMPANION_APP_PARSER_H_

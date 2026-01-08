@@ -35,8 +35,7 @@ constexpr char kFeatureParamDeviceIds[] = "111111,AAAAAA,BBBBBB,CCCCCC,DDDDDD";
 
 }  // namespace
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 class CompanionAppBrokerImplUnitTest : public AshTestBase,
                                        public CompanionAppBroker::Observer {
@@ -354,5 +353,4 @@ TEST_F(CompanionAppBrokerImplUnitTest,
   EXPECT_FALSE(launch_companion_app_notification_shown_);
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair

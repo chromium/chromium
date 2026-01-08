@@ -9,8 +9,7 @@
 
 #include "base/observer_list.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 class CompanionAppBrokerImpl : public CompanionAppBroker {
  public:
@@ -30,7 +29,6 @@ class CompanionAppBrokerImpl : public CompanionAppBroker {
   base::ObserverList<Observer> observers_;
 };
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
 
 #endif  // ASH_QUICK_PAIR_COMPANION_APP_COMPANION_APP_BROKER_IMPL_H_

@@ -35,8 +35,7 @@ bool IsLoggedIn(ash::LoginStatus status) {
 
 }  // namespace
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 CompanionAppBrokerImpl::CompanionAppBrokerImpl() {}
 
@@ -144,5 +143,4 @@ void CompanionAppBrokerImpl::LaunchCompanionApp(scoped_refptr<Device> device) {
   }
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
