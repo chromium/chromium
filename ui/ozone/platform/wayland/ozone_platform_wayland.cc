@@ -220,8 +220,8 @@ class OzonePlatformWayland : public OzonePlatform,
       }
     }
 
-    return gfx::ClientNativePixmapDmaBuf::IsConfigurationSupported(format,
-                                                                   usage);
+    return gfx::ClientNativePixmapDmaBuf::IsConfigurationSupported(
+        viz::SharedImageFormatToBufferFormat(format), usage);
 #else
     return false;
 #endif
