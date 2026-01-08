@@ -1827,14 +1827,10 @@ TEST_F(ComputedStyleTest, ScrollTimelineNameNoDiff) {
   ComputedStyleBuilder builder1(*InitialComputedStyle());
   ComputedStyleBuilder builder2(*InitialComputedStyle());
 
-  builder1.SetScrollTimelineName(MakeGarbageCollected<ScopedCSSNameList>(
-      HeapVector<Member<const ScopedCSSName>>(
-          1u, MakeGarbageCollected<ScopedCSSName>(AtomicString("test"),
-                                                  /* tree_scope */ nullptr))));
-  builder2.SetScrollTimelineName(MakeGarbageCollected<ScopedCSSNameList>(
-      HeapVector<Member<const ScopedCSSName>>(
-          1u, MakeGarbageCollected<ScopedCSSName>(AtomicString("test"),
-                                                  /* tree_scope */ nullptr))));
+  builder1.SetScrollTimelineName(
+      Vector<AtomicString>(1u, AtomicString("test")));
+  builder2.SetScrollTimelineName(
+      Vector<AtomicString>(1u, AtomicString("test")));
 
   const ComputedStyle* style1 = builder1.TakeStyle();
   const ComputedStyle* style2 = builder2.TakeStyle();
@@ -1861,14 +1857,10 @@ TEST_F(ComputedStyleTest, ViewTimelineNameNoDiff) {
   ComputedStyleBuilder builder1(*InitialComputedStyle());
   ComputedStyleBuilder builder2(*InitialComputedStyle());
 
-  builder1.SetViewTimelineName(MakeGarbageCollected<ScopedCSSNameList>(
-      HeapVector<Member<const ScopedCSSName>>(
-          1u, MakeGarbageCollected<ScopedCSSName>(AtomicString("test"),
-                                                  /* tree_scope */ nullptr))));
-  builder2.SetViewTimelineName(MakeGarbageCollected<ScopedCSSNameList>(
-      HeapVector<Member<const ScopedCSSName>>(
-          1u, MakeGarbageCollected<ScopedCSSName>(AtomicString("test"),
-                                                  /* tree_scope */ nullptr))));
+  builder1.SetScrollTimelineName(
+      Vector<AtomicString>(1u, AtomicString("test")));
+  builder2.SetScrollTimelineName(
+      Vector<AtomicString>(1u, AtomicString("test")));
 
   const ComputedStyle* style1 = builder1.TakeStyle();
   const ComputedStyle* style2 = builder2.TakeStyle();

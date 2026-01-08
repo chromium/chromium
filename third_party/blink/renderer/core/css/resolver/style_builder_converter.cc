@@ -105,6 +105,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -189,6 +190,18 @@ ScopedCSSNameList* ConvertNoneOrCustomIdentList(StyleResolverState& state,
         StyleBuilderConverter::ConvertNoneOrCustomIdent(state, *item));
   }
   return MakeGarbageCollected<ScopedCSSNameList>(std::move(names));
+}
+
+Vector<AtomicString> ConvertNoneOrCustomIdentListUnscoped(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  DCHECK(value.IsBaseValueList());
+  Vector<AtomicString> names;
+  for (const Member<const CSSValue>& item : To<CSSValueList>(value)) {
+    names.push_back(
+        StyleBuilderConverter::ConvertNoneOrCustomIdentUnscoped(state, *item));
+  }
+  return names;
 }
 
 }  // namespace
@@ -2187,10 +2200,26 @@ ScopedCSSName* StyleBuilderConverter::ConvertCustomIdent(
     StyleResolverState& state,
     const CSSValue& value) {
   state.SetHasTreeScopedReference();
-  const CSSCustomIdentValue& custom_ident = To<CSSCustomIdentValue>(value);
   return MakeGarbageCollected<ScopedCSSName>(
-      custom_ident.ComputeIdent(state.CssToLengthConversionData()),
-      custom_ident.GetTreeScope());
+      ConvertCustomIdentUnscoped(state, value),
+      To<CSSCustomIdentValue>(value).GetTreeScope());
+}
+
+AtomicString StyleBuilderConverter::ConvertNoneOrCustomIdentUnscoped(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
+    return g_null_atom;
+  }
+  return ConvertCustomIdentUnscoped(state, value);
+}
+
+AtomicString StyleBuilderConverter::ConvertCustomIdentUnscoped(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  return To<CSSCustomIdentValue>(value).ComputeIdent(
+      state.CssToLengthConversionData());
 }
 
 StylePositionAnchor StyleBuilderConverter::ConvertPositionAnchor(
@@ -3826,26 +3855,25 @@ Vector<TimelineInset> StyleBuilderConverter::ConvertViewTimelineInset(
   return insets;
 }
 
-ScopedCSSNameList* StyleBuilderConverter::ConvertViewTimelineName(
+Vector<AtomicString> StyleBuilderConverter::ConvertViewTimelineName(
     StyleResolverState& state,
     const CSSValue& value) {
-  return ConvertNoneOrCustomIdentList(state, value);
+  return ConvertNoneOrCustomIdentListUnscoped(state, value);
 }
 
-ScopedCSSNameList* StyleBuilderConverter::ConvertTimelineScope(
+Vector<AtomicString> StyleBuilderConverter::ConvertTimelineScope(
     StyleResolverState& state,
     const CSSValue& value) {
   if (value.IsIdentifierValue()) {
     DCHECK_EQ(CSSValueID::kNone, To<CSSIdentifierValue>(value).GetValueID());
-    return nullptr;
+    return {};
   }
-  DCHECK(value.IsScopedValue());
   DCHECK(value.IsBaseValueList());
-  HeapVector<Member<const ScopedCSSName>> names;
+  Vector<AtomicString> names;
   for (const Member<const CSSValue>& item : To<CSSValueList>(value)) {
-    names.push_back(ConvertCustomIdent(state, *item));
+    names.push_back(ConvertCustomIdentUnscoped(state, *item));
   }
-  return MakeGarbageCollected<ScopedCSSNameList>(std::move(names));
+  return names;
 }
 
 PositionArea StyleBuilderConverter::ConvertPositionArea(

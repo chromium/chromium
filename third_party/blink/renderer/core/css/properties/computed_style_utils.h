@@ -217,7 +217,7 @@ class CORE_EXPORT ComputedStyleUtils {
 
   static CSSValue* ValueForTimelineInset(const TimelineInset&,
                                          const ComputedStyle&);
-  static CSSValue* SingleValueForTimelineShorthand(const ScopedCSSName* name,
+  static CSSValue* SingleValueForTimelineShorthand(const AtomicString& name,
                                                    TimelineAxis,
                                                    std::optional<TimelineInset>,
                                                    const ComputedStyle&);

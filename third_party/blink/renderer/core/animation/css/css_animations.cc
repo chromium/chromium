@@ -761,18 +761,16 @@ const CSSAnimationUpdate* GetPendingAnimationUpdate(Node& node) {
 // SpecifiedTimelines "zips" together name/axis/inset vectors such that
 // individual name/axis/inset values can be accessed as a tuple.
 //
-// SpecifiedTimelines skips over entries with nullptr-names (which
-// represents "none"), because such entries should not yield timelines.
+// SpecifiedTimelines skips over entries with empty names (which
+// represent "none"), because such entries should not yield timelines.
 class SpecifiedTimelines {
   STACK_ALLOCATED();
 
  public:
-  explicit SpecifiedTimelines(const ScopedCSSNameList* names,
+  explicit SpecifiedTimelines(const Vector<AtomicString>& names,
                               const Vector<TimelineAxis>& axes,
                               const Vector<TimelineInset>* insets)
-      : names_(names ? &names->GetNames() : nullptr),
-        axes_(axes),
-        insets_(insets) {}
+      : names_(names), axes_(axes), insets_(insets) {}
 
   class Iterator {
     STACK_ALLOCATED();
@@ -781,13 +779,12 @@ class SpecifiedTimelines {
     Iterator(wtf_size_t index, const SpecifiedTimelines& timelines)
         : index_(index), timelines_(timelines) {}
 
-    std::tuple<Member<const ScopedCSSName>, TimelineAxis, TimelineInset>
-    operator*() const {
-      const HeapVector<Member<const ScopedCSSName>>& names = *timelines_.names_;
+    std::tuple<AtomicString, TimelineAxis, TimelineInset> operator*() const {
+      const Vector<AtomicString>& names = timelines_.names_;
       const Vector<TimelineAxis>& axes = timelines_.axes_;
       const Vector<TimelineInset>* insets = timelines_.insets_;
 
-      Member<const ScopedCSSName> name = names[index_];
+      const AtomicString& name = names[index_];
       TimelineAxis axis = axes.empty()
                               ? TimelineAxis::kBlock
                               : axes[std::min(index_, axes.size() - 1)];
@@ -799,7 +796,7 @@ class SpecifiedTimelines {
       return std::make_tuple(name, axis, inset);
     }
 
-    void operator++() { index_ = timelines_.SkipPastNullptr(index_ + 1); }
+    void operator++() { index_ = timelines_.SkipPastNone(index_ + 1); }
 
     bool operator==(const Iterator& o) const { return index_ == o.index_; }
 
@@ -808,24 +805,25 @@ class SpecifiedTimelines {
     const SpecifiedTimelines& timelines_;
   };
 
-  Iterator begin() const { return Iterator(SkipPastNullptr(0), *this); }
+  Iterator begin() const { return Iterator(SkipPastNone(0), *this); }
 
   Iterator end() const { return Iterator(Size(), *this); }
 
  private:
-  wtf_size_t Size() const { return names_ ? names_->size() : 0; }
+  wtf_size_t Size() const { return names_.size(); }
 
-  wtf_size_t SkipPastNullptr(wtf_size_t start) const {
+  wtf_size_t SkipPastNone(wtf_size_t start) const {
     wtf_size_t size = Size();
     wtf_size_t index = start;
     DCHECK_LE(index, size);
-    while (index < size && !(*names_)[index]) {
+    // Empty strings represent "none".
+    while (index < size && names_[index].empty()) {
       ++index;
     }
     return index;
   }
 
-  const HeapVector<Member<const ScopedCSSName>>* names_;
+  const Vector<AtomicString>& names_;
   const Vector<TimelineAxis>& axes_;
   const Vector<TimelineInset>* insets_;
 };
@@ -1071,7 +1069,8 @@ void CSSAnimations::CalculateScrollTimelineUpdate(
       (timeline_data && !timeline_data->GetScrollTimelines().empty())
           ? &timeline_data->GetScrollTimelines()
           : nullptr;
-  if (style_builder.ScrollTimelineName() || existing_scroll_timelines) {
+  if (!style_builder.ScrollTimelineName().empty() ||
+      existing_scroll_timelines) {
     update.SetChangedScrollTimelines(CalculateChangedScrollTimelines(
         animating_element, existing_scroll_timelines, style_builder));
   }
@@ -1087,7 +1086,7 @@ void CSSAnimations::CalculateViewTimelineUpdate(
       (timeline_data && !timeline_data->GetViewTimelines().empty())
           ? &timeline_data->GetViewTimelines()
           : nullptr;
-  if (style_builder.ViewTimelineName() || existing_view_timelines) {
+  if (!style_builder.ViewTimelineName().empty() || existing_view_timelines) {
     update.SetChangedViewTimelines(CalculateChangedViewTimelines(
         animating_element, existing_view_timelines, style_builder));
   }
@@ -1103,7 +1102,7 @@ void CSSAnimations::CalculateDeferredTimelineUpdate(
       (timeline_data && !timeline_data->GetDeferredTimelines().empty())
           ? &timeline_data->GetDeferredTimelines()
           : nullptr;
-  if (style_builder.TimelineScope() || existing_deferred_timelines) {
+  if (!style_builder.TimelineScope().empty() || existing_deferred_timelines) {
     update.SetChangedDeferredTimelines(CalculateChangedDeferredTimelines(
         animating_element, existing_deferred_timelines, style_builder));
   }
@@ -1118,10 +1117,7 @@ CSSScrollTimelineMap CSSAnimations::CalculateChangedScrollTimelines(
 
   Document& document = animating_element.GetDocument();
 
-  for (auto [scoped_name, axis, inset] :
-       SpecifiedScrollTimelines(style_builder)) {
-    // TODO(crbug.com/40877521): Use unscoped names for timeline properties.
-    const AtomicString& name = scoped_name->GetName();
+  for (auto [name, axis, inset] : SpecifiedScrollTimelines(style_builder)) {
     // Note: ScrollTimeline does not use insets.
     ScrollTimeline* existing_timeline =
         GetTimeline(existing_scroll_timelines, name);
@@ -1148,10 +1144,7 @@ CSSViewTimelineMap CSSAnimations::CalculateChangedViewTimelines(
   CSSViewTimelineMap changed_timelines =
       NullifyExistingTimelines(existing_view_timelines);
 
-  for (auto [scoped_name, axis, inset] :
-       SpecifiedViewTimelines(style_builder)) {
-    // TODO(crbug.com/40877521): Use unscoped names for timeline properties.
-    const AtomicString& name = scoped_name->GetName();
+  for (auto [name, axis, inset] : SpecifiedViewTimelines(style_builder)) {
     ViewTimeline* existing_timeline =
         GetTimeline(existing_view_timelines, name);
     CSSViewTimelineOptions options(&animating_element, axis, inset);
@@ -1176,20 +1169,15 @@ CSSDeferredTimelineMap CSSAnimations::CalculateChangedDeferredTimelines(
   CSSDeferredTimelineMap changed_timelines =
       NullifyExistingTimelines(existing_deferred_timelines);
 
-  if (const ScopedCSSNameList* name_list = style_builder.TimelineScope()) {
-    for (const Member<const ScopedCSSName>& scoped_name :
-         name_list->GetNames()) {
-      // TODO(crbug.com/40877521): Use unscoped names for timeline properties.
-      const AtomicString& name = scoped_name->GetName();
-      if (GetTimeline(existing_deferred_timelines, name)) {
-        changed_timelines.erase(name);
-        continue;
-      }
-      DeferredTimeline* new_timeline = MakeGarbageCollected<DeferredTimeline>(
-          &animating_element.GetDocument());
-      new_timeline->ServiceAnimations(kTimingUpdateOnDemand);
-      changed_timelines.Set(name, new_timeline);
+  for (const AtomicString& name : style_builder.TimelineScope()) {
+    if (GetTimeline(existing_deferred_timelines, name)) {
+      changed_timelines.erase(name);
+      continue;
     }
+    DeferredTimeline* new_timeline = MakeGarbageCollected<DeferredTimeline>(
+        &animating_element.GetDocument());
+    new_timeline->ServiceAnimations(kTimingUpdateOnDemand);
+    changed_timelines.Set(name, new_timeline);
   }
 
   return changed_timelines;
@@ -1508,9 +1496,7 @@ AnimationTimeline* CSSAnimations::ComputeTimeline(
     return nullptr;
   }
   if (style_timeline.IsName()) {
-    // TODO(crbug.com/40877521): Use unscoped names for timeline properties.
-    return FindAncestorTimeline(style_timeline.GetName().GetName(), element,
-                                &update);
+    return FindAncestorTimeline(style_timeline.GetName(), element, &update);
   }
   if (style_timeline.IsView()) {
     return ComputeViewFunctionTimeline(element, style_timeline.GetView(),

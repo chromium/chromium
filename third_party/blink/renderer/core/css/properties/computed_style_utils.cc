@@ -2713,8 +2713,7 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimeline(
     return CSSIdentifierValue::Create(timeline.GetKeyword());
   }
   if (timeline.IsName()) {
-    const ScopedCSSName& scoped_name = timeline.GetName();
-    return ValueForAnimationName(scoped_name.GetName());
+    return ValueForAnimationName(timeline.GetName());
   }
   if (timeline.IsView()) {
     const StyleTimeline::ViewData& view_data = timeline.GetView();
@@ -2766,7 +2765,7 @@ CSSValue* ComputedStyleUtils::ValueForTimelineInset(
 }
 
 CSSValue* ComputedStyleUtils::SingleValueForTimelineShorthand(
-    const ScopedCSSName* name,
+    const AtomicString& name,
     TimelineAxis axis,
     std::optional<TimelineInset> inset,
     const ComputedStyle& style) {

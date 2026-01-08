@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 // Implementations of methods in Shorthand subclasses that aren't generated.
 
@@ -4363,7 +4364,7 @@ bool ParseTimelineShorthand(CSSPropertyID shorthand_id,
 }
 
 static CSSValue* CSSValueForTimelineShorthand(
-    const HeapVector<Member<const ScopedCSSName>>& name_vector,
+    const Vector<AtomicString>& name_vector,
     const Vector<TimelineAxis>& axis_vector,
     const Vector<TimelineInset>* inset_vector,
     const ComputedStyle& style) {
@@ -4377,13 +4378,13 @@ static CSSValue* CSSValueForTimelineShorthand(
   }
   if (name_vector.empty()) {
     list->Append(*ComputedStyleUtils::SingleValueForTimelineShorthand(
-        /* name */ nullptr, TimelineAxis::kBlock, /* inset */ std::nullopt,
+        /*name=*/g_null_atom, TimelineAxis::kBlock, /*inset=*/std::nullopt,
         style));
     return list;
   }
   for (wtf_size_t i = 0; i < name_vector.size(); ++i) {
     list->Append(*ComputedStyleUtils::SingleValueForTimelineShorthand(
-        name_vector[i].Get(), axis_vector[i],
+        name_vector[i], axis_vector[i],
         inset_vector ? std::optional<TimelineInset>((*inset_vector)[i])
                      : std::optional<TimelineInset>(),
         style));
@@ -4410,9 +4411,7 @@ const CSSValue* ScrollTimeline::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  const HeapVector<Member<const ScopedCSSName>>& name_vector =
-      style.ScrollTimelineName() ? style.ScrollTimelineName()->GetNames()
-                                 : HeapVector<Member<const ScopedCSSName>>{};
+  const Vector<AtomicString>& name_vector = style.ScrollTimelineName();
   const Vector<TimelineAxis>& axis_vector = style.ScrollTimelineAxis();
   return CSSValueForTimelineShorthand(name_vector, axis_vector,
                                       /* inset_vector */ nullptr, style);
@@ -4861,9 +4860,7 @@ const CSSValue* ViewTimeline::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  const HeapVector<Member<const ScopedCSSName>>& name_vector =
-      style.ViewTimelineName() ? style.ViewTimelineName()->GetNames()
-                               : HeapVector<Member<const ScopedCSSName>>{};
+  const Vector<AtomicString>& name_vector = style.ViewTimelineName();
   const Vector<TimelineAxis>& axis_vector = style.ViewTimelineAxis();
   const Vector<TimelineInset>& inset_vector = style.ViewTimelineInset();
   return CSSValueForTimelineShorthand(name_vector, axis_vector, &inset_vector,

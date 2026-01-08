@@ -345,9 +345,8 @@ StyleTimeline CSSToStyleMap::MapAnimationTimeline(StyleResolverState& state,
     return StyleTimeline(ident->GetValueID());
   }
   if (auto* custom_ident = DynamicTo<CSSCustomIdentValue>(value)) {
-    return StyleTimeline(MakeGarbageCollected<ScopedCSSName>(
-        custom_ident->ComputeIdent(state.CssToLengthConversionData()),
-        custom_ident->GetTreeScope()));
+    return StyleTimeline(
+        custom_ident->ComputeIdent(state.CssToLengthConversionData()));
   }
   if (value.IsViewValue()) {
     const auto& view_value = To<cssvalue::CSSViewValue>(value);

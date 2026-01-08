@@ -9308,13 +9308,12 @@ const CSSValue* ScrollTimelineName::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (!style.ScrollTimelineName()) {
+  if (style.ScrollTimelineName().empty()) {
     return InitialValue();
   }
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  for (const Member<const ScopedCSSName>& name :
-       style.ScrollTimelineName()->GetNames()) {
-    list->Append(*ComputedStyleUtils::ValueForCustomIdentOrNone(name.Get()));
+  for (const AtomicString& name : style.ScrollTimelineName()) {
+    list->Append(*ComputedStyleUtils::ValueForCustomIdentOrNone(name));
   }
   return list;
 }
@@ -10922,13 +10921,12 @@ const CSSValue* ViewTimelineName::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (!style.ViewTimelineName()) {
+  if (style.ViewTimelineName().empty()) {
     return InitialValue();
   }
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  for (const Member<const ScopedCSSName>& name :
-       style.ViewTimelineName()->GetNames()) {
-    list->Append(*ComputedStyleUtils::ValueForCustomIdentOrNone(name.Get()));
+  for (const AtomicString& name : style.ViewTimelineName()) {
+    list->Append(*ComputedStyleUtils::ValueForCustomIdentOrNone(name));
   }
   return list;
 }
@@ -12150,13 +12148,12 @@ const CSSValue* TimelineScope::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (!style.TimelineScope()) {
+  if (style.TimelineScope().empty()) {
     return MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kNone);
   }
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  for (const Member<const ScopedCSSName>& name :
-       style.TimelineScope()->GetNames()) {
-    list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(name->GetName()));
+  for (const AtomicString& name : style.TimelineScope()) {
+    list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(name));
   }
   return list;
 }

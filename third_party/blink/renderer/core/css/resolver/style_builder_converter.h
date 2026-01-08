@@ -261,6 +261,10 @@ class StyleBuilderConverter {
                                                    const CSSValue&);
   static ScopedCSSName* ConvertCustomIdent(StyleResolverState&,
                                            const CSSValue&);
+  static AtomicString ConvertNoneOrCustomIdentUnscoped(StyleResolverState&,
+                                                       const CSSValue&);
+  static AtomicString ConvertCustomIdentUnscoped(StyleResolverState&,
+                                                 const CSSValue&);
   static StylePositionAnchor ConvertPositionAnchor(StyleResolverState&,
                                                    const CSSValue&);
   static PositionVisibility ConvertPositionVisibility(StyleResolverState& state,
@@ -438,10 +442,10 @@ class StyleBuilderConverter {
                                                       const CSSValue&);
   static Vector<TimelineInset> ConvertViewTimelineInset(StyleResolverState&,
                                                         const CSSValue&);
-  static ScopedCSSNameList* ConvertViewTimelineName(StyleResolverState&,
-                                                    const CSSValue&);
-  static ScopedCSSNameList* ConvertTimelineScope(StyleResolverState&,
-                                                 const CSSValue&);
+  static Vector<AtomicString> ConvertViewTimelineName(StyleResolverState&,
+                                                      const CSSValue&);
+  static Vector<AtomicString> ConvertTimelineScope(StyleResolverState&,
+                                                   const CSSValue&);
 
   static PositionArea ConvertPositionArea(StyleResolverState&,
                                           const CSSValue&,

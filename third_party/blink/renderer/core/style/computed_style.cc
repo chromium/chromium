@@ -275,19 +275,16 @@ static bool DiffAffectsContainerQueries(const ComputedStyle& old_style,
 
 static bool DiffAffectsScrollAnimations(const ComputedStyle& old_style,
                                         const ComputedStyle& new_style) {
-  if (!base::ValuesEquivalent(old_style.ScrollTimelineName(),
-                              new_style.ScrollTimelineName()) ||
+  if ((old_style.ScrollTimelineName() != new_style.ScrollTimelineName()) ||
       (old_style.ScrollTimelineAxis() != new_style.ScrollTimelineAxis())) {
     return true;
   }
-  if (!base::ValuesEquivalent(old_style.ViewTimelineName(),
-                              new_style.ViewTimelineName()) ||
+  if ((old_style.ViewTimelineName() != new_style.ViewTimelineName()) ||
       (old_style.ViewTimelineAxis() != new_style.ViewTimelineAxis()) ||
       (old_style.ViewTimelineInset() != new_style.ViewTimelineInset())) {
     return true;
   }
-  if (!base::ValuesEquivalent(old_style.TimelineScope(),
-                              new_style.TimelineScope())) {
+  if (old_style.TimelineScope() != new_style.TimelineScope()) {
     return true;
   }
   return false;

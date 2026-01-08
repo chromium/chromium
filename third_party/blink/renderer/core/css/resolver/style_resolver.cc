@@ -256,13 +256,13 @@ bool HasAnimationsOrTransitions(const StyleResolverState& state) {
 }
 
 bool HasTimelines(const StyleResolverState& state) {
-  if (state.StyleBuilder().ScrollTimelineName()) {
+  if (!state.StyleBuilder().ScrollTimelineName().empty()) {
     return true;
   }
-  if (state.StyleBuilder().ViewTimelineName()) {
+  if (!state.StyleBuilder().ViewTimelineName().empty()) {
     return true;
   }
-  if (state.StyleBuilder().TimelineScope()) {
+  if (!state.StyleBuilder().TimelineScope().empty()) {
     return true;
   }
   if (ElementAnimations* element_animations = GetElementAnimations(state)) {
