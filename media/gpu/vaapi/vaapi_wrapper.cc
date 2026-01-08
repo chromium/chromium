@@ -677,9 +677,8 @@ bool IsLowPowerIntelProcessor() {
         base::MatchPattern(cpuid.cpu_brand(), "Intel(R) Core(TM) *Y CPU*");
 
     return cpuid.family() == kPentiumAndLaterFamily &&
-           (base::Contains(cpuid.cpu_brand(), "Pentium") ||
-            base::Contains(cpuid.cpu_brand(), "Celeron") ||
-            is_core_y_processor);
+           (cpuid.cpu_brand().contains("Pentium") ||
+            cpuid.cpu_brand().contains("Celeron") || is_core_y_processor);
   }();
 
   return is_low_power_intel;
@@ -1707,7 +1706,7 @@ int VaapiWrapper::GetMaxNumDecoderInstances() {
   constexpr int kAMDStoneyRidgeMaxNumOfInstances = 10;
   auto va_display_state_handle = VADisplayStateSingleton::GetHandle();
   if (va_display_state_handle &&
-      base::Contains(va_display_state_handle->vendor_string(), "stoney")) {
+      va_display_state_handle->vendor_string().contains("stoney")) {
     return kAMDStoneyRidgeMaxNumOfInstances;
   }
   // TODO(andrescj): we can relax this once we extract video decoding into its

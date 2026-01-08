@@ -317,7 +317,7 @@ TEST_F(VaapiTest, VaapiSandboxInitialization) {
 // [1] https://github.com/intel/libva/commit/6f69256f8ccc9a73c0b196ab77ac69ab1f4f33c2
 TEST_F(VaapiTest, VerifyNoVAProfileH264Baseline) {
   const auto va_info = RetrieveVAInfoOutput();
-  EXPECT_FALSE(base::Contains(va_info, VAProfileH264Baseline));
+  EXPECT_FALSE(va_info.contains(VAProfileH264Baseline));
 }
 
 // Verifies that every VAProfile from VaapiWrapper::GetSupportedDecodeProfiles()
@@ -480,7 +480,7 @@ TEST_F(VaapiTest, UnsupportedVAProfile) {
           VaapiWrapper::kDecode);
   // H.263 decoding is NOT supported anywhere, but leave an ASSERT JIC.
   constexpr auto kUnsupportedVAProfile = VAProfileH263Baseline;
-  ASSERT_FALSE(base::Contains(configurations, kUnsupportedVAProfile));
+  ASSERT_FALSE(configurations.contains(kUnsupportedVAProfile));
 
   auto wrapper_or_error =
       VaapiWrapper::Create(VaapiWrapper::kDecode, kUnsupportedVAProfile,
@@ -498,7 +498,7 @@ TEST_F(VaapiTest, TooManyDecoderInstances) {
           VaapiWrapper::kDecode);
   // H.264 decoding is currently supported everywhere, but leave an ASSERT.
   constexpr auto kVAProfile = VAProfileH264ConstrainedBaseline;
-  ASSERT_TRUE(base::Contains(configurations, kVAProfile));
+  ASSERT_TRUE(configurations.contains(kVAProfile));
 
   const int kMaxNumOfInstances = VaapiWrapper::GetMaxNumDecoderInstances();
   std::vector<scoped_refptr<VaapiWrapper>> vaapi_wrappers(kMaxNumOfInstances);
@@ -549,8 +549,8 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
       base::MatchPattern(cpuid.cpu_brand(), "Intel(R) Core(TM) *Y CPU*");
   const bool is_low_power_intel =
       cpuid.family() == kPentiumAndLaterFamily &&
-      (base::Contains(cpuid.cpu_brand(), "Pentium") ||
-       base::Contains(cpuid.cpu_brand(), "Celeron") || is_core_y_processor);
+      (cpuid.cpu_brand().contains("Pentium") ||
+       cpuid.cpu_brand().contains("Celeron") || is_core_y_processor);
   if (!is_low_power_intel)
     GTEST_SKIP() << "Not an Intel low power processor";
 

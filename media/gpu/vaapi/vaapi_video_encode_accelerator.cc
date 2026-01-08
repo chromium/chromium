@@ -1213,7 +1213,7 @@ void VaapiVideoEncodeAccelerator::SetState(State state) {
         {{kUninitialized, "kUninitialized"},
          {kEncoding, "kEncoding"},
          {kError, "kError"}});
-    CHECK(base::Contains(kStateToString, state));
+    CHECK(kStateToString.contains(state));
     VLOGF(2) << "setting state to: " << kStateToString.at(state);
   }
 
