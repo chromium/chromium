@@ -87,27 +87,6 @@ std::optional<std::wstring> StringFromVariant(const VARIANT& source) {
   return {};
 }
 
-std::string GetStringFromValue(const std::string& value) {
-  return value;
-}
-
-std::string GetStringFromValue(int value) {
-  return base::NumberToString(value);
-}
-
-std::string GetStringFromValue(bool value) {
-  return base::ToString(value);
-}
-
-std::string GetStringFromValue(const updater::UpdatesSuppressedTimes& value) {
-  return base::StringPrintf("%d, %d, %d", value.start_hour_,
-                            value.start_minute_, value.duration_minute_);
-}
-
-std::string GetStringFromValue(const std::vector<std::string>& value) {
-  return base::JoinString(value, ";");
-}
-
 }  // namespace
 
 namespace updater {
@@ -1929,14 +1908,10 @@ template <typename T>
   return MakeAndInitializeComObject<PolicyStatusValueImpl>(
       policy_status_value,
       value.effective_policy() ? value.effective_policy()->source : "",
-      value.effective_policy()
-          ? GetStringFromValue(value.effective_policy()->policy)
-          : "",
+      value.effective_policy() ? value.effective_policy()->ToString() : "",
       value.conflict_policy() != std::nullopt,
       value.conflict_policy() ? value.conflict_policy()->source : "",
-      value.conflict_policy()
-          ? GetStringFromValue(value.conflict_policy()->policy)
-          : "");
+      value.conflict_policy() ? value.conflict_policy()->ToString() : "");
 }
 
 HRESULT PolicyStatusValueImpl::RuntimeClassInitialize(

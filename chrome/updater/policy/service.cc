@@ -45,6 +45,7 @@
 #include "chrome/updater/policy/policy_fetcher.h"
 #include "chrome/updater/policy/policy_manager.h"
 #include "chrome/updater/prefs.h"
+#include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/policy/core/common/policy_types.h"
@@ -75,6 +76,22 @@ base::Value::Dict PolicyStatusToDict(const PolicyStatus<T>& policy_status) {
   return base::Value::Dict()
       .Set("valuesBySource", std::move(values_by_source))
       .Set("prevailingSource", policy_status.effective_policy()->source);
+}
+
+std::string PolicySourceToString(
+    const UpdateService::PolicyValue::PolicySource& policy_source) {
+  switch (policy_source) {
+    case UpdateService::PolicyValue::PolicySource::kSourceCloud:
+      return kSourceDMPolicyManager;
+    case UpdateService::PolicyValue::PolicySource::kSourceDefault:
+      return kSourceDefaultValuesPolicyManager;
+    case UpdateService::PolicyValue::PolicySource::kSourceExternalConstants:
+      return kSourceDictValuesPolicyManager;
+    case UpdateService::PolicyValue::PolicySource::kSourcePlatform:
+      return kSourcePlatformPolicyManager;
+    case UpdateService::PolicyValue::PolicySource::kSourceUnknown:
+      return "unknown";
+  }
 }
 
 }  // namespace
@@ -505,122 +522,156 @@ base::Value::Dict PolicyService::GetAllPolicies() const {
       .Set("policiesByAppId", std::move(policies_by_app_id));
 }
 
-std::string PolicyService::GetAllPoliciesAsString() const {
+base::flat_map<std::string, UpdateService::PolicyValue>
+PolicyService::GetUpdaterPolicies() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<std::string> policies;
 
+  base::flat_map<std::string, UpdateService::PolicyValue> policies;
   const PolicyStatus<bool> cloud_policy_override_platform_policy =
       CloudPolicyOverridesPlatformPolicy();
   if (cloud_policy_override_platform_policy) {
-    policies.push_back(base::StringPrintf(
-        "CloudPolicyOverridesPlatformPolicy = %d (%s)",
-        cloud_policy_override_platform_policy.policy(),
-        cloud_policy_override_platform_policy.effective_policy()
-            ->source.c_str()));
+    policies.insert({"CloudPolicyOverridesPlatformPolicy",
+                     cloud_policy_override_platform_policy.ToPolicyValue()});
   }
 
   const PolicyStatus<base::TimeDelta> last_check_period = GetLastCheckPeriod();
   if (last_check_period) {
-    policies.push_back(base::StringPrintf(
-        "LastCheckPeriod = %d (%s)", last_check_period.policy().InMinutes(),
-        last_check_period.effective_policy()->source.c_str()));
+    policies.insert({"LastCheckPeriod", last_check_period.ToPolicyValue()});
   }
 
   const PolicyStatus<UpdatesSuppressedTimes> update_supressed_times =
       GetUpdatesSuppressedTimes();
   if (update_supressed_times) {
-    policies.push_back(base::StringPrintf(
-        "UpdatesSuppressed = {StartHour: %d, StartMinute: "
-        "%d, Duration: %d} (%s)",
-        update_supressed_times.policy().start_hour_,
-        update_supressed_times.policy().start_minute_,
-        update_supressed_times.policy().duration_minute_,
-        update_supressed_times.effective_policy()->source.c_str()));
+    policies.insert(
+        {"UpdatesSuppressed", update_supressed_times.ToPolicyValue()});
   }
 
   const PolicyStatus<std::string> download_preference = GetDownloadPreference();
   if (download_preference) {
-    policies.push_back(base::StringPrintf(
-        "DownloadPreference = %s (%s)", download_preference.policy().c_str(),
-        download_preference.effective_policy()->source.c_str()));
+    policies.insert(
+        {"DownloadPreference", download_preference.ToPolicyValue()});
   }
 
   const PolicyStatus<int> cache_size_limit = GetPackageCacheSizeLimitMBytes();
   if (cache_size_limit) {
-    policies.push_back(base::StringPrintf(
-        "PackageCacheSizeLimit = %d MB (%s)", cache_size_limit.policy(),
-        cache_size_limit.effective_policy()->source.c_str()));
+    policies.insert(
+        {"PackageCacheSizeLimit", cache_size_limit.ToPolicyValue()});
   }
 
   const PolicyStatus<int> cache_expiration_time =
       GetPackageCacheExpirationTimeDays();
   if (cache_expiration_time) {
-    policies.push_back(base::StringPrintf(
-        "PackageCacheExpires = %d days (%s)", cache_expiration_time.policy(),
-        cache_expiration_time.effective_policy()->source.c_str()));
+    policies.insert(
+        {"PackageCacheExpires", cache_expiration_time.ToPolicyValue()});
   }
 
   const PolicyStatus<std::string> proxy_mode = GetProxyMode();
   if (proxy_mode) {
-    policies.push_back(
-        base::StringPrintf("ProxyMode = %s (%s)", proxy_mode.policy().c_str(),
-                           proxy_mode.effective_policy()->source.c_str()));
+    policies.insert({"ProxyMode", proxy_mode.ToPolicyValue()});
   }
 
   const PolicyStatus<std::string> proxy_pac_url = GetProxyPacUrl();
   if (proxy_pac_url) {
-    policies.push_back(base::StringPrintf(
-        "ProxyPacURL = %s (%s)", proxy_pac_url.policy().c_str(),
-        proxy_pac_url.effective_policy()->source.c_str()));
+    policies.insert({"ProxyPacURL", proxy_pac_url.ToPolicyValue()});
   }
   const PolicyStatus<std::string> proxy_server = GetProxyServer();
   if (proxy_server) {
-    policies.push_back(base::StringPrintf(
-        "ProxyServer = %s (%s)", proxy_server.policy().c_str(),
-        proxy_server.effective_policy()->source.c_str()));
+    policies.insert({"ProxyServer", proxy_server.ToPolicyValue()});
   }
 
   for (const std::string& app_id : GetAppsWithPolicy()) {
-    std::vector<std::string> app_policies;
+    base::flat_map<std::string, UpdateService::PolicyValue> app_policies;
     const PolicyStatus<int> app_install = GetPolicyForAppInstalls(app_id);
     if (app_install) {
-      app_policies.push_back(
-          base::StringPrintf("Install = %d (%s)", app_install.policy(),
-                             app_install.effective_policy()->source.c_str()));
+      app_policies.insert({"Install", app_install.ToPolicyValue()});
     }
 
     const PolicyStatus<int> app_update = GetPolicyForAppUpdates(app_id);
     if (app_update) {
-      app_policies.push_back(
-          base::StringPrintf("Update = %d (%s)", app_update.policy(),
-                             app_update.effective_policy()->source.c_str()));
+      app_policies.insert({"Update", app_update.ToPolicyValue()});
     }
     const PolicyStatus<std::string> target_channel = GetTargetChannel(app_id);
     if (target_channel) {
-      app_policies.push_back(base::StringPrintf(
-          "TargetChannel = %s (%s)", target_channel.policy().c_str(),
-          target_channel.effective_policy()->source.c_str()));
+      app_policies.insert({"TargetChannel", target_channel.ToPolicyValue()});
     }
     const PolicyStatus<std::string> target_version_prefix =
         GetTargetVersionPrefix(app_id);
     if (target_version_prefix) {
-      app_policies.push_back(base::StringPrintf(
-          "TargetVersionPrefix = %s (%s)",
-          target_version_prefix.policy().c_str(),
-          target_version_prefix.effective_policy()->source.c_str()));
+      app_policies.insert(
+          {"TargetVersionPrefix", target_version_prefix.ToPolicyValue()});
     }
     const PolicyStatus<bool> rollback_allowed =
         IsRollbackToTargetVersionAllowed(app_id);
     if (rollback_allowed) {
-      app_policies.push_back(base::StringPrintf(
-          "RollbackToTargetVersionAllowed = %d (%s)", rollback_allowed.policy(),
-          rollback_allowed.effective_policy()->source.c_str()));
+      app_policies.insert(
+          {"RollbackToTargetVersionAllowed", rollback_allowed.ToPolicyValue()});
+    }
+  }
+  return policies;
+}
+
+base::flat_map<std::string,
+               base::flat_map<std::string, UpdateService::PolicyValue>>
+PolicyService::GetAppPolicies() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::flat_map<std::string,
+                 base::flat_map<std::string, UpdateService::PolicyValue>>
+      policies;
+  for (const std::string& app_id : GetAppsWithPolicy()) {
+    base::flat_map<std::string, UpdateService::PolicyValue> app_policies;
+    const PolicyStatus<int> app_install = GetPolicyForAppInstalls(app_id);
+    if (app_install) {
+      app_policies.insert({"Install", app_install.ToPolicyValue()});
     }
 
+    const PolicyStatus<int> app_update = GetPolicyForAppUpdates(app_id);
+    if (app_update) {
+      app_policies.insert({"Update", app_update.ToPolicyValue()});
+    }
+    const PolicyStatus<std::string> target_channel = GetTargetChannel(app_id);
+    if (target_channel) {
+      app_policies.insert({"TargetChannel", target_channel.ToPolicyValue()});
+    }
+    const PolicyStatus<std::string> target_version_prefix =
+        GetTargetVersionPrefix(app_id);
+    if (target_version_prefix) {
+      app_policies.insert(
+          {"TargetVersionPrefix", target_version_prefix.ToPolicyValue()});
+    }
+    const PolicyStatus<bool> rollback_allowed =
+        IsRollbackToTargetVersionAllowed(app_id);
+    if (rollback_allowed) {
+      app_policies.insert(
+          {"RollbackToTargetVersionAllowed", rollback_allowed.ToPolicyValue()});
+    }
+    policies.insert({app_id, std::move(app_policies)});
+  }
+  return policies;
+}
+
+std::string PolicyService::GetAllPoliciesAsString() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::vector<std::string> policies;
+  for (const auto& [policy, value] : GetUpdaterPolicies()) {
+    policies.push_back(base::StringPrintf(
+        "%s = %s (%s)", policy.c_str(), value.policy_value.c_str(),
+        PolicySourceToString(value.policy_source).c_str()));
+  }
+
+  for (const auto& [app_id, app_policy_values] : GetAppPolicies()) {
+    std::vector<std::string> app_policies;
+    for (const auto& [policy, value] : app_policy_values) {
+      app_policies.push_back(base::StringPrintf(
+          "%s = %s (%s)", policy.c_str(), value.policy_value.c_str(),
+          PolicySourceToString(value.policy_source).c_str()));
+    }
     policies.push_back(
         base::StringPrintf("\"%s\": {\n    %s\n  }", app_id.c_str(),
                            base::JoinString(app_policies, "\n    ").c_str()));
   }
+
   return base::StringPrintf("{\n  %s\n}\n",
                             base::JoinString(policies, "\n  ").c_str());
 }

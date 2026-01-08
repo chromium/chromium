@@ -16,12 +16,14 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/updater/event_history.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/manager.h"
+#include "chrome/updater/update_service.h"
 
 namespace policy {
 enum class PolicyFetchReason;
@@ -37,10 +39,40 @@ class PolicyFetcher;
 template <typename T>
 class PolicyStatus {
  public:
+  struct PolicyValueEntry {
+    std::string policy_value;
+    UpdateService::PolicyValue::PolicySource policy_source =
+        UpdateService::PolicyValue::PolicySource::kSourceUnknown;
+  };
+
   struct Entry {
     Entry(const std::string& s, T p) : source(s), policy(p) {}
     std::string source;
     T policy{};
+
+    PolicyValueEntry ToPolicyValueEntry() const {
+      PolicyValueEntry entry;
+      entry.policy_value = ToString();
+      if (base::EqualsCaseInsensitiveASCII(source, kSourceDMPolicyManager)) {
+        entry.policy_source =
+            UpdateService::PolicyValue::PolicySource::kSourceCloud;
+      } else if (base::EqualsCaseInsensitiveASCII(
+                     source, kSourceDefaultValuesPolicyManager)) {
+        entry.policy_source =
+            UpdateService::PolicyValue::PolicySource::kSourceDefault;
+      } else if (base::EqualsCaseInsensitiveASCII(
+                     source, kSourceDictValuesPolicyManager)) {
+        entry.policy_source =
+            UpdateService::PolicyValue::PolicySource::kSourceExternalConstants;
+      } else if (base::EqualsCaseInsensitiveASCII(
+                     source, kSourcePlatformPolicyManager)) {
+        entry.policy_source =
+            UpdateService::PolicyValue::PolicySource::kSourcePlatform;
+      }
+      return entry;
+    }
+
+    std::string ToString() const { return base::ToString(policy); }
   };
 
   PolicyStatus() = default;
@@ -60,6 +92,34 @@ class PolicyStatus {
                policy != effective_policy_.value().policy) {
       conflict_policy_ = std::make_optional<Entry>(source, policy);
     }
+  }
+
+  UpdateService::PolicyValue ToPolicyValue() const {
+    const PolicyValueEntry effective = effective_policy()->ToPolicyValueEntry();
+    UpdateService::PolicyValue value;
+    value.policy_value = effective.policy_value;
+    value.policy_source = effective.policy_source;
+
+    for (const auto& status_entry : all_policies()) {
+      const PolicyValueEntry entry = status_entry.ToPolicyValueEntry();
+      switch (entry.policy_source) {
+        case UpdateService::PolicyValue::PolicySource::kSourceCloud:
+          value.cloud_value = entry.policy_value;
+          break;
+        case UpdateService::PolicyValue::PolicySource::kSourceDefault:
+          value.default_value = entry.policy_value;
+          break;
+        case UpdateService::PolicyValue::PolicySource::kSourceExternalConstants:
+          value.external_constants_value = entry.policy_value;
+          break;
+        case UpdateService::PolicyValue::PolicySource::kSourcePlatform:
+          value.platform_value = entry.policy_value;
+          break;
+        case UpdateService::PolicyValue::PolicySource::kSourceUnknown:
+          break;
+      }
+    }
+    return value;
   }
 
   const std::optional<Entry>& effective_policy() const {
@@ -171,6 +231,11 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
 
   // Helper methods.
   base::Value::Dict GetAllPolicies() const;
+  base::flat_map<std::string, UpdateService::PolicyValue> GetUpdaterPolicies()
+      const;
+  base::flat_map<std::string,
+                 base::flat_map<std::string, UpdateService::PolicyValue>>
+  GetAppPolicies() const;
   std::string GetAllPoliciesAsString() const;
   bool AreUpdatesSuppressedNow(base::Time now = base::Time::Now()) const;
 
