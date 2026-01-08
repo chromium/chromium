@@ -88,6 +88,7 @@ MultivariantPlaylist::Parse(std::string_view source,
   std::vector<VariantStream> variants;
   base::flat_map<std::optional<std::string_view>, scoped_refptr<RenditionGroup>>
       audio_rendition_groups;
+  base::flat_map<GURL, RenditionGroup::RenditionTrackId> rendition_uri_map;
   RenditionGroup::RenditionTrackId::Generator rendition_id_generator;
 
   // Get variants out of the playlist
@@ -159,9 +160,29 @@ MultivariantPlaylist::Parse(std::string_view source,
             case MediaType::kAudio: {
               auto* group = GetOrCreateRenditionGroup(
                   {}, audio_rendition_groups, media_tag.group_id.Str());
+
+              std::optional<RenditionGroup::RenditionTrackId> rendition_id;
+              std::optional<GURL> resolved_playlist_uri;
+              if (!media_tag.uri.has_value()) {
+                rendition_id = rendition_id_generator.GenerateNextId();
+              } else {
+                resolved_playlist_uri = uri.Resolve(media_tag.uri->Str());
+                if (!resolved_playlist_uri->is_valid()) {
+                  return ParseStatusCode::kInvalidUri;
+                }
+                auto id_iter = rendition_uri_map.find(*resolved_playlist_uri);
+                if (id_iter == rendition_uri_map.end()) {
+                  rendition_id = rendition_id_generator.GenerateNextId();
+                  rendition_uri_map.emplace(*resolved_playlist_uri,
+                                            *rendition_id);
+                } else {
+                  rendition_id = id_iter->second;
+                }
+              }
+
               auto rendition_result = group->AddRendition(
                   base::PassKey<MultivariantPlaylist>(), std::move(media_tag),
-                  uri, rendition_id_generator.GenerateNextId());
+                  uri, std::move(resolved_playlist_uri), *rendition_id);
               if (!rendition_result.has_value()) {
                 return std::move(rendition_result).error();
               }

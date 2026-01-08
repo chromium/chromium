@@ -81,6 +81,7 @@ ParseStatus::Or<std::monostate> RenditionGroup::AddRendition(
     base::PassKey<MultivariantPlaylist>,
     XMediaTag tag,
     const GURL& playlist_uri,
+    std::optional<GURL> resolved_playlist_uri,
     RenditionTrackId unique_id) {
   DCHECK(tag.group_id.Str() == id_);
   DCHECK(playlist_uri.is_valid());
@@ -92,14 +93,6 @@ ParseStatus::Or<std::monostate> RenditionGroup::AddRendition(
   // FORCED MUST NOT be present unless the TYPE is SUBTITLES. We don't support
   // the SUBTITLES type.
   DCHECK(tag.forced == false);
-
-  std::optional<GURL> uri;
-  if (tag.uri.has_value()) {
-    uri = playlist_uri.Resolve(tag.uri->Str());
-    if (!uri->is_valid()) {
-      return ParseStatusCode::kInvalidUri;
-    }
-  }
 
   auto name = std::string(tag.name.Str());
   if (renditions_map_.contains(MediaTrack::Id{name})) {
@@ -123,7 +116,7 @@ ParseStatus::Or<std::monostate> RenditionGroup::AddRendition(
   auto& rendition = renditions_.emplace_back(
       base::PassKey<RenditionGroup>(),
       Rendition::CtorArgs{
-          .uri = std::move(uri),
+          .uri = std::move(resolved_playlist_uri),
           .name = std::move(name),
           .language = std::move(language),
           .associated_language = std::move(associated_language),
