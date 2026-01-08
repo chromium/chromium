@@ -107,13 +107,13 @@ ts_definitions = [
   "//tools/typescript/definitions/pending.d.ts",
 ]
 
-ts_library("ts_build") {
+ts_library("build_ts") {
   root_dir = "$ts_build_staging_dir"
   out_dir = tsc_out_dir
 
   composite = true
 
-  deps = [ "../../common:ts_build" ]
+  deps = [ "../../common:build_ts" ]
 
   # Targets that need to run before running the TS build.
   extra_deps = [
@@ -151,8 +151,8 @@ bundle_js("bundle_js") {
   out_folder = "$target_gen_dir/bundle"
 
   deps = [
+    ":build_ts",
     ":copy_mediapipe_files",
-    ":ts_build",
     "../../common:copied_files",
   ]
 }
@@ -179,7 +179,7 @@ bundle_js("bundle_js_sandboxed_pumpkin_tagger") {
   js_module_in_files = [ "sandboxed_pumpkin_tagger.js" ]
   out_folder = "$target_gen_dir/bundle/dictation/parse"
 
-  deps = [ ":ts_build" ]
+  deps = [ ":build_ts" ]
 }
 
 # Minifies the sandboxed pumpkin tagger to optimize memory footprint.

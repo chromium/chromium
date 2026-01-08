@@ -65,13 +65,13 @@ ts_modules = [
 ]
 
 # Root dir must be the parent directory so it can reach common.
-ts_library("ts_build") {
+ts_library("build_ts") {
   root_dir = "$ts_build_staging_dir"
   out_dir = tsc_out_dir
 
   composite = true
 
-  deps = [ "../../common:ts_build" ]
+  deps = [ "../../common:build_ts" ]
 
   extra_deps = [ ":stage_ts_build" ]
 
@@ -107,7 +107,7 @@ bundle_js("bundle_js") {
   out_folder = "$target_gen_dir/bundle"
 
   deps = [
-    ":ts_build",
+    ":build_ts",
     "../../common:copied_files",
   ]
 }

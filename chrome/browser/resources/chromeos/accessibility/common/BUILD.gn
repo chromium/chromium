@@ -129,7 +129,7 @@ copy("copy_ash_common_macros") {
   outputs = [ "$ts_build_staging_dir/action_fulfillment/macros/macro_names.ts" ]
 }
 
-ts_library("ts_build") {
+ts_library("build_ts") {
   root_dir = "$ts_build_staging_dir"
   out_dir = tsc_out_dir
   definitions = ts_definitions
@@ -149,9 +149,9 @@ ts_library("ts_build") {
 run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = accessibility_common_out_dir
-  deps = [ ":ts_build" ]
+  deps = [ ":build_ts" ]
   sources = earcons + js_sources +
-            filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
+            filter_include(get_target_outputs(":build_ts"), [ "*.js" ])
 
   rewrite_rules = [
     rebase_path(tsc_out_dir, root_build_dir) + ":",

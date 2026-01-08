@@ -187,11 +187,11 @@ js_modules = [
 ]
 
 # Root dir must be the parent directory so it can reach common/.
-ts_library("ts_build") {
+ts_library("build_ts") {
   root_dir = "$ts_build_staging_dir"
   out_dir = tsc_out_dir
 
-  deps = [ "../../common:ts_build" ]
+  deps = [ "../../common:build_ts" ]
 
   extra_deps = [
     #copied files
@@ -252,11 +252,11 @@ run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = chromevox_out_dir
   deps = [
+    ":build_ts",
     ":copy_sre",
     ":minify_js_messageformat",
-    ":ts_build",
+    "../../common:build_ts",
     "../../common:copied_files",
-    "../../common:ts_build",
   ]
 
   clear_dest_dirs = [
@@ -288,7 +288,7 @@ run_jsbundler("copied_files") {
     "tutorial/practice_areas/jump_commands.html",
     "tutorial/practice_areas/selects.html",
   ]
-  sources += filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
+  sources += filter_include(get_target_outputs(":build_ts"), [ "*.js" ])
 
   rewrite_rules = [
     rebase_path("$tsc_out_dir", root_build_dir) + ":",

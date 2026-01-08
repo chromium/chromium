@@ -28,7 +28,7 @@ group("build") {
   ]
 }
 
-ts_library("ts_build") {
+ts_library("build_ts") {
   in_files = ts_modules
   out_dir = tsc_out_dir
 
@@ -55,8 +55,8 @@ copy("braille_ime_manifest") {
 run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = braille_ime_out_dir
-  deps = [ ":ts_build" ]
-  sources = filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
+  deps = [ ":build_ts" ]
+  sources = filter_include(get_target_outputs(":build_ts"), [ "*.js" ])
 
   rewrite_rules = [
     rebase_path(tsc_out_dir, root_build_dir) + ":",
@@ -84,7 +84,7 @@ js2gtest("braille_ime_extjs_tests") {
     "../common/testing/e2e_test_base.js",
   ]
   deps = [
-    ":ts_build",
+    ":build_ts",
     "//ash",
     "//base",
     "//chrome/browser/ash/accessibility",
