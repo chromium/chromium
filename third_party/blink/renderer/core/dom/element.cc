@@ -8686,9 +8686,7 @@ ColumnPseudoElement* Element::GetOrCreateColumnPseudoElementIfNeeded(
         column_pseudo_element->CustomStyleForLayoutObject(
             StyleRecalcContext::FromPseudoElementAncestors(*this,
                                                            kPseudoIdColumn));
-    if (!style) {
-      style = &GetDocument().GetStyleResolver().InitialStyle();
-    }
+    DCHECK(style);
     column_pseudo_element->SetComputedStyle(style);
     column_pseudo_element->InsertedInto(*this);
     probe::PseudoElementCreated(column_pseudo_element);
