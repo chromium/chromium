@@ -1541,7 +1541,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         doNothing()
                 .when(mMultiInstanceManager)
-                .openNewWindow(eq("Android.WindowManager.NewWindow2"), eq(false), anyInt());
+                .openNewWindow(eq(false), anyInt());
     }
 
     @Test
@@ -1719,7 +1719,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         eq(false),
                         eq(true),
                         anyInt());
-        verify(mMultiInstanceManager, times(1)).openNewWindow(any(), anyBoolean(), anyInt());
+        verify(mMultiInstanceManager, times(1)).openNewWindow(anyBoolean(), anyInt());
     }
 
     @Test
@@ -1734,7 +1734,7 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(mMultiInstanceManager, times(0))
                 .moveAndReparentTabsToNewWindow(
                         any(), anyInt(), anyBoolean(), anyBoolean(), anyBoolean(), anyInt());
-        verify(mMultiInstanceManager, times(1)).openNewWindow(any(), anyBoolean(), anyInt());
+        verify(mMultiInstanceManager, times(1)).openNewWindow(anyBoolean(), anyInt());
     }
 
     @Test
@@ -1749,7 +1749,7 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(mMultiInstanceManager, times(0))
                 .moveAndReparentTabGroupToNewWindow(
                         any(), eq(INVALID_WINDOW_ID), eq(true), eq(false), eq(true), anyInt());
-        verify(mMultiInstanceManager, times(1)).openNewWindow(any(), anyBoolean(), anyInt());
+        verify(mMultiInstanceManager, times(1)).openNewWindow(anyBoolean(), anyInt());
     }
 
     @Test
@@ -2515,7 +2515,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         .build();
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
 
-        mMultiInstanceManager.openNewWindow("", false, NewWindowAppSource.OTHER);
+        mMultiInstanceManager.openNewWindow(false, NewWindowAppSource.OTHER);
 
         verify(mCurrentActivity).startActivity(intentCaptor.capture());
         Intent intent = intentCaptor.getValue();

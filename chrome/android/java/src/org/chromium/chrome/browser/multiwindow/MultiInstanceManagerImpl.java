@@ -354,7 +354,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
             }
             return true;
         } else if (id == R.id.new_window_menu_id) {
-            openNewWindow("Android.WindowManager.NewWindow2", /* incognito= */ false, appSource);
+            openNewWindow(/* incognito= */ false, appSource);
             return true;
         } else if (id == R.id.new_incognito_window_menu_id) {
             TabModelOrchestrator tabModelOrchestrator = mTabModelOrchestratorSupplier.get();
@@ -363,7 +363,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
             if (tabModelSelector == null) return true;
             Profile profile = tabModelSelector.getCurrentModel().getProfile();
             if (profile != null && IncognitoUtils.isIncognitoModeEnabled(profile)) {
-                openNewWindow("Android.WindowManager.NewWindow2", /* incognito= */ true, appSource);
+                openNewWindow(/* incognito= */ true, appSource);
             }
             return true;
         }
@@ -499,8 +499,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
 
         return intent;
     }
-    protected void openNewWindow(
-            String umaAction, boolean incognito, @NewWindowAppSource int source) {
+    protected void openNewWindow(boolean incognito, @NewWindowAppSource int source) {
         Intent intent = createNewWindowIntent(incognito);
         if (intent == null) {
             return;
@@ -512,7 +511,6 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
                 MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
                 source,
                 NewWindowAppSource.NUM_ENTRIES);
-        RecordUserAction.record(umaAction);
     }
 
     @Override
