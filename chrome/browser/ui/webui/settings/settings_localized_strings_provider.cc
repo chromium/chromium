@@ -167,6 +167,7 @@
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #endif
@@ -950,6 +951,9 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
                           IsWebActuationDisabledForEnterprise(profile));
   html_source->AddBoolean("glicActorEnabled",
                           base::FeatureList::IsEnabled(features::kGlicActor));
+  html_source->AddBoolean(
+      "glicCanUseLive",
+      glic::GlicEnabling::EnablementForProfile(profile).EligibleForLive());
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

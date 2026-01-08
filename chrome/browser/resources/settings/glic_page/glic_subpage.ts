@@ -169,6 +169,13 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
             SettingsGlicPageFeaturePrefName.USER_STATUS}.value)`,
       },
 
+      microphoneToggleEnabled_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('glicCanUseLive');
+        },
+      },
+
       tabAccessSubLabel_: {
         type: String,
         computed: `computeTabAccessSubLabel_(prefs.${
@@ -294,6 +301,7 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   declare private locationSubLabel_: string;
   declare private locationLearnMoreUrl_: string;
   declare private microphoneSubLabel_: string;
+  declare private microphoneToggleEnabled_: boolean;
   declare private tabAccessSubLabel_: string;
   declare private tabAccessLearnMoreUrl_: string;
   declare private defaultTabAccessSubLabel_: string;

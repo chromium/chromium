@@ -458,20 +458,6 @@ suite('GlicSubpage', function() {
         await verifyUserAction('Glic.Settings.Geolocation.Disabled');
       });
 
-      test('MicrophoneToggle', async () => {
-        page.setPrefValue(PrefName.MICROPHONE_ENABLED, false);
-
-        const microphoneToggle =
-            $<SettingsToggleButtonElement>('microphoneToggle')!;
-        assertTrue(!!microphoneToggle);
-
-        microphoneToggle.click();
-        await verifyUserAction('Glic.Settings.Microphone.Enabled');
-
-        microphoneToggle.click();
-        await verifyUserAction('Glic.Settings.Microphone.Disabled');
-      });
-
       test('TabContextToggle', async () => {
         page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, false);
 
@@ -788,6 +774,35 @@ suite('GlicSubpage', function() {
     });
   });
 
+  suite('MicrophoneToggleVisible', () => {
+    test('assert toggle is visible', () => {
+      const microphoneToggle =
+          $<SettingsToggleButtonElement>('microphoneToggle')!;
+      assertTrue(isVisible(microphoneToggle));
+    });
+
+    test('metrics', async () => {
+      page.setPrefValue(PrefName.MICROPHONE_ENABLED, false);
+
+      const microphoneToggle =
+          $<SettingsToggleButtonElement>('microphoneToggle')!;
+      assertTrue(!!microphoneToggle);
+
+      microphoneToggle.click();
+      await verifyUserAction('Glic.Settings.Microphone.Enabled');
+
+      microphoneToggle.click();
+      await verifyUserAction('Glic.Settings.Microphone.Disabled');
+    });
+  });
+
+  suite('MicrophoneToggleHidden', () => {
+    test('assert toggle is hidden', () => {
+      const microphoneToggle =
+          $<SettingsToggleButtonElement>('microphoneToggle')!;
+      assertFalse(isVisible(microphoneToggle));
+    });
+  });
 
   suite('WebActuationToggleVisibleForAllowedTier', () => {
     test('assert toggle is visible', () => {

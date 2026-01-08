@@ -291,6 +291,10 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
               kGlicEligibilitySeparateAccountCapabilitySyntheticTrialName,
               field_trial->GetGroupNameWithoutActivation());
     }
+
+    result.live_disallowed =
+        primary_account.capabilities.can_use_model_execution_features() !=
+        signin::Tribool::kTrue;
   }
 
   if (profile->GetPrefs()->GetInteger(::prefs::kGeminiSettings) !=

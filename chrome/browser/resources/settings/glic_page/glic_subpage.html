@@ -193,6 +193,7 @@
           id="microphoneToggle" pref="{{prefs.glic.microphone_enabled}}"
           label="$i18n{glicMicrophoneToggle}"
           sub-label="[[microphoneSubLabel_]]"
+          hidden="[[!microphoneToggleEnabled_]]"
           on-settings-boolean-control-change="onMicrophoneToggleChange_">
       </settings-toggle-button>
       <div hidden="[[showGlicDefaultTabContextSetting_]]">

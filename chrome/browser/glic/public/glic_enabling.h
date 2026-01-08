@@ -193,6 +193,9 @@ class GlicEnabling : public signin::IdentityManager::Observer {
     bool disallowed_by_remote_other : 1 = false;
     bool not_consented : 1 = false;
 
+    // Whether live (audio) functionality is disallowed for this account type.
+    bool live_disallowed : 1 = false;
+
     bool IsProfileEligible() const {
       return !feature_disabled && !not_regular_profile;
     }
@@ -219,6 +222,10 @@ class GlicEnabling : public signin::IdentityManager::Observer {
              (IsProfileEligible() && !not_rolled_out &&
               !primary_account_not_capable && !disallowed_by_remote_other &&
               !not_consented);
+    }
+
+    bool EligibleForLive() const {
+      return IsProfileEligible() && !live_disallowed;
     }
 
     bool DisallowedByAdmin() const {
