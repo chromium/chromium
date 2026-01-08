@@ -2809,6 +2809,7 @@ if (!is_android) {
       "//components/offline_items_collection/core/test_support",
       "//components/omnibox/browser:vector_icons",
       "//components/optimization_guide/content/browser",
+      "//components/optimization_guide/content/browser:test_support",
       "//components/optimization_guide/content/mojom:mojo_interfaces",
       "//components/optimization_guide/content/renderer",
       "//components/optimization_guide/core",
