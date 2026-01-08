@@ -199,6 +199,26 @@ SidePanelUI* ReadAnythingController::GetSidePanelUI() {
   return tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_ui();
 }
 
+ReadAnythingImmersiveOverlayView*
+ReadAnythingController::GetImmersiveOverlayView() {
+  if (!tab_) {
+    return nullptr;
+  }
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(tab_->GetBrowserWindowInterface());
+
+  if (!browser_view) {
+    return nullptr;
+  }
+  ContentsContainerView* contents_container_view =
+      browser_view->GetContentsContainerViewFor(tab_->GetContents());
+  if (!contents_container_view) {
+    return nullptr;
+  }
+  return static_cast<ReadAnythingImmersiveOverlayView*>(
+      contents_container_view->read_anything_immersive_overlay_view());
+}
+
 // Lazily creates and returns the WebUIContentsWrapper for Reading Mode.
 std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
 ReadAnythingController::GetOrCreateWebUIWrapper(
@@ -256,16 +276,10 @@ void ReadAnythingController::ShowImmersiveUI(ReadAnythingOpenTrigger trigger) {
     CHECK(!has_shown_ui_ || web_ui_wrapper_);
   }
 
-  BrowserView* browser_view =
-      BrowserView::GetBrowserViewForBrowser(tab_->GetBrowserWindowInterface());
-
-  if (!browser_view || !browser_view->GetActiveContentsContainerView()) {
+  auto* immersive_overlay_view = GetImmersiveOverlayView();
+  if (!immersive_overlay_view) {
     return;
   }
-  auto* immersive_overlay_view = static_cast<ReadAnythingImmersiveOverlayView*>(
-      browser_view->GetActiveContentsContainerView()
-          ->read_anything_immersive_overlay_view());
-  CHECK(immersive_overlay_view);
   immersive_overlay_view->ShowUI(
       GetOrCreateWebUIWrapper(PresentationState::kInImmersiveOverlay), trigger);
 }
@@ -288,15 +302,10 @@ void ReadAnythingController::CloseImmersiveUI(bool closed_by_tab_switch) {
     return;
   }
 
-  BrowserView* browser_view =
-      BrowserView::GetBrowserViewForBrowser(tab_->GetBrowserWindowInterface());
-  if (!browser_view || !browser_view->GetActiveContentsContainerView()) {
+  auto* immersive_overlay_view = GetImmersiveOverlayView();
+  if (!immersive_overlay_view) {
     return;
   }
-  auto* immersive_overlay_view = static_cast<ReadAnythingImmersiveOverlayView*>(
-      browser_view->GetActiveContentsContainerView()
-          ->read_anything_immersive_overlay_view());
-  CHECK(immersive_overlay_view);
 
   std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> wrapper =
       immersive_overlay_view->CloseUI();
@@ -414,7 +423,7 @@ void ReadAnythingController::SetMainContentsAccessible(
   }
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(tab_->GetBrowserWindowInterface());
-  if (!browser_view || !browser_view->GetActiveContentsContainerView()) {
+  if (!browser_view) {
     return;
   }
   ContentsContainerView* contents_container_view =

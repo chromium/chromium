@@ -27,6 +27,7 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class ReadAnythingController;
+class ReadAnythingImmersiveOverlayView;
 
 // A helper class to observe a specific WebContents, so the ReadAnything
 // Controller can observe multiple WebContents. Event callbacks are configured
@@ -176,6 +177,9 @@ class ReadAnythingController {
   // Returns the SidePanelUI for the active tab if it can be shown.
   // Otherwise, returns nullptr.
   SidePanelUI* GetSidePanelUI();
+
+  // Returns the immersive overlay view for the current tab.
+  ReadAnythingImmersiveOverlayView* GetImmersiveOverlayView();
 
   raw_ptr<tabs::TabInterface> tab_ = nullptr;
   ui::ScopedUnownedUserData<ReadAnythingController> scoped_unowned_user_data_;
