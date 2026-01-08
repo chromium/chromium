@@ -565,10 +565,16 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerIdentityDiceWebSigninDeclined,
       "2LBpsLxW40ugnJ3q1cK0YRjYGpmV", std::vector<std::string>{},
       identity_string_psd_fields);
+
+  // This survey is for the First Run Experience, so it must run on new
+  // profiles.
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveyFirstRunSignin,
       kHatsSurveyTriggerIdentityFirstRunSignin, "RyaBY3Nkt0ugnJ3q1cK0NsYdHNN6",
-      std::vector<std::string>{}, identity_string_psd_fields);
+      std::vector<std::string>{}, identity_string_psd_fields,
+      /*log_responses_to_uma=*/false,
+      /*log_responses_to_ukm=*/false, /*profile_age_requirement*/
+      hats::SurveyConfig::ProfileAgeRequirement::kAnyAge);
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveyPasswordBubbleSignin,
       kHatsSurveyTriggerIdentityPasswordBubbleSignin,
@@ -584,11 +590,16 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
                               "5BV1ygFHd0ugnJ3q1cK0WVqeKyud",
                               std::vector<std::string>{},
                               identity_string_psd_fields);
+
+  // This survey is for a newly added profile.
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveyProfilePickerAddProfileSignin,
       kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin,
       "dQhvVytAT0ugnJ3q1cK0WmcCsZxn", std::vector<std::string>{},
-      identity_string_psd_fields);
+      identity_string_psd_fields, /*log_responses_to_uma=*/false,
+      /*log_responses_to_ukm=*/false, /*profile_age_requirement*/
+      hats::SurveyConfig::ProfileAgeRequirement::kAnyAge);
+
   survey_configs.emplace_back(
       &switches::kChromeIdentitySurveySigninInterceptProfileSeparation,
       kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation,
@@ -996,10 +1007,12 @@ SurveyConfig::SurveyConfig(
     const std::vector<std::string>& product_specific_string_data_fields,
     bool log_responses_to_uma,
     bool log_responses_to_ukm,
+    ProfileAgeRequirement profile_age_requirement,
     RequestedBrowserType requested_browser_type)
     : trigger(trigger),
       product_specific_bits_data_fields(product_specific_bits_data_fields),
       product_specific_string_data_fields(product_specific_string_data_fields),
+      profile_age_requirement(profile_age_requirement),
       requested_browser_type(requested_browser_type),
       survey_feature(feature) {
   enabled = base::FeatureList::IsEnabled(*feature);

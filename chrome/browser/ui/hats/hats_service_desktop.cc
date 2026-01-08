@@ -471,6 +471,25 @@ bool HatsServiceDesktop::CanShowSurvey(const std::string& trigger) const {
     return false;
   }
 
+  // Check the profile age requirements for this survey. Some surveys (e.g.
+  // those for the First Run Experience) need to run on brand new profiles.
+  switch (config.profile_age_requirement) {
+    case hats::SurveyConfig::ProfileAgeRequirement::kOneMonthOrOlder: {
+      // If the profile is too new, measured as the age of the profile
+      // directory, the user is ineligible.
+      base::Time now = base::Time::Now();
+      auto creation_time = profile()->GetOriginalProfile()->GetCreationTime();
+      if ((now - creation_time) < kMinimumProfileAge) {
+        UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,
+                                  ShouldShowSurveyReasons::kNoProfileTooNew);
+        return false;
+      }
+      break;
+    }
+    case hats::SurveyConfig::ProfileAgeRequirement::kAnyAge:
+      break;
+  }
+
   if (DoesCooldownApply(profile(), GetPrefsForHatsMetadata(), config)) {
     UMA_HISTOGRAM_ENUMERATION(
         kHatsShouldShowSurveyReasonHistogram,
@@ -566,16 +585,6 @@ bool HatsServiceDesktop::CanShowAnySurvey(bool user_prompted) const {
   // whether a user is eligible is thus lower for these types of surveys.
   if (user_prompted) {
     return true;
-  }
-
-  // If the profile is too new, measured as the age of the profile
-  // directory, the user is ineligible.
-  base::Time now = base::Time::Now();
-  auto creation_time = profile()->GetOriginalProfile()->GetCreationTime();
-  if ((now - creation_time) < kMinimumProfileAge) {
-    UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,
-                              ShouldShowSurveyReasons::kNoProfileTooNew);
-    return false;
   }
 
   return true;
