@@ -249,7 +249,7 @@ bool ConsumeOneOrTwoValuedPosition(CSSParserTokenStream&,
                                    CSSValue*& result_y);
 bool ConsumeBorderShorthand(CSSParserTokenStream&,
                             const CSSParserContext&,
-                            const CSSParserLocalContext&,
+                            CSSParserLocalContext&,
                             const CSSValue*& result_width,
                             const CSSValue*& result_style,
                             const CSSValue*& result_color);
@@ -335,7 +335,6 @@ void AddExpandedPropertyForValue(CSSPropertyID prop_id,
                                  bool,
                                  HeapVector<CSSPropertyValue, 64>& properties);
 
-CSSValue* ConsumeTransformValue(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ConsumeTransformList(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ConsumeFilterFunctionList(CSSParserTokenStream&,
                                     const CSSParserContext&);
@@ -441,20 +440,20 @@ bool ConsumeBackgroundPosition(CSSParserTokenStream&,
                                const CSSValue*& result_y);
 CSSValue* ConsumePrefixedBackgroundBox(CSSParserTokenStream&, AllowTextValue);
 CSSValue* ParseBackgroundBox(CSSParserTokenStream&,
-                             const CSSParserLocalContext&,
+                             CSSParserLocalContext&,
                              AllowTextValue alias_allow_text_value);
 CSSValue* ParseBackgroundSize(CSSParserTokenStream&,
                               const CSSParserContext&,
-                              const CSSParserLocalContext&,
+                              CSSParserLocalContext&,
                               std::optional<WebFeature> negative_size);
 CSSValue* ParseMaskSize(CSSParserTokenStream&,
                         const CSSParserContext&,
-                        const CSSParserLocalContext&,
+                        CSSParserLocalContext&,
                         std::optional<WebFeature> negative_size);
 bool ParseBackgroundOrMask(bool,
                            CSSParserTokenStream&,
                            const CSSParserContext&,
-                           const CSSParserLocalContext&,
+                           CSSParserLocalContext&,
                            HeapVector<CSSPropertyValue, 64>&);
 
 CORE_EXPORT CSSValue* ConsumeProgressType(CSSParserTokenStream&,
@@ -488,7 +487,7 @@ CSSValue* ParseBorderRadiusCorner(CSSParserTokenStream&,
                                   const CSSParserContext&);
 CSSValue* ParseBorderWidthSide(CSSParserTokenStream&,
                                const CSSParserContext&,
-                               const CSSParserLocalContext&);
+                               CSSParserLocalContext&);
 const CSSValue* ParseBorderStyleSide(CSSParserTokenStream&,
                                      const CSSParserContext&);
 
@@ -658,7 +657,7 @@ bool ConsumeRadii(std::array<CSSValue*, 4>& horizontal_radii,
                   std::array<CSSValue*, 4>& vertical_radii,
                   CSSParserTokenStream& stream,
                   const CSSParserContext& context,
-                  bool use_legacy_parsing);
+                  CSSParserLocalContext& local_context);
 
 CSSValue* ConsumeTextDecorationLine(CSSParserTokenStream&);
 CSSValue* ConsumeTextBoxEdge(CSSParserTokenStream&);
@@ -673,10 +672,10 @@ CSSValue* ConsumeSpacingTrim(CSSParserTokenStream&);
 
 CSSValue* ConsumeTransformValue(CSSParserTokenStream&,
                                 const CSSParserContext&,
-                                bool use_legacy_parsing);
+                                CSSParserLocalContext&);
 CSSValue* ConsumeTransformList(CSSParserTokenStream&,
                                const CSSParserContext&,
-                               const CSSParserLocalContext&);
+                               CSSParserLocalContext&);
 CSSValue* ConsumeTransitionBehavior(CSSParserTokenStream&);
 CSSValue* ConsumeTransitionProperty(CSSParserTokenStream&,
                                     const CSSParserContext&);
@@ -684,7 +683,7 @@ bool IsValidPropertyList(const CSSValueList&);
 
 CSSValue* ConsumeBorderColorSide(CSSParserTokenStream&,
                                  const CSSParserContext&,
-                                 const CSSParserLocalContext&);
+                                 CSSParserLocalContext&);
 CSSValue* ConsumeBorderWidth(CSSParserTokenStream&,
                              const CSSParserContext&,
                              UnitlessQuirk);
@@ -696,7 +695,7 @@ CSSValue* ConsumeSingleContainerName(CSSParserTokenStream&,
 CSSValue* ConsumeContainerName(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ConsumeContainerType(CSSParserTokenStream&, const CSSParserContext&);
 
-UnitlessQuirk UnitlessUnlessShorthand(const CSSParserLocalContext&);
+UnitlessQuirk UnitlessUnlessShorthand(CSSParserLocalContext&);
 
 // https://drafts.csswg.org/css-counter-styles-3/#typedef-counter-style-name
 CSSCustomIdentValue* ConsumeCounterStyleName(CSSParserTokenStream&,
@@ -902,7 +901,7 @@ CSSValue* ConsumeTextOverflow(CSSParserTokenStream&);
 
 CSSValue* ConsumeNameScope(CSSParserTokenStream& stream,
                            const CSSParserContext& context,
-                           const CSSParserLocalContext&);
+                           CSSParserLocalContext&);
 
 // If the stream starts with “!important”, consumes it and returns true.
 // If the stream is at EOF, returns false.

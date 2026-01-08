@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_idioms.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
@@ -220,8 +221,11 @@ const CSSValue* ConsumeSingleType(const CSSSyntaxComponent& syntax,
           stream, context, CSSPrimitiveValue::ValueRange::kAll);
     case CSSSyntaxType::kResolution:
       return css_parsing_utils::ConsumeResolution(stream, context);
-    case CSSSyntaxType::kTransformFunction:
-      return css_parsing_utils::ConsumeTransformValue(stream, context);
+    case CSSSyntaxType::kTransformFunction: {
+      CSSParserLocalContext local_context = CSSParserLocalContext();
+      return css_parsing_utils::ConsumeTransformValue(stream, context,
+                                                      local_context);
+    }
     case CSSSyntaxType::kTransformList:
       return css_parsing_utils::ConsumeTransformList(stream, context);
     case CSSSyntaxType::kCustomIdent:

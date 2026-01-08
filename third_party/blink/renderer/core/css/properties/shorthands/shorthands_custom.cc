@@ -953,8 +953,7 @@ bool BorderRadius::ParseShorthand(
   std::array<CSSValue*, 4> vertical_radii = {nullptr};
 
   if (!css_parsing_utils::ConsumeRadii(horizontal_radii, vertical_radii, stream,
-                                       context,
-                                       local_context.UseAliasParsing())) {
+                                       context, local_context)) {
     return false;
   }
 
@@ -3589,13 +3588,12 @@ bool Offset::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
-    CSSParserLocalContext&,
+    CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   // TODO(meade): The propertyID parameter isn't used - it can be removed
   // once all of the ParseSingleValue implementations have been moved to the
   // CSSPropertys, and the base CSSProperty::ParseSingleValue contains
   // no functionality.
-  auto local_context = CSSParserLocalContext();
   const CSSValue* offset_position =
       GetCSSPropertyOffsetPosition().ParseSingleValue(stream, context,
                                                       local_context);

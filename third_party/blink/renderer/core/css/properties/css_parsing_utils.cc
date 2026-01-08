@@ -561,7 +561,9 @@ bool ConsumeBorderRadiusCommon(CSSParserTokenStream& args,
   if (ConsumeIdent<CSSValueID::kRound>(args)) {
     std::array<CSSValue*, 4> horizontal_radii = {nullptr};
     std::array<CSSValue*, 4> vertical_radii = {nullptr};
-    if (!ConsumeRadii(horizontal_radii, vertical_radii, args, context, false)) {
+    CSSParserLocalContext local_context = CSSParserLocalContext();
+    if (!ConsumeRadii(horizontal_radii, vertical_radii, args, context,
+                      local_context)) {
       return false;
     }
     shape->SetTopLeftRadius(MakeGarbageCollected<CSSValuePair>(
@@ -710,14 +712,14 @@ bool ConsumeNumbersOrPercents(CSSParserTokenStream& stream,
 
 bool ConsumePerspective(CSSParserTokenStream& stream,
                         const CSSParserContext& context,
-                        CSSFunctionValue*& transform_value,
-                        bool use_legacy_parsing) {
+                        CSSParserLocalContext& local_context,
+                        CSSFunctionValue*& transform_value) {
   CSSValue* parsed_value = ConsumeLength(
       stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
   if (!parsed_value) {
     parsed_value = ConsumeIdent<CSSValueID::kNone>(stream);
   }
-  if (!parsed_value && use_legacy_parsing) {
+  if (!parsed_value && local_context.UseAliasParsing()) {
     if (const CSSPrimitiveValue* number_value = ConsumeNumber(
             stream, context, CSSPrimitiveValue::ValueRange::kNonNegative)) {
       std::optional<double> number = number_value->GetValueIfKnown();
@@ -2637,7 +2639,7 @@ bool ConsumeOneOrTwoValuedPosition(CSSParserTokenStream& stream,
 
 bool ConsumeBorderShorthand(CSSParserTokenStream& stream,
                             const CSSParserContext& context,
-                            const CSSParserLocalContext& local_context,
+                            CSSParserLocalContext& local_context,
                             const CSSValue*& result_width,
                             const CSSValue*& result_style,
                             const CSSValue*& result_color) {
@@ -3751,15 +3753,10 @@ void AddProperty(CSSPropertyID resolved_property,
       shorthand_index, implicit == IsImplicitProperty::kImplicit));
 }
 
-CSSValue* ConsumeTransformValue(CSSParserTokenStream& stream,
-                                const CSSParserContext& context) {
-  bool use_legacy_parsing = false;
-  return ConsumeTransformValue(stream, context, use_legacy_parsing);
-}
-
 CSSValue* ConsumeTransformList(CSSParserTokenStream& stream,
                                const CSSParserContext& context) {
-  return ConsumeTransformList(stream, context, CSSParserLocalContext());
+  CSSParserLocalContext local_context = CSSParserLocalContext();
+  return ConsumeTransformList(stream, context, local_context);
 }
 
 CSSValue* ConsumeFilterFunctionList(CSSParserTokenStream& stream,
@@ -4955,7 +4952,7 @@ CSSValue* ConsumePrefixedBackgroundBox(CSSParserTokenStream& stream,
 }
 
 CSSValue* ParseBackgroundBox(CSSParserTokenStream& stream,
-                             const CSSParserLocalContext& local_context,
+                             CSSParserLocalContext& local_context,
                              AllowTextValue alias_allow_text_value) {
   // This is legacy behavior that does not match spec, see crbug.com/604023
   if (local_context.UseAliasParsing()) {
@@ -4967,7 +4964,7 @@ CSSValue* ParseBackgroundBox(CSSParserTokenStream& stream,
 
 CSSValue* ParseBackgroundSize(CSSParserTokenStream& stream,
                               const CSSParserContext& context,
-                              const CSSParserLocalContext& local_context,
+                              CSSParserLocalContext& local_context,
                               std::optional<WebFeature> negative_size) {
   return ConsumeCommaSeparatedList(
       static_cast<CSSValue* (*)(CSSParserTokenStream&, const CSSParserContext&,
@@ -4980,7 +4977,7 @@ CSSValue* ParseBackgroundSize(CSSParserTokenStream& stream,
 
 CSSValue* ParseMaskSize(CSSParserTokenStream& stream,
                         const CSSParserContext& context,
-                        const CSSParserLocalContext& local_context,
+                        CSSParserLocalContext& local_context,
                         std::optional<WebFeature> negative_size) {
   return ConsumeCommaSeparatedList(
       static_cast<CSSValue* (*)(CSSParserTokenStream&, const CSSParserContext&,
@@ -5063,7 +5060,7 @@ CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
 bool ParseBackgroundOrMask(bool important,
                            CSSParserTokenStream& stream,
                            const CSSParserContext& context,
-                           const CSSParserLocalContext& local_context,
+                           CSSParserLocalContext& local_context,
                            HeapVector<CSSPropertyValue, 64>& properties) {
   CSSPropertyID shorthand_id = local_context.CurrentShorthand();
   DCHECK(shorthand_id == CSSPropertyID::kBackground ||
@@ -5491,7 +5488,7 @@ bool ConsumeCorner(CSSParserTokenStream& stream,
 
 CSSValue* ParseBorderWidthSide(CSSParserTokenStream& stream,
                                const CSSParserContext& context,
-                               const CSSParserLocalContext& local_context) {
+                               CSSParserLocalContext& local_context) {
   CSSPropertyID shorthand = local_context.CurrentShorthand();
   bool allow_quirky_lengths = IsQuirksModeBehavior(context.Mode()) &&
                               (shorthand == CSSPropertyID::kInvalid ||
@@ -8432,7 +8429,7 @@ bool ConsumeRadii(std::array<CSSValue*, 4>& horizontal_radii,
                   std::array<CSSValue*, 4>& vertical_radii,
                   CSSParserTokenStream& stream,
                   const CSSParserContext& context,
-                  bool use_legacy_parsing) {
+                  CSSParserLocalContext& local_context) {
   unsigned horizontal_value_count = 0;
   for (;
        horizontal_value_count < 4 && stream.Peek().GetType() != kDelimiterToken;
@@ -8460,7 +8457,7 @@ bool ConsumeRadii(std::array<CSSValue*, 4>& horizontal_radii,
   } else {
     // Legacy syntax: -webkit-border-radius: l1 l2; is equivalent to
     // border-radius: l1 / l2;
-    if (use_legacy_parsing && horizontal_value_count == 2) {
+    if (local_context.UseAliasParsing() && horizontal_value_count == 2) {
       vertical_radii[0] = horizontal_radii[1];
       horizontal_radii[1] = nullptr;
     } else {
@@ -8647,7 +8644,7 @@ CSSValue* ConsumeSpacingTrim(CSSParserTokenStream& stream) {
 
 CSSValue* ConsumeTransformValue(CSSParserTokenStream& stream,
                                 const CSSParserContext& context,
-                                bool use_legacy_parsing) {
+                                CSSParserLocalContext& local_context) {
   CSSValueID function_id = stream.Peek().FunctionId();
   if (!IsValidCSSValueID(function_id)) {
     return nullptr;
@@ -8704,8 +8701,8 @@ CSSValue* ConsumeTransformValue(CSSParserTokenStream& stream,
         }
         break;
       case CSSValueID::kPerspective:
-        if (!ConsumePerspective(stream, context, transform_value,
-                                use_legacy_parsing)) {
+        if (!ConsumePerspective(stream, context, local_context,
+                                transform_value)) {
           return nullptr;
         }
         break;
@@ -8776,7 +8773,7 @@ CSSValue* ConsumeTransformValue(CSSParserTokenStream& stream,
 
 CSSValue* ConsumeTransformList(CSSParserTokenStream& stream,
                                const CSSParserContext& context,
-                               const CSSParserLocalContext& local_context) {
+                               CSSParserLocalContext& local_context) {
   if (stream.Peek().Id() == CSSValueID::kNone) {
     return ConsumeIdent(stream);
   }
@@ -8784,7 +8781,7 @@ CSSValue* ConsumeTransformList(CSSParserTokenStream& stream,
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   do {
     CSSValue* parsed_transform_value =
-        ConsumeTransformValue(stream, context, local_context.UseAliasParsing());
+        ConsumeTransformValue(stream, context, local_context);
     if (!parsed_transform_value) {
       break;
     }
@@ -8844,7 +8841,7 @@ bool IsValidPropertyList(const CSSValueList& value_list) {
 
 CSSValue* ConsumeBorderColorSide(CSSParserTokenStream& stream,
                                  const CSSParserContext& context,
-                                 const CSSParserLocalContext& local_context) {
+                                 CSSParserLocalContext& local_context) {
   CSSPropertyID shorthand = local_context.CurrentShorthand();
   bool allow_quirky_colors = IsQuirksModeBehavior(context.Mode()) &&
                              (shorthand == CSSPropertyID::kInvalid ||
@@ -8990,8 +8987,7 @@ CSSValue* ConsumeSVGPaint(CSSParserTokenStream& stream,
   return ConsumeColor(stream, context);
 }
 
-UnitlessQuirk UnitlessUnlessShorthand(
-    const CSSParserLocalContext& local_context) {
+UnitlessQuirk UnitlessUnlessShorthand(CSSParserLocalContext& local_context) {
   return local_context.CurrentShorthand() == CSSPropertyID::kInvalid
              ? UnitlessQuirk::kAllow
              : UnitlessQuirk::kForbid;
@@ -9603,7 +9599,7 @@ CSSValue* ConsumeProgressType(CSSParserTokenStream& stream,
 
 CSSValue* ConsumeNameScope(CSSParserTokenStream& stream,
                            const CSSParserContext& context,
-                           const CSSParserLocalContext&) {
+                           CSSParserLocalContext&) {
   if (CSSValue* value =
           css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(stream)) {
     return value;
