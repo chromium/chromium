@@ -260,7 +260,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
                                 int x,
                                 int y);
 
-  gpu::raster::RasterInterface* RasterInterface() const;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const {
     return context_provider_wrapper_;
@@ -312,9 +311,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // only needed for ganesh.
   void DisableLineDrawingAsPathsIfNecessary();
 
+ protected:
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
 
- protected:
   // Note that `info_` should be const, but the relevant SkImageInfo
   // constructors do not exist.
   SkImageInfo info_;
@@ -499,6 +498,8 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   bool IsAccelerated() const final { return is_accelerated_; }
   bool IsGpuContextLost() const override;
   base::ByteSize EstimatedSizeInBytes() const override;
+
+  gpu::raster::RasterInterface* RasterInterface() const;
 
   // Use Snapshot() for capturing a frame that is intended to be displayed via
   // the compositor. Cases that are destined to be transferred via a

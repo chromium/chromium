@@ -306,6 +306,11 @@ CanvasResourceProviderSharedImage::~CanvasResourceProviderSharedImage() {
   }
 
   GetFlushForImageListener()->RemoveObserver(this);
+
+  // Last chance for outstanding GPU timers to record metrics.
+  if (RasterInterface()) {
+    CheckGpuTimers(RasterInterface());
+  }
 }
 
 ScopedRasterTimer CanvasResourceProviderSharedImage::CreateScopedRasterTimer() {
@@ -1420,11 +1425,6 @@ CanvasResourceProvider::CanvasResourceProvider(
 
 CanvasResourceProvider::~CanvasResourceProvider() {
   CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
-
-  // Last chance for outstanding GPU timers to record metrics.
-  if (RasterInterface()) {
-    CheckGpuTimers(RasterInterface());
-  }
 }
 
 std::unique_ptr<MemoryManagedPaintRecorder>
@@ -1607,7 +1607,8 @@ CanvasResourceProvider::UnacceleratedSnapshot(ImageOrientation orientation) {
   return snapshot;
 }
 
-gpu::raster::RasterInterface* CanvasResourceProvider::RasterInterface() const {
+gpu::raster::RasterInterface*
+CanvasResourceProviderSharedImage::RasterInterface() const {
   if (!context_provider_wrapper_)
     return nullptr;
   return context_provider_wrapper_->ContextProvider().RasterInterface();
