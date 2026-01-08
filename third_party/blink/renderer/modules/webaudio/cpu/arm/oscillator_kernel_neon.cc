@@ -2,18 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <arm_neon.h>
+
 #include "base/compiler_specific.h"
-#include "build/build_config.h"
 #include "third_party/blink/renderer/modules/webaudio/oscillator_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/periodic_wave.h"
 
-#if defined(CPU_ARM_NEON)
-#include <arm_neon.h>
-#endif
-
 namespace blink {
 
-#if defined(CPU_ARM_NEON)
 namespace {
 
 float32x4_t WrapVirtualIndexVector(float32x4_t x,
@@ -249,6 +245,5 @@ double OscillatorHandler::ProcessARateVectorKernel(
 
   return virtual_read_index;
 }
-#endif
 
 }  // namespace blink

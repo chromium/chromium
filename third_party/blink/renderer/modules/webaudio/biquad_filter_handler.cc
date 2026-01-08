@@ -8,6 +8,7 @@
 
 #include "base/containers/span.h"
 #include "base/synchronization/lock.h"
+#include "build/build_config.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
@@ -21,9 +22,9 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
-#ifdef __SSE2__
-#include <immintrin.h>
-#elif defined(__ARM_NEON__)
+#if defined(ARCH_CPU_X86_FAMILY)
+#include <xmmintrin.h>
+#elif defined(CPU_ARM_NEON)
 #include <arm_neon.h>
 #endif
 
@@ -60,7 +61,7 @@ bool HasConstantValues(base::span<float> values) {
             static_cast<size_t>(std::numeric_limits<int>::max()));
   const int values_size = static_cast<int>(values.size());
 
-#if defined(__SSE2__)
+#if defined(ARCH_CPU_X86_FAMILY)
   // Process 4 floats at a time using SIMD
   __m128 value_vec = _mm_set1_ps(value);
   // Start at 0 for byte alignment
@@ -75,7 +76,7 @@ bool HasConstantValues(base::span<float> values) {
       return false;
     }
   }
-#elif defined(__ARM_NEON__)
+#elif defined(CPU_ARM_NEON)
   // Process 4 floats at a time using SIMD
   float32x4_t value_vec = vdupq_n_f32(value);
   // Start at 0 for byte alignment
