@@ -23,10 +23,8 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
      */
     public static final String GOOGLE_PAY_INTERNAL_APP_IDENTITY = "Google_Pay_Internal";
 
-    private static final String UNTRACKED_FACTORY_ID_PREFIX = "Untracked factory - ";
     private static @Nullable PaymentAppService sInstance;
     private final Map<String, PaymentAppFactoryInterface> mFactories = new HashMap<>();
-    private int mIdMax;
 
     /** @return The singleton instance of this class. */
     public static PaymentAppService getInstance() {
@@ -37,16 +35,6 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
     }
 
     private PaymentAppService() {}
-
-    // TODO(crbug.com/40727972): Remove this method after tests and clank switch to use
-    // addUniqueFactory.
-    /**
-     * @param factory The factory to add.
-     */
-    public void addFactory(PaymentAppFactoryInterface factory) {
-        String id = UNTRACKED_FACTORY_ID_PREFIX + mIdMax++;
-        mFactories.put(id, factory);
-    }
 
     /** Resets the instance, used by //clank tests. */
     public void resetForTest() {
@@ -71,14 +59,13 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
     }
 
     /**
-     * Adds a factory with an id if this id is not added already; otherwise, do nothing.
+     * Adds a factory with a unique id. If the id is already in use, this method will assert.
      * @param factory The factory to be added, can be null;
      * @param factoryId The id that the caller uses to identify the given factory.
      */
     public void addUniqueFactory(@Nullable PaymentAppFactoryInterface factory, String factoryId) {
         if (factory == null) return;
-        assert !factoryId.startsWith(UNTRACKED_FACTORY_ID_PREFIX);
-        if (mFactories.containsKey(factoryId)) return;
+        assert !mFactories.containsKey(factoryId);
         mFactories.put(factoryId, factory);
     }
 
