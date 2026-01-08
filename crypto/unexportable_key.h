@@ -198,6 +198,12 @@ class CRYPTO_EXPORT StatefulUnexportableKeyProvider
   // Deletes all state associated with a given signing key. Returns true on
   // successful deletion, false otherwise. This can sometimes block, and
   // therefore must not be called from the UI thread.
+  //
+  // NOTE: For macOS this will perform prefix matching on
+  // `Config::application_tag`. That is, if `Config::application_tag` is
+  // "com.example.foo", this will delete keys with application tags like
+  // "com.example.foo.1", "com.example.foo.1234", etc, assuming `wrapped_key`
+  // matches exactly.
   virtual bool DeleteSigningKeySlowly(
       base::span<const uint8_t> wrapped_key) = 0;
 

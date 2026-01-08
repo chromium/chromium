@@ -270,6 +270,29 @@ TEST_F(UnexportableKeyMacTest, DeleteSigningKeyWithWrongApplicationTag) {
   EXPECT_TRUE(scoped_fake_keychain_.keychain()->items().empty());
 }
 
+TEST_F(UnexportableKeyMacTest, DeleteSigningKeyPrefixMatching) {
+  UnexportableKeyProvider::Config specific_config = config_;
+  specific_config.application_tag += ".suffix";
+  std::unique_ptr<UnexportableKeyProvider> specific_provider =
+      GetUnexportableKeyProvider(specific_config);
+  ASSERT_TRUE(specific_provider);
+
+  auto key = specific_provider->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key);
+  std::vector<uint8_t> wrapped_key = key->GetWrappedKey();
+
+  ASSERT_TRUE(specific_provider->FromWrappedSigningKeySlowly(wrapped_key));
+
+  // `provider_`'s application tag is a prefix of the created key's tag, and
+  // thus deletion should succeed.
+  EXPECT_TRUE(
+      provider_->AsStatefulUnexportableKeyProvider()->DeleteSigningKeySlowly(
+          wrapped_key));
+
+  EXPECT_FALSE(specific_provider->FromWrappedSigningKeySlowly(wrapped_key));
+  EXPECT_TRUE(scoped_fake_keychain_.keychain()->items().empty());
+}
+
 TEST_F(UnexportableKeyMacTest, GetKeyTag) {
   ASSERT_TRUE(provider_);
   auto key = provider_->GenerateSigningKeySlowly(kAcceptableAlgos);
