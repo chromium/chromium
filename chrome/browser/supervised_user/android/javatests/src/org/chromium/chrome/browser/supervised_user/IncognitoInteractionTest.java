@@ -81,10 +81,6 @@ public class IncognitoInteractionTest {
     @Policies.Add({@Policies.Item(key = "IncognitoModeAvailability", string = "0")})
     public void incognitoTabsNotClosedWhenPolicyAllowsIncognito() throws Exception {
         Profile profile = mActivityTestRule.getProfile(/* incognito= */ false);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SupervisedUserServiceTestBridge.init(profile);
-                });
 
         // Create a new incognito tab. This succeeds, as the device is not
         // supervised.
@@ -108,10 +104,6 @@ public class IncognitoInteractionTest {
     public void incognitoTabsClosedWhenBrowserContentFilteringIsEnabledWithoutAccount()
             throws Exception {
         Profile profile = mActivityTestRule.getProfile(/* incognito= */ false);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SupervisedUserServiceTestBridge.init(profile);
-                });
 
         // Create a new incognito tab. This succeeds, as the device is not
         // supervised.
@@ -137,10 +129,6 @@ public class IncognitoInteractionTest {
             throws Exception {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         Profile profile = mActivityTestRule.getProfile(/* incognito= */ false);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SupervisedUserServiceTestBridge.init(profile);
-                });
 
         // Create a new incognito tab. This succeeds, as the device is not
         // supervised (however, a regular account is signed in).
@@ -166,10 +154,6 @@ public class IncognitoInteractionTest {
             throws Exception {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         Profile profile = mActivityTestRule.getProfile(/* incognito= */ false);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SupervisedUserServiceTestBridge.init(profile);
-                });
 
         // Create a new incognito tab. This succeeds, as the device is not
         // supervised (however, a regular account is signed in).
