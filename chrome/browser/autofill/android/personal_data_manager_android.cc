@@ -862,14 +862,9 @@ ScopedJavaLocalRef<jobject>
 PersonalDataManagerAndroid::CreateBnplIssuerForSettingsFromNative(
     JNIEnv* env,
     const BnplIssuer& bnpl_issuer) {
-  // `light_mode_image_id` is used for both light and dark modes on Android.
-  const auto& [light_mode_image_id, _] = GetBnplIssuerIconIds(
-      bnpl_issuer.issuer_id(),
-      /*issuer_linked=*/bnpl_issuer.payment_instrument().has_value());
-
   CHECK(bnpl_issuer.payment_instrument());
   return Java_BnplIssuerForSettings_Constructor(
-      env, ResourceMapper::MapToJavaDrawableId(light_mode_image_id.value()),
+      env, std::string(ConvertToBnplIssuerIdString(bnpl_issuer.issuer_id())),
       bnpl_issuer.payment_instrument()->instrument_id(),
       bnpl_issuer.GetDisplayName());
 }

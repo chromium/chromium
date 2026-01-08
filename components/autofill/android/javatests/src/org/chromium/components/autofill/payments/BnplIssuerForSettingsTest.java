@@ -10,11 +10,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.autofill.R;
 
 /** Unit tests for {@link BnplIssuerForSettings}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BnplIssuerForSettingsTest {
+    private static final String ISSUER_ID = "affirm";
     private static final long ISSUER_INSTRUMENT_ID = 100;
     private static final String ISSUER_NAME = "Affirm";
 
@@ -22,11 +22,10 @@ public class BnplIssuerForSettingsTest {
     public void testConstructor() throws Exception {
         BnplIssuerForSettings bnplIssuerForSettings =
                 new BnplIssuerForSettings(
-                        /* iconId= */ R.drawable.bnpl_icon_generic,
+                        /* issuerId= */ ISSUER_ID,
                         /* instrumentId= */ ISSUER_INSTRUMENT_ID,
                         /* displayName= */ ISSUER_NAME);
-
-        assertThat(bnplIssuerForSettings.getIconId()).isEqualTo(R.drawable.bnpl_icon_generic);
+        assertThat(bnplIssuerForSettings.getIssuerId()).isEqualTo(ISSUER_ID);
         assertThat(bnplIssuerForSettings.getInstrumentId()).isEqualTo(ISSUER_INSTRUMENT_ID);
         assertThat(bnplIssuerForSettings.getDisplayName()).isEqualTo(ISSUER_NAME);
     }

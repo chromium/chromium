@@ -42,7 +42,6 @@ class TouchToFillPaymentMethodView {
       TouchToFillPaymentMethodViewController* controller,
       base::span<const LoyaltyCard> all_loyalty_cards) = 0;
   virtual bool OnPurchaseAmountExtracted(
-      const TouchToFillPaymentMethodViewController& controller,
       base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
       std::optional<int64_t> extracted_amount,
       bool is_amount_supported_by_any_issuer,
@@ -50,7 +49,6 @@ class TouchToFillPaymentMethodView {
   virtual bool ShowProgressScreen(
       TouchToFillPaymentMethodViewController* controller) = 0;
   virtual bool ShowBnplIssuers(
-      const TouchToFillPaymentMethodViewController& controller,
       base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
       const std::string& app_locale) = 0;
   virtual bool ShowErrorScreen(

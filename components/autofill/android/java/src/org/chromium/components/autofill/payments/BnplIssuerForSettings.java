@@ -4,8 +4,6 @@
 
 package org.chromium.components.autofill.payments;
 
-import androidx.annotation.DrawableRes;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -16,30 +14,30 @@ import org.chromium.build.annotations.NullMarked;
 @JNINamespace("autofill")
 @NullMarked
 public class BnplIssuerForSettings {
-    private final @DrawableRes int mIconId;
+    private final String mIssuerId;
     private final long mInstrumentId;
     private final String mDisplayName;
 
     /**
      * Constructs a new BnplIssuerForSettings.
      *
-     * @param iconId The resource ID of the issuer's icon.
+     * @param issuerId The ID of the BNPL issuer.
      * @param instrumentId The payment instrument ID of the issuer.
      * @param displayName The name of the issuer to be displayed.
      */
     @CalledByNative
     public BnplIssuerForSettings(
-            @DrawableRes int iconId,
+            @JniType("std::string") String issuerId,
             long instrumentId,
             @JniType("std::u16string") String displayName) {
-        mIconId = iconId;
+        mIssuerId = issuerId;
         mInstrumentId = instrumentId;
         mDisplayName = displayName;
     }
 
-    /** Returns the resource ID of the issuer's icon. */
-    public @DrawableRes int getIconId() {
-        return mIconId;
+    /** Returns the ID of the BNPL issuer. */
+    public String getIssuerId() {
+        return mIssuerId;
     }
 
     /** Returns the payment instrument ID of the issuer. */

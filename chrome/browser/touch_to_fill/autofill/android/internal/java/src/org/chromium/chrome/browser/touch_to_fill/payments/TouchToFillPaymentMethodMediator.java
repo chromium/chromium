@@ -1231,11 +1231,21 @@ class TouchToFillPaymentMethodMediator {
     }
 
     private PropertyModel createBnplIssuerContextModel(BnplIssuerContext issuerContext) {
+        @Nullable
+        final TouchToFillResourceProvider resourceProvider =
+                ServiceLoaderUtil.maybeCreate(TouchToFillResourceProvider.class);
+        @DrawableRes
+        final int issuerImageId =
+                resourceProvider == null
+                        ? R.drawable.bnpl_icon_generic
+                        : resourceProvider.getBnplIssuerDrawableId(
+                                /* issuerId= */ issuerContext.getIssuerId(),
+                                /* isLinked= */ issuerContext.isLinked());
         PropertyModel.Builder bnplIssuerModelBuilder =
                 new PropertyModel.Builder(NON_TRANSFORMING_BNPL_ISSUER_CONTEXT_KEYS)
                         .with(ISSUER_NAME, issuerContext.getDisplayName())
                         .with(ISSUER_SELECTION_TEXT, issuerContext.getSelectionText())
-                        .with(ISSUER_ICON_ID, issuerContext.getIconId())
+                        .with(ISSUER_ICON_ID, issuerImageId)
                         .with(ISSUER_LINKED, issuerContext.isLinked())
                         .with(
                                 ON_ISSUER_CLICK_ACTION,

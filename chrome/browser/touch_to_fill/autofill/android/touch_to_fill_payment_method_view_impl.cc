@@ -58,28 +58,18 @@ ConvertBnplIssuerTosDetailToJavaObject(
 
 // TODO(crbug.com/449764859): Refactor BnplIssuerContext to use JNI type
 // converters.
-// TODO(crbug.com/430575808): Refactor CreateJavaBnplIssuerContextFromNative to
-// use ResourceMapper::MapToJavaDrawableId directly, eliminating the need to
-// pass the controller argument.
 static base::android::ScopedJavaLocalRef<jobject>
 CreateJavaBnplIssuerContextFromNative(
     JNIEnv* env,
-    const autofill::TouchToFillPaymentMethodViewController& controller,
     const autofill::payments::BnplIssuerContext& bnpl_issuer_context,
     const std::string& app_locale) {
-  // `light_mode_image_id` is used for both light and dark modes on Android.
-  const auto& [light_mode_image_id, _] = GetBnplIssuerIconIds(
-      bnpl_issuer_context.issuer.issuer_id(),
-      /*issuer_linked=*/bnpl_issuer_context.issuer.payment_instrument()
-          .has_value());
-
   const std::u16string selection_text =
       autofill::payments::GetBnplIssuerSelectionOptionText(
           bnpl_issuer_context.issuer.issuer_id(), app_locale,
           {bnpl_issuer_context});
 
   return autofill::Java_BnplIssuerContext_Constructor(
-      env, controller.GetJavaResourceId(light_mode_image_id.value()),
+      env,
       std::string(
           ConvertToBnplIssuerIdString(bnpl_issuer_context.issuer.issuer_id())),
       bnpl_issuer_context.issuer.GetDisplayName(), selection_text,
@@ -228,7 +218,6 @@ bool TouchToFillPaymentMethodViewImpl::ShowAllLoyaltyCards(
 }
 
 bool TouchToFillPaymentMethodViewImpl::OnPurchaseAmountExtracted(
-    const TouchToFillPaymentMethodViewController& controller,
     base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
     std::optional<int64_t> extracted_amount,
     bool is_amount_supported_by_any_issuer,
@@ -243,7 +232,7 @@ bool TouchToFillPaymentMethodViewImpl::OnPurchaseAmountExtracted(
     for (const payments::BnplIssuerContext& issuer_context :
          bnpl_issuer_contexts) {
       issuer_context_array.push_back(CreateJavaBnplIssuerContextFromNative(
-          env, controller, issuer_context, *app_locale));
+          env, issuer_context, *app_locale));
     }
   }
 
@@ -271,7 +260,6 @@ bool TouchToFillPaymentMethodViewImpl::ShowProgressScreen(
 }
 
 bool TouchToFillPaymentMethodViewImpl::ShowBnplIssuers(
-    const TouchToFillPaymentMethodViewController& controller,
     base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
     const std::string& app_locale) {
   if (!java_object_) {
@@ -283,8 +271,8 @@ bool TouchToFillPaymentMethodViewImpl::ShowBnplIssuers(
   issuer_context_array.reserve(bnpl_issuer_contexts.size());
   for (const payments::BnplIssuerContext& issuer_context :
        bnpl_issuer_contexts) {
-    issuer_context_array.push_back(CreateJavaBnplIssuerContextFromNative(
-        env, controller, issuer_context, app_locale));
+    issuer_context_array.push_back(
+        CreateJavaBnplIssuerContextFromNative(env, issuer_context, app_locale));
   }
 
   Java_TouchToFillPaymentMethodViewBridge_showBnplIssuers(

@@ -13,12 +13,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -30,6 +32,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
+import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillResourceProvider;
 import org.chromium.components.autofill.payments.BnplIssuerForSettings;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -135,8 +138,16 @@ public class AutofillBuyNowPayLaterFragment extends ChromeBaseSettingsFragment
             issuerPref.setOnPreferenceClickListener(this);
 
             // Set BNPL issuer icon.
-            issuerPref.setIcon(
-                    AppCompatResources.getDrawable(getStyledContext(), issuer.getIconId()));
+            @Nullable
+            final TouchToFillResourceProvider resourceProvider =
+                    ServiceLoaderUtil.maybeCreate(TouchToFillResourceProvider.class);
+            @DrawableRes
+            final int issuerImageId =
+                    resourceProvider == null
+                            ? R.drawable.bnpl_icon_generic
+                            : resourceProvider.getBnplIssuerDrawableId(
+                                    /* issuerId= */ issuer.getIssuerId(), /* isLinked= */ true);
+            issuerPref.setIcon(AppCompatResources.getDrawable(getStyledContext(), issuerImageId));
 
             // Add GPay icon.
             issuerPref.setWidgetLayoutResource(R.layout.autofill_server_data_label);

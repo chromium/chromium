@@ -426,7 +426,6 @@ public class TouchToFillPaymentMethodViewTest {
                     /* merchantDomains= */ Collections.emptyList());
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_AFFIRM_LINKED =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.affirm_linked,
                     /* issuerId= */ "affirm",
                     /* displayName= */ "Affirm",
                     /* selectionText= */ "Monthly or 4 installments",
@@ -434,7 +433,6 @@ public class TouchToFillPaymentMethodViewTest {
                     /* isEligible= */ true);
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_AFFIRM_UNLINKED =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.affirm_unlinked,
                     /* issuerId= */ "affirm",
                     /* displayName= */ "Affirm",
                     /* selectionText= */ "Monthly or 4 installments",
@@ -443,7 +441,6 @@ public class TouchToFillPaymentMethodViewTest {
     private static final BnplIssuerContext
             BNPL_ISSUER_CONTEXT_INELIGIBLE_NOT_SUPPORTED_BY_MERCHANT =
                     new BnplIssuerContext(
-                            /* iconId= */ R.drawable.affirm_linked,
                             /* issuerId= */ "affirm",
                             /* displayName= */ "Affirm",
                             /* selectionText= */ "Not supported by merchant",
@@ -2324,7 +2321,7 @@ public class TouchToFillPaymentMethodViewTest {
         return new PropertyModel.Builder(NON_TRANSFORMING_BNPL_ISSUER_CONTEXT_KEYS)
                 .with(ISSUER_NAME, issuerContext.getDisplayName())
                 .with(ISSUER_SELECTION_TEXT, issuerContext.getSelectionText())
-                .with(ISSUER_ICON_ID, issuerContext.getIconId())
+                .with(ISSUER_ICON_ID, R.drawable.bnpl_icon_generic)
                 .with(ISSUER_LINKED, issuerContext.isLinked())
                 .with(APPLY_ISSUER_DEACTIVATED_STYLE, !issuerContext.isEligible())
                 .with(ON_ISSUER_CLICK_ACTION, actionCallback)

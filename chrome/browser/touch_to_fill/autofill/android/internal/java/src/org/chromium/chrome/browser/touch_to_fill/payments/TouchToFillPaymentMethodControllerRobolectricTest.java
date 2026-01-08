@@ -423,7 +423,6 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* isLocalPaymentsMethod= */ false);
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_AFFIRM_LINKED =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.affirm_linked,
                     /* issuerId= */ "affirm",
                     /* displayName= */ "Affirm",
                     /* selectionText= */ "Monthly or 4 installments",
@@ -431,7 +430,6 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* isEligible= */ true);
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_AFFIRM_UNLINKED =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.affirm_unlinked,
                     /* issuerId= */ "affirm",
                     /* displayName= */ "Affirm",
                     /* selectionText= */ "Monthly or 4 installments",
@@ -439,7 +437,6 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* isEligible= */ true);
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_KLARNA_LINKED =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.klarna_linked,
                     /* issuerId= */ "klarna",
                     /* displayName= */ "Klarna",
                     /* selectionText= */ "Pay in low monthly installments",
@@ -447,7 +444,6 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* isEligible= */ true);
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_KLARNA_UNLINKED =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.klarna_unlinked,
                     /* issuerId= */ "klarna",
                     /* displayName= */ "Klarna",
                     /* selectionText= */ "Pay in low monthly installments",
@@ -455,7 +451,6 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* isEligible= */ true);
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_ZIP_LINKED =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.zip_linked,
                     /* issuerId= */ "zip",
                     /* displayName= */ "Zip",
                     /* selectionText= */ "Pay in easy installments",
@@ -463,7 +458,6 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* isEligible= */ true);
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_ZIP_UNLINKED =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.zip_unlinked,
                     /* issuerId= */ "zip",
                     /* displayName= */ "Zip",
                     /* selectionText= */ "Pay in easy installments",
@@ -472,7 +466,6 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     private static final BnplIssuerContext
             BNPL_ISSUER_CONTEXT_INELIGIBLE_NOT_SUPPORTED_BY_MERCHANT =
                     new BnplIssuerContext(
-                            /* iconId= */ R.drawable.affirm_linked,
                             /* issuerId= */ "affirm",
                             /* displayName= */ "Affirm",
                             /* selectionText= */ "Not supported by merchant",
@@ -480,7 +473,6 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                             /* isEligible= */ false);
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_LOW =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.klarna_linked,
                     /* issuerId= */ "klarna",
                     /* displayName= */ "Klarna",
                     /* selectionText= */ "Purchase must be over $50.00",
@@ -488,7 +480,6 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* isEligible= */ false);
     private static final BnplIssuerContext BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_HIGH =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.zip_unlinked,
                     /* issuerId= */ "zip",
                     /* displayName= */ "Zip",
                     /* selectionText= */ "Purchase must be under $10,000.00",
@@ -525,7 +516,6 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                             new LegalMessageLine(LEGAL_MESSAGE_LINE)));
     private static final BnplIssuerContext UNKNOWN_BNPL_ISSUER_CONTEXT =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.bnpl_icon_generic,
                     /* issuerId= */ "unknownId",
                     /* displayName= */ "Test",
                     /* selectionText= */ "Daily or 1000 installments",
@@ -562,6 +552,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         when(mBottomSheetController.requestShowContent(any(BottomSheetContent.class), anyBoolean()))
                 .thenReturn(true);
         when(mResourceProvider.getBnplIssuerTosDrawableId(anyString(), anyBoolean()))
+                .thenReturn(R.drawable.bnpl_icon_generic);
+        when(mResourceProvider.getBnplIssuerDrawableId(anyString(), anyBoolean()))
                 .thenReturn(R.drawable.bnpl_icon_generic);
         mCoordinator = new TouchToFillPaymentMethodCoordinator();
         mCoordinator.initialize(
@@ -3094,7 +3086,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                                                 .get(ISSUER_SELECTION_TEXT)
                                                 .equals(issuerContext.getSelectionText())
                                         && item.model.get(ISSUER_ICON_ID)
-                                                == issuerContext.getIconId()
+                                                == R.drawable.bnpl_icon_generic
                                         && item.model.get(ISSUER_LINKED) == issuerContext.isLinked()
                                         && item.model.get(APPLY_ISSUER_DEACTIVATED_STYLE)
                                                 != issuerContext.isEligible())
@@ -3114,8 +3106,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 bnplIssuerContextModel.get().get(ISSUER_SELECTION_TEXT),
                 is(expectedBnplIssuerContext.getSelectionText()));
         assertThat(
-                bnplIssuerContextModel.get().get(ISSUER_ICON_ID),
-                is(expectedBnplIssuerContext.getIconId()));
+                bnplIssuerContextModel.get().get(ISSUER_ICON_ID), is(R.drawable.bnpl_icon_generic));
         assertThat(
                 bnplIssuerContextModel.get().get(ISSUER_LINKED),
                 is(expectedBnplIssuerContext.isLinked()));
