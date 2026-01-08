@@ -282,6 +282,9 @@ template("cargo_crate") {
       # Don't import the `chromium` crate into third-party code.
       no_chromium_prelude = true
 
+      # Disable generating `..._clippy` targets for third-party code.
+      no_clippy = true
+
       # Depend by default on the `//build/rust/allocator` library, but avoid this
       # dependency in `no_std` mode.  This is desirable for two reasons:
       # 1. It gives users of `cargo_crate` an indirect way to control presence of
@@ -539,6 +542,9 @@ template("cargo_crate") {
 
         # Don't import the `chromium` crate into third-party code.
         no_chromium_prelude = true
+
+        # Disable generating `..._clippy` targets for third-party code.
+        no_clippy = true
 
         # Build scripts do not need to link to chrome's allocator.
         no_allocator_crate = true

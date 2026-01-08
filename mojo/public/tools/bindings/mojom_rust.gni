@@ -146,6 +146,10 @@ template("mojom_rust") {
       }
 
       visibility = output_visibility
+
+      # The generated crate doesn't need these dependencies.
+      no_allocator_crate = true
+      no_clippy = true
     }
   } else {
     group("${base_name}_meta") {

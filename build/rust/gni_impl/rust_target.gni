@@ -68,6 +68,13 @@ template("rust_target") {
     _allow_unsafe = invoker.allow_unsafe
   }
 
+  # Default to the `args.gn`-wide setting, but allow individual targets to
+  # opt-out by setting `no_clippy = true`.
+  _enable_clippy_for_this_target = enable_rust_clippy
+  if (defined(invoker.no_clippy) && invoker.no_clippy) {
+    _enable_clippy_for_this_target = false
+  }
+
   if (_generate_crate_root) {
     generated_file("${_target_name}_crate_root") {
       outputs = [ "${target_gen_dir}/${target_name}.rs" ]
@@ -151,10 +158,11 @@ template("rust_target") {
   if (invoker.target_type == "rust_proc_macro") {
     _main_target_suffix = "__proc_macro"
   } else if (invoker.target_type == "shared_library") {
-    _main_target_suffix = "__proc_macro"
+    _main_target_suffix = "__shared_library"
   } else {
     _main_target_suffix = ""
   }
+  _main_target_name = "${_target_name}${_main_target_suffix}"
 
   _deps = []
   if (defined(invoker.deps)) {
@@ -241,8 +249,7 @@ template("rust_target") {
       if (defined(_visibility)) {
         visibility = _visibility
       }
-      public_deps =
-          [ ":${_target_name}${_main_target_suffix}($rust_macro_toolchain)" ]
+      public_deps = [ ":${_main_target_name}($rust_macro_toolchain)" ]
     }
 
     not_needed(invoker, "*")
@@ -254,6 +261,7 @@ template("rust_target") {
                  "_crate_name",
                  "_cxx_bindings",
                  "_deps",
+                 "_enable_clippy_for_this_target",
                  "_rustc_metadata",
                  "_out_dir",
                  "_public_deps",
@@ -301,7 +309,7 @@ template("rust_target") {
         if (defined(_visibility)) {
           visibility = _visibility
         }
-        public_deps = [ ":${_target_name}${_main_target_suffix}" ]
+        public_deps = [ ":${_main_target_name}" ]
         public_deps += _cxx_generated_deps_for_cpp
       }
     }
@@ -402,20 +410,41 @@ template("rust_target") {
       not_needed(invoker, [ "executable_configs" ])
     }
 
-    target(invoker.target_type, "${_target_name}${_main_target_suffix}") {
+    if (_enable_clippy_for_this_target) {
+      _clippy_target_name = "${_target_name}_clippy"
+    }
+
+    _rust_sources = invoker.sources
+    if (_generate_crate_root) {
+      _rust_deps += [ ":${_target_name}_crate_root" ]
+      _rust_sources += [ _crate_root ]
+    }
+
+    _rust_inputs = []
+    if (defined(invoker.inputs)) {
+      _rust_inputs += invoker.inputs
+    }
+    if (defined(_bindgen_inputs)) {
+      _rust_inputs += _bindgen_inputs
+    }
+
+    target(invoker.target_type, "${_main_target_name}") {
       forward_variables_from(invoker,
                              "*",
                              TESTONLY_AND_VISIBILITY + [
-                                   "features",
-                                   "deps",
                                    "aliased_deps",
-                                   "public_deps",
-                                   "rustflags",
-                                   "rustenv",
                                    "configs",
+                                   "deps",
+                                   "features",
+                                   "inputs",
+                                   "no_clippy",
+                                   "public_deps",
+                                   "rustenv",
+                                   "rustflags",
+                                   "sources",
+                                   "test_inputs",
                                    "unit_test_output_dir",
                                    "unit_test_target",
-                                   "test_inputs",
                                  ])
 
       if (_main_target_suffix != "") {
@@ -425,6 +454,9 @@ template("rust_target") {
         not_needed([ "_visibility" ])
       } else if (defined(_visibility)) {
         visibility = _visibility
+      }
+      if (_enable_clippy_for_this_target && defined(visibility)) {
+        visibility += [ ":${_clippy_target_name}" ]
       }
 
       testonly = _testonly
@@ -446,18 +478,8 @@ template("rust_target") {
       }
       rustenv = _rustenv
 
-      if (_generate_crate_root) {
-        deps += [ ":${_target_name}_crate_root" ]
-        sources += [ _crate_root ]
-      }
-
-      if (!defined(inputs)) {
-        inputs = []
-      }
-
-      if (defined(_bindgen_inputs)) {
-        inputs += _bindgen_inputs
-      }
+      sources = _rust_sources
+      inputs = _rust_inputs
 
       if (!defined(output_name)) {
         # Note that file names of libraries must start with the crate name in
@@ -503,6 +525,44 @@ template("rust_target") {
       }
     } else {
       not_needed([ "_cxx_deps" ])
+    }
+
+    if (_enable_clippy_for_this_target) {
+      # Using `filter_include(get_target_outputs(..., ["*.rustflags.json"]))`
+      # would have been cleaner, but `get_target_outputs` doesn't work for
+      # library nor executable targets...
+      _rustc_env_and_flags =
+          "${target_out_dir}/${_main_target_name}.rustflags.json"
+      _rustc_rsp = "${target_out_dir}/${_main_target_name}.rsp.rust"
+
+      _clippy_stamp_file = "${target_out_dir}/${_target_name}.clippy"
+
+      action("${_clippy_target_name}") {
+        script = "//build/rust/gni_impl/clippy_wrapper.py"
+        inputs = [ "//build/rust/gni_impl/rustc_wrapper.py" ]
+        outputs = [ _clippy_stamp_file ]
+
+        sources = _rust_sources + _rust_inputs  # consumed by `clippy-driver`
+        sources += [
+          _rustc_env_and_flags,  # consumed by `clippy_wrapper.py`
+          _rustc_rsp,  # consumed by `clippy-driver`
+        ]
+
+        deps = [ ":${_main_target_name}" ]  # For `_rustc_env_and_flags`.
+        deps += _rust_deps  # `.rlib`s, build-script-generated files, etc.
+
+        args = [
+          "--clippy-driver",
+          rebase_path("//third_party/rust-toolchain/bin/clippy-driver",
+                      root_build_dir),
+          "--rustc-env-and-flags",
+          rebase_path(_rustc_env_and_flags, root_build_dir),
+          "--build-stamp-file",
+          rebase_path(_clippy_stamp_file, root_build_dir),
+        ]
+
+        testonly = _testonly
+      }
     }
   }
 }

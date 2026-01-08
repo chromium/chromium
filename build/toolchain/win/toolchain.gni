@@ -339,15 +339,26 @@ template("msvc_toolchain") {
     }
 
     if (toolchain_has_rust) {
+      rustc_wrapper_path =
+          rebase_path("//build/rust/gni_impl/rustc_wrapper.py", root_build_dir)
+      rustc_wrapper = "\"$python_path\" \"$rustc_wrapper_path\""
+
+      rustc_env_and_flags_path =
+          "{{target_out_dir}}/{{label_name}}.rustflags.json"
+      rustc_wrapper += " --dump-rustc-env-and-flags $rustc_env_and_flags_path"
+
+      rustc_rsp_path = "{{target_out_dir}}/{{label_name}}.rsp"
+      rustc_wrapper += " --rsp=$rustc_rsp_path"
+
       rust_sysroot_relative = rebase_path(rust_sysroot, root_build_dir)
       rustc = "$rust_sysroot_relative/bin/rustc"
-      rustc_wrapper =
-          rebase_path("//build/rust/gni_impl/rustc_wrapper.py", root_build_dir)
+      rustc_wrapper += " --target-windows --rustc=$rustc"
+
       rustc_windows_args = " -Clinker=$link$rust_linkflags $rustc_common_args"
 
       tool("rust_staticlib") {
         libname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
-        rspfile = "$libname.rsp"
+        rspfile = rustc_rsp_path
         depfile = "$libname.d"
 
         default_output_extension = ".lib"
@@ -358,10 +369,14 @@ template("msvc_toolchain") {
         # collide.
         default_output_dir = "{{target_out_dir}}"
         description = "RUST(STATICLIB) {{output}}"
-        outputs = [ libname ]
+        outputs = [
+          libname,
+          rustc_env_and_flags_path,
+          "${rspfile}.rust",
+        ]
 
         rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
-        command = "\"$python_path\" \"$rustc_wrapper\" --target-windows --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $libname LDFLAGS RUSTENV {{rustenv}}"
+        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $libname -- $rustc_windows_args LDFLAGS RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
       }
 
@@ -371,7 +386,7 @@ template("msvc_toolchain") {
         # actually liblibc.rlib).
         rlibname =
             "{{output_dir}}/lib{{target_output_name}}{{output_extension}}"
-        rspfile = "$rlibname.rsp"
+        rspfile = rustc_rsp_path
         depfile = "$rlibname.d"
 
         default_output_extension = ".rlib"
@@ -384,17 +399,21 @@ template("msvc_toolchain") {
         # collide.
         default_output_dir = "{{target_out_dir}}"
         description = "RUST {{output}}"
-        outputs = [ rlibname ]
+        outputs = [
+          rlibname,
+          rustc_env_and_flags_path,
+          "${rspfile}.rust",
+        ]
 
         rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
-        command = "\"$python_path\" \"$rustc_wrapper\" --target-windows --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rlibname {{rustdeps}} {{externs}} LDFLAGS RUSTENV {{rustenv}}"
+        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $rlibname -- $rustc_windows_args {{rustdeps}} {{externs}} LDFLAGS RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
       }
 
       tool("rust_bin") {
         exename = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
         pdbname = "$exename.pdb"
-        rspfile = "$exename.rsp"
+        rspfile = rustc_rsp_path
         depfile = "$exename.d"
         pool = "//build/toolchain:link_pool($default_toolchain)"
 
@@ -405,12 +424,14 @@ template("msvc_toolchain") {
           # The first entry here is used for dependency tracking.
           exename,
           pdbname,
+          rustc_env_and_flags_path,
+          "${rspfile}.rust",
         ]
         runtime_outputs = outputs
 
         rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
         dynamic_link_switch = ""
-        command = "\"$python_path\" \"$rustc_wrapper\" --target-windows --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $exename LDFLAGS {{ldflags}} $sys_lib_flags /PDB:$pdbname RUSTENV {{rustenv}}"
+        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $exename -- $rustc_windows_args LDFLAGS {{ldflags}} $sys_lib_flags /PDB:$pdbname RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
       }
 
@@ -419,7 +440,7 @@ template("msvc_toolchain") {
         dllname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
         libname = "$dllname.lib"  # e.g. foo.dll.lib
         pdbname = "$dllname.pdb"
-        rspfile = "$dllname.rsp"
+        rspfile = rustc_rsp_path
         depfile = "$dllname.d"
         pool = "//build/toolchain:link_pool($default_toolchain)"
 
@@ -434,6 +455,8 @@ template("msvc_toolchain") {
           libname,
           dllname,
           pdbname,
+          rustc_env_and_flags_path,
+          "${rspfile}.rust",
         ]
         runtime_outputs = [
           dllname,
@@ -442,7 +465,7 @@ template("msvc_toolchain") {
 
         rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
         dynamic_link_switch = ""
-        command = "\"$python_path\" \"$rustc_wrapper\" --target-windows --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $dllname LDFLAGS {{ldflags}} $sys_lib_flags /PDB:$pdbname /IMPLIB:$libname RUSTENV {{rustenv}}"
+        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $dllname -- $rustc_windows_args LDFLAGS {{ldflags}} $sys_lib_flags /PDB:$pdbname /IMPLIB:$libname RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
 
         # Since the above commands only updates the .lib file when it changes,
@@ -455,7 +478,7 @@ template("msvc_toolchain") {
         # E.g. "foo.dll":
         dllname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
         pdbname = "$dllname.pdb"
-        rspfile = "$dllname.rsp"
+        rspfile = rustc_rsp_path
         depfile = "$dllname.d"
         pool = "//build/toolchain:link_pool($default_toolchain)"
 
@@ -472,12 +495,14 @@ template("msvc_toolchain") {
           # try to link primary .dll target) we omit the .lib here entirely.
           dllname,
           pdbname,
+          rustc_env_and_flags_path,
+          "${rspfile}.rust",
         ]
         runtime_outputs = outputs
 
         rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
         dynamic_link_switch = ""
-        command = "\"$python_path\" \"$rustc_wrapper\" --target-windows --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $dllname LDFLAGS {{ldflags}} $sys_lib_flags /PDB:$pdbname RUSTENV {{rustenv}}"
+        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $dllname -- $rustc_windows_args LDFLAGS {{ldflags}} $sys_lib_flags /PDB:$pdbname RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
 
         # Since the above commands only updates the .lib file when it changes,

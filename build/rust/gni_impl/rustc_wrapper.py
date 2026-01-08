@@ -5,6 +5,7 @@
 # found in the LICENSE file.
 
 import argparse
+import json
 import pathlib
 import subprocess
 import shlex
@@ -23,6 +24,8 @@ import action_helpers
 # * To remove dependencies on some environment variables from the .d file.
 # * To enable use of .rsp files.
 # * To work around two gn bugs on Windows
+# * Saving `rustc` command-line flags and environment, so that it can be reused
+#   when invoking `cc_bindings_from_rs` or `clippy-driver`
 #
 # LDFLAGS ESCAPING
 #
@@ -180,13 +183,56 @@ def verify_inputs(depline, sources, abs_build_root):
   return False
 
 
+def ConvertPathsToAbsolute(env):
+  """Converts values stored in the `env` dictionary to absolute paths."""
+  for (k, v) in env.items():
+    # Paths need to be relative at gn/ninja level (for compatibility with
+    # distributed builds), but it's okay to use absolute paths below gn/ninja
+    # level.  And because some paths need to be absolute, we make all of them
+    # absolute.  Examples of environment-variable-stored paths that need to be
+    # absolute:
+    #
+    # * `OUT_DIR` (because `rustc` resolves `include!` in relation to `.rs`
+    #   files - see https://crbug.com/448040713#comment6).
+    # * `SDKROOT` - see https://crbug.com/442128549
+    if v and os.path.exists(v):
+      env[k] = os.path.abspath(v)
+
+
+def _SaveRustEnvAndFlags(path, rustenv, rustflags):
+  os.makedirs(os.path.dirname(path), exist_ok=True)
+  data = {'rustenv': rustenv, 'rustflags': rustflags}
+  with action_helpers.atomic_output(path, 'w', encoding='utf-8') as json_file:
+    json.dump(data, json_file, indent=4)
+
+
+def LoadRustEnvAndFlags(path):
+  """Loads previously dumped env and flags (see --dump-rustc-env-and-flags. """
+  with open(path, "r", encoding='utf-8') as json_file:
+    data = json.load(json_file)
+  rustenv = data["rustenv"]
+  rustflags = data["rustflags"]
+  return rustenv, rustflags
+
+
 def main():
   parser = argparse.ArgumentParser()
+
   parser.add_argument('--rustc', required=True, type=pathlib.Path)
   parser.add_argument('--depfile', required=True, type=pathlib.Path)
   parser.add_argument('--rsp', type=pathlib.Path, required=True)
   parser.add_argument('--target-windows', action='store_true')
+  parser.add_argument('--dump-rustc-env-and-flags',
+                      type=pathlib.Path,
+                      required=True)
   parser.add_argument('-v', action='store_true')
+
+  # Explicitly intercept `-o` and `--emit` to prevent them from getting
+  # saved via `_SaveRustEnvAndFlags`.  This helps to avoid overwriting
+  # these outputs when reusing the command-line flags for `clippy-driver`.
+  parser.add_argument('-o', type=pathlib.Path, required=True)
+  parser.add_argument('--emit', type=str, required=True)
+
   parser.add_argument('args', metavar='ARG', nargs='+')
 
   args = parser.parse_args()
@@ -222,7 +268,7 @@ def main():
     # Full fix will come from https://gn-review.googlesource.com/c/gn/+/12480
     rsp_args = [remove_lib_suffix_from_l_args(arg) for arg in rsp_args]
     rustc_args = [remove_lib_suffix_from_l_args(arg) for arg in rustc_args]
-  out_rsp = str(args.rsp) + ".rsp"
+  out_rsp = str(args.rsp) + ".rust"
   with open(out_rsp, 'w') as rspfile:
     # rustc needs the rsp file to be separated by newlines. Note that GN
     # generates the file separated by spaces:
@@ -230,33 +276,19 @@ def main():
     rspfile.write("\n".join(rsp_args))
   rustc_args.append(f'@{out_rsp}')
 
-  env = os.environ.copy()
-  fixed_env_vars = []
-  for item in rustenv:
-    (k, v) = item.split("=", 1)
+  rustenv = dict([item.split("=", 1) for item in rustenv])  # list to dict
+  _SaveRustEnvAndFlags(args.dump_rustc_env_and_flags, rustenv, rustc_args)
+  ConvertPathsToAbsolute(rustenv)
+  env = os.environ.copy() | rustenv
 
-    # Paths need to be relative at gn/ninja level (for compatibility with
-    # distributed builds), but it's okay to use absolute paths below gn/ninja
-    # level.  And because some paths need to be absolute, we make all of them
-    # absolute.  Examples of environment-variable-stored paths that need to be
-    # absolute:
-    #
-    # * `OUT_DIR` (because `rustc` resolves `include!` in relation to `.rs`
-    #   files - see https://crbug.com/448040713#comment6).
-    # * `SDKROOT` - see https://crbug.com/442128549
-    if os.path.exists(v):
-      v = os.path.abspath(v)
-    env[k] = v
-    fixed_env_vars.append(k)
+  # Add `--emit` and `-o` flags into the `rustc` invocation
+  # (but do this _after_ the `_SaveRustEnvAndFlags` call above).
+  rustc_args += ["--emit", args.emit, "-o", args.o]
 
-  try:
-    if args.v:
-      print(' '.join(f'{k}={shlex.quote(v)}' for k, v in env.items()),
-            args.rustc, shlex.join(rustc_args))
-    r = subprocess.run([args.rustc, *rustc_args], env=env, check=False)
-  finally:
-    if not args.v:
-      os.remove(out_rsp)
+  if args.v:
+    print(' '.join(f'{k}={shlex.quote(v)}' for k, v in env.items()), args.rustc,
+          shlex.join(rustc_args))
+  r = subprocess.run([args.rustc, *rustc_args], env=env, check=False)
   if r.returncode != 0:
     sys.exit(r.returncode)
 
@@ -268,7 +300,7 @@ def main():
     env_dep_re = re.compile("# env-dep:(.*)=.*")
     for line in d:
       m = env_dep_re.match(line)
-      if m and m.group(1) in fixed_env_vars:
+      if m and m.group(1) in rustenv.keys():
         dirty = True  # We want to skip this line.
       else:
         new_line = normalize_depline(line, abs_build_root)

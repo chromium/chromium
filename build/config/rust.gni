@@ -93,6 +93,15 @@ declare_args() {
   # a platform. Mostly applicable to Windows, where new versions can handle ANSI
   # escape sequences but it's not reliable in general.
   force_rustc_color_output = false
+
+  # Whether expansion of GN templates like `rust_static_library` automatically
+  # creates a target for invoking `clippy` against Rust sources.
+  #
+  # TODO(crbug.com/41484295): Consider enabling this in some configurations.
+  # This requires:
+  # * Fixing pre-existing violations of `clippy` lints (crbug.com/472355480)
+  # * Deciding on a policy (e.g. which trybots can/should cover `clippy`)
+  enable_rust_clippy = false
 }
 
 declare_args() {

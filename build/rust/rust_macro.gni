@@ -19,6 +19,10 @@ template("rust_macro") {
 
     # Macros are loaded by rustc and shouldn't use chrome's allocation routines.
     no_allocator_crate = true
+
+    # TODO(crbug.com/472338477): Stop disabling Clippy - this depends on
+    # figuring out cross-toolchain dependencies on `*.rustflags.json` files.
+    no_clippy = true
   }
 }
 

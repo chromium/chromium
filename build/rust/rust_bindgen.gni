@@ -149,5 +149,6 @@ template("rust_bindgen") {
     # And avoiding them avoids dependency cycles.
     no_allocator_crate = true
     no_chromium_prelude = true
+    no_clippy = true
   }
 }

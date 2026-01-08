@@ -658,19 +658,29 @@ template("single_gcc_toolchain") {
     }
 
     if (toolchain_has_rust) {
+      rustc_wrapper_path =
+          rebase_path("//build/rust/gni_impl/rustc_wrapper.py", root_build_dir)
+      rustc_wrapper = "\"$python_path\" \"$rustc_wrapper_path\""
+
+      rustc_env_and_flags_path =
+          "{{target_out_dir}}/{{label_name}}.rustflags.json"
+      rustc_wrapper += " --dump-rustc-env-and-flags=$rustc_env_and_flags_path"
+
+      rustc_rsp_path = "{{target_out_dir}}/{{label_name}}.rsp"
+      rustc_wrapper += " --rsp=$rustc_rsp_path"
+
       if (!defined(rust_compiler_prefix)) {
         rust_compiler_prefix = ""
       }
       rust_sysroot_relative = rebase_path(rust_sysroot, root_build_dir)
       rustc_bin = "$rust_sysroot_relative/bin/rustc"
       rustc = "$rust_compiler_prefix${rustc_bin}"
-      rustc_wrapper =
-          rebase_path("//build/rust/gni_impl/rustc_wrapper.py", root_build_dir)
+      rustc_wrapper += " --rustc=$rustc"
 
       # RSP manipulation due to https://bugs.chromium.org/p/gn/issues/detail?id=249
       tool("rust_staticlib") {
         libname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
-        rspfile = "$libname.rsp"
+        rspfile = rustc_rsp_path
         depfile = "$libname.d"
 
         default_output_extension = ".a"
@@ -681,10 +691,14 @@ template("single_gcc_toolchain") {
         # collide.
         default_output_dir = "{{target_out_dir}}"
         description = "RUST(STATICLIB) {{output}}"
-        outputs = [ libname ]
+        outputs = [
+          libname,
+          rustc_env_and_flags_path,
+          "${rspfile}.rust",
+        ]
 
         rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
-        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $libname LDFLAGS RUSTENV {{rustenv}}"
+        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $libname -- -Clinker=\"${invoker.cxx}\" $rustc_common_args LDFLAGS RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
       }
 
@@ -694,7 +708,7 @@ template("single_gcc_toolchain") {
         # actually liblibc.rlib).
         rlibname =
             "{{output_dir}}/lib{{target_output_name}}{{output_extension}}"
-        rspfile = "$rlibname.rsp"
+        rspfile = rustc_rsp_path
         depfile = "$rlibname.d"
 
         default_output_extension = ".rlib"
@@ -706,60 +720,76 @@ template("single_gcc_toolchain") {
         # collide.
         default_output_dir = "{{target_out_dir}}"
         description = "RUST {{output}}"
-        outputs = [ rlibname ]
+        outputs = [
+          rlibname,
+          rustc_env_and_flags_path,
+          "${rspfile}.rust",
+        ]
 
         rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
-        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rlibname LDFLAGS RUSTENV {{rustenv}}"
+        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $rlibname -- -Clinker=\"${invoker.cxx}\" $rustc_common_args LDFLAGS RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
       }
 
       tool("rust_bin") {
         exename = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
         depfile = "$exename.d"
-        rspfile = "$exename.rsp"
+        rspfile = rustc_rsp_path
         pool = "//build/toolchain:link_pool($default_toolchain)"
 
         default_output_extension = default_executable_extension
         default_output_dir = "{{root_out_dir}}"
         description = "RUST(BIN) {{output}}"
-        outputs = [ exename ]
+        outputs = [
+          exename,
+          rustc_env_and_flags_path,
+          "${rspfile}.rust",
+        ]
 
         rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
-        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $exename LDFLAGS {{ldflags}} ${extra_ldflags} RUSTENV {{rustenv}}"
+        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $exename -- -Clinker=\"${invoker.cxx}\" $rustc_common_args LDFLAGS {{ldflags}} ${extra_ldflags} RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
       }
 
       tool("rust_cdylib") {
         dllname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
         depfile = "$dllname.d"
-        rspfile = "$dllname.rsp"
+        rspfile = rustc_rsp_path
         pool = "//build/toolchain:link_pool($default_toolchain)"
 
         default_output_extension = default_shlib_extension
         output_prefix = "lib"
         default_output_dir = "{{root_out_dir}}${default_shlib_subdir}"
         description = "RUST(CDYLIB) {{output}}"
-        outputs = [ dllname ]
+        outputs = [
+          dllname,
+          rustc_env_and_flags_path,
+          "${rspfile}.rust",
+        ]
 
         rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
-        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $dllname LDFLAGS {{ldflags}} ${extra_ldflags} RUSTENV {{rustenv}}"
+        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $dllname -- -Clinker=\"${invoker.cxx}\" $rustc_common_args LDFLAGS {{ldflags}} ${extra_ldflags} RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
       }
 
       tool("rust_macro") {
         dllname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
         depfile = "$dllname.d"
-        rspfile = "$dllname.rsp"
+        rspfile = rustc_rsp_path
         pool = "//build/toolchain:link_pool($default_toolchain)"
 
         default_output_extension = default_shlib_extension
         output_prefix = "lib"
         default_output_dir = "{{root_out_dir}}${default_shlib_subdir}"
         description = "RUST(MACRO) {{output}}"
-        outputs = [ dllname ]
+        outputs = [
+          dllname,
+          rustc_env_and_flags_path,
+          "${rspfile}.rust",
+        ]
 
         rspfile_content = "{{rustdeps}} {{externs}} SOURCES {{sources}}"
-        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $dllname LDFLAGS {{ldflags}} ${extra_ldflags} RUSTENV {{rustenv}}"
+        command = "$rustc_wrapper --depfile=$depfile --emit=dep-info=$depfile,link -o $dllname -- -Clinker=\"${invoker.cxx}\" $rustc_common_args LDFLAGS {{ldflags}} ${extra_ldflags} RUSTENV {{rustenv}}"
         rust_sysroot = rust_sysroot_relative
       }
     }
