@@ -1395,24 +1395,6 @@ TEST(CertVerifyProcTest, VerifyCertValidityTooLong) {
   }
 }
 
-TEST_P(CertVerifyProcInternalTest, TestKnownRoot) {
-  base::FilePath certs_dir = GetTestCertsDirectory();
-  scoped_refptr<X509Certificate> cert_chain = CreateCertificateChainFromFile(
-      certs_dir, "leaf_from_known_root.pem", X509Certificate::FORMAT_AUTO);
-  ASSERT_TRUE(cert_chain);
-
-  int flags = 0;
-  CertVerifyResult verify_result;
-  int error =
-      Verify(cert_chain.get(), "arabianhorseplay.com", flags, &verify_result);
-  EXPECT_THAT(error, IsOk())
-      << "This test relies on a real certificate that "
-      << "expires on May 18 2026. If failing on/after "
-      << "that date, please disable and file a bug "
-      << "against mattm. Current time: " << base::Time::Now();
-  EXPECT_TRUE(verify_result.is_issued_by_known_root);
-}
-
 // This tests that on successful certificate verification,
 // CertVerifyResult::public_key_hashes is filled with a SHA256 hash for each
 // of the certificates in the chain.
