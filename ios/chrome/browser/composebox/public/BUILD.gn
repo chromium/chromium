@@ -24,6 +24,11 @@ source_set("theme") {
   public_deps = [ ":input_plate_position" ]
 }
 
+source_set("constants") {
+  sources = [ "composebox_constants.h" ]
+  deps = [ "//base" ]
+}
+
 source_set("animation") {
   sources = [ "composebox_animation_base.h" ]
   deps = [ "//base" ]
