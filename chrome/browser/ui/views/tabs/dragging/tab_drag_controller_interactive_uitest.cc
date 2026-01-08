@@ -452,7 +452,8 @@ std::string IDString(TabStripModel* model) {
 }
 
 TabStrip* GetTabStripForBrowser(BrowserWindowInterface* browser) {
-  return BrowserView::GetBrowserViewForBrowser(browser)->tabstrip();
+  return BrowserView::GetBrowserViewForBrowser(browser)
+      ->horizontal_tab_strip_for_testing();
 }
 
 TabDragController* GetTabDragController(TabStrip* tab_strip) {

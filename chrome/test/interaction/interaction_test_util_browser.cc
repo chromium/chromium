@@ -303,7 +303,7 @@ class InteractionTestUtilSimulatorBrowser
         tab_collection->AsA<views::TrackedElementViews>()->view();
     TabStrip* tab_strip = nullptr;
     if (auto* const browser_view = views::AsViewClass<BrowserView>(view)) {
-      tab_strip = browser_view->tabstrip();
+      tab_strip = browser_view->horizontal_tab_strip_for_testing();
     } else {
       tab_strip = views::AsViewClass<TabStrip>(view);
     }

@@ -42,8 +42,8 @@ class BrowserRootViewBrowserTest : public InProcessBrowserTest {
   }
 
   void PerformMouseWheelOnTabStrip(const gfx::Vector2d& offset) {
-    TabStrip* tabstrip =
-        BrowserView::GetBrowserViewForBrowser(browser())->tabstrip();
+    TabStrip* tabstrip = BrowserView::GetBrowserViewForBrowser(browser())
+                             ->horizontal_tab_strip_for_testing();
     const gfx::Point tabstrip_center = tabstrip->GetLocalBounds().CenterPoint();
     const gfx::Point location = views::View::ConvertPointToTarget(
         tabstrip, browser_root_view(), tabstrip_center);
@@ -184,8 +184,8 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest,
   }
 
   TabStripModel* model = browser()->tab_strip_model();
-  TabStrip* tabstrip =
-      BrowserView::GetBrowserViewForBrowser(browser())->tabstrip();
+  TabStrip* tabstrip = BrowserView::GetBrowserViewForBrowser(browser())
+                           ->horizontal_tab_strip_for_testing();
   ASSERT_TRUE(model->SupportsTabGroups());
 
   // Create 5 tabs, with the leftmost, center, and rightmost in collapsed tab

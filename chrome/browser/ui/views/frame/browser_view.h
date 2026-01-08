@@ -284,7 +284,9 @@ class BrowserView : public BrowserWindow,
   }
 
   // Accessor for the TabStrip.
-  TabStrip* tabstrip() { return tab_strip_region_view_->tab_strip(); }
+  TabStrip* horizontal_tab_strip_for_testing() {
+    return tab_strip_region_view_->tab_strip();
+  }
 
   // Accessor for the WebUI tab strip.
   WebUITabStripContainerView* webui_tab_strip() { return webui_tab_strip_; }

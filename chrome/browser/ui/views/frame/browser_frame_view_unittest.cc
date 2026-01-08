@@ -83,10 +83,12 @@ TEST_F(BrowserFrameViewTabbedTest, MAYBE_HitTestTabstrip) {
   const gfx::Rect frame_bounds = frame_view_->bounds();
 
   gfx::RectF tabstrip_bounds_in_frame_coords(
-      frame_view_->GetBrowserView()->tabstrip()->GetLocalBounds());
-  views::View::ConvertRectToTarget(frame_view_->GetBrowserView()->tabstrip(),
-                                   frame_view_,
-                                   &tabstrip_bounds_in_frame_coords);
+      frame_view_->GetBrowserView()
+          ->horizontal_tab_strip_for_testing()
+          ->GetLocalBounds());
+  views::View::ConvertRectToTarget(
+      frame_view_->GetBrowserView()->horizontal_tab_strip_for_testing(),
+      frame_view_, &tabstrip_bounds_in_frame_coords);
   const gfx::Rect tabstrip_bounds =
       gfx::ToEnclosingRect(tabstrip_bounds_in_frame_coords);
   EXPECT_FALSE(tabstrip_bounds.IsEmpty());

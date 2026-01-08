@@ -140,7 +140,7 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
                        Layout) {
   LaunchAppBrowser();
-  TabStrip* tabstrip = browser_view()->tabstrip();
+  TabStrip* tabstrip = browser_view()->horizontal_tab_strip_for_testing();
   ToolbarView* toolbar = browser_view()->toolbar();
   views::WebView* contents_web_view = browser_view()->contents_web_view();
   views::View* top_container = browser_view()->top_container();

@@ -123,8 +123,8 @@ class TabScrubberTest : public InProcessBrowserTest,
   TabStrip* GetTabStrip(Browser* browser) {
     aura::Window* window = browser->window()->GetNativeWindow();
     // This test depends on TabStrip impl.
-    TabStrip* tab_strip =
-        BrowserView::GetBrowserViewForNativeWindow(window)->tabstrip();
+    TabStrip* tab_strip = BrowserView::GetBrowserViewForNativeWindow(window)
+                              ->horizontal_tab_strip_for_testing();
     DCHECK(tab_strip);
     return tab_strip;
   }

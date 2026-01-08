@@ -88,7 +88,7 @@ class ImmersiveModeControllerChromeosTest : public TestWithBrowserView {
 TEST_F(ImmersiveModeControllerChromeosTest, Layout) {
   AddTab(browser(), GURL("about:blank"));
 
-  TabStrip* tabstrip = browser_view()->tabstrip();
+  TabStrip* tabstrip = browser_view()->horizontal_tab_strip_for_testing();
   ToolbarView* toolbar = browser_view()->toolbar();
   views::WebView* contents_web_view = browser_view()->contents_web_view();
 
@@ -251,7 +251,7 @@ TEST_F(ImmersiveModeControllerChromeosTest, ExitUponRestore) {
 TEST_F(ImmersiveModeControllerChromeosTest, LayeredSpinners) {
   AddTab(browser(), GURL("about:blank"));
 
-  TabStrip* tabstrip = browser_view()->tabstrip();
+  TabStrip* tabstrip = browser_view()->horizontal_tab_strip_for_testing();
 
   // Immersive fullscreen starts out disabled; layers are OK.
   EXPECT_FALSE(browser_view()->GetWidget()->IsFullscreen());

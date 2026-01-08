@@ -239,8 +239,9 @@ TEST_F(BrowserViewTest, DISABLED_BrowserViewLayout) {
   // |browser_view_| owns the Browser, not the test class.
   Browser* browser = browser_view()->browser();
   TopContainerView* top_container = browser_view()->top_container();
-  TabStrip* tabstrip = browser_view()->tabstrip();
-  views::View* tabstrip_region = browser_view()->tabstrip()->parent();
+  TabStrip* tabstrip = browser_view()->horizontal_tab_strip_for_testing();
+  views::View* tabstrip_region =
+      browser_view()->horizontal_tab_strip_for_testing()->parent();
   ToolbarView* toolbar = browser_view()->toolbar();
   views::View* contents_container = browser_view()->contents_container();
   views::WebView* contents_web_view = browser_view()->contents_web_view();
@@ -464,7 +465,8 @@ TEST_F(BrowserViewTest, WindowTitleOmitsLowMemoryUsage) {
   memory_usage.tab_resource_usage = tab_resource_usage_;
 
   AddTab(browser(), GURL("about:blank"));
-  Tab* const tab = browser_view()->tabstrip()->tab_at(0);
+  Tab* const tab =
+      browser_view()->horizontal_tab_strip_for_testing()->tab_at(0);
   tab->SetData(std::move(memory_usage));
 
   // Expect that low memory usage isn't in the window title.
@@ -698,7 +700,8 @@ TEST_F(BrowserViewHostedAppTest, Layout) {
 
   // The tabstrip, toolbar and bookmark bar should not be visible for hosted
   // apps.
-  EXPECT_FALSE(browser_view()->tabstrip()->GetVisible());
+  EXPECT_FALSE(
+      browser_view()->horizontal_tab_strip_for_testing()->GetVisible());
   EXPECT_FALSE(browser_view()->toolbar()->GetVisible());
   EXPECT_FALSE(browser_view()->IsBookmarkBarVisible());
 

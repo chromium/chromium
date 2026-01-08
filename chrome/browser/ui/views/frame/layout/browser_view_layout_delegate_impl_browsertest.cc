@@ -155,7 +155,8 @@ IN_PROC_BROWSER_TEST_P(BrowserViewLayoutDelegateImplBrowsertest,
                               "Screenshot not supported on all platforms"),
       WithView(kBrowserViewElementId,
                [&bounds](BrowserView* browser_view) {
-                 TabStrip* const tabstrip = browser_view->tabstrip();
+                 TabStrip* const tabstrip =
+                     browser_view->horizontal_tab_strip_for_testing();
                  tabstrip->InvalidateLayout();
                  views::test::RunScheduledLayout(browser_view);
                  bounds = GetBoundsInWindow(tabstrip);

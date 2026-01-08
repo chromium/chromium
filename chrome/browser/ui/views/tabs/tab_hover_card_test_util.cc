@@ -25,7 +25,8 @@ TabHoverCardTestUtil::~TabHoverCardTestUtil() {
 
 // static
 TabStrip* TabHoverCardTestUtil::GetTabStrip(BrowserWindowInterface* browser) {
-  return BrowserView::GetBrowserViewForBrowser(browser)->tabstrip();
+  return BrowserView::GetBrowserViewForBrowser(browser)
+      ->horizontal_tab_strip_for_testing();
 }
 
 // static

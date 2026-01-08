@@ -208,7 +208,7 @@ class InteractionTestUtilBrowserSelectTabTest
 IN_PROC_BROWSER_TEST_P(InteractionTestUtilBrowserSelectTabTest, SelectTab) {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
-  TabStrip* const tab_strip = browser_view->tabstrip();
+  TabStrip* const tab_strip = browser_view->horizontal_tab_strip_for_testing();
   auto* const browser_el =
       views::ElementTrackerViews::GetInstance()->GetElementForView(browser_view,
                                                                    true);

@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
   EXPECT_EQ(top_view_in_browser_fullscreen, browser_view->GetTabStripVisible());
   // This makes sure that the layout was updated accordingly.
   EXPECT_EQ(top_view_in_browser_fullscreen,
-            browser_view->tabstrip()->GetVisible());
+            browser_view->horizontal_tab_strip_for_testing()->GetVisible());
   EXPECT_EQ(top_view_in_browser_fullscreen,
             chrome::IsCommandEnabled(browser(), IDC_SHOW_BOOKMARK_BAR));
 

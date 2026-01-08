@@ -35,6 +35,7 @@ static_library("shell_delegate") {
     "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sessions",
+    "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/ash/accelerator",
     "//chrome/browser/ui/ash/accessibility",

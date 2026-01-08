@@ -536,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TitleAndLoadState) {
   content::TestNavigationObserver navigation_watcher(
       contents, 1, content::MessageLoopRunner::QuitMode::DEFERRED);
 
-  TabStrip* tab_strip = browser_view()->tabstrip();
+  TabStrip* tab_strip = browser_view()->horizontal_tab_strip_for_testing();
   // Navigate without blocking.
   const GURL test_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
