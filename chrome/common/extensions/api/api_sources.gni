@@ -53,9 +53,8 @@ if (enable_service_discovery) {
   schema_sources_ += [ "mdns.idl" ]
 }
 
-# Schemas that should be used only to auto-generate the C++ types.
-# In many cases, this includes schemas used to generate types used in manifest
-# parsing.
+# Schemas that should be used only to generate the JSON strings and function
+# registration. These do not generate the strong C++ types.
 uncompiled_sources_ = [
   "action.json",
   "browsing_data.json",
