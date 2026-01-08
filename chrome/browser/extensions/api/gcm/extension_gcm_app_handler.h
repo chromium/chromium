@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_GCM_APP_HANDLER_H_
-#define CHROME_BROWSER_EXTENSIONS_EXTENSION_GCM_APP_HANDLER_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_API_GCM_EXTENSION_GCM_APP_HANDLER_H_
+#define CHROME_BROWSER_EXTENSIONS_API_GCM_EXTENSION_GCM_APP_HANDLER_H_
 
 #include <memory>
 #include <string>
@@ -114,4 +114,4 @@ class ExtensionGCMAppHandler : public gcm::GCMAppHandler,
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_EXTENSION_GCM_APP_HANDLER_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_API_GCM_EXTENSION_GCM_APP_HANDLER_H_

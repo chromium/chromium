@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_gcm_app_handler.h"
+#include "chrome/browser/extensions/api/gcm/extension_gcm_app_handler.h"
 
 #include <memory>
 
@@ -61,10 +61,10 @@ void ExtensionGCMAppHandler::Shutdown() {
   const ExtensionSet& enabled_extensions =
       ExtensionRegistry::Get(profile_)->enabled_extensions();
   for (ExtensionSet::const_iterator extension = enabled_extensions.begin();
-       extension != enabled_extensions.end();
-       ++extension) {
-    if (IsGCMPermissionEnabled(extension->get()))
+       extension != enabled_extensions.end(); ++extension) {
+    if (IsGCMPermissionEnabled(extension->get())) {
       GetGCMDriver()->RemoveAppHandler((*extension)->id());
+    }
   }
 }
 
@@ -92,25 +92,26 @@ void ExtensionGCMAppHandler::OnSendError(
   js_event_router_->OnSendError(app_id, send_error_details);
 }
 
-void ExtensionGCMAppHandler::OnSendAcknowledged(
-    const std::string& app_id,
-    const std::string& message_id) {
+void ExtensionGCMAppHandler::OnSendAcknowledged(const std::string& app_id,
+                                                const std::string& message_id) {
   // This event is not exposed to JS API. It terminates here.
 }
 
 void ExtensionGCMAppHandler::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
-  if (IsGCMPermissionEnabled(extension))
+  if (IsGCMPermissionEnabled(extension)) {
     AddAppHandler(extension->id());
+  }
 }
 
 void ExtensionGCMAppHandler::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-  if (!IsGCMPermissionEnabled(extension))
+  if (!IsGCMPermissionEnabled(extension)) {
     return;
+  }
 
   if (reason == UnloadedExtensionReason::UPDATE &&
       !GetGCMDriver()->app_handlers().empty()) {
@@ -140,8 +141,9 @@ void ExtensionGCMAppHandler::OnExtensionUnloaded(
   // When the extension is being uninstalled, it will be unloaded first. We
   // should not remove the app handler in this case and it will be handled
   // in OnExtensionUninstalled.
-  if (reason != UnloadedExtensionReason::UNINSTALL)
+  if (reason != UnloadedExtensionReason::UNINSTALL) {
     RemoveAppHandler(extension->id());
+  }
 }
 
 void ExtensionGCMAppHandler::OnExtensionUninstalled(
@@ -172,12 +174,13 @@ gcm::GCMDriver* ExtensionGCMAppHandler::GetGCMDriver() const {
 
 instance_id::InstanceIDDriver* ExtensionGCMAppHandler::GetInstanceIDDriver()
     const {
-  return instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile_)->
-      driver();
+  return instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile_)
+      ->driver();
 }
 
 void ExtensionGCMAppHandler::OnUnregisterCompleted(
-    const std::string& app_id, gcm::GCMClient::Result result) {
+    const std::string& app_id,
+    gcm::GCMClient::Result result) {
   RemoveAppHandler(app_id);
 }
 
