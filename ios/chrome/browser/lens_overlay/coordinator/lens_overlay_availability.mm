@@ -33,8 +33,7 @@ bool IsLensOverlaySameTabNavigationEnabled(const PrefService* prefs) {
 }
 
 bool IsLVFUnifiedExperienceEnabled(const PrefService* prefs) {
-  return IsLensOverlayAvailable(prefs) &&
-         base::FeatureList::IsEnabled(kEnableLensViewFinderUnifiedExperience);
+  return IsLensOverlayAvailable(prefs);
 }
 
 bool IsLensOverlayLandscapeOrientationEnabled(const PrefService* prefs) {

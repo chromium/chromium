@@ -581,11 +581,6 @@ const char kEnableLensInOmniboxCopiedImageDescription[] =
 const char kEnableLensOverlayName[] = "Enable Lens Overlay";
 const char kEnableLensOverlayDescription[] = "Enables lens overlay UI";
 
-const char kEnableLensViewFinderUnifiedExperienceName[] =
-    "Enable LVF Unified Experience";
-const char kEnableLensViewFinderUnifiedExperienceDescription[] =
-    "Enables Lens View Finder unified experience";
-
 const char kEnableReadingListAccountStorageName[] =
     "Enable Reading List Account Storage";
 const char kEnableReadingListAccountStorageDescription[] =
