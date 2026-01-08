@@ -31,7 +31,6 @@ component("growth") {
     "//build:branding_buildflags",
     "//chromeos/ash/components/channel",
     "//chromeos/ash/components/demo_mode",
-    "//chromeos/ash/components/scalable_iph:buildflags",
     "//chromeos/ash/resources",
     "//chromeos/ui/vector_icons",
     "//components/account_id",

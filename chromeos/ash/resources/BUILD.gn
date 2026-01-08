@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
-import("//chromeos/ash/components/scalable_iph/scalable_iph.gni")
 import("//tools/grit/grit_rule.gni")
 
 assert(is_chromeos)
@@ -19,10 +18,7 @@ grit("resources") {
   ]
   output_dir = "$root_gen_dir/chromeos/ash"
 
-  defines = [
-    "enable_cros_scalable_iph=$enable_cros_scalable_iph",
-    "is_chrome_branded=$is_chrome_branded",
-  ]
+  defines = [ "is_chrome_branded=$is_chrome_branded" ]
 
   grit_flags = [
     "-E",
