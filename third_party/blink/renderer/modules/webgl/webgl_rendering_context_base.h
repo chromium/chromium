@@ -969,20 +969,13 @@ class MODULES_EXPORT WebGLRenderingContextBase
     LRUCanvasSnapshotProviderCache(wtf_size_t capacity, CacheType type);
     // The pointer returned is owned by the image buffer map.
     CanvasSnapshotProvider* GetCanvasSnapshotProvider(
-        gfx::Size size,
-        viz::SharedImageFormat format,
-        SkAlphaType alpha_type,
-        const gfx::ColorSpace& color_space);
+        const CanvasSnapshotProvider::Info& info);
 
    private:
     void BubbleToFront(wtf_size_t idx);
     const wtf_size_t capacity_;
     const CacheType type_;
     Vector<std::unique_ptr<CanvasSnapshotProvider>> snapshot_providers_;
-    // The returned CanvasSnapshotProvider may have a different format from the
-    // one requested (e.g, BGRA vs RGBA). Ensure this doesn't cause cache
-    // misses by recording also the requested format.
-    Vector<viz::SharedImageFormat> requested_formats_;
   };
   LRUCanvasSnapshotProviderCache generated_image_cache_{
       4, LRUCanvasSnapshotProviderCache::CacheType::kImage};

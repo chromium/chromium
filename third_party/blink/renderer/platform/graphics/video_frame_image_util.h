@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "media/base/video_transformation.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_snapshot_provider.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
@@ -34,7 +35,6 @@ class PaintFlags;
 }  // namespace cc
 
 namespace blink {
-class CanvasSnapshotProvider;
 class StaticBitmapImage;
 
 // Converts a media orientation into a blink one or vice versa.
@@ -81,17 +81,31 @@ PLATFORM_EXPORT void DrawVideoFrameIntoCanvas(
 PLATFORM_EXPORT scoped_refptr<viz::RasterContextProvider>
 GetRasterContextProvider();
 
+// Helper function for creating a CanvasSnapshotProvider from a VideoFrame. The
+// returned info structure will be filled as follows:
+//   alpha_type: kOpaque_SkAlphaType for opaque frames, kPremul_SkAlphaType
+//   otherwise.
+//
+//   color_space: If `reinterpret_video_as_srgb` was true, then this
+//   is sRGB, otherwise frame.CompatRGBColorSpace().
+//
+//   format: Always GetN32FormatForCanvas() at the time of writing.
+//
+//   size: Set to frame.natural_size() unless `scaled_size` is provided.
+PLATFORM_EXPORT CanvasSnapshotProvider::Info
+CreateSnapshotProviderInfoForVideoFrame(
+    const media::VideoFrame& frame,
+    std::optional<gfx::Size> scaled_size = std::nullopt,
+    bool reinterpret_video_as_srgb = false);
+
 // Creates a CanvasSnapshotProvider which is appropriate for drawing VideoFrame
 // objects into. Some callers to CreateImageFromVideoFrame() may choose to cache
 // their snapshot providers. If `raster_context_provider` is null a software
 // snapshot provider will be returned.
 PLATFORM_EXPORT std::unique_ptr<CanvasSnapshotProvider>
-CreateSnapshotProviderForVideoFrame(
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
-    viz::RasterContextProvider* raster_context_provider);
+CreateSnapshotProviderForVideo(
+    const CanvasSnapshotProvider::Info& info,
+    viz::RasterContextProvider* raster_context_provider = nullptr);
 
 }  // namespace blink
 

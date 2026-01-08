@@ -566,26 +566,16 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
     video_renderer = wmp->GetPaintCanvasVideoRenderer();
   }
 
-  if (!media_video_frame || !video_renderer)
-    return nullptr;
-
-  gfx::Size dest_size = size.value_or(media_video_frame->natural_size());
-  if (dest_size.width() <= 0 || dest_size.height() <= 0) {
+  if (!media_video_frame || !video_renderer || (size && size->IsEmpty())) {
     return nullptr;
   }
 
-  const auto alpha_type = media::IsOpaque(media_video_frame->format())
-                              ? kOpaque_SkAlphaType
-                              : kPremul_SkAlphaType;
+  auto required_provider_info = CreateSnapshotProviderInfoForVideoFrame(
+      *media_video_frame, size, reinterpret_as_srgb);
 
-  const gfx::ColorSpace dest_color_space =
-      reinterpret_as_srgb ? gfx::ColorSpace::CreateSRGB()
-                          : media_video_frame->CompatRGBColorSpace();
-  if (!snapshot_provider_ || !snapshot_provider_->IsValid() ||
-      allow_accelerated_images != allow_accelerated_images_ ||
-      dest_size != snapshot_provider_->Size() ||
-      dest_color_space != snapshot_provider_->GetColorSpace() ||
-      alpha_type != snapshot_provider_->GetAlphaType()) {
+  if (!snapshot_provider_ ||
+      !required_provider_info.Matches(*snapshot_provider_) ||
+      allow_accelerated_images != allow_accelerated_images_) {
     viz::RasterContextProvider* raster_context_provider = nullptr;
     if (allow_accelerated_images) {
       if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
@@ -596,12 +586,8 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
     snapshot_provider_.reset();
 
     // Providing a null |raster_context_provider| creates a software provider.
-    //
-    // TODO(https://crbug.com/40230609): N32 may be incorrect when drawing high
-    // bit depth frames destined for a high bit depth canvas.
-    snapshot_provider_ = CreateSnapshotProviderForVideoFrame(
-        dest_size, GetN32FormatForCanvas(), alpha_type, dest_color_space,
-        raster_context_provider);
+    snapshot_provider_ = CreateSnapshotProviderForVideo(
+        required_provider_info, raster_context_provider);
     if (!snapshot_provider_) {
       return nullptr;
     }

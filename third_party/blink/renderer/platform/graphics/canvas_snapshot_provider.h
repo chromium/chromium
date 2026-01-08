@@ -29,6 +29,21 @@ class PLATFORM_EXPORT CanvasSnapshotProvider {
   virtual bool IsValid() const = 0;
   virtual bool IsGpuContextLost() const = 0;
   virtual bool IsExternalBitmapProvider() const { return false; }
+
+  // Helper structure and function for caching CanvasSnapshotProviders.
+  struct Info {
+    SkAlphaType alpha_type;
+    gfx::ColorSpace color_space;
+    viz::SharedImageFormat format;
+    gfx::Size size;
+
+    bool Matches(const CanvasSnapshotProvider& provider) const {
+      return provider.IsValid() && provider.Size() == size &&
+             provider.GetSharedImageFormat() == format &&
+             provider.GetAlphaType() == alpha_type &&
+             provider.GetColorSpace() == color_space;
+    }
+  };
 };
 
 }  // namespace blink

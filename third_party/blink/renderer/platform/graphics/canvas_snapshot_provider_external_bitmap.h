@@ -22,10 +22,7 @@ class PLATFORM_EXPORT CanvasSnapshotProviderExternalBitmap
       public cc::ImageProvider {
  public:
   static std::unique_ptr<CanvasSnapshotProviderExternalBitmap> Create(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space);
+      const CanvasSnapshotProvider::Info& info);
 
   ~CanvasSnapshotProviderExternalBitmap() override;
 
@@ -38,21 +35,19 @@ class PLATFORM_EXPORT CanvasSnapshotProviderExternalBitmap
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
       ImageOrientation orientation) override;
   viz::SharedImageFormat GetSharedImageFormat() const override {
-    return format_;
+    return info_.format;
   }
-  gfx::ColorSpace GetColorSpace() const override { return color_space_; }
-  SkAlphaType GetAlphaType() const override { return alpha_type_; }
-  gfx::Size Size() const override { return size_; }
+  gfx::ColorSpace GetColorSpace() const override { return info_.color_space; }
+  SkAlphaType GetAlphaType() const override { return info_.alpha_type; }
+  gfx::Size Size() const override { return info_.size; }
 
   // cc::ImageProvider:
   cc::ImageProvider::ScopedResult GetRasterContent(
       const cc::DrawImage& draw_image) override;
 
  private:
-  CanvasSnapshotProviderExternalBitmap(gfx::Size size,
-                                       viz::SharedImageFormat format,
-                                       SkAlphaType alpha_type,
-                                       const gfx::ColorSpace& color_space);
+  explicit CanvasSnapshotProviderExternalBitmap(
+      const CanvasSnapshotProvider::Info& info);
 
   std::optional<cc::PlaybackImageProvider> playback_image_provider_n32_;
   std::optional<cc::PlaybackImageProvider> playback_image_provider_f16_;
@@ -60,10 +55,8 @@ class PLATFORM_EXPORT CanvasSnapshotProviderExternalBitmap
   sk_sp<SkSurface> surface_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
 
-  gfx::Size size_;
-  viz::SharedImageFormat format_;
-  SkAlphaType alpha_type_;
-  gfx::ColorSpace color_space_;
+  const CanvasSnapshotProvider::Info info_;
+
   const cc::PaintImage::Id snapshot_paint_image_id_;
   cc::PaintImage::ContentId snapshot_paint_image_content_id_ =
       cc::PaintImage::kInvalidContentId;

@@ -171,18 +171,12 @@ void ImageCaptureFrameGrabber::OnVideoFrame(
     ScriptPromiseResolver<ImageBitmap>* resolver) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  const SkAlphaType alpha_type = media::IsOpaque(frame->format())
-                                     ? kOpaque_SkAlphaType
-                                     : kPremul_SkAlphaType;
-  const gfx::ColorSpace dest_color_space = frame->CompatRGBColorSpace();
-  if (!snapshot_provider_ || !snapshot_provider_->IsValid() ||
-      snapshot_provider_->Size() != frame->natural_size() ||
-      snapshot_provider_->GetColorSpace() != dest_color_space ||
-      snapshot_provider_->GetAlphaType() != alpha_type) {
-    snapshot_provider_ = CreateSnapshotProviderForVideoFrame(
-        frame->natural_size(),
-        viz::SkColorTypeToSinglePlaneSharedImageFormat(kN32_SkColorType),
-        alpha_type, dest_color_space,
+  auto required_provider_info = CreateSnapshotProviderInfoForVideoFrame(*frame);
+
+  if (!snapshot_provider_ ||
+      !required_provider_info.Matches(*snapshot_provider_)) {
+    snapshot_provider_ = CreateSnapshotProviderForVideo(
+        required_provider_info,
         // TODO(crbug.com/468035607): The RasterContextProvider is nullptr since
         // this API has historically provided software backed images, but maybe
         // shouldn't be.

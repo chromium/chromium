@@ -42,13 +42,9 @@ CanvasSnapshotProviderExternalBitmap::GetRasterContent(
 
 std::unique_ptr<CanvasSnapshotProviderExternalBitmap>
 CanvasSnapshotProviderExternalBitmap::Create(
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space) {
+    const CanvasSnapshotProvider::Info& info) {
   auto provider = base::WrapUnique<CanvasSnapshotProviderExternalBitmap>(
-      new CanvasSnapshotProviderExternalBitmap(size, format, alpha_type,
-                                               color_space));
+      new CanvasSnapshotProviderExternalBitmap(info));
   if (provider->IsValid()) {
     return provider;
   }
@@ -56,25 +52,20 @@ CanvasSnapshotProviderExternalBitmap::Create(
 }
 
 CanvasSnapshotProviderExternalBitmap::CanvasSnapshotProviderExternalBitmap(
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space)
-    : size_(size),
-      format_(format),
-      alpha_type_(alpha_type),
-      color_space_(color_space),
+    const CanvasSnapshotProvider::Info& info)
+    : info_(info),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
       recorder_(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
                                                        /*client=*/nullptr)) {
-  const bool can_use_lcd_text = alpha_type_ == kOpaque_SkAlphaType;
+  const bool can_use_lcd_text = info_.alpha_type == kOpaque_SkAlphaType;
   const auto props =
       skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
   surface_ = SkSurfaces::Raster(
-      SkImageInfo::Make(size_.width(), size_.height(),
-                        viz::ToClosestSkColorType(format_), kPremul_SkAlphaType,
-                        color_space_.ToSkColorSpace()),
+      SkImageInfo::Make(info_.size.width(), info_.size.height(),
+                        viz::ToClosestSkColorType(info_.format),
+                        kPremul_SkAlphaType,
+                        info_.color_space.ToSkColorSpace()),
       &props);
 }
 
@@ -106,7 +97,7 @@ CanvasSnapshotProviderExternalBitmap::DoExternalDrawAndSnapshot(
         // Create an ImageDecodeCache for half float images only if the canvas
         // is using half float back storage.
         cc::ImageDecodeCache* cache_f16 = nullptr;
-        if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
+        if (info_.format == viz::SinglePlaneFormat::kRGBA_F16) {
           cache_f16 = &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
         }
 
@@ -114,14 +105,14 @@ CanvasSnapshotProviderExternalBitmap::DoExternalDrawAndSnapshot(
             &Image::SharedCCDecodeCache(kN32_SkColorType);
 
         cc::TargetColorParams target_color_params;
-        target_color_params.color_space = color_space_;
+        target_color_params.color_space = info_.color_space;
         playback_image_provider_n32_.emplace(
             cache_rgba8, target_color_params,
             cc::PlaybackImageProvider::Settings());
 
         // If the image provider may require to decode to half float instead of
         // uint8, create a f16 PlaybackImageProvider with the passed cache.
-        if (format_ == viz::SinglePlaneFormat::kRGBA_F16) {
+        if (info_.format == viz::SinglePlaneFormat::kRGBA_F16) {
           DCHECK(cache_f16);
           playback_image_provider_f16_.emplace(
               cache_f16, target_color_params,

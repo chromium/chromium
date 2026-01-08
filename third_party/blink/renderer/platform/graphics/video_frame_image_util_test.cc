@@ -122,10 +122,10 @@ class VideoFrameImageUtilTest
     std::unique_ptr<CanvasSnapshotProvider> local_snapshot_provider;
 
     if (!snapshot_provider) {
-      auto frame_color_space = frame->CompatRGBColorSpace();
-      local_snapshot_provider = CreateSnapshotProviderForVideoFrame(
-          dest_rect.size(), GetN32FormatForCanvas(), kPremul_SkAlphaType,
-          frame_color_space, raster_context_provider());
+      auto info =
+          CreateSnapshotProviderInfoForVideoFrame(*frame, dest_rect.size());
+      local_snapshot_provider =
+          CreateSnapshotProviderForVideo(info, raster_context_provider());
       if (!local_snapshot_provider) {
         DLOG(ERROR) << "Failed to create CanvasResourceProvider.";
         return nullptr;
@@ -251,8 +251,8 @@ TEST_P(VideoFrameImageUtilTest, FlushedAcceleratedImage) {
       raster_context_provider(), kTestSize, gfx::Rect(kTestSize),
       base::DoNothing());
 
-  auto provider = CreateSnapshotProviderForVideoFrame(
-      kTestSize, kTestFormat, kTestAlphaType, kTestColorSpace,
+  auto provider = CreateSnapshotProviderForVideo(
+      {kTestAlphaType, kTestColorSpace, kTestFormat, kTestSize},
       raster_context_provider());
   ASSERT_TRUE(provider);
   EXPECT_TRUE(provider->IsAccelerated());
@@ -265,8 +265,8 @@ TEST_P(VideoFrameImageUtilTest, FlushedAcceleratedImage) {
 }
 
 TEST_P(VideoFrameImageUtilTest, CreateSnapshotProviderForVideoFrame) {
-  auto provider = CreateSnapshotProviderForVideoFrame(
-      kTestSize, kTestFormat, kTestAlphaType, kTestColorSpace,
+  auto provider = CreateSnapshotProviderForVideo(
+      {kTestAlphaType, kTestColorSpace, kTestFormat, kTestSize},
       raster_context_provider());
   ASSERT_TRUE(provider);
   EXPECT_EQ(provider->IsAccelerated(), expect_accelerated_images());
