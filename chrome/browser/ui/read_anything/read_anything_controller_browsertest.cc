@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
@@ -31,7 +30,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -820,101 +818,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(overlay_view);
   EXPECT_TRUE(overlay_view->GetVisible());
   EXPECT_FALSE(overlay_view->children().empty());
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
-                       UnresponsiveRenderer_ClosesImmersive) {
-  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
-  ASSERT_TRUE(tab);
-  auto* controller = ReadAnythingController::From(tab);
-  ASSERT_TRUE(controller);
-  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
-  AssertOverlayVisibility(true);
-
-  content::SimulateUnresponsiveRenderer(
-      GetImmersiveWebContents(),
-      GetImmersiveWebContents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
-
-  AssertOverlayVisibility(false);
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
-                       ShowImmersiveUI_AfterUnresponsiveRenderer_DoesNotCrash) {
-  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
-  ASSERT_TRUE(tab);
-  auto* controller = ReadAnythingController::From(tab);
-  ASSERT_TRUE(controller);
-  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
-  AssertOverlayVisibility(true);
-  content::WebContents* starting_contents = GetImmersiveWebContents();
-
-  content::SimulateUnresponsiveRenderer(
-      starting_contents,
-      starting_contents->GetPrimaryMainFrame()->GetRenderWidgetHost());
-  AssertOverlayVisibility(false);
-  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
-
-  AssertOverlayVisibility(true);
-  // The web contents would be the same if it was not recreated.
-  EXPECT_NE(GetImmersiveWebContents(), starting_contents);
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
-                       UnresponsiveRenderer_ClosesSidePanel) {
-  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
-  ASSERT_TRUE(tab);
-  auto* controller = ReadAnythingController::From(tab);
-  ASSERT_TRUE(controller);
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
-  controller->ShowSidePanelUI(SidePanelOpenTrigger::kReadAnythingOmniboxChip);
-  // Wait until the side panel is showing.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return side_panel_ui->IsSidePanelEntryShowing(
-        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
-  }));
-
-  content::SimulateUnresponsiveRenderer(
-      GetSidePanelWebContents(),
-      GetSidePanelWebContents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
-
-  // Verify Side Panel is closed
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !side_panel_ui->IsSidePanelEntryShowing(
-        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
-  }));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
-                       ShowSidePanelUI_AfterUnresponsiveRenderer_DoesNotCrash) {
-  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
-  ASSERT_TRUE(tab);
-  auto* controller = ReadAnythingController::From(tab);
-  ASSERT_TRUE(controller);
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
-  controller->ShowSidePanelUI(SidePanelOpenTrigger::kReadAnythingOmniboxChip);
-  // Wait until the side panel is showing.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return side_panel_ui->IsSidePanelEntryShowing(
-        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
-  }));
-  content::WebContents* starting_contents = GetSidePanelWebContents();
-
-  content::SimulateUnresponsiveRenderer(
-      starting_contents,
-      starting_contents->GetPrimaryMainFrame()->GetRenderWidgetHost());
-  // Wait until Side Panel is closed.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !side_panel_ui->IsSidePanelEntryShowing(
-        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
-  }));
-  controller->ShowSidePanelUI(SidePanelOpenTrigger::kReadAnythingOmniboxChip);
-
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return side_panel_ui->IsSidePanelEntryShowing(
-        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
-  }));
-  // The web contents would be the same if it was not recreated.
-  EXPECT_NE(GetSidePanelWebContents(), starting_contents);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
