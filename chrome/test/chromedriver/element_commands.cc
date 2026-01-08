@@ -1128,8 +1128,7 @@ Status ExecuteElementScreenshot(Session* session,
       "({x: window.pageXOffset,"
       "  y: window.pageYOffset,"
       "  height: document.documentElement.clientHeight,"
-      "  width: document.documentElement.clientWidth,"
-      "  device_pixel_ratio: window.devicePixelRatio})",
+      "  width: document.documentElement.clientWidth})",
       false, &browser_info);
   if (status.IsError())
     return status;
@@ -1139,8 +1138,6 @@ Status ExecuteElementScreenshot(Session* session,
   double scroll_top = browser_info_dict.FindDouble("y").value();
   double viewport_height = browser_info_dict.FindDouble("height").value();
   double viewport_width = browser_info_dict.FindDouble("width").value();
-  double device_pixel_ratio =
-      browser_info_dict.FindDouble("device_pixel_ratio").value();
 
   if (!clip->is_dict())
     return Status(kUnknownError, "Element Rect is not a dictionary");
@@ -1156,13 +1153,12 @@ Status ExecuteElementScreenshot(Session* session,
   // CaptureScreenshot.
   clip_dict.Set("x", location.x + scroll_left);
   clip_dict.Set("y", location.y + scroll_top);
-  clip_dict.Set("scale", 1 / device_pixel_ratio);
   // Crop screenshot by viewport if element is larger than viewport
   clip_dict.Set("height", std::min(viewport_height - location.y,
                                    clip_dict.FindDouble("height").value()));
   clip_dict.Set("width", std::min(viewport_width - location.x,
                                   clip_dict.FindDouble("width").value()));
-
+  clip_dict.Set("scale", 1);
   std::string screenshot;
   status = web_view->CaptureScreenshot(&screenshot, screenshot_params);
   if (status.IsError())

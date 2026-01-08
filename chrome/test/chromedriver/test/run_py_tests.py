@@ -533,6 +533,8 @@ class ChromeDriverBaseTest(unittest.TestCase):
 
   def CreateDriver(self, server_url=None, server_pid=None,
                    download_dir=None, browser_name=None, **kwargs):
+    kwargs.setdefault('chrome_switches', []).append(
+        '--force-device-scale-factor=1')
     if server_url is None:
       server_url = _CHROMEDRIVER_SERVER_URL
     if server_pid is None:
