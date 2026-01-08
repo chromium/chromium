@@ -32,7 +32,7 @@ ImposedMatchParser::Status ImposedMatchParser::Parse(
   // Parse |imposed_matches| and check bounds.
   std::istringstream iss(std::move(imposed_matches));
   bool first = true;
-  iss.peek();  // Makes empty |iss| realize EOF is reached.
+  std::ignore = iss.peek();  // Makes empty |iss| realize EOF is reached.
   while (iss && !iss.eof()) {
     // Eat delimiter.
     if (first) {
