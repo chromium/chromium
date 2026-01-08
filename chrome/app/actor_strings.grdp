@@ -26,6 +26,9 @@
       =1 {Task done}
       other {Tasks done}}
   </message>
+  <message name="IDR_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the tab associated with a task no longer exists or was closed." translateable="true">
+    Tab closed
+  </message>
   <message name="IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task needs attention." translateable="true">
     Waiting for your help
   </message>
