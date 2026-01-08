@@ -1027,6 +1027,7 @@ clang_tot_linux_builder(
             "linux-jammy",
         ],
     ),
+    free_space = builders.free_space.high,
     short_name = "asn",
 )
 
