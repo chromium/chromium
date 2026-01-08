@@ -10,11 +10,14 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_switches.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/authentication/history_sync/coordinator/history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/history_sync/coordinator/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/authentication/history_sync/model/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/reauth/signin_reauth_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
@@ -54,6 +57,7 @@
 
 @interface RecentTabsCoordinator () <HistorySyncPopupCoordinatorDelegate,
                                      RecentTabsPresentationDelegate,
+                                     SigninReauthCoordinatorDelegate,
                                      TabContextMenuDelegate>
 // Completion block called once the recentTabsViewController is dismissed.
 @property(nonatomic, copy) ProceduralBlock completion;
@@ -75,7 +79,9 @@
   HistorySyncPopupCoordinator* _historySyncPopupCoordinator;
   raw_ptr<AuthenticationService> _authenticationService;
   raw_ptr<syncer::SyncService> _syncService;
-  // The coordinator to sign-in from recent tabs.
+  SigninReauthCoordinator* _reauthCoordinator;
+  // TODO(crbug.com/471207686): Remove after kIdentityInAuthErrorFollowUps is
+  // launched.
   SigninCoordinator* _signinCoordinator;
 }
 
@@ -86,6 +92,7 @@
   CHECK(!self.sharingCoordinator, base::NotFatalUntil::M150);
   CHECK(!_authenticationService, base::NotFatalUntil::M150);
   CHECK(!_syncService, base::NotFatalUntil::M150);
+  CHECK(!_reauthCoordinator, base::NotFatalUntil::M150);
   CHECK(!_signinCoordinator, base::NotFatalUntil::M150);
 }
 
@@ -183,6 +190,7 @@
       dismissViewControllerAnimated:YES
                          completion:self.completion];
   [self stopSigninCoordinator];
+  [self stopReauthCoordinator];
   self.recentTabsNavigationController = nil;
   self.recentTabsContextMenuHelper = nil;
   [self.sharingCoordinator stop];
@@ -196,6 +204,34 @@
 #pragma mark - RecentTabsPresentationDelegate
 
 - (void)showPrimaryAccountReauth {
+  if (!base::FeatureList::IsEnabled(switches::kIdentityInAuthErrorFollowUps)) {
+    [self showPrimaryAccountReauthLegacy];
+    return;
+  }
+  if (_reauthCoordinator.viewWillPersist) {
+    return;
+  }
+  [self stopReauthCoordinator];
+
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(self.profile);
+  CoreAccountInfo account =
+      identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (account.IsEmpty()) {
+    // A sign-out was triggered in the meantime, don't do anything.
+    return;
+  }
+  _reauthCoordinator = [[SigninReauthCoordinator alloc]
+      initWithBaseViewController:self.recentTabsTableViewController
+                         browser:self.browser
+                         account:account
+               reauthAccessPoint:signin_metrics::ReauthAccessPoint::
+                                     kRecentTabs];
+  _reauthCoordinator.delegate = self;
+  [_reauthCoordinator start];
+}
+
+- (void)showPrimaryAccountReauthLegacy {
   if (_signinCoordinator.viewWillPersist) {
     return;
   }
@@ -321,6 +357,13 @@
   [self.mediator refreshSessionsView];
 }
 
+#pragma mark - SigninReauthCoordinatorDelegate
+
+- (void)reauthFinishedWithResult:(ReauthResult)result
+                          gaiaID:(const GaiaId*)gaiaID {
+  [self stopReauthCoordinator];
+}
+
 #pragma mark - Private
 
 - (void)signinCoordinatorCompletedWithCoordinator:
@@ -338,6 +381,12 @@
   [_historySyncPopupCoordinator stop];
   _historySyncPopupCoordinator.delegate = nil;
   _historySyncPopupCoordinator = nil;
+}
+
+- (void)stopReauthCoordinator {
+  _reauthCoordinator.delegate = nil;
+  [_reauthCoordinator stop];
+  _reauthCoordinator = nil;
 }
 
 - (void)stopSigninCoordinator {

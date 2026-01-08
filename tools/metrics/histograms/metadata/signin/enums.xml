@@ -881,6 +881,7 @@ chromium-metrics-reviews@google.com.
 <enum name="ReauthAccessPoint">
   <int value="0" label="Account menu"/>
   <int value="1" label="Account settings"/>
+  <int value="2" label="Recent tabs"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/signin_metrics.h:ReauthAccessPoint) -->
