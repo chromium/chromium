@@ -13,5 +13,7 @@ include_rules = [
   "+ios/chrome/browser/url_loading/model/url_loading_browser_agent.h",
   "+ios/chrome/browser/url_loading/model/url_loading_params.h",
   "+ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h",
+  "+ios/web/js_messaging/java_script_feature_manager.h",
+  "+ios/web/find_in_page/find_in_page_java_script_feature.h",
   "+ios/web/util/content_type_util.h",
 ]

@@ -195,8 +195,8 @@
     return;
   }
 
-  _BWGBrowserAgent->PresentBwgOverlay(self.baseViewController,
-                                      std::move(pageContextWrapperResponse));
+  _BWGBrowserAgent->PresentFloatyWithPageContext(
+      self.baseViewController, std::move(pageContextWrapperResponse));
 
   base::UmaHistogramLongTimes100(
       _didPresentBWGFRE ? kStartupTimeWithFREHistogram
@@ -224,8 +224,8 @@
   partialPageContext->set_url(activeWebState->GetVisibleURL().spec());
   partialPageContext->set_title(base::UTF16ToUTF8(activeWebState->GetTitle()));
 
-  _BWGBrowserAgent->PresentPendingBwgOverlay(self.baseViewController,
-                                             std::move(partialPageContext));
+  _BWGBrowserAgent->PresentFloatyWithPendingContext(
+      self.baseViewController, std::move(partialPageContext));
 
   base::UmaHistogramLongTimes100(
       _didPresentBWGFRE ? kStartupTimeWithFREHistogram
@@ -251,7 +251,7 @@
     return;
   }
 
-  _BWGBrowserAgent->UpdateBwgOverlayPageContext(std::move(response));
+  _BWGBrowserAgent->UpdateFloatyPageContext(std::move(response));
 }
 
 // Notifies the currently active WebState's BWG tab helper that the FRE will be

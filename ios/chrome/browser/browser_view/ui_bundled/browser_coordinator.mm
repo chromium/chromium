@@ -126,6 +126,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_coordinator.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_coordinator.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
@@ -738,8 +739,9 @@ const char kChromeAppStoreUrl[] =
   // group is closed.
   TabGroupConfirmationCoordinator* _lastTabClosingAlert;
 
-  // The coordinator for BWG related logic.
+  // The coordinators for Gemini related logic.
   BWGCoordinator* _BWGCoordinator;
+  GeminiFirstRunCoordinator* _geminiFirstRunCoordinator;
 
   // The coordinator for the Search What You See promo.
   SearchWhatYouSeePromoCoordinator* _searchWhatYouSeePromoCoordinator;
@@ -3171,9 +3173,15 @@ const char kChromeAppStoreUrl[] =
 
 - (void)startGeminiFlowWithImageAttachment:(UIImage*)image
                                 entryPoint:(gemini::EntryPoint)entryPoint {
+  if (IsGeminiRefactoredFREEnabled()) {
+    BwgBrowserAgent::FromBrowser(self.browser)
+        ->StartGeminiFlow(self.viewController, image, entryPoint);
+    return;
+  }
+
   if (entryPoint == gemini::EntryPoint::ImageContextMenu) {
     BwgBrowserAgent::FromBrowser(self.browser)
-        ->StartGeminiFlow(self.viewController, image);
+        ->StartGeminiFlow(self.viewController, image, entryPoint);
     return;
   }
 
@@ -3185,6 +3193,21 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)dismissGeminiFlowWithCompletion:(ProceduralBlock)completion {
+  if (IsGeminiRefactoredFREEnabled()) {
+    // If the user is still in the FRE, dismiss it.
+    if (_geminiFirstRunCoordinator) {
+      [_geminiFirstRunCoordinator stopWithCompletion:completion];
+      _geminiFirstRunCoordinator = nil;
+      return;
+    }
+
+    BwgBrowserAgent::FromBrowser(self.browser)->DismissFloaty();
+    if (completion) {
+      completion();
+    }
+    return;
+  }
+
   if (!_BWGCoordinator && completion) {
     completion();
     return;
@@ -3199,6 +3222,36 @@ const char kChromeAppStoreUrl[] =
   if (BWGService->IsBwgAvailableForWebState(self.activeWebState)) {
     [self startGeminiFlowWithEntryPoint:gemini::EntryPoint::Promo];
   }
+}
+
+- (void)startGeminiFREWithCompletion:(void (^)(BOOL success))completion
+                      fromEntryPoint:(gemini::EntryPoint)entryPoint {
+  CHECK(IsGeminiRefactoredFREEnabled());
+
+  __weak BrowserCoordinator* weakSelf = self;
+  ProceduralBlock startCoordinatorBlock = ^{
+    [weakSelf startGeminiFirstRunCoordinatorWithCompletion:completion
+                                            fromEntryPoint:entryPoint];
+  };
+
+  if (_geminiFirstRunCoordinator) {
+    [_geminiFirstRunCoordinator stopWithCompletion:startCoordinatorBlock];
+    _geminiFirstRunCoordinator = nil;
+  } else {
+    startCoordinatorBlock();
+  }
+}
+
+- (void)startGeminiFirstRunCoordinatorWithCompletion:
+            (void (^)(BOOL success))completion
+                                      fromEntryPoint:
+                                          (gemini::EntryPoint)entryPoint {
+  _geminiFirstRunCoordinator = [[GeminiFirstRunCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                  fromEntryPoint:entryPoint
+               completionHandler:completion];
+  [_geminiFirstRunCoordinator start];
 }
 
 #pragma mark - PromosManagerCommands

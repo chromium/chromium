@@ -30,6 +30,10 @@ enum class EntryPoint;
 // web state is eligible. If the page is ineligible, does nothing.
 - (void)showBWGPromoIfPageIsEligible;
 
+// Starts the FRE flow with a completion block.
+- (void)startGeminiFREWithCompletion:(void (^)(BOOL success))completion
+                      fromEntryPoint:(gemini::EntryPoint)entryPoint;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_BWG_COMMANDS_H_
