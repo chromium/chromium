@@ -2,6 +2,7 @@ include_rules = [
   "+chromeos/crosapi/mojom",
   "+components/bookmarks",
   "+components/os_crypt/async/browser",
+  "+components/os_crypt/async/common",
   "+components/pref_registry",
   "+components/prefs",
   "+components/signin/public",

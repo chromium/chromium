@@ -25046,26 +25046,6 @@
             ]
         }
     ],
-    "SyncUseOsCryptAsync": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SyncUseOsCryptAsync"
-                    ]
-                }
-            ]
-        }
-    ],
     "SysPkJPandVKMv3": [
         {
             "platforms": [

@@ -173,7 +173,7 @@ BASE_FEATURE(kSyncTrustedVaultInfobarMessageImprovements,
 BASE_FEATURE(kSyncPreferencesUseSelectedTypes,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncUseOsCryptAsync, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSyncUseOsCryptAsync, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncDetermineAccountManagedStatus,
              base::FEATURE_DISABLED_BY_DEFAULT);

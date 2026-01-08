@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/saved_tab_groups/public/pref_names.h"
@@ -23,6 +24,7 @@
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_service_crypto.h"
+#include "components/sync/test/sync_service_crypto_test_utils.h"
 #include "components/trusted_vault/test/fake_trusted_vault_client.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -112,6 +114,11 @@ class SyncUserSettingsImplTest : public testing::Test {
 
     sync_service_crypto_ = std::make_unique<SyncServiceCrypto>(
         &sync_service_crypto_delegate_, &trusted_vault_client_);
+    if (base::FeatureList::IsEnabled(kSyncUseOsCryptAsync)) {
+      sync_service_crypto_->SetEncryptor(
+          std::make_unique<os_crypt_async::Encryptor>(
+              GetEncryptorForTest()));
+    }
 
     ON_CALL(delegate_, IsCustomPassphraseAllowed).WillByDefault(Return(true));
     ON_CALL(delegate_, GetSyncAccountStateForPrefs)
