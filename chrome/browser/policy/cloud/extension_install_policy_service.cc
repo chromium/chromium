@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -17,6 +18,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
@@ -47,7 +49,10 @@ bool IsExtensionInstallBlocked(
 
 }  // namespace
 ExtensionInstallPolicyService::ExtensionInstallPolicyService(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile) {
+  CHECK(base::FeatureList::IsEnabled(
+      features::kEnableExtensionInstallPolicyFetching));
+}
 
 ExtensionInstallPolicyService::~ExtensionInstallPolicyService() = default;
 
@@ -70,10 +75,12 @@ void ExtensionInstallPolicyService::CanInstallExtension(
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   size_t callback_count = 0;
-  if (user_cloud_policy_manager) {
+  if (user_cloud_policy_manager &&
+      user_cloud_policy_manager->core()->extension_install_service()) {
     ++callback_count;
   }
-  if (machine_cloud_policy_manager) {
+  if (machine_cloud_policy_manager &&
+      machine_cloud_policy_manager->core()->extension_install_service()) {
     ++callback_count;
   }
   if (callback_count == 0) {
@@ -100,7 +107,8 @@ void ExtensionInstallPolicyService::CanInstallExtension(
               },
               std::move(callback)));
 
-  if (user_cloud_policy_manager) {
+  if (user_cloud_policy_manager &&
+      user_cloud_policy_manager->core()->extension_install_service()) {
     user_cloud_policy_manager->core()
         ->extension_install_service()
         ->FetchExtensionInstallPolicy(
@@ -108,7 +116,8 @@ void ExtensionInstallPolicyService::CanInstallExtension(
             extension_id_and_version, PolicyFetchReason::kExtensionInstall,
             barrier_callback);
   }
-  if (machine_cloud_policy_manager) {
+  if (machine_cloud_policy_manager &&
+      machine_cloud_policy_manager->core()->extension_install_service()) {
     machine_cloud_policy_manager->core()
         ->extension_install_service()
         ->FetchExtensionInstallPolicy(
