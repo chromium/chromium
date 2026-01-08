@@ -1651,7 +1651,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void SetOnboardingCompleted() override {
-    // TODO(crbug.com/466005378): Record metrics.
+    base::RecordAction(base::UserMetricsAction("Glic.Fre.Accept"));
     pref_service_->SetInteger(prefs::kGlicCompletedFre,
                               static_cast<int>(prefs::FreStatus::kCompleted));
 

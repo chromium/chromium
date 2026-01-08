@@ -1647,6 +1647,8 @@ IN_PROC_BROWSER_TEST_P(GlicOnboardingApiTest, testSetOnboardingCompleted) {
   GlicLauncherConfiguration::SetCheckDefaultBrowserCallbackForTesting(
       run_loop.QuitClosure());
 
+  EXPECT_EQ(0, user_action_tester->GetActionCount("Glic.Fre.Accept"));
+
   ContinueJsTest();
 
   ASSERT_TRUE(base::test::RunUntil([&] {
@@ -1657,6 +1659,8 @@ IN_PROC_BROWSER_TEST_P(GlicOnboardingApiTest, testSetOnboardingCompleted) {
   run_loop.Run();
   GlicLauncherConfiguration::SetCheckDefaultBrowserCallbackForTesting(
       base::RepeatingClosure());
+
+  EXPECT_EQ(1, user_action_tester->GetActionCount("Glic.Fre.Accept"));
 
   ContinueJsTest();
 }
