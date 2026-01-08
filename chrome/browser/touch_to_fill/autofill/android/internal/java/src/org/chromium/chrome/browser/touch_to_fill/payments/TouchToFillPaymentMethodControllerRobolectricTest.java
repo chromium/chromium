@@ -94,7 +94,6 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.OPEN_MANAGEMENT_UI_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.OPEN_MANAGEMENT_UI_TITLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.ICON_CONTENT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.SUBTITLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.TITLE_ID;
@@ -523,7 +522,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                             new LegalMessageLine(LEGAL_MESSAGE_LINE)));
     private static final BnplIssuerContext UNKNOWN_BNPL_ISSUER_CONTEXT =
             new BnplIssuerContext(
-                    /* iconId= */ R.drawable.google_pay,
+                    /* iconId= */ R.drawable.bnpl_icon_generic,
                     /* issuerId= */ "unknownId",
                     /* displayName= */ "Test",
                     /* selectionText= */ "Daily or 1000 installments",
@@ -560,7 +559,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         when(mBottomSheetController.requestShowContent(any(BottomSheetContent.class), anyBoolean()))
                 .thenReturn(true);
         when(mResourceProvider.getBnplIssuerTosDrawableId(anyString(), anyBoolean()))
-                .thenReturn(R.drawable.google_pay);
+                .thenReturn(R.drawable.bnpl_icon_generic);
         mCoordinator = new TouchToFillPaymentMethodCoordinator();
         mCoordinator.initialize(
                 mActivity,
@@ -1887,10 +1886,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                         mActivity.getString(
                                 R.string.autofill_bnpl_tos_unlinked_title,
                                 BNPL_ISSUER_TOS_DETAIL_AFFIRM.getIssuerName())));
-        assertThat(headerModel.get(0).get(IMAGE_DRAWABLE_ID), is(R.drawable.google_pay));
-        assertThat(
-                headerModel.get(0).get(ICON_CONTENT_DESCRIPTION_ID),
-                is(R.string.autofill_google_pay_and_affirm_logo_accessible_name));
+        assertThat(headerModel.get(0).get(IMAGE_DRAWABLE_ID), is(R.drawable.bnpl_icon_generic));
 
         List<PropertyModel> bnplTosItemModel = getModelsOfType(itemList, BNPL_TOS_TEXT);
         assertThat(bnplTosItemModel.size(), is(3));

@@ -342,11 +342,9 @@ class TouchToFillPaymentMethodProperties {
                 new PropertyModel.ReadableIntPropertyKey("subtitle_id");
         static final PropertyModel.ReadableObjectPropertyKey<String> TITLE_STRING =
                 new PropertyModel.ReadableObjectPropertyKey<>("title_string");
-        static final PropertyModel.ReadableIntPropertyKey ICON_CONTENT_DESCRIPTION_ID =
-                new PropertyModel.ReadableIntPropertyKey("icon_content_description_id");
 
         static final PropertyKey[] ALL_KEYS = {
-            IMAGE_DRAWABLE_ID, TITLE_ID, SUBTITLE_ID, TITLE_STRING, ICON_CONTENT_DESCRIPTION_ID
+            IMAGE_DRAWABLE_ID, TITLE_ID, SUBTITLE_ID, TITLE_STRING
         };
 
         private HeaderProperties() {}
