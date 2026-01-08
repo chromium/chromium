@@ -49,6 +49,9 @@ BASE_FEATURE(kContextualTasksForceEntryPointEligibility,
 BASE_FEATURE(kContextualTasksForceCountryCodeUS,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextualTasksRemoveTasksWithoutThreadsOrTabAssociations,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const base::FeatureParam<double> kMinEmbeddingSimilarityScore{
     &kContextualTasksContext, "ContextualTasksContextEmbeddingSimilarityScore",
     0.8};

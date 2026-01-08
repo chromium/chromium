@@ -31,6 +31,11 @@ BASE_DECLARE_FEATURE(kContextualTasksSuggestionsEnabled);
 // Force the application locale to US and the gl query parameter to us.
 BASE_DECLARE_FEATURE(kContextualTasksForceCountryCodeUS);
 
+// Remove tasks that have no tabs or threads associated with them on tab
+// disassociation.
+BASE_DECLARE_FEATURE(
+    kContextualTasksRemoveTasksWithoutThreadsOrTabAssociations);
+
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {
   kNoEntryPoint,
