@@ -26,7 +26,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
-#include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -834,7 +833,8 @@ void WriteRenderFrameImplDeletion(perfetto::EventContext& ctx,
 // be reused. Returns zero if under memory pressure, as memory should be freed
 // up as soon as possible if it's limited.
 base::TimeDelta GetSubframeProcessShutdownDelay(
-    BrowserContext* browser_context) {
+    BrowserContext* browser_context,
+    base::MemoryPressureLevel memory_pressure_level) {
   static constexpr base::TimeDelta kZeroDelay;
   if (!RenderProcessHostImpl::ShouldDelayProcessShutdown()) {
     return kZeroDelay;
@@ -842,11 +842,7 @@ base::TimeDelta GetSubframeProcessShutdownDelay(
 
   // Don't delay process shutdown under memory pressure. Does not cancel
   // existing shutdown delays for processes already in delayed-shutdown state.
-  const auto* const memory_monitor = base::MemoryPressureMonitor::Get();
-  if (memory_monitor &&
-      memory_monitor->GetCurrentPressureLevel(
-          base::MemoryPressureMonitorTag::kSubframeShutdownDelay) >=
-          base::MEMORY_PRESSURE_LEVEL_MODERATE) {
+  if (memory_pressure_level >= base::MEMORY_PRESSURE_LEVEL_MODERATE) {
     return kZeroDelay;
   }
 
@@ -2532,7 +2528,10 @@ RenderFrameHostImpl::RenderFrameHostImpl(
           GetLocalFrameTracingTrack(
               frame_token_,
               is_main_frame(),
-              agent_scheduling_group_->GetProcess()->GetID()))) {
+              agent_scheduling_group_->GetProcess()->GetID()))),
+      memory_pressure_listener_registration_(
+          base::MemoryPressureListenerTag::kRenderFrameHostImpl,
+          this) {
   TRACE_EVENT("navigation", "RenderFrameHostImpl::RenderFrameHostImpl",
               perfetto::Flow::FromPointer(this));
   TRACE_EVENT_BEGIN("navigation", "RenderFrameHostImpl", tracing_track_,
@@ -4557,7 +4556,8 @@ void RenderFrameHostImpl::DeleteRenderFrame(
           frame_tree_->IsBeingDestroyed()
               ? base::TimeDelta()
               : GetSubframeProcessShutdownDelay(
-                    GetSiteInstance()->GetBrowserContext());
+                    GetSiteInstance()->GetBrowserContext(),
+                    memory_pressure_level());
       // If this document has unload handlers (and is active), ensure that they
       // have a chance to execute by delaying process cleanup. This will prevent
       // the process from shutting down immediately in the case where this is

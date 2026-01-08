@@ -94,6 +94,7 @@ enum class MemoryPressureListenerTag {
   kGlicProfileManager = 60,
   kWebUIContentsPreloadManager = 61,
   kPaintPreviewTabService = 62,
+  kRenderFrameHostImpl = 63,
 };
 
 // To start listening, derive from MemoryPressureListener, and use
