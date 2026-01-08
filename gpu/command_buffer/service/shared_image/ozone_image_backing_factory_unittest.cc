@@ -623,7 +623,7 @@ TEST_F(OzoneImageBackingFactoryTest, CreateGpuMemoryBufferHandle) {
     };
     for (auto usage : usages) {
       if (!ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
-              viz::SharedImageFormatToBufferFormat(format), usage)) {
+              format, usage)) {
         continue;
       }
 
