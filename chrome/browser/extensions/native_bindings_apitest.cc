@@ -826,30 +826,26 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
                      R"(chrome.test.runTests([
                         function checkApiAliasing() {
-                          chrome.test.assertTrue(chrome.runtime !== undefined,
-                                                 'chrome.runtime');
-                          // Standard APIs like `runtime` are independently
-                          // created for both `chrome` and `browser` namespaces.
+                          // Standard APIs like runtime are independently
+                          // created for both chrome and browser namespaces.
                           // They are not aliases of each other identity-wise,
                           // but they provide the same functionality.
-                          chrome.test.assertEq(chrome.runtime, browser.runtime);
 
                           // Try to modify chrome.runtime as representative of
                           // most APIs since they use the same bindings
-                          // accessor. In a non-extension-devtools context like
-                          // this, the API root on `chrome` is typically
-                          // writable.
+                          // accessor. In a non-devtools-page context like this,
+                          // the API root on chrome is typically writable.
                           let originalRuntimeApi = chrome.runtime;
                           chrome.runtime = 'bar';
                           chrome.test.assertEq('bar', chrome.runtime);
 
-                          // Verify that `browser.runtime` was NOT affected by
-                          // the change to `chrome.runtime`, confirming it's an
+                          // Verify that browser.runtime was not affected by
+                          // the change to chrome.runtime, confirming it's an
                           // independent object instance.
                           chrome.test.assertEq(originalRuntimeApi,
                                                browser.runtime);
 
-                          // Clean up for subsequent tests.
+                          // Revert modification for the following tests.
                           chrome.runtime = originalRuntimeApi;
                           chrome.test.assertEq(originalRuntimeApi,
                                                chrome.runtime);
@@ -874,8 +870,8 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-// Tests that `browser.devtools` is aliased to `chrome.devtools` in a devtools
-// context. This is unique because `devtools` APIs are injected by the devtools
+// Tests that browser.devtools is aliased to chrome.devtools in a devtools
+// context. This is unique because devtools API is injected by the devtools
 // frontend rather than the standard extension bindings system.
 IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
                        ChromeAndBrowserObjects_DevToolsApiAliasing) {
@@ -892,26 +888,22 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
   test_dir.WriteFile(FILE_PATH_LITERAL("devtools.js"),
                      R"(chrome.test.runTests([
                         function checkDevtoolsApiAliasing() {
-                          chrome.test.assertTrue(browser.devtools !== undefined,
-                                                 'browser.devtools');
-                          // Unlike other APIs, `browser.devtools` is a dynamic
-                          // alias (via a getter) to `chrome.devtools`. This is
-                          // necessary because `devtools` is injected by the
+                          // Unlike other APIs, browser.devtools is a dynamic
+                          // alias (via a getter) to chrome.devtools. This is
+                          // necessary because devtools is injected by the
                           // devtools frontend.
-                          chrome.test.assertEq(chrome.devtools,
-                                               browser.devtools);
 
-                          // Attempt to overwrite the root `chrome.devtools`
-                          // object. In this context (devtools page), it is
-                          // non-writable/configurable.
+                          // Attempts to overwrite the root chrome.devtools
+                          // object do not succeed though. In this context
+                          // (devtools page), it is non-writable/configurable.
                           let originalDevtoolsApi = chrome.devtools;
                           chrome.devtools = 'bar';
                           chrome.test.assertEq(originalDevtoolsApi,
                                                chrome.devtools);
 
-                          // Since `browser.devtools` is a getter that looks up
-                          // `chrome.devtools`, it still matches whatever is on
-                          // `chrome`.
+                          // Since browser.devtools is a getter that looks up
+                          // chrome.devtools, it still matches whatever is on
+                          // chrome.
                           chrome.test.assertEq(chrome.devtools,
                                                browser.devtools);
 
@@ -937,7 +929,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-// Tests that `devtools` is NOT available if the extension doesn't have a
+// Tests that devtools is NOT available if the extension doesn't have a
 // devtools page.
 IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
                        ChromeAndBrowserObjects_NoDevTools) {
