@@ -801,7 +801,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   }
 
   if (browser_->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL ||
-      browser_->GetType() == BrowserWindowInterface::Type::TYPE_POPUP) {
+      browser_->GetType() == BrowserWindowInterface::Type::TYPE_POPUP ||
+      browser_view->GetIsWebAppType()) {
     data_protection_ui_controller_ =
         GetUserDataFactory()
             .CreateInstance<
