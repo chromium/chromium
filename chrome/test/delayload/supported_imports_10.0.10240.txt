@@ -1303,7 +1303,7 @@ Microsoft (R) COFF/PE Dumper Version 14.36.32538.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 
-Dump of file 10.0.10240\crypt32.dll
+Dump of file crypt32.dll
 
 File Type: DLL
 
@@ -1635,7 +1635,7 @@ Microsoft (R) COFF/PE Dumper Version 14.31.31106.2
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 
-Dump of file D:\Windows10LTS\dlls\cryptsp.dll
+Dump of file cryptsp.dll
 
 File Type: DLL
 
@@ -1730,7 +1730,7 @@ Microsoft (R) COFF/PE Dumper Version 14.36.32538.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 
-Dump of file 10.0.10240\dbghelp.dll
+Dump of file dbghelp.dll
 
 File Type: DLL
 
@@ -1992,7 +1992,7 @@ Microsoft (R) COFF/PE Dumper Version 14.36.32538.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 
-Dump of file 10.0.10240\dhcpcsvc.dll
+Dump of file dhcpcsvc.dll
 
 File Type: DLL
 
@@ -2088,7 +2088,7 @@ Microsoft (R) COFF/PE Dumper Version 14.36.32538.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 
-Dump of file 10.0.10240\DWrite.dll
+Dump of file DWrite.dll
 
 File Type: DLL
 
@@ -2162,6 +2162,232 @@ File Type: DLL
         1000 .reloc
        16000 .rsrc
        5C000 .text
+Microsoft (R) COFF/PE Dumper Version 14.31.31106.2
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+
+Dump of file FirewallAPI.dll
+
+File Type: DLL
+
+  Section contains the following exports for FirewallAPI.dll
+
+    00000000 characteristics
+    559F2D18 time date stamp Thu Jul  9 19:25:28 2015
+        0.00 version
+           1 ordinal base
+         197 number of functions
+         197 number of names
+
+    ordinal hint RVA      name
+
+          6    0 00001C90 DllCanUnloadNow
+          7    1 00001D50 DllGetClassObject
+          8    2 00017660 DllRegisterServer
+          9    3 000176B0 DllUnregisterServer
+         10    4 00038730 FWAddAuthenticationSet
+         11    5 000388B0 FWAddConnectionSecurityRule
+         12    6 00038A30 FWAddCryptoSet
+         13    7 00038B80 FWAddFirewallRule
+         14    8 00038D20 FWAddMainModeRule
+         15    9 00038E50 FWAddSecurityRealm
+         16    A 00001E30 FWChangeNotificationCreate
+         17    B 0001D590 FWChangeNotificationDestroy
+         18    C 000390A0 FWChangeTransactionalState
+         19    D 000033E0 FWClosePolicyStore
+         20    E 00039220 FWCopyAuthenticationSet
+         21    F 00039270 FWCopyConnectionSecurityRule
+         22   10 000392D0 FWCopyCryptoSet
+         23   11 00039330 FWCopyFirewallRule
+         24   12 00039390 FWDeleteAllAuthenticationSets
+         25   13 00039470 FWDeleteAllConnectionSecurityRules
+         26   14 00039540 FWDeleteAllCryptoSets
+         27   15 00039620 FWDeleteAllFirewallRules
+         28   16 000396F0 FWDeleteAllMainModeRules
+         29   17 000397C0 FWDeleteAuthenticationSet
+         30   18 000398A0 FWDeleteConnectionSecurityRule
+         31   19 00039980 FWDeleteCryptoSet
+         32   1A 00039A60 FWDeleteFirewallRule
+         33   1B 00039B40 FWDeleteMainModeRule
+         34   1C 00039C20 FWDeletePhase1SAs
+         35   1D 00039CE0 FWDeletePhase2SAs
+         36   1E 00039DA0 FWDeleteSecurityRealm
+         37   1F 00039DD0 FWDiagGetAppList
+         38   20 00039ED0 FWEnumAdapters
+         39   21 00039FE0 FWEnumAuthenticationSets
+         40   22 0003A180 FWEnumConnectionSecurityRules
+         41   23 0003A320 FWEnumCryptoSets
+         42   24 00007540 FWEnumFirewallRules
+         43   25 0003A490 FWEnumMainModeRules
+         44   26 0003A5E0 FWEnumNetworks
+         45   27 0003A6F0 FWEnumPhase1SAs
+         46   28 0003A7D0 FWEnumPhase2SAs
+         47   29 0003A8B0 FWEnumProducts
+         48   2A 0003A9C0 FWExportPolicy
+         49   2B 00006ED0 FWFreeAdapters
+         50   2C 0003AB00 FWFreeAuthenticationSet
+         51   2D 0003AB10 FWFreeAuthenticationSets
+         52   2E 0003ABD0 FWFreeAuthenticationSetsByHandle
+         53   2F 0003ACC0 FWFreeConnectionSecurityRule
+         54   30 0003ACD0 FWFreeConnectionSecurityRules
+         55   31 0003AD90 FWFreeConnectionSecurityRulesByHandle
+         56   32 0003AE80 FWFreeCryptoSet
+         57   33 0003AE90 FWFreeCryptoSets
+         58   34 0003AF50 FWFreeCryptoSetsByHandle
+         59   35 00006ED0 FWFreeDiagAppList
+         60   36 0003B060 FWFreeFirewallRule
+         61   37 000098D0 FWFreeFirewallRules
+         62   38 0003B070 FWFreeFirewallRulesByHandle
+         63   39 0003B160 FWFreeFirewallRulesOld
+         64   3A 0003B230 FWFreeMainModeRule
+         65   3B 0003B240 FWFreeMainModeRules
+         66   3C 0003B300 FWFreeMainModeRulesByHandle
+         67   3D 00006ED0 FWFreeNetworks
+         68   3E 0003B3F0 FWFreePhase1SAs
+         69   3F 0003B4E0 FWFreePhase2SAs
+         70   40 00006ED0 FWFreeProducts
+         71   41 00006400 FWGetConfig
+         72   42 00006970 FWGetConfig2
+         73   43 00009220 FWGetGlobalConfig
+         74   44 00009780 FWGetGlobalConfig2
+         75   45 0003B5A0 FWGetGlobalConfig3
+         76   46 000066C0 FWGetIndicatedPortInUse
+         77   47 0003B6B0 FWImportPolicy
+         78   48 000035D0 FWIndicatePortInUse
+         79   49 0003B7F0 FWIndicateProxyForUrl
+         80   4A 0003B8F0 FWIndicateProxyResolverRefresh
+         81   4B 0003B900 FWIndicateTupleInUse
+         82   4C 0003BA80 FWIndicateTupleInUse2
+         83   4D 0003BC00 FWIsTargetAProxy
+         84   4E 000030A0 FWOpenPolicyStore
+         85   4F 0003BDE0 FWQueryAuthenticationSets
+         86   50 0003BF10 FWQueryConnectionSecurityRules
+         87   51 0003C040 FWQueryCryptoSets
+         88   52 000064E0 FWQueryFirewallRules
+         89   53 0003C170 FWQueryIsolationType
+         90   54 0003C2B0 FWQueryMainModeRules
+         91   55 0003C3D0 FWRegisterProduct
+         92   56 000065F0 FWResetIndicatedPortInUse
+         93   57 00006D90 FWResetIndicatedTupleInUse
+         94   58 0003C560 FWRestoreDefaults
+         95   59 0003C820 FWRestoreGPODefaults
+         96   5A 0003C980 FWRevertTransaction
+         97   5B 0003CA90 FWSelectConSecRule
+         98   5C 0003CC60 FWSetAuthenticationSet
+         99   5D 0003CDE0 FWSetConfig
+        100   5E 0003CED0 FWSetConnectionSecurityRule
+        101   5F 0003D050 FWSetCryptoSet
+        102   60 0003D1A0 FWSetFirewallRule
+        103   61 0003D340 FWSetGlobalConfig
+        104   62 0003D490 FWSetGlobalConfig2
+        105   63 0003D5E0 FWSetMainModeRule
+        106   64 0003D710 FWStatusMessageFromStatusCode
+        107   65 0003D8D0 FWUnregisterProduct
+        108   66 0003D990 FWVerifyAuthenticationSet
+        109   67 0003D9F0 FWVerifyAuthenticationSetQuery
+        110   68 0003DA50 FWVerifyConnectionSecurityRule
+        111   69 0003DAB0 FWVerifyConnectionSecurityRuleQuery
+        112   6A 0003DB10 FWVerifyCryptoSet
+        113   6B 0003DB70 FWVerifyCryptoSetQuery
+        114   6C 0003DBD0 FWVerifyFirewallRule
+        115   6D 00003070 FWVerifyFirewallRuleQuery
+        116   6E 0003DC30 FWVerifyMainModeRule
+        117   6F 0003DC90 FWVerifyMainModeRuleQuery
+        118   70 0001EA90 FwActivate
+        119   71 00001610 FwAlloc
+        120   72 00006940 FwAllocCheckSize
+        121   73 00021060 FwAllowedProgramsAdd
+        122   74 00021230 FwAllowedProgramsDelete
+        123   75 00006210 FwAnalyzeFirewallPolicy
+        124   76 00001F00 FwAnalyzeFirewallPolicyOnProfile
+        125   77 00021390 FwApiHelperFree
+        126   78 00021420 FwApiHelperInit
+          1   79 00018E60 FwBstrToPorts
+        127   7A 0003DCF0 FwConvertIPv6SubNetToRange
+        128   7B 0003DD00 FwCopyAuthSet
+        129   7C 0003DD60 FwCopyMainModeRule
+        130   7D 0003DDC0 FwCopyWFAddressesContents
+        131   7E 00006EC0 FwEmptyWFAddresses
+        132   7F 00006ED0 FwFree
+        133   80 00006EC0 FwFreeAddresses
+        134   81 0003DE20 FwFreePorts
+        135   82 0003DE50 FwGetAddressesAsString
+          2   83 0001BCD0 FwGetCurrentProfile
+          3   84 00019110 FwGetVersionField
+        136   85 000214D0 FwIcmpSettingsEnum
+        137   86 00021650 FwIcmpSettingsSet
+        138   87 0003DEB0 FwIsGroupPolicyEnforced
+        139   88 0001D3A0 FwIsRemoteManagementEnabled
+        140   89 000217C0 FwLogSettingsSet
+        141   8A 0003E400 FwMergeAddresses
+        142   8B 00021A00 FwMulticastBroadcastResponsesEnum
+        143   8C 00021B70 FwMulticastBroadcastResponsesSet
+        144   8D 00021CD0 FwNotificationsEnum
+        145   8E 00021E40 FwNotificationsSet
+        146   8F 00021FA0 FwOpModesEnum
+        147   90 00022110 FwOpModesSet
+        148   91 00022260 FwPortOpeningsAdd
+        149   92 00022460 FwPortOpeningsDelete
+        150   93 000225D0 FwProfileTypeCurrentGet
+        151   94 00022680 FwProfileTypeGet
+        152   95 00022730 FwRestoreDefaults
+        153   96 000227C0 FwServicesEnum
+        154   97 000229A0 FwServicesSet
+        155   98 0003E410 FwStringToAddresses
+        156   99 0003E4C0 FwStringToPorts
+          4   9A 0001BDA0 GetDisabledInterfaces
+        157   9B 00006E40 IcfAddrChangeNotificationCreate
+        158   9C 00001E30 IcfChangeNotificationCreate
+        159   9D 0001D590 IcfChangeNotificationDestroy
+        160   9E 0001D610 IcfConnect
+        161   9F 0000D370 IcfDisconnect
+        162   A0 0001D620 IcfFreeDynamicFwPorts
+        163   A1 0001D6D0 IcfFreeProfile
+        164   A2 0001D950 IcfFreeTickets
+        165   A3 0001D9E0 IcfGetCurrentProfileType
+        166   A4 0001DA80 IcfGetDynamicFwPorts
+        167   A5 0001DD90 IcfGetOperationalMode
+        168   A6 0001DF00 IcfGetProfile
+        169   A7 0001E210 IcfGetTickets
+        170   A8 00022DD0 IcfIsPortAllowed
+        171   A9 0000D370 IcfOpenDynamicFwPortWithoutSocket
+        172   AA 0001E4E0 IcfSubNetsGetScope
+        173   AB 000060D0 IsFirewallInCoExistanceMode
+        174   AC 00008730 IsPortOrICMPAllowed
+        175   AD 0003E590 NetworkIsolationAddAllowEnterpriseIdRule
+        176   AE 0003E680 NetworkIsolationCreateAllInterfacesContainer
+        177   AF 0003E920 NetworkIsolationCreateAppContainer
+        178   B0 0003EBD0 NetworkIsolationCreateInterfaceContainer
+        179   B1 0003EE80 NetworkIsolationDeleteAllInterfacesContainer
+        180   B2 0003EF40 NetworkIsolationDeleteAllowEnterpriseIdRule
+        181   B3 0003EF50 NetworkIsolationDeleteAppContainer
+        182   B4 0003F1C0 NetworkIsolationDeleteInterfaceContainer
+        183   B5 00001130 NetworkIsolationDiagnoseConnectFailure
+        184   B6 000012A0 NetworkIsolationDiagnoseConnectFailureAndGetInfo
+        185   B7 00001360 NetworkIsolationDiagnoseListen
+        186   B8 0003F290 NetworkIsolationDiagnoseSocketCreation
+        187   B9 0003F400 NetworkIsolationEnumAppContainers
+        188   BA 0003F570 NetworkIsolationEnumerateAppContainerRules
+          5   BB 00006ED0 NetworkIsolationFreeAppContainers
+        189   BC 0003F5F0 NetworkIsolationGetAppContainer
+        190   BD 0003F740 NetworkIsolationGetAppContainerConfig
+        191   BE 0003F8A0 NetworkIsolationGetEnterpriseId
+        192   BF 0003F920 NetworkIsolationGetEnterpriseIdAsync
+        193   C0 0003FCF0 NetworkIsolationGetEnterpriseIdClose
+        194   C1 0003FE80 NetworkIsolationRegisterForAppContainerChanges
+        195   C2 00040290 NetworkIsolationSetAppContainerConfig
+        196   C3 00040370 NetworkIsolationSetupAppContainerBinaries
+        197   C4 00040640 NetworkIsolationUnregisterForAppContainerChanges
+
+  Summary
+
+        2000 .data
+        1000 .didat
+        4000 .pdata
+       2C000 .rdata
+        2000 .reloc
+        7000 .rsrc
+       45000 .text
 Microsoft (R) COFF/PE Dumper Version 14.31.31106.2
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
@@ -3069,7 +3295,7 @@ Microsoft (R) COFF/PE Dumper Version 14.36.32538.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 
-Dump of file 10.0.10240\IPHLPAPI.DLL
+Dump of file IPHLPAPI.DLL
 
 File Type: DLL
 
@@ -3375,7 +3601,7 @@ Microsoft (R) COFF/PE Dumper Version 14.36.32538.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 
-Dump of file 10.0.10240\kernel32.dll
+Dump of file kernel32.dll
 
 File Type: DLL
 
@@ -5000,7 +5226,7 @@ Microsoft (R) COFF/PE Dumper Version 14.36.32538.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 
-Dump of file 10.0.10240\ntdll.dll
+Dump of file ntdll.dll
 
 File Type: DLL
 
@@ -7836,7 +8062,7 @@ Microsoft (R) COFF/PE Dumper Version 14.36.32538.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 
-Dump of file 10.0.10240\oleaut32.dll
+Dump of file oleaut32.dll
 
 File Type: DLL
 
@@ -8868,7 +9094,7 @@ Microsoft (R) COFF/PE Dumper Version 14.36.32538.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 
-Dump of file 10.0.10240\secur32.dll
+Dump of file secur32.dll
 
 File Type: DLL
 
@@ -10914,7 +11140,7 @@ Microsoft (R) COFF/PE Dumper Version 14.36.32538.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 
-Dump of file 10.0.10240\userenv.dll
+Dump of file userenv.dll
 
 File Type: DLL
 
@@ -11022,7 +11248,7 @@ Microsoft (R) COFF/PE Dumper Version 14.36.32538.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 
-Dump of file 10.0.10240\version.dll
+Dump of file version.dll
 
 File Type: DLL
 
@@ -11067,7 +11293,7 @@ Microsoft (R) COFF/PE Dumper Version 14.36.32538.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 
-Dump of file 10.0.10240\winhttp.dll
+Dump of file winhttp.dll
 
 File Type: DLL
 
@@ -11151,7 +11377,7 @@ Microsoft (R) COFF/PE Dumper Version 14.36.32538.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 
-Dump of file 10.0.10240\winmm.dll
+Dump of file winmm.dll
 
 File Type: DLL
 
@@ -11362,7 +11588,7 @@ Microsoft (R) COFF/PE Dumper Version 14.36.32538.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 
-Dump of file 10.0.10240\winspool.drv
+Dump of file winspool.drv
 
 File Type: DLL
 
@@ -11632,7 +11858,7 @@ Microsoft (R) COFF/PE Dumper Version 14.36.32538.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 
-Dump of file 10.0.10240\wintrust.dll
+Dump of file wintrust.dll
 
 File Type: DLL
 
@@ -11809,7 +12035,7 @@ Microsoft (R) COFF/PE Dumper Version 14.36.32538.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 
-Dump of file 10.0.10240\ws2_32.dll
+Dump of file ws2_32.dll
 
 File Type: DLL
 
