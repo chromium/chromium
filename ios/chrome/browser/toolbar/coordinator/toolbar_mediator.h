@@ -7,17 +7,19 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/toolbar/ui/toolbar_mutator.h"
+
 @protocol ToolbarConsumer;
 class WebNavigationBrowserAgent;
 class WebStateList;
 
 // Mediator for the toolbar.
-@interface ToolbarMediator : NSObject
+@interface ToolbarMediator : NSObject <ToolbarMutator>
 
 // The consumer for this mediator.
 @property(nonatomic, weak) id<ToolbarConsumer> consumer;
 
-/// Helper for web navigation.
+// Helper for web navigation.
 @property(nonatomic, assign) WebNavigationBrowserAgent* navigationBrowserAgent;
 
 // Initializer.

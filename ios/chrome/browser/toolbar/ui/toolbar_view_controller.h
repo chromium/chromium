@@ -9,10 +9,31 @@
 
 #import "ios/chrome/browser/toolbar/ui/toolbar_consumer.h"
 
+@protocol ActivityServiceCommands;
+@protocol PopupMenuCommands;
+@protocol BrowserCoordinatorCommands;
+@protocol SceneCommands;
 @class ToolbarButtonFactory;
+@protocol ToolbarMutator;
 
 // View controller for the toolbar.
 @interface ToolbarViewController : UIViewController <ToolbarConsumer>
+
+// Handler for the browser coordinator commands.
+@property(nonatomic, weak) id<BrowserCoordinatorCommands>
+    browserCoordinatorHandler;
+
+// Handler for the popup menu commands.
+@property(nonatomic, weak) id<PopupMenuCommands> popupMenuHandler;
+
+// Handler for the activity service commands.
+@property(nonatomic, weak) id<ActivityServiceCommands> activityServiceHandler;
+
+// Handler for the scene commands.
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
+
+// Mutator to handle toolbar actions.
+@property(nonatomic, weak) id<ToolbarMutator> mutator;
 
 // Factory used to create the buttons.
 @property(nonatomic, strong) ToolbarButtonFactory* buttonFactory;

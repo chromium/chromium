@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/toolbar/coordinator/toolbar_mediator.h"
 
-#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -114,6 +113,24 @@
                              stringWithUTF8String:visibleURL.spec().c_str()]];
 
   [_consumer setShareEnabled:!visibleURL.is_empty()];
+}
+
+#pragma mark - ToolbarMutator
+
+- (void)goBack {
+  self.navigationBrowserAgent->GoBack();
+}
+
+- (void)goForward {
+  self.navigationBrowserAgent->GoForward();
+}
+
+- (void)reload {
+  self.navigationBrowserAgent->Reload();
+}
+
+- (void)stop {
+  self.navigationBrowserAgent->StopLoading();
 }
 
 @end

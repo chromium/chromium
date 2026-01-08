@@ -21,6 +21,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
@@ -186,25 +188,13 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   [self.locationBarCoordinator start];
 
   if (IsChromeNextIaEnabled()) {
-    _topToolbarMediator = [[ToolbarMediator alloc]
-        initWithWebStateList:browser->GetWebStateList()];
-    _topToolbarMediator.navigationBrowserAgent =
-        WebNavigationBrowserAgent::FromBrowser(browser);
+    _topToolbarMediator = [self createToolbarMediator];
+    _topToolbarViewController =
+        [self createToolbarViewControllerForMediator:_topToolbarMediator];
 
-    _topToolbarViewController = [[ToolbarViewController alloc] init];
-    _topToolbarViewController.buttonFactory =
-        [[ToolbarButtonFactory alloc] init];
-    _topToolbarMediator.consumer = _topToolbarViewController;
-
-    _bottomToolbarMediator = [[ToolbarMediator alloc]
-        initWithWebStateList:browser->GetWebStateList()];
-    _bottomToolbarMediator.navigationBrowserAgent =
-        WebNavigationBrowserAgent::FromBrowser(browser);
-
-    _bottomToolbarViewController = [[ToolbarViewController alloc] init];
-    _bottomToolbarViewController.buttonFactory =
-        [[ToolbarButtonFactory alloc] init];
-    _bottomToolbarMediator.consumer = _bottomToolbarViewController;
+    _bottomToolbarMediator = [self createToolbarMediator];
+    _bottomToolbarViewController =
+        [self createToolbarViewControllerForMediator:_bottomToolbarMediator];
 
     self.started = YES;
     return;
@@ -977,6 +967,43 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
     return NO;
   }
   return IsVisibleURLNewTabPage(webState);
+}
+
+// Creates a new toolbar view controller, for the associated `mediator`.
+- (ToolbarViewController*)createToolbarViewControllerForMediator:
+    (ToolbarMediator*)mediator {
+  CHECK(IsChromeNextIaEnabled());
+
+  Browser* browser = self.browser;
+  CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+
+  ToolbarViewController* toolbarViewController =
+      [[ToolbarViewController alloc] init];
+  toolbarViewController.buttonFactory = [[ToolbarButtonFactory alloc] init];
+  toolbarViewController.mutator = mediator;
+  toolbarViewController.browserCoordinatorHandler =
+      HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+  toolbarViewController.popupMenuHandler =
+      HandlerForProtocol(dispatcher, PopupMenuCommands);
+  toolbarViewController.activityServiceHandler =
+      HandlerForProtocol(dispatcher, ActivityServiceCommands);
+  toolbarViewController.sceneHandler =
+      HandlerForProtocol(dispatcher, SceneCommands);
+
+  mediator.consumer = toolbarViewController;
+
+  return toolbarViewController;
+}
+
+// Creates a new toolbar mediator.
+- (ToolbarMediator*)createToolbarMediator {
+  Browser* browser = self.browser;
+  ToolbarMediator* toolbarMediator =
+      [[ToolbarMediator alloc] initWithWebStateList:browser->GetWebStateList()];
+  toolbarMediator.navigationBrowserAgent =
+      WebNavigationBrowserAgent::FromBrowser(browser);
+
+  return toolbarMediator;
 }
 
 @end
