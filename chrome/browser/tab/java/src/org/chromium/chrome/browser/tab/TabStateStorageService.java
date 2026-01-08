@@ -11,6 +11,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.tabs.TabStripCollection;
 
 /** Java counterpart to keyed service in native that writes tab data to disk. */
 @JNINamespace("tabs")
@@ -82,9 +83,26 @@ public class TabStateStorageService {
         TabStateStorageServiceJni.get().clearState(mNativeTabStateStorageService);
     }
 
-    /** Clears all the tabs for a given window from persistent storage. */
+    /**
+     * Clears all the tabs for a given window from persistent storage.
+     *
+     * @param windowTag The window tag to clear data for.
+     */
     public void clearWindow(String windowTag) {
         TabStateStorageServiceJni.get().clearWindow(mNativeTabStateStorageService, windowTag);
+    }
+
+    /**
+     * Clears all unused nodes for a given window from persistent storage. Any node that is not a
+     * child of the given collection will be deleted.
+     *
+     * @param windowTag The window tag to clear unused nodes for.
+     * @param tabStripCollection The tab strip collection for a given window.
+     */
+    public void clearUnusedNodesForWindow(String windowTag, TabStripCollection tabStripCollection) {
+        TabStateStorageServiceJni.get()
+                .clearUnusedNodesForWindow(
+                        mNativeTabStateStorageService, windowTag, tabStripCollection);
     }
 
     /** Clears all the tabs for a given window from persistent storage. */
@@ -146,6 +164,11 @@ public class TabStateStorageService {
                 long nativeTabStateStorageServiceAndroid, @JniType("std::string") String windowTag);
 
         long createBatch(long nativeTabStateStorageServiceAndroid);
+
+        void clearUnusedNodesForWindow(
+                long nativeTabStateStorageServiceAndroid,
+                @JniType("std::string") String windowTag,
+                @JniType("TabStripCollection*") TabStripCollection tabStripCollection);
 
         void printAll(long nativeTabStateStorageServiceAndroid);
 

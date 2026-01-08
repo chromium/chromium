@@ -5,6 +5,7 @@
 #include "chrome/browser/android/tab_state_storage_service_android.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
@@ -21,10 +22,15 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_group_collection_data_android.h"
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
+#include "chrome/browser/tab/storage_id.h"
+#include "chrome/browser/tab/storage_id_mapping.h"
 #include "chrome/browser/tab/storage_loaded_data.h"
 #include "chrome/browser/tab/tab_group_collection_data.h"
 #include "chrome/browser/tab/tab_state_storage_backend.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
+#include "components/tabs/public/android/jni_conversion.h"
+#include "components/tabs/public/direct_child_walker.h"
+#include "components/tabs/public/tab_strip_collection.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/tab/jni_headers/TabStateStorageService_jni.h"
@@ -45,6 +51,31 @@ void RunJavaCallbackLoadAll(JNIEnv* env,
   base::android::RunObjectCallbackAndroid(j_loaded_data_callback,
                                           data_android->GetJavaObject());
 }
+
+// Recursively crawls the entire tree and retrieves storage ids for all nodes.
+class CollectionStorageIdCrawler : public DirectChildWalker::Processor {
+ public:
+  explicit CollectionStorageIdCrawler(StorageIdMapping& mapping,
+                                      std::vector<StorageId>& ids)
+      : mapping_(mapping), ids_(ids) {}
+
+  void ProcessTab(const TabInterface* tab) override {
+    StorageId id = mapping_.get().GetStorageId(tab);
+    ids_->push_back(id);
+  }
+
+  void ProcessCollection(const TabCollection* collection) override {
+    StorageId id = mapping_.get().GetStorageId(collection);
+    ids_->push_back(id);
+
+    DirectChildWalker walker(collection, this);
+    walker.Walk();
+  }
+
+ private:
+  raw_ref<StorageIdMapping> mapping_;
+  raw_ref<std::vector<StorageId>> ids_;
+};
 
 }  // namespace
 
@@ -98,6 +129,20 @@ void TabStateStorageServiceAndroid::ClearState(JNIEnv* env) {
 void TabStateStorageServiceAndroid::ClearWindow(JNIEnv* env,
                                                 const std::string& window_tag) {
   tab_state_storage_service_->ClearWindow(window_tag);
+}
+
+void TabStateStorageServiceAndroid::ClearUnusedNodesForWindow(
+    JNIEnv* env,
+    const std::string& window_tag,
+    const TabStripCollection* collection) {
+  std::vector<StorageId> ids;
+  ids.push_back(tab_state_storage_service_->GetStorageId(collection));
+  CollectionStorageIdCrawler crawler(*tab_state_storage_service_, ids);
+
+  DirectChildWalker walker(collection, &crawler);
+  walker.Walk();
+
+  tab_state_storage_service_->ClearNodesForWindowExcept(window_tag, ids);
 }
 
 void TabStateStorageServiceAndroid::PrintAll(JNIEnv* env) {
