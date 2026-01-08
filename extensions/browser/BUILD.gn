@@ -978,6 +978,7 @@ source_set("unit_tests") {
     "content_verifier/content_verifier_unittest.cc",
     "content_verifier/content_verifier_utils_unittest.cc",
     "content_verifier/content_verify_job_unittest.cc",
+    "convert_user_script_unittest.cc",
     "error_map_unittest.cc",
     "event_listener_map_unittest.cc",
     "event_router_unittest.cc",

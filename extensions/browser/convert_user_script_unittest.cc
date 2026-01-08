@@ -13,9 +13,10 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/common/chrome_paths.h"
+#include "extensions/browser/extensions_test.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_paths.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,19 +30,18 @@ static void AddPattern(URLPatternSet* extent, const std::string& pattern) {
   extent->AddPattern(URLPattern(schemes, pattern));
 }
 
-}
+}  // namespace
 
-class ExtensionFromUserScript : public testing::Test {
-};
+using ExtensionFromUserScript = ExtensionsTest;
 
 TEST_F(ExtensionFromUserScript, Basic) {
   base::ScopedTempDir extensions_dir;
   ASSERT_TRUE(extensions_dir.CreateUniqueTempDir());
 
   base::FilePath test_file;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_file));
-  test_file = test_file.AppendASCII("extensions")
-                       .AppendASCII("user_script_basic.user.js");
+  ASSERT_TRUE(base::PathService::Get(DIR_TEST_DATA, &test_file));
+  test_file = test_file.AppendASCII("user_script")
+                  .AppendASCII("user_script_basic.user.js");
 
   std::u16string error;
   scoped_refptr<Extension> extension(
@@ -83,8 +83,7 @@ TEST_F(ExtensionFromUserScript, Basic) {
   // Make sure the files actually exist on disk.
   EXPECT_TRUE(base::PathExists(
       extension->path().Append(script.js_scripts()[0]->relative_path())));
-  EXPECT_TRUE(base::PathExists(
-      extension->path().Append(kManifestFilename)));
+  EXPECT_TRUE(base::PathExists(extension->path().Append(kManifestFilename)));
 }
 
 TEST_F(ExtensionFromUserScript, NoMetadata) {
@@ -92,9 +91,9 @@ TEST_F(ExtensionFromUserScript, NoMetadata) {
   ASSERT_TRUE(extensions_dir.CreateUniqueTempDir());
 
   base::FilePath test_file;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_file));
-  test_file = test_file.AppendASCII("extensions")
-                       .AppendASCII("user_script_no_metadata.user.js");
+  ASSERT_TRUE(base::PathService::Get(DIR_TEST_DATA, &test_file));
+  test_file = test_file.AppendASCII("user_script")
+                  .AppendASCII("user_script_no_metadata.user.js");
 
   std::u16string error;
   scoped_refptr<Extension> extension(ConvertUserScriptToExtension(
@@ -132,8 +131,7 @@ TEST_F(ExtensionFromUserScript, NoMetadata) {
   // Make sure the files actually exist on disk.
   EXPECT_TRUE(base::PathExists(
       extension->path().Append(script.js_scripts()[0]->relative_path())));
-  EXPECT_TRUE(base::PathExists(
-      extension->path().Append(kManifestFilename)));
+  EXPECT_TRUE(base::PathExists(extension->path().Append(kManifestFilename)));
 }
 
 TEST_F(ExtensionFromUserScript, NotUTF8) {
@@ -141,9 +139,9 @@ TEST_F(ExtensionFromUserScript, NotUTF8) {
   ASSERT_TRUE(extensions_dir.CreateUniqueTempDir());
 
   base::FilePath test_file;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_file));
-  test_file = test_file.AppendASCII("extensions")
-                       .AppendASCII("user_script_not_utf8.user.js");
+  ASSERT_TRUE(base::PathService::Get(DIR_TEST_DATA, &test_file));
+  test_file = test_file.AppendASCII("user_script")
+                  .AppendASCII("user_script_not_utf8.user.js");
 
   std::u16string error;
   scoped_refptr<Extension> extension(ConvertUserScriptToExtension(
@@ -159,9 +157,9 @@ TEST_F(ExtensionFromUserScript, RunAtDocumentStart) {
   ASSERT_TRUE(extensions_dir.CreateUniqueTempDir());
 
   base::FilePath test_file;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_file));
-  test_file = test_file.AppendASCII("extensions")
-                       .AppendASCII("user_script_run_at_start.user.js");
+  ASSERT_TRUE(base::PathService::Get(DIR_TEST_DATA, &test_file));
+  test_file = test_file.AppendASCII("user_script")
+                  .AppendASCII("user_script_run_at_start.user.js");
 
   std::u16string error;
   scoped_refptr<Extension> extension(
@@ -194,9 +192,9 @@ TEST_F(ExtensionFromUserScript, RunAtDocumentEnd) {
   ASSERT_TRUE(extensions_dir.CreateUniqueTempDir());
 
   base::FilePath test_file;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_file));
-  test_file = test_file.AppendASCII("extensions")
-                       .AppendASCII("user_script_run_at_end.user.js");
+  ASSERT_TRUE(base::PathService::Get(DIR_TEST_DATA, &test_file));
+  test_file = test_file.AppendASCII("user_script")
+                  .AppendASCII("user_script_run_at_end.user.js");
 
   std::u16string error;
   scoped_refptr<Extension> extension(
@@ -229,9 +227,9 @@ TEST_F(ExtensionFromUserScript, RunAtDocumentIdle) {
   ASSERT_TRUE(extensions_dir.CreateUniqueTempDir());
 
   base::FilePath test_file;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_file));
-  test_file = test_file.AppendASCII("extensions")
-                       .AppendASCII("user_script_run_at_idle.user.js");
+  ASSERT_TRUE(base::PathService::Get(DIR_TEST_DATA, &test_file));
+  test_file = test_file.AppendASCII("user_script")
+                  .AppendASCII("user_script_run_at_idle.user.js");
   ASSERT_TRUE(base::PathExists(test_file)) << test_file.value();
 
   std::u16string error;
