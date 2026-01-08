@@ -133,14 +133,8 @@ void InfobarBadgeTabHelper::UnregisterInfobar(infobars::InfoBar* infobar) {
         infobar_accept_observations =
             infobar_accept_observer_.scoped_observations();
     InfoBarIOS* infobar_ios = static_cast<InfoBarIOS*>(infobar);
-    // TODO(crbug.com/330899285): Fix the root cause of infobar not being
-    // observed, and remove the `else` condition.
     if (infobar_accept_observations.IsObservingSource(infobar_ios)) {
       infobar_accept_observations.RemoveObservation(infobar_ios);
-    } else {
-      DUMP_WILL_BE_NOTREACHED()
-          << "cannot find observed infobar with type: "
-          << static_cast<int>(infobar_ios->infobar_type());
     }
   }
 }
