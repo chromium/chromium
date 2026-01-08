@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverBrowserTest,
 
   // Loads a page in the prerender.
   auto prerender_url = embedded_test_server()->GetURL("/simple.html");
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
   // The prerendering should not affect the current status.
@@ -312,7 +312,8 @@ IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverBrowserTest,
   // Loads a page in the prerender.
   prerender_helper()->AddPrerenderAsync(prerender_url);
   registry_observer.WaitForTrigger(prerender_url);
-  auto host_id = prerender_helper()->GetHostForUrl(prerender_url);
+  content::PrerenderHostId host_id =
+      prerender_helper()->GetHostForUrl(prerender_url);
 
   // Adds the expected url and flag for the main frame.
   observer.GetTestClient(true)->AddExpectedOriginAndFlags(

@@ -46,8 +46,8 @@ class PrerenderHandleImpl final : public PrerenderHandle,
   void OnHostDestroyed(PrerenderFinalStatus status) override;
   void OnHostReused() override;
 
-  FrameTreeNodeId frame_tree_node_id_for_testing() const {
-    return frame_tree_node_id_;
+  PrerenderHostId prerender_host_id_for_testing() const {
+    return prerender_host_id_;
   }
 
  private:
@@ -57,6 +57,7 @@ class PrerenderHandleImpl final : public PrerenderHandle,
   base::WeakPtr<PrerenderHostRegistry> prerender_host_registry_;
   // `frame_tree_node_id_` is the root FrameTreeNode id of the prerendered
   // page.
+  // TODO(crbug.com/434826191): Remove this field.
   FrameTreeNodeId frame_tree_node_id_;
 
   const GURL prerendering_url_;

@@ -1687,7 +1687,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewPrerenderBrowserTest,
   ASSERT_TRUE(safety_tip_observer->safety_tip_check_pending_for_testing());
   auto prerender_url = embedded_test_server()->GetURL("/simple.html");
   // Loads |prerender_url| in the prerenderer.
-  content::FrameTreeNodeId prerender_id =
+  content::PrerenderHostId prerender_id =
       prerender_helper()->AddPrerender(prerender_url);
   ASSERT_TRUE(prerender_id);
   content::test::PrerenderHostObserver host_observer(*web_contents(),

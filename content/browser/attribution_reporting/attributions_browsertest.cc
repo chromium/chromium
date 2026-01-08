@@ -1137,7 +1137,7 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(NoConversionsOnPrerender) {
     // Pre-render the conversion url.
     const GURL kConversionUrl = https_server->GetURL(
         "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
-    FrameTreeNodeId host_id = prerender_helper_.AddPrerender(kConversionUrl);
+    PrerenderHostId host_id = prerender_helper_.AddPrerender(kConversionUrl);
     content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                        host_id);
 
@@ -1187,7 +1187,7 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(ConversionsRegisteredOnActivatedPrerender) {
     // Pre-render the conversion url.
     const GURL kConversionUrl = https_server()->GetURL(
         "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
-    FrameTreeNodeId host_id = prerender_helper_.AddPrerender(kConversionUrl);
+    PrerenderHostId host_id = prerender_helper_.AddPrerender(kConversionUrl);
     content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                        host_id);
 
@@ -1252,7 +1252,7 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(NoConversionsInSubframeOnPrerender) {
     const GURL kConversionUrl = https_server()->GetURL(
         "d.test",
         "/attribution_reporting/page_with_conversion_redirect_in_iframe.html");
-    FrameTreeNodeId host_id = prerender_helper_.AddPrerender(kConversionUrl);
+    PrerenderHostId host_id = prerender_helper_.AddPrerender(kConversionUrl);
     content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                        host_id);
 
@@ -1300,7 +1300,7 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(
     const GURL kConversionUrl = https_server()->GetURL(
         "d.test",
         "/attribution_reporting/page_with_conversion_redirect_in_iframe.html");
-    FrameTreeNodeId host_id = prerender_helper_.AddPrerender(kConversionUrl);
+    PrerenderHostId host_id = prerender_helper_.AddPrerender(kConversionUrl);
     content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                        host_id);
 
@@ -1370,7 +1370,7 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(
     const GURL kConversionUrl = https_server()->GetURL(
         "d.test",
         "/attribution_reporting/page_with_conversion_redirect_in_iframe.html");
-    FrameTreeNodeId host_id = prerender_helper_.AddPrerender(kConversionUrl);
+    PrerenderHostId host_id = prerender_helper_.AddPrerender(kConversionUrl);
     content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                        host_id);
 

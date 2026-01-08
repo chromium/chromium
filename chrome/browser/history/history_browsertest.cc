@@ -1326,7 +1326,7 @@ IN_PROC_BROWSER_TEST_F(HistoryPrerenderBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
 
   // Start a prerender, but we don't activate it.
-  const content::FrameTreeNodeId kHostId =
+  const content::PrerenderHostId kHostId =
       prerender_helper().AddPrerender(kPrerenderingUrl);
   ASSERT_TRUE(kHostId);
 
@@ -1345,7 +1345,7 @@ IN_PROC_BROWSER_TEST_F(HistoryPrerenderBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
 
   // Start a prerender.
-  const content::FrameTreeNodeId kHostId =
+  const content::PrerenderHostId kHostId =
       prerender_helper().AddPrerender(kPrerenderingUrl);
   ASSERT_TRUE(kHostId);
 
@@ -1371,7 +1371,7 @@ IN_PROC_BROWSER_TEST_F(HistoryPrerenderBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
 
   // Start a prerender.
-  const content::FrameTreeNodeId kHostId =
+  const content::PrerenderHostId kHostId =
       prerender_helper().AddPrerender(kPrerenderingUrl);
   ASSERT_TRUE(kHostId);
 

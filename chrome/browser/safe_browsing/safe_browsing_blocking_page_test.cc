@@ -3449,7 +3449,7 @@ IN_PROC_BROWSER_TEST_F(
   SetupUrlRealTimeVerdictInCacheManager(prerender_url, browser()->profile(),
                                         RTLookupResponse::ThreatInfo::SAFE,
                                         /*threat_type=*/std::nullopt);
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().AddPrerender(prerender_url);
   content::RenderFrameHost* prerender_render_frame_host =
       prerender_helper().GetPrerenderedMainFrameHost(host_id);

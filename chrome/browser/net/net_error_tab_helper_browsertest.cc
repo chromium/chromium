@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorTabHelperWithPrerenderingTest,
   prerender_helper().AddPrerenderAsync(prerender_url);
   registry_observer.WaitForTrigger(prerender_url);
 
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().GetHostForUrl(prerender_url);
   EXPECT_TRUE(host_id);
   test::PrerenderHostObserver host_observer(*GetWebContents(), host_id);

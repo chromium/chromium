@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionPrerenderBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(GetWebContents(), initial_url));
   ResetHistogramTester();
 
-  const content::FrameTreeNodeId host_id =
+  const content::PrerenderHostId host_id =
       prerender_test_helper().AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);

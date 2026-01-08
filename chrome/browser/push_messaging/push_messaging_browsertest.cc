@@ -2785,7 +2785,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingIncognitoBrowserTest,
   // Start a prerender with the push messaging test URL.
   const GURL prerendering_url(
       https_server()->GetURL(GetTestURL() + "?prerendering"));
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper_.AddPrerender(prerendering_url);
   content::test::PrerenderHostObserver prerender_observer(*web_contents(),
                                                           host_id);

@@ -2629,7 +2629,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptPrerenderBrowserTest, CancelOnAuthRequested) {
   content::test::PrerenderHostRegistryObserver registry_observer(
       *GetWebContents());
   registry_observer.WaitForTrigger(kPrerenderingUrl);
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().GetHostForUrl(kPrerenderingUrl);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
@@ -2652,7 +2652,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptPrerenderBrowserTest,
 
   // Start prerendering `kPrerenderingUrl`.
   const GURL kPrerenderingUrl = embedded_test_server()->GetURL("/title1.html");
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().AddPrerender(kPrerenderingUrl);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
@@ -2687,7 +2687,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptPrerenderBrowserTest,
 
   // Start prerendering `kPrerenderingUrl`.
   const GURL kPrerenderingUrl = embedded_test_server()->GetURL("/title1.html");
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().AddPrerender(kPrerenderingUrl);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);

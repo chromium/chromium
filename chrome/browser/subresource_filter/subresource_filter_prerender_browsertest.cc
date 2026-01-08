@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
     MockSubresourceFilterObserver observer(web_contents());
     EXPECT_CALL(observer,
                 OnPageActivationComputed(_, HasActivationLevelDisabled()));
-    const content::FrameTreeNodeId host_id =
+    const content::PrerenderHostId host_id =
         prerender_helper_.AddPrerender(prerendering_url);
     ASSERT_TRUE(Mock::VerifyAndClearExpectations(&observer));
 
@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
     MockSubresourceFilterObserver observer(web_contents());
     EXPECT_CALL(observer,
                 OnPageActivationComputed(_, HasActivationLevelEnabled()));
-    const content::FrameTreeNodeId host_id =
+    const content::PrerenderHostId host_id =
         prerender_helper_.AddPrerender(prerendering_url);
     ASSERT_TRUE(Mock::VerifyAndClearExpectations(&observer));
 
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 
   // Navigate to the initial URL and trigger the prerender.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-  const content::FrameTreeNodeId host_id =
+  const content::PrerenderHostId host_id =
       prerender_helper_.AddPrerender(prerendering_url);
   RenderFrameHost* prerender_rfh =
       prerender_helper_.GetPrerenderedMainFrameHost(host_id);
@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Trigger a prerendering of title1.html.
-  const content::FrameTreeNodeId prerender_host_id =
+  const content::PrerenderHostId prerender_host_id =
       prerender_helper_.AddPrerender(prerendering_url1);
 
   // Now navigate the prerendered page to a cross-site page. Ensure the
@@ -446,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   // Load the initial page and trigger a prerender.
   {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
-    const content::FrameTreeNodeId prerender_host_id =
+    const content::PrerenderHostId prerender_host_id =
         prerender_helper_.AddPrerender(prerendering_url);
     prerender_rfh =
         prerender_helper_.GetPrerenderedMainFrameHost(prerender_host_id);
@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
     content::WebContentsConsoleObserver console_observer(web_contents());
     console_observer.SetPattern(kActivationWarningConsoleMessage);
     // Trigger a prerender.
-    const content::FrameTreeNodeId host_id =
+    const content::PrerenderHostId host_id =
         prerender_helper_.AddPrerender(prerender_url);
     ASSERT_TRUE(console_observer.Wait());
     RenderFrameHost* prerender_rfh =

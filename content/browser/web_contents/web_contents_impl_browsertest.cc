@@ -5278,7 +5278,7 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
   set_prerender_target_web_contents(inner_wc.get());
   ASSERT_TRUE(NavigateToURL(inner_wc.get(), inner_url));
   // Add a prerender in inner WebContents.
-  FrameTreeNodeId prerender_host_id =
+  PrerenderHostId prerender_host_id =
       prerender_helper().AddPrerender(prerender_url);
 
   // Get the RenderFrameHosts in inner WebContents.
@@ -7274,7 +7274,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsPrerenderBrowserTest,
 
   // Prerender a page that has a MIME type, text/plain.
   const GURL prerendering_url = embedded_test_server()->GetURL("/plain.txt");
-  FrameTreeNodeId host_id = prerender_helper().AddPrerender(prerendering_url);
+  PrerenderHostId host_id = prerender_helper().AddPrerender(prerendering_url);
 
   // Check MIME type for each page.
   EXPECT_EQ("text/html",
@@ -7309,7 +7309,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsPrerenderWithDiscardBrowserTest,
 
   // Prerender a page.
   const GURL prerendering_url = embedded_test_server()->GetURL("/plain.txt");
-  const FrameTreeNodeId host_id =
+  const PrerenderHostId host_id =
       prerender_helper().AddPrerender(prerendering_url);
   PrerenderHostRegistry* registry =
       static_cast<WebContentsImpl*>(web_contents())->GetPrerenderHostRegistry();

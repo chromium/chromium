@@ -230,15 +230,15 @@ class PrerenderDevToolsProtocolTest : public DevToolsProtocolTest {
   }
 
   bool HasHostForUrl(const GURL& url) {
-    FrameTreeNodeId host_id = prerender_helper_->GetHostForUrl(url);
+    PrerenderHostId host_id = prerender_helper_->GetHostForUrl(url);
     return !!host_id;
   }
 
-  FrameTreeNodeId AddPrerender(const GURL& prerendering_url) {
+  PrerenderHostId AddPrerender(const GURL& prerendering_url) {
     return prerender_helper_->AddPrerender(prerendering_url);
   }
 
-  RenderFrameHostImpl* GetPrerenderedMainFrameHost(FrameTreeNodeId host_id) {
+  RenderFrameHostImpl* GetPrerenderedMainFrameHost(PrerenderHostId host_id) {
     return static_cast<RenderFrameHostImpl*>(
         prerender_helper_->GetPrerenderedMainFrameHost(host_id));
   }
@@ -4229,7 +4229,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Make a prerendered page.
-  FrameTreeNodeId host_id = AddPrerender(kPrerenderingUrl);
+  PrerenderHostId host_id = AddPrerender(kPrerenderingUrl);
   auto* prerender_render_frame_host = GetPrerenderedMainFrameHost(host_id);
   Attach();
   SendCommandSync("Preload.enable");
@@ -4267,7 +4267,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL prerendering_url = GetUrl("/empty.html?prerender");
 
   // Start prerendering.
-  const FrameTreeNodeId host_id = AddPrerender(prerendering_url);
+  const PrerenderHostId host_id = AddPrerender(prerendering_url);
 
   Attach();
   SendCommandSync("Preload.enable");

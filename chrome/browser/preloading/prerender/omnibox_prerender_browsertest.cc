@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
 
   // Since preload setting is disabled, prerender shouldn't be triggered.
   base::RunLoop().RunUntilIdle();
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().GetHostForUrl(prerender_url);
   EXPECT_TRUE(host_id.is_null());
 
@@ -370,7 +370,7 @@ class PrerenderOmniboxSearchSuggestionExpiryBrowserTest
         GetSearchSuggestionUrl(search_terms, /*with_parameter=*/false);
     registry_observer.WaitForTrigger(prerendered_url);
 
-    content::FrameTreeNodeId host_id =
+    content::PrerenderHostId host_id =
         prerender_helper().GetHostForUrl(prerendered_url);
     ASSERT_TRUE(host_id);
     content::test::PrerenderHostObserver prerender_observer(

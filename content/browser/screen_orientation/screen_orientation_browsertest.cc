@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationLockForPrerenderBrowserTest,
 
   // Start a prerender.
   const GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
-  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(prerender_url);
+  PrerenderHostId host_id = prerender_helper_.AddPrerender(prerender_url);
   ASSERT_TRUE(host_id);
 
   // Shut down the prerendered page. It shouldn't trigger orientation unlock.

@@ -750,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
   {
     ConfigureAsAbusiveWarn(prerendering_url);
     content::WebContentsConsoleObserver console_observer(web_contents());
-    content::FrameTreeNodeId host_id =
+    content::PrerenderHostId host_id =
         prerender_helper_.AddPrerender(prerendering_url);
     content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                        host_id);
@@ -786,7 +786,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
   ConfigureAsAbusive(prerendering_url);
 
   // Loads a page in the prerender.
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper_.AddPrerender(prerendering_url);
   auto* prerendered_frame_host =
       prerender_helper_.GetPrerenderedMainFrameHost(host_id);

@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
 
   // Wait until the completion of prerendering navigation.
   prerender_helper_.WaitForPrerenderLoadCompletion(prerender_url);
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper_.GetHostForUrl(prerender_url);
   EXPECT_TRUE(host_id);
 
@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
 
   // Start a prerender.
   GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
-  const content::FrameTreeNodeId host_id =
+  const content::PrerenderHostId host_id =
       prerender_helper_.AddPrerender(prerender_url);
 
   content::test::PrerenderHostObserver observer(*web_contents(), host_id);
@@ -563,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
     registry_observer.WaitForTrigger(kPrerenderingUrl);
   }
 
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper_.GetHostForUrl(kPrerenderingUrl);
   content::test::PrerenderHostObserver prerender_observer(*web_contents(),
                                                           host_id);
@@ -837,7 +837,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   // Start a prerender and a main frame navigation in the prerendered page.
   GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
   GURL navigation_url = embedded_test_server()->GetURL("/title3.html");
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper_.AddPrerender(prerender_url);
   prerender_helper_.WaitForPrerenderLoadCompletion(host_id);
   prerender_helper_.NavigatePrerenderedPage(host_id, navigation_url);

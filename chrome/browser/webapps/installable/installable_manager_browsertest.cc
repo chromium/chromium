@@ -1705,7 +1705,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerInPrerenderingBrowserTest,
   // Loads a page in the prerendering.
   const std::string path = "/banners/manifest_test_page.html";
   auto prerender_url = embedded_test_server()->GetURL(path);
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
 
@@ -1806,7 +1806,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerInPrerenderingBrowserTest,
       embedded_test_server()->GetURL("/banners/manifest_test_page.html");
   // OnResetData() should not be called on the prerendering.
   EXPECT_CALL(*manager.get(), OnResetData()).Times(0);
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper()->AddPrerender(prerender_url);
 
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
@@ -1889,7 +1889,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerInPrerenderingBrowserTest,
       embedded_test_server()->GetURL("/banners/no_manifest_test_page.html");
   // OnResetData() should not be called on the prerendering.
   EXPECT_CALL(*manager.get(), OnResetData()).Times(0);
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper()->AddPrerender(prerender_url);
 
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);

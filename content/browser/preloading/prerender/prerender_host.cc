@@ -102,8 +102,8 @@ base::flat_map<PrerenderHostId, FrameTreeNodeId>& GetPrerenderHostIdMap() {
 BASE_FEATURE(kCreatePrerenderSiteInstanceWithURL,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-base::OnceCallback<void(FrameTreeNodeId)>& GetHostCreationCallback() {
-  static base::NoDestructor<base::OnceCallback<void(FrameTreeNodeId)>>
+base::OnceCallback<void(PrerenderHostId)>& GetHostCreationCallback() {
+  static base::NoDestructor<base::OnceCallback<void(PrerenderHostId)>>
       host_creation_callback;
   return *host_creation_callback;
 }
@@ -429,7 +429,7 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
 
 // static
 void PrerenderHost::SetHostCreationCallbackForTesting(
-    base::OnceCallback<void(FrameTreeNodeId host_id)> callback) {
+    base::OnceCallback<void(PrerenderHostId host_id)> callback) {
   GetHostCreationCallback() = std::move(callback);
 }
 
@@ -505,7 +505,7 @@ PrerenderHost::PrerenderHost(
 
   if (GetHostCreationCallback()) {
     CHECK_IS_TEST();
-    std::move(GetHostCreationCallback()).Run(frame_tree_node_id_);
+    std::move(GetHostCreationCallback()).Run(prerender_host_id_);
   }
 }
 

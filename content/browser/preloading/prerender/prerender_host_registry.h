@@ -244,7 +244,7 @@ class CONTENT_EXPORT PrerenderHostRegistry
       const GURL& search_prewarm_url);
 
   // Returns whether `prerender_new_tab_handle_by_id_` has the given id.
-  bool HasNewTabHandleByIdForTesting(FrameTreeNodeId frame_tree_node_id);
+  bool HasNewTabHandleByIdForTesting(PrerenderHostId prerender_host_id);
 
   // Cancels all hosts.
   void CancelAllHostsForTesting();

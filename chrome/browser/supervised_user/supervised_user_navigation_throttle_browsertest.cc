@@ -300,9 +300,9 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationThrottleWithPrerenderingTest,
   content::test::PrerenderHostCreationWaiter host_creation_waiter;
   prerender_helper().AddPrerendersAsync(
       {allowed_url}, /*eagerness=*/std::nullopt, GetTargetHint());
-  content::FrameTreeNodeId host_id = host_creation_waiter.Wait();
+  content::PrerenderHostId host_id = host_creation_waiter.Wait();
   auto* prerender_web_contents =
-      content::WebContents::FromFrameTreeNodeId(host_id);
+      content::test::PrerenderTestHelper::GetPrerenderWebContents(host_id);
   content::test::PrerenderHostObserver host_observer(*prerender_web_contents,
                                                      host_id);
   host_observer.WaitForDestroyed();

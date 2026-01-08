@@ -167,7 +167,7 @@ void PrerenderBrowserTest::TestPrerenderAndActivateInNewTab(
 
   // Start a prerender.
   GURL prerender_url = embedded_test_server()->GetURL("/prerender/empty.html");
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().AddPrerender(prerender_url,
                                       /*eagerness=*/std::nullopt, "_blank");
   EXPECT_TRUE(host_id);
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Start a prerender.
   GURL prerender_url = embedded_test_server()->GetURL("/prerender/empty.html");
-  content::FrameTreeNodeId host_id = prerender_helper().AddPrerender(
+  content::PrerenderHostId host_id = prerender_helper().AddPrerender(
       prerender_url, /*eagerness=*/std::nullopt, "_blank");
   EXPECT_TRUE(host_id);
 
@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   prerender_helper().NavigatePrerenderedPage(host_id, navigation_url);
 
   auto* prerender_web_contents =
-      content::WebContents::FromFrameTreeNodeId(host_id);
+      prerender_helper().GetPrerenderWebContents(host_id);
 
   // Activate.
   content::test::PrerenderHostObserver prerender_observer(
@@ -445,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DisableNetworkPrediction) {
   prerender_helper().AddPrerenderAsync(prerender_url);
   // Since preload setting is disabled, prerender shouldn't be triggered.
   base::RunLoop().RunUntilIdle();
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().GetHostForUrl(prerender_url);
   EXPECT_TRUE(host_id.is_null());
 
@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PreloadingHoldbackNotOverridden) {
   prerender_helper().AddPrerenderAsync(prerender_url);
   // Since preload setting is disabled, prerender shouldn't be triggered.
   registry_observer.WaitForTrigger(prerender_url);
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().GetHostForUrl(prerender_url);
   EXPECT_TRUE(host_id.is_null());
 }
@@ -572,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SameOriginMainFrameNavigation) {
   content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *GetActiveWebContents(), prerender_url);
 
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().GetHostForUrl(prerender_url);
   ASSERT_TRUE(host_id);
 
@@ -621,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *GetActiveWebContents(), prerender_url);
 
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().GetHostForUrl(prerender_url);
   ASSERT_TRUE(host_id);
 
@@ -673,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(
   content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *GetActiveWebContents(), prerender_url);
 
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().GetHostForUrl(prerender_url);
   ASSERT_TRUE(host_id);
 
@@ -701,7 +701,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Start a prerender.
   GURL prerender_url = embedded_test_server()->GetURL("/prerender/empty.html");
-  content::FrameTreeNodeId host_id = prerender_helper().AddPrerender(
+  content::PrerenderHostId host_id = prerender_helper().AddPrerender(
       prerender_url, /*eagerness=*/std::nullopt, "_blank");
 
   // Navigate a prerendered page to another page.
@@ -712,7 +712,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // WebContents::Close() should eventually call
   // PrerenderWebContentsDelegate::CloseContents() that cancels prerendering.
   auto* prerender_web_contents =
-      content::WebContents::FromFrameTreeNodeId(host_id);
+      prerender_helper().GetPrerenderWebContents(host_id);
   ASSERT_TRUE(prerender_web_contents);
   content::WebContentsDestroyedWatcher destroyed_watcher(
       prerender_web_contents);
@@ -849,7 +849,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
       prerender_url,
       chrome_preloading_predictor::kMouseHoverOrMouseDownOnNewTabPage);
   base::RunLoop().RunUntilIdle();
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().GetHostForUrl(prerender_url);
   EXPECT_TRUE(host_id.is_null());
 
@@ -936,7 +936,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
   content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *GetActiveWebContents(), prerender_url);
 
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().GetHostForUrl(prerender_url);
   ASSERT_TRUE(host_id);
 
@@ -1027,7 +1027,7 @@ class PrerenderPrewarmDefaultSearchEngineTest
         content::SlowHttpResponse::NoResponse());
   }
 
-  content::FrameTreeNodeId GetPrewarmSearchResultHost() {
+  content::PrerenderHostId GetPrewarmSearchResultHost() {
     return prerender_helper().GetPrewarmSearchResultHost(prewarm_url_);
   }
 
@@ -1073,8 +1073,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   auto* prerender_manager =
       PrerenderManager::FromWebContents(GetActiveWebContents());
   EXPECT_TRUE(prerender_manager->MaybeStartPrewarmSearchResult());
-  content::FrameTreeNodeId host_id = GetPrewarmSearchResultHost();
+  content::PrerenderHostId host_id = GetPrewarmSearchResultHost();
   ASSERT_TRUE(host_id);
+  content::FrameTreeNodeId frame_tree_node_id =
+      prerender_helper()
+          .GetPrerenderedMainFrameHost(host_id)
+          ->GetFrameTreeNodeId();
+  ASSERT_TRUE(frame_tree_node_id);
   prerender_helper().WaitForPrerenderLoadCompletion(host_id);
 
   content::test::PrerenderHostObserver prerender_observer(
@@ -1085,8 +1090,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   prerender_helper().AddPrerender(prerender_url);
   prerender_observer.WaitForDestroyed();
   ASSERT_TRUE(prerender_observer.WasHostReused());
-  auto reuse_host_id = prerender_helper().GetHostForUrl(prerender_url);
-  ASSERT_EQ(host_id, reuse_host_id);
+  content::PrerenderHostId reuse_host_id =
+      prerender_helper().GetHostForUrl(prerender_url);
+  content::FrameTreeNodeId reuse_frame_tree_node_id =
+      prerender_helper()
+          .GetPrerenderedMainFrameHost(reuse_host_id)
+          ->GetFrameTreeNodeId();
+  ASSERT_EQ(frame_tree_node_id, reuse_frame_tree_node_id);
+  ASSERT_NE(host_id, reuse_host_id);
 
   // Activate
   content::TestActivationManager activation_manager(GetActiveWebContents(),
@@ -1111,8 +1122,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   EXPECT_TRUE(prerender_manager->MaybeStartPrewarmSearchResult());
   // Throttle the navigation to the prewarmed paged before commit.
   EXPECT_TRUE(navigation_manager.WaitForResponse());
-  content::FrameTreeNodeId host_id = GetPrewarmSearchResultHost();
+  content::PrerenderHostId host_id = GetPrewarmSearchResultHost();
   ASSERT_TRUE(host_id);
+  content::FrameTreeNodeId frame_tree_node_id =
+      prerender_helper()
+          .GetPrerenderedMainFrameHost(host_id)
+          ->GetFrameTreeNodeId();
+  ASSERT_TRUE(frame_tree_node_id);
 
   // Resume the navigation of the previous prewarm page.
   navigation_manager.ResumeNavigation();
@@ -1141,8 +1157,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   // PrerenderHost. Committing the previous navigation should not cause the
   // current prerender to fail.
   EXPECT_TRUE(navigation_manager.WaitForNavigationFinished());
-  auto reuse_host_id = prerender_helper().GetHostForUrl(prerender_url);
-  ASSERT_EQ(host_id, reuse_host_id);
+  content::PrerenderHostId reuse_host_id =
+      prerender_helper().GetHostForUrl(prerender_url);
+  content::FrameTreeNodeId reuse_frame_tree_node_id =
+      prerender_helper()
+          .GetPrerenderedMainFrameHost(reuse_host_id)
+          ->GetFrameTreeNodeId();
+  ASSERT_EQ(frame_tree_node_id, reuse_frame_tree_node_id);
+  ASSERT_NE(host_id, reuse_host_id);
 
   EXPECT_TRUE(new_navigation_manager.WaitForNavigationFinished());
 }
@@ -1162,8 +1184,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   content::TestNavigationManager navigation_manager(GetActiveWebContents(),
                                                     prewarm_url_);
   EXPECT_TRUE(prerender_manager->MaybeStartPrewarmSearchResult());
-  content::FrameTreeNodeId host_id = GetPrewarmSearchResultHost();
+  content::PrerenderHostId host_id = GetPrewarmSearchResultHost();
   ASSERT_TRUE(host_id);
+  content::FrameTreeNodeId frame_tree_node_id =
+      prerender_helper()
+          .GetPrerenderedMainFrameHost(host_id)
+          ->GetFrameTreeNodeId();
+  ASSERT_TRUE(frame_tree_node_id);
   ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   ASSERT_TRUE(navigation_manager.was_committed());
   ASSERT_TRUE(navigation_manager.was_successful());
@@ -1187,7 +1214,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
 
   EXPECT_TRUE(new_navigation_manager.WaitForNavigationFinished());
   auto reuse_host_id = prerender_helper().GetHostForUrl(prerender_url);
-  ASSERT_EQ(host_id, reuse_host_id);
+  content::FrameTreeNodeId reuse_frame_tree_node_id =
+      prerender_helper()
+          .GetPrerenderedMainFrameHost(reuse_host_id)
+          ->GetFrameTreeNodeId();
+  ASSERT_EQ(frame_tree_node_id, reuse_frame_tree_node_id);
+  ASSERT_NE(host_id, reuse_host_id);
   prerender_helper().WaitForPrerenderLoadCompletion(reuse_host_id);
 }
 
@@ -1201,7 +1233,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   auto* prerender_manager =
       PrerenderManager::FromWebContents(GetActiveWebContents());
   EXPECT_TRUE(prerender_manager->MaybeStartPrewarmSearchResult());
-  content::FrameTreeNodeId host_id = GetPrewarmSearchResultHost();
+  content::PrerenderHostId host_id = GetPrewarmSearchResultHost();
   ASSERT_TRUE(host_id);
   prerender_helper().WaitForPrerenderLoadCompletion(host_id);
 

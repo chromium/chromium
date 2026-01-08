@@ -1587,7 +1587,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_Limit,
              queries_cancelled_prerender) {
           SearchUrls cancelled_urls = GetSearchUrls(query_cancelled_prerender);
           ASSERT_EQ(prerender_helper().GetHostForUrl(cancelled_urls.prerender),
-                    content::FrameTreeNodeId());
+                    content::PrerenderHostId());
         }
       }
     }

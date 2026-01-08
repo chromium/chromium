@@ -1407,13 +1407,7 @@ PrerenderHost* PrerenderHostRegistry::FindPrewarmSearchResultHostForTesting(
 }
 
 bool PrerenderHostRegistry::HasNewTabHandleByIdForTesting(
-    FrameTreeNodeId frame_tree_node_id) {
-  auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
-  if (!frame_tree_node) {
-    return false;
-  }
-  PrerenderHostId prerender_host_id =
-      frame_tree_node->frame_tree().delegate()->GetPrerenderHostId();
+    PrerenderHostId prerender_host_id) {
   return prerender_new_tab_handle_by_id_.contains(prerender_host_id);
 }
 

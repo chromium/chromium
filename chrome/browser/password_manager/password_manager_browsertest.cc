@@ -4485,7 +4485,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
 
   // Ensure that the prerender has started.
   registry_observer.WaitForTrigger(prerender_url);
-  content::FrameTreeNodeId prerender_id =
+  content::PrerenderHostId prerender_id =
       prerender_helper()->GetHostForUrl(prerender_url);
   EXPECT_TRUE(prerender_id);
   content::test::PrerenderHostObserver host_observer(*WebContents(),
@@ -4529,7 +4529,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
   auto prerender_url =
       embedded_test_server()->GetURL("/password/password_form.html");
   // Loads a page in the prerender.
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*WebContents(), host_id);
   content::RenderFrameHost* render_frame_host =
@@ -4580,7 +4580,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
   auto prerender_url =
       embedded_test_server()->GetURL("/password/password_form.html");
   // Loads a page in the prerender.
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
   content::RenderFrameHost* render_frame_host =

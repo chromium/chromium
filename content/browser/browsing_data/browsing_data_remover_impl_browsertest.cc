@@ -1031,7 +1031,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrerenderingBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));
 
   // 2) Add and wait for prerendering of the prerendering url to complete.
-  FrameTreeNodeId host_id = prerender_helper().AddPrerender(prerendering_url);
+  PrerenderHostId host_id = prerender_helper().AddPrerender(prerendering_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
 
   // 3) Remove the browsing data with DATA_TYPE_CACHE.

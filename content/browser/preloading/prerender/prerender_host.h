@@ -200,7 +200,7 @@ class CONTENT_EXPORT PrerenderHost {
 
   // Sets a callback to be called on PrerenderHost creation.
   static void SetHostCreationCallbackForTesting(
-      base::OnceCallback<void(FrameTreeNodeId host_id)> callback);
+      base::OnceCallback<void(PrerenderHostId host_id)> callback);
 
   PrerenderHost(std::unique_ptr<PrerenderHost> reuse_host,
                 const PrerenderAttributes& attributes,

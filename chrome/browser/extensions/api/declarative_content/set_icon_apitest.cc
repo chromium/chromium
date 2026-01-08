@@ -151,7 +151,7 @@ class SetIconAPIPrerenderingTest : public SetIconAPITest {
   ~SetIconAPIPrerenderingTest() override = default;
 
  protected:
-  content::FrameTreeNodeId Prerender(const GURL& url) {
+  content::PrerenderHostId Prerender(const GURL& url) {
     return prerender_helper_.AddPrerender(url);
   }
   void Activate(const GURL& url) { prerender_helper_.NavigatePrimaryPage(url); }
@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(SetIconAPIPrerenderingTest, Overview) {
   // Prerendering an unmatched page should not reset the icon.
   const GURL kPrerenderingUrl =
       embedded_test_server()->GetURL("/empty.html?hide");
-  content::FrameTreeNodeId host_id = Prerender(kPrerenderingUrl);
+  content::PrerenderHostId host_id = Prerender(kPrerenderingUrl);
   ASSERT_TRUE(host_id);
   EXPECT_FALSE(action->GetDeclarativeIcon(tab_id).IsEmpty());
 

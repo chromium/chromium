@@ -1266,7 +1266,7 @@ IN_PROC_BROWSER_TEST_F(SmsPrerenderingBrowserTest,
 
   // Load a page in the prerendering.
   GURL prerender_url = https_server_.GetURL("/simple_page.html?prerendering");
-  const FrameTreeNodeId host_id =
+  const PrerenderHostId host_id =
       prerender_helper()->AddPrerender(prerender_url);
   content::RenderFrameHost* prerender_rfh =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);

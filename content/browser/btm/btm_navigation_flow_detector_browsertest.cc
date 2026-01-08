@@ -1491,7 +1491,7 @@ IN_PROC_BROWSER_TEST_F(
   // accesses cookies with both response headers and Javascript.
   const GURL prerendering_url =
       embedded_https_test_server_.GetURL(kSiteB, "/set-cookie?name=value");
-  const FrameTreeNodeId host_id =
+  const PrerenderHostId host_id =
       prerender_test_helper()->AddPrerender(prerendering_url);
   prerender_test_helper()->WaitForPrerenderLoadCompletion(prerendering_url);
   test::PrerenderHostObserver prerender_observer(*web_contents, host_id);

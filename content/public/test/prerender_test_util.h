@@ -105,11 +105,11 @@ class PrerenderHostCreationWaiter {
   PrerenderHostCreationWaiter();
   ~PrerenderHostCreationWaiter() = default;
 
-  FrameTreeNodeId Wait();
+  PrerenderHostId Wait();
 
  private:
   base::RunLoop run_loop_;
-  FrameTreeNodeId created_host_id_;
+  PrerenderHostId created_host_id_;
 };
 
 // Enables appropriate features for Prerender2.
@@ -150,16 +150,16 @@ class PrerenderTestHelper {
 
   // Attempts to lookup the host for the given |url|. Returns an invalid frame
   // id upon failure.
-  static FrameTreeNodeId GetHostForUrl(WebContents& web_contents,
+  static PrerenderHostId GetHostForUrl(WebContents& web_contents,
                                        const GURL& url);
-  FrameTreeNodeId GetHostForUrl(const GURL& url);
+  PrerenderHostId GetHostForUrl(const GURL& url);
 
-  static FrameTreeNodeId GetPrewarmSearchResultHost(WebContents& web_contents,
+  static PrerenderHostId GetPrewarmSearchResultHost(WebContents& web_contents,
                                                     const GURL& prewarm_url);
-  FrameTreeNodeId GetPrewarmSearchResultHost(const GURL& prewarm_url);
+  PrerenderHostId GetPrewarmSearchResultHost(const GURL& prewarm_url);
 
   // Returns whether the registry holds the handler for prerender-into-new-tab.
-  bool HasNewTabHandle(FrameTreeNodeId host_id);
+  bool HasNewTabHandle(PrerenderHostId host_id);
 
   // Waits until a prerender has finished loading.
   //
@@ -174,23 +174,22 @@ class PrerenderTestHelper {
   static void WaitForPrerenderLoadCompletion(WebContents& web_contents,
                                              const GURL& url);
   void WaitForPrerenderLoadCompletion(const GURL& url);
-  void WaitForPrerenderLoadCompletion(FrameTreeNodeId host_id);
+  void WaitForPrerenderLoadCompletion(PrerenderHostId host_id);
   static void WaitForPrerenderLoadCancellation(WebContents& web_contents,
                                                const GURL& url);
   void WaitForPrerenderLoadCancellation(const GURL& url);
-  void WaitForPrerenderLoadCancellation(FrameTreeNodeId host_id);
 
   // Adds <script type="speculationrules"> in the current main frame and waits
   // until the completion of prerendering. Returns the id of the resulting
   // prerendering host.
-  FrameTreeNodeId AddPrerender(const GURL& prerendering_url,
+  PrerenderHostId AddPrerender(const GURL& prerendering_url,
                                int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
-  FrameTreeNodeId AddPrerender(
+  PrerenderHostId AddPrerender(
       const GURL& prerendering_url,
       std::optional<blink::mojom::SpeculationEagerness> eagerness,
       const std::string& target_hint,
       int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
-  FrameTreeNodeId AddPrerender(
+  PrerenderHostId AddPrerender(
       const GURL& prerendering_url,
       std::optional<blink::mojom::SpeculationEagerness> eagerness,
       std::optional<std::string> no_vary_search_hint,
@@ -238,10 +237,10 @@ class PrerenderTestHelper {
       ui::PageTransition page_transition);
 
   // This navigates, but does not activate, the prerendered page.
-  void NavigatePrerenderedPage(FrameTreeNodeId host_id, const GURL& url);
+  void NavigatePrerenderedPage(PrerenderHostId host_id, const GURL& url);
 
   // This cancels the prerendered page.
-  void CancelPrerenderedPage(FrameTreeNodeId host_id);
+  void CancelPrerenderedPage(PrerenderHostId host_id);
 
   // Navigates the primary page to the URL and waits until the completion of
   // the navigation.
@@ -286,13 +285,17 @@ class PrerenderTestHelper {
   [[nodiscard]] ::testing::AssertionResult VerifyPrerenderingState(
       const GURL& url);
 
+  // Returns WebContents hosting `host_id`.
+  static WebContents* GetPrerenderWebContents(PrerenderHostId host_id);
+
   // Returns RenderFrameHost corresponding to `host_id` or `url`.
   static RenderFrameHost* GetPrerenderedMainFrameHost(WebContents& web_contents,
-                                                      FrameTreeNodeId host_id);
+                                                      PrerenderHostId host_id);
   static RenderFrameHost* GetPrerenderedMainFrameHost(WebContents& web_contents,
                                                       const GURL& url);
   RenderFrameHost* GetPrerenderedMainFrameHost(FrameTreeNodeId host_id);
   RenderFrameHost* GetPrerenderedMainFrameHost(const GURL& url);
+  RenderFrameHost* GetPrerenderedMainFrameHost(PrerenderHostId host_id);
 
   int GetRequestCount(const GURL& url);
   net::test_server::HttpRequest::HeaderMap GetRequestHeaders(const GURL& url);

@@ -805,7 +805,7 @@ IN_PROC_BROWSER_TEST_F(
     tab_stats_tracker_->AddObserverAndSetInitialState(&mock_observer);
     EXPECT_CALL(mock_observer, OnPrimaryMainFrameNavigationCommitted(_))
         .Times(0);
-    content::FrameTreeNodeId host_id =
+    content::PrerenderHostId host_id =
         prerender_test_helper().AddPrerender(prerender_url);
     ASSERT_TRUE(GetWebContents());
     host_observer = std::make_unique<content::test::PrerenderHostObserver>(
