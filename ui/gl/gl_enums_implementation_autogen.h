@@ -8,6 +8,11 @@
 //    clang-format -i -style=chromium filename
 // DO NOT EDIT!
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef UI_GL_GL_ENUMS_IMPLEMENTATION_AUTOGEN_H_
 #define UI_GL_GL_ENUMS_IMPLEMENTATION_AUTOGEN_H_
 
@@ -3933,67 +3938,67 @@ static constexpr EnumToString kEnumToStringTable[] = {
     },
     {
         0x8E60,
-        "GL_MAX_MESH_UNIFORM_BLOCKS_NV",
+        "GL_MAX_MESH_UNIFORM_BLOCKS_EXT",
     },
     {
         0x8E61,
-        "GL_MAX_MESH_TEXTURE_IMAGE_UNITS_NV",
+        "GL_MAX_MESH_TEXTURE_IMAGE_UNITS_EXT",
     },
     {
         0x8E62,
-        "GL_MAX_MESH_IMAGE_UNIFORMS_NV",
+        "GL_MAX_MESH_IMAGE_UNIFORMS_EXT",
     },
     {
         0x8E63,
-        "GL_MAX_MESH_UNIFORM_COMPONENTS_NV",
+        "GL_MAX_MESH_UNIFORM_COMPONENTS_EXT",
     },
     {
         0x8E64,
-        "GL_MAX_MESH_ATOMIC_COUNTER_BUFFERS_NV",
+        "GL_MAX_MESH_ATOMIC_COUNTER_BUFFERS_EXT",
     },
     {
         0x8E65,
-        "GL_MAX_MESH_ATOMIC_COUNTERS_NV",
+        "GL_MAX_MESH_ATOMIC_COUNTERS_EXT",
     },
     {
         0x8E66,
-        "GL_MAX_MESH_SHADER_STORAGE_BLOCKS_NV",
+        "GL_MAX_MESH_SHADER_STORAGE_BLOCKS_EXT",
     },
     {
         0x8E67,
-        "GL_MAX_COMBINED_MESH_UNIFORM_COMPONENTS_NV",
+        "GL_MAX_COMBINED_MESH_UNIFORM_COMPONENTS_EXT",
     },
     {
         0x8E68,
-        "GL_MAX_TASK_UNIFORM_BLOCKS_NV",
+        "GL_MAX_TASK_UNIFORM_BLOCKS_EXT",
     },
     {
         0x8E69,
-        "GL_MAX_TASK_TEXTURE_IMAGE_UNITS_NV",
+        "GL_MAX_TASK_TEXTURE_IMAGE_UNITS_EXT",
     },
     {
         0x8E6A,
-        "GL_MAX_TASK_IMAGE_UNIFORMS_NV",
+        "GL_MAX_TASK_IMAGE_UNIFORMS_EXT",
     },
     {
         0x8E6B,
-        "GL_MAX_TASK_UNIFORM_COMPONENTS_NV",
+        "GL_MAX_TASK_UNIFORM_COMPONENTS_EXT",
     },
     {
         0x8E6C,
-        "GL_MAX_TASK_ATOMIC_COUNTER_BUFFERS_NV",
+        "GL_MAX_TASK_ATOMIC_COUNTER_BUFFERS_EXT",
     },
     {
         0x8E6D,
-        "GL_MAX_TASK_ATOMIC_COUNTERS_NV",
+        "GL_MAX_TASK_ATOMIC_COUNTERS_EXT",
     },
     {
         0x8E6E,
-        "GL_MAX_TASK_SHADER_STORAGE_BLOCKS_NV",
+        "GL_MAX_TASK_SHADER_STORAGE_BLOCKS_EXT",
     },
     {
         0x8E6F,
-        "GL_MAX_COMBINED_TASK_UNIFORM_COMPONENTS_NV",
+        "GL_MAX_COMBINED_TASK_UNIFORM_COMPONENTS_EXT",
     },
     {
         0x8E72,
@@ -5633,7 +5638,7 @@ static constexpr EnumToString kEnumToStringTable[] = {
     },
     {
         0x92DF,
-        "GL_MESH_OUTPUT_PER_VERTEX_GRANULARITY_NV",
+        "GL_MESH_OUTPUT_PER_VERTEX_GRANULARITY_EXT",
     },
     {
         0x92E0,
@@ -6361,7 +6366,7 @@ static constexpr EnumToString kEnumToStringTable[] = {
     },
     {
         0x9538,
-        "GL_MAX_MESH_OUTPUT_VERTICES_NV",
+        "GL_MAX_MESH_OUTPUT_VERTICES_EXT",
     },
     {
         0x9539,
@@ -6385,15 +6390,15 @@ static constexpr EnumToString kEnumToStringTable[] = {
     },
     {
         0x953E,
-        "GL_MESH_WORK_GROUP_SIZE_NV",
+        "GL_MESH_WORK_GROUP_SIZE_EXT",
     },
     {
         0x953F,
-        "GL_TASK_WORK_GROUP_SIZE_NV",
+        "GL_TASK_WORK_GROUP_SIZE_EXT",
     },
     {
         0x9543,
-        "GL_MESH_OUTPUT_PER_PRIMITIVE_GRANULARITY_NV",
+        "GL_MESH_OUTPUT_PER_PRIMITIVE_GRANULARITY_EXT",
     },
     {
         0x954D,
@@ -6421,15 +6426,15 @@ static constexpr EnumToString kEnumToStringTable[] = {
     },
     {
         0x9557,
-        "GL_MAX_MESH_VIEWS_NV",
+        "GL_MAX_MESH_MULTIVIEW_VIEW_COUNT_EXT",
     },
     {
         0x9559,
-        "GL_MESH_SHADER_NV",
+        "GL_MESH_SHADER_EXT",
     },
     {
         0x955A,
-        "GL_TASK_SHADER_NV",
+        "GL_TASK_SHADER_EXT",
     },
     {
         0x955B,
@@ -6505,31 +6510,31 @@ static constexpr EnumToString kEnumToStringTable[] = {
     },
     {
         0x9579,
-        "GL_MESH_VERTICES_OUT_NV",
+        "GL_MESH_VERTICES_OUT_EXT",
     },
     {
         0x957A,
-        "GL_MESH_PRIMITIVES_OUT_NV",
+        "GL_MESH_PRIMITIVES_OUT_EXT",
     },
     {
         0x957B,
-        "GL_MESH_OUTPUT_TYPE_NV",
+        "GL_MESH_OUTPUT_TYPE_EXT",
     },
     {
         0x957C,
-        "GL_MESH_SUBROUTINE_NV",
+        "GL_MESH_SUBROUTINE_EXT",
     },
     {
         0x957D,
-        "GL_TASK_SUBROUTINE_NV",
+        "GL_TASK_SUBROUTINE_EXT",
     },
     {
         0x957E,
-        "GL_MESH_SUBROUTINE_UNIFORM_NV",
+        "GL_MESH_SUBROUTINE_UNIFORM_EXT",
     },
     {
         0x957F,
-        "GL_TASK_SUBROUTINE_UNIFORM_NV",
+        "GL_TASK_SUBROUTINE_UNIFORM_EXT",
     },
     {
         0x9580,
@@ -6645,27 +6650,27 @@ static constexpr EnumToString kEnumToStringTable[] = {
     },
     {
         0x959C,
-        "GL_UNIFORM_BLOCK_REFERENCED_BY_MESH_SHADER_NV",
+        "GL_UNIFORM_BLOCK_REFERENCED_BY_MESH_SHADER_EXT",
     },
     {
         0x959D,
-        "GL_UNIFORM_BLOCK_REFERENCED_BY_TASK_SHADER_NV",
+        "GL_UNIFORM_BLOCK_REFERENCED_BY_TASK_SHADER_EXT",
     },
     {
         0x959E,
-        "GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_MESH_SHADER_NV",
+        "GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_MESH_SHADER_EXT",
     },
     {
         0x959F,
-        "GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_TASK_SHADER_NV",
+        "GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_TASK_SHADER_EXT",
     },
     {
         0x95A0,
-        "GL_REFERENCED_BY_MESH_SHADER_NV",
+        "GL_REFERENCED_BY_MESH_SHADER_EXT",
     },
     {
         0x95A1,
-        "GL_REFERENCED_BY_TASK_SHADER_NV",
+        "GL_REFERENCED_BY_TASK_SHADER_EXT",
     },
     {
         0x95A2,
@@ -7053,6 +7058,122 @@ static constexpr EnumToString kEnumToStringTable[] = {
     {
         0x9711,
         "GL_TEXTURE_CBCR_DEGAMMA_QCOM",
+    },
+    {
+        0x9740,
+        "GL_MAX_TASK_WORK_GROUP_TOTAL_COUNT_EXT",
+    },
+    {
+        0x9741,
+        "GL_MAX_MESH_WORK_GROUP_TOTAL_COUNT_EXT",
+    },
+    {
+        0x9742,
+        "GL_MAX_TASK_PAYLOAD_SIZE_EXT",
+    },
+    {
+        0x9743,
+        "GL_MAX_TASK_SHARED_MEMORY_SIZE_EXT",
+    },
+    {
+        0x9744,
+        "GL_MAX_MESH_SHARED_MEMORY_SIZE_EXT",
+    },
+    {
+        0x9745,
+        "GL_MAX_TASK_PAYLOAD_AND_SHARED_MEMORY_SIZE_EXT",
+    },
+    {
+        0x9746,
+        "GL_MAX_MESH_PAYLOAD_AND_SHARED_MEMORY_SIZE_EXT",
+    },
+    {
+        0x9747,
+        "GL_MAX_MESH_OUTPUT_MEMORY_SIZE_EXT",
+    },
+    {
+        0x9748,
+        "GL_MAX_MESH_PAYLOAD_AND_OUTPUT_MEMORY_SIZE_EXT",
+    },
+    {
+        0x9749,
+        "GL_MAX_MESH_OUTPUT_COMPONENTS_EXT",
+    },
+    {
+        0x974A,
+        "GL_MAX_MESH_OUTPUT_LAYERS_EXT",
+    },
+    {
+        0x974B,
+        "GL_MAX_PREFERRED_TASK_WORK_GROUP_INVOCATIONS_EXT",
+    },
+    {
+        0x974C,
+        "GL_MAX_PREFERRED_MESH_WORK_GROUP_INVOCATIONS_EXT",
+    },
+    {
+        0x974D,
+        "GL_MESH_PREFERS_LOCAL_INVOCATION_VERTEX_OUTPUT_EXT",
+    },
+    {
+        0x974E,
+        "GL_MESH_PREFERS_LOCAL_INVOCATION_PRIMITIVE_OUTPUT_EXT",
+    },
+    {
+        0x974F,
+        "GL_MESH_PREFERS_COMPACT_VERTEX_OUTPUT_EXT",
+    },
+    {
+        0x9750,
+        "GL_MESH_PREFERS_COMPACT_PRIMITIVE_OUTPUT_EXT",
+    },
+    {
+        0x9751,
+        "GL_MAX_TASK_WORK_GROUP_COUNT_EXT",
+    },
+    {
+        0x9752,
+        "GL_MAX_MESH_WORK_GROUP_COUNT_EXT",
+    },
+    {
+        0x9753,
+        "GL_TASK_SHADER_INVOCATIONS_EXT",
+    },
+    {
+        0x9754,
+        "GL_MESH_SHADER_INVOCATIONS_EXT",
+    },
+    {
+        0x9755,
+        "GL_MESH_PRIMITIVES_GENERATED_EXT",
+    },
+    {
+        0x9756,
+        "GL_MAX_MESH_OUTPUT_PRIMITIVES_EXT",
+    },
+    {
+        0x9757,
+        "GL_MAX_MESH_WORK_GROUP_INVOCATIONS_EXT",
+    },
+    {
+        0x9758,
+        "GL_MAX_MESH_WORK_GROUP_SIZE_EXT",
+    },
+    {
+        0x9759,
+        "GL_MAX_TASK_WORK_GROUP_INVOCATIONS_EXT",
+    },
+    {
+        0x975A,
+        "GL_MAX_TASK_WORK_GROUP_SIZE_EXT",
+    },
+    {
+        0x9770,
+        "GL_HUAWEI_SHADER_BINARY",
+    },
+    {
+        0x9771,
+        "GL_HUAWEI_PROGRAM_BINARY",
     },
     {
         0xC0,

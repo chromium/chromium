@@ -29,5 +29,4 @@ $../../
 +third_party/ipcz/
 +third_party/liburlpattern/
 -tools/
--ui/gl/  # Unsafe generated files.
 -v8/
