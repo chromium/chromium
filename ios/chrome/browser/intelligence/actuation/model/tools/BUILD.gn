@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 source_set("actuation_interface") {
-  sources = [ "actuation_command.h" ]
+  sources = [ "actuation_tool.h" ]
 
   deps = [ "//base" ]
 }

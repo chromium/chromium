@@ -309,8 +309,8 @@ bool IsGeminiDynamicSettingsEnabled();
 BASE_DECLARE_FEATURE(kActuationTools);
 bool IsActuationEnabled();
 
-// Returns true if the specified action is disabled via the "DisabledActions"
+// Returns true if the specified tool is disabled via the "DisabledTools"
 // feature parameter of the `kActuationTools` feature.
-bool IsActionDisabled(optimization_guide::proto::Action::ActionCase action);
+bool IsToolDisabled(optimization_guide::proto::Action::ActionCase tool);
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

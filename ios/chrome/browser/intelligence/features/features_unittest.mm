@@ -15,32 +15,32 @@ TEST_F(ActuationFeaturesTest, IsActuationEnabledDefault) {
   EXPECT_FALSE(IsActuationEnabled());
 }
 
-TEST_F(ActuationFeaturesTest, IsActionDisabled_Default) {
+TEST_F(ActuationFeaturesTest, IsToolDisabled_Default) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   scoped_feature_list.InitAndEnableFeature(kActuationTools);
-  // Arbitrarily select kClick to test that actions are enabled by default.
-  EXPECT_FALSE(IsActionDisabled(optimization_guide::proto::Action::kClick));
+  // Arbitrarily select kClick to test that tools are enabled by default.
+  EXPECT_FALSE(IsToolDisabled(optimization_guide::proto::Action::kClick));
 }
 
-TEST_F(ActuationFeaturesTest, IsActionDisabled_ActionDisabled) {
+TEST_F(ActuationFeaturesTest, IsToolDisabled_ToolDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   base::FieldTrialParams params;
-  params["DisabledActions"] = "ClickAction,TypeAction";
+  params["DisabledTools"] = "ClickTool,TypeTool";
   scoped_feature_list.InitAndEnableFeatureWithParameters(kActuationTools,
                                                          params);
 
-  EXPECT_TRUE(IsActionDisabled(optimization_guide::proto::Action::kClick));
-  EXPECT_TRUE(IsActionDisabled(optimization_guide::proto::Action::kType));
-  // ScrollAction is NOT in the disabled list, so it should be enabled.
-  EXPECT_FALSE(IsActionDisabled(optimization_guide::proto::Action::kScroll));
+  EXPECT_TRUE(IsToolDisabled(optimization_guide::proto::Action::kClick));
+  EXPECT_TRUE(IsToolDisabled(optimization_guide::proto::Action::kType));
+  // ScrollTool is NOT in the disabled list, so it should be enabled.
+  EXPECT_FALSE(IsToolDisabled(optimization_guide::proto::Action::kScroll));
 }
 
-TEST_F(ActuationFeaturesTest, IsActionDisabled_ActionNotSet) {
+TEST_F(ActuationFeaturesTest, IsToolDisabled_ToolNotSet) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   scoped_feature_list.InitAndEnableFeature(kActuationTools);
   EXPECT_TRUE(
-      IsActionDisabled(optimization_guide::proto::Action::ACTION_NOT_SET));
+      IsToolDisabled(optimization_guide::proto::Action::ACTION_NOT_SET));
 }

@@ -4,14 +4,14 @@
 
 source_set("model") {
   sources = [
-    "actuation_action_factory.h",
-    "actuation_action_factory.mm",
     "actuation_service.h",
     "actuation_service.mm",
     "actuation_service_factory.h",
     "actuation_service_factory.mm",
+    "actuation_tool_factory.h",
+    "actuation_tool_factory.mm",
   ]
-  public_deps = [ "//ios/chrome/browser/intelligence/actuation/model/actions:actuation_interface" ]
+  public_deps = [ "//ios/chrome/browser/intelligence/actuation/model/tools:actuation_interface" ]
   deps = [
     "//base",
     "//components/keyed_service/core",
@@ -25,8 +25,8 @@ source_set("model") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "actuation_action_factory_unittest.mm",
     "actuation_service_unittest.mm",
+    "actuation_tool_factory_unittest.mm",
   ]
   deps = [
     ":model",

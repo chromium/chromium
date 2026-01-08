@@ -10,53 +10,53 @@
 
 using optimization_guide::proto::Action;
 
-std::optional<std::string> ActuationActionCaseToString(
-    Action::ActionCase action) {
-  switch (action) {
+std::optional<std::string> ActuationActionCaseToToolName(
+    Action::ActionCase tool) {
+  switch (tool) {
     case Action::kClick:
-      return "ClickAction";
+      return "ClickTool";
     case Action::kType:
-      return "TypeAction";
+      return "TypeTool";
     case Action::kScroll:
-      return "ScrollAction";
+      return "ScrollTool";
     case Action::kMoveMouse:
-      return "MoveMouseAction";
+      return "MoveMouseTool";
     case Action::kDragAndRelease:
-      return "DragAndReleaseAction";
+      return "DragAndReleaseTool";
     case Action::kSelect:
-      return "SelectAction";
+      return "SelectTool";
     case Action::kNavigate:
-      return "NavigateAction";
+      return "NavigateTool";
     case Action::kBack:
-      return "HistoryBackAction";
+      return "HistoryBackTool";
     case Action::kForward:
-      return "HistoryForwardAction";
+      return "HistoryForwardTool";
     case Action::kWait:
-      return "WaitAction";
+      return "WaitTool";
     case Action::kCreateTab:
-      return "CreateTabAction";
+      return "CreateTabTool";
     case Action::kCloseTab:
-      return "CloseTabAction";
+      return "CloseTabTool";
     case Action::kActivateTab:
-      return "ActivateTabAction";
+      return "ActivateTabTool";
     case Action::kCreateWindow:
-      return "CreateWindowAction";
+      return "CreateWindowTool";
     case Action::kCloseWindow:
-      return "CloseWindowAction";
+      return "CloseWindowTool";
     case Action::kActivateWindow:
-      return "ActivateWindowAction";
+      return "ActivateWindowTool";
     case Action::kYieldToUser:
-      return "YieldToUserAction";
+      return "YieldToUserTool";
     case Action::kAttemptLogin:
-      return "AttemptLoginAction";
+      return "AttemptLoginTool";
     case Action::kScrollTo:
-      return "ScrollToAction";
+      return "ScrollToTool";
     case Action::kScriptTool:
-      return "ScriptToolAction";
+      return "ScriptToolTool";
     case Action::kMediaControl:
-      return "MediaControlAction";
+      return "MediaControlTool";
     case Action::kAttemptFormFilling:
-      return "AttemptFormFillingAction";
+      return "AttemptFormFillingTool";
     case Action::ACTION_NOT_SET:
       return std::nullopt;
   }
