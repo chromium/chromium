@@ -73,14 +73,6 @@ TOTAL_DEVICE_POLICY_EXTERNAL_DATA_MAX_SIZE = 1024 * 1024 * 100
 # Instead, let the build automatically add the appropriate notices
 # when you mark a policy with sensitive: True
 SENSITIVE_POLICIES_WITH_MANUAL_NOTICE = [
-    "DefaultSearchProviderEnabled",
-    "PasswordProtectionLoginURLs",
-    "PasswordProtectionChangePasswordURL",
-    "SafeBrowsingEnabled",
-    "SafeBrowsingAllowlistDomains",
-    "HomepageLocation",
-    "HomepageIsNewTabPage",
-    "NewTabPageLocation",
     "RestoreOnStartup",
     "RestoreOnStartupURLs",
     "FirstPartySetsOverrides",
