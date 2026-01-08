@@ -308,6 +308,11 @@ CanvasResourceProviderSharedImage::~CanvasResourceProviderSharedImage() {
   GetFlushForImageListener()->RemoveObserver(this);
 }
 
+ScopedRasterTimer CanvasResourceProviderSharedImage::CreateScopedRasterTimer() {
+  return ScopedRasterTimer(IsAccelerated() ? RasterInterface() : nullptr, *this,
+                           always_enable_raster_timers_for_testing_);
+}
+
 void CanvasResourceProviderSharedImage::OnContextDestroyed() {
   if (skia_canvas_) {
     skia_canvas_->reset_image_provider();
@@ -1613,13 +1618,17 @@ SkSurfaceProps CanvasResourceProvider::GetSkSurfaceProps() const {
   return skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
 }
 
+ScopedRasterTimer CanvasResourceProvider::CreateScopedRasterTimer() {
+  return ScopedRasterTimer(nullptr, *this,
+                           always_enable_raster_timers_for_testing_);
+}
+
 std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
     FlushReason reason /*=FlushReason::kOther*/) {
   if (!recorder_->HasReleasableDrawOps()) {
     return std::nullopt;
   }
-  ScopedRasterTimer timer(IsAccelerated() ? RasterInterface() : nullptr, *this,
-                          always_enable_raster_timers_for_testing_);
+  auto timer = CreateScopedRasterTimer();
   bool want_to_print = (IsPrinting() && reason != FlushReason::kClear) ||
                        reason == FlushReason::kPrinting ||
                        reason == FlushReason::kCanvasPushFrameWhilePrinting;

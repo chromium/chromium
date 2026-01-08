@@ -196,6 +196,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // FlushCanvas and preserve recording only if IsPrinting or
   // FlushReason indicates printing in progress.
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason = FlushReason::kOther);
+  virtual ScopedRasterTimer CreateScopedRasterTimer();
 
   // TODO(crbug.com/371227617): Trim callsites of this method to those that
   // actually need to pass this info to Skia APIs and then eliminate the
@@ -553,6 +554,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
  private:
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
+  ScopedRasterTimer CreateScopedRasterTimer() override;
 
   // Returns true iff the resource provider is (a) using a GPU channel for
   // software SharedImages and (b) that channel has been lost.
