@@ -1773,6 +1773,15 @@
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_URL" desc="The label of the 'URL' field of form for the user to edit an existing pinned site">
         URL
       </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_SNACKBAR_ADDED_AND_PINNED" desc="The notification displayed at the bottom of the screen after the user has pinned a site through the 'Add site' button">
+        Site added and pinned
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_SNACKBAR_EDITS_SAVED" desc="The notification displayed at the bottom of the screen after the user has successfully edited a pinned site">
+        Edits saved
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_SNACKBAR_PINNED" desc="The notification displayed at the bottom of the screen after the user has pinned a site">
+        Site pinned
+      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_ALLOW" desc="Label indicating user can allow price tracking notifications">
           Allow price tracking notifications…
       </message>
@@ -4256,7 +4265,7 @@
         Most visited
       </message>
       <message name="IDS_IOS_NEW_TAB_MOST_VISITED_ITEM_REMOVED" desc="Text shown when the user removes one of the most visited websites on the new tab page.">
-        Item removed
+        This site won't be shown again
       </message>
       <message name="IDS_IOS_NEW_TAB_PAGE" desc="Label for text saying the user is on the new tab page">
         New tab page

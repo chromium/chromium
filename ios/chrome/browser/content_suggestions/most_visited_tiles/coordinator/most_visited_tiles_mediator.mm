@@ -263,7 +263,12 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 - (void)removeMostVisited:(MostVisitedItem*)item {
   [self.contentSuggestionsMetricsRecorder recordMostVisitedTileRemoved];
   [self blockMostVisitedURL:item.URL];
-  [self showMostVisitedUndoForURL:item.URL];
+  __weak MostVisitedTilesMediator* weakSelf = self;
+  [self showSnackbarWithMessage:l10n_util::GetNSString(
+                                    IDS_IOS_NEW_TAB_MOST_VISITED_ITEM_REMOVED)
+                     undoAction:^{
+                       [weakSelf allowMostVisitedURL:item.URL];
+                     }];
 }
 
 - (void)openModalToAddPinnedSite {
@@ -353,8 +358,18 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 - (BOOL)addPinnedSiteWithTitle:(NSString*)title URL:(NSString*)URL {
   GURL fixedUpURL =
       url_formatter::FixupURL(base::SysNSStringToUTF8(URL), std::string());
-  return _mostVisitedSites->AddCustomLink(fixedUpURL,
-                                          base::SysNSStringToUTF16(title));
+  if (!_mostVisitedSites->AddCustomLink(fixedUpURL,
+                                        base::SysNSStringToUTF16(title))) {
+    return NO;
+  }
+  __weak MostVisitedTilesMediator* weakSelf = self;
+  [self showSnackbarWithMessage:
+            l10n_util::GetNSString(
+                IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_SNACKBAR_ADDED_AND_PINNED)
+                     undoAction:^{
+                       [weakSelf undoLastPinAction];
+                     }];
+  return YES;
 }
 
 - (BOOL)editPinnedSiteForURL:(NSString*)oldURL
@@ -367,8 +382,18 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
     // Do not provide the new URL if only the title is changing.
     newKeyURL = GURL();
   }
-  return _mostVisitedSites->UpdateCustomLink(oldKeyURL, newKeyURL,
-                                             base::SysNSStringToUTF16(title));
+  if (!_mostVisitedSites->UpdateCustomLink(oldKeyURL, newKeyURL,
+                                           base::SysNSStringToUTF16(title))) {
+    return NO;
+  }
+  __weak MostVisitedTilesMediator* weakSelf = self;
+  [self showSnackbarWithMessage:
+            l10n_util::GetNSString(
+                IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_SNACKBAR_EDITS_SAVED)
+                     undoAction:^{
+                       [weakSelf undoLastPinAction];
+                     }];
+  return YES;
 }
 
 #pragma mark - Private
@@ -431,24 +456,6 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   [self useFreshMostVisited];
 }
 
-// Shows a snackbar with an action to undo the removal of the most visited item
-// with a `URL`.
-- (void)showMostVisitedUndoForURL:(GURL)URL {
-  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
-  __weak MostVisitedTilesMediator* weakSelf = self;
-  action.handler = ^{
-    [weakSelf allowMostVisitedURL:URL];
-  };
-  action.title = l10n_util::GetNSString(IDS_NEW_TAB_UNDO_THUMBNAIL_REMOVE);
-
-  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  SnackbarMessage* message = [[SnackbarMessage alloc]
-      initWithTitle:l10n_util::GetNSString(
-                        IDS_IOS_NEW_TAB_MOST_VISITED_ITEM_REMOVED)];
-  message.action = action;
-  [self.snackbarHandler showSnackbarMessage:message];
-}
-
 - (void)allowMostVisitedURL:(GURL)URL {
   _mostVisitedSites->AddOrRemoveBlockedUrl(URL, false);
   [self useFreshMostVisited];
@@ -499,7 +506,24 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
     _mostVisitedSites->DeleteCustomLink(url);
     return;
   }
-  _mostVisitedSites->AddCustomLink(url, base::SysNSStringToUTF16(item.title));
+  if (!_mostVisitedSites->AddCustomLink(url,
+                                        base::SysNSStringToUTF16(item.title))) {
+    return;
+  }
+  // Show snackbar message.
+  __weak MostVisitedTilesMediator* weakSelf = self;
+  [self showSnackbarWithMessage:
+            l10n_util::GetNSString(
+                IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_SNACKBAR_PINNED)
+                     undoAction:^{
+                       [weakSelf undoLastPinAction];
+                     }];
+}
+
+// Undo the last action that adds/removes/edits a pinned site.
+- (void)undoLastPinAction {
+  CHECK(IsContentSuggestionsCustomizable());
+  _mostVisitedSites->UndoCustomLinkAction();
 }
 
 // Converts a ntp_tiles::NTPTile `tile` to a MostVisitedItem
@@ -513,6 +537,19 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   suggestion.titleSource = tile.title_source;
 
   return suggestion;
+}
+
+// Display a snackbar with `message` and an "undo" button, invoking `undoAction`
+// on tap.
+- (void)showSnackbarWithMessage:(NSString*)message
+                     undoAction:(ProceduralBlock)undoAction {
+  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
+  action.handler = undoAction;
+  action.title = l10n_util::GetNSString(IDS_NEW_TAB_UNDO_THUMBNAIL_REMOVE);
+  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
+  SnackbarMessage* snackbar = [[SnackbarMessage alloc] initWithTitle:message];
+  snackbar.action = action;
+  [self.snackbarHandler showSnackbarMessage:snackbar];
 }
 
 @end
