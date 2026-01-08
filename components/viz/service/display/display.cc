@@ -1112,9 +1112,6 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     }
     pending_swaps_++;
 
-    UMA_HISTOGRAM_COUNTS_100("Compositing.Display.PendingSwaps",
-                             pending_swaps_);
-
     RecordFrameTypes(has_interactive_frame, has_animated_frame);
 
     renderer_->SwapBuffers(std::move(swap_frame_data));
