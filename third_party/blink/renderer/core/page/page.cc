@@ -1283,8 +1283,7 @@ void Page::DidCommitLoad(LocalFrame* frame) {
     // See crbug.com/642279
     GetVisualViewport().SetScrollOffset(
         ScrollOffset(), mojom::blink::ScrollType::kProgrammatic,
-        cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant,
-        ScrollableArea::ScrollCallback());
+        cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant);
   }
   // crbug/1312107: If DevTools has "Highlight ad frames" checked when the
   // main frame is refreshed or the ad frame is navigated to a different

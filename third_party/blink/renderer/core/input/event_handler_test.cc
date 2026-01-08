@@ -2234,32 +2234,23 @@ TEST_F(EventHandlerSimTest, TestUpdateHoverAfterJSScrollAtBeginFrame) {
   // Find the scrollable area and set scroll offset.
   ScrollableArea* scrollable_area =
       GetDocument().GetLayoutView()->GetScrollableArea();
-  bool finished = false;
-  scrollable_area->SetScrollOffset(
-      ScrollOffset(0, 1000), mojom::blink::ScrollType::kProgrammatic,
-      cc::ScrollSourceType::kAbsoluteScroll,
-      mojom::blink::ScrollBehavior::kSmooth,
-      ScrollableArea::ScrollCallback(BindOnce(
-          [](bool* finished, ScrollableArea::ScrollCompletionMode) {
-            *finished = true;
-          },
-          Unretained(&finished))));
+  scrollable_area->SetScrollOffset(ScrollOffset(0, 1000),
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kAbsoluteScroll,
+                                   mojom::blink::ScrollBehavior::kSmooth);
   Compositor().BeginFrame();
   LocalFrameView* frame_view = GetDocument().View();
   ASSERT_EQ(0, frame_view->LayoutViewport()->GetScrollOffset().y());
-  ASSERT_FALSE(finished);
   // Scrolling is in progress but the hover is not updated yet.
   Compositor().BeginFrame();
   // Start scroll animation, but it is not finished.
   Compositor().BeginFrame();
   ASSERT_GT(frame_view->LayoutViewport()->GetScrollOffset().y(), 0);
-  ASSERT_FALSE(finished);
 
   // Mark hover state dirty but the hover state does not change after the
   // animation finishes.
   Compositor().BeginFrame(1);
   ASSERT_EQ(1000, frame_view->LayoutViewport()->GetScrollOffset().y());
-  ASSERT_TRUE(finished);
   EXPECT_TRUE(element->IsHovered());
 
   // Hover state is updated after the begin frame.

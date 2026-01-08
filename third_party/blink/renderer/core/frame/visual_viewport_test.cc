@@ -1735,8 +1735,7 @@ TEST_P(VisualViewportTest, visualViewportIsInert) {
 
   visual_viewport.SetScrollOffset(
       ScrollOffset(10, 15), mojom::blink::ScrollType::kProgrammatic,
-      cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant,
-      ScrollableArea::ScrollCallback());
+      cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant);
 
   ASSERT_EQ(10, visual_viewport.GetScrollOffset().x());
   ASSERT_EQ(15, visual_viewport.GetScrollOffset().y());

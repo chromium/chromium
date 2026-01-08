@@ -56,7 +56,6 @@
 #include "ui/gfx/geometry/quad_f.h"
 
 namespace base {
-class ScopedClosureRunner;
 class SingleThreadTaskRunner;
 }  // namespace base
 
@@ -124,20 +123,12 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
                                   cc::ScrollSourceType source_type,
                                   ScrollCallback on_finish);
 
-  // See https://crbug.com/413002675: `on_finish` is not always executed at the
-  // end of the scroll (example: it may be executed while the scroll is in
-  // progress for animated programmatic scrolls).
-  virtual bool SetScrollOffset(const ScrollOffset&,
-                               mojom::blink::ScrollType,
-                               cc::ScrollSourceType,
-                               mojom::blink::ScrollBehavior,
-                               ScrollCallback on_finish,
-                               bool targeted_scroll = false);
-  bool SetScrollOffset(
+  virtual bool SetScrollOffset(
       const ScrollOffset&,
       mojom::blink::ScrollType,
       cc::ScrollSourceType,
-      mojom::blink::ScrollBehavior = mojom::blink::ScrollBehavior::kInstant);
+      mojom::blink::ScrollBehavior = mojom::blink::ScrollBehavior::kInstant,
+      bool targeted_scroll = false);
   void ScrollBy(
       const ScrollOffset&,
       mojom::blink::ScrollType,
@@ -190,21 +181,16 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // SnapForDisplacement() return true if snapping was performed, and false
   // otherwise. Note that this does not necessarily mean that any scrolling was
   // performed as a result e.g., if we are already at the snap point.
-  // The scroll callback parameter is used to set the hover state dirty and
-  // send a scroll end event when the scroll ends without snap or the snap
-  // point is the same as the scroll position.
   //
   // SnapAtCurrentPosition() calls SnapForEndPosition() with the current
   // scroll position.
   bool SnapAtCurrentPosition(bool scrolled_x,
                              bool scrolled_y,
-                             cc::ScrollSourceType source_type,
-                             base::ScopedClosureRunner on_finish);
+                             cc::ScrollSourceType source_type);
   bool SnapForEndPosition(const gfx::PointF& end_position,
                           bool scrolled_x,
                           bool scrolled_y,
-                          cc::ScrollSourceType source_type,
-                          base::ScopedClosureRunner on_finish);
+                          cc::ScrollSourceType source_type);
   bool SnapForDirection(ScrollDirectionPhysical direction);
   bool SnapForPageScroll(ScrollDirectionPhysical direction);
   bool SnapForDocumentScroll(ScrollDirectionPhysical direction);
@@ -718,7 +704,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   bool PerformSnapping(const cc::SnapSelectionStrategy& strategy,
                        cc::ScrollSourceType source_type,
                        mojom::blink::ScrollBehavior behavior,
-                       base::ScopedClosureRunner on_finish,
                        bool preserve_pinned_marker);
 
   void ScrollToScrollInitialTarget(const LayoutObject*);

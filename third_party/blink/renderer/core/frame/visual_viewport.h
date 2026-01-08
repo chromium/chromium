@@ -188,12 +188,12 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
 
   // ScrollableArea implementation
   ChromeClient* GetChromeClient() const override;
-  bool SetScrollOffset(const ScrollOffset&,
-                       mojom::blink::ScrollType,
-                       cc::ScrollSourceType,
-                       mojom::blink::ScrollBehavior,
-                       ScrollCallback on_finish,
-                       bool targeted_scroll = false) override;
+  bool SetScrollOffset(
+      const ScrollOffset&,
+      mojom::blink::ScrollType,
+      cc::ScrollSourceType,
+      mojom::blink::ScrollBehavior = mojom::blink::ScrollBehavior::kInstant,
+      bool targeted_scroll = false) override;
   PhysicalRect ScrollIntoView(
       const PhysicalRect&,
       const PhysicalBoxStrut& scroll_margin,

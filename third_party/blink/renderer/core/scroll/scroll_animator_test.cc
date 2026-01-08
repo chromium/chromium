@@ -127,12 +127,10 @@ class MockScrollableAreaForAnimatorTest
       cc::ScrollSourceType source_type = cc::ScrollSourceType::kNone,
       mojom::blink::ScrollBehavior behavior =
           mojom::blink::ScrollBehavior::kInstant,
-      ScrollCallback on_finish = ScrollCallback(),
       bool targeted_scroll = false) override {
     if (animator)
       animator->SetCurrentOffset(offset);
-    return ScrollableArea::SetScrollOffset(offset, type, source_type, behavior,
-                                           std::move(on_finish));
+    return ScrollableArea::SetScrollOffset(offset, type, source_type, behavior);
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner() const final {

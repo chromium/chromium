@@ -249,8 +249,7 @@ class WebFrameWidgetScrollContainerHitTest : public WebFrameWidgetSimTest {
 
     visual_viewport.SetScrollOffset(
         ScrollOffset(0, 50), mojom::blink::ScrollType::kProgrammatic,
-        cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant,
-        ScrollableArea::ScrollCallback());
+        cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant);
     EXPECT_EQ(visual_viewport.GetScrollOffset(), ScrollOffset(0, 50));
     scrollable_id = widget.GetScrollableContainerIdAt(box2_target_offset);
     EXPECT_EQ(scrollable_id, box2_dom_node_id);

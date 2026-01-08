@@ -319,7 +319,6 @@ bool RootFrameViewport::SetScrollOffset(
     mojom::blink::ScrollType scroll_type,
     cc::ScrollSourceType source_type,
     mojom::blink::ScrollBehavior scroll_behavior,
-    ScrollCallback on_finish,
     bool targeted_scroll) {
   UpdateScrollAnimator();
 
@@ -328,20 +327,17 @@ bool RootFrameViewport::SetScrollOffset(
 
   if (scroll_type == mojom::blink::ScrollType::kAnchoring) {
     return DistributeScrollBetweenViewports(offset, scroll_type, source_type,
-                                            scroll_behavior, kLayoutViewport,
-                                            std::move(on_finish));
+                                            scroll_behavior, kLayoutViewport);
   }
 
   if (scroll_behavior == mojom::blink::ScrollBehavior::kSmooth) {
     return DistributeScrollBetweenViewports(offset, scroll_type, source_type,
-                                            scroll_behavior, kVisualViewport,
-                                            std::move(on_finish));
+                                            scroll_behavior, kVisualViewport);
   }
 
   ScrollOffset clamped_offset = ClampScrollOffset(offset);
   return ScrollableArea::SetScrollOffset(clamped_offset, scroll_type,
-                                         source_type, scroll_behavior,
-                                         std::move(on_finish), false);
+                                         source_type, scroll_behavior);
 }
 
 mojom::blink::ScrollBehavior RootFrameViewport::ScrollBehaviorStyle() const {
@@ -402,8 +398,7 @@ PhysicalRect RootFrameViewport::ScrollIntoView(
           params->behavior, GetLayoutBox()->StyleRef().GetScrollBehavior());
     }
     SetScrollOffset(new_scroll_offset, params->type,
-                    cc::ScrollSourceType::kAbsoluteScroll, behavior,
-                    ScrollCallback());
+                    cc::ScrollSourceType::kAbsoluteScroll, behavior);
   }
 
   // Return the newly moved rect to absolute coordinates.
@@ -421,7 +416,7 @@ void RootFrameViewport::UpdateScrollOffset(const ScrollOffset& offset,
                                            cc::ScrollSourceType source_type) {
   DistributeScrollBetweenViewports(offset, scroll_type, source_type,
                                    mojom::blink::ScrollBehavior::kInstant,
-                                   kVisualViewport, ScrollCallback());
+                                   kVisualViewport);
 }
 
 bool RootFrameViewport::DistributeScrollBetweenViewports(
@@ -429,8 +424,7 @@ bool RootFrameViewport::DistributeScrollBetweenViewports(
     mojom::blink::ScrollType scroll_type,
     cc::ScrollSourceType source_type,
     mojom::blink::ScrollBehavior behavior,
-    ViewportToScrollFirst scroll_first,
-    ScrollCallback on_finish) {
+    ViewportToScrollFirst scroll_first) {
   // Make sure we use the scroll offsets as reported by each viewport's
   // ScrollAnimatorBase, since its ScrollableArea's offset may have the
   // fractional part truncated off.
@@ -441,10 +435,6 @@ bool RootFrameViewport::DistributeScrollBetweenViewports(
   ScrollOffset delta = offset - old_offset;
 
   if (delta.IsZero()) {
-    if (on_finish) {
-      std::move(on_finish).Run(
-          ScrollableArea::ScrollCompletionMode::kZeroDelta);
-    }
     return false;
   }
 
@@ -466,8 +456,6 @@ bool RootFrameViewport::DistributeScrollBetweenViewports(
   ScrollOffset secondary_offset = secondary.ClampScrollOffset(
       secondary.GetScrollAnimator().CurrentOffset() + unconsumed_by_primary);
 
-  auto all_done = MakeViewportScrollCompletion(std::move(on_finish));
-
   // DistributeScrollBetweenViewports can be called from SetScrollOffset,
   // so we assume that aborting sequenced smooth scrolls has been handled.
   // It can also be called from inside an animation to set the offset in
@@ -477,10 +465,10 @@ bool RootFrameViewport::DistributeScrollBetweenViewports(
   // is dispatched to the DOMWindow before the VisualViewport.
   bool did_scroll = LayoutViewport().SetScrollOffset(
       scroll_first == kLayoutViewport ? primary_offset : secondary_offset,
-      scroll_type, source_type, behavior, all_done, false);
+      scroll_type, source_type, behavior, false);
   did_scroll |= GetVisualViewport().SetScrollOffset(
       scroll_first == kVisualViewport ? primary_offset : secondary_offset,
-      scroll_type, source_type, behavior, all_done, false);
+      scroll_type, source_type, behavior, false);
   return did_scroll;
 }
 
