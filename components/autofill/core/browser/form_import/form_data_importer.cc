@@ -637,6 +637,8 @@ FormDataImporter::GetAddressObservedFieldValues(
             import_log_buffer)) {
       has_invalid_field_types = true;
     }
+
+    const auto field_and_value_it = preceding_values.find(field_type);
     // Found phone number component field.
     // TODO(crbug.com/40735892) Remove feature check when launched.
     if (GroupTypeOfFieldType(field_type) == FieldTypeGroup::kPhone &&
@@ -649,7 +651,7 @@ FormDataImporter::GetAddressObservedFieldValues(
       // type a second time implies that it belongs to a new number. Since
       // Autofill currently supports storing only one phone number per profile,
       // ignore this and all subsequent phone number fields.
-      if (preceding_values.contains(field_type)) {
+      if (field_and_value_it != preceding_values.end()) {
         ignore_phone_number_fields = true;
         continue;
       }
@@ -658,8 +660,8 @@ FormDataImporter::GetAddressObservedFieldValues(
     // (which is typically user-friendly) is prioritized over the potentially
     // less readable option value that might be present in a corresponding
     // <input> field.
-    if (!preceding_values.contains(field_type) ||
-        !preceding_values[field_type].selected_option_value.has_value() ||
+    if (field_and_value_it == preceding_values.end() ||
+        !field_and_value_it->second.selected_option_value.has_value() ||
         selected_option_value.has_value()) {
       preceding_values.insert_or_assign(
           field_type, ValueForImport{.value_for_import = std::move(value),
