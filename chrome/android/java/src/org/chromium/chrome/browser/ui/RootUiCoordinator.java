@@ -564,8 +564,6 @@ public class RootUiCoordinator
                         && savedInstanceState.getBoolean(
                                 IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING,
                                 false);
-        // TODO(crbug.com/459921316): Only persist incognito state for app updates, state should be
-        //  discarded after a reboot.
         boolean persistedIncognitoReauthPending =
                 persistentState != null
                         && persistentState.getBoolean(

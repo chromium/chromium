@@ -8,11 +8,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+
+import static org.chromium.chrome.browser.incognito.reauth.IncognitoReauthControllerImpl.PREVIOUS_VERSION_CODE;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -38,6 +42,7 @@ import org.robolectric.annotation.LooperMode.Mode;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -129,6 +134,10 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
         verify(mTabModelSelectorMock, times(1)).isTabStateInitialized();
         mTabModelSelectorObserver = mTabModelSelectorObserverArgumentCaptor.getValue();
         assertNotNull("Didn't add any observer.", mTabModelSelectorObserver);
+
+        doReturn(BuildConfig.VERSION_CODE - 1)
+                .when(mPersistentStateMock)
+                .getLong(eq(PREVIOUS_VERSION_CODE), anyLong());
     }
 
     @After
@@ -184,6 +193,7 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
 
         verify(mCipherFactoryMock, times(1)).restoreFromBundle(mSavedInstanceStateMock);
         verify(mCipherFactoryMock, times(1)).restoreFromPersistableBundle(mPersistentStateMock);
+        verify(mPersistentStateMock, times(1)).getLong(eq(PREVIOUS_VERSION_CODE), anyLong());
         verify(mIntentMock, times(1))
                 .getBooleanExtra(IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
     }
@@ -213,6 +223,7 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
                 .getBoolean(IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false);
         verify(mPersistentStateMock, times(1))
                 .getBoolean(IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false);
+        verify(mPersistentStateMock, times(1)).getLong(eq(PREVIOUS_VERSION_CODE), anyLong());
         verify(mIntentMock, times(1))
                 .getBooleanExtra(IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
     }
@@ -253,6 +264,7 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
                 .getBoolean(IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false);
         verify(mSavedInstanceStateMock, times(1))
                 .getBoolean(IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED, false);
+        verify(mPersistentStateMock, times(1)).getLong(eq(PREVIOUS_VERSION_CODE), anyLong());
         verify(mIntentMock, times(1))
                 .getBooleanExtra(IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
     }
@@ -293,6 +305,7 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
                 .getBoolean(IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false);
         verify(mPersistentStateMock, times(1))
                 .getBoolean(IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED, false);
+        verify(mPersistentStateMock, times(1)).getLong(eq(PREVIOUS_VERSION_CODE), anyLong());
         verify(mIntentMock, times(1))
                 .getBooleanExtra(IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
     }
@@ -338,6 +351,7 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
                 .getBoolean(IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false);
         verify(mSavedInstanceStateMock, times(1))
                 .getBoolean(IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED, false);
+        verify(mPersistentStateMock, times(1)).getLong(eq(PREVIOUS_VERSION_CODE), anyLong());
         verify(mIntentMock, times(1))
                 .getBooleanExtra(IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
         // This is called again when we call mNativeInitObserver.onFinishNativeInitialization();
@@ -389,6 +403,7 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
                 .getBoolean(IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false);
         verify(mPersistentStateMock, times(1))
                 .getBoolean(IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED, false);
+        verify(mPersistentStateMock, times(1)).getLong(eq(PREVIOUS_VERSION_CODE), anyLong());
 
         verify(mIntentMock, times(1))
                 .getBooleanExtra(IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
@@ -438,6 +453,7 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
                 .getBoolean(IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false);
         verify(mSavedInstanceStateMock, times(1))
                 .getBoolean(IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED, false);
+        verify(mPersistentStateMock, times(1)).getLong(eq(PREVIOUS_VERSION_CODE), anyLong());
         verify(mIntentMock, times(1))
                 .getBooleanExtra(IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
         // This is called again when we call mNativeInitObserver.onFinishNativeInitialization();
@@ -483,6 +499,7 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
                 .getBoolean(IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false);
         verify(mPersistentStateMock, times(1))
                 .getBoolean(IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED, false);
+        verify(mPersistentStateMock, times(1)).getLong(eq(PREVIOUS_VERSION_CODE), anyLong());
         verify(mIntentMock, times(1))
                 .getBooleanExtra(IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
         // This is called again when we call mNativeInitObserver.onFinishNativeInitialization();
@@ -529,6 +546,7 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
                 .getBoolean(IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false);
         verify(mSavedInstanceStateMock, times(1))
                 .getBoolean(IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED, false);
+        verify(mPersistentStateMock, times(1)).getLong(eq(PREVIOUS_VERSION_CODE), anyLong());
         verify(mIntentMock, times(1))
                 .getBooleanExtra(IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
         verify(mTabModelSelectorMock, times(2)).isTabStateInitialized();
@@ -575,6 +593,7 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
                 .getBoolean(IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false);
         verify(mPersistentStateMock, times(1))
                 .getBoolean(IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED, false);
+        verify(mPersistentStateMock, times(1)).getLong(eq(PREVIOUS_VERSION_CODE), anyLong());
 
         verify(mIntentMock, times(1))
                 .getBooleanExtra(IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
@@ -615,6 +634,7 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
                 .getBoolean(IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false);
         verify(mSavedInstanceStateMock, times(1))
                 .getBoolean(IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED, false);
+
         verify(mIntentMock, times(1))
                 .getBooleanExtra(IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
         verify(mTabModelSelectorMock, times(2)).isTabStateInitialized();
@@ -654,10 +674,56 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
                 .getBoolean(IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false);
         verify(mPersistentStateMock, times(1))
                 .getBoolean(IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED, false);
+        verify(mPersistentStateMock, times(1))
+                .getLong(PREVIOUS_VERSION_CODE, BuildConfig.VERSION_CODE);
 
         verify(mIntentMock, times(1))
                 .getBooleanExtra(IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
         verify(mTabModelSelectorMock, times(2)).isTabStateInitialized();
+    }
+
+    @Test
+    @SmallTest
+    public void testShouldNotBlockDraw_WhenNotUpdatingApp_ForPersistedPendingReauth() {
+        // Premise conditions
+        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(
+                /* isAvailable= */ true);
+        doReturn(false).when(mCipherFactoryMock).restoreFromBundle(mSavedInstanceStateMock);
+        doReturn(false)
+                .when(mSavedInstanceStateMock)
+                .getBoolean(IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false);
+        doReturn(false)
+                .when(mSavedInstanceStateMock)
+                .getBoolean(IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED, false);
+
+        doReturn(BuildConfig.VERSION_CODE)
+                .when(mPersistentStateMock)
+                .getLong(eq(PREVIOUS_VERSION_CODE), anyLong());
+
+        doReturn(true).when(mCipherFactoryMock).restoreFromPersistableBundle(mPersistentStateMock);
+        doReturn(true)
+                .when(mPersistentStateMock)
+                .getBoolean(IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false);
+        doReturn(true)
+                .when(mPersistentStateMock)
+                .getBoolean(IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED, false);
+
+        doReturn(true)
+                .when(mIntentMock)
+                .getBooleanExtra(IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
+
+        // Test condition
+        doReturn(true).when(mTabModelSelectorMock).isTabStateInitialized();
+
+        // mNativeInitObserver.onFinishNativeInitialization();
+        assertFalse("Should block draw.", mIncognitoRestoreAppLaunchDrawBlocker.shouldBlockDraw());
+
+        // Verify all the mocks were called.
+        verify(mCipherFactoryMock, times(1)).restoreFromBundle(mSavedInstanceStateMock);
+        verify(mPersistentStateMock, times(1)).getLong(eq(PREVIOUS_VERSION_CODE), anyLong());
+        verify(mIntentMock, times(1))
+                .getBooleanExtra(IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
+        verify(mTabModelSelectorMock, times(1)).isTabStateInitialized();
     }
 
     @Test

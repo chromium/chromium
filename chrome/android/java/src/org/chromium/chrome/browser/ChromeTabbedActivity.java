@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser;
 
 import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.chrome.browser.incognito.reauth.IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING;
+import static org.chromium.chrome.browser.incognito.reauth.IncognitoReauthControllerImpl.PREVIOUS_VERSION_CODE;
 import static org.chromium.chrome.browser.notifications.tips.TipsPromoCoordinator.INVALID_TIPS_NOTIFICATION_FEATURE_TYPE;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 import static org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED;
@@ -73,6 +75,7 @@ import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.cc.input.BrowserControlsState;
@@ -2162,12 +2165,30 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             Intent intent = getIntent();
 
             boolean hadCipherData = false;
-            // TODO(crbug.com/459921316): Only persist incognito state for app updates, state should
-            //  be discarded after a reboot.
-            if (shouldPersistAcrossReboots()) {
-                hadCipherData =
-                        CipherLazyHolder.sCipherInstance.restoreFromPersistableBundle(
-                                getPersistentInstanceState());
+            PersistableBundle persistentState = getPersistentInstanceState();
+            if (shouldPersistAcrossReboots() && persistentState != null) {
+                boolean appWasUpdated =
+                        BuildConfig.VERSION_CODE
+                                != persistentState.getLong(
+                                        PREVIOUS_VERSION_CODE, BuildConfig.VERSION_CODE);
+                // Only restore incognito state if the data was persisted for an app update.
+                // It is possible for an app update to follow a device reboot, before the app is
+                // restored by the OS. In this case, the OS drops and clears the PersistableBundle
+                // from the device reboot when applying the app update. This ensures that state
+                // should not be restored incorrectly if an app update immediately after a reboot
+                // "hides" the occurrence of the reboot, as incognito state should not be restored
+                // after a reboot.
+                if (appWasUpdated) {
+                    hadCipherData =
+                            CipherLazyHolder.sCipherInstance.restoreFromPersistableBundle(
+                                    persistentState);
+                } else {
+                    // TODO(crbug.com/474346053): Refactor where the keys are declared and which
+                    //  classes handle cleaning up incognito state.
+                    CipherLazyHolder.sCipherInstance.clearPersistentIncognitoState(persistentState);
+                    persistentState.remove(KEY_IS_INCOGNITO_REAUTH_PENDING);
+                    persistentState.remove(IS_INCOGNITO_SELECTED);
+                }
             }
             if (!hadCipherData) {
                 hadCipherData =
@@ -3284,8 +3305,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         boolean isIncognitoSelectedInSavedState =
                 savedInstanceState != null
                         && savedInstanceState.getBoolean(IS_INCOGNITO_SELECTED, false);
-        // TODO(crbug.com/459921316): Only persist incognito state for app updates, state should
-        //  be discarded after a reboot.
         boolean isIncognitoSelectedInPersistentState =
                 shouldPersistAcrossReboots()
                         && persistentState != null
@@ -4353,6 +4372,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         if (shouldPersistAcrossReboots()) {
             saveToBaseBundle(outPersistentState);
             CipherLazyHolder.sCipherInstance.saveToPersistableBundle(outPersistentState);
+            outPersistentState.putLong(PREVIOUS_VERSION_CODE, BuildConfig.VERSION_CODE);
         }
     }
 

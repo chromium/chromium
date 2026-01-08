@@ -266,6 +266,12 @@ public class CipherFactory {
         return updateCipherData(wrappedKey, iv);
     }
 
+    /** Clears state related to incognito from the PersistableBundle. */
+    public void clearPersistentIncognitoState(PersistableBundle persistentState) {
+        persistentState.remove(PERSISTENT_BUNDLE_KEY);
+        persistentState.remove(PERSISTENT_BUNDLE_IV);
+    }
+
     private boolean updateCipherData(byte[] wrappedKey, byte[] iv) {
         try {
             Key bundledKey = new SecretKeySpec(wrappedKey, "AES");

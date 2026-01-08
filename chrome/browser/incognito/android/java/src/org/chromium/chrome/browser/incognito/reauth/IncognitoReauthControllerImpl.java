@@ -54,6 +54,9 @@ public class IncognitoReauthControllerImpl
     // incognito tabs present before Chrome went to background.
     public static final String KEY_IS_INCOGNITO_REAUTH_PENDING = "incognitoReauthPending";
 
+    // TODO(crbug.com/474346053): Find a better home for this persistent state key.
+    public static final String PREVIOUS_VERSION_CODE = "previous_version_code";
+
     /**
      * A list of all {@link IncognitoReauthCallback} that would be triggered from
      * |mIncognitoReauthCallback|.

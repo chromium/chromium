@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui;
 
+import static org.chromium.chrome.browser.incognito.reauth.IncognitoReauthControllerImpl.PREVIOUS_VERSION_CODE;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -12,6 +14,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -180,8 +183,6 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
         // A valid saved instance state or persistent state is needed here.
         boolean validSavedIncognitoState =
                 hasValidSavedIncognitoState(isIncognitoFiredFromLauncherShortcut);
-        // TODO(crbug.com/459921316): Only persist incognito state for app updates, state should
-        //  be discarded after a reboot.
         boolean validPersistentIncognitoState =
                 hasValidPersistentIncognitoState(isIncognitoFiredFromLauncherShortcut);
         if (!validSavedIncognitoState && !validPersistentIncognitoState) return false;
@@ -224,6 +225,13 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
     private boolean hasValidPersistentIncognitoState(boolean isIncognitoFiredFromLauncherShortcut) {
         PersistableBundle persistentState = mPersistentStateSupplier.get();
         if (persistentState == null) return false;
+
+        // Only restore incognito state if the data was persisted for an app update.
+        // TODO(crbug.com/474348773): Test more rigorously to see whether this check is needed.
+        if (BuildConfig.VERSION_CODE
+                == persistentState.getLong(PREVIOUS_VERSION_CODE, BuildConfig.VERSION_CODE)) {
+            return false;
+        }
 
         if (!mCipherFactory.restoreFromPersistableBundle(persistentState)) return false;
 
