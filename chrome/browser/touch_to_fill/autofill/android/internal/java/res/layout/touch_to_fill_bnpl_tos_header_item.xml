@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_marginHorizontal="@dimen/bnpl_tos_header_item_layout_margin_horizontal"
+    android:layout_marginBottom="@dimen/bnpl_tos_header_item_layout_margin_bottom"
+    android:orientation="vertical">
+
+  <ImageView
+      android:id="@+id/bnpl_tos_branding_icon"
+      android:layout_width="wrap_content"
+      android:layout_height="@dimen/bnpl_tos_header_item_icon_height"
+      android:layout_marginVertical="@dimen/bnpl_tos_header_item_icon_margin_vertical"
+      android:importantForAccessibility="no"
+      android:scaleType="fitCenter"
+      android:adjustViewBounds="true"
+      android:layout_gravity="center_horizontal"/>
+
+    <androidx.appcompat.widget.DialogTitle
+        android:id="@+id/bnpl_tos_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"/>
+
+</LinearLayout>
