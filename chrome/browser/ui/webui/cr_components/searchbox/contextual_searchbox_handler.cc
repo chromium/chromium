@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_utils.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
@@ -98,12 +97,9 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
 
   // Iterate through the tab strip model, getting the data for each tab
   auto* tab_strip_model = browser_window_interface->GetTabStripModel();
-  for (int i = 0; i < tab_strip_model->count(); i++) {
-    content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
-    tabs::TabInterface* const tab = tab_strip_model->GetTabAtIndex(i);
-    TabRendererData tab_renderer_data =
-        TabRendererData::FromTabInModel(tab_strip_model, i);
-    const auto& last_committed_url = tab_renderer_data.last_committed_url;
+  for (tabs::TabInterface* tab : *tab_strip_model) {
+    content::WebContents* web_contents = tab->GetContents();
+    const auto& last_committed_url = web_contents->GetLastCommittedURL();
     // Skip tabs that are still loading, and skip webui.
     const bool is_invalid_url = !last_committed_url.is_valid();
     const bool is_internal_page =
@@ -116,7 +112,7 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
 
     auto tab_data = searchbox::mojom::TabInfo::New();
     tab_data->tab_id = tab->GetHandle().raw_value();
-    tab_data->title = base::UTF16ToUTF8(tab_renderer_data.title);
+    tab_data->title = base::UTF16ToUTF8(TabUIHelper::From(tab)->GetTitle());
     tab_data->url = last_committed_url;
     const bool show_in_current_tab_chip =
         tab_strip_model->GetActiveWebContents()->GetLastCommittedURL() ==

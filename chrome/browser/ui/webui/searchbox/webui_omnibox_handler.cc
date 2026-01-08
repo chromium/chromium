@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
-#include "chrome/browser/ui/tabs/tab_renderer_data.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
@@ -287,18 +287,12 @@ void WebuiOmniboxHandler::AddTabContext(int32_t tab_id,
                                         AddTabContextCallback callback) {
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_.get());
-  auto* tab_strip_model = browser_window_interface->GetTabStripModel();
   const tabs::TabHandle handle = tabs::TabHandle(tab_id);
   tabs::TabInterface* const tab = handle.Get();
   if (!tab) {
     std::move(callback).Run(std::nullopt);
     return;
   }
-
-  auto tab_strip_id = tab_strip_model->GetIndexOfTab(tab);
-
-  TabRendererData tab_renderer_data =
-      TabRendererData::FromTabInModel(tab_strip_model, tab_strip_id);
 
   SearchboxContextData* searchbox_context_data =
       browser_window_interface->GetFeatures().searchbox_context_data();
@@ -313,8 +307,8 @@ void WebuiOmniboxHandler::AddTabContext(int32_t tab_id,
 
   auto tab_attachment = searchbox::mojom::TabAttachment::New();
   tab_attachment->tab_id = tab_id;
-  tab_attachment->title = base::UTF16ToUTF8(tab_renderer_data.title);
-  tab_attachment->url = tab_renderer_data.last_committed_url;
+  tab_attachment->title = base::UTF16ToUTF8(TabUIHelper::From(tab)->GetTitle());
+  tab_attachment->url = tab->GetContents()->GetLastCommittedURL();
   context->file_infos.push_back(
       searchbox::mojom::SearchContextAttachment::NewTabAttachment(
           std::move(tab_attachment)));

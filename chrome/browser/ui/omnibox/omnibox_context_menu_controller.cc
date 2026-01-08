@@ -28,7 +28,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
-#include "chrome/browser/ui/tabs/tab_renderer_data.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
@@ -185,11 +185,9 @@ OmniboxContextMenuController::GetRecentTabs() {
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_.get());
   auto* tab_strip_model = browser_window_interface->GetTabStripModel();
-  for (int i = 0; i < tab_strip_model->count(); i++) {
-    tabs::TabInterface* const tab = tab_strip_model->GetTabAtIndex(i);
-    TabRendererData tab_renderer_data =
-        TabRendererData::FromTabInModel(tab_strip_model, i);
-    const auto& last_committed_url = tab_renderer_data.last_committed_url;
+  for (tabs::TabInterface* tab : *tab_strip_model) {
+    content::WebContents* web_contents = tab->GetContents();
+    const auto& last_committed_url = web_contents->GetLastCommittedURL();
     if (!IsValidTab(last_committed_url)) {
       continue;
     }
@@ -201,10 +199,9 @@ OmniboxContextMenuController::GetRecentTabs() {
 
     OmniboxContextMenuController::TabInfo tab_data;
     tab_data.tab_id = tab->GetHandle().raw_value();
-    tab_data.title = tab_renderer_data.title;
+    tab_data.title = TabUIHelper::From(tab)->GetTitle();
     tab_data.url = last_committed_url;
 
-    content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
     tab_data.last_active =
         std::max(web_contents->GetLastActiveTimeTicks(),
                  web_contents->GetLastInteractionTimeTicks());
