@@ -302,7 +302,7 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
 
     // Configure the query encoding for this form and add it to the appropriate
     // collection of forms: queryable vs non-queryable.
-    if (ShouldBeQueried(*form_structure)) {
+    if (ShouldBeQueried(form)) {
       queryable_forms.push_back(form_structure);
     }
 

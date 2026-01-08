@@ -172,7 +172,9 @@ bool ShouldRunHeuristicsForSingleFields(const T& form) {
          HasAllowedScheme(url(form));
 }
 
-bool ShouldBeQueried(const FormStructure& form) {
+template <typename T>
+  requires IsForm<T>
+bool ShouldBeQueried(const T& form) {
   return (AtLeastNumFieldsSatisfy(form, kMinRequiredFieldsForQuery,
                                   is_active) ||
           std::ranges::any_of(fields(form), is_password_field)) &&
@@ -262,6 +264,10 @@ bool ShouldRunHeuristicsForSingleFields(const FormData& form) {
 
 bool ShouldRunHeuristicsForSingleFields(const FormStructure& form) {
   return internal::ShouldRunHeuristicsForSingleFields(form);
+}
+
+bool ShouldBeQueried(const FormData& form) {
+  return internal::ShouldBeQueried(form);
 }
 
 bool ShouldBeQueried(const FormStructure& form) {

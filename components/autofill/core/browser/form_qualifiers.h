@@ -50,6 +50,7 @@ class LogManager;
 // and crowdsourced data should not be used to override this. Password fields
 // are different because there is no way to specify password generation
 // directly.
+[[nodiscard]] bool ShouldBeQueried(const FormData& form);
 [[nodiscard]] bool ShouldBeQueried(const FormStructure& form);
 
 // Returns true if we should upload Autofill votes for this form to the
