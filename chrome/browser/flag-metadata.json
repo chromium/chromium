@@ -54,11 +54,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "add-printer-via-printscanmgr",
-    "owners": [ "pmoy@chromium.org", "project-bolton-eng@google.com" ],
-    "expiry_milestone": 133
-  },
-  {
     "name": "ai-hub-new-badge",
     "owners": [
       "joemerramos@google.com",
