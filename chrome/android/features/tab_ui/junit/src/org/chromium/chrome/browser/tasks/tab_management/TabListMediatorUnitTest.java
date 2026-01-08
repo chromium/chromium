@@ -36,6 +36,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
@@ -155,6 +156,8 @@ import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.Pric
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
@@ -1515,6 +1518,29 @@ public class TabListMediatorUnitTest {
         assertThat(mModelList.size(), equalTo(3));
         assertThat(mModelList.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB3_ID));
         assertThat(mModelList.get(1).model.get(TabProperties.TITLE), equalTo(TAB3_TITLE));
+    }
+
+    @Test
+    public void testHidingClearsCardState() {
+        initAndAssertAllProperties();
+        TabGridItemTouchHelperCallback callback = getItemTouchHelperCallback();
+        callback.getMovementFlags(mRecyclerView, mViewHolder1);
+
+        when(mViewHolder1.getBindingAdapterPosition()).thenReturn(POSITION1);
+        when(mViewHolder1.getItemViewType()).thenReturn(UiType.TAB);
+
+        callback.onSelectedChanged(mViewHolder1, ItemTouchHelper.ACTION_STATE_DRAG);
+        assertThat(
+                mModelList.get(POSITION1).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.SELECTED_CARD_ZOOM_IN));
+        assertThat(mModelList.get(POSITION1).model.get(CARD_ALPHA), equalTo(0.8f));
+
+        mMediator.postHiding();
+
+        assertThat(
+                mModelList.get(POSITION1).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.SELECTED_CARD_ZOOM_OUT));
+        assertThat(mModelList.get(POSITION1).model.get(CARD_ALPHA), equalTo(1f));
     }
 
     @Test

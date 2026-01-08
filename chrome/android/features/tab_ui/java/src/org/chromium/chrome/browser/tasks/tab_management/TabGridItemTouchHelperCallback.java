@@ -191,6 +191,22 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
                         | ItemTouchHelper.DOWN;
     }
 
+    /** Resets the state of any selected and highlighted cards. */
+    public void clearCardState() {
+        if (mSelectedTabIndex != TabModel.INVALID_TAB_INDEX) {
+            mModel.updateSelectedCardForSelection(mSelectedTabIndex, false);
+            mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
+        }
+        if (mHoveredTabIndex != TabModel.INVALID_TAB_INDEX) {
+            mModel.updateHoveredCardForHover(mHoveredTabIndex, false);
+            mHoveredTabIndex = TabModel.INVALID_TAB_INDEX;
+        }
+        if (mPreviousArchivedMessageCardIndex != TabModel.INVALID_TAB_INDEX) {
+            mModel.updateHoveredCardForHover(mPreviousArchivedMessageCardIndex, false);
+            mPreviousArchivedMessageCardIndex = TabModel.INVALID_TAB_INDEX;
+        }
+    }
+
     boolean isMessageType(RecyclerView.@Nullable ViewHolder viewHolder) {
         if (viewHolder == null) return false;
         @UiType int type = viewHolder.getItemViewType();

@@ -1752,6 +1752,7 @@ class TabListMediator implements TabListNotificationHandler {
             selectTab(mLastSelectedTabListModelIndex, index);
             mTabToAddDelayed = null;
         }
+        mTabGridItemTouchHelperCallback.clearCardState();
     }
 
     private boolean isSelectedTab(Tab tab, int tabModelSelectedTabId) {
