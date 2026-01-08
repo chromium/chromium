@@ -20,6 +20,7 @@ class SystemIdentityManager;
 class TabGroupService;
 class TrustedVaultClientBackend;
 @class UIImage;
+@class UIWindow;
 
 namespace base {
 class TimeDelta;
@@ -131,9 +132,12 @@ bool DelayAppLaunchPromos();
 // of identifiers that contains identifiers of UIScene that are active.
 bool NeverPurgeDiscardedSessionsData();
 
-// Returns true if the UI should be minimal for testing (after loading a
+// Returns true if the UI should be minimal for testing.
+bool ShouldLoadMinimalAppUI();
+
+// Loads a minimal UI for testing in the given window (usually after loading a
 // simple UILabel into the first UIWindow).
-bool LoadMinimalAppUI();
+void LoadMinimalAppUI(UIWindow* window);
 
 // Returns a policy provider that should be installed as the platform policy
 // provider when testing. May return nullptr.

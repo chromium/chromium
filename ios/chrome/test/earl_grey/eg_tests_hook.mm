@@ -66,27 +66,6 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
 
-namespace {
-
-// Loads a very simple UILabel with a teapot emoji in it as the main
-// UI for the given window.
-void LoadMinimalAppUIInWindow(UIWindow* window) {
-  UIViewController* viewController = [[UIViewController alloc] init];
-  UILabel* label =
-      [[UILabel alloc] initWithFrame:window.windowScene.screen.bounds];
-  label.text = @"🫖";
-  label.textAlignment = NSTextAlignmentCenter;
-  label.textColor = [UIColor whiteColor];
-  label.backgroundColor = [UIColor darkGrayColor];
-  label.font = [UIFont boldSystemFontOfSize:80];
-  viewController.view = label;
-  window.rootViewController = viewController;
-  [window addSubview:viewController.view];
-  [window makeKeyAndVisible];
-}
-
-}  // namespace
-
 namespace tests_hook {
 
 bool DisableGeminiEligibilityCheck() {
@@ -172,31 +151,29 @@ bool NeverPurgeDiscardedSessionsData() {
   return true;
 }
 
-bool LoadMinimalAppUI() {
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          test_switches::kLoadMinimalAppUI)) {
-    return false;
-  }
-  static bool minimal_ui_loaded = false;
-  if (!minimal_ui_loaded) {
-    NSSet<UIScene*>* scenes = UIApplication.sharedApplication.connectedScenes;
-    for (UIScene* scene in scenes) {
-      UIWindowScene* window_scene = base::apple::ObjCCast<UIWindowScene>(scene);
-      if (!window_scene) {
-        continue;
-      }
-      for (UIWindow* window in window_scene.windows) {
-        if (window.canBecomeKeyWindow) {
-          LoadMinimalAppUIInWindow(window);
-          minimal_ui_loaded = true;
-          return true;
-        };
-      }
-    }
-    // There should have been a window.
-    NOTREACHED();
-  };
-  return true;
+bool ShouldLoadMinimalAppUI() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      test_switches::kLoadMinimalAppUI);
+}
+
+void LoadMinimalAppUI(UIWindow* window) {
+  UIViewController* viewController = [[UIViewController alloc] init];
+  viewController.view.backgroundColor = [UIColor darkGrayColor];
+  UILabel* label = [[UILabel alloc] init];
+  label.text = @"🫖";
+  label.textAlignment = NSTextAlignmentCenter;
+  label.textColor = [UIColor whiteColor];
+  label.font = [UIFont boldSystemFontOfSize:80];
+  label.translatesAutoresizingMaskIntoConstraints = NO;
+  [viewController.view addSubview:label];
+  [NSLayoutConstraint activateConstraints:@[
+    [label.centerXAnchor
+        constraintEqualToAnchor:viewController.view.centerXAnchor],
+    [label.centerYAnchor
+        constraintEqualToAnchor:viewController.view.centerYAnchor],
+  ]];
+  window.rootViewController = viewController;
+  [window makeKeyAndVisible];
 }
 
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider() {

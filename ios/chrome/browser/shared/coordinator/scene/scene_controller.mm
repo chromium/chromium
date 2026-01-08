@@ -1303,7 +1303,9 @@ void RecordIfNeededSigninFullscreenPromoEvent(
     return;
   }
 
-  if (!tests_hook::LoadMinimalAppUI()) {
+  if (tests_hook::ShouldLoadMinimalAppUI()) {
+    tests_hook::LoadMinimalAppUI(self.sceneState.window);
+  } else {
     [self startUpChromeUI];
   }
   self.sceneState.UIEnabled = YES;
@@ -1522,6 +1524,9 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 // domain of the foreground tab and the tab count. Assumes the scene is
 // visible. Will return nil if there are no tabs.
 - (NSString*)displayTitleForAppSwitcher {
+  if (tests_hook::ShouldLoadMinimalAppUI()) {
+    return nil;
+  }
   Browser* browser = self.currentInterface.browser;
   DCHECK(browser);
 
@@ -1705,7 +1710,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
     }
   }
 
-  if (tests_hook::LoadMinimalAppUI()) {
+  if (tests_hook::ShouldLoadMinimalAppUI()) {
     return NO;
   }
 
@@ -1880,7 +1885,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 // Adds agents that may depend on profileState. Called after a profileState has
 // been connected to the sceneState.
 - (void)addProfileStateDependentAgents {
-  if (tests_hook::LoadMinimalAppUI()) {
+  if (tests_hook::ShouldLoadMinimalAppUI()) {
     return;
   }
 

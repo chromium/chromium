@@ -629,7 +629,7 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
     }
   }
 
-  if (!tests_hook::LoadMinimalAppUI()) {
+  if (!tests_hook::ShouldLoadMinimalAppUI()) {
     [self attachProfileAgents];
   }
 }

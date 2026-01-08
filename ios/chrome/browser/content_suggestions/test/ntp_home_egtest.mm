@@ -172,14 +172,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 }
 
 - (BOOL)loadMinimalAppUI {
-  // TODO(crbug.com/469833796): Fix this issue on ipad-device bot.
-#if !TARGET_OS_SIMULATOR
-  // The app hasn't booted yet, so `isIpadIdiom` cannot be used here.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return NO;
-  }
-#endif
-
   std::vector<SEL> minimalAppUITests = {
       @selector(testAccessibility),
       @selector(testOmniboxWidthRotation),
@@ -455,6 +447,9 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 - (void)testOmniboxWidthRotation {
   [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
   [ChromeEarlGreyUI waitForAppToIdle];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
   UIEdgeInsets safeArea = collectionView.safeAreaInsets;
   CGFloat collectionWidth =
@@ -1052,6 +1047,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
 - (void)testMinimumHeight {
   [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
+  GREYWaitForAppToIdle(@"App failed to idle");
   [self
       testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
 
@@ -1098,6 +1094,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // the device back and forth.
 - (void)testInitialPositionAndOrientationChange {
   [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
+  GREYWaitForAppToIdle(@"App failed to idle");
 
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
 
@@ -1364,6 +1361,10 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   // Tests most visited tiles visibility separately.
   [self resetCustomizationPrefs];
   [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(kNTPCustomizationMenuButtonIdentifier)];
 
   // Open the Home customization menu.
   [[EarlGrey
