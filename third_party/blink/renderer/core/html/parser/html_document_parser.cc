@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
@@ -1584,7 +1585,18 @@ void HTMLDocumentParser::ProcessPreloadData(
 
   seen_csp_meta_tags_ += preload_data->csp_meta_tag_count;
   for (auto& request : preload_data->requests) {
+    // Check if this preload should be filtered before queueing it.
+    // This avoids queueing requests (e.g., in "html_only"
+    // kLightweightNoStatePrefetch mode) that the preloader would
+    // just discard later.
+    if (!HTMLResourcePreloader::ShouldPreload(
+            GetDocument(), request->GetResourceType(), request->IsPreconnect(),
+            request->DeferOption(), request->FetchPriorityHint())) {
+      continue;
+    }
+
     queued_preloads_.push_back(std::move(request));
+
     if (metrics_reporter_) {
       metrics_reporter_->IncrementPreloadRequestCount();
     }
