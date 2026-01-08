@@ -1815,8 +1815,12 @@ TEST_F(TabsApiUnitTest, SplitTabsWithHighlightFunction) {
                                           api_test_utils::FunctionMode::kNone));
 
   // Check that both sides of the split are selected.
-  ASSERT_TRUE(GetTabStripModel()->selection_model().IsSelected(0));
-  ASSERT_TRUE(GetTabStripModel()->selection_model().IsSelected(1));
+  ASSERT_TRUE(
+      GetTabStripModel()->selection_model().GetListSelectionModel().IsSelected(
+          0));
+  ASSERT_TRUE(
+      GetTabStripModel()->selection_model().GetListSelectionModel().IsSelected(
+          1));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

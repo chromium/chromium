@@ -80,8 +80,7 @@ class TabStripModelSelectionState final {
 
   // Access the current object as a ListSelectionModel. Requires the
   // |model_| member to be non null.
-  const ui::ListSelectionModel& GetListSelectionModel(
-      base::PassKey<TabStripModel>) const;
+  const ui::ListSelectionModel& GetListSelectionModel() const;
 
   // Helper functions to update the |list_selection_model_| member,
   // which is a ListSelectionModel representation of the current

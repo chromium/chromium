@@ -56,17 +56,11 @@ bool GlicTabSubMenuModel::IsCommandIdEnabled(int command_id) const {
 
 void GlicTabSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
   if (command_id == TabStripModel::CommandGlicCreateNewChat) {
-    std::vector<int> indices;
-    if (tab_strip_model_->IsTabSelected(context_index_)) {
-      const ui::ListSelectionModel::SelectedIndices selected_indices =
-          tab_strip_model_->selection_model().selected_indices();
-      indices.assign(selected_indices.begin(), selected_indices.end());
-    } else {
-      indices.push_back(context_index_);
+    std::vector<tabs::TabInterface*> tabs;
+    for (tabs::TabInterface* tab :
+         tab_strip_model_->selection_model().selected_tabs()) {
+      tabs.push_back(tab);
     }
-
-    std::vector<tabs::TabInterface*> tabs =
-        tab_strip_model_->GetTabsAtIndices(indices);
 
     GlicKeyedService* service =
         GlicKeyedService::Get(tab_strip_model_->profile());

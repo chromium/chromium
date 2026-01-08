@@ -652,10 +652,10 @@ void TabStripPageHandler::MoveGroup(const std::string& group_id_string,
           source_tab_strip_model->group_model(), group_id_string);
   TabGroup* const group =
       source_tab_strip_model->group_model()->GetTabGroup(group_id.value());
-  const gfx::Range tabs_in_group = group->ListTabs();
+  const gfx::Range tabs_in_group_indices = group->ListTabs();
 
   if (source_browser == target_browser) {
-    if (static_cast<int>(tabs_in_group.start()) == to_index) {
+    if (static_cast<int>(tabs_in_group_indices.start()) == to_index) {
       // If the group is already in place, don't move it. This may happen
       // if multiple drag events happen while the tab group is still
       // being moved.
@@ -665,11 +665,15 @@ void TabStripPageHandler::MoveGroup(const std::string& group_id_string,
     // When a group is moved, all the tabs in it need to be selected at the same
     // time. This mimics the way the native tab strip works and also allows
     // this handler to ignore the events for each individual tab moving.
-    ui::ListSelectionModel group_selection;
-    group_selection.SetSelectedIndex(tabs_in_group.start());
-    group_selection.SetSelectionFromAnchorTo(tabs_in_group.end() - 1);
-    group_selection.set_active(
-        target_browser->tab_strip_model()->selection_model().active());
+    std::vector<tabs::TabInterface*> tabs_in_group =
+        target_browser->tab_strip_model()->GetTabsAtIndices(
+            tabs_in_group_indices.ToIntVector());
+    tabs::TabStripModelSelectionState group_selection(
+        target_browser->tab_strip_model());
+    group_selection.SetSelectedTabs(
+        {tabs_in_group.begin(), tabs_in_group.end()},
+        target_browser->tab_strip_model()->selection_model().active_tab(),
+        target_browser->tab_strip_model()->selection_model().anchor_tab());
     target_browser->tab_strip_model()->SetSelectionFromModel(group_selection);
 
     target_browser->tab_strip_model()->MoveGroupTo(group_id.value(), to_index);

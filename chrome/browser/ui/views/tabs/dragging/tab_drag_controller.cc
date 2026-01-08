@@ -1301,8 +1301,9 @@ void TabDragController::AttachToNewContext(
   // the new model.
   CHECK(GetViewsMatchingDraggedContents(attached_context_).empty());
 
-  selection_model_before_attach_ =
-      attached_context_->GetTabStripModel()->selection_model();
+  selection_model_before_attach_ = attached_context_->GetTabStripModel()
+                                       ->selection_model()
+                                       .GetListSelectionModel();
 
   // Insert at any valid index in the tabstrip. We'll fix up the insertion
   // index in MoveAttached() later, if we're transitioning to kDraggingTabs;
@@ -1446,8 +1447,11 @@ TabDragController::Detach(ReleaseCapture release_capture) {
   }
 
   std::vector<int> dragged_indices;
-  for (int dragged_index :
-       attached_model->selection_model().selected_indices()) {
+
+  // TODO(crbug.com/435178910) Remove this usage of ListSelectionModel.
+  for (int dragged_index : attached_model->selection_model()
+                               .GetListSelectionModel()
+                               .selected_indices()) {
     dragged_indices.push_back(dragged_index);
   }
   const std::vector<tab_groups::TabGroupId> groups_to_move =

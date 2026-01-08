@@ -568,8 +568,11 @@ class TabStripModel {
 
   // Sets the selection to match that of |source|.
   void SetSelectionFromModel(ui::ListSelectionModel source);
+  void SetSelectionFromModel(const tabs::TabStripModelSelectionState& source);
 
-  ui::ListSelectionModel selection_model() const;
+  const tabs::TabStripModelSelectionState& selection_model() const {
+    return selection_model_;
+  }
 
   // Features that want to show tabstrip-modal UI are mutually exclusive.
   // Before showing a modal UI first check `CanShowModalUI`. Then call

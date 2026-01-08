@@ -395,12 +395,11 @@ void TabsEventRouterPlatformDelegate::DispatchActiveTabChanged(
 void TabsEventRouterPlatformDelegate::DispatchTabSelectionChanged(
     TabStripModel* tab_strip_model,
     const ui::ListSelectionModel& old_model) {
-  ui::ListSelectionModel::SelectedIndices new_selection =
-      tab_strip_model->selection_model().selected_indices();
   base::Value::List all_tabs;
 
-  for (int index : new_selection) {
-    WebContents* contents = tab_strip_model->GetWebContentsAt(index);
+  for (tabs::TabInterface* tab :
+       tab_strip_model->selection_model().selected_tabs()) {
+    WebContents* contents = tab->GetContents();
     if (!contents) {
       break;
     }

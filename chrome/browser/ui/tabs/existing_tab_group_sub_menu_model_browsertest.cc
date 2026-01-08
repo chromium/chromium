@@ -207,11 +207,7 @@ IN_PROC_BROWSER_TEST_F(ExistingTabGroupSubMenuModelTest,
   }
   model_1->DeselectTabAt(0);
 
-  const ui::ListSelectionModel::SelectedIndices selection_indices =
-      model_1->selection_model().selected_indices();
-  std::vector<int> selected_indices =
-      std::vector<int>(selection_indices.begin(), selection_indices.end());
-  EXPECT_EQ(selected_indices.size(), size_t(3));
+  EXPECT_EQ(model_1->selection_model().size(), size_t(3));
   EXPECT_EQ(4u, menu_1.GetItemCount());
 
   // Move the 3 selected indices in model_1 to model_2.

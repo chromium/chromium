@@ -594,10 +594,9 @@ void ReloadInternal(BrowserWindowInterface* browser,
     // a defensive copy into a more stable form before we begin. We take
     // WebContents* so we can follow the tabs as they shift within the same
     // tabstrip (e.g. if `disposition` is NEW_BACKGROUND_TAB).
-    for (const int selected_index :
-         tab_strip_model->selection_model().selected_indices()) {
-      tabs_to_reload.push_back(
-          tab_strip_model->GetWebContentsAt(selected_index));
+    for (tabs::TabInterface* t :
+         tab_strip_model->selection_model().selected_tabs()) {
+      tabs_to_reload.push_back(t->GetContents());
     }
   } else {
     tabs_to_reload.push_back(active_contents);
@@ -1299,14 +1298,21 @@ bool CanDuplicateKeyboardFocusedTab(const Browser* browser) {
 
 bool CanMoveActiveTabToNewWindow(Browser* browser) {
   const ui::ListSelectionModel::SelectedIndices selection =
-      browser->tab_strip_model()->selection_model().selected_indices();
+      browser->tab_strip_model()
+          ->selection_model()
+          .GetListSelectionModel()
+          .selected_indices();
   return CanMoveTabsToNewWindow(
       browser, std::vector<int>(selection.begin(), selection.end()));
 }
 
+// TODO(crbug.com/435178910) Remove this usage of ListSelectionModel.
 void MoveActiveTabToNewWindow(Browser* browser) {
   const ui::ListSelectionModel::SelectedIndices selection =
-      browser->tab_strip_model()->selection_model().selected_indices();
+      browser->tab_strip_model()
+          ->selection_model()
+          .GetListSelectionModel()
+          .selected_indices();
   MoveTabsToNewWindow(browser,
                       std::vector<int>(selection.begin(), selection.end()));
 }

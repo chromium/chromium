@@ -208,9 +208,10 @@ void BrowserTabStripController::InitFromModel(TabStrip* tabstrip) {
   }
   AddTabs(tabs_to_add);
 }
-
+// TODO(crbug.com/435178910): Change this to return a
+// TabStripModelSelectionState instead of a ListSelectionModel.
 ui::ListSelectionModel BrowserTabStripController::GetSelectionModel() const {
-  return model_->selection_model();
+  return model_->selection_model().GetListSelectionModel();
 }
 
 int BrowserTabStripController::GetCount() const {

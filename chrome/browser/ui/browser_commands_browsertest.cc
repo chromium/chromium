@@ -229,9 +229,12 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, ReloadSelectedTabsWithinSplitView) {
   };
 
   // The split tab should be active.
-  EXPECT_THAT(
-      browser()->tab_strip_model()->selection_model().selected_indices(),
-      testing::ElementsAre(4, 5));
+  EXPECT_THAT(browser()
+                  ->tab_strip_model()
+                  ->selection_model()
+                  .GetListSelectionModel()
+                  .selected_indices(),
+              testing::ElementsAre(4, 5));
   EXPECT_EQ(browser()->tab_strip_model()->active_index(), 5);
   EXPECT_THAT(get_reloads(), testing::ElementsAre(0, 0, 0, 0, 0));
 
@@ -243,9 +246,12 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, ReloadSelectedTabsWithinSplitView) {
 
   // Select 1st tab.
   browser()->tab_strip_model()->SelectTabAt(1);
-  EXPECT_THAT(
-      browser()->tab_strip_model()->selection_model().selected_indices(),
-      testing::ElementsAre(1, 4, 5));
+  EXPECT_THAT(browser()
+                  ->tab_strip_model()
+                  ->selection_model()
+                  .GetListSelectionModel()
+                  .selected_indices(),
+              testing::ElementsAre(1, 4, 5));
   EXPECT_EQ(browser()->tab_strip_model()->active_index(), 1);
 
   // Reload with the split tab selected but not active. All selected tabs should
@@ -256,9 +262,12 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, ReloadSelectedTabsWithinSplitView) {
 
   // Activate the split tab.
   browser()->tab_strip_model()->SelectTabAt(5);
-  EXPECT_THAT(
-      browser()->tab_strip_model()->selection_model().selected_indices(),
-      testing::ElementsAre(1, 4, 5));
+  EXPECT_THAT(browser()
+                  ->tab_strip_model()
+                  ->selection_model()
+                  .GetListSelectionModel()
+                  .selected_indices(),
+              testing::ElementsAre(1, 4, 5));
   EXPECT_EQ(browser()->tab_strip_model()->active_index(), 5);
 
   // Reload with the split 4|5 tab selected and active. All selected tabs should

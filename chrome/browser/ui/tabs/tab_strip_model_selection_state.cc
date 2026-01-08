@@ -63,11 +63,17 @@ void TabStripModelSelectionState::RemoveTabFromSelection(TabInterface* tab) {
 void TabStripModelSelectionState::SetActiveTab(TabInterface* tab) {
   InvalidateListSelectionModel();
   active_tab_ = tab;
+  if (!selected_tabs_.contains(tab)) {
+    AddTabToSelection(tab);
+  }
 }
 
 void TabStripModelSelectionState::SetAnchorTab(TabInterface* tab) {
   InvalidateListSelectionModel();
   anchor_tab_ = tab;
+  if (!selected_tabs_.contains(tab)) {
+    AddTabToSelection(tab);
+  }
 }
 
 bool TabStripModelSelectionState::AppendTabsToSelection(
@@ -117,8 +123,7 @@ bool TabStripModelSelectionState::Valid() const {
 }
 
 const ui::ListSelectionModel&
-TabStripModelSelectionState::GetListSelectionModel(
-    base::PassKey<TabStripModel>) const {
+TabStripModelSelectionState::GetListSelectionModel() const {
   if (!list_selection_model_.has_value()) {
     UpdateListSelectionModel();
     CHECK(list_selection_model_.has_value());
