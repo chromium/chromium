@@ -117,7 +117,7 @@ class OzonePlatformCast : public OzonePlatform {
 
   bool IsNativePixmapConfigSupported(viz::SharedImageFormat format,
                                      gfx::BufferUsage usage) const override {
-    return format == viz::SharedImageFormat::kBGRA_8888 &&
+    return format == viz::SinglePlaneFormat::kBGRA_8888 &&
            usage == gfx::BufferUsage::SCANOUT;
   }
 
