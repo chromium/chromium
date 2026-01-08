@@ -387,6 +387,10 @@ bool RequestHandlerForPolicy::ProcessCloudPolicyForExtensionInstall(
   em::PolicyData policy_data;
   policy_data.set_policy_type(fetch_request.policy_type());
   policy_data.set_policy_value(result.SerializeAsString());
+  if (fetch_request.extension_ids_and_version_size() == 1) {
+    policy_data.set_settings_entity_id(
+        fetch_request.extension_ids_and_version(0).extension_id());
+  }
   policy_data.SerializeToString(
       response->add_responses()->mutable_policy_data());
   return true;
