@@ -11,6 +11,11 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/webui_config.h"
+#include "ui/base/resource/resource_scale_factor.h"
+
+namespace base {
+class RefCountedMemory;
+}
 
 class VersionUI;
 
@@ -37,6 +42,9 @@ class VersionUI : public content::WebUIController {
   // Loads a data source with many named details comprising version info.
   // The keys are from version_ui_constants.
   static void AddVersionDetailStrings(content::WebUIDataSource* html_source);
+
+  static base::RefCountedMemory* GetFaviconResourceBytes(
+      ui::ResourceScaleFactor scale_factor);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Returns a localized version string suitable for displaying in UI.

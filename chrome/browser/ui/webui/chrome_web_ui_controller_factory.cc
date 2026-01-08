@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/webui/crashes/crashes_ui.h"
 #include "chrome/browser/ui/webui/download_internals/download_internals_ui.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
+#include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -398,6 +399,10 @@ base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
     return FlagsUI::GetFaviconResourceBytes(scale_factor);
   }
 
+  if (page_url.host() == chrome::kChromeUIVersionHost) {
+    return VersionUI::GetFaviconResourceBytes(scale_factor);
+  }
+
 #if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
   // The chrome://apps page is not available on Android or ChromeOS.
@@ -406,7 +411,8 @@ base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-  if (page_url.host() == chrome::kChromeUINewTabPageHost) {
+  if (page_url.host() == chrome::kChromeUINewTabPageHost ||
+      page_url.host() == chrome::kChromeUINewTabHost) {
     return NewTabPageUI::GetFaviconResourceBytes(scale_factor);
   }
 

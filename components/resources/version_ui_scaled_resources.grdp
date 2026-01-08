@@ -4,16 +4,19 @@
     <then>
       <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO" file="google_chrome/product_logo.png" />
       <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_WHITE" file="google_chrome/product_logo_white.png" />
+      <structure type="chrome_scaled_image" name="IDR_PRODUCT_FAVICON" file="google_chrome/favicon_product.png" />
     </then>
     <else>
       <if expr="_is_chrome_for_testing_branded">
         <then>
           <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO" file="google_chrome/google_chrome_for_testing/product_logo.png" />
           <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_WHITE" file="google_chrome/google_chrome_for_testing/product_logo_white.png" />
+          <structure type="chrome_scaled_image" name="IDR_PRODUCT_FAVICON" file="google_chrome/google_chrome_for_testing/favicon_product.png" />
         </then>
         <else>
           <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO" file="chromium/product_logo.png" />
           <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_WHITE" file="chromium/product_logo_white.png" />
+          <structure type="chrome_scaled_image" name="IDR_PRODUCT_FAVICON" file="chromium/favicon_product.png" />
         </else>
       </if>
     </else>
