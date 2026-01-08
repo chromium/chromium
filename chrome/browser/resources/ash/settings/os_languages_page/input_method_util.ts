@@ -9,7 +9,7 @@ import {assertExhaustive} from '../assert_extras.js';
 import type {Route} from '../router.js';
 import {routes} from '../router.js';
 
-import {JapaneseInputMode, JapaneseKeymapStyle, JapanesePunctuationStyle, JapaneseSelectionShortcut, JapaneseShiftKeyModeStyle, JapaneseSpaceInputStyle, JapaneseSymbolStyle, KoreanKeyboardLayout, OptionType, XkbKeyboardLayout, ZhuyinKeyboardLayout, ZhuyinSelectKeys} from './input_method_prefs_consts.js';
+import {JapaneseInputMode, JapaneseKeymapStyle, JapanesePunctuationStyle, JapaneseSelectionShortcut, JapaneseShiftKeyModeStyle, JapaneseSpaceInputStyle, JapaneseSymbolStyle, KoreanKeyboardLayout, OptionType, PinyinXkbLayout, ZhuyinKeyboardLayout, ZhuyinSelectKeys} from './input_method_prefs_consts.js';
 import {OPTION_DEFAULT} from './input_method_prefs_defaults.js';
 import type {SettingsContext} from './input_method_settings.js';
 import {getInputMethodSettings, SettingsType} from './input_method_settings.js';
@@ -204,7 +204,7 @@ const Settings = {
     {
       title: SettingsHeaders.PHYSICAL_KEYBOARD,
       optionNames: [
-        {name: OptionType.XKB_LAYOUT},
+        {name: OptionType.PINYIN_XKB_LAYOUT},
         {name: OptionType.PINYIN_ENABLE_UPPER_PAGING},
         {name: OptionType.PINYIN_ENABLE_LOWER_PAGING},
         {name: OptionType.PINYIN_DEFAULT_CHINESE},
@@ -418,7 +418,7 @@ export function getOptionUiType(option: OptionType|UiOptionType): UiType {
     case OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL:
     case OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL:
       return UiType.TOGGLE_BUTTON;
-    case OptionType.XKB_LAYOUT:
+    case OptionType.PINYIN_XKB_LAYOUT:
     case OptionType.JAPANESE_INPUT_MODE:
     case OptionType.JAPANESE_PUNCTUATION_STYLE:
     case OptionType.JAPANESE_SYMBOL_STYLE:
@@ -534,7 +534,7 @@ export function getOptionLabelName(option: OptionType|UiOptionType): string {
       return 'inputMethodOptionsJapaneseDeletePersonalizationData';
     case OptionType.JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS:
       return 'inputMethodOptionsJapaneseDisablePersonalizedSuggestions';
-    case OptionType.XKB_LAYOUT:
+    case OptionType.PINYIN_XKB_LAYOUT:
       return 'inputMethodOptionsXkbLayout';
     case UiOptionType.EDIT_USER_DICT:
       return 'inputMethodOptionsEditUserDict';
@@ -655,15 +655,15 @@ export function getOptionMenuItems(option: OptionType|UiOptionType):
         {value: 1, name: 'inputMethodOptionsAutoCorrectionModest'},
         {value: 2, name: 'inputMethodOptionsAutoCorrectionAggressive'},
       ];
-    case OptionType.XKB_LAYOUT:
+    case OptionType.PINYIN_XKB_LAYOUT:
       return [
-        {value: XkbKeyboardLayout.XKB_US, name: 'inputMethodOptionsUsKeyboard'},
+        {value: PinyinXkbLayout.XKB_US, name: 'inputMethodOptionsUsKeyboard'},
         {
-          value: XkbKeyboardLayout.XKB_DVORAK,
+          value: PinyinXkbLayout.XKB_DVORAK,
           name: 'inputMethodOptionsDvorakKeyboard',
         },
         {
-          value: XkbKeyboardLayout.XKB_COLEMAK,
+          value: PinyinXkbLayout.XKB_COLEMAK,
           name: 'inputMethodOptionsColemakKeyboard',
         },
       ];
