@@ -70,12 +70,18 @@ if (!is_android) {
 
     deps = [
       "//base",
+      "//chrome/app:branded_strings",
+      "//chrome/app:generated_resources",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/promos:utils",
+      "//chrome/browser/sharing",
       "//chrome/browser/sync",
       "//components/desktop_to_mobile_promos",
       "//components/keyed_service/core",
       "//components/prefs",
+      "//components/sharing_message",
+      "//components/sync_device_info",
+      "//ui/base",
     ]
   }
 
@@ -92,11 +98,15 @@ if (!is_android) {
       ":utils",
       "//base/test:test_support",
       "//chrome/browser/promos:utils",
+      "//chrome/browser/sharing",
       "//chrome/browser/sync",
       "//chrome/browser/ui/user_education",
       "//chrome/test:test_support",
+      "//components/desktop_to_mobile_promos",
       "//components/segmentation_platform/public",
       "//components/send_tab_to_self",
+      "//components/sharing_message",
+      "//components/sharing_message:unit_tests",
       "//components/sync/base",
       "//components/sync/protocol",
       "//components/sync_device_info",
