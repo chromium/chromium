@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/cronet/config.gni")
 import("//build/config/rust.gni")
 import("//build/rust/rust_unit_test.gni")
 
@@ -334,7 +335,17 @@ template("rust_target") {
       _rust_deps += [ "//build/rust/std" ]
     }
 
-    if (!defined(invoker.no_allocator_crate) || !invoker.no_allocator_crate) {
+    # When Cronet is built in the Android repo, it builds differently (e.g., it
+    # uses stdlib from Android, which includes its own allocator. If we depend
+    # on Chromium's allocator crate, its shims, and libstd's will conflict on
+    # each other and fail the build (see https://crbug.com/469501106 for more
+    # details).
+    # Ideally, we should do the same when building Cronet within Chromium, for
+    # consistency. However, this is currently incompatible with how Chromium
+    # builds rust dependencies (https://crbug.com/469501106 documents the errors
+    # encountered when trying this).
+    if ((!defined(invoker.no_allocator_crate) || !invoker.no_allocator_crate) &&
+        !is_cronet_for_aosp_build) {
       _rust_deps += [ "//build/rust/allocator" ]
     }
 
