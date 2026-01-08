@@ -26,10 +26,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_BLOOM_FILTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_BLOOM_FILTER_H_
 
-#include "base/check_op.h"
-#include "base/compiler_specific.h"
+#include <algorithm>
+#include <array>
+
 #include "base/containers/span.h"
-#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -60,8 +60,7 @@ class BloomFilter {
 
   friend bool operator==(const BloomFilter<keyBits>& a,
                          const BloomFilter<keyBits>& b) {
-    return UNSAFE_TODO(
-               memcmp(a.bit_array_, b.bit_array_, a.kBitArrayMemorySize)) == 0;
+    return a.bit_array_ == b.bit_array_;
   }
 
   base::span<unsigned> GetRawData() { return base::span(bit_array_); }
@@ -72,8 +71,6 @@ class BloomFilter {
   static constexpr size_t kTableSize = 1 << keyBits;
   static constexpr size_t kBitsPerPosition = 8 * sizeof(BitArrayUnit);
   static constexpr size_t kBitArraySize = kTableSize / kBitsPerPosition;
-  static constexpr size_t kBitArrayMemorySize =
-      kBitArraySize * sizeof(BitArrayUnit);
   static constexpr unsigned kKeyMask = (1 << keyBits) - 1;
 
   static size_t BitArrayIndex(unsigned key);
@@ -82,7 +79,7 @@ class BloomFilter {
   bool IsBitSet(unsigned key) const;
   void SetBit(unsigned key);
 
-  BitArrayUnit bit_array_[kBitArraySize];
+  std::array<BitArrayUnit, kBitArraySize> bit_array_;
 
   static_assert(keyBits <= kMaxKeyBits, "bloom filter key size check");
 
@@ -105,13 +102,13 @@ inline void BloomFilter<keyBits>::Add(unsigned hash) {
 
 template <unsigned keyBits>
 inline void BloomFilter<keyBits>::Clear() {
-  UNSAFE_TODO(memset(bit_array_, 0, kBitArrayMemorySize));
+  std::ranges::fill(bit_array_, 0);
 }
 
 template <unsigned keyBits>
 inline void BloomFilter<keyBits>::Merge(const BloomFilter<keyBits>& other) {
   for (size_t i = 0; i < kBitArraySize; ++i) {
-    UNSAFE_TODO(bit_array_[i] |= other.bit_array_[i]);
+    bit_array_[i] |= other.bit_array_[i];
   }
 }
 
@@ -127,14 +124,12 @@ inline unsigned BloomFilter<keyBits>::BitMask(unsigned key) {
 
 template <unsigned keyBits>
 bool BloomFilter<keyBits>::IsBitSet(unsigned key) const {
-  DCHECK_LT(BitArrayIndex(key), kBitArraySize);
-  return UNSAFE_TODO(bit_array_[BitArrayIndex(key)]) & BitMask(key);
+  return bit_array_[BitArrayIndex(key)] & BitMask(key);
 }
 
 template <unsigned keyBits>
 void BloomFilter<keyBits>::SetBit(unsigned key) {
-  DCHECK_LT(BitArrayIndex(key), kBitArraySize);
-  UNSAFE_TODO(bit_array_[BitArrayIndex(key)]) |= BitMask(key);
+  bit_array_[BitArrayIndex(key)] |= BitMask(key);
 }
 
 }  // namespace blink
