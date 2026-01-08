@@ -132,8 +132,8 @@ BrowserWindowInterface* CreateBrowser(Profile* profile, bool user_gesture) {
 
   BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
                                    *profile, user_gesture);
-  // TODO(https://crbug.com/430344931): When this is ported to android platfoms,
-  // this window isn't guaranteed to be fully initialized.
+  // TODO(https://crbug.com/430344931): When this is ported to android
+  // platforms, this window isn't guaranteed to be fully initialized.
   return CreateBrowserWindow(std::move(params));
 }
 
