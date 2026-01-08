@@ -6,9 +6,12 @@
 #define CHROMEOS_ASH_EXPERIENCES_CAMERA_CAMERA_SAVE_HANDLER_H_
 
 #include <memory>
+#include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
+#include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "ui/gfx/image/image.h"
 
@@ -19,6 +22,8 @@ class FilePath;
 namespace gfx {
 class Image;
 }  // namespace gfx
+
+class CameraUploadNotification;
 
 // Browser-side handler for camera save operations.
 class CameraSaveHandler : public base::SupportsUserData::Data {
@@ -64,6 +69,9 @@ class CameraSaveHandler : public base::SupportsUserData::Data {
         const gfx::Image& thumbnail,
         base::RepeatingCallback<void(int64_t)> progress_callback,
         base::OnceCallback<void(bool)> done_callback) = 0;
+
+    // Cancels all ongoing uploads.
+    virtual void CancelUploads() = 0;
   };
 
   CameraSaveHandler(const CameraSaveHandler&) = delete;
@@ -98,20 +106,60 @@ class CameraSaveHandler : public base::SupportsUserData::Data {
                   base::OnceCallback<void(bool)> callback);
 
  private:
+  // Data to track upload progress per file.
+  struct Upload {
+    Upload(base::OnceCallback<void(bool)> done_callback, int64_t file_size);
+    ~Upload();
+    base::OnceCallback<void(bool)> done_callback;
+    int64_t file_size;           // Size of the file in bytes.
+    int64_t bytes_uploaded = 0;  // Bytes uploaded so far.
+  };
+
   explicit CameraSaveHandler(std::unique_ptr<Delegate> delegate);
 
   // Returns the initial folder where the camera app will write files to.
   base::FilePath GetWritablePath() const;
+  // Returns the full path of the file with `base_name` in the writable folder
+  // returned by `GetWritablePath()`.
+  base::FilePath GetFilePathBeforeUpload(const base::FilePath& base_name) const;
   void PerformUpload(const base::FilePath& upload_from_path,
                      const gfx::Image& thumbnail,
                      base::OnceCallback<void(bool)> callback,
-                     std::optional<int64_t> file_size);
-  void OnUploadProgress(const base::FilePath&, int64_t);
-  void OnUploadDone(const base::FilePath&,
-                    base::OnceCallback<void(bool)> callback,
-                    bool);
+                     std::optional<int64_t> file_size)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+  // Tracks the size and bytes uploaded of this file at `upload_from_path` to
+  // show a single progress notification across all uploads.
+  void TrackUpload(const base::FilePath& upload_from_path,
+                   std::unique_ptr<Upload> upload)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+  // Removes this file at `upload_from_path` from being tracked for upload
+  // progress.
+  void UntrackUpload(const base::FilePath& upload_from_path, bool success)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+  // Creates, modifies or resets the progress notification based on current
+  // upload progress.
+  void UpdateProgressNotification() VALID_CONTEXT_REQUIRED(sequence_checker_);
+  // Cancels all ongoing uploads and resets progress tracking.
+  void CancelUploads() VALID_CONTEXT_REQUIRED(sequence_checker_);
+  // Gets called for each file when its upload progress is updated.
+  void OnUploadProgress(const base::FilePath&, int64_t)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+  // Gets called for each file when it is no longer being uploaded.
+  void OnUploadDone(const base::FilePath&, bool)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   std::unique_ptr<Delegate> delegate_;
+  // TODO(crbug.com/454152412) Add unit tests for progress notification and
+  // upload tracking.
+  std::unique_ptr<CameraUploadNotification> progress_notification_;
+  // Map from file base name to its upload tracking data.
+  std::map<base::FilePath, std::unique_ptr<Upload>> uploads_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  // Total bytes that have been uploaded so far across all uploads.
+  int64_t total_bytes_uploaded_ = 0;
+  // Total size of all uploads in bytes.
+  int64_t total_size_of_uploads_ = 0;
+  SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CameraSaveHandler> weak_ptr_factory_{this};
 };
 

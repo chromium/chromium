@@ -8,10 +8,16 @@ source_set("camera_save_handler") {
   sources = [
     "camera_save_handler.cc",
     "camera_save_handler.h",
+    "camera_upload_notification.cc",
+    "camera_upload_notification.h",
   ]
 
   deps = [
     "//base",
+    "//chromeos/ui/vector_icons",
+    "//components/strings:components_strings",
+    "//ui/base",
     "//ui/gfx",
+    "//ui/message_center",
   ]
 }
