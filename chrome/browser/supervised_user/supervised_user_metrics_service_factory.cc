@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/metrics_service_accessor_delegate.h"
@@ -82,9 +83,9 @@ SupervisedUserMetricsServiceFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<supervised_user::SupervisedUserMetricsService>(
       profile->GetPrefs(),
-      *SupervisedUserServiceFactory::GetForProfile(profile),
-      *supervised_user::SupervisedUserUrlFilteringServiceFactory::GetForProfile(
-          profile),
+      CHECK_DEREF(SupervisedUserServiceFactory::GetForProfile(profile)),
+      CHECK_DEREF(supervised_user::SupervisedUserUrlFilteringServiceFactory::
+                      GetForProfile(profile)),
 #if BUILDFLAG(IS_ANDROID)
       CHECK_DEREF(g_browser_process->device_parental_controls()),
 #endif
