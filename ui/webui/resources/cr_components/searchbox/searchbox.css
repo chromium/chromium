@@ -31,14 +31,6 @@
   --cr-searchbox-shadow: none;
 }
 
-:host([show-thumbnail]) {
-  --cr-searchbox-thumbnail-icon-offset: 54px;
-}
-
-:host([enable-thumbnail-sizing-tweaks_][show-thumbnail]) {
-  --cr-searchbox-thumbnail-icon-offset: 48px;
-}
-
 :host([searchbox-chrome-refresh-theming][dropdown-is-visible]) {
   --cr-searchbox-shadow: 0 0 12px 4px var(--color-searchbox-shadow)
 }
@@ -102,7 +94,12 @@
   flex-direction: column;
   height: auto;
   min-height: var(--cr-searchbox-height);
+  overflow: hidden;
   width: 100%;
+}
+
+:host([is-lens-searchbox_]) #inputWrapper {
+  box-shadow: none;
 }
 
 :host([multi-line-enabled]) textarea {
@@ -124,12 +121,6 @@
 }
 
 :is(input, textarea) {
-  --cr-searchbox-input-start-padding: calc(52px +
-      var(--cr-searchbox-thumbnail-icon-offset, 0px));
-  --cr-searchbox-input-trailing-padding:
-      calc(var(--cr-searchbox-voice-icon-offset)
-      + var(--cr-searchbox-voice-search-button-width)
-      + var(--cr-searchbox-inner-icon-margin));
   background-color: transparent;
   border: none;
   color: var(--color-searchbox-foreground);
@@ -152,28 +143,12 @@
 }
 
 :host-context(:not([ntp-realbox-next-enabled])) input {
-  padding-top: 15px;
+  align-self: center;
+  padding-top: 0;
 }
 
 :host-context([searchbox-layout-mode='Compact']) input {
   padding-top: 19px;
-}
-
-:host([compose-button-enabled][dropdown-is-visible]) :is(input, textarea),
-:host([searchbox-layout-mode^='Tall']) :is(input, textarea) {
-  --cr-searchbox-input-trailing-padding: calc(12px
-      + var(--cr-compose-button-width)
-      + var(--cr-searchbox-icon-spacing));
-}
-
-:host([searchbox-layout-mode='Compact'][dropdown-is-visible]) :is(input, textarea) {
-  --cr-searchbox-input-trailing-padding: calc(var(--cr-searchbox-voice-search-button-width)
-      + var(--cr-compose-button-width)
-      + var(--cr-searchbox-icon-spacing));
-}
-
-:host-context([is-back-arrow-visible]) :is(input, textarea) {
-  padding-inline-start: calc(22px + var(--cr-searchbox-thumbnail-icon-offset, 0px));
 }
 
 :host([searchbox-chrome-refresh-theming]) :is(input, textarea)::selection {
@@ -233,7 +208,7 @@ cr-searchbox-icon {
 }
 
 :host(:not([ntp-realbox-next-enabled])) cr-searchbox-icon {
-  top: 8px;
+  align-self: center;
 }
 
 @media (forced-colors: active) {
@@ -281,7 +256,7 @@ cr-searchbox-icon {
 }
 
 :host(:not([ntp-realbox-next-enabled])) .searchbox-icon-button-container {
-  top: 6px;
+  align-self: center;
 }
 
 @media (forced-colors: active) {
@@ -352,21 +327,9 @@ cr-searchbox-icon,
 }
 
 #thumbnailContainer {
-  align-content: center;
-  inset-block-start: var(--cr-searchbox-icon-top-position);
-  inset-inline-start: 52px;
-  height: 100%;
-  outline: none;
-  position: absolute;
+  align-self: center;
+  padding-inline: 10px;
   z-index: 101;
-}
-
-:host([enable-thumbnail-sizing-tweaks_]) #thumbnailContainer {
-  inset-inline-start: 50px;
-}
-
-:host-context([is-back-arrow-visible]) #thumbnailContainer {
-  inset-inline-start: 16px;
 }
 
 :host([ntp-realbox-next-enabled]) :is(input, textarea)::placeholder {
@@ -469,6 +432,10 @@ cr-searchbox-dropdown::part(dropdown-content) {
   min-height: 48px;
   position: relative;
   width: 100%;
+}
+
+:host([is-lens-searchbox_]) #inputInnerContainer {
+  min-height: 52px;
 }
 
 :host([searchbox-layout-mode^='Tall']) #inputInnerContainer {
