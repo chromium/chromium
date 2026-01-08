@@ -218,7 +218,7 @@
 <translation id="17906873777101817">主动询问是否保存密码和通行密钥</translation>
 <translation id="1794893174442046596">标签页分组</translation>
 <translation id="1807893857950749072">允许接收价格跟踪通知…</translation>
-<translation id="1809929083618343438">此操作会从 Chrome 中移除所选信息，但不会从您的 Google 账号中删除这些信息。</translation>
+<translation id="1809929083618343438">此操作会将所选信息从 Chrome 中移除，但不会将其从您的 Google 账号中删除。</translation>
 <translation id="1810976980198522421">取消</translation>
 <translation id="1815941218935345331">密码</translation>
 <translation id="1818687879307252150">{count,plural, =0{没有任何密码遭泄露}=1{有 {count} 个密码遭泄露}other{有 {count} 个密码遭泄露}}</translation>

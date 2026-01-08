@@ -148,7 +148,7 @@
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2629740064077610681">Organisasi Anda dapat melihat dan mengelola data penjelajahan, seperti bookmark, histori, dan sandi. Organisasi Anda tidak dapat melihat data penjelajahan di profil Chromium lain</translation>
 <translation id="2635452620547538388">Verifikasi diri Anda untuk menggunakan dan menyimpan data Chromium di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="2637732208198500597">{COUNT,plural, =0{Perlindungan Lanjutan mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update}=1{Perlindungan Lanjutan mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. Jendela Samaran Anda tidak akan dibuka kembali.}other{Perlindungan Lanjutan mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
+<translation id="2637732208198500597">{COUNT,plural, =0{Perlindungan Lanjutan mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update}=1{Perlindungan Lanjutan mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. Jendela Samaran tidak akan dibuka kembali.}other{Perlindungan Lanjutan mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. # jendela Samaran tidak akan dibuka kembali.}}</translation>
 <translation id="2648074677641340862">Terjadi error pada sistem operasi saat pemasangan berlangsung. Download Chromium lagi.</translation>
 <translation id="2661879430930417727">Jika Anda berbagi perangkat, teman dan keluarga dapat menjelajah secara terpisah dan menyiapkan Chromium sesuai keinginannya</translation>
 <translation id="2711502716910134313">Tab Chromium</translation>
