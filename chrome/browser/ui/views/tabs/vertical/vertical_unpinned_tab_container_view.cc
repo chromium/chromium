@@ -110,11 +110,14 @@ void VerticalUnpinnedTabContainerView::UpdateLayoutForDrag(
 
 void VerticalUnpinnedTabContainerView::HandleTabDragInContainer(
     const gfx::Point point_in_container) {
-  views::ProposedLayout target_layout = CalculateProposedLayout({});
+  const views::ProposedLayout& target_layout = layout_manager_->target_layout();
   views::View* view_at_point =
       GetViewAtPoint(target_layout, point_in_container);
   if (auto* tab_view = views::AsViewClass<VerticalTabView>(view_at_point)) {
     tab_view->OnTabDragOver();
+  } else if (auto* group_view =
+                 views::AsViewClass<VerticalTabGroupView>(view_at_point)) {
+    group_view->OnTabDragOver();
   } else if (point_in_container.y() >= target_layout.host_size.height()) {
     // If the drag exceeds the bounds all the children, then let the drag
     // handler determine where to put the dragged tab(s) relative to this node.

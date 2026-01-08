@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "components/tabs/public/tab_collection.h"
+#include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view_utils.h"
@@ -135,18 +136,53 @@ void VerticalTabDragHandlerImpl::DraggedTabsOverNode(
   if (dragged_tabs_.contains(&node)) {
     return;
   }
-  // TODO(crbug.com/439963720): Support dragging over other types.
   // TODO(crbug.com/439963720): This assumes only one tab is being dragged.
   CHECK_EQ(1u, dragged_tabs_.size());
-  if (node.type() == TabCollectionNode::Type::TAB) {
-    const auto* tab = std::get<const tabs::TabInterface*>(node.GetNodeData());
-
-    tab_strip_model_->MoveSelectedTabsTo(tab_strip_model_->GetIndexOfTab(tab),
-                                         std::nullopt);
-  } else if (node.type() == TabCollectionNode::Type::UNPINNED) {
-    tab_strip_model_->MoveSelectedTabsTo(tab_strip_model_->count() - 1,
-                                         std::nullopt);
+  switch (node.type()) {
+    case TabCollectionNode::Type::TAB:
+      HandleTabDragOverTab(node);
+      break;
+    case TabCollectionNode::Type::GROUP:
+      HandleTabDragOverGroup(node);
+      break;
+    case TabCollectionNode::Type::UNPINNED:
+      HandleTabDragOverUnpinnedContainer(node);
+      break;
+    default:
+      NOTREACHED();
   }
+}
+
+void VerticalTabDragHandlerImpl::HandleTabDragOverTab(
+    const TabCollectionNode& node) {
+  const auto* tab = std::get<const tabs::TabInterface*>(node.GetNodeData());
+  CHECK(tab);
+  tab_strip_model_->MoveSelectedTabsTo(tab_strip_model_->GetIndexOfTab(tab),
+                                       tab->GetGroup());
+}
+
+void VerticalTabDragHandlerImpl::HandleTabDragOverGroup(
+    const TabCollectionNode& node) {
+  const auto* tab_group =
+      static_cast<const tabs::TabGroupTabCollection*>(
+          std::get<const tabs::TabCollection*>(node.GetNodeData()))
+          ->GetTabGroup();
+  CHECK(tab_group);
+  const int insertion_idx =
+      tab_strip_model_->GetIndexOfTab(tab_group->GetFirstTab());
+  const bool should_insert_before_group =
+      tab_strip_model_->IsGroupCollapsed(tab_group->id());
+
+  tab_strip_model_->MoveSelectedTabsTo(
+      insertion_idx, should_insert_before_group
+                         ? std::nullopt
+                         : std::make_optional(tab_group->id()));
+}
+
+void VerticalTabDragHandlerImpl::HandleTabDragOverUnpinnedContainer(
+    const TabCollectionNode& node) {
+  tab_strip_model_->MoveSelectedTabsTo(tab_strip_model_->count() - 1,
+                                       std::nullopt);
 }
 
 TabDragContext* VerticalTabDragHandlerImpl::GetDragContext() {

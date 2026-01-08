@@ -14,8 +14,10 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_dragged_tabs_container.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/tabs/public/tab_collection_storage.h"
 #include "components/tabs/public/tab_group.h"
@@ -50,15 +52,17 @@ const TabGroup* GetTabGroupFromNode(TabCollectionNode* node) {
 }  // namespace
 
 VerticalTabGroupView::VerticalTabGroupView(TabCollectionNode* collection_node)
-    : collection_node_(collection_node),
+    : VerticalDraggedTabsContainer(static_cast<const views::View&>(*this)),
+      collection_node_(collection_node),
       tab_group_visual_data_(
           *GetTabGroupFromNode(collection_node_)->visual_data()),
       group_header_(AddChildView(std::make_unique<VerticalTabGroupHeaderView>(
           this,
           &tab_group_visual_data_))),
-      group_line_(AddChildView(std::make_unique<views::View>())) {
-  SetLayoutManager(std::make_unique<TabCollectionAnimatingLayoutManager>(
-      std::make_unique<views::DelegatingLayoutManager>(this)));
+      group_line_(AddChildView(std::make_unique<views::View>())),
+      layout_manager_(*SetLayoutManager(
+          std::make_unique<TabCollectionAnimatingLayoutManager>(
+              std::make_unique<views::DelegatingLayoutManager>(this)))) {
   node_destroyed_subscription_ =
       collection_node_->RegisterWillDestroyCallback(base::BindOnce(
           &VerticalTabGroupView::ResetCollectionNode, base::Unretained(this)));
@@ -126,7 +130,7 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
   // fill available width.
   for (auto* child : children) {
     gfx::Rect bounds = gfx::Rect(child->GetPreferredSize());
-    bounds.set_y(height);
+    bounds.set_y(GetYForDraggedTabBounds(*child).value_or(height));
     // If the tab strip is not collapsed then the groups tabs should be inset.
     bounds.set_x(
         is_tab_strip_collapsed
@@ -151,7 +155,7 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
   layouts.child_layouts.emplace_back(
       group_line_.get(), group_line_->GetVisible(), group_line_bounds);
 
-  const bool is_collapsed = tab_group_visual_data_.is_collapsed();
+  const bool is_collapsed = IsCollapsed();
   layouts.host_size = gfx::Size(
       width, is_collapsed
                  ? header_bounds.height() + (2 * kGroupHeaderVerticalMargin)
@@ -200,6 +204,44 @@ void VerticalTabGroupView::UpdateChildVisibilityForCollapseState(
   for (auto* child : collection_node_->GetDirectChildren()) {
     child->SetVisible(!collapsed);
   }
+}
+
+bool VerticalTabGroupView::IsCollapsed() const {
+  return tab_group_visual_data_.is_collapsed();
+}
+
+VerticalTabDragHandler& VerticalTabGroupView::GetDragHandler() {
+  CHECK(collection_node_);
+  CHECK(collection_node_->GetController());
+  return collection_node_->GetController()->GetDragHandler();
+}
+
+void VerticalTabGroupView::UpdateLayoutForDrag(bool skip_animations) {
+  if (skip_animations) {
+    layout_manager_->ResetToTargetLayout();
+  } else {
+    InvalidateLayout();
+  }
+}
+
+void VerticalTabGroupView::HandleTabDragInContainer(
+    const gfx::Point point_in_container) {
+  // If the drag is on or above the group header, treat this as a drag over
+  // group as a whole, rather than a drag over an individual tab.
+  if (point_in_container.y() <= group_header_->bounds().bottom()) {
+    GetDragHandler().DraggedTabsOverNode(*collection_node_);
+    return;
+  }
+
+  views::View* view_at_point =
+      GetViewAtPoint(layout_manager_->target_layout(), point_in_container);
+  if (auto* tab_view = views::AsViewClass<VerticalTabView>(view_at_point)) {
+    tab_view->OnTabDragOver();
+  }
+}
+
+void VerticalTabGroupView::OnTabDragOver() {
+  GetDragHandler().DraggedTabsOverNode(*collection_node_);
 }
 
 BEGIN_METADATA(VerticalTabGroupView)

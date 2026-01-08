@@ -39,7 +39,23 @@ VerticalDraggedTabsContainer::~VerticalDraggedTabsContainer() {
 
 VerticalDraggedTabsContainer& VerticalDraggedTabsContainer::GetTabDragTarget(
     const gfx::Point& point_in_screen) {
-  // TODO(crbug.com/439963720): Look for nested targets.
+  gfx::Point point_in_container = views::View::ConvertPointFromScreen(
+      base::to_address(host_view_), point_in_screen);
+  for (views::View* child : host_view_->children()) {
+    if (!child->GetVisible() || !child->bounds().Contains(point_in_container) ||
+        dragging_views_.contains(child)) {
+      continue;
+    }
+    if (auto* unpinned_container =
+            views::AsViewClass<VerticalUnpinnedTabContainerView>(child)) {
+      return unpinned_container->GetTabDragTarget(point_in_screen);
+    }
+    if (auto* group_view = views::AsViewClass<VerticalTabGroupView>(child)) {
+      if (!group_view->IsCollapsed()) {
+        return group_view->GetTabDragTarget(point_in_screen);
+      }
+    }
+  }
   return *this;
 }
 

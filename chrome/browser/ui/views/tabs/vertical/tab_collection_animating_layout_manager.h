@@ -44,6 +44,8 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
   // Snaps the container to the target layout.
   void ResetToTargetLayout();
 
+  const views::ProposedLayout& target_layout() const { return target_layout_; }
+
  protected:
   // LayoutManagerBase:
   views::ProposedLayout CalculateProposedLayout(

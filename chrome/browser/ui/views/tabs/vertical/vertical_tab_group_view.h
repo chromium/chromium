@@ -8,6 +8,8 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
+#include "chrome/browser/ui/views/tabs/vertical/tab_collection_animating_layout_manager.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_dragged_tabs_container.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_header_view.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -15,12 +17,14 @@
 #include "ui/views/view.h"
 
 class TabCollectionNode;
+class VerticalTabDragHandler;
 class VerticalTabGroupHeaderView;
 
 // Container for a tab group in the vertical tabstrip.
 class VerticalTabGroupView : public views::View,
                              public views::LayoutDelegate,
-                             public VerticalTabGroupHeaderView::Delegate {
+                             public VerticalTabGroupHeaderView::Delegate,
+                             public VerticalDraggedTabsContainer {
   METADATA_HEADER(VerticalTabGroupView, views::View)
 
  public:
@@ -43,11 +47,21 @@ class VerticalTabGroupView : public views::View,
 
   void OnDataChanged();
 
+  bool IsCollapsed() const;
+
+  // Handler when a tab that is not in the group is dragged over this.
+  void OnTabDragOver();
+
   VerticalTabGroupHeaderView* group_header_for_testing() {
     return group_header_;
   }
 
  private:
+  // VerticalDraggedTabsContainer:
+  VerticalTabDragHandler& GetDragHandler() override;
+  void UpdateLayoutForDrag(bool skip_animations) override;
+  void HandleTabDragInContainer(const gfx::Point point_in_container) override;
+
   void ResetCollectionNode();
   void UpdateChildVisibilityForCollapseState(bool collapsed);
 
@@ -59,6 +73,8 @@ class VerticalTabGroupView : public views::View,
   tab_groups::TabGroupVisualData tab_group_visual_data_;
   const raw_ptr<VerticalTabGroupHeaderView> group_header_ = nullptr;
   const raw_ptr<views::View> group_line_ = nullptr;
+
+  const raw_ref<TabCollectionAnimatingLayoutManager> layout_manager_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_GROUP_VIEW_H_

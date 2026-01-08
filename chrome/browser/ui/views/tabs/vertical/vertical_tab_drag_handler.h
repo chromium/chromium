@@ -113,6 +113,11 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   // Cleans up state tracked by this handler for a given node.
   void OnNodeWillDestroy(TabCollectionNode& node);
 
+  // Handlers for drag operations over various node types.
+  void HandleTabDragOverTab(const TabCollectionNode& node);
+  void HandleTabDragOverGroup(const TabCollectionNode& node);
+  void HandleTabDragOverUnpinnedContainer(const TabCollectionNode& node);
+
   const raw_ref<TabStripModel> tab_strip_model_;
   const raw_ref<TabCollectionNode> root_node_;
 
