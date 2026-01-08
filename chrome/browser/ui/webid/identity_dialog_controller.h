@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/webid/proto/fedcm_clickthrough_rate_metadata.pb.h"
 #include "components/segmentation_platform/public/result.h"
+#include "content/public/browser/page_user_data.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "ui/gfx/native_ui_types.h"
 
@@ -37,6 +38,7 @@ using DismissCallback =
 using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
 using IdentityRequestAccountPtr =
     scoped_refptr<content::IdentityRequestAccount>;
+using OnFederatedTokenReceivedCallback = base::OnceCallback<void(bool)>;
 using TokenError = content::IdentityCredentialTokenError;
 
 // The IdentityDialogController controls the views that are used across
@@ -162,6 +164,44 @@ class IdentityDialogController
   // recommendation from |segmentation_platform_service_| is used.
   void CollectTrainingData(UserAction user_action);
 
+  // Represents an actor login request. The actor may choose to request
+  // a federated token from a specific account, and request to be notified when
+  // the request is completed.
+  class ActorLoginRequest : public content::PageUserData<ActorLoginRequest> {
+   public:
+    ActorLoginRequest(content::Page& page,
+                      const GURL& idp_url,
+                      const std::string& account_id,
+                      OnFederatedTokenReceivedCallback callback);
+    ActorLoginRequest(const ActorLoginRequest&) = delete;
+    ActorLoginRequest& operator=(const ActorLoginRequest&) = delete;
+    ~ActorLoginRequest() override;
+
+    const GURL& idp_url() const { return idp_url_; }
+    const std::string& account_id() const { return account_id_; }
+    const OnFederatedTokenReceivedCallback&
+    on_federated_token_received_callback() const {
+      return on_federated_token_received_callback_;
+    }
+
+    PAGE_USER_DATA_KEY_DECL();
+
+   private:
+    GURL idp_url_;
+    std::string account_id_;
+    OnFederatedTokenReceivedCallback on_federated_token_received_callback_;
+  };
+
+  // Sets the actor login request information. This is used to know whether a
+  // current pending web identity request is an actor login request, which
+  // account to automatically select, and how to notify the actor.
+  static void SetActorLoginRequest(content::Page& page,
+                                   const GURL& idp_url,
+                                   const std::string& account_id,
+                                   OnFederatedTokenReceivedCallback callback);
+  static void UnsetActorLoginRequest(content::Page& page);
+  ActorLoginRequest* GetActorLoginRequest() const;
+
  private:
   // Attempts to set `account_view_` if it is not already set -- directly on
   // Android, via TabFeatures on desktop.
@@ -169,6 +209,9 @@ class IdentityDialogController
 
   // Gets the clickthrough rate on the RP aggregated across all users.
   webid::FedCmClickthroughRateMetadata GetFedCmClickthroughRateMetadata();
+
+  // Whether to show FedCM UI or not.
+  bool ShouldShowFedCmUi();
 
   std::unique_ptr<AccountSelectionView> account_view_{nullptr};
   AccountSelectionCallback on_account_selection_;

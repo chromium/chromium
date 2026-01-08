@@ -38,27 +38,4 @@ RequestPageData::ConsumeUserInfoAccountsResponseTime(const GURL& idp_url) {
   return std::nullopt;
 }
 
-RequestPageData::EmbedderLoginRequest::EmbedderLoginRequest(
-    const GURL& idp_url,
-    const std::string& account_id,
-    OnFederatedTokenReceivedCallback callback)
-    : idp_url(idp_url),
-      account_id(account_id),
-      on_federated_token_received_callback(std::move(callback)) {}
-
-RequestPageData::EmbedderLoginRequest::EmbedderLoginRequest(
-    EmbedderLoginRequest&&) = default;
-
-RequestPageData::EmbedderLoginRequest::~EmbedderLoginRequest() = default;
-
-void RequestPageData::SetEmbedderLoginRequest(
-    std::optional<EmbedderLoginRequest> request) {
-  embedder_login_request_ = std::move(request);
-}
-
-const std::optional<RequestPageData::EmbedderLoginRequest>&
-RequestPageData::GetEmbedderLoginRequest() {
-  return embedder_login_request_;
-}
-
 }  // namespace content::webid
