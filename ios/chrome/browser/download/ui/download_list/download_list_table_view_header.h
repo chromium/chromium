@@ -18,11 +18,6 @@
 /// Mutator for handling filter changes.
 @property(nonatomic, weak) id<DownloadListMutator> mutator;
 
-/// Returns the preferred height for the header view based on its current
-/// content.
-/// @param width The width to use for height calculation.
-- (CGFloat)preferredHeightForWidth:(CGFloat)width;
-
 /// Controls the visibility of the attribution text at the bottom of the header.
 /// @param shown Whether to show the attribution text.
 - (void)setAttributionTextShown:(BOOL)shown;
