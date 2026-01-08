@@ -32,6 +32,7 @@ constexpr CGFloat kCornerRadius = 10;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
+    self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
     self.backgroundColor =
         [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
     self.layer.cornerRadius = kCornerRadius;
