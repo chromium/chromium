@@ -21,6 +21,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/ui_bundled/sync/sync_create_passphrase_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -135,10 +136,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (TableViewItem*)passphraseItem {
   DCHECK(syncer::IsSyncAllowedByFlag());
   NSString* text = l10n_util::GetNSString(IDS_SYNC_FULL_ENCRYPTION_DATA);
-  return [self itemWithType:ItemTypePassphrase
-                       text:text
-                    checked:_isUsingExplicitPassphrase
-                    enabled:!_isUsingExplicitPassphrase];
+  TableViewItem* result = [self itemWithType:ItemTypePassphrase
+                                        text:text
+                                     checked:_isUsingExplicitPassphrase
+                                     enabled:!_isUsingExplicitPassphrase];
+  result.accessibilityIdentifier = kSyncFullEncryptionAccessibilityIdentifier;
+  return result;
 }
 
 // Returns a footer item with a link.
@@ -223,8 +226,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
-  [self.presentationDelegate
-      syncEncryptionTableViewControllerDidDisappear:self];
+  if (self.isMovingFromParentViewController) {
+    [self.presentationDelegate
+        syncEncryptionTableViewControllerDidDismiss:self];
+  }
 }
 
 #pragma mark - SettingsControllerProtocol callbacks

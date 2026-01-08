@@ -13,6 +13,7 @@ source_set("sync") {
     "sync_encryption_table_view_controller.mm",
   ]
   deps = [
+    ":constants",
     "//base",
     "//components/application_locale_storage",
     "//components/autofill/core/common",
@@ -54,6 +55,15 @@ source_set("sync") {
     "//ui/base",
     "//url",
   ]
+}
+
+source_set("constants") {
+  sources = [
+    "sync_encryption_constants.h",
+    "sync_encryption_constants.mm",
+  ]
+  deps = [ "//base" ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("unit_tests") {
@@ -102,8 +112,12 @@ source_set("unit_tests") {
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [ "sync_encryption_passphrase_table_view_controller_egtest.mm" ]
+  sources = [
+    "sync_encryption_passphrase_table_view_controller_egtest.mm",
+    "sync_encryption_table_view_controller_egtest.mm",
+  ]
   deps = [
+    ":constants",
     "//base/test:test_support",
     "//components/feature_engagement/public",
     "//components/strings",

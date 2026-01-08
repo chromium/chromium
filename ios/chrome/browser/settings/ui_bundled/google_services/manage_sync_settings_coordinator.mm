@@ -761,7 +761,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 #pragma mark - SyncEncryptionTableViewControllerPresentationDelegate
 
-- (void)syncEncryptionTableViewControllerDidDisappear:
+- (void)syncEncryptionTableViewControllerDidDismiss:
     (SyncEncryptionTableViewController*)viewController {
   CHECK_EQ(_syncEncryptionTableViewController, viewController,
            base::NotFatalUntil::M150);
