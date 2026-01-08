@@ -120,6 +120,11 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
     }
 
     @Override
+    public void showAllLoyaltyCards(List<LoyaltyCard> allLoyaltyCards) {
+        mMediator.showAllLoyaltyCards(allLoyaltyCards, mValuableImageFunction);
+    }
+
+    @Override
     public void onPurchaseAmountExtracted(
             List<BnplIssuerContext> bnplIssuerContexts,
             Long extractedAmount,

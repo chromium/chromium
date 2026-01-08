@@ -992,6 +992,19 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillAffiliatedLoyaltyCard(
 #endif
 }
 
+bool ChromePaymentsAutofillClient::ShowTouchToFillForAllLoyaltyCards(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    std::vector<autofill::LoyaltyCard> loyalty_cards_to_suggest) {
+#if BUILDFLAG(IS_ANDROID)
+  return GetTouchToFillPaymentMethodController()->ShowAllLoyaltyCards(
+      std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
+      delegate, std::move(loyalty_cards_to_suggest));
+#else
+  // Touch To Fill is not supported on Desktop.
+  NOTREACHED();
+#endif
+}
+
 bool ChromePaymentsAutofillClient::OnPurchaseAmountExtracted(
     base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
     std::optional<int64_t> extracted_amount,

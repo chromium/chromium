@@ -626,6 +626,12 @@ class TouchToFillPaymentMethodMediator {
                 TOUCH_TO_FILL_NUMBER_OF_LOYALTY_CARDS_SHOWN, mAllLoyaltyCards.size());
     }
 
+    public void showAllLoyaltyCards(
+            List<LoyaltyCard> allLoyaltyCards,
+            Function<LoyaltyCard, Drawable> valuableImageFunction) {
+        // TODO(crbug.com/467962940): Display the full list of loyalty cards.
+    }
+
     private ModelList getLoyaltyCardHomeScreenItems(
             List<LoyaltyCard> affiliatedLoyaltyCards,
             Function<LoyaltyCard, Drawable> valuableImageFunction,
@@ -1122,7 +1128,7 @@ class TouchToFillPaymentMethodMediator {
         recordTouchToFillBnplTosUserAction(TouchToFillBnplTosScreenUserAction.ACCEPTED);
     }
 
-    private void showAllLoyaltyCards() {
+    private void showAllLoyaltyCardsList() {
         mModel.set(CURRENT_SCREEN, ALL_LOYALTY_CARDS_SCREEN);
         mModel.set(FOCUSED_VIEW_ID_FOR_ACCESSIBILITY, R.id.all_loyalty_cards_back_image_button);
         ModelList allLoyaltyCardsModel = new ModelList();
@@ -1231,7 +1237,7 @@ class TouchToFillPaymentMethodMediator {
 
     private PropertyModel createAllLoyaltyCardsItemModel() {
         return new PropertyModel.Builder(AllLoyaltyCardsItemProperties.ALL_KEYS)
-                .with(AllLoyaltyCardsItemProperties.ON_CLICK_ACTION, this::showAllLoyaltyCards)
+                .with(AllLoyaltyCardsItemProperties.ON_CLICK_ACTION, this::showAllLoyaltyCardsList)
                 .build();
     }
 

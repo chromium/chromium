@@ -95,6 +95,12 @@ class TouchToFillPaymentMethodViewBridge {
     }
 
     @CalledByNative
+    private void showAllLoyaltyCards(
+            @JniType("base::span<const LoyaltyCard>") List<LoyaltyCard> allLoyaltyCards) {
+        mComponent.showAllLoyaltyCards(allLoyaltyCards);
+    }
+
+    @CalledByNative
     private void onPurchaseAmountExtracted(
             @JniType("std::vector") List<BnplIssuerContext> bnplIssuerContexts,
             @JniType("std::optional<int64_t>") @Nullable Long extractedAmount,

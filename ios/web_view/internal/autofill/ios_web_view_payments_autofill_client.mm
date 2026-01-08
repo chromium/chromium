@@ -384,6 +384,12 @@ bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillAffiliatedLoyaltyCard(
   return false;
 }
 
+bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillForAllLoyaltyCards(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    std::vector<LoyaltyCard> loyalty_cards_to_suggest) {
+  return false;
+}
+
 bool IOSWebViewPaymentsAutofillClient::OnPurchaseAmountExtracted(
     base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
     std::optional<int64_t> extracted_amount,

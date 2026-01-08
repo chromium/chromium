@@ -36,6 +36,11 @@ class TouchToFillDelegate {
   virtual bool TryToShowTouchToFill(const FormData& form,
                                     const FormFieldData& field) = 0;
 
+  // Shows the TTF surface displaying the full list of loyalty cards.
+  virtual bool ShowTouchToFillForAllLoyaltyCards(
+      const FormData& form,
+      const FormFieldData& field) = 0;
+
   // Returns whether the TTF surface is currently being shown.
   virtual bool IsShowingTouchToFill() = 0;
 

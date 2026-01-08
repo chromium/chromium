@@ -912,6 +912,11 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       }
       break;
     }
+    case SuggestionType::kAllLoyaltyCardsEntry: {
+      manager_->touch_to_fill_delegate()->ShowTouchToFillForAllLoyaltyCards(
+          query_form_, query_field_);
+      break;
+    }
     case SuggestionType::kOneTimePasswordEntry: {
       const FormStructure* form_structure =
           manager_->FindCachedFormById(query_form_.global_id());
@@ -942,7 +947,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kTroubleSigningInEntry:
     case SuggestionType::kFreeformFooter:
     case SuggestionType::kAccountStoragePasswordEntry:
-    case SuggestionType::kAllLoyaltyCardsEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
     case SuggestionType::kGeneratePasswordEntry:
     case SuggestionType::kDevtoolsTestAddresses:

@@ -367,6 +367,18 @@ void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
 
   // If no submenu is needed.
 #if BUILDFLAG(IS_ANDROID)
+  if (affiliated_cards.empty() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableNonAffiliatedLoyaltyCardsFilling)) {
+    Suggestion all_loyalty_cards_entry(
+        l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_LOYALTY_CARDS_ALL_YOUR_CARDS_SUGGESTION),
+        SuggestionType::kAllLoyaltyCardsEntry);
+    callback(
+        {FillingProduct::kLoyaltyCard, {std::move(all_loyalty_cards_entry)}});
+    return;
+  }
+
   const bool generate_flat_suggestions = true;
 #else
   const bool generate_flat_suggestions = non_affiliated_cards.empty();

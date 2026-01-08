@@ -54,6 +54,9 @@ class TouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView {
       base::span<const LoyaltyCard> affiliated_loyalty_cards,
       base::span<const LoyaltyCard> all_loyalty_cards,
       bool first_time_usage) override;
+  bool ShowAllLoyaltyCards(
+      TouchToFillPaymentMethodViewController* controller,
+      base::span<const LoyaltyCard> all_loyalty_cards) override;
   bool OnPurchaseAmountExtracted(
       const TouchToFillPaymentMethodViewController& controller,
       base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,

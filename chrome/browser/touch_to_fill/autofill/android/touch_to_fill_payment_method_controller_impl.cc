@@ -144,6 +144,25 @@ bool TouchToFillPaymentMethodControllerImpl::ShowAffiliatedLoyaltyCards(
   return true;
 }
 
+bool TouchToFillPaymentMethodControllerImpl::ShowAllLoyaltyCards(
+    std::unique_ptr<TouchToFillPaymentMethodView> view,
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const LoyaltyCard> all_loyalty_cards) {
+  // Abort if TTF surface is already shown.
+  if (view_) {
+    return false;
+  }
+
+  if (!view->ShowAllLoyaltyCards(this, all_loyalty_cards)) {
+    ResetJavaObject();
+    return false;
+  }
+
+  view_ = std::move(view);
+  delegate_ = std::move(delegate);
+  return true;
+}
+
 bool TouchToFillPaymentMethodControllerImpl::OnPurchaseAmountExtracted(
     base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
     std::optional<int64_t> extracted_amount,

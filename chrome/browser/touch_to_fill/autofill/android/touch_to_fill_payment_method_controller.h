@@ -67,6 +67,13 @@ class TouchToFillPaymentMethodController
       base::span<const LoyaltyCard> all_loyalty_cards,
       bool first_time_usage) = 0;
 
+  // Shows the Touch To Fill `view`. `delegate` will provide the full list of
+  // fillable loyalty cards and be notified of the user's decision.
+  virtual bool ShowAllLoyaltyCards(
+      std::unique_ptr<TouchToFillPaymentMethodView> view,
+      base::WeakPtr<TouchToFillDelegate> delegate,
+      base::span<const LoyaltyCard> all_loyalty_cards) = 0;
+
   // If the user is on the credit card suggestion screen and amount extraction
   // is completed, this updates the BNPL payment method option on the Touch To
   // Fill suggestion view. If the `extracted_amount` is null, the option is

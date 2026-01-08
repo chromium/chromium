@@ -142,6 +142,14 @@ interface TouchToFillPaymentMethodComponent {
             boolean firstTimeUsage);
 
     /**
+     * Displays a bottom sheet for all loyalty cards.
+     *
+     * @param allLoyaltyCards The list of all the user's loyalty cards that are displayed on the
+     *     first screen in the bottom sheet.
+     */
+    void showAllLoyaltyCards(List<LoyaltyCard> allLoyaltyCards);
+
+    /**
      * Updates BNPL suggestions or BNPL screen on the bottom sheet based on the results of amount
      * extraction.
      *

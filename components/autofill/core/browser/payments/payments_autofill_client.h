@@ -643,6 +643,14 @@ class PaymentsAutofillClient : public RiskDataLoader {
       base::WeakPtr<TouchToFillDelegate> delegate,
       std::vector<LoyaltyCard> loyalty_cards_to_suggest) = 0;
 
+  // Shows the Touch To Fill surface for filling Wallet loyalty card
+  // information, if possible, returning `true` on success. `delegate` will be
+  // notified of events. This function is not implemented on iOS and iOS
+  // WebView, and should not be used on those platforms.
+  virtual bool ShowTouchToFillForAllLoyaltyCards(
+      base::WeakPtr<TouchToFillDelegate> delegate,
+      std::vector<LoyaltyCard> loyalty_cards_to_suggest) = 0;
+
   // Updates the BNPL UI, returning true on success. This either:
   // 1. Updates the BNPL payment method option on the Touch To Fill surface, OR
   // 2. Updates the progress screen with the selection screen or error screen,

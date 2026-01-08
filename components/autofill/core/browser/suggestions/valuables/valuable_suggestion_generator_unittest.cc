@@ -621,9 +621,8 @@ TEST_F(
   EXPECT_THAT(suggestions[1], EqualsSuggestion(SuggestionType::kSeparator));
   EXPECT_THAT(suggestions[2], EqualsManageLoyaltyCardsSuggestion());
 #else  // !BUILDFLAG(IS_ANDROID)
-  EXPECT_THAT(suggestions,
-              testing::ElementsAre(EqualsSuggestion(SuggestionType::kSeparator),
-                                   EqualsManageLoyaltyCardsSuggestion()));
+  EXPECT_THAT(suggestions, testing::ElementsAre(EqualsSuggestion(
+                               SuggestionType::kAllLoyaltyCardsEntry)));
 #endif
 }
 

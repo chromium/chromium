@@ -315,6 +315,14 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
   return true;
 }
 
+bool TouchToFillDelegateAndroidImpl::ShowTouchToFillForAllLoyaltyCards(
+    const FormData& form,
+    const FormFieldData& field) {
+  // TODO(crbug.com/467962940): Call payment client
+  // `ShowTouchToFillForAllLoyaltyCards`.
+  return false;
+}
+
 bool TouchToFillDelegateAndroidImpl::IsShowingTouchToFill() {
   return ttf_payment_method_state_ == TouchToFillState::kIsShowing;
 }

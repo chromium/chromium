@@ -58,6 +58,12 @@ class MockTouchToFillPaymentMethodController
                base::span<const LoyaltyCard>,
                bool),
               (override));
+  MOCK_METHOD(bool,
+              ShowAllLoyaltyCards,
+              (std::unique_ptr<TouchToFillPaymentMethodView>,
+               base::WeakPtr<TouchToFillDelegate>,
+               base::span<const LoyaltyCard>),
+              (override));
   MOCK_METHOD(
       bool,
       OnPurchaseAmountExtracted,

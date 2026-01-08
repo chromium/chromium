@@ -63,6 +63,10 @@ class TouchToFillPaymentMethodControllerImpl
       base::span<const LoyaltyCard> affiliated_loyalty_cards,
       base::span<const LoyaltyCard> all_loyalty_cards,
       bool first_time_usage) override;
+  bool ShowAllLoyaltyCards(
+      std::unique_ptr<TouchToFillPaymentMethodView> view,
+      base::WeakPtr<TouchToFillDelegate> delegate,
+      base::span<const LoyaltyCard> all_loyalty_cards) override;
   bool OnPurchaseAmountExtracted(
       base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
       std::optional<int64_t> extracted_amount,

@@ -537,6 +537,12 @@ bool IOSChromePaymentsAutofillClient::ShowTouchToFillAffiliatedLoyaltyCard(
   return false;
 }
 
+bool IOSChromePaymentsAutofillClient::ShowTouchToFillForAllLoyaltyCards(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    std::vector<LoyaltyCard> loyalty_cards_to_suggest) {
+  return false;
+}
+
 bool IOSChromePaymentsAutofillClient::OnPurchaseAmountExtracted(
     base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
     std::optional<int64_t> extracted_amount,

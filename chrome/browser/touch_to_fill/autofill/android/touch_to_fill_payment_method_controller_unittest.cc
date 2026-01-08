@@ -81,6 +81,10 @@ class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView
                base::span<const LoyaltyCard> affiliated_loyalty_cards,
                base::span<const LoyaltyCard> all_loyalty_cards,
                bool first_time_usage));
+  MOCK_METHOD(bool,
+              ShowAllLoyaltyCards,
+              (TouchToFillPaymentMethodViewController * controller,
+               base::span<const LoyaltyCard> all_loyalty_cards));
   MOCK_METHOD(
       bool,
       OnPurchaseAmountExtracted,

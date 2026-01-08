@@ -119,6 +119,10 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   bool TryToShowTouchToFill(const FormData& form,
                             const FormFieldData& field) override;
 
+  // Shows the TTF surface displaying the full list of loyalty cards.
+  bool ShowTouchToFillForAllLoyaltyCards(const FormData& form,
+                                         const FormFieldData& field) override;
+
   // Returns whether the TTF surface is currently being shown.
   bool IsShowingTouchToFill() override;
 

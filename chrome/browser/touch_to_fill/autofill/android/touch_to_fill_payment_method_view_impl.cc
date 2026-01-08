@@ -213,6 +213,20 @@ bool TouchToFillPaymentMethodViewImpl::ShowAffiliatedLoyaltyCards(
   return true;
 }
 
+bool TouchToFillPaymentMethodViewImpl::ShowAllLoyaltyCards(
+    TouchToFillPaymentMethodViewController* controller,
+    base::span<const LoyaltyCard> all_loyalty_cards) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  if (!IsReadyToShow(controller, env)) {
+    return false;
+  }
+
+  Java_TouchToFillPaymentMethodViewBridge_showAllLoyaltyCards(
+      env, java_object_, all_loyalty_cards);
+
+  return true;
+}
+
 bool TouchToFillPaymentMethodViewImpl::OnPurchaseAmountExtracted(
     const TouchToFillPaymentMethodViewController& controller,
     base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,

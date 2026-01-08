@@ -873,6 +873,10 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
               TryToShowTouchToFill,
               (const FormData&, const FormFieldData&),
               (override));
+  MOCK_METHOD(bool,
+              ShowTouchToFillForAllLoyaltyCards,
+              (const FormData&, const FormFieldData&),
+              (override));
   MOCK_METHOD(bool, IsShowingTouchToFill, (), (override));
   MOCK_METHOD(void, HideTouchToFill, (), (override));
   MOCK_METHOD(void, Reset, (), (override));

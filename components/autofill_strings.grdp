@@ -520,6 +520,9 @@
     <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_ONE_TIME_PASSWORD" desc="Accessibility announcement for when a one time password is autofilled.">
       Autofilled code
     </message>
+    <message name="IDS_AUTOFILL_LOYALTY_CARDS_ALL_YOUR_CARDS_SUGGESTION" desc="The keyboard accessory suggestion to open the loyalty cards bottom sheet containing all the user loyalty cards.">
+      Your loyalty cards
+    </message>
   </if>
 
   <!-- Explicit save/update address prompt strings -->

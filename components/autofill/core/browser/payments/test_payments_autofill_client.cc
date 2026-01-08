@@ -381,6 +381,12 @@ bool TestPaymentsAutofillClient::ShowTouchToFillAffiliatedLoyaltyCard(
   return false;
 }
 
+bool TestPaymentsAutofillClient::ShowTouchToFillForAllLoyaltyCards(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    std::vector<LoyaltyCard> loyalty_cards_to_suggest) {
+  return false;
+}
+
 bool TestPaymentsAutofillClient::OnPurchaseAmountExtracted(
     base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
     std::optional<int64_t> extracted_amount,
