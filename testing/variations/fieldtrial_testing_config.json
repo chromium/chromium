@@ -15630,21 +15630,6 @@
             ]
         }
     ],
-    "LockTopControlsOnLargeTabletAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LockTopControlsOnLargeTabletsV2"
-                    ]
-                }
-            ]
-        }
-    ],
     "LofnPermissiveUsbPassthrough": [
         {
             "platforms": [
