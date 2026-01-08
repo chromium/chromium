@@ -228,8 +228,9 @@ std::optional<tab_groups::TabGroupId> TestTabModel::CreateTabGroup(
   return std::nullopt;
 }
 
-void TestTabModel::SetTabGroupTitle(tab_groups::TabGroupId group_id,
-                                    const std::u16string& title) {
+void TestTabModel::SetTabGroupVisualData(
+    tab_groups::TabGroupId group_id,
+    const tab_groups::TabGroupVisualData& visual_data) {
   NOTIMPLEMENTED();
 }
 
@@ -517,8 +518,9 @@ OwningTestTabModel::GetTabGroupVisualData(tab_groups::TabGroupId group_id) {
   return std::nullopt;
 }
 
-void OwningTestTabModel::SetTabGroupTitle(tab_groups::TabGroupId group_id,
-                                          const std::u16string& title) {
+void OwningTestTabModel::SetTabGroupVisualData(
+    tab_groups::TabGroupId group_id,
+    const tab_groups::TabGroupVisualData& visual_data) {
   NOTIMPLEMENTED();
 }
 

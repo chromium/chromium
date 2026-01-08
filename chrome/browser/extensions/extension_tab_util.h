@@ -206,7 +206,6 @@ class ExtensionTabUtil {
   // Gets the metadata for the group with ID `group_id`. Sets the `error` if not
   // found. `out_window`, `out_id`, or `out_visual_data` may be nullptr and will
   // not be set within the function if so.
-  // TODO(crbug.com/405219902): Visual data is not yet supported on Android.
   static bool GetGroupById(int group_id,
                            content::BrowserContext* browser_context,
                            bool include_incognito,

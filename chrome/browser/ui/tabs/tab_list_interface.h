@@ -129,9 +129,11 @@ class TabListInterface {
   virtual std::optional<tab_groups::TabGroupId> CreateTabGroup(
       const std::vector<tabs::TabHandle>& tabs) = 0;
 
-  // Sets the title of a tab group. Does nothing if the group does not exist.
-  virtual void SetTabGroupTitle(tab_groups::TabGroupId group_id,
-                                const std::u16string& title) = 0;
+  // Sets the visual data for a tab group. Implementations may choose to notify
+  // observers of the change.
+  virtual void SetTabGroupVisualData(
+      tab_groups::TabGroupId group_id,
+      const tab_groups::TabGroupVisualData& visual_data) = 0;
 
   // Adds `tabs` to the `group_id` if provided or creates a new tab group.
   // Returns the tab group ID of the created or added to group. Tabs will be

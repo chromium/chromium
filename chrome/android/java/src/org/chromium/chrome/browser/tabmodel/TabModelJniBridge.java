@@ -37,6 +37,7 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -550,6 +551,14 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     protected abstract void setTabGroupTitle(
             @JniType("base::Token") Token tabGroupId,
             @JniType("std::optional<std::u16string>") @Nullable String title);
+
+    @CalledByNative
+    protected abstract void setTabGroupColor(
+            @JniType("base::Token") Token tabGroupId, @TabGroupColorId int colorId);
+
+    @CalledByNative
+    protected abstract void setTabGroupCollapsed(
+            @JniType("base::Token") Token tabGroupId, boolean isCollapsed, boolean animate);
 
     @CalledByNative
     protected abstract @JniType("std::optional<base::Token>") @Nullable Token addTabsToGroup(

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/extensions/api/tab_groups.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
@@ -73,9 +74,9 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, GetFunction) {
   std::optional<tab_groups::TabGroupId> group = tab_list->CreateTabGroup(tabs);
   ASSERT_TRUE(group.has_value());
 
-  // TODO(crbug.com/371432155): Test color and collapsed when those properties
-  // can be set on Android.
-  tab_list->SetTabGroupTitle(*group, u"Title");
+  tab_groups::TabGroupVisualData visual_data(
+      u"Title", tab_groups::TabGroupColorId::kCyan, /*is_collapsed=*/true);
+  tab_list->SetTabGroupVisualData(*group, visual_data);
 
   // Call the chrome.tabGroups.get() function with a valid group id.
   auto extension = CreateTabGroupsExtension();
@@ -91,6 +92,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, GetFunction) {
             *group_info.FindInt("windowId"));
   EXPECT_FALSE(*group_info.FindBool("shared"));
   EXPECT_EQ("Title", *group_info.FindString("title"));
+  EXPECT_EQ("cyan", *group_info.FindString("color"));
+  EXPECT_TRUE(*group_info.FindBool("collapsed"));
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, GetFunctionInvalidGroup) {

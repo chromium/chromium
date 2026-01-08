@@ -40,6 +40,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/resource_request_body_android.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/android/gurl_android.h"
@@ -655,11 +656,20 @@ std::optional<tab_groups::TabGroupId> TabModelJniBridge::CreateTabGroup(
   return tab_groups::TabGroupId::FromOptionalToken(group_id_token);
 }
 
-void TabModelJniBridge::SetTabGroupTitle(tab_groups::TabGroupId group_id,
-                                         const std::u16string& title) {
+void TabModelJniBridge::SetTabGroupVisualData(
+    tab_groups::TabGroupId group_id,
+    const tab_groups::TabGroupVisualData& visual_data) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
-  Java_TabModelJniBridge_setTabGroupTitle(env, jobj, group_id.token(), title);
+  Java_TabModelJniBridge_setTabGroupTitle(env, jobj, group_id.token(),
+                                          visual_data.title());
+
+  // The cast is safe because the enum values are synced across C++ and Java.
+  Java_TabModelJniBridge_setTabGroupColor(
+      env, jobj, group_id.token(), static_cast<jint>(visual_data.color()));
+  Java_TabModelJniBridge_setTabGroupCollapsed(env, jobj, group_id.token(),
+                                              visual_data.is_collapsed(),
+                                              /*animate=*/false);
 }
 
 std::optional<tab_groups::TabGroupId> TabModelJniBridge::AddTabsToGroup(
