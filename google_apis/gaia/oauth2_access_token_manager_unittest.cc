@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -44,7 +43,7 @@ class FakeOAuth2AccessTokenManagerDelegate
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       OAuth2AccessTokenConsumer* consumer,
       const std::string& token_binding_challenge) override {
-    EXPECT_TRUE(base::Contains(account_ids_to_refresh_tokens_, account_id));
+    EXPECT_TRUE(account_ids_to_refresh_tokens_.contains(account_id));
     return GaiaAccessTokenFetcher::
         CreateExchangeRefreshTokenForAccessTokenInstance(
             consumer, url_loader_factory,
@@ -52,7 +51,7 @@ class FakeOAuth2AccessTokenManagerDelegate
   }
 
   bool HasRefreshToken(const CoreAccountId& account_id) const override {
-    return base::Contains(account_ids_to_refresh_tokens_, account_id);
+    return account_ids_to_refresh_tokens_.contains(account_id);
   }
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()

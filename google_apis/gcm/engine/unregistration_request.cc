@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/escape.h"
@@ -50,13 +49,13 @@ const char kDeviceRegistrationError[] = "PHONE_REGISTRATION_ERROR";
 
 // Gets correct status from the error message.
 UnregistrationRequest::Status GetStatusFromError(const std::string& error) {
-  if (base::Contains(error, kInvalidParameters)) {
+  if (error.contains(kInvalidParameters)) {
     return UnregistrationRequest::INVALID_PARAMETERS;
   }
-  if (base::Contains(error, kInternalServerError)) {
+  if (error.contains(kInternalServerError)) {
     return UnregistrationRequest::INTERNAL_SERVER_ERROR;
   }
-  if (base::Contains(error, kDeviceRegistrationError)) {
+  if (error.contains(kDeviceRegistrationError)) {
     return UnregistrationRequest::DEVICE_REGISTRATION_ERROR;
   }
   // Should not be reached, unless the server adds new error types.
