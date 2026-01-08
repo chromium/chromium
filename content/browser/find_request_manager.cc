@@ -692,6 +692,13 @@ void FindRequestManager::FindInternal(const FindRequest& request) {
     if (!target_rfh || !CheckFrame(target_rfh))
       target_rfh = GetInitialFrame(request.options->forward);
 
+    // Verify that we have a valid frame before sending the request.
+    if (!target_rfh || !CheckFrame(target_rfh)) {
+      // No valid frame to send the find request to. Advance the queue.
+      AdvanceQueue(request.id);
+      return;
+    }
+
     SendFindRequest(request, target_rfh);
     current_request_ = request;
     pending_active_match_ordinal_ = true;
