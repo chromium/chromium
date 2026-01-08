@@ -231,7 +231,9 @@ public class AutocompleteMediatorUnitTest {
         mAutocompleteResult = spy(AutocompleteResult.fromCache(mSuggestionsList, null));
         lenient().doReturn(true).when(mAutocompleteDelegate).isKeyboardActive();
         setUpLocationBarDataProvider(
-                JUnitTestGURLs.NTP_URL, "New Tab Page", PageClassification.NTP_VALUE);
+                JUnitTestGURLs.NTP_URL,
+                "New Tab Page",
+                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
 
         mMediator.setOmniboxSuggestionsVisualStateObserver(mVisualStateObserver);
         mMediator.onTopResumedActivityChanged(true);
@@ -1667,6 +1669,10 @@ public class AutocompleteMediatorUnitTest {
         mMediator.setAutocompleteProfile(mProfile);
         mMediator.onNativeInitialized();
         mMediator.onOmniboxSessionStateChange(true);
+        setUpLocationBarDataProvider(
+                JUnitTestGURLs.NTP_URL,
+                "New Tab Page",
+                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
         when(mTextStateProvider.getTextWithoutAutocomplete()).thenReturn("test");
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("test");
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.IMAGE_GENERATION);

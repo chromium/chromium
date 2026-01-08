@@ -254,10 +254,12 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
 
         boolean isSupportedPageClass =
                 switch (pageClass) {
+                    // LINT.IfChange(FuseboxSupportedPageClassifications)
                     case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE,
                             PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE,
                             PageClassification.OTHER_VALUE ->
                             true;
+                    // LINT.ThenChange(/components/omnibox/browser/android/java/src/org/chromium/components/omnibox/AutocompleteInput.java:FuseboxSupportedPageClassifications)
                     default -> false;
                 };
 
