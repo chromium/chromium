@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 28
+version_major: 29
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 # https://ssltest-a.actalis.it:8443
@@ -163,16 +163,19 @@ trust_anchors {
 trust_anchors {
   sha256_hex: "31ad6648f8104138c738f39ea4320133393e3a18cc02296ef97c2ac9ef6731d0"
   ev_policy_oids: "2.23.140.1.1"
+  trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x0a"  # 52580.200109.1.10
 }
 
 # CN=DigiCert Assured ID Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US
 trust_anchors {
   sha256_hex: "3e9099b5015e8f486c00bcea9d111ee721faba355a89bcf1df69561e3dc6325c"
+  trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x03"  # 52580.200109.1.3
 }
 
 # CN=DigiCert Global Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US
 trust_anchors {
   sha256_hex: "4348a0e9444c78cb265e058d5e8944b4d84f9662bd26db257f8934a443c70161"
+  trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x02"  # 52580.200109.1.2
 }
 
 # CN=DigiCert Trusted Root G4, OU=www.digicert.com, O=DigiCert Inc, C=US
@@ -180,6 +183,7 @@ trust_anchors {
 trust_anchors {
   sha256_hex: "552f7bdcf1a7af9e6ce672017f4f12abf77240c78e761ac203d1d9d20ac89988"
   ev_policy_oids: "2.23.140.1.1"
+  trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x0b"  # 52580.200109.1.11
 }
 
 # CN=DigiCert High Assurance EV Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US
@@ -187,6 +191,7 @@ trust_anchors {
 trust_anchors {
   sha256_hex: "7431e5f4c3c1ce4690774f0b61e05440883ba9a01ed00ba6abd7806ed3b118cf"
   ev_policy_oids: "2.23.140.1.1"
+  trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x01"  # 52580.200109.1.1
 }
 
 # CN=DigiCert Assured ID Root G2, OU=www.digicert.com, O=DigiCert Inc, C=US
@@ -194,6 +199,7 @@ trust_anchors {
 trust_anchors {
   sha256_hex: "7d05ebb682339f8c9451ee094eebfefa7953a114edb2f44949452fab7d2fc185"
   ev_policy_oids: "2.23.140.1.1"
+  trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x0c"  # 52580.200109.1.12
 }
 
 # CN=DigiCert Assured ID Root G3, OU=www.digicert.com, O=DigiCert Inc, C=US
@@ -201,6 +207,7 @@ trust_anchors {
 trust_anchors {
   sha256_hex: "7e37cb8b4c47090cab36551ba6f45db840680fba166a952db100717f43053fc2"
   ev_policy_oids: "2.23.140.1.1"
+  trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x0d"  # 52580.200109.1.13
 }
 
 # CN=DigiCert Global Root G2, OU=www.digicert.com, O=DigiCert Inc, C=US
@@ -208,6 +215,7 @@ trust_anchors {
 trust_anchors {
   sha256_hex: "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f"
   ev_policy_oids: "2.23.140.1.1"
+  trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x09"  # 52580.200109.1.9
 }
 
 # CN=CA Disig Root R2, O=Disig a.s., L=Bratislava, C=SK
@@ -397,11 +405,13 @@ trust_anchors {
 trust_anchors {
   sha256_hex: "85a0dd7dd720adb7ff05f83d542b209dc7ff4528f7d677b18389fea5e5c49e86"
   ev_policy_oids: "2.23.140.1.1"
+  trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x04"  # 52580.200109.1.4
 }
 
 # CN=QuoVadis Root CA 3 G3, O=QuoVadis Limited, C=BM
 trust_anchors {
   sha256_hex: "88ef81de202eb018452e43f864725cea5fbd1fc2d9d205730709c5d8b8690f46"
+  trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x08"  # 52580.200109.1.8
 }
 
 # CN=QuoVadis Root CA 2 G3, O=QuoVadis Limited, C=BM
@@ -409,6 +419,7 @@ trust_anchors {
 trust_anchors {
   sha256_hex: "8fe4fb0af93a4d0d67db0bebb23e37c71bf325dcbcdd240ea04daf58b47e1840"
   ev_policy_oids: "2.23.140.1.1"
+  trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x07"  # 52580.200109.1.7
 }
 
 # OU=Security Communication RootCA2, O=SECOM Trust Systems CO.,LTD., C=JP
@@ -618,11 +629,13 @@ trust_anchors {
 # CN=DigiCert TLS ECC P384 Root G5, O=DigiCert, Inc., C=US
 trust_anchors {
   sha256_hex: "018e13f0772532cf809bd1b17281867283fc48c6e13be9c69812854a490c1b05"
+  trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x13"  # 52580.200109.1.19
 }
 
 # CN=DigiCert TLS RSA4096 Root G5, O=DigiCert, Inc., C=US
 trust_anchors {
   sha256_hex: "371a00dc0533b3721a7eeb40e8419e70799d2b0a0f2c1d80693165f7cec4ad75"
+  trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x12"  # 52580.200109.1.18
 }
 
 # C = US, O = Certainly, CN = Certainly Root E1
@@ -1504,4 +1517,58 @@ additional_certs {
   enforce_anchor_expiry: true
   tls_trust_anchor: true
   trust_anchor_id: "\xd6\x79\x09\x0f"  # 11129.9.15
+}
+
+# "CN=E7,O=Let's Encrypt,C=US"
+additional_certs {
+  sha256_hex: "54715420224c5b65beed018dc3940d7338c577e322d5488f633d8c6a8fed61b2"
+  enforce_anchor_constraints: true
+  enforce_anchor_expiry: true
+  tls_trust_anchor: true
+  trust_anchor_id: "\x82\xdf\x13\x02\x0d"  # 44947.2.13
+}
+
+# "CN=E8,O=Let's Encrypt,C=US"
+additional_certs {
+  sha256_hex: "ac1274542267f17b525535b5563bf731febb182533b46a82dc869cb64eb528c0"
+  enforce_anchor_constraints: true
+  enforce_anchor_expiry: true
+  tls_trust_anchor: true
+  trust_anchor_id: "\x82\xdf\x13\x02\x0e"  # 44947.2.14
+}
+
+# "CN=E9,O=Let's Encrypt,C=US"
+additional_certs {
+  sha256_hex: "4185df97806c2ba76f1d79823f112ffa639a49ccdc990908102067ab6412b886"
+  enforce_anchor_constraints: true
+  enforce_anchor_expiry: true
+  tls_trust_anchor: true
+  trust_anchor_id: "\x82\xdf\x13\x02\x0f"  # 44947.2.15
+}
+
+# "CN=R12,O=Let's Encrypt,C=US"
+additional_certs {
+  sha256_hex: "131fce7784016899a5a00203a9efc80f18ebbd75580717edc1553580930836ec"
+  enforce_anchor_constraints: true
+  enforce_anchor_expiry: true
+  tls_trust_anchor: true
+  trust_anchor_id: "\x82\xdf\x13\x02\x12"  # 44947.2.18
+}
+
+# "CN=R13,O=Let's Encrypt,C=US"
+additional_certs {
+  sha256_hex: "d3b128216a843f8ef1321501f5df52a5df52939ee2c19297712cd3de4d419354"
+  enforce_anchor_constraints: true
+  enforce_anchor_expiry: true
+  tls_trust_anchor: true
+  trust_anchor_id: "\x82\xdf\x13\x02\x13"  # 44947.2.19
+}
+
+# "CN=R14,O=Let's Encrypt,C=US"
+additional_certs {
+  sha256_hex: "24d45aa9b8d6053d281f3842c8cc0c6c1af7ccdfd42dd5c12f6a74fa9323f7a2"
+  enforce_anchor_constraints: true
+  enforce_anchor_expiry: true
+  tls_trust_anchor: true
+  trust_anchor_id: "\x82\xdf\x13\x02\x14"  # 44947.2.20
 }
