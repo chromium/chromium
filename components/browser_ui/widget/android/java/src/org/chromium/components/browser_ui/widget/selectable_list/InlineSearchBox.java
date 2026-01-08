@@ -50,13 +50,20 @@ public class InlineSearchBox {
 
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
 
+    private final int mInlineStartPadding;
+
     public InlineSearchBox(
+            Context context,
             SearchDelegate searchDelegate,
             SettableNonNullObservableSupplier<Boolean> hasSearchTextSupplier,
             KeyboardVisibilityDelegate keyboardVisibilityDelegate) {
         mSearchDelegate = searchDelegate;
         mHasSearchTextSupplier = hasSearchTextSupplier;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
+        mInlineStartPadding =
+                context.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.selectable_list_inline_search_bar_start_padding);
     }
 
     /**
@@ -141,7 +148,7 @@ public class InlineSearchBox {
      * calculated(in onDisplayStyleChanged()), so dynamical adjustment is needed for the inline
      * search box too.
      */
-    public void setInlinePadding(int left, int top, int right, int bottom) {
+    private void setInlinePadding(int left, int top, int right, int bottom) {
         if (mInlineSearchBoxContainer == null) return;
         mInlineSearchBoxContainer.post(
                 () -> {
@@ -157,6 +164,16 @@ public class InlineSearchBox {
                     mInlineSearchBoxContainer.setPaddingRelative(
                             left - (location[0] - appLocation[0]), top, right, bottom);
                 });
+    }
+
+    /**
+     * Updates the padding of the inline search box based on the current display style.
+     *
+     * @param paddingStart The base padding derived from the display style.
+     * @param paddingTop The top padding to apply.
+     */
+    public void updatePadding(int paddingStart, int paddingTop) {
+        setInlinePadding(paddingStart + mInlineStartPadding, paddingTop, 0, 0);
     }
 
     /**

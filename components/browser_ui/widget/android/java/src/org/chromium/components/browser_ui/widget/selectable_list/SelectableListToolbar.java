@@ -705,11 +705,7 @@ public class SelectableListToolbar<E> extends Toolbar
                 this.getPaddingBottom());
 
         if (mInlineSearchBox != null) {
-            mInlineSearchBox.setInlinePadding(
-                    padding + paddingStartOffset + navigationButtonStartOffsetPx,
-                    this.getPaddingTop(),
-                    0,
-                    0);
+            mInlineSearchBox.updatePadding(padding, this.getPaddingTop());
         }
     }
 
@@ -924,6 +920,7 @@ public class SelectableListToolbar<E> extends Toolbar
         this.getMenu().removeItem(searchMenuItemId);
         mInlineSearchBox =
                 new InlineSearchBox(
+                        getContext(),
                         mSearchDelegate,
                         mHasSearchTextSupplier,
                         KeyboardVisibilityDelegate.getInstance());
