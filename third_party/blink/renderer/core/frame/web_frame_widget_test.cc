@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
@@ -246,9 +247,10 @@ class WebFrameWidgetScrollContainerHitTest : public WebFrameWidgetSimTest {
         widget.GetScrollableContainerIdAt(box1_target_offset);
     EXPECT_EQ(scrollable_id, box1_dom_node_id);
 
-    visual_viewport.SetScrollOffset(ScrollOffset(0, 50),
-                                    mojom::blink::ScrollType::kProgrammatic,
-                                    cc::ScrollSourceType::kNone);
+    visual_viewport.SetScrollOffset(
+        ScrollOffset(0, 50), mojom::blink::ScrollType::kProgrammatic,
+        cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant,
+        ScrollableArea::ScrollCallback());
     EXPECT_EQ(visual_viewport.GetScrollOffset(), ScrollOffset(0, 50));
     scrollable_id = widget.GetScrollableContainerIdAt(box2_target_offset);
     EXPECT_EQ(scrollable_id, box2_dom_node_id);

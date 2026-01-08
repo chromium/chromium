@@ -776,15 +776,6 @@ bool VisualViewport::SetScrollOffset(
                                          std::move(on_finish));
 }
 
-bool VisualViewport::SetScrollOffset(
-    const ScrollOffset& offset,
-    mojom::blink::ScrollType scroll_type,
-    cc::ScrollSourceType source_type,
-    mojom::blink::ScrollBehavior scroll_behavior) {
-  return SetScrollOffset(offset, scroll_type, source_type, scroll_behavior,
-                         ScrollCallback());
-}
-
 PhysicalOffset VisualViewport::LocalToScrollOriginOffset() const {
   return {};
 }
@@ -802,14 +793,9 @@ PhysicalRect VisualViewport::ScrollIntoView(
           *params->align_y.get()));
 
   if (new_scroll_offset != GetScrollOffset()) {
-    if (params->is_for_scroll_sequence) {
-      SetScrollOffset(new_scroll_offset, params->type,
-                      cc::ScrollSourceType::kAbsoluteScroll, params->behavior);
-    } else {
-      SetScrollOffset(new_scroll_offset, params->type,
-                      cc::ScrollSourceType::kAbsoluteScroll, params->behavior,
-                      ScrollCallback());
-    }
+    SetScrollOffset(new_scroll_offset, params->type,
+                    cc::ScrollSourceType::kAbsoluteScroll, params->behavior,
+                    ScrollCallback());
   }
 
   return rect_in_absolute;

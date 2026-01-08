@@ -395,16 +395,15 @@ PhysicalRect RootFrameViewport::ScrollIntoView(
   }
 
   if (new_scroll_offset != GetScrollOffset()) {
+    mojom::blink::ScrollBehavior behavior =
+        mojom::blink::ScrollBehavior::kInstant;
     if (params->is_for_scroll_sequence) {
-      mojom::blink::ScrollBehavior behavior = DetermineScrollBehavior(
+      behavior = DetermineScrollBehavior(
           params->behavior, GetLayoutBox()->StyleRef().GetScrollBehavior());
-      ScrollableArea::SetScrollOffset(new_scroll_offset, params->type,
-                                      cc::ScrollSourceType::kAbsoluteScroll,
-                                      behavior);
-    } else {
-      ScrollableArea::SetScrollOffset(new_scroll_offset, params->type,
-                                      cc::ScrollSourceType::kAbsoluteScroll);
     }
+    SetScrollOffset(new_scroll_offset, params->type,
+                    cc::ScrollSourceType::kAbsoluteScroll, behavior,
+                    ScrollCallback());
   }
 
   // Return the newly moved rect to absolute coordinates.

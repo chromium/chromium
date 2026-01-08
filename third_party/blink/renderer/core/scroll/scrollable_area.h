@@ -133,7 +133,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
                                mojom::blink::ScrollBehavior,
                                ScrollCallback on_finish,
                                bool targeted_scroll = false);
-  virtual bool SetScrollOffset(
+  bool SetScrollOffset(
       const ScrollOffset&,
       mojom::blink::ScrollType,
       cc::ScrollSourceType,
