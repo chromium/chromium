@@ -27,6 +27,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/test_event_router_observer.h"
 #include "extensions/common/extension_builder.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -803,6 +804,67 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest,
   EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(3).value());
 
   tab_strip_model->CloseAllTabs();
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsOnCreated) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  TestEventRouterObserver event_observer(EventRouter::Get(profile()));
+
+  browser()->tab_strip_model()->AddToNewGroup({1, 2, 3});
+
+  EXPECT_EQ(2u, event_observer.events().size());
+  EXPECT_TRUE(
+      event_observer.events().contains(api::tab_groups::OnCreated::kEventName));
+  EXPECT_TRUE(
+      event_observer.events().contains(api::tab_groups::OnUpdated::kEventName));
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsOnUpdated) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({1, 2, 3});
+
+  TestEventRouterObserver event_observer(EventRouter::Get(profile()));
+
+  tab_groups::TabGroupVisualData visual_data(u"Title",
+                                             tab_groups::TabGroupColorId::kRed);
+  tab_strip_model->ChangeTabGroupVisuals(group, visual_data);
+
+  EXPECT_EQ(1u, event_observer.events().size());
+  EXPECT_TRUE(
+      event_observer.events().contains(api::tab_groups::OnUpdated::kEventName));
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsOnRemoved) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tab_strip_model->AddToNewGroup({1, 2, 3});
+
+  TestEventRouterObserver event_observer(EventRouter::Get(profile()));
+
+  tab_strip_model->RemoveFromGroup({1, 2, 3});
+
+  EXPECT_EQ(1u, event_observer.events().size());
+  EXPECT_TRUE(
+      event_observer.events().contains(api::tab_groups::OnRemoved::kEventName));
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsOnMoved) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({1, 2, 3});
+
+  TestEventRouterObserver event_observer(EventRouter::Get(profile()));
+
+  tab_strip_model->MoveGroupTo(group, 0);
+
+  EXPECT_EQ(1u, event_observer.events().size());
+  EXPECT_TRUE(
+      event_observer.events().contains(api::tab_groups::OnMoved::kEventName));
 }
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

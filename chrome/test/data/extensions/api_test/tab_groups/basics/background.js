@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Basic browser tests for the tabGroups API. Most API behavior is tested in
-// tab_groups_api_unittest.cc, this just provides end-to-end coverage.
+// Basic API tests for the tabGroups API. Most API behavior is tested in
+// tab_groups_api_browsertest.cc, this just provides end-to-end coverage.
 chrome.test.runTests([
   function testQuerySucceeds() {
     chrome.tabs.create({}, (tab) => {
