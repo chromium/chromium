@@ -6421,6 +6421,8 @@ static_library("browser") {
       "metrics/google_update_metrics_provider_win.h",
       "metrics/key_credential_manager_support_reporter_win.cc",
       "metrics/key_credential_manager_support_reporter_win.h",
+      "metrics/system_memory_list_metrics_provider_win.cc",
+      "metrics/system_memory_list_metrics_provider_win.h",
       "metrics/tpm_metrics_provider_win.cc",
       "metrics/tpm_metrics_provider_win.h",
       "net/chrome_mojo_proxy_resolver_win.cc",

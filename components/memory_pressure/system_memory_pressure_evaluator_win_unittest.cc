@@ -35,19 +35,6 @@ constexpr char kCommitAvailableMBHistogramName[] = "Memory.CommitAvailableMB";
 constexpr char kCommitPercentageUsedHistogramName[] =
     "Memory.CommitPercentageUsed";
 
-constexpr char kZeroMemoryListHistogramName[] =
-    "Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds.ZeroList";
-constexpr char kFreeMemoryListHistogramName[] =
-    "Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds.FreeList";
-constexpr char kTotalIntervalsRecordedHistogramName[] =
-    "Memory.SystemMemoryLists.TotalIntervalsRecorded";
-constexpr char kFreeListCountHistogramName[] =
-    "Memory.SystemMemoryLists.FreePageCount";
-constexpr char kZeroListCountHistogramName[] =
-    "Memory.SystemMemoryLists.ZeroPageCount";
-constexpr char kModifiedListCountHistogramName[] =
-    "Memory.SystemMemoryLists.ModifiedPageCount";
-
 }  // namespace
 
 // This is outside of the anonymous namespace so that it can be seen as a friend
@@ -56,7 +43,6 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
  public:
   using SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel;
   using SystemMemoryPressureEvaluator::CheckMemoryPressure;
-  using SystemMemoryPressureEvaluator::CheckSystemMemoryListPageCounts;
   using SystemMemoryPressureEvaluator::RecordCommitHistograms;
 
   explicit TestSystemMemoryPressureEvaluator(
@@ -87,16 +73,6 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
       delete;
   TestSystemMemoryPressureEvaluator& operator=(
       const TestSystemMemoryPressureEvaluator&) = delete;
-
-  void SetFreeList(uintptr_t size) {
-    memory_list_information_.FreePageCount = size;
-  }
-  void SetZeroList(uintptr_t size) {
-    memory_list_information_.ZeroPageCount = size;
-  }
-  void SetModifiedList(uintptr_t size) {
-    memory_list_information_.ModifiedPageCount = size;
-  }
 
   // Sets up the memory status to reflect the provided absolute memory left.
   void SetMemoryFree(base::ByteCount phys_left) {
@@ -134,14 +110,7 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
     return true;
   }
 
-  NTSTATUS GetSystemMemoryListInformation(
-      SYSTEM_MEMORY_LIST_INFORMATION& memory_list_info) override {
-    memory_list_info = memory_list_information_;
-    return STATUS_SUCCESS;
-  }
-
   MEMORYSTATUSEX mem_status_{};
-  SYSTEM_MEMORY_LIST_INFORMATION memory_list_information_{};
 };
 
 class WinSystemMemoryPressureEvaluatorTest : public testing::Test {
@@ -368,79 +337,6 @@ TEST_F(WinSystemMemoryPressureEvaluatorTest, PotentialUnderflow) {
   histogram_tester.ExpectUniqueSample(kCommitLimitMBHistogramName, 50, 1);
   histogram_tester.ExpectUniqueSample(kCommitAvailableMBHistogramName, 100, 1);
   histogram_tester.ExpectUniqueSample(kCommitPercentageUsedHistogramName, 0, 1);
-}
-
-// Verifies that we correctly set an empty memory list to be exhausted.
-TEST(WinSystemMemoryPressureEvaluatorMemoryList, SystemListCheckEmptyList) {
-  base::test::TaskEnvironment task_environment{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::HistogramTester histogram_tester;
-  TestSystemMemoryPressureEvaluator evaluator(nullptr);
-
-  evaluator.SetFreeList(0);
-  evaluator.SetModifiedList(0);
-  evaluator.SetZeroList(0);
-
-  task_environment.FastForwardBy(base::Seconds(40));
-  evaluator.CheckSystemMemoryListPageCounts();
-
-  histogram_tester.ExpectUniqueSample(kZeroMemoryListHistogramName, 1, 1);
-  histogram_tester.ExpectUniqueSample(kFreeMemoryListHistogramName, 1, 1);
-  histogram_tester.ExpectUniqueSample(kTotalIntervalsRecordedHistogramName, 1,
-                                      1);
-  histogram_tester.ExpectUniqueSample(kFreeListCountHistogramName, 0, 1);
-  histogram_tester.ExpectUniqueSample(kZeroListCountHistogramName, 0, 1);
-  histogram_tester.ExpectUniqueSample(kModifiedListCountHistogramName, 0, 1);
-}
-
-// Verifies that we correctly set a non-empty memory list as non-exhausted.
-TEST(WinSystemMemoryPressureEvaluatorMemoryList, SystemListCheckNonEmptyList) {
-  base::test::TaskEnvironment task_environment{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::HistogramTester histogram_tester;
-  TestSystemMemoryPressureEvaluator evaluator(nullptr);
-
-  evaluator.SetFreeList(1);
-  evaluator.SetModifiedList(1);
-  evaluator.SetZeroList(1);
-
-  task_environment.FastForwardBy(base::Seconds(40));
-  evaluator.CheckSystemMemoryListPageCounts();
-
-  histogram_tester.ExpectUniqueSample(kZeroMemoryListHistogramName, 0, 1);
-  histogram_tester.ExpectUniqueSample(kFreeMemoryListHistogramName, 0, 1);
-  histogram_tester.ExpectUniqueSample(kTotalIntervalsRecordedHistogramName, 1,
-                                      1);
-  histogram_tester.ExpectUniqueSample(kFreeListCountHistogramName, 1, 1);
-  histogram_tester.ExpectUniqueSample(kZeroListCountHistogramName, 1, 1);
-  histogram_tester.ExpectUniqueSample(kModifiedListCountHistogramName, 1, 1);
-}
-
-// Verifies that we correctly reset all the counters by ensuring we don't record
-// '2' for any of the values.
-TEST(WinSystemMemoryPressureEvaluatorMemoryList, SystemListCounterReset) {
-  base::test::TaskEnvironment task_environment{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::HistogramTester histogram_tester;
-  TestSystemMemoryPressureEvaluator evaluator(nullptr);
-
-  evaluator.SetFreeList(0);
-  evaluator.SetModifiedList(0);
-  evaluator.SetZeroList(0);
-
-  task_environment.FastForwardBy(base::Seconds(40));
-  evaluator.CheckSystemMemoryListPageCounts();
-
-  task_environment.FastForwardBy(base::Seconds(40));
-  evaluator.CheckSystemMemoryListPageCounts();
-
-  histogram_tester.ExpectUniqueSample(kZeroMemoryListHistogramName, 1, 2);
-  histogram_tester.ExpectUniqueSample(kFreeMemoryListHistogramName, 1, 2);
-  histogram_tester.ExpectUniqueSample(kTotalIntervalsRecordedHistogramName, 1,
-                                      2);
-  histogram_tester.ExpectUniqueSample(kFreeListCountHistogramName, 0, 2);
-  histogram_tester.ExpectUniqueSample(kZeroListCountHistogramName, 0, 2);
-  histogram_tester.ExpectUniqueSample(kModifiedListCountHistogramName, 0, 2);
 }
 
 }  // namespace win

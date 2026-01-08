@@ -7548,6 +7548,7 @@ test("unit_tests") {
       "../browser/media/cdm_document_service_impl_test.cc",
       "../browser/media/media_foundation_service_monitor_unittest.cc",
       "../browser/metrics/antivirus_metrics_provider_win_unittest.cc",
+      "../browser/metrics/system_memory_list_metrics_provider_win_unittest.cc",
       "../browser/metrics/tpm_metrics_provider_win_unittest.cc",
       "../browser/notifications/notification_platform_bridge_win_unittest.cc",
       "../browser/notifications/win/fake_notification_image_retainer.cc",
