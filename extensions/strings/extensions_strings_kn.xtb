@@ -33,7 +33,7 @@
 <translation id="5356315618422219272">ಅಪ್ಲಿಕೇಶನ್ ವೀಕ್ಷಣೆ: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">ಈ ವಿಸ್ತರಣೆಯು ಕೀ ಫೈಲ್ '<ph name="KEY_PATH" />' ಅನ್ನು ಒಳಗೊಂಡಿದೆ. ನೀವು ಸಾಮಾನ್ಯವಾಗಿ ಹಾಗೆ ಮಾಡಲು ಬಯಸುವುದಿಲ್ಲ.</translation>
 <translation id="5486326529110362464">ಖಾಸಗಿ ಕೀಲಿಗಾಗಿ ಇನ್‌ಪುಟ್ ಮೌಲ್ಯ ಅಸ್ತಿತ್ವದಲ್ಲಿರಬೇಕು.</translation>
-<translation id="5972529113578162692">ಈ ಯಂತ್ರದ ನಿರ್ವಾಹಕರಿಗೆ <ph name="EXTENSION_NAME" /> ಸ್ಥಾಪಿಸಲು ಅಗತ್ಯವಿದೆ. ಇದನ್ನು ಅಸ್ಥಾಪಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
+<translation id="5972529113578162692">ಈ ಯಂತ್ರದ ನಿರ್ವಾಹಕರಿಗೆ <ph name="EXTENSION_NAME" /> ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವ ಅಗತ್ಯವಿದೆ. ಇದನ್ನು ಅನ್ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> ಅವರಿಂದ <ph name="PRODUCT_ID" /> ಅಪರಿಚಿತ ಉತ್ಪನ್ನ (ಕ್ರಮ ಸಂಖ್ಯೆ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> ಮಾರಾಟಗಾರರಿಂದ <ph name="PRODUCT_NAME" /></translation>
 <translation id="6322279351188361895">ಗೌಪ್ಯತೆ ಕೀಲಿಯನ್ನು ಓದಲು ವಿಫಲವಾಗಿದೆ.</translation>
