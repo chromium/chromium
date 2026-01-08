@@ -12,9 +12,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentCaptor.captor;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -35,11 +37,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -84,6 +89,8 @@ public class TabUnitTest {
     @Mock private UserPrefs.Natives mUserPrefsNatives;
     @Mock private PrefService mPrefs;
     @Mock TabImpl.Natives mNativeMock;
+    @Mock private LookAheadObservableSupplier<Tab> mTabSupplier;
+    @Captor private ArgumentCaptor<Callback<Tab>> mCallbackCaptor;
 
     private TabImpl mTab;
 
@@ -109,6 +116,48 @@ public class TabUnitTest {
                 };
         mTab.addObserver(mObserver);
         mTab.setAutofillProvider(mAutofillProvider);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnAddedToTabModel_SendsDidInsertUpdate() {
+        TabImplJni.setInstanceForTesting(mNativeMock);
+        mTab.setNativePtrForTesting(1);
+
+        mTab.onAddedToTabModel(mTabSupplier, ignored -> false);
+        verify(mNativeMock).sendDidInsertUpdate(anyLong());
+    }
+
+    @Test
+    @SmallTest
+    public void testSendsDidActivateUpdate() {
+        TabImplJni.setInstanceForTesting(mNativeMock);
+        mTab.setNativePtrForTesting(1);
+
+        mTab.onAddedToTabModel(mTabSupplier, ignored -> false);
+        verify(mTabSupplier).addObserver(mCallbackCaptor.capture());
+
+        mCallbackCaptor.getValue().onResult(mTab);
+        verify(mNativeMock).sendDidActivateUpdate(anyLong());
+    }
+
+    @Test
+    @SmallTest
+    public void testSendsWillDeactivateUpdate() {
+        TabImplJni.setInstanceForTesting(mNativeMock);
+        mTab.setNativePtrForTesting(1);
+
+        ArgumentCaptor<Callback<Tab>> lookAheadCaptor = captor();
+        mTab.onAddedToTabModel(mTabSupplier, ignored -> false);
+
+        verify(mTabSupplier).addObserver(mCallbackCaptor.capture());
+        verify(mTabSupplier).addLookAheadObserver(lookAheadCaptor.capture());
+
+        // Set as active first to set mWasLastActive to true.
+        mCallbackCaptor.getValue().onResult(mTab);
+
+        lookAheadCaptor.getValue().onResult(null);
+        verify(mNativeMock).sendWillDeactivateUpdate(anyLong());
     }
 
     @Test
