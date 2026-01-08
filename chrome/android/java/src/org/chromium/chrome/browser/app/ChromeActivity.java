@@ -25,6 +25,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.os.SystemClock;
 import android.text.format.DateUtils;
 import android.util.Pair;
@@ -1116,6 +1117,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
 
         mRootUiCoordinator.restoreUiState(getSavedInstanceState());
+        mRootUiCoordinator.restorePersistentUiState(getPersistentInstanceState());
 
         if (mFullscreenVideoPictureInPictureController != null) {
             mFullscreenVideoPictureInPictureController.onStart();
@@ -1741,6 +1743,15 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
         outState.putBoolean(IS_FROM_RECREATING, mIsRecreating);
         mRootUiCoordinator.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+
+        if (shouldPersistAcrossReboots()) {
+            mRootUiCoordinator.onSavePersistentState(outPersistentState);
+        }
     }
 
     /**

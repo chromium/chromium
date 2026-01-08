@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.ui;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.ui.activity_recreation.ActivityRecreationController.IS_TAB_SWITCHER_SHOWN;
+import static org.chromium.chrome.browser.ui.activity_recreation.ActivityRecreationController.URL_BAR_EDIT_TEXT;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -2400,12 +2402,40 @@ public class RootUiCoordinator
     }
 
     /**
+     * Saves relevant information preserved by {@code RootUiCoordinator#prepareUiState()} to the
+     * persistent bundle that will be used to restore the UI state after the activity is recreated.
+     * This is expected to be invoked in {@code Activity#onSaveInstanceState(Bundle,
+     * PersistableBundle)}.
+     *
+     * @param outPersistentState The {@link PersistableBundle} that is used to save state
+     *     information.
+     */
+    public void onSavePersistentState(PersistableBundle outPersistentState) {
+        if (mToolbarManager.isUrlBarFocused()) {
+            outPersistentState.putString(
+                    URL_BAR_EDIT_TEXT, mToolbarManager.getUrlBarTextWithoutAutocomplete());
+        }
+        outPersistentState.putBoolean(
+                IS_TAB_SWITCHER_SHOWN, mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER));
+    }
+
+    /**
      * Restores the relevant UI state when the activity is recreated on a device fold transition.
      *
      * @param savedInstanceState The {@link Bundle} that is used to restore the UI state.
      */
     public void restoreUiState(Bundle savedInstanceState) {
         mActivityRecreationController.restoreUiState(savedInstanceState);
+    }
+
+    /**
+     * Restores the relevant UI state when the activity is recreated after a device reboot or app
+     * update.
+     *
+     * @param outPersistentState The {@link PersistableBundle} that is used to restore the UI state.
+     */
+    public void restorePersistentUiState(@Nullable PersistableBundle outPersistentState) {
+        mActivityRecreationController.restorePersistentState(outPersistentState);
     }
 
     private void attemptToShowRestoreTabsPromo() {

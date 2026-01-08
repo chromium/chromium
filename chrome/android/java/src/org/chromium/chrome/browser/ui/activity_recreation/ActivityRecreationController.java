@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.view.View;
 
 import org.chromium.base.supplier.ObservableSupplier;
@@ -30,6 +31,9 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
  */
 @NullMarked
 public class ActivityRecreationController {
+    public static final String URL_BAR_EDIT_TEXT = "URL_BAR_EDIT_TEXT";
+    public static final String IS_TAB_SWITCHER_SHOWN = "IS_TAB_SWITCHER_SHOWN";
+
     static final String ACTIVITY_RECREATION_UI_STATE = "activity_recreation_ui_state";
     private final OneshotSupplier<ToolbarManager> mToolbarManagerSupplier;
     private final ObservableSupplier<LayoutManager> mLayoutManagerSupplier;
@@ -122,14 +126,35 @@ public class ActivityRecreationController {
         if (uiState == null) {
             return;
         }
-        restoreOmniboxState(
-                uiState,
-                assertNonNull(mToolbarManagerSupplier.get()),
-                layoutManager,
-                mLayoutStateHandler);
+        ToolbarManager toolbarManager = assertNonNull(mToolbarManagerSupplier.get());
+        if (uiState.mIsUrlBarFocused && toolbarManager != null) {
+            restoreOmniboxState(
+                    toolbarManager, layoutManager, mLayoutStateHandler, uiState.mUrlBarEditText);
+        }
         restoreKeyboardState(uiState, mActivityTabProvider, layoutManager, mLayoutStateHandler);
-        restoreTabSwitcherState(uiState, layoutManager);
+        restoreTabSwitcherState(uiState.mIsTabSwitcherShown, layoutManager);
         restoreExclusiveAccessState(uiState, mExclusiveAccessManager, mActivityTabProvider);
+    }
+
+    /**
+     * Restores the relevant UI state when the activity is recreated after a device reboot or app
+     * update.
+     *
+     * @param outPersistentState The {@link PersistableBundle} that is used to restore the UI state.
+     */
+    public void restorePersistentState(@Nullable PersistableBundle outPersistentState) {
+        LayoutManager layoutManager = mLayoutManagerSupplier.get();
+        if (outPersistentState == null || layoutManager == null) return;
+
+        restoreTabSwitcherState(
+                outPersistentState.getBoolean(IS_TAB_SWITCHER_SHOWN, false),
+                mLayoutManagerSupplier.get());
+
+        String urlBarEditText = outPersistentState.getString(URL_BAR_EDIT_TEXT, "");
+        ToolbarManager toolbarManager = assertNonNull(mToolbarManagerSupplier.get());
+        if (!urlBarEditText.isEmpty() && toolbarManager != null) {
+            restoreOmniboxState(toolbarManager, layoutManager, mLayoutStateHandler, urlBarEditText);
+        }
     }
 
     private boolean getKeyboardVisibilityState() {
@@ -216,18 +241,14 @@ public class ActivityRecreationController {
     }
 
     private static void restoreOmniboxState(
-            ActivityRecreationUiState uiState,
             ToolbarManager toolbarManager,
             LayoutManager layoutManager,
-            Handler layoutStateHandler) {
-        if (toolbarManager == null || !uiState.mIsUrlBarFocused) {
-            return;
-        }
-        String urlBarText = uiState.mUrlBarEditText;
+            Handler layoutStateHandler,
+            @Nullable String urlBarEditText) {
         restoreUiStateOnLayoutDoneShowing(
                 layoutManager,
                 layoutStateHandler,
-                () -> setUrlBarFocusAndText(toolbarManager, urlBarText));
+                () -> setUrlBarFocusAndText(toolbarManager, urlBarEditText));
     }
 
     private static void restoreKeyboardState(
@@ -245,10 +266,8 @@ public class ActivityRecreationController {
     }
 
     private static void restoreTabSwitcherState(
-            ActivityRecreationUiState uiState, LayoutManager layoutManager) {
-        if (!uiState.mIsTabSwitcherShown) {
-            return;
-        }
+            boolean isTabSwitcherShown, LayoutManager layoutManager) {
+        if (!isTabSwitcherShown) return;
         layoutManager.showLayout(LayoutType.TAB_SWITCHER, false);
     }
 
