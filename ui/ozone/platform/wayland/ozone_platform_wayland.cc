@@ -192,7 +192,6 @@ class OzonePlatformWayland : public OzonePlatform,
 
   bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
                                      gfx::BufferUsage usage) const override {
-    auto buffer_format = viz::SharedImageFormatToBufferFormat(format);
 #if defined(WAYLAND_GBM)
     // If there is no drm render node device available, native pixmaps are not
     // supported.
@@ -222,8 +221,8 @@ class OzonePlatformWayland : public OzonePlatform,
       }
     }
 
-    return gfx::ClientNativePixmapDmaBuf::IsConfigurationSupported(
-        buffer_format, usage);
+    return gfx::ClientNativePixmapDmaBuf::IsConfigurationSupported(format,
+                                                                   usage);
 #else
     return false;
 #endif
