@@ -78,6 +78,12 @@ const base::FilePath::CharType* kSimpleFile = FILE_PATH_LITERAL("simple.html");
 }  // namespace
 
 class FullscreenControllerInteractiveTest : public ExclusiveAccessTest {
+  void SetUpOnMainThread() override {
+    ExclusiveAccessTest::SetUpOnMainThread();
+
+    SetDisableFullscreenWithinTab(true);
+  }
+
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExclusiveAccessTest::SetUpCommandLine(command_line);
@@ -146,6 +152,16 @@ class FullscreenControllerInteractiveTest : public ExclusiveAccessTest {
     pointer_lock_controller->set_bubble_hide_callback_for_test(
         base::NullCallback());
     FinishExclusiveAccessBubbleAnimation();
+  }
+
+  void SetDisableFullscreenWithinTab(bool disable) {
+    FullscreenController* fullscreen_controller =
+        browser()
+            ->GetFeatures()
+            .exclusive_access_manager()
+            ->fullscreen_controller();
+    fullscreen_controller
+        ->set_disable_entering_fullscreen_within_tab_for_testing(disable);
   }
 
  private:
@@ -841,6 +857,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        CapturedContentEntersFullscreenWithinTab) {
+  SetDisableFullscreenWithinTab(false);
   // Simulate tab capture, as used by getDisplayMedia() content sharing.
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   base::ScopedClosureRunner capture_closure =
@@ -871,6 +888,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        OpeningPopupDoesNotExitFullscreenWithinTab) {
+  SetDisableFullscreenWithinTab(false);
+
   // Simulate visible tab capture and enter fullscreen-within-tab.
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   base::ScopedClosureRunner capture_closure =
@@ -894,6 +913,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        BlockingContentsDoesNotExitFullscreenWithinTab) {
+  SetDisableFullscreenWithinTab(false);
+
   // Simulate visible tab capture and enter fullscreen-within-tab.
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   base::ScopedClosureRunner capture_closure =
