@@ -419,6 +419,9 @@ void DesktopCaptureAccessHandler::HandleRequest(
 
   // Resolve DesktopMediaID for the specified device id.
   content::DesktopMediaID media_id;
+  // TODO(crbug.com/469624802): Replace "main RenderFrame" IDs with the
+  // request's actual RenderFrame IDs once the desktop capture extension API
+  // implementation is fixed.
   content::WebContents* const web_contents_for_stream =
       content::WebContents::FromRenderFrameHost(
           content::RenderFrameHost::FromID(request.render_process_id,
