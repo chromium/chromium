@@ -1653,7 +1653,7 @@ void CanvasResourceProvider::UnacceleratedRasterRecord(
   skgpu::ganesh::FlushAndSubmit(GetSkSurface());
 }
 
-bool CanvasResourceProvider::IsGpuContextLost() const {
+bool CanvasResourceProviderSharedImage::IsGpuContextLost() const {
   auto* raster_interface = RasterInterface();
   return !raster_interface ||
          raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;

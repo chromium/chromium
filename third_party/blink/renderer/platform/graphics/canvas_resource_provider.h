@@ -214,8 +214,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   }
   uint32_t ContentUniqueID() const;
 
-  bool IsGpuContextLost() const override;
-
   virtual bool WritePixels(const SkImageInfo& orig_info,
                            const void* pixels,
                            size_t row_bytes,
@@ -365,6 +363,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
 
   bool IsValid() const override { return GetSkSurface(); }
   bool IsAccelerated() const override { return false; }
+  bool IsGpuContextLost() const override { return true; }
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault) override;
 
@@ -497,6 +496,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
     return this;
   }
   bool IsAccelerated() const final { return is_accelerated_; }
+  bool IsGpuContextLost() const override;
   base::ByteSize EstimatedSizeInBytes() const override;
 
   // Use Snapshot() for capturing a frame that is intended to be displayed via
