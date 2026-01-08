@@ -1260,6 +1260,41 @@ TEST_F(AutofillOptimizationGuideDeciderTest, IsIframeUrlAllowlistedForActor) {
 }
 
 // Test that the `AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST` optimization type is
+// registered when payments data is loaded and the actor rewrite feature is on.
+TEST_F(AutofillOptimizationGuideDeciderTest,
+       OnPaymentsDataLoaded_AutofillActorIframeOriginAllowlist) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(
+      features::kAutofillActorRewriteCreditCardTriggerField);
+
+  EXPECT_CALL(
+      decider(),
+      RegisterOptimizationTypes(Contains(
+          optimization_guide::proto::AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST)));
+
+  guide().OnPaymentsDataLoaded(payments_data_manager());
+}
+
+// Test that the `AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST` optimization type is
+// not registered when payments data is loaded if the actor rewrite feature is
+// disabled.
+TEST_F(
+    AutofillOptimizationGuideDeciderTest,
+    OnPaymentsDataLoaded_AutofillActorIframeOriginAllowlist_FeatureDisabled) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(
+      features::kAutofillActorRewriteCreditCardTriggerField);
+
+  EXPECT_CALL(
+      decider(),
+      RegisterOptimizationTypes(Contains(
+          optimization_guide::proto::AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST)))
+      .Times(0);
+
+  guide().OnPaymentsDataLoaded(payments_data_manager());
+}
+
+// Test that the `AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST` optimization type is
 // registered when a credit card form is seen and the actor rewrite feature is
 // on.
 TEST_F(AutofillOptimizationGuideDeciderTest,
