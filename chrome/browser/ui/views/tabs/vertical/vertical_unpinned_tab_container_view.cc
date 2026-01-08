@@ -47,9 +47,8 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
   bool is_collapsed = controller && controller->IsCollapsed();
 
   const int horizontal_padding = GetLayoutConstant(
-      is_collapsed
-          ? LayoutConstant::kVerticalTabStripCollapsedHorizontalPadding
-          : LayoutConstant::kVerticalTabStripUncollapsedHorizontalPadding);
+      is_collapsed ? LayoutConstant::kVerticalTabStripCollapsedPadding
+                   : LayoutConstant::kVerticalTabStripUncollapsedPadding);
   const auto children = collection_node_->GetDirectChildren();
 
   // Layout children in order. Children will have their preferred height and

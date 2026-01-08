@@ -49,8 +49,6 @@
 #include "ui/views/view_utils.h"
 
 namespace {
-constexpr gfx::Insets kRegionInteriorMargins = gfx::Insets::VH(8, 0);
-
 constexpr int kRegionVerticalPadding = 5;
 }  // namespace
 
@@ -65,7 +63,6 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
       browser_view_(browser_view) {
   flex_layout_ = SetLayoutManager(std::make_unique<views::FlexLayout>());
   flex_layout_->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetInteriorMargin(kRegionInteriorMargins)
       .SetCollapseMargins(true)
       .SetDefault(
           views::kFlexBehaviorKey,
@@ -384,13 +381,20 @@ void VerticalTabStripRegionView::OnCollapsedStateChanged(
     UpdateCollapseState(state_controller_->GetState());
   }
 
-  const int horizontal_padding = GetLayoutConstant(
+  const int padding = GetLayoutConstant(
       state_controller_->IsCollapsed()
-          ? LayoutConstant::kVerticalTabStripCollapsedHorizontalPadding
-          : LayoutConstant::kVerticalTabStripUncollapsedHorizontalPadding);
-  flex_layout_->SetDefault(
+          ? LayoutConstant::kVerticalTabStripCollapsedPadding
+          : LayoutConstant::kVerticalTabStripUncollapsedPadding);
+  top_button_separator_->SetProperty(
+      views::kMarginsKey, gfx::Insets::VH(kRegionVerticalPadding, padding));
+  top_button_container_->SetProperty(
       views::kMarginsKey,
-      gfx::Insets::VH(kRegionVerticalPadding, horizontal_padding));
+      gfx::Insets::TLBR(0, padding, kRegionVerticalPadding, padding));
+  bottom_button_container_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(kRegionVerticalPadding, padding, 0, padding));
+
+  flex_layout_->SetInteriorMargin(gfx::Insets::VH(padding, 0));
 
   if (tab_strip_view_) {
     tab_strip_view_->SetCollapsedState(state_controller->IsCollapsed());
