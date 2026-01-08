@@ -114,7 +114,9 @@ views::ProposedLayout VerticalSplitTabView::CalculateProposedLayout(
   int width = 0;
   int height = 0;
 
-  const auto children = collection_node_->GetDirectChildren();
+  const std::vector<views::View*> children =
+      collection_node_ ? collection_node_->GetDirectChildren()
+                       : std::vector<views::View*>();
   if (children.size() != 2) {
     layouts.host_size = gfx::Size(0, 0);
     return layouts;
