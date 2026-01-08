@@ -144,6 +144,7 @@ blink_core_sources_style = [
   "text_decoration_thickness.cc",
   "text_decoration_thickness.h",
   "text_box_edge.h",
+  "text_indent_flags.h",
   "text_overflow_data.h",
   "text_size_adjust.h",
   "style_trigger_scope.h",

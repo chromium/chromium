@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/core/style/style_border_shape.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
+#include "third_party/blink/renderer/core/style/text_indent_flags.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_style_tracker.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -10047,16 +10048,47 @@ const CSSValue* TextGrow::CSSValueFromComputedStyleInternal(
 const CSSValue* TextIndent::ParseSingleValue(CSSParserTokenStream& stream,
                                              const CSSParserContext& context,
                                              CSSParserLocalContext&) const {
-  // [ <length> | <percentage> ]
-  CSSValue* length_percentage = css_parsing_utils::ConsumeLengthOrPercent(
-      stream, context, CSSPrimitiveValue::ValueRange::kAll,
-      css_parsing_utils::UnitlessQuirk::kAllow);
+  // `[ <length-percentage> ] && hanging? && each-line?`
+  CSSPrimitiveValue* length_percentage = nullptr;
+  CSSIdentifierValue* hanging = nullptr;
+  CSSIdentifierValue* each_line = nullptr;
+  for (;;) {
+    if (!length_percentage) {
+      length_percentage = css_parsing_utils::ConsumeLengthOrPercent(
+          stream, context, CSSPrimitiveValue::ValueRange::kAll,
+          css_parsing_utils::UnitlessQuirk::kAllow);
+      if (length_percentage) {
+        continue;
+      }
+    }
+    if (RuntimeEnabledFeatures::CssTextIndentEnabled()) {
+      if (!hanging) {
+        hanging = css_parsing_utils::ConsumeIdent<CSSValueID::kHanging>(stream);
+        if (hanging) {
+          continue;
+        }
+      }
+      if (!each_line) {
+        each_line =
+            css_parsing_utils::ConsumeIdent<CSSValueID::kEachLine>(stream);
+        if (each_line) {
+          continue;
+        }
+      }
+    }
+    break;
+  }
   if (!length_percentage) {
     return nullptr;
   }
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*length_percentage);
-
+  if (hanging) {
+    list->Append(*hanging);
+  }
+  if (each_line) {
+    list->Append(*each_line);
+  }
   return list;
 }
 
@@ -10068,6 +10100,13 @@ const CSSValue* TextIndent::CSSValueFromComputedStyleInternal(
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
       style.TextIndent(), style));
+  const TextIndentFlags flags = style.GetTextIndentFlags();
+  if (EnumHasFlags(flags, TextIndentFlags::kHanging)) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kHanging));
+  }
+  if (EnumHasFlags(flags, TextIndentFlags::kEachLine)) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kEachLine));
+  }
   return list;
 }
 
@@ -10075,18 +10114,21 @@ void TextIndent::ApplyValue(StyleResolverState& state,
                             const CSSValue& value,
                             ValueMode) const {
   Length length_or_percentage_value;
-
+  TextIndentFlags flags = TextIndentFlags::kDefault;
   for (auto& list_value : To<CSSValueList>(value)) {
     if (auto* list_primitive_value =
             DynamicTo<CSSPrimitiveValue>(*list_value)) {
       length_or_percentage_value = list_primitive_value->ConvertToLength(
           state.CssToLengthConversionData());
+    } else if (const auto* ident = DynamicTo<CSSIdentifierValue>(*list_value)) {
+      flags |= CssValueIDToPlatformEnum<TextIndentFlags>(ident->GetValueID());
     } else {
       NOTREACHED();
     }
   }
 
   state.StyleBuilder().SetTextIndent(length_or_percentage_value);
+  state.StyleBuilder().SetTextIndentFlags(flags);
 }
 
 const CSSValue* TextJustify::CSSValueFromComputedStyleInternal(

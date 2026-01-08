@@ -1748,6 +1748,11 @@
       status: "experimental",
     },
     {
+      // crbug.com/434361099
+      name: "CssTextIndent",
+      status: "test",
+    },
+    {
       // crbug.com/40321528
       name: "CssTextJustify",
       status: "stable",

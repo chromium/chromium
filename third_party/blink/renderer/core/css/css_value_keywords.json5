@@ -2074,6 +2074,10 @@
     // block-ellipsis
     "no-ellipsis",
 
+    // text-indent
+    "each-line",
+    // "hanging",
+
     // text-justify
     // "auto",
     // "none",
