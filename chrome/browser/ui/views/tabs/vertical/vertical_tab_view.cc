@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/glow_hover_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/common/buildflags.h"
-#include "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkRRect.h"
@@ -37,6 +37,8 @@
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -45,9 +47,6 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/delegating_layout_manager.h"
-#include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/flex_layout_types.h"
-#include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -60,12 +59,10 @@
 #endif
 
 namespace {
-// The padding should be 8dp but the icon contains 3dp of padding on both sides.
-constexpr int kIconPadding = 5;
-constexpr int kAfterTitlePadding = 2;
-constexpr int kCloseButtonPadding = 2;
-constexpr int kAfterAlertIndicatorPadding = 4;
+constexpr int kIconDesignWidth = 16;
 constexpr int kTitleMinWidth = 10;
+constexpr int kHorizontalInset = 7;
+constexpr int kDefaultPadding = 4;
 
 class VerticalTabTitle : public views::Label {
   METADATA_HEADER(VerticalTabTitle, views::Label)
@@ -76,10 +73,6 @@ class VerticalTabTitle : public views::Label {
     SetHandlesTooltips(false);
     SetBackgroundColor(SK_ColorTRANSPARENT);
     SetProperty(views::kElementIdentifierKey, kVerticalTabTitleElementId);
-  }
-
-  gfx::Size GetMinimumSize() const override {
-    return gfx::Size(kTitleMinWidth, GetLineHeight());
   }
 };
 
@@ -111,7 +104,6 @@ TabStripUserGestureDetails GetGestureDetail(const ui::Event& event) {
 
 VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
     : collection_node_(collection_node),
-      flex_layout_(SetLayoutManager(std::make_unique<views::FlexLayout>())),
       tab_style_(TabStyle::Get()),
       icon_(AddChildView(std::make_unique<TabIcon>())),
       title_(AddChildView(std::make_unique<VerticalTabTitle>())),
@@ -147,46 +139,22 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
   }
 #endif
 
-  SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
+  // Ordered vector of children to be rendered in the tab.
+  tab_children_configs_ = {
+      TabChildConfig(close_button_, kIconDesignWidth, kDefaultPadding,
+                     /*align_leading=*/false,
+                     /*expand=*/false),
+      TabChildConfig(alert_indicator_, kIconDesignWidth, kDefaultPadding,
+                     /*align_leading=*/false,
+                     /*expand=*/false),
+      TabChildConfig(icon_, kIconDesignWidth, kHorizontalInset,
+                     /*align_leading=*/true,
+                     /*expand=*/false),
+      TabChildConfig(title_, kTitleMinWidth, kDefaultPadding,
+                     /*align_leading=*/true,
+                     /*expand=*/true)};
 
-  flex_layout_->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetCollapseMargins(true)
-      .SetMinimumCrossAxisSize(
-          GetLayoutConstant(LayoutConstant::kVerticalTabHeight));
-
-  alert_indicator_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferredSnapToZero,
-                               views::MaximumFlexSizeRule::kPreferred)
-          .WithOrder(2));
-  alert_indicator_->SetProperty(
-      views::kMarginsKey, gfx::Insets().set_right(kAfterAlertIndicatorPadding));
-  icon_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferredSnapToZero,
-                               views::MaximumFlexSizeRule::kPreferred)
-          .WithOrder(3));
-  icon_->SetProperty(views::kMarginsKey,
-                     gfx::Insets().set_left_right(kIconPadding, kIconPadding));
-
-  title_->SetProperty(views::kFlexBehaviorKey,
-                      views::FlexSpecification(
-                          views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
-                          views::MaximumFlexSizeRule::kUnbounded)
-                          .WithOrder(4));
-  title_->SetProperty(views::kMarginsKey,
-                      gfx::Insets().set_right(kAfterTitlePadding));
-
-  close_button_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferredSnapToZero,
-                               views::MaximumFlexSizeRule::kPreferred)
-          .WithOrder(1));
-  close_button_->SetProperty(views::kMarginsKey,
-                             gfx::Insets::VH(0, kCloseButtonPadding));
-
+  SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
   // So we get don't get enter/exit on children and don't prematurely stop the
@@ -382,6 +350,77 @@ void VerticalTabView::OnThemeChanged() {
   UpdateColors();
 }
 
+gfx::Rect VerticalTabView::GetChildBounds(const gfx::Rect& container,
+                                          const TabChildConfig& config,
+                                          const bool center) const {
+  const gfx::Size preferred_size = config.view->GetPreferredSize();
+
+  // Some icons have larger sizes to account for decoration. Make a distinction
+  // between the design width and the actual width.
+  const int design_width =
+      config.expand ? container.width() - config.padding : config.min_width;
+  const int actual_width = config.expand ? container.width() - config.padding
+                                         : preferred_size.width();
+
+  int x = container.x();
+  if (center) {
+    x += 0.5 * (container.width() - actual_width);
+  } else if (config.align_leading) {
+    x += 0.5 * (design_width - actual_width);
+  } else {
+    x += container.width() - 0.5 * (design_width + actual_width);
+  }
+  const int y =
+      container.y() + 0.5 * (container.height() - preferred_size.height());
+
+  return gfx::Rect(x, y, actual_width, preferred_size.height());
+}
+
+views::ProposedLayout VerticalTabView::CalculateProposedLayout(
+    const views::SizeBounds& size_bounds) const {
+  const int width = size_bounds.width().value_or(
+      VerticalTabStripRegionView::kUncollapsedMaxWidth);
+  const int height = GetLayoutConstant(LayoutConstant::kVerticalTabHeight);
+
+  views::ProposedLayout layouts;
+  layouts.host_size = gfx::Size(width, height);
+
+  gfx::Rect bounds_remaining = gfx::Rect(0, 0, width, height);
+  bounds_remaining.Inset(gfx::Insets::VH(0, kHorizontalInset));
+
+  const bool is_centered =
+      width < VerticalTabStripRegionView::kCollapsedWidth || pinned_;
+
+  int placed_children = 0;
+  for (const auto& child : tab_children_configs_) {
+    const bool can_render_child =
+        is_centered
+            ? (placed_children == 0)
+            : (child.min_width + child.padding < bounds_remaining.width() ||
+               placed_children < 2);
+    if (child.view->GetVisible() && can_render_child) {
+      layouts.child_layouts.emplace_back(
+          child.view.get(), child.view->GetVisible(),
+          GetChildBounds(bounds_remaining, child, is_centered));
+
+      if (!is_centered) {
+        bounds_remaining.Inset(
+            child.align_leading
+                ? gfx::Insets().set_left(child.padding + child.min_width)
+                : gfx::Insets().set_right(child.padding + child.min_width));
+      }
+
+      placed_children += 1;
+    } else {
+      layouts.child_layouts.emplace_back(
+          child.view.get(), child.view->GetVisible(),
+          gfx::Rect(bounds_remaining.x(), bounds_remaining.y(), 0, 0));
+    }
+  }
+
+  return layouts;
+}
+
 bool VerticalTabView::GetHitTestMask(SkPath* mask) const {
   *mask = GetPath();
   return true;
@@ -452,25 +491,15 @@ void VerticalTabView::OnDataChanged() {
   icon_->SetActiveState(tab->IsActivated());
   icon_->SetAttention(TabIcon::AttentionType::kBlockedWebContents,
                       tab->IsActivated() && tab_data.blocked);
-  icon_->SetProperty(
-      views::kMarginsKey,
-      pinned_ ? gfx::Insets()
-              : gfx::Insets().set_left_right(kIconPadding, kIconPadding));
 
   title_->SetText(tab_data.title);
   title_->SetVisible(!pinned_);
 
   alert_indicator_->TransitionToAlertState(
       tabs::TabAlertController::GetAlertStateToShow(tab_data.alert_state));
-  alert_indicator_->SetProperty(
-      views::kMarginsKey,
-      pinned_ ? gfx::Insets()
-              : gfx::Insets().set_right(kAfterAlertIndicatorPadding));
+
   UpdateAlertIndicatorVisibility();
   UpdateCloseButtonVisibility();
-
-  flex_layout_->SetMainAxisAlignment(pinned_ ? views::LayoutAlignment::kCenter
-                                             : views::LayoutAlignment::kStart);
 
   UpdateColors();
   InvalidateLayout();

@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_VIEW_H_
 
+#include <vector>
+
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
@@ -36,6 +39,7 @@ class TabUnderlineView;
 
 // View for a vertical tabstrip's tab.
 class VerticalTabView : public views::View,
+                        public views::LayoutDelegate,
                         public views::MaskedTargeterDelegate,
                         public AlertIndicatorButton::Delegate,
                         public views::ContextMenuController {
@@ -70,6 +74,22 @@ class VerticalTabView : public views::View,
   void RemovedFromWidget() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnThemeChanged() override;
+
+  struct TabChildConfig {
+    raw_ptr<views::View> view;
+    int min_width;
+    int padding;
+    bool align_leading;
+    bool expand;
+  };
+
+  gfx::Rect GetChildBounds(const gfx::Rect& container,
+                           const TabChildConfig& config,
+                           const bool center) const;
+
+  // views::LayoutDelegate
+  views::ProposedLayout CalculateProposedLayout(
+      const views::SizeBounds& size_bounds) const override;
 
   // views::MaskedTargeterDelegate:
   bool GetHitTestMask(SkPath* mask) const override;
@@ -112,7 +132,8 @@ class VerticalTabView : public views::View,
   const tabs::TabInterface* GetTabInterface() const;
 
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
-  const raw_ptr<views::FlexLayout> flex_layout_;
+
+  std::vector<TabChildConfig> tab_children_configs_;
 
   const raw_ptr<const TabStyle> tab_style_;
 
