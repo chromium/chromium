@@ -233,6 +233,7 @@ source_set("sync_integration_tests_impl") {
       "//chrome/browser/metrics/desktop_session_duration",
       "//chrome/browser/search_engines",
       "//chrome/browser/send_tab_to_self",
+      "//chrome/browser/sharing",
       "//chrome/browser/themes",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/tabs/saved_tab_groups",
