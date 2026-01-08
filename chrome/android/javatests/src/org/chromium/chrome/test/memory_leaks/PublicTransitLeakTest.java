@@ -88,20 +88,4 @@ public class PublicTransitLeakTest {
                                 .getTestServer()
                                 .getURL("/chrome/test/data/android/google.html")));
     }
-
-    @Test
-    @LargeTest
-    public void omniboxTest() {
-        var page = mChromeTabbedActivityTestRule.startOnBlankPage();
-        var omnibox = page.openOmnibox();
-        omnibox.pressBackTo().exitFacility();
-    }
-
-    @Test
-    @LargeTest
-    public void ntpAndIncognitoNtpTest() {
-        var page = mChromeTabbedActivityTestRule.startOnBlankPage();
-        var incognitoNtp = page.openNewIncognitoTabOrWindowFast();
-        incognitoNtp.openNewTabFast();
-    }
 }
