@@ -19,6 +19,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "components/data_sharing/public/features.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -55,8 +56,8 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 namespace extensions {
 namespace {
 
-// TODO(crbug.com/405219902): Port to desktop Android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+using tab_groups::TabGroupId;
+
 base::Value::List RunTabGroupsQueryFunction(
     content::BrowserContext* browser_context,
     const Extension* extension,
@@ -69,7 +70,6 @@ base::Value::List RunTabGroupsQueryFunction(
           api_test_utils::FunctionMode::kNone);
   return std::move(*value).TakeList();
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 base::Value::Dict RunTabGroupsGetFunction(
     content::BrowserContext* browser_context,
@@ -150,6 +150,17 @@ class TabGroupsApiBrowserTest : public ExtensionBrowserTest {
 #endif
   }
 
+  // Creates a tab group out of existing tabs at `tab_indices`.
+  std::optional<TabGroupId> CreateTabGroup(
+      const std::vector<int>& tab_indices) {
+    auto* tab_list = TabListInterface::From(browser_window_interface());
+    std::vector<tabs::TabHandle> tabs;
+    for (int index : tab_indices) {
+      tabs.push_back(tab_list->GetTab(index)->GetHandle());
+    }
+    return tab_list->CreateTabGroup(tabs);
+  }
+
  private:
   // The original web contentses in order.
   std::vector<raw_ptr<content::WebContents, VectorExperimental>> web_contents_;
@@ -187,28 +198,35 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest,
 
   tab_strip_model2->CloseAllTabs();
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that querying groups by title returns the correct groups.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsQueryTitle) {
   scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
 
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
+  ASSERT_TRUE(SupportsTabGroups());
+
+  TabListInterface* tab_list =
+      TabListInterface::From(browser_window_interface());
+  ASSERT_TRUE(tab_list);
 
   // Create 3 groups with different titles.
   const tab_groups::TabGroupColorId color = tab_groups::TabGroupColorId::kGrey;
 
-  tab_groups::TabGroupId group1 = tab_strip_model->AddToNewGroup({0});
+  std::optional<TabGroupId> group1 = CreateTabGroup({0});
+  ASSERT_TRUE(group1);
   tab_groups::TabGroupVisualData visual_data1(u"Sample title", color);
-  tab_strip_model->ChangeTabGroupVisuals(group1, visual_data1);
+  tab_list->SetTabGroupVisualData(*group1, visual_data1);
 
-  tab_groups::TabGroupId group2 = tab_strip_model->AddToNewGroup({1});
+  std::optional<TabGroupId> group2 = CreateTabGroup({1});
+  ASSERT_TRUE(group2);
   tab_groups::TabGroupVisualData visual_data2(u"Sample title suffixed", color);
-  tab_strip_model->ChangeTabGroupVisuals(group2, visual_data2);
+  tab_list->SetTabGroupVisualData(*group2, visual_data2);
 
-  tab_groups::TabGroupId group3 = tab_strip_model->AddToNewGroup({2});
+  std::optional<TabGroupId> group3 = CreateTabGroup({2});
+  ASSERT_TRUE(group3);
   tab_groups::TabGroupVisualData visual_data3(u"Prefixed Sample title", color);
-  tab_strip_model->ChangeTabGroupVisuals(group3, visual_data3);
+  tab_list->SetTabGroupVisualData(*group3, visual_data3);
 
   // Query by title and verify results.
   const char* kTitleQueryInfo = R"([{"title": "Sample title"}])";
@@ -218,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsQueryTitle) {
 
   const base::Value& group_info = groups_list[0];
   ASSERT_TRUE(group_info.is_dict());
-  EXPECT_EQ(ExtensionTabUtil::GetGroupId(group1),
+  EXPECT_EQ(ExtensionTabUtil::GetGroupId(*group1),
             *group_info.GetDict().FindInt("id"));
 }
 
@@ -226,24 +244,30 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsQueryTitle) {
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsQueryColor) {
   scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
 
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
+  ASSERT_TRUE(SupportsTabGroups());
+
+  TabListInterface* tab_list =
+      TabListInterface::From(browser_window_interface());
+  ASSERT_TRUE(tab_list);
 
   // Create 3 groups with different colors.
-  tab_groups::TabGroupId group1 = tab_strip_model->AddToNewGroup({0});
+  std::optional<TabGroupId> group1 = CreateTabGroup({0});
+  ASSERT_TRUE(group1);
   tab_groups::TabGroupVisualData visual_data1(
       std::u16string(), tab_groups::TabGroupColorId::kGrey);
-  tab_strip_model->ChangeTabGroupVisuals(group1, visual_data1);
+  tab_list->SetTabGroupVisualData(*group1, visual_data1);
 
-  tab_groups::TabGroupId group2 = tab_strip_model->AddToNewGroup({1});
+  std::optional<TabGroupId> group2 = CreateTabGroup({1});
+  ASSERT_TRUE(group2);
   tab_groups::TabGroupVisualData visual_data2(
       std::u16string(), tab_groups::TabGroupColorId::kRed);
-  tab_strip_model->ChangeTabGroupVisuals(group2, visual_data2);
+  tab_list->SetTabGroupVisualData(*group2, visual_data2);
 
-  tab_groups::TabGroupId group3 = tab_strip_model->AddToNewGroup({2});
+  std::optional<TabGroupId> group3 = CreateTabGroup({2});
+  ASSERT_TRUE(group3);
   tab_groups::TabGroupVisualData visual_data3(
       std::u16string(), tab_groups::TabGroupColorId::kBlue);
-  tab_strip_model->ChangeTabGroupVisuals(group3, visual_data3);
+  tab_list->SetTabGroupVisualData(*group3, visual_data3);
 
   // Query by color and verify results.
   const char* kColorQueryInfo = R"([{"color": "blue"}])";
@@ -253,10 +277,12 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsQueryColor) {
 
   const base::Value& group_info = groups_list[0];
   ASSERT_EQ(base::Value::Type::DICT, group_info.type());
-  EXPECT_EQ(ExtensionTabUtil::GetGroupId(group3),
+  EXPECT_EQ(ExtensionTabUtil::GetGroupId(*group3),
             *group_info.GetDict().FindInt("id"));
 }
 
+// TODO(crbug.com/405219902): Port to desktop Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 class SharedTabGroupExtensionsBrowserTest : public TabGroupsApiBrowserTest {
  public:
   SharedTabGroupExtensionsBrowserTest() {
@@ -264,7 +290,7 @@ class SharedTabGroupExtensionsBrowserTest : public TabGroupsApiBrowserTest {
         data_sharing::features::kDataSharingFeature);
   }
 
-  void ShareTabGroup(const tab_groups::TabGroupId& group_id,
+  void ShareTabGroup(const TabGroupId& group_id,
                      const syncer::CollaborationId& collaboration_id) {
     tab_groups::TabGroupSyncService* service =
         static_cast<tab_groups::TabGroupSyncService*>(
@@ -283,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupExtensionsBrowserTest,
   ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
 
   // Create a group that is unshared.
-  tab_groups::TabGroupId group1 = tab_strip_model->AddToNewGroup({0});
+  TabGroupId group1 = tab_strip_model->AddToNewGroup({0});
   tab_groups::TabGroupVisualData visual_data1(
       std::u16string(), tab_groups::TabGroupColorId::kGrey);
   tab_strip_model->ChangeTabGroupVisuals(group1, visual_data1);
@@ -341,14 +367,11 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsGetSuccess) {
   ASSERT_TRUE(SupportsTabGroups());
 
   // Create a group.
-  auto* tab_list = TabListInterface::From(browser_window_interface());
-  std::vector<tabs::TabHandle> tabs;
-  tabs.push_back(tab_list->GetTab(0)->GetHandle());
-  tabs.push_back(tab_list->GetTab(1)->GetHandle());
-  std::optional<tab_groups::TabGroupId> group = tab_list->CreateTabGroup(tabs);
+  std::optional<TabGroupId> group = CreateTabGroup({0, 1});
   ASSERT_TRUE(group);
 
   // Set the visual data.
+  auto* tab_list = TabListInterface::From(browser_window_interface());
   tab_groups::TabGroupVisualData visual_data(
       u"Title", tab_groups::TabGroupColorId::kBlue);
   tab_list->SetTabGroupVisualData(*group, visual_data);
@@ -384,14 +407,11 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsUpdateSuccess) {
   ASSERT_TRUE(SupportsTabGroups());
 
   // Create a group.
-  auto* tab_list = TabListInterface::From(browser_window_interface());
-  std::vector<tabs::TabHandle> tabs;
-  tabs.push_back(tab_list->GetTab(0)->GetHandle());
-  tabs.push_back(tab_list->GetTab(1)->GetHandle());
-  std::optional<tab_groups::TabGroupId> group = tab_list->CreateTabGroup(tabs);
+  std::optional<TabGroupId> group = CreateTabGroup({0, 1});
   ASSERT_TRUE(group);
 
   // Set the visual data.
+  auto* tab_list = TabListInterface::From(browser_window_interface());
   tab_groups::TabGroupVisualData visual_data(
       u"Initial title", tab_groups::TabGroupColorId::kBlue);
   tab_list->SetTabGroupVisualData(*group, visual_data);
@@ -439,7 +459,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsUpdateSavedTab) {
   TabGroupModel* tab_group_model = tab_strip_model->group_model();
 
   // Create a group.
-  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({0, 1, 2});
+  // TODO(crbug.com/405219902): Convert call to CreateTabGroup() here and below.
+  TabGroupId group = tab_strip_model->AddToNewGroup({0, 1, 2});
   tab_groups::TabGroupVisualData visual_data(
       u"Initial title", tab_groups::TabGroupColorId::kBlue);
   tab_strip_model->ChangeTabGroupVisuals(group, visual_data);
@@ -479,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveRight) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
 
   // Create a group with multiple tabs.
-  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({1, 2, 3});
+  TabGroupId group = tab_strip_model->AddToNewGroup({1, 2, 3});
   int group_id = ExtensionTabUtil::GetGroupId(group);
 
   // Use the TabGroupsMoveFunction to move the group to index 2.
@@ -513,8 +534,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest,
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
 
   // Create a group with multiple tabs.
-  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({1, 2, 3});
-  tab_groups::TabGroupId group_2 = tab_strip_model->AddToNewGroup({4, 5});
+  TabGroupId group = tab_strip_model->AddToNewGroup({1, 2, 3});
+  TabGroupId group_2 = tab_strip_model->AddToNewGroup({4, 5});
 
   int group_id = ExtensionTabUtil::GetGroupId(group);
 
@@ -552,8 +573,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest,
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
 
   // Create a group with multiple tabs.
-  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({1, 2});
-  tab_groups::TabGroupId group_2 = tab_strip_model->AddToNewGroup({4, 5});
+  TabGroupId group = tab_strip_model->AddToNewGroup({1, 2});
+  TabGroupId group_2 = tab_strip_model->AddToNewGroup({4, 5});
 
   int group_id = ExtensionTabUtil::GetGroupId(group);
 
@@ -587,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveLeft) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
 
   // Create a group with multiple tabs.
-  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({2, 3, 4});
+  TabGroupId group = tab_strip_model->AddToNewGroup({2, 3, 4});
   int group_id = ExtensionTabUtil::GetGroupId(group);
 
   // Use the TabGroupsMoveFunction to move the group to index 0.
@@ -619,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveAcrossWindows) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
 
   // Create a group with multiple tabs.
-  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({2, 3, 4});
+  TabGroupId group = tab_strip_model->AddToNewGroup({2, 3, 4});
   int group_id = ExtensionTabUtil::GetGroupId(group);
 
   // Create a new window and add a few tabs.
@@ -679,7 +700,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveToPinnedError) {
   tab_strip_model->SetTabPinned(2, /*pinned=*/true);
 
   // Create a group with an unpinned tab.
-  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({4});
+  TabGroupId group = tab_strip_model->AddToNewGroup({4});
   int group_id = ExtensionTabUtil::GetGroupId(group);
 
   // Try to move the group to index 1 and expect an error.
@@ -705,7 +726,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest,
 
   // Create two tab groups, one with multiple tabs and the other to move.
   tab_strip_model->AddToNewGroup({0, 1, 2});
-  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({4});
+  TabGroupId group = tab_strip_model->AddToNewGroup({4});
   int group_id = ExtensionTabUtil::GetGroupId(group);
 
   // Try to move the second group to index 1 and expect an error.
@@ -777,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest,
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
 
   // Create a group with multiple tabs.
-  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({1, 2, 3});
+  TabGroupId group = tab_strip_model->AddToNewGroup({1, 2, 3});
   int group_id = ExtensionTabUtil::GetGroupId(group);
   int window_id = ExtensionTabUtil::GetWindowId(browser());
 

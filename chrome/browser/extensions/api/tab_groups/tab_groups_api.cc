@@ -116,10 +116,6 @@ ExtensionFunction::ResponseAction TabGroupsGetFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/405219902): Port to desktop Android.
-  return RespondNow(Error(kNotYetImplementedError));
-#else
   std::optional<api::tab_groups::Query::Params> params =
       api::tab_groups::Query::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -132,7 +128,8 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
   if (!window_controller) {
     return RespondNow(Error(ExtensionTabUtil::kNoCurrentWindowError));
   }
-  Browser* current_browser = window_controller->GetBrowser();
+  BrowserWindowInterface* current_browser =
+      window_controller->GetBrowserWindowInterface();
   if (!current_browser) {
     return RespondNow(
         Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
@@ -168,15 +165,26 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
           }
         }
 
+#if !BUILDFLAG(IS_ANDROID)
+        // Android does not have a SupportsTabGroups() method.
         TabStripModel* tab_strip = browser_window_interface->GetTabStripModel();
         if (!tab_strip->SupportsTabGroups()) {
           return true;
         }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-        for (const tab_groups::TabGroupId& id :
-             tab_strip->group_model()->ListTabGroups()) {
-          const tab_groups::TabGroupVisualData* visual_data =
-              tab_strip->group_model()->GetTabGroup(id)->visual_data();
+        TabListInterface* tab_list =
+            TabListInterface::From(browser_window_interface);
+        if (!tab_list) {
+          return true;
+        }
+
+        for (const tab_groups::TabGroupId& id : tab_list->ListTabGroups()) {
+          std::optional<tab_groups::TabGroupVisualData> visual_data =
+              tab_list->GetTabGroupVisualData(id);
+          if (!visual_data) {
+            continue;
+          }
 
           if (params->query_info.collapsed &&
               *params->query_info.collapsed != visual_data->is_collapsed()) {
@@ -210,7 +218,6 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
       });
 
   return RespondNow(WithArguments(std::move(result_list)));
-#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
