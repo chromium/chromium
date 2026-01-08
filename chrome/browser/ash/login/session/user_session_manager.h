@@ -194,6 +194,11 @@ class UserSessionManager
   // Restores authentication session after crash.
   void RestoreAuthenticationSession(Profile* profile);
 
+  // Initializes classes which are responsible for enforcing online sign-in
+  // based on various policies.
+  void EnsureTrackingOfOnlineSignInConditions(Profile* profile,
+                                              UserContext::AuthFlow auth_flow);
+
   // Usually is called when Chrome is restarted after a crash and there's an
   // active session. First user (one that is passed with --login-user) Chrome
   // session has been already restored at this point. This method asks session

@@ -248,6 +248,11 @@ void StartUserSession(user_manager::UserManager* user_manager,
     UserSessionManager::GetInstance()->StartTetherServiceIfPossible(
         user_profile);
 
+    // There was no authentication, but for the purpose of online sign-in
+    // conditions this is the same as offline auth flow.
+    UserSessionManager::GetInstance()->EnsureTrackingOfOnlineSignInConditions(
+        user_profile, UserContext::AUTH_FLOW_OFFLINE);
+
     // Associates AppListClient with the current active profile.
     AppListClientImpl::GetInstance()->UpdateProfile();
   }

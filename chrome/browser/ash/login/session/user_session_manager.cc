@@ -851,6 +851,35 @@ void UserSessionManager::RestoreAuthenticationSession(Profile* user_profile) {
   }
 }
 
+void UserSessionManager::EnsureTrackingOfOnlineSignInConditions(
+    Profile* profile,
+    UserContext::AuthFlow auth_flow) {
+  PasswordSyncTokenVerifier* password_sync_token_verifier =
+      PasswordSyncTokenVerifierFactory::GetForProfile(profile);
+  // PasswordSyncTokenVerifier can be created only for SAML users.
+  if (password_sync_token_verifier) {
+    CHECK(ProfileHelper::Get()->GetUserByProfile(profile)->using_saml());
+    if (auth_flow == UserContext::AUTH_FLOW_GAIA_WITH_SAML) {
+      // Update local sync token after online SAML login.
+      password_sync_token_verifier->FetchSyncTokenOnReauth();
+    } else if (auth_flow == UserContext::AUTH_FLOW_OFFLINE) {
+      // Verify local sync token to check whether the local password is out
+      // of sync.
+      password_sync_token_verifier->RecordTokenPollingStart();
+      password_sync_token_verifier->CheckForPasswordNotInSync();
+    } else {
+      // SAML user is not expected to go through other authentication flows.
+      NOTREACHED();
+    }
+  }
+
+  OfflineSigninLimiter* offline_signin_limiter =
+      OfflineSigninLimiterFactory::GetForProfile(profile);
+  if (offline_signin_limiter) {
+    offline_signin_limiter->SignedIn(auth_flow);
+  }
+}
+
 void UserSessionManager::RestoreActiveSessions() {
   SessionManagerClient::Get()->RetrieveActiveSessions(
       base::BindOnce(&UserSessionManager::OnRestoreActiveSessions,
@@ -1747,29 +1776,7 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
           /*using_saml=*/auth_flow == UserContext::AUTH_FLOW_GAIA_WITH_SAML,
           user_context_.IsUsingSamlPrincipalsApi());
     }
-    PasswordSyncTokenVerifier* password_sync_token_verifier =
-        PasswordSyncTokenVerifierFactory::GetForProfile(profile);
-    // PasswordSyncTokenVerifier can be created only for SAML users.
-    if (password_sync_token_verifier) {
-      CHECK(user->using_saml());
-      if (auth_flow == UserContext::AUTH_FLOW_GAIA_WITH_SAML) {
-        // Update local sync token after online SAML login.
-        password_sync_token_verifier->FetchSyncTokenOnReauth();
-      } else if (auth_flow == UserContext::AUTH_FLOW_OFFLINE) {
-        // Verify local sync token to check whether the local password is out
-        // of sync.
-        password_sync_token_verifier->RecordTokenPollingStart();
-        password_sync_token_verifier->CheckForPasswordNotInSync();
-      } else {
-        // SAML user is not expected to go through other authentication flows.
-        NOTREACHED();
-      }
-    }
-
-    OfflineSigninLimiter* offline_signin_limiter =
-        OfflineSigninLimiterFactory::GetForProfile(profile);
-    if (offline_signin_limiter)
-      offline_signin_limiter->SignedIn(auth_flow);
+    EnsureTrackingOfOnlineSignInConditions(profile, auth_flow);
   }
 
   profile->OnLogin();
