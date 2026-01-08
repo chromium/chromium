@@ -72,6 +72,11 @@ class ViewConditions {
 
         View matchedView = viewAndRoot.view;
 
+        if (!matchedView.isAttachedToWindow()) {
+            matchEvaluation.didMatch = false;
+            matchEvaluation.messages.add("Detached from window");
+        }
+
         int visibility = matchedView.getVisibility();
         if (visibility != View.VISIBLE) {
             matchEvaluation.didMatch = false;

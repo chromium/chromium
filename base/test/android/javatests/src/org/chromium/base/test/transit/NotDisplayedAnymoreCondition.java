@@ -45,9 +45,6 @@ public class NotDisplayedAnymoreCondition extends UiThreadCondition {
             // If created by a ViewElement, search the root which it was matched.
             Root rootMatched = mViewElement.getDisplayedCondition().getRootMatched();
             assert rootMatched != null;
-            if (!rootMatched.getDecorView().hasWindowFocus()) {
-                return fulfilled();
-            }
             rootsToSearch = List.of(rootMatched);
         } else {
             // If not created by a ViewElement (i.e. created by declareNoView()), search
@@ -68,19 +65,22 @@ public class NotDisplayedAnymoreCondition extends UiThreadCondition {
             rootsToSearch = InternalViewFinder.findRoots(rootSpec);
         }
         List<ViewAndRoot> allMatches = InternalViewFinder.findViews(rootsToSearch, mMatcher);
-        List<ViewConditions.DisplayedEvaluation> displayedMatches = new ArrayList<>();
+        List<ViewConditions.DisplayedEvaluation> allEvaluations = new ArrayList<>();
+        List<ViewConditions.DisplayedEvaluation> displayedEvaluations = new ArrayList<>();
         for (ViewAndRoot viewAndRoot : allMatches) {
             ViewConditions.DisplayedEvaluation displayedEvaluation =
                     ViewConditions.evaluateMatch(viewAndRoot, /* displayedPercentageRequired= */ 1);
+            allEvaluations.add(displayedEvaluation);
             if (displayedEvaluation.didMatch) {
-                displayedMatches.add(displayedEvaluation);
+                displayedEvaluations.add(displayedEvaluation);
             }
         }
 
-        if (displayedMatches.isEmpty()) {
-            return fulfilled();
+        if (displayedEvaluations.isEmpty()) {
+            return fulfilled(ViewConditions.writeDisplayedViewsStatusMessage(allEvaluations));
         } else {
-            return notFulfilled(ViewConditions.writeDisplayedViewsStatusMessage(displayedMatches));
+            return notFulfilled(
+                    ViewConditions.writeDisplayedViewsStatusMessage(displayedEvaluations));
         }
     }
 }
