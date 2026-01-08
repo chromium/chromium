@@ -10,5 +10,6 @@ include_rules = [
   "+ios/chrome/browser/overlays/model/public/overlay_presentation_context.h",
   "+ios/chrome/browser/prerender/model/prerender_browser_agent.h",
   "+ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h",
+  "+ios/chrome/browser/web/model/web_navigation_browser_agent.h",
   # keep-sorted end
 ]

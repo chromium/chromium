@@ -1,0 +1,23 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
+
+NSString* const kToolbarViewIdentifier = @"kToolbarViewIdentifier";
+NSString* const kToolbarBackButtonIdentifier = @"kToolbarBackButtonIdentifier";
+NSString* const kToolbarForwardButtonIdentifier =
+    @"kToolbarForwardButtonIdentifier";
+NSString* const kToolbarReloadButtonIdentifier =
+    @"kToolbarReloadButtonIdentifier";
+NSString* const kToolbarStopButtonIdentifier = @"kToolbarStopButtonIdentifier";
+NSString* const kToolbarShareButtonIdentifier =
+    @"kToolbarShareButtonIdentifier";
+NSString* const kToolbarTabGridButtonIdentifier =
+    @"kToolbarTabGridButtonIdentifier";
+NSString* const kToolbarToolsMenuButtonIdentifier =
+    @"kToolbarToolsMenuButtonIdentifier";
+NSString* const kToolbarOmniboxButtonIdentifier =
+    @"kToolbarOmniboxButtonIdentifier";
+NSString* const kToolbarAssistantButtonIdentifier =
+    @"kToolbarAssistantButtonIdentifier";

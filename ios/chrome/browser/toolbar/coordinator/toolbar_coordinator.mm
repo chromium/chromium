@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/toolbar/coordinator/toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/adaptive_toolbar_view_controller.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/legacy_toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/primary_toolbar_coordinator.h"
@@ -42,6 +43,9 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_utils.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/secondary_toolbar_coordinator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/toolbar_coordinatee.h"
+#import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_factory.h"
+#import "ios/chrome/browser/toolbar/ui/toolbar_view_controller.h"
+#import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/web_state.h"
@@ -102,6 +106,14 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   BOOL _fakeboxPinned;
   /// Command handler for showing the IPH.
   id<HelpCommands> _helpHandler;
+  /// Top toolbar mediator.
+  ToolbarMediator* _topToolbarMediator;
+  /// Top toolbar view controller.
+  ToolbarViewController* _topToolbarViewController;
+  /// Bottom toolbar mediator.
+  ToolbarMediator* _bottomToolbarMediator;
+  /// Bottom toolbar view controller.
+  ToolbarViewController* _bottomToolbarViewController;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser {
@@ -172,8 +184,31 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   self.locationBarCoordinator.popupPresenterDelegate =
       self.popupPresenterDelegate;
   [self.locationBarCoordinator start];
-  self.legacyToolbarMediator.omniboxConsumer =
-      self.locationBarCoordinator.toolbarOmniboxConsumer;
+
+  if (IsChromeNextIaEnabled()) {
+    _topToolbarMediator = [[ToolbarMediator alloc]
+        initWithWebStateList:browser->GetWebStateList()];
+    _topToolbarMediator.navigationBrowserAgent =
+        WebNavigationBrowserAgent::FromBrowser(browser);
+
+    _topToolbarViewController = [[ToolbarViewController alloc] init];
+    _topToolbarViewController.buttonFactory =
+        [[ToolbarButtonFactory alloc] init];
+    _topToolbarMediator.consumer = _topToolbarViewController;
+
+    _bottomToolbarMediator = [[ToolbarMediator alloc]
+        initWithWebStateList:browser->GetWebStateList()];
+    _bottomToolbarMediator.navigationBrowserAgent =
+        WebNavigationBrowserAgent::FromBrowser(browser);
+
+    _bottomToolbarViewController = [[ToolbarViewController alloc] init];
+    _bottomToolbarViewController.buttonFactory =
+        [[ToolbarButtonFactory alloc] init];
+    _bottomToolbarMediator.consumer = _bottomToolbarViewController;
+
+    self.started = YES;
+    return;
+  }
 
   self.primaryToolbarCoordinator.viewControllerDelegate = self;
   self.primaryToolbarCoordinator.toolbarHeightDelegate =
@@ -206,7 +241,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   [self updateToolbarsLayout];
   [self updateLocationBarHeightWithAnimation:NO focusStateDidChange:NO];
 
-  [super start];
   self.started = YES;
 }
 
@@ -214,7 +248,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   if (!self.started) {
     return;
   }
-  [super stop];
   self.orchestrator.editViewAnimatee = nil;
   self.orchestrator.locationBarAnimatee = nil;
   self.orchestrator = nil;
@@ -252,10 +285,16 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 }
 
 - (UIViewController*)primaryToolbarViewController {
+  if (IsChromeNextIaEnabled()) {
+    return _topToolbarViewController;
+  }
   return self.primaryToolbarCoordinator.viewController;
 }
 
 - (UIViewController*)secondaryToolbarViewController {
+  if (IsChromeNextIaEnabled()) {
+    return _bottomToolbarViewController;
+  }
   return self.secondaryToolbarCoordinator.viewController;
 }
 
