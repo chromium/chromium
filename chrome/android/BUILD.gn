@@ -1508,6 +1508,10 @@ if (_is_default_toolchain) {
     ]
 
     data_deps = [ "//ui/base:goldctl" ]
+
+    if (enable_extensions_core) {
+      deps += [ "//chrome/browser/ui/android/extensions:javatests" ]
+    }
   }
 
   if (enable_vr || enable_arcore) {
