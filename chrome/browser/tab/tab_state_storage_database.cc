@@ -16,7 +16,9 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/tab/payload_util.h"
 #include "chrome/browser/tab/protocol/children.pb.h"
@@ -403,6 +405,26 @@ void TabStateStorageDatabase::ClearWindow(std::string_view window_tag) {
       db_.GetCachedStatement(SQL_FROM_HERE, kDeleteWindowSql));
   delete_statement.BindString(0, window_tag);
   delete_statement.Run();
+}
+
+bool TabStateStorageDatabase::ClearNodesForWindowExcept(
+    std::string_view window_tag,
+    const std::vector<StorageId>& ids) {
+  const std::string id_placeholders =
+      base::JoinString(std::vector<std::string_view>(ids.size(), "?"), ",");
+
+  const std::string kDeleteNodesExceptSql =
+      base::StrCat({"DELETE FROM nodes WHERE window_tag = ? AND id NOT IN (",
+                    id_placeholders, ")"});
+
+  sql::Statement delete_statement(
+      db_.GetUniqueStatement(kDeleteNodesExceptSql));
+  delete_statement.BindString(0, window_tag);
+
+  for (size_t i = 0; i < ids.size(); i++) {
+    delete_statement.BindBlob(i + 1, StorageIdToBlob(ids[i]));
+  }
+  return delete_statement.Run();
 }
 
 void TabStateStorageDatabase::SetKey(std::string window_tag,

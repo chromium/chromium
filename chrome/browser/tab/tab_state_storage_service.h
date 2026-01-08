@@ -101,6 +101,9 @@ class TabStateStorageService : public KeyedService,
 
   void ClearWindow(std::string_view window_tag);
 
+  void ClearNodesForWindowExcept(std::string_view window_tag,
+                                 std::vector<StorageId> ids);
+
   // Sets the key for encryption.
   void SetKey(std::string_view window_tag, std::vector<uint8_t> key);
 

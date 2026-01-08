@@ -116,6 +116,17 @@ void TabStateStorageBackend::ClearWindow(std::string_view window_tag) {
                                 base::Unretained(database_.get()), window_tag));
 }
 
+void TabStateStorageBackend::ClearNodesForWindowExcept(
+    std::string_view window_tag,
+    std::vector<StorageId> ids) {
+  db_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(
+                         &TabStateStorageDatabase::ClearNodesForWindowExcept),
+                     base::Unretained(database_.get()), std::string(window_tag),
+                     std::move(ids)));
+}
+
 void TabStateStorageBackend::SetKey(std::string_view window_tag,
                                     std::vector<uint8_t> key) {
   db_task_runner_->PostTask(
