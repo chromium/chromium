@@ -422,6 +422,8 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
         // Verify history sync state.
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
+        // Should signout on decline.
+        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
     }
 
     @Test
@@ -452,6 +454,62 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
         // Verify history sync state.
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
+        // Should signout on decline.
+        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testBackPressHistorySync_legacy() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        // Add another activity in the back stack
+        mBlankActivityTestRule.launchActivity(null);
+
+        launchActivity(
+                NoAccountSigninMode.BOTTOM_SHEET,
+                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                HistorySyncConfig.OptInMode.REQUIRED);
+
+        verifyCollapsedBottomSheetAndSignin(TestAccounts.ACCOUNT1);
+
+        // Verify that the history opt-in dialog is shown.
+        onViewWaiting(withId(R.id.history_sync_illustration), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+
+        Espresso.pressBack();
+
+        // Verify that the flow completion callback, which finishes the activity, is called.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+        // Verify history sync state.
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
+        // Back press does NOT sign out on decline.
+        assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testBackPressHistorySync() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        // Add another activity in the back stack
+        mBlankActivityTestRule.launchActivity(null);
+
+        launchSeamlessSigninAndVerifySignedIn(
+                HistorySyncConfig.OptInMode.REQUIRED, TestAccounts.ACCOUNT1);
+
+        // Verify that the history opt-in dialog is shown.
+        onViewWaiting(withId(R.id.history_sync_illustration), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+
+        Espresso.pressBack();
+
+        // Verify that the flow completion callback, which finishes the activity, is called.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+        // Verify history sync state.
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
+        // Back press does NOT sign out on decline.
+        assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
     }
 
     @Test

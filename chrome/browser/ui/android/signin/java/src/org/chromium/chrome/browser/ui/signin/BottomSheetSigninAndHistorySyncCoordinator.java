@@ -528,6 +528,8 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         }
         ModalDialogManager manager = mModalDialogManagerSupplier.get();
         assert manager != null;
+        boolean isSeamlessSigninFlow =
+                mConfig.withAccountSigninMode == WithAccountSigninMode.SEAMLESS_SIGNIN;
 
         mDialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -551,9 +553,9 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                                             dismissHistorySync(
                                                     /* didSignOut= */ false,
                                                     /* isHistorySyncAccepted= */ false);
-                                        } else {
+                                        } else if (!isSeamlessSigninFlow) {
                                             // TODO(crbug.com/453930445): onFlowComplete can be
-                                            // called twice, hide behind seamless sign-in flag
+                                            // called twice. Remove after seamless sign-in launch.
                                             onFlowComplete(
                                                     SigninAndHistorySyncCoordinator.Result
                                                             .aborted());
@@ -563,8 +565,9 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                         .with(
                                 ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
                                 // TODO(crbug.com/453930445): remove entire handleOnBackPressed
-                                // block, back pressing by default dismisses the dialog
-                                new OnBackPressedCallback(true) {
+                                // block after seamless sign-in launch. Back pressing by default
+                                // dismisses the dialog.
+                                new OnBackPressedCallback(!isSeamlessSigninFlow) {
                                     @Override
                                     public void handleOnBackPressed() {
                                         if (mHistorySyncCoordinator != null) {
