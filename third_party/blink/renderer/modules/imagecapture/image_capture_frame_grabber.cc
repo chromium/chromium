@@ -175,7 +175,7 @@ void ImageCaptureFrameGrabber::OnVideoFrame(
                                      ? kOpaque_SkAlphaType
                                      : kPremul_SkAlphaType;
   const gfx::ColorSpace dest_color_space = frame->CompatRGBColorSpace();
-  if (!snapshot_provider_ ||
+  if (!snapshot_provider_ || !snapshot_provider_->IsValid() ||
       snapshot_provider_->Size() != frame->natural_size() ||
       snapshot_provider_->GetColorSpace() != dest_color_space ||
       snapshot_provider_->GetAlphaType() != alpha_type) {
