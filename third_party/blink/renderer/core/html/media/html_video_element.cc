@@ -581,9 +581,7 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
   const gfx::ColorSpace dest_color_space =
       reinterpret_as_srgb ? gfx::ColorSpace::CreateSRGB()
                           : media_video_frame->CompatRGBColorSpace();
-  if (!snapshot_provider_ ||
-      (snapshot_provider_->IsAccelerated() &&
-       snapshot_provider_->IsGpuContextLost()) ||
+  if (!snapshot_provider_ || !snapshot_provider_->IsValid() ||
       allow_accelerated_images != allow_accelerated_images_ ||
       dest_size != snapshot_provider_->Size() ||
       dest_color_space != snapshot_provider_->GetColorSpace() ||
