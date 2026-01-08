@@ -10,10 +10,12 @@
 #import "ios/chrome/browser/toolbar/ui/toolbar_consumer.h"
 
 @protocol ActivityServiceCommands;
-@protocol PopupMenuCommands;
 @protocol BrowserCoordinatorCommands;
+@class LayoutGuideCenter;
+@protocol PopupMenuCommands;
 @protocol SceneCommands;
 @class ToolbarButtonFactory;
+@protocol ToolbarHeightDelegate;
 @protocol ToolbarMutator;
 
 // View controller for the toolbar.
@@ -37,6 +39,15 @@
 
 // Factory used to create the buttons.
 @property(nonatomic, strong) ToolbarButtonFactory* buttonFactory;
+
+// The height of the toolbar.
+@property(nonatomic, readonly) CGFloat toolbarHeight;
+
+// The height delegate.
+@property(nonatomic, weak) id<ToolbarHeightDelegate> toolbarHeightDelegate;
+
+// Layout Guide Center.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
 @end
 

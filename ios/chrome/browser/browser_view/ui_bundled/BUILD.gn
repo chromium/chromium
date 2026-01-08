@@ -281,6 +281,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen:fullscreen_broadcasting_util",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/public",
+    "//ios/chrome/browser/toolbar/ui:height_delegate",
     "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/unit_conversion/ui_bundled:coordinator",
     "//ios/chrome/browser/url_loading/model",

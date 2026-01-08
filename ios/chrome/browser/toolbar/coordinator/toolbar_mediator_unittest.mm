@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/toolbar/coordinator/toolbar_mediator.h"
 
-#import "base/memory/raw_ptr.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -13,9 +16,12 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_consumer.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -25,15 +31,20 @@
 #import "url/gurl.h"
 
 // Fixture for testing ToolbarMediator.
-class ToolbarMediatorTest : public PlatformTest {
+class ToolbarMediatorTest : public PlatformTest,
+                            public testing::WithParamInterface<BOOL> {
  protected:
   ToolbarMediatorTest() {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
+    TestFullscreenController::CreateForBrowser(browser_.get());
 
     mediator_ = [[ToolbarMediator alloc]
-        initWithWebStateList:browser_->GetWebStateList()];
+        initWithWebStateList:browser_->GetWebStateList()
+        fullscreenController:TestFullscreenController::FromBrowser(
+                                 browser_.get())
+                 topPosition:GetParam()];
     mediator_.navigationBrowserAgent =
         WebNavigationBrowserAgent::FromBrowser(browser_.get());
 
@@ -75,6 +86,7 @@ class ToolbarMediatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   ToolbarMediator* mediator_;
@@ -84,8 +96,7 @@ class ToolbarMediatorTest : public PlatformTest {
 };
 
 // Tests that selecting a web state updates the consumer.
-TEST_F(ToolbarMediatorTest, TestWebStateSelectionUpdatesConsumer) {
-
+TEST_P(ToolbarMediatorTest, TestWebStateSelectionUpdatesConsumer) {
   OCMExpect([consumer_ setCanGoBack:YES]);
   OCMExpect([consumer_ setCanGoForward:NO]);
   OCMExpect([consumer_ setLocationBarText:[OCMArg any]]);
@@ -99,7 +110,7 @@ TEST_F(ToolbarMediatorTest, TestWebStateSelectionUpdatesConsumer) {
 }
 
 // Tests update of the consumer when the webpage triggers a navigation.
-TEST_F(ToolbarMediatorTest, TestWebStateUpdates) {
+TEST_P(ToolbarMediatorTest, TestWebStateUpdates) {
   std::unique_ptr<web::FakeWebState> web_state = CreateWebState();
   web::FakeWebState* fake_web_state = web_state.get();
 
@@ -143,7 +154,7 @@ TEST_F(ToolbarMediatorTest, TestWebStateUpdates) {
 }
 
 // Tests that the mutator handles back action.
-TEST_F(ToolbarMediatorTest, TestMutatorGoBack) {
+TEST_P(ToolbarMediatorTest, TestMutatorGoBack) {
   std::unique_ptr<web::FakeWebState> web_state = CreateWebState();
   web::FakeWebState* fake_web_state = web_state.get();
 
@@ -161,7 +172,7 @@ TEST_F(ToolbarMediatorTest, TestMutatorGoBack) {
 }
 
 // Tests that the mutator handles forward action.
-TEST_F(ToolbarMediatorTest, TestMutatorGoForward) {
+TEST_P(ToolbarMediatorTest, TestMutatorGoForward) {
   std::unique_ptr<web::FakeWebState> web_state = CreateWebState();
   web::FakeWebState* fake_web_state = web_state.get();
 
@@ -180,7 +191,7 @@ TEST_F(ToolbarMediatorTest, TestMutatorGoForward) {
 }
 
 // Tests that the mutator handles reload action.
-TEST_F(ToolbarMediatorTest, TestMutatorReload) {
+TEST_P(ToolbarMediatorTest, TestMutatorReload) {
   browser_->GetWebStateList()->InsertWebState(
       CreateWebState(), WebStateList::InsertionParams::AtIndex(0).Activate());
 
@@ -192,7 +203,7 @@ TEST_F(ToolbarMediatorTest, TestMutatorReload) {
 }
 
 // Tests that the mutator handles stop action.
-TEST_F(ToolbarMediatorTest, TestMutatorStop) {
+TEST_P(ToolbarMediatorTest, TestMutatorStop) {
   std::unique_ptr<web::FakeWebState> web_state = CreateWebState();
   web::FakeWebState* fake_web_state = web_state.get();
 
@@ -206,3 +217,41 @@ TEST_F(ToolbarMediatorTest, TestMutatorStop) {
 
   EXPECT_TRUE(fake_web_state->was_stopped());
 }
+
+// Tests that the consumer is updated when the bottom omnibox pref changes.
+TEST_P(ToolbarMediatorTest, TestBottomOmniboxEnabled) {
+  if (!IsBottomOmniboxAvailable()) {
+    return;
+  }
+  BOOL top_position = GetParam();
+
+  OCMExpect([consumer_ setVisible:top_position]);
+  TestingApplicationContext::GetGlobal()->GetLocalState()->SetBoolean(
+      omnibox::kIsOmniboxInBottomPosition, false);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  OCMExpect([consumer_ setVisible:!top_position]);
+  TestingApplicationContext::GetGlobal()->GetLocalState()->SetBoolean(
+      omnibox::kIsOmniboxInBottomPosition, true);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the consumer is not updated when the bottom omnibox pref changes
+// if the bottom toolbar is not available.
+TEST_P(ToolbarMediatorTest, TestBottomOmniboxNotEnabled) {
+  if (IsBottomOmniboxAvailable()) {
+    return;
+  }
+
+  OCMReject([consumer_ setVisible:YES]).ignoringNonObjectArgs();
+
+  TestingApplicationContext::GetGlobal()->GetLocalState()->SetBoolean(
+      omnibox::kIsOmniboxInBottomPosition, false);
+  TestingApplicationContext::GetGlobal()->GetLocalState()->SetBoolean(
+      omnibox::kIsOmniboxInBottomPosition, true);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+INSTANTIATE_TEST_SUITE_P(ToolbarMediatorTest,
+                         ToolbarMediatorTest,
+                         testing::Bool());

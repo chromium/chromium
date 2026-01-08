@@ -2815,6 +2815,7 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 }
 
 - (void)layoutToolbarHeightChangeWithAnimation:(BOOL)animated {
+  CHECK(!IsChromeNextIaEnabled());
   if (!self.viewLoaded) {
     return;
   }

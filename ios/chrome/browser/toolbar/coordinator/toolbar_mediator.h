@@ -9,7 +9,9 @@
 
 #import "ios/chrome/browser/toolbar/ui/toolbar_mutator.h"
 
+class FullscreenController;
 @protocol ToolbarConsumer;
+@protocol ToolbarHeightDelegate;
 class WebNavigationBrowserAgent;
 class WebStateList;
 
@@ -22,8 +24,13 @@ class WebStateList;
 // Helper for web navigation.
 @property(nonatomic, assign) WebNavigationBrowserAgent* navigationBrowserAgent;
 
+// Delegate that handles the toolbars height.
+@property(nonatomic, weak) id<ToolbarHeightDelegate> toolbarHeightDelegate;
+
 // Initializer.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                fullscreenController:(FullscreenController*)fullscreenController
+                         topPosition:(BOOL)topPosition
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -12,10 +12,15 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_utils.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_visibility.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
+#import "ios/chrome/browser/toolbar/ui/toolbar_height_delegate.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_mutator.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -29,6 +34,7 @@
   ToolbarButton* _toolsMenuButton;
   UIButton* _omniboxButton;
   UIStackView* _stackView;
+  BOOL _visible;
 }
 
 - (void)viewDidLoad {
@@ -40,6 +46,18 @@
 
   [self createButtons];
   [self setUpHierarchy];
+
+  [self updateToolbarVisibility];
+}
+
+- (CGFloat)toolbarHeight {
+  CGFloat height = 0;
+
+  if (_visible) {
+    height += ToolbarExpandedHeight(
+        self.traitCollection.preferredContentSizeCategory);
+  }
+  return height;
 }
 
 #pragma mark - ToolbarConsumer
@@ -65,7 +83,84 @@
   [_omniboxButton setTitle:text forState:UIControlStateNormal];
 }
 
+- (void)setVisible:(BOOL)visible {
+  if (_visible == visible) {
+    return;
+  }
+  _visible = visible;
+  [self loadViewIfNeeded];
+  [self updateToolbarVisibility];
+  [self.toolbarHeightDelegate toolbarsHeightChanged];
+}
+
+- (void)setLocationIndicatorVisible:(BOOL)locationIndicatorVisible
+                    forNotification:(NSNotification*)notification {
+  if (locationIndicatorVisible) {
+    [self.toolbarHeightDelegate secondaryToolbarMovedAboveKeyboard];
+  } else {
+    [self.toolbarHeightDelegate secondaryToolbarRemovedFromKeyboard];
+    [GetFirstResponder() resignFirstResponder];
+  }
+
+  [self.view layoutIfNeeded];
+
+  NSDictionary* userInfo = notification.userInfo;
+  NSTimeInterval duration =
+      [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+  UIViewAnimationCurve curve = static_cast<UIViewAnimationCurve>(
+      [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]);
+
+  CGFloat visibleKeyboardHeight = 0;
+  if (locationIndicatorVisible) {
+    if ([self useAccessoryViewPosition]) {
+      visibleKeyboardHeight = [self inputAccessoryHeightInWindow];
+    } else {
+      visibleKeyboardHeight =
+          [self keyboardHeightInWindowFromNotification:notification];
+    }
+  }
+
+  [self.toolbarHeightDelegate
+      adjustSecondaryToolbarForKeyboardHeight:visibleKeyboardHeight
+                                  isCollapsed:locationIndicatorVisible
+                                     duration:duration
+                                        curve:curve];
+}
+
 #pragma mark - Private
+
+// Returns whether the a accessory view position should be used.
+- (BOOL)useAccessoryViewPosition {
+  UIView* inputAccessory = [self.layoutGuideCenter
+      referencedViewUnderName:kInputAccessoryViewLayoutGuide];
+  return inputAccessory != nil;
+}
+
+// Returns the input accessory view height, in window coordinates.
+- (CGFloat)inputAccessoryHeightInWindow {
+  UIView* inputAccessory = [self.layoutGuideCenter
+      referencedViewUnderName:kInputAccessoryViewLayoutGuide];
+  CGRect rectInWindow =
+      [inputAccessory convertRect:inputAccessory.layer.presentationLayer.frame
+                           toView:self.view.window];
+  return self.view.window.frame.size.height - rectInWindow.origin.y;
+}
+
+// Returns the user visible height of the keyboard.
+- (CGFloat)keyboardHeightInWindowFromNotification:
+    (NSNotification*)notification {
+  NSDictionary* userInfo = notification.userInfo;
+  // Part of the keyboard might be hidden. Keep only the visible area.
+  CGRect keyboardFrame = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+  id<UICoordinateSpace> fromCoordinateSpace =
+      ((UIScreen*)notification.object).coordinateSpace;
+  id<UICoordinateSpace> toCoordinateSpace = self.view.window;
+  CGRect keyboardFrameInWindow =
+      [fromCoordinateSpace convertRect:keyboardFrame
+                     toCoordinateSpace:toCoordinateSpace];
+  return CGRectIntersection(keyboardFrameInWindow, self.view.window.bounds)
+      .size.height;
+}
 
 // Creates the buttons.
 - (void)createButtons {
@@ -121,7 +216,7 @@
   _stackView.alignment = UIStackViewAlignmentCenter;
 
   [self.view addSubview:_stackView];
-  AddSameConstraints(self.view, _stackView);
+  AddSameConstraints(self.view.safeAreaLayoutGuide, _stackView);
 
   [self updateButtonVisibility];
   [self
@@ -185,6 +280,11 @@
 // Handles tab grid button touch up.
 - (void)tabGridTouchUp {
   [self.sceneHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
+}
+
+// Updates the visibility of the toolbar.
+- (void)updateToolbarVisibility {
+  self.view.hidden = !_visible;
 }
 
 @end

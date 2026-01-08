@@ -27,6 +27,13 @@
 // Sets the text for the omnibox button (location bar).
 - (void)setLocationBarText:(NSString*)text;
 
+// Sets whether the toolbar is visible.
+- (void)setVisible:(BOOL)visible;
+
+// Sets whether the location indicator should be visible.
+- (void)setLocationIndicatorVisible:(BOOL)locationIndicatorVisible
+                    forNotification:(NSNotification*)notification;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_TOOLBAR_CONSUMER_H_

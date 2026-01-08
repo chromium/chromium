@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/fakebox_focuser.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/side_swipe_toolbar_snapshot_providing.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_coordinating.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_height_delegate.h"
+#import "ios/chrome/browser/toolbar/ui/toolbar_height_delegate.h"
 
 @protocol OmniboxPopupPresenterDelegate;
 @protocol OmniboxFocusDelegate;
