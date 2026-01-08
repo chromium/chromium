@@ -20,6 +20,9 @@
 #import "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/time/time.h"
+#import "base/time/time_override.h"
+#import "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #import "components/autofill/core/browser/heuristic_source.h"
@@ -160,6 +163,10 @@ class FormStructureBrowserTest
       const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& forms);
 
   web::WebState* web_state() const { return web_state_.get(); }
+  static base::Time GetTestTime() { return test_time_; }
+
+  static inline base::Time test_time_;
+  std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_override_;
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::ScopedTestingWebClient web_client_;
@@ -181,6 +188,10 @@ class FormStructureBrowserTest
 FormStructureBrowserTest::FormStructureBrowserTest()
     : DataDrivenTest(GetTestDataDir(), kFeatureName, kTestName),
       web_client_(std::make_unique<ChromeWebClient>()) {
+  std::ignore = base::Time::FromString("Sat, 01 Feb 2025 09:00:00 +0000",
+                                       &FormStructureBrowserTest::test_time_);
+  time_override_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
+      &FormStructureBrowserTest::GetTestTime, nullptr, nullptr);
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       IOSChromeProfilePasswordStoreFactory::GetInstance(),
@@ -258,6 +269,11 @@ void FormStructureBrowserTest::SetUp() {
 }
 
 void FormStructureBrowserTest::TearDown() {
+  autofill_manager_injector_.reset();
+  autofill_client_.reset();
+  suggestion_controller_ = nil;
+  autofill_agent_ = nil;
+  password_controller_ = nil;
   web::test::WaitForBackgroundTasks();
   web_state_.reset();
 }
@@ -362,6 +378,11 @@ const auto& GetFailingTestNames() {
       "115_checkout_walgreens.com.html",
       "116_cc_checkout_walgreens.com.html",
       "150_checkout_venus.com_search_field.html",
+      // TODO(crbug.com/473467160): Analyze the root causes of these
+      // regressions.
+      "110_checkout_harryanddavid.com.html",
+      "123_bug_459132.html",
+      "132_bug_469012.html",
   };
   return failing_test_names;
 }
@@ -372,9 +393,7 @@ const auto& GetFailingTestNames() {
 // If disabling a test, prefer to add the name names of the specific test cases
 // to GetFailingTestNames(), directly above, instead of renaming the test to
 // DISABLED_DataDrivenHeuristics.
-// TODO(crbug.com/432460380): Test is crashing and it is unclear to me how to
-// get the name of the specific test case.
-TEST_P(FormStructureBrowserTest, DISABLED_DataDrivenHeuristics) {
+TEST_P(FormStructureBrowserTest, DataDrivenHeuristics) {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   GTEST_SKIP() << "DataDrivenHeuristics tests are only supported with legacy "
                   "parsing patterns";
