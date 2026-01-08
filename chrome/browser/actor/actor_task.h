@@ -297,11 +297,6 @@ class ActorTask {
   // Total time this task has been actuating with no tabs visible.
   base::TimeDelta total_time_not_visible_;
 
-  // If ExecutionEngine::Act finishes while the task is waiting on user input it
-  // gets stashed in this closure to continue the reply when the task is
-  // uninterrupted.
-  base::OnceClosure stashed_reply_from_execution_engine_;
-
   // A map from a tab's handle to state associated with that tab. The presence
   // of a tab in this map signifies that it is part of this task.
   absl::flat_hash_map<tabs::TabHandle, std::unique_ptr<ActorControlledTabState>>

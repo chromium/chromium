@@ -37,40 +37,11 @@ using content::EvalJs;
 using content::GetDOMNodeId;
 using content::NavigateIframeToURL;
 using content::RenderFrameHost;
-using content::TestNavigationManager;
 using content::WebContents;
 
 namespace actor {
 
 namespace {
-
-class ExecutionEngineStateWaiter : public ExecutionEngine::StateObserver {
- public:
-  ExecutionEngineStateWaiter(base::OnceClosure callback,
-                             ExecutionEngine* execution_engine,
-                             ExecutionEngine::State target_state)
-      : callback_(std::move(callback)),
-        execution_engine_(execution_engine),
-        target_state_(target_state) {
-    execution_engine_->AddObserver(this);
-  }
-  ~ExecutionEngineStateWaiter() override {
-    execution_engine_->RemoveObserver(this);
-  }
-
-  // `ExecutionEngine::StateObserver`:
-  void OnStateChanged(ExecutionEngine::State old_state,
-                      ExecutionEngine::State new_state) override {
-    if (new_state == target_state_) {
-      std::move(callback_).Run();
-    }
-  }
-
- private:
-  base::OnceClosure callback_;
-  const raw_ptr<ExecutionEngine> execution_engine_;
-  ExecutionEngine::State target_state_;
-};
 
 class ActorToolAgnosticBrowserTest : public ActorToolsTest {
  public:
@@ -533,74 +504,6 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
   }
 }
 
-// This test is for behavior guarded by a killswitch.
-class ActorToolAgnosticBrowserTestWithDeferWhileInterrupted
-    : public ActorToolAgnosticBrowserTest {
- public:
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(kGlicDeferActUntilUninterrupted);
-    ActorToolAgnosticBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithDeferWhileInterrupted,
-                       ActCallbackDeferredWhileInterrupted) {
-  const GURL next_url = embedded_test_server()->GetURL("/actor/blank.html");
-  const GURL start_url = embedded_test_server()->GetURL(base::StrCat(
-      {"/actor/link_full_page.html?href=", EncodeURI(next_url.spec())}));
-
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
-
-  const std::string_view selector = "#link";
-  std::optional<int> link = GetDOMNodeId(*main_frame(), selector);
-  ASSERT_TRUE(link);
-
-  // Since we expect ActorTask::Act to not invoke the callback while
-  // interrupted, watch for the execution engine state instead.
-  base::test::TestFuture<void> tool_invoke_future;
-  ExecutionEngineStateWaiter waiter(tool_invoke_future.GetCallback(),
-                                    actor_task().GetExecutionEngine(),
-                                    ExecutionEngine::State::kComplete);
-
-  // Inject a click action that causes a navigation. However, the navigation
-  // blocks on start so the action doesn't finish.
-  TestNavigationManager navigation_manager(web_contents(), next_url);
-  std::unique_ptr<ToolRequest> action =
-      MakeClickRequest(*main_frame(), link.value());
-  ActResultFuture act_result;
-  actor_task().Act(ToRequestList(action), act_result.GetCallback());
-  ASSERT_TRUE(navigation_manager.WaitForRequestStart());
-
-  // The action is blocked on the in-progress navigation.
-  EXPECT_EQ(actor_task().GetState(), ActorTask::State::kActing);
-  TinyWait();
-  EXPECT_FALSE(act_result.IsReady());
-  EXPECT_FALSE(tool_invoke_future.IsReady());
-
-  // Put the task into a state where it's waiting on a user action.
-  actor_task().Interrupt();
-  EXPECT_EQ(actor_task().GetState(), ActorTask::State::kWaitingOnUser);
-
-  // Now unblock the navigation. This should allow the click action to complete;
-  // however, because the task is waiting on a user action it shouldn't appear
-  // to complete yet.
-  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
-  ASSERT_TRUE(tool_invoke_future.Wait());
-
-  // Ensure the Act callback isn't replied to since the task is in an
-  // interrupted state.
-  TinyWait();
-  EXPECT_FALSE(act_result.IsReady());
-
-  actor_task().Uninterrupt(ActorTask::State::kActing);
-  EXPECT_EQ(actor_task().GetState(), ActorTask::State::kReflecting);
-  EXPECT_TRUE(act_result.IsReady());
-  ExpectOkResult(act_result);
-}
-
 class ActorToolAgnosticBrowserTestWithCustomDelay
     : public ActorToolAgnosticBrowserTest {
  public:
@@ -649,6 +552,28 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithCustomDelay,
   }
 }
 
+class ToolInvokeWaiter : public ExecutionEngine::StateObserver {
+ public:
+  ToolInvokeWaiter(base::OnceClosure callback,
+                   ExecutionEngine* execution_engine)
+      : callback_(std::move(callback)), execution_engine_(execution_engine) {
+    execution_engine_->AddObserver(this);
+  }
+  ~ToolInvokeWaiter() override { execution_engine_->RemoveObserver(this); }
+
+  // `ExecutionEngine::StateObserver`:
+  void OnStateChanged(ExecutionEngine::State old_state,
+                      ExecutionEngine::State new_state) override {
+    if (new_state == ExecutionEngine::State::kToolInvoke) {
+      std::move(callback_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure callback_;
+  const raw_ptr<ExecutionEngine> execution_engine_;
+};
+
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithCustomDelay,
                        RendererCrashesBeforeToolFinishes) {
   const GURL url =
@@ -660,9 +585,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithCustomDelay,
   ASSERT_TRUE(button_id);
 
   base::test::TestFuture<void> tool_invoke_future;
-  ExecutionEngineStateWaiter waiter(tool_invoke_future.GetCallback(),
-                                    actor_task().GetExecutionEngine(),
-                                    ExecutionEngine::State::kToolInvoke);
+  ToolInvokeWaiter waiter(tool_invoke_future.GetCallback(),
+                          actor_task().GetExecutionEngine());
   std::unique_ptr<ToolRequest> action =
       MakeClickRequest(*main_frame(), button_id.value());
   ActResultFuture result;

@@ -294,7 +294,6 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
 
   action_tracker_for_metrics_->WillAct(actions);
   callback_for_act_ = std::move(callback);
-  stashed_reply_from_execution_engine_.Reset();
 
   execution_engine_->Act(std::move(actions),
                          base::BindOnce(&ActorTask::OnFinishedAct,
@@ -305,22 +304,6 @@ void ActorTask::OnFinishedAct(
     mojom::ActionResultPtr result,
     std::optional<size_t> index_of_failed_action,
     std::vector<ActionResultWithLatencyInfo> action_results) {
-  if (base::FeatureList::IsEnabled(kGlicDeferActUntilUninterrupted) &&
-      state_ == State::kWaitingOnUser) {
-    journal_->Log(GURL(), id(),
-                  "ActorTask::OnFinishedAct (stash due to waiting state)", {});
-
-    // The tool may have finished (e.g. due to timeout) while a task is
-    // interrupted and waiting on user input, defer running the act callback
-    // until the task is uninterrupted to block further progress in a waiting
-    // state.
-    CHECK(stashed_reply_from_execution_engine_.is_null());
-    stashed_reply_from_execution_engine_ = base::BindOnce(
-        &ActorTask::OnFinishedAct, base::Unretained(this), std::move(result),
-        std::move(index_of_failed_action), std::move(action_results));
-    return;
-  }
-
   if (state_ != State::kActing) {
     // Note: this likely isn't a problem when it happens - e.g. the task was
     // paused while the act was in progress but we note it here for debugging
@@ -350,8 +333,6 @@ void ActorTask::OnFinishedAct(
 }
 
 void ActorTask::Stop(StoppedReason stop_reason) {
-  stashed_reply_from_execution_engine_.Reset();
-
   // Invoke the callback before changing states so that the client sees the Act
   // result before seeing the state transition.
   if (callback_for_act_) {
@@ -410,8 +391,6 @@ void ActorTask::Pause(bool from_actor) {
     return;
   }
 
-  stashed_reply_from_execution_engine_.Reset();
-
   // Invoke the callback before changing states so that the client sees the Act
   // result before seeing the state transition.
   if (callback_for_act_) {
@@ -456,16 +435,6 @@ void ActorTask::Uninterrupt(State resumed_state) {
   if (GetState() != State::kWaitingOnUser) {
     return;
   }
-
-  if (stashed_reply_from_execution_engine_) {
-    // Since we're running the OnFinishedActing reply from ExecutionEngine,
-    // simulate entering back into Acting state to finish the action and run the
-    // callback_for_act_.
-    SetState(State::kActing);
-    std::move(stashed_reply_from_execution_engine_).Run();
-    return;
-  }
-
   SetState(resumed_state);
 }
 

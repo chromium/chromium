@@ -479,10 +479,6 @@ void ExecutionEngine::SendUserConfirmationDialogRequest(
     std::move(callback).Run(/*may_continue=*/false);
     return;
   }
-
-  journal_->Log(GURL::EmptyGURL(), task_->id(),
-                "SendUserConfirmationDialogRequest", {});
-
   task_->delegate()->RequestToShowUserConfirmationDialog(
       task_->id(), navigation_origin, for_blocklisted_origin,
       base::BindOnce(&ExecutionEngine::OnPromptUserToConfirmNavigationDecision,
