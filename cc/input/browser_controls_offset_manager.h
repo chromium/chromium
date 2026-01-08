@@ -182,6 +182,7 @@ class CC_EXPORT BrowserControlsOffsetManager {
                                     float stop_ratio);
   void SetTopMinHeightOffsetAnimationRange(float from, float to);
   void SetBottomMinHeightOffsetAnimationRange(float from, float to);
+  bool IsAnimatingHeightChange();
 
   // The client manages the lifecycle of this.
   raw_ptr<BrowserControlsOffsetManagerClient> client_;
@@ -276,6 +277,8 @@ class CC_EXPORT BrowserControlsOffsetManager {
     // Return the bounds.
     float min_value() { return min_value_; }
     float max_value() { return max_value_; }
+
+    bool jump_to_end_on_reset() { return jump_to_end_on_reset_; }
 
    private:
     bool IsComplete(float value);

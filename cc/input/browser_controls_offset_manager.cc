@@ -320,6 +320,15 @@ void BrowserControlsOffsetManager::OnBrowserControlsParamsChanged(
     } else if (BottomControlsShownRatio() == OldBottomControlsMinShownRatio()) {
       new_bottom_ratio = BottomControlsMinShownRatio();
     }
+
+    if (base::FeatureList::IsEnabled(
+            features::kBrowserControlsHeightChangeCancelAnimations) &&
+        IsAnimatingHeightChange()) {
+      // Reset the animation if one of the animation has marked with
+      // `jump_to_end_on_reset`. This can be used as a signal that the current
+      // animation is going through a height change.
+      ResetAnimations();
+    }
   }
 
   // Browser controls height change animations
@@ -874,6 +883,13 @@ void BrowserControlsOffsetManager::SetBottomMinHeightOffsetAnimationRange(
     float to) {
   bottom_min_height_offset_animation_range_ =
       std::make_pair(std::min(from, to), std::max(from, to));
+}
+
+bool BrowserControlsOffsetManager::IsAnimatingHeightChange() {
+  return (top_controls_animation_.IsInitialized() &&
+          top_controls_animation_.jump_to_end_on_reset()) ||
+         (bottom_controls_animation_.IsInitialized() &&
+          bottom_controls_animation_.jump_to_end_on_reset());
 }
 
 double BrowserControlsOffsetManager::PredictViewportBoundsDelta(
