@@ -868,8 +868,6 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_CONSIDER_1_LEARN_MORE_LABEL},
       {"glicDefaultTabAccessWhenOn1",
        IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_WHEN_ON_1},
-      {"glicDefaultTabAccessWhenOn2",
-       IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_WHEN_ON_2},
       {"glicDefaultTabAccessConsider1",
        IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_CONSIDER_1},
       {"glicDefaultTabAccessConsider2",
@@ -888,6 +886,12 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_1},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddLocalizedString(
+      "glicDefaultTabAccessWhenOn2",
+      glic::GlicEnabling::EnablementForProfile(profile).EligibleForLive()
+          ? IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_WHEN_ON_2
+          : IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_WHEN_ON_2_NO_LIVE);
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
   bool has_url =
