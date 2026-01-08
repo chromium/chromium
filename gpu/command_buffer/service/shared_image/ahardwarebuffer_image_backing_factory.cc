@@ -189,10 +189,11 @@ std::optional<uint64_t> GetRecommendedAHBUsage(VkPhysicalDevice device,
   return ahb_usage.androidHardwareBufferUsage;
 }
 
-constexpr viz::SharedImageFormat kSupportedFormats[5]{
-    viz::SinglePlaneFormat::kRGBA_8888, viz::SinglePlaneFormat::kBGR_565,
-    viz::SinglePlaneFormat::kRGBA_F16, viz::SinglePlaneFormat::kRGBX_8888,
-    viz::SinglePlaneFormat::kRGBA_1010102};
+constexpr viz::SharedImageFormat kSupportedFormats[7]{
+    viz::SinglePlaneFormat::kRGBA_8888,    viz::SinglePlaneFormat::kBGR_565,
+    viz::SinglePlaneFormat::kRGBA_F16,     viz::SinglePlaneFormat::kRGBX_8888,
+    viz::SinglePlaneFormat::kRGBA_1010102, viz::MultiPlaneFormat::kNV12,
+    viz::MultiPlaneFormat::kYV12};
 
 // Returns whether the format is supported by AHardwareBuffer.
 // TODO(vikassoni): In future we will need to expose the set of formats and
@@ -211,6 +212,9 @@ bool AHardwareBufferSupportedFormat(viz::SharedImageFormat format) {
 unsigned int AHardwareBufferFormat(viz::SharedImageFormat format) {
   DCHECK(AHardwareBufferSupportedFormat(format));
 
+  // Comes from:
+  // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/graphics/java/android/graphics/ImageFormat.java
+  constexpr unsigned int AHARDWAREBUFFER_FORMAT_YV12 = 0x32315659;
   if (format == viz::SinglePlaneFormat::kRGBA_8888) {
     return AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM;
   } else if (format == viz::SinglePlaneFormat::kBGR_565) {
@@ -221,6 +225,10 @@ unsigned int AHardwareBufferFormat(viz::SharedImageFormat format) {
     return AHARDWAREBUFFER_FORMAT_R8G8B8X8_UNORM;
   } else if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
     return AHARDWAREBUFFER_FORMAT_R10G10B10A2_UNORM;
+  } else if (format == viz::MultiPlaneFormat::kYV12) {
+    return AHARDWAREBUFFER_FORMAT_Y8Cb8Cr8_420;
+  } else if (format == viz::MultiPlaneFormat::kNV12) {
+    return AHARDWAREBUFFER_FORMAT_YV12;
   }
 
   NOTREACHED();
@@ -486,9 +494,13 @@ AHardwareBufferImageBacking::ProduceGLTexture(SharedImageManager* manager,
 
   // Android documentation states that right GL format for RGBX AHardwareBuffer
   // is GL_RGB8, so we don't use angle rgbx.
-  GLFormatDesc gl_format_desc =
-      gl_format_caps_.ToGLFormatDescOverrideHalfFloatType(format(),
-                                                          /*plane_index=*/0);
+  GLFormatDesc gl_format_desc;
+  if (format().PrefersExternalSampler()) {
+    gl_format_desc = gl_format_caps_.ToGLFormatDescExternalSampler(format());
+  } else {
+    gl_format_desc = gl_format_caps_.ToGLFormatDescOverrideHalfFloatType(
+        format(), /*plane_index=*/0);
+  }
   GLuint service_id =
       CreateAndBindTexture(egl_image.get(), gl_format_desc.target);
 
@@ -520,9 +532,13 @@ AHardwareBufferImageBacking::ProduceGLTexturePassthrough(
 
   // Android documentation states that right GL format for RGBX AHardwareBuffer
   // is GL_RGB8, so we don't use angle rgbx.
-  GLFormatDesc gl_format_desc =
-      gl_format_caps_.ToGLFormatDescOverrideHalfFloatType(format(),
-                                                          /*plane_index=*/0);
+  GLFormatDesc gl_format_desc;
+  if (format().PrefersExternalSampler()) {
+    gl_format_desc = gl_format_caps_.ToGLFormatDescExternalSampler(format());
+  } else {
+    gl_format_desc = gl_format_caps_.ToGLFormatDescOverrideHalfFloatType(
+        format(), /*plane_index=*/0);
+  }
   GLuint service_id =
       CreateAndBindTexture(egl_image.get(), gl_format_desc.target);
 
@@ -737,6 +753,14 @@ AHardwareBufferImageBackingFactory::FormatInfoForSupportedFormat(
   const bool is_egl_image_supported =
       gl::g_current_gl_driver->ext.b_GL_OES_EGL_image;
   if (!is_egl_image_supported) {
+    return info;
+  }
+
+  if (format.is_multi_plane()) {
+    info.gl_supported = true;
+    info.gl_format = 0;
+    info.gl_type = 0;
+    info.internal_format = 0;
     return info;
   }
 
@@ -1012,7 +1036,7 @@ bool AHardwareBufferImageBackingFactory::IsSupported(
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
     base::span<const uint8_t> pixel_data) {
-  if (format.is_multi_plane()) {
+  if (format.is_multi_plane() && !format.PrefersExternalSampler()) {
     return false;
   }
 

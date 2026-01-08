@@ -345,7 +345,7 @@ TEST_P(AHardwareBufferImageBackingFactoryTest, InitialData) {
 // Test to check invalid format support.
 TEST_P(AHardwareBufferImageBackingFactoryTest, InvalidFormat) {
   auto mailbox = Mailbox::Generate();
-  auto format = viz::MultiPlaneFormat::kNV12;
+  auto format = viz::MultiPlaneFormat::kP010;
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -391,6 +391,48 @@ TEST_P(AHardwareBufferImageBackingFactoryTest,
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       "TestLabel", /*is_thread_safe=*/false, std::move(handle));
   EXPECT_TRUE(backing);
+}
+
+TEST_P(AHardwareBufferImageBackingFactoryTest, MultiplanarAHB) {
+  if (IsGraphiteDawn()) {
+    GTEST_SKIP() << "Graphite/Dawn not supported";
+  }
+
+  auto mailbox = Mailbox::Generate();
+  auto format = viz::MultiPlaneFormat::kNV12;
+  format.SetPrefersExternalSampler();
+  gfx::Size size(256, 256);
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  AHardwareBuffer* buffer = nullptr;
+  AHardwareBuffer_Desc hwb_desc = {};
+  hwb_desc.width = size.width();
+  hwb_desc.height = size.height();
+  hwb_desc.layers = 1;
+  hwb_desc.format = AHARDWAREBUFFER_FORMAT_Y8Cb8Cr8_420;
+  hwb_desc.usage = AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE;
+  AHardwareBuffer_allocate(&hwb_desc, &buffer);
+  ASSERT_NE(buffer, nullptr);
+
+  gfx::GpuMemoryBufferHandle handle;
+  handle.type = gfx::ANDROID_HARDWARE_BUFFER;
+  handle.android_hardware_buffer =
+      base::android::ScopedHardwareBufferHandle::Adopt(buffer);
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      "TestLabel", /*is_thread_safe=*/false, std::move(handle));
+  EXPECT_TRUE(backing);
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+
+  auto skia_representation = shared_image_representation_factory_.ProduceSkia(
+      mailbox, context_state_.get());
+  EXPECT_TRUE(skia_representation);
 }
 
 // Test to check invalid size support.

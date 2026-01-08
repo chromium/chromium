@@ -32,8 +32,11 @@ std::unique_ptr<VulkanImage> CreateVkImageFromAhbHandle(
 
   auto* device_queue = context_state->vk_context_provider()->GetDeviceQueue();
   gfx::GpuMemoryBufferHandle gmb_handle(std::move(ahb_handle));
+  VkFormat vk_format = format.PrefersExternalSampler()
+                           ? VK_FORMAT_UNDEFINED
+                           : ToVkFormatSinglePlanar(format);
   return VulkanImage::CreateFromGpuMemoryBufferHandle(
-      device_queue, std::move(gmb_handle), size, ToVkFormatSinglePlanar(format),
+      device_queue, std::move(gmb_handle), size, vk_format,
       /*usage=*/0, /*flags=*/0, /*image_tiling=*/VK_IMAGE_TILING_OPTIMAL,
       /*queue_family_index=*/queue_family_index);
 }

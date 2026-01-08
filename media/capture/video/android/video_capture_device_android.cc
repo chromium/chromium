@@ -407,11 +407,13 @@ void VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread(
   switch (desc.format) {
     case AndroidImageFormat::ANDROID_IMAGE_FORMAT_YUV_420_888:
       video_pixel_format = PIXEL_FORMAT_I420;
-      shared_image_format = viz::MultiPlaneFormat::kYV12;
+      shared_image_format = viz::MultiPlaneFormat::kNV12;
+      shared_image_format.SetPrefersExternalSampler();
       break;
     case AndroidImageFormat::ANDROID_IMAGE_FORMAT_YV12:
       video_pixel_format = PIXEL_FORMAT_NV12;
       shared_image_format = viz::MultiPlaneFormat::kNV12;
+      shared_image_format.SetPrefersExternalSampler();
       break;
     default:
       LOG(ERROR) << "Unsupported AHardwareBuffer format: " << desc.format;
