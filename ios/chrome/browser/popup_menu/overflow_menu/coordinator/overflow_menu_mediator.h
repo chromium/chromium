@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_consumer.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_content_consumer.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_action_provider.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/ui/ui_swift.h"
 
@@ -59,7 +59,7 @@ class WebStateList;
 // Mediator for the overflow menu. This object is in charge of creating and
 // updating the items of the overflow menu.
 @interface OverflowMenuMediator
-    : NSObject <BrowserContainerConsumer, OverflowMenuActionProvider>
+    : NSObject <BrowserContentConsumer, OverflowMenuActionProvider>
 
 // The data model for the overflow menu.
 @property(nonatomic, weak) OverflowMenuModel* model;

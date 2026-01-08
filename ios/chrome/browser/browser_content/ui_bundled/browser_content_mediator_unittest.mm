@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_mediator.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_content_mediator.h"
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_consumer.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_content_consumer.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
@@ -23,8 +23,8 @@
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
-// BrowserContainerConsumer for use in tests.
-@interface FakeBrowserContainerConsumer : NSObject <BrowserContainerConsumer>
+// BrowserContentConsumer for use in tests.
+@interface FakeBrowserContentConsumer : NSObject <BrowserContentConsumer>
 @property(nonatomic, strong) UIView* contentView;
 @property(nonatomic, strong) UIViewController* contentViewController;
 @property(nonatomic, strong)
@@ -32,25 +32,25 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 @property(nonatomic, assign, getter=isContentBlocked) BOOL contentBlocked;
 @end
 
-@implementation FakeBrowserContainerConsumer
+@implementation FakeBrowserContentConsumer
 @end
 
-// Test fixture for BrowserContainerMediator.
-class BrowserContainerMediatorTest : public PlatformTest {
+// Test fixture for BrowserContentMediator.
+class BrowserContentMediatorTest : public PlatformTest {
  public:
-  BrowserContainerMediatorTest() {
+  BrowserContentMediatorTest() {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     overlay_presenter_ = OverlayPresenter::FromBrowser(
         browser_.get(), OverlayModality::kWebContentArea);
-    mediator_ = [[BrowserContainerMediator alloc]
+    mediator_ = [[BrowserContentMediator alloc]
                   initWithWebStateList:browser_->GetWebStateList()
         webContentAreaOverlayPresenter:overlay_presenter_];
-    consumer_ = [[FakeBrowserContainerConsumer alloc] init];
+    consumer_ = [[FakeBrowserContentConsumer alloc] init];
     mediator_.consumer = consumer_;
     overlay_presenter_->SetPresentationContext(&presentation_context_);
   }
-  ~BrowserContainerMediatorTest() override {
+  ~BrowserContentMediatorTest() override {
     overlay_presenter_->SetPresentationContext(nullptr);
   }
 
@@ -60,13 +60,13 @@ class BrowserContainerMediatorTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   FakeOverlayPresentationContext presentation_context_;
   raw_ptr<OverlayPresenter> overlay_presenter_ = nullptr;
-  BrowserContainerMediator* mediator_ = nil;
-  FakeBrowserContainerConsumer* consumer_ = nil;
+  BrowserContentMediator* mediator_ = nil;
+  FakeBrowserContentConsumer* consumer_ = nil;
 };
 
 // Tests that the content area is blocked when an HTTP authentication dialog is
 // shown for a page whose host does not match the last committed URL.
-TEST_F(BrowserContainerMediatorTest, BlockContentForHTTPAuthDialog) {
+TEST_F(BrowserContentMediatorTest, BlockContentForHTTPAuthDialog) {
   ASSERT_FALSE(consumer_.contentBlocked);
 
   // Add and activate a WebState with kWebStateUrl.

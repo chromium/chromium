@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browser_container/model/edit_menu_tab_helper.h"
+#import "ios/chrome/browser/browser_content/model/edit_menu_tab_helper.h"
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/browser_container/model/edit_menu_builder.h"
+#import "ios/chrome/browser/browser_content/model/edit_menu_builder.h"
 #import "ios/web/public/web_state.h"
 
 EditMenuTabHelper::EditMenuTabHelper(web::WebState* web_state) {

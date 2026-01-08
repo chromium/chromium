@@ -1970,7 +1970,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   _templateURLService = nullptr;
 }
 
-#pragma mark - BrowserContainerConsumer
+#pragma mark - BrowserContentConsumer
 
 - (void)setContentBlocked:(BOOL)contentBlocked {
   if (_contentBlocked == contentBlocked) {

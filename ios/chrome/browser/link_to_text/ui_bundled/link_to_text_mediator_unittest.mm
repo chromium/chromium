@@ -16,7 +16,7 @@
 #import "components/shared_highlighting/core/common/text_fragment.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/ukm/test_ukm_recorder.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_alert_delegate.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_alert_delegate.h"
 #import "ios/chrome/browser/link_to_text/model/link_generation_outcome.h"
 #import "ios/chrome/browser/link_to_text/model/link_to_text_constants.h"
 #import "ios/chrome/browser/link_to_text/model/link_to_text_java_script_feature.h"

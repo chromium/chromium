@@ -12,7 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_edit_menu_utils.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_edit_menu_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"

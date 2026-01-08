@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_coordinator.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_content_coordinator.h"
 
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_alert_delegate.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_content_view_controller.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_alert_delegate.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -28,10 +28,10 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/strings/grit/ui_strings.h"
 
-// Test fixture for BrowserContainerCoordinator.
-class BrowserContainerCoordinatorTest : public PlatformTest {
+// Test fixture for BrowserContentCoordinator.
+class BrowserContentCoordinatorTest : public PlatformTest {
  public:
-  BrowserContainerCoordinatorTest() {
+  BrowserContentCoordinatorTest() {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     mocked_activity_service_handler_ =
@@ -61,11 +61,10 @@ class BrowserContainerCoordinatorTest : public PlatformTest {
     FullscreenController::CreateForBrowser(browser_.get());
   }
 
-  BrowserContainerCoordinator* CreateAndStartCoordinator() {
-    BrowserContainerCoordinator* coordinator =
-        [[BrowserContainerCoordinator alloc]
-            initWithBaseViewController:nil
-                               browser:browser_.get()];
+  BrowserContentCoordinator* CreateAndStartCoordinator() {
+    BrowserContentCoordinator* coordinator = [[BrowserContentCoordinator alloc]
+        initWithBaseViewController:nil
+                           browser:browser_.get()];
     [coordinator start];
     [scoped_key_window_.Get() setRootViewController:coordinator.viewController];
     return coordinator;
@@ -84,9 +83,8 @@ class BrowserContainerCoordinatorTest : public PlatformTest {
 
 // Tests that the coordinator displays an alert with given title, message and
 // actions.
-TEST_F(BrowserContainerCoordinatorTest,
-       LinkToTextConsumerLinkGenerationFailed) {
-  BrowserContainerCoordinator* coordinator = CreateAndStartCoordinator();
+TEST_F(BrowserContentCoordinatorTest, LinkToTextConsumerLinkGenerationFailed) {
+  BrowserContentCoordinator* coordinator = CreateAndStartCoordinator();
 
   EditMenuAlertDelegateAction* action_ok = [[EditMenuAlertDelegateAction alloc]
       initWithTitle:l10n_util::GetNSString(IDS_APP_OK)

@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/browser_container/model/edit_menu_builder.h"
+#import "ios/chrome/browser/browser_content/model/edit_menu_builder.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 
 @protocol SceneCommands;

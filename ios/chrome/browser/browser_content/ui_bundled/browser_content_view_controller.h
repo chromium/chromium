@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BROWSER_CONTAINER_UI_BUNDLED_BROWSER_CONTAINER_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_BROWSER_CONTAINER_UI_BUNDLED_BROWSER_CONTAINER_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_BROWSER_CONTENT_UI_BUNDLED_BROWSER_CONTENT_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_BROWSER_CONTENT_UI_BUNDLED_BROWSER_CONTENT_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_consumer.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_content_consumer.h"
 
-@protocol BrowserContainerViewControllerDelegate;
+@protocol BrowserContentViewControllerDelegate;
 
 // UIViewController which allows displaying and removing a content view.
-@interface BrowserContainerViewController
-    : UIViewController <BrowserContainerConsumer>
+@interface BrowserContentViewController
+    : UIViewController <BrowserContentConsumer>
 
 // The UIViewController used to display overlay UI over the web content area.
 @property(nonatomic, strong)
     UIViewController* webContentsOverlayContainerViewController;
 
 // The delegate that hendles the edit menu.
-@property(nonatomic, weak) id<BrowserContainerViewControllerDelegate> delegate;
+@property(nonatomic, weak) id<BrowserContentViewControllerDelegate> delegate;
 
 // Adds the given `contentView` as a subview and removes the previously added
 // `contentView` or `contentViewController`, if any. If `contentView` is nil
@@ -34,4 +34,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_BROWSER_CONTAINER_UI_BUNDLED_BROWSER_CONTAINER_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_BROWSER_CONTENT_UI_BUNDLED_BROWSER_CONTENT_VIEW_CONTROLLER_H_

@@ -11,7 +11,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_edit_menu_utils.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_edit_menu_utils.h"
 #import "ios/chrome/browser/explain_with_gemini/coordinator/explain_with_gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"

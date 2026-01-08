@@ -13,7 +13,7 @@
 #import "components/optimization_guide/proto/hints.pb.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/ukm/test_ukm_recorder.h"
-#import "ios/chrome/browser/browser_container/model/edit_menu_tab_helper.h"
+#import "ios/chrome/browser/browser_content/model/edit_menu_tab_helper.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/overlays/fake_infobar_overlay_request_factory.h"

@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_content_view_controller.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller+private.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/key_commands_provider.h"
@@ -283,7 +283,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         std::make_unique<ScopedClipboardRecentContentInstaller>(
             std::make_unique<FakeClipboardRecentContent>());
 
-    container_ = [[BrowserContainerViewController alloc] init];
+    container_ = [[BrowserContentViewController alloc] init];
     key_commands_provider_ =
         [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
     safe_area_provider_ =
@@ -333,9 +333,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.ntpCoordinator = NTPCoordinator_;
 
     bvc_ = [[BrowserViewController alloc]
-        initWithBrowserContainerViewController:container_
-                           keyCommandsProvider:key_commands_provider_
-                                  dependencies:dependencies];
+        initWithBrowserContentViewController:container_
+                         keyCommandsProvider:key_commands_provider_
+                                dependencies:dependencies];
     bvc_.webUsageEnabled = YES;
     bvc_.browserViewVisibilityStateChangedCallback =
         BrowserViewVisibilityNotifierBrowserAgent::FromBrowser(browser_.get())
@@ -455,7 +455,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   raw_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   KeyCommandsProvider* key_commands_provider_;
-  BrowserContainerViewController* container_;
+  BrowserContentViewController* container_;
   BrowserViewController* bvc_;
   UIWindow* window_;
   SceneState* scene_state_;

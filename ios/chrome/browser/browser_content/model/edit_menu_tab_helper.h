@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BROWSER_CONTAINER_MODEL_EDIT_MENU_TAB_HELPER_H_
-#define IOS_CHROME_BROWSER_BROWSER_CONTAINER_MODEL_EDIT_MENU_TAB_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_BROWSER_CONTENT_MODEL_EDIT_MENU_TAB_HELPER_H_
+#define IOS_CHROME_BROWSER_BROWSER_CONTENT_MODEL_EDIT_MENU_TAB_HELPER_H_
 
 #import "ios/web/public/web_state_user_data.h"
 
@@ -40,4 +40,4 @@ class EditMenuTabHelper : public web::WebStateUserData<EditMenuTabHelper> {
   raw_ptr<web::WebState> web_state_;
 };
 
-#endif  // IOS_CHROME_BROWSER_BROWSER_CONTAINER_MODEL_EDIT_MENU_TAB_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_BROWSER_CONTENT_MODEL_EDIT_MENU_TAB_HELPER_H_

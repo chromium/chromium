@@ -14,7 +14,7 @@
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/translate/core/browser/translate_pref_names.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_alert_delegate.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_alert_delegate.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"

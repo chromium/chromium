@@ -18,7 +18,7 @@ source_set("coordinator") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model",
-    "//ios/chrome/browser/browser_container/ui_bundled",
+    "//ios/chrome/browser/browser_content/ui_bundled",
     "//ios/chrome/browser/bubble/model",
     "//ios/chrome/browser/bubble/ui_bundled",
     "//ios/chrome/browser/default_browser/model:utils",

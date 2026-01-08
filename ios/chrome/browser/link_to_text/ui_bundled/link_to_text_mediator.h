@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/browser_container/model/edit_menu_builder.h"
+#import "ios/chrome/browser/browser_content/model/edit_menu_builder.h"
 
 @protocol ActivityServiceCommands;
 @protocol EditMenuAlertDelegate;

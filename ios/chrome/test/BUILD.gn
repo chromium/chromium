@@ -239,7 +239,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/bring_android_tabs/model:unit_tests",
     "//ios/chrome/browser/bring_android_tabs/ui_bundled:unit_tests",
     "//ios/chrome/browser/broadcaster/ui_bundled:unit_tests",
-    "//ios/chrome/browser/browser_container/ui_bundled:unit_tests",
+    "//ios/chrome/browser/browser_content/ui_bundled:unit_tests",
     "//ios/chrome/browser/browser_view/model:unit_tests",
     "//ios/chrome/browser/browser_view/ui_bundled:unit_tests",
     "//ios/chrome/browser/browsing_data/model:unit_tests",

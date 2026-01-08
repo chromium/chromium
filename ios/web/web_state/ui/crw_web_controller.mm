@@ -1405,9 +1405,9 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 
   // This will be resized later, but matching the final frame will minimize
   // re-rendering.
-  UIView* browserContainer = self.webStateImpl->GetWebViewContainer();
-  if (browserContainer) {
-    _containerView.frame = browserContainer.bounds;
+  UIView* browserContent = self.webStateImpl->GetWebViewContainer();
+  if (browserContent) {
+    _containerView.frame = browserContent.bounds;
   } else {
     // Use the screen size because the application's key window and the
     // container may still be nil.

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_content_view_controller.h"
 
 #import "base/check.h"
 #import "base/feature_list.h"
 #import "base/notreached.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller_delegate.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_edit_menu_handler.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_content_view_controller_delegate.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_edit_menu_handler.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -16,17 +16,17 @@
 #import "ios/web/common/features.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@interface BrowserContainerViewController ()
+@interface BrowserContentViewController ()
 // Properties backing public setters.
 @property(nonatomic, strong) UIView* contentView;
 @property(nonatomic, strong) UIViewController* contentViewController;
-// BrowserContainerConsumer backing properties.
+// BrowserContentConsumer backing properties.
 @property(nonatomic, assign, getter=isContentBlocked) BOOL contentBlocked;
 // The view inserted into the hierarchy when self.contentBlocked is set to YES.
 @property(nonatomic, strong) UIView* contentBlockingView;
 @end
 
-@implementation BrowserContainerViewController
+@implementation BrowserContentViewController
 
 - (void)dealloc {
   DCHECK(![_contentView superview] || [_contentView superview] == self.view);
@@ -41,7 +41,7 @@
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
 
-  // OverlayContainerView should cover all subviews of BrowserContainerView.
+  // OverlayContainerView should cover all subviews of BrowserContentView.
   [self.view
       bringSubviewToFront:self.webContentsOverlayContainerViewController.view];
 }
@@ -51,7 +51,7 @@
   if (!self.presentedViewController) {
     // TODO(crbug.com/41364311): On iOS10, UIDocumentMenuViewController and
     // WKFileUploadPanel somehow combine to call dismiss twice instead of once.
-    // The second call would dismiss the BrowserContainerViewController itself,
+    // The second call would dismiss the BrowserContentViewController itself,
     // so look for that case and return early.
     //
     // TODO(crbug.com/40580587): A similar bug exists on all iOS versions with
@@ -60,7 +60,7 @@
     //
     // Return early whenever this method is invoked but no VC appears to be
     // presented.  These cases will always end up dismissing the
-    // BrowserContainerViewController itself, which would put the app into an
+    // BrowserContentViewController itself, which would put the app into an
     // unresponsive state.
     return;
   }
@@ -72,8 +72,8 @@
 
   if (base::FeatureList::IsEnabled(
           web::features::kRestoreWKWebViewEditMenuHandler)) {
-    [self.delegate browserContainerViewController:self
-                    didTriggerEditMenuWithBuilder:builder];
+    [self.delegate browserContentViewController:self
+                  didTriggerEditMenuWithBuilder:builder];
   }
 }
 

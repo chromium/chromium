@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BROWSER_CONTAINER_UI_BUNDLED_BROWSER_EDIT_MENU_HANDLER_H_
-#define IOS_CHROME_BROWSER_BROWSER_CONTAINER_UI_BUNDLED_BROWSER_EDIT_MENU_HANDLER_H_
+#ifndef IOS_CHROME_BROWSER_BROWSER_CONTENT_UI_BUNDLED_BROWSER_EDIT_MENU_HANDLER_H_
+#define IOS_CHROME_BROWSER_BROWSER_CONTENT_UI_BUNDLED_BROWSER_EDIT_MENU_HANDLER_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/browser_container/model/edit_menu_builder.h"
+#import "ios/chrome/browser/browser_content/model/edit_menu_builder.h"
 
 // A handler for the Browser edit menu.
 // This class is in charge of customising the menu and executing the commands.
@@ -31,4 +31,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_BROWSER_CONTAINER_UI_BUNDLED_BROWSER_EDIT_MENU_HANDLER_H_
+#endif  // IOS_CHROME_BROWSER_BROWSER_CONTENT_UI_BUNDLED_BROWSER_EDIT_MENU_HANDLER_H_

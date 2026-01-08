@@ -66,9 +66,9 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/progress_dialog/autofill_progress_dialog_coordinator.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
-#import "ios/chrome/browser/browser_container/model/edit_menu_builder.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_coordinator.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller.h"
+#import "ios/chrome/browser/browser_content/model/edit_menu_builder.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_content_coordinator.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_content_view_controller.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator+Testing.h"
@@ -454,7 +454,7 @@ const char kChromeAppStoreUrl[] =
 
 // The coordinator managing the container view controller.
 @property(nonatomic, strong)
-    BrowserContainerCoordinator* browserContainerCoordinator;
+    BrowserContentCoordinator* browserContentCoordinator;
 
 // Mediator for incognito reauth.
 @property(nonatomic, strong) IncognitoReauthMediator* incognitoAuthMediator;
@@ -768,7 +768,7 @@ const char kChromeAppStoreUrl[] =
     return;
   }
   _readerModeCoordinator = [[ReaderModeCoordinator alloc]
-      initWithBaseViewController:self.browserContainerCoordinator.viewController
+      initWithBaseViewController:self.browserContentCoordinator.viewController
                          browser:self.browser];
   _readerModeCoordinator.delegate = self;
   [_readerModeCoordinator setOverscrollDelegate:self];
@@ -1192,14 +1192,14 @@ const char kChromeAppStoreUrl[] =
 
 // Instantiates a BrowserViewController.
 - (void)createViewController {
-  DCHECK(self.browserContainerCoordinator.viewController);
+  DCHECK(self.browserContentCoordinator.viewController);
 
   Browser* browser = self.browser;
   _viewController = [[BrowserViewController alloc]
-      initWithBrowserContainerViewController:self.browserContainerCoordinator
-                                                 .viewController
-                         keyCommandsProvider:_keyCommandsProvider
-                                dependencies:_viewControllerDependencies];
+      initWithBrowserContentViewController:self.browserContentCoordinator
+                                               .viewController
+                       keyCommandsProvider:_keyCommandsProvider
+                              dependencies:_viewControllerDependencies];
 
   _viewController.browserViewVisibilityStateChangedCallback =
       BrowserViewVisibilityNotifierBrowserAgent::FromBrowser(browser)
@@ -1370,13 +1370,13 @@ const char kChromeAppStoreUrl[] =
   _bookmarksCoordinator =
       [[BookmarksCoordinator alloc] initWithBrowser:browser];
 
-  self.browserContainerCoordinator =
-      [[BrowserContainerCoordinator alloc] initWithBaseViewController:nil
-                                                              browser:browser];
-  [self.browserContainerCoordinator start];
+  self.browserContentCoordinator =
+      [[BrowserContentCoordinator alloc] initWithBaseViewController:nil
+                                                            browser:browser];
+  [self.browserContentCoordinator start];
 
   self.downloadManagerCoordinator = [[DownloadManagerCoordinator alloc]
-      initWithBaseViewController:self.browserContainerCoordinator.viewController
+      initWithBaseViewController:self.browserContentCoordinator.viewController
                          browser:browser];
   self.downloadManagerCoordinator.presenter =
       [[VerticalAnimationContainer alloc] init];
@@ -1551,8 +1551,8 @@ const char kChromeAppStoreUrl[] =
     self.downloadListCoordinator = nil;
   }
 
-  [self.browserContainerCoordinator stop];
-  self.browserContainerCoordinator = nil;
+  [self.browserContentCoordinator stop];
+  self.browserContentCoordinator = nil;
 
   [_NTPCoordinator stop];
   _NTPCoordinator = nil;
@@ -1887,7 +1887,7 @@ const char kChromeAppStoreUrl[] =
   // Cache frequently repeated property values to curb generated code bloat.
   BrowserViewController* browserViewController = self.viewController;
 
-  DCHECK(self.browserContainerCoordinator.viewController);
+  DCHECK(self.browserContentCoordinator.viewController);
   self.tabEventsMediator = [[TabEventsMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()
             ntpCoordinator:_NTPCoordinator
@@ -2527,7 +2527,7 @@ const char kChromeAppStoreUrl[] =
 
   BOOL canShowTabStrip = CanShowTabStrip(self.viewController);
 
-  UIView* contentArea = self.browserContainerCoordinator.viewController.view;
+  UIView* contentArea = self.browserContentCoordinator.viewController.view;
   UIView* snapshotView = nil;
 
   if (!canShowTabStrip) {
@@ -2998,7 +2998,7 @@ const char kChromeAppStoreUrl[] =
     return;
   }
   _readerModeBlurOverlayCoordinator = [[ReaderModeBlurOverlayCoordinator alloc]
-      initWithBaseViewController:self.browserContainerCoordinator.viewController
+      initWithBaseViewController:self.browserContentCoordinator.viewController
                          browser:self.browser];
   [_readerModeBlurOverlayCoordinator startWithCompletion:completion];
 }
@@ -3964,7 +3964,7 @@ const char kChromeAppStoreUrl[] =
 
 - (void)buildEditMenuWithBuilder:(id<UIMenuBuilder>)builder
                       inWebState:(web::WebState*)webState {
-  return [self.browserContainerCoordinator.editMenuBuilder
+  return [self.browserContentCoordinator.editMenuBuilder
       buildEditMenuWithBuilder:builder
                     inWebState:webState];
 }
@@ -4006,7 +4006,7 @@ const char kChromeAppStoreUrl[] =
 #pragma mark - PrerenderBrowserAgentDelegate methods
 
 - (UIView*)webViewContainer {
-  return self.browserContainerCoordinator.viewController.view;
+  return self.browserContentCoordinator.viewController.view;
 }
 
 #pragma mark - SyncPresenterCommands
@@ -4308,8 +4308,8 @@ const char kChromeAppStoreUrl[] =
     [overlays addObject:sadTabView];
   }
 
-  BrowserContainerViewController* browserContainerViewController =
-      self.browserContainerCoordinator.viewController;
+  BrowserContentViewController* browserContentViewController =
+      self.browserContentCoordinator.viewController;
   // The overlay container view controller is presenting something if it has
   // a `presentedViewController` AND that view controller's
   // `presentingViewController` is the overlay container. Otherwise, some other
@@ -4320,7 +4320,7 @@ const char kChromeAppStoreUrl[] =
   // view hierarchy, the overflow menu view controller is also the
   // `overlayContainerViewController`'s presentedViewController.
   UIViewController* overlayContainerViewController =
-      browserContainerViewController.webContentsOverlayContainerViewController;
+      browserContentViewController.webContentsOverlayContainerViewController;
   UIViewController* presentedOverlayViewController =
       overlayContainerViewController.presentedViewController;
   if (presentedOverlayViewController &&
@@ -4886,7 +4886,7 @@ const char kChromeAppStoreUrl[] =
   }
 
   _dataControlsDialogCoordinator = [[DataControlsDialogCoordinator alloc]
-      initWithBaseViewController:self.browserContainerCoordinator.viewController
+      initWithBaseViewController:self.browserContentCoordinator.viewController
                          browser:self.browser
                       dialogType:dialogType
               organizationDomain:organizationDomain

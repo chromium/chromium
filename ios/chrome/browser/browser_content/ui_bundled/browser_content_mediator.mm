@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_mediator.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_content_mediator.h"
 
 #import "base/check_op.h"
 #import "base/scoped_observation.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_consumer.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_content_consumer.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_content_view_controller.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presentation_context.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
@@ -48,7 +48,7 @@ bool IsActiveOverlayRequestForNonCommittedHttpAuthentication(
 }
 }  // namespace
 
-@interface BrowserContainerMediator () <OverlayPresenterObserving> {
+@interface BrowserContentMediator () <OverlayPresenterObserving> {
   // Observer that listens for HTTP authentication dialog presentation.
   std::unique_ptr<OverlayPresenterObserver> _overlayPresenterObserver;
   std::unique_ptr<
@@ -63,7 +63,7 @@ bool IsActiveOverlayRequestForNonCommittedHttpAuthentication(
     BOOL showingAuthDialogForNonCommittedURL;
 @end
 
-@implementation BrowserContainerMediator
+@implementation BrowserContentMediator
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
       webContentAreaOverlayPresenter:(OverlayPresenter*)overlayPresenter {
@@ -90,7 +90,7 @@ bool IsActiveOverlayRequestForNonCommittedHttpAuthentication(
 
 #pragma mark - Accessors
 
-- (void)setConsumer:(id<BrowserContainerConsumer>)consumer {
+- (void)setConsumer:(id<BrowserContentConsumer>)consumer {
   if (_consumer == consumer) {
     return;
   }

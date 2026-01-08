@@ -27,7 +27,7 @@ class AboutThisSiteService;
 // the new consumer.
 @property(nonatomic, weak) id<PageInfoAboutThisSiteConsumer> consumer;
 
-// Designated initializer. `webState` is the webState for the BrowserContainer
+// Designated initializer. `webState` is the webState for the BrowserContent
 // that owns this mediator. `service` is the AboutThisSiteService used to obtain
 // the AboutThisSite information of the `webState`. `webState` should not be
 // null.

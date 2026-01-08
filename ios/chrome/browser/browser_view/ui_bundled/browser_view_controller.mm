@@ -20,7 +20,7 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/authentication/ui_bundled/re_signin_infobar_delegate.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_content_view_controller.h"
 #import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
 #import "ios/chrome/browser/browser_view/public/browser_view_visibility_state_changed_callback.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller+private.h"
@@ -260,9 +260,9 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 // not active, the UI will not react to changes in the active web state, so
 // generally an inactive BVC should not be visible.
 @property(nonatomic, assign, getter=isActive) BOOL active;
-// Browser container view controller.
+// Browser content view controller.
 @property(nonatomic, strong)
-    BrowserContainerViewController* browserContainerViewController;
+    BrowserContentViewController* browserContentViewController;
 // Invisible button used to dismiss the keyboard.
 @property(nonatomic, strong) UIButton* typingShield;
 // The visibility state of the browser view. Value will be set to `kVisible` on
@@ -362,16 +362,16 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 
 #pragma mark - Object lifecycle
 
-- (instancetype)
-    initWithBrowserContainerViewController:
-        (BrowserContainerViewController*)browserContainerViewController
-                       keyCommandsProvider:
-                           (KeyCommandsProvider*)keyCommandsProvider
-                              dependencies:(BrowserViewControllerDependencies)
-                                               dependencies {
+- (instancetype)initWithBrowserContentViewController:
+                    (BrowserContentViewController*)browserContentViewController
+                                 keyCommandsProvider:
+                                     (KeyCommandsProvider*)keyCommandsProvider
+                                        dependencies:
+                                            (BrowserViewControllerDependencies)
+                                                dependencies {
   self = [super initWithNibName:nil bundle:base::apple::FrameworkBundle()];
   if (self) {
-    _browserContainerViewController = browserContainerViewController;
+    _browserContentViewController = browserContentViewController;
     _keyCommandsProvider = keyCommandsProvider;
     _sideSwipeCoordinator = dependencies.sideSwipeCoordinator;
     [_sideSwipeCoordinator setSideSwipeUIControllerDelegate:self];
@@ -420,7 +420,7 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 #pragma mark - Public Properties
 
 - (UIView*)contentArea {
-  return self.browserContainerViewController.view;
+  return self.browserContentViewController.view;
 }
 
 - (void)setInfobarBannerOverlayContainerViewController:
@@ -917,9 +917,9 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
               forControlEvents:UIControlEventTouchUpInside];
   self.view.autoresizingMask = initialViewAutoresizing;
 
-  [self addChildViewController:self.browserContainerViewController];
+  [self addChildViewController:self.browserContentViewController];
   [self.view addSubview:self.contentArea];
-  [self.browserContainerViewController didMoveToParentViewController:self];
+  [self.browserContentViewController didMoveToParentViewController:self];
   [self.view addSubview:self.typingShield];
   [super viewDidLoad];
 
@@ -1582,12 +1582,11 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
       // TODO(crbug.com/41407753): For a newly created WebState, the session
       // will not be restored until LoadIfNecessary call. Remove when fixed.
       self.currentWebState->GetNavigationManager()->LoadIfNecessary();
-      self.browserContainerViewController.contentView = nil;
-      self.browserContainerViewController.contentViewController =
-          viewController;
+      self.browserContentViewController.contentView = nil;
+      self.browserContentViewController.contentViewController = viewController;
       [NTPCoordinator constrainNamedGuideForFeedIPH];
     } else {
-      self.browserContainerViewController.contentView = view;
+      self.browserContentViewController.contentView = view;
     }
     // Resize horizontal viewport if Smooth Scrolling is on.
     if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
@@ -2313,7 +2312,7 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 #pragma mark - TabConsumer (Public)
 
 - (void)resetTab {
-  self.browserContainerViewController.contentView = nil;
+  self.browserContentViewController.contentView = nil;
 }
 
 - (void)prepareForNewTabAnimation {

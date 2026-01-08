@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_coordinator.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_content_coordinator.h"
 
 #import <Availability.h>
 
 #import "base/check.h"
 #import "components/search_engines/template_url_service.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_mediator.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller_delegate.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_edit_menu_handler.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_alert_delegate.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_content_mediator.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_content_view_controller.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_content_view_controller_delegate.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_edit_menu_handler.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_alert_delegate.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_edit_menu_builder.h"
 #import "ios/chrome/browser/explain_with_gemini/coordinator/explain_with_gemini_mediator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
@@ -39,17 +39,16 @@
 #import "ios/web/common/features.h"
 #import "url/gurl.h"
 
-@interface BrowserContainerCoordinator () <
-    BrowserContainerViewControllerDelegate,
-    EditMenuAlertDelegate>
+@interface BrowserContentCoordinator () <BrowserContentViewControllerDelegate,
+                                         EditMenuAlertDelegate>
 
 // Redefine property as readwrite.
 @property(nonatomic, strong, readwrite)
-    BrowserContainerViewController* viewController;
+    BrowserContentViewController* viewController;
 
 @end
 
-@implementation BrowserContainerCoordinator {
+@implementation BrowserContentCoordinator {
   // Whether the coordinator is started.
   BOOL _started;
   // Coordinator used to present alerts to the user.
@@ -60,8 +59,8 @@
   OverlayContainerCoordinator* _webContentAreaOverlayContainerCoordinator;
   // The mediator used for the Partial Translate feature.
   PartialTranslateMediator* _partialTranslateMediator;
-  // The mediator used to configure the BrowserContainerConsumer.
-  BrowserContainerMediator* _mediator;
+  // The mediator used to configure the BrowserContentConsumer.
+  BrowserContentMediator* _mediator;
   // The mediator used for the Link to Text feature.
   LinkToTextMediator* _linkToTextMediator;
   // The mediator used for the Explain With Gemini feature.
@@ -86,7 +85,7 @@
   WebStateList* webStateList = browser->GetWebStateList();
   ProfileIOS* profile = browser->GetProfile();
   BOOL incognito = profile->IsOffTheRecord();
-  self.viewController = [[BrowserContainerViewController alloc] init];
+  self.viewController = [[BrowserContentViewController alloc] init];
   self.viewController.delegate = self;
 
   _webContentAreaOverlayContainerCoordinator =
@@ -154,8 +153,8 @@
   OverlayPresenter* overlayPresenter =
       OverlayPresenter::FromBrowser(browser, OverlayModality::kWebContentArea);
   _mediator =
-      [[BrowserContainerMediator alloc] initWithWebStateList:webStateList
-                              webContentAreaOverlayPresenter:overlayPresenter];
+      [[BrowserContentMediator alloc] initWithWebStateList:webStateList
+                            webContentAreaOverlayPresenter:overlayPresenter];
 
   _mediator.consumer = self.viewController;
 
@@ -193,7 +192,7 @@
                                                    browser:self.browser
                                                      title:title
                                                    message:message];
-  __weak BrowserContainerCoordinator* weakSelf = self;
+  __weak BrowserContentCoordinator* weakSelf = self;
   for (EditMenuAlertDelegateAction* action in actions) {
     [_alertCoordinator addItemWithTitle:action.title
                                  action:^{
@@ -207,11 +206,10 @@
   [_alertCoordinator start];
 }
 
-#pragma mark - BrowserContainerViewControllerDelegate
+#pragma mark - BrowserContentViewControllerDelegate
 
-- (void)browserContainerViewController:
-            (BrowserContainerViewController*)controller
-         didTriggerEditMenuWithBuilder:(id<UIMenuBuilder>)builder {
+- (void)browserContentViewController:(BrowserContentViewController*)controller
+       didTriggerEditMenuWithBuilder:(id<UIMenuBuilder>)builder {
   CHECK(base::FeatureList::IsEnabled(
       web::features::kRestoreWKWebViewEditMenuHandler));
   web::WebState* webState =

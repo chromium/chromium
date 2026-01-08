@@ -13,7 +13,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/send_tab_to_self/features.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_mediator.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_content_mediator.h"
 #import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -94,7 +94,7 @@ using base::UserMetricsAction;
 @property(nonatomic, strong) OverflowMenuMediator* overflowMenuMediator;
 // Mediator to that alerts the main `mediator` when the web content area
 // is blocked by an overlay.
-@property(nonatomic, strong) BrowserContainerMediator* contentBlockerMediator;
+@property(nonatomic, strong) BrowserContentMediator* contentBlockerMediator;
 
 // Time when the tools menu opened.
 @property(nonatomic, assign) NSTimeInterval toolsMenuOpenTime;
@@ -206,7 +206,7 @@ using base::UserMetricsAction;
 
   OverlayPresenter* overlayPresenter = OverlayPresenter::FromBrowser(
       self.browser, OverlayModality::kWebContentArea);
-  self.contentBlockerMediator = [[BrowserContainerMediator alloc]
+  self.contentBlockerMediator = [[BrowserContentMediator alloc]
                 initWithWebStateList:self.browser->GetWebStateList()
       webContentAreaOverlayPresenter:overlayPresenter];
 

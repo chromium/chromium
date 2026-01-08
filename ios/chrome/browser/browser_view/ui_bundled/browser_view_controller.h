@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/web/model/web_state_container_view_provider.h"
 
 @class BookmarksCoordinator;
-@class BrowserContainerViewController;
+@class BrowserContentViewController;
 @protocol DefaultPromoNonModalPresentationDelegate;
 @protocol FindInPageCommands;
 class FullscreenController;
@@ -88,16 +88,16 @@ typedef struct {
                         WebStateContainerViewProvider>
 
 // Initializes a new BVC.
-// `browserContainerViewController` is the container object this BVC will exist
+// `browserContentViewController` is the container object this BVC will exist
 // inside.
 // TODO(crbug.com/41475381): Remove references to model objects from this class.
-- (instancetype)
-    initWithBrowserContainerViewController:
-        (BrowserContainerViewController*)browserContainerViewController
-                       keyCommandsProvider:
-                           (KeyCommandsProvider*)keyCommandsProvider
-                              dependencies:(BrowserViewControllerDependencies)
-                                               dependencies
+- (instancetype)initWithBrowserContentViewController:
+                    (BrowserContentViewController*)browserContentViewController
+                                 keyCommandsProvider:
+                                     (KeyCommandsProvider*)keyCommandsProvider
+                                        dependencies:
+                                            (BrowserViewControllerDependencies)
+                                                dependencies
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
