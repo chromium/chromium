@@ -1317,4 +1317,3 @@ BTree* openCatalogTree(io_func* file) {
 
   return btree;
 }
-

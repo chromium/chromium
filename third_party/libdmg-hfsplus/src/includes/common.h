@@ -8,6 +8,14 @@
 #include <string.h>
 #include <sys/types.h>
 
+// strlcpy looks useful, but not part of POSIX libc. BSD-inspired libc may
+// have it, but (as of 2025-Oct-2) Mozilla's build environment for
+// libdmg-hfsplus doesn't.
+#ifdef strlcpy
+#undef strlcpy
+#endif
+#pragma GCC poison strlcpy
+
 #ifdef WIN32
 #include <unistd.h>
 #define fseeko fseeko64
@@ -32,12 +40,12 @@
 #define APPLE_TO_UNIX_TIME(x) ((x) - TIME_OFFSET_FROM_UNIX)
 #define UNIX_TO_APPLE_TIME(x) ((x) + TIME_OFFSET_FROM_UNIX)
 
-#define ASSERT(x, m) if(!(x)) { assertPrint(m); }
+#define ASSERT(x, m) if(!(x)) { assertPrint(__func__, __FILE__, __LINE__, m); }
 
-static inline void assertPrint(const char *msg) {
+static inline void assertPrint(const char *func, const char* file, int line, const char *msg) {
 	int errsave = errno;
 	fflush(stdout);
-	fprintf(stderr, "error: %s\n", msg);
+	fprintf(stderr, "error in %s (%s, %d): %s\n", func, file, line, msg);
 	if (errsave != 0)
 		fprintf(stderr, "system error: %s\n", strerror(errsave));
 	fflush(stderr);

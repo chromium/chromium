@@ -45,7 +45,7 @@ extern "C" {
 	   symlinks in the input are handled, and `assignSpecialPermissions` controls
 	   whether to assign alternate permissions to some specific paths associated
 	   with system image installers, BootNeuter, and/or system binaries. */
-	void addAllInFolder2(
+	void addAllInFolderWithPolicies(
 			HFSCatalogNodeID folderID, Volume* volume, const char* parentName,
 			IncomingSymlinksPolicy symlinkPolicy, char assignSpecialPermissions);
 
@@ -58,7 +58,7 @@ extern "C" {
 	   input are handled, and `assignSpecialPermissions` controls whether to
 	   assign alternate permisisons to some specific paths associated with system
 	   image installers, BootNeuter, and/or system binaries. */
-	void addall_hfs_2(
+	void addall_hfs_with_policies(
 			Volume* volume, const char* dirToMerge, const char* dest,
 			IncomingSymlinksPolicy symlinkPolicy, char assignSpecialPermissions);
 	void extractAllInFolder(HFSCatalogNodeID folderID, Volume* volume);

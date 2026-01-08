@@ -9,6 +9,7 @@ link_directories(${ZLIB_LIBRARIES})
 
 link_directories (${PROJECT_BINARY_DIR}/common)
 add_library(hfs btree.c catalog.c extents.c xattr.c fastunicodecompare.c flatfile.c hfslib.c rawfile.c utility.c volume.c hfscompress.c ../includes/hfs/hfslib.h ../includes/hfs/hfsplus.h ../includes/hfs/hfscompress.h)
+target_compile_options(hfs PUBLIC -fno-strict-aliasing)
 target_link_libraries(hfs common z)
 
 add_executable(hfsplus hfs.c)

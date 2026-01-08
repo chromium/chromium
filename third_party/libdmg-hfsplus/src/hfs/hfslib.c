@@ -293,10 +293,10 @@ void removeAllInFolder(HFSCatalogNodeID folderID, Volume* volume, const char* pa
 }
 
 void addAllInFolder(HFSCatalogNodeID folderID, Volume* volume, const char* parentName) {
-	addAllInFolder2(folderID, volume, parentName, kIncomingSymlinksTraverse, TRUE);
+	addAllInFolderWithPolicies(folderID, volume, parentName, kIncomingSymlinksTraverse, TRUE);
 }
 
-void addAllInFolder2(
+void addAllInFolderWithPolicies(
 		HFSCatalogNodeID folderID, Volume* volume, const char* parentName,
 		IncomingSymlinksPolicy symlinkPolicy, char assignSpecialPermissions) {
 	char fullName[1024];
@@ -315,7 +315,7 @@ void addAllInFolder2(
 	ASSERT(dir, "addAllInFolder: cannot opendir CWD");
 
 	printf(
-		"info: addAllInFolder2: running in %s with symlink policy %d and permission setting %d\n",
+		"info: addAllInFolderWithPolicies: running in %s with symlink policy %d and permission setting %d\n",
 		cwd, symlinkPolicy, assignSpecialPermissions);
 
 	for (struct dirent* ent = readdir(dir); ent; ent = readdir(dir)) {
@@ -333,7 +333,6 @@ void addAllInFolder2(
 		for (CatalogRecordList* nextEntry = theList; nextEntry; nextEntry = nextEntry->next) {
 			char* name = unicodeToAscii(&nextEntry->name);
 			if(strcmp(name, ent->d_name) == 0) {
-				/* Assignment inside condition is intended. */
 				HFSPlusCatalogFolder* recordAsFolder = tryCatalogRecordAsFolder(nextEntry->record);
 				if (recordAsFolder) {
 					cnid = recordAsFolder->folderID;
@@ -386,7 +385,7 @@ void addAllInFolder2(
 			printf("Setting permissions to %06o for %s\n", st.st_mode, fullName);
 			/* Recurse */
 			ASSERT(chdir(ent->d_name) == 0, "chdir");
-			addAllInFolder2(cnid, volume, fullName, symlinkPolicy, assignSpecialPermissions);
+			addAllInFolderWithPolicies(cnid, volume, fullName, symlinkPolicy, assignSpecialPermissions);
 			ASSERT(chdir(cwd) == 0, "chdir");
 		} else if (S_ISREG(st.st_mode)) {
 			printf("file: %s\n", fullName);	fflush(stdout);
@@ -553,14 +552,14 @@ void extractAllInFolder(HFSCatalogNodeID folderID, Volume* volume) {
 
 
 void addall_hfs(Volume* volume, const char* dirToMerge, const char* dest) {
-	addall_hfs_2(volume, dirToMerge, dest, kIncomingSymlinksTraverse, TRUE);
+	addall_hfs_with_policies(volume, dirToMerge, dest, kIncomingSymlinksTraverse, TRUE);
 }
 
-void addall_hfs_2(
+void addall_hfs_with_policies(
 			Volume* volume, const char* dirToMerge, const char* dest,
 			IncomingSymlinksPolicy symlinkPolicy, char assignSpecialPermissions) {
 	char cwd[1024];
-	ASSERT(getcwd(cwd, 1024) != NULL, "addall_hfs_2: getcwd failed");
+	ASSERT(getcwd(cwd, 1024) != NULL, "addall_hfs_with_policies: getcwd failed");
 
 	if(chdir(dirToMerge) != 0) {
 		printf("Cannot open that directory: %s\n", dirToMerge);
@@ -574,7 +573,7 @@ void addall_hfs_2(
 	
 	/* reduced limit leaves room for appending '/' */
 	size_t nChars = strlen(dest);
-	ASSERT(nChars < 1023, "addall_hfs_2: dest too long");
+	ASSERT(nChars < 1023, "addall_hfs_with_policies: dest too long");
 	char pathWithSlash[1024];
 	memcpy(pathWithSlash, dest, nChars+1);
 	if (pathWithSlash[nChars-1] != '/') {
@@ -582,7 +581,7 @@ void addall_hfs_2(
 		pathWithSlash[nChars+1] = '\0';
 	}
 
-	addAllInFolder2(folderRecord->folderID, volume,  pathWithSlash,
+	addAllInFolderWithPolicies(folderRecord->folderID, volume,  pathWithSlash,
 					symlinkPolicy, assignSpecialPermissions);
 	ASSERT(chdir(cwd) == 0, "chdir");
 	free(record);

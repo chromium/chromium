@@ -247,8 +247,9 @@ size_t getAttribute(Volume* volume, uint32_t fileID, const char* name, uint8_t**
 	size_t size;
 	int exact;
 
-	if(!volume->attrTree)
+	if(!volume->attrTree) {
 		return FALSE;
+	}
 
 	memset(&key, 0 , sizeof(HFSPlusAttrKey));
 	key.fileID = fileID;
@@ -264,7 +265,6 @@ size_t getAttribute(Volume* volume, uint32_t fileID, const char* name, uint8_t**
 		if(record) {
 			free(record);
 		}
-
 		return 0;
 	}
 

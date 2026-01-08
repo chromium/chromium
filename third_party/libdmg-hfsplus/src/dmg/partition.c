@@ -522,8 +522,8 @@ int writeDriverDescriptorMap(int pNum, AbstractFile* file, DriverDescriptorRecor
   sprintf(pName, "Driver Descriptor Map (DDM : %d)", pNum + 1);
   *resources = insertData(*resources, "blkx", pNum, pName, 0, false, (const char*) blkx, sizeof(BLKXTable) + (blkx->blocksRunCount * sizeof(BLKXRun)), ATTRIBUTE_HDIUTIL);
 
-  free(buffer);
   bufferFile->close(bufferFile);
+  free(buffer);
   free(blkx);
 
   pNum++;
