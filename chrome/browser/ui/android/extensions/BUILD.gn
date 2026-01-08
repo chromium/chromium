@@ -146,29 +146,6 @@ if (enable_extensions_core) {
       "//ui/android:ui_no_recycler_view_java",
     ]
   }
-
-  android_library("javatests") {
-    testonly = true
-    sources = [ "javatests/src/org/chromium/chrome/browser/ui/extensions/ExtensionsToolbarTest.java" ]
-    deps = [
-      ":java",
-      "//base:base_java",
-      "//base:base_java_test_support",
-      "//chrome/android:chrome_java",
-      "//chrome/browser/flags:java",
-      "//chrome/browser/profiles/android:java",
-      "//chrome/browser/tab:java",
-      "//chrome/test/android:chrome_java_integration_test_support",
-      "//content/public/android:content_java",
-      "//third_party/androidx:androidx_test_core_java",
-      "//third_party/androidx:androidx_test_espresso_espresso_core_java",
-      "//third_party/androidx:androidx_test_runner_java",
-      "//third_party/hamcrest:hamcrest_java",
-      "//third_party/junit",
-      "//ui/android:ui_java_test_support",
-      "//ui/android:ui_no_recycler_view_java",
-    ]
-  }
 }
 
 android_resources("java_resources") {
