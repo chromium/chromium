@@ -156,6 +156,11 @@ tabs::TabInterface* TestTabModel::OpenTab(const GURL& url, int index) {
   return nullptr;
 }
 
+void TestTabModel::SetOpenerForTab(tabs::TabHandle target,
+                                   tabs::TabHandle opener) {
+  NOTIMPLEMENTED();
+}
+
 void TestTabModel::DiscardTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
 }
@@ -438,6 +443,11 @@ void OwningTestTabModel::ActivateTab(tabs::TabHandle tab) {
 tabs::TabInterface* OwningTestTabModel::OpenTab(const GURL& url, int index) {
   NOTIMPLEMENTED();
   return nullptr;
+}
+
+void OwningTestTabModel::SetOpenerForTab(tabs::TabHandle target,
+                                         tabs::TabHandle opener) {
+  NOTIMPLEMENTED();
 }
 
 void OwningTestTabModel::DiscardTab(tabs::TabHandle tab) {

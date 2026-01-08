@@ -116,6 +116,7 @@ class TabModelJniBridge : public TabModel {
   // TabListInterface implementation.
   void ActivateTab(tabs::TabHandle tab) override;
   tabs::TabInterface* OpenTab(const GURL& url, int index) override;
+  void SetOpenerForTab(tabs::TabHandle target, tabs::TabHandle opener) override;
   void DiscardTab(tabs::TabHandle tab) override;
   tabs::TabInterface* DuplicateTab(tabs::TabHandle tab) override;
   tabs::TabInterface* GetTab(int index) override;

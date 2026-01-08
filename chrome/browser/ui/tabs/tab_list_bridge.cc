@@ -105,9 +105,21 @@ tabs::TabInterface* TabListBridge::OpenTab(const GURL& url, int index) {
   return tab_strip_->GetTabAtIndex(index_to_retrieve);
 }
 
+void TabListBridge::SetOpenerForTab(tabs::TabHandle target,
+                                    tabs::TabHandle opener) {
+  const int target_index = GetIndexOfTab(target);
+  CHECK_NE(target_index, TabStripModel::kNoTab);
+  CHECK_NE(GetIndexOfTab(opener), TabStripModel::kNoTab);
+
+  content::WebContents* opener_contents = opener.Get()->GetContents();
+  if (!opener_contents) {
+    return;
+  }
+  tab_strip_->SetOpenerOfWebContentsAt(target_index, opener_contents);
+}
+
 void TabListBridge::DiscardTab(tabs::TabHandle tab) {
   content::WebContents* contents = tab.Get()->GetContents();
-  ;
   if (contents) {
     resource_coordinator::TabLifecycleUnitExternal*
         tab_lifecycle_unit_external =

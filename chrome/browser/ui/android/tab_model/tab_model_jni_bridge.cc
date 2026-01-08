@@ -468,6 +468,17 @@ tabs::TabInterface* TabModelJniBridge::OpenTab(const GURL& url, int index) {
   return Java_TabModelJniBridge_openTabProgrammatically(env, jobj, jurl, index);
 }
 
+void TabModelJniBridge::SetOpenerForTab(tabs::TabHandle target,
+                                        tabs::TabHandle opener) {
+  TabAndroid* target_tab = TabAndroid::FromTabHandle(target);
+  TabAndroid* opener_tab = TabAndroid::FromTabHandle(opener);
+  if (!target_tab || !opener_tab) {
+    return;
+  }
+  JNIEnv* env = AttachCurrentThread();
+  Java_TabModelJniBridge_setOpenerForTab(env, target_tab, opener_tab);
+}
+
 void TabModelJniBridge::DiscardTab(tabs::TabHandle tab) {
   if (!base::FeatureList::IsEnabled(features::kWebContentsDiscard)) {
     return;
