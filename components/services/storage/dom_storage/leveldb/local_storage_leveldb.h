@@ -82,7 +82,6 @@ class LocalStorageLevelDB : public DomStorageDatabase {
                     memory_dump_id);
 
   // Implement the `DomStorageDatabase` interface:
-  DomStorageDatabaseLevelDB& GetLevelDB() override;
   StatusOr<std::map<Key, Value>> ReadMapKeyValues(
       MapLocator map_locator) override;
   DbStatus UpdateMaps(std::vector<MapBatchUpdate> map_updates) override;
@@ -135,6 +134,7 @@ class LocalStorageLevelDB : public DomStorageDatabase {
   DbStatus PutVersionForTesting(int64_t version) override;
   void MakeAllCommitsFailForTesting() override;
   void SetDestructionCallbackForTesting(base::OnceClosure callback) override;
+  DomStorageDatabaseLevelDB& GetLevelDBForTesting();
 
  private:
   // Adds the "METAACCESS:<storage key>" entry to `batch` when

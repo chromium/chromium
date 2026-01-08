@@ -407,7 +407,7 @@ TEST_F(SessionStorageLevelDBTest, PutMetadata) {
   // Verify the contents in the database, which includes the "version" entry.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   ASSERT_EQ(all_entries.size(), 3u);
 
   EXPECT_EQ(all_entries[0].key,
@@ -451,7 +451,7 @@ TEST_F(SessionStorageLevelDBTest, PutMetadataWithMultipleMaps) {
     // Verify the contents in the database, which includes the "version" entry.
     ASSERT_OK_AND_ASSIGN(
         std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-        session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+        session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
     ASSERT_EQ(all_entries.size(), 5u);
 
     EXPECT_EQ(
@@ -533,7 +533,7 @@ TEST_F(SessionStorageLevelDBTest, DeleteStorageKeysFromSessionWithMetadata) {
   // Verify the database contains the `metadata` and "VERSION" entries.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   EXPECT_EQ(all_entries.size(), 2u);
 
   // Delete the `metadata` entry from the database.
@@ -544,8 +544,9 @@ TEST_F(SessionStorageLevelDBTest, DeleteStorageKeysFromSessionWithMetadata) {
 
   // Verify the contents in the database, which should only include the
   // "VERSION" entry.
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 1u);
@@ -575,7 +576,7 @@ TEST_F(SessionStorageLevelDBTest,
   // entry.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   EXPECT_EQ(all_entries.size(), 3u);
 
   // Delete the two key/value entries from the database.
@@ -590,8 +591,9 @@ TEST_F(SessionStorageLevelDBTest,
 
   // Verify the contents in the database, which should only include the
   // "VERSION" entry.
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 1u);
@@ -625,7 +627,7 @@ TEST_F(SessionStorageLevelDBTest, DeleteStorageKeysFromSessionWithMapExcluded) {
   // Verify the database contains the metadata, key/value and "VERSION" entries.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   EXPECT_EQ(all_entries.size(), 3u);
 
   // Delete the `metadata` entry from the database.
@@ -636,8 +638,9 @@ TEST_F(SessionStorageLevelDBTest, DeleteStorageKeysFromSessionWithMapExcluded) {
 
   // Verify the contents in the database, which should include the
   // map key/value entry and the "VERSION" entry.
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 2u);
@@ -734,7 +737,7 @@ TEST_F(SessionStorageLevelDBTest,
   // entries and one "VERSION" entry.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   EXPECT_EQ(all_entries.size(), 11u);
 
   // Delete `kFakeUrlStorageKey` from `kFakeSessionId`, which must remove one
@@ -749,8 +752,9 @@ TEST_F(SessionStorageLevelDBTest,
   // - Six map key/value entries for `kFakeMapId`, `kOtherFakeMapId` and
   //   `kThirdFakeMapId`.
   // - One database VERSION entry.
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 10u);
@@ -801,8 +805,9 @@ TEST_F(SessionStorageLevelDBTest,
   // - Four map key/value entry for `kOtherFakeMapId`.
   // - One database VERSION entry.
   all_entries.clear();
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 7u);
@@ -853,8 +858,9 @@ TEST_F(SessionStorageLevelDBTest,
   // Verify the contents in the database, which should only include the
   // "VERSION" entry.
   all_entries.clear();
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 1u);
@@ -884,7 +890,7 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMetadata) {
   // Verify the database contains the `metadata` and "VERSION" entries.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   EXPECT_EQ(all_entries.size(), 2u);
 
   // Delete the `metadata` entry from the database.
@@ -894,8 +900,9 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMetadata) {
 
   // Verify the contents in the database, which should only include the
   // "VERSION" entry.
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 1u);
@@ -924,7 +931,7 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMapKeyValues) {
   // entry.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   EXPECT_EQ(all_entries.size(), 3u);
 
   // Delete the two key/value entries from the database.
@@ -938,8 +945,9 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMapKeyValues) {
 
   // Verify the contents in the database, which should only include the
   // "VERSION" entry.
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 1u);
@@ -973,7 +981,7 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMapExcluded) {
   // Verify the database contains the metadata, key/value and "VERSION" entries.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   EXPECT_EQ(all_entries.size(), 3u);
 
   // Delete the `metadata` entry from the database.
@@ -983,8 +991,9 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMapExcluded) {
 
   // Verify the contents in the database, which should include the
   // map key/value entry and the "VERSION" entry.
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 2u);
@@ -1050,7 +1059,7 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMultipleStorageKeys) {
   // entries and one "VERSION" entry.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   EXPECT_EQ(all_entries.size(), 8u);
 
   // Delete `kFakeSessionId`, which must remove one metadata entry.
@@ -1063,8 +1072,9 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMultipleStorageKeys) {
   //   `kThirdFakeSessionId`.
   // - Three map key/value entries for `kFakeMapId`, and `kOtherFakeMapId`.
   // - One database VERSION entry.
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 7u);
@@ -1105,8 +1115,9 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMultipleStorageKeys) {
   // - One metadata entry for `kThirdFakeSessionId`.
   // - One map key/value entry for `kOtherFakeMapId`.
   // - One database VERSION entry.
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 3u);

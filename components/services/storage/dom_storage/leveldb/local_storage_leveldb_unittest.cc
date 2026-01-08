@@ -529,7 +529,7 @@ TEST_F(LocalStorageLevelDBTest, PutMetadataWithEmpty) {
   // Verify the contents in the database, which includes the "VERSION" entry.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      local_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      local_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   ASSERT_EQ(all_entries.size(), 1u);
 
   VerifyDatabaseVersionEntry(all_entries[0]);
@@ -553,7 +553,7 @@ TEST_F(LocalStorageLevelDBTest, PutMetadataWithWriteMetadata) {
   // Verify the contents in the database, which includes the "VERSION" entry.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      local_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      local_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   ASSERT_EQ(all_entries.size(), 2u);
 
   // Verify "META:" entry.
@@ -581,7 +581,7 @@ TEST_F(LocalStorageLevelDBTest, PutMetadataWithAccessMetadata) {
   // Verify the contents in the database, which includes the "VERSION" entry.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      local_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      local_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   ASSERT_EQ(all_entries.size(), 2u);
 
   // Verify "METAACCESS:" entry.
@@ -610,7 +610,7 @@ TEST_F(LocalStorageLevelDBTest, PutMetadataWithAccessAndWriteMetadata) {
   // Verify the contents in the database, which includes the "VERSION" entry.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      local_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      local_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   ASSERT_EQ(all_entries.size(), 3u);
 
   // Verify "META:" entry.
@@ -653,7 +653,7 @@ TEST_F(LocalStorageLevelDBTest, PutMetadataWithMultipleMaps) {
   // Verify the contents in the database, which includes the "VERSION" entry.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      local_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      local_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   ASSERT_EQ(all_entries.size(), 5u);
 
   // Verify "META:" entry for the first storage key.
@@ -711,7 +711,7 @@ TEST_F(LocalStorageLevelDBTest,
   // "VERSION" entry.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      local_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      local_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   ASSERT_EQ(all_entries.size(), 1u);
 
   VerifyDatabaseVersionEntry(all_entries[0]);
@@ -742,7 +742,7 @@ TEST_F(LocalStorageLevelDBTest, DeleteStorageKeysFromSessionWithWriteMetadata) {
   // "VERSION" entry.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      local_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      local_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   ASSERT_EQ(all_entries.size(), 1u);
 
   VerifyDatabaseVersionEntry(all_entries[0]);
@@ -777,7 +777,7 @@ TEST_F(LocalStorageLevelDBTest, DeleteStorageKeysFromSessionWithMapKeyValues) {
   // "VERSION" entry.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      local_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      local_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   ASSERT_EQ(all_entries.size(), 1u);
 
   VerifyDatabaseVersionEntry(all_entries[0]);
@@ -860,7 +860,7 @@ TEST_F(LocalStorageLevelDBTest,
   // storage key entries and the "VERSION" entry.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      local_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      local_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   ASSERT_EQ(all_entries.size(), 4u);
 
   // Verify "META:" entry for the second storage key.
@@ -900,8 +900,9 @@ TEST_F(LocalStorageLevelDBTest,
 
   // Verify the contents in the database, which should only include the
   // "VERSION" entry.
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       local_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      local_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   ASSERT_EQ(all_entries.size(), 1u);
 
   VerifyDatabaseVersionEntry(all_entries[0]);

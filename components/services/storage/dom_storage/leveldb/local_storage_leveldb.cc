@@ -177,10 +177,6 @@ DbStatus LocalStorageLevelDB::Open(
   return DbStatus::OK();
 }
 
-DomStorageDatabaseLevelDB& LocalStorageLevelDB::GetLevelDB() {
-  return *leveldb_;
-}
-
 StatusOr<std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>>
 LocalStorageLevelDB::ReadMapKeyValues(MapLocator map_locator) {
   CHECK_EQ(map_locator.session_ids().size(), 1u);
@@ -403,6 +399,10 @@ void LocalStorageLevelDB::MakeAllCommitsFailForTesting() {
 void LocalStorageLevelDB::SetDestructionCallbackForTesting(
     base::OnceClosure callback) {
   leveldb_->SetDestructionCallbackForTesting(std::move(callback));
+}
+
+DomStorageDatabaseLevelDB& LocalStorageLevelDB::GetLevelDBForTesting() {
+  return *leveldb_;
 }
 
 void LocalStorageLevelDB::PutMapUsageMetadata(

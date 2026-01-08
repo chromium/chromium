@@ -14,6 +14,8 @@
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 
 namespace storage {
+class DomStorageDatabaseLevelDB;
+
 // The "map-" prefix for all key/value pairs.
 inline constexpr const uint8_t kMapIdPrefix[] = {'m', 'a', 'p', '-'};
 
@@ -87,7 +89,6 @@ class SessionStorageLevelDB : public DomStorageDatabase {
   SessionStorageLevelDB& operator=(const SessionStorageLevelDB&) = delete;
 
   // Implement the `DomStorageDatabase` interface:
-  DomStorageDatabaseLevelDB& GetLevelDB() override;
   StatusOr<std::map<Key, Value>> ReadMapKeyValues(
       MapLocator map_locator) override;
   DbStatus UpdateMaps(std::vector<MapBatchUpdate> map_updates) override;
@@ -120,6 +121,7 @@ class SessionStorageLevelDB : public DomStorageDatabase {
   DbStatus PutVersionForTesting(int64_t version) override;
   void MakeAllCommitsFailForTesting() override;
   void SetDestructionCallbackForTesting(base::OnceClosure callback) override;
+  DomStorageDatabaseLevelDB& GetLevelDBForTesting();
 
  private:
   // Parses the value from the next map ID key in the LevelDB.  Converts the

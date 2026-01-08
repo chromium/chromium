@@ -166,10 +166,6 @@ DbStatus SessionStorageLevelDB::Open(
   return DbStatus::OK();
 }
 
-DomStorageDatabaseLevelDB& SessionStorageLevelDB::GetLevelDB() {
-  return *leveldb_;
-}
-
 StatusOr<std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>>
 SessionStorageLevelDB::ReadMapKeyValues(MapLocator map_locator) {
   return leveldb_->GetMapKeyValues(GetMapPrefix(map_locator.map_id().value()));
@@ -308,6 +304,10 @@ void SessionStorageLevelDB::MakeAllCommitsFailForTesting() {
 void SessionStorageLevelDB::SetDestructionCallbackForTesting(
     base::OnceClosure callback) {
   leveldb_->SetDestructionCallbackForTesting(std::move(callback));
+}
+
+DomStorageDatabaseLevelDB& SessionStorageLevelDB::GetLevelDBForTesting() {
+  return *leveldb_;
 }
 
 StatusOr<int64_t> SessionStorageLevelDB::ReadNextMapId() const {
