@@ -6,6 +6,7 @@ import './raw_event_details.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '../icons.html.js';
 
 import {assert} from '//resources/js/assert.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -47,7 +48,7 @@ export class EventListItemElement extends CrLitElement {
       eventDate: {type: Object},
       processMap: {type: Object},
       expanded: {type: Boolean, notify: true},
-      error: {type: Boolean, reflect: true},
+      status: {type: String, reflect: true},
       scope: {type: String, reflect: true},
     };
   }
@@ -56,7 +57,7 @@ export class EventListItemElement extends CrLitElement {
   accessor eventDate: Date|undefined = undefined;
   accessor processMap: UpdaterProcessMap|undefined = undefined;
   accessor expanded = false;
-  accessor error = false;
+  accessor status: 'success'|'error'|'' = '';
   accessor scope: Scope|undefined = undefined;
 
   protected appId: string|undefined = undefined;
@@ -69,6 +70,7 @@ export class EventListItemElement extends CrLitElement {
   protected nextVersion: string|undefined = undefined;
   protected updaterVersion: string|undefined = undefined;
   protected commandLine: string|undefined = undefined;
+  protected eventSummaryIcon: string|undefined = undefined;
   protected eventSummary: string|undefined = undefined;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -78,11 +80,12 @@ export class EventListItemElement extends CrLitElement {
       this.formattedDate = this.computeFormattedDate();
       this.formattedDuration = this.computeFormattedDuration();
       this.errors = this.computeErrors();
-      this.error = this.errors.length > 0;
+      this.status = this.computeStatus();
       this.omahaRequest = this.computeOmahaRequest();
       this.omahaResponse = this.computeOmahaResponse();
       this.nextVersion = this.computeNextVersion();
       this.commandLine = this.computeCommandLine();
+      this.eventSummaryIcon = this.computeEventSummaryIcon();
       this.eventSummary = this.getEventSummary(this.event);
     }
 
@@ -199,6 +202,25 @@ export class EventListItemElement extends CrLitElement {
             'errorDetails', error.category, error.code, error.extracode1));
   }
 
+  private computeStatus(): 'success'|'error'|'' {
+    if (this.event === undefined) {
+      return '';
+    }
+    if (this.errors.length > 0) {
+      return 'error';
+    }
+    if (this.event.eventType === 'UPDATE' && isMergedHistoryEvent(this.event)) {
+      const updateOutcome = this.event.endEvent.outcome;
+      if (updateOutcome === 'UPDATED') {
+        return 'success';
+      }
+      if (updateOutcome === 'UPDATE_ERROR') {
+        return 'error';
+      }
+    }
+    return '';
+  }
+
   private computeOmahaRequest(): Record<string, unknown>|undefined {
     if (this.event === undefined || !isMergedHistoryEvent(this.event) ||
         this.event.eventType !== 'POST_REQUEST' ||
@@ -245,6 +267,32 @@ export class EventListItemElement extends CrLitElement {
     return this.event.startEvent.commandLine;
   }
 
+  private computeEventSummaryIcon(): string|undefined {
+    if (this.event === undefined || !isMergedHistoryEvent(this.event)) {
+      return undefined;
+    }
+    switch (this.event.eventType) {
+      case 'UPDATE':
+        switch (this.event.endEvent.outcome) {
+          case 'UPDATED':
+            return 'cr:check-circle';
+          case 'NO_UPDATE':
+            return 'cr:sync';
+          case 'UPDATE_ERROR':
+            return 'cr:warning';
+          default:
+            return undefined;
+        }
+      case 'POST_REQUEST':
+        return (this.omahaRequest !== undefined ||
+                this.omahaResponse !== undefined) ?
+            'updater:omaha' :
+            '';
+      default:
+        return undefined;
+    }
+  }
+
   private getInstallSummary(event: MergedInstallEvent): string|undefined {
     return event.endEvent.version !== undefined ?
         loadTimeData.getStringF('installSummary', event.endEvent.version) :
@@ -265,6 +313,13 @@ export class EventListItemElement extends CrLitElement {
   private getActivateSummary(event: MergedActivateEvent): string {
     return loadTimeData.getString(
         event.endEvent.activated ? 'activationSucceeded' : 'activationFailed');
+  }
+
+  private getPostRequestSummary(): string|undefined {
+    return (this.omahaRequest !== undefined ||
+            this.omahaResponse !== undefined) ?
+        loadTimeData.getString('omahaRequest') :
+        undefined;
   }
 
   private getUpdateSummary(event: MergedUpdateEvent): string|undefined {
@@ -322,6 +377,8 @@ export class EventListItemElement extends CrLitElement {
           return this.getQualifySummary(event);
         case 'ACTIVATE':
           return this.getActivateSummary(event);
+        case 'POST_REQUEST':
+          return this.getPostRequestSummary();
         case 'UPDATE':
           return this.getUpdateSummary(event);
         case 'UPDATER_PROCESS':
@@ -339,17 +396,6 @@ export class EventListItemElement extends CrLitElement {
           return undefined;
       }
     }
-  }
-
-  /**
-   * Returns whether a chip should be added before the event description
-   * indicating that the event is an HTTP POST likely containing an Omaha
-   * request/response pair.
-   */
-  protected shouldShowOmahaRequestChip() {
-    return this.event !== undefined && isMergedHistoryEvent(this.event) &&
-        this.event.eventType === 'POST_REQUEST' &&
-        (this.omahaRequest !== undefined || this.omahaResponse !== undefined);
   }
 }
 

@@ -433,7 +433,7 @@ suite('EventListItemElement', () => {
     };
     item.event = event;
     await microtasksFinished();
-    assertTrue(item.error);
+    assertEquals('error', item.status);
     assertNotEquals(
         null, item.shadowRoot.querySelector('.event-error-details'));
 
@@ -462,7 +462,7 @@ suite('EventListItemElement', () => {
     };
     item.event = mergedEvent;
     await microtasksFinished();
-    assertTrue(item.error);
+    assertEquals('error', item.status);
     assertStringContains(
         item.shadowRoot.textContent,
         loadTimeData.getStringF('errorDetails', 4, 5, 6));
@@ -761,6 +761,291 @@ suite('EventListItemElement', () => {
       assertTrue(!!iconElement);
       assertEquals('cr:computer', iconElement.icon);
       assertEquals(loadTimeData.getString('scopeSystem'), iconElement.title);
+    });
+  });
+
+  suite('summary icon', () => {
+    test('displays check circle for updated', async () => {
+      item.event = {
+        eventType: 'UPDATE',
+        startEvent: {
+          eventType: 'UPDATE',
+          eventId: '1',
+          deviceUptime: 0,
+          pid: 0,
+          processToken: '',
+          bound: 'START',
+          errors: [],
+          appId: '{app1}',
+        },
+        endEvent: {
+          eventType: 'UPDATE',
+          eventId: '1',
+          deviceUptime: 1000,
+          pid: 0,
+          processToken: '',
+          bound: 'END',
+          errors: [],
+          outcome: 'UPDATED',
+        },
+      };
+      await microtasksFinished();
+      const icon = item.shadowRoot.querySelector(
+          '.event-description-icon-column cr-icon');
+      assertTrue(!!icon);
+      assertEquals('cr:check-circle', icon.getAttribute('icon'));
+    });
+
+    test('displays sync for no update', async () => {
+      item.event = {
+        eventType: 'UPDATE',
+        startEvent: {
+          eventType: 'UPDATE',
+          eventId: '1',
+          deviceUptime: 0,
+          pid: 0,
+          processToken: '',
+          bound: 'START',
+          errors: [],
+          appId: '{app1}',
+        },
+        endEvent: {
+          eventType: 'UPDATE',
+          eventId: '1',
+          deviceUptime: 1000,
+          pid: 0,
+          processToken: '',
+          bound: 'END',
+          errors: [],
+          outcome: 'NO_UPDATE',
+        },
+      };
+      await microtasksFinished();
+      const icon = item.shadowRoot.querySelector(
+          '.event-description-icon-column cr-icon');
+      assertTrue(!!icon);
+      assertEquals('cr:sync', icon.getAttribute('icon'));
+    });
+
+    test('displays warning for update error', async () => {
+      item.event = {
+        eventType: 'UPDATE',
+        startEvent: {
+          eventType: 'UPDATE',
+          eventId: '1',
+          deviceUptime: 0,
+          pid: 0,
+          processToken: '',
+          bound: 'START',
+          errors: [],
+          appId: '{app1}',
+        },
+        endEvent: {
+          eventType: 'UPDATE',
+          eventId: '1',
+          deviceUptime: 1000,
+          pid: 0,
+          processToken: '',
+          bound: 'END',
+          errors: [],
+          outcome: 'UPDATE_ERROR',
+        },
+      };
+      await microtasksFinished();
+      const icon = item.shadowRoot.querySelector(
+          '.event-description-icon-column cr-icon');
+      assertTrue(!!icon);
+      assertEquals('cr:warning', icon.getAttribute('icon'));
+    });
+
+    test('displays Omaha logo for Omaha request', async () => {
+      item.event = {
+        eventType: 'POST_REQUEST',
+        startEvent: {
+          eventType: 'POST_REQUEST',
+          eventId: '1',
+          deviceUptime: 0,
+          pid: 0,
+          processToken: '',
+          bound: 'START',
+          errors: [],
+          request: btoa(')]}\'{"request":{"@os":"win"}}'),
+        },
+        endEvent: {
+          eventType: 'POST_REQUEST',
+          eventId: '1',
+          deviceUptime: 1000,
+          pid: 0,
+          processToken: '',
+          bound: 'END',
+          errors: [],
+          response: btoa(')]}\'{"response":{"protocol":"3.0"}}'),
+        },
+      };
+      await microtasksFinished();
+      const icon = item.shadowRoot.querySelector(
+          '.event-description-icon-column cr-icon');
+      assertTrue(!!icon);
+      assertEquals('updater:omaha', icon.getAttribute('icon'));
+    });
+
+
+    test('does not display for other events', async () => {
+      item.event = {
+        eventType: 'INSTALL',
+        startEvent: {
+          eventType: 'INSTALL',
+          eventId: '1',
+          deviceUptime: 0,
+          pid: 0,
+          processToken: '',
+          bound: 'START',
+          errors: [],
+          appId: '{app1}',
+        },
+        endEvent: {
+          eventType: 'INSTALL',
+          eventId: '1',
+          deviceUptime: 1000,
+          pid: 0,
+          processToken: '',
+          bound: 'END',
+          errors: [],
+          version: '1.0',
+        },
+      };
+      await microtasksFinished();
+      const icon = item.shadowRoot.querySelector(
+          '.event-description-icon-column cr-icon');
+      assertFalse(!!icon);
+    });
+  });
+
+  suite('"status" attribute', () => {
+    test('is "error" when there are errors', async () => {
+      item.event = {
+        eventType: 'PERSISTED_DATA',
+        bound: 'INSTANT',
+        eventId: '1',
+        deviceUptime: 0,
+        pid: 0,
+        processToken: '',
+        errors: [{category: 1, code: 2, extracode1: 3}],
+        eulaRequired: false,
+        registeredApps: [],
+      };
+      await microtasksFinished();
+      assertEquals('error', item.getAttribute('status'));
+    });
+
+    test('is "success" when update is successful', async () => {
+      item.event = {
+        eventType: 'UPDATE',
+        startEvent: {
+          eventType: 'UPDATE',
+          eventId: '1',
+          deviceUptime: 0,
+          pid: 0,
+          processToken: '',
+          bound: 'START',
+          errors: [],
+          appId: '{app1}',
+        },
+        endEvent: {
+          eventType: 'UPDATE',
+          eventId: '1',
+          deviceUptime: 1000,
+          pid: 0,
+          processToken: '',
+          bound: 'END',
+          errors: [],
+          outcome: 'UPDATED',
+        },
+      };
+      await microtasksFinished();
+      assertEquals('success', item.getAttribute('status'));
+    });
+
+    test('is "error" when update fails', async () => {
+      item.event = {
+        eventType: 'UPDATE',
+        startEvent: {
+          eventType: 'UPDATE',
+          eventId: '1',
+          deviceUptime: 0,
+          pid: 0,
+          processToken: '',
+          bound: 'START',
+          errors: [],
+          appId: '{app1}',
+        },
+        endEvent: {
+          eventType: 'UPDATE',
+          eventId: '1',
+          deviceUptime: 1000,
+          pid: 0,
+          processToken: '',
+          bound: 'END',
+          errors: [],
+          outcome: 'UPDATE_ERROR',
+        },
+      };
+      await microtasksFinished();
+      assertEquals('error', item.getAttribute('status'));
+    });
+
+    test('is unset other events', async () => {
+      item.event = {
+        eventType: 'INSTALL',
+        startEvent: {
+          eventType: 'INSTALL',
+          eventId: '1',
+          deviceUptime: 0,
+          pid: 0,
+          processToken: '',
+          bound: 'START',
+          errors: [],
+          appId: '{app1}',
+        },
+        endEvent: {
+          eventType: 'INSTALL',
+          eventId: '1',
+          deviceUptime: 1000,
+          pid: 0,
+          processToken: '',
+          bound: 'END',
+          errors: [],
+          version: '1.0',
+        },
+      };
+      await microtasksFinished();
+      assertEquals('', item.getAttribute('status'));
+
+      item.event = {
+        eventType: 'UPDATE',
+        startEvent: {
+          eventType: 'UPDATE',
+          eventId: '1',
+          deviceUptime: 0,
+          pid: 0,
+          processToken: '',
+          bound: 'START',
+          errors: [],
+          appId: '{app1}',
+        },
+        endEvent: {
+          eventType: 'UPDATE',
+          eventId: '1',
+          deviceUptime: 1000,
+          pid: 0,
+          processToken: '',
+          bound: 'END',
+          errors: [],
+          outcome: 'NO_UPDATE',
+        },
+      };
+      await microtasksFinished();
+      assertEquals('', item.getAttribute('status'));
     });
   });
 });

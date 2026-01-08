@@ -11,9 +11,10 @@
 
 :host {
   --event-type-background-color: var(--google-blue-50);
-  --omaha-request-background-color: var(--google-green-50);
   --event-error-border-color: var(--google-red-700);
   --event-error-background-color: color-mix(in srgb, var(--google-red-500) 4%, white);
+  --event-success-border-color: var(--google-green-700);
+  --event-success-background-color: color-mix(in srgb, var(--google-green-500) 4%, white);
 
   border: 1px solid var(--cr-scrollable-border-color);
   border-radius: 8px;
@@ -23,15 +24,21 @@
 @media (prefers-color-scheme: dark) {
   :host {
     --event-type-background-color: var(--google-blue-900);
-    --omaha-request-background-color: var(--google-green-700);
     --event-error-border-color: var(--cr-fallback-color-error);
     --event-error-background-color: color-mix(in srgb, var(--google-red-500) 10%, black);
+    --event-success-border-color: var(--google-green-700);
+    --event-success-background-color: color-mix(in srgb, var(--google-green-500) 10%, black);
   }
 }
 
-:host([error]) {
+:host([status=error]) {
   border-color: var(--event-error-border-color);
   background-color: var(--event-error-background-color);
+}
+
+:host([status=success]) {
+  border-color: var(--event-success-border-color);
+  background-color: var(--event-success-background-color);
 }
 
 cr-expand-button {
@@ -90,20 +97,23 @@ cr-expand-button {
   color: var(--cr-link-color);
 }
 
-.event-type.omaha-request {
-  background-color: var(--omaha-request-background-color);
-  margin-right: 4px;
-  color: var(--google-green-900);
+.event-description-icon-column {
+  flex-basis: 1%;
+  flex-shrink: 0;
+ --iron-icon-width: 16px;
+ --iron-icon-height: 16px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .event-type.omaha-request {
-    color: var(--google-grey-50);
-  }
+.event-description-icon-column cr-icon[icon="cr:check-circle"] {
+  --iron-icon-fill-color: var(--event-success-border-color);
+}
+
+.event-description-icon-column cr-icon[icon="cr:warning"] {
+  --iron-icon-fill-color: var(--event-error-border-color);
 }
 
 .event-description {
-  flex-basis: 60%;
+  flex-basis: 55%;
   flex-shrink: 0;
   overflow: hidden;
   text-overflow: ellipsis;

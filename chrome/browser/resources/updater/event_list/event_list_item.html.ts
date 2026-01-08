@@ -34,12 +34,13 @@ export function getHtml(this: EventListItemElement) {
           ${localizeEventType(this.event.eventType)}
         </span>
       </div>
-      <span class="event-description">
-        ${this.shouldShowOmahaRequestChip() ? html`
-          <span class="event-type omaha-request">
-            $i18n{omahaRequest}
-          </span>
+      <div class="event-description-icon-column">
+        ${this.eventSummaryIcon ? html`
+          <cr-icon icon="${this.eventSummaryIcon}">
+          </cr-icon>
         ` : ''}
+      </div>
+      <span class="event-description">
         ${this.eventSummary ?? ''}
       </span>
     </div>
@@ -70,7 +71,7 @@ export function getHtml(this: EventListItemElement) {
       <code>${this.commandLine}</code>
     </div>
   ` : ''}
-  ${this.error ? html`
+  ${this.errors.length > 0 ? html`
     <div class="event-error-details">
       ${this.errors.map(item => html`
         <div>
