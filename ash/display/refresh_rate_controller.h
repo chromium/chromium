@@ -11,6 +11,7 @@
 #include "ash/display/display_performance_mode_controller.h"
 #include "ash/system/power/power_status.h"
 #include "base/scoped_observation.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_tree_host_observer.h"
@@ -104,8 +105,8 @@ class ASH_EXPORT RefreshRateController
 
   bool force_throttle_ = false;
 
-  std::unordered_map<int64_t, std::vector<float>> display_refresh_rates_;
-  std::unordered_map<int64_t, float> refresh_rate_preferences_;
+  absl::flat_hash_map<int64_t, std::vector<float>> display_refresh_rates_;
+  absl::flat_hash_map<int64_t, float> refresh_rate_preferences_;
 
   base::ScopedObservation<ash::PowerStatus, ash::PowerStatus::Observer>
       power_status_observer_{this};
