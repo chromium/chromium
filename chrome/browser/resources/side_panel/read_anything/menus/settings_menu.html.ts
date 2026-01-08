@@ -14,8 +14,11 @@ export function getHtml(this: SettingsMenuElement) {
   <cr-action-menu id="settings-menu-dialog" non-modal>
     ${this.options_.map((item, index) => html`
       <button class="menu-row ${item.className || ''}"
+          id="${item.id}"
           role="menuitem"
           data-index="${index}"
+          title="${item.ariaLabel || item.title}"
+          aria-label="${item.ariaLabel || item.title}"
           @click="${this.onMenuItemClick_}">
 
 
@@ -23,10 +26,16 @@ export function getHtml(this: SettingsMenuElement) {
           <cr-icon class="start-icon" icon="${item.icon}"></cr-icon>
         ` : ''}
 
-        <div class="label">${item.ariaLabel}</div>
+        <div class="label">${item.title}</div>
 
         ${item.itemType === SettingsItemType.TOGGLE ? html`
-            <cr-toggle></cr-toggle>
+            <cr-toggle
+              title="${item.ariaLabel || item.title}"
+              aria-label="${item.ariaLabel || item.title}"
+              @click="${this.onMenuItemClick_}"
+              ?checked="${item.enabled || false}"
+              data-index="${index}">
+            </cr-toggle>
         ` : html`
             <!-- TODO(crbug.com/473611756): Fix direction in RTL -->
             <cr-icon class="end-icon" icon="cr:chevron-right"></cr-icon>

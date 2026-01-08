@@ -12,9 +12,10 @@ import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/c
 import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement, type PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {SettingsOption, ToolbarEvent} from '../content/read_anything_types.js';
+import type {SettingsPrefs} from '../content/read_anything_types.js';
+import {DEFAULT_SETTINGS, SettingsOption, ToolbarEvent} from '../content/read_anything_types.js';
 import {openMenu} from '../shared/common.js';
 
 import {getCss} from './settings_menu.css.js';
@@ -28,8 +29,12 @@ export enum SettingsItemType {
 interface SettingsItem {
   id: SettingsOption;
   icon: string;
-  ariaLabel: string;
+  title: string;
   itemType: SettingsItemType;
+  // Whether the toggle is checked. Only used when itemType is TOGGLE
+  enabled?: boolean;
+  // Needed when the aria label should be different from the title
+  ariaLabel?: string;
   className?: string;
 }
 
@@ -37,68 +42,68 @@ const MENU_ITEM_DATA: Record<SettingsOption, SettingsItem> = {
   [SettingsOption.COLOR]: {
     id: SettingsOption.COLOR,
     icon: 'read-anything:color',
-    ariaLabel: 'themeTitle',
+    title: 'themeTitle',
     itemType: SettingsItemType.MENU,
   },
   [SettingsOption.FONT]: {
     id: SettingsOption.FONT,
     icon: 'read-anything:font',
-    ariaLabel: 'fontNameTitle',
+    title: 'fontNameTitle',
     itemType: SettingsItemType.MENU,
   },
   [SettingsOption.FONT_SIZE]: {
     id: SettingsOption.FONT_SIZE,
     icon: 'read-anything:font-size',
-    ariaLabel: 'fontSizeTitle',
+    title: 'fontSizeTitle',
     itemType: SettingsItemType.MENU,
   },
   [SettingsOption.IMAGES]: {
     id: SettingsOption.IMAGES,
     icon: 'read-anything:images-enabled',
-    ariaLabel: 'imagesLabel',
+    title: 'imagesLabel',
     itemType: SettingsItemType.TOGGLE,
   },
   [SettingsOption.LINKS]: {
     id: SettingsOption.LINKS,
     icon: 'read-anything:links-enabled',
-    ariaLabel: 'linksLabel',
+    title: 'linksLabel',
     itemType: SettingsItemType.TOGGLE,
     className: 'hr',
   },
   [SettingsOption.LINE_SPACING]: {
     id: SettingsOption.LINE_SPACING,
     icon: 'read-anything:line-spacing',
-    ariaLabel: 'lineSpacingTitle',
+    title: 'lineSpacingTitle',
     itemType: SettingsItemType.MENU,
   },
   [SettingsOption.LETTER_SPACING]: {
     id: SettingsOption.LETTER_SPACING,
     icon: 'read-anything:letter-spacing',
-    ariaLabel: 'letterSpacingTitle',
+    title: 'letterSpacingTitle',
     itemType: SettingsItemType.MENU,
   },
   [SettingsOption.LINE_FOCUS]: {
     id: SettingsOption.LINE_FOCUS,
     icon: 'read-anything:line-focus',
-    ariaLabel: 'lineFocusLabel',
+    title: 'lineFocusLabel',
     itemType: SettingsItemType.MENU,
   },
   [SettingsOption.PRESENTATION]: {
     id: SettingsOption.PRESENTATION,
     icon: 'read-anything:view',
-    ariaLabel: 'viewLabel',
+    title: 'viewLabel',
     itemType: SettingsItemType.MENU,
   },
   [SettingsOption.VOICE_SELECTION]: {
     id: SettingsOption.VOICE_SELECTION,
     icon: 'read-anything:voice-selection',
-    ariaLabel: 'voiceSelectionLabel',
+    title: 'voiceSelectionLabel',
     itemType: SettingsItemType.MENU,
   },
   [SettingsOption.VOICE_HIGHLIGHT]: {
     id: SettingsOption.VOICE_HIGHLIGHT,
     icon: 'read-anything:highlight-on',
-    ariaLabel: 'voiceHighlightLabel',
+    title: 'voiceHighlightLabel',
     itemType: SettingsItemType.MENU,
   },
 };
@@ -126,11 +131,11 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
   static override get properties() {
     return {
-      presentationState: {type: Number},
+      settingsPrefs: {type: Object},
     };
   }
 
-  accessor presentationState: number = 0;
+  accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
 
   protected options_: SettingsItem[] = [];
   private currentOpenId_: string|null = null;
@@ -142,10 +147,12 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     this.pointerEventCallback_ = this.onPointerEvent_.bind(this);
   }
 
-  constructor() {
-    super();
-    // TODO (crbug.com/470379596): Add keyboard navigation to settings menu
-    this.initializeMenuOptions_();
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('settingsPrefs')) {
+      this.initializeMenuOptions_();
+    }
   }
 
   private initializeMenuOptions_() {
@@ -165,24 +172,54 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     optionIDs =
         optionIDs.concat([SettingsOption.PRESENTATION, SettingsOption.LINKS]);
 
-    if (chrome.readingMode.imagesEnabled) {
+    if (chrome.readingMode.imagesFeatureEnabled) {
       optionIDs.push(SettingsOption.IMAGES);
     }
 
-    // TODO (crbug.com/470379647): Add the toggle elements to settings menu
     this.options_ = optionIDs.map(id => {
       const original = MENU_ITEM_DATA[id];
-      const ariaLabel = loadTimeData.getString(original.ariaLabel);
+      const title = loadTimeData.getString(original.title);
+      let ariaLabel = title;
+      let enabled = false;
+
+      if (id === SettingsOption.IMAGES) {
+        enabled = this.settingsPrefs.imagesEnabled;
+        ariaLabel = this.getImageItemLabels();
+      }
+
+      if (id === SettingsOption.LINKS) {
+        enabled = this.settingsPrefs.linksEnabled;
+        ariaLabel = this.getLinkItemLabels();
+      }
 
       return {
         ...original,
-        id: id,
+        id,
+        title,
         ariaLabel,
+        enabled,
       };
     });
   }
 
+  private getLinkItemLabels() {
+    if (chrome.readingMode.linksEnabled) {
+      return loadTimeData.getString('disableLinksLabel');
+    }
+
+    return loadTimeData.getString('enableLinksLabel');
+  }
+
+  private getImageItemLabels() {
+    if (chrome.readingMode.imagesEnabled) {
+      return loadTimeData.getString('disableImagesLabel');
+    }
+
+    return loadTimeData.getString('enableImagesLabel');
+  }
+
   protected onMenuItemClick_(e: Event) {
+    e.stopImmediatePropagation();
     const currentTarget = e.currentTarget as HTMLElement;
     const index = Number.parseInt(currentTarget.dataset['index']!);
     const item = this.options_[index];
@@ -190,8 +227,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       return;
     }
 
-    // TODO (crbug.com/470379647): Add the toggle elements to settings menu
     if (item.itemType === SettingsItemType.TOGGLE) {
+      this.onToggleMenuItemClick_(item);
       return;
     }
 
@@ -208,7 +245,28 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     this.currentOpenId_ = newMenuId;
   }
 
+  private onToggleMenuItemClick_(item: SettingsItem) {
+    if (item.itemType !== SettingsItemType.TOGGLE) {
+      return;
+    }
+
+    if (item.id === SettingsOption.LINKS) {
+      chrome.readingMode.onLinksEnabledToggled();
+      this.fire(ToolbarEvent.LINKS);
+      item.ariaLabel = this.getLinkItemLabels();
+      item.enabled = chrome.readingMode.linksEnabled;
+    } else if (item.id === SettingsOption.IMAGES) {
+      chrome.readingMode.onImagesEnabledToggled();
+      this.fire(ToolbarEvent.IMAGES);
+      item.ariaLabel = this.getImageItemLabels();
+      item.enabled = chrome.readingMode.imagesEnabled;
+    }
+
+    this.requestUpdate();
+  }
+
   open(anchor: HTMLElement) {
+    // TODO (crbug.com/470379596): Add keyboard navigation to settings menu
     openMenu(this.$.lazyMenu.get(), anchor);
     this.blockedEvents_.forEach(eventType => {
       window.addEventListener(

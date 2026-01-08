@@ -5,7 +5,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {SettingsMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {SettingsOption, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -79,5 +79,43 @@ suite('SettingsMenuElement', () => {
     }
 
     assertEquals(8, submenuEvents);
+  });
+
+  test('links event is fired when links item is clicked', () => {
+    const actionMenu = settingsMenu.$.lazyMenu.get();
+    const menuItems =
+        Array.from(actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
+    const targetItem = menuItems.find(item => item.id === SettingsOption.LINKS);
+    assertTrue(!!targetItem);
+
+    let linksEventWasFired = false;
+    settingsMenu.addEventListener(
+        ToolbarEvent.LINKS, () => linksEventWasFired = true);
+    let linkEnabledTogled = false;
+    chrome.readingMode.onLinksEnabledToggled = () => linkEnabledTogled = true;
+
+    targetItem.click();
+    assertTrue(linksEventWasFired);
+    assertTrue(linkEnabledTogled);
+  });
+
+  test('images event is fired when images item is clicked', () => {
+    const actionMenu = settingsMenu.$.lazyMenu.get();
+    const menuItems =
+        Array.from(actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
+    const targetItem =
+        menuItems.find(item => item.id === SettingsOption.IMAGES);
+    assertTrue(!!targetItem);
+
+    let imagesEventWasFired = false;
+    settingsMenu.addEventListener(
+        ToolbarEvent.IMAGES, () => imagesEventWasFired = true);
+    let imagesEnabledTogled = false;
+    chrome.readingMode.onImagesEnabledToggled = () => imagesEnabledTogled =
+        true;
+
+    targetItem.click();
+    assertTrue(imagesEventWasFired);
+    assertTrue(imagesEnabledTogled);
   });
 });
