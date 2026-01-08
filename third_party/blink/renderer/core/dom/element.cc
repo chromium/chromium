@@ -9789,6 +9789,15 @@ bool Element::ShouldStoreComputedStyle(const ComputedStyle& style) const {
   if (LayoutObjectIsNeeded(style)) {
     return true;
   }
+  if (IsColumnPseudoElement()) {
+    // Column pseudo-elements don't create layout objects, but need to store
+    // computed style regardless (display type doesn't matter here). It's the
+    // layout engine that decides whether a `::column` should exist or not. A
+    // `::column` pseudo-element may e.g. specify `scroll-snap-align`. There may
+    // also be a `::scroll-marker` child pseudo-element that inherits properties
+    // from its `::column`.
+    return true;
+  }
   if (auto* svg_element = DynamicTo<SVGElement>(this)) {
     if (!svg_element->HasSVGParent()) {
       return false;

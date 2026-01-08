@@ -33,6 +33,7 @@ class CORE_EXPORT ColumnPseudoElement : public IndexedPseudoElement {
 
   void AttachLayoutTree(AttachContext&) final;
   void DetachLayoutTree(bool performing_reattach) final;
+  bool LayoutObjectIsNeeded(const DisplayStyle&) const final;
 
  private:
   PhysicalRect column_rect_;

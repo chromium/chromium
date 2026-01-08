@@ -129,6 +129,10 @@ void ColumnPseudoElement::DetachLayoutTree(bool performing_reattach) {
   ContainerNode::DetachLayoutTree(performing_reattach);
 }
 
+bool ColumnPseudoElement::LayoutObjectIsNeeded(const DisplayStyle&) const {
+  return false;
+}
+
 void ColumnPseudoElement::SetIsInsideInactiveColumnTabForDescendants(
     bool is_inactive) const {
   class Listener : public PhysicalFragmentTraversalListener {
