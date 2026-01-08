@@ -38,6 +38,7 @@ export class CrDialogDemoElement extends CrLitElement {
     return {
       autofocusInput_: {type: Boolean},
       isDialogOpen_: {type: Boolean},
+      noCancel_: {type: Boolean},
       showHeader_: {type: Boolean},
       showFooter_: {type: Boolean},
       showInputs_: {type: Boolean},
@@ -48,6 +49,7 @@ export class CrDialogDemoElement extends CrLitElement {
 
   protected accessor autofocusInput_: boolean = false;
   protected accessor isDialogOpen_: boolean = false;
+  protected accessor noCancel_: boolean = false;
   protected accessor showHeader_: boolean = false;
   protected accessor showFooter_: boolean = false;
   protected accessor showInputs_: boolean = false;
@@ -109,6 +111,10 @@ export class CrDialogDemoElement extends CrLitElement {
 
   protected onAutofocusInputChanged_(e: CustomEvent<{value: boolean}>) {
     this.autofocusInput_ = e.detail.value;
+  }
+
+  protected onNoCancelChanged_(e: CustomEvent<{value: boolean}>) {
+    this.noCancel_ = e.detail.value;
   }
 }
 
