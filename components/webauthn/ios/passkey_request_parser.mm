@@ -6,6 +6,7 @@
 
 #import "base/base64url.h"
 #import "device/fido/fido_user_verification_requirement.h"
+#import "device/fido/public/fido_constants.h"
 
 namespace webauthn {
 
@@ -42,6 +43,9 @@ constexpr char kDisplayName[] = "displayName";
 // Member of the credential descriptors array.
 constexpr char kType[] = "type";
 constexpr char kTransports[] = "transports";
+
+// JSON formatted extension input data.
+constexpr char kExtensions[] = "extensions";
 
 // Returns the string if valid, otherwise returns the error.
 base::expected<const std::string, PasskeysParsingError> ValidateString(
@@ -210,11 +214,117 @@ ReadCredentials(const base::Value::List* serialized_descriptors) {
   return credential_descriptors;
 }
 
+// Builds a PRFInputData object from a dictionary.
+base::expected<passkey_model_utils::PRFInputData, PasskeysParsingError>
+BuildPRFInputData(const base::Value::Dict& dict) {
+  // Get base 64 encoded strings.
+  const std::string* first64 = dict.FindString(device::kExtensionPRFFirst);
+  const std::string* second64 = dict.FindString(device::kExtensionPRFSecond);
+
+  // The first input is mandatory.
+  if (!first64) {
+    return base::unexpected(PasskeysParsingError::kMissingFirstPRFInput);
+  }
+
+  // Decode base 64 strings into byte arrays.
+  std::optional<std::vector<uint8_t>> first = Base64UrlDecode(*first64);
+  if (!first.has_value()) {
+    // Base 64 decode failure.
+    return base::unexpected(PasskeysParsingError::kMalformedFirstPRFInput);
+  }
+
+  std::optional<std::vector<uint8_t>> second = std::nullopt;
+  if (second64) {
+    second = Base64UrlDecode(*second64);
+    if (!second.has_value()) {
+      // Base 64 decode failure.
+      return base::unexpected(PasskeysParsingError::kMalformedSecondPRFInput);
+    }
+  }
+
+  // No input should be larger than the maximum allowed input size.
+  if (first->size() > device::kMaxPRFInputSize ||
+      (second.has_value() && second->size() > device::kMaxPRFInputSize)) {
+    return base::unexpected(PasskeysParsingError::kPRFInputTooLarge);
+  }
+
+  return passkey_model_utils::PRFInputData(*first, second);
+}
+
+// Reads all extension data from the extensions dictionary.
+base::expected<PasskeyExtensionData, PasskeysParsingError> BuildExtensionData(
+    const base::Value::Dict& extensions,
+    const std::optional<std::vector<device::PublicKeyCredentialDescriptor>>&
+        allow_credentials,
+    bool for_create_request) {
+  const base::Value::Dict* prf = extensions.FindDict(device::kExtensionPRF);
+  PasskeyExtensionData extension_data;
+  if (!prf) {
+    return extension_data;
+  }
+
+  const base::Value::Dict* prf_eval = prf->FindDict(device::kExtensionPRFEval);
+  if (prf_eval) {
+    auto prf_input_data = BuildPRFInputData(*prf_eval);
+    if (!prf_input_data.has_value()) {
+      return base::unexpected(prf_input_data.error());
+    }
+    extension_data.prf_eval = std::move(*prf_input_data);
+  }
+
+  const base::Value::Dict* eval_by_credential =
+      prf->FindDict(device::kExtensionPRFEvalByCredential);
+  if (eval_by_credential) {
+    if (for_create_request) {
+      // eval_by_credential is disallowed on create requests.
+      return base::unexpected(PasskeysParsingError::kEvalByCredentialOnCreate);
+    }
+
+    for (auto per_credential_data : *eval_by_credential) {
+      // Note that `&per_credential_data.first` can't be null, so
+      // kMissingEvalByCredential is used for both the empty and missing cases.
+      auto credential_id = ValidateBase64URLString(
+          &per_credential_data.first,
+          PasskeysParsingError::kMissingEvalByCredential,
+          PasskeysParsingError::kMissingEvalByCredential,
+          PasskeysParsingError::kMalformedEvalByCredential);
+
+      if (!credential_id.has_value()) {
+        return base::unexpected(credential_id.error());
+      }
+
+      // Every credential id must appear in the allow_credentials list.
+      if (allow_credentials.has_value() &&
+          !std::any_of(allow_credentials->begin(), allow_credentials->end(),
+                       [&credential_id](
+                           const device::PublicKeyCredentialDescriptor& desc) {
+                         return desc.id == *credential_id;
+                       })) {
+        return base::unexpected(
+            PasskeysParsingError::kEvalByCredentialNotAllowed);
+      }
+
+      auto prf_input_data =
+          BuildPRFInputData(per_credential_data.second.GetDict());
+      if (!prf_input_data.has_value()) {
+        return base::unexpected(prf_input_data.error());
+      }
+      extension_data.prf_eval_by_credential.emplace(*credential_id,
+                                                    std::move(*prf_input_data));
+    }
+  }
+
+  return extension_data;
+}
+
 // Builds a PasskeyRequestParams object from the parameters contained in the
 // provided dictionary.
 base::expected<PasskeyRequestParams, PasskeysParsingError> BuildRequestParams(
     IOSPasskeyClient::RequestInfo request_info,
-    const base::Value::Dict& dict) {
+    const base::Value::Dict& dict,
+    const std::optional<std::vector<device::PublicKeyCredentialDescriptor>>&
+        allow_credentials,
+    bool for_create_request) {
   const base::Value::Dict* request_dict = dict.FindDict(kRequest);
   if (!request_dict) {
     return base::unexpected(PasskeysParsingError::kMissingRequest);
@@ -239,10 +349,22 @@ base::expected<PasskeyRequestParams, PasskeysParsingError> BuildRequestParams(
     return base::unexpected(rp_entity.error());
   }
 
+  const base::Value::Dict* extensions = dict.FindDict(kExtensions);
+  if (!extensions) {
+    return base::unexpected(PasskeysParsingError::kMissingExtensions);
+  }
+
+  auto extension_data =
+      BuildExtensionData(*extensions, allow_credentials, for_create_request);
+  if (!extension_data.has_value()) {
+    return base::unexpected(extension_data.error());
+  }
+
   return PasskeyRequestParams(std::move(request_info), std::move(*rp_entity),
                               std::move(*challenge),
                               ToUserVerificationRequirement(
-                                  request_dict->FindString(kUserVerification)));
+                                  request_dict->FindString(kUserVerification)),
+                              std::move(*extension_data));
 }
 
 }  // namespace
@@ -269,14 +391,16 @@ BuildRequestInfo(const base::Value::Dict& dict) {
 base::expected<AssertionRequestParams, PasskeysParsingError>
 BuildAssertionRequestParams(IOSPasskeyClient::RequestInfo request_info,
                             const base::Value::Dict& dict) {
-  auto request_params = BuildRequestParams(std::move(request_info), dict);
-  if (!request_params.has_value()) {
-    return base::unexpected(request_params.error());
-  }
-
   auto credentials = ReadCredentials(dict.FindList(kAllowCredentials));
   if (!credentials.has_value()) {
     return base::unexpected(credentials.error());
+  }
+
+  auto request_params =
+      BuildRequestParams(std::move(request_info), dict, *credentials,
+                         /*for_create_request=*/false);
+  if (!request_params.has_value()) {
+    return base::unexpected(request_params.error());
   }
 
   return AssertionRequestParams(std::move(*request_params),
@@ -286,7 +410,13 @@ BuildAssertionRequestParams(IOSPasskeyClient::RequestInfo request_info,
 base::expected<RegistrationRequestParams, PasskeysParsingError>
 BuildRegistrationRequestParams(IOSPasskeyClient::RequestInfo request_info,
                                const base::Value::Dict& dict) {
-  auto request_params = BuildRequestParams(std::move(request_info), dict);
+  auto credentials = ReadCredentials(dict.FindList(kExcludeCredentials));
+  if (!credentials.has_value()) {
+    return base::unexpected(credentials.error());
+  }
+
+  auto request_params = BuildRequestParams(
+      std::move(request_info), dict, std::nullopt, /*for_create_request=*/true);
   if (!request_params.has_value()) {
     return base::unexpected(request_params.error());
   }
@@ -299,11 +429,6 @@ BuildRegistrationRequestParams(IOSPasskeyClient::RequestInfo request_info,
   auto user_entity = BuildUserEntity(*user_entity_dict);
   if (!user_entity.has_value()) {
     return base::unexpected(user_entity.error());
-  }
-
-  auto credentials = ReadCredentials(dict.FindList(kExcludeCredentials));
-  if (!credentials.has_value()) {
-    return base::unexpected(credentials.error());
   }
 
   return RegistrationRequestParams(std::move(*request_params),

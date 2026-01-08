@@ -172,7 +172,7 @@ TEST_F(PasskeyControllerJavaScriptTest,
 
   NSDictionary* body = message_handler().lastReceivedMessage.body;
   NSArray* allKeys = body.allKeys;
-  EXPECT_EQ(allKeys.count, 7ul);
+  EXPECT_EQ(allKeys.count, 8ul);
   EXPECT_TRUE([allKeys containsObject:@"event"]);
   EXPECT_TRUE([allKeys containsObject:@"frameId"]);
   EXPECT_TRUE([allKeys containsObject:@"requestId"]);
@@ -180,6 +180,7 @@ TEST_F(PasskeyControllerJavaScriptTest,
   EXPECT_TRUE([allKeys containsObject:@"rpEntity"]);
   EXPECT_TRUE([allKeys containsObject:@"userEntity"]);
   EXPECT_TRUE([allKeys containsObject:@"excludeCredentials"]);
+  EXPECT_TRUE([allKeys containsObject:@"extensions"]);
 
   EXPECT_NSEQ(@"handleCreateRequest", body[@"event"]);
 }
@@ -196,13 +197,14 @@ TEST_F(PasskeyControllerJavaScriptTest,
 
   NSDictionary* body = message_handler().lastReceivedMessage.body;
   NSArray* allKeys = body.allKeys;
-  EXPECT_EQ(allKeys.count, 6ul);
+  EXPECT_EQ(allKeys.count, 7ul);
   EXPECT_TRUE([allKeys containsObject:@"event"]);
   EXPECT_TRUE([allKeys containsObject:@"frameId"]);
   EXPECT_TRUE([allKeys containsObject:@"requestId"]);
   EXPECT_TRUE([allKeys containsObject:@"request"]);
   EXPECT_TRUE([allKeys containsObject:@"rpEntity"]);
   EXPECT_TRUE([allKeys containsObject:@"allowCredentials"]);
+  EXPECT_TRUE([allKeys containsObject:@"extensions"]);
 
   EXPECT_NSEQ(@"handleGetRequest", body[@"event"]);
 }

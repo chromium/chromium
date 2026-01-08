@@ -67,9 +67,11 @@ PasskeyRequestParams BuildPasskeyRequestParams() {
                                              kFakeRequestId);
   device::PublicKeyCredentialRpEntity rp_entity(kRpId);
   std::vector<uint8_t> challenge;
+  PasskeyExtensionData extension_data;
   return PasskeyRequestParams(std::move(request_info), std::move(rp_entity),
                               std::move(challenge),
-                              device::UserVerificationRequirement::kPreferred);
+                              device::UserVerificationRequirement::kPreferred,
+                              std::move(extension_data));
 }
 
 // Builds RegistrationRequestParams from an exclude credentials list.

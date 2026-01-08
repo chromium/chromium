@@ -239,6 +239,19 @@ function publicKeyCredentialDescriptorAsSerializedDescriptors(
                          }));
 }
 
+// Serialize all extension inputs.
+function serializeExtensions(extensions?: AuthenticationExtensionsClientInputs):
+    AuthenticationExtensionsClientInputsJSON {
+  const result: AuthenticationExtensionsClientInputsJSON = {};
+
+  if (!extensions) {
+    return result;
+  }
+
+  // TODO(crbug.com/460485679): Support extensions.
+  return result;
+}
+
 // Creates a PublicKeyCredential from the provided list of arguments.
 // The credential's type is always set to 'public-key'.
 function createPublicKeyCredential(
@@ -431,6 +444,7 @@ function createRegistrationRequest(
     'userEntity': extractUserEntity(publicKeyOptions.user),
     'excludeCredentials': publicKeyCredentialDescriptorAsSerializedDescriptors(
         publicKeyOptions.excludeCredentials),
+    'extensions': serializeExtensions(publicKeyOptions.extensions),
   });  // Attestation request
 
   return deferredPromise.promise;
@@ -451,6 +465,7 @@ function createAssertionRequest(
     'rpEntity': extractRelyingPartyEntity(publicKeyOptions),
     'allowCredentials': publicKeyCredentialDescriptorAsSerializedDescriptors(
         publicKeyOptions.allowCredentials),
+    'extensions': serializeExtensions(publicKeyOptions.extensions),
   });  // Assertion request
 
   return deferredPromise.promise;

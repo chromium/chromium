@@ -52,6 +52,11 @@ bool IsOriginValidForRelyingPartyId(const url::Origin& origin,
   return true;
 }
 
+// Converts an std::string to a byte vector.
+std::vector<uint8_t> ToByteVector(const std::string& str) {
+  return std::vector<uint8_t>(str.begin(), str.end());
+}
+
 // Utility function to create a passkey and an attestation object from the
 // provided parameters.
 // TODO(crbug.com/460485333): Merge this code with PerformPasskeyCreation.
@@ -123,11 +128,9 @@ std::optional<PasskeyJavaScriptFeature::AssertionData> CreateAssertionObject(
     return std::nullopt;
   }
 
-  const std::string& user_id = passkey.user_id();
   return PasskeyJavaScriptFeature::AssertionData(
       std::move(*signature), std::move(authenticator_data),
-      std::vector<uint8_t>(user_id.begin(), user_id.end()),
-      std::move(client_data_json));
+      ToByteVector(passkey.user_id()), std::move(client_data_json));
 }
 
 // Attempts to find a passkey matching the provided credential ID in a list of
@@ -266,7 +269,8 @@ web::WebFrame* PasskeyTabHelper::GetWebFrame(
 
 bool PasskeyTabHelper::HasExcludedPasskey(
     const RegistrationRequestParams& params) const {
-  std::set<std::string> exclude_credentials = params.GetExcludeCredentialIds();
+  std::set<std::vector<uint8_t>> exclude_credentials =
+      params.GetExcludeCredentialIds();
   if (exclude_credentials.empty()) {
     return false;
   }
@@ -275,7 +279,7 @@ bool PasskeyTabHelper::HasExcludedPasskey(
       passkey_model_->GetPasskeys(params.RpId(),
                                   PasskeyModel::ShadowedCredentials::kExclude);
   for (const auto& passkey : passkeys) {
-    if (exclude_credentials.contains(passkey.credential_id())) {
+    if (exclude_credentials.contains(ToByteVector(passkey.credential_id()))) {
       return true;
     }
   }
@@ -294,13 +298,14 @@ PasskeyTabHelper::GetFilteredPasskeys(
 
   // If the allowed credentials array is empty, then the relying party accepts
   // any passkey credential.
-  std::set<std::string> allow_credentials = params.GetAllowCredentialIds();
+  std::set<std::vector<uint8_t>> allow_credentials =
+      params.GetAllowCredentialIds();
   if (allow_credentials.empty()) {
     return passkeys;
   }
 
   std::erase_if(passkeys, [&](sync_pb::WebauthnCredentialSpecifics cred) {
-    return !allow_credentials.contains(cred.credential_id());
+    return !allow_credentials.contains(ToByteVector(cred.credential_id()));
   });
 
   return passkeys;

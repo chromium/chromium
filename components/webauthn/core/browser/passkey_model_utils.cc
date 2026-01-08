@@ -128,6 +128,7 @@ PRFInputData::PRFInputData(
 
 PRFInputData::PRFInputData(const PRFInputData&) = default;
 PRFInputData::PRFInputData(PRFInputData&&) = default;
+PRFInputData& PRFInputData::operator=(PRFInputData&&) = default;
 PRFInputData::~PRFInputData() = default;
 
 ExtensionInputData::ExtensionInputData(PRFInputData prf_input_data)

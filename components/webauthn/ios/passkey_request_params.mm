@@ -11,28 +11,37 @@ namespace webauthn {
 namespace {
 
 // Returns a set of credential ids from a vector of credential descriptors.
-std::set<std::string> GetIdsFromDescriptors(
+std::set<std::vector<uint8_t>> GetIdsFromDescriptors(
     const std::vector<device::PublicKeyCredentialDescriptor>& descriptors) {
-  std::set<std::string> descriptor_ids;
+  std::set<std::vector<uint8_t>> descriptor_ids;
   std::transform(descriptors.begin(), descriptors.end(),
                  std::inserter(descriptor_ids, descriptor_ids.begin()),
                  [](const device::PublicKeyCredentialDescriptor& desc) {
-                   return std::string(desc.id.begin(), desc.id.end());
+                   return desc.id;
                  });
   return descriptor_ids;
 }
 
 }  // namespace
 
+PasskeyExtensionData::PasskeyExtensionData() = default;
+PasskeyExtensionData::PasskeyExtensionData(const PasskeyExtensionData& other) =
+    default;
+PasskeyExtensionData::PasskeyExtensionData(PasskeyExtensionData&& other) =
+    default;
+PasskeyExtensionData::~PasskeyExtensionData() = default;
+
 PasskeyRequestParams::PasskeyRequestParams(
     IOSPasskeyClient::RequestInfo request_info,
     device::PublicKeyCredentialRpEntity rp_entity,
     std::vector<uint8_t> challenge,
-    device::UserVerificationRequirement user_verification)
+    device::UserVerificationRequirement user_verification,
+    PasskeyExtensionData extension_data)
     : request_info_(std::move(request_info)),
       rp_entity_(std::move(rp_entity)),
       challenge_(std::move(challenge)),
-      user_verification_(user_verification) {}
+      user_verification_(user_verification),
+      extension_data_(std::move(extension_data)) {}
 
 PasskeyRequestParams::PasskeyRequestParams(PasskeyRequestParams&& other) =
     default;
@@ -74,7 +83,8 @@ AssertionRequestParams::AssertionRequestParams(
 AssertionRequestParams::AssertionRequestParams(AssertionRequestParams&& other) =
     default;
 
-std::set<std::string> AssertionRequestParams::GetAllowCredentialIds() const {
+std::set<std::vector<uint8_t>> AssertionRequestParams::GetAllowCredentialIds()
+    const {
   return GetIdsFromDescriptors(allow_credentials_);
 }
 
@@ -91,8 +101,8 @@ RegistrationRequestParams::RegistrationRequestParams(
 RegistrationRequestParams::RegistrationRequestParams(
     RegistrationRequestParams&& other) = default;
 
-std::set<std::string> RegistrationRequestParams::GetExcludeCredentialIds()
-    const {
+std::set<std::vector<uint8_t>>
+RegistrationRequestParams::GetExcludeCredentialIds() const {
   return GetIdsFromDescriptors(exclude_credentials_);
 }
 

@@ -44,6 +44,7 @@ struct PRFInputData {
 
   PRFInputData(const PRFInputData&);
   PRFInputData(PRFInputData&&);
+  PRFInputData& operator=(PRFInputData&& other);
   ~PRFInputData();
 
   inline const device::PRFInput& prf_input() const { return input; }
