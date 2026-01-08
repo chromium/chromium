@@ -117,6 +117,7 @@ source_set("impl") {
   ]
   deps = [
     ":actor",
+    ":variants",
     "//chrome/browser:browser_process",
     "//chrome/browser/page_content_annotations:fetcher",
     "//chrome/browser/signin",
@@ -181,7 +182,6 @@ source_set("impl") {
     ]
 
     deps += [
-      ":variants",
       "//chrome/browser/actor/ui",
       "//chrome/browser/actor/ui:event_dispatcher",
       "//chrome/browser/affiliations",
@@ -218,17 +218,15 @@ source_set("impl") {
   }
 }
 
-if (!skip_android_unmigrated_actor_files) {
-  source_set("variants") {
-    sources = [
-      "tool_request_variant.cc",
-      "tool_request_variant.h",
-    ]
-    deps = [
-      ":actor",
-      "//base",
-    ]
-  }
+source_set("variants") {
+  sources = [
+    "tool_request_variant.cc",
+    "tool_request_variant.h",
+  ]
+  deps = [
+    ":actor",
+    "//base",
+  ]
 }
 
 # This target contains only type definitions that may be depended on by other
