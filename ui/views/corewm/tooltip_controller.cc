@@ -5,6 +5,7 @@
 #include "ui/views/corewm/tooltip_controller.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <string_view>
 #include <utility>
@@ -511,7 +512,8 @@ void TooltipController::SetObservedWindow(aura::Window* target) {
 }
 
 bool TooltipController::IsTooltipIdUpdateNeeded() const {
-  return state_manager_->tooltip_id() != wm::GetTooltipId(observed_window_);
+  return state_manager_->tooltip_id() !=
+         reinterpret_cast<std::uintptr_t>(wm::GetTooltipId(observed_window_));
 }
 
 bool TooltipController::IsTooltipTextUpdateNeeded() const {
