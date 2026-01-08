@@ -218,6 +218,10 @@
       ],
       "mirroring_builder_group_and_names": [
         {
+          "builder": "gpu-fyi-cq-mac-arm64",
+          "group": "tryserver.chromium.mac"
+        },
+        {
           "builder": "gpu-fyi-try-mac-arm64-apple-m1-exp",
           "group": "tryserver.chromium.mac"
         },

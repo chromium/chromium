@@ -54,6 +54,7 @@ consoles.console_view(
     name = "chromium.gpu.fyi",
     branch_selector = [
         branches.selector.ANDROID_BRANCHES,
+        branches.selector.MAC_BRANCHES,
     ],
     ordering = {
         None: ["Windows", "Mac", "Linux"],
@@ -1117,6 +1118,7 @@ gpu.ci.mac_builder(
 
 gpu.ci.mac_builder(
     name = "GPU FYI Mac arm64 Builder",
+    branch_selector = branches.selector.MAC_BRANCHES,
     description_html = "Builds release Mac arm64 binaries for GPU testing",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -2097,6 +2099,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac FYI Retina Release (Apple M2)",
+    branch_selector = branches.selector.MAC_BRANCHES,
     description_html = "Runs release GPU tests on stable Mac/M2 Macbook Pro configs",
     parent = "GPU FYI Mac arm64 Builder",
     builder_spec = builder_config.builder_spec(
