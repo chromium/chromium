@@ -189,9 +189,9 @@ std::optional<BiddingAndAuctionServerKey> BiddingAndAuctionKeySet::GetRandomKey(
     if (it == origin_scoped_keys_.end() || it->second.empty()) {
       return std::nullopt;
     }
-    return it->second[base::RandInt(0, it->second.size() - 1)];
+    return base::RandomChoice(it->second);
   } else if (!keys_.empty()) {
-    return keys_[base::RandInt(0, keys_.size() - 1)];
+    return base::RandomChoice(keys_);
   }
   return std::nullopt;
 }
