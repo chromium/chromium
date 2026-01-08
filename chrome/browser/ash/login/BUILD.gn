@@ -151,6 +151,7 @@ static_library("login") {
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/login/auth",
     "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/login/fjord_oobe",
     "//chrome/browser/ash/login/oobe_quick_start",
     "//chrome/browser/ash/login/oobe_quick_start:oobe_quick_start_pref_names",
     "//chrome/browser/ash/login/quick_unlock",
