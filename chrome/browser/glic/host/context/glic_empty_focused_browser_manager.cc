@@ -29,8 +29,6 @@ BrowserWindowInterface* GlicEmptyFocusedBrowserManager::GetFocusedBrowser()
 
 BrowserWindowInterface* GlicEmptyFocusedBrowserManager::GetActiveBrowser()
     const {
-  // TODO(b:441552043): pull a default implementation for vanilla active browser
-  // tracking.
   return nullptr;
 }
 
