@@ -22,6 +22,7 @@
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 using content::NavigationHandle;
 using content::WebContents;
@@ -68,6 +69,11 @@ void NavigateTool::Invoke(ToolCallback callback) {
 
   if (base::FeatureList::IsEnabled(kGlicNavigateUsingLoadURL)) {
     content::NavigationController::LoadURLParams params(url_);
+
+    if (base::FeatureList::IsEnabled(kGlicNavigateToolUseOpaqueInitiator)) {
+      params.initiator_origin = url::Origin();
+    }
+
     params.transition_type = ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
     params.is_renderer_initiated = false;
     params.has_user_gesture = true;
