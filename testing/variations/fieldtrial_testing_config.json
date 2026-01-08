@@ -26374,23 +26374,6 @@
             ]
         }
     ],
-    "UseIssueTokenToFetchAccessTokens": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseIssueTokenToFetchAccessTokens"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseLastVisitedFallbackURLFavicon": [
         {
             "platforms": [
