@@ -129,6 +129,9 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
     private boolean mQueryEntered;
     private SettingsIndexData mIndexData;
 
+    // True if empty fragment is showing.
+    private boolean mShowingEmptyFragment;
+
     // Interface to communite with search backend and receive results asynchronously.
     public interface SearchCallback {
         /**
@@ -445,6 +448,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         mFragmentState = FS_SETTINGS;
         mBackActionCallback.setEnabled(false);
         if (mUseMultiColumn) mUpdateFirstVisibleTitle.onResult(0);
+        mShowingEmptyFragment = false;
     }
 
     private void exitResultState() {
@@ -508,6 +512,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
                     },
                     false);
         }
+        mShowingEmptyFragment = true;
     }
 
     private void openHelpCenter() {
@@ -652,6 +657,15 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
             // Query edit UI should be hidden while we're browsing results.
             if (mFragmentState == FS_RESULTS) query.setVisibility(View.GONE);
 
+            // In single mode we end up at non-main settings where search cannot be initiated.
+            // Keeping the empty fragment in that state is confusing and misleading. To sort
+            // out the inconsistency, we revert to default state (FS_SETTINGS);
+            if (mFragmentState == FS_SEARCH && mShowingEmptyFragment) {
+                exitSearchState(/* clearFragment= */ false);
+                mUpdateFirstVisibleTitle.onResult(0);
+                return;
+            }
+
             if (mFragmentState == FS_SEARCH || mFragmentState == FS_RESULTS) {
                 if (isShowingMainSettings()) {
                     // Results in the detail pane should be slided in to be visible if the pane
@@ -761,6 +775,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
                 .replace(getViewIdForSearchDisplay(), mResultsFragment)
                 .setReorderingAllowed(true)
                 .commit();
+        mShowingEmptyFragment = false;
     }
 
     /**
