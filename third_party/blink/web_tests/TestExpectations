@@ -9827,3 +9827,4 @@ crbug.com/40250618 [ Mac ] external/wpt/html/cross-origin-opener-policy/reportin
 
 # Gardener 2026-01-08
 crbug.com/474158153 [ Linux ] external/wpt/xml/xslt/large-cdata.html [ Crash Failure Pass ]
+crbug.com/474155097 [ Linux ] virtual/xslt-disabled/external/wpt/xml/xslt/large-cdata.html [ Crash Failure Pass ]
