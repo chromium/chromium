@@ -439,6 +439,49 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tab.Discarding.Reload.CausedByFocus" enum="Boolean"
+    expires_after="2027-01-10">
+  <owner>aattar@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded when a discarded tab begins to reload. Returns true if the tab was
+    focused at the moment the reload started (indicating an explicit user
+    switch), and false if it was a background reload.
+  </summary>
+</histogram>
+
+<histogram name="Tab.Discarding.Reload.FreedMemoryMB" units="MB"
+    expires_after="2027-01-10">
+  <owner>aattar@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded when a discarded tab finishes reloading. Tracks the estimated
+    memory (in MB) that was originally freed when this tab was discarded.
+    Correlate with Reload.LoadTime to determine efficiency.
+  </summary>
+</histogram>
+
+<histogram name="Tab.Discarding.Reload.LoadTime" units="ms"
+    expires_after="2027-01-10">
+  <owner>aattar@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded when a discarded tab finishes reloading. Measures the duration from
+    DidStartLoading to DidStopLoading.
+  </summary>
+</histogram>
+
+<histogram name="Tab.Discarding.Reload.TimeSinceDiscard" units="ms"
+    expires_after="2027-01-10">
+  <owner>aattar@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded when a discarded tab begins to reload. Measures the time elapsed
+    since the tab was originally discarded. Short times indicate high &quot;user
+    regret.&quot;
+  </summary>
+</histogram>
+
 <histogram name="Tab.ExternalApplicationOpened{Cause}"
     enum="ExternalLauncherOption" expires_after="2026-04-05">
   <owner>olivierrobin@chromium.org</owner>
