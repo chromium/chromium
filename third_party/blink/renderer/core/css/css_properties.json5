@@ -5908,6 +5908,8 @@
       inherited: true,
       keywords: ["auto", "none", "inter-word", "inter-character"],
       typedom_types: ["Keyword"],
+      valid_for_first_letter: true,
+      valid_for_first_line: true,
       invalidate: ["layout"],
       runtime_flag: "CssTextJustify",
     },
