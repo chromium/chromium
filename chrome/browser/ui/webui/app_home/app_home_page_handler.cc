@@ -178,10 +178,9 @@ void AppHomePageHandler::LaunchAppInternal(
 
   web_app::WebAppRegistrar& registrar = web_app_provider_->registrar_unsafe();
   if (registrar.IsInstallState(
-          app_id,
-          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+          app_id, {web_app::proto::SUGGESTED_FROM_ANOTHER_DEVICE,
+                   web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                   web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
     type = extensions::Manifest::Type::TYPE_HOSTED_APP;
     full_launch_url = registrar.GetAppStartUrl(app_id);
     launch_container = web_app::ConvertDisplayModeToAppLaunchContainer(
@@ -367,6 +366,9 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
       case web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION:
         is_locally_installed = true;
         break;
+      // Apps that will be migrated to should not be shown on UX surfaces.
+      case web_app::proto::SUGGESTED_FROM_MIGRATION:
+        NOTREACHED();
     }
   }
 
@@ -446,6 +448,11 @@ void AppHomePageHandler::FillWebAppInfoList(
   web_app::WebAppRegistrar& registrar = web_app_provider_->registrar_unsafe();
 
   for (const webapps::AppId& web_app_id : registrar.GetAppIds()) {
+    // Do not show apps that are migration targets on chrome://apps.
+    if (registrar.IsInstallState(web_app_id,
+                                 {web_app::proto::SUGGESTED_FROM_MIGRATION})) {
+      continue;
+    }
     result->emplace_back(CreateAppInfoPtrFromWebApp(web_app_id));
   }
 }
@@ -680,10 +687,9 @@ void AppHomePageHandler::UninstallApp(const std::string& app_id) {
   }
 
   if (web_app_provider_->registrar_unsafe().IsInstallState(
-          app_id,
-          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+          app_id, {web_app::proto::SUGGESTED_FROM_ANOTHER_DEVICE,
+                   web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                   web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
     UninstallWebApp(app_id);
     return;
   }
@@ -697,10 +703,9 @@ void AppHomePageHandler::UninstallApp(const std::string& app_id) {
 
 void AppHomePageHandler::ShowAppSettings(const std::string& app_id) {
   if (web_app_provider_->registrar_unsafe().IsInstallState(
-          app_id,
-          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+          app_id, {web_app::proto::SUGGESTED_FROM_ANOTHER_DEVICE,
+                   web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                   web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
     ShowWebAppSettings(app_id);
     return;
   }
@@ -720,10 +725,9 @@ void AppHomePageHandler::ShowAppSettings(const std::string& app_id) {
 void AppHomePageHandler::CreateAppShortcut(const std::string& app_id,
                                            CreateAppShortcutCallback callback) {
   if (web_app_provider_->registrar_unsafe().IsInstallState(
-          app_id,
-          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+          app_id, {web_app::proto::SUGGESTED_FROM_ANOTHER_DEVICE,
+                   web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                   web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
     CreateWebAppShortcut(app_id, std::move(callback));
     return;
   }

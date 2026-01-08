@@ -704,6 +704,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
                                       : apps::Readiness::kReady);
       break;
     case proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE:
+    case proto::InstallState::SUGGESTED_FROM_MIGRATION:
       readiness = apps::Readiness::kDisabledByUser;
   }
 

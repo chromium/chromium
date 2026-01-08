@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/ui/webui/app_home/mock_app_home_page.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -28,6 +29,8 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -336,6 +339,28 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, OnWebAppInstalled) {
       .Times(testing::AtLeast(1));
   webapps::AppId installed_app_id = InstallTestWebApp();
   page_handler->Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, SkipAppsToBeMigrated) {
+  std::unique_ptr<TestAppHomePageHandler> page_handler =
+      GetAppHomePageHandler();
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)))
+      .Times(testing::AtLeast(1));
+  webapps::AppId installed_app_id = InstallTestWebApp();
+  {
+    web_app::ScopedRegistryUpdate update =
+        web_app::WebAppProvider::GetForTest(profile())
+            ->sync_bridge_unsafe()
+            .BeginUpdate();
+    web_app::WebApp* mutable_web_app = update->UpdateApp(installed_app_id);
+    ASSERT_NE(nullptr, mutable_web_app);
+    mutable_web_app->SetInstallState(web_app::proto::SUGGESTED_FROM_MIGRATION);
+  }
+
+  base::test::TestFuture<std::vector<app_home::mojom::AppInfoPtr>> future;
+  page_handler->GetApps(future.GetCallback());
+  auto app_infos = future.Take();
+  EXPECT_TRUE(app_infos.empty());
 }
 
 IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, OnExtensionLoaded_App) {

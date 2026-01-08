@@ -169,6 +169,8 @@ class WebApp {
   // - Partially installed no integration: The app is considered installed, but
   // does not have any OS integration with the operating system (no shortcuts,
   // etc). This is used for preinstalled apps on non-CrOS device.
+  // - Suggested from migration: The app is not fully installed on this device,
+  // and is pending migration from another app.
   proto::InstallState install_state() const { return install_state_; }
 
   // Sync-initiated installation produces a stub app awaiting for full

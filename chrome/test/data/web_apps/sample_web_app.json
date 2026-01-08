@@ -184,7 +184,7 @@
       "source": "GENERATED_ICON_FIX_SOURCE_RETROACTIVE",
       "window_start_time": "363425051"
    },
-   "install_state": "1",
+   "install_state": "2",
    "installed_by": [ {
       "install_api_call_time": "1970-02-07 12:05:51.959000 UTC",
       "requesting_url": "https://example.com/installed_by1_1234/"

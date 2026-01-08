@@ -162,6 +162,7 @@ void FetchInstallabilityForChromeManagement::OnAppLockGranted() {
   } else {
     switch (app_lock_->registrar().GetInstallState(app_id_).value()) {
       case web_app::proto::SUGGESTED_FROM_ANOTHER_DEVICE:
+      case web_app::proto::SUGGESTED_FROM_MIGRATION:
         result = InstallableCheckResult::kInstallable;
         break;
       case web_app::proto::INSTALLED_WITH_OS_INTEGRATION:
