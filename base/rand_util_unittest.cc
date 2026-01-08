@@ -193,6 +193,25 @@ TEST(RandUtilTest, RandBytesAsString) {
   EXPECT_NE(0, accumulator);
 }
 
+TEST(RandUtilTest, RandomChoice) {
+  auto elements = std::to_array<uint8_t>({2, 4, 6, 8, 10, 12, 14, 16});
+
+  // Choose random cells and zero them; afterward, check whether every cell is
+  // zeroed, meaning the random choice hit every cell at least once.
+  //
+  // The probability that this will fail to clear one of the eight cells is
+  // essentially zero; all 1024 trials would have to not hit that cell
+  // (probability (7/8)**1024, which is ~4.1e-60. This is an instance of the
+  // "Coupon Collector's Problem" in probability theory.
+  for (size_t i = 0; i < 1024; i++) {
+    base::RandomChoice(elements) = 0;
+  }
+
+  for (const auto& e : elements) {
+    EXPECT_EQ(e, 0);
+  }
+}
+
 // Make sure that it is still appropriate to use RandGenerator in conjunction
 // with std::random_shuffle().
 TEST(RandUtilTest, RandGeneratorForRandomShuffle) {

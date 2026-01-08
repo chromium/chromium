@@ -213,6 +213,15 @@ void RandomShuffle(Itr first, Itr last) {
   std::shuffle(first, last, RandomBitGenerator());
 }
 
+// Return a random element from the given range, which must be nonempty.
+template <typename Range>
+  requires(std::ranges::random_access_range<Range> &&
+           std::ranges::sized_range<Range>)
+decltype(auto) RandomChoice(Range&& r) {
+  CHECK(!r.empty());
+  return r[base::RandGenerator(r.size())];
+}
+
 #if BUILDFLAG(IS_POSIX)
 BASE_EXPORT int GetUrandomFD();
 #endif
