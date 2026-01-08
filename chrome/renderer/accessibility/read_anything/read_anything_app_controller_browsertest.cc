@@ -142,7 +142,9 @@ class MockReadAnythingUntrustedPageHandler
               (override));
   MOCK_METHOD(void, GetPresentationState, (), (override));
   MOCK_METHOD(void, CloseUI, (), (override));
+  MOCK_METHOD(void, TogglePinState, (), (override));
   MOCK_METHOD(void, TogglePresentation, (), (override));
+  MOCK_METHOD(void, SendPinStateRequest, (), (override));
 
   mojo::PendingRemote<read_anything::mojom::UntrustedPageHandler>
   BindNewPipeAndPassRemote() {
@@ -3208,6 +3210,11 @@ TEST_F(ReadAnythingAppControllerTest,
   controller().OnActiveAXTreeIDChanged(id, ukm::kInvalidSourceId, false);
   task_environment_.FastForwardBy(kTimeSincePageLoadForDataCollection +
                                   base::Seconds(1));
+}
+
+TEST_F(ReadAnythingAppControllerTest, ImmersiveReadAnythingTogglesPinState) {
+  controller().TogglePinState();
+  EXPECT_CALL(page_handler_, TogglePinState()).Times(1);
 }
 
 class ReadAnythingAppControllerV8SegmentationTest

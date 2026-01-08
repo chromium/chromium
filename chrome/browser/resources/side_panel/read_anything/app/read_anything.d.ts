@@ -92,6 +92,9 @@ declare namespace chrome {
     // Whether the Immersive Read Anything feature flag is enabled.
     let isImmersiveEnabled: boolean;
 
+    // Whether Read Anything is pinned to the toolbar.
+    let isReadAnythingPinned: boolean;
+
     // Whether the Read Aloud feature flag is enabled.
     let isReadAloudEnabled: boolean;
 
@@ -331,6 +334,12 @@ declare namespace chrome {
     // Called by the Read Anything app to close the Read Anything UI.
     function close(): void;
 
+    // Called by the ReadAnything app to toggle the pin state.
+    function togglePinState(): void;
+
+    // Called to get the pin state from the browser.
+    function sendPinStateRequest(): void;
+
     // Called by the Read Anything app to toggle between presentation modes.
     function togglePresentation(): void;
 
@@ -346,6 +355,8 @@ declare namespace chrome {
 
     // Sets the current presentation state.
     function onPresentationStateReceived(presentationState: number): void;
+
+    function onPinStateReceived(pinState: boolean): void;
 
     // Display the empty state page to tell the user we can't distill the page.
     function showEmpty(): void;

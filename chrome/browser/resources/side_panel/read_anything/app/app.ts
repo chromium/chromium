@@ -311,6 +311,10 @@ export class AppElement extends AppElementBase implements SpeechListener,
           // which content to display based on the presentation state.
           this.presentationState_ = presentationState;
         };
+
+    chrome.readingMode.onPinStateReceived = (pinState: boolean) => {
+      this.$.immersiveHeader.isReadAnythingPinned = pinState;
+    };
   }
 
   private onWindowResize_() {

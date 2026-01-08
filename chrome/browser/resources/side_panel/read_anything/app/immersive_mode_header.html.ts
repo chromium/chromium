@@ -18,7 +18,8 @@ export function getHtml(this: ImmersiveModeHeaderElement) {
   <div>
     <cr-icon-button class="toolbar-button"
       id="pin"
-      iron-icon="read-anything:pin">
+      iron-icon="${this.getPinIcon_()}"
+      @click="${this.onPinButtonClick_}">
     </cr-icon-button>
     <cr-icon-button class="toolbar-button"
       id="close"

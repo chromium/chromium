@@ -288,6 +288,15 @@ interface UntrustedPageHandler {
   // has its own close button that handles closing itself.
   CloseUI();
 
+  // Informs the browser that a user clicked on the pin button in
+  // immersive mode. This is only used in immersive reading mode as the
+  // side panel has its own pin button handled by itself.
+  TogglePinState();
+
+  // Sends a request to the browser for the pin state. The request
+  // is returned via OnPinStatusReceived;
+  SendPinStateRequest();
+
   // Informs the browser that the user clicked the toggle presentation button.
   TogglePresentation();
 };
@@ -386,4 +395,7 @@ interface UntrustedPage {
     int32 node_id,
     skia.mojom.BitmapN32 image
   );
+
+  // Lets the renderer process know that the browser has sent a new pin state.
+  OnPinStatusReceived(bool new_pin_state);
 };

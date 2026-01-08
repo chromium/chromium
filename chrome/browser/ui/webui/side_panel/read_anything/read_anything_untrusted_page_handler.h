@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_screenshotter.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "components/dom_distiller/core/task_tracker.h"
@@ -123,6 +124,7 @@ class ReadAnythingUntrustedPageHandler :
     public ui::AXActionHandlerObserver,
     public read_anything::mojom::UntrustedPageHandler,
     public ReadAnythingLifecycleObserver,
+    public PinnedToolbarActionsModel::Observer,
     public translate::TranslateDriver::LanguageDetectionObserver {
  public:
   ReadAnythingUntrustedPageHandler(
@@ -191,6 +193,17 @@ class ReadAnythingUntrustedPageHandler :
   void UninstallVoice(const std::string& language) override;
   void OnDistillationStatus(read_anything::mojom::DistillationStatus status,
                             int word_count) override;
+  void TogglePinState() override;
+  void SendPinStateRequest() override;
+  bool immersive_read_anything_pin_state() {
+    return immersive_read_anything_pin_state_;
+  }
+  // PinnedToolbarModel::Observer
+  void OnActionsChanged() override;
+
+  // Checks toolbar pin status to assess whether or not to update the pin status
+  // of read anything immersive
+  void MaybeUpdateImmersivePinStatus();
 
   // TranslateDriver::LanguageDetectionObserver:
   void OnLanguageDetermined(
@@ -376,6 +389,17 @@ class ReadAnythingUntrustedPageHandler :
   // the page handler to trigger distillation if the page would now be
   // recognized as a pdf after it finishes loading.
   bool is_pdf_ = false;
+
+  // This manages the life cycle of the pinned toolbar observer. We observe
+  // the pinned toolbar to ensure capture user pin changes in the toolbar ui.
+  base::ScopedObservation<PinnedToolbarActionsModel,
+                          PinnedToolbarActionsModel::Observer>
+      pinned_toolbar_actions_observation_{this};
+  bool immersive_read_anything_pin_state_ = false;
+
+  // We keep a pointer to the pinned_toolbar to propagate changes to the pin
+  // status onto the toolbar.
+  raw_ptr<PinnedToolbarActionsModel> pinned_toolbar_;
 
   base::ScopedClosureRunner audible_closure_;
 
