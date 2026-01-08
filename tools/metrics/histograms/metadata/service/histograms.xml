@@ -2020,6 +2020,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.SyntheticResponse.ReceiveResponseToComplete"
+    units="ms" expires_after="2026-05-03">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records the time from (a) the client receives the network response to (b)
+    completes the response time.
+
+    This is recorded in navigation, when the browser receives the response from
+    the network, while committed the navigation with locally stored headers.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.SyntheticResponse.ReloadReason"
     enum="SyntheticResponseReloadReason" expires_after="2026-05-03">
   <owner>sisidovski@chromium.org</owner>
@@ -2031,6 +2044,19 @@ chromium-metrics-reviews@google.com.
     This is recorded in navigation, when the browser receives the response from
     the network, but the browser tell the custom response to reload the page to
     the renderer for some fallback case e.g. header mismatch.
+  </summary>
+</histogram>
+
+<histogram name="ServiceWorker.SyntheticResponse.StartRequestToReceiveResponse"
+    units="ms" expires_after="2026-05-03">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records the time from (a) the loader starts a network request to (b) it
+    receives the response.
+
+    This is recorded in navigation, when the browser receives the response from
+    the network, while committed the navigation with locally stored headers.
   </summary>
 </histogram>
 

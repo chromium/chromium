@@ -33,6 +33,10 @@ constexpr char kHistogramIsHeaderConsistent[] =
     "ServiceWorker.SyntheticResponse.IsHeaderConsistent";
 constexpr char kHistogramIsHeaderStored[] =
     "ServiceWorker.SyntheticResponse.IsHeaderStored";
+constexpr char kHistogramStartRequestToReceiveResponse[] =
+    "ServiceWorker.SyntheticResponse.StartRequestToReceiveResponse";
+constexpr char kHistogramReceiveResponseToComplete[] =
+    "ServiceWorker.SyntheticResponse.ReceiveResponseToComplete";
 constexpr char kHistogramSyntheticResponseReloadReason[] =
     "ServiceWorker.SyntheticResponse.ReloadReason";
 
@@ -282,6 +286,7 @@ void ServiceWorkerSyntheticResponseManager::StartRequest(
               perfetto::Flow::FromPointer(this), "request_id", request_id,
               "url", request.url.spec());
   CHECK(!request.client_side_content_decoding_enabled);
+  request_start_time_ = base::TimeTicks::Now();
   response_callback_ = std::move(receive_response_callback);
   redirect_callback_ = std::move(receive_redirect_callback);
   complete_callback_ = std::move(complete_callback);
@@ -357,6 +362,9 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
   TRACE_EVENT("ServiceWorker",
               "ServiceWorkerSyntheticResponseManager::OnReceiveResponse",
               perfetto::Flow::FromPointer(this));
+  response_received_time_ = base::TimeTicks::Now();
+  base::UmaHistogramTimes(kHistogramStartRequestToReceiveResponse,
+                          response_received_time_ - request_start_time_);
   switch (status_) {
     case SyntheticResponseStatus::kReady: {
       CHECK(write_buffer_manager_.has_value());
@@ -425,6 +433,8 @@ void ServiceWorkerSyntheticResponseManager::OnComplete(
   TRACE_EVENT("ServiceWorker",
               "ServiceWorkerSyntheticResponseManager::OnComplete",
               perfetto::Flow::FromPointer(this));
+  base::UmaHistogramTimes(kHistogramReceiveResponseToComplete,
+                          base::TimeTicks::Now() - response_received_time_);
   std::move(complete_callback_).Run(status);
 }
 

@@ -117,6 +117,9 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
   std::optional<RaceNetworkRequestSimpleBufferManager> simple_buffer_manager_;
   bool did_start_synthetic_response = false;
 
+  base::TimeTicks request_start_time_;
+  base::TimeTicks response_received_time_;
+
   static bool dry_run_mode_for_testing_;
 
   base::WeakPtrFactory<ServiceWorkerSyntheticResponseManager> weak_factory_{
