@@ -64,6 +64,7 @@ source_set("browser_agent") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/tabs/model:dependency_installer",
     "//ios/chrome/browser/url_loading/model",
     "//ios/public/provider/chrome/browser/bwg:bwg_api",
     "//ui/gfx",
@@ -74,9 +75,12 @@ source_set("tab_helper") {
   sources = [
     "bwg_tab_helper.h",
     "bwg_tab_helper.mm",
+    "gemini_tab_helper_observer.h",
   ]
   deps = [
+    ":page_context",
     ":snapshot_utils",
+    "//components/favicon/ios",
     "//components/feature_engagement/public",
     "//components/google/core/common",
     "//components/optimization_guide/core",
@@ -234,6 +238,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/snapshots/model:test_utils",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:test_support",
+    "//ios/chrome/browser/web/model/web_view_proxy",
     "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser/bwg:bwg_api",
     "//ios/web/find_in_page",

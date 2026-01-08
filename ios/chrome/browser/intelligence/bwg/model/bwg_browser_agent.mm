@@ -72,6 +72,10 @@ CGFloat kFullscreenDisabled = 1.0;
 }  // namespace
 
 BwgBrowserAgent::BwgBrowserAgent(Browser* browser) : BrowserUserData(browser) {
+  if (IsGeminiCopresenceEnabled()) {
+    StartObserving(browser_, TabsDependencyInstaller::Policy::kOnlyRealized);
+  }
+
   bwg_gateway_ = ios::provider::CreateBWGGateway();
 
   if (bwg_gateway_) {
@@ -100,7 +104,13 @@ BwgBrowserAgent::BwgBrowserAgent(Browser* browser) : BrowserUserData(browser) {
   }
 }
 
-BwgBrowserAgent::~BwgBrowserAgent() = default;
+BwgBrowserAgent::~BwgBrowserAgent() {
+  if (fullscreen_controller_) {
+    fullscreen_controller_->RemoveObserver(this);
+    fullscreen_controller_ = nullptr;
+  }
+  StopObserving();
+}
 
 void BwgBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
                                       UIImage* image_attachment,
@@ -278,6 +288,60 @@ void BwgBrowserAgent::DismissFloaty() {
   ios::provider::ResetGemini();
 }
 
+#pragma mark - TabsDependencyInstaller
+
+void BwgBrowserAgent::OnWebStateInserted(web::WebState* web_state) {
+  // No-op. We only observe the active WebState, handled in
+  // OnActiveWebStateChanged.
+}
+
+void BwgBrowserAgent::OnWebStateRemoved(web::WebState* web_state) {
+  // No-op. If the active WebState is removed, OnActiveWebStateChanged will
+  // handle the detachment.
+}
+
+void BwgBrowserAgent::OnWebStateDeleted(web::WebState* web_state) {
+  // No-op, handled by OnWebStateRemoved or OnBwgTabHelperDestroyed.
+}
+
+void BwgBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
+                                              web::WebState* new_active) {
+  if (old_active) {
+    BwgTabHelper* old_tab_helper = BwgTabHelper::FromWebState(old_active);
+    if (old_tab_helper) {
+      old_tab_helper->RemoveObserver(this);
+    }
+  }
+
+  if (new_active) {
+    BwgTabHelper* new_tab_helper = GetActiveTabHelper(new_active);
+    if (new_tab_helper) {
+      new_tab_helper->AddObserver(this);
+      // Propagate the context of the new active tab.
+      OnPageContextUpdated(new_active);
+    }
+  }
+}
+
+#pragma mark - GeminiTabHelperObserver
+
+void BwgBrowserAgent::OnPageContextUpdated(web::WebState* web_state) {
+  BwgTabHelper* tab_helper = GetActiveTabHelper(web_state);
+  if (!tab_helper) {
+    return;
+  }
+
+  GeminiPageContext* gemini_page_context = tab_helper->GetPartialPageContext();
+  ApplyUserPrefsToPageContext(gemini_page_context);
+
+  // This update is from the active tab. Propagate it to the provider.
+  ios::provider::UpdatePageContext(gemini_page_context);
+}
+
+void BwgBrowserAgent::OnGeminiTabHelperDestroyed(BwgTabHelper* tab_helper) {
+  tab_helper->RemoveObserver(this);
+}
+
 #pragma mark - FullscreenControllerObserver
 
 void BwgBrowserAgent::FullscreenProgressUpdated(
@@ -305,6 +369,12 @@ void BwgBrowserAgent::FullscreenWillAnimate(FullscreenController* controller,
                                                       : kFullscreenDisabled);
     }
   }];
+}
+
+void BwgBrowserAgent::FullscreenControllerWillShutDown(
+    FullscreenController* controller) {
+  controller->RemoveObserver(this);
+  fullscreen_controller_ = nullptr;
 }
 
 #pragma mark - Private
@@ -427,4 +497,16 @@ void BwgBrowserAgent::SetSessionCommandHandlers() {
 
   bwg_session_handler_.settingsHandler = settings_handler;
   bwg_session_handler_.BWGHandler = bwg_handler;
+}
+
+BwgTabHelper* BwgBrowserAgent::GetActiveTabHelper(web::WebState* web_state) {
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  if (active_web_state && active_web_state == web_state) {
+    BwgTabHelper* tab_helper = BwgTabHelper::FromWebState(web_state);
+    if (tab_helper) {
+      return tab_helper;
+    }
+  }
+  return nullptr;
 }

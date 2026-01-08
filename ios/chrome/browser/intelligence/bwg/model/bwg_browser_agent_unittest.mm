@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
@@ -239,4 +240,49 @@ TEST_F(BwgBrowserAgentTest,
 
   // Assert the BWG tab helper was set as foregrounded.
   ASSERT_FALSE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
+}
+
+// Tests that switching active web states handles observations correctly.
+TEST_F(BwgBrowserAgentTest, TestActiveWebStateChanged) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kGeminiCopresence);
+
+  // Create a new browser to ensure the BwgBrowserAgent is initialized with the
+  // feature flag enabled.
+
+  std::unique_ptr<TestBrowser> scoped_browser =
+      std::make_unique<TestBrowser>(profile_.get());
+  BwgBrowserAgent::CreateForBrowser(scoped_browser.get());
+  BwgBrowserAgent* agent = BwgBrowserAgent::FromBrowser(scoped_browser.get());
+
+  std::unique_ptr<web::FakeWebState> web_state1 =
+      std::make_unique<web::FakeWebState>();
+  web_state1->SetBrowserState(profile_.get());
+  BwgTabHelper::CreateForWebState(web_state1.get());
+  WebViewProxyTabHelper::CreateForWebState(web_state1.get());
+  BwgTabHelper* helper1 = BwgTabHelper::FromWebState(web_state1.get());
+
+  scoped_browser->GetWebStateList()->InsertWebState(
+      std::move(web_state1),
+      WebStateList::InsertionParams::Automatic().Activate(true));
+
+  // Verify that the agent is observing the first tab helper.
+  EXPECT_TRUE(helper1->HasObserver(agent));
+
+  std::unique_ptr<web::FakeWebState> web_state2 =
+      std::make_unique<web::FakeWebState>();
+  web_state2->SetBrowserState(profile_.get());
+  BwgTabHelper::CreateForWebState(web_state2.get());
+  WebViewProxyTabHelper::CreateForWebState(web_state2.get());
+  BwgTabHelper* helper2 = BwgTabHelper::FromWebState(web_state2.get());
+
+  // Switch to new web state.
+  scoped_browser->GetWebStateList()->InsertWebState(
+      std::move(web_state2),
+      WebStateList::InsertionParams::Automatic().Activate(true));
+
+  // Verify that the agent stopped observing the first tab helper and started
+  // observing the second one.
+  EXPECT_FALSE(helper1->HasObserver(agent));
+  EXPECT_TRUE(helper2->HasObserver(agent));
 }

@@ -14,8 +14,10 @@
 #import "base/types/expected.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller_observer.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper_observer.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
+#import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 
 class Browser;
 
@@ -41,12 +43,25 @@ class PageContext;
 // A browser agent responsible for presenting the floaty and managing
 // its protocol handlers.
 class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
-                        FullscreenControllerObserver {
+                        FullscreenControllerObserver,
+                        public TabsDependencyInstaller,
+                        public GeminiTabHelperObserver {
  public:
   BwgBrowserAgent(const BwgBrowserAgent&) = delete;
   BwgBrowserAgent& operator=(const BwgBrowserAgent&) = delete;
 
   ~BwgBrowserAgent() override;
+
+  // TabsDependencyInstaller:
+  void OnWebStateInserted(web::WebState* web_state) override;
+  void OnWebStateRemoved(web::WebState* web_state) override;
+  void OnWebStateDeleted(web::WebState* web_state) override;
+  void OnActiveWebStateChanged(web::WebState* old_active,
+                               web::WebState* new_active) override;
+
+  // GeminiTabHelperObserver:
+  void OnPageContextUpdated(web::WebState* web_state) override;
+  void OnGeminiTabHelperDestroyed(BwgTabHelper* tab_helper) override;
 
   // Checks if the FRE needs to be shown and start the Gemini flow
   // accordingly.
@@ -129,11 +144,17 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   // at that time.
   void SetSessionCommandHandlers();
 
+  // Helper to get the BwgTabHelper for the active web state if it matches the
+  // provided web state.
+  BwgTabHelper* GetActiveTabHelper(web::WebState* web_state);
+
   // FullscreenControllerObserver:
   void FullscreenProgressUpdated(FullscreenController* controller,
                                  CGFloat progress) override;
   void FullscreenWillAnimate(FullscreenController* controller,
                              FullscreenAnimator* animator) override;
+  void FullscreenControllerWillShutDown(
+      FullscreenController* controller) override;
 
   // The gateway for bridging internal protocols.
   __strong id<BWGGatewayProtocol> bwg_gateway_ = nullptr;

@@ -7,13 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/observer_list.h"
 #import "base/scoped_observation.h"
 #import "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #import "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #import "components/optimization_guide/core/hints/optimization_metadata.h"
 #import "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper_observer.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/optimization_guide/mojom/zero_state_suggestions_service.mojom.h"
+#import "ios/web/public/favicon/favicon_url.h"
 #import "ios/web/public/js_image_transcoder/java_script_image_transcoder.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -21,6 +24,7 @@
 @protocol BWGCommands;
 @protocol LocationBarBadgeCommands;
 @protocol SnackbarCommands;
+@class GeminiPageContext;
 
 namespace base {
 class Value;
@@ -100,6 +104,15 @@ class BwgTabHelper : public web::WebStateObserver,
   // criteria.
   bool ShouldPreventContextualPanelEntryPoint();
 
+  // Adds an observer.
+  void AddObserver(GeminiTabHelperObserver* observer);
+
+  // Removes an observer.
+  void RemoveObserver(GeminiTabHelperObserver* observer);
+
+  // Whether the observer exists in the observer list.
+  bool HasObserver(GeminiTabHelperObserver* observer);
+
   // Setter for `prevent_contextual_panel_entry_point_`.
   void SetPreventContextualPanelEntryPoint(bool should_prevent);
 
@@ -112,6 +125,10 @@ class BwgTabHelper : public web::WebStateObserver,
   // Setter for `contextual_cue_label_`.
   void SetContextualCueLabel(NSString* cue_label);
 
+  // Returns the partial PageContext for the current WebState, including URL,
+  // Title, and Favicon.
+  GeminiPageContext* GetPartialPageContext();
+
   // WebStateObserver:
   void WasShown(web::WebState* web_state) override;
   void WasHidden(web::WebState* web_state) override;
@@ -122,6 +139,10 @@ class BwgTabHelper : public web::WebStateObserver,
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
+  void TitleWasSet(web::WebState* web_state) override;
+  void FaviconUrlUpdated(
+      web::WebState* web_state,
+      const std::vector<web::FaviconURL>& candidates) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
  private:
@@ -251,6 +272,15 @@ class BwgTabHelper : public web::WebStateObserver,
   // Contextual cue label generated for Gemini contextual cue metadata.
   NSString* contextual_cue_label_;
 
+  // List of observers.
+  base::ObserverList<GeminiTabHelperObserver> observers_;
+
+  // Tracking variables for semantic event checks.
+  GURL current_url_;
+  std::u16string current_title_;
+  __strong UIImage* current_favicon_;
+
+  // Weak pointer factory.
   base::WeakPtrFactory<BwgTabHelper> weak_ptr_factory_{this};
 };
 
