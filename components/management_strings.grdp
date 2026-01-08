@@ -123,14 +123,26 @@
     <message name="IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_CONFIGURATION" desc="Message telling users that their administrator has configured files to be uploaded to cloud storage">
       Your administrator has configured to save <ph name="FILES">$1<ex>downloads and screenshots</ex></ph> in your enterprise-managed <ph name="CLOUD_STORAGE">$2<ex>Google Drive or OneDrive</ex></ph> storage. These files may be monitored, audited, and retained when you delete them.
     </message>
+    <message name="IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_CAMERA" desc="This string will appear in a sentence such as 'administrator has configured to save camera files'" meaning="Part of files upload enterprise disclosure">
+      camera files
+    </message>
     <message name="IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_DOWNLOADS" desc="This string will appear in a sentence such as 'administrator has configured to save downloads'" meaning="Part of files upload enterprise disclosure">
       downloads
     </message>
     <message name="IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_SCREENSHOTS" desc="This string will appear in a sentence such as 'administrator has configured to save screenshots'" meaning="Part of files upload enterprise disclosure">
       screenshots
     </message>
+    <message name="IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_CAMERA_AND_DOWNLOADS" desc="This string will appear in a sentence such as 'administrator has configured to save camera files and downloads'" meaning="Part of files upload enterprise disclosure">
+      camera files and downloads
+    </message>
     <message name="IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_DOWNLOADS_AND_SCREENSHOTS" desc="This string will appear in a sentence such as 'administrator has configured to save downloads and screenshots'" meaning="Part of files upload enterprise disclosure">
       downloads and screenshots
+    </message>
+    <message name="IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_CAMERA_AND_SCREENSHOTS" desc="This string will appear in a sentence such as 'administrator has configured to save camera files and screenshots'" meaning="Part of files upload enterprise disclosure">
+      camera files and screenshots
+    </message>
+    <message name="IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_CAMERA_DOWNLOADS_AND_SCREENSHOTS" desc="This string will appear in a sentence such as 'administrator has configured to save camera files, downloads and screenshots'" meaning="Part of files upload enterprise disclosure">
+      camera files, downloads and screenshots
     </message>
     <message name="IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_GOOGLE_DRIVE" desc="This string will appear in a sentence such as 'configured to save downloads in Google Drive'" meaning="Part of files upload enterprise disclosure">
       Google Drive
