@@ -162,15 +162,18 @@ constexpr base::cstring_view kToEmulate = "ToEmulate";
 constexpr base::cstring_view kUnderscore = "_";
 constexpr std::string_view kNullCharacter("\0", 1);
 
+std::string SanitizeName(std::string_view name) {
+  std::string sanitized_name(name);
+  base::ReplaceChars(sanitized_name, kNullCharacter, kUnderscore,
+                     &sanitized_name);
+  return sanitized_name;
+}
+
 std::string GetOperandName(std::string_view name, OperandId id) {
   // ORT CreateValueInfo API rejects name starting with null character:
   // https://github.com/microsoft/onnxruntime/blob/7b5a93ef5f71ca58a1b6e4ae81b250e767756c68/onnxruntime/core/session/model_editor_c_api.cc#L29
-  std::string effective_name(name);
-  base::ReplaceChars(effective_name, kNullCharacter, kUnderscore,
-                     &effective_name);
-
-  return base::JoinString({effective_name, base::NumberToString(id.value())},
-                          kUnderscore);
+  return base::JoinString(
+      {SanitizeName(name), base::NumberToString(id.value())}, kUnderscore);
 }
 
 // Maps a DataType to a `ONNXTensorElementDataType`. Other `TensorTypeMap`
@@ -391,22 +394,18 @@ std::string GraphBuilderOrt::GetOperandNameById(OperandId operand_id) const {
 }
 
 std::string GraphBuilderOrt::GenerateNodeName(std::string_view label) {
-  return base::JoinString({label, base::NumberToString(next_operation_id_++)},
-                          kUnderscore);
+  return base::JoinString(
+      {SanitizeName(label), base::NumberToString(next_operation_id_++)},
+      kUnderscore);
 }
 
 std::string GraphBuilderOrt::GenerateEmulatedOpLabel(
     base::cstring_view op_type,
     std::string_view original_label,
     std::string_view additional_tag) {
-  if (additional_tag.empty()) {
-    return base::JoinString({kInserted, op_type, kToEmulate, original_label},
-                            kUnderscore);
-  } else {
-    return base::JoinString(
-        {kInserted, op_type, additional_tag, kToEmulate, original_label},
-        kUnderscore);
-  }
+  return base::JoinString({kInserted, op_type, additional_tag, kToEmulate,
+                           SanitizeName(original_label)},
+                          kUnderscore);
 }
 
 std::string GraphBuilderOrt::GenerateOperandName() {
