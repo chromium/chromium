@@ -140,8 +140,9 @@ std::vector<std::vector<int>> ParseMatchSubtypes(
   for (auto index = 0u; index < num_items; index++) {
     const auto& subtypes_item = (*subtypes_list)[index];
     // Permissive: ignore subtypes that are not in a form of a list.
-    if (!subtypes_item.is_list())
+    if (!subtypes_item.is_list()) {
       continue;
+    }
 
     const auto& subtype_list = subtypes_item.GetList();
     auto& result_subtypes = result[index];
@@ -149,8 +150,9 @@ std::vector<std::vector<int>> ParseMatchSubtypes(
 
     for (const auto& subtype : subtype_list) {
       // Permissive: Skip over any item that is not an integer.
-      if (!subtype.is_int())
+      if (!subtype.is_int()) {
         continue;
+      }
       result_subtypes.emplace_back(subtype.GetInt());
     }
   }
@@ -436,8 +438,9 @@ void SearchSuggestionParser::SuggestResult::SetAnnotation(
 int SearchSuggestionParser::SuggestResult::CalculateRelevance(
     const AutocompleteInput& input,
     bool keyword_provider_requested) const {
-  if (!from_keyword_ && keyword_provider_requested)
+  if (!from_keyword_ && keyword_provider_requested) {
     return 100;
+  }
   return ((input.type() == metrics::OmniboxInputType::URL) ? 300 : 600);
 }
 
@@ -512,8 +515,9 @@ void SearchSuggestionParser::NavigationResult::
   TermMatches term_matches_in_url = FindTermMatches(input_text, formatted_url_);
   // Convert TermMatches (offset, length) to MatchPosition (start, end).
   std::vector<AutocompleteMatch::MatchPosition> match_positions;
-  for (auto match : term_matches_in_url)
+  for (auto match : term_matches_in_url) {
     match_positions.emplace_back(match.offset, match.offset + match.length);
+  }
   AutocompleteMatch::GetMatchComponents(GURL(formatted_url_), match_positions,
                                         &match_in_scheme, &match_in_subdomain);
   auto format_types = AutocompleteMatch::GetFormatTypes(
@@ -571,19 +575,22 @@ void SearchSuggestionParser::Results::Clear() {
 }
 
 bool SearchSuggestionParser::Results::HasServerProvidedScores() const {
-  if (verbatim_relevance >= 0)
+  if (verbatim_relevance >= 0) {
     return true;
+  }
 
   // Right now either all results of one type will be server-scored or they will
   // all be locally scored, but in case we change this later, we'll just check
   // them all.
   for (auto i(suggest_results.begin()); i != suggest_results.end(); ++i) {
-    if (i->relevance_from_server())
+    if (i->relevance_from_server()) {
       return true;
+    }
   }
   for (auto i(navigation_results.begin()); i != navigation_results.end(); ++i) {
-    if (i->relevance_from_server())
+    if (i->relevance_from_server()) {
       return true;
+    }
   }
 
   return false;
@@ -596,10 +603,12 @@ std::string SearchSuggestionParser::ExtractJsonData(
     const network::SimpleURLLoader* source,
     std::optional<std::string> response_body) {
   const net::HttpResponseHeaders* response_headers = nullptr;
-  if (source && source->ResponseInfo())
+  if (source && source->ResponseInfo()) {
     response_headers = source->ResponseInfo()->headers.get();
-  if (!response_body)
+  }
+  if (!response_body) {
     return std::string();
+  }
 
   std::string json_data = std::move(response_body).value();
 
@@ -612,8 +621,10 @@ std::string SearchSuggestionParser::ExtractJsonData(
       std::u16string data_16;
       // TODO(jungshik): Switch to CodePageToUTF8 after it's added.
       if (base::CodepageToUTF16(json_data, charset.c_str(),
-                                base::OnStringConversionError::FAIL, &data_16))
+                                base::OnStringConversionError::FAIL,
+                                &data_16)) {
         json_data = base::UTF16ToUTF8(data_16);
+      }
     }
   }
   return json_data;
@@ -649,16 +660,18 @@ bool SearchSuggestionParser::ParseSuggestResults(
   const std::u16string input_text = input.IsZeroSuggest() ? u"" : input.text();
 
   // 1st element: query.
-  if (root_list.empty() || !root_list[0].is_string())
+  if (root_list.empty() || !root_list[0].is_string()) {
     return false;
+  }
   std::u16string query = base::UTF8ToUTF16(root_list[0].GetString());
   if (query != input_text) {
     return false;
   }
 
   // 2nd element: suggestions list.
-  if (root_list.size() < 2u || !root_list[1].is_list())
+  if (root_list.size() < 2u || !root_list[1].is_list()) {
     return false;
+  }
   const auto& results_list = root_list[1].GetList();
 
   // 3rd element: Ignore the optional description list for now.
@@ -803,8 +816,9 @@ bool SearchSuggestionParser::ParseSuggestResults(
     // Google search may return empty suggestions for weird input characters,
     // they make no sense at all and can cause problems in our code.
     suggestion = base::CollapseWhitespace(suggestion, false);
-    if (suggestion.empty())
+    if (suggestion.empty()) {
       continue;
+    }
 
     omnibox::NavigationalIntent nav_intent = omnibox::NAV_INTENT_NONE;
     if (nav_intents && index < nav_intents->size() &&
@@ -874,8 +888,9 @@ bool SearchSuggestionParser::ParseSuggestResults(
           // include this in the search terms.
           suggestion.erase(0, 2);
           // Unlikely to happen, but better to be safe.
-          if (base::CollapseWhitespace(suggestion, false).empty())
+          if (base::CollapseWhitespace(suggestion, false).empty()) {
             continue;
+          }
         }
         if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
           match_contents = l10n_util::GetStringFUTF16(
