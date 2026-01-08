@@ -243,4 +243,16 @@ TEST_F(PluginResponseWriterTest, StartWithJavaScriptDisabled) {
   EXPECT_THAT(response, HasSubstr("javascript=\"block\""));
 }
 
+TEST_F(PluginResponseWriterTest, EscapesOriginalUrl) {
+  PdfStreamDelegate::StreamInfo stream;
+  stream.stream_url = GURL("chrome-extension://id/stream-url");
+  stream.original_url = GURL("http://example.com/foo&quot;bar.pdf");
+  std::string response = GenerateResponse(stream);
+
+  EXPECT_THAT(response, HasSubstr("src=\"chrome-extension://id/stream-url\""));
+  EXPECT_THAT(
+      response,
+      HasSubstr("original-url=\"http://example.com/foo&amp;quot;bar.pdf\""));
+}
+
 }  // namespace pdf
