@@ -13,20 +13,15 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router.h"
-#include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router_factory.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
-#include "chrome/browser/ui/tabs/tab_group_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "components/data_sharing/public/features.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/event_router.h"
@@ -36,6 +31,19 @@
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router.h"
+#include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 // NOTE: While the tests in this file appear like they could be unit tests, they
 // use browser windows and tabs. As such they need to be browser tests. See
 // docs/chrome_browser_design_principles.md. This also makes them easier to port
@@ -44,6 +52,8 @@
 namespace extensions {
 namespace {
 
+// TODO(crbug.com/405219902): Port to desktop Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 base::Value::List RunTabGroupsQueryFunction(
     content::BrowserContext* browser_context,
     const Extension* extension,
@@ -56,6 +66,7 @@ base::Value::List RunTabGroupsQueryFunction(
           api_test_utils::FunctionMode::kNone);
   return std::move(*value).TakeList();
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 base::Value::Dict RunTabGroupsGetFunction(
     content::BrowserContext* browser_context,
@@ -89,7 +100,10 @@ class TabGroupsApiBrowserTest : public ExtensionBrowserTest {
     ExtensionBrowserTest::SetUpOnMainThread();
 
     // Browser tests start with one tab open.
-    web_contents_.push_back(browser()->tab_strip_model()->GetWebContentsAt(0));
+    auto* tab_list = TabListInterface::From(browser_window_interface());
+    tabs::TabInterface* initial_tab = tab_list->GetTab(0);
+    ASSERT_TRUE(initial_tab);
+    web_contents_.push_back(initial_tab->GetContents());
 
     // Add several tabs to the browser and get their web contents.
     constexpr int kNumTabs = 5;
@@ -102,22 +116,35 @@ class TabGroupsApiBrowserTest : public ExtensionBrowserTest {
     }
 
     // Wait for the TabGroupSyncService to properly initialize before making any
-    // changes to tab groups.
-    WaitForTabGroupSyncServiceInitialized();
+    // changes to tab groups. This is not used on Android.
+#if !BUILDFLAG(IS_ANDROID)
+    auto observer =
+        std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
+    observer->Wait();
+#endif
   }
   void TearDownOnMainThread() override {
     web_contents_.clear();
-    browser()->tab_strip_model()->CloseAllTabs();
+
+    // Close all tabs.
+    auto* tab_list = TabListInterface::From(browser_window_interface());
+    for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
+      tab->Close();
+    }
     ExtensionBrowserTest::TearDownOnMainThread();
   }
 
   content::WebContents* web_contents(int index) { return web_contents_[index]; }
 
-  void WaitForTabGroupSyncServiceInitialized() {
-    auto observer =
-        std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
-            tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
-    observer->Wait();
+  bool SupportsTabGroups() {
+#if BUILDFLAG(IS_ANDROID)
+    // Android doesn't support things like platform apps that have tab strips
+    // that don't support tab groups, so tab groups are always supported.
+    return true;
+#else
+    return browser()->tab_strip_model()->SupportsTabGroups();
+#endif
   }
 
  private:
@@ -125,6 +152,8 @@ class TabGroupsApiBrowserTest : public ExtensionBrowserTest {
   std::vector<raw_ptr<content::WebContents, VectorExperimental>> web_contents_;
 };
 
+// TODO(crbug.com/405219902): Port to desktop Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests querying on a TabStripModel that doesn't support tab groups.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest,
                        TabStripModelWithNoTabGroupFails) {
@@ -300,20 +329,27 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupExtensionsBrowserTest,
               *group_info.GetDict().FindInt("id"));
   }
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that getting a group returns the correct metadata.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsGetSuccess) {
   scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
 
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
+  ASSERT_TRUE(SupportsTabGroups());
 
   // Create a group.
-  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({0, 1, 2});
+  auto* tab_list = TabListInterface::From(browser_window_interface());
+  std::vector<tabs::TabHandle> tabs;
+  tabs.push_back(tab_list->GetTab(0)->GetHandle());
+  tabs.push_back(tab_list->GetTab(1)->GetHandle());
+  std::optional<tab_groups::TabGroupId> group = tab_list->CreateTabGroup(tabs);
+  ASSERT_TRUE(group.has_value());
+
+  // Set the visual data.
   tab_groups::TabGroupVisualData visual_data(
       u"Title", tab_groups::TabGroupColorId::kBlue);
-  tab_strip_model->ChangeTabGroupVisuals(group, visual_data);
-  int group_id = ExtensionTabUtil::GetGroupId(group);
+  tab_list->SetTabGroupVisualData(*group, visual_data);
+  int group_id = ExtensionTabUtil::GetGroupId(*group);
 
   // Use the TabGroupsGetFunction to get the group object.
   constexpr char kFormatArgs[] = R"([%d])";
@@ -327,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsGetSuccess) {
 
 // Test that tabGroups.get() fails on a nonexistent group.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsGetError) {
-  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+  ASSERT_TRUE(SupportsTabGroups());
   scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
 
   // Try to get a non-existent group and expect an error.
@@ -338,6 +374,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsGetError) {
   EXPECT_EQ("No group with id: 0.", error);
 }
 
+// TODO(crbug.com/405219902): Port to desktop Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that updating group metadata works as expected.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsUpdateSuccess) {
   scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
@@ -456,8 +494,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveRight) {
   EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(4).value());
 }
 
-// Test that moving a group to the right of another group results in the correct
-// tab order.
+// Test that moving a group to the right of another group results in the
+// correct tab order.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest,
                        TabGroupsMoveAdjacentGroupRight) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
@@ -495,8 +533,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest,
   EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(5).value());
 }
 
-// Test that moving a group to the right of another group results in the correct
-// tab order.
+// Test that moving a group to the right of another group results in the
+// correct tab order.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest,
                        TabGroupsMoveGroupCannotMoveToTheMiddleOfAGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
@@ -563,6 +601,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveLeft) {
   EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(1).value());
   EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(2).value());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 }  // namespace extensions
