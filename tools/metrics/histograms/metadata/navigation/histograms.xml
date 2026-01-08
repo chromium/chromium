@@ -312,6 +312,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="BackForwardCache.CCNS.JSNetworkRequestIncludesCredentials"
+    enum="Boolean" expires_after="2026-06-21">
+  <owner>leimy@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    Logs the whether ThreadableLoader request includes the credentials.
+
+    This is recorded every time when the ThreadableLoader receives response that
+    contains Cache-control: no-store header (i.e. it will potentially evict the
+    page which was loaded with Cache-control: no-store from BFCache).
+  </summary>
+</histogram>
+
 <histogram name="BackForwardCache.EvictedAfterDocumentRestoredReason"
     enum="BackForwardCacheEvictedAfterDocumentRestoredReason"
     expires_after="2024-09-15">

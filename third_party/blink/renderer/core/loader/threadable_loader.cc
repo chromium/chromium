@@ -312,6 +312,9 @@ void ThreadableLoader::ResponseReceived(Resource* resource,
   // Back/Forward cache will be disabled for the page if the main resource has
   // "Cache-Control: no-store" as well.
   if (response.CacheControlContainsNoStore()) {
+    base::UmaHistogramBoolean(
+        "BackForwardCache.CCNS.JSNetworkRequestIncludesCredentials",
+        response.RequestIncludeCredentials());
     execution_context_->GetScheduler()->RegisterStickyFeature(
         SchedulingPolicy::Feature::
             kJsNetworkRequestReceivedCacheControlNoStoreResource,
