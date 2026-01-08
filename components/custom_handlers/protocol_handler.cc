@@ -59,12 +59,14 @@ ProtocolHandler::ProtocolHandler(
     std::optional<std::string> app_id,
     std::optional<std::string> extension_id,
     base::Time last_modified,
+    bool is_confirmed,
     blink::ProtocolHandlerSecurityLevel security_level)
     : protocol_(base::ToLowerASCII(protocol)),
       url_(url),
       web_app_id_(app_id),
       extension_id_(extension_id),
       last_modified_(last_modified),
+      is_confirmed_(is_confirmed),
       security_level_(security_level) {}
 
 // static
@@ -74,7 +76,7 @@ ProtocolHandler ProtocolHandler::CreateWebAppProtocolHandler(
     const std::string& app_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return ProtocolHandler(protocol, url, app_id, /*extension_id=*/std::nullopt,
-                         base::Time::Now(),
+                         base::Time::Now(), /*is_confirmed=*/true,
                          blink::ProtocolHandlerSecurityLevel::kStrict);
 }
 
@@ -86,6 +88,7 @@ ProtocolHandler ProtocolHandler::CreateExtensionProtocolHandler(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return ProtocolHandler(
       protocol, url, /*app_id=*/std::nullopt, extension_id, base::Time::Now(),
+      /*is_confirmed=*/false,
       blink::ProtocolHandlerSecurityLevel::kExtensionFeatures);
 }
 
@@ -129,6 +132,7 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
   std::string protocol, url;
   // |time| defaults to the beginning of time if it is not specified.
   base::Time time;
+  bool is_confirmed = true;
   blink::ProtocolHandlerSecurityLevel security_level =
       blink::ProtocolHandlerSecurityLevel::kStrict;
   if (const std::string* protocol_in = value.FindString("protocol"))
@@ -140,6 +144,9 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
   // Treat invalid times as the default value.
   if (time_value)
     time = *time_value;
+  if (std::optional<bool> is_confirmed_value = value.FindBool("is_confirmed")) {
+    is_confirmed = *is_confirmed_value;
+  }
   std::optional<int> security_level_value = value.FindInt("security_level");
   if (security_level_value) {
     security_level =
@@ -151,7 +158,8 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
     if (app_id_val->is_string())
       app_id = app_id_val->GetString();
     return ProtocolHandler(protocol, GURL(url), app_id,
-                           /*extension_id=*/std::nullopt, time, security_level);
+                           /*extension_id=*/std::nullopt, time, is_confirmed,
+                           security_level);
   }
 
   if (const base::Value* extension_id_val = value.Find("extension_id")) {
@@ -160,7 +168,7 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
       extension_id = extension_id_val->GetString();
     }
     return ProtocolHandler(protocol, GURL(url), /*app_id=*/std::nullopt,
-                           extension_id, time, security_level);
+                           extension_id, time, is_confirmed, security_level);
   }
 
   return ProtocolHandler(protocol, GURL(url), time, security_level);
@@ -196,6 +204,7 @@ base::Value::Dict ProtocolHandler::Encode() const {
   d.Set("protocol", protocol_);
   d.Set("url", url_.spec());
   d.Set("last_modified", base::TimeToValue(last_modified_));
+  d.Set("is_confirmed", is_confirmed_);
   d.Set("security_level", static_cast<int>(security_level_));
 
   if (web_app_id_.has_value())
