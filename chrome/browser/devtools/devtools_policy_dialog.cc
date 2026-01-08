@@ -32,8 +32,11 @@
 
 namespace {
 
+#if BUILDFLAG(IS_LINUX)
 constexpr int kIconPadding = 4;
-
+#else
+constexpr int kIconPadding = 0;
+#endif
 }
 
 DevToolsPolicyDialog::DevToolsPolicyDialog(content::WebContents* web_contents) {
