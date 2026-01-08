@@ -465,7 +465,7 @@ void ProfilePickerHandler::DisplayForceSigninErrorDialog(
   AllowJavascript();
 
   const auto& [title, body] = error.GetErrorTexts();
-  FireWebUIListener("display-force-signin-error-dialog", base::Value(title),
+  FireWebUIListener("display-signin-error-dialog", base::Value(title),
                     base::Value(body),
                     base::Value(profile_path.AsUTF16Unsafe()));
 }
