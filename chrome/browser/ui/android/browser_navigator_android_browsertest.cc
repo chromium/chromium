@@ -119,6 +119,16 @@ class NavigateAndroidBrowserTest : public AndroidBrowserTest {
     return url;
   }
 
+  // Helper to add tabs to the current window.
+  void CreateTabs(int count) {
+    for (int i = 0; i < count; ++i) {
+      NavigateParams params(browser_window_, GURL("about:blank"),
+                            ui::PAGE_TRANSITION_TYPED);
+      params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+      Navigate(&params);
+    }
+  }
+
   BrowserWindowInterface* CreateIncognitoBrowserWindow() {
     Profile* incognito_profile =
         GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
@@ -589,4 +599,66 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest, EnsureSingleNavigation) {
   EXPECT_EQ(1, tab_observer.counter()->finish_count());
 
   tab_list_->RemoveTabListInterfaceObserver(&tab_observer);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
+                       Navigate_WithExplicitTabstripIndex) {
+  const GURL url1 = StartAtURL("/title1.html");
+  // Create 2 extra tabs to establish a list: [Tab0, Tab1, Tab2].
+  CreateTabs(2);
+  ASSERT_EQ(3, tab_list_->GetTabCount());
+
+  // Prepare a navigation with an explicit index of 1.
+  // Current state: [Tab0, Tab1, Tab2]
+  // Desired state: [Tab0, NewTab, Tab1, Tab2]
+  const GURL url_new = embedded_test_server()->GetURL("/title2.html");
+  NavigateParams params(browser_window_, url_new, ui::PAGE_TRANSITION_TYPED);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.tabstrip_index = 1;
+
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
+  ASSERT_TRUE(handle);
+  content::TestNavigationObserver observer(handle->GetWebContents());
+  observer.Wait();
+
+  // Verify the tab count increased.
+  EXPECT_EQ(4, tab_list_->GetTabCount());
+
+  // Verify the new tab is exactly at index 1.
+  tabs::TabInterface* new_tab = tab_list_->GetTab(1);
+  ASSERT_TRUE(new_tab);
+  EXPECT_EQ(url_new, new_tab->GetContents()->GetLastCommittedURL());
+
+  // Verify the original Tab1 (which was at index 1) moved to index 2.
+  EXPECT_EQ(GURL("about:blank"),
+            tab_list_->GetTab(2)->GetContents()->GetVisibleURL());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
+                       Navigate_WithExplicitTabstripIndexInvalidIndex) {
+  const GURL url1 = StartAtURL("/title1.html");
+  // Create 2 extra tabs to establish a list: [Tab0, Tab1, Tab2].
+  CreateTabs(2);
+  ASSERT_EQ(3, tab_list_->GetTabCount());
+
+  // Prepare a navigation with an invalid index of 10.
+  // Current state: [Tab0, Tab1, Tab2]
+  // Expected state: [Tab0, Tab1, Tab2, NewTab]
+  const GURL url_new = embedded_test_server()->GetURL("/title2.html");
+  NavigateParams params(browser_window_, url_new, ui::PAGE_TRANSITION_TYPED);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.tabstrip_index = 10;
+
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
+  ASSERT_TRUE(handle);
+  content::TestNavigationObserver observer(handle->GetWebContents());
+  observer.Wait();
+
+  // Verify the tab count increased.
+  EXPECT_EQ(4, tab_list_->GetTabCount());
+
+  // Verify the new tab is at the final index.
+  tabs::TabInterface* new_tab = tab_list_->GetTab(3);
+  ASSERT_TRUE(new_tab);
+  EXPECT_EQ(url_new, new_tab->GetContents()->GetLastCommittedURL());
 }

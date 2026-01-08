@@ -109,11 +109,16 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
       // TODO (crbug.com/449738150) Match WML logic in
       // TabStripModel::DetermineInsertionIndex.
       int active_index = tab_model->GetActiveIndex();
-      int insertion_index =
-          active_index == -1 ? 0
-          : params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB
-              ? -1
-              : active_index + 1;
+
+      if (params->tabstrip_index != -1) {
+        // TODO (crbug.com/449738150) TabModel should support AddTabTypes.
+        // params->tabstrip_add_types |= AddTabTypes::ADD_FORCE_INDEX;
+      } else if (active_index == -1) {
+        params->tabstrip_index = 0;
+      } else if (params->disposition !=
+                 WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+        params->tabstrip_index = active_index + 1;
+      }
 
       // Create a WebContents.
       content::WebContents::CreateParams create_params(
@@ -122,7 +127,7 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
           content::WebContents::Create(create_params);
       // Create a new tab (opens in the background).
       tabs::TabInterface* new_tab = tab_model->CreateTab(
-          nullptr, std::move(web_contents), insertion_index,
+          nullptr, std::move(web_contents), params->tabstrip_index,
           TabModel::TabLaunchType::FROM_TAB_LIST_INTERFACE,
           /*should_pin=*/false);
 
