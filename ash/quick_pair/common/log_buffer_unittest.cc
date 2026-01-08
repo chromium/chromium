@@ -10,8 +10,7 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 class QuickPairLogBufferTest : public testing::Test,
                                public LogBuffer::Observer {
@@ -46,5 +45,4 @@ TEST_F(QuickPairLogBufferTest, ObserversNotifiedWhenLogBufferCleared) {
   EXPECT_EQ(log_messages_.size(), 0u);
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair

@@ -21,8 +21,7 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 class MockQuickPairBrowserDelegate : public QuickPairBrowserDelegate {
  public:
@@ -57,7 +56,6 @@ class MockQuickPairBrowserDelegate : public QuickPairBrowserDelegate {
   MOCK_METHOD(void, OpenPlayStorePage, (GURL play_store_uri), (override));
 };
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
 
 #endif  // ASH_QUICK_PAIR_COMMON_MOCK_QUICK_PAIR_BROWSER_DELEGATE_H_

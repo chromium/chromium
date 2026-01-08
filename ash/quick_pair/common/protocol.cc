@@ -4,8 +4,7 @@
 
 #include "ash/quick_pair/common/protocol.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 std::ostream& operator<<(std::ostream& stream, Protocol protocol) {
   switch (protocol) {
@@ -23,5 +22,4 @@ std::ostream& operator<<(std::ostream& stream, Protocol protocol) {
   return stream;
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair

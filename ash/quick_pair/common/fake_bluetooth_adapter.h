@@ -9,8 +9,7 @@
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 class FakeBluetoothAdapter
     : public testing::NiceMock<device::MockBluetoothAdapter> {
@@ -89,7 +88,6 @@ class FakeBluetoothAdapter
           LowEnergyScanSessionHardwareOffloadingStatus::kSupported;
 };
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
 
 #endif  // ASH_QUICK_PAIR_COMMON_FAKE_BLUETOOTH_ADAPTER_H_

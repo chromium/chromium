@@ -27,8 +27,7 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 // Interface for a class which provides browser dependences to classes within
 // ash::quick_pair. This allows us to retrieve dependencies (such as the active
@@ -73,7 +72,6 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON) QuickPairBrowserDelegate {
   static void SetInstanceForTesting(QuickPairBrowserDelegate* instance);
 };
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
 
 #endif  // ASH_QUICK_PAIR_COMMON_QUICK_PAIR_BROWSER_DELEGATE_H_

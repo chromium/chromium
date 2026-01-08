@@ -14,8 +14,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 // Contains logs specific to the Quick Pair implementations (e.g. Fast Pair).
 // This buffer has a maximum size and will discard entries in FIFO order. Call
@@ -79,7 +78,6 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON) LogBuffer {
   base::ObserverList<Observer>::Unchecked observers_;
 };
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
 
 #endif  // ASH_QUICK_PAIR_COMMON_LOG_BUFFER_H_

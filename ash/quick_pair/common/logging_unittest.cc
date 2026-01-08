@@ -12,8 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 namespace {
 
@@ -124,5 +123,4 @@ TEST_F(QuickPairLoggingTest, StandardLogsCreated) {
   EXPECT_NE(std::string::npos, g_standard_logs.Get()[2].find(kLog3));
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
