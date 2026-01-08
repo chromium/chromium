@@ -4,8 +4,6 @@
 
 #import "components/webauthn/ios/passkey_tab_helper.h"
 
-#import "base/base64.h"
-#import "base/base64url.h"
 #import "base/check_deref.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/metrics/histogram_functions.h"

@@ -4,7 +4,7 @@
 
 #import "components/webauthn/ios/passkey_java_script_feature.h"
 
-#import "base/base64.h"
+#import "base/base64url.h"
 #import "base/no_destructor.h"
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
@@ -70,6 +70,26 @@ GetPlaceholderReplacements() {
     base::SysUTF8ToNSString(kHandleModalPasskeyRequestsPlaceholder) :
         base::SysUTF16ToNSString(full_script_block),
   };
+}
+
+// Encodes a byte vector to base 64 URL encoded string.
+std::string Base64UrlEncode(base::span<const uint8_t> input) {
+  std::string output;
+  // Omit padding, according to the spec. See:
+  // https://w3c.github.io/webauthn/#base64url-encoding
+  base::Base64UrlEncode(input, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &output);
+  return output;
+}
+
+// Encodes a string to a base 64 URL encoded string.
+std::string Base64UrlEncode(std::string_view input) {
+  std::string output;
+  // Omit padding, according to the spec. See:
+  // https://w3c.github.io/webauthn/#base64url-encoding
+  base::Base64UrlEncode(input, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &output);
+  return output;
 }
 
 // Reads the type of log event received.
@@ -172,10 +192,10 @@ void PasskeyJavaScriptFeature::ResolveAttestationRequest(
       web_frame, "passkey.resolveAttestationRequest",
       base::Value::List()
           .Append(request_id)
-          .Append(base::Base64Encode(credential_id))
-          .Append(base::Base64Encode(attestation_data.attestation_object))
-          .Append(base::Base64Encode(attestation_data.authenticator_data))
-          .Append(base::Base64Encode(attestation_data.public_key_spki_der))
+          .Append(Base64UrlEncode(credential_id))
+          .Append(Base64UrlEncode(attestation_data.attestation_object))
+          .Append(Base64UrlEncode(attestation_data.authenticator_data))
+          .Append(Base64UrlEncode(attestation_data.public_key_spki_der))
           .Append(attestation_data.client_data_json));
 }
 
@@ -188,11 +208,11 @@ void PasskeyJavaScriptFeature::ResolveAssertionRequest(
       web_frame, "passkey.resolveAssertionRequest",
       base::Value::List()
           .Append(request_id)
-          .Append(base::Base64Encode(credential_id))
-          .Append(base::Base64Encode(assertion_data.authenticator_data))
+          .Append(Base64UrlEncode(credential_id))
+          .Append(Base64UrlEncode(assertion_data.authenticator_data))
           .Append(assertion_data.client_data_json)
-          .Append(base::Base64Encode(assertion_data.signature))
-          .Append(base::Base64Encode(assertion_data.user_handle)));
+          .Append(Base64UrlEncode(assertion_data.signature))
+          .Append(Base64UrlEncode(assertion_data.user_handle)));
 }
 
 std::optional<std::string>

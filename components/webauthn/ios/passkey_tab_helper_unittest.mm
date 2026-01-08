@@ -4,7 +4,6 @@
 
 #import "components/webauthn/ios/passkey_tab_helper.h"
 
-#import "base/base64url.h"
 #import "base/rand_util.h"
 #import "base/strings/to_string.h"
 #import "base/test/metrics/histogram_tester.h"

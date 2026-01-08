@@ -4,7 +4,7 @@
 
 #import "components/webauthn/ios/passkey_request_parser.h"
 
-#import "base/base64.h"
+#import "base/base64url.h"
 #import "device/fido/fido_user_verification_requirement.h"
 
 namespace webauthn {
@@ -57,18 +57,19 @@ base::expected<const std::string, PasskeysParsingError> ValidateString(
   return *str;
 }
 
-// Decodes a base 64 encoded string into a data vector.
+// Decodes a base 64 URL encoded string into a data vector.
 // Returns std::nullopt on failure.
-std::optional<std::vector<uint8_t>> Base64Decode(
-    const std::string& base_64_string) {
+std::optional<std::vector<uint8_t>> Base64UrlDecode(
+    const std::string& base_64_url_string) {
   std::vector<uint8_t> decoded_data;
-  if (base_64_string.empty()) {
+  if (base_64_url_string.empty()) {
     return decoded_data;
   }
 
   std::string decoded_string;
-  if (!base::Base64Decode(base_64_string, &decoded_string,
-                          base::Base64DecodePolicy::kStrict)) {
+  if (!base::Base64UrlDecode(base_64_url_string,
+                             base::Base64UrlDecodePolicy::IGNORE_PADDING,
+                             &decoded_string)) {
     return std::nullopt;
   }
 
@@ -76,20 +77,36 @@ std::optional<std::vector<uint8_t>> Base64Decode(
   return decoded_data;
 }
 
+// Returns the decoded data if valid, otherwise returns the error.
+base::expected<std::vector<uint8_t>, PasskeysParsingError>
+ValidateBase64URLString(const std::string* str,
+                        PasskeysParsingError missing_code,
+                        PasskeysParsingError empty_code,
+                        PasskeysParsingError malformed_code) {
+  auto validated_str = ValidateString(str, missing_code, empty_code);
+  if (!validated_str.has_value()) {
+    return base::unexpected(validated_str.error());
+  }
+
+  std::optional<std::vector<uint8_t>> decoded_data =
+      Base64UrlDecode(*validated_str);
+  if (!decoded_data.has_value()) {
+    return base::unexpected(malformed_code);
+  }
+
+  return *decoded_data;
+}
+
 // Builds a PublicKeyCredentialUserEntity object from the parameters contained
 // in the provided dictionary.
 base::expected<device::PublicKeyCredentialUserEntity, PasskeysParsingError>
 BuildUserEntity(const base::Value::Dict& dict) {
-  auto id_base_64 =
-      ValidateString(dict.FindString(kId), PasskeysParsingError::kMissingUserId,
-                     PasskeysParsingError::kEmptyUserId);
-  if (!id_base_64.has_value()) {
-    return base::unexpected(id_base_64.error());
-  }
-
-  std::optional<std::vector<uint8_t>> decoded_id = Base64Decode(*id_base_64);
+  auto decoded_id = ValidateBase64URLString(
+      dict.FindString(kId), PasskeysParsingError::kMissingUserId,
+      PasskeysParsingError::kEmptyUserId,
+      PasskeysParsingError::kMalformedUserId);
   if (!decoded_id.has_value()) {
-    return base::unexpected(PasskeysParsingError::kMalformedUserId);
+    return base::unexpected(decoded_id.error());
   }
 
   device::PublicKeyCredentialUserEntity user_entity(*decoded_id);
@@ -164,17 +181,12 @@ ReadCredentials(const base::Value::List* serialized_descriptors) {
       continue;
     }
 
-    auto credential_id_base_64 = ValidateString(
+    auto decoded_id = ValidateBase64URLString(
         dict.FindString(kId), PasskeysParsingError::kMissingCredentialId,
-        PasskeysParsingError::kEmptyCredentialId);
-    if (!credential_id_base_64.has_value()) {
-      return base::unexpected(credential_id_base_64.error());
-    }
-
-    std::optional<std::vector<uint8_t>> decoded_id =
-        Base64Decode(*credential_id_base_64);
+        PasskeysParsingError::kEmptyCredentialId,
+        PasskeysParsingError::kMalformedCredentialId);
     if (!decoded_id.has_value()) {
-      return base::unexpected(PasskeysParsingError::kMalformedCredentialId);
+      return base::unexpected(decoded_id.error());
     }
 
     device::PublicKeyCredentialDescriptor credential_descriptor(
@@ -208,18 +220,13 @@ base::expected<PasskeyRequestParams, PasskeysParsingError> BuildRequestParams(
     return base::unexpected(PasskeysParsingError::kMissingRequest);
   }
 
-  auto challenge_base_64 =
-      ValidateString(request_dict->FindString(kChallenge),
-                     PasskeysParsingError::kMissingChallenge,
-                     PasskeysParsingError::kEmptyChallenge);
-  if (!challenge_base_64.has_value()) {
-    return base::unexpected(challenge_base_64.error());
-  }
-
-  std::optional<std::vector<uint8_t>> challenge =
-      Base64Decode(*challenge_base_64);
+  auto challenge =
+      ValidateBase64URLString(request_dict->FindString(kChallenge),
+                              PasskeysParsingError::kMissingChallenge,
+                              PasskeysParsingError::kEmptyChallenge,
+                              PasskeysParsingError::kMalformedChallenge);
   if (!challenge.has_value()) {
-    return base::unexpected(PasskeysParsingError::kMalformedChallenge);
+    return base::unexpected(challenge.error());
   }
 
   const base::Value::Dict* rp_entity_dict = dict.FindDict(kRpEntity);

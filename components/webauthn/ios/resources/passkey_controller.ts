@@ -135,9 +135,9 @@ function decodeBase64URLToArrayBuffer(base64: string): ArrayBuffer {
   return stringToArrayBuffer(atob(standardBase64));
 }
 
-// Converts a buffer source to a base 64 encoded (forgiving policy) string.
-function bufferSourceToBase64(buffer: BufferSource): string {
-  return arrayBufferToBase64(
+// Converts a buffer source to a base 64 URL encoded string.
+function bufferSourceToBase64URL(buffer: BufferSource): string {
+  return arrayBufferToBase64URL(
       buffer instanceof ArrayBuffer ? buffer : buffer.buffer);
 }
 
@@ -162,7 +162,7 @@ interface UserEntity {
 // Returns a dictionary of the user's entity.
 function extractUserEntity(user: PublicKeyCredentialUserEntity): UserEntity {
   return {
-    'id': bufferSourceToBase64(user.id),
+    'id': bufferSourceToBase64URL(user.id),
     'name': user.name,
     'displayName': user.displayName,
   };
@@ -205,7 +205,7 @@ function extractRequestInformation(options: Options): RequestInformation {
   }
 
   return {
-    'challenge': bufferSourceToBase64(options.challenge),
+    'challenge': bufferSourceToBase64URL(options.challenge),
     'userVerification': uvRequirement ?? 'unknown',
     'extensions': options.extensions,
   };
@@ -234,7 +234,7 @@ function publicKeyCredentialDescriptorAsSerializedDescriptors(
   // Map the array and convert BufferSource to base64.
   return descriptors.map((desc) => ({
                            type: desc.type,
-                           id: bufferSourceToBase64(desc.id),
+                           id: bufferSourceToBase64URL(desc.id),
                            transports: transportsAsStrings(desc.transports),
                          }));
 }

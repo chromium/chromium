@@ -16,11 +16,11 @@ namespace {
 // An empty string for testing purposes.
 constexpr std::string kEmpty = "";
 
-// A base 64 encoded string.
-constexpr std::string kBase64 = "TGVlcm95IEplbmtpbnM=";
+// A base 64 encoded URL string.
+constexpr std::string kBase64url = "TGVlcm95IEplbmtpbnM=";
 
-// A malformed base 64 encoded string.
-constexpr std::string kNotBase64 = "NOT_BASE_64!";
+// A malformed base 64 url encoded string.
+constexpr std::string kNotBase64url = "NOT_BASE_64_URL!";
 
 // Request ID associated with deferred promises.
 constexpr std::string kRequestId = "requestId";
@@ -143,14 +143,14 @@ base::Value::Dict BuildRequestParamsDictForRequest(
 base::Value::Dict BuildRequestParamsDictForRp(bool has_rp_entity_dict,
                                               const std::string* rp_id) {
   return BuildRequestParamsDict(
-      /*has_request_dict=*/true, &kBase64, has_rp_entity_dict, rp_id,
+      /*has_request_dict=*/true, &kBase64url, has_rp_entity_dict, rp_id,
       /*has_user_entity_dict=*/false, nullptr, nullptr, nullptr, nullptr);
 }
 
 base::Value::Dict BuildRequestParamsDictForUser(bool has_user_entity_dict,
                                                 const std::string* user_id) {
-  return BuildRequestParamsDict(/*has_request_dict=*/true, &kBase64,
-                                /*has_rp_entity_dict=*/true, &kBase64,
+  return BuildRequestParamsDict(/*has_request_dict=*/true, &kBase64url,
+                                /*has_rp_entity_dict=*/true, &kBase64url,
                                 has_user_entity_dict, user_id, nullptr, nullptr,
                                 nullptr);
 }
@@ -159,9 +159,9 @@ base::Value::Dict BuildRequestParamsDictForCredentials(
     const std::string* credential_list_name,
     const std::string* credential_type,
     const std::string* credential_id) {
-  return BuildRequestParamsDict(/*has_request_dict=*/true, &kBase64,
-                                /*has_rp_entity_dict=*/true, &kBase64,
-                                /*has_user_entity_dict=*/true, &kBase64,
+  return BuildRequestParamsDict(/*has_request_dict=*/true, &kBase64url,
+                                /*has_rp_entity_dict=*/true, &kBase64url,
+                                /*has_user_entity_dict=*/true, &kBase64url,
                                 credential_list_name, credential_type,
                                 credential_id);
 }
@@ -265,9 +265,9 @@ TEST_F(PasskeyRequestParserTest, EmptyChallenge) {
 
 // Tests that an error is returned on a malformed challenge.
 TEST_F(PasskeyRequestParserTest, MalformedChallenge) {
-  VerifyRequestParamsError(
-      BuildRequestParamsDictForRequest(/*has_request_dict=*/true, &kNotBase64),
-      PasskeysParsingError::kMalformedChallenge);
+  VerifyRequestParamsError(BuildRequestParamsDictForRequest(
+                               /*has_request_dict=*/true, &kNotBase64url),
+                           PasskeysParsingError::kMalformedChallenge);
 }
 
 // Tests that an error is returned on a missing rp entity.
@@ -315,7 +315,8 @@ TEST_F(PasskeyRequestParserTest, EmptyUserId) {
 // Tests that an error is returned on a malformed user id.
 TEST_F(PasskeyRequestParserTest, MalformedUserId) {
   VerifyRegistrationRequestParamsError(
-      BuildRequestParamsDictForUser(/*has_user_entity_dict=*/true, &kNotBase64),
+      BuildRequestParamsDictForUser(/*has_user_entity_dict=*/true,
+                                    &kNotBase64url),
       PasskeysParsingError::kMalformedUserId);
 }
 
@@ -346,19 +347,19 @@ TEST_F(PasskeyRequestParserTest, EmptyCredentialId) {
 
 // Tests that an error is returned on a malformed credential id.
 TEST_F(PasskeyRequestParserTest, MalformedCredentialId) {
-  VerifyRequestCredentialIdError(&kNotBase64,
+  VerifyRequestCredentialIdError(&kNotBase64url,
                                  PasskeysParsingError::kMalformedCredentialId);
 }
 
 TEST_F(PasskeyRequestParserTest, NoError) {
   auto assertion_request_params = BuildAssertionRequestParams(
       ValidRequestInfo(),
-      BuildRequestParamsDictForRp(/*has_rp_entity_dict=*/true, &kBase64));
+      BuildRequestParamsDictForRp(/*has_rp_entity_dict=*/true, &kBase64url));
   ASSERT_TRUE(assertion_request_params.has_value());
 
   auto registration_request_params = BuildRegistrationRequestParams(
-      ValidRequestInfo(),
-      BuildRequestParamsDictForUser(/*has_user_entity_dict=*/true, &kBase64));
+      ValidRequestInfo(), BuildRequestParamsDictForUser(
+                              /*has_user_entity_dict=*/true, &kBase64url));
   ASSERT_TRUE(registration_request_params.has_value());
 }
 
