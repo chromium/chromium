@@ -1055,6 +1055,7 @@ const CGFloat kMinVerticalInset = 8.0;
 
   NSMutableAttributedString* fieldText =
       [[text attributedSubstringFromRange:userTextRange] mutableCopy];
+  [fieldText addAttributes:_omniboxTypingAttributes range:userTextRange];
 
   if (autocompleteLength > 0) {
     // Creating `autocompleteText` from `[text string]` has the added bonus of
@@ -1272,8 +1273,8 @@ const CGFloat kMinVerticalInset = 8.0;
 
 - (void)textViewDidBeginEditing:(UITextView*)textView {
   _editing = YES;
-  [self.omniboxTextInputDelegate textInputDidBeginEditing:self];
   [self updateOmniboxTypingAttributes];
+  [self.omniboxTextInputDelegate textInputDidBeginEditing:self];
 }
 
 - (void)textViewDidEndEditing:(UITextView*)textView {
