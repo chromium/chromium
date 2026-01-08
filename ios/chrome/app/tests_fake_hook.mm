@@ -150,4 +150,9 @@ std::unique_ptr<AimEligibilityService> CreateAimEligibilityService(
   return nullptr;
 }
 
+std::unique_ptr<contextual_search::ContextualSearchService>
+CreateContextualSearchService(ProfileIOS* profile) {
+  return nullptr;
+}
+
 }  // namespace tests_hook

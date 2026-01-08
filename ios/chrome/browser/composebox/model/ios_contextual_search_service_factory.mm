@@ -8,6 +8,7 @@
 #import "components/contextual_search/contextual_search_service.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/variations/variations_client.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/composebox/model/ios_contextual_search_service.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -47,6 +48,9 @@ ContextualSearchServiceFactory::~ContextualSearchServiceFactory() = default;
 std::unique_ptr<KeyedService>
 ContextualSearchServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
+  if (auto service = tests_hook::CreateContextualSearchService(profile)) {
+    return service;
+  }
   auto* variations_client_service =
       VariationsClientServiceFactory::GetForProfile(profile);
   return std::make_unique<IOSContextualSearchService>(

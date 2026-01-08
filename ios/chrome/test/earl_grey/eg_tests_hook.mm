@@ -39,6 +39,7 @@
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/aim/model/mock_ios_chrome_aim_eligibility_service.h"
+#import "ios/chrome/browser/composebox/model/mock_ios_contextual_search_service.h"
 #import "ios/chrome/browser/drive/model/test_drive_service.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -448,6 +449,11 @@ std::unique_ptr<AimEligibilityService> CreateAimEligibilityService(
     ProfileIOS* profile) {
   return MockIOSChromeAimEligibilityService::CreateTestingProfileService(
       profile);
+}
+
+std::unique_ptr<contextual_search::ContextualSearchService>
+CreateContextualSearchService(ProfileIOS* profile) {
+  return MockIOSContextualSearchService::CreateTestingProfileService(profile);
 }
 
 }  // namespace tests_hook

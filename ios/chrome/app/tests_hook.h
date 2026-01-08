@@ -22,6 +22,10 @@ class TrustedVaultClientBackend;
 @class UIImage;
 @class UIWindow;
 
+namespace contextual_search {
+class ContextualSearchService;
+}  // namespace contextual_search
+
 namespace base {
 class TimeDelta;
 }  // namespace base
@@ -242,6 +246,11 @@ UIImage* GetPHPickerViewControllerImage();
 // The real factory will be used if this hook returns null.
 std::unique_ptr<AimEligibilityService> CreateAimEligibilityService(
     ProfileIOS* profile);
+
+// Returns a mock ContextualSearchService for testing.
+// The real factory will be used if this hook returns null.
+std::unique_ptr<contextual_search::ContextualSearchService>
+CreateContextualSearchService(ProfileIOS* profile);
 
 }  // namespace tests_hook
 

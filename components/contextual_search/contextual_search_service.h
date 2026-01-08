@@ -56,7 +56,7 @@ class ContextualSearchService : public KeyedService {
   static bool IsContextSharingEnabled(const PrefService* prefs);
 
   // Creates a new session and returns a handle to it.
-  std::unique_ptr<ContextualSearchSessionHandle> CreateSession(
+  virtual std::unique_ptr<ContextualSearchSessionHandle> CreateSession(
       std::unique_ptr<ContextualSearchContextController::ConfigParams>
           query_controller_config_params,
       ContextualSearchSource source);
