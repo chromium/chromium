@@ -482,28 +482,8 @@ TEST_F(JingleSessionTest, TestIncompatibleProtocol) {
 
   std::unique_ptr<CandidateSessionConfig> config =
       CandidateSessionConfig::CreateDefault();
-  // Disable all video codecs so the host will reject connection.
-  config->mutable_video_configs()->clear();
-  client_server_->set_protocol_config(std::move(config));
-  ConnectClient(FakeAuthenticator::Config(FakeAuthenticator::ACCEPT));
-
-  EXPECT_EQ(ErrorCode::INCOMPATIBLE_PROTOCOL, client_session_->error());
-  EXPECT_FALSE(host_session_);
-}
-
-// Verify that GICE-only client is rejected with an appropriate error code.
-TEST_F(JingleSessionTest, TestLegacyIceConnection) {
-  CreateSessionManagers(FakeAuthenticator::Config(FakeAuthenticator::ACCEPT));
-
-  EXPECT_CALL(host_server_listener_, OnIncomingSession(_, _, _, _)).Times(0);
-
-  EXPECT_CALL(client_session_event_handler_,
-              OnSessionStateChange(Session::FAILED))
-      .Times(1);
-
-  std::unique_ptr<CandidateSessionConfig> config =
-      CandidateSessionConfig::CreateDefault();
-  config->set_ice_supported(false);
+  // Disable WebRTC so the host will reject connection.
+  config->set_webrtc_supported(false);
   client_server_->set_protocol_config(std::move(config));
   ConnectClient(FakeAuthenticator::Config(FakeAuthenticator::ACCEPT));
 

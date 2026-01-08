@@ -253,7 +253,10 @@ std::unique_ptr<CandidateSessionConfig>
 CandidateSessionConfig::CreateDefault() {
   std::unique_ptr<CandidateSessionConfig> result = CreateEmpty();
 
-  result->set_ice_supported(true);
+  // Disable ICE (i.e. chromotocol) in preparation for deletion.
+  // See: crbug.com/375470501
+  result->set_ice_supported(false);
+  result->set_webrtc_supported(true);
 
   // Control channel.
   result->mutable_control_configs()->push_back(

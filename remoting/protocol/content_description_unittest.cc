@@ -18,6 +18,10 @@ namespace remoting::protocol {
 TEST(ContentDescriptionTest, FormatAndParse) {
   std::unique_ptr<CandidateSessionConfig> config =
       CandidateSessionConfig::CreateDefault();
+  // ICE must be enabled since otherwise the channel configs would not be
+  // serialized.
+  // TODO: crbug.com/375470501 - Fix the test for WebRTC.
+  config->set_ice_supported(true);
   ContentDescription description(
       std::move(config), Authenticator::CreateEmptyAuthenticatorMessage());
   std::unique_ptr<jingle_xmpp::XmlElement> xml(description.ToXml());

@@ -29,46 +29,36 @@ TEST(SessionConfig, SelectCommon) {
   std::unique_ptr<CandidateSessionConfig> default_candidate_config =
       CandidateSessionConfig::CreateDefault();
 
-  std::unique_ptr<CandidateSessionConfig> candidate_config_with_webrtc =
+  std::unique_ptr<CandidateSessionConfig> candidate_config_with_ice =
       CandidateSessionConfig::CreateEmpty();
-  candidate_config_with_webrtc->set_webrtc_supported(true);
+  candidate_config_with_ice->set_ice_supported(true);
+  candidate_config_with_ice->set_webrtc_supported(false);
 
   std::unique_ptr<CandidateSessionConfig> hybrid_candidate_config =
       CandidateSessionConfig::CreateDefault();
+  hybrid_candidate_config->set_ice_supported(true);
   hybrid_candidate_config->set_webrtc_supported(true);
 
   std::unique_ptr<SessionConfig> selected;
 
-  // ICE is selected by default.
+  // WebRTC is selected by default.
   selected = SessionConfig::SelectCommon(default_candidate_config.get(),
                                          default_candidate_config.get());
   ASSERT_TRUE(selected);
-  EXPECT_EQ(SessionConfig::Protocol::ICE, selected->protocol());
+  EXPECT_EQ(SessionConfig::Protocol::WEBRTC, selected->protocol());
 
-  // WebRTC protocol is not supported by default.
+  // ICE protocol is not supported by default.
   selected = SessionConfig::SelectCommon(default_candidate_config.get(),
-                                         candidate_config_with_webrtc.get());
+                                         candidate_config_with_ice.get());
   EXPECT_FALSE(selected);
 
-  // ICE is selected when client supports both protocols
+  // WebRTC is selected when client supports both protocols
   selected = SessionConfig::SelectCommon(default_candidate_config.get(),
                                          hybrid_candidate_config.get());
   ASSERT_TRUE(selected);
-  EXPECT_EQ(SessionConfig::Protocol::ICE, selected->protocol());
-
-  // WebRTC is selected when both peers support it.
-  selected = SessionConfig::SelectCommon(candidate_config_with_webrtc.get(),
-                                         candidate_config_with_webrtc.get());
-  ASSERT_TRUE(selected);
   EXPECT_EQ(SessionConfig::Protocol::WEBRTC, selected->protocol());
 
   // WebRTC is selected when both peers support it.
-  selected = SessionConfig::SelectCommon(candidate_config_with_webrtc.get(),
-                                         hybrid_candidate_config.get());
-  ASSERT_TRUE(selected);
-  EXPECT_EQ(SessionConfig::Protocol::WEBRTC, selected->protocol());
-
-  // ICE is selected if both peers support both protocols.
   selected = SessionConfig::SelectCommon(hybrid_candidate_config.get(),
                                          hybrid_candidate_config.get());
   ASSERT_TRUE(selected);
@@ -84,23 +74,33 @@ TEST(SessionConfig, IsSupported) {
   std::unique_ptr<CandidateSessionConfig> default_candidate_config =
       CandidateSessionConfig::CreateDefault();
 
+  std::unique_ptr<CandidateSessionConfig> candidate_config_with_ice =
+      CandidateSessionConfig::CreateDefault();
+  candidate_config_with_ice->set_ice_supported(true);
+  candidate_config_with_ice->set_webrtc_supported(false);
+
   std::unique_ptr<CandidateSessionConfig> candidate_config_with_webrtc =
       CandidateSessionConfig::CreateEmpty();
+  candidate_config_with_webrtc->set_ice_supported(false);
   candidate_config_with_webrtc->set_webrtc_supported(true);
 
   std::unique_ptr<CandidateSessionConfig> hybrid_candidate_config =
       CandidateSessionConfig::CreateDefault();
+  hybrid_candidate_config->set_ice_supported(true);
   hybrid_candidate_config->set_webrtc_supported(true);
 
   std::unique_ptr<SessionConfig> ice_config = SessionConfig::ForTest();
   std::unique_ptr<SessionConfig> webrtc_config =
       SessionConfig::ForTestWithWebrtc();
 
-  EXPECT_TRUE(default_candidate_config->IsSupported(*ice_config));
-  EXPECT_FALSE(default_candidate_config->IsSupported(*webrtc_config));
+  EXPECT_FALSE(default_candidate_config->IsSupported(*ice_config));
+  EXPECT_TRUE(default_candidate_config->IsSupported(*webrtc_config));
 
   EXPECT_FALSE(candidate_config_with_webrtc->IsSupported(*ice_config));
   EXPECT_TRUE(candidate_config_with_webrtc->IsSupported(*webrtc_config));
+
+  EXPECT_TRUE(candidate_config_with_ice->IsSupported(*ice_config));
+  EXPECT_FALSE(candidate_config_with_ice->IsSupported(*webrtc_config));
 
   EXPECT_TRUE(hybrid_candidate_config->IsSupported(*ice_config));
   EXPECT_TRUE(hybrid_candidate_config->IsSupported(*webrtc_config));
