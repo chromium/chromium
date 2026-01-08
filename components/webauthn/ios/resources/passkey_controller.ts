@@ -239,6 +239,50 @@ function publicKeyCredentialDescriptorAsSerializedDescriptors(
                          }));
 }
 
+// Converts PRF values to strings (Base64URL).
+function prfValuesToBase64URL(values: AuthenticationExtensionsPRFValues):
+    AuthenticationExtensionsPRFValuesJSON {
+  const result: AuthenticationExtensionsPRFValuesJSON = {
+    first: bufferSourceToBase64URL(values.first),
+  };
+  if (values.second) {
+    result.second = bufferSourceToBase64URL(values.second);
+  }
+  return result;
+}
+
+// Serializes all PRF-related data from the extensions dictionary.
+function serializePRF(prf: AuthenticationExtensionsPRFInputs):
+    AuthenticationExtensionsPRFInputsJSON {
+  const result: AuthenticationExtensionsPRFInputsJSON = {};
+
+  // Add main PRF values to result as Base64 strings if present.
+  if (prf.eval) {
+    result.eval = prfValuesToBase64URL(prf.eval);
+  }
+
+  // Get per credential PRF values as Base64 strings if present.
+  const perCredentialPRFData:
+      Map<string, AuthenticationExtensionsPRFValuesJSON> = new Map();
+  for (const credentialId in prf.evalByCredential) {
+    const credentialPRFData = prf.evalByCredential[credentialId];
+    if (credentialPRFData) {
+      // credentialId is base64url encoded, as specified by the webauthn spec
+      // here: https://www.w3.org/TR/webauthn-3/#prf-extension
+      perCredentialPRFData.set(
+          credentialId, prfValuesToBase64URL(credentialPRFData));
+    }
+  }
+
+  // Copy per credential PRF values as Base64 strings to result if present.
+  if (prf.evalByCredential) {
+    result.evalByCredential =
+        Object.fromEntries(perCredentialPRFData.entries());
+  }
+
+  return result;
+}
+
 // Serialize all extension inputs.
 function serializeExtensions(extensions?: AuthenticationExtensionsClientInputs):
     AuthenticationExtensionsClientInputsJSON {
@@ -248,7 +292,12 @@ function serializeExtensions(extensions?: AuthenticationExtensionsClientInputs):
     return result;
   }
 
-  // TODO(crbug.com/460485679): Support extensions.
+  if (extensions.prf) {
+    result.prf = serializePRF(extensions.prf);
+  }
+
+  // TODO(crbug.com/460485679): Support extensions other than PRF.
+
   return result;
 }
 
