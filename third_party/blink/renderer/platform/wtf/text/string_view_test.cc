@@ -661,4 +661,30 @@ TEST(StringViewTest, Contains) {
   EXPECT_TRUE(StringView(u"ascii\u25A0").contains(uchar::kBlackSquare));
 }
 
+TEST(StringViewTest, StripWhiteSpace) {
+  StringView expected("Hello  world");
+  EXPECT_EQ(expected, StringView("Hello  world").StripWhiteSpace());
+  EXPECT_EQ(expected, StringView("  Hello  world  ").StripWhiteSpace());
+  EXPECT_EQ(expected, StringView("\nHello  world\v  ").StripWhiteSpace());
+
+  EXPECT_EQ(StringView(), StringView().StripWhiteSpace());
+  EXPECT_EQ(StringView(""), StringView("").StripWhiteSpace());
+  EXPECT_EQ(StringView(""), StringView("\n").StripWhiteSpace());
+  EXPECT_EQ(StringView(""), StringView(u"\u3000").StripWhiteSpace());
+}
+
+TEST(StringViewTest, StripWhiteSpaceWithPredicate) {
+  StringView expected("Hello  world");
+  IsWhiteSpaceFunctionPtr p = IsASCIISpaceWHATWG;
+  EXPECT_EQ(expected, StringView("Hello  world").StripWhiteSpace(p));
+  EXPECT_EQ(expected, StringView("  Hello  world  ").StripWhiteSpace(p));
+  EXPECT_EQ("Hello  world\v",
+            StringView("\nHello  world\v  ").StripWhiteSpace(p));
+
+  EXPECT_EQ(StringView(), StringView().StripWhiteSpace(p));
+  EXPECT_EQ(StringView(""), StringView("").StripWhiteSpace(p));
+  EXPECT_EQ(StringView(""), StringView("\n").StripWhiteSpace(p));
+  EXPECT_EQ(StringView(u"\u3000"), StringView(u"\u3000").StripWhiteSpace(p));
+}
+
 }  // namespace blink

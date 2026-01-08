@@ -297,6 +297,14 @@ class WTF_EXPORT StringView {
   CodePointIterator begin() const;
   CodePointIterator end() const;
 
+  // Returns a substring removing leading and trailing white spaces.
+  // This function removes spaces, \n, \t, \r, \f, \v, and unicode spaces such
+  // as U+2000 and U+3000.
+  [[nodiscard]] StringView StripWhiteSpace() const;
+  // Returns a substring removing leading and trailing matched characters.
+  [[nodiscard]] StringView StripWhiteSpace(
+      IsWhiteSpaceFunctionPtr predicate) const;
+
  private:
   void Set(const StringImpl&, unsigned offset, unsigned length);
 

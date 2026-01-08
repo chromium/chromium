@@ -14,6 +14,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_internal.h"
+#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -357,6 +359,29 @@ CodePointIterator StringView::begin() const {
 
 CodePointIterator StringView::end() const {
   return CodePointIterator::End(*this);
+}
+
+StringView StringView::StripWhiteSpace() const {
+  return VisitCharacters(*this, [&](auto chars) {
+    const auto [start, len] = internal::StrippedMatchedCharactersRange(
+        chars, unicode::IsSpaceOrNewline);
+    if (start == 0 && len == length_) {
+      return *this;
+    }
+    return StringView(chars.subspan(start, len));
+  });
+}
+
+StringView StringView::StripWhiteSpace(
+    IsWhiteSpaceFunctionPtr predicate) const {
+  return VisitCharacters(*this, [&](auto chars) {
+    const auto [start, len] =
+        internal::StrippedMatchedCharactersRange(chars, predicate);
+    if (start == 0 && len == length_) {
+      return *this;
+    }
+    return StringView(chars.subspan(start, len));
+  });
 }
 
 std::ostream& operator<<(std::ostream& out, const StringView& string) {
