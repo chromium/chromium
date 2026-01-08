@@ -6,50 +6,27 @@
     </title>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
-    <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
-      let audit = Audit.createTaskRunner();
-      let context;
-      let scriptNode1;
-      let scriptNode2;
-      let analyzer;
+    <script>
+      test(() => {
+        const context = new OfflineAudioContext(1, 1024, 44100);
+        const analyzer = new AnalyserNode(context);
+        // Create a ScriptProcessorNode with 0 output channels.
+        const scriptNode1 = context.createScriptProcessor(1024, 11, 0);
+        // Create a ScriptProcessorNode with 1 output channel.
+        const scriptNode2 = context.createScriptProcessor(1024, 1, 1);
 
-      audit.define('initialize', (task, should) => {
-        should(function() {
-          context = new OfflineAudioContext(1, 1024, 44100);
-        }, 'context = new OfflineAudioContext(1, 1024, 44100)').notThrow();
-        should(function() {
-          analyzer = context.createAnalyser();
-        }, 'analyzer = context.createAnalyser()').notThrow();
-        should(
-            function() {
-              scriptNode1 = context.createScriptProcessor(1024, 11, 0);
-            },
-            'scriptNode1 = context.createScriptProcessor(1024, 11, 0)')
-            .notThrow();
-        should(
-            function() {
-              scriptNode2 = context.createScriptProcessor(1024, 1, 1);
-            },
-            'scriptNode2 = context.createScriptProcessor(1024, 1, 1)')
-            .notThrow();
-        task.done();
-      });
+        // Connecting a node with 0 output channels should throw
+        // an InvalidAccessError.
+        assert_throws_dom(
+            'InvalidAccessError',
+            () => { scriptNode1.connect(analyzer); },
+            'scriptNode1.connect(analyzer)');
 
-      audit.define('test', (task, should) => {
-        should(function() {
-          scriptNode1.connect(analyzer);
-        }, 'scriptNode1.connect(analyzer)').throw(DOMException, 'InvalidAccessError');
-        should(function() {
-          scriptNode2.connect(analyzer);
-        }, 'scriptNode2.connect(analyzer)').notThrow();
-        task.done();
-      });
-
-      audit.run();
+        // Connecting a node with 1 output channel should not throw an error.
+        scriptNode2.connect(analyzer);
+      }, 'Test Connecting 0-output channel ScriptProcessor to Another Node');
     </script>
   </body>
 </html>
