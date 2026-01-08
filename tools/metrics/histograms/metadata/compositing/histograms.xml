@@ -542,38 +542,6 @@ chromium-metrics-reviews@google.com.
   <token key="DPI" variants="LCDTextDisallowedReasonDPI"/>
 </histogram>
 
-<histogram name="Compositing.Renderer.NumActiveLayers" units="layers"
-    expires_after="2025-04-13">
-  <owner>pdr@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    The number of layers in the active tree for each compositor frame. This is
-    logged once per frame, before the frame is drawn (in a renderer process).
-  </summary>
-</histogram>
-
-<histogram name="Compositing.Renderer.NumActivePictureLayers" units="layers"
-    expires_after="2025-04-13">
-  <owner>pdr@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    The number of PictureLayers in the active tree for each compositor frame.
-    This is logged once per frame, before the frame is drawn (in a renderer
-    process).
-  </summary>
-</histogram>
-
-<histogram name="Compositing.Renderer.NumRenderSurfaces" units="surfaces"
-    expires_after="2024-09-22">
-  <owner>pdr@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    The number of render surfaces in the render surface layer list. Recorded
-    each time the render surface layer list is constructed (in a renderer
-    process).
-  </summary>
-</histogram>
-
 <histogram name="Compositing.Scheduler.DeadlineMode"
     enum="BeginImplFrameDeadlineMode" expires_after="2026-05-31">
   <owner>lizeb@chromium.org</owner>

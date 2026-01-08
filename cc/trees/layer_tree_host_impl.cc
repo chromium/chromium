@@ -2011,23 +2011,6 @@ DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame,
   if (input_delegate_)
     input_delegate_->WillDraw();
 
-  // No need to record metrics each time we draw, 1% is enough.
-  constexpr double kSamplingFrequency = .01;
-  if (!downsample_metrics_ ||
-      metrics_subsampler_.ShouldSample(kSamplingFrequency)) {
-    // These metrics are only for the renderer process.
-    if (RunningOnRendererProcess()) {
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Compositing.Renderer.NumActiveLayers",
-          base::saturated_cast<int>(active_tree_->NumLayers()), 1, 1000, 20);
-
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Compositing.Renderer.NumActivePictureLayers",
-          base::saturated_cast<int>(active_tree_->picture_layers().size()), 1,
-          1000, 20);
-    }
-  }
-
   // Tick worklet animations here, just before draw, to give animation worklets
   // as much time as possible to produce their output for this frame. Note that
   // an animation worklet is asked to produce its output at the beginning of the
