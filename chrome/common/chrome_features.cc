@@ -482,6 +482,11 @@ BASE_FEATURE(kGlicActOnWebCapabilityForManagedTrials,
 // main app.
 BASE_FEATURE(kGlicUnifiedFreScreen, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls the Glic Trust First Onboarding experience.
+BASE_FEATURE(kGlicTrustFirstOnboarding, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kGlicTrustFirstOnboardingArmParam{
+    &kGlicTrustFirstOnboarding, "arm", 1 /* kStartChat */};
 #if BUILDFLAG(ENABLE_GLIC)
 // Controls whether the Glic feature is enabled.
 // IMPORTANT: this feature should never be expired! It is used as the main

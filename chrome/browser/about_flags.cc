@@ -4653,6 +4653,22 @@ const FeatureEntry::FeatureVariation kGlicButtonAltLabelVariations[] = {
      nullptr},
     {"C", kGlicButtonAltLabelVariant2, std::size(kGlicButtonAltLabelVariant2),
      nullptr}};
+
+const FeatureEntry::FeatureParam kGlicTrustFirstOnboardingArm1Params[] = {
+    {"arm", "1"}};
+const FeatureEntry::FeatureParam kGlicTrustFirstOnboardingArm2Params[] = {
+    {"arm", "2"}};
+const FeatureEntry::FeatureParam kGlicTrustFirstOnboardingArm3Params[] = {
+    {"arm", "3"}};
+
+const FeatureEntry::FeatureVariation kGlicTrustFirstOnboardingVariations[] = {
+    {"- Arm 1: Start Chat", kGlicTrustFirstOnboardingArm1Params,
+     std::size(kGlicTrustFirstOnboardingArm1Params), nullptr},
+    {"- Arm 2: Welcome Screen", kGlicTrustFirstOnboardingArm2Params,
+     std::size(kGlicTrustFirstOnboardingArm2Params), nullptr},
+    {"- Arm 3: In-Flow opt-in", kGlicTrustFirstOnboardingArm3Params,
+     std::size(kGlicTrustFirstOnboardingArm3Params), nullptr},
+};
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 const FeatureEntry::FeatureParam kAutofillShowTypePredictionsAsTitle[] = {
@@ -11859,6 +11875,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicUseToolbarHeightSidePanelName,
      flag_descriptions::kGlicUseToolbarHeightSidePanelDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicUseToolbarHeightSidePanel)},
+    {"glic-trust-first-onboarding",
+     flag_descriptions::kGlicTrustFirstOnboardingName,
+     flag_descriptions::kGlicTrustFirstOnboardingDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlicTrustFirstOnboarding,
+                                    kGlicTrustFirstOnboardingVariations,
+                                    "GlicTrustFirstOnboarding")},
 #if BUILDFLAG(IS_CHROMEOS)
     {"glic-use-non-client", flag_descriptions::kGlicUseNonClientName,
      flag_descriptions::kGlicUseNonClientDescription, kOsCrOS,

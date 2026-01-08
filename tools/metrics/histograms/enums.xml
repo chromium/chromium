@@ -10586,6 +10586,7 @@ from previous Chrome versions.
   <int value="-1332267458" label="RemoveNavigationHistory:enabled"/>
   <int value="-1331831950" label="site-isolation-for-password-sites:enabled"/>
   <int value="-1330409814" label="ContextMenuCopyImage:enabled"/>
+  <int value="-1330292576" label="GlicTrustFirstOnboarding:disabled"/>
   <int value="-1329990210"
       label="UserCloudSigninRestrictionPolicyFetcher:disabled"/>
   <int value="-1329973081"
@@ -11705,6 +11706,7 @@ from previous Chrome versions.
   <int value="-943223021"
       label="FeatureNotificationGuideSkipCheckForLowEngagedUsers:disabled"/>
   <int value="-942935700" label="FastPairKeyboards:disabled"/>
+  <int value="-942248285" label="GlicTrustFirstOnboarding:enabled"/>
   <int value="-941752665" label="infobar-refresh:enabled"/>
   <int value="-941056354" label="CdmStorageDatabase:enabled"/>
   <int value="-940931658" label="UseDMSAAForTilesAndroidGL:disabled"/>

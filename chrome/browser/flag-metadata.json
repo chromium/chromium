@@ -5776,6 +5776,15 @@
     "owners": [ "estalin@chromium.org", "//chrome/browser/glic/OWNERS" ],
     "expiry_milestone": 150
   },
+  {
+    "name": "glic-trust-first-onboarding",
+    "owners": [
+     "tommasin@chromium.org",
+     "zalmashni@google.com",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 152
+  },
   { "name": "glic-use-non-client",
     "owners": [
       "zoraiznaeem@chromium.org",

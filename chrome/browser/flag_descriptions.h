@@ -1422,6 +1422,10 @@ inline constexpr char kGlicDaisyChainNewTabsName[] =
 inline constexpr char kGlicDaisyChainNewTabsDescription[] =
     "Daisy chains new tabs if the active tab when the new tab was create has an"
     " open glic side panel";
+inline constexpr char kGlicTrustFirstOnboardingName[] =
+    "Glic Trust First Onboarding";
+inline constexpr char kGlicTrustFirstOnboardingDescription[] =
+    "Enables the Trust First Onboarding experiment for Glic.";
 inline constexpr char kGlicUseToolbarHeightSidePanelName[] =
     "Glic Use Toolbar Height Side Panel";
 inline constexpr char kGlicUseToolbarHeightSidePanelDescription[] =
