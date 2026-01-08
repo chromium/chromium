@@ -282,8 +282,8 @@ class WaterfallError(Exception):
 class StarlarkEdits:
   """Edits to make to a starlark file to migrate tests for builders."""
 
-  targets_builder_defaults: dict[str, str]
-  """The parameters to set in the targets.builder_defaults declaration.
+  targets_bundle_defaults: dict[str, str]
+  """The parameters to set in the targets.bundle_defaults declaration.
 
   parameter name -> string representation of parameter value
   """
@@ -416,7 +416,7 @@ def update_starlark(
 
   def create_defaults(kind):
     # %{kind} as the pattern tells it to operate on all rules of that kind.
-    # There shouldn't be more than one targets.builder_defaults.set "rule".
+    # There shouldn't be more than one targets.bundle_defaults.set "rule".
     defaults_target = f'{star_file}:%{kind}'
     # Check if a declaration of the kind already exists, any print operation
     # will result in output if there is already a rule
@@ -432,7 +432,7 @@ def update_starlark(
     return defaults_target
 
   for kind, defaults in (
-      ('targets.builder_defaults.set', edits.targets_builder_defaults),
+      ('targets.bundle_defaults.set', edits.targets_bundle_defaults),
       ('targets.settings_defaults.set', edits.targets_settings_defaults),
   ):
     if not defaults:
