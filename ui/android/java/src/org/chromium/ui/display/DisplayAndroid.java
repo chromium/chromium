@@ -142,6 +142,22 @@ public class DisplayAndroid {
         return getManager().getDisplayAndroid(display);
     }
 
+    /**
+     * Returns the device's internal, built-in display (ID 0).
+     *
+     * <p>This method always returns the default display (typically the phone or tablet screen),
+     * even if the application is currently running on a secondary screen (such as an external
+     * monitor or in Samsung DeX mode).
+     *
+     * <p>
+     *
+     * @return The {@link DisplayAndroid} corresponding to {@link
+     *     android.view.Display#DEFAULT_DISPLAY}.
+     */
+    /* package */ static DisplayAndroid getGlobalDefaultDisplay() {
+        return getManager().getDisplayAndroid(DisplayAndroidManager.getGlobalDefaultDisplay());
+    }
+
     /** Returns the display ID that matches the one defined in Android's Display. */
     public int getDisplayId() {
         return mDisplayId;

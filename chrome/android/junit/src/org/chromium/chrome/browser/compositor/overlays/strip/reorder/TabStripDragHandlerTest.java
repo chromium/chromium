@@ -79,6 +79,7 @@ import org.chromium.chrome.browser.dragdrop.ChromeMultiTabDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabGroupDropDataAndroid;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -892,6 +893,7 @@ public class TabStripDragHandlerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void test_onDrag_dropInStrip_differentModel_fail_incognitoAsNewWindow() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         doTestDropInDestinationDifferentModel_fail(/* isGroupDrag= */ false);
     }
 
@@ -899,6 +901,7 @@ public class TabStripDragHandlerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void test_onDrag_dropInStrip_differentModel_fail_tabGroup_incognitoAsNewWindow() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         doTestDropInDestinationDifferentModel_fail(/* isGroupDrag= */ true);
     }
 
@@ -906,6 +909,7 @@ public class TabStripDragHandlerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void test_onDrag_dropInStrip_differentModel_fail_multiTab_incognitoAsNewWindow() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         doTestDropInDestinationDifferentModel_fail_multiTab();
     }
 
