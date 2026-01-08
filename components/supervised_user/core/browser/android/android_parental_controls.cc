@@ -4,6 +4,7 @@
 
 #include "components/supervised_user/core/browser/android/android_parental_controls.h"
 
+#include <string>
 #include <string_view>
 
 #include "base/memory/weak_ptr.h"
@@ -27,6 +28,10 @@ void AndroidParentalControls::Init() {
 
 AndroidParentalControls::~AndroidParentalControls() = default;
 
+bool AndroidParentalControls::IsSafeSearchForced() const {
+  return IsSearchContentFiltersEnabled();
+}
+
 void AndroidParentalControls::OnContentFiltersObserverEnabled(
     std::string_view setting_name) {
   OnContentFiltersObserverChanged(setting_name);
@@ -40,12 +45,10 @@ void AndroidParentalControls::OnContentFiltersObserverDisabled(
 void AndroidParentalControls::OnContentFiltersObserverChanged(
     std::string_view setting_name) {
   if (setting_name == browser_content_filters_observer_.GetSettingName()) {
-    observer_list_.Notify(
-        &Observer::OnAndroidParentalControlsBrowserContentFiltersChanged);
+    NotifyBrowserContentFiltersChanged();
   } else if (setting_name ==
              search_content_filters_observer_.GetSettingName()) {
-    observer_list_.Notify(
-        &Observer::OnAndroidParentalControlsSearchContentFiltersChanged);
+    NotifySearchContentFiltersChanged();
   } else {
     NOTREACHED() << "Unexpected setting name: " << setting_name;
   }
@@ -59,18 +62,6 @@ bool AndroidParentalControls::IsSearchContentFiltersEnabled() const {
   return search_content_filters_observer_.IsEnabled();
 }
 
-bool AndroidParentalControls::IsSafeSearchForced() const {
-  return IsSearchContentFiltersEnabled();
-}
-
-void AndroidParentalControls::AddObserver(Observer* observer) const {
-  observer_list_.AddObserver(observer);
-}
-
-void AndroidParentalControls::RemoveObserver(Observer* observer) const {
-  observer_list_.RemoveObserver(observer);
-}
-
 void AndroidParentalControls::SetBrowserContentFiltersEnabledForTesting(
     bool enabled) {
   browser_content_filters_observer_.SetEnabledForTesting(enabled);
@@ -80,5 +71,4 @@ void AndroidParentalControls::SetSearchContentFiltersEnabledForTesting(
     bool enabled) {
   search_content_filters_observer_.SetEnabledForTesting(enabled);
 }
-
 }  // namespace supervised_user

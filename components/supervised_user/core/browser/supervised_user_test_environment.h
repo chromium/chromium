@@ -15,6 +15,7 @@
 #include "components/prefs/testing_pref_store.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/browser/device_parental_controls_noop_impl.h"
 #include "components/supervised_user/core/browser/supervised_user_content_filters_service.h"
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
@@ -27,14 +28,20 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/supervised_user/core/browser/android/android_parental_controls.h"
-#include "components/supervised_user/core/browser/android/content_filters_observer_bridge.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace supervised_user {
 
+using DeviceParentalControlsTestImpl =
+#if BUILDFLAG(IS_ANDROID)
+    AndroidParentalControls;
+#else
+    DeviceParentalControlsNoOpImpl;
+#endif
+
 // Handy set of initial states of supervision stack, to preset before testing.
 enum class InitialSupervisionState : int {
-  // Default mode, no supervision, no content filters at startup.
+  // Default mode, no family link nor local device supervision.
   kUnsupervised,
   // Enable family link, and use defaults.
   kFamilyLinkDefault,
@@ -139,9 +146,7 @@ class SupervisedUserTestEnvironment {
   PrefService* pref_service();
   sync_preferences::TestingPrefServiceSyncable* pref_service_syncable();
   safe_search_api::FakeURLCheckerClient* url_checker_client();
-#if BUILDFLAG(IS_ANDROID)
-  AndroidParentalControls* android_parental_controls();
-#endif  // BUILDFLAG(IS_ANDROID)
+  DeviceParentalControlsTestImpl& device_parental_controls();
 
   // Simulators of parental controls. Instance methods use services from this
   // test environment, while static methods are suitable for heavier testing
@@ -181,10 +186,7 @@ class SupervisedUserTestEnvironment {
   std::unique_ptr<SupervisedUserService> service_;
   std::unique_ptr<SupervisedUserUrlFilteringService> url_filtering_service_;
   std::unique_ptr<SupervisedUserMetricsService> metrics_service_;
-
-#if BUILDFLAG(IS_ANDROID)
-  AndroidParentalControls android_parental_controls_;
-#endif  // BUILDFLAG(IS_ANDROID)
+  DeviceParentalControlsTestImpl device_parental_controls_;
 
   // The objects are actually owned by the service_, but are referenced here for
   // convenience.

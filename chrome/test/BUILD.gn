@@ -162,6 +162,7 @@ static_library("test_support") {
     "//chrome/test/data/webui:resources",
     "//components/activity_reporter",
     "//components/affiliations/core/browser:test_support",
+    "//components/supervised_user/core/browser:device_parental_controls",
     "//components/supervised_user/core/browser:test_support",
     "//ui/base/unowned_user_data",
   ]
@@ -7335,6 +7336,7 @@ test("unit_tests") {
     "//components/subresource_filter/core/browser",
     "//components/subresource_filter/core/browser:test_support",
     "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/browser:device_parental_controls",
     "//components/supervised_user/core/browser:fetcher",
     "//components/supervised_user/core/browser:test_support",
     "//components/supervised_user/core/browser/proto",
@@ -8054,6 +8056,7 @@ test("unit_tests") {
       "//components/signin/core/browser",
       "//components/signin/public/android:signin_java_test_support",
       "//components/supervised_user/android:content_filters_observer_bridge_java",
+      "//components/supervised_user/core/browser/android",
       "//components/supervised_user/core/browser/proto",
       "//components/supervised_user/core/common",
       "//components/translate/content/android",

@@ -7,6 +7,7 @@
 #import "base/check_deref.h"
 #import "base/no_destructor.h"
 #import "components/prefs/pref_service.h"
+#import "components/supervised_user/core/browser/device_parental_controls.h"
 #import "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "components/supervised_user/core/browser/supervised_user_url_filter.h"
@@ -76,5 +77,6 @@ SupervisedUserServiceFactory::BuildServiceInstanceFor(
               CHECK_DEREF(profile->GetPrefs()),
               platform_delegate->GetCountryCode(),
               platform_delegate->GetChannel())),
-      std::move(platform_delegate));
+      std::move(platform_delegate),
+      GetApplicationContext()->GetDeviceParentalControls());
 }

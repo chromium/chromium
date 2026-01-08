@@ -8,11 +8,13 @@
 
 #include "base/check_deref.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/metrics_service_accessor_delegate.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/supervised_user/core/browser/device_parental_controls.h"
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "content/public/browser/browser_context.h"
@@ -22,9 +24,6 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/check_deref.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/global_features.h"
 #include "components/supervised_user/core/browser/android/android_parental_controls.h"
 #endif
 
@@ -86,9 +85,7 @@ SupervisedUserMetricsServiceFactory::BuildServiceInstanceForBrowserContext(
       CHECK_DEREF(SupervisedUserServiceFactory::GetForProfile(profile)),
       CHECK_DEREF(supervised_user::SupervisedUserUrlFilteringServiceFactory::
                       GetForProfile(profile)),
-#if BUILDFLAG(IS_ANDROID)
-      CHECK_DEREF(g_browser_process->device_parental_controls()),
-#endif
+      g_browser_process->device_parental_controls(),
       std::move(extensions_metrics_delegate),
       std::make_unique<supervised_user::MetricsServiceAccessorDelegateImpl>());
 }

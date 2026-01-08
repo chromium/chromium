@@ -26,6 +26,7 @@ source_set("test_support") {
   ]
   deps = [
     ":browser",
+    ":device_parental_controls",
     "//base",
     "//base/test:test_support",
     "//components/content_settings/core/browser:test_support",
@@ -152,6 +153,7 @@ static_library("browser") {
   ]
 
   deps = [
+    ":device_parental_controls",
     ":fetcher",
     ":fetcher_config",
     ":synthetic_field_trial_delegate",
@@ -192,6 +194,19 @@ if (is_android) {
   }
 }
 
+static_library("device_parental_controls") {
+  sources = [
+    "device_parental_controls.cc",
+    "device_parental_controls.h",
+    "device_parental_controls_noop_impl.cc",
+    "device_parental_controls_noop_impl.h",
+  ]
+  deps = [
+    ":synthetic_field_trial_delegate",
+    "//base",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -220,6 +235,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":browser",
+    ":device_parental_controls",
     ":fetcher",
     ":fetcher_config",
     ":test_support",

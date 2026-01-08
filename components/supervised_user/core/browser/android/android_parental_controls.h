@@ -10,6 +10,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/supervised_user/core/browser/android/content_filters_observer_bridge.h"
+#include "components/supervised_user/core/browser/device_parental_controls.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
 namespace supervised_user {
@@ -17,45 +18,22 @@ namespace supervised_user {
 // Provides access to Android-specific parental controls settings through JNI
 // bridges. Translates the operating system's settings to state of the browser
 // features they control.
-class AndroidParentalControls : public ContentFiltersObserverBridge::Observer {
+class AndroidParentalControls : public DeviceParentalControls,
+                                public ContentFiltersObserverBridge::Observer {
  public:
-  class Observer {
-   public:
-    // Note: this is intermediate state of migrating away the Supervised User
-    // stack from the pref interface for url filtering. In the target layout,
-    // AndroidParentalControls will notify about change of browser
-    // feature (such as incognito mode, safe search or web filtering) rather
-    // than about change of the underlying parental control setting. Currently,
-    // the existing interface is just duplicated.
-    // TODO(crbug.com/470298260): replace low-level OS signals with high-level
-    // browser feature states.
-    virtual void OnAndroidParentalControlsSearchContentFiltersChanged() {}
-    virtual void OnAndroidParentalControlsBrowserContentFiltersChanged() {}
-  };
-
   AndroidParentalControls();
   ~AndroidParentalControls() override;
   AndroidParentalControls(const AndroidParentalControls&) = delete;
   const AndroidParentalControls& operator=(const AndroidParentalControls&) =
       delete;
 
-  // Delegates the initialization to the bridges.
-  void Init();
-
-  // TODO(crbug.com/470298260): replace low-level OS signals with high-level
-  // browser feature states (eg. IsWebFilteringEnabled, IsSafeSearchForced,
-  // IsIncognitoModeAvailable).
-  bool IsBrowserContentFiltersEnabled() const;
-  bool IsSearchContentFiltersEnabled() const;
-
-  bool IsSafeSearchForced() const;
-
-  // Add and remove observers.
-  void AddObserver(Observer* observer) const;
-  void RemoveObserver(Observer* observer) const;
-
-  void SetBrowserContentFiltersEnabledForTesting(bool enabled);
-  void SetSearchContentFiltersEnabledForTesting(bool enabled);
+  // DeviceParentalControls:
+  void Init() override;
+  bool IsSafeSearchForced() const override;
+  bool IsBrowserContentFiltersEnabled() const override;
+  bool IsSearchContentFiltersEnabled() const override;
+  void SetBrowserContentFiltersEnabledForTesting(bool enabled) override;
+  void SetSearchContentFiltersEnabledForTesting(bool enabled) override;
 
  private:
   // ContentFiltersObserverBridge::Observer:
@@ -67,9 +45,6 @@ class AndroidParentalControls : public ContentFiltersObserverBridge::Observer {
       kBrowserContentFiltersSettingName};
   ContentFiltersObserverBridge search_content_filters_observer_{
       kSearchContentFiltersSettingName};
-
-  // Observer list.
-  mutable base::ObserverList<Observer>::Unchecked observer_list_;
 
   base::ScopedObservation<ContentFiltersObserverBridge,
                           ContentFiltersObserverBridge::Observer>

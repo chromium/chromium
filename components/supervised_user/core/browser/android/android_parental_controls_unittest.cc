@@ -4,6 +4,7 @@
 
 #include "components/supervised_user/core/browser/android/android_parental_controls.h"
 
+#include "components/supervised_user/core/browser/device_parental_controls.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -12,7 +13,7 @@ namespace {
 
 class AndroidParentalControlsTest : public testing::Test {};
 
-class MockObserver : public AndroidParentalControls::Observer {
+class MockObserver : public DeviceParentalControls::Observer {
  public:
   MOCK_METHOD(void,
               OnAndroidParentalControlsBrowserContentFiltersChanged,

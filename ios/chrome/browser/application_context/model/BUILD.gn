@@ -29,6 +29,7 @@ source_set("model") {
     "//components/prefs",
     "//components/sessions",
     "//components/signin/core/browser",
+    "//components/supervised_user/core/browser:device_parental_controls",
     "//components/translate/core/browser",
     "//components/ukm",
     "//components/update_client",

@@ -130,6 +130,8 @@
 #include "components/subresource_filter/content/browser/safe_browsing_ruleset_publisher.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/constants.h"
+#include "components/supervised_user/core/browser/device_parental_controls.h"
+#include "components/supervised_user/core/browser/device_parental_controls_noop_impl.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/ukm/ukm_service.h"
 #include "components/update_client/update_query_params.h"
@@ -203,7 +205,7 @@ void OnLocalStatePrefsLoaded();
 #include "components/gcm_driver/gcm_client_factory.h"
 #include "components/gcm_driver/gcm_desktop_utils.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 #include "chrome/browser/background/extensions/background_mode_manager.h"
@@ -306,6 +308,9 @@ BrowserProcessImpl::BrowserProcessImpl(StartupData* startup_data)
 #if BUILDFLAG(IS_ANDROID)
       device_parental_controls_(
           std::make_unique<supervised_user::AndroidParentalControls>()),
+#else
+      device_parental_controls_(
+          std::make_unique<supervised_user::DeviceParentalControlsNoOpImpl>()),
 #endif
       platform_part_(std::make_unique<BrowserProcessPlatformPart>()),
       network_time_tracker_(startup_data->chrome_feature_list_creator()
@@ -1080,13 +1085,11 @@ BrowserProcessImpl::background_printing_manager() {
 #endif
 }
 
-#if BUILDFLAG(IS_ANDROID)
-supervised_user::AndroidParentalControls*
+supervised_user::DeviceParentalControls&
 BrowserProcessImpl::device_parental_controls() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return device_parental_controls_.get();
+  return *device_parental_controls_;
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
 IntranetRedirectDetector* BrowserProcessImpl::intranet_redirect_detector() {

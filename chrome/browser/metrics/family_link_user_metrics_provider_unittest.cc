@@ -581,21 +581,21 @@ class FamilyLinkUserMetricsProviderWithContentFiltersAndroidTest
                 *profile->GetPrefs(), platform_delegate->GetCountryCode(),
                 platform_delegate->GetChannel())),
         std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
-        *TestingBrowserProcess::GetGlobal()->device_parental_controls());
+        TestingBrowserProcess::GetGlobal()->device_parental_controls());
   }
 
   // Enables or disables the browser content filters for all profiles.
   void SetBrowserContentFilters(bool enabled) {
     TestingBrowserProcess::GetGlobal()
         ->device_parental_controls()
-        ->SetBrowserContentFiltersEnabledForTesting(enabled);
+        .SetBrowserContentFiltersEnabledForTesting(enabled);
   }
 
   // Enables or disables the search content filters for all profiles.
   void SetSearchContentFilters(bool enabled) {
     TestingBrowserProcess::GetGlobal()
         ->device_parental_controls()
-        ->SetSearchContentFiltersEnabledForTesting(enabled);
+        .SetSearchContentFiltersEnabledForTesting(enabled);
   }
 
  private:

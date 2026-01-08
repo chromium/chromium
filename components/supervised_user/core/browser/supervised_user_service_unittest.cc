@@ -432,12 +432,12 @@ class SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest
     : public SupervisedUserServiceWebFilterTypeTransitionsTest {
  protected:
   void SetBrowserFilterEnabled(bool enabled) {
-    supervised_user_test_environment_->android_parental_controls()
-        ->SetBrowserContentFiltersEnabledForTesting(enabled);
+    supervised_user_test_environment_->device_parental_controls()
+        .SetBrowserContentFiltersEnabledForTesting(enabled);
   }
   void SetSearchFilterEnabled(bool enabled) {
-    supervised_user_test_environment_->android_parental_controls()
-        ->SetSearchContentFiltersEnabledForTesting(enabled);
+    supervised_user_test_environment_->device_parental_controls()
+        .SetSearchContentFiltersEnabledForTesting(enabled);
   }
   bool IsSupervisedLocally() const {
     return supervised_user_test_environment_->service()->IsSupervisedLocally();

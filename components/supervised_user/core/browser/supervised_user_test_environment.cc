@@ -201,8 +201,8 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment(
 #if BUILDFLAG(IS_ANDROID)
   if (initial_state ==
       InitialSupervisionState::kSupervisedWithAllContentFilters) {
-    android_parental_controls_.SetBrowserContentFiltersEnabledForTesting(true);
-    android_parental_controls_.SetSearchContentFiltersEnabledForTesting(true);
+    device_parental_controls_.SetBrowserContentFiltersEnabledForTesting(true);
+    device_parental_controls_.SetSearchContentFiltersEnabledForTesting(true);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -220,21 +220,13 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment(
       std::make_unique<SupervisedUserURLFilter>(
           *pref_store_environment_.pref_service(),
           std::make_unique<FakeURLFilterDelegate>(), std::move(client)),
-      std::make_unique<FakePlatformDelegate>()
-#if BUILDFLAG(IS_ANDROID)
-          ,
-      android_parental_controls_
-#endif  // BUILDFLAG(IS_ANDROID)
-  );
+      std::make_unique<FakePlatformDelegate>(), device_parental_controls_);
 
   url_filtering_service_ = std::make_unique<SupervisedUserUrlFilteringService>(
       *service_.get(), *pref_store_environment_.settings_service());
   metrics_service_ = std::make_unique<SupervisedUserMetricsService>(
       pref_store_environment_.pref_service(), *service_.get(),
-      *url_filtering_service_.get(),
-#if BUILDFLAG(IS_ANDROID)
-      android_parental_controls_,
-#endif
+      *url_filtering_service_.get(), device_parental_controls_,
       std::make_unique<SupervisedUserMetricsServiceExtensionDelegateFake>(),
       std::move(synthetic_field_trial_delegate));
 }
@@ -338,12 +330,11 @@ safe_search_api::FakeURLCheckerClient*
 SupervisedUserTestEnvironment::url_checker_client() {
   return url_checker_client_.get();
 }
-#if BUILDFLAG(IS_ANDROID)
-AndroidParentalControls*
-SupervisedUserTestEnvironment::android_parental_controls() {
-  return &android_parental_controls_;
+
+DeviceParentalControlsTestImpl&
+SupervisedUserTestEnvironment::device_parental_controls() {
+  return device_parental_controls_;
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 SynteticFieldTrialDelegateMock::SynteticFieldTrialDelegateMock() = default;
 SynteticFieldTrialDelegateMock::~SynteticFieldTrialDelegateMock() = default;

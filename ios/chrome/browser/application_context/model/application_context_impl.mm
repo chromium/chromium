@@ -45,6 +45,8 @@
 #import "components/prefs/pref_service.h"
 #import "components/sessions/core/session_id_generator.h"
 #import "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
+#import "components/supervised_user/core/browser/device_parental_controls.h"
+#import "components/supervised_user/core/browser/device_parental_controls_noop_impl.h"
 #import "components/translate/core/browser/translate_download_manager.h"
 #import "components/ukm/ukm_service.h"
 #import "components/update_client/configurator.h"
@@ -604,6 +606,15 @@ ApplicationContextImpl::GetAutoDeletionService() {
         std::make_unique<auto_deletion::AutoDeletionService>(GetLocalState());
   }
   return auto_deletion_service_.get();
+}
+
+supervised_user::DeviceParentalControls&
+ApplicationContextImpl::GetDeviceParentalControls() {
+  if (!device_parental_controls_) {
+    device_parental_controls_ =
+        std::make_unique<supervised_user::DeviceParentalControlsNoOpImpl>();
+  }
+  return *device_parental_controls_;
 }
 
 optimization_guide::OptimizationGuideGlobalState*

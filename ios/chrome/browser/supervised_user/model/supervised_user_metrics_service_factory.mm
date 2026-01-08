@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_metrics_service_factory.h"
 
 #import "base/no_destructor.h"
+#import "components/supervised_user/core/browser/device_parental_controls.h"
 #import "components/supervised_user/core/browser/supervised_user_metrics_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_url_filtering_service_factory.h"
@@ -40,6 +42,7 @@ SupervisedUserMetricsServiceFactory::BuildServiceInstanceFor(
       *SupervisedUserServiceFactory::GetForProfile(profile),
       *supervised_user::SupervisedUserUrlFilteringServiceFactory::GetForProfile(
           profile),
+      GetApplicationContext()->GetDeviceParentalControls(),
       /*extensions_metrics_delegate=*/nullptr,
       /*metrics_service_accessor_delegate=*/nullptr);
 }

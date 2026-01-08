@@ -47,6 +47,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
+#include "components/supervised_user/core/browser/device_parental_controls.h"
+#include "components/supervised_user/core/browser/device_parental_controls_noop_impl.h"
 #include "content/public/browser/network_service_instance.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
@@ -166,6 +168,13 @@ void TestingBrowserProcess::TearDownAndDeleteInstance() {
 
 TestingBrowserProcess::TestingBrowserProcess()
     : testing_local_state_(std::make_unique<TestingPrefServiceSimple>()),
+#if BUILDFLAG(IS_ANDROID)
+      device_parental_controls_(
+          std::make_unique<supervised_user::AndroidParentalControls>()),
+#else
+      device_parental_controls_(
+          std::make_unique<supervised_user::DeviceParentalControlsNoOpImpl>()),
+#endif
       platform_part_(std::make_unique<TestingBrowserProcessPlatformPart>()),
       os_crypt_async_(os_crypt_async::GetTestOSCryptAsyncForTesting()) {
   RegisterLocalState(testing_local_state_->registry());
@@ -533,16 +542,10 @@ TestingBrowserProcess::background_printing_manager() {
 #endif
 }
 
-#if BUILDFLAG(IS_ANDROID)
-supervised_user::AndroidParentalControls*
+supervised_user::DeviceParentalControls&
 TestingBrowserProcess::device_parental_controls() {
-  if (!device_parental_controls_) {
-    device_parental_controls_ =
-        std::make_unique<supervised_user::AndroidParentalControls>();
-  }
-  return device_parental_controls_.get();
+  return *device_parental_controls_;
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 const std::string& TestingBrowserProcess::GetApplicationLocale() {
   CHECK(features_);

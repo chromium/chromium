@@ -9,17 +9,15 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/supervised_user/core/browser/device_parental_controls.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_synthetic_field_trial_service_delegate.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "supervised_user_service.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "components/supervised_user/core/browser/android/android_parental_controls.h"
-#endif
 
 class PrefRegistrySimple;
 class PrefService;
@@ -34,12 +32,8 @@ class SupervisedUserURLFilter;
 // Service to initialize and control metric recorders of supervised users.
 // Records metrics daily, or when the SupervisedUserService changes.
 class SupervisedUserMetricsService : public KeyedService,
-                                     public SupervisedUserServiceObserver
-#if BUILDFLAG(IS_ANDROID)
-    ,
-                                     public AndroidParentalControls::Observer
-#endif
-{
+                                     public SupervisedUserServiceObserver,
+                                     public DeviceParentalControls::Observer {
  public:
   // Delegate for recording metrics relating to extensions for supervised users
   // such as metrics that should be recorded daily.
@@ -59,9 +53,7 @@ class SupervisedUserMetricsService : public KeyedService,
       PrefService* pref_service,
       SupervisedUserService& supervised_user_service,
       const SupervisedUserUrlFilteringService& url_filtering_service,
-#if BUILDFLAG(IS_ANDROID)
-      AndroidParentalControls& android_parental_controls_service,
-#endif
+      DeviceParentalControls& device_parental_controls,
       std::unique_ptr<SupervisedUserMetricsServiceExtensionDelegate>
           extensions_metrics_delegate,
       std::unique_ptr<SynteticFieldTrialDelegate>
@@ -78,11 +70,9 @@ class SupervisedUserMetricsService : public KeyedService,
   // SupervisedUserServiceObserver:
   void OnURLFilterChanged() override;
 
-#if BUILDFLAG(IS_ANDROID)
-  // AndroidParentalControlsService::Observer:
+  // DeviceParentalControls::Observer:
   void OnAndroidParentalControlsSearchContentFiltersChanged() override;
   void OnAndroidParentalControlsBrowserContentFiltersChanged() override;
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // Helper function to check if a new day has arrived.
   void CheckForNewDay();
@@ -102,9 +92,7 @@ class SupervisedUserMetricsService : public KeyedService,
   const raw_ptr<PrefService> pref_service_;
   raw_ref<SupervisedUserService> supervised_user_service_;
   raw_ref<const SupervisedUserUrlFilteringService> url_filtering_service_;
-#if BUILDFLAG(IS_ANDROID)
-  raw_ref<const AndroidParentalControls> android_parental_controls_;
-#endif
+  raw_ref<const DeviceParentalControls> device_parental_controls_;
   std::unique_ptr<SupervisedUserMetricsServiceExtensionDelegate>
       extensions_metrics_delegate_;
   std::unique_ptr<SynteticFieldTrialDelegate> synthetic_field_trial_delegate_;
@@ -120,11 +108,9 @@ class SupervisedUserMetricsService : public KeyedService,
 
   base::ScopedObservation<SupervisedUserService, SupervisedUserServiceObserver>
       supervised_user_service_observation_{this};
-#if BUILDFLAG(IS_ANDROID)
-  base::ScopedObservation<AndroidParentalControls,
-                          AndroidParentalControls::Observer>
-      android_parental_controls_service_observation_{this};
-#endif
+  base::ScopedObservation<DeviceParentalControls,
+                          DeviceParentalControls::Observer>
+      device_parental_controls_observation_{this};
 };
 
 }  // namespace supervised_user

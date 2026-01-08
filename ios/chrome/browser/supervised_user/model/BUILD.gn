@@ -38,6 +38,7 @@ source_set("model") {
     "//components/security_interstitials/core",
     "//components/signin/public/identity_manager",
     "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/browser:device_parental_controls",
     "//components/supervised_user/core/browser/proto",
     "//components/supervised_user/core/common",
     "//components/variations/service",

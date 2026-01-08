@@ -25,6 +25,10 @@ class TestNetworkConnectionTracker;
 class TestURLLoaderFactory;
 }  // namespace network
 
+namespace supervised_user {
+class DeviceParentalControls;
+}  // namespace supervised_user
+
 class MockPromosManager;
 
 class TestingApplicationContext : public ApplicationContext {
@@ -124,6 +128,7 @@ class TestingApplicationContext : public ApplicationContext {
   auto_deletion::AutoDeletionService* GetAutoDeletionService() override;
   optimization_guide::OptimizationGuideGlobalState*
   GetOptimizationGuideGlobalState() override;
+  supervised_user::DeviceParentalControls& GetDeviceParentalControls() override;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
@@ -159,6 +164,8 @@ class TestingApplicationContext : public ApplicationContext {
   std::unique_ptr<auto_deletion::AutoDeletionService> auto_deletion_service_;
   std::unique_ptr<optimization_guide::OptimizationGuideGlobalState>
       optimization_guide_global_state_;
+  std::unique_ptr<supervised_user::DeviceParentalControls>
+      device_parental_controls_;
   std::unique_ptr<ApplicationLocaleStorage> application_locale_storage_;
   std::unique_ptr<activity_reporter::ActivityReporter> activity_reporter_;
 };

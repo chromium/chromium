@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -18,18 +19,11 @@
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/keyed_service/core/keyed_service_factory.h"
+#include "components/supervised_user/core/browser/device_parental_controls.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "content/public/browser/storage_partition.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/check_deref.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/global_features.h"
-#include "components/supervised_user/core/browser/android/android_parental_controls.h"
-#include "components/supervised_user/core/browser/android/content_filters_observer_bridge.h"
-#endif  // BUILDFLAG(IS_ANDROID)
 
 struct AccountInfo;
 
@@ -115,12 +109,8 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
               identity_manager, url_loader_factory, *profile->GetPrefs(),
               platform_delegate->GetCountryCode(),
               platform_delegate->GetChannel())),
-      std::make_unique<SupervisedUserServicePlatformDelegate>(*profile)
-#if BUILDFLAG(IS_ANDROID)
-          ,
-      CHECK_DEREF(g_browser_process->device_parental_controls())
-#endif  // BUILDFLAG(IS_ANDROID)
-  );
+      std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
+      g_browser_process->device_parental_controls());
 }
 
 }  // namespace supervised_user_test_util

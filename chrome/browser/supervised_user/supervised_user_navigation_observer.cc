@@ -295,7 +295,7 @@ void SupervisedUserNavigationObserver::OnForceGoogleSafeSearchChanged(
     return;
   }
 
-  if (!g_browser_process->device_parental_controls()->IsSafeSearchForced()) {
+  if (!g_browser_process->device_parental_controls().IsSafeSearchForced()) {
     // Safe search is forced but for different reason than supervision - do not
     // step into other features shoes.
     return;

@@ -1,0 +1,31 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_DEVICE_PARENTAL_CONTROLS_NOOP_IMPL_H_
+#define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_DEVICE_PARENTAL_CONTROLS_NOOP_IMPL_H_
+
+#include "components/supervised_user/core/browser/device_parental_controls.h"
+
+namespace supervised_user {
+
+// An implementation of DeviceParentalControls intended for use on platforms
+// that do not support parental controls. Offers browser-neutral behavior.
+class DeviceParentalControlsNoOpImpl : public DeviceParentalControls {
+ public:
+  DeviceParentalControlsNoOpImpl();
+  ~DeviceParentalControlsNoOpImpl() override;
+  DeviceParentalControlsNoOpImpl(const DeviceParentalControlsNoOpImpl&) =
+      delete;
+  const DeviceParentalControlsNoOpImpl& operator=(
+      const DeviceParentalControlsNoOpImpl&) = delete;
+
+  // DeviceParentalControls:
+  bool IsSafeSearchForced() const override;
+  bool IsBrowserContentFiltersEnabled() const override;
+  bool IsSearchContentFiltersEnabled() const override;
+};
+
+}  // namespace supervised_user
+
+#endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_DEVICE_PARENTAL_CONTROLS_NOOP_IMPL_H_

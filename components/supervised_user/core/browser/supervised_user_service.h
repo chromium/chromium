@@ -15,9 +15,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/supervised_user/core/browser/device_parental_controls.h"
 #include "components/supervised_user/core/browser/remote_web_approvals_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_content_filters_service.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
@@ -26,11 +28,6 @@
 #include "components/supervised_user/core/common/supervised_users.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "components/supervised_user/core/browser/android/android_parental_controls.h"
-#include "components/supervised_user/core/browser/android/content_filters_observer_bridge.h"
-#endif
 
 class PrefService;
 class SupervisedUserServiceObserver;
@@ -81,12 +78,8 @@ class Custodian {
 // * `profile.managed_user_id` for url filtering, remove approvals and custodian
 //    data,
 // * `incognito.mode_availability` for incognito mode.
-class SupervisedUserService : public KeyedService
-#if BUILDFLAG(IS_ANDROID)
-    ,
-                              public AndroidParentalControls::Observer
-#endif
-{
+class SupervisedUserService : public KeyedService,
+                              public DeviceParentalControls::Observer {
  public:
   // Delegate encapsulating platform-specific logic that is invoked from this
   // service.
@@ -165,12 +158,10 @@ class SupervisedUserService : public KeyedService
       SupervisedUserContentFiltersService* content_filters_service,
       syncer::SyncService* sync_service,
       std::unique_ptr<SupervisedUserURLFilter> url_filter,
-      std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate
-#if BUILDFLAG(IS_ANDROID)
-      ,
-      const AndroidParentalControls& android_parental_controls
-#endif
-  );
+      std::unique_ptr<SupervisedUserService::PlatformDelegate>
+          platform_delegate,
+      const DeviceParentalControls& device_parental_controls);
+
  private:
   // Activates the service which controls managed settings of url filtering and
   // incognito mode.
@@ -210,8 +201,7 @@ class SupervisedUserService : public KeyedService
   // any parental controls are enabled and incognito mode is not available.
   void OnIncognitoModeAvailabilityChanged();
 
-#if BUILDFLAG(IS_ANDROID)
-  // AndroidParentalControlsService::Observer:
+  // DeviceParentalControls::Observer:
   void OnAndroidParentalControlsBrowserContentFiltersChanged() override;
   void OnAndroidParentalControlsSearchContentFiltersChanged() override;
 
@@ -219,7 +209,6 @@ class SupervisedUserService : public KeyedService
   void OnSearchContentFiltersDisabled();
   void OnBrowserContentFiltersEnabled();
   void OnBrowserContentFiltersDisabled();
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // Returns true if the user is supervised locally (e.g. on the device) and
   // requested search content to be filtered.
@@ -241,9 +230,7 @@ class SupervisedUserService : public KeyedService
 
   std::unique_ptr<PlatformDelegate> platform_delegate_;
 
-#if BUILDFLAG(IS_ANDROID)
-  const raw_ref<const AndroidParentalControls> android_parental_controls_;
-#endif  // BUILDFLAG(IS_ANDROID)
+  const raw_ref<const DeviceParentalControls> device_parental_controls_;
 
   // Registrar for core prefs that drive this service.
   PrefChangeRegistrar main_pref_change_registrar_;
@@ -264,11 +251,9 @@ class SupervisedUserService : public KeyedService
 
   base::ObserverList<SupervisedUserServiceObserver>::Unchecked observer_list_;
 
-#if BUILDFLAG(IS_ANDROID)
-  base::ScopedObservation<const AndroidParentalControls,
-                          AndroidParentalControls::Observer>
-      android_parental_controls_observation_{this};
-#endif  // BUILDFLAG(IS_ANDROID)
+  base::ScopedObservation<const DeviceParentalControls,
+                          DeviceParentalControls::Observer>
+      device_parental_controls_observation_{this};
 
 #if BUILDFLAG(IS_CHROMEOS)
   bool signout_required_after_supervision_enabled_ = false;

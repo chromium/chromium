@@ -88,7 +88,7 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
 // search query params are not appended.
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
                        DontPropagateSearchContentFilterSettingWhenDisabled) {
-  ASSERT_FALSE(GetDeviceParentalControls()->IsSearchContentFiltersEnabled());
+  ASSERT_FALSE(GetDeviceParentalControls().IsSearchContentFiltersEnabled());
 
   // The loaded URL is exactly as requested.
   EXPECT_TRUE(content::NavigateToURL(
@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
 // feature consistency.
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
                        LoadSafeSearchResultsWithSearchContentFilterPreset) {
-  GetDeviceParentalControls()->SetSearchContentFiltersEnabledForTesting(true);
+  GetDeviceParentalControls().SetSearchContentFiltersEnabledForTesting(true);
   GURL url = embedded_test_server()->GetURL("google.com", "/search?q=cat");
 
   // The final url will be different: with safe search query params.
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
 // supervised user pref store by device parental controls.
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
                        InactiveSupervisedUserSettingsCantVetoSafeSearch) {
-  GetDeviceParentalControls()->SetSearchContentFiltersEnabledForTesting(true);
+  GetDeviceParentalControls().SetSearchContentFiltersEnabledForTesting(true);
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
 // params are appended.
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
                        PreexistingSafeSearchParamsAreRemovedBeforeAppending) {
-  GetDeviceParentalControls()->SetSearchContentFiltersEnabledForTesting(true);
+  GetDeviceParentalControls().SetSearchContentFiltersEnabledForTesting(true);
   GURL url = embedded_test_server()->GetURL("google.com",
                                             "/search?safe=off&ssui=on&q=cat");
 
@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
 
   content::TestNavigationObserver navigation_observer(web_contents());
-  GetDeviceParentalControls()->SetSearchContentFiltersEnabledForTesting(true);
+  GetDeviceParentalControls().SetSearchContentFiltersEnabledForTesting(true);
   navigation_observer.Wait();
 
   // Key part: the search results are reloaded with extra query params.
@@ -187,8 +187,7 @@ class SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest
     content::TestNavigationObserver navigation_observer(web_contents());
     // Turn the filtering on. That will trigger a url check which is resolved to
     // restricted.
-    GetDeviceParentalControls()->SetBrowserContentFiltersEnabledForTesting(
-        true);
+    GetDeviceParentalControls().SetBrowserContentFiltersEnabledForTesting(true);
     navigation_observer.Wait();
   }
 
@@ -295,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // In this test to facilitate the back button click, one url is allowed but
   // others are not. All navigations are subject to classification in this test.
-  GetDeviceParentalControls()->SetBrowserContentFiltersEnabledForTesting(true);
+  GetDeviceParentalControls().SetBrowserContentFiltersEnabledForTesting(true);
 
   // Two classification calls are expected:
   // 1. when the page is first loaded

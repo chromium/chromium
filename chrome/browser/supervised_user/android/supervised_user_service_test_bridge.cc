@@ -16,13 +16,13 @@ namespace supervised_user {
 static void JNI_SupervisedUserServiceTestBridge_EnableBrowserContentFilters(
     JNIEnv* env) {
   g_browser_process->device_parental_controls()
-      ->SetBrowserContentFiltersEnabledForTesting(true);
+      .SetBrowserContentFiltersEnabledForTesting(true);
 }
 
 static void JNI_SupervisedUserServiceTestBridge_EnableSearchContentFilters(
     JNIEnv* env) {
   g_browser_process->device_parental_controls()
-      ->SetSearchContentFiltersEnabledForTesting(true);
+      .SetSearchContentFiltersEnabledForTesting(true);
 }
 }  // namespace supervised_user
 

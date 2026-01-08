@@ -81,8 +81,8 @@ class RulesetService;
 }
 
 namespace supervised_user {
-class AndroidParentalControls;
-}
+class DeviceParentalControls;
+}  // namespace supervised_user
 
 namespace variations {
 class VariationsService;
@@ -224,15 +224,13 @@ class BrowserProcess {
   virtual printing::BackgroundPrintingManager*
   background_printing_manager() = 0;
 
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/471425807): Make this platform-agnostic.
-  // Returns handle to the manager of device parental controls, which are
-  // independent from the profile. This handler is member of browser process
+  // Returns a handle to the manager of device parental controls, which
+  // are independent from the profile. This handler is member of browser process
   // directly and cannot be moved to GlobalFeatures, because it is also required
   // early to initialize the pref service on Android.
-  virtual supervised_user::AndroidParentalControls*
+  // Platforms not implementing device parental control return a no-op stub.
+  virtual supervised_user::DeviceParentalControls&
   device_parental_controls() = 0;
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
   virtual IntranetRedirectDetector* intranet_redirect_detector() = 0;

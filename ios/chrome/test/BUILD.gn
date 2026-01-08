@@ -73,6 +73,7 @@ source_set("test_support") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common",
+    "//components/supervised_user/core/browser:device_parental_controls",
     "//components/variations",
     "//components/variations/service",
     "//ios/chrome/browser/content_settings/model",

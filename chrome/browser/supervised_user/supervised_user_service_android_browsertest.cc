@@ -325,14 +325,14 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
 
   // Try turning the knob on the local supervision (browser filtering).
-  GetDeviceParentalControls()->SetBrowserContentFiltersEnabledForTesting(true);
+  GetDeviceParentalControls().SetBrowserContentFiltersEnabledForTesting(true);
   EXPECT_FALSE(GetSupervisedUserService()->IsSupervisedLocally());
   EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
   histogram_tester().ExpectBucketCount(
       "SupervisedUsers.FamilyLinkSupervisionConflict", 1, 1);
 
   // Try turning the knob on the local supervision (search filtering).
-  GetDeviceParentalControls()->SetSearchContentFiltersEnabledForTesting(true);
+  GetDeviceParentalControls().SetSearchContentFiltersEnabledForTesting(true);
   EXPECT_FALSE(GetSupervisedUserService()->IsSupervisedLocally());
   EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
   histogram_tester().ExpectBucketCount(
