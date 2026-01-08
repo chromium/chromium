@@ -63,6 +63,14 @@ class PasskeyRequestParams {
   bool ShouldPerformUserVerification(
       bool is_biometric_authentication_enabled) const;
 
+  // Returns the extensions input data for passkey creation.
+  passkey_model_utils::ExtensionInputData ExtensionInputForCreation() const;
+
+  // Returns the extensions input data for the selected passkey's credential ID
+  // for passkey assertion.
+  passkey_model_utils::ExtensionInputData ExtensionInputForCredential(
+      std::vector<uint8_t> credential_id) const;
+
  private:
   // The request information (frame id, request id).
   const IOSPasskeyClient::RequestInfo request_info_;

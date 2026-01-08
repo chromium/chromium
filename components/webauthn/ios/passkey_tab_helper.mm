@@ -67,13 +67,13 @@ CreatePasskeyAndAttestationObject(
     std::string client_data_json,
     std::string_view rp_id,
     const PasskeyModel::UserEntity& user_entity,
-    const passkey_model_utils::ExtensionInputData& extension_input_data,
-    passkey_model_utils::ExtensionOutputData* extension_output_data) {
+    const passkey_model_utils::ExtensionInputData& extension_input_data) {
+  passkey_model_utils::ExtensionOutputData extension_output_data;
   auto [passkey, public_key_spki_der] =
       passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
           rp_id, user_entity, trusted_vault_key,
           /*trusted_vault_key_version=*/0, extension_input_data,
-          extension_output_data);
+          &extension_output_data);
 
   // TODO(crbug.com/460485333): use the real value for `did_complete_uv`.
   passkey_model_utils::SerializedAttestationObject
@@ -86,7 +86,8 @@ CreatePasskeyAndAttestationObject(
           PasskeyJavaScriptFeature::AttestationData(
               std::move(serialized_attestation_object.attestation_object),
               std::move(serialized_attestation_object.authenticator_data),
-              std::move(public_key_spki_der), std::move(client_data_json))};
+              std::move(public_key_spki_der), std::move(client_data_json),
+              std::move(extension_output_data))};
 }
 
 // Utility function to create an assertion object from the provided parameters.
@@ -95,7 +96,8 @@ std::optional<PasskeyJavaScriptFeature::AssertionData> CreateAssertionObject(
     const SharedKey& trusted_vault_key,
     const sync_pb::WebauthnCredentialSpecifics& passkey,
     std::string client_data_json,
-    std::string_view rp_id) {
+    std::string_view rp_id,
+    const passkey_model_utils::ExtensionInputData& extension_input_data) {
   // Fetch secrets from passkey if possible.
   sync_pb::WebauthnCredentialSpecifics_Encrypted credential_secrets;
   if (!passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
@@ -130,7 +132,8 @@ std::optional<PasskeyJavaScriptFeature::AssertionData> CreateAssertionObject(
 
   return PasskeyJavaScriptFeature::AssertionData(
       std::move(*signature), std::move(authenticator_data),
-      ToByteVector(passkey.user_id()), std::move(client_data_json));
+      ToByteVector(passkey.user_id()), std::move(client_data_json),
+      extension_input_data.ToOutputData(credential_secrets));
 }
 
 // Attempts to find a passkey matching the provided credential ID in a list of
@@ -408,14 +411,12 @@ void PasskeyTabHelper::CompletePasskeyCreation(
     return;
   }
 
-  // TODO(crbug.com/460485679) : Implement extension support.
-  passkey_model_utils::ExtensionInputData extension_input_data;
-  passkey_model_utils::ExtensionOutputData extension_output_data;
-
   // Create passkey and attestation object.
+  passkey_model_utils::ExtensionInputData extension_input_data =
+      params.ExtensionInputForCreation();
   auto [passkey, attestation_data] = CreatePasskeyAndAttestationObject(
       shared_key_list[0], std::move(client_data_json), params.RpId(),
-      params.UserEntity(), extension_input_data, &extension_output_data);
+      params.UserEntity(), extension_input_data);
 
   // Add passkey to the passkey model and present the confirmation infobar.
   // TODO(crbug.com/460485333): Wait until success message from TypeScript code?
@@ -481,12 +482,14 @@ void PasskeyTabHelper::CompletePasskeyAssertion(
     return;
   }
 
-  // TODO(crbug.com/460485679) : Implement extension support.
-
   // Attempt to create an assertion object.
+  const std::string& credential_id = passkey.credential_id();
+  passkey_model_utils::ExtensionInputData extension_input_data =
+      params.ExtensionInputForCredential(ToByteVector(credential_id));
   std::optional<PasskeyJavaScriptFeature::AssertionData> assertion_data =
       CreateAssertionObject(shared_key_list[0], passkey,
-                            std::move(client_data_json), params.RpId());
+                            std::move(client_data_json), params.RpId(),
+                            extension_input_data);
 
   // TODO(crbug.com/460485333): Update the passkey's last used time to
   // base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds().
@@ -494,7 +497,6 @@ void PasskeyTabHelper::CompletePasskeyAssertion(
 
   if (assertion_data.has_value()) {
     // Resolve the PublicKeyCredential promise.
-    const std::string& credential_id = passkey.credential_id();
     PasskeyJavaScriptFeature::GetInstance()->ResolveAssertionRequest(
         web_frame, passkey_request_id, credential_id,
         std::move(*assertion_data));

@@ -60,6 +60,12 @@ base::expected<RegistrationRequestParams, PasskeysParsingError>
 BuildRegistrationRequestParams(IOSPasskeyClient::RequestInfo request_info,
                                const base::Value::Dict& dict);
 
+// Converts an ExtensionOutputData object to the
+// AuthenticationExtensionsClientOutputsJSON structure defined in
+// passkey_controller.ts.
+base::Value::Dict ToAuthenticationExtensionsClientOutputsJSON(
+    passkey_model_utils::ExtensionOutputData extension_output_data);
+
 }  // namespace webauthn
 
 #endif  // COMPONENTS_WEBAUTHN_IOS_PASSKEY_REQUEST_PARSER_H_

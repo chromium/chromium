@@ -61,6 +61,16 @@ base::expected<const std::string, PasskeysParsingError> ValidateString(
   return *str;
 }
 
+// Encodes a byte vector to base 64 URL encoded string.
+std::string Base64UrlEncode(base::span<const uint8_t> input) {
+  std::string output;
+  // Omit padding, according to the spec. See:
+  // https://w3c.github.io/webauthn/#base64url-encoding
+  base::Base64UrlEncode(input, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &output);
+  return output;
+}
+
 // Decodes a base 64 URL encoded string into a data vector.
 // Returns std::nullopt on failure.
 std::optional<std::vector<uint8_t>> Base64UrlDecode(
@@ -434,6 +444,47 @@ BuildRegistrationRequestParams(IOSPasskeyClient::RequestInfo request_info,
   return RegistrationRequestParams(std::move(*request_params),
                                    std::move(*user_entity),
                                    std::move(*credentials));
+}
+
+base::Value::Dict ToAuthenticationExtensionsClientOutputsJSON(
+    passkey_model_utils::ExtensionOutputData extension_output_data) {
+  base::Value::Dict extensions_dict;
+
+  if (!extension_output_data.prf_result.empty()) {
+    static constexpr size_t kPRFOutputSize = 32u;
+    size_t output_size = extension_output_data.prf_result.size();
+
+    // PRF extension dictionary.
+    // Contains `enabled` value and `results` dictionary.
+    base::Value::Dict prf_dict;
+
+    // PRF extension's `enabled` value.
+    prf_dict.Set(device::kExtensionPRFEnabled, true);
+
+    // PRF extension's `result` dictionary.
+    // Contains `first` value as a base 64 encoded string.
+    // May contain `second` value as a base 64 encoded string.
+    base::Value::Dict prf_results_dict;
+    if (output_size == kPRFOutputSize) {
+      prf_results_dict.Set(device::kExtensionPRFFirst,
+                           Base64UrlEncode(extension_output_data.prf_result));
+    } else {
+      // When non empty, the PRF result can have exactly 1 output or exactly 2
+      // outputs.
+      CHECK_EQ(output_size, kPRFOutputSize * 2u);
+
+      auto span = base::span(extension_output_data.prf_result);
+      auto [first, second] = span.split_at<kPRFOutputSize>();
+
+      prf_results_dict.Set(device::kExtensionPRFFirst, Base64UrlEncode(first));
+      prf_results_dict.Set(device::kExtensionPRFSecond,
+                           Base64UrlEncode(second));
+    }
+    prf_dict.Set(device::kExtensionPRFResults, std::move(prf_results_dict));
+    extensions_dict.Set(device::kExtensionPRF, std::move(prf_dict));
+  }
+
+  return extensions_dict;
 }
 
 }  // namespace webauthn

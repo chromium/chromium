@@ -130,11 +130,13 @@ PasskeyJavaScriptFeature::AttestationData::AttestationData(
     std::vector<uint8_t> attestation_object,
     std::vector<uint8_t> authenticator_data,
     std::vector<uint8_t> public_key_spki_der,
-    std::string client_data_json)
+    std::string client_data_json,
+    passkey_model_utils::ExtensionOutputData extension_output_data)
     : attestation_object(std::move(attestation_object)),
       authenticator_data(std::move(authenticator_data)),
       public_key_spki_der(std::move(public_key_spki_der)),
-      client_data_json(std::move(client_data_json)) {}
+      client_data_json(std::move(client_data_json)),
+      extension_output_data(std::move(extension_output_data)) {}
 
 PasskeyJavaScriptFeature::AttestationData::AttestationData(
     PasskeyJavaScriptFeature::AttestationData&& other) = default;
@@ -144,11 +146,13 @@ PasskeyJavaScriptFeature::AssertionData::AssertionData(
     std::vector<uint8_t> signature,
     std::vector<uint8_t> authenticator_data,
     std::vector<uint8_t> user_handle,
-    std::string client_data_json)
+    std::string client_data_json,
+    passkey_model_utils::ExtensionOutputData extension_output_data)
     : signature(std::move(signature)),
       authenticator_data(std::move(authenticator_data)),
       user_handle(std::move(user_handle)),
-      client_data_json(std::move(client_data_json)) {}
+      client_data_json(std::move(client_data_json)),
+      extension_output_data(std::move(extension_output_data)) {}
 
 PasskeyJavaScriptFeature::AssertionData::AssertionData(
     PasskeyJavaScriptFeature::AssertionData&& other) = default;
@@ -196,7 +200,9 @@ void PasskeyJavaScriptFeature::ResolveAttestationRequest(
           .Append(Base64UrlEncode(attestation_data.attestation_object))
           .Append(Base64UrlEncode(attestation_data.authenticator_data))
           .Append(Base64UrlEncode(attestation_data.public_key_spki_der))
-          .Append(attestation_data.client_data_json));
+          .Append(attestation_data.client_data_json)
+          .Append(ToAuthenticationExtensionsClientOutputsJSON(
+              std::move(attestation_data.extension_output_data))));
 }
 
 void PasskeyJavaScriptFeature::ResolveAssertionRequest(
@@ -209,10 +215,12 @@ void PasskeyJavaScriptFeature::ResolveAssertionRequest(
       base::Value::List()
           .Append(request_id)
           .Append(Base64UrlEncode(credential_id))
-          .Append(Base64UrlEncode(assertion_data.authenticator_data))
-          .Append(assertion_data.client_data_json)
           .Append(Base64UrlEncode(assertion_data.signature))
-          .Append(Base64UrlEncode(assertion_data.user_handle)));
+          .Append(Base64UrlEncode(assertion_data.authenticator_data))
+          .Append(Base64UrlEncode(assertion_data.user_handle))
+          .Append(assertion_data.client_data_json)
+          .Append(ToAuthenticationExtensionsClientOutputsJSON(
+              std::move(assertion_data.extension_output_data))));
 }
 
 std::optional<std::string>

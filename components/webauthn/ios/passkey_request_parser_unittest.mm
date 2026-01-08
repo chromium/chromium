@@ -4,6 +4,8 @@
 
 #import "components/webauthn/ios/passkey_request_parser.h"
 
+#import "base/base64url.h"
+#import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "device/fido/public/fido_constants.h"
 #import "testing/platform_test.h"
 
@@ -61,6 +63,14 @@ std::string BuildLargeBase64String() {
     tooLarge64 += pattern64;
   }
   return tooLarge64;
+}
+
+// Encodes a byte vector to base 64 URL encoded string.
+std::string Base64UrlEncode(base::span<const uint8_t> input) {
+  std::string output;
+  base::Base64UrlEncode(input, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &output);
+  return output;
 }
 
 base::Value::Dict BuildRequestInfoDict(const std::string* frame_id,
@@ -601,6 +611,49 @@ TEST_F(PasskeyRequestParserTest, NoError) {
       ValidRequestInfo(), BuildRequestParamsDictForUser(
                               /*has_user_entity_dict=*/true, &kBase64url));
   ASSERT_TRUE(registration_request_params.has_value());
+}
+
+TEST_F(PasskeyRequestParserTest, ToAuthenticationExtensionsClientOutputsJSON) {
+  passkey_model_utils::ExtensionOutputData extension_output_data;
+
+  // Test case 1: Empty prf_result.
+  extension_output_data.prf_result = {};
+  base::Value::Dict dict =
+      ToAuthenticationExtensionsClientOutputsJSON(extension_output_data);
+  EXPECT_TRUE(dict.empty());
+
+  // Test case 2: prf_result size 32.
+  std::vector<uint8_t> prf_result_32(32, 0xAA);
+  extension_output_data.prf_result = prf_result_32;
+  dict = ToAuthenticationExtensionsClientOutputsJSON(extension_output_data);
+  EXPECT_FALSE(dict.empty());
+  const base::Value::Dict* prf_dict = dict.FindDict(device::kExtensionPRF);
+  ASSERT_TRUE(prf_dict);
+  EXPECT_TRUE(prf_dict->FindBool(device::kExtensionPRFEnabled).value_or(false));
+  const base::Value::Dict* results =
+      prf_dict->FindDict(device::kExtensionPRFResults);
+  ASSERT_TRUE(results);
+  const std::string* first = results->FindString(device::kExtensionPRFFirst);
+  ASSERT_TRUE(first);
+  EXPECT_EQ(*first, Base64UrlEncode(prf_result_32));
+  EXPECT_FALSE(results->FindString(device::kExtensionPRFSecond));
+
+  // Test case 3: prf_result size 64.
+  std::vector<uint8_t> prf_result_64(64, 0xBB);
+  extension_output_data.prf_result = prf_result_64;
+  dict = ToAuthenticationExtensionsClientOutputsJSON(extension_output_data);
+  EXPECT_FALSE(dict.empty());
+  prf_dict = dict.FindDict(device::kExtensionPRF);
+  ASSERT_TRUE(prf_dict);
+  EXPECT_TRUE(prf_dict->FindBool(device::kExtensionPRFEnabled).value_or(false));
+  results = prf_dict->FindDict(device::kExtensionPRFResults);
+  ASSERT_TRUE(results);
+  first = results->FindString(device::kExtensionPRFFirst);
+  const std::string* second = results->FindString(device::kExtensionPRFSecond);
+  ASSERT_TRUE(first);
+  ASSERT_TRUE(second);
+  EXPECT_EQ(*first, Base64UrlEncode(base::span(prf_result_64).first(32u)));
+  EXPECT_EQ(*second, Base64UrlEncode(base::span(prf_result_64).subspan(32u)));
 }
 
 }  // namespace webauthn

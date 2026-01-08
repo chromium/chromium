@@ -301,11 +301,63 @@ function serializeExtensions(extensions?: AuthenticationExtensionsClientInputs):
   return result;
 }
 
+// Converts Base64URL strings to PRF values.
+function prfBase64URLToValues(outputs: AuthenticationExtensionsPRFValuesJSON):
+    AuthenticationExtensionsPRFValues {
+  const result: AuthenticationExtensionsPRFValues = {
+    first: decodeBase64URLToArrayBuffer(outputs.first),
+  };
+  if (outputs.second) {
+    result.second = decodeBase64URLToArrayBuffer(outputs.second);
+  }
+  return result;
+}
+
+// Interface containing serialized PRF outputs.
+// eslint-disable-next-line @typescript-eslint/naming-convention
+interface AuthenticationExtensionsPRFOutputsJSON {
+  enabled: boolean;
+  results: AuthenticationExtensionsPRFValuesJSON;
+}
+
+// Interface containing serialized extension outputs.
+// eslint-disable-next-line @typescript-eslint/naming-convention
+interface AuthenticationExtensionsClientOutputsJSON {
+  prf: AuthenticationExtensionsPRFOutputsJSON;
+}
+
+// Deserializes all PRF-related data from the extensions dictionary.
+function deserializePRF(prf: AuthenticationExtensionsPRFOutputsJSON):
+    AuthenticationExtensionsPRFOutputs {
+  return {enabled: prf.enabled, results: prfBase64URLToValues(prf.results)};
+}
+
+// Deserialize all extension outputs.
+function deserializeExtensions(
+    extensions?: AuthenticationExtensionsClientOutputsJSON):
+    AuthenticationExtensionsClientOutputs {
+  const result: AuthenticationExtensionsClientOutputs = {};
+
+  if (!extensions) {
+    return result;
+  }
+
+  if (extensions.prf) {
+    result.prf = deserializePRF(extensions.prf);
+  }
+
+  // TODO(crbug.com/460485679): Support extensions other than PRF.
+
+  return result;
+}
+
 // Creates a PublicKeyCredential from the provided list of arguments.
 // The credential's type is always set to 'public-key'.
 function createPublicKeyCredential(
     authenticatorAttachment: string, rawId: ArrayBuffer,
-    response: AuthenticatorResponse): PublicKeyCredential {
+    response: AuthenticatorResponse,
+    extensionOutputs: AuthenticationExtensionsClientOutputs):
+    PublicKeyCredential {
   return {
     id: arrayBufferToBase64URL(rawId),
     type: 'public-key',
@@ -313,8 +365,7 @@ function createPublicKeyCredential(
     rawId: rawId,
     response: response,
     getClientExtensionResults(): AuthenticationExtensionsClientOutputs {
-      // TODO(crbug.com/460485679): implement when adding extension support.
-      return {};
+      return extensionOutputs;
     },
     toJSON(): any {
       return {
@@ -331,9 +382,9 @@ function createPublicKeyCredential(
 // Creates an empty credential, which will be used to resolve a Credential
 // promise so that the promise resolution is deferred to the renderer.
 function createEmptyCredential(): PublicKeyCredential {
-  const nullArray = new ArrayBuffer(0);
-  const emptyResponse: AuthenticatorResponse = {clientDataJSON: nullArray};
-  return createPublicKeyCredential('', nullArray, emptyResponse);
+  const emptyArray = new ArrayBuffer(0);
+  const emptyResponse: AuthenticatorResponse = {clientDataJSON: emptyArray};
+  return createPublicKeyCredential('', emptyArray, emptyResponse, {});
 }
 
 // Returns whether a credential is non empty.
@@ -587,10 +638,11 @@ function deferToRenderer(requestId: string): void {
 
 // Resolves the credential promise with the provided response.
 function resolveCredentialPromise(
-    requestId: string, id64: string, response: AuthenticatorResponse): void {
+    requestId: string, id64: string, response: AuthenticatorResponse,
+    extensions: AuthenticationExtensionsClientOutputsJSON): void {
   const id = decodeBase64URLToArrayBuffer(id64);
-  const credential: PublicKeyCredential =
-      createPublicKeyCredential('platform', id, response);
+  const credential: PublicKeyCredential = createPublicKeyCredential(
+      'platform', id, response, deserializeExtensions(extensions));
 
   DeferredPublicKeyCredentialPromise.resolve(requestId, credential);
 }
@@ -598,8 +650,9 @@ function resolveCredentialPromise(
 // Function called from C++ to resolve the deferred promise with a valid
 // assertion credential.
 function resolveAssertionRequest(
-    requestId: string, id64: string, authenticatorData64: string,
-    clientDataJson: string, signature64: string, userHandle64: string): void {
+    requestId: string, id64: string, signature64: string,
+    authenticatorData64: string, userHandle64: string, clientDataJson: string,
+    extensions: AuthenticationExtensionsClientOutputsJSON): void {
   const response: AuthenticatorAssertionResponse = {
     authenticatorData: decodeBase64URLToArrayBuffer(authenticatorData64),
     clientDataJSON: stringToArrayBuffer(clientDataJson),
@@ -607,7 +660,7 @@ function resolveAssertionRequest(
     userHandle: decodeBase64URLToArrayBuffer(userHandle64),
   };
 
-  resolveCredentialPromise(requestId, id64, response);
+  resolveCredentialPromise(requestId, id64, response, extensions);
 }
 
 // Function called from C++ to resolve the deferred promise with a valid
@@ -615,14 +668,15 @@ function resolveAssertionRequest(
 function resolveAttestationRequest(
     requestId: string, id64: string, attestationObject64: string,
     authenticatorData64: string, publicKeySpkiDer64: string,
-    clientDataJson: string): void {
+    clientDataJson: string,
+    extensions: AuthenticationExtensionsClientOutputsJSON): void {
   const response: AuthenticatorAttestationResponse =
       createAuthenticatorAttestationResponse(
           decodeBase64URLToArrayBuffer(attestationObject64),
           decodeBase64URLToArrayBuffer(authenticatorData64),
           decodeBase64URLToArrayBuffer(publicKeySpkiDer64), clientDataJson);
 
-  resolveCredentialPromise(requestId, id64, response);
+  resolveCredentialPromise(requestId, id64, response, extensions);
 }
 
 const passkey = new CrWebApi();
