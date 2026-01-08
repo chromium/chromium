@@ -78,8 +78,9 @@ base::flat_set<base::FilePath> ModelInfo::GetAdditionalFiles() const {
 
 std::optional<base::FilePath> ModelInfo::GetAdditionalFileWithBaseName(
     const base::FilePath::StringType& base_name) const {
-  if (additional_files_.contains(base_name)) {
-    return additional_files_.at(base_name);
+  if (auto it = additional_files_.find(base_name);
+      it != additional_files_.end()) {
+    return it->second;
   }
   return std::nullopt;
 }
