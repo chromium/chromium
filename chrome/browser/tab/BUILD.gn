@@ -13,6 +13,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/CollectionStorageObserverFactory.java",
     "java/src/org/chromium/chrome/browser/tab/CurrentTabObserver.java",
     "java/src/org/chromium/chrome/browser/tab/EmptyTabObserver.java",
+    "java/src/org/chromium/chrome/browser/tab/LookAheadObservableSupplier.java",
     "java/src/org/chromium/chrome/browser/tab/SadTab.java",
     "java/src/org/chromium/chrome/browser/tab/SadTabView.java",
     "java/src/org/chromium/chrome/browser/tab/ScopedStorageBatch.java",
