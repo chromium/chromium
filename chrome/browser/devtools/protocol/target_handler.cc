@@ -43,13 +43,14 @@ NavigateParams CreateNavigateParams(Profile* profile,
   NavigateParams params(profile, url, transition);
   if (new_window) {
     params.disposition = WindowOpenDisposition::NEW_WINDOW;
-    if (background)
-      params.window_action = NavigateParams::WindowAction::kShowWindowInactive;
   } else {
     params.disposition = (background)
                              ? WindowOpenDisposition::NEW_BACKGROUND_TAB
                              : WindowOpenDisposition::NEW_FOREGROUND_TAB;
     params.browser = browser;
+  }
+  if (background) {
+    params.window_action = NavigateParams::WindowAction::kShowWindowInactive;
   }
   return params;
 }
