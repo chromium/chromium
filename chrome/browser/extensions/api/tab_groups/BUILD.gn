@@ -27,6 +27,7 @@ source_set("tab_groups") {
     "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_list_interface",
     "//chrome/common/extensions",
     "//chrome/common/extensions/api",
     "//components/tab_groups",

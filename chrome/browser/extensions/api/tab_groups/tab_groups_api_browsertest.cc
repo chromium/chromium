@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsGetSuccess) {
   tabs.push_back(tab_list->GetTab(0)->GetHandle());
   tabs.push_back(tab_list->GetTab(1)->GetHandle());
   std::optional<tab_groups::TabGroupId> group = tab_list->CreateTabGroup(tabs);
-  ASSERT_TRUE(group.has_value());
+  ASSERT_TRUE(group);
 
   // Set the visual data.
   tab_groups::TabGroupVisualData visual_data(
@@ -374,23 +374,25 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsGetError) {
   EXPECT_EQ("No group with id: 0.", error);
 }
 
-// TODO(crbug.com/405219902): Port to desktop Android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that updating group metadata works as expected.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsUpdateSuccess) {
   scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
 
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
-
-  TabGroupModel* tab_group_model = tab_strip_model->group_model();
+  ASSERT_TRUE(SupportsTabGroups());
 
   // Create a group.
-  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({0, 1, 2});
+  auto* tab_list = TabListInterface::From(browser_window_interface());
+  std::vector<tabs::TabHandle> tabs;
+  tabs.push_back(tab_list->GetTab(0)->GetHandle());
+  tabs.push_back(tab_list->GetTab(1)->GetHandle());
+  std::optional<tab_groups::TabGroupId> group = tab_list->CreateTabGroup(tabs);
+  ASSERT_TRUE(group);
+
+  // Set the visual data.
   tab_groups::TabGroupVisualData visual_data(
       u"Initial title", tab_groups::TabGroupColorId::kBlue);
-  tab_strip_model->ChangeTabGroupVisuals(group, visual_data);
-  int group_id = ExtensionTabUtil::GetGroupId(group);
+  tab_list->SetTabGroupVisualData(*group, visual_data);
+  int group_id = ExtensionTabUtil::GetGroupId(*group);
 
   // Use the TabGroupsUpdateFunction to update the title and color.
   auto function = base::MakeRefCounted<TabGroupsUpdateFunction>();
@@ -402,15 +404,16 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsUpdateSuccess) {
                                           api_test_utils::FunctionMode::kNone));
 
   // Verify the new group metadata.
-  const tab_groups::TabGroupVisualData* new_visual_data =
-      tab_group_model->GetTabGroup(group)->visual_data();
+  std::optional<tab_groups::TabGroupVisualData> new_visual_data =
+      tab_list->GetTabGroupVisualData(*group);
+  ASSERT_TRUE(new_visual_data);
   EXPECT_EQ(new_visual_data->title(), u"New title");
   EXPECT_EQ(new_visual_data->color(), tab_groups::TabGroupColorId::kRed);
 }
 
 // Test that tabGroups.update() fails on a nonexistent group.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsUpdateError) {
-  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+  ASSERT_TRUE(SupportsTabGroups());
 
   scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
 
@@ -423,6 +426,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsUpdateError) {
   EXPECT_EQ("No group with id: 0.", error);
 }
 
+// TODO(crbug.com/405219902): Port to desktop Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that tabGroups.update() passes on a saved group.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsUpdateSavedTab) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();

@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/extensions/api/tab_groups.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/windows.h"
@@ -213,10 +214,6 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/405219902): Port to desktop Android.
-  return RespondNow(Error(kNotYetImplementedError));
-#else
   std::optional<api::tab_groups::Update::Params> params =
       api::tab_groups::Update::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -255,28 +252,35 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
     return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
   }
 
-  Browser* browser = window->GetBrowser();
+  BrowserWindowInterface* browser = window->GetBrowserWindowInterface();
   if (!browser) {
     return RespondNow(
         Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
   }
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Android does not have a SupportsTabGroups() method.
+  TabStripModel* tab_strip_model = window->GetBrowser()->tab_strip_model();
   if (!tab_strip_model->SupportsTabGroups()) {
     return RespondNow(
         Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
   }
-  TabGroup* tab_group = tab_strip_model->group_model()->GetTabGroup(id);
+#endif
 
+  // Update the visual data.
+  auto* tab_list = TabListInterface::From(browser);
+  if (!tab_list) {
+    return RespondNow(
+        Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
+  }
   tab_groups::TabGroupVisualData new_visual_data(title, color, collapsed);
-  tab_strip_model->ChangeTabGroupVisuals(id, std::move(new_visual_data));
+  tab_list->SetTabGroupVisualData(id, new_visual_data);
 
   if (!has_callback())
     return RespondNow(NoArguments());
 
   return RespondNow(ArgumentList(api::tab_groups::Get::Results::Create(
-      ExtensionTabUtil::CreateTabGroupObject(tab_group->id(),
-                                             *tab_group->visual_data()))));
-#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
+      ExtensionTabUtil::CreateTabGroupObject(id, new_visual_data))));
 }
 
 ExtensionFunction::ResponseAction TabGroupsMoveFunction::Run() {

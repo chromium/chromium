@@ -65,10 +65,8 @@ class ExtensionTabUtil {
   static constexpr char kWindowNotFoundError[] = "No window with id: *.";
   static constexpr char kTabStripNotEditableError[] =
       "Tabs cannot be edited right now (user may be dragging a tab).";
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   static constexpr char kTabStripDoesNotSupportTabGroupsError[] =
       "Grouping is not supported by tabs in this window.";
-#endif
   static constexpr char kJavaScriptUrlsNotAllowedInExtensionNavigations[] =
       "JavaScript URLs are not allowed in API based extension navigations. Use "
       "chrome.scripting.executeScript instead.";
