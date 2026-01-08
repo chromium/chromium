@@ -482,81 +482,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="4" label="Snapped"/>
 </enum>
 
-<enum name="Assistant.LauncherSearchIphQueryType">
-  <int value="0" label="Weather"/>
-  <int value="1" label="Unit Conversion 1"/>
-  <int value="2" label="Unit Conversion 2"/>
-  <int value="3" label="Translation"/>
-  <int value="4" label="Definition"/>
-  <int value="5" label="Calculation"/>
-</enum>
-
 <!-- These values must be in sync with ProvisionConstants in CloudDPC code -->
-
-<enum name="Assistant.LibassistantDlcInstallResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Internal error"/>
-  <int value="2" label="Failed because Update Engine is busy"/>
-  <int value="3" label="Failed because a reboot is needed"/>
-  <int value="4" label="Invalid DLC submitted"/>
-  <int value="5" label="Failed to create directory"/>
-  <int value="6" label="Failed to find image"/>
-</enum>
-
-<enum name="Assistant.LibassistantDlcLoadStatus">
-  <int value="0" label="kNotLoaded"/>
-  <int value="1" label="kLoaded"/>
-</enum>
-
-<enum name="AssistantButtonId">
-  <int value="1" label="kBackDeprecated"/>
-  <int value="2" label="kCloseDeprecated"/>
-  <int value="3" label="kMinimizeDeprecated"/>
-  <int value="4" label="kKeyboardInputToggle"/>
-  <int value="5" label="kVoiceInputToggle"/>
-  <int value="6" label="kSettingsDeprecated"/>
-  <int value="7" label="kBackInLauncherDeprecated"/>
-</enum>
-
-<enum name="AssistantEntryPoint">
-  <int value="0" label="kUnspecified"/>
-  <int value="1" label="kDeepLink"/>
-  <int value="2" label="kHotkey"/>
-  <int value="3" label="kHotword"/>
-  <int value="4" label="kLauncherSearchBoxDeprecated"/>
-  <int value="5" label="kLongPressLauncher"/>
-  <int value="6" label="kSetup"/>
-  <int value="7" label="kStylus"/>
-  <int value="8" label="kLauncherSearchResult"/>
-  <int value="9" label="kLauncherSearchBoxIcon"/>
-  <int value="10" label="kProactiveSuggestions"/>
-  <int value="11" label="kLauncherChip"/>
-  <int value="12" label="kBloom"/>
-</enum>
-
-<enum name="AssistantExitPoint">
-  <int value="0" label="kUnspecified"/>
-  <int value="1" label="kCloseButtonDeprecated"/>
-  <int value="2" label="kHotkey"/>
-  <int value="3" label="kNewBrowserTabFromServer"/>
-  <int value="4" label="kNewBrowserTabFromUser"/>
-  <int value="5" label="kOutsidePressDeprecated"/>
-  <int value="6" label="kSetup"/>
-  <int value="7" label="kStylus"/>
-  <int value="8" label="kBackInLauncher"/>
-  <int value="9" label="kLauncherClose"/>
-  <int value="10" label="kLauncherOpen"/>
-  <int value="11" label="kScreenshot"/>
-  <int value="12" label="kOverviewMode"/>
-</enum>
-
-<enum name="AssistantInteractionResolution">
-  <int value="0" label="kNormal"/>
-  <int value="1" label="kInterruption"/>
-  <int value="2" label="kError"/>
-  <int value="3" label="kMicTimeout"/>
-  <int value="4" label="kMultiDeviceHotwordLoss"/>
-</enum>
 
 <!-- LINT.IfChange(AssistantNewEntryPointEligibility) -->
 
@@ -570,67 +496,6 @@ uploading your change for review.  These are checked by presubmit scripts.
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.cc:AssistantNewEntryPointEligibility) -->
-
-<enum name="AssistantOptInFlowStatus">
-  <int value="0" label="kFlowStarted"/>
-  <int value="1" label="kActivityControlShown"/>
-  <int value="2" label="kActivityControlAccepted"/>
-  <int value="3" label="kActivityControlSkipped"/>
-  <int value="4" label="kThirdPartyShown"/>
-  <int value="5" label="kThirdPartyContinued"/>
-  <int value="6" label="kGetMoreShown"/>
-  <int value="7" label="kEmailOptedIn"/>
-  <int value="8" label="kEmailOptedOut"/>
-  <int value="9" label="kGetMoreContinued"/>
-  <int value="10" label="kReadyScreenShown"/>
-  <int value="11" label="kReadyScreenContinued"/>
-  <int value="12" label="kVoiceMatchShown"/>
-  <int value="13" label="kVoiceMatchEnrollmentDone"/>
-  <int value="14" label="kVoiceMatchEnrollmentSkipped"/>
-  <int value="15" label="kVoiceMatchEnrollmentError"/>
-  <int value="16" label="kRelatedInfoShown"/>
-  <int value="17" label="kRelatedInfoAccepted"/>
-  <int value="18" label="kRelatedInfoSkipped"/>
-  <int value="19" label="kActivityControlDaAccepted"/>
-  <int value="20" label="kActivityControlDaSkipped"/>
-  <int value="21" label="kActivityControlWaaAccepted"/>
-  <int value="22" label="kActivityControlWaaSkipped"/>
-</enum>
-
-<enum name="AssistantQueryResponseType">
-  <int value="0" label="kUnspecified"/>
-  <int value="1" label="kDeviceAction"/>
-  <int value="2" label="kInlineElement"/>
-  <int value="3" label="kSearchFallback"/>
-  <int value="4" label="kTargetedAction"/>
-</enum>
-
-<enum name="AssistantQuerySource">
-  <int value="0" label="kUnspecified"/>
-  <int value="1" label="kDeeplink"/>
-  <int value="2" label="kDialogPlateTextField"/>
-  <int value="3" label="kStylus"/>
-  <int value="4" label="kSuggestionChip"/>
-  <int value="5" label="kVoiceInput"/>
-  <int value="6" label="kProactiveSuggestions"/>
-  <int value="7" label="kLibAssistantInitiated"/>
-  <int value="8" label="kWarmerWelcome"/>
-  <int value="9" label="kConversationStarter"/>
-  <int value="10" label="kWhatsOnMyScreen"/>
-  <int value="11" label="kQuickAnswers"/>
-  <int value="12" label="kLauncherChip"/>
-  <int value="13" label="kBetterOnboarding"/>
-  <int value="14" label="kBloom"/>
-</enum>
-
-<enum name="AssistantServiceState">
-  <int value="0" label="kStopped"/>
-  <int value="1" label="kStarting"/>
-  <int value="2" label="kStarted"/>
-  <int value="3" label="kRunning"/>
-  <int value="4" label="kStopping"/>
-  <int value="5" label="kDisconnected"/>
-</enum>
 
 <enum name="AuctionInvalidServerResponseReason">
   <int value="0" label="Unknown"/>

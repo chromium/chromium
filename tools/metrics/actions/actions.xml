@@ -5507,18 +5507,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Assistant.NewEntryPoint.Launcher">
-  <obsolete>
-    Deprecated in M139. Replaced with Apps.AppList.GeminiSearchBoxIcon.
-  </obsolete>
-  <owner>yawano@google.com</owner>
-  <owner>assistive-eng@google.com</owner>
-  <description>
-    User has opened the new entry point by activating a button in the launcher
-    (app list).
-  </description>
-</action>
-
 <action name="AutoDetectChange">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -51118,13 +51106,6 @@ should be able to be added at any place in this file.
   <description>
     User launched voice interaction session through long pressing app list
     button.
-  </description>
-</action>
-
-<action name="VoiceInteraction.Started.Assistant">
-  <owner>muyuanli@chromium.org</owner>
-  <description>
-    User launched voice interaction session through Assistant key.
   </description>
 </action>
 
