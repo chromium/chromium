@@ -1408,7 +1408,7 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
       const VideoCaptureOverlay::CapturedFrameProperties frame_properties{
           frame_capture.region_properties, content_rect, frame->format()};
 
-      // For GMB-backed video frames, overlays were already applied by
+      // For MappableSI-backed video frames, overlays were already applied by
       // CopyOutputRequest API. For in-memory frames, apply overlays here:
       auto overlay_renderer = VideoCaptureOverlay::MakeCombinedRenderer(
           GetOverlaysInOrder(), frame_properties);
@@ -1426,8 +1426,8 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
     if (frame->visible_rect() != result_rect &&
         !frame->HasMappableSharedImage()) {
       // If there are parts of the frame that are visible but we have not wrote
-      // into them, letterbox them. This is not needed for GMB-backed frames as
-      // the letterboxing happens on GPU.
+      // into them, letterbox them. This is not needed for MappableSI-backed
+      // frames as the letterboxing happens on GPU.
       media::LetterboxVideoFrame(frame.get(), result_rect);
     }
 
