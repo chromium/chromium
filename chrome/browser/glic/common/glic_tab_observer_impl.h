@@ -32,6 +32,9 @@ class GlicTabObserverImpl : public GlicTabObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+  void OnTabChangedAt(tabs::TabInterface* tab,
+                      int index,
+                      TabChangeType change_type) override;
 
  private:
   raw_ptr<Profile> profile_;
