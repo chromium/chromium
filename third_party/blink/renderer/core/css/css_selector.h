@@ -677,6 +677,10 @@ class CORE_EXPORT CSSSelector {
     return Match() == kPseudoClass && GetPseudoType() == kPseudoParent;
   }
 
+  // Returns true if the provided pseudo-class supports invalidation and can be
+  // passed to Element::PseudoStateChanged, otherwise false.
+  static bool SupportsPseudoStateChange(PseudoType);
+
   void Trace(Visitor* visitor) const;
 
   static String FormatPseudoTypeForDebugging(PseudoType);

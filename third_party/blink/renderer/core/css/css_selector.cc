@@ -2144,6 +2144,91 @@ CSSSelector::RelationType ConvertRelationToRelative(
   }
 }
 
+// static
+bool CSSSelector::SupportsPseudoStateChange(PseudoType type) {
+  switch (type) {
+    case CSSSelector::kPseudoActive:
+    case CSSSelector::kPseudoActiveViewTransition:
+    case CSSSelector::kPseudoActiveViewTransitionType:
+    case CSSSelector::kPseudoAnyLink:
+    case CSSSelector::kPseudoAutofill:
+    case CSSSelector::kPseudoAutofillPreviewed:
+    case CSSSelector::kPseudoAutofillSelected:
+    case CSSSelector::kPseudoChecked:
+    case CSSSelector::kPseudoDefault:
+    case CSSSelector::kPseudoDefined:
+    case CSSSelector::kPseudoDir:
+    case CSSSelector::kPseudoDisabled:
+    case CSSSelector::kPseudoDrag:
+    case CSSSelector::kPseudoEmpty:
+    case CSSSelector::kPseudoEnabled:
+    case CSSSelector::kPseudoFirstChild:
+    case CSSSelector::kPseudoFirstOfType:
+    case CSSSelector::kPseudoFocus:
+    case CSSSelector::kPseudoFocusVisible:
+    case CSSSelector::kPseudoFocusWithin:
+    case CSSSelector::kPseudoFullScreen:
+    case CSSSelector::kPseudoFullScreenAncestor:
+    case CSSSelector::kPseudoFullscreen:
+    case CSSSelector::kPseudoHas:
+    case CSSSelector::kPseudoHasDatalist:
+    case CSSSelector::kPseudoHasSlotted:
+    case CSSSelector::kPseudoHover:
+    case CSSSelector::kPseudoInRange:
+    case CSSSelector::kPseudoIndeterminate:
+    case CSSSelector::kPseudoInterestSource:
+    case CSSSelector::kPseudoInterestTarget:
+    case CSSSelector::kPseudoInvalid:
+    case CSSSelector::kPseudoLang:
+    case CSSSelector::kPseudoLastChild:
+    case CSSSelector::kPseudoLastOfType:
+    case CSSSelector::kPseudoLink:
+    case CSSSelector::kPseudoLinkTo:
+    case CSSSelector::kPseudoListBox:
+    case CSSSelector::kPseudoModal:
+    case CSSSelector::kPseudoMultiSelectFocus:
+    case CSSSelector::kPseudoNthChild:
+    case CSSSelector::kPseudoNthLastChild:
+    case CSSSelector::kPseudoNthLastOfType:
+    case CSSSelector::kPseudoNthOfType:
+    case CSSSelector::kPseudoOnlyChild:
+    case CSSSelector::kPseudoOnlyOfType:
+    case CSSSelector::kPseudoOpen:
+    case CSSSelector::kPseudoOptional:
+    case CSSSelector::kPseudoOutOfRange:
+    case CSSSelector::kPseudoOverscrollTarget:
+    case CSSSelector::kPseudoPaused:
+    case CSSSelector::kPseudoPermissionGranted:
+    case CSSSelector::kPseudoPictureInPicture:
+    case CSSSelector::kPseudoPlaceholderShown:
+    case CSSSelector::kPseudoPlaying:
+    case CSSSelector::kPseudoPopoverOpen:
+    case CSSSelector::kPseudoReadOnly:
+    case CSSSelector::kPseudoReadWrite:
+    case CSSSelector::kPseudoRequired:
+    case CSSSelector::kPseudoSelectHasSlottedButton:
+    case CSSSelector::kPseudoSelection:
+    case CSSSelector::kPseudoSelectorFragmentAnchor:
+    case CSSSelector::kPseudoState:
+    case CSSSelector::kPseudoTarget:
+    case CSSSelector::kPseudoTargetAfter:
+    case CSSSelector::kPseudoTargetBefore:
+    case CSSSelector::kPseudoTargetCurrent:
+    case CSSSelector::kPseudoUserInvalid:
+    case CSSSelector::kPseudoUserValid:
+    case CSSSelector::kPseudoValid:
+    case CSSSelector::kPseudoVideoPersistent:
+    case CSSSelector::kPseudoVideoPersistentAncestor:
+    case CSSSelector::kPseudoVisited:
+    case CSSSelector::kPseudoWebKitAutofill:
+    case CSSSelector::kPseudoWebkitAnyLink:
+    case CSSSelector::kPseudoXrOverlay:
+      return true;
+    default:
+      return false;
+  }
+}
+
 constexpr bool IsPseudoMapSorted(const NameToPseudoStruct* map, unsigned size) {
   for (unsigned i = 0; i < size - 1; i++) {
     // strcmp/strncmp would be much better here, but unfortunately they aren't

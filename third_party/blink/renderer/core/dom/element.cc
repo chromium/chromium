@@ -6566,6 +6566,8 @@ void Element::PseudoStateChangedForTesting(CSSSelector::PseudoType pseudo) {
 void Element::PseudoStateChanged(
     CSSSelector::PseudoType pseudo,
     AffectedByPseudoStateChange&& affected_by_pseudo) {
+  DCHECK(CSSSelector::SupportsPseudoStateChange(pseudo))
+      << CSSSelector::FormatPseudoTypeForDebugging(pseudo);
   // We can't schedule invaliation sets from inside style recalc otherwise
   // we'd never process them.
   // TODO(esprehn): Make this an ASSERT and fix places that call into this
