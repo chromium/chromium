@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/hyphenation/hyphenator_aosp.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
-#include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/ignoring_ascii_case_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 
 namespace blink {
@@ -194,7 +194,7 @@ struct HyphenatorLocaleData {
 
 using LocaleMap = HashMap<AtomicString,
                           const HyphenatorLocaleData*,
-                          CaseFoldingHashTraits<AtomicString>>;
+                          IgnoringAsciiCaseHashTraits<AtomicString>>;
 
 static LocaleMap CreateLocaleFallbackMap() {
   // This data is from CLDR, compiled by AOSP.
