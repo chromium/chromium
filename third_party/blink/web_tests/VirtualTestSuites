@@ -5065,7 +5065,7 @@
     "owners": [
       "web-bluetooth@google.com"
     ],
-    "expires": "Jan 1, 2026"
+    "expires": "Jan 1, 2027"
   },
   "--webauthn-remote-desktop-support can be toggled with enterprise policies, ",
   "so we need to support this long term.",
