@@ -191,6 +191,13 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
                          jint id,
                          const base::android::JavaRef<jstring>& value);
   void SetSelection(JNIEnv* env, jint id, jint start, jint end);
+  void SetExtendedSelection(JNIEnv* env,
+                            jint id,
+                            jint start_node_id,
+                            jint start_node_offset,
+                            jint end_node_id,
+                            jint end_node_offset);
+  void ClearExtendedSelection(JNIEnv* env, jint id);
   jboolean AdjustSlider(JNIEnv* env, jint id, jboolean increment);
   void ShowContextMenu(JNIEnv* env, jint id);
 

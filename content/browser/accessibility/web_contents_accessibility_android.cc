@@ -1752,9 +1752,9 @@ void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoSelection(
     focus_node = platform_ancestor;
   }
 
-  int anchor_unique_id =
+  const int anchor_unique_id =
       static_cast<BrowserAccessibilityAndroid*>(anchor_node)->GetUniqueId();
-  int focus_unique_id =
+  const int focus_unique_id =
       static_cast<BrowserAccessibilityAndroid*>(focus_node)->GetUniqueId();
   Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoExtendedSelectionAttrs(
       env, obj, info, anchor_unique_id, anchor_offset, focus_unique_id,
@@ -1927,6 +1927,51 @@ void WebContentsAccessibilityAndroid::SetSelection(JNIEnv* env,
         node->CreatePositionForSelectionAt(start),
         node->CreatePositionForSelectionAt(end)));
   }
+}
+
+void WebContentsAccessibilityAndroid::SetExtendedSelection(
+    JNIEnv* env,
+    jint id,
+    jint start_node_id,
+    jint start_node_offset,
+    jint end_node_id,
+    jint end_node_offset) {
+  CHECK(
+      base::FeatureList::IsEnabled(features::kAccessibilityExtendedSelection));
+
+  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(id);
+  if (!node) {
+    return;
+  }
+
+  BrowserAccessibilityAndroid* start_node = GetAXFromUniqueID(start_node_id);
+  BrowserAccessibilityAndroid* end_node = GetAXFromUniqueID(end_node_id);
+  if (!start_node || !end_node) {
+    return;
+  }
+
+  // TODO(crbug.com/443078007): Add test cases and explore when selection is
+  // on non-text nodes or higher up in the tree, like the root.
+  ui::BrowserAccessibility::AXPosition start_position =
+      start_node->CreatePositionForSelectionAt(start_node_offset);
+  ui::BrowserAccessibility::AXPosition end_position =
+      end_node->CreatePositionForSelectionAt(end_node_offset);
+
+  node->manager()->SetSelection(ui::BrowserAccessibility::AXRange(
+      std::move(start_position), std::move(end_position)));
+}
+
+void WebContentsAccessibilityAndroid::ClearExtendedSelection(JNIEnv* env,
+                                                             jint id) {
+  CHECK(
+      base::FeatureList::IsEnabled(features::kAccessibilityExtendedSelection));
+
+  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(id);
+  if (!node) {
+    return;
+  }
+
+  node->manager()->SetSelection(ui::BrowserAccessibility::AXRange());
 }
 
 jboolean WebContentsAccessibilityAndroid::AdjustSlider(JNIEnv* env,

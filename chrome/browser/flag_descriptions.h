@@ -4730,7 +4730,7 @@ inline constexpr char kAccessibilityExtendedSelectionName[] =
     "Accessibility Extended Selection";
 inline constexpr char kAccessibilityExtendedSelectionDescription[] =
     "When enabled, extended selections are sent to Android through "
-    "setSelection API.";
+    "setSelection API add received using ACTION_SET_EXTENDED_SELECTION.";
 
 inline constexpr char kAccessibilityImproveLiveRegionAnnounceName[] =
     "Accessibility Improve Live Region Announcement";

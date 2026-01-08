@@ -12,6 +12,7 @@ import android.content.ServiceConnection;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.hardware.display.DisplayManager;
+import android.os.Bundle;
 import android.util.Pair;
 import android.util.SparseArray;
 import android.view.Display;
@@ -288,6 +289,42 @@ public interface AconfigFlaggedApiDelegate {
      * @param info The node whose extended selection is cleared.
      */
     default void clearSelection(AccessibilityNodeInfoCompat info) {}
+
+    /**
+     * @return Id of
+     *     androidx.core.view.accessibility.AccessibilityNodeInfo.AccessibilityActionCompat.ACTION_SET_EXTENDED_SELECTION
+     */
+    default @Nullable Integer getActionSetExtendedSelectionId() {
+        return null;
+    }
+
+    /**
+     * Calls {@link android.view.accessibility.AccessibilityNodeInfoCompat#getSelection()} if
+     * supported.
+     *
+     * @param arguments Arguments sent with the ACTION_SET_EXTENDED_SELECTION action.
+     * @return Null if selection is empty or feature is not available, otherwise a pair of two
+     *     integers, representing startVirtualDescendentId and startOffset for the selection start
+     *     node.
+     */
+    default @Nullable Pair<Integer, Integer> getActionSetExtendedSelectionStartArgument(
+            Bundle arguments) {
+        return null;
+    }
+
+    /**
+     * Calls {@link android.view.accessibility.AccessibilityNodeInfoCompat#getSelection()} if
+     * supported.
+     *
+     * @param arguments Arguments sent with the ACTION_SET_EXTENDED_SELECTION action.
+     * @return Null if selection is empty or feature is not available, otherwise a pair of two
+     *     integers, representing startVirtualDescendentId and startOffset for the selection end
+     *     node.
+     */
+    default @Nullable Pair<Integer, Integer> getActionSetExtendedSelectionEndArgument(
+            Bundle arguments) {
+        return null;
+    }
 
     /** Checks if {@link android.content.pm.webapp.WebAppManager} service is available. */
     default boolean isWebAppServiceEnabled() {

@@ -56,6 +56,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_DATA_REQUEST_IMAGE_DATA_KEY;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_REQUEST_LAYOUT_BASED_ACTIONS;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_URL;
+import static org.chromium.content_public.browser.ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION;
 import static org.chromium.content_public.browser.ContentFeatureList.ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND;
 
 import android.annotation.SuppressLint;
@@ -1470,11 +1471,51 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             }
             return false;
         } else {
+            if (ContentFeatureMap.isEnabled(ACCESSIBILITY_EXTENDED_SELECTION)) {
+                AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+                if (delegate != null
+                        && delegate.getActionSetExtendedSelectionId() != null
+                        && action == delegate.getActionSetExtendedSelectionId()) {
+                    if (arguments == null) return false;
+
+                    // Since `delegate.getActionSetExtendedSelectionId()` is not null, extended
+                    // selection should be available and hence a null value for start node means
+                    // that `node.getSelection()` has returned null.
+                    var selectionStart =
+                            delegate.getActionSetExtendedSelectionStartArgument(arguments);
+                    if (selectionStart == null) {
+                        WebContentsAccessibilityImplJni.get()
+                                .clearExtendedSelection(mNativeObj, virtualViewId);
+                        return true;
+                    }
+
+                    var selectionEnd = delegate.getActionSetExtendedSelectionEndArgument(arguments);
+                    // This is not expected since start node is not null, but since the error is
+                    // from
+                    // the platform, assume selection is cleared.
+                    if (selectionEnd == null) {
+                        WebContentsAccessibilityImplJni.get()
+                                .clearExtendedSelection(mNativeObj, virtualViewId);
+                        return true;
+                    }
+
+                    WebContentsAccessibilityImplJni.get()
+                            .setExtendedSelection(
+                                    mNativeObj,
+                                    virtualViewId,
+                                    /* startNodeId= */ selectionStart.first,
+                                    /* startNodeOffset= */ selectionStart.second,
+                                    /* endNodeId= */ selectionEnd.first,
+                                    /* endNodeOffset= */ selectionEnd.second);
+                    return true;
+                }
+            }
+
             // This should never be hit, so do the equivalent of NOTREACHED;
             assert false : "AccessibilityNodeProvider called performAction with unexpected action.";
-        }
 
-        return false;
+            return false;
+        }
     }
 
     @Override
@@ -2574,6 +2615,16 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         void setTextFieldValue(long nativeWebContentsAccessibilityAndroid, int id, String newValue);
 
         void setSelection(long nativeWebContentsAccessibilityAndroid, int id, int start, int end);
+
+        void setExtendedSelection(
+                long nativeWebContentsAccessibilityAndroid,
+                int id,
+                int startNodeId,
+                int startNodeOffset,
+                int endNodeId,
+                int endNodeOffset);
+
+        void clearExtendedSelection(long nativeWebContentsAccessibilityAndroid, int id);
 
         boolean nextAtGranularity(
                 long nativeWebContentsAccessibilityAndroid,
