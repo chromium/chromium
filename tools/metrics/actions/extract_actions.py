@@ -891,20 +891,8 @@ def PrettyPrint(actions_dict: Dict[str, action_utils.Action],
   return actions_model.PrettifyTree(doc)
 
 
-def UpdateXml(original_xml):
-  actions_dict, comment_nodes, variants_dict = ParseActionFile(original_xml)
-
-  expanded_actions_dict = copy.deepcopy(actions_dict)
-  # Created a deep copy of the actions dictionary to expand variants into. This
-  # is to avoid modifying the original Action objects in case of variants
-  # present in the xml file, which would remove their token definitions.
-  if variants_dict:
-    try:
-      action_utils.CreateActionsFromVariants(expanded_actions_dict,
-                                             variants_dict)
-    except Exception as e:
-      logging.warning(str(e))
-
+def _GeneratedActions() -> set[str]:
+  """Returns list of name of the actions that are generated programmatically"""
   actions = set()
   AddComputedActions(actions)
   AddWebUIActions(actions)
@@ -918,7 +906,24 @@ def UpdateXml(original_xml):
   AddHistoryPageActions(actions)
   AddPDFPluginActions(actions)
 
-  for action_name in actions:
+  return actions
+
+
+def UpdateXml(original_xml):
+  actions_dict, comment_nodes, variants_dict = ParseActionFile(original_xml)
+
+  # Created a deep copy of the actions dictionary to expand variants into. This
+  # is to avoid modifying the original Action objects in case of variants
+  # present in the xml file, which would remove their token definitions.
+  expanded_actions_dict = copy.deepcopy(actions_dict)
+  action_utils.CreateActionsFromVariants(expanded_actions_dict, variants_dict)
+
+  generated_actions_names = _GeneratedActions()
+
+  # For generated actions we create a trivial action with no owners or
+  # description. However we don't override the action if it's already present
+  # in actions.xml allowing adding those details in the future.
+  for action_name in generated_actions_names:
     if action_name not in expanded_actions_dict:
       actions_dict[action_name] = action_utils.Action(action_name, None, [])
 
