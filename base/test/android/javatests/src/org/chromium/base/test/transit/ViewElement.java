@@ -12,7 +12,6 @@ import static org.chromium.base.test.transit.Condition.whether;
 import static org.chromium.base.test.transit.SimpleConditions.instrumentationThreadCondition;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.Context;
 import android.view.View;
 
@@ -26,6 +25,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matcher;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.ForgivingClickAction;
@@ -227,10 +227,8 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> implements V
 
         Triggers.runTo(
                         () -> {
-                            ActivityManager activityManager =
-                                    (ActivityManager)
-                                            activity.getSystemService(Context.ACTIVITY_SERVICE);
-                            activityManager.moveTaskToFront(activity.getTaskId(), 0);
+                            ApiCompatibilityUtils.moveTaskToFront(
+                                    activity, activity.getTaskId(), 0);
                         })
                 .withContext(this)
                 .waitForAnd(

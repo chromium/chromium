@@ -8,8 +8,6 @@ import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
@@ -27,6 +25,7 @@ import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.TaskVisibilityListener;
 import org.chromium.base.JniOnceCallback;
@@ -1196,11 +1195,9 @@ final class ChromeAndroidTaskImpl
         // Activate the Task if it's already visible.
         if (isVisibleInternal(topActivityScopedObjects)) {
             var activity = topActivityScopedObjects.mActivity;
-            ActivityManager activityManager =
-                    (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
             mPendingActionManager.requestAction(PendingAction.SHOW);
             mState = State.PENDING_UPDATE;
-            activityManager.moveTaskToFront(activity.getTaskId(), 0);
+            ApiCompatibilityUtils.moveTaskToFront(activity, activity.getTaskId(), 0);
         }
     }
 
@@ -1210,11 +1207,9 @@ final class ChromeAndroidTaskImpl
 
     private void activateInternal(TopActivityScopedObjects topActivityScopedObjects) {
         var activity = topActivityScopedObjects.mActivity;
-        ActivityManager activityManager =
-                (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
         mPendingActionManager.requestAction(PendingAction.ACTIVATE);
         mState = State.PENDING_UPDATE;
-        activityManager.moveTaskToFront(activity.getTaskId(), 0);
+        ApiCompatibilityUtils.moveTaskToFront(activity, activity.getTaskId(), 0);
     }
 
     @RequiresApi(api = VERSION_CODES.R)

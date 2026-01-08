@@ -5,10 +5,9 @@
 package org.chromium.base.test.transit;
 
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.content.Context;
 
 import org.chromium.base.ActivityState;
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -62,9 +61,7 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
                 () -> {
                     var activity = get();
                     assert activity != null;
-                    ActivityManager activityManager =
-                            (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-                    activityManager.moveTaskToFront(activity.getTaskId(), 0);
+                    ApiCompatibilityUtils.moveTaskToFront(activity, activity.getTaskId(), 0);
                 });
     }
 

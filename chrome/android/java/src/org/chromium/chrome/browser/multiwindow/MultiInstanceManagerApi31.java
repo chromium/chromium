@@ -27,6 +27,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Callback;
@@ -1305,10 +1306,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         // Launch the intent in the existing activity and bring the task to foreground if it is
         // alive.
         ((ChromeTabbedActivity) activity).onNewIntent(intent);
-        var activityManager = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-        if (activityManager != null) {
-            activityManager.moveTaskToFront(taskId, 0);
-        }
+        ApiCompatibilityUtils.moveTaskToFront(activity, taskId, 0);
         return true;
     }
 
@@ -1446,8 +1444,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
     @VisibleForTesting
     void bringTaskForeground(int taskId) {
-        ActivityManager am = (ActivityManager) mActivity.getSystemService(Context.ACTIVITY_SERVICE);
-        am.moveTaskToFront(taskId, 0);
+        ApiCompatibilityUtils.moveTaskToFront(mActivity, taskId, 0);
     }
 
     @VisibleForTesting
