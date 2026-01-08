@@ -335,6 +335,12 @@ void VerticalTabView::AddedToWidget() {
   paint_as_active_subscription_ =
       GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
           &VerticalTabView::UpdateColors, base::Unretained(this)));
+
+  // Recompute the hovered state as mouse events are not processed if a view
+  // removed from the widget and added.
+  if (!split_) {
+    UpdateHovered(IsMouseHovered());
+  }
 }
 
 void VerticalTabView::RemovedFromWidget() {

@@ -54,6 +54,7 @@ void VerticalSplitTabView::AddedToWidget() {
   paint_as_active_subscription_ =
       GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
           &VerticalSplitTabView::UpdateBorder, base::Unretained(this)));
+  UpdateHovered(IsMouseHovered());
 }
 
 void VerticalSplitTabView::RemovedFromWidget() {
