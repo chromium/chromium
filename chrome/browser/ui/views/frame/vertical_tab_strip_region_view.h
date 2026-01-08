@@ -47,7 +47,7 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   static constexpr int kResizeAreaWidth = 6;
   // TODO(crbug.com/465833741): Replace constant with derived value based on
   // caption buttons.
-  static constexpr int kUncollapsedMinWidth = 128;
+  static constexpr int kUncollapsedMinWidth = 126;
   // TODO(crbug.com/465832180): Replace constant based width final max width for
   // view.
   static constexpr int kUncollapsedMaxWidth = 400;
