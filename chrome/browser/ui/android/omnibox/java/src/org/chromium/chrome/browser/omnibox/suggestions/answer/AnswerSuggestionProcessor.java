@@ -91,7 +91,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
             if (shouldShowCardUi) {
                 int leadInSpacing =
                         mContext.getResources()
-                                .getDimensionPixelSize(R.dimen.omnibox_simple_card_leadin);
+                                .getDimensionPixelSize(R.dimen.omnibox_simple_card_lead_in);
                 model.set(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING, leadInSpacing);
                 model.set(
                         BaseSuggestionViewProperties.TOP_PADDING,
