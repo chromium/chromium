@@ -41,13 +41,14 @@ CSSAnimationData::CSSAnimationData() : CSSTimingData(InitialDuration()) {
   composition_list_.push_back(InitialComposition());
   timeline_trigger_name_list_.push_back(InitialTimelineTriggerName());
   timeline_trigger_source_list_.push_back(InitialTimelineTriggerSource());
-  timeline_trigger_range_start_list_.push_back(
-      InitialTimelineTriggerRangeStart());
-  timeline_trigger_range_end_list_.push_back(InitialTimelineTriggerRangeEnd());
-  timeline_trigger_exit_range_start_list_.push_back(
-      InitialTimelineTriggerExitRangeStart());
-  timeline_trigger_exit_range_end_list_.push_back(
-      InitialTimelineTriggerExitRangeEnd());
+  timeline_trigger_entry_range_start_list_.push_back(
+      InitialTimelineTriggerEntryRangeStart());
+  timeline_trigger_entry_range_end_list_.push_back(
+      InitialTimelineTriggerEntryRangeEnd());
+  timeline_trigger_active_range_start_list_.push_back(
+      InitialTimelineTriggerActiveRangeStart());
+  timeline_trigger_active_range_end_list_.push_back(
+      InitialTimelineTriggerActiveRangeEnd());
   trigger_attachments_list_.push_back(InitialTriggerAttachments());
 }
 
@@ -136,14 +137,14 @@ bool CSSAnimationData::TriggersMatchForStyleRecalc(
     const CSSAnimationData& other) const {
   return TimelineTriggerNamesMatch(other) &&
          (other.TimelineTriggerSourceList() == TimelineTriggerSourceList()) &&
-         (other.TimelineTriggerRangeStartList() ==
-          TimelineTriggerRangeStartList()) &&
-         (other.TimelineTriggerRangeEndList() ==
-          TimelineTriggerRangeEndList()) &&
-         (other.TimelineTriggerExitRangeStartList() ==
-          TimelineTriggerExitRangeStartList()) &&
-         (other.TimelineTriggerExitRangeEndList() ==
-          TimelineTriggerExitRangeEndList());
+         (other.TimelineTriggerEntryRangeStartList() ==
+          TimelineTriggerEntryRangeStartList()) &&
+         (other.TimelineTriggerEntryRangeEndList() ==
+          TimelineTriggerEntryRangeEndList()) &&
+         (other.TimelineTriggerActiveRangeStartList() ==
+          TimelineTriggerActiveRangeStartList()) &&
+         (other.TimelineTriggerActiveRangeEndList() ==
+          TimelineTriggerActiveRangeEndList());
 }
 
 }  // namespace blink

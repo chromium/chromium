@@ -4784,10 +4784,11 @@ bool ConsumeTimelineTriggerShorthand(
         // If we didn't get a trigger{-exit}-range-end, try to infer it from
         // trigger{-exit}-range-start if we got one. This allows, for example,
         // 'contain 0%' to expand to 'contain 0% contain 100%'.
-        if (property_id == CSSPropertyID::kTimelineTriggerExitRangeEnd) {
+        if (property_id == CSSPropertyID::kTimelineTriggerActiveRangeEnd) {
           longhand_value = css_parsing_utils::GetImpliedRangeEnd(
               trigger_exit_range_start_value);
-        } else if (property_id == CSSPropertyID::kTimelineTriggerRangeEnd) {
+        } else if (property_id ==
+                   CSSPropertyID::kTimelineTriggerEntryRangeEnd) {
           longhand_value =
               css_parsing_utils::GetImpliedRangeEnd(trigger_range_start_value);
         }

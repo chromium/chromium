@@ -1575,16 +1575,16 @@ TimelineTrigger* CSSAnimations::ComputeTimelineTrigger(
   }
 
   const std::optional<TimelineOffset>& new_start_offset =
-      CSSAnimationData::GetRepeated(data->TimelineTriggerRangeStartList(),
+      CSSAnimationData::GetRepeated(data->TimelineTriggerEntryRangeStartList(),
                                     animation_index);
   const std::optional<TimelineOffset>& new_end_offset =
-      CSSAnimationData::GetRepeated(data->TimelineTriggerRangeEndList(),
+      CSSAnimationData::GetRepeated(data->TimelineTriggerEntryRangeEndList(),
                                     animation_index);
   const TimelineOffsetOrAuto& new_exit_start_offset =
-      CSSAnimationData::GetRepeated(data->TimelineTriggerExitRangeStartList(),
+      CSSAnimationData::GetRepeated(data->TimelineTriggerActiveRangeStartList(),
                                     animation_index);
   const TimelineOffsetOrAuto& new_exit_end_offset =
-      CSSAnimationData::GetRepeated(data->TimelineTriggerExitRangeEndList(),
+      CSSAnimationData::GetRepeated(data->TimelineTriggerActiveRangeEndList(),
                                     animation_index);
 
   Animation::RangeBoundary* new_range_start =
@@ -3532,10 +3532,10 @@ bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
     case CSSPropertyID::kTextOrientation:
     case CSSPropertyID::kTimelineScope:
     case CSSPropertyID::kTimelineTriggerName:
-    case CSSPropertyID::kTimelineTriggerRangeStart:
-    case CSSPropertyID::kTimelineTriggerRangeEnd:
-    case CSSPropertyID::kTimelineTriggerExitRangeStart:
-    case CSSPropertyID::kTimelineTriggerExitRangeEnd:
+    case CSSPropertyID::kTimelineTriggerEntryRangeStart:
+    case CSSPropertyID::kTimelineTriggerEntryRangeEnd:
+    case CSSPropertyID::kTimelineTriggerActiveRangeStart:
+    case CSSPropertyID::kTimelineTriggerActiveRangeEnd:
     case CSSPropertyID::kTimelineTriggerSource:
     case CSSPropertyID::kTransition:
     case CSSPropertyID::kTransitionBehavior:

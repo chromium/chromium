@@ -2629,7 +2629,7 @@ CSSValue* ComputedStyleUtils::ValueForAnimationRangeOrAuto(
                                 default_offset);
 }
 
-CSSValue* ComputedStyleUtils::ValueForTimelineTriggerExitRangeList(
+CSSValue* ComputedStyleUtils::ValueForTimelineTriggerActiveRangeList(
     const Vector<TimelineOffsetOrAuto>& range_list,
     const ComputedStyle& style,
     const Length& default_offset) {
@@ -2791,51 +2791,51 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTriggerBehaviorList(
                                   &ValueForAnimationTriggerBehavior);
 }
 
-CSSValue* ComputedStyleUtils::ValueForTimelineTriggerRangeStartList(
+CSSValue* ComputedStyleUtils::ValueForTimelineTriggerEntryRangeStartList(
     const CSSAnimationData* animation_data,
     const ComputedStyle& style) {
   return ValueForAnimationRangeList(
       animation_data
-          ? animation_data->TimelineTriggerRangeStartList()
+          ? animation_data->TimelineTriggerEntryRangeStartList()
           : Vector<std::optional<
                 TimelineOffset>>{CSSAnimationData::
-                                     InitialTimelineTriggerRangeStart()},
+                                     InitialTimelineTriggerEntryRangeStart()},
       style, Length::Percent(0.0));
 }
 
-CSSValue* ComputedStyleUtils::ValueForTimelineTriggerRangeEndList(
+CSSValue* ComputedStyleUtils::ValueForTimelineTriggerEntryRangeEndList(
     const CSSAnimationData* animation_data,
     const ComputedStyle& style) {
   return ValueForAnimationRangeList(
       animation_data
-          ? animation_data->TimelineTriggerRangeEndList()
+          ? animation_data->TimelineTriggerEntryRangeEndList()
           : Vector<std::optional<
                 TimelineOffset>>{CSSAnimationData::
-                                     InitialTimelineTriggerRangeEnd()},
+                                     InitialTimelineTriggerEntryRangeEnd()},
       style, Length::Percent(100.0));
 }
 
-CSSValue* ComputedStyleUtils::ValueForTimelineTriggerExitRangeStartList(
+CSSValue* ComputedStyleUtils::ValueForTimelineTriggerActiveRangeStartList(
     const CSSAnimationData* animation_data,
     const ComputedStyle& style) {
-  return ValueForTimelineTriggerExitRangeList(
+  return ValueForTimelineTriggerActiveRangeList(
       animation_data
-          ? animation_data->TimelineTriggerExitRangeStartList()
+          ? animation_data->TimelineTriggerActiveRangeStartList()
           : Vector<
                 TimelineOffsetOrAuto>{CSSAnimationData::
-                                          InitialTimelineTriggerExitRangeStart()},
+                                          InitialTimelineTriggerActiveRangeStart()},
       style, Length::Percent(0.0));
 }
 
-CSSValue* ComputedStyleUtils::ValueForTimelineTriggerExitRangeEndList(
+CSSValue* ComputedStyleUtils::ValueForTimelineTriggerActiveRangeEndList(
     const CSSAnimationData* animation_data,
     const ComputedStyle& style) {
-  return ValueForTimelineTriggerExitRangeList(
+  return ValueForTimelineTriggerActiveRangeList(
       animation_data
-          ? animation_data->TimelineTriggerExitRangeEndList()
+          ? animation_data->TimelineTriggerActiveRangeEndList()
           : Vector<
                 TimelineOffsetOrAuto>{CSSAnimationData::
-                                          InitialTimelineTriggerExitRangeEnd()},
+                                          InitialTimelineTriggerActiveRangeEnd()},
       style, Length::Percent(100.0));
 }
 

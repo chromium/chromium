@@ -936,10 +936,12 @@ enum CSSSampleId {
     // kAnimationTriggerBehavior = 870,
     kTimelineTriggerName = 871,
     kTimelineTriggerBehavior = 872,
-    kTimelineTriggerRangeStart = 873,
-    kTimelineTriggerRangeEnd = 874,
-    kTimelineTriggerExitRangeStart = 875,
-    kTimelineTriggerExitRangeEnd = 876,
+    // Renamed to TimelineTriggerEntryRange*
+    // kTimelineTriggerRangeStart = 873,
+    // kTimelineTriggerRangeEnd = 874,
+    // Renamed to TimelineTriggerActiveRange*
+    // kTimelineTriggerExitRangeStart = 875,
+    // kTimelineTriggerExitRangeEnd = 876,
     kTimelineTriggerSource = 877,
     kTimelineTrigger = 878,
     kGridLanes = 879,
@@ -962,8 +964,10 @@ enum CSSSampleId {
     kRowRuleEdgeInsetEnd = 896,
     kRowRuleInteriorInsetStart = 897,
     kRowRuleInteriorInsetEnd = 898,
-    kTimelineTriggerRange = 899,
-    kTimelineTriggerExitRange = 900,
+    // Renamed to TimelineTriggerEntryRange
+    // kTimelineTriggerRange = 899,
+    // Renamed to TimelineTriggerActiveRange
+    // kTimelineTriggerExitRange = 900,
     kTriggerScope = 901,
     kProtocol = 902,
     kHostname = 903,
@@ -980,6 +984,12 @@ enum CSSSampleId {
     kRuleEdgeInset = 914,
     kRuleInteriorInset = 915,
     kPageMarginSafety = 916,
+    kTimelineTriggerEntryRangeStart = 917,
+    kTimelineTriggerEntryRangeEnd = 918,
+    kTimelineTriggerActiveRangeStart = 919,
+    kTimelineTriggerActiveRangeEnd = 920,
+    kTimelineTriggerEntryRange = 921,
+    kTimelineTriggerActiveRange = 922,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

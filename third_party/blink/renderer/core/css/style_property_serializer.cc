@@ -714,9 +714,9 @@ String StylePropertySerializer::SerializeShorthand(
       return TextSpacingValue();
     case CSSPropertyID::kTimelineTrigger:
       return GetLayeredShorthandValue(timelineTriggerShorthand());
-    case CSSPropertyID::kTimelineTriggerRange:
+    case CSSPropertyID::kTimelineTriggerEntryRange:
       return TimelineTriggerRangeShorthandValue();
-    case CSSPropertyID::kTimelineTriggerExitRange:
+    case CSSPropertyID::kTimelineTriggerActiveRange:
       return TimelineTriggerExitRangeShorthandValue();
     case CSSPropertyID::kWebkitTextStroke:
       return GetShorthandValue(webkitTextStrokeShorthand());
@@ -1159,19 +1159,18 @@ String StylePropertySerializer::AnimationRangeShorthandValue() const {
 }
 
 String StylePropertySerializer::TimelineTriggerRangeShorthandValue() const {
-  CHECK_EQ(timelineTriggerRangeShorthand().length(), 2u);
-  CHECK_EQ(timelineTriggerRangeShorthand().properties()[0],
-           &GetCSSPropertyTimelineTriggerRangeStart());
-  CHECK_EQ(timelineTriggerRangeShorthand().properties()[1],
-           &GetCSSPropertyTimelineTriggerRangeEnd());
+  CHECK_EQ(timelineTriggerEntryRangeShorthand().length(), 2u);
+  CHECK_EQ(timelineTriggerEntryRangeShorthand().properties()[0],
+           &GetCSSPropertyTimelineTriggerEntryRangeStart());
+  CHECK_EQ(timelineTriggerEntryRangeShorthand().properties()[1],
+           &GetCSSPropertyTimelineTriggerEntryRangeEnd());
 
   const CSSValueList& start_list =
       To<CSSValueList>(*property_set_.GetPropertyCSSValue(
-          GetCSSPropertyTimelineTriggerRangeStart()));
+          GetCSSPropertyTimelineTriggerEntryRangeStart()));
   const CSSValueList& end_list =
       To<CSSValueList>(*property_set_.GetPropertyCSSValue(
-          GetCSSPropertyTimelineTriggerRangeEnd()));
-
+          GetCSSPropertyTimelineTriggerEntryRangeEnd()));
   if (start_list.length() != end_list.length()) {
     return "";
   }
@@ -1186,19 +1185,18 @@ String StylePropertySerializer::TimelineTriggerRangeShorthandValue() const {
 }
 
 String StylePropertySerializer::TimelineTriggerExitRangeShorthandValue() const {
-  CHECK_EQ(timelineTriggerExitRangeShorthand().length(), 2u);
-  CHECK_EQ(timelineTriggerExitRangeShorthand().properties()[0],
-           &GetCSSPropertyTimelineTriggerExitRangeStart());
-  CHECK_EQ(timelineTriggerExitRangeShorthand().properties()[1],
-           &GetCSSPropertyTimelineTriggerExitRangeEnd());
+  CHECK_EQ(timelineTriggerActiveRangeShorthand().length(), 2u);
+  CHECK_EQ(timelineTriggerActiveRangeShorthand().properties()[0],
+           &GetCSSPropertyTimelineTriggerActiveRangeStart());
+  CHECK_EQ(timelineTriggerActiveRangeShorthand().properties()[1],
+           &GetCSSPropertyTimelineTriggerActiveRangeEnd());
 
   const CSSValueList& start_list =
       To<CSSValueList>(*property_set_.GetPropertyCSSValue(
-          GetCSSPropertyTimelineTriggerExitRangeStart()));
+          GetCSSPropertyTimelineTriggerActiveRangeStart()));
   const CSSValueList& end_list =
       To<CSSValueList>(*property_set_.GetPropertyCSSValue(
-          GetCSSPropertyTimelineTriggerExitRangeEnd()));
-
+          GetCSSPropertyTimelineTriggerActiveRangeEnd()));
   if (start_list.length() != end_list.length()) {
     return "";
   }
@@ -1957,7 +1955,7 @@ String StylePropertySerializer::GetLayeredShorthandValue(
             omit_value = true;
           }
         } else if (property->IDEquals(
-                       CSSPropertyID::kTimelineTriggerRangeStart)) {
+                       CSSPropertyID::kTimelineTriggerEntryRangeStart)) {
           if (const auto* start_identifier =
                   DynamicTo<CSSIdentifierValue>(value)) {
             // Only 'normal' is stored as an identifier, other values are lists.
@@ -1966,13 +1964,13 @@ String StylePropertySerializer::GetLayeredShorthandValue(
             omit_value = true;
           }
         } else if (property->IDEquals(
-                       CSSPropertyID::kTimelineTriggerRangeEnd)) {
+                       CSSPropertyID::kTimelineTriggerEntryRangeEnd)) {
           if (const auto* end_identifier =
                   DynamicTo<CSSIdentifierValue>(value)) {
             DCHECK(end_identifier->GetValueID() == CSSValueID::kNormal);
             omit_value = true;
           } else {
-            // Get timeline-trigger-range-start.
+            // Get timeline-trigger-entry-range-start.
             // The form "name X name 100%" must contract to "name X".
             //
             // https://github.com/w3c/csswg-drafts/issues/8438
@@ -1985,7 +1983,7 @@ String StylePropertySerializer::GetLayeredShorthandValue(
             omit_value = DropAnimationRangeEndValue(*start_value, *value);
           }
         } else if (property->IDEquals(
-                       CSSPropertyID::kTimelineTriggerExitRangeStart)) {
+                       CSSPropertyID::kTimelineTriggerActiveRangeStart)) {
           if (const auto* start_identifier =
                   DynamicTo<CSSIdentifierValue>(value)) {
             // Only 'normal' and 'auto' are stored as identifiers, other values
@@ -1996,14 +1994,14 @@ String StylePropertySerializer::GetLayeredShorthandValue(
             omit_value = start_identifier->GetValueID() == CSSValueID::kAuto;
           }
         } else if (property->IDEquals(
-                       CSSPropertyID::kTimelineTriggerExitRangeEnd)) {
+                       CSSPropertyID::kTimelineTriggerActiveRangeEnd)) {
           if (const auto* end_identifier =
                   DynamicTo<CSSIdentifierValue>(value)) {
             DCHECK(end_identifier->GetValueID() == CSSValueID::kAuto ||
                    end_identifier->GetValueID() == CSSValueID::kNormal);
             omit_value = end_identifier->GetValueID() == CSSValueID::kAuto;
           } else {
-            // Get timeline-trigger-exit-range-start.
+            // Get timeline-trigger-active-range-start.
             const auto* property_values =
                 To<CSSValueList>(values[property_index - 1].Get());
 
@@ -2024,7 +2022,7 @@ String StylePropertySerializer::GetLayeredShorthandValue(
             layer_result.Append(" 0% 0% / ");
           }
         } else if (property->IDEquals(
-                       CSSPropertyID::kTimelineTriggerExitRangeStart)) {
+                       CSSPropertyID::kTimelineTriggerActiveRangeStart)) {
           layer_result.Append(" / ");
         } else if (!layer_result.empty()) {
           // Do this second to avoid ending up with an extra space in the output

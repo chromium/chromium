@@ -8188,10 +8188,10 @@ Called by update_use_counter_css.py.-->
   <int value="870" label="animation-trigger-behavior (obsolete)"/>
   <int value="871" label="timeline-trigger-name"/>
   <int value="872" label="timeline-trigger-behavior"/>
-  <int value="873" label="timeline-trigger-range-start"/>
-  <int value="874" label="timeline-trigger-range-end"/>
-  <int value="875" label="timeline-trigger-exit-range-start"/>
-  <int value="876" label="timeline-trigger-exit-range-end"/>
+  <int value="873" label="timeline-trigger-range-start (obsolete)"/>
+  <int value="874" label="timeline-trigger-range-end (obsolete)"/>
+  <int value="875" label="timeline-trigger-exit-range-start (obsolete)"/>
+  <int value="876" label="timeline-trigger-exit-range-end (obsolete)"/>
   <int value="877" label="timeline-trigger-source"/>
   <int value="878" label="timeline-trigger"/>
   <int value="879" label="grid-lanes"/>
@@ -8214,8 +8214,8 @@ Called by update_use_counter_css.py.-->
   <int value="896" label="row-rule-edge-inset-end"/>
   <int value="897" label="row-rule-interior-inset-start"/>
   <int value="898" label="row-rule-interior-inset-end"/>
-  <int value="899" label="timeline-trigger-range"/>
-  <int value="900" label="timeline-trigger-exit-range"/>
+  <int value="899" label="timeline-trigger-range (obsolete)"/>
+  <int value="900" label="timeline-trigger-exit-range (obsolete)"/>
   <int value="901" label="trigger-scope"/>
   <int value="902" label="protocol"/>
   <int value="903" label="hostname"/>
@@ -8232,6 +8232,12 @@ Called by update_use_counter_css.py.-->
   <int value="914" label="rule-edge-inset"/>
   <int value="915" label="rule-interior-inset"/>
   <int value="916" label="page-margin-safety"/>
+  <int value="917" label="timeline-trigger-entry-range-start"/>
+  <int value="918" label="timeline-trigger-entry-range-end"/>
+  <int value="919" label="timeline-trigger-active-range-start"/>
+  <int value="920" label="timeline-trigger-active-range-end"/>
+  <int value="921" label="timeline-trigger-entry-range"/>
+  <int value="922" label="timeline-trigger-active-range"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

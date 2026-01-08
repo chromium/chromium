@@ -447,11 +447,11 @@ All changes to this list should go through Blink's feature review process: http:
     text-wrap-mode
     text-wrap-style
     timeline-scope
-    timeline-trigger-exit-range-end
-    timeline-trigger-exit-range-start
+    timeline-trigger-active-range-end
+    timeline-trigger-active-range-start
+    timeline-trigger-entry-range-end
+    timeline-trigger-entry-range-start
     timeline-trigger-name
-    timeline-trigger-range-end
-    timeline-trigger-range-start
     timeline-trigger-source
     top
     touch-action
@@ -971,18 +971,18 @@ All changes to this list should go through Blink's feature review process: http:
         text-wrap-mode
         text-wrap-style
     timeline-trigger
-        timeline-trigger-exit-range-end
-        timeline-trigger-exit-range-start
+        timeline-trigger-active-range-end
+        timeline-trigger-active-range-start
+        timeline-trigger-entry-range-end
+        timeline-trigger-entry-range-start
         timeline-trigger-name
-        timeline-trigger-range-end
-        timeline-trigger-range-start
         timeline-trigger-source
-    timeline-trigger-exit-range
-        timeline-trigger-exit-range-end
-        timeline-trigger-exit-range-start
-    timeline-trigger-range
-        timeline-trigger-range-end
-        timeline-trigger-range-start
+    timeline-trigger-active-range
+        timeline-trigger-active-range-end
+        timeline-trigger-active-range-start
+    timeline-trigger-entry-range
+        timeline-trigger-entry-range-end
+        timeline-trigger-entry-range-start
     transition
         transition-behavior
         transition-delay

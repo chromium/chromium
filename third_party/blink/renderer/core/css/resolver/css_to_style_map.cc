@@ -747,18 +747,20 @@ EAnimationTriggerBehavior CSSToStyleMap::MapAnimationTimelineTriggerBehavior(
 }
 
 std::optional<TimelineOffset>
-CSSToStyleMap::MapAnimationTimelineTriggerRangeStart(StyleResolverState& state,
-                                                     const CSSValue& value) {
+CSSToStyleMap::MapAnimationTimelineTriggerEntryRangeStart(
+    StyleResolverState& state,
+    const CSSValue& value) {
   return MapAnimationRange(state, value, 0);
 }
 
 std::optional<TimelineOffset>
-CSSToStyleMap::MapAnimationTimelineTriggerRangeEnd(StyleResolverState& state,
-                                                   const CSSValue& value) {
+CSSToStyleMap::MapAnimationTimelineTriggerEntryRangeEnd(
+    StyleResolverState& state,
+    const CSSValue& value) {
   return MapAnimationRange(state, value, 100);
 }
 
-TimelineOffsetOrAuto CSSToStyleMap::MapAnimationTimelineTriggerExitRangeStart(
+TimelineOffsetOrAuto CSSToStyleMap::MapAnimationTimelineTriggerActiveRangeStart(
     StyleResolverState& state,
     const CSSValue& value) {
   if (auto* ident = DynamicTo<CSSIdentifierValue>(value);
@@ -768,7 +770,7 @@ TimelineOffsetOrAuto CSSToStyleMap::MapAnimationTimelineTriggerExitRangeStart(
   return TimelineOffsetOrAuto(MapAnimationRange(state, value, 0));
 }
 
-TimelineOffsetOrAuto CSSToStyleMap::MapAnimationTimelineTriggerExitRangeEnd(
+TimelineOffsetOrAuto CSSToStyleMap::MapAnimationTimelineTriggerActiveRangeEnd(
     StyleResolverState& state,
     const CSSValue& value) {
   if (auto* ident = DynamicTo<CSSIdentifierValue>(value);
