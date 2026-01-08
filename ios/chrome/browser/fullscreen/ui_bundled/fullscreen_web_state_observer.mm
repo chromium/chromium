@@ -32,7 +32,11 @@ FullscreenWebStateObserver::FullscreenWebStateObserver(
   DCHECK(model_);
 }
 
-FullscreenWebStateObserver::~FullscreenWebStateObserver() = default;
+FullscreenWebStateObserver::~FullscreenWebStateObserver() {
+  CHECK(!web::WebStateObserver::IsInObserverList())
+      << "FullscreenWebStateObserver must be removed "
+         "from observer list before destruction.";
+}
 
 void FullscreenWebStateObserver::SetWebState(web::WebState* web_state) {
   if (web_state_ == web_state) {
