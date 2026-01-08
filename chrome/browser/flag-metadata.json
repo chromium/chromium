@@ -9707,6 +9707,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "tab-bottom-sheet",
+    "owners": [ "hitarthkothari@google.com", "ckitagawa@google.com", "clank-tab-dev@google.com"],
+    "expiry_milestone": 151
+  },
+  {
     "name": "tab-capture-infobar-links",
     "owners": [ "tovep@chromium.org", "eladalon@chromium.org" ],
     "expiry_milestone": 150

@@ -10801,6 +10801,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidHistoryPaneFaviconsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(ui::kAndroidHistoryPaneFavicons)},
 
+    {"tab-bottom-sheet", flag_descriptions::kTabBottomSheetName,
+     flag_descriptions::kTabBottomSheetDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabBottomSheet)},
+
     {"android-tips-notifications",
      flag_descriptions::kAndroidTipsNotificationsName,
      flag_descriptions::kAndroidTipsNotificationsDescription, kOsAndroid,

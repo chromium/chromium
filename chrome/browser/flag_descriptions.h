@@ -5727,6 +5727,10 @@ inline constexpr char kSupervisedUserInterstitialWithoutApprovalsDescription[] =
     "Enabling #allow-non-family-link-url-filter-mode is also required for "
     "users who do not sign-in.";
 
+inline constexpr char kTabBottomSheetName[] = "Tab bottom sheet";
+inline constexpr char kTabBottomSheetDescription[] =
+    "Enables the tab bottom sheet feature.";
+
 inline constexpr char kTabClosureMethodRefactorName[] =
     "Tab closure method refactor";
 inline constexpr char kTabClosureMethodRefactorDescription[] =

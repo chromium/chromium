@@ -636,6 +636,7 @@ public abstract class ChromeFeatureList {
     public static final String SYNC_ENABLE_NEW_SYNC_DASHBOARD_URL = "SyncEnableNewSyncDashboardUrl";
     public static final String SYNC_ENABLE_PASSWORDS_SYNC_ERROR_MESSAGE_ALTERNATIVE =
             "SyncEnablePasswordsSyncErrorMessageAlternative";
+    public static final String TAB_BOTTOM_SHEET = "TabBottomSheet";
     public static final String TAB_CLOSURE_METHOD_REFACTOR = "TabClosureMethodRefactor";
     public static final String TAB_FREEZING_USES_DISCARD = "TabFreezingUsesDiscard";
     public static final String TAB_MODEL_INIT_FIXES = "TabModelInitFixes";
@@ -1320,6 +1321,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SHOW_TAB_LIST_ANIMATIONS, false);
     public static final MutableFlagWithSafeDefault sSuppressToolbarCapturesAtGestureEnd =
             newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END, false);
+    public static final MutableFlagWithSafeDefault sTabBottomSheet =
+            newMutableFlagWithSafeDefault(TAB_BOTTOM_SHEET, false);
     public static final MutableFlagWithSafeDefault sTabFreezingUsesDiscard =
             newMutableFlagWithSafeDefault(TAB_FREEZING_USES_DISCARD, false);
     public static final MutableFlagWithSafeDefault sTabSwitcherGroupSuggestionsAndroid =

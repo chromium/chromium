@@ -8837,6 +8837,7 @@ from previous Chrome versions.
   <int value="-1882649050" label="ProfilesReordering:enabled"/>
   <int value="-1882427024" label="IwaControlledFrame:disabled"/>
   <int value="-1882330924" label="NTPArticleSuggestions:enabled"/>
+  <int value="-1882201059" label="TabBottomSheet:enabled"/>
   <int value="-1881210399" label="AccessibilityManifestV3ChromeVox:disabled"/>
   <int value="-1880683127" label="UnrestrictedUsb:disabled"/>
   <int value="-1880633355" label="CaptureModeAudioMixing:disabled"/>
@@ -19986,6 +19987,7 @@ from previous Chrome versions.
   <int value="1969604362" label="enable-pinch-virtual-viewport"/>
   <int value="1970043159" label="AndroidBookmarkBarFastFollow:disabled"/>
   <int value="1970371579" label="UseNewEtc1Encoder:disabled"/>
+  <int value="1971095607" label="TabBottomSheet:disabled"/>
   <int value="1971436110" label="PasswordsInCredMan:enabled"/>
   <int value="1971472561" label="CrostiniImeSupport:disabled"/>
   <int value="1971964569" label="NewEncodeCpuLoadEstimator:disabled"/>
