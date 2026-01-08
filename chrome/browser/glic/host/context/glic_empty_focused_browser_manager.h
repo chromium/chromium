@@ -5,8 +5,14 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_EMPTY_FOCUSED_BROWSER_MANAGER_H_
 #define CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_EMPTY_FOCUSED_BROWSER_MANAGER_H_
 
+#include "build/build_config.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager_interface.h"
-#include "chrome/browser/ui/browser_window.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_window.h"  // CLEANUP: Remove this
+#endif
+
+class BrowserWindowInterface;
 
 namespace glic {
 

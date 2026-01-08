@@ -4,15 +4,19 @@
 
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 
-#include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
-#include "chrome/browser/themes/theme_service_factory.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#endif
 
 namespace glic {
 
@@ -35,9 +39,11 @@ GlicKeyedServiceFactory::GlicKeyedServiceFactory()
           "GlicKeyedService",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
+#if !BUILDFLAG(IS_ANDROID)
   DependsOn(ThemeServiceFactory::GetInstance());
   DependsOn(contextual_cueing::ContextualCueingServiceFactory::GetInstance());
   DependsOn(actor::ActorKeyedServiceFactory::GetInstance());
+#endif
   DependsOn(subscription_eligibility::SubscriptionEligibilityServiceFactory::
                 GetInstance());
 }
@@ -62,8 +68,18 @@ GlicKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<GlicKeyedService>(
       profile, IdentityManagerFactory::GetForProfile(profile),
       g_browser_process->profile_manager(), GlicProfileManager::GetInstance(),
-      contextual_cueing::ContextualCueingServiceFactory::GetForProfile(profile),
-      actor::ActorKeyedServiceFactory::GetActorKeyedService(profile));
+#if !BUILDFLAG(IS_ANDROID)
+      contextual_cueing::ContextualCueingServiceFactory::GetForProfile(profile)
+#else
+      nullptr  // NEEDS_ANDROID_IMPL
+#endif
+          ,
+#if !BUILDFLAG(IS_ANDROID)
+      actor::ActorKeyedServiceFactory::GetActorKeyedService(profile)
+#else
+      nullptr  // NEEDS_ANDROID_IMPL
+#endif
+  );
 }
 
 }  // namespace glic

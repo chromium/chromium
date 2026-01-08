@@ -8,8 +8,8 @@
 
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -17,6 +17,10 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#endif
 
 namespace glic {
 
@@ -34,7 +38,8 @@ bool IsTabValidForSharing(content::WebContents* web_contents) {
       {GURL(), GURL(url::kAboutBlankURL),
        GURL(chrome::kChromeUINewTabPageThirdPartyURL),
        GURL(chrome::kChromeUINewTabPageURL), GURL(chrome::kChromeUINewTabURL),
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+       // NEEDS_ANDROID_IMPL: This isn't yet available on android desktop.
        // "What's New" does not exist in the form of a tab on ChromeOS.
        GURL(chrome::kChromeUIWhatsNewURL)
 #endif

@@ -5,11 +5,15 @@
 #include "chrome/browser/glic/host/page_metadata_manager.h"
 
 #include "base/functional/bind.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
+#include "build/build_config.h"
 #include "components/optimization_guide/content/browser/page_content_metadata_observer.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/tabs/tab_model.h"
+#endif
 
 namespace glic {
 

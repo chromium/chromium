@@ -190,7 +190,9 @@ GlicKeyedService::GlicKeyedService(
           std::make_unique<GlicWebContentsWarmingPool>(profile)),
       contextual_cueing_service_(contextual_cueing_service) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
+#if !BUILDFLAG(IS_ANDROID)
   CHECK(actor_keyed_service);
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   if (UseDefaultWindowController()) {

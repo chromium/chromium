@@ -283,7 +283,12 @@ void GlicShareImageHandler::OnCopyPolicyCheckComplete(
     ShareComplete(ShareImageResult::kFailedNoTab);
     return;
   }
-  BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
+  BrowserWindowInterface* browser =
+#if !BUILDFLAG(IS_ANDROID)
+      tab->GetBrowserWindowInterface();
+#else
+      nullptr;  // NEEDS_ANDROID_IMPL
+#endif
   if (!browser) {
     ShareComplete(ShareImageResult::kFailedNoBrowser);
     return;

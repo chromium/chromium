@@ -756,9 +756,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                   base::Unretained(this)));
     }
 
+#if !BUILDFLAG(IS_ANDROID)  // single instance not implemented on android
     if (!GlicEnabling::IsMultiInstanceEnabled()) {
       browser_attach_observation_ = ObserveBrowserForAttachment(profile_, this);
     }
+#endif
 
     system_permission_settings_observation_ =
         system_permission_settings::Observe(base::BindRepeating(

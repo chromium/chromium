@@ -14,12 +14,12 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notimplemented.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/browser_ui/scoped_glic_button_indicator.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
-#include "chrome/browser/glic/fre/glic_fre_dialog_view.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
@@ -59,6 +59,9 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget_observer.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/fre/glic_fre_dialog_view.h"
+#endif
 namespace glic {
 
 namespace {

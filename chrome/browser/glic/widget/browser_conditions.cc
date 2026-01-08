@@ -8,16 +8,21 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "ui/base/base_window.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/views/widget/widget_observer.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/aura/window.h"
@@ -121,11 +126,17 @@ bool IsBrowserInForeground(BrowserWindowInterface* bwi) {
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-bool IsBrowserVisible(Browser* browser) {
+bool IsBrowserVisible(BrowserWindowInterface* bwi) {
+#if !BUILDFLAG(IS_ANDROID)
+  Browser* browser = static_cast<Browser*>(bwi);
   return browser && browser->window() &&
          browser->GetBrowserView().GetWidget() &&
          browser->window()->IsVisible() && !browser->window()->IsMinimized() &&
          browser->capabilities()->IsVisibleOnScreen();
+#else
+  // NEEDS_ANDROID_IMPL
+  return bwi->GetWindow()->IsVisible();
+#endif
 }
 
 BrowserWindowInterface* GetActiveGlicEligibleBrowser(Profile* profile) {
@@ -138,6 +149,7 @@ BrowserWindowInterface* GetActiveGlicEligibleBrowser(Profile* profile) {
   return nullptr;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 class BrowserAttachObservationImpl : public BrowserAttachObservation,
                                      public BrowserCollectionObserver,
                                      public views::WidgetObserver {
@@ -236,5 +248,6 @@ std::unique_ptr<BrowserAttachObservation> ObserveBrowserForAttachment(
     BrowserAttachObserver* observer) {
   return std::make_unique<BrowserAttachObservationImpl>(profile, observer);
 }
+#endif
 
 }  // namespace glic
