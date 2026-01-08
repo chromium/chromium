@@ -101,7 +101,6 @@ bool WillDispatchTabCreatedEvent(
 TabsEventRouter::TabEntry::TabEntry(TabsEventRouter& router,
                                     content::WebContents& contents)
     : WebContentsObserver(&contents),
-      was_muted_(contents.IsAudioMuted()),
       router_(router) {
   auto* audible_helper = RecentlyAudibleHelper::FromWebContents(&contents);
   was_audible_ = audible_helper->WasRecentlyAudible();
@@ -112,14 +111,6 @@ bool TabsEventRouter::TabEntry::SetAudible(bool new_val) {
     return false;
   }
   was_audible_ = new_val;
-  return true;
-}
-
-bool TabsEventRouter::TabEntry::SetMuted(bool new_val) {
-  if (was_muted_ == new_val) {
-    return false;
-  }
-  was_muted_ = new_val;
   return true;
 }
 
@@ -165,6 +156,10 @@ void TabsEventRouter::TabEntry::TitleWasSet(content::NavigationEntry* entry) {
   std::set<std::string> changed_property_names;
   changed_property_names.insert(tabs_constants::kTitleKey);
   router_->TabUpdated(this, std::move(changed_property_names));
+}
+
+void TabsEventRouter::TabEntry::DidUpdateAudioMutingState(bool muted) {
+  router_->TabUpdated(this, {kMutedInfoKey});
 }
 
 void TabsEventRouter::TabEntry::WebContentsDestroyed() {
@@ -250,11 +245,6 @@ void TabsEventRouter::TabUpdated(TabEntry* entry,
     changed_property_names.insert(kAudibleKey);
   }
 #endif
-
-  bool muted = entry->web_contents()->IsAudioMuted();
-  if (entry->SetMuted(muted)) {
-    changed_property_names.insert(kMutedInfoKey);
-  }
 
   if (!changed_property_names.empty()) {
     DispatchTabUpdatedEvent(entry->web_contents(),

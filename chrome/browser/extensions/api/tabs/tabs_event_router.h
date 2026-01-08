@@ -76,15 +76,15 @@ class TabsEventRouter : public favicon::FaviconDriverObserver,
     TabEntry(const TabEntry&) = delete;
     TabEntry& operator=(const TabEntry&) = delete;
 
-    // Update the audible and muted states and return whether they were changed
+    // Update the audible state and return whether they were changed.
     bool SetAudible(bool new_val);
-    bool SetMuted(bool new_val);
 
     // content::WebContentsObserver:
     void NavigationEntryCommitted(
         const content::LoadCommittedDetails& load_details) override;
     void DidStopLoading() override;
     void TitleWasSet(content::NavigationEntry* entry) override;
+    void DidUpdateAudioMutingState(bool muted) override;
     void WebContentsDestroyed() override;
 
    private:
@@ -95,9 +95,8 @@ class TabsEventRouter : public favicon::FaviconDriverObserver,
     // changes.
     bool complete_waiting_on_load_ = false;
 
-    // Previous audible and muted states
+    // Previous audible state.
     bool was_audible_ = false;
-    bool was_muted_;
 
     GURL url_;
 
