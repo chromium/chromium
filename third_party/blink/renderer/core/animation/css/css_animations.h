@@ -231,16 +231,16 @@ class CORE_EXPORT CSSAnimations final {
     DISALLOW_NEW();
 
    public:
-    void SetScrollTimeline(const ScopedCSSName& name, ScrollTimeline*);
+    void SetScrollTimeline(const AtomicString& name, ScrollTimeline*);
     const CSSScrollTimelineMap& GetScrollTimelines() const {
       return scroll_timelines_;
     }
-    void SetViewTimeline(const ScopedCSSName& name, ViewTimeline*);
+    void SetViewTimeline(const AtomicString& name, ViewTimeline*);
     const CSSViewTimelineMap& GetViewTimelines() const {
       return view_timelines_;
     }
 
-    void SetDeferredTimeline(const ScopedCSSName& name, DeferredTimeline*);
+    void SetDeferredTimeline(const AtomicString& name, DeferredTimeline*);
     const CSSDeferredTimelineMap& GetDeferredTimelines() const {
       return deferred_timelines_;
     }
@@ -404,20 +404,20 @@ class CORE_EXPORT CSSAnimations final {
 
   static const TimelineData* GetTimelineData(const Element&);
 
-  static ScrollSnapshotTimeline* FindTimelineForNode(const ScopedCSSName& name,
+  static ScrollSnapshotTimeline* FindTimelineForNode(const AtomicString& name,
                                                      Node*,
                                                      const CSSAnimationUpdate*);
   template <typename TimelineType>
-  static TimelineType* FindTimelineForElement(const ScopedCSSName& name,
+  static TimelineType* FindTimelineForElement(const AtomicString& name,
                                               const TimelineData*,
                                               const CSSAnimationUpdate*);
 
   static ScrollSnapshotTimeline* FindAncestorTimeline(
-      const ScopedCSSName& name,
+      const AtomicString& name,
       Node*,
       const CSSAnimationUpdate*);
 
-  static DeferredTimeline* FindDeferredTimeline(const ScopedCSSName& name,
+  static DeferredTimeline* FindDeferredTimeline(const AtomicString& name,
                                                 Element*,
                                                 const CSSAnimationUpdate*);
 
