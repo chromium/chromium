@@ -15066,7 +15066,7 @@ TEST_F(HttpCacheTest, EncryptionDelegateInitSuccess) {
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  MockHttpCache cache(
+  auto cache = std::make_unique<MockHttpCache>(
       std::make_unique<TestCacheBackendFactoryWithEncryption>(
           &mock_delegate, temp_dir.GetPath()));
 
@@ -15074,7 +15074,7 @@ TEST_F(HttpCacheTest, EncryptionDelegateInitSuccess) {
   MockHttpRequest request(kSimpleGET_Transaction);
   TestCompletionCallback callback;
   std::unique_ptr<HttpTransaction> transaction =
-      cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+      cache->http_cache()->CreateTransaction(DEFAULT_PRIORITY);
   ASSERT_TRUE(transaction);
 
   int rv =
@@ -15094,6 +15094,9 @@ TEST_F(HttpCacheTest, EncryptionDelegateInitSuccess) {
 
   ReadAndVerifyTransaction(transaction.get(), kSimpleGET_Transaction);
   transaction.reset();
+
+  // To ensure the cache and its backend are destroyed before the test exits.
+  cache.reset();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -15103,15 +15106,16 @@ TEST_F(HttpCacheTest, EncryptionDelegateInitFailure) {
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  MockHttpCache cache(std::make_unique<TestCacheBackendFactoryWithEncryption>(
-      &mock_delegate, temp_dir.GetPath()));
+  auto cache = std::make_unique<MockHttpCache>(
+      std::make_unique<TestCacheBackendFactoryWithEncryption>(
+          &mock_delegate, temp_dir.GetPath()));
 
   // Create a transaction to trigger cache creation. The transaction should fail
   // because the backend creation fails.
   MockHttpRequest request(kSimpleGET_Transaction);
   TestCompletionCallback callback;
   std::unique_ptr<HttpTransaction> transaction =
-      cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+      cache->http_cache()->CreateTransaction(DEFAULT_PRIORITY);
   ASSERT_TRUE(transaction);
 
   int rv =
@@ -15133,6 +15137,9 @@ TEST_F(HttpCacheTest, EncryptionDelegateInitFailure) {
 
   ReadAndVerifyTransaction(transaction.get(), kSimpleGET_Transaction);
   transaction.reset();
+
+  // To ensure the cache and its backend are destroyed before the test exits.
+  cache.reset();
   base::RunLoop().RunUntilIdle();
 }
 
