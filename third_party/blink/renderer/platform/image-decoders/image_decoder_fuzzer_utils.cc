@@ -11,6 +11,10 @@
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+#include "third_party/blink/renderer/platform/image-decoders/jxl/jxl_image_decoder.h"
+#endif
+
 namespace blink {
 
 ColorBehavior GetColorBehavior(FuzzedDataProvider& fdp) {
@@ -80,6 +84,15 @@ std::unique_ptr<ImageDecoder> CreateImageDecoder(DecoderType decoder_type,
           /*max_decoded_bytes=*/fdp.ConsumeIntegral<uint32_t>(),
           GetAnimationOption(fdp));
     }
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+    case DecoderType::kJxlDecoder: {
+      return std::make_unique<JXLImageDecoder>(
+          GetAlphaOption(fdp), GetHbdOption(fdp), GetColorBehavior(fdp),
+          GetAuxImageType(fdp),
+          /*max_decoded_bytes=*/fdp.ConsumeIntegral<uint32_t>(),
+          GetAnimationOption(fdp));
+    }
+#endif
   }
 }
 
