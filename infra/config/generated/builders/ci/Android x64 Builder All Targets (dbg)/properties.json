@@ -68,7 +68,6 @@
     "experiments": [
       "oom-score-adj"
     ],
-    "metrics_project": "chromium-reclient-metrics",
     "output_local_strategy": "greedy",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 500

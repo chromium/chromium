@@ -55,7 +55,6 @@
     "experiments": [
       "no-fallback"
     ],
-    "metrics_project": "chromium-reclient-metrics",
     "output_local_strategy": "greedy",
     "project": "rbe-chromium-untrusted-test",
     "remote_jobs": -1

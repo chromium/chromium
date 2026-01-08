@@ -58,7 +58,6 @@
     "experiments": [
       "no-fallback"
     ],
-    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-untrusted",
     "remote_jobs": 5120
   },
