@@ -413,9 +413,14 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
         error_message = '\n'.join(json_output['errors'])
         LOGGER.error(error_message)
       else:
-        all_test_classes = json_output['values'][0]['children'][0]['children']
-        if all_test_classes:
-          break
+        try:
+          all_test_classes = json_output['values'][0]['children'][0]['children']
+          if all_test_classes:
+            break
+        except (KeyError, IndexError, TypeError):
+          # retry if keys or list elements are missing
+          LOGGER.exception('Failed to parse enumerate-tests json output')
+          continue
 
     # on certain occasions -enumerate-tests will return code 0 and have an empty
     # "errors" list in its json output, but still have failed, in which case
