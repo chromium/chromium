@@ -88,6 +88,58 @@ void GetOrCreateBrowserWindowForDisposition(
   }
 }
 
+// Helper called in GetOrCreateTabForDisposition().
+// Maps the NavigateParams to the appropriate Android TabLaunchType.
+TabModel::TabLaunchType GetTabLaunchType(const NavigateParams* params) {
+  using TabLaunchType = TabModel::TabLaunchType;
+
+  // 1. Explicit Index:
+  // If an explicit index is requested, use FROM_CHROME_UI. This type does NOT
+  // trigger "adjacency" logic in Java, allowing the passed index to be
+  // respected.
+  if (params->tabstrip_index != -1) {
+    return TabLaunchType::FROM_CHROME_UI;
+  }
+
+  bool is_background =
+      params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  bool is_link = ui::PageTransitionCoreTypeIs(params->transition,
+                                              ui::PAGE_TRANSITION_LINK);
+
+  // 2. Background Navigation:
+  if (is_background) {
+    if (is_link) {
+      // Background Link (e.g., Ctrl+Click).
+      // Use FROM_LONGPRESS_BACKGROUND to trigger "Group with Parent" logic
+      // while keeping the tab in the background.
+      return TabLaunchType::FROM_LONGPRESS_BACKGROUND;
+    }
+    // Generic Background (e.g., Middle-click Bookmark).
+    // Use FROM_BROWSER_ACTIONS. In Java, this forces the tab to the END
+    // of the model (ignoring adjacency) and keeps it backgrounded.
+    return TabLaunchType::FROM_BROWSER_ACTIONS;
+  }
+
+  // 3. Foreground Navigation:
+  if (is_link) {
+    // Foreground Link.
+    // Use FROM_LINK to trigger "Adjacent to Parent" logic and selection.
+    return TabLaunchType::FROM_LINK;
+  }
+
+  if (ui::PageTransitionCoreTypeIs(params->transition,
+                                   ui::PAGE_TRANSITION_TYPED) ||
+      ui::PageTransitionCoreTypeIs(params->transition,
+                                   ui::PAGE_TRANSITION_GENERATED)) {
+    // Omnibox Navigation.
+    // Use FROM_OMNIBOX to disable adjacency logic (placing it at the end).
+    return TabLaunchType::FROM_OMNIBOX;
+  }
+
+  // Default Generic Foreground.
+  return TabLaunchType::FROM_CHROME_UI;
+}
+
 // Helper to create/locate tabs.
 raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
     BrowserWindowInterface* bwi,
@@ -102,22 +154,17 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
     case WindowOpenDisposition::NEW_BACKGROUND_TAB:
       [[fallthrough]];
     case WindowOpenDisposition::NEW_FOREGROUND_TAB: {
-      // Determine the insertion index.
-      // If there's no active tab (e.g., empty tab list), insert at the
-      // beginning. Otherwise if inserting a foreground tab, insert after the
-      // active tab. Else insert background tab at end of list.
-      // TODO (crbug.com/449738150) Match WML logic in
-      // TabStripModel::DetermineInsertionIndex.
-      int active_index = tab_model->GetActiveIndex();
+      // Select the TabLaunchType.
+      TabModel::TabLaunchType launch_type = GetTabLaunchType(params);
 
-      if (params->tabstrip_index != -1) {
-        // TODO (crbug.com/449738150) TabModel should support AddTabTypes.
-        // params->tabstrip_add_types |= AddTabTypes::ADD_FORCE_INDEX;
-      } else if (active_index == -1) {
-        params->tabstrip_index = 0;
-      } else if (params->disposition !=
-                 WindowOpenDisposition::NEW_BACKGROUND_TAB) {
-        params->tabstrip_index = active_index + 1;
+      // Identify parent tab.
+      // Parent tab is intentionally left as nullptr if the
+      // TabLaunchType == FROM_OMNIBOX to ensure the tab is added as the last
+      // tab (mirroring WML behavior).
+      TabAndroid* parent = nullptr;
+      if (params->source_contents &&
+          launch_type != TabModel::TabLaunchType::FROM_OMNIBOX) {
+        parent = TabAndroid::FromWebContents(params->source_contents);
       }
 
       // Create a WebContents.
@@ -125,10 +172,10 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
           params->initiating_profile);
       std::unique_ptr<content::WebContents> web_contents =
           content::WebContents::Create(create_params);
-      // Create a new tab (opens in the background).
+
+      // Create a new tab.
       tabs::TabInterface* new_tab = tab_model->CreateTab(
-          nullptr, std::move(web_contents), params->tabstrip_index,
-          TabModel::TabLaunchType::FROM_TAB_LIST_INTERFACE,
+          parent, std::move(web_contents), params->tabstrip_index, launch_type,
           /*should_pin=*/false);
 
       if (!new_tab || !new_tab->GetContents()) {
