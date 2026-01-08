@@ -330,7 +330,7 @@ class AcquireLoadThread : public PlatformThread::Delegate {
   void ThreadMain() override {
     // Wait for the other thread to make Release_Store
     PlatformThread::Sleep(Milliseconds(100));
-    value_->load(std::memory_order_acquire);
+    std::ignore = value_->load(std::memory_order_acquire);
   }
 
  private:
