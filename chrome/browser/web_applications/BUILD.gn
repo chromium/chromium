@@ -896,6 +896,7 @@ source_set("web_applications_unit_tests") {
     "external_install_options_unittest.cc",
     "externally_managed_app_manager_unittest.cc",
     "icons/icon_masker_unittest.cc",
+    "icons/trusted_icon_filter_unittest.cc",
     "isolated_web_apps/commands/check_isolated_web_app_bundle_installability_command_unittest.cc",
     "isolated_web_apps/commands/get_controlled_frame_partition_command_unittest.cc",
     "isolated_web_apps/commands/install_isolated_web_app_command_unittest.cc",
