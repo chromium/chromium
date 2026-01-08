@@ -58,6 +58,7 @@
 #include "components/sync/protocol/shared_comment_specifics.pb.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
 #include "components/sync/protocol/sharing_message_specifics.pb.h"
+#include "components/sync/protocol/skill_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
@@ -2160,7 +2161,17 @@ VISIT_PROTO_FIELDS(const sync_pb::SharedCommentSpecifics& proto) {
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SkillSpecifics& proto) {
-  // TODO(crbug.com/471793686): In CL #2, VISIT fields added to specifics.
+  VISIT(guid);
+  VISIT(name);
+  VISIT(icon);
+  VISIT(simple_skill);
+  VISIT(creation_time_windows_epoch_micros);
+  VISIT(last_update_time_windows_epoch_micros);
+  VISIT(schema_version);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::SimpleSkill& proto) {
+  VISIT(prompt);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::AiThreadSpecifics& proto) {

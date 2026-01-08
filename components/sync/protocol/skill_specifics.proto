@@ -16,6 +16,29 @@ package sync_pb;
 
 // Skills stored by the user.
 message SkillSpecifics {
-  // TODO(crbug.com/471793686): In CL #2, add fields that you wish to sync, then
-  // update proto_visitors.h and potentially proto_enum_conversions.*.
+  // The unique identifier for the skill.
+  optional string guid = 1;
+
+  // The name of the skill.
+  optional string name = 2;
+
+  // Emoji icon for the skill.
+  optional string icon = 3;
+
+  optional SimpleSkill simple_skill = 4;
+
+  // The time the skill was created.
+  optional int64 creation_time_windows_epoch_micros = 5;
+
+  // The time the skill was last updated.
+  optional int64 last_update_time_windows_epoch_micros = 6;
+
+  // The schema version of the skill, useful for migrations.
+  optional int32 schema_version = 7;
+}
+
+// Represents a simple skill, primarily defined by a natural language prompt.
+message SimpleSkill {
+  // The core prompt text that instructs the model.
+  optional string prompt = 1;
 }
