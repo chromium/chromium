@@ -12,6 +12,8 @@ inline constexpr std::string_view kPkAutocorrectLevelPrefName =
     "physicalKeyboardAutoCorrectionLevel";
 inline constexpr std::string_view kPkAutocorrectEnabledByDefaultPrefName =
     "physicalKeyboardAutoCorrectionEnabledByDefault";
+inline constexpr std::string_view kPkEnablePredictiveWritingPrefName =
+    "physicalKeyboardEnablePredictiveWriting";
 inline constexpr std::string_view kVkAutocorrectLevelPrefName =
     "virtualKeyboardAutoCorrectionLevel";
 
