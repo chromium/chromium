@@ -54,20 +54,8 @@ scoped_refptr<DeviceAllocator> DeviceAllocator::Create(
     scoped_refptr<SessionOptions> session_options,
     scoped_refptr<Environment> env) {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
-
-  base::span<const OrtEpDevice* const> registered_ep_devices =
-      env->GetRegisteredEpDevices();
-  std::vector<const OrtEpDevice*> selected_ep_devices =
-      Environment::SelectEpDevices(registered_ep_devices,
-                                   session_options->device_type());
-  if (selected_ep_devices.empty()) {
-    LOG(ERROR)
-        << "[WebNN] No suitable EP device found for creating DeviceAllocator.";
-    return nullptr;
-  }
-
-  const OrtEpDevice* first_selected_device = selected_ep_devices.front();
-  CHECK(first_selected_device);
+  const OrtEpDevice* first_selected_device =
+      session_options->first_selected_device();
 
   const char* ep_name = ort_api->EpDevice_EpName(first_selected_device);
   // SAFETY: ORT guarantees that `ep_name` is valid and null-terminated.

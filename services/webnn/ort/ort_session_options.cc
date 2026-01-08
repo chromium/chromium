@@ -13,7 +13,6 @@
 #include "services/webnn/ort/logging.h"
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/platform_functions_ort.h"
-#include "services/webnn/public/cpp/execution_providers_info.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_switches.h"
@@ -178,15 +177,31 @@ scoped_refptr<SessionOptions> SessionOptions::Create(
         /*config_value=*/config_entry.value.c_str()));
   }
 
-  return base::MakeRefCounted<SessionOptions>(
-      base::PassKey<SessionOptions>(), std::move(session_options), device_type);
+  return base::MakeRefCounted<SessionOptions>(base::PassKey<SessionOptions>(),
+                                              std::move(session_options),
+                                              device_type, std::move(env));
 }
 
 SessionOptions::SessionOptions(base::PassKey<SessionOptions>,
                                ScopedOrtSessionOptions session_options,
-                               OrtHardwareDeviceType device_type)
-    : session_options_(std::move(session_options)), device_type_(device_type) {
+                               OrtHardwareDeviceType device_type,
+                               scoped_refptr<Environment> env)
+    : session_options_(std::move(session_options)),
+      device_type_(device_type),
+      env_(std::move(env)) {
   CHECK(session_options_.get());
+
+  base::span<const OrtEpDevice* const> registered_ep_devices =
+      env_->GetRegisteredEpDevices();
+  std::vector<const OrtEpDevice*> selected_ep_devices =
+      Environment::SelectEpDevices(registered_ep_devices, device_type);
+  // ORT guarantees that the default CPU EP is registered.
+  // `Environment::SelectEpDevices` will always select the the default CPU EP as
+  // a fallback.
+  CHECK(!selected_ep_devices.empty());
+
+  first_selected_device_ = selected_ep_devices.front();
+  CHECK(first_selected_device_);
 
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
   // SAFETY: Passing `&device_type_` is safe because the delegate is only called
