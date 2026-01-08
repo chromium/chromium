@@ -25,6 +25,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/installer/util/google_update_settings.h"
+#include "components/activity_reporter/activity_reporter.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
@@ -183,7 +184,11 @@ void UmaSessionStats::ProvideCurrentSessionData() {
   base::UmaHistogramBoolean(
       "Session.IsActive",
       active_session_count_ > (closing_active_session_ ? 1 : 0));
-  base::UmaHistogramBoolean("Session.IsActive2", active_session_count_ != 0);
+  const bool is_active = active_session_count_ != 0;
+  base::UmaHistogramBoolean("Session.IsActive2", is_active);
+  if (is_active) {
+    g_browser_process->activity_reporter()->ReportActive();
+  }
 
   // We record Session.Background.TotalDuration here to ensure each UMA log
   // containing a background session contains this histogram.
@@ -296,6 +301,7 @@ base::TimeDelta UmaSessionStats::SessionTimeTracker::EndForegroundSession() {
   base::PumaHistogramBoolean(
       base::PumaType::kRc,
       "PUMA.RegionalCapabilities.Session.TotalDuration.Recorded", true);
+  g_browser_process->activity_reporter()->ReportActive();
   return duration;
 }
 

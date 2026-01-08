@@ -257,10 +257,12 @@ source_set("session_metrics_profile_agent") {
   deps = [
     ":profile",
     "//base",
+    "//components/activity_reporter",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/metrics/model:tab_usage_recorder_service",
     "//ios/chrome/browser/metrics/model:tab_usage_recorder_service_factory",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
   ]
 }
 

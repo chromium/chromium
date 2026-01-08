@@ -109,6 +109,7 @@ source_set("model") {
     ":constants",
     ":demographics_client",
     "//base",
+    "//components/activity_reporter",
     "//components/application_locale_storage",
     "//components/browser_sync",
     "//components/country_codes",
