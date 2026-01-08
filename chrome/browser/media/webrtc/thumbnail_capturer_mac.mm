@@ -372,6 +372,7 @@ class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
 
   void SelectSources(const std::vector<SourceId>& ids,
                      gfx::Size thumbnail_size) override;
+  void SetSortWindowListForTesting(bool sort) { sort_window_list_ = sort; }
 
  private:
   void UpdateWindowsList();
@@ -416,6 +417,9 @@ class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
   NSArray<SCDisplay*>* __strong shareable_displays_;
 
   base::RepeatingTimer refresh_timer_;
+
+  // Used for testing to disable the sorting of windows using CGWindowList.
+  bool sort_window_list_ = true;
 
   std::unique_ptr<ScreenshotManagerCapturer> screenshot_manager_capturer_;
 
@@ -602,6 +606,10 @@ SCContentFilter* ThumbnailCapturerMac::GetWindowContentFilter(
 
 NSArray<SCWindow*>* ThumbnailCapturerMac::SortOrderByCGWindowList(
     NSArray<SCWindow*>* current_windows) const {
+  if (!sort_window_list_) {
+    return current_windows;
+  }
+
   // Only get on screen, non-desktop windows.
   // According to
   // https://developer.apple.com/documentation/coregraphics/cgwindowlistoption/1454105-optiononscreenonly
@@ -723,6 +731,16 @@ std::unique_ptr<ThumbnailCapturer> CreateThumbnailCapturerMac(
   }
   if (@available(macOS 14.4, *)) {
     return std::make_unique<ThumbnailCapturerMac>(type);
+  }
+  NOTREACHED();
+}
+
+std::unique_ptr<ThumbnailCapturer> CreateThumbnailCapturerMacForTesting(
+    DesktopMediaList::Type type) {
+  if (@available(macOS 14.4, *)) {
+    auto capturer = std::make_unique<ThumbnailCapturerMac>(type);
+    capturer->SetSortWindowListForTesting(false);  // IN-TEST
+    return capturer;
   }
   NOTREACHED();
 }

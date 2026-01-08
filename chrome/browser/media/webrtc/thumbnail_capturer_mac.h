@@ -16,4 +16,7 @@ bool ShouldUseThumbnailCapturerMac(DesktopMediaList::Type type);
 std::unique_ptr<ThumbnailCapturer> CreateThumbnailCapturerMac(
     DesktopMediaList::Type type);
 
+std::unique_ptr<ThumbnailCapturer> CreateThumbnailCapturerMacForTesting(
+    DesktopMediaList::Type type);
+
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_THUMBNAIL_CAPTURER_MAC_H_
