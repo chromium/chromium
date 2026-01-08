@@ -59,7 +59,7 @@ class VerticalTabGroupView : public views::View,
  private:
   // VerticalDraggedTabsContainer:
   VerticalTabDragHandler& GetDragHandler() override;
-  void UpdateLayoutForDrag(bool skip_animations) override;
+  void UpdateLayoutForDrag() override;
   void HandleTabDragInContainer(const gfx::Point point_in_container) override;
 
   void ResetCollectionNode();

@@ -58,9 +58,8 @@ class VerticalDraggedTabsContainer : public TabDragTarget {
  private:
   virtual VerticalTabDragHandler& GetDragHandler() = 0;
 
-  // Invalidates the layout of the host view, with the option to skip
-  // animations.
-  virtual void UpdateLayoutForDrag(bool skip_animations) = 0;
+  // Invalidates the layout of the host view, skipping animations.
+  virtual void UpdateLayoutForDrag() = 0;
 
   // Handles a dragged tab that is parented within this target.
   // `point_in_container` is a point relative to this target's view.

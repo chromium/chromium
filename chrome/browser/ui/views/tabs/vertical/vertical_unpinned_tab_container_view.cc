@@ -98,13 +98,8 @@ VerticalTabDragHandler& VerticalUnpinnedTabContainerView::GetDragHandler() {
   return collection_node_->GetController()->GetDragHandler();
 }
 
-void VerticalUnpinnedTabContainerView::UpdateLayoutForDrag(
-    bool skip_animations) {
-  if (skip_animations) {
-    layout_manager_->ResetToTargetLayout();
-  } else {
-    InvalidateLayout();
-  }
+void VerticalUnpinnedTabContainerView::UpdateLayoutForDrag() {
+  layout_manager_->ResetToTargetLayout();
 }
 
 void VerticalUnpinnedTabContainerView::HandleTabDragInContainer(

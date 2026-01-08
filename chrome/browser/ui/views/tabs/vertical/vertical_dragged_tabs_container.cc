@@ -95,11 +95,13 @@ TabDragContext* VerticalDraggedTabsContainer::OnTabDragUpdated(
     tab_view->SetClipPath(tab_view->clip_path());
   }
 
-  // This is needed so that the transformation takes over without animating
-  // any bounds changes. This needs to be done after applying the initial
-  // transformations because the transformation is taken into account
-  // when determining the view's bounds.
-  UpdateLayoutForDrag(/*skip_animations=*/is_initial_drag);
+  if (is_initial_drag) {
+    // This is needed so that the transformation takes over without animating
+    // any bounds changes. This needs to be done after applying the initial
+    // transformations because the transformation is taken into account
+    // when determining the view's bounds.
+    UpdateLayoutForDrag();
+  }
 
   return GetDragHandler().GetDragContext();
 }
@@ -140,7 +142,7 @@ void VerticalDraggedTabsContainer::ResetDragState() {
     view->SetTransform(gfx::Transform());
     view->SetClipPath(view->clip_path());
   }
-  UpdateLayoutForDrag(/*skip_animations=*/true);
+  UpdateLayoutForDrag();
   dragging_views_.clear();
 }
 

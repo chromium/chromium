@@ -275,6 +275,7 @@ void TabCollectionNode::MoveChild(base::PassKey<TabCollectionNode> pass_key,
   TabCollectionNode* moved_node = children_[target_index].get();
   node_view_->ReorderChildView(moved_node->node_view_,
                                static_cast<int>(children_.size() - 1));
+  node_view_->InvalidateLayout();
 
   EnsureFocusOrder(target_index);
 }

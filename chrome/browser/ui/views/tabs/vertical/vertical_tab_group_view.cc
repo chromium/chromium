@@ -215,12 +215,8 @@ VerticalTabDragHandler& VerticalTabGroupView::GetDragHandler() {
   return collection_node_->GetController()->GetDragHandler();
 }
 
-void VerticalTabGroupView::UpdateLayoutForDrag(bool skip_animations) {
-  if (skip_animations) {
-    layout_manager_->ResetToTargetLayout();
-  } else {
-    InvalidateLayout();
-  }
+void VerticalTabGroupView::UpdateLayoutForDrag() {
+  layout_manager_->ResetToTargetLayout();
 }
 
 void VerticalTabGroupView::HandleTabDragInContainer(
