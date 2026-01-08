@@ -66,9 +66,18 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder, Modul
     /** Create view for the educational tip module. */
     @Override
     public ViewGroup createView(ViewGroup parentView) {
-        return (ViewGroup)
-                LayoutInflater.from(mActionDelegate.getContext())
-                        .inflate(R.layout.educational_tip_module_layout, parentView, false);
+        ViewGroup moduleView =
+                (ViewGroup)
+                        LayoutInflater.from(mActionDelegate.getContext())
+                                .inflate(R.layout.educational_tip_module_layout, parentView, false);
+
+        if (SetupListModuleUtils.isSetupListModule(mModuleType)) {
+            // Setup List images don't have a background
+            moduleView
+                    .findViewById(R.id.educational_tip_module_content_image)
+                    .setBackgroundResource(0);
+        }
+        return moduleView;
     }
 
     /** Bind the property model for the educational tip module. */

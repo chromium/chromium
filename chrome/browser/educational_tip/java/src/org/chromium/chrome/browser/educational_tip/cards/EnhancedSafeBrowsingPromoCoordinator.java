@@ -53,8 +53,7 @@ public class EnhancedSafeBrowsingPromoCoordinator implements EducationalTipCardP
 
     @Override
     public @DrawableRes int getCardImage() {
-        // TODO(crbug.com/469425754): Replace with the corresponding drawable, once available.
-        return R.drawable.default_browser_promo_logo;
+        return R.drawable.enhanced_safe_browsing_promo_logo;
     }
 
     @Override
@@ -63,7 +62,4 @@ public class EnhancedSafeBrowsingPromoCoordinator implements EducationalTipCardP
                 .startSettings(mActionDelegate.getContext(), SafeBrowsingSettingsFragment.class);
         mOnModuleClickedCallback.run();
     }
-
-    @Override
-    public void destroy() {}
 }

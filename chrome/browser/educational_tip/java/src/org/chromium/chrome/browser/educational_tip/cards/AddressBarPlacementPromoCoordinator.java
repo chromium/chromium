@@ -53,8 +53,7 @@ public class AddressBarPlacementPromoCoordinator implements EducationalTipCardPr
 
     @Override
     public @DrawableRes int getCardImage() {
-        // TODO(crbug.com/469425754): Replace with the corresponding drawable, once available.
-        return R.drawable.default_browser_promo_logo;
+        return R.drawable.address_bar_placement_promo_logo;
     }
 
     @Override
@@ -63,7 +62,4 @@ public class AddressBarPlacementPromoCoordinator implements EducationalTipCardPr
                 .startSettings(mActionDelegate.getContext(), AddressBarSettingsFragment.class);
         mOnModuleClickedCallback.run();
     }
-
-    @Override
-    public void destroy() {}
 }

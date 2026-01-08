@@ -159,7 +159,7 @@ public class EducationalTipModuleMediatorUnitTest {
                 ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
                 R.string.educational_tip_enhanced_safe_browsing_title,
                 R.string.educational_tip_enhanced_safe_browsing_description,
-                R.drawable.default_browser_promo_logo);
+                R.drawable.enhanced_safe_browsing_promo_logo);
     }
 
     @Test
@@ -174,7 +174,7 @@ public class EducationalTipModuleMediatorUnitTest {
                 ModuleType.ADDRESS_BAR_PLACEMENT_PROMO,
                 R.string.educational_tip_address_bar_placement_title,
                 R.string.educational_tip_address_bar_placement_description,
-                R.drawable.default_browser_promo_logo);
+                R.drawable.address_bar_placement_promo_logo);
     }
 
     @Test
