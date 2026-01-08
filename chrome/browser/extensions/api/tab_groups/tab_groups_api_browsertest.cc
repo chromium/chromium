@@ -36,10 +36,12 @@
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -606,6 +608,203 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveLeft) {
   EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(1).value());
   EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(2).value());
 }
+
+// Test that moving a group to another window works as expected.
+IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveAcrossWindows) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  // Create a group with multiple tabs.
+  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({2, 3, 4});
+  int group_id = ExtensionTabUtil::GetGroupId(group);
+
+  // Create a new window and add a few tabs.
+  Browser* browser2 = CreateBrowser(profile());
+  BrowserList::SetLastActive(browser2);
+  int window_id2 = ExtensionTabUtil::GetWindowId(browser2);
+
+  TabStripModel* tab_strip_model2 = browser2->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model2->SupportsTabGroups());
+
+  // A new browser starts with 1 tab open, so iterate from 1.
+  constexpr int kNumTabs2 = 3;
+  for (int i = 1; i < kNumTabs2; ++i) {
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser2, GURL("about:blank"),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_NO_WAIT);
+  }
+  ASSERT_EQ(kNumTabs2, tab_strip_model2->count());
+
+  // Use the TabGroupsMoveFunction to move the group to index 1 in the other
+  // window.
+  constexpr int kNumTabsMovedAcrossWindows = 3;
+  auto function = base::MakeRefCounted<TabGroupsMoveFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([%d, {"windowId": %d, "index": 1}])";
+  const std::string args =
+      base::StringPrintf(kFormatArgs, group_id, window_id2);
+  ASSERT_TRUE(api_test_utils::RunFunction(function.get(), args, profile(),
+                                          api_test_utils::FunctionMode::kNone));
+
+  ASSERT_EQ(kNumTabs2 + kNumTabsMovedAcrossWindows, tab_strip_model2->count());
+  EXPECT_EQ(tab_strip_model2->GetWebContentsAt(1), web_contents(2));
+  EXPECT_EQ(tab_strip_model2->GetWebContentsAt(2), web_contents(3));
+  EXPECT_EQ(tab_strip_model2->GetWebContentsAt(3), web_contents(4));
+
+  EXPECT_EQ(group, tab_strip_model2->GetTabGroupForTab(1).value());
+  EXPECT_EQ(group, tab_strip_model2->GetTabGroupForTab(2).value());
+  EXPECT_EQ(group, tab_strip_model2->GetTabGroupForTab(3).value());
+
+  // Clean up.
+  tab_strip_model->CloseAllTabs();
+  tab_strip_model2->CloseAllTabs();
+}
+
+// Test that a group is cannot be moved into the pinned tabs region.
+IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveToPinnedError) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  // Pin the first 3 tabs.
+  tab_strip_model->SetTabPinned(0, /*pinned=*/true);
+  tab_strip_model->SetTabPinned(1, /*pinned=*/true);
+  tab_strip_model->SetTabPinned(2, /*pinned=*/true);
+
+  // Create a group with an unpinned tab.
+  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({4});
+  int group_id = ExtensionTabUtil::GetGroupId(group);
+
+  // Try to move the group to index 1 and expect an error.
+  auto function = base::MakeRefCounted<TabGroupsMoveFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([%d, {"index": 1}])";
+  const std::string args = base::StringPrintf(kFormatArgs, group_id);
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), args, profile(), api_test_utils::FunctionMode::kNone);
+  EXPECT_EQ(
+      "Cannot move the group to an index that is in the middle of pinned tabs.",
+      error);
+}
+
+// Test that a group cannot be moved into the middle of another group.
+IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest,
+                       TabGroupsMoveToOtherGroupError) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  // Create two tab groups, one with multiple tabs and the other to move.
+  tab_strip_model->AddToNewGroup({0, 1, 2});
+  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({4});
+  int group_id = ExtensionTabUtil::GetGroupId(group);
+
+  // Try to move the second group to index 1 and expect an error.
+  auto function = base::MakeRefCounted<TabGroupsMoveFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([%d, {"index": 1}])";
+  const std::string args = base::StringPrintf(kFormatArgs, group_id);
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), args, profile(), api_test_utils::FunctionMode::kNone);
+  EXPECT_EQ(
+      "Cannot move the group to an index that is in the middle of another "
+      "group.",
+      error);
+}
+
+// Test that tab groups aren't edited while dragging.
+IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, IsTabStripEditable) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
+  int group_id = ExtensionTabUtil::GetGroupId(
+      browser()->tab_strip_model()->AddToNewGroup({0}));
+  const std::string args =
+      base::StringPrintf(R"([%d, {"index": %d}])", group_id, 1);
+
+  BrowserWindow* browser_window = browser()->window();
+  EXPECT_TRUE(browser_window->IsTabStripEditable());
+
+  // Succeed moving group when tab strip is editable.
+  {
+    auto function = base::MakeRefCounted<TabGroupsMoveFunction>();
+    function->set_extension(extension);
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
+  }
+
+  // Make tab strip uneditable.
+  browser_window->DisableTabStripEditingForTesting();
+  EXPECT_FALSE(browser_window->IsTabStripEditable());
+
+  // Succeed querying group when tab strip is not editable.
+  {
+    const char* query_args = R"([{"title": "Sample title"}])";
+    auto function = base::MakeRefCounted<TabGroupsQueryFunction>();
+    function->set_extension(extension);
+    EXPECT_TRUE(
+        api_test_utils::RunFunction(function.get(), query_args, profile(),
+                                    api_test_utils::FunctionMode::kNone));
+  }
+
+  // Gracefully cancel group tab drag if tab strip isn't editable.
+  {
+    auto function = base::MakeRefCounted<TabGroupsMoveFunction>();
+    function->set_extension(extension);
+    std::string error = api_test_utils::RunFunctionAndReturnError(
+        function.get(), args, profile());
+    EXPECT_EQ(ExtensionTabUtil::kTabStripNotEditableError, error);
+  }
+}
+
+// Test that moving a group within the same window but specifying the window id
+// does not cause unexpected behavior.
+IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest,
+                       TabGroupsMoveGroupWithinSameWindowWithWindowId) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  // Create a group with multiple tabs.
+  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({1, 2, 3});
+  int group_id = ExtensionTabUtil::GetGroupId(group);
+  int window_id = ExtensionTabUtil::GetWindowId(browser());
+
+  // Move the group to index 1, specifying the current window id.
+  auto function = base::MakeRefCounted<TabGroupsMoveFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([%d, {"windowId": %d, "index": 1}])";
+  const std::string args = base::StringPrintf(kFormatArgs, group_id, window_id);
+  ASSERT_TRUE(api_test_utils::RunFunction(function.get(), args, profile(),
+                                          api_test_utils::FunctionMode::kNone));
+
+  // Verify the tabs are in the correct order.The group should now be at
+  // index 1.
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(0), web_contents(0));
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(1), web_contents(1));
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(2), web_contents(2));
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(3), web_contents(3));
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(4), web_contents(4));
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(5), web_contents(5));
+
+  // Verify that the group is still associated with the correct tabs.
+  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(1).value());
+  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(2).value());
+  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(3).value());
+
+  tab_strip_model->CloseAllTabs();
+}
+
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
