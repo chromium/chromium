@@ -8,6 +8,13 @@
 namespace ash {
 namespace input_method {
 
+inline constexpr std::string_view kPkAutocorrectLevelPrefName =
+    "physicalKeyboardAutoCorrectionLevel";
+inline constexpr std::string_view kPkAutocorrectEnabledByDefaultPrefName =
+    "physicalKeyboardAutoCorrectionEnabledByDefault";
+inline constexpr std::string_view kVkAutocorrectLevelPrefName =
+    "virtualKeyboardAutoCorrectionLevel";
+
 // Top level option categories:
 // LINT.IfChange(JpOptionCategories)
 inline constexpr std::string_view kJpPrefAutomaticallySwitchToHalfwidth =

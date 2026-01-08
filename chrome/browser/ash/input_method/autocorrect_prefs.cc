@@ -11,18 +11,12 @@
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "chrome/browser/ash/input_method/input_method_settings.h"
+#include "chrome/browser/ash/input_method/input_method_settings_consts.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace ash::input_method {
 namespace {
-
-constexpr std::string_view kPkAutocorrectLevelPrefName =
-    "physicalKeyboardAutoCorrectionLevel";
-constexpr std::string_view kVkAutocorrectLevelPrefName =
-    "virtualKeyboardAutoCorrectionLevel";
-constexpr std::string_view kPkEnabledByDefaultPrefName =
-    "physicalKeyboardAutoCorrectionEnabledByDefault";
 
 AutocorrectPreference GetAutocorrectPrefFor(
     const std::string_view autocorrect_pref_path,
@@ -54,7 +48,7 @@ bool IsPkAutocorrectEnabledByDefault(const PrefService& pref_service,
   const base::Value::Dict& settings =
       pref_service.GetDict(prefs::kLanguageInputMethodSpecificSettings);
   const base::Value* enabled_by_default = settings.FindByDottedPath(
-      base::StrCat({engine_id, ".", kPkEnabledByDefaultPrefName}));
+      base::StrCat({engine_id, ".", kPkAutocorrectEnabledByDefaultPrefName}));
 
   return (enabled_by_default && enabled_by_default->GetIfBool().has_value() &&
           enabled_by_default->GetIfBool().value());
@@ -96,7 +90,8 @@ bool SetPhysicalKeyboardAutocorrectAsEnabledByDefault(
       ScopedDictPrefUpdate(pref_service,
                            prefs::kLanguageInputMethodSpecificSettings)
           ->SetByDottedPath(
-              base::StrCat({engine_id, ".", kPkEnabledByDefaultPrefName}),
+              base::StrCat(
+                  {engine_id, ".", kPkAutocorrectEnabledByDefaultPrefName}),
               base::Value(true));
   return result != nullptr;
 }
