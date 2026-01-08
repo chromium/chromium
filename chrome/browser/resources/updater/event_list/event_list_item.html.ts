@@ -20,6 +20,9 @@ export function getHtml(this: EventListItemElement) {
     @expanded-changed="${this.onExpandedChanged}">
   <div class="event-header">
     <div class="event-summary">
+      <div class="event-date">
+        ${this.formattedDate ?? ''}
+      </div>
       <span class="event-app${!this.appId ? ' internal-event' : ''}">
         ${this.appLabel ?? ''}
       </span>
@@ -43,9 +46,6 @@ export function getHtml(this: EventListItemElement) {
       <span class="event-description">
         ${this.eventSummary ?? ''}
       </span>
-    </div>
-    <div class="event-date">
-      ${this.formattedDate ?? ''}
     </div>
   </div>
 </cr-expand-button>
