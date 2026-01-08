@@ -1464,6 +1464,10 @@ void RequestService::OnAccountSelected(const GURL& idp_config_url,
       &RequestService::OnContinueOnResponseReceived,
       weak_ptr_factory_.GetWeakPtr(), idp_info.provider->Clone());
 
+  IdpNetworkRequestManager::RedirectToCallback redirect_to = base::BindOnce(
+      &RequestService::OnRedirectToResponseReceived,
+      weak_ptr_factory_.GetWeakPtr(), idp_info.provider->Clone());
+
   std::vector<std::string> disclosure_shown_for;
   if (!is_sign_in) {
     disclosure_shown_for =
@@ -1505,7 +1509,7 @@ void RequestService::OnAccountSelected(const GURL& idp_config_url,
       base::BindOnce(&RequestService::OnTokenResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(),
                      idp_info.provider->Clone()),
-      std::move(continue_on),
+      std::move(continue_on), std::move(redirect_to),
       base::BindOnce(&RequestService::RecordErrorMetrics,
                      weak_ptr_factory_.GetWeakPtr(),
                      idp_info.provider->Clone()));
@@ -1691,6 +1695,13 @@ void RequestService::OnContinueOnResponseReceived(
       webid::ContinueOnPopupStatus::kPopupOpened);
   ShowModalDialog(DialogType::kContinueOnPopup, idp->config->config_url,
                   continue_on);
+}
+
+void RequestService::OnRedirectToResponseReceived(
+    IdentityProviderRequestOptionsPtr idp,
+    FetchStatus status,
+    const GURL& redirect_to) {
+  // TODO(crbug.com/474120843): Handle the redirect_to response.
 }
 
 void RequestService::ShowErrorDialog(const GURL& idp_config_url,

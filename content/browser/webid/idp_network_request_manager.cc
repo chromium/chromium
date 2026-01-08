@@ -134,10 +134,15 @@ constexpr char kBrandingIconSize[] = "size";
 // The id assertion endpoint contains a token result.
 constexpr char kTokenKey[] = "token";
 constexpr char kIssuanceTokenKey[] = "issuance_token";
-// The id assertion endpoint contains a URL, which indicates that
+// The id assertion endpoint can contain a "continue_on" URL to indicate that
 // the serve wants to direct the user to continue on a pop-up
 // window before it provides a token result.
 constexpr char kContinueOnKey[] = "continue_on";
+// The id assertion endpoint can contain a "redirect_to" URL to indicate that
+// the server wants to redirect the user to a URL to complete the flow.
+// The token is embedded in the URL as a query parameter, following standards
+// such as OIDC and SAML.
+constexpr char kRedirectToKey[] = "redirect_to";
 // The id assertion endpoint may contain an error dict containing a code and url
 // which describes the error.
 constexpr char kErrorKey[] = "error";
@@ -693,32 +698,37 @@ ErrorDialogType GetErrorDialogType(const std::string& code, const GURL& url) {
 
 TokenResponseType GetTokenResponseType(const base::Value* token,
                                        const std::string* continue_on,
+                                       const std::string* redirect_to,
                                        const base::Value::Dict* error) {
-  if (token && error && !continue_on) {
+  // TODO(crbug.com/474120843): break down the TokenResponseType further so that
+  // we can log the distinction between the continue_on and the redirect_to
+  // cases.
+  bool has_continuation = continue_on || redirect_to;
+  if (token && error && !has_continuation) {
     return TokenResponseType::
         kTokenReceivedAndErrorReceivedAndContinueOnNotReceived;
-  } else if (token && !error && !continue_on) {
+  } else if (token && !error && !has_continuation) {
     return TokenResponseType::
         kTokenReceivedAndErrorNotReceivedAndContinueOnNotReceived;
-  } else if (!token && error && !continue_on) {
+  } else if (!token && error && !has_continuation) {
     return TokenResponseType::
         kTokenNotReceivedAndErrorReceivedAndContinueOnNotReceived;
-  } else if (token && !error && continue_on) {
+  } else if (token && !error && has_continuation) {
     return TokenResponseType::
         kTokenReceivedAndErrorNotReceivedAndContinueOnReceived;
-  } else if (token && error && continue_on) {
+  } else if (token && error && has_continuation) {
     return TokenResponseType::
         kTokenReceivedAndErrorReceivedAndContinueOnReceived;
-  } else if (!token && !error && continue_on) {
+  } else if (!token && !error && has_continuation) {
     return TokenResponseType::
         kTokenNotReceivedAndErrorNotReceivedAndContinueOnReceived;
-  } else if (!token && error && continue_on) {
+  } else if (!token && error && has_continuation) {
     return TokenResponseType::
         kTokenNotReceivedAndErrorReceivedAndContinueOnReceived;
   }
   DCHECK(!token);
   DCHECK(!error);
-  DCHECK(!continue_on);
+  DCHECK(!has_continuation);
   return TokenResponseType::
       kTokenNotReceivedAndErrorNotReceivedAndContinueOnNotReceived;
 }
@@ -744,6 +754,7 @@ ErrorDialogType GetErrorDialogTypeAndSetTokenError(int response_code,
 void OnTokenRequestParsed(
     IdpNetworkRequestManager::TokenRequestCallback callback,
     IdpNetworkRequestManager::ContinueOnCallback continue_on_callback,
+    IdpNetworkRequestManager::RedirectToCallback redirect_to_callback,
     IdpNetworkRequestManager::RecordErrorMetricsCallback
         record_error_metrics_callback,
     const GURL& token_url,
@@ -781,11 +792,15 @@ void OnTokenRequestParsed(
   const std::string* continue_on = can_use_response && continue_on_callback
                                        ? response->FindString(kContinueOnKey)
                                        : nullptr;
+  // TODO(crbug.com/474120843): also support redirect_to that are POST requests.
+  const std::string* redirect_to = can_use_response && redirect_to_callback
+                                       ? response->FindString(kRedirectToKey)
+                                       : nullptr;
   const base::Value::Dict* response_error =
       response ? response->FindDict(kErrorKey) : nullptr;
 
-  TokenResponseType token_response_type =
-      GetTokenResponseType(token_value, continue_on, response_error);
+  TokenResponseType token_response_type = GetTokenResponseType(
+      token_value, continue_on, redirect_to, response_error);
 
   if (response_error) {
     std::string error_code;
@@ -850,6 +865,19 @@ void OnTokenRequestParsed(
           .Run(token_response_type, /*error_dialog_type=*/std::nullopt,
                /*error_url_type=*/std::nullopt);
       std::move(continue_on_callback)
+          .Run({ParseStatus::kSuccess, fetch_status.response_code},
+               std::move(url));
+      return;
+    }
+  }
+
+  if (redirect_to) {
+    GURL url = token_url.Resolve(*redirect_to);
+    if (url.is_valid()) {
+      std::move(record_error_metrics_callback)
+          .Run(token_response_type, /*error_dialog_type=*/std::nullopt,
+               /*error_url_type=*/std::nullopt);
+      std::move(redirect_to_callback)
           .Run({ParseStatus::kSuccess, fetch_status.response_code},
                std::move(url));
       return;
@@ -1084,6 +1112,7 @@ void IdpNetworkRequestManager::SendTokenRequest(
     bool idp_blindness,
     TokenRequestCallback callback,
     ContinueOnCallback continue_on,
+    RedirectToCallback redirect_to,
     RecordErrorMetricsCallback record_error_metrics_callback) {
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateCredentialedResourceRequest(
@@ -1103,7 +1132,7 @@ void IdpNetworkRequestManager::SendTokenRequest(
   DownloadJsonAndParse(
       std::move(resource_request), url_encoded_post_data,
       base::BindOnce(&OnTokenRequestParsed, std::move(callback),
-                     std::move(continue_on),
+                     std::move(continue_on), std::move(redirect_to),
                      std::move(record_error_metrics_callback), token_url),
       // We should parse the response body for the ID assertion endpoint request
       // even if the response code is non-2xx because the server may include the

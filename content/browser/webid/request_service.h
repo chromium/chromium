@@ -389,6 +389,11 @@ class CONTENT_EXPORT RequestService
       FetchStatus status,
       const GURL& url);
 
+  void OnRedirectToResponseReceived(
+      blink::mojom::IdentityProviderRequestOptionsPtr idp,
+      FetchStatus status,
+      const GURL& redirect_to);
+
   // Called after we get at token (either from the ID assertion endpoint or
   // from IdentityProvider.resolve) to update our various permissions.
   void MarkUserAsSignedIn(const GURL& idp_config_url,

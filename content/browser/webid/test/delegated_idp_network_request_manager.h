@@ -49,9 +49,10 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       const GURL& token_url,
       const std::string& account,
       const std::string& url_encoded_post_data,
-      bool idp_blidness,
+      bool idp_blindness,
       TokenRequestCallback callback,
-      ContinueOnCallback continue_on_callback,
+      ContinueOnCallback continue_on,
+      RedirectToCallback redirect_to,
       RecordErrorMetricsCallback record_error_metrics_callback) override;
   void SendSuccessfulTokenRequestMetrics(
       const GURL& metrics_endpoint_url,

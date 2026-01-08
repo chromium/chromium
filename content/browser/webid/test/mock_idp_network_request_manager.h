@@ -54,6 +54,7 @@ class MockIdpNetworkRequestManager : public webid::IdpNetworkRequestManager {
                bool,
                TokenRequestCallback,
                ContinueOnCallback,
+               RedirectToCallback,
                RecordErrorMetricsCallback),
               (override));
   MOCK_METHOD(void,

@@ -234,6 +234,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
   using TokenRequestCallback =
       base::OnceCallback<void(FetchStatus, TokenResult&&)>;
   using ContinueOnCallback = base::OnceCallback<void(FetchStatus, const GURL&)>;
+  using RedirectToCallback = base::OnceCallback<void(FetchStatus, const GURL&)>;
   using RecordErrorMetricsCallback =
       base::OnceCallback<void(FedCmTokenResponseType,
                               std::optional<FedCmErrorDialogType>,
@@ -294,6 +295,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
       bool idp_blindness,
       TokenRequestCallback callback,
       ContinueOnCallback continue_on,
+      RedirectToCallback redirect_to,
       RecordErrorMetricsCallback record_error_metrics_callback);
 
   // Sends metrics to metrics endpoint after a token was successfully generated.

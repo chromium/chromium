@@ -133,6 +133,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       bool idp_blindness,
       TokenRequestCallback callback,
       ContinueOnCallback continue_on,
+      RedirectToCallback redirect_to,
       RecordErrorMetricsCallback record_error_metrics_callback) override {
     TokenResult result;
     result.token = base::Value(kToken);

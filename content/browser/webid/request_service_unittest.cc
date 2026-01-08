@@ -444,6 +444,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       bool idp_blidness,
       TokenRequestCallback callback,
       ContinueOnCallback on_continue,
+      RedirectToCallback redirect_to,
       RecordErrorMetricsCallback record_error_metrics_callback) override {
     ++num_fetched_[FetchedEndpoint::TOKEN];
 
@@ -565,6 +566,7 @@ class IdpNetworkRequestManagerParamChecker
       bool idp_blindness,
       TokenRequestCallback callback,
       ContinueOnCallback on_continue,
+      RedirectToCallback redirect_to,
       RecordErrorMetricsCallback record_error_metrics_callback) override {
     if (expected_selected_account_id_) {
       EXPECT_EQ(expected_selected_account_id_, account);
@@ -575,6 +577,7 @@ class IdpNetworkRequestManagerParamChecker
     TestIdpNetworkRequestManager::SendTokenRequest(
         token_url, account, url_encoded_post_data, idp_blindness,
         std::move(callback), std::move(on_continue),
+        IdpNetworkRequestManager::RedirectToCallback(),
         std::move(record_error_metrics_callback));
   }
 

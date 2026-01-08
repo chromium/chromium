@@ -312,6 +312,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
     std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
     manager->SendTokenRequest(token_endpoint, account, request, idp_blindness,
                               std::move(callback), base::DoNothing(),
+                              base::DoNothing(),
                               CreateErrorMetricsCallback(run_loop));
     run_loop.Run();
     return {std::move(fetch_status), std::move(token_result)};
@@ -2011,6 +2012,7 @@ TEST_F(IdpNetworkRequestManagerTest, FetchingTokenLeadsToAContinuationUrl) {
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
   manager->SendTokenRequest(token_endpoint, "account", "request", false,
                             std::move(callback), std::move(on_continue),
+                            base::DoNothing(),
                             CreateErrorMetricsCallback(run_loop));
   run_loop.Run();
   EXPECT_EQ(TokenResponseType::
@@ -2032,6 +2034,7 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithToken) {
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
   manager->SendTokenRequest(token_endpoint, "account", "request", false,
                             base::DoNothing(), base::DoNothing(),
+                            base::DoNothing(),
                             CreateErrorMetricsCallback(run_loop));
   run_loop.Run();
   EXPECT_EQ(
@@ -2052,6 +2055,7 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithErrorAndToken) {
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
   manager->SendTokenRequest(token_endpoint, "account", "request", false,
                             base::DoNothing(), base::DoNothing(),
+                            base::DoNothing(),
                             CreateErrorMetricsCallback(run_loop));
   run_loop.Run();
   EXPECT_EQ(
@@ -2071,6 +2075,7 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithError) {
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
   manager->SendTokenRequest(token_endpoint, "account", "request", false,
                             base::DoNothing(), base::DoNothing(),
+                            base::DoNothing(),
                             CreateErrorMetricsCallback(run_loop));
   run_loop.Run();
   EXPECT_EQ(
@@ -2101,7 +2106,7 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnCanBeRelativeUrl) {
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
   manager->SendTokenRequest(token_endpoint, "account", "request", false,
                             std::move(callback), std::move(on_continue),
-                            base::DoNothing());
+                            base::DoNothing(), base::DoNothing());
   run_loop.Run();
 }
 
