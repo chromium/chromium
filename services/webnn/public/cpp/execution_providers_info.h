@@ -100,7 +100,7 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
                     .Revision = 0,
                 },
             .vendor_id = 0x10de,
-            .enabled = true,
+            .enabled = false,
         },
     },
     // Intel
