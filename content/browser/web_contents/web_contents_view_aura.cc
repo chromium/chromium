@@ -288,8 +288,7 @@ void PrepareDragData(const DropData& drop_data,
     provider->SetString(*drop_data.text);
   }
   if (!drop_data.url_infos.empty()) {
-    provider->SetURL(drop_data.url_infos.front().url,
-                     drop_data.url_infos.front().title);
+    provider->SetURLs(drop_data.url_infos);
   }
   if (drop_data.html && !drop_data.html->empty())
     provider->SetHtml(*drop_data.html, drop_data.html_base_url);

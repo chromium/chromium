@@ -21,9 +21,8 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/clipboard/file_info.h"
-
-class GURL;
 
 namespace ui {
 
@@ -48,12 +47,12 @@ COMPONENT_EXPORT(UI_BASE_CLIPBOARD) bool HasHtml(IDataObject* data_object);
 // Helper methods to extract information from an IDataObject.  These methods
 // return true if the requested data type is found in |data_object|.
 
-// Only returns true if url->is_valid() is true.
+// Returns true if any supported clipboard format produces at least one URL
+// entry.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
-bool GetUrl(IDataObject* data_object,
-            GURL* url,
-            std::u16string* title,
-            bool convert_filenames);
+bool GetUrlInfos(IDataObject* data_object,
+                 std::vector<ClipboardUrlInfo>& url_infos,
+                 bool convert_filenames);
 // Only returns true if |*filenames| is not empty.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
 bool GetFilenames(IDataObject* data_object,

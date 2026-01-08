@@ -150,7 +150,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderWin
   void MarkAsFromPrivileged() override;
   bool IsFromPrivileged() const override;
   void SetString(std::u16string_view data) override;
-  void SetURL(const GURL& url, std::u16string_view title) override;
+  void SetURLs(base::span<const ClipboardUrlInfo> url_infos) override;
   void SetFilename(const base::FilePath& path) override;
   void SetFilenames(const std::vector<FileInfo>& filenames) override;
   // Test only method for adding virtual file content to the data store. The
@@ -170,9 +170,9 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderWin
   void SetHtml(const std::u16string& html, const GURL& base_url) override;
 
   std::optional<std::u16string> GetString() const override;
-  std::optional<UrlInfo> GetURLAndTitle(
+  std::vector<ClipboardUrlInfo> GetURLsAndTitles(
       FilenameToURLPolicy policy) const override;
-  std::optional<std::vector<GURL>> GetURLs(
+  std::vector<ClipboardUrlInfo> GetURLs(
       FilenameToURLPolicy policy) const override;
   std::optional<std::vector<FileInfo>> GetFilenames() const override;
   bool HasVirtualFilenames() const override;
