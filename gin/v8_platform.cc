@@ -135,7 +135,8 @@ class ScopedBoostablePriorityImpl : public v8::ScopedBoostablePriority {
 
   bool BoostPriority() override {
     return scoped_boostable_priority_.BoostPriority(
-        base::PlatformThread::GetCurrentThreadType());
+        std::min(base::PlatformThread::GetCurrentThreadType(),
+                 base::ThreadType::kInteractive));
   }
 
   void Reset() override { scoped_boostable_priority_.Reset(); }
