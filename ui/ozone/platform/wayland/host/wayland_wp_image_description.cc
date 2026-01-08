@@ -185,12 +185,6 @@ gfx::ColorSpace WaylandWpImageDescription::CreateColorSpaceFromPendingInfo(
     return gfx::ColorSpace::CreateSRGB();
   }
 
-  if (!is_hdr && transfer == gfx::ColorSpace::TransferID::GAMMA22) {
-    // Pass through SRGB content to the compositor instead of re-encoding
-    // it as gamma 2.2 (https://crbug.com/449423580)
-    transfer = gfx::ColorSpace::TransferID::SRGB;
-  }
-
   gfx::ColorSpace color_space(
       *primaries, *transfer, gfx::ColorSpace::MatrixID::RGB,
       gfx::ColorSpace::RangeID::FULL, custom_primaries, custom_transfer_fn);
