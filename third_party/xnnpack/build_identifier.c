@@ -576,8 +576,7 @@
 // - external/xnnpack+/src/qd8-f32-qb4w-gemm/gen/qd8-f32-qb4w-gemm-4x4c8-minmax-avx-ld128.c
 // - external/xnnpack+/src/qd8-f32-qb4w-gemm/gen/qd8-f32-qb4w-gemm-4x4c8-minmax-sse2-ld128.c
 // - external/xnnpack+/src/qd8-f32-qb4w-gemm/gen/qd8-f32-qb4w-gemm-8x16c8-minmax-avx512vnni-prfm.c
-// - external/xnnpack+/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x4-minmax-scalar.c
-// - external/xnnpack+/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-4x4-minmax-scalar.c
+// - external/xnnpack+/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x2-minmax-scalar.c
 // - external/xnnpack+/src/qd8-f32-qc4w-gemm/gen/qd8-f32-qc4w-gemm-14x16c8-minmax-avx512vnnigfni-prfm.c
 // - external/xnnpack+/src/qd8-f32-qc4w-gemm/gen/qd8-f32-qc4w-gemm-16x64c4-minmax-avx512amx.c
 // - external/xnnpack+/src/qd8-f32-qc4w-gemm/gen/qd8-f32-qc4w-gemm-1x16c8-minmax-avx512skx-madd-prfm.c
@@ -1008,10 +1007,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-   72, 126, 216, 186,  30, 226,  40, 178,
-   83, 195, 201, 251, 117,  20,   4, 207,
-  174,  67,  79,   3,  52,  62, 212, 215,
-  246, 129, 151, 220,  97, 184, 137, 170
+   41,  21, 203,  83,  53,  36, 124,  86,
+   89, 103,  74, 171,  16,   2,  51,   7,
+  106,  41, 152,  56,  88, 247,  47,  27,
+   43,  90, 144,   5,  47, 114, 221, 207
 };
 
 size_t xnn_experimental_get_build_identifier_size() {

@@ -18430,8 +18430,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x4-minmax-scalar.c",
-        "src/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-4x4-minmax-scalar.c",
+        "src/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x2-minmax-scalar.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -18457,8 +18456,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x4-minmax-scalar.c",
-        "src/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-4x4-minmax-scalar.c",
+        "src/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x2-minmax-scalar.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -42576,8 +42574,7 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x4-minmax-scalar.c",
-        "src/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-4x4-minmax-scalar.c",
+        "src/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x2-minmax-scalar.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -42603,8 +42600,7 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x4-minmax-scalar.c",
-        "src/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-4x4-minmax-scalar.c",
+        "src/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x2-minmax-scalar.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -53088,8 +53084,7 @@ if (current_cpu == "riscv64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x4-minmax-scalar.c",
-        "src/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-4x4-minmax-scalar.c",
+        "src/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x2-minmax-scalar.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -53115,8 +53110,7 @@ if (current_cpu == "riscv64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x4-minmax-scalar.c",
-        "src/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-4x4-minmax-scalar.c",
+        "src/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x2-minmax-scalar.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
