@@ -629,7 +629,33 @@ class TouchToFillPaymentMethodMediator {
     public void showAllLoyaltyCards(
             List<LoyaltyCard> allLoyaltyCards,
             Function<LoyaltyCard, Drawable> valuableImageFunction) {
-        // TODO(crbug.com/467962940): Display the full list of loyalty cards.
+        mInputProtector.markShowTime();
+        assert allLoyaltyCards != null;
+        mAllLoyaltyCards = allLoyaltyCards;
+        mValuableImageFunction = valuableImageFunction;
+        mAffiliatedLoyaltyCards = null;
+        mSuggestions = null;
+        mIbans = null;
+        mShouldShowScanCreditCard = false;
+        mCardImageFunction = null;
+        mBnplIssuerContexts = null;
+
+        showAllLoyaltyCardsList();
+        mBottomSheetFocusHelper.registerForOneTimeUse();
+        mModel.set(
+                SHEET_CONTENT_DESCRIPTION_ID,
+                R.string.autofill_loyalty_card_bottom_sheet_content_description);
+        mModel.set(
+                SHEET_HALF_HEIGHT_DESCRIPTION_ID,
+                R.string.autofill_loyalty_card_bottom_sheet_half_height);
+        mModel.set(
+                SHEET_FULL_HEIGHT_DESCRIPTION_ID,
+                R.string.autofill_loyalty_card_bottom_sheet_full_height);
+        mModel.set(SHEET_CLOSED_DESCRIPTION_ID, R.string.autofill_loyalty_card_bottom_sheet_closed);
+        mModel.set(VISIBLE, true);
+
+        RecordHistogram.recordCount100Histogram(
+                TOUCH_TO_FILL_NUMBER_OF_LOYALTY_CARDS_SHOWN, mAllLoyaltyCards.size());
     }
 
     private ModelList getLoyaltyCardHomeScreenItems(
@@ -1049,6 +1075,8 @@ class TouchToFillPaymentMethodMediator {
                             mAffiliatedLoyaltyCards,
                             mValuableImageFunction,
                             /* firstTimeUsage= */ false));
+        } else if (mAllLoyaltyCards != null) {
+            hideSheet();
         } else {
             assert false : "Unhandled home screen show";
         }
@@ -1085,7 +1113,10 @@ class TouchToFillPaymentMethodMediator {
     private void onSelectedLoyaltyCard(LoyaltyCard loyaltyCard) {
         if (!mInputProtector.shouldInputBeProcessed()) return;
         mDelegate.loyaltyCardSuggestionSelected(loyaltyCard);
-        final boolean affiliatedLoyaltyCardSelected = mAffiliatedLoyaltyCards.contains(loyaltyCard);
+        final boolean affiliatedLoyaltyCardSelected =
+                mAffiliatedLoyaltyCards != null && mAffiliatedLoyaltyCards.contains(loyaltyCard);
+        // TODO(crbug.com/467962940): Record outcome separately for the standalone all loyalty cards
+        // surface.
         recordTouchToFillLoyaltyCardOutcomeHistogram(
                 affiliatedLoyaltyCardSelected
                         ? TouchToFillLoyaltyCardOutcome.AFFILIATED_LOYALTY_CARD

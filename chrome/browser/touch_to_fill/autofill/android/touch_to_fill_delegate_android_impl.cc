@@ -318,9 +318,28 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
 bool TouchToFillDelegateAndroidImpl::ShowTouchToFillForAllLoyaltyCards(
     const FormData& form,
     const FormFieldData& field) {
-  // TODO(crbug.com/467962940): Call payment client
-  // `ShowTouchToFillForAllLoyaltyCards`.
-  return false;
+  query_form_ = form;
+  query_field_ = field;
+  payments::PaymentsAutofillClient& payments_client =
+      *manager_->client().GetPaymentsAutofillClient();
+  ValuablesDataManager* vdm = manager_->client().GetValuablesDataManager();
+  if (!vdm) {
+    return false;
+  }
+  const std::vector<LoyaltyCard> loyalty_cards =
+      vdm->GetLoyaltyCardsToSuggest();
+  const bool shown = payments_client.ShowTouchToFillForAllLoyaltyCards(
+      GetWeakPtr(), std::move(loyalty_cards));
+  if (!shown) {
+    return false;
+  }
+  ttf_payment_method_state_ = TouchToFillState::kIsShowing;
+  manager_->client().HideAutofillSuggestions(
+      SuggestionHidingReason::kOverlappingWithTouchToFillSurface);
+  manager_->DidShowSuggestions({Suggestion(SuggestionType::kLoyaltyCardEntry)},
+                               form, field.global_id(),
+                               /*update_suggestions_callback=*/{});
+  return true;
 }
 
 bool TouchToFillDelegateAndroidImpl::IsShowingTouchToFill() {

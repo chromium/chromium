@@ -2829,7 +2829,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     }
 
     @Test
-    public void testShowAllLoyaltyCards() throws TimeoutException {
+    public void testShowAllLoyaltyCardsSubpage() throws TimeoutException {
         mCoordinator.showAffiliatedLoyaltyCards(
                 List.of(LOYALTY_CARD_1),
                 List.of(LOYALTY_CARD_1, LOYALTY_CARD_2),
@@ -2868,6 +2868,50 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
         loyaltyCardModel1.get(ON_LOYALTY_CARD_CLICK_ACTION).run();
         verify(mDelegateMock).loyaltyCardSuggestionSelected(LOYALTY_CARD_1);
+    }
+
+    @Test
+    public void testShowAllLoyaltyCards() throws TimeoutException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(TOUCH_TO_FILL_NUMBER_OF_LOYALTY_CARDS_SHOWN, 2)
+                        .expectIntRecord(
+                                TOUCH_TO_FILL_LOYALTY_CARD_OUTCOME_HISTOGRAM,
+                                TouchToFillLoyaltyCardOutcome.NON_AFFILIATED_LOYALTY_CARD)
+                        .build();
+        mCoordinator.showAllLoyaltyCards(List.of(LOYALTY_CARD_1, LOYALTY_CARD_2));
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(ALL_LOYALTY_CARDS_SCREEN));
+
+        // Verify that both loyalty cards are shown.
+        ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, LOYALTY_CARD).size(), is(2));
+
+        PropertyModel loyaltyCardModel = itemList.get(0).model;
+        assertThat(
+                loyaltyCardModel.get(LOYALTY_CARD_NUMBER),
+                is(LOYALTY_CARD_1.getLoyaltyCardNumber()));
+        assertThat(loyaltyCardModel.get(MERCHANT_NAME), is(LOYALTY_CARD_1.getMerchantName()));
+
+        mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
+        loyaltyCardModel.get(ON_LOYALTY_CARD_CLICK_ACTION).run();
+        verify(mDelegateMock).loyaltyCardSuggestionSelected(LOYALTY_CARD_1);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testPressBackFromAllLoyaltyCardsScreen() throws TimeoutException {
+        mCoordinator.showAllLoyaltyCards(List.of(LOYALTY_CARD_1, LOYALTY_CARD_2));
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(ALL_LOYALTY_CARDS_SCREEN));
+
+        // Verify that both loyalty cards are shown.
+        ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, LOYALTY_CARD).size(), is(2));
+
+        // Press back closes the bottom sheet.
+        mTouchToFillPaymentMethodModel.get(BACK_PRESS_HANDLER).run();
+        assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(false));
     }
 
     @Test
