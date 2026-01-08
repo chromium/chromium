@@ -28,15 +28,6 @@ export function getHtml(this: EventListElement) {
     chunk-size="25" role="grid" aria-rowcount="${this.events.length}"
     ?hidden="${this.events.length > 0}" .scrollTarget="${this.scrollTarget}"
     .template="${(item: EventEntry) => html`
-      ${item.shouldShowBreak ? html`
-        <div class="event-list-break">
-          <span class="event-list-break-line"></span>
-            <span role="heading" aria-level="2" class="event-list-break-label">
-              ${item.formattedEventDate} (${item.formattedRelativeEventDate})
-            </span>
-          <span class="event-list-break-line"></span>
-        </div>
-      `: ''}
       <div>
         <event-list-item .event="${item.event}" .eventDate="${item.eventDate}"
             .processMap="${this.processMap}"

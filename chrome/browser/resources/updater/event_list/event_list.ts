@@ -35,16 +35,11 @@ function getEventEntries(
   if (processMap === undefined) {
     return [];
   }
-  return events.map((event, index) => {
+  return events.map(event => {
     const eventDate = processMap.eventDate(event);
     assert(eventDate !== undefined);
-    const nextEvent = events[index - 1];
-    const nextEventDate =
-        nextEvent ? processMap.eventDate(nextEvent) : undefined;
     return {
       event,
-      shouldShowBreak: index > 0 && nextEventDate !== undefined &&
-          nextEventDate.getTime() - eventDate.getTime() > 1000 * 60 * 60,
       eventDate,
       formattedEventDate: getFormattedDate(eventDate),
       formattedRelativeEventDate: getRelativeDate(eventDate),
@@ -86,8 +81,6 @@ function getRelativeDate(date: Date): string {
 
 export interface EventEntry {
   event: HistoryEvent|MergedHistoryEvent;
-  // Whether a list break should be displayed before the entry.
-  shouldShowBreak: boolean;
   eventDate: Date;
   formattedEventDate: string;
   formattedRelativeEventDate: string;

@@ -8,7 +8,7 @@ import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {EventListElement} from 'chrome://updater/event_list/event_list.js';
 import type {EventListItemElement} from 'chrome://updater/event_list/event_list_item.js';
-import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('EventListElement', () => {
@@ -276,107 +276,5 @@ suite('EventListElement', () => {
             .every(item => item.expanded));
     assertEquals(
         loadTimeData.getString('expandAll'), expandButton.textContent.trim());
-  });
-
-  test('displays list breaks', async () => {
-    const messages = [
-      {
-        'eventType': 'UPDATER_PROCESS',
-        'eventId': 'p1',
-        'deviceUptime': '0',
-        'pid': '100',
-        'processToken': 'token1',
-        'bound': 'START',
-        'timestamp': '13410446400000000',  // '2025-12-17T12:00:00Z'
-      },
-      {
-        'eventType': 'UPDATER_PROCESS',
-        'eventId': 'p1',
-        'deviceUptime': '182165200000',
-        'pid': '100',
-        'processToken': 'token1',
-        'bound': 'END',
-        'exitCode': '0',
-      },
-      {
-        'eventType': 'INSTALL',
-        'eventId': '1',
-        'deviceUptime': '1000',
-        'pid': '100',
-        'processToken': 'token1',
-        'bound': 'START',
-        'appId': '{app1}',
-      },
-      {
-        'eventType': 'INSTALL',
-        'eventId': '1',
-        'deviceUptime': '2000',
-        'pid': '100',
-        'processToken': 'token1',
-        'bound': 'END',
-        'version': '1.0',
-      },
-      // Second process more than 1 hour later
-      {
-        'eventType': 'UPDATER_PROCESS',
-        'eventId': 'p2',
-        'deviceUptime': '0',
-        'pid': '200',
-        'processToken': 'token2',
-        'bound': 'START',
-        'timestamp': '13410453600000000',  // 2025-12-17T14:00:00Z
-      },
-      {
-        'eventType': 'UPDATER_PROCESS',
-        'eventId': 'p2',
-        'deviceUptime': '182165200000',
-        'pid': '200',
-        'processToken': 'token2',
-        'bound': 'END',
-        'exitCode': '0',
-      },
-      {
-        'eventType': 'INSTALL',
-        'eventId': '2',
-        'deviceUptime': '1000',
-        'pid': '200',
-        'processToken': 'token2',
-        'bound': 'START',
-        'appId': '{app2}',
-      },
-      {
-        'eventType': 'INSTALL',
-        'eventId': '2',
-        'deviceUptime': '2000',
-        'pid': '200',
-        'processToken': 'token2',
-        'bound': 'END',
-        'version': '2.0',
-      },
-    ];
-
-    element.messages = messages;
-    await microtasksFinished();
-
-    const items = element.shadowRoot.querySelectorAll('event-list-item');
-    assertEquals(4, items.length);
-
-    const listBreaks = element.shadowRoot.querySelectorAll('.event-list-break');
-    assertEquals(1, listBreaks.length);
-
-    const label =
-        listBreaks[0]!.querySelector('.event-list-break-label')!.textContent;
-    const p1Date = new Date('2025-12-17T12:00:00Z');
-    assertStringContains(
-        label,
-        new Intl
-            .DateTimeFormat(undefined, {
-              timeZoneName: 'short',
-              month: 'numeric',
-              day: 'numeric',
-              hour: 'numeric',
-              minute: 'numeric',
-            })
-            .format(p1Date));
   });
 });
