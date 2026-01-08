@@ -49,15 +49,6 @@ BASE_FEATURE(kDataMigration, base::FEATURE_DISABLED_BY_DEFAULT);
 // Disables blur on various system surfaces.
 BASE_FEATURE(kDisableSystemBlur, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Disable idle sockets closing on memory pressure for NetworkContexts that
-// belong to Profiles. It only applies to Profiles because the goal is to
-// improve perceived performance of web browsing within the ChromeOS user
-// session by avoiding re-estabshing TLS connections that require client
-// certificates.
-BASE_FEATURE(kDisableIdleSocketsCloseOnMemoryPressure,
-             "disable_idle_sockets_close_on_memory_pressure",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Disables translation services of the Quick Answers V2.
 BASE_FEATURE(kDisableQuickAnswersV2Translation,
              base::FEATURE_DISABLED_BY_DEFAULT);

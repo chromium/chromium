@@ -224,13 +224,6 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
           ->initial_delay_for_broken_alternative_service,
       context.quic_context->params()->exponential_backoff_on_initial_delay);
 
-  if (!params_.disable_idle_sockets_close_on_memory_pressure) {
-    memory_pressure_listener_registration_ =
-        std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
-            FROM_HERE, base::MemoryPressureListenerTag::kHttpNetworkSession,
-            this);
-  }
-
   http_stream_pool_ = std::make_unique<HttpStreamPool>(
       this,
       /*cleanup_on_ip_address_change=*/!params.ignore_ip_address_changes);
@@ -456,21 +449,6 @@ ClientSocketPoolManager* HttpNetworkSession::GetSocketPoolManager(
       return websocket_socket_pool_manager_.get();
     default:
       NOTREACHED();
-  }
-}
-
-void HttpNetworkSession::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
-  DCHECK(!params_.disable_idle_sockets_close_on_memory_pressure);
-
-  switch (memory_pressure_level) {
-    case base::MEMORY_PRESSURE_LEVEL_NONE:
-      break;
-
-    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      CloseIdleConnections("Low memory");
-      break;
   }
 }
 

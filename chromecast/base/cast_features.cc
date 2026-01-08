@@ -142,11 +142,6 @@ BASE_FEATURE(kTripleBuffer720,
 BASE_FEATURE(kSingleBuffer,
              "enable_single_buffer",
              base::FEATURE_DISABLED_BY_DEFAULT);
-// Disable idle sockets closing on memory pressure. See
-// chromecast/browser/cast_network_contexts.cc for usage.
-BASE_FEATURE(kDisableIdleSocketsCloseOnMemoryPressure,
-             "disable_idle_sockets_close_on_memory_pressure",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableGeneralAudienceBrowsing,
              "enable_general_audience_browsing",
@@ -195,7 +190,6 @@ const base::Feature* kFeatures[] = {
     &kEnableQuic,
     &kTripleBuffer720,
     &kSingleBuffer,
-    &kDisableIdleSocketsCloseOnMemoryPressure,
     &kEnableGeneralAudienceBrowsing,
     &kEnableSideGesturePassThrough,
     &kEnableChromeAudioManagerAndroid,

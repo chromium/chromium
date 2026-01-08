@@ -247,7 +247,6 @@ WebSocketTestURLRequestContextHost::WebSocketTestURLRequestContextHost()
   HttpNetworkSessionParams params;
   params.enable_spdy_ping_based_connection_checking = false;
   params.enable_quic = false;
-  params.disable_idle_sockets_close_on_memory_pressure = false;
   url_request_context_builder_->set_http_network_session_params(params);
 }
 

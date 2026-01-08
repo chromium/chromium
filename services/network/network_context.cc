@@ -2971,9 +2971,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
       *base::CommandLine::ForCurrentProcess(), is_quic_force_disabled,
       &session_params, quic_context->params());
 
-  session_params.disable_idle_sockets_close_on_memory_pressure =
-      params_->disable_idle_sockets_close_on_memory_pressure;
-
   session_params.key_auth_cache_server_entries_by_network_anonymization_key =
       params_->split_auth_cache_by_network_anonymization_key;
 

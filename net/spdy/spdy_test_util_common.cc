@@ -373,8 +373,6 @@ HttpNetworkSessionParams SpdySessionDependencies::CreateSessionParams(
   params.greased_http2_frame = session_deps->greased_http2_frame;
   params.http2_end_stream_with_data_frame =
       session_deps->http2_end_stream_with_data_frame;
-  params.disable_idle_sockets_close_on_memory_pressure =
-      session_deps->disable_idle_sockets_close_on_memory_pressure;
   params.enable_early_data = session_deps->enable_early_data;
   params.key_auth_cache_server_entries_by_network_anonymization_key =
       session_deps->key_auth_cache_server_entries_by_network_anonymization_key;

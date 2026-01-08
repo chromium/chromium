@@ -211,7 +211,6 @@ struct SpdySessionDependencies {
   std::optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame;
   bool http2_end_stream_with_data_frame = false;
   raw_ptr<NetLog> net_log = nullptr;
-  bool disable_idle_sockets_close_on_memory_pressure = false;
   bool enable_early_data = false;
   bool key_auth_cache_server_entries_by_network_anonymization_key = false;
   bool enable_priority_update = false;

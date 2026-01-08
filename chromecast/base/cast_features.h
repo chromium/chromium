@@ -21,7 +21,6 @@ BASE_DECLARE_FEATURE(kAllowUserMediaAccess);
 BASE_DECLARE_FEATURE(kEnableQuic);
 BASE_DECLARE_FEATURE(kTripleBuffer720);
 BASE_DECLARE_FEATURE(kSingleBuffer);
-BASE_DECLARE_FEATURE(kDisableIdleSocketsCloseOnMemoryPressure);
 BASE_DECLARE_FEATURE(kEnableGeneralAudienceBrowsing);
 BASE_DECLARE_FEATURE(kEnableSideGesturePassThrough);
 BASE_DECLARE_FEATURE(kEnableChromeAudioManagerAndroid);
