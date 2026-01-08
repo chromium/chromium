@@ -967,7 +967,7 @@ chromium-metrics-reviews@google.com.
   <token key="NotificationTipsFeatureType">
     <variant name=""/>
     <variant name=".BottomOmnibox"/>
-    <variant name=".EnhancedBrowsing"/>
+    <variant name=".EnhancedSafeBrowsing"/>
     <variant name=".GoogleLens"/>
     <variant name=".QuickDelete"/>
   </token>
@@ -998,7 +998,7 @@ chromium-metrics-reviews@google.com.
   <token key="NotificationTipsFeatureType">
     <variant name=""/>
     <variant name=".BottomOmnibox"/>
-    <variant name=".EnhancedBrowsing"/>
+    <variant name=".EnhancedSafeBrowsing"/>
     <variant name=".GoogleLens"/>
     <variant name=".QuickDelete"/>
   </token>
