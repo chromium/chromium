@@ -8,11 +8,12 @@ found in the LICENSE file.
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
   <item>
-    <shape android:shape="rectangle">
+    <shape android:shape="rectangle"
+        android:tint="?attr/colorPrimary">
       <solid android:color="@android:color/transparent" />
       <stroke
           android:width="@dimen/ntp_customization_theme_collections_list_item_selected_background_width"
-          android:color="@color/baseline_primary_40" />
+          android:color="@android:color/white" />
       <corners android:radius="@dimen/ntp_customization_theme_collections_list_item_selected_background_outer_radius" />
     </shape>
   </item>
@@ -22,7 +23,8 @@ found in the LICENSE file.
       android:left="@dimen/ntp_customization_theme_collections_list_item_selected_background_width"
       android:right="@dimen/ntp_customization_theme_collections_list_item_selected_background_width"
       android:top="@dimen/ntp_customization_theme_collections_list_item_selected_background_width">
-    <shape android:shape="rectangle">
+    <shape android:shape="rectangle"
+        android:tint="@color/ntp_customization_bottom_sheet_list_item_selected_inner_border_color">
       <solid android:color="@android:color/transparent" />
       <stroke
           android:width="@dimen/ntp_customization_theme_collections_list_item_selected_background_width"

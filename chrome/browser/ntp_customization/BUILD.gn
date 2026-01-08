@@ -142,6 +142,8 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/color-night/ntp_customization_bottom_sheet_list_item_selected_inner_border_color.xml",
+    "java/res/color/ntp_customization_bottom_sheet_list_item_selected_inner_border_color.xml",
     "java/res/drawable/chrome_color_icon_bottom_left.xml",
     "java/res/drawable/chrome_color_icon_bottom_right.xml",
     "java/res/drawable/chrome_color_icon_list_selector.xml",
