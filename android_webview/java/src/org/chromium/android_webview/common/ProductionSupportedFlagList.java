@@ -1134,6 +1134,11 @@ public final class ProductionSupportedFlagList {
                 "LevelDBCacheSize",
                 "Reduces the size of the LevelDB cache to reduce memory usage at no expected speed"
                         + " cost"),
+        Flag.baseFeature(
+                "VariationsStickyPersistence",
+                "Controls how prefs are written and persisted for tracking sticky study activation."
+                    + " Note: The actual behavior is controlled by a feature param, but disabling"
+                    + " the feature will use the default param value (no special persistence)."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
 
