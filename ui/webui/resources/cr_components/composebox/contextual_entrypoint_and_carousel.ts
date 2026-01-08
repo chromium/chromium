@@ -122,6 +122,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       // specifically to Omnibox Searchbox in compact mode, as opposed to the
       // AIM composebox where the entrypoint is always visible.
       hideEntrypointButton: {type: Boolean},
+      inComposebox: {type: Boolean},
 
       // =========================================================================
       // Protected properties
@@ -170,6 +171,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   accessor showRecentTabChip: boolean = false;
   accessor contextMenuGlifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
+  accessor inComposebox: boolean = false;
 
   protected accessor attachmentFileTypes_: string =
       loadTimeData.getString('composeboxAttachmentFileTypes');
@@ -238,9 +240,21 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         (this.shouldShowRecentTabChip_ || this.shouldShowLensSearchChip_);
   }
 
-  protected get shouldShowToolChips_(): boolean {
+  protected get shouldShowToolChipsForTallMode_(): boolean {
     return this.searchboxLayoutMode !== 'Compact' ||
         this.shouldShowContextualChipsForCompactMode_;
+  }
+
+  protected get toolChipsVisible_(): boolean {
+    return this.shouldShowRecentTabChip_ || this.shouldShowLensSearchChip_ ||
+        this.inDeepSearchMode_ || this.inCreateImageMode_;
+  }
+
+  protected get shouldShowToolChipsForCompactMode_(): boolean {
+    return this.searchboxLayoutMode === 'Compact' && this.toolChipsVisible_ &&
+        ((this.entrypointName !== 'Omnibox') ||
+         (this.entrypointName === 'Omnibox' &&
+          this.searchboxLayoutMode === 'Compact' && this.inComposebox));
   }
 
   protected get shouldShowDivider_(): boolean {
