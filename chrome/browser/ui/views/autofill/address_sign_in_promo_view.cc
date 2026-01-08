@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/address_sign_in_promo_view.h"
 
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
 #include "chrome/grit/browser_resources.h"
@@ -31,6 +32,7 @@ AddressSignInPromoView::AddressSignInPromoView(
           views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
+  set_margins(BubbleSignInPromoView::GetBubbleSigninPromoMargins());
 
   // Show the sign in promo.
   auto* sign_in_promo = AddChildView(std::make_unique<BubbleSignInPromoView>(

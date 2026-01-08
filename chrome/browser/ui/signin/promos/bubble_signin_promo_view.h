@@ -49,6 +49,11 @@ class BubbleSignInPromoView : public views::View, public views::WidgetObserver {
 
   View* GetSignInButton() const;
 
+  // This should be used to set the margins of bubble views containing only a
+  // `BubbleSignInPromoView`. Don't use these margins on dialogs without a title
+  // or close button.
+  static gfx::Insets GetBubbleSigninPromoMargins();
+
  private:
   // Used to sign in in when `signin_button_view_` is pressed.
   void SignIn();

@@ -229,9 +229,9 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
   password_dropdown_ = nullptr;
   accessibility_alert_ = nullptr;
   RemoveAllChildViews();
-  SetLayoutManager(std::make_unique<views::FillLayout>());
   SetShowIcon(false);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  GetBubbleFrameView()->SetFootnoteView(nullptr);
   // SetExtraView is not designed to be called multiple times, so hide the
   // extra button if it exists. Note that we're intentionally keeping the width
   // of the previous dialog, even if it's the wider 3-button width.
@@ -239,7 +239,9 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
     extra_view_->SetVisible(false);
   }
 
-  GetBubbleFrameView()->SetFootnoteView(nullptr);
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+  set_margins(BubbleSignInPromoView::GetBubbleSigninPromoMargins());
+
   SetTitle(IDS_AUTOFILL_SIGNIN_PROMO_TITLE_PASSWORD);
 
   // Add the accessibility alert view first so that it does not overlap with
