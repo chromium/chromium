@@ -9,6 +9,7 @@
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
+#include "content/public/browser/web_contents.h"
 
 namespace web_app {
 
@@ -27,6 +28,15 @@ std::unique_ptr<WebAppDataRetriever> WebContentsManager::CreateDataRetriever() {
 std::unique_ptr<WebAppIconDownloader>
 WebContentsManager::CreateIconDownloader() {
   return std::make_unique<WebAppIconDownloader>();
+}
+
+base::CallbackListSubscription
+WebContentsManager::GetPrimaryPageAllSpecifiedManifests(
+    content::WebContents& web_contents,
+    AllManifestsCallbackList::CallbackType callback) {
+  return content::PageManifestManager::GetOrCreate(
+             web_contents.GetPrimaryPage())
+      ->GetAllSpecifiedManifests(std::move(callback));
 }
 
 FakeWebContentsManager*

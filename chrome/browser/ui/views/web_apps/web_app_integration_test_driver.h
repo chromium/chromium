@@ -425,7 +425,7 @@ class WebAppIntegrationTestDriver {
 
   // Wait for the manifest update to start after the site has been loaded and
   // the manifest url loaded as well.
-  void AwaitManifestUpdateStartedPostNavigation();
+  void AwaitManifestUpdateStartedPostNavigation(content::WebContents*);
 
   void HandleAppIdentityUpdateDialogResponse(
       UpdateDialogResponse response,

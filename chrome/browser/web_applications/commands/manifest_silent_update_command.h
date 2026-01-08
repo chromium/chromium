@@ -89,7 +89,11 @@ struct ManifestSilentUpdateCompletionInfo {
   explicit ManifestSilentUpdateCompletionInfo(
       ManifestSilentUpdateCheckResult result);
   ~ManifestSilentUpdateCompletionInfo() = default;
+
   base::Value::Dict ToDebugValue();
+
+  // String value representation for compatibility with base::ToString.
+  std::string ToString();
 
   // Move operation only for simplicity.
   ManifestSilentUpdateCompletionInfo(ManifestSilentUpdateCompletionInfo&&);

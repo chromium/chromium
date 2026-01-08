@@ -45,6 +45,8 @@ class ManifestManagerHost : public PageUserData<ManifestManagerHost>,
 
   base::CallbackListSubscription GetSpecifiedManifest(
       ManifestCallbackList::CallbackType callback) override;
+  base::CallbackListSubscription GetAllSpecifiedManifests(
+      AllManifestsCallbackList::CallbackType callback) override;
 
   void RequestManifestDebugInfo(
       blink::mojom::ManifestManager::RequestManifestDebugInfoCallback callback);
@@ -83,7 +85,11 @@ class ManifestManagerHost : public PageUserData<ManifestManagerHost>,
 
   void MaybeFetchManifestForSubscriptions();
 
+  void NotifyOnceSubscriptionsIfSuccessCached();
+
   void NotifySubscriptionsIfSuccessCached();
+
+  bool HasManifestSubscriptions() const;
 
   PAGE_USER_DATA_KEY_DECL();
 
@@ -94,6 +100,7 @@ class ManifestManagerHost : public PageUserData<ManifestManagerHost>,
       std::nullopt;
 
   ManifestCallbackList developer_manifest_callback_list_;
+  AllManifestsCallbackList all_manifests_callback_list_;
 
   mojo::AssociatedReceiver<blink::mojom::ManifestUrlChangeObserver>
       manifest_url_change_observer_receiver_{this};

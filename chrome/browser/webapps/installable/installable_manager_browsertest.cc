@@ -451,9 +451,6 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckManifestOnly) {
   EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
   EXPECT_FALSE(tester->manifest_url().is_empty());
 
-  EXPECT_TRUE(tester->primary_icon_url().is_empty());
-  EXPECT_EQ(nullptr, tester->primary_icon());
-  EXPECT_FALSE(tester->has_maskable_primary_icon());
   EXPECT_TRUE(tester->installable_check_passed());
   EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
 }
@@ -474,9 +471,6 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
   EXPECT_FALSE(tester->manifest_url().is_empty());
 
-  EXPECT_TRUE(tester->primary_icon_url().is_empty());
-  EXPECT_EQ(nullptr, tester->primary_icon());
-  EXPECT_FALSE(tester->has_maskable_primary_icon());
   EXPECT_TRUE(tester->installable_check_passed());
   EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
 }
@@ -508,8 +502,6 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, FetchWebPageMetaData) {
     EXPECT_EQ(u"Web app banner test page", tester->metadata().title);
     EXPECT_EQ(u"description", tester->metadata().description);
 
-    EXPECT_TRUE(tester->primary_icon_url().is_empty());
-    EXPECT_EQ(nullptr, tester->primary_icon());
     EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
   }
 
@@ -1631,9 +1623,6 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
                   DisplayOverrideIs(blink::mojom::DisplayMode::kMinimalUi),
                   DisplayOverrideIs(blink::mojom::DisplayMode::kStandalone)));
 
-  EXPECT_TRUE(tester->primary_icon_url().is_empty());
-  EXPECT_EQ(nullptr, tester->primary_icon());
-  EXPECT_FALSE(tester->has_maskable_primary_icon());
   EXPECT_TRUE(tester->installable_check_passed());
   EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
 }

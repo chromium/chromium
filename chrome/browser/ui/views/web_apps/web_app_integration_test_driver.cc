@@ -144,6 +144,9 @@
 #include "components/webapps/isolated_web_apps/test_support/test_signed_web_bundle_builder.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/page_manifest_manager.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -686,8 +689,60 @@ class UninstallCompleteWaiter final : public BrowserListObserver,
       observation_{this};
 };
 
-std::optional<ProfileState> GetStateForProfile(StateSnapshot* state_snapshot,
-                                               Profile* profile) {
+class ManifestFoundOrNotWaiter final
+    : public content::WebContentsObserver {
+ public:
+  explicit ManifestFoundOrNotWaiter(content::WebContents* web_contents)
+      : WebContentsObserver(web_contents) {
+    CHECK(web_contents);
+  }
+  ~ManifestFoundOrNotWaiter() override = default;
+
+  void Wait() {
+    if (web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
+      if (web_contents()->GetPrimaryPage().GetManifestUrl().has_value()) {
+        SubscribeToManifest();
+      } else {
+        run_loop_.Quit();
+      }
+    }
+    run_loop_.Run();
+  }
+
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override {
+    if (web_contents()->GetPrimaryPage().GetManifestUrl().has_value()) {
+      SubscribeToManifest();
+      return;
+    }
+    run_loop_.Quit();
+  }
+
+  void WebContentsDestroyed() override {
+    Observe(nullptr);
+    run_loop_.Quit();
+  }
+
+ private:
+  void SubscribeToManifest() {
+    manifest_subscription_ =
+        content::PageManifestManager::GetOrCreate(
+            web_contents()->GetPrimaryPage())
+            ->GetSpecifiedManifest(
+                base::IgnoreArgs<
+                    const content::PageManifestManager::ManifestResult&>(
+                    base::BindOnce(
+                        &ManifestFoundOrNotWaiter::OnManifestSpecified,
+                        base::Unretained(this))));
+  }
+
+  void OnManifestSpecified() { run_loop_.Quit(); }
+
+  base::CallbackListSubscription manifest_subscription_;
+  base::RunLoop run_loop_;
+};
+
+std::optional<ProfileState>
+GetStateForProfile(StateSnapshot* state_snapshot, Profile* profile) {
   CHECK(state_snapshot);
   CHECK(profile);
   auto it = state_snapshot->profiles.find(profile);
@@ -4092,7 +4147,8 @@ void WebAppIntegrationTestDriver::AfterStateCheckAction() {
   ASSERT_EQ(*after_state_change_action_state_, *ConstructStateSnapshot());
 }
 
-void WebAppIntegrationTestDriver::AwaitManifestUpdateStartedPostNavigation() {
+void WebAppIntegrationTestDriver::AwaitManifestUpdateStartedPostNavigation(
+    content::WebContents* web_contents) {
   CHECK(provider());
 
   // Wait till pending manifest update processes have finished loading the page
@@ -4111,10 +4167,12 @@ void WebAppIntegrationTestDriver::AwaitManifestUpdateStartedPostNavigation() {
         loop_for_load_finish.QuitClosure());
     loop_for_load_finish.Run();
   }
+  ManifestFoundOrNotWaiter manifest_found_or_not_waiter(web_contents);
+  manifest_found_or_not_waiter.Wait();
 
   // Wait till all manifest silent update command has completed. This will
-  // either cause an update to happen, or the pending update to be stored on the
-  // web app.
+  // either cause an update to happen, or the pending update to be stored on
+  // the web app.
   command_manager.AwaitAllCommandsCompleteForTesting();
 }
 
@@ -4447,7 +4505,8 @@ void WebAppIntegrationTestDriver::ForceUpdateManifestContents(
   if (app_browser()) {
     EXPECT_TRUE(ui_test_utils::NavigateToURL(app_browser(),
                                              app_url_with_manifest_param));
-    AwaitManifestUpdateStartedPostNavigation();
+    AwaitManifestUpdateStartedPostNavigation(
+        app_browser()->tab_strip_model()->GetActiveWebContents());
     MenuButtonUpdateListener(*app_browser(), wait_for_pending_updates_to_arrive)
         .Await();
   } else {
@@ -4455,7 +4514,8 @@ void WebAppIntegrationTestDriver::ForceUpdateManifestContents(
                  "tab might not end up actually updating the manifest";
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), app_url_with_manifest_param));
-    AwaitManifestUpdateStartedPostNavigation();
+    AwaitManifestUpdateStartedPostNavigation(
+        browser()->tab_strip_model()->GetActiveWebContents());
   }
   post_update_start_urls_[site] = app_url_with_manifest_param;
 }

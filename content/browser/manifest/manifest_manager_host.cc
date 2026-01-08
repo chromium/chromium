@@ -106,8 +106,20 @@ base::CallbackListSubscription ManifestManagerHost::GetSpecifiedManifest(
   if (last_manifest_success_result_.has_value()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(&ManifestManagerHost::NotifySubscriptionsIfSuccessCached,
-                       weak_factory_.GetWeakPtr()));
+        base::BindOnce(
+            &ManifestManagerHost::NotifyOnceSubscriptionsIfSuccessCached,
+            weak_factory_.GetWeakPtr()));
+  } else {
+    MaybeFetchManifestForSubscriptions();
+  }
+  return result;
+}
+
+base::CallbackListSubscription ManifestManagerHost::GetAllSpecifiedManifests(
+    AllManifestsCallbackList::CallbackType callback) {
+  auto result = all_manifests_callback_list_.Add(callback);
+  if (last_manifest_success_result_.has_value()) {
+    callback.Run(base::ok(last_manifest_success_result_->Clone()));
   } else {
     MaybeFetchManifestForSubscriptions();
   }
@@ -212,17 +224,20 @@ void ManifestManagerHost::OnRequestManifestAndErrors(
     }
   }
   if (result.has_value()) {
-    last_manifest_success_result_ = std::move(result.value());
-    NotifySubscriptionsIfSuccessCached();
-  } else {
-    developer_manifest_callback_list_.Notify(result);
+    // This Clone COULD be avoided if we cached the full expected result.
+    // However - that gets really confusing if we also have it be optional.
+    // Since we only care about caching success, it is simpler to clone here,
+    // and just cache the success results as an optional.
+    last_manifest_success_result_ = result->Clone();
   }
+  developer_manifest_callback_list_.Notify(result);
+  all_manifests_callback_list_.Notify(result);
 }
 
 void ManifestManagerHost::ManifestUrlChanged(const GURL& manifest_url) {
   last_manifest_success_result_ = std::nullopt;
   static_cast<PageImpl&>(page()).UpdateManifestUrl(manifest_url);
-  if (!developer_manifest_callback_list_.empty()) {
+  if (HasManifestSubscriptions()) {
     MaybeFetchManifestForSubscriptions();
   }
 }
@@ -238,7 +253,7 @@ void ManifestManagerHost::MaybeFetchManifestForSubscriptions() {
                      weak_factory_.GetWeakPtr()));
 }
 
-void ManifestManagerHost::NotifySubscriptionsIfSuccessCached() {
+void ManifestManagerHost::NotifyOnceSubscriptionsIfSuccessCached() {
   if (last_manifest_success_result_.has_value()) {
     // This Clone COULD be avoided if we cached the full expected result.
     // However - that gets really confusing if we also have it be optional.
@@ -249,6 +264,11 @@ void ManifestManagerHost::NotifySubscriptionsIfSuccessCached() {
         result = base::ok(last_manifest_success_result_->Clone());
     developer_manifest_callback_list_.Notify(result);
   }
+}
+
+bool ManifestManagerHost::HasManifestSubscriptions() const {
+  return !developer_manifest_callback_list_.empty() ||
+         !all_manifests_callback_list_.empty();
 }
 
 PAGE_USER_DATA_KEY_IMPL(ManifestManagerHost);

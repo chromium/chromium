@@ -2311,11 +2311,19 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIsolatedWebAppBrowserTest,
   UpdateCheckResultAwaiter awaiter(
       url_info.origin().GetURL().Resolve("/index.html"));
   EXPECT_TRUE(OpenApp(url_info.app_id()));
-  EXPECT_EQ(std::move(awaiter).AwaitNextResult(),
-            ManifestUpdateResult::kAppIsIsolatedWebApp);
-
-  histogram_tester_.ExpectBucketCount(
-      kUpdateHistogramName, ManifestUpdateResult::kAppIsIsolatedWebApp, 1);
+  if (base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon) &&
+      base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating)) {
+    // With the new update process, simply assert that no metrics are reported,
+    // as the command will report result metrics if it is run.
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
+    histogram_tester_.ExpectTotalCount(
+        "Webapp.Update.ManifestSilentUpdateCheckResult", 0);
+  } else {
+    EXPECT_EQ(std::move(awaiter).AwaitNextResult(),
+              ManifestUpdateResult::kAppIsIsolatedWebApp);
+    histogram_tester_.ExpectBucketCount(
+        kUpdateHistogramName, ManifestUpdateResult::kAppIsIsolatedWebApp, 1);
+  }
 }
 
 using ManifestUpdateManagerWebAppsBrowserTest =

@@ -192,7 +192,7 @@ void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
 
 void WebAppDataRetriever::GetPrimaryPageFirstSpecifiedManifest(
     content::WebContents& web_contents,
-    GetManifestOnceCallbackList::CallbackType callback) {
+    ManifestCallbackList::CallbackType callback) {
   Observe(&web_contents);
   // Concurrent calls are not allowed.
   CHECK(!HasPendingCall(), base::NotFatalUntil::M145);

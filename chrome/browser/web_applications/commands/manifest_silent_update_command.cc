@@ -260,6 +260,10 @@ base::Value::Dict ManifestSilentUpdateCompletionInfo::ToDebugValue() {
                : base::EmptyString16());
 }
 
+std::string ManifestSilentUpdateCompletionInfo::ToString() {
+  return ToDebugValue().DebugString();
+}
+
 ManifestSilentUpdateCommand::ManifestSilentUpdateCommand(
     content::WebContents& web_contents,
     std::optional<base::Time> previous_time_for_silent_icon_update,
@@ -315,8 +319,13 @@ void ManifestSilentUpdateCommand::StartWithLock(
   data_retriever_ = lock_->web_contents_manager().CreateDataRetriever();
 
   SetStage(ManifestSilentUpdateCommandStage::kFetchingNewManifestData);
+  // This explicitly does NOT ask to download the primary icon, to prevent
+  // network usage and because we check for the icon downloading later.
+  // However, kValidManifestIgnoreDisplay does still check for the existence of
+  // a primary icon url.
+  // TODO(https://crbug.com/468037835): Make this criteria logic not need the
+  // whole InstallableManager layer here if possible.
   webapps::InstallableParams params;
-  params.valid_primary_icon = true;
   params.check_eligibility = true;
   params.installable_criteria =
       webapps::InstallableCriteria::kValidManifestIgnoreDisplay;
