@@ -2011,7 +2011,8 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeMaskOutputClip) {
   SetBodyInnerHTML(R"HTML(
     <div id="container" style="width: 100px; height: 10px; overflow: hidden">
       <div id="masked"
-           style="height: 100px; background: red; -webkit-mask: url()"></div>
+           style="height: 100px; background: red;
+                  -webkit-mask: linear-gradient(red, blue)"></div>
     </div>
   )HTML");
 

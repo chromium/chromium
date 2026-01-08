@@ -5705,7 +5705,8 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGRootWithMask) {
 
 TEST_P(PaintPropertyTreeBuilderTest, SVGRootWithCSSMask) {
   SetBodyInnerHTML(R"HTML(
-    <svg id="svg" width="16" height="16" style="-webkit-mask-image: url(fake);">
+    <svg id="svg" width="16" height="16"
+        style="-webkit-mask-image: linear-gradient(black, transparent);">
     </svg>
   )HTML");
 

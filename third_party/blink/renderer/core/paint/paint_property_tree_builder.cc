@@ -1876,6 +1876,19 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       if (EffectCanUseCurrentClipAsOutputClip())
         state.output_clip = context_.current.clip;
       state.opacity = style.Opacity();
+      // If the mask image is not valid, it must be treated as a transparent
+      // black image layer. See
+      // https://drafts.fxtf.org/css-masking-1/#the-mask-image.
+      // MaskBoundingBox() returns nullopt for all invalid mask image layers.
+      if (style.HasMask() && !style.BackdropFilter().IsEmpty() &&
+          RuntimeEnabledFeatures::
+              HandleInvalidMaskImageWithBackdropFilterEnabled()) {
+        // TODO(crbug.com/473987435): Consider waiting for all mask-image layers
+        // to load before rendering, instead of rendering after the first one.
+        if (style.MaskLayers().AllImagesAreInvalid()) {
+          state.opacity = 0.f;
+        }
+      }
       if (object_.IsBlendingAllowed()) {
         state.blend_mode = ToSkBlendMode(style.GetBlendMode());
       }

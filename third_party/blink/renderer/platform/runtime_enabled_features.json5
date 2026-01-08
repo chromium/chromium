@@ -2839,6 +2839,11 @@
       status: "stable",
     },
     {
+      // Killswitch for https://crbug.com/441547032.
+      name: "HandleInvalidMaskImageWithBackdropFilter",
+      status: "stable",
+    },
+    {
       name: "HandleShadowDOMInSubstringUtil",
       status: "stable",
     },

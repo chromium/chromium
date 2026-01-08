@@ -463,6 +463,19 @@ bool FillLayer::ImageOccludesNextLayers(const Document& document,
   return false;
 }
 
+bool FillLayer::AllImagesAreInvalid() const {
+  bool has_any_image = false;
+  for (const FillLayer* layer = this; layer; layer = layer->Next()) {
+    if (StyleImage* image = layer->GetImage()) {
+      has_any_image = true;
+      if (image->CanRender() && image->IsLoaded()) {
+        return false;
+      }
+    }
+  }
+  return has_any_image;
+}
+
 static inline bool LayerImagesIdentical(const FillLayer& layer1,
                                         const FillLayer& layer2) {
   // We just care about pointer equivalency.
