@@ -132,6 +132,7 @@ class MemoryUsageView:
             html_str = template.render(json_data=self, root_id=unique_root_id)
         finally:
             sys.setrecursionlimit(previous_recursion_limit)
+            self.roots = saved_roots
         display(HTML(html_str))
 
 
