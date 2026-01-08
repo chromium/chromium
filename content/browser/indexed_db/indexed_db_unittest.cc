@@ -1027,7 +1027,8 @@ TEST_P(IndexedDBTest, NotifyIndexedDBListChanged) {
     loop.Run();
   }
 
-  EXPECT_EQ(1, observer.notify_list_changed_count);
+  // 1 from backing store initialization and 1 from transaction commit.
+  EXPECT_EQ(2, observer.notify_list_changed_count);
 
   // Connection need to be closed before opening another connection. Because if
   // one connection triggers a version change, it can affect other open
@@ -1091,7 +1092,7 @@ TEST_P(IndexedDBTest, NotifyIndexedDBListChanged) {
 
     loop.Run();
   }
-  EXPECT_EQ(2, observer.notify_list_changed_count);
+  EXPECT_EQ(3, observer.notify_list_changed_count);
 
   connection2.reset();
 
@@ -1149,7 +1150,7 @@ TEST_P(IndexedDBTest, NotifyIndexedDBListChanged) {
 
     loop.Run();
   }
-  EXPECT_EQ(3, observer.notify_list_changed_count);
+  EXPECT_EQ(4, observer.notify_list_changed_count);
 
   // Close the connections to finish the test nicely.
   connection3.reset();
@@ -1250,7 +1251,7 @@ TEST_P(IndexedDBTest, NotifyIndexedDBContentChanged) {
 
   loop2.Run();
 
-  EXPECT_EQ(1, observer.notify_list_changed_count);
+  EXPECT_EQ(2, observer.notify_list_changed_count);
   EXPECT_EQ(1, observer.notify_content_changed_count);
 
   // Connection need to be closed before opening another connection. Because if
@@ -1308,7 +1309,7 @@ TEST_P(IndexedDBTest, NotifyIndexedDBContentChanged) {
   loop5.Run();
 
   // +1 list changed for the transaction
-  EXPECT_EQ(2, observer.notify_list_changed_count);
+  EXPECT_EQ(3, observer.notify_list_changed_count);
   EXPECT_EQ(2, observer.notify_content_changed_count);
 
   // Close the connection to finish the test nicely.

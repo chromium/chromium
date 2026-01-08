@@ -1013,6 +1013,13 @@ Status Transaction::CommitPhaseTwo() {
   locks_receiver_.locks.clear();
 
   if (committed) {
+    if (mode() != blink::mojom::IDBTransactionMode::ReadOnly) {
+      const bool did_sync =
+          mode() == blink::mojom::IDBTransactionMode::VersionChange ||
+          durability_ == blink::mojom::IDBTransactionDurability::Strict;
+      bucket_context_->delegate().on_files_written.Run(did_sync);
+    }
+
     {
       TRACE_EVENT1("IndexedDB",
                    "Transaction::CommitPhaseTwo.TransactionCompleteCallbacks",
@@ -1020,12 +1027,6 @@ Status Transaction::CommitPhaseTwo() {
       connection()->callbacks()->OnComplete(*this);
     }
 
-    if (mode() != blink::mojom::IDBTransactionMode::ReadOnly) {
-      const bool did_sync =
-          mode() == blink::mojom::IDBTransactionMode::VersionChange ||
-          durability_ == blink::mojom::IDBTransactionDurability::Strict;
-      bucket_context_->delegate().on_files_written.Run(did_sync);
-    }
     return s;
   }
 
