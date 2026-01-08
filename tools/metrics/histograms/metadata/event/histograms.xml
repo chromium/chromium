@@ -868,38 +868,6 @@ chromium-metrics-reviews@google.com.
   <token key="Operator" variants="ScrollJankOperator"/>
 </histogram>
 
-<histogram name="Event.Touch.TimedOutOnDesktopSite" enum="BooleanTimedOut"
-    expires_after="2023-10-31">
-  <owner>flackr@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    On non-mobile-optimized (desktop) sites, whether the ack response from the
-    renderer for any event in a contiguous touch sequence exceeds the
-    desktop-specific timeout threshold.
-
-    Warning: This histogram has incomplete data. It expired on 2021-08-15 and
-    then got re-enabled on M110.
-
-    Team: input-dev@chromium.org.
-  </summary>
-</histogram>
-
-<histogram name="Event.Touch.TimedOutOnMobileSite" enum="BooleanTimedOut"
-    expires_after="2023-10-31">
-  <owner>flackr@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    On mobile-optimized sites, whether the ack response from the renderer for
-    any event in a contiguous touch sequence exceeds the mobile-specific timeout
-    threshold.
-
-    Warning: This histogram has incomplete data. It expired on 2021-08-15 and
-    then got re-enabled on M110.
-
-    Team: input-dev@chromium.org.
-  </summary>
-</histogram>
-
 <histogram name="Event.UserActivation.TriggerFor{ActivationGatedApiType}"
     enum="UserActivationTriggerEnum" expires_after="2023-09-30">
   <owner>mustaq@chromium.org</owner>

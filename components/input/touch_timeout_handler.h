@@ -51,8 +51,6 @@ class TouchTimeoutHandler {
   bool AckedTimeoutEventRequiresCancel(
       blink::mojom::InputEventResultState ack_result) const;
   void SetPendingAckState(PendingAckState new_pending_ack_state);
-  void LogSequenceStartForUMA();
-  void LogSequenceEndForUMAIfNecessary(bool timed_out);
   base::TimeDelta GetTimeoutDelay() const;
   bool HasTimeoutEvent() const;
 
@@ -74,10 +72,6 @@ class TouchTimeoutHandler {
 
   bool enabled_;
   bool enabled_for_current_sequence_;
-
-  // Bookkeeping to classify and log whether a touch sequence times out.
-  bool sequence_awaiting_uma_update_;
-  bool sequence_using_mobile_timeout_;
 };
 
 }  // namespace input
