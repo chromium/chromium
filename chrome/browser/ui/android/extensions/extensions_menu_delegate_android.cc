@@ -59,9 +59,8 @@ void ExtensionsMenuDelegateAndroid::OnActionsInitialized() {
 }
 
 void ExtensionsMenuDelegateAndroid::OnHostAccessRequestAddedOrUpdated(
-    ExtensionActionViewModel* action_model,
-    int index,
-    content::WebContents* web_contents) {
+    const extensions::ExtensionId& extension_id,
+    int index) {
   // TODO(crbug.com/473213114)
 }
 

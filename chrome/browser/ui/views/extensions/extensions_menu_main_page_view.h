@@ -20,10 +20,6 @@ namespace content {
 class WebContents;
 }
 
-namespace ui {
-class ImageModel;
-}  // namespace ui
-
 namespace views {
 class Label;
 class ToggleButton;
@@ -65,10 +61,9 @@ class ExtensionsMenuMainPageView : public views::View {
   // Adds or updates the extension entry in the `requests_access_section_` with
   // the given information. Doesn't update the requests section view
   // visibility.
-  void AddOrUpdateExtensionRequestingAccess(const extensions::ExtensionId& id,
-                                            const std::u16string& name,
-                                            const ui::ImageModel& icon,
-                                            int index);
+  void AddOrUpdateExtensionRequestingAccess(
+      ExtensionsMenuViewModel::HostAccessRequest request,
+      int index);
 
   // Remove the entry in the `requests_access_section_` corresponding to `id`,
   // if existent. Doesn't update the requests section view visibility.

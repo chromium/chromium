@@ -96,9 +96,8 @@ void ExtensionsMenuDelegateDesktop::OnActiveWebContentsChanged(
 }
 
 void ExtensionsMenuDelegateDesktop::OnHostAccessRequestAddedOrUpdated(
-    ExtensionActionViewModel* action_model,
-    int index,
-    content::WebContents* web_contents) {
+    const extensions::ExtensionId& extension_id,
+    int index) {
   CHECK(current_page_);
 
   // Site access requests only affect the main page.
@@ -114,8 +113,7 @@ void ExtensionsMenuDelegateDesktop::OnHostAccessRequestAddedOrUpdated(
     return;
   }
 
-  AddOrUpdateExtensionRequestingAccess(main_page, action_model, index,
-                                       web_contents);
+  AddOrUpdateExtensionRequestingAccess(main_page, extension_id, index);
   main_page->SetOptionalSectionVisibility(optional_section);
 }
 
@@ -265,7 +263,7 @@ void ExtensionsMenuDelegateDesktop::OnUserPermissionsSettingsChanged() {
 
   ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
   CHECK(main_page);
-  UpdateMainPage(main_page, GetActiveWebContents());
+  UpdateMainPage(main_page);
 
   // TODO(crbug.com/40879945): Update the "highlighted section" based on the
   // `site_setting` and whether a page refresh is needed.
@@ -276,7 +274,7 @@ void ExtensionsMenuDelegateDesktop::OnUserPermissionsSettingsChanged() {
 
 void ExtensionsMenuDelegateDesktop::OpenMainPage() {
   auto main_page = std::make_unique<ExtensionsMenuMainPageView>(browser_, this);
-  UpdateMainPage(main_page.get(), GetActiveWebContents());
+  UpdateMainPage(main_page.get());
   PopulateMainPage(main_page.get());
 
   SwitchToPage(std::move(main_page));
@@ -371,14 +369,11 @@ void ExtensionsMenuDelegateDesktop::UpdatePage(
 
   ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
   DCHECK(main_page);
-  UpdateMainPage(main_page, web_contents);
+  UpdateMainPage(main_page);
 }
 
 void ExtensionsMenuDelegateDesktop::UpdateMainPage(
-    ExtensionsMenuMainPageView* main_page,
-    content::WebContents* web_contents) {
-  CHECK(web_contents);
-
+    ExtensionsMenuMainPageView* main_page) {
   // Update site settings.
   ExtensionsMenuViewModel::SiteSettingsState site_settings_state =
       menu_model_->GetSiteSettingsState();
@@ -398,9 +393,7 @@ void ExtensionsMenuDelegateDesktop::UpdateMainPage(
 
     const auto& requests = menu_model_->host_access_requests();
     for (size_t i = 0; i < requests.size(); ++i) {
-      AddOrUpdateExtensionRequestingAccess(
-          main_page, menu_model_->GetActionViewModel(requests[i]), i,
-          web_contents);
+      AddOrUpdateExtensionRequestingAccess(main_page, requests[i], i);
     }
   }
   main_page->SetOptionalSectionVisibility(optional_section);
@@ -473,18 +466,15 @@ void ExtensionsMenuDelegateDesktop::InsertMenuEntry(
 
 void ExtensionsMenuDelegateDesktop::AddOrUpdateExtensionRequestingAccess(
     ExtensionsMenuMainPageView* main_page,
-    ExtensionActionViewModel* action_model,
-    int index,
-    content::WebContents* web_contents) {
-  auto extension_id = action_model->GetId();
-  std::u16string name = action_model->GetActionName();
+    const extensions::ExtensionId& extension_id,
+    int index) {
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
-  ui::ImageModel icon =
-      action_model->GetIcon(web_contents, gfx::Size(icon_size, icon_size));
+  ExtensionsMenuViewModel::HostAccessRequest request =
+      menu_model_->GetHostAccessRequest(extension_id,
+                                        gfx::Size(icon_size, icon_size));
 
-  main_page->AddOrUpdateExtensionRequestingAccess(extension_id, name, icon,
-                                                  index);
+  main_page->AddOrUpdateExtensionRequestingAccess(request, index);
 }
 
 content::WebContents* ExtensionsMenuDelegateDesktop::GetActiveWebContents()

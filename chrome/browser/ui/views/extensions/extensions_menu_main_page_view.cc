@@ -230,21 +230,20 @@ void ExtensionsMenuMainPageView::UpdateSiteSettings(
 }
 
 void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
-    const extensions::ExtensionId& id,
-    const std::u16string& name,
-    const ui::ImageModel& icon,
+    ExtensionsMenuViewModel::HostAccessRequest request,
     int index) {
   // Update request entry if existent.
-  views::View* request_entry = GetExtensionRequestEntry(id);
+  views::View* request_entry = GetExtensionRequestEntry(request.extension_id);
   if (request_entry) {
     std::vector<raw_ptr<View, VectorExperimental>> extension_items =
         request_entry->children();
     views::AsViewClass<views::ImageView>(
         extension_items[kRequestEntryIconIndex])
-        ->SetImage(icon);
+        ->SetImage(request.extension_icon);
     views::AsViewClass<views::Label>(extension_items[kRequestEntryLabelIndex])
-        ->SetText(name);
+        ->SetText(request.extension_name);
     requests_entries_view_->ReorderChildView(request_entry, index);
+
     return;
   }
 
@@ -262,9 +261,10 @@ void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
           .SetProperty(views::kMarginsKey,
                        gfx::Insets::TLBR(control_vertical_margin, 0, 0, 0))
           .AddChildren(
-              views::Builder<views::ImageView>().SetImage(icon),
+              views::Builder<views::ImageView>().SetImage(
+                  request.extension_icon),
               views::Builder<views::Label>()
-                  .SetText(name)
+                  .SetText(request.extension_name)
                   .SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS)
                   .SetEnabledColor(kColorExtensionsMenuText)
                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
@@ -276,7 +276,7 @@ void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
               views::Builder<views::MdTextButton>()
                   .SetCallback(base::BindRepeating(
                       &ExtensionsMenuHandler::OnDismissExtensionClicked,
-                      base::Unretained(menu_handler_), id))
+                      base::Unretained(menu_handler_), request.extension_id))
                   .SetStyle(ui::ButtonStyle::kText)
                   .SetBgColorIdOverride(kColorExtensionsMenuContainerBackground)
                   .SetText(l10n_util::GetStringUTF16(
@@ -285,11 +285,11 @@ void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
                       IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_DISMISS_BUTTON_TOOLTIP))
                   .SetAccessibleName(l10n_util::GetStringFUTF16(
                       IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_DISMISS_BUTTON_ACCESSIBLE_NAME,
-                      name)),
+                      request.extension_name)),
               views::Builder<views::MdTextButton>()
                   .SetCallback(base::BindRepeating(
                       &ExtensionsMenuHandler::OnAllowExtensionClicked,
-                      base::Unretained(menu_handler_), id))
+                      base::Unretained(menu_handler_), request.extension_id))
                   .SetStyle(ui::ButtonStyle::kText)
                   .SetBgColorIdOverride(kColorExtensionsMenuContainerBackground)
                   .SetText(l10n_util::GetStringUTF16(
@@ -298,13 +298,13 @@ void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
                       IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_TOOLTIP))
                   .SetAccessibleName(l10n_util::GetStringFUTF16(
                       IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_ACCESSIBLE_NAME,
-                      name))
+                      request.extension_name))
                   .SetProperty(views::kMarginsKey,
                                gfx::Insets::TLBR(
                                    0, related_control_horizontal_margin, 0, 0)))
           .Build();
 
-  requests_entries_.insert({id, item.get()});
+  requests_entries_.insert({request.extension_id, item.get()});
   requests_entries_view_->AddChildViewAt(std::move(item), index);
 }
 

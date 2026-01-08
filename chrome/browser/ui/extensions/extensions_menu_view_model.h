@@ -57,9 +57,8 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
     // Notifies the delegate that a new host access request was added or updated
     // with `action_model` on `index`.
     virtual void OnHostAccessRequestAddedOrUpdated(
-        ExtensionActionViewModel* action_model,
-        int index,
-        content::WebContents* web_contents) = 0;
+        const extensions::ExtensionId& extension_id,
+        int index) = 0;
 
     // Notifies the delegate that the host access request for
     // `extension_id` was removed.
@@ -137,6 +136,16 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
     std::u16string tooltip_text;
     // The checked/toggled state. False for buttons with no on/off state.
     bool is_on = false;
+  };
+
+  // Hold the information for an extension's host access request.
+  struct HostAccessRequest {
+    // The if of the extension.
+    extensions::ExtensionId extension_id;
+    // The display name for the extension.
+    std::u16string extension_name;
+    // The display icon for the extension.
+    ui::ImageModel extension_icon;
   };
 
   // Holds the information for an extension's site permissions in the extensions
@@ -234,15 +243,16 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // `extension_id`.
   bool CanShowSitePermissionsPage(const extensions::ExtensionId& extension_id);
 
-  // Returns the extension action view model for the given `extension_id`.
-  ExtensionActionViewModel* GetActionViewModel(
-      const extensions::ExtensionId& extension_id) const;
-
   // Returns the state for the extension's context menu button.
   ControlState GetContextMenuButtonState(
       const extensions::ExtensionId& extension_id);
   ControlState GetContextMenuButtonState(
       ExtensionActionViewModel* action_model);
+
+  // Returns the host access request information for an extension.
+  HostAccessRequest GetHostAccessRequest(
+      const extensions::ExtensionId& extension_id,
+      const gfx::Size& icon_size);
 
   // Returns the site access permissions state for an extension. This will crash
   // if called when the user cannot modify the extension site permissions, as
@@ -330,6 +340,10 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // access requests, clearing any existent ones. This should be called when
   // actions are initialized, or on page navigations.
   void UpdateHostAccessRequests();
+
+  // Returns the extension action view model for the given `extension_id`.
+  ExtensionActionViewModel* GetActionViewModel(
+      const extensions::ExtensionId& extension_id) const;
 
   // Updates the model when web contents changed, and notifies observers.
   void OnWebContentsChanged(content::WebContents* web_contents);

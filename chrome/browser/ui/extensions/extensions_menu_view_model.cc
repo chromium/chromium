@@ -759,6 +759,20 @@ ExtensionsMenuViewModel::GetContextMenuButtonState(
   return GetContextMenuButtonState(action_model);
 }
 
+ExtensionsMenuViewModel::HostAccessRequest
+ExtensionsMenuViewModel::GetHostAccessRequest(
+    const extensions::ExtensionId& extension_id,
+    const gfx::Size& icon_size) {
+  ExtensionActionViewModel* action_model = GetActionViewModel(extension_id);
+  HostAccessRequest request;
+  request.extension_id = extension_id;
+  request.extension_name = action_model->GetActionName();
+  request.extension_icon =
+      action_model->GetIcon(GetActiveWebContents(), icon_size);
+
+  return request;
+}
+
 ExtensionsMenuViewModel::ControlState
 ExtensionsMenuViewModel::GetContextMenuButtonState(
     ExtensionActionViewModel* action_model) {
@@ -1013,12 +1027,9 @@ void ExtensionsMenuViewModel::OnHostAccessRequestUpdated(
     // the manifest. Consider removing this.
     auto it = std::ranges::find(host_access_requests_, extension_id);
     int index = std::distance(host_access_requests_.begin(), it);
-    ExtensionActionViewModel* action_model = GetActionViewModel(extension_id);
-    CHECK(action_model);
 
     for (Observer& observer : observers_) {
-      observer.OnHostAccessRequestAddedOrUpdated(action_model, index,
-                                                 GetActiveWebContents());
+      observer.OnHostAccessRequestAddedOrUpdated(extension_id, index);
     }
     return;
   }
@@ -1228,10 +1239,8 @@ void ExtensionsMenuViewModel::AddHostAccessRequest(
 
   // Notify observers.
   int index = std::distance(host_access_requests_.begin(), insert_it);
-  ExtensionActionViewModel* action_model = action_model_it->get();
   for (Observer& observer : observers_) {
-    observer.OnHostAccessRequestAddedOrUpdated(action_model, index,
-                                               GetActiveWebContents());
+    observer.OnHostAccessRequestAddedOrUpdated(extension_id, index);
   }
 }
 

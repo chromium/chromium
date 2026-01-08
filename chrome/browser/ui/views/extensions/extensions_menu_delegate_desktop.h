@@ -50,9 +50,8 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Delegate,
   // ExtensionsMenuViewModel::Observer:
   void OnActiveWebContentsChanged(content::WebContents* web_contents) override;
   void OnHostAccessRequestAddedOrUpdated(
-      ExtensionActionViewModel* action_model,
-      int index,
-      content::WebContents* web_contents) override;
+      const extensions::ExtensionId& extension_id,
+      int index) override;
   void OnHostAccessRequestRemoved(
       const extensions::ExtensionId& extension_id) override;
   void OnHostAccessRequestsCleared() override;
@@ -100,9 +99,8 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Delegate,
   // Updates current_page for the given `web_contents`.
   void UpdatePage(content::WebContents* web_contents);
 
-  // Updates `main_page` for the given `web_contents`.
-  void UpdateMainPage(ExtensionsMenuMainPageView* main_page,
-                      content::WebContents* web_contents);
+  // Updates the menu's main page.
+  void UpdateMainPage(ExtensionsMenuMainPageView* main_page);
 
   // Updates `site_permissions_page` for the given `web_contents`.
   void UpdateSitePermissionsPage(
@@ -121,9 +119,8 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Delegate,
   // `index`.
   void AddOrUpdateExtensionRequestingAccess(
       ExtensionsMenuMainPageView* main_page,
-      ExtensionActionViewModel* action_model,
-      int index,
-      content::WebContents* web_contents);
+      const extensions::ExtensionId& extension_id,
+      int index);
 
   // Returns the currently active web contents.
   content::WebContents* GetActiveWebContents() const;
