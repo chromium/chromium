@@ -115,6 +115,7 @@ void CastResolver::Resolve(CastResolver::ResolveRequest& request,
   static const uint64_t abi_revision = FetchAbiRevision();
   fuchsia_component_resolution::ResolverResolveResponse result{{
       .component = fuchsia_component_resolution::Component{{
+          .url = std::move(request.component_url()),
           .decl =
               fuchsia_mem::Data::WithBytes(std::move(persisted_decl.value())),
           .abi_revision = abi_revision,

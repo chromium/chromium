@@ -7,7 +7,6 @@
 
 #include <fidl/fuchsia.logger/cpp/fidl.h>
 #include <lib/syslog/structured_backend/cpp/fuchsia_syslog.h>
-#include <lib/syslog/structured_backend/cpp/logger.h>
 #include <lib/zx/socket.h>
 #include <stdint.h>
 
@@ -42,20 +41,20 @@ class BASE_EXPORT ScopedFxLogger {
       fidl::ClientEnd<fuchsia_logger::LogSink> client_end,
       std::vector<std::string_view> tags = {});
 
-  // Logs a message to the Fuchsia logger at the specified severity. This will
-  // *not* filter the message based on Fuchsia'a configured minimum severity
-  // level; the caller should take steps to filter messages accordingly.
   void LogMessage(std::string_view file,
                   uint32_t line_number,
                   std::string_view msg,
                   logging::LogSeverity severity);
 
-  bool is_valid() const { return logger_.IsValid(); }
+  bool is_valid() const { return socket_.is_valid(); }
 
  private:
-  ScopedFxLogger(fuchsia_logging::Logger logger) : logger_(std::move(logger)) {}
+  ScopedFxLogger(std::vector<std::string_view> tags, zx::socket socket);
 
-  fuchsia_logging::Logger logger_;
+  // For thread-safety these members should be treated as read-only.
+  // They are non-const only to allow move-assignment of ScopedFxLogger.
+  std::vector<std::string> tags_;
+  zx::socket socket_;
 };
 
 }  // namespace base

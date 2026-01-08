@@ -83,53 +83,56 @@ ScopedFxLogger ScopedFxLogger::CreateFromLogSink(
   // CHECK()ing or LOG()ing inside this function is safe, since it is only
   // called to initialize logging, not during individual logging operations.
 
-  // TODO(zijiehe): Update the signature to accept std::vector<std::string> and
-  // remove this conversion.
-  std::vector<std::string> str_tags;
-  for (std::string_view tag : tags) {
-    str_tags.push_back(std::string(tag));
-  }
-  std::vector<const char*> c_str_tags;
-  for (const std::string& tag : str_tags) {
-    c_str_tags.push_back(tag.c_str());
-  }
-  if (zx::result<fuchsia_logging::Logger> logger =
-          fuchsia_logging::Logger::Create(fuchsia_logging::RawLogSettings{
-              .log_sink = log_sink_client_end.TakeChannel().release(),
-              .tags = c_str_tags.data(),
-              .tags_count = c_str_tags.size(),
-          });
-      logger.is_error()) {
-    ZX_LOG(ERROR, logger.status_value()) << "Unable to create Fuchsia logger";
+  // Attempts to create a kernel socket object should never fail.
+  zx::socket local, remote;
+  zx_status_t socket_status =
+      zx::socket::create(ZX_SOCKET_DATAGRAM, &local, &remote);
+  ZX_CHECK(socket_status == ZX_OK, socket_status)
+      << "zx_socket_create() failed";
+
+  // ConnectStructured() may fail if e.g. the LogSink has disconnected already.
+  fidl::SyncClient log_sink(std::move(log_sink_client_end));
+  auto connect_structured_result =
+      log_sink->ConnectStructured(std::move(remote));
+  if (connect_structured_result.is_error()) {
+    ZX_LOG(ERROR, connect_structured_result.error_value().status())
+        << "ConnectStructured() failed";
     return {};
-  } else {
-    return ScopedFxLogger(*std::move(logger));
   }
+
+  return ScopedFxLogger(std::move(tags), std::move(local));
 }
 
 void ScopedFxLogger::LogMessage(std::string_view file,
                                 uint32_t line_number,
                                 std::string_view msg,
                                 logging::LogSeverity severity) {
-  if (!logger_.IsValid()) {
+  if (!socket_.is_valid()) {
     return;
   }
 
-  FuchsiaLogSeverity fuchsia_severity =
-      LogSeverityToFuchsiaLogSeverity(severity);
+  auto fuchsia_severity = LogSeverityToFuchsiaLogSeverity(severity);
 
   // It is not safe to use e.g. CHECK() or LOG() macros here, since those
   // may result in reentrancy if this instance is used for routing process-
   // global logs to the system logger.
 
-  fuchsia_logging::LogBuffer buffer;
-  buffer.BeginRecord(
-      fuchsia_severity, std::string_view(file.data(), file.size()), line_number,
-      std::string_view(msg.data(), msg.size()), 0,
-      base::Process::Current().Pid(), base::PlatformThread::CurrentId().raw());
-  if (logger_.FlushBuffer(buffer).is_error()) {
-    fprintf(stderr, "Logger::FlushBuffer failed\n");
+  fuchsia_syslog::LogBuffer buffer;
+  buffer.BeginRecord(fuchsia_severity,
+                     std::string_view(file.data(), file.size()), line_number,
+                     std::string_view(msg.data(), msg.size()),
+                     socket_.borrow(), 0, base::Process::Current().Pid(),
+                     base::PlatformThread::CurrentId().raw());
+  for (const auto& tag : tags_) {
+    buffer.WriteKeyValue("tag", tag);
+  }
+  if (!buffer.FlushRecord()) {
+    fprintf(stderr, "fuchsia_syslog.LogBuffer.FlushRecord() failed\n");
   }
 }
+
+ScopedFxLogger::ScopedFxLogger(std::vector<std::string_view> tags,
+                               zx::socket socket)
+    : tags_(tags.begin(), tags.end()), socket_(std::move(socket)) {}
 
 }  // namespace base
