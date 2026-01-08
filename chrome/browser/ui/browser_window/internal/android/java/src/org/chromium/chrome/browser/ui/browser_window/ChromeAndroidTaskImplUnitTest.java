@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.ActivityS
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskImpl.State;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskUnitTestSupport.ChromeAndroidTaskWithMockDeps;
 import org.chromium.chrome.browser.ui.browser_window.PendingActionManager.PendingAction;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.mojom.WindowShowState;
 
@@ -1022,10 +1023,8 @@ public class ChromeAndroidTaskImplUnitTest {
         var chromeAndroidTask =
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
 
-        // Arrange: Enter non-multi-window mode, where we can't set window bounds.
-        when(chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity
-                        .isInMultiWindowMode())
-                .thenReturn(false);
+        // Arrange: Enter non-desktop-windowing mode, where we can't set window bounds.
+        AppHeaderUtils.setAppInDesktopWindowForTesting(false);
 
         // Act.
         chromeAndroidTask.maximize();
@@ -1253,10 +1252,8 @@ public class ChromeAndroidTaskImplUnitTest {
         float dipScale = 2.0f;
         when(displayAndroid.getDipScale()).thenReturn(dipScale);
 
-        // Arrange: Enter non-multi-window mode, where we can't set window bounds.
-        when(chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity
-                        .isInMultiWindowMode())
-                .thenReturn(false);
+        // Arrange: Enter non-desktop-windowing mode, where we can't set window bounds.
+        AppHeaderUtils.setAppInDesktopWindowForTesting(false);
 
         // Act.
         Rect newBoundsInDp =
@@ -1375,10 +1372,8 @@ public class ChromeAndroidTaskImplUnitTest {
                 chromeAndroidTask.getRestoredBoundsInPxForTesting());
         chromeAndroidTask.getPendingActionManagerForTesting().clearPendingActionsForTesting();
 
-        // Arrange: Enter non-multi-window mode, where we can't set window bounds.
-        when(chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity
-                        .isInMultiWindowMode())
-                .thenReturn(false);
+        // Arrange: Enter non-desktop-windowing mode, where we can't set window bounds.
+        AppHeaderUtils.setAppInDesktopWindowForTesting(false);
 
         // Act
         chromeAndroidTask.restore();

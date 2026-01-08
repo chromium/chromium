@@ -44,7 +44,9 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.ui.browser_window.PendingActionManager.PendingAction;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
@@ -135,6 +137,7 @@ final class ChromeAndroidTaskImpl
     private static final class TopActivityScopedObjects {
         final Activity mActivity;
         final ActivityWindowAndroid mActivityWindowAndroid;
+        final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
         static @Nullable TopActivityScopedObjects obtain(ChromeAndroidTaskImpl chromeAndroidTask) {
             var activityScopedObjects = chromeAndroidTask.mActivityScopedObjectsDeque.peekFirst();
@@ -148,13 +151,19 @@ final class ChromeAndroidTaskImpl
                             : activityWindowAndroid.getActivity().get();
             return activityWindowAndroid == null || activity == null
                     ? null
-                    : new TopActivityScopedObjects(activity, activityWindowAndroid);
+                    : new TopActivityScopedObjects(
+                            activity,
+                            activityWindowAndroid,
+                            activityScopedObjects.mDesktopWindowStateManager);
         }
 
         private TopActivityScopedObjects(
-                Activity activity, ActivityWindowAndroid activityWindowAndroid) {
+                Activity activity,
+                ActivityWindowAndroid activityWindowAndroid,
+                @Nullable DesktopWindowStateManager desktopWindowStateManager) {
             mActivity = activity;
             mActivityWindowAndroid = activityWindowAndroid;
+            mDesktopWindowStateManager = desktopWindowStateManager;
         }
     }
 
@@ -276,7 +285,8 @@ final class ChromeAndroidTaskImpl
      * {@link #mState} is set to {@link State#PENDING_UPDATE}.
      */
     private static boolean canSetBounds(TopActivityScopedObjects topActivityScopedObjects) {
-        if (!isDesktopWindowingMode(topActivityScopedObjects)) {
+        if (!AppHeaderUtils.isAppInDesktopWindow(
+                topActivityScopedObjects.mDesktopWindowStateManager)) {
             return false;
         }
 
@@ -293,12 +303,6 @@ final class ChromeAndroidTaskImpl
         }
 
         return true;
-    }
-
-    private static boolean isDesktopWindowingMode(
-            TopActivityScopedObjects topActivityScopedObjects) {
-        // TODO(crbug.com/473907993): Use DesktopWindowStateManager to check desktop windowing mode.
-        return topActivityScopedObjects.mActivity.isInMultiWindowMode();
     }
 
     ChromeAndroidTaskImpl(
@@ -631,7 +635,8 @@ final class ChromeAndroidTaskImpl
 
         useActivity(
                 topActivityScopedObjects -> {
-                    if (!isDesktopWindowingMode(topActivityScopedObjects)
+                    if (!AppHeaderUtils.isAppInDesktopWindow(
+                                    topActivityScopedObjects.mDesktopWindowStateManager)
                             || !isActiveInternal(topActivityScopedObjects)) {
                         return;
                     }
@@ -716,7 +721,8 @@ final class ChromeAndroidTaskImpl
 
         useActivity(
                 topActivityScopedObjects -> {
-                    if (!isDesktopWindowingMode(topActivityScopedObjects)
+                    if (!AppHeaderUtils.isAppInDesktopWindow(
+                                    topActivityScopedObjects.mDesktopWindowStateManager)
                             || !isActiveInternal(topActivityScopedObjects)) {
                         return;
                     }

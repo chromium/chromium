@@ -21,6 +21,7 @@ if (is_android) {
       "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tabmodel:java",
+      "//chrome/browser/ui/android/desktop_windowing:java",
       "//chrome/browser/ui/android/multiwindow:java",
       "//chrome/browser/ui/browser_window/internal:java",
       "//chrome/browser/ui/browser_window/public/android:java",
