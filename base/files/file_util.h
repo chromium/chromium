@@ -543,7 +543,7 @@ BASE_EXPORT bool TouchFile(const FilePath& path,
 // Wrapper for fopen-like calls. Returns non-NULL FILE* on success. The
 // underlying file descriptor (POSIX) or handle (Windows) is unconditionally
 // configured to not be propagated to child processes.
-BASE_EXPORT FILE* OpenFile(const FilePath& filename, const char* mode);
+BASE_EXPORT FILE* OpenFile(const FilePath& filename, base::cstring_view mode);
 
 // Closes file opened by OpenFile. Returns true on success.
 BASE_EXPORT bool CloseFile(FILE* file);

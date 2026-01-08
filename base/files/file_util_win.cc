@@ -25,7 +25,6 @@
 
 #include "base/check.h"
 #include "base/clang_profiling_buildflags.h"
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/files/file_enumerator.h"
@@ -971,17 +970,16 @@ bool GetFileInfo(const FilePath& file_path, File::Info* results) {
   return true;
 }
 
-FILE* OpenFile(const FilePath& filename, const char* mode) {
-  std::string_view mode_view(mode);
-  size_t n_pos = mode_view.find('N');
-  size_t comma_pos = mode_view.find(',');
+FILE* OpenFile(const FilePath& filename, base::cstring_view mode) {
+  size_t n_pos = mode.find('N');
+  size_t comma_pos = mode.find(',');
 
   // 'N' is unconditionally added below, so be sure there is not one already
   // present before a comma in `mode`.
-  DCHECK(n_pos == std::string_view::npos ||
-         (comma_pos != std::string_view::npos && n_pos > comma_pos));
+  DCHECK(n_pos == base::cstring_view::npos ||
+         (comma_pos != base::cstring_view::npos && n_pos > comma_pos));
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  std::wstring w_mode = UTF8ToWide(mode_view);
+  std::wstring w_mode = UTF8ToWide(mode);
   AppendModeCharacter(L'N', &w_mode);
   return _wfsopen(filename.value().c_str(), w_mode.c_str(), _SH_DENYNO);
 }

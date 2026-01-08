@@ -12,7 +12,6 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <sys/mman.h>
 #include <sys/param.h>
 #include <sys/time.h>
@@ -30,7 +29,6 @@
 #include "base/base_switches.h"
 #include "base/bits.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/stack.h"
@@ -1049,12 +1047,13 @@ bool GetFileInfo(const FilePath& file_path, File::Info* results) {
   return true;
 }
 
-FILE* OpenFile(const FilePath& filename, const char* mode) {
+FILE* OpenFile(const FilePath& filename, base::cstring_view mode) {
   // 'e' is unconditionally added below, so be sure there is not one already
   // present before a comma in |mode|.
-  DCHECK(UNSAFE_TODO(strchr(mode, 'e')) == nullptr ||
-         (UNSAFE_TODO(strchr(mode, ',')) != nullptr &&
-          UNSAFE_TODO(strchr(mode, 'e')) > UNSAFE_TODO(strchr(mode, ','))));
+  size_t e_pos = mode.find('e');
+  size_t comma_pos = mode.find(',');
+  DCHECK(e_pos == base::cstring_view::npos ||
+         (comma_pos != base::cstring_view::npos && e_pos > comma_pos));
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   FILE* result = nullptr;
 #if BUILDFLAG(IS_ANDROID)
@@ -1069,13 +1068,13 @@ FILE* OpenFile(const FilePath& filename, const char* mode) {
     if (fd < 0) {
       return nullptr;
     }
-    return fdopen(fd, mode);
+    return fdopen(fd, mode.c_str());
   }
 #endif
 #if BUILDFLAG(IS_APPLE)
   // macOS does not provide a mode character to set O_CLOEXEC; see
   // https://developer.apple.com/legacy/library/documentation/Darwin/Reference/ManPages/man3/fopen.3.html.
-  const char* the_mode = mode;
+  const char* the_mode = mode.c_str();
 #else
   std::string mode_with_e(AppendModeCharacter(mode, 'e'));
   const char* the_mode = mode_with_e.c_str();
