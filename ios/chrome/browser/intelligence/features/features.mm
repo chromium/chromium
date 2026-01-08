@@ -381,13 +381,6 @@ bool IsGeminiImageRemixToolEnabled() {
   return base::FeatureList::IsEnabled(kGeminiImageRemixTool);
 }
 
-BASE_FEATURE(kImageContextMenuGeminiEntryPoint,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsImageContextMenuGeminiEntryPointEnabled() {
-  return base::FeatureList::IsEnabled(kImageContextMenuGeminiEntryPoint);
-}
-
 BASE_FEATURE(kGeminiEligibilityAblation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiEligibilityAblationEnabled() {

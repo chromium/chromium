@@ -6059,11 +6059,6 @@
     "expiry_milestone": 136
   },
   {
-    "name": "image-context-menu-gemini-entry-point",
-    "owners": [ "nicolasmacbeth@google.com", "bling-alchemy-eng@google.com" ],
-    "expiry_milestone": 148
-  },
-  {
     "name": "image-descriptions-alternative-routing",
     "owners": [ "francisjp@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 132

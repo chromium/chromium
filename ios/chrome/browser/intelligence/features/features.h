@@ -280,11 +280,6 @@ bool IsWebPageReportedImagesSheetEnabled();
 BASE_DECLARE_FEATURE(kGeminiImageRemixTool);
 bool IsGeminiImageRemixToolEnabled();
 
-// Feature flag for enabling passing an image from the long-press context menu
-// to Gemini.
-BASE_DECLARE_FEATURE(kImageContextMenuGeminiEntryPoint);
-bool IsImageContextMenuGeminiEntryPointEnabled();
-
 // Feature flag for enabling the Gemini eligibility ablation experiment.
 BASE_DECLARE_FEATURE(kGeminiEligibilityAblation);
 bool IsGeminiEligibilityAblationEnabled();

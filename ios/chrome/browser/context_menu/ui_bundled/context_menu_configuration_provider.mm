@@ -531,10 +531,10 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   __weak __typeof(self) weakSelf = self;
 
   // Launch the Gemini experience with an image attached.
-  BOOL canShowGeminiElement =
-      IsImageContextMenuGeminiEntryPointEnabled() &&
-      BwgServiceFactory::GetForProfile(self.browser->GetProfile())
-          ->IsBwgAvailableForWebState(webState);
+  raw_ptr<BwgService> BWGService =
+      BwgServiceFactory::GetForProfile(self.browser->GetProfile());
+  BOOL canShowGeminiElement = IsGeminiImageRemixToolEnabled() && BWGService &&
+                              BWGService->IsBwgAvailableForWebState(webState);
   if (canShowGeminiElement) {
     ProceduralBlock geminiElementCallback = ^{
       [weakSelf openGeminiWithImageURL:imageURL referrer:referrer];
