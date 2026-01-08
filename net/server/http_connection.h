@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
@@ -87,7 +88,7 @@ class NET_EXPORT HttpConnection {
     // Appends new pending data and returns true if total size doesn't exceed
     // the limit, |total_size_limit_|.  It would change data() if new data is
     // the first pending data.
-    bool Append(const std::string& data);
+    bool Append(std::string_view data);
 
     // Consumes data and changes data() accordingly.  It cannot be more than
     // GetSizeToWrite().

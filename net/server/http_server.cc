@@ -93,7 +93,7 @@ void HttpServer::SendOverWebSocket(
 }
 
 void HttpServer::SendRaw(int connection_id,
-                         const std::string& data,
+                         std::string_view data,
                          NetworkTrafficAnnotationTag traffic_annotation) {
   HttpConnection* connection = FindConnection(connection_id);
   if (connection == nullptr)
@@ -112,8 +112,8 @@ void HttpServer::SendResponse(int connection_id,
 
 void HttpServer::Send(int connection_id,
                       HttpStatusCode status_code,
-                      const std::string& data,
-                      const std::string& content_type,
+                      std::string_view data,
+                      std::string_view content_type,
                       NetworkTrafficAnnotationTag traffic_annotation) {
   HttpServerResponseInfo response(status_code);
   response.SetContentHeaders(data.size(), content_type);
@@ -122,8 +122,8 @@ void HttpServer::Send(int connection_id,
 }
 
 void HttpServer::Send200(int connection_id,
-                         const std::string& data,
-                         const std::string& content_type,
+                         std::string_view data,
+                         std::string_view content_type,
                          NetworkTrafficAnnotationTag traffic_annotation) {
   Send(connection_id, HTTP_OK, data, content_type, traffic_annotation);
 }
@@ -135,7 +135,7 @@ void HttpServer::Send404(int connection_id,
 }
 
 void HttpServer::Send500(int connection_id,
-                         const std::string& message,
+                         std::string_view message,
                          NetworkTrafficAnnotationTag traffic_annotation) {
   SendResponse(connection_id, HttpServerResponseInfo::CreateFor500(message),
                traffic_annotation);
