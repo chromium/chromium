@@ -49,6 +49,9 @@ namespace {
 /// Minimum vertical inset, defaults from UITextView.
 const CGFloat kMinVerticalInset = 8.0;
 
+/// The placeholder leading padding.
+const CGFloat kPlaceholderLeadingPadding = 4.0;
+
 }  // namespace
 
 @interface OmniboxTextViewIOS () <UIGestureRecognizerDelegate,
@@ -177,7 +180,6 @@ const CGFloat kMinVerticalInset = 8.0;
   // Align placeholder with the text view's content area by constraining it
   // directly to the text view's frame and then adding the internal insets.
   UIEdgeInsets textInsets = self.textContainerInset;
-  CGFloat linePadding = self.textContainer.lineFragmentPadding;
   _placeholderTopConstraint =
       [placeholderLabel.topAnchor constraintEqualToAnchor:self.topAnchor
                                                  constant:textInsets.top];
@@ -185,7 +187,7 @@ const CGFloat kMinVerticalInset = 8.0;
     _placeholderTopConstraint,
     [placeholderLabel.leadingAnchor
         constraintEqualToAnchor:self.leadingAnchor
-                       constant:textInsets.left + linePadding],
+                       constant:kPlaceholderLeadingPadding],
     [placeholderLabel.trailingAnchor
         constraintEqualToAnchor:self.trailingAnchor],
   ]];
