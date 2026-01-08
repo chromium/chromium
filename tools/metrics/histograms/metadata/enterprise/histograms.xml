@@ -872,18 +872,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.DeviceSettings.UpdatedStatus"
-    enum="DeviceSettingsStatus" expires_after="M141">
-  <owner>rbock@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <owner>managed-devices@google.com</owner>
-  <summary>
-    Deprecated. Use Enterprise.DeviceSettings.UpdatedStatus2 instead. Recorded
-    every time as DeviceSettingsProvider updates its current state. Used to
-    compare rate of Enterprise.DeviceSettings.MissingPolicyMitigated event.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.DeviceSettings.UpdatedStatus2"
     enum="DeviceSettingsStatus2" expires_after="2026-06-07">
   <owner>rbock@google.com</owner>
