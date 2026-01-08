@@ -738,15 +738,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     }
 
     private boolean isOlderThanSixMonths(long timestampMillis) {
-        return (TimeUtils.currentTimeMillis() - timestampMillis) > SIX_MONTHS_MS;
+        // Only consider a valid timestamp to check for instance retention expiration.
+        return timestampMillis > 0
+                && (TimeUtils.currentTimeMillis() - timestampMillis) > SIX_MONTHS_MS;
     }
 
     @Override
     public int getCurrentInstanceId() {
-        List<InstanceInfo> allInstances = getInstanceInfo(PersistedInstanceType.ANY);
-        if (allInstances == null || allInstances.isEmpty()) return INVALID_WINDOW_ID;
-        // Current instance is at top of list.
-        return allInstances.get(0).instanceId;
+        return mInstanceId;
     }
 
     @VisibleForTesting

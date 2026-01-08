@@ -1037,6 +1037,7 @@ public class MultiInstanceManagerApi31UnitTest {
         // Ensure the single instance at non-zero position is handled okay.
         int expected = 2;
         assertEquals(expected, allocInstanceIndex(expected, mActivityTask56));
+        mMultiInstanceManager.initialize(expected, TASK_ID_56, SupportedProfileType.MIXED);
         int id = mMultiInstanceManager.getCurrentInstanceId();
         assertEquals("Current instanceId is not as expected", expected, id);
     }
@@ -1522,8 +1523,11 @@ public class MultiInstanceManagerApi31UnitTest {
         mMultiInstanceManager.mTestBuildInstancesList = true;
         MultiWindowTestUtils.enableMultiInstance();
         // Allocate and create two instances.
-        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62, true));
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mCurrentActivity, true));
+        mMultiInstanceManager.initialize(0, TASK_ID_56, SupportedProfileType.MIXED);
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63, true));
+        var multiInstanceManager = createMultiInstanceManager(mTabbedActivityTask63);
+        multiInstanceManager.initialize(1, TASK_ID_63, SupportedProfileType.MIXED);
         assertEquals(2, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
     }
 
