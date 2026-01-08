@@ -18,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/browser/webid/idp_network_request_manager.h"
 #include "content/browser/webid/request_service.h"
 #include "content/browser/webid/test/federated_auth_request_request_token_callback_helper.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
@@ -117,9 +118,11 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                            const GURL& accounts_url,
                            const std::string& client_id,
                            AccountsRequestCallback callback) override {
+    IdpNetworkRequestManager::AccountsResponse response;
+    response.accounts = kAccounts;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), kFetchStatusSuccess, kAccounts));
+        FROM_HERE, base::BindOnce(std::move(callback), kFetchStatusSuccess,
+                                  std::move(response)));
     return true;
   }
 

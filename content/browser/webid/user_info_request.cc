@@ -210,7 +210,7 @@ void UserInfoRequest::OnAllConfigAndWellKnownFetched(
 
 void UserInfoRequest::OnAccountsResponseReceived(
     FetchStatus fetch_status,
-    std::vector<IdentityRequestAccountPtr> accounts) {
+    IdpNetworkRequestManager::AccountsResponse accounts) {
   UpdateIdpSigninStatusForAccountsEndpointResponse(
       *render_frame_host_, idp_config_url_, fetch_status,
       does_idp_have_failing_signin_status_, permission_delegate_);
@@ -226,7 +226,7 @@ void UserInfoRequest::OnAccountsResponseReceived(
 
   // Populate the accounts' login state based on browser stored permission
   // grants.
-  for (auto& account : accounts) {
+  for (auto& account : accounts.accounts) {
     LoginState login_state = LoginState::kSignUp;
     // Consider this a sign-in if we have seen a successful sign-up for
     // this account before.
@@ -237,8 +237,7 @@ void UserInfoRequest::OnAccountsResponseReceived(
     }
     account->browser_trusted_login_state = login_state;
   }
-
-  MaybeReturnAccounts(std::move(accounts));
+  MaybeReturnAccounts(std::move(accounts.accounts));
 }
 
 void UserInfoRequest::MaybeReturnAccounts(

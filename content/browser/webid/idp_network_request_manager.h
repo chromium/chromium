@@ -204,11 +204,20 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
 
   // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmErrorUrlType)
 
+  struct CONTENT_EXPORT AccountsResponse {
+    AccountsResponse();
+    ~AccountsResponse();
+    AccountsResponse(const AccountsResponse&);
+    AccountsResponse(AccountsResponse&&);
+    AccountsResponse& operator=(const AccountsResponse&);
+
+    std::vector<IdentityRequestAccountPtr> accounts;
+  };
+
   using AccountsRequestCallback =
-      base::OnceCallback<void(FetchStatus,
-                              std::vector<IdentityRequestAccountPtr>)>;
+      base::OnceCallback<void(FetchStatus, AccountsResponse)>;
   using FetchAccountPicturesAndBrandIconsCallback =
-      base::OnceCallback<void(std::vector<IdentityRequestAccountPtr>,
+      base::OnceCallback<void(AccountsResponse,
                               std::unique_ptr<IdentityProviderInfo>,
                               const gfx::Image&)>;
   using FetchIdpBrandIconCallback =
@@ -314,7 +323,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
   virtual void DownloadAndDecodeImage(const GURL& url, ImageCallback callback);
 
   void FetchAccountPicturesAndBrandIcons(
-      const std::vector<IdentityRequestAccountPtr>& accounts,
+      const AccountsResponse& accounts,
       std::unique_ptr<IdentityProviderInfo> idp_info,
       const GURL& rp_brand_icon_url,
       FetchAccountPicturesAndBrandIconsCallback callback);
@@ -350,7 +359,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
   void OnAllAccountPicturesAndBrandIconUrlReceived(
       FetchAccountPicturesAndBrandIconsCallback callback,
       std::unique_ptr<IdentityProviderInfo> idp_info,
-      std::vector<IdentityRequestAccountPtr>&& accounts,
+      AccountsResponse&& accounts,
       const GURL& rp_brand_icon_url);
   void OnIdpBrandIconReceived(std::unique_ptr<IdentityProviderInfo> idp_info,
                               FetchIdpBrandIconCallback callback);

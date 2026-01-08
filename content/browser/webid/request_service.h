@@ -273,7 +273,7 @@ class CONTENT_EXPORT RequestService
   // fetched for `idp_info`. Accounts should be moved instead of copied to this
   // function.
   void OnFetchDataForIdpSucceeded(
-      std::vector<IdentityRequestAccountPtr> accounts,
+      IdpNetworkRequestManager::AccountsResponse accounts,
       std::unique_ptr<IdentityProviderInfo> idp_info);
 
   void MaybeShowActiveModeModalDialog(const GURL& idp_config_url,

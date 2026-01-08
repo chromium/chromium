@@ -90,22 +90,22 @@ class AccountsFetcher {
   void OnAccountsResponseReceived(
       std::unique_ptr<IdentityProviderInfo> idp_info,
       FetchStatus status,
-      std::vector<IdentityRequestAccountPtr> accounts);
+      IdpNetworkRequestManager::AccountsResponse accounts);
 
   void OnAccountsFetchSucceeded(
       std::unique_ptr<IdentityProviderInfo> idp_info,
       FetchStatus status,
-      std::vector<IdentityRequestAccountPtr> accounts);
+      IdpNetworkRequestManager::AccountsResponse accounts);
 
   void OnClientMetadataResponseReceived(
       std::unique_ptr<IdentityProviderInfo> idp_info,
-      std::vector<IdentityRequestAccountPtr>&& accounts,
+      IdpNetworkRequestManager::AccountsResponse&& accounts,
       FetchStatus status,
       IdpNetworkRequestManager::ClientMetadata client_metadata);
 
   void OnFetchDataForIdpSucceeded(
       const IdpNetworkRequestManager::ClientMetadata& client_metadata,
-      std::vector<IdentityRequestAccountPtr> accounts,
+      IdpNetworkRequestManager::AccountsResponse accounts,
       std::unique_ptr<IdentityProviderInfo> idp_info,
       const gfx::Image& rp_brand_icon);
 

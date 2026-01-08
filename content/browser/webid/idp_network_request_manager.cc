@@ -76,6 +76,16 @@ using ErrorUrlType = IdpNetworkRequestManager::FedCmErrorUrlType;
 using TokenResponseType = IdpNetworkRequestManager::FedCmTokenResponseType;
 using TokenResult = IdpNetworkRequestManager::TokenResult;
 
+IdpNetworkRequestManager::AccountsResponse::AccountsResponse() = default;
+IdpNetworkRequestManager::AccountsResponse::AccountsResponse(
+    AccountsResponse&&) = default;
+IdpNetworkRequestManager::AccountsResponse::AccountsResponse(
+    const AccountsResponse&) = default;
+IdpNetworkRequestManager::AccountsResponse::~AccountsResponse() = default;
+IdpNetworkRequestManager::AccountsResponse&
+IdpNetworkRequestManager::AccountsResponse::operator=(
+    const IdpNetworkRequestManager::AccountsResponse&) = default;
+
 namespace {
 
 // Path to find the well-known file on the eTLD+1 host.
@@ -581,23 +591,23 @@ void OnAccountsRequestParsed(
     IdpNetworkRequestManager::AccountsRequestCallback callback,
     FetchStatus fetch_status,
     data_decoder::DataDecoder::ValueOrError result) {
-  std::vector<IdentityRequestAccountPtr> account_list;
+  IdpNetworkRequestManager::AccountsResponse response;
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
     webid::RecordAccountsResponseInvalidReason(
         AccountsResponseInvalidReason::kResponseIsNotJsonOrDict);
-    std::move(callback).Run(fetch_status, account_list);
+    std::move(callback).Run(fetch_status, std::move(response));
     return;
   }
 
-  const base::Value::Dict& response = result->GetDict();
-  const base::Value::List* accounts = response.FindList(kAccountsKey);
+  const base::Value::Dict& response_dict = result->GetDict();
+  const base::Value::List* accounts = response_dict.FindList(kAccountsKey);
 
   if (!accounts) {
     webid::RecordAccountsResponseInvalidReason(
         AccountsResponseInvalidReason::kNoAccountsKey);
     std::move(callback).Run(
         {ParseStatus::kInvalidResponseError, fetch_status.response_code},
-        account_list);
+        std::move(response));
     return;
   }
 
@@ -606,14 +616,14 @@ void OnAccountsRequestParsed(
         AccountsResponseInvalidReason::kAccountListIsEmpty);
     std::move(callback).Run(
         {ParseStatus::kEmptyListError, fetch_status.response_code},
-        account_list);
+        std::move(response));
     return;
   }
 
   AccountsResponseInvalidReason parsing_error =
       AccountsResponseInvalidReason::kResponseIsNotJsonOrDict;
   bool accounts_valid =
-      ParseAccounts(*accounts, account_list, client_id,
+      ParseAccounts(*accounts, response.accounts, client_id,
                     fetch_status.from_accounts_push, parsing_error);
 
   if (!accounts_valid) {
@@ -623,12 +633,12 @@ void OnAccountsRequestParsed(
 
     std::move(callback).Run(
         {ParseStatus::kInvalidResponseError, fetch_status.response_code},
-        std::vector<IdentityRequestAccountPtr>());
+        IdpNetworkRequestManager::AccountsResponse());
     return;
   }
 
   std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
-                          std::move(account_list));
+                          std::move(response));
 }
 
 std::pair<GURL, std::optional<ErrorUrlType>> GetErrorUrlAndType(
@@ -1201,7 +1211,7 @@ void IdpNetworkRequestManager::DownloadAndDecodeImage(const GURL& url,
 }
 
 void IdpNetworkRequestManager::FetchAccountPicturesAndBrandIcons(
-    const std::vector<IdentityRequestAccountPtr>& accounts,
+    const AccountsResponse& accounts,
     std::unique_ptr<IdentityProviderInfo> idp_info,
     const GURL& rp_brand_icon_url,
     FetchAccountPicturesAndBrandIconsCallback callback) {
@@ -1210,13 +1220,13 @@ void IdpNetworkRequestManager::FetchAccountPicturesAndBrandIcons(
 
   auto barrier_callback = base::BarrierClosure(
       // Wait for all accounts plus the brand icon URLs.
-      accounts.size() + 2,
+      accounts.accounts.size() + 2,
       base::BindOnce(&IdpNetworkRequestManager::
                          OnAllAccountPicturesAndBrandIconUrlReceived,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(idp_info), accounts, rp_brand_icon_url));
 
-  for (const auto& account : accounts) {
+  for (const auto& account : accounts.accounts) {
     if (webid::IsLightweightModeEnabled() && account->from_accounts_push) {
       FetchCachedAccountImage(url::Origin::Create(config_url), account->picture,
                               barrier_callback);
@@ -1277,9 +1287,9 @@ void IdpNetworkRequestManager::OnImageReceived(base::OnceClosure callback,
 void IdpNetworkRequestManager::OnAllAccountPicturesAndBrandIconUrlReceived(
     FetchAccountPicturesAndBrandIconsCallback callback,
     std::unique_ptr<IdentityProviderInfo> idp_info,
-    std::vector<IdentityRequestAccountPtr>&& accounts,
+    AccountsResponse&& accounts,
     const GURL& rp_brand_icon_url) {
-  for (auto& account : accounts) {
+  for (auto& account : accounts.accounts) {
     auto it = downloaded_images_.find(account->picture);
     if (it != downloaded_images_.end()) {
       // We do not use std::move here in case multiple accounts use the same

@@ -21,6 +21,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webid/disconnect_request.h"
+#include "content/browser/webid/idp_network_request_manager.h"
 #include "content/browser/webid/metrics.h"
 #include "content/browser/webid/test/delegated_idp_network_request_manager.h"
 #include "content/browser/webid/test/federated_auth_request_request_token_callback_helper.h"
@@ -428,10 +429,11 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       }
     }
 
+    IdpNetworkRequestManager::AccountsResponse response;
+    response.accounts = accounts_list_.empty() ? info.accounts : accounts_list_;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), info.accounts_response,
-                                  accounts_list_.empty() ? info.accounts
-                                                         : accounts_list_));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), info.accounts_response, response));
     return true;
   }
 
@@ -4284,8 +4286,9 @@ class ParseStatusOverrideIdpNetworkRequestManager
 
       FetchStatus fetch_status{accounts_parse_status_, net::HTTP_OK};
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), fetch_status,
-                                    std::vector<IdentityRequestAccountPtr>()));
+          FROM_HERE,
+          base::BindOnce(std::move(callback), fetch_status,
+                         IdpNetworkRequestManager::AccountsResponse()));
       return true;
     }
 

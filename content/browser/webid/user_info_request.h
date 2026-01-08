@@ -65,7 +65,7 @@ class CONTENT_EXPORT UserInfoRequest {
 
   void OnAccountsResponseReceived(
       FetchStatus fetch_status,
-      std::vector<IdentityRequestAccountPtr> accounts);
+      IdpNetworkRequestManager::AccountsResponse accounts);
 
   void MaybeReturnAccounts(
       const std::vector<IdentityRequestAccountPtr>& accounts);

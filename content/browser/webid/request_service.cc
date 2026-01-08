@@ -858,7 +858,7 @@ UseOtherAccountResult RequestService::ComputeUseOtherAccountResult(
 }
 
 void RequestService::OnFetchDataForIdpSucceeded(
-    std::vector<IdentityRequestAccountPtr> accounts,
+    IdpNetworkRequestManager::AccountsResponse accounts,
     std::unique_ptr<IdentityProviderInfo> idp_info) {
   fetch_data_.did_succeed_for_at_least_one_idp = true;
 
@@ -872,7 +872,7 @@ void RequestService::OnFetchDataForIdpSucceeded(
     });
   }
   idp_infos_[idp_config_url] = std::move(idp_info);
-  idp_accounts_[idp_config_url] = std::move(accounts);
+  idp_accounts_[idp_config_url] = std::move(accounts.accounts);
 
   fetch_data_.pending_idps.erase(idp_config_url);
   MaybeShowAccountsDialog();

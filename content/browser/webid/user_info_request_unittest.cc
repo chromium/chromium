@@ -168,16 +168,18 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                            AccountsRequestCallback callback) override {
     has_fetched_accounts_endpoint_ = true;
 
-    std::vector<IdentityRequestAccountPtr> accounts;
+    IdpNetworkRequestManager::AccountsResponse accounts;
     for (const AccountConfig& account_config : config_.accounts) {
-      accounts.emplace_back(base::MakeRefCounted<IdentityRequestAccount>(
-          account_config.id, GenerateEmailForUserId(account_config.id),
-          kAccountName, GenerateEmailForUserId(account_config.id), kAccountName,
-          kAccountGivenName, GURL(kAccountPicture), kAccountPhone,
-          kAccountUsername,
-          /*login_hints=*/std::vector<std::string>(),
-          /*domain_hints=*/std::vector<std::string>(),
-          /*labels=*/std::vector<std::string>(), account_config.login_state));
+      accounts.accounts.emplace_back(
+          base::MakeRefCounted<IdentityRequestAccount>(
+              account_config.id, GenerateEmailForUserId(account_config.id),
+              kAccountName, GenerateEmailForUserId(account_config.id),
+              kAccountName, kAccountGivenName, GURL(kAccountPicture),
+              kAccountPhone, kAccountUsername,
+              /*login_hints=*/std::vector<std::string>(),
+              /*domain_hints=*/std::vector<std::string>(),
+              /*labels=*/std::vector<std::string>(),
+              account_config.login_state));
     }
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "content/browser/webid/config_fetcher.h"
 #include "content/browser/webid/flags.h"
+#include "content/browser/webid/idp_network_request_manager.h"
 #include "content/browser/webid/mappers.h"
 #include "content/browser/webid/request_service.h"
 #include "content/browser/webid/webid_utils.h"
@@ -312,7 +313,7 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
 void AccountsFetcher::OnAccountsResponseReceived(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     FetchStatus status,
-    std::vector<IdentityRequestAccountPtr> accounts) {
+    IdpNetworkRequestManager::AccountsResponse accounts) {
   federated_auth_request_impl_->SetAccountsFetchedTime(base::TimeTicks::Now());
 
   GURL idp_config_url = idp_info->provider->config->config_url;
@@ -331,11 +332,14 @@ void AccountsFetcher::OnAccountsResponseReceived(
                                resultAndTokenStatus.second, status);
     return;
   }
-  RecordRawAccountsSize(accounts.size());
-  RecordAccountFieldsType(accounts);
-  FilterAccountsWithLabel(idp_info->metadata.requested_label, accounts);
-  FilterAccountsWithLoginHint(idp_info->provider->login_hint, accounts);
-  FilterAccountsWithDomainHint(idp_info->provider->domain_hint, accounts);
+  RecordRawAccountsSize(accounts.accounts.size());
+  RecordAccountFieldsType(accounts.accounts);
+  FilterAccountsWithLabel(idp_info->metadata.requested_label,
+                          accounts.accounts);
+  FilterAccountsWithLoginHint(idp_info->provider->login_hint,
+                              accounts.accounts);
+  FilterAccountsWithDomainHint(idp_info->provider->domain_hint,
+                               accounts.accounts);
   auto filter = [](const IdentityRequestAccountPtr& account) {
     return account->is_filtered_out;
   };
@@ -343,23 +347,23 @@ void AccountsFetcher::OnAccountsResponseReceived(
           idp_config_url) ||
       federated_auth_request_impl_->login_url() !=
           idp_info->metadata.idp_login_url) {
-    std::erase_if(accounts, filter);
+    std::erase_if(accounts.accounts, filter);
   } else {
     // If the user is logging in to new accounts, only show filtered
     // accounts if there are no new unfiltered accounts. This includes in
     // particular the case where all accounts are filtered out.
     size_t new_unfiltered = std::count_if(
-        accounts.begin(), accounts.end(),
+        accounts.accounts.begin(), accounts.accounts.end(),
         [&](const IdentityRequestAccountPtr& account) {
           return !account->is_filtered_out &&
                  !federated_auth_request_impl_->HadAccountIdBeforeLogin(
                      account->id);
         });
     if (new_unfiltered > 0u) {
-      std::erase_if(accounts, filter);
+      std::erase_if(accounts.accounts, filter);
     }
   }
-  if (accounts.size() == 0u) {
+  if (accounts.accounts.size() == 0u) {
     // No accounts remain, so treat as account fetch failure.
     render_frame_host_->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
@@ -373,10 +377,10 @@ void AccountsFetcher::OnAccountsResponseReceived(
                                TokenStatus::kAccountsListEmpty, status);
     return;
   }
-  RecordReadyToShowAccountsSize(accounts.size());
-  ComputeLoginStates(idp_info->provider->config->config_url, accounts);
+  RecordReadyToShowAccountsSize(accounts.accounts.size());
+  ComputeLoginStates(idp_info->provider->config->config_url, accounts.accounts);
   ComputeAccountFields(GetDisclosureFields(idp_info->provider->fields),
-                       accounts);
+                       accounts.accounts);
 
   OnAccountsFetchSucceeded(std::move(idp_info), status, std::move(accounts));
 }
@@ -384,7 +388,7 @@ void AccountsFetcher::OnAccountsResponseReceived(
 void AccountsFetcher::OnAccountsFetchSucceeded(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     FetchStatus status,
-    std::vector<IdentityRequestAccountPtr> accounts) {
+    IdpNetworkRequestManager::AccountsResponse accounts) {
   // For cross-site iframes, we need to fetch client metadata in case the
   // IDP sends `client_is_third_party_to_top_frame_origin: true`.
   url::Origin embedding_origin =
@@ -392,10 +396,11 @@ void AccountsFetcher::OnAccountsFetchSucceeded(
   url::Origin rp_origin = render_frame_host_->GetLastCommittedOrigin();
   bool need_client_metadata =
       !net::SchemefulSite::IsSameSite(embedding_origin, rp_origin);
+
   if (!need_client_metadata &&
       !idp_info->provider->config->from_idp_registration_api &&
       !GetDisclosureFields(idp_info->provider->fields).empty()) {
-    for (const auto& account : accounts) {
+    for (const auto& account : accounts.accounts) {
       if (account->idp_claimed_login_state.value_or(
               account->browser_trusted_login_state) == LoginState::kSignUp) {
         need_client_metadata |= true;
@@ -430,7 +435,7 @@ void AccountsFetcher::OnAccountsFetchSucceeded(
 
 void AccountsFetcher::OnClientMetadataResponseReceived(
     std::unique_ptr<IdentityProviderInfo> idp_info,
-    std::vector<IdentityRequestAccountPtr>&& accounts,
+    IdpNetworkRequestManager::AccountsResponse&& accounts,
     FetchStatus status,
     IdpNetworkRequestManager::ClientMetadata client_metadata) {
   federated_auth_request_impl_->SetClientMetadataFetchedTime(
@@ -449,7 +454,7 @@ void AccountsFetcher::OnClientMetadataResponseReceived(
 
 void AccountsFetcher::OnFetchDataForIdpSucceeded(
     const IdpNetworkRequestManager::ClientMetadata& client_metadata,
-    std::vector<IdentityRequestAccountPtr> accounts,
+    IdpNetworkRequestManager::AccountsResponse accounts,
     std::unique_ptr<IdentityProviderInfo> idp_info,
     const gfx::Image& rp_brand_icon) {
   const GURL& idp_config_url = idp_info->provider->config->config_url;
@@ -468,7 +473,7 @@ void AccountsFetcher::OnFetchDataForIdpSucceeded(
       /*has_login_status_mismatch=*/false);
   idp_info->client_is_third_party_to_top_frame_origin =
       client_metadata.client_is_third_party_to_top_frame_origin;
-  for (auto& account : accounts) {
+  for (auto& account : accounts.accounts) {
     account->identity_provider = idp_info->data;
   }
 
