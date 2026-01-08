@@ -93,8 +93,16 @@ class ViewTransitionBrowserTest : public ContentBrowserTest {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
+// TODO(crbug.com/468211765): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_NavigationCancelledAfterScreenshot \
+  DISABLED_NavigationCancelledAfterScreenshot
+#else
+#define MAYBE_NavigationCancelledAfterScreenshot \
+  NavigationCancelledAfterScreenshot
+#endif
 IN_PROC_BROWSER_TEST_F(ViewTransitionBrowserTest,
-                       NavigationCancelledAfterScreenshot) {
+                       MAYBE_NavigationCancelledAfterScreenshot) {
   // Start with a page which has an opt-in for VT.
   GURL test_url(
       embedded_test_server()->GetURL("/view_transitions/basic-vt-opt-in.html"));
