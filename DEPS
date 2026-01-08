@@ -2106,7 +2106,7 @@ deps = {
     Var('chromium_git') + '/chromium/deps/flac.git' + '@' + '807e251d9f8c5dd6059e547931e9c6a4251967af',
 
   'src/third_party/flatbuffers/src':
-    Var('chromium_git') + '/external/github.com/google/flatbuffers.git' + '@' + '187240970746d00bbd26b0f5873ed54d2477f9f3',
+    Var('chromium_git') + '/external/github.com/google/flatbuffers.git' + '@' + 'a86afae9399bbe631d1ea0783f8816e780e236cc',
 
   'src/third_party/fontconfig/src': {
       'url': Var('chromium_git') + '/external/fontconfig.git' + '@' + 'd62c2ab268d1679335daa8fb0ea6970f35224a76',
