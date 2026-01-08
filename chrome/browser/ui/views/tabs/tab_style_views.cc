@@ -49,15 +49,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
-
-Tab* GetLeftTab(const Tab* tab) {
-  return tab->controller()->GetAdjacentTab(tab, base::i18n::IsRTL() ? 1 : -1);
-}
-
-Tab* GetRightTab(const Tab* tab) {
-  return tab->controller()->GetAdjacentTab(tab, base::i18n::IsRTL() ? -1 : 1);
-}
-
 class TabStyleViewsImpl : public TabStyleViews {
  public:
   explicit TabStyleViewsImpl(Tab* tab);
@@ -270,27 +261,25 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
       top_right_corner_radius = 0;
     }
 
-    // If the size of the space for the path is smaller than the size of a
-    // favicon, if we are building a path for the hit test, or if we are
-    // building a path for a split tab, expand to take the entire width of the
-    // separator margins AND the separator.
-    const bool limited_tab_space = (right - left) < (gfx::kFaviconSize * scale);
-    const bool expand_into_previous_separator =
-        limited_tab_space || path_type == TabStyle::PathType::kHitTest ||
-        IsRightSplitTab(tab());
-    const bool expand_into_next_separator =
-        limited_tab_space || path_type == TabStyle::PathType::kHitTest ||
-        IsLeftSplitTab(tab());
-    if (expand_into_previous_separator || expand_into_next_separator) {
-      // If there is a tab before this one, then expand into its overlap.
-      const Tab* const previous_tab = GetLeftTab(tab());
-      if (expand_into_previous_separator && previous_tab) {
+    // While the tab is closing do not add extra space as it degrades the close
+    // tab annimation.
+    if (!tab()->closing()) {
+      // If the size of the space for the path is smaller than the size of a
+      // favicon, if we are building a path for the hit test, or if we are
+      // building a path for a split tab, expand to take the entire width of the
+      // separator margins AND the separator.
+      const bool limited_tab_space =
+          (right - left) < (gfx::kFaviconSize * scale);
+      const bool expand_into_left_separator =
+          limited_tab_space || path_type == TabStyle::PathType::kHitTest ||
+          IsRightSplitTab(tab());
+      const bool expand_into_right_separator =
+          limited_tab_space || path_type == TabStyle::PathType::kHitTest ||
+          IsLeftSplitTab(tab());
+      if (expand_into_left_separator) {
         left -= separator_overlap / 2.0;
       }
-
-      // If there is a tab after this one, then expand into its overlap.
-      const Tab* const next_tab = GetRightTab(tab());
-      if (expand_into_next_separator && next_tab) {
+      if (expand_into_right_separator) {
         right += separator_overlap / 2.0;
       }
     }
