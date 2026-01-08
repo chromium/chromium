@@ -143,14 +143,7 @@ class GlicFreControllerUiTestBase : public test::InteractiveGlicTest {
 class GlicFreControllerUiTest : public GlicFreControllerUiTestBase {
  public:
   void SetUp() override {
-    // TODO(b/399666689): Warming chrome://glic/ seems to allow that page to
-    // interfere with chrome://glic-fre/'s <webview>, too, depending which loads
-    // first. It's also unclear whether it ought to happen at all before FRE
-    // completion. Disable that feature until that can be sorted out.
-    features_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{features::kGlicWarming,
-                               features::kGlicFreWarming});
+    InitializeFeatures();
 
     fre_server_.AddDefaultHandlers();
     fre_server_.ServeFilesFromDirectory(
@@ -162,6 +155,18 @@ class GlicFreControllerUiTest : public GlicFreControllerUiTestBase {
     SetGlicFreUrlOverride(fre_url_);
 
     GlicFreControllerUiTestBase::SetUp();
+  }
+
+ protected:
+  virtual void InitializeFeatures() {
+    // TODO(b/399666689): Warming chrome://glic/ seems to allow that page to
+    // interfere with chrome://glic-fre/'s <webview>, too, depending which loads
+    // first. It's also unclear whether it ought to happen at all before FRE
+    // completion. Disable that feature until that can be sorted out.
+    features_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kGlicWarming,
+                               features::kGlicFreWarming});
   }
 
   auto ForceInvalidateAccount() {
@@ -406,6 +411,35 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,
         histogram_tester().ExpectTotalCount("Glic.Fre.WebUiFrameworkLoadTime",
                                             1);
         histogram_tester().ExpectTotalCount("Glic.Fre.WebClientLoadTime", 1);
+      })));
+}
+
+class GlicFreControllerUiUnifiedTest : public GlicFreControllerUiTest {
+ protected:
+  void InitializeFeatures() override {
+    features_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicUnifiedFreScreen},
+        /*disabled_features=*/{features::kGlicWarming,
+                               features::kGlicFreWarming});
+  }
+};
+
+// TODO(crbug.com/427261741#comment11) Test is flaky on all platforms.
+IN_PROC_BROWSER_TEST_F(GlicFreControllerUiUnifiedTest, DISABLED_CloseWithEsc) {
+  auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
+
+  RunTestSequence(
+      ObserveState(kFreWebUiState, std::ref(GetFreController())),
+      PressButton(kGlicButtonElementId),
+      InstrumentNonTabWebView(test::kGlicFreHostElementId, kGlicViewElementId),
+      InstrumentInnerWebContents(test::kGlicFreContentsElementId,
+                                 test::kGlicFreHostElementId, 0),
+      WaitForWebContentsReady(test::kGlicFreContentsElementId),
+      WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
+      SendKeyPress(kGlicViewElementId, ui::VKEY_ESCAPE, ui::EF_NONE),
+      WaitForHide(kGlicViewElementId), InAnyContext(Do([&]() {
+        EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.CloseWithEsc"),
+                  1);
       })));
 }
 

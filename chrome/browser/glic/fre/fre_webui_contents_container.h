@@ -9,6 +9,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 
 namespace glic {
@@ -30,6 +31,8 @@ class FreWebUIContentsContainer : public content::WebContentsDelegate,
   // content::WebContentsDelegate implementation:
   void SetContentsBounds(content::WebContents* source,
                          const gfx::Rect& bounds) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
 
   // content::WebContentsObserver:
   void PrimaryMainFrameRenderProcessGone(
@@ -41,6 +44,7 @@ class FreWebUIContentsContainer : public content::WebContentsDelegate,
   const std::unique_ptr<content::WebContents> web_contents_;
   raw_ptr<views::WebView> fre_web_view_;
   raw_ptr<GlicFreController> fre_controller_;
+  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 };
 
 }  // namespace glic
