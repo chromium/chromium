@@ -42,6 +42,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -49,6 +50,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/crx_file/id_util.h"
 #include "components/grit/components_resources.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -75,7 +77,6 @@
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
 namespace web_app {
 
 namespace {
@@ -231,9 +232,32 @@ bool AreWebAppsEnabled(Profile* profile) {
   return !profile->IsOffTheRecord();
 }
 
+bool IsWebAppInstallByUserPolicyEnabled(Profile* profile) {
+  WebAppProvider* web_app_provider = WebAppProvider::GetForWebApps(profile);
+  if (web_app_provider == nullptr) {
+    return false;
+  }
+
+  return web_app_provider->policy_manager().GetEffectiveInstallPolicyValue();
+}
+
 bool AreWebAppsUserInstallable(Profile* profile) {
   return AreWebAppsEnabled(profile) && !profile->IsGuestSession() &&
-         !profile->IsOffTheRecord();
+         !profile->IsOffTheRecord() &&
+         IsWebAppInstallByUserPolicyEnabled(profile);
+}
+
+// Policy installed apps are only allowed on:
+// 1. ChromeOS guest sessions (current only on Ash).
+// 2. All Chrome profiles apart from incognito/guest profiles.
+bool AreWebAppsForceInstallable(Profile* profile) {
+  bool allowed = AreWebAppsEnabled(profile) && !profile->IsGuestSession() &&
+                 !profile->IsOffTheRecord();
+#if BUILDFLAG(IS_CHROMEOS)
+  allowed = allowed || user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
+            user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession();
+#endif
+  return allowed;
 }
 
 content::BrowserContext* GetBrowserContextForWebApps(

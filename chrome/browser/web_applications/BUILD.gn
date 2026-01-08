@@ -477,6 +477,8 @@ source_set("web_applications") {
     sources += [
       "policy/web_app_settings_policy_handler.cc",
       "policy/web_app_settings_policy_handler.h",
+      "policy/web_app_user_install_policy_handler.cc",
+      "policy/web_app_user_install_policy_handler.h",
       "web_app_utils.cc",
       "web_app_utils.h",
     ]

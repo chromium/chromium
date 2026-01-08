@@ -46,6 +46,13 @@ enum class WebappUninstallSource;
 
 namespace web_app {
 
+enum class NotSupportedReason {
+  kGuestMode = 0,
+  kOffTheRecord = 1,
+  kPolicyDisabled = 2,
+  kMaxValue = kPolicyDisabled
+};
+
 class IsolatedWebAppInstallerCoordinator;
 class WebAppScreenshotFetcher;
 struct WebAppInstallInfo;
@@ -243,6 +250,7 @@ base::AutoReset<bool> SetAutoAcceptWebInstallLaunchDialogForTesting();
 // when the dialog is closed.
 void ShowInstallNotSupportedDialog(content::WebContents* web_contents,
                                    Profile* profile,
+                                   NotSupportedReason reason,
                                    base::OnceClosure callback);
 
 }  // namespace web_app

@@ -72,6 +72,7 @@ class WebAppInstallNotSupportedDialogDelegate
 
 void ShowInstallNotSupportedDialog(content::WebContents* web_contents,
                                    Profile* profile,
+                                   NotSupportedReason reason,
                                    base::OnceClosure callback) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
@@ -91,11 +92,21 @@ void ShowInstallNotSupportedDialog(content::WebContents* web_contents,
       web_contents, profile, std::move(callback));
   auto delegate_weak_ptr = delegate->AsWeakPtr();
 
-  // Show incognito title unless the profile is in guest mode.
-  int title_id =
-      profile->IsGuestSession()
-          ? IDS_WEB_APP_INSTALL_NOT_SUPPORTED_DIALOG_TITLE_GUEST_MODE
-          : IDS_WEB_APP_INSTALL_NOT_SUPPORTED_DIALOG_TITLE_INCOGNITO_MODE;
+  int title_id;
+  switch (reason) {
+    case NotSupportedReason::kGuestMode:
+      // Show guest mode title.
+      title_id = IDS_WEB_APP_INSTALL_NOT_SUPPORTED_DIALOG_TITLE_GUEST_MODE;
+      break;
+    case NotSupportedReason::kOffTheRecord:
+      // Show incognito title.
+      title_id = IDS_WEB_APP_INSTALL_NOT_SUPPORTED_DIALOG_TITLE_INCOGNITO_MODE;
+      break;
+    case NotSupportedReason::kPolicyDisabled:
+      // Show policy title.
+      title_id = IDS_WEB_APP_INSTALL_NOT_SUPPORTED_DIALOG_TITLE_POLICY_MODE;
+      break;
+  }
 
   auto dialog_model =
       ui::DialogModel::Builder(std::move(delegate))

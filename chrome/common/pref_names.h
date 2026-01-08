@@ -2623,6 +2623,12 @@ inline constexpr char kWebAppCreateInQuickLaunchBar[] =
 inline constexpr char kWebAppInstallForceList[] =
     "profile.web_app.install.forcelist";
 
+#if !BUILDFLAG(IS_ANDROID)
+// Boolean pref tracking whether users can install web apps through the browser.
+inline constexpr char kWebAppInstallByUserEnabled[] =
+    "profile.web_app.install_by_user_enabled";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // A list of dictionaries for managing Web Apps.
 inline constexpr char kWebAppSettings[] = "profile.web_app.policy_settings";
 

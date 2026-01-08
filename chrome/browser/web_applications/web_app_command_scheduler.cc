@@ -82,6 +82,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -665,6 +666,12 @@ void WebAppCommandScheduler::LaunchAppWithCustomParams(
 void WebAppCommandScheduler::InstallAppLocally(const webapps::AppId& app_id,
                                                base::OnceClosure callback,
                                                const base::Location& location) {
+  // Disallow InstallAppLocally to install sync apps if web app installs are not
+  // allowed via policy.
+  if (!web_app::IsWebAppInstallByUserPolicyEnabled(&profile_.get())) {
+    return;
+  }
+
   provider_->command_manager().ScheduleCommand(
       std::make_unique<InstallAppLocallyCommand>(app_id, std::move(callback)),
       location);

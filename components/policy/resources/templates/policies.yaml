@@ -1420,6 +1420,7 @@ policies:
   1419: SaaSReportDomainUrlsForProfile
   1420: GeminiActOnWebAllowedForURLs
   1421: GeminiActOnWebBlockedForURLs
+  1422: WebAppInstallByUserEnabled
 
 atomic_groups:
   1: Homepage

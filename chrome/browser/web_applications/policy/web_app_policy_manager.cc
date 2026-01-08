@@ -91,18 +91,6 @@ bool IconInfosContainIconURL(const std::vector<apps::IconInfo>& icon_infos,
   return false;
 }
 
-// Policy installed apps are only allowed on:
-// 1. ChromeOS guest sessions (current only on Ash).
-// 2. All Chrome profiles apart from incognito/guest profiles.
-bool AreForceInstalledAppsAllowed(Profile* profile) {
-  bool allowed = web_app::AreWebAppsUserInstallable(profile);
-#if BUILDFLAG(IS_CHROMEOS)
-  allowed = allowed || user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
-            user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession();
-#endif
-  return allowed;
-}
-
 bool IsForceUnregistrationPolicyEnabled() {
   return base::FeatureList::IsEnabled(
       web_app::kDesktopPWAsForceUnregisterOSIntegration);
@@ -145,7 +133,10 @@ BASE_FEATURE(kDesktopPWAsForceUnregisterOSIntegration,
 const char WebAppPolicyManager::kInstallResultHistogramName[];
 
 WebAppPolicyManager::WebAppPolicyManager(Profile* profile)
-    : profile_(profile), pref_service_(profile_->GetPrefs()) {}
+    : profile_(profile),
+      pref_service_(profile_->GetPrefs()),
+      effective_web_apps_user_installable_policy_(
+          pref_service_->GetBoolean(prefs::kWebAppInstallByUserEnabled)) {}
 
 WebAppPolicyManager::~WebAppPolicyManager() = default;
 
@@ -239,6 +230,7 @@ void WebAppPolicyManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kWebAppInstallForceList);
   registry->RegisterListPref(prefs::kWebAppSettings);
+  registry->RegisterBooleanPref(prefs::kWebAppInstallByUserEnabled, true);
 }
 
 // static
@@ -439,7 +431,7 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps(
   CHECK(!allow_close_and_relaunch);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-  if (!AreForceInstalledAppsAllowed(profile_)) {
+  if (!web_app::AreWebAppsForceInstallable(profile_)) {
     OnWebAppForceInstallPolicyParsed();
     return;
   }
@@ -842,6 +834,10 @@ bool WebAppPolicyManager::IsPreventCloseEnabled(
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+bool WebAppPolicyManager::GetEffectiveInstallPolicyValue() {
+  return effective_web_apps_user_installable_policy_;
 }
 
 void WebAppPolicyManager::RefreshPolicyInstalledAppsForTesting(

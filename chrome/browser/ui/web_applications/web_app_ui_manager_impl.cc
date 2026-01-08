@@ -55,6 +55,7 @@
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
@@ -175,7 +176,18 @@ void WebAppUiManager::TriggerInstallNotSupportedDialog(
     content::WebContents* web_contents,
     Profile* profile,
     base::OnceClosure callback) {
-  ShowInstallNotSupportedDialog(web_contents, profile, std::move(callback));
+  NotSupportedReason reason;
+  if (profile->IsGuestSession()) {
+    reason = NotSupportedReason::kGuestMode;
+  } else if (profile->IsOffTheRecord()) {
+    reason = NotSupportedReason::kOffTheRecord;
+  } else if (!web_app::IsWebAppInstallByUserPolicyEnabled(profile)) {
+    reason = NotSupportedReason::kPolicyDisabled;
+  } else {
+    NOTREACHED();
+  }
+  ShowInstallNotSupportedDialog(web_contents, profile, reason,
+                                std::move(callback));
 }
 
 WebAppUiManagerImpl::WebAppUiManagerImpl(Profile* profile)

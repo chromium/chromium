@@ -771,6 +771,15 @@ void AppHomePageHandler::LaunchDeprecatedAppDialog() {
 }
 
 void AppHomePageHandler::InstallAppLocally(const std::string& app_id) {
+  // TODO(crbug.com/456164619): Grey out web app sync if web app installs are
+  // not allowed via policy. Disallow InstallAppLocally to install sync apps if
+  // web app installs are not allowed via policy. Trigger not supported dialog.
+  if (!web_app::IsWebAppInstallByUserPolicyEnabled(profile_)) {
+    web_app::WebAppUiManager::TriggerInstallNotSupportedDialog(
+        web_ui_->GetWebContents(), profile_, base::DoNothing());
+    return;
+  }
+
   web_app_provider_->scheduler().InstallAppLocally(app_id, base::DoNothing());
 }
 

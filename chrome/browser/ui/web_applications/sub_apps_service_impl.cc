@@ -276,8 +276,11 @@ void SubAppsServiceImpl::Add(
       // Compromised renderer, bail immediately (this call deletes *this).
       &SubAppsServiceImpl::ReportBadMessageAndDeleteThis, this);
 
-  CHECK(AreWebAppsUserInstallable(
-      Profile::FromBrowserContext(render_frame_host().GetBrowserContext())));
+  if (!AreWebAppsUserInstallable(Profile::FromBrowserContext(
+          render_frame_host().GetBrowserContext()))) {
+    ReturnAllAddsAsFailed(sub_apps_to_add, std::move(result_callback));
+    return;
+  }
 
   // Assign id to this add call
   int add_call_id = next_add_call_id_++;

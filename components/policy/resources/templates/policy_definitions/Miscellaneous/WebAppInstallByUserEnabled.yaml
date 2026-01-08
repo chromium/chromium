@@ -1,0 +1,29 @@
+caption: Enable User Web App Install From Browser
+
+desc: |-
+  This policy controls whether users can install web apps through the browser.
+  If you enable or don’t configure this policy, users can install web apps through the browser.
+  If you disable this policy, users can’t install web apps through the browser and the "apps" data type will be excluded from synchronization for <ph name="CHROME_SYNC_NAME">Chrome Sync</ph>.
+  This policy doesn't support dynamic refresh. Any changes, whether enabling, disabling or unsetting, become effective only after the browser is restarted.
+  This policy doesn't affect the '<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME">WebAppInstallForceList</ph>' policy.
+default: true
+example_value: false
+features:
+  dynamic_refresh: false
+  per_profile: true
+owners:
+- file://chrome/browser/web_applications/OWNERS
+- ishikapatel@microsoft.com
+- liahiscock@microsoft.com
+supported_on:
+- chrome.*:145-
+- chrome_os:145-
+type: main
+schema:
+  type: boolean
+items:
+- caption: Users can install web apps through the browser.
+  value: true
+- caption: Users can’t install web apps through the browser.
+  value: false
+tags: []

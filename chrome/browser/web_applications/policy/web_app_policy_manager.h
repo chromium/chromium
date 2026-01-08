@@ -146,6 +146,9 @@ class WebAppPolicyManager {
 
   bool IsPreventCloseEnabled(const webapps::AppId& app_id) const;
 
+  // Gets the `effective_web_apps_user_installable_policy_` value.
+  bool GetEffectiveInstallPolicyValue();
+
   void RefreshPolicyInstalledAppsForTesting(
       bool allow_close_and_relaunch = false);
 
@@ -243,6 +246,11 @@ class WebAppPolicyManager {
 
   bool is_refreshing_ = false;
   bool needs_refresh_ = false;
+
+  // The web app system source of truth for the WebAppInstallByUserEnabled
+  // policy. By design, this policy cannot be modified during the browser
+  // session. This policy does not support dynamic refresh.
+  bool effective_web_apps_user_installable_policy_ = true;
 
   base::flat_map<std::string, WebAppSetting> settings_by_url_;
   base::flat_map<GURL, CustomManifestValues> custom_manifest_values_by_url_;

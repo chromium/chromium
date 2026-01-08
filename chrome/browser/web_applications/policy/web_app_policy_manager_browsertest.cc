@@ -29,11 +29,16 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/pref_names.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/page.h"
@@ -483,6 +488,94 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTestWithAuthProxy, Install) {
             base::UTF16ToASCII(manifest->name.value_or(std::u16string())));
   ASSERT_EQ(1u, manifest->icons.size());
   EXPECT_TRUE(manifest->icons[0].src.spec().ends_with(kCustomIconUrlSuffix));
+}
+
+// This test suite verifies the WebAppInstallByUserEnabled policy behavior when
+// toggled between enabled/disabled states, including its effects on web app
+// installability and app sync preference management.
+class WebAppPolicyUserInstallTest : public WebAppBrowserTestBase {
+ public:
+  WebAppPolicyUserInstallTest() = default;
+  WebAppPolicyUserInstallTest(const WebAppPolicyUserInstallTest&) = delete;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    WebAppBrowserTestBase::SetUpInProcessBrowserTestFixture();
+
+    // Set up the policy provider.
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+    policy::PolicyMap policies;
+    if (GetTestPreCount() == 0 || GetTestPreCount() == 2) {
+      // Create policy map with enabled web app installs.
+      policies.Set(policy::key::kWebAppInstallByUserEnabled,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                   policy::POLICY_SOURCE_ENTERPRISE_DEFAULT, base::Value(true),
+                   nullptr);
+    } else {
+      // Create policy map with disabled web app installs.
+      policies.Set(policy::key::kWebAppInstallByUserEnabled,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                   policy::POLICY_SOURCE_ENTERPRISE_DEFAULT, base::Value(false),
+                   nullptr);
+    }
+    policy_provider_.UpdateChromePolicy(policies);
+  }
+
+  Profile* profile() { return browser()->profile(); }
+
+  void SetSyncAppsDefaultPref() {
+    PrefService* prefs_service = profile()->GetPrefs();
+    prefs_service->SetBoolean(syncer::prefs::internal::kSyncApps, true);
+  }
+
+ private:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppPolicyUserInstallTest,
+                       PRE_PRE_UserInstallPolicySwapping) {
+  // Verify that the user can install web apps.
+  bool policy_value =
+      provider().policy_manager().GetEffectiveInstallPolicyValue();
+  EXPECT_TRUE(policy_value);
+  EXPECT_TRUE(AreWebAppsUserInstallable(profile()));
+
+  // Turn on sync for web apps.
+  SetSyncAppsDefaultPref();
+  // Verify sync is turned on for web apps.
+  PrefService* prefs = profile()->GetPrefs();
+  bool sync_pref_value = prefs->GetBoolean(syncer::prefs::internal::kSyncApps);
+  ASSERT_TRUE(sync_pref_value);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppPolicyUserInstallTest,
+                       PRE_UserInstallPolicySwapping) {
+  // Verify that the user cannot install web apps.
+  bool policy_value =
+      provider().policy_manager().GetEffectiveInstallPolicyValue();
+  EXPECT_FALSE(policy_value);
+  EXPECT_FALSE(AreWebAppsUserInstallable(profile()));
+
+  // Verify that sync is turned off for web apps.
+  PrefService* prefs = profile()->GetPrefs();
+  bool sync_pref_value = prefs->GetBoolean(syncer::prefs::internal::kSyncApps);
+  ASSERT_FALSE(sync_pref_value);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppPolicyUserInstallTest, UserInstallPolicySwapping) {
+  // Verify that the user can install web apps.
+  bool policy_value =
+      provider().policy_manager().GetEffectiveInstallPolicyValue();
+  EXPECT_TRUE(policy_value);
+  EXPECT_TRUE(AreWebAppsUserInstallable(profile()));
+
+  // Verify that sync is turned on for web apps again.
+  PrefService* prefs = profile()->GetPrefs();
+  bool sync_pref_value = prefs->GetBoolean(syncer::prefs::internal::kSyncApps);
+  ASSERT_TRUE(sync_pref_value);
 }
 
 }  // namespace web_app

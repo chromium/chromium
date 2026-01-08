@@ -157,6 +157,7 @@
 #include "chrome/browser/policy/local_sync_policy_handler.h"
 #include "chrome/browser/policy/managed_account_policy_handler.h"
 #include "chrome/browser/web_applications/policy/web_app_settings_policy_handler.h"
+#include "chrome/browser/web_applications/policy/web_app_user_install_policy_handler.h"
 #include "components/contextual_search/search_content_sharing_policy_handler.h"
 #include "components/headless/policy/headless_mode_policy_handler.h"
 #include "components/lens/lens_overlay_permission_utils.h"
@@ -2755,6 +2756,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 
   handlers->AddHandler(
       std::make_unique<web_app::WebAppSettingsPolicyHandler>(chrome_schema));
+  handlers->AddHandler(
+      std::make_unique<web_app::WebAppUserInstallPolicyHandler>());
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   handlers->AddHandler(
