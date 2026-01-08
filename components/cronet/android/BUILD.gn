@@ -271,11 +271,12 @@ sizes_test("cronet_sizes") {
 }
 
 cronet_shared_java_deps_to_package = [
+  ":base_feature_overrides_java_proto",
   ":cronet_stats_log_java",
+  ":flags_java_proto",
   "//base:metrics_ScopedSysTraceEvent_java",
   "//build/android:build_java",
-  ":base_feature_overrides_java_proto",
-  ":flags_java_proto",
+  "//third_party/android_deps:protobuf_lite_runtime_java",
 ]
 
 # Common Cronet code that is used in Cronet API *and* implementations.
@@ -307,10 +308,8 @@ android_library("cronet_shared_java") {
 
   # Adding deps here won't include those deps in the cronet_shared_java.jar.
   # Please add to cronet_shared_java_deps_to_package instead.
-  deps = [
-           "//third_party/android_deps:protobuf_lite_runtime_java",
-           "//third_party/androidx:androidx_annotation_annotation_java",
-         ] + cronet_shared_java_deps_to_package
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  public_deps = cronet_shared_java_deps_to_package
 
   proguard_configs =
       [ "//components/cronet/android/cronet_shared_proguard.cfg" ]
@@ -457,7 +456,6 @@ android_library("cronet_impl_common_java") {
     ":cronet_api_java",
     ":cronet_shared_java",
     ":impl_version",
-    "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
@@ -596,7 +594,6 @@ android_library("cronet_impl_native_java") {
     "//build/android:build_java",
     "//components/cronet:request_context_config_java_proto",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
-    "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
@@ -750,7 +747,6 @@ android_apk("cronet_sample_apk") {
     ":cronet_combine_proguard_flags",
     ":cronet_sample_apk_java",
     ":cronet_sample_apk_resources",
-    "//third_party/android_deps:protobuf_lite_runtime_java",
   ]
 
   # Cronet jars will include this, so don't duplicate.
@@ -1064,9 +1060,11 @@ template("repackage_jars") {
     direct_deps_only = true
     jar_excluded_patterns = _excludes
 
-    # This is to prevent clashing with the real jni_zero in apps that include
-    # cronet (eg: google3). See https://crbug.com/353534209
     renaming_rules = [
+      "com.google.protobuf.**->org.chromium.net.internal.com.google.protobuf",
+
+      # This is to prevent clashing with the real jni_zero in apps that include
+      # cronet (eg: google3). See https://crbug.com/353534209.
       "org.jni_zero.**->internal.org.jni_zero",
       "org.chromium.build.**->internal.org.chromium.build",
     ]
