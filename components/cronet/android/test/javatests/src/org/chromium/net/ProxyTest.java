@@ -29,6 +29,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -38,6 +39,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
+import org.chromium.net.impl.TestLogger;
 import org.chromium.net.test.ServerCertificate;
 
 import java.util.AbstractMap;
@@ -54,7 +56,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ProxyTest {
     private static final int HTTPENGINE_PROXY_API_SDK_EXTENSION = 21;
 
-    @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
+    private final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
+    private final CronetLoggerTestRule<TestLogger> mLoggerTestRule =
+            new CronetLoggerTestRule<>(TestLogger.class);
+
+    @Rule public final RuleChain chain = RuleChain.outerRule(mLoggerTestRule).around(mTestRule);
 
     private NativeTestServer mNativeTestServer;
 
@@ -206,6 +212,14 @@ public class ProxyTest {
         if (mTestRule.implementationUnderTest() != CronetImplementation.AOSP_PLATFORM) {
             assertThat(callback.getResponseInfoWithChecks()).hasProxyServerThat().isEqualTo(":0");
         }
+
+        // CronetTrafficInfo is logged starting from Oreo. AOSP_PLATFORM does not support test
+        // logger injection.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && mTestRule.implementationUnderTest() != CronetImplementation.AOSP_PLATFORM) {
+            mLoggerTestRule.mTestLogger.waitForLogCronetTrafficInfo();
+            assertThat(mLoggerTestRule.mTestLogger.getLastCronetTrafficInfo().isProxied())
+                    .isFalse();
+        }
     }
 
     @Test
@@ -252,6 +266,14 @@ public class ProxyTest {
         }
         Mockito.verify(proxyCallback, never()).onBeforeRequest(any());
         Mockito.verify(proxyCallback, never()).onResponseReceived(any(), anyInt());
+
+            // CronetTrafficInfo is logged starting from Oreo. AOSP_PLATFORM does not support test
+        // logger injection.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && mTestRule.implementationUnderTest() != CronetImplementation.AOSP_PLATFORM) {
+            mLoggerTestRule.mTestLogger.waitForLogCronetTrafficInfo();
+            assertThat(mLoggerTestRule.mTestLogger.getLastCronetTrafficInfo().isProxied())
+                    .isFalse();
+        }
     }
 
     @Test
@@ -292,6 +314,17 @@ public class ProxyTest {
         assertThat(callback.mError).isNotNull();
         Mockito.verify(proxyCallback, never()).onBeforeRequest(any());
         Mockito.verify(proxyCallback, never()).onResponseReceived(any(), anyInt());
+        // CronetTrafficInfo is logged starting from Oreo. AOSP_PLATFORM does not support test
+        // logger injection.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && mTestRule.implementationUnderTest() != CronetImplementation.AOSP_PLATFORM) {
+            mLoggerTestRule.mTestLogger.waitForLogCronetTrafficInfo();
+            // The request failed before we received the response headers from the destination. In
+            // this scenario we don't know whether //net would have proxied the request. We report
+            // null to differentiate against the scenario where we received response headers but the
+            // request failed (in which case we definitely do know whether the request has been
+            // proxied or not).
+            assertThat(mLoggerTestRule.mTestLogger.getLastCronetTrafficInfo().isProxied()).isNull();
+        }
     }
 
     @Test
@@ -387,6 +420,13 @@ public class ProxyTest {
             Mockito.verify(brokenProxyCallback, times(1)).onResponseReceived(any(), anyInt());
             Mockito.verify(workingProxyCallback, times(1)).onBeforeRequest(any());
             Mockito.verify(workingProxyCallback, times(1)).onResponseReceived(any(), anyInt());
+            // CronetTrafficInfo is logged starting from Oreo. AOSP_PLATFORM does not support test
+        // logger injection.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && mTestRule.implementationUnderTest() != CronetImplementation.AOSP_PLATFORM) {
+                mLoggerTestRule.mTestLogger.waitForLogCronetTrafficInfo();
+                assertThat(mLoggerTestRule.mTestLogger.getLastCronetTrafficInfo().isProxied())
+                        .isTrue();
+            }
 
             callback = new TestUrlRequestCallback();
             urlRequestBuilder =
@@ -403,6 +443,13 @@ public class ProxyTest {
             Mockito.verify(brokenProxyCallback, times(1)).onResponseReceived(any(), anyInt());
             Mockito.verify(workingProxyCallback, times(2)).onBeforeRequest(any());
             Mockito.verify(workingProxyCallback, times(2)).onResponseReceived(any(), anyInt());
+            // CronetTrafficInfo is logged starting from Oreo. AOSP_PLATFORM does not support test
+        // logger injection.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && mTestRule.implementationUnderTest() != CronetImplementation.AOSP_PLATFORM) {
+                mLoggerTestRule.mTestLogger.waitForLogCronetTrafficInfo();
+                assertThat(mLoggerTestRule.mTestLogger.getLastCronetTrafficInfo().isProxied())
+                        .isTrue();
+            }
         }
     }
 
@@ -846,6 +893,12 @@ public class ProxyTest {
                                     new Pair<>("Content-Length", "0"),
                                     new Pair<>("Content-Type", "")));
         }
+        // CronetTrafficInfo is logged starting from Oreo. AOSP_PLATFORM does not support test
+        // logger injection.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && mTestRule.implementationUnderTest() != CronetImplementation.AOSP_PLATFORM) {
+            mLoggerTestRule.mTestLogger.waitForLogCronetTrafficInfo();
+            assertThat(mLoggerTestRule.mTestLogger.getLastCronetTrafficInfo().isProxied()).isTrue();
+        }
     }
 
     @Test
@@ -942,6 +995,13 @@ public class ProxyTest {
                                     new Pair<>("Content-Type", "")));
         } finally {
             Http2TestServer.shutdownHttp2TestServer();
+        }
+        // CronetTrafficInfo is logged starting from Oreo. AOSP_PLATFORM does not support test
+        // logger injection.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && mTestRule.implementationUnderTest() != CronetImplementation.AOSP_PLATFORM) {
+            // TODO(https://crbug.com/460426595): Change this to check for the correct proxy
+            // server value once BidirectionalStream correctly reports proxy servers.
+            assertThat(mLoggerTestRule.mTestLogger.getLastCronetTrafficInfo().isProxied()).isNull();
         }
     }
 

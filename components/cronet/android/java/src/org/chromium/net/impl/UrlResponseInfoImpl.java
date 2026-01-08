@@ -30,6 +30,7 @@ public final class UrlResponseInfoImpl extends UrlResponseInfo {
     private final String mProxyServer;
     private final AtomicLong mReceivedByteCount;
     private final HeaderBlockImpl mHeaders;
+    private final boolean mIsProxied;
 
     /** Unmodifiable container of response headers or trailers. */
     public static final class HeaderBlockImpl extends HeaderBlock {
@@ -68,17 +69,20 @@ public final class UrlResponseInfoImpl extends UrlResponseInfo {
     /**
      * Creates an implementation of {@link UrlResponseInfo}.
      *
-     * @param urlChain the URL chain. The first entry is the originally requested URL;
-     *         the following entries are redirects followed.
+     * @param urlChain the URL chain. The first entry is the originally requested URL; the following
+     *     entries are redirects followed.
      * @param httpStatusCode the HTTP status code.
      * @param httpStatusText the HTTP status text of the status line.
      * @param allHeadersList list of response header field and value pairs.
-     * @param wasCached {@code true} if the response came from the cache, {@code false}
-     *         otherwise.
+     * @param wasCached {@code true} if the response came from the cache, {@code false} otherwise.
      * @param negotiatedProtocol the protocol negotiated with the server.
      * @param proxyServer the proxy server that was used for the request.
      * @param receivedByteCount minimum count of bytes received from the network to process this
-     *         request.
+     *     request.
+     * @param isProxied whether the request has been sent via a proxy.
+     *     TODO(https://crbug.com/461449109): Consider relying on the value of {@code proxyServer}
+     *     instead of duplicating this information. Currently this is error prone because {@code
+     *     proxyServer} value in the absence of a proxy server is inconsistent.
      */
     public UrlResponseInfoImpl(
             List<String> urlChain,
@@ -88,7 +92,8 @@ public final class UrlResponseInfoImpl extends UrlResponseInfo {
             boolean wasCached,
             String negotiatedProtocol,
             String proxyServer,
-            long receivedByteCount) {
+            long receivedByteCount,
+            boolean isProxied) {
         mResponseInfoUrlChain = Collections.unmodifiableList(urlChain);
         mHttpStatusCode = httpStatusCode;
         mHttpStatusText = httpStatusText;
@@ -97,6 +102,7 @@ public final class UrlResponseInfoImpl extends UrlResponseInfo {
         mNegotiatedProtocol = negotiatedProtocol;
         mProxyServer = proxyServer;
         mReceivedByteCount = new AtomicLong(receivedByteCount);
+        mIsProxied = isProxied;
     }
 
     /** Constructor for backwards compatibility.  See main constructor above for more info. */
@@ -117,7 +123,8 @@ public final class UrlResponseInfoImpl extends UrlResponseInfo {
                 wasCached,
                 negotiatedProtocol,
                 proxyServer,
-                0);
+                0,
+                /* isProxied= */ false);
     }
 
     @Override
@@ -193,5 +200,9 @@ public final class UrlResponseInfoImpl extends UrlResponseInfo {
     /** Sets mReceivedByteCount. Must not be called after request completion or cancellation. */
     public void setReceivedByteCount(long currentReceivedByteCount) {
         mReceivedByteCount.set(currentReceivedByteCount);
+    }
+
+    boolean isProxied() {
+        return mIsProxied;
     }
 }
