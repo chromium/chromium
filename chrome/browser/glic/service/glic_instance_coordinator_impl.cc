@@ -19,6 +19,7 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/browser_ui/scoped_glic_button_indicator.h"
+#include "chrome/browser/glic/common/glic_tab_observer.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -122,10 +123,9 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
           this),
       metrics_(this) {
   if (base::FeatureList::IsEnabled(features::kGlicDaisyChainNewTabs)) {
-    tab_creation_observer_ = std::make_unique<GlicTabCreationObserver>(
-        profile_,
-        base::BindRepeating(&GlicInstanceCoordinatorImpl::OnTabCreated,
-                            weak_ptr_factory_.GetWeakPtr()));
+    tab_observer_ = GlicTabObserver::Create(
+        profile_, base::BindRepeating(&GlicInstanceCoordinatorImpl::OnTabEvent,
+                                      weak_ptr_factory_.GetWeakPtr()));
   }
   if (base::FeatureList::IsEnabled(kGlicHibernateOnMemoryUsage)) {
     memory_monitor_timer_.Start(
@@ -693,8 +693,16 @@ void GlicInstanceCoordinatorImpl::OnWillCreateFloaty() {
   CloseFloaty();
 }
 
-void GlicInstanceCoordinatorImpl::OnTabCreated(tabs::TabInterface& old_tab,
-                                               tabs::TabInterface& new_tab) {
+void GlicInstanceCoordinatorImpl::OnTabEvent(const GlicTabEvent& event) {
+  auto* creation_event = std::get_if<TabCreationEvent>(&event);
+  if (!creation_event ||
+      creation_event->creation_type != TabCreationType::kUserInitiated) {
+    return;
+  }
+  if (!creation_event->old_tab || !creation_event->new_tab) {
+    return;
+  }
+
   PrefService* pref_service = profile_->GetPrefs();
   if (!pref_service ||
       !pref_service->GetBoolean(
@@ -702,12 +710,13 @@ void GlicInstanceCoordinatorImpl::OnTabCreated(tabs::TabInterface& old_tab,
     return;
   }
 
-  if (!GlicSidePanelCoordinator::IsGlicSidePanelActive(&old_tab)) {
+  if (!GlicSidePanelCoordinator::IsGlicSidePanelActive(
+          creation_event->old_tab)) {
     return;
   }
 
   auto* instance = CreateGlicInstance();
-  SidePanelShowOptions side_panel_options{new_tab};
+  SidePanelShowOptions side_panel_options{*creation_event->new_tab};
   side_panel_options.suppress_opening_animation = true;
   side_panel_options.pin_trigger = GlicPinTrigger::kNewTabDaisyChain;
   instance->Show(ShowOptions{side_panel_options});

@@ -15,12 +15,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/glic/common/glic_tab_observer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
-#include "chrome/browser/glic/service/glic_tab_creation_observer.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_coordinator_metrics.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
@@ -166,7 +166,7 @@ class GlicInstanceCoordinatorImpl
   std::string DescribeForTesting();
 
  private:
-  void OnTabCreated(tabs::TabInterface& old_tab, tabs::TabInterface& new_tab);
+  void OnTabEvent(const GlicTabEvent& event);
   GlicInstanceImpl* GetOrCreateGlicInstanceImplForTab(tabs::TabInterface* tab);
   GlicInstanceImpl* GetInstanceImplFor(const InstanceId& id) const;
   GlicInstanceImpl* GetInstanceImplForTab(const tabs::TabInterface* tab) const;
@@ -218,7 +218,7 @@ class GlicInstanceCoordinatorImpl
 
   GlicInstanceCoordinatorMetrics metrics_;
 
-  std::unique_ptr<GlicTabCreationObserver> tab_creation_observer_;
+  std::unique_ptr<GlicTabObserver> tab_observer_;
 
   base::WeakPtrFactory<GlicInstanceCoordinatorImpl> weak_ptr_factory_{this};
 };
