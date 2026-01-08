@@ -476,11 +476,11 @@ bool CanonicalizeFileHost(std::u16string_view spec,
 // CanonicalizeNonSpecialHostVerbose.
 //
 // TODO(crbug.com/40063064): Check the callers of these functions.
-COMPONENT_EXPORT(URL)
-void CanonicalizeHostVerbose(const char* spec,
-                             const Component& host,
-                             CanonOutput* output,
-                             CanonHostInfo* host_info);
+UNSAFE_BUFFER_USAGE COMPONENT_EXPORT(URL) void CanonicalizeHostVerbose(
+    const char* spec,
+    const Component& host,
+    CanonOutput* output,
+    CanonHostInfo* host_info);
 COMPONENT_EXPORT(URL)
 void CanonicalizeHostVerbose(std::string_view spec,
                              const Component& host,
@@ -650,11 +650,11 @@ bool CanonicalizePath(std::optional<std::u16string_view> path,
 // functions requires several steps.
 // TODO(crbug.com/422740114): Remove this after `//net/third_party/quiche` is
 // not depending on it.
-COMPONENT_EXPORT(URL)
-bool CanonicalizePath(const char* spec,
-                      const Component& path,
-                      CanonOutput* output,
-                      Component* out_path);
+UNSAFE_BUFFER_USAGE COMPONENT_EXPORT(URL) bool CanonicalizePath(
+    const char* spec,
+    const Component& path,
+    CanonOutput* output,
+    Component* out_path);
 COMPONENT_EXPORT(URL)
 bool CanonicalizePath(std::optional<std::string_view> path,
                       CanonOutput* output,

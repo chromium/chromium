@@ -96,7 +96,8 @@ struct Component {
     if (!is_valid()) {
       return std::nullopt;
     }
-    return std::basic_string_view(&UNSAFE_TODO(source[begin]), len);
+    // SAFETY: It's unsafe. Do not use this function.
+    return std::basic_string_view(&UNSAFE_BUFFERS(source[begin]), len);
   }
 
   // Returns a std::optional<string_view> using `source` as a backend.

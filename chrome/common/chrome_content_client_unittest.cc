@@ -31,9 +31,7 @@ namespace chrome_common {
 
 TEST(ChromeContentClientTest, AdditionalSchemes) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  EXPECT_TRUE(url::IsStandard(
-      extensions::kExtensionScheme,
-      url::Component(0, strlen(extensions::kExtensionScheme))));
+  EXPECT_TRUE(url::IsStandard(extensions::kExtensionScheme));
 
   GURL extension_url(
       "chrome-extension://abcdefghijklmnopqrstuvwxyzabcdef/foo.html");
