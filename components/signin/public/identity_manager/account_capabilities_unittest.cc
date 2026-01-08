@@ -30,38 +30,6 @@ TEST_F(AccountCapabilitiesTest, GetSupportedAccountCapabilityNames) {
   EXPECT_THAT(names, Contains(kCanUseModelExecutionFeaturesName));
 }
 
-// The tests below validate that the ACCOUNT_CAPABILITY_F macro works correctly.
-//
-// Due to the way capabilities are defined, it is not possible to use fake
-// test capabilities; instead a real flag-guarded capability is used. Once this
-// capability is fully launched, these tests should be removed.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(AccountCapabilitiesTest,
-       GetSupportedAccountCapabilityNames_FlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      switches::kGlicEligibilitySeparateAccountCapability);
-
-  auto names =
-      AccountCapabilities::GetSupportedAccountCapabilityNamesInternal();
-
-  // Check one of the existing expected account capabilities.
-  EXPECT_THAT(names, Not(Contains(kCanUseGeminiInChromeCapabilityName)));
-}
-
-TEST_F(AccountCapabilitiesTest,
-       GetSupportedAccountCapabilityNames_FlagEnabled) {
-  base::test::ScopedFeatureList feature_list{
-      switches::kGlicEligibilitySeparateAccountCapability};
-
-  auto names =
-      AccountCapabilities::GetSupportedAccountCapabilityNamesInternal();
-
-  // Check one of the existing expected account capabilities.
-  EXPECT_THAT(names, Contains(kCanUseGeminiInChromeCapabilityName));
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
 TEST_F(AccountCapabilitiesTest, CanFetchFamilyMemberInfo) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.can_fetch_family_member_info(),

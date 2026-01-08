@@ -106,7 +106,7 @@ class AccountCapabilities {
   signin::Tribool can_use_edu_features() const;
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // The user account is able to use Gemini in Chrome.
   signin::Tribool can_use_gemini_in_chrome() const;
 #endif

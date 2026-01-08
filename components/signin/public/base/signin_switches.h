@@ -247,7 +247,7 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kFullscreenSignInPromoUseDate);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
 // When enabled, GLIC will check a new CanUseGeminiInChrome account capability
 // to determine profile eligibility, instead of CanUseModelExecutionFeatures.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

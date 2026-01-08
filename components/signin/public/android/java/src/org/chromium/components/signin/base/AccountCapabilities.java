@@ -117,6 +117,14 @@ public class AccountCapabilities {
     }
 
     /**
+     * @return canUseGeminiInChromeCapability capability value.
+     */
+    public @Tribool int canUseGeminiInChromeCapability() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.CAN_USE_GEMINI_IN_CHROME_CAPABILITY_NAME);
+    }
+
+    /**
      * @return canUseMantaService capability value.
      */
     public @Tribool int canUseMantaService() {

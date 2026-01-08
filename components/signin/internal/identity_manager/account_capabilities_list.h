@@ -86,6 +86,12 @@ ACCOUNT_CAPABILITY(kCanUseEduFeaturesCapabilityName,
                    "accountcapabilities/gezdsmbnmnqxa")
 #endif
 
+#if !BUILDFLAG(IS_IOS)
+ACCOUNT_CAPABILITY(kCanUseGeminiInChromeCapabilityName,
+                   CAN_USE_GEMINI_IN_CHROME_CAPABILITY_NAME,
+                   "accountcapabilities/giytmnrnmnqxa")
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 ACCOUNT_CAPABILITY(kCanUseGenerativeAiInRecorderApp,
                    CAN_USE_GENERATIVE_AI_IN_RECORDER_APP,
@@ -118,9 +124,10 @@ ACCOUNT_CAPABILITY(kIsOptedInToParentalSupervisionCapabilityName,
                    IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME,
                    "accountcapabilities/guzdslldmfya")
 
-ACCOUNT_CAPABILITY(kIsSubjectToAccountLevelEnterprisePoliciesCapabilityName,
-                   IS_SUBJECT_TO_ACCOUNT_LEVEL_ENTERPRISE_POLICIES_CAPABILITY_NAME,
-                   "accountcapabilities/ge4tgnznmnqxa")
+ACCOUNT_CAPABILITY(
+    kIsSubjectToAccountLevelEnterprisePoliciesCapabilityName,
+    IS_SUBJECT_TO_ACCOUNT_LEVEL_ENTERPRISE_POLICIES_CAPABILITY_NAME,
+    "accountcapabilities/ge4tgnznmnqxa")
 
 ACCOUNT_CAPABILITY(
     kIsSubjectToChromePrivacySandboxRestrictedMeasurementNotice,
@@ -134,12 +141,5 @@ ACCOUNT_CAPABILITY(kIsSubjectToEnterprisePoliciesCapabilityName,
 ACCOUNT_CAPABILITY(kIsSubjectToParentalControlsCapabilityName,
                    IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
                    "accountcapabilities/guydolldmfya")
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-ACCOUNT_CAPABILITY_F(kCanUseGeminiInChromeCapabilityName,
-                     CAN_USE_GEMINI_IN_CHROME_CAPABILITY_NAME,
-                     "accountcapabilities/giytmnrnmnqxa",
-                     switches::kGlicEligibilitySeparateAccountCapability)
-#endif
 
 // keep-sorted end

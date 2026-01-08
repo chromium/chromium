@@ -149,7 +149,7 @@ signin::Tribool AccountCapabilities::can_use_edu_features() const {
 }
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
 signin::Tribool AccountCapabilities::can_use_gemini_in_chrome() const {
   return GetCapabilityByName(kCanUseGeminiInChromeCapabilityName);
 }

@@ -304,7 +304,7 @@ BASE_FEATURE(kFRESignInAlternativeSecondaryButtonText,
 BASE_FEATURE(kFullscreenSignInPromoUseDate, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kGlicEligibilitySeparateAccountCapability,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif

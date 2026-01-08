@@ -91,7 +91,7 @@ void AccountCapabilitiesTestMutator::set_can_use_edu_features(bool value) {
 }
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
 void AccountCapabilitiesTestMutator::set_can_use_gemini_in_chrome(bool value) {
   capabilities_->capabilities_map_[kCanUseGeminiInChromeCapabilityName] = value;
 }

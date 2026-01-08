@@ -53,6 +53,8 @@ public final class AccountCapabilitiesTest {
                 return capabilities.canUseDevToolsGenerativeAiFeatures();
             case AccountCapabilitiesConstants.CAN_USE_EDU_FEATURES_CAPABILITY_NAME:
                 return capabilities.canUseEduFeatures();
+            case AccountCapabilitiesConstants.CAN_USE_GEMINI_IN_CHROME_CAPABILITY_NAME:
+                return capabilities.canUseGeminiInChromeCapability();
             case AccountCapabilitiesConstants.CAN_USE_MANTA_SERVICE_NAME:
                 return capabilities.canUseMantaService();
             case AccountCapabilitiesConstants.CAN_USE_MODEL_EXECUTION_FEATURES_NAME:
@@ -138,6 +140,11 @@ public final class AccountCapabilitiesTest {
                                 .value(
                                         AccountCapabilitiesConstants
                                                 .CAN_FETCH_FAMILY_MEMBER_INFO_CAPABILITY_NAME),
+                        new ParameterSet()
+                                .name("canUseGeminiInChromeCapability")
+                                .value(
+                                        AccountCapabilitiesConstants
+                                                .CAN_USE_GEMINI_IN_CHROME_CAPABILITY_NAME),
                         new ParameterSet()
                                 .name("IsSubjectToParentalControls")
                                 .value(

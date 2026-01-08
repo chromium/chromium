@@ -48,7 +48,7 @@ class AccountCapabilitiesTestMutator {
 #if !BUILDFLAG(IS_IOS)
   void set_can_use_edu_features(bool value);
 #endif
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
   void set_can_use_gemini_in_chrome(bool value);
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
