@@ -49,7 +49,7 @@ class AAudioInputStream : public AudioInputStream,
   void SetOutputDeviceForAec(const std::string& output_device_id) override;
 
   // AAudioStreamWrapper::DataCallback implementation.
-  bool OnAudioDataRequested(base::span<float> audio_data) override;
+  bool OnAudioDataRequested(void* audio_data, int32_t num_frames) override;
   void OnError() override;
   void OnDeviceChange() override;
 

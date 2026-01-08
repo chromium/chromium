@@ -8,9 +8,8 @@
 #include <aaudio/AAudio.h>
 
 #include "base/android/requires_api.h"
-#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "media/audio/android/audio_device.h"
@@ -36,10 +35,7 @@ class AAudioStreamWrapper {
    public:
     virtual ~DataCallback() = default;
 
-    // `audio_data` will be exactly big enough to contain `frames * channels`
-    // interleaved samples, in accordance with the `params` passed to
-    // `AAudioStreamWrapper` at construction time.
-    virtual bool OnAudioDataRequested(base::span<float> audio_data) = 0;
+    virtual bool OnAudioDataRequested(void* audio_data, int32_t num_frames) = 0;
     virtual void OnError() = 0;
     virtual void OnDeviceChange() = 0;
   };
@@ -97,7 +93,7 @@ class AAudioStreamWrapper {
   aaudio_usage_t usage_;
   aaudio_performance_mode_t performance_mode_;
 
-  const raw_ref<DataCallback> callback_;
+  const raw_ptr<DataCallback> callback_;
 
   bool is_closed_ = false;
 

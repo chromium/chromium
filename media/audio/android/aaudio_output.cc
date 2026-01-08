@@ -114,12 +114,26 @@ void AAudioOutputStream::Stop() {
   }
 }
 
-bool AAudioOutputStream::OnAudioDataRequested(base::span<float> audio_data) {
+bool AAudioOutputStream::OnAudioDataRequested(void* audio_data,
+                                              int32_t num_frames) {
+  CHECK_EQ(num_frames, audio_bus_->frames());
+
   base::AutoLock al(lock_);
   if (!callback_) {
     // Stop() might have already been called, but there can still be pending
     // data callbacks in flight.
-    std::ranges::fill(audio_data, 0.0);
+
+    size_t total_size;
+    auto total_frames = base::CheckMul(num_frames, audio_bus_->channels());
+    if (base::CheckMul(total_frames, sizeof(float))
+            .AssignIfValid(&total_size)) {
+      // SAFETY: Unfortunately, `audio_data` comes from the OS, and we must use
+      // some unsafe buffers. This should be safe because we set the format
+      // as AAUDIO_FORMAT_PCM_FLOAT in AAudioStreamWrapper (and CHECK that it is
+      // set), so we know this void* is pointing towards floats. We also control
+      // the channel count, and the OS gives us `num_frames`.
+      UNSAFE_BUFFERS(memset(audio_data, 0, total_size));
+    }
     return false;
   }
 
@@ -131,10 +145,9 @@ bool AAudioOutputStream::OnAudioDataRequested(base::span<float> audio_data) {
 
   peak_detector_.FindPeak(audio_bus_.get());
 
-  CHECK_EQ(frames_filled, audio_bus_->frames());
-
   audio_bus_->Scale(muted_ ? 0.0 : volume_);
-  audio_bus_->ToInterleaved<Float32SampleTypeTraits>(audio_data);
+  audio_bus_->ToInterleaved<Float32SampleTypeTraits>(
+      frames_filled, reinterpret_cast<float*>(audio_data));
 
   return true;
 }
