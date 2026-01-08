@@ -661,10 +661,8 @@ public class AccountPickerBottomSheetMediator
                     .clearWebSigninAccountPickerActiveDismissalCount();
         }
 
-        // TODO(crbug.com/435381574): Investigate whether this sign-out is still needed, and remove
-        // it if possible.
         if (mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
-            mAccountPickerDelegate.onSignoutBeforeSignin();
+            // Signout before sign-in is from web sign-in traffic (crbug.com/435381574)
             mSigninManager.signOut(SignoutReason.SIGNIN_RETRIGGERED);
         }
 
