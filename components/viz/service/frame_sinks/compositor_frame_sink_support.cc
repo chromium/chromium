@@ -536,8 +536,14 @@ CompositorFrameSinkSupport::TakeCopyOutputRequests(
     // Requests with a non-valid local id should be satisfied as soon as
     // possible.
     else if (!it->local_surface_id.is_valid() ||  // NOLINT
-             it->local_surface_id <= latest_local_id) {
+             latest_local_id.IsSameOrNewerThan(it->local_surface_id)) {
       results.push_back(std::move(*it));
+      it = copy_output_requests_.erase(it);
+    } else if (latest_local_id.IsNewerThanIgnoringEmbedToken(
+                   it->local_surface_id) &&
+               latest_local_id.embed_token() !=
+                   it->local_surface_id.embed_token()) {
+      // This must be that the embedding changed, so discard.
       it = copy_output_requests_.erase(it);
     } else {
       ++it;

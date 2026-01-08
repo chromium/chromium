@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/feature_list.h"
-
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 
 #include <string>
@@ -11,11 +9,13 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "base/token.h"
@@ -1451,6 +1451,67 @@ TEST_P(CompositorFrameSinkSupportTest,
   EXPECT_TRUE(requests_map.empty());
   GetSurfaceForId(id2)->TakeCopyOutputRequests(&requests_map);
   EXPECT_FALSE(requests_map.empty());
+}
+
+// Verifies that CopyOutputRequests are released when the embedding
+// token changes.
+TEST_P(CompositorFrameSinkSupportTest, CopyOutputRequestEmbeddingTokenChanges) {
+  LocalSurfaceId local_surface_id1(1, kArbitraryToken);
+  LocalSurfaceId local_surface_id2(2, kAnotherArbitraryToken);
+  SurfaceId id2(support_->frame_sink_id(), local_surface_id2);
+
+  // Create the first surface.
+  support_->SubmitCompositorFrame(local_surface_id1,
+                                  MakeDefaultInteractiveCompositorFrame());
+
+  base::test::TestFuture<std::unique_ptr<CopyOutputResult>> result_future;
+  auto request = std::make_unique<CopyOutputRequest>(
+      CopyOutputRequest::ResultFormat::RGBA,
+      CopyOutputRequest::ResultDestination::kSystemMemory,
+      result_future.GetCallback());
+  support_->RequestCopyOfOutput(
+      {local_surface_id1, SubtreeCaptureId(), std::move(request)});
+
+  // Create the second surface with new embedding token.
+  support_->SubmitCompositorFrame(local_surface_id2,
+                                  MakeDefaultInteractiveCompositorFrame());
+
+  GetSurfaceForId(id2)->TakeCopyOutputRequestsFromClient();
+  EXPECT_FALSE(GetSurfaceForId(id2)->HasCopyOutputRequests());
+  const auto& copy_result = result_future.Get();
+  ASSERT_TRUE(copy_result);
+  EXPECT_TRUE(copy_result->IsEmpty());
+}
+
+// Verifies that CopyOutputRequests are added to the appropriate surface
+// when the embedding token changes.
+TEST_P(CompositorFrameSinkSupportTest,
+       CopyOutputRequestWithDifferentEmbeddingTokens) {
+  LocalSurfaceId local_surface_id1(1, kArbitraryToken);
+  LocalSurfaceId local_surface_id2(2, kAnotherArbitraryToken);
+  SurfaceId id1(support_->frame_sink_id(), local_surface_id1);
+  SurfaceId id2(support_->frame_sink_id(), local_surface_id2);
+
+  // Create the first surface.
+  support_->SubmitCompositorFrame(local_surface_id1,
+                                  MakeDefaultInteractiveCompositorFrame());
+
+  auto request = std::make_unique<CopyOutputRequest>(
+      CopyOutputRequest::ResultFormat::RGBA,
+      CopyOutputRequest::ResultDestination::kSystemMemory,
+      base::BindOnce(StubResultCallback));
+  support_->RequestCopyOfOutput(
+      {local_surface_id2, SubtreeCaptureId(), std::move(request)});
+
+  GetSurfaceForId(id1)->TakeCopyOutputRequestsFromClient();
+  EXPECT_FALSE(GetSurfaceForId(id1)->HasCopyOutputRequests());
+
+  // Create the second surface with new embedding token.
+  support_->SubmitCompositorFrame(local_surface_id2,
+                                  MakeDefaultInteractiveCompositorFrame());
+
+  GetSurfaceForId(id2)->TakeCopyOutputRequestsFromClient();
+  EXPECT_TRUE(GetSurfaceForId(id2)->HasCopyOutputRequests());
 }
 
 // Verifies that OnFrameTokenUpdate is issued after OnFirstSurfaceActivation.
