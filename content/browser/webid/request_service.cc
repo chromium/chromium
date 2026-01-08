@@ -39,6 +39,7 @@
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -345,6 +346,9 @@ void RequestService::RequestToken(
                             /*is_auto_selected=*/false);
     return;
   }
+
+  can_accept_redirect_to_ =
+      IsNavigationInterceptionEnabled() && navigation_handle != nullptr;
 
   had_transient_user_activation_ =
       (navigation_handle &&
@@ -1701,7 +1705,43 @@ void RequestService::OnRedirectToResponseReceived(
     IdentityProviderRequestOptionsPtr idp,
     FetchStatus status,
     const GURL& redirect_to) {
-  // TODO(crbug.com/474120843): Handle the redirect_to response.
+  // Navigate the top-level frame to the URL specified by the IdP.
+  //
+  // This is done here rather than in the callers of the RequestService because
+  // that allows us to have a consistent experience regardless of how the token
+  // was requested (e.g. via an interception or via the renderer process call).
+  if (!can_accept_redirect_to_ || !redirect_to.SchemeIsHTTPOrHTTPS()) {
+    CompleteRequestWithError(
+        FederatedAuthRequestResult::kIdTokenInvalidResponse,
+        TokenStatus::kIdTokenInvalidResponse,
+        /*should_delay_callback=*/false);
+    return;
+  }
+
+  // can_accept_redirect_to_ is only true for primary main frames.
+  DCHECK(render_frame_host().IsInPrimaryMainFrame());
+
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+
+  if (!web_contents) {
+    CompleteRequestWithError(FederatedAuthRequestResult::kError,
+                             /*token_status=*/std::nullopt,
+                             /*should_delay_callback=*/false);
+    return;
+  }
+
+  content::NavigationController::LoadURLParams params(redirect_to);
+  params.transition_type = ui::PAGE_TRANSITION_LINK;
+  web_contents->GetController().LoadURLWithParams(params);
+
+  // TODO(crbug.com/474120843): Introduce a more specific success enum value
+  // rather than kSuccessUsingTokenInHttpResponse.
+  CompleteRequest(FederatedAuthRequestResult::kSuccess,
+                  TokenStatus::kSuccessUsingTokenInHttpResponse,
+                  /*token_error=*/std::nullopt, idp->config->config_url,
+                  /*token_data=*/std::nullopt,
+                  /*should_delay_callback=*/false);
 }
 
 void RequestService::ShowErrorDialog(const GURL& idp_config_url,

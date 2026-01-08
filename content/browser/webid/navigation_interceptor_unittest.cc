@@ -247,31 +247,19 @@ TEST_F(NavigationInterceptorTest, WillProcessResponse) {
             return federated_auth_request.get();
           }));
 
-  GURL redirect_to("https://rp.example");
-
+  base::RunLoop run_loop;
   EXPECT_CALL(*federated_auth_request.get(), RequestToken)
-      .WillOnce(WithArgs<3>(
-          [&redirect_to](
-              blink::mojom::FederatedAuthRequest::RequestTokenCallback
-                  callback) {
-            base::Value::Dict token_dict;
-            token_dict.Set("redirect_to", redirect_to.spec());
-            std::move(callback).Run(
-                blink::mojom::RequestTokenStatus::kSuccess,
-                /*selected_identity_provider_config_url=*/GURL(),
-                base::Value(token_dict.Clone()),
-                /*error=*/nullptr,
-                /*is_auto_selected=*/false);
-          }));
+      .WillOnce([&](auto, auto, auto, auto) {
+        // When RequestToken is finally called, quit the RunLoop.
+        run_loop.Quit();
+      });
 
-  NavigationStartObserver observer(web_contents());
   interceptor.WillStartRequest();
   auto result = interceptor.WillProcessResponse();
   EXPECT_EQ(result, content::NavigationThrottle::DEFER);
 
-  observer.Wait();
-
-  EXPECT_EQ(observer.started_url(), redirect_to);
+  // This will block the test until run_loop.Quit() is called inside the mock.
+  run_loop.Run();
 }
 
 TEST_F(NavigationInterceptorTest, WillProcessResponseWithRedirect) {
@@ -315,31 +303,19 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseWithRedirect) {
             return federated_auth_request.get();
           }));
 
-  GURL redirect_to("https://rp.example/redirect");
-
+  base::RunLoop run_loop;
   EXPECT_CALL(*federated_auth_request.get(), RequestToken)
-      .WillOnce(WithArgs<3>(
-          [&redirect_to](
-              blink::mojom::FederatedAuthRequest::RequestTokenCallback
-                  callback) {
-            base::Value::Dict token_dict;
-            token_dict.Set("redirect_to", redirect_to.spec());
-            std::move(callback).Run(
-                blink::mojom::RequestTokenStatus::kSuccess,
-                /*selected_identity_provider_config_url=*/GURL(),
-                base::Value(token_dict.Clone()),
-                /*error=*/nullptr,
-                /*is_auto_selected=*/false);
-          }));
+      .WillOnce([&](auto, auto, auto, auto) {
+        // When RequestToken is finally called, quit the RunLoop.
+        run_loop.Quit();
+      });
 
-  NavigationStartObserver observer(web_contents());
   interceptor.WillStartRequest();
   auto result = interceptor.WillProcessResponse();
   EXPECT_EQ(result, content::NavigationThrottle::DEFER);
 
-  observer.Wait();
-
-  EXPECT_EQ(observer.started_url(), redirect_to);
+  // This will block the test until run_loop.Quit() is called inside the mock.
+  run_loop.Run();
 }
 
 TEST_F(NavigationInterceptorTest, WillProcessResponseNoActivation) {

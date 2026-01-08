@@ -168,45 +168,12 @@ void NavigationInterceptor::OnTokenResponse(
     std::optional<base::Value> token,
     blink::mojom::TokenErrorPtr error,
     bool is_auto_selected) {
-  // TODO(http://crbug.com/455614294): expose the redirect_to URL outside
-  // of the token so that either one or the other can be used.
-  // TODO(http://crbug.com/455614294): consider supporting the redirect_to
-  // response for non-interception use cases too.
-  if (status != blink::mojom::RequestTokenStatus::kSuccess) {
-    // The FedCM request failed.
-    // Cancel the navigation because it is a developer error.
-    CancelDeferredNavigation(CANCEL);
-    return;
-  }
-
-  ResponseBuilder response_builder;
-  auto params = response_builder.Build(std::move(*token));
-
-  if (!params) {
-    // The FedCM request succeeded, but the IdP returned an
-    // invalid response.
-    // Cancel the navigation because it is a developer error.
-    CancelDeferredNavigation(CANCEL);
-    return;
-  }
-
-  auto frame_tree_node_id = navigation_handle()->GetFrameTreeNodeId();
-
-  params->frame_tree_node_id = frame_tree_node_id;
-
-  content::WebContents* web_contents = navigation_handle()->GetWebContents();
-
-  if (!web_contents) {
-    return;
-  }
-
-  // Redirect the navigation to the URL specified in the token (which also
-  // cancels the current one).
-  // TODO(http://crbug.com/455614294): re-consider the security properties that
-  // the redirection need to have (e.g. CSP, who is the initiator, should
-  // SameSite cookies be passed, how does it relate to the history, the Referer
-  // header, navigating to internal schemes, like chrome://settings, etc).
-  web_contents->GetController().LoadURLWithParams(*params);
+  // The token response is not used in the navigation interception flow because
+  // the IdP is expected to respond with a "redirect_to" field which is handled
+  // in RequestService.
+  // We cancel this specific navigation, assuming that the RequestService
+  // will have already started a new navigation.
+  CancelDeferredNavigation(CANCEL);
 }
 
 const char* NavigationInterceptor::GetNameForLogging() {

@@ -643,6 +643,10 @@ class CONTENT_EXPORT RequestService
 
   perfetto::NamedTrack perfetto_track_;
 
+  // Whether this RequestService can make top level redirections, available
+  // currently only for interception-initiated requests.
+  bool can_accept_redirect_to_{false};
+
   mojo::Receiver<blink::mojom::FederatedAuthRequest> receiver_{this};
 
   base::WeakPtrFactory<RequestService> weak_ptr_factory_{this};
