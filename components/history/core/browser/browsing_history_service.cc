@@ -722,20 +722,80 @@ void BrowsingHistoryService::ReturnResultsToDriver(
   // with new results, and these two sets may contain duplicates. Assuming every
   // call to Web History is successful, we shouldn't be able to have empty sync
   // results at the same time as we have pending local.
+  bool has_remote_results = false;
   if (!state->remote_results.empty()) {
+    has_remote_results = true;
     MergeDuplicateResults(state.get(), &results);
-
-    const base::Time local_expiry_threshold =
-        clock_->Now() - base::Days(HistoryBackend::kExpireDaysThreshold);
-    base::flat_map<HistoryEntry::EntryType, size_t> pre_expiry_counts;
-    base::flat_map<HistoryEntry::EntryType, size_t> post_expiry_counts;
-    for (const HistoryEntry& entry : results) {
-      if (entry.time < local_expiry_threshold) {
-        ++pre_expiry_counts[entry.entry_type];
-      } else {
-        ++post_expiry_counts[entry.entry_type];
-      }
+  } else {
+    // TODO(skym): Is the optimization to skip merge on local only results worth
+    // the complexity increase here?
+    if (state->local_status == MORE_RESULTS && !state->local_results.empty()) {
+      state->local_end_time_for_continuation =
+          state->local_results.rbegin()->time;
     }
+    results = std::move(state->local_results);
+    state->local_results.clear();
+  }
+
+  RecordResultsMetrics(results, has_remote_results);
+
+  QueryResultsInfo info;
+  info.search_text = state->search_text;
+  info.reached_beginning =
+      !CanRetry(state->local_status) && !CanRetry(state->remote_status);
+  info.sync_timed_out = state->remote_status == TIMED_OUT;
+  base::OnceClosure continuation =
+      base::BindOnce(&BrowsingHistoryService::QueryHistoryInternal,
+                     weak_factory_.GetWeakPtr(), std::move(state));
+  driver_->OnQueryComplete(results, info, std::move(continuation));
+  driver_->HasOtherFormsOfBrowsingHistory(has_other_forms_of_browsing_history_,
+                                          has_synced_results_);
+}
+
+void BrowsingHistoryService::RecordResultsMetrics(
+    const std::vector<HistoryEntry>& results,
+    bool has_remote_results) {
+  // Count the number of local, remote, and combined entries, each split by
+  // entries before vs after the local expiry threshold (90 days).
+  const base::Time local_expiry_threshold =
+      clock_->Now() - base::Days(HistoryBackend::kExpireDaysThreshold);
+  base::flat_map<HistoryEntry::EntryType, size_t> pre_expiry_counts;
+  base::flat_map<HistoryEntry::EntryType, size_t> post_expiry_counts;
+  for (const HistoryEntry& entry : results) {
+    if (entry.time < local_expiry_threshold) {
+      ++pre_expiry_counts[entry.entry_type];
+    } else {
+      ++post_expiry_counts[entry.entry_type];
+    }
+  }
+
+  // Note: The histogram max of 150 is chosen to match `RESULTS_PER_PAGE` from
+  // chrome/browser/resources/history/constants.ts and `kMaxQueryCount` from
+  // chrome/browser/android/history/browsing_history_bridge.cc.
+  base::UmaHistogramCustomCounts(
+      "History.BrowsingHistoryResult.LocalOnly.PreExpiryThreshold",
+      pre_expiry_counts[HistoryEntry::LOCAL_ENTRY], 0, 150, 50);
+  base::UmaHistogramCustomCounts(
+      "History.BrowsingHistoryResult.LocalOnly.PostExpiryThreshold",
+      post_expiry_counts[HistoryEntry::LOCAL_ENTRY], 0, 150, 50);
+  base::UmaHistogramCustomCounts(
+      "History.BrowsingHistoryResult.RemoteOnly.PreExpiryThreshold",
+      pre_expiry_counts[HistoryEntry::REMOTE_ENTRY], 0, 150, 50);
+  base::UmaHistogramCustomCounts(
+      "History.BrowsingHistoryResult.RemoteOnly.PostExpiryThreshold",
+      post_expiry_counts[HistoryEntry::REMOTE_ENTRY], 0, 150, 50);
+  base::UmaHistogramCustomCounts(
+      "History.BrowsingHistoryResult.Combined.PreExpiryThreshold",
+      pre_expiry_counts[HistoryEntry::COMBINED_ENTRY], 0, 150, 50);
+  base::UmaHistogramCustomCounts(
+      "History.BrowsingHistoryResult.Combined.PostExpiryThreshold",
+      post_expiry_counts[HistoryEntry::COMBINED_ENTRY], 0, 150, 50);
+
+  // The "WebHistoryMergeResult" histograms are only recorded if there were any
+  // remote results, i.e. an actual merge happened.
+  // TODO(crbug.com/456079210): Clean up these histograms once the
+  // "History.BrowsingHistoryResult.*" ones are established.
+  if (has_remote_results) {
     // Note: The histogram max of 150 is chosen to match `RESULTS_PER_PAGE` from
     // chrome/browser/resources/history/constants.ts and `kMaxQueryCount` from
     // chrome/browser/android/history/browsing_history_bridge.cc.
@@ -757,28 +817,7 @@ void BrowsingHistoryService::ReturnResultsToDriver(
     base::UmaHistogramCustomCounts(
         "History.WebHistoryMergeResult.Combined.PostExpiryThreshold",
         post_expiry_counts[HistoryEntry::COMBINED_ENTRY], 0, 150, 50);
-  } else {
-    // TODO(skym): Is the optimization to skip merge on local only results worth
-    // the complexity increase here?
-    if (state->local_status == MORE_RESULTS && !state->local_results.empty()) {
-      state->local_end_time_for_continuation =
-          state->local_results.rbegin()->time;
-    }
-    results = std::move(state->local_results);
-    state->local_results.clear();
   }
-
-  QueryResultsInfo info;
-  info.search_text = state->search_text;
-  info.reached_beginning =
-      !CanRetry(state->local_status) && !CanRetry(state->remote_status);
-  info.sync_timed_out = state->remote_status == TIMED_OUT;
-  base::OnceClosure continuation =
-      base::BindOnce(&BrowsingHistoryService::QueryHistoryInternal,
-                     weak_factory_.GetWeakPtr(), std::move(state));
-  driver_->OnQueryComplete(results, info, std::move(continuation));
-  driver_->HasOtherFormsOfBrowsingHistory(has_other_forms_of_browsing_history_,
-                                          has_synced_results_);
 }
 
 void BrowsingHistoryService::WebHistoryQueryComplete(
