@@ -15,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -513,11 +512,11 @@ public interface Tab extends TabLifecycle {
 
     /** Called when the tab is added to a tab model. */
     void onAddedToTabModel(
-            NullableObservableSupplier<Tab> currentTabSupplier,
+            LookAheadObservableSupplier<Tab> currentTabSupplier,
             SelectionStateSupplier selectionStateSupplier);
 
     /** Called when the tab is removed from a tab model. */
-    void onRemovedFromTabModel(NullableObservableSupplier<Tab> currentTabSupplier);
+    void onRemovedFromTabModel(LookAheadObservableSupplier<Tab> currentTabSupplier);
 
     /** Returns whether the tab is multi-selected. */
     boolean isMultiSelected();

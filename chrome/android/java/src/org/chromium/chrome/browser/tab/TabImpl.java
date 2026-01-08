@@ -44,7 +44,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.process_launcher.ScopedServiceBindingBatch;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.Initializer;
@@ -176,7 +175,7 @@ class TabImpl implements Tab {
     private final Profile mProfile;
 
     /** The tab model this tab is currently attached to. */
-    private @Nullable NullableObservableSupplier<Tab> mCurrentTabSupplier;
+    private @Nullable LookAheadObservableSupplier<Tab> mCurrentTabSupplier;
 
     /** Whether or not this tab is a part of multi selection. */
     private @Nullable SelectionStateSupplier mSelectionStateSupplier;
@@ -353,7 +352,13 @@ class TabImpl implements Tab {
                 mWasLastActive = active;
 
                 if (!active) return;
-                TabImplJni.get().sendActivatedUpdate(mNativeTabAndroid, active);
+                TabImplJni.get().sendDidActivateUpdate(mNativeTabAndroid);
+            };
+
+    private final Callback<@Nullable Tab> mActiveTabLookAheadObserver =
+            (activeTab) -> {
+                if (mWasLastActive == null || !mWasLastActive) return;
+                TabImplJni.get().sendWillDeactivateUpdate(mNativeTabAndroid);
             };
 
     /**
@@ -2930,7 +2935,7 @@ class TabImpl implements Tab {
 
     @Override
     public void onAddedToTabModel(
-            NullableObservableSupplier<Tab> currentTabSupplier,
+            LookAheadObservableSupplier<Tab> currentTabSupplier,
             SelectionStateSupplier selectionStateSupplier) {
         // Tabs should not be attached to multiple tab models.
         assert mCurrentTabSupplier == null;
@@ -2939,10 +2944,11 @@ class TabImpl implements Tab {
         mSelectionStateSupplier = selectionStateSupplier;
 
         mCurrentTabSupplier.addObserver(mActiveTabObserver);
+        mCurrentTabSupplier.addLookAheadObserver(mActiveTabLookAheadObserver);
     }
 
     @Override
-    public void onRemovedFromTabModel(NullableObservableSupplier<Tab> currentTabSupplier) {
+    public void onRemovedFromTabModel(LookAheadObservableSupplier<Tab> currentTabSupplier) {
         // Usually mCurrentTabSupplier should equal currentTabSupplier when it's removed from the
         // TabModel. However, during reparenting it appears there are situations where the tab is
         // not removed from the original TabModel before being added to the new TabModel. In these
@@ -2951,10 +2957,12 @@ class TabImpl implements Tab {
 
         if (mCurrentTabSupplier != null) {
             mCurrentTabSupplier.removeObserver(mActiveTabObserver);
+            mCurrentTabSupplier.removeLookAheadObserver(mActiveTabLookAheadObserver);
         }
 
         mCurrentTabSupplier = null;
         mSelectionStateSupplier = null;
+        mWasLastActive = null;
     }
 
     @Override
@@ -3042,7 +3050,9 @@ class TabImpl implements Tab {
 
         void onDraggingStateChanged(long nativeTabAndroid, boolean isDragging);
 
-        void sendActivatedUpdate(long nativeTabAndroid, boolean isActivated);
+        void sendDidActivateUpdate(long nativeTabAndroid);
+
+        void sendWillDeactivateUpdate(long nativeTabAndroid);
     }
 
     @VisibleForTesting

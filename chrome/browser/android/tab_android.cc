@@ -474,8 +474,12 @@ void TabAndroid::UpdateDelegates(
   web_contents()->SetDelegate(web_contents_delegate_.get());
 }
 
-void TabAndroid::SendActivatedUpdate(JNIEnv* env, jboolean active) {
+void TabAndroid::SendDidActivateUpdate(JNIEnv* env) {
   did_activate_callback_list_.Notify(this);
+}
+
+void TabAndroid::SendWillDeactivateUpdate(JNIEnv* env) {
+  will_deactivate_callback_list_.Notify(this);
 }
 
 namespace {
@@ -667,11 +671,9 @@ base::CallbackListSubscription TabAndroid::RegisterDidActivate(
   return did_activate_callback_list_.Add(std::move(callback));
 }
 
-// TODO(crbug.com/409366905): Finish TabInterface implementation.
 base::CallbackListSubscription TabAndroid::RegisterWillDeactivate(
     WillDeactivateCallback callback) {
-  NOTIMPLEMENTED();
-  return base::CallbackListSubscription();
+  return will_deactivate_callback_list_.Add(std::move(callback));
 }
 
 bool TabAndroid::IsVisible() const {

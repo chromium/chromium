@@ -33,7 +33,6 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
-import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -286,8 +285,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     private final ObserverList<TabModelObserver> mTabModelObservers = new ObserverList<>();
     private final ObserverList<TabGroupModelFilterObserver> mTabGroupObservers =
             new ObserverList<>();
-    private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
-            ObservableSuppliers.createNullable();
+    private final SettableLookAheadObservableSupplier<Tab> mCurrentTabSupplier =
+            new SettableLookAheadObservableSupplier<>();
     private final SettableNonNullObservableSupplier<Integer> mTabCountSupplier =
             ObservableSuppliers.createNonNull(0);
     private final Set<Integer> mMultiSelectedTabs = new HashSet<>();
@@ -1337,6 +1336,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         }
 
         for (TabModelObserver obs : mTabModelObservers) obs.willAddTab(tab, type);
+
         // Clear the multi-selection set before adding the tab.
         clearMultiSelection(/* notifyObservers= */ false);
         boolean hasAnyTabs = mCurrentTabSupplier.get() != null;
@@ -1344,6 +1344,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 mOrderController.willOpenInForeground(type, isIncognito())
                         || (!hasAnyTabs && type == TabLaunchType.FROM_LONGPRESS_BACKGROUND);
         index = mOrderController.determineInsertionIndex(type, index, tab);
+
+        boolean shouldSelectBackgroundTab = !isActiveModel() && !hasAnyTabs && !selectTab;
+        if (shouldSelectBackgroundTab) {
+            mCurrentTabSupplier.willSet(tab);
+        }
 
         // TODO(crbug.com/437141942): Update the list of undoable tabs instead of
         // committing it.
@@ -1381,7 +1386,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         tab.setRootId(tab.getId());
 
         int finalIndex =
-                org.chromium.chrome.browser.tabmodel.TabCollectionTabModelImplJni.get()
+                TabCollectionTabModelImplJni.get()
                         .addTabRecursive(
                                 mNativeTabCollectionTabModelImplPtr,
                                 tab,
@@ -1391,7 +1396,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                                 tab.getIsPinned());
 
         // When adding the first background tab make sure to select it.
-        if (!isActiveModel() && !hasAnyTabs && !selectTab) {
+        if (shouldSelectBackgroundTab) {
             mCurrentTabSupplier.set(tab);
         }
 
@@ -1681,6 +1686,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             } else {
                 newSelectedTab = getTabAt(MathUtils.clamp(i, 0, currentTabCount - 1));
             }
+
+            mCurrentTabSupplier.willSet(newSelectedTab);
             mModelDelegate.requestToShowTab(newSelectedTab, type);
             mCurrentTabSupplier.set(newSelectedTab);
 
@@ -1831,6 +1838,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             nearbyTab =
                     TabModelImplUtil.findNearbyNotClosingTab(
                             this, tabsToRemove.indexOf(currentTabInModel), tabsToRemove);
+        }
+
+        if (nextTab != currentTabInModel && nextIsInOtherModel) {
+            mCurrentTabSupplier.willSet(nearbyTab);
         }
 
         Map<Token, @Nullable Tab> tabGroupShownTabs = new HashMap<>();
