@@ -1215,10 +1215,6 @@ void GlicInstanceImpl::CloseAllEmbedders() {
   }
 }
 
-void GlicInstanceImpl::CloseAllEmbeddersForTesting() {
-  CloseAllEmbedders();
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 views::View* GlicInstanceImpl::GetActiveEmbedderGlicViewForTesting() {
   auto* embedder = GetActiveEmbedder();

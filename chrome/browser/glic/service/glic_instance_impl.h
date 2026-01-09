@@ -232,7 +232,6 @@ class GlicInstanceImpl : public GlicInstance,
   glic::GlicInstanceMetrics* metrics() { return &instance_metrics_; }
 
   // Test support.
-  void CloseAllEmbeddersForTesting();
 #if !BUILDFLAG(IS_ANDROID)
   views::View* GetActiveEmbedderGlicViewForTesting();
 #endif

@@ -746,9 +746,9 @@ void GlicInstanceCoordinatorImpl::OnMemoryPressure(
 
     for (GlicInstanceImpl* instance : instances_to_process) {
       if (kGlicHibernateAllAggressive.Get()) {
-        auto is_showing = instance->IsShowing();
+        auto was_showing = instance->IsShowing();
         instance->Hibernate();
-        if (is_showing) {
+        if (was_showing) {
           instance->CloseAllEmbedders();
         }
       } else if (!instance->IsShowing() && !instance->IsActuating()) {
