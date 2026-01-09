@@ -23,7 +23,6 @@ enum class TabCreationType {
   kUnknown,
 };
 
-// Event fired when a new tab is inserted into the tab strip.
 struct TabCreationEvent {
   // The newly created tab. Only valid for the duration of the callback.
   raw_ptr<tabs::TabInterface> new_tab = nullptr;
@@ -35,11 +34,7 @@ struct TabCreationEvent {
   TabCreationType creation_type = TabCreationType::kUnknown;
 };
 
-// Event fired when a tab is removed, moved, replaced, navigated, or favicon
-// changed.
-struct TabMutationEvent {};
-
-using GlicTabEvent = std::variant<TabCreationEvent, TabMutationEvent>;
+using GlicTabEvent = std::variant<TabCreationEvent>;
 
 // Observes tab events across all windows for a specific profile.
 class GlicTabObserver {

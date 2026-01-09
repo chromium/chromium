@@ -9,14 +9,15 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/glic/common/glic_tab_observer.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
+class BrowserTabStripTracker;
 
 namespace glic {
 class GlicMetrics;
@@ -32,12 +33,12 @@ struct GlicPinnedTabContextEvent {
 };
 
 // Manages a collection of tabs that have been selected to be shared.
-class GlicPinnedTabManager {
+class GlicPinnedTabManager : public TabStripModelObserver {
  public:
   explicit GlicPinnedTabManager(Profile* profile,
                                 GlicInstance::UIDelegate* ui_delegate,
                                 GlicMetrics* metrics);
-  virtual ~GlicPinnedTabManager();
+  ~GlicPinnedTabManager() override;
 
   // Registers a callback to be invoked when the collection of pinned tabs
   // changes.
@@ -129,7 +130,15 @@ class GlicPinnedTabManager {
  private:
   class UpdateThrottler;
 
-  void OnTabEvent(const GlicTabEvent& event);
+  // TabStripModelObserver implementation:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
+  void OnTabChangedAt(tabs::TabInterface* tab,
+                      int index,
+                      TabChangeType change_type) override;
+  void OnTabWillBeRemoved(tabs::TabInterface* tab, int index) override;
 
   void OnPinCandidatesObserverDisconnected();
 
@@ -217,8 +226,8 @@ class GlicPinnedTabManager {
   // A timer to debounce pin candidate updates.
   std::unique_ptr<UpdateThrottler> pin_candidate_updater_;
 
-  // Tracks tab events for the current profile.
-  std::unique_ptr<GlicTabObserver> tab_observer_;
+  // Tracks all the browsers for the current profile.
+  std::unique_ptr<BrowserTabStripTracker> tab_strip_tracker_;
 
   base::WeakPtrFactory<GlicPinnedTabManager> weak_ptr_factory_{this};
 };

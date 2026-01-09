@@ -54,32 +54,22 @@ void GlicTabObserverImpl::OnTabStripModelChanged(
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
   if (change.type() == TabStripModelChange::kInserted) {
-    const auto& insert = *change.GetInsert();
-    for (const auto& content : insert.contents) {
+    for (const auto& contents_with_index : change.GetInsert()->contents) {
       tabs::TabInterface* new_tab =
-          tab_strip_model->GetTabAtIndex(content.index);
+          tabs::TabInterface::GetFromContents(contents_with_index.contents);
+
       tabs::TabInterface* old_active_tab = nullptr;
       if (selection.old_contents) {
         old_active_tab =
             tabs::TabInterface::GetFromContents(selection.old_contents);
       }
-      TabCreationType type = DetermineTabCreationType(new_tab);
-      callback_.Run(TabCreationEvent{new_tab, old_active_tab, type});
+
+      if (new_tab) {
+        TabCreationType creation_type = DetermineTabCreationType(new_tab);
+        callback_.Run(TabCreationEvent{new_tab, old_active_tab, creation_type});
+      }
     }
-    return;
   }
-
-  if (change.type() == TabStripModelChange::kRemoved ||
-      change.type() == TabStripModelChange::kMoved ||
-      change.type() == TabStripModelChange::kReplaced) {
-    callback_.Run(TabMutationEvent{});
-  }
-}
-
-void GlicTabObserverImpl::OnTabChangedAt(tabs::TabInterface* tab,
-                                         int index,
-                                         TabChangeType change_type) {
-  callback_.Run(TabMutationEvent{});
 }
 
 TabCreationType GlicTabObserverImpl::DetermineTabCreationType(
