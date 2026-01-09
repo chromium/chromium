@@ -102,11 +102,6 @@ found in the LICENSE file.
         android:order="19"
         android:title="@string/options_homepage_title"/>
     <Preference
-        android:fragment="org.chromium.chrome.browser.magic_stack.HomeModulesConfigSettings"
-        android:key="home_modules_config"
-        android:order="20"
-        android:title="@string/home_modules_configuration"/>
-    <Preference
         android:fragment="org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment"
         android:key="toolbar_shortcut"
         android:order="21"
