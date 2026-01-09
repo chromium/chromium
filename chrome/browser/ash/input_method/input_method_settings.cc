@@ -106,18 +106,16 @@ mojom::VietnameseVniSettingsPtr CreateVietnameseVniSettings(
     const base::Value::Dict& input_method_specific_pref) {
   auto settings = mojom::VietnameseVniSettings::New();
   settings->allow_flexible_diacritics =
-      input_method_specific_pref
-          .FindBool("vietnameseVniAllowFlexibleDiacritics")
+      input_method_specific_pref.FindBool(kVnPrefVniAllowFlexibleDiacritics)
           .value_or(true);
   settings->new_style_tone_mark_placement =
-      input_method_specific_pref
-          .FindBool("vietnameseVniNewStyleToneMarkPlacement")
+      input_method_specific_pref.FindBool(kVnPrefVniNewStyleToneMarkPlacement)
           .value_or(false);
   settings->enable_insert_double_horn_on_uo =
-      input_method_specific_pref.FindBool("vietnameseVniInsertDoubleHornOnUo")
+      input_method_specific_pref.FindBool(kVnPrefVniInsertDoubleHornOnUo)
           .value_or(false);
   settings->show_underline_for_composition_text =
-      input_method_specific_pref.FindBool("vietnameseVniShowUnderline")
+      input_method_specific_pref.FindBool(kVnPrefVniShowUnderline)
           .value_or(true);
   RecordSettingsMetrics(*settings);
   return settings;
@@ -127,21 +125,19 @@ mojom::VietnameseTelexSettingsPtr CreateVietnameseTelexSettings(
     const base::Value::Dict& input_method_specific_pref) {
   auto settings = mojom::VietnameseTelexSettings::New();
   settings->allow_flexible_diacritics =
-      input_method_specific_pref
-          .FindBool("vietnameseTelexAllowFlexibleDiacritics")
+      input_method_specific_pref.FindBool(kVnPrefTelexAllowFlexibleDiacritics)
           .value_or(true);
   settings->new_style_tone_mark_placement =
-      input_method_specific_pref
-          .FindBool("vietnameseTelexNewStyleToneMarkPlacement")
+      input_method_specific_pref.FindBool(kVnPrefTelexNewStyleToneMarkPlacement)
           .value_or(false);
   settings->enable_insert_double_horn_on_uo =
-      input_method_specific_pref.FindBool("vietnameseTelexInsertDoubleHornOnUo")
+      input_method_specific_pref.FindBool(kVnPrefTelexInsertDoubleHornOnUo)
           .value_or(false);
   settings->enable_w_for_u_horn_shortcut =
-      input_method_specific_pref.FindBool("vietnameseTelexInsertUHornOnW")
+      input_method_specific_pref.FindBool(kVnPrefTelexInsertUHornOnW)
           .value_or(true);
   settings->show_underline_for_composition_text =
-      input_method_specific_pref.FindBool("vietnameseTelexShowUnderline")
+      input_method_specific_pref.FindBool(kVnPrefTelexShowUnderline)
           .value_or(true);
   RecordSettingsMetrics(*settings);
   return settings;

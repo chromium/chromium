@@ -48,6 +48,26 @@ inline constexpr std::string_view kJpPrefDisablePersonalizedSuggestions =
 inline constexpr std::string_view kJpPrefAutomaticallySendStatisticsToGoogle =
     "AutomaticallySendStatisticsToGoogle";
 // LINT.ThenChange(/chrome/browser/resources/ash/settings/os_languages_page/input_method_prefs_consts.ts:JpOptionCategories)
+
+inline constexpr std::string_view kVnPrefVniAllowFlexibleDiacritics =
+    "vietnameseVniAllowFlexibleDiacritics";
+inline constexpr std::string_view kVnPrefVniNewStyleToneMarkPlacement =
+    "vietnameseVniNewStyleToneMarkPlacement";
+inline constexpr std::string_view kVnPrefVniInsertDoubleHornOnUo =
+    "vietnameseVniInsertDoubleHornOnUo";
+inline constexpr std::string_view kVnPrefVniShowUnderline =
+    "vietnameseVniShowUnderline";
+inline constexpr std::string_view kVnPrefTelexAllowFlexibleDiacritics =
+    "vietnameseTelexAllowFlexibleDiacritics";
+inline constexpr std::string_view kVnPrefTelexNewStyleToneMarkPlacement =
+    "vietnameseTelexNewStyleToneMarkPlacement";
+inline constexpr std::string_view kVnPrefTelexInsertDoubleHornOnUo =
+    "vietnameseTelexInsertDoubleHornOnUo";
+inline constexpr std::string_view kVnPrefTelexInsertUHornOnW =
+    "vietnameseTelexInsertUHornOnW";
+inline constexpr std::string_view kVnPrefTelexShowUnderline =
+    "vietnameseTelexShowUnderline";
+
 // Options values for the above option categories:
 // LINT.IfChange(JpOptionValues)
 inline constexpr std::string_view kJpPrefInputModeKana = "Kana";
