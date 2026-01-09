@@ -204,6 +204,9 @@ void MigrateUserToEnhancedSecurityBundleIfNeeded(
     return;
   }
 
+  // If we have attempted to migrate the user previously, don't try again. This
+  // is a one-time migration. That's why this check needs to happen before
+  // attempting the checks below.
   if (prefs->GetBoolean(
           ::prefs::kBundledSettingsCheckedMigrateUserToEnhancedBundle)) {
     return;
