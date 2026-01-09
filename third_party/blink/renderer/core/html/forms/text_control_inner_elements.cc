@@ -150,12 +150,6 @@ const ComputedStyle* TextControlInnerEditorElement::CustomStyleForLayoutObject(
           ? EUserModify::kReadOnly
           : EUserModify::kReadWritePlaintextOnly);
   style_builder.SetDisplay(EDisplay::kBlock);
-  // HasLineIfEmpty is unnecessary for <textarea> with anonymous IFCs because:
-  //  - <textarea> has the placeholder break element.
-  //  - HasLineIfEmpty is harmful for internal anonymous blocks.
-  if (!RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()) {
-    style_builder.SetHasLineIfEmpty(true);
-  }
   if (!start_style.ApplyControlFixedSize(host)) {
     const Font* font = start_style.GetFont();
     const SimpleFontData* font_data = font->PrimaryFont();

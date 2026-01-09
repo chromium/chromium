@@ -2910,10 +2910,7 @@ TEST_F(LocalCaretRectTest, AfterLineBreakTextArea) {
   Position position4 = RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()
                            ? Position(br_in_2nd_line, 0)
                            : Position(inner_text, 4);
-  PhysicalRect local_rect4 =
-      RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()
-          ? PhysicalRect(0, 0, 1, 10)
-          : PhysicalRect(0, 10, 1, 10);
+  PhysicalRect local_rect4(0, 0, 1, 10);
   EXPECT_EQ(
       LocalCaretRect(position4.AnchorNode()->GetLayoutObject(), local_rect4),
       LocalCaretRectOfPosition(
@@ -2924,10 +2921,7 @@ TEST_F(LocalCaretRectTest, AfterLineBreakTextArea) {
   Position position5 = RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()
                            ? Position(placeholder_br, 0)
                            : Position(inner_text, 5);
-  PhysicalRect local_rect5 =
-      RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()
-          ? PhysicalRect(0, 0, 1, 10)
-          : PhysicalRect(0, 20, 1, 10);
+  PhysicalRect local_rect5(0, 0, 1, 10);
   EXPECT_EQ(LocalCaretRect(placeholder_br->GetLayoutObject(), local_rect5),
             LocalCaretRectOfPosition(
                 PositionWithAffinity(position5, TextAffinity::kDownstream)));

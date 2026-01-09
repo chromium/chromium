@@ -10,9 +10,6 @@ namespace blink {
 class LayoutTextControlInnerEditorTest : public RenderingTest {};
 
 TEST_F(LayoutTextControlInnerEditorTest, AddChildWithoutTrailingLf) {
-  if (!RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()) {
-    return;
-  }
   SetBodyInnerHTML("<textarea id=ta>foo\nbar</textarea>");
   const auto* ta = GetLayoutBoxByElementId("ta");
   const auto* inner_editor = To<LayoutBlockFlow>(ta->FirstChildBox());
@@ -44,9 +41,6 @@ TEST_F(LayoutTextControlInnerEditorTest, AddChildWithoutTrailingLf) {
 }
 
 TEST_F(LayoutTextControlInnerEditorTest, AddChildWithTrailingLf) {
-  if (!RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()) {
-    return;
-  }
   SetBodyInnerHTML("<textarea id=ta>foo\nbar\n</textarea>");
   const auto* ta = GetLayoutBoxByElementId("ta");
   const auto* inner_editor = To<LayoutBlockFlow>(ta->FirstChildBox());
@@ -89,9 +83,6 @@ TEST_F(LayoutTextControlInnerEditorTest, AddChildWithTrailingLf) {
 }
 
 TEST_F(LayoutTextControlInnerEditorTest, RemoveChildWithoutTrailingLf) {
-  if (!RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()) {
-    return;
-  }
   SetBodyInnerHTML("<textarea id=ta>foo\nbar</textarea>");
   const auto* ta = GetLayoutBoxByElementId("ta");
   const auto* inner_editor = To<LayoutBlockFlow>(ta->FirstChildBox());
@@ -121,9 +112,6 @@ TEST_F(LayoutTextControlInnerEditorTest, RemoveChildWithoutTrailingLf) {
 
 // crbug.com/416795534
 TEST_F(LayoutTextControlInnerEditorTest, AddChildBeforeTestRenderingHolder) {
-  if (!RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()) {
-    return;
-  }
   SetBodyInnerHTML("<textarea id=ta>A\n</textarea>");
   GetElementById("ta")->Focus();
   GetDocument().execCommand(

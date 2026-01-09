@@ -25,9 +25,6 @@ class LayoutTextControlTest : public RenderingTest {
   // Return the LayoutText from inside a text control's user agent shadow tree.
   LayoutText* GetInnerLayoutText(TextControlElement* control) {
     auto* editor_box = control->InnerEditorElement()->GetLayoutObject();
-    if (!RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()) {
-      return To<LayoutText>(editor_box->SlowFirstChild());
-    }
     if (auto* anonymous_block =
             DynamicTo<LayoutBlockFlow>(editor_box->SlowFirstChild())) {
       return To<LayoutText>(anonymous_block->FirstChild());

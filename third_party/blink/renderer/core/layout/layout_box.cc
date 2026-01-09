@@ -237,8 +237,7 @@ LayoutUnit TextAreaIntrinsicBlockSize(const HTMLTextAreaElement& textarea,
   const auto* inner_editor = textarea.InnerEditorElement();
   const auto* reference_box =
       inner_editor ? inner_editor->GetLayoutBox() : nullptr;
-  if (RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled() && reference_box &&
-      reference_box->FirstChildBox()) {
+  if (reference_box && reference_box->FirstChildBox()) {
     reference_box = reference_box->FirstChildBox();
   }
   const LayoutUnit line_height =

@@ -1182,49 +1182,30 @@ String TextControlElement::ValueWithHardLineBreaks() const {
   if (!layout_object)
     return Value();
 
-  if (RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()) {
-    StringBuilder result;
-    bool has_valid_ifcs = false;
-    for (auto* anonymous = To<LayoutBlockFlow>(layout_object->FirstChild());
-         anonymous; anonymous = To<LayoutBlockFlow>(anonymous->NextSibling())) {
-      InlineCursor cursor(*anonymous);
-      if (!cursor) {
-        continue;
-      }
-      const auto* mapping = InlineNode::GetOffsetMapping(anonymous);
-      if (!mapping) {
-        continue;
-      }
-      has_valid_ifcs = true;
-      Position break_position = GetNextSoftBreak(*mapping, cursor);
-      const Node* node = anonymous->FirstChild()
-                             ? anonymous->FirstChild()->GetNode()
-                             : nullptr;
-      for (; node && node->GetLayoutObject() &&
-             node->GetLayoutObject()->Parent() == anonymous;
-           node = node->nextSibling()) {
-        AppendWrappedNode(*inner_text, *node, *mapping, cursor, break_position,
-                          result);
-      }
-    }
-    return has_valid_ifcs ? result.ReleaseString() : Value();
-  }
-
-  InlineCursor cursor(*layout_object);
-  if (!cursor) {
-    return Value();
-  }
-  const auto* mapping = InlineNode::GetOffsetMapping(layout_object);
-  if (!mapping) {
-    return Value();
-  }
-  Position break_position = GetNextSoftBreak(*mapping, cursor);
   StringBuilder result;
-  for (Node& node : NodeTraversal::DescendantsOf(*inner_text)) {
-    AppendWrappedNode(*inner_text, node, *mapping, cursor, break_position,
-                      result);
+  bool has_valid_ifcs = false;
+  for (auto* anonymous = To<LayoutBlockFlow>(layout_object->FirstChild());
+       anonymous; anonymous = To<LayoutBlockFlow>(anonymous->NextSibling())) {
+    InlineCursor cursor(*anonymous);
+    if (!cursor) {
+      continue;
+    }
+    const auto* mapping = InlineNode::GetOffsetMapping(anonymous);
+    if (!mapping) {
+      continue;
+    }
+    has_valid_ifcs = true;
+    Position break_position = GetNextSoftBreak(*mapping, cursor);
+    const Node* node =
+        anonymous->FirstChild() ? anonymous->FirstChild()->GetNode() : nullptr;
+    for (; node && node->GetLayoutObject() &&
+           node->GetLayoutObject()->Parent() == anonymous;
+         node = node->nextSibling()) {
+      AppendWrappedNode(*inner_text, *node, *mapping, cursor, break_position,
+                        result);
+    }
   }
-  return result.ToString();
+  return has_valid_ifcs ? result.ReleaseString() : Value();
 }
 
 TextControlElement* EnclosingTextControl(const Position& position) {

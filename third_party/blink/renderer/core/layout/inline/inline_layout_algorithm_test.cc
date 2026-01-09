@@ -70,9 +70,7 @@ class InlineLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
 
     LayoutBlockFlow* block_flow =
         To<LayoutBlockFlow>(textarea->InnerEditorElement()->GetLayoutObject());
-    if (RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()) {
-      block_flow = To<LayoutBlockFlow>(block_flow->FirstChild());
-    }
+    block_flow = To<LayoutBlockFlow>(block_flow->FirstChild());
     InlineCursor cursor(*block_flow);
     cursor.MoveToFirstLine();
     EXPECT_TRUE(cursor.IsNotNull());
