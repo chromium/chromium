@@ -14,6 +14,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
@@ -68,7 +69,7 @@ class HeightTransitionHandler {
     private final TabObscuringHandler mTabObscuringHandler;
     private TabObscuringHandler.@Nullable Observer mTabObscuringHandlerObserver;
 
-    private final TabStripTransitionDelegate mTabStripTransitionDelegate;
+    private final OneshotSupplier<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier;
 
     /**
      * Current height of the tab strip represented by the space reserved on top of the toolbar
@@ -109,8 +110,8 @@ class HeightTransitionHandler {
      *     TabStripTransitionCoordinator}.
      * @param handler The {@link Handler} used by {@link TabStripTransitionCoordinator}.
      * @param tabObscuringHandler Delegate object handling obscuring views.
-     * @param tabStripTransitionDelegate The {@link TabStripTransitionDelegate} to help facilitate
-     *     the height transition.
+     * @param tabStripTransitionDelegateSupplier Supplier for the {@link
+     *     TabStripTransitionDelegate}.
      * @param tabStripTransitionHandler The {@link TabStripTransitionHandler} instance to facilitate
      *     tab strip visibility transitions.
      */
@@ -121,14 +122,14 @@ class HeightTransitionHandler {
             CallbackController callbackController,
             Handler handler,
             TabObscuringHandler tabObscuringHandler,
-            TabStripTransitionDelegate tabStripTransitionDelegate,
+            OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier,
             TabStripTransitionHandler tabStripTransitionHandler) {
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         mControlContainer = controlContainer;
         mTabStripHeightFromResource = tabStripHeightFromResource;
         mCallbackController = callbackController;
         mHandler = handler;
-        mTabStripTransitionDelegate = tabStripTransitionDelegate;
+        mTabStripTransitionDelegateSupplier = tabStripTransitionDelegateSupplier;
         mTabStripTransitionHandler = tabStripTransitionHandler;
 
         mTabStripHeight = tabStripHeightFromResource;
@@ -224,7 +225,8 @@ class HeightTransitionHandler {
     }
 
     private void requestTransition() {
-        maybeUpdateTabStripVisibility();
+        mTabStripTransitionDelegateSupplier.runSyncOrOnAvailable(
+                mCallbackController.makeCancelable(delegate -> maybeUpdateTabStripVisibility()));
     }
 
     private void maybeUpdateTabStripVisibility() {
@@ -427,7 +429,13 @@ class HeightTransitionHandler {
         // update the strip visibility. In a desktop window, the height transition runs solely
         // to update the strip top padding and it is expected of the fade transition to
         // control the strip visibility by updating the scrim in this case when applicable.
-        mTabStripTransitionDelegate.onHeightChanged(mTabStripHeight, mUpdateStripVisibility);
+        if (mTabStripTransitionDelegateSupplier.get() != null) {
+            mTabStripTransitionDelegateSupplier
+                    .get()
+                    .onHeightChanged(mTabStripHeight, mUpdateStripVisibility);
+        } else {
+            Log.w(TAG, "TabStripTransitionDelegate is null. Skipped onHeightChanged.");
+        }
 
         // If top control is already at steady state, notify right away.
         if (isTopControlAtSteadyState()) {
@@ -482,7 +490,9 @@ class HeightTransitionHandler {
         mBrowserControlsVisibilityManager.removeObserver(mTransitionFinishedObserver);
         mTransitionFinishedObserver = null;
 
-        mTabStripTransitionDelegate.onHeightTransitionFinished(finished);
+        if (mTabStripTransitionDelegateSupplier.get() != null) {
+            mTabStripTransitionDelegateSupplier.get().onHeightTransitionFinished(finished);
+        }
         mControlContainer.onHeightTransitionFinished(finished);
     }
 

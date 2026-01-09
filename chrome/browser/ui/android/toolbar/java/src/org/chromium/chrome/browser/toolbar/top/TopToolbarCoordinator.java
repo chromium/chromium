@@ -386,24 +386,19 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         }
 
         int tabStripHeightResource = mToolbarLayout.getTabStripHeightFromResource();
-
-        mTabStripTransitionDelegateSupplier.runSyncOrOnAvailable(
-                (tabStripTransitionDelegate) -> {
-                    if (mControlContainer == null) return;
-                    mTabStripTransitionCoordinator =
-                            new TabStripTransitionCoordinator(
-                                    browserControlsVisibilityManager,
-                                    mControlContainer,
-                                    tabStripHeightResource,
-                                    mTabObscuringHandler,
-                                    mDesktopWindowStateManager,
-                                    tabStripTransitionDelegate,
-                                    tabStripTransitionHandler);
-                    mToolbarLayout
-                            .getContext()
-                            .registerComponentCallbacks(mTabStripTransitionCoordinator);
-                    mToolbarLayout.setTabStripTransitionCoordinator(mTabStripTransitionCoordinator);
-                });
+        if (tabStripHeightResource > 0) {
+            mTabStripTransitionCoordinator =
+                    new TabStripTransitionCoordinator(
+                            browserControlsVisibilityManager,
+                            mControlContainer,
+                            tabStripHeightResource,
+                            mTabObscuringHandler,
+                            mDesktopWindowStateManager,
+                            mTabStripTransitionDelegateSupplier,
+                            tabStripTransitionHandler);
+            mToolbarLayout.getContext().registerComponentCallbacks(mTabStripTransitionCoordinator);
+            mToolbarLayout.setTabStripTransitionCoordinator(mTabStripTransitionCoordinator);
+        }
     }
 
     /**

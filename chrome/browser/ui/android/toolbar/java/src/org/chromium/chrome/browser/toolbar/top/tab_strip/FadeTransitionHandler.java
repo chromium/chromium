@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.top.tab_strip;
 import android.util.DisplayMetrics;
 
 import org.chromium.base.CallbackController;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.ui.base.ViewUtils;
@@ -19,21 +20,26 @@ import org.chromium.ui.base.ViewUtils;
 class FadeTransitionHandler {
     private static final int FADE_TRANSITION_DURATION_MS = 200;
 
-    private final TabStripTransitionDelegate mTabStripTransitionDelegate;
+    private final OneshotSupplier<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier;
+    private final CallbackController mCallbackController;
 
     private int mTabStripTransitionThreshold;
     private int mTabStripWidth;
 
     FadeTransitionHandler(
-            TabStripTransitionDelegate tabStripTransitionDelegate,
+            OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier,
             CallbackController callbackController) {
-        mTabStripTransitionDelegate = tabStripTransitionDelegate;
+        mTabStripTransitionDelegateSupplier = tabStripTransitionDelegateSupplier;
+        mCallbackController = callbackController;
     }
 
     void updateTabStripTransitionThreshold(DisplayMetrics displayMetrics) {
+        var delegate = mTabStripTransitionDelegateSupplier.get();
+        // Skip while the delegate is null before native init; this method will be invoked by the
+        // observer callback once the delegate supplier is injected.
+        if (delegate == null) return;
         mTabStripTransitionThreshold =
-                ViewUtils.dpToPx(
-                        displayMetrics, mTabStripTransitionDelegate.getFadeTransitionThresholdDp());
+                ViewUtils.dpToPx(displayMetrics, delegate.getFadeTransitionThresholdDp());
     }
 
     void onTabStripSizeChanged(
@@ -44,7 +50,9 @@ class FadeTransitionHandler {
     }
 
     private void requestTransition(boolean forceFadeInStrip) {
-        maybeUpdateTabStripVisibility(forceFadeInStrip);
+        mTabStripTransitionDelegateSupplier.runSyncOrOnAvailable(
+                mCallbackController.makeCancelable(
+                        delegate -> maybeUpdateTabStripVisibility(forceFadeInStrip)));
     }
 
     private void maybeUpdateTabStripVisibility(boolean forceFadeInStrip) {
@@ -53,7 +61,9 @@ class FadeTransitionHandler {
         boolean showTabStrip = mTabStripWidth >= mTabStripTransitionThreshold || forceFadeInStrip;
         var newOpacity = showTabStrip ? 0f : 1f;
 
-        mTabStripTransitionDelegate.onFadeTransitionRequested(
-                newOpacity, FADE_TRANSITION_DURATION_MS);
+        var delegate = mTabStripTransitionDelegateSupplier.get();
+        assert delegate != null : "TabStripTransitionDelegate should be available.";
+
+        delegate.onFadeTransitionRequested(newOpacity, FADE_TRANSITION_DURATION_MS);
     }
 }
