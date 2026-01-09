@@ -1634,11 +1634,7 @@ size_t BookmarkBarView::GetFirstHiddenNodeIndex() const {
 }
 
 std::unique_ptr<MenuButton> BookmarkBarView::CreateAllBookmarksButton() {
-  auto button = std::make_unique<BookmarkFolderButton>(base::BindRepeating(
-      [](BookmarkBarView* bar, const ui::Event& event) {
-        bar->OnMenuButtonPressed(BookmarkParentFolder::OtherFolder(), event);
-      },
-      base::Unretained(this)));
+  auto button = CreateMenuButtonForFolder(BookmarkParentFolder::OtherFolder());
   button->SetID(VIEW_ID_ALL_BOOKMARKS);
   button->set_context_menu_controller(this);
   return button;
@@ -1646,11 +1642,8 @@ std::unique_ptr<MenuButton> BookmarkBarView::CreateAllBookmarksButton() {
 
 std::unique_ptr<MenuButton> BookmarkBarView::CreateManagedBookmarksButton() {
   // Title is set in Loaded.
-  auto button = std::make_unique<BookmarkFolderButton>(base::BindRepeating(
-      [](BookmarkBarView* bar, const ui::Event& event) {
-        bar->OnMenuButtonPressed(BookmarkParentFolder::ManagedFolder(), event);
-      },
-      base::Unretained(this)));
+  auto button =
+      CreateMenuButtonForFolder(BookmarkParentFolder::ManagedFolder());
   button->SetID(VIEW_ID_MANAGED_BOOKMARKS);
   button->set_context_menu_controller(this);
   return button;
@@ -1697,11 +1690,8 @@ std::unique_ptr<views::View> BookmarkBarView::CreateBookmarkButton(
         base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
   } else {
     CHECK(node->is_folder());
-    button = std::make_unique<BookmarkFolderButton>(
-        base::BindRepeating(&BookmarkBarView::OnMenuButtonPressed,
-                            base::Unretained(this),
-                            BookmarkParentFolder::FromFolderNode(node)),
-        node->GetTitle());
+    button = CreateMenuButtonForFolder(
+        BookmarkParentFolder::FromFolderNode(node), node->GetTitle());
   }
   ConfigureButton(node, button.get());
   bookmark_buttons_.insert(bookmark_buttons_.cbegin() + index,
@@ -1712,6 +1702,15 @@ std::unique_ptr<views::View> BookmarkBarView::CreateBookmarkButton(
                               base::Unretained(this)));
   UpdateFirstHiddenNodeIndex();
   return button;
+}
+
+std::unique_ptr<views::MenuButton> BookmarkBarView::CreateMenuButtonForFolder(
+    const BookmarkParentFolder& folder,
+    std::u16string_view title) {
+  return std::make_unique<BookmarkFolderButton>(
+      base::BindRepeating(&BookmarkBarView::OnMenuButtonPressed,
+                          base::Unretained(this), folder),
+      title);
 }
 
 void BookmarkBarView::RemoveBookmarkButton(size_t index) {

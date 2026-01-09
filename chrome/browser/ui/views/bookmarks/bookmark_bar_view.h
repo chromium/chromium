@@ -312,6 +312,11 @@ class BookmarkBarView : public views::AccessiblePaneView,
       const bookmarks::BookmarkNode* node,
       size_t index);
 
+  // Creates a MenuButton for a Bookmark Folder with an optional title.
+  std::unique_ptr<views::MenuButton> CreateMenuButtonForFolder(
+      const BookmarkParentFolder& folder,
+      std::u16string_view title = {});
+
   // Removes the bookmark button at the given index.
   void RemoveBookmarkButton(size_t index);
 
