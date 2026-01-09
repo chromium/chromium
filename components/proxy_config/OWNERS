@@ -1,2 +1,6 @@
 acostinas@google.com
 stevenjb@chromium.org
+
+# Owners of proxy override rules.
+seblalancette@chromium.org
+domfc@chromium.org
