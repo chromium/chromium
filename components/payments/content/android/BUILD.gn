@@ -259,6 +259,7 @@ android_library("minimal_java") {
     "java/src/org/chromium/components/payments/PaymentAppFactoryInterface.java",
     "java/src/org/chromium/components/payments/PaymentAppFactoryParams.java",
     "java/src/org/chromium/components/payments/PaymentAppService.java",
+    "java/src/org/chromium/components/payments/PaymentAppServiceDelegate.java",
     "java/src/org/chromium/components/payments/PaymentHandlerHost.java",
     "java/src/org/chromium/components/payments/PaymentRequestParams.java",
     "java/src/org/chromium/components/payments/PaymentRequestSpec.java",
