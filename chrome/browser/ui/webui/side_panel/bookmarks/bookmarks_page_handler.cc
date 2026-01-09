@@ -602,7 +602,7 @@ void BookmarksPageHandler::ExecuteContextMenuCommand(
       node_ids, bookmarks_ui_->embedder(), source,
       bookmarks_ui_->GetShoppingListContextMenuController(),
       browser_window_interface_);
-  if (context_menu->IsCommandIdEnabled(command_id)) {
+  if (context_menu && context_menu->IsCommandIdEnabled(command_id)) {
     context_menu->ExecuteCommand(command_id, 0);
   }
 }
