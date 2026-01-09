@@ -4321,27 +4321,6 @@ constexpr char kDisableFacilitatedPaymentsMerchantAllowlistInternalName[] =
     "disable-facilitated-payments-merchant-allowlist";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-
-const FeatureEntry::FeatureParam kHistoryOptInEducationalTipTurnOn[] = {
-    {"history_opt_in_educational_tip_param", "0"}};
-const FeatureEntry::FeatureParam kHistoryOptInEducationalTipLetsGo[] = {
-    {"history_opt_in_educational_tip_param", "1"}};
-const FeatureEntry::FeatureParam kHistoryOptInEducationalTipContinue[] = {
-    {"history_opt_in_educational_tip_param", "2"}};
-
-const FeatureEntry::FeatureVariation kHistoryOptInEducationalTipVariations[] = {
-    {"Enable with \"Turn on\" string variant",
-     kHistoryOptInEducationalTipTurnOn,
-     std::size(kHistoryOptInEducationalTipTurnOn), nullptr},
-    {"Enable with \"Let's go\" string variant",
-     kHistoryOptInEducationalTipLetsGo,
-     std::size(kHistoryOptInEducationalTipLetsGo), nullptr},
-    {"Enable with \"Continue\" string variant",
-     kHistoryOptInEducationalTipContinue,
-     std::size(kHistoryOptInEducationalTipContinue), nullptr}};
-#endif  // BUILDFLAG(IS_ANDROID)
-
 const FeatureEntry::FeatureParam
     kStandardBoundSessionCredentialsForDevelopers[] = {
         {"RequireOriginTrialTokens", "false"},
@@ -11081,16 +11060,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensAimSuggestionsGradientBackgroundDescription,
      kOsAll,
      FEATURE_VALUE_TYPE(lens::features::kLensAimSuggestionsGradientBackground)},
-
-#if BUILDFLAG(IS_ANDROID)
-
-    {"history-opt-in-educational-tip",
-     flag_descriptions::kHistoryOptInEducationalTipName,
-     flag_descriptions::kHistoryOptInEducationalTipDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kHistoryOptInEducationalTip,
-                                    kHistoryOptInEducationalTipVariations,
-                                    "HistoryOptInEducationalTipVariations")},
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
     {"sensitive-content", flag_descriptions::kSensitiveContentName,

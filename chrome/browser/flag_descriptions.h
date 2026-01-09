@@ -137,11 +137,6 @@ inline constexpr char kAndroidAdaptiveFrameRateDescription[] =
     "include lowering frame rate for low speed scroll. Has no effect if device "
     "does not support adaptive refresh rate.";
 
-inline constexpr char kHistoryOptInEducationalTipName[] =
-    "History sync educational tip";
-inline constexpr char kHistoryOptInEducationalTipDescription[] =
-    "Enables a history sync promo in the magic stack on NTP";
-
 inline constexpr char kGroupPromoPrototypeCpaName[] =
     "Group Promo Prototype - Contextual page action";
 inline constexpr char kGroupPromoPrototypeCpaDescription[] =

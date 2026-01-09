@@ -312,17 +312,6 @@ BASE_FEATURE(kGlicEligibilitySeparateAccountCapability,
 BASE_FEATURE(kHandleMdmErrorsForDasherAccounts,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-// Enables a history sync educational tip in the magic stack on NTP.
-BASE_FEATURE(kHistoryOptInEducationalTip, base::FEATURE_ENABLED_BY_DEFAULT);
-// Determines which text should be shown on the history sync educational tip
-// button. No-op unless HistoryOptInEducationalTip is enabled.
-const base::FeatureParam<int> kHistoryOptInEducationalTipVariation(
-    &kHistoryOptInEducationalTip,
-    "history_opt_in_educational_tip_param",
-    1);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kIdentityInAuthErrorFollowUps, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif

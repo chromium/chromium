@@ -119,8 +119,7 @@ bool HistorySyncPromo::IsEnabled(int impression_count) {
     return true;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kEducationalTipModule) ||
-      !base::FeatureList::IsEnabled(switches::kHistoryOptInEducationalTip)) {
+  if (!base::FeatureList::IsEnabled(features::kEducationalTipModule)) {
     return false;
   }
 

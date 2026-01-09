@@ -18,7 +18,6 @@
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/send_tab_to_self/features.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -450,9 +449,7 @@ TEST_F(HomeModulesCardRegistryTest, TestAuxiliarySearchPromoCardDisabled) {
 // Tests that the Registry registers the HistorySyncPromo card when its feature
 // is enabled.
 TEST_F(HomeModulesCardRegistryTest, TestHistorySyncPromoCardEnabled) {
-  feature_list_.InitWithFeatures(
-      {features::kEducationalTipModule, switches::kHistoryOptInEducationalTip},
-      {});
+  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
   registry_ = std::make_unique<HomeModulesCardRegistry>(
       &profile_pref_service_, &local_state_pref_service_);
 
@@ -474,9 +471,7 @@ TEST_F(HomeModulesCardRegistryTest, TestHistorySyncPromoCardEnabled) {
 // Tests that the Registry won't register the HistorySyncPromo card when it is
 // disabled because of user's interaction history.
 TEST_F(HomeModulesCardRegistryTest, TestHistorySyncPromoCardDisabled) {
-  feature_list_.InitWithFeatures(
-      {features::kEducationalTipModule, switches::kHistoryOptInEducationalTip},
-      {});
+  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
   profile_pref_service_.SetUserPref(kHistorySyncPromoImpressionCounterPref,
                                     std::make_unique<base::Value>(11));
   registry_ = std::make_unique<HomeModulesCardRegistry>(
