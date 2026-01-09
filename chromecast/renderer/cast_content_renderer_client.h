@@ -25,7 +25,7 @@ class ContentRendererClientMixins;
 }  // namespace cast_receiver
 
 namespace chromecast {
-class MemoryPressureObserverImpl;
+
 namespace media {
 class MediaCapsObserverImpl;
 class SupportedCodecProfileLevelsMemo;
@@ -109,9 +109,6 @@ class CastContentRendererClient
   std::unique_ptr<media::SupportedCodecProfileLevelsMemo> supported_profiles_;
   mojo::Receiver<mojom::ApplicationMediaCapabilitiesObserver>
       app_media_capabilities_observer_receiver_{this};
-#if !BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<MemoryPressureObserverImpl> memory_pressure_observer_;
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<media::CastAudioDeviceFactory> cast_audio_device_factory_;

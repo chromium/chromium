@@ -58,8 +58,6 @@ class UserLevelMemoryPressureSignalGenerator {
 
   void HandleMemoryPressureLevel(base::MemoryPressureLevel level);
 
-  static void NotifyMemoryPressure(base::MemoryPressureLevel level);
-
   static void ReportBeforeAfterMetrics(
       base::ByteCount total_pmf_visible_or_higher_priority_renderers,
       const char* suffix_name);

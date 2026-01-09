@@ -2094,6 +2094,12 @@ void RenderProcessHostImpl::InitializeChannelProxy() {
     channel_->Pause();
   }
   InitializeSharedMemoryRegionsOnceChannelIsUp();
+
+  // Must register after binding `child_process_`.
+  if (!run_renderer_in_process()) {
+    memory_pressure_listener_registration_.emplace(
+        base::MemoryPressureListenerTag::kRenderProcessHostImpl, this);
+  }
 }
 
 void RenderProcessHostImpl::InitializeSharedMemoryRegionsOnceChannelIsUp() {
@@ -2769,6 +2775,16 @@ void RenderProcessHostImpl::RegisterCoordinatorClient(
               GetProcess().Pid()));
 
   coordinator_connector_receiver_.reset();
+}
+
+void RenderProcessHostImpl::OnMemoryPressure(
+    base::MemoryPressureLevel memory_pressure_level) {
+  // Match the existing behavior of only sending the memory pressure level on
+  // select platforms.
+  // TODO(pmonette): Enable for all platforms.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CASTOS)
+  child_process_->OnMemoryPressure(memory_pressure_level);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void RenderProcessHostImpl::CreateRendererHost(
@@ -6161,15 +6177,6 @@ void RenderProcessHostImpl::ProvideSwapFileForRenderer() {
           },
           std::move(allocator)));
 }
-
-#if BUILDFLAG(IS_ANDROID)
-
-void RenderProcessHostImpl::NotifyMemoryPressureToRenderer(
-    base::MemoryPressureLevel level) {
-  child_process_->OnMemoryPressure(level);
-}
-
-#endif
 
 void RenderProcessHostImpl::GetBoundInterfacesForTesting(
     std::vector<std::string>& out) {

@@ -311,14 +311,6 @@ void ChildProcessHostImpl::SetProfilingFile(base::File file) {
 }
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-// Notifies the child process of memory pressure level.
-void ChildProcessHostImpl::NotifyMemoryPressureToChildProcess(
-    base::MemoryPressureLevel level) {
-  child_process()->OnMemoryPressure(level);
-}
-#endif
-
 void ChildProcessHostImpl::SetBatterySaverMode(
     bool battery_saver_mode_enabled) {
   child_process()->SetBatterySaverMode(battery_saver_mode_enabled);

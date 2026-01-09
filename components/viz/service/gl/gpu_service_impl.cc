@@ -1156,16 +1156,6 @@ void GpuServiceImpl::OnForegroundedOnMainThread() {
   base::allocator::PartitionAllocSupport::Get()->OnForegrounded();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-void GpuServiceImpl::OnMemoryPressure(base::MemoryPressureLevel level) {
-  // Forward the notification to the registry of MemoryPressureListeners.
-  base::SingleThreadTaskRunner::GetMainThreadDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &base::MemoryPressureListenerRegistry::NotifyMemoryPressure, level));
-}
-#endif
-
 #if BUILDFLAG(IS_APPLE)
 void GpuServiceImpl::BeginCATransaction() {
   DCHECK(io_runner_->BelongsToCurrentThread());

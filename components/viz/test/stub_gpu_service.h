@@ -81,9 +81,6 @@ class StubGpuService : public mojom::GpuService {
   void OnBackgroundCleanup() override;
   void OnBackgrounded() override;
   void OnForegrounded() override;
-#if !BUILDFLAG(IS_ANDROID)
-  void OnMemoryPressure(base::MemoryPressureLevel level) override;
-#endif
 #if BUILDFLAG(IS_APPLE)
   void BeginCATransaction() override;
   void CommitCATransaction(CommitCATransactionCallback callback) override;

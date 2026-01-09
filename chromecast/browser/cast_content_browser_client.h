@@ -72,7 +72,6 @@ class CastWindowManager;
 class CastFeatureListCreator;
 class DisplaySettingsManager;
 class GeneralAudienceBrowsingService;
-class MemoryPressureControllerImpl;
 class ServiceConnector;
 
 namespace media {
@@ -332,10 +331,6 @@ class CastContentBrowserClient
 
   // A static cache to hold crash_handlers for each process_type
   std::map<std::string, breakpad::CrashHandlerHostLinux*> crash_handlers_;
-
-  // Notify renderers of memory pressure (Android renderers register directly
-  // with OS for this).
-  std::unique_ptr<MemoryPressureControllerImpl> memory_pressure_controller_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 

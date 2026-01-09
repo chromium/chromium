@@ -78,12 +78,7 @@ cast_source_set("renderer") {
     "//services/service_manager/public/cpp",
   ]
 
-  if (!is_android) {
-    sources += [
-      "memory_pressure_observer_impl.cc",
-      "memory_pressure_observer_impl.h",
-    ]
-  } else {
+  if (is_android) {
     deps += [ "//chromecast/media/audio:cast_audio_device_factory" ]
   }
 }

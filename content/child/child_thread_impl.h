@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/auto_reset.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -147,11 +148,9 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
 
   bool IsInBrowserProcess() const;
 
-#if BUILDFLAG(IS_ANDROID)
   // Received memory pressure signal sent by the browser process.
   virtual void OnMemoryPressureFromBrowserReceived(
       base::MemoryPressureLevel level);
-#endif
 
  private:
   class IOThreadState;

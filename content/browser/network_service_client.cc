@@ -124,10 +124,6 @@ NetworkServiceClient::NetworkServiceClient()
 
   if (IsOutOfProcessNetworkService()) {
     net::CertDatabase::GetInstance()->AddObserver(this);
-    memory_pressure_listener_registration_ =
-        std::make_unique<base::MemoryPressureListenerRegistration>(
-            FROM_HERE, base::MemoryPressureListenerTag::kNetworkServiceClient,
-            this);
   }
 
   webrtc_connections_observer_ =
@@ -160,11 +156,6 @@ void NetworkServiceClient::OnTrustStoreChanged() {
 
 void NetworkServiceClient::OnClientCertStoreChanged() {
   GetNetworkService()->OnClientCertStoreChanged();
-}
-
-void NetworkServiceClient::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
-  GetNetworkService()->OnMemoryPressure(memory_pressure_level);
 }
 
 void NetworkServiceClient::OnPeerToPeerConnectionsCountChange(uint32_t count) {

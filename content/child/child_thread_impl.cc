@@ -24,7 +24,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/logging/logging_settings.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump.h"
 #include "base/metrics/field_trial.h"
@@ -458,14 +458,12 @@ class ChildThreadImpl::IOThreadState
   }
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
   void OnMemoryPressure(base::MemoryPressureLevel level) override {
     main_thread_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&ChildThreadImpl::OnMemoryPressureFromBrowserReceived,
                        weak_main_thread_, level));
   }
-#endif
 
   void SetBatterySaverMode(bool battery_saver_mode_enabled) override {
     if (battery_saver_mode_enabled) {
@@ -915,18 +913,11 @@ bool ChildThreadImpl::IsInBrowserProcess() const {
   return static_cast<bool>(browser_process_io_runner_);
 }
 
-#if BUILDFLAG(IS_ANDROID)
 void ChildThreadImpl::OnMemoryPressureFromBrowserReceived(
     base::MemoryPressureLevel level) {
-  // Generate no memory pressure signals when --single-process is specified.
-  // Because we expect a signal for the browser process has been already
-  // generated.
-  if (IsInBrowserProcess()) {
-    return;
-  }
+  CHECK(!IsInBrowserProcess());
   // Forward the notification to the registry of MemoryPressureListeners.
-  base::MemoryPressureListener::NotifyMemoryPressure(level);
+  base::MemoryPressureListenerRegistry::NotifyMemoryPressure(level);
 }
-#endif
 
 }  // namespace content

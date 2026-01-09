@@ -95,6 +95,8 @@ enum class MemoryPressureListenerTag {
   kWebUIContentsPreloadManager = 61,
   kPaintPreviewTabService = 62,
   kRenderFrameHostImpl = 63,
+  kRenderProcessHostImpl = 64,
+  kBrowserChildProcessHostImpl = 65,
 };
 
 // To start listening, derive from MemoryPressureListener, and use

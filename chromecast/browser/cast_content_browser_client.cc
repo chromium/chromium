@@ -116,8 +116,6 @@
 #include "components/crash/core/app/crashpad.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "media/audio/audio_features.h"
-#else
-#include "chromecast/browser/memory_pressure_controller_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if defined(USE_ALSA)

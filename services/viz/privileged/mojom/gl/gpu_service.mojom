@@ -16,7 +16,6 @@ import "gpu/ipc/common/surface_handle.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 import "media/mojo/mojom/video_encode_accelerator.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
-import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/process_id.mojom";
 import "services/webnn/public/mojom/features.mojom";
 import "services/webnn/public/mojom/webnn_context_provider.mojom";
@@ -187,10 +186,6 @@ interface GpuService {
 
   // Called by the browser immediately after the application is foregrounded.
   OnForegrounded();
-
-  // Called by the browser when the system is under memory pressure.
-  [EnableIfNot=is_android]
-  OnMemoryPressure(mojo_base.mojom.MemoryPressureLevel level);
 
   // Begin a batch of layer tree changes.
   [EnableIf=is_apple]

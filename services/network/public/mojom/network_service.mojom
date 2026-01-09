@@ -9,7 +9,6 @@ import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
-import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
@@ -321,10 +320,6 @@ interface NetworkService {
 
   // Send the encryption key to the network service to use for AES encryption.
   SetEncryptionKey(mojo_base.mojom.ByteString encryption_key);
-
-  // Called when the system is low on memory.
-  OnMemoryPressure(
-      mojo_base.mojom.MemoryPressureLevel memory_pressure_level);
 
   // Called when there is a change in the current count of peer to peer
   // connections that may require low latency.
