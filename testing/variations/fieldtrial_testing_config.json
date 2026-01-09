@@ -15656,25 +15656,6 @@
             ]
         }
     ],
-    "LowPriorityAsyncScriptExecution": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LowPriorityAsyncScriptExecution"
-                    ]
-                }
-            ]
-        }
-    ],
     "LowerPriorityForCompositorGestures": [
         {
             "platforms": [
