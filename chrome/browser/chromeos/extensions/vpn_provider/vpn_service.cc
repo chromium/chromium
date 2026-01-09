@@ -10,17 +10,19 @@
 #include "base/check_deref.h"
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/extensions/api/vpn_provider.h"
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_driver_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_observer.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_profile.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
@@ -30,6 +32,7 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/unloaded_extension_reason.h"
+#include "extensions/common/extension.h"
 
 namespace chromeos {
 
@@ -111,7 +114,7 @@ void VpnService::VpnConfiguration::OnPlatformMessage(
 }
 
 VpnService::VpnService(content::BrowserContext* browser_context)
-    : browser_context_(browser_context), vpn_providers_observer_(this) {
+    : browser_context_(CHECK_DEREF(browser_context)) {
   extension_registry_observer_.Observe(
       extensions::ExtensionRegistry::Get(browser_context));
   network_configuration_observer_.Observe(
@@ -134,7 +137,7 @@ void VpnService::SendShowAddDialogToExtension(const std::string& extension_id) {
           api_vpn::OnUIEvent::kEventName,
           api_vpn::OnUIEvent::Create(api_vpn::UIEvent::kShowAddDialog,
                                      std::string()),
-          browser_context_));
+          &browser_context_.get()));
 }
 
 void VpnService::SendShowConfigureDialogToExtension(
@@ -147,12 +150,12 @@ void VpnService::SendShowConfigureDialogToExtension(
           api_vpn::OnUIEvent::kEventName,
           api_vpn::OnUIEvent::Create(api_vpn::UIEvent::kShowConfigureDialog,
                                      configuration_name),
-          browser_context_));
+          &browser_context_.get()));
 }
 
 void VpnService::SendToExtension(const std::string& extension_id,
                                  std::unique_ptr<extensions::Event> event) {
-  extensions::EventRouter::Get(browser_context_)
+  extensions::EventRouter::Get(&browser_context_.get())
       ->DispatchEventToExtension(extension_id, std::move(event));
 }
 
@@ -171,7 +174,7 @@ void VpnService::SendOnPacketReceivedToExtension(
                       api_vpn::OnPacketReceived::kEventName,
                       api_vpn::OnPacketReceived::Create(
                           std::vector<uint8_t>(data.begin(), data.end())),
-                      browser_context_));
+                      &browser_context_.get()));
 }
 
 void VpnService::SendOnPlatformMessageToExtension(
@@ -187,7 +190,7 @@ void VpnService::SendOnPlatformMessageToExtension(
               configuration_name,
               static_cast<api_vpn::PlatformMessage>(platform_message),
               std::string{}),
-          browser_context_));
+          &browser_context_.get()));
 }
 
 void VpnService::SendOnConfigRemovedToExtension(
@@ -199,7 +202,7 @@ void VpnService::SendOnConfigRemovedToExtension(
           extensions::events::HistogramValue::VPN_PROVIDER_ON_CONFIG_REMOVED,
           api_vpn::OnConfigRemoved::kEventName,
           api_vpn::OnConfigRemoved::Create(configuration_name),
-          browser_context_));
+          &browser_context_.get()));
 }
 
 VpnService::VpnConfiguration* VpnService::LookupConfiguration(
@@ -216,8 +219,7 @@ VpnService::VpnConfiguration* VpnService::LookupConfiguration(
 
 void VpnService::OnConfigurationRemoved(const std::string& service_path,
                                         const std::string& /*guid*/) {
-  VpnService::VpnConfiguration* configuration =
-      LookupConfiguration(service_path);
+  VpnConfiguration* configuration = LookupConfiguration(service_path);
   if (!configuration) {
     // Ignore removal of a configuration unknown to VPN service, which means
     // the configuration was created internally by the platform or already
@@ -299,16 +301,6 @@ void VpnService::NetworkListChanged() {
   }
 }
 
-void VpnService::OnVpnExtensionsChanged(
-    base::flat_set<std::string> vpn_extensions) {
-  // No changes to the existing set?
-  if (vpn_extensions_ == vpn_extensions) {
-    return;
-  }
-  vpn_extensions_ = std::move(vpn_extensions);
-  NetworkListChanged();
-}
-
 void VpnService::OnGetShillProperties(
     const std::string& service_path,
     std::optional<base::Value::Dict> configuration_properties) {
@@ -331,7 +323,10 @@ void VpnService::OnGetShillProperties(
     return;
   }
 
-  if (!vpn_extensions_.contains(*extension_id)) {
+  if (!extensions::ExtensionRegistry::Get(&browser_context_.get())
+           ->GetExtensionById(*extension_id,
+                              extensions::ExtensionRegistry::ENABLED)) {
+    // Does not belong to this instance of VpnService.
     return;
   }
 

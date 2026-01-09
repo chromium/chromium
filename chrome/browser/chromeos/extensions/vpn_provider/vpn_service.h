@@ -10,22 +10,16 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_interface.h"
 #include "chromeos/ash/components/network/network_configuration_observer.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
-#include "chromeos/ash/components/network/vpn_providers_observer.h"
-#include "extensions/browser/extension_event_histogram_value.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/unloaded_extension_reason.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/extension_id.h"
 
 namespace ash {
 class NetworkConfigurationHandler;
@@ -47,7 +41,6 @@ namespace chromeos {
 class VpnService : public extensions::api::VpnServiceInterface,
                    public ash::NetworkConfigurationObserver,
                    public ash::NetworkStateHandlerObserver,
-                   public ash::VpnProvidersObserver::Delegate,
                    public extensions::ExtensionRegistryObserver {
  public:
   explicit VpnService(content::BrowserContext*);
@@ -63,24 +56,24 @@ class VpnService : public extensions::api::VpnServiceInterface,
       const std::string& configuration_name) override;
   void CreateConfiguration(const std::string& extension_id,
                            const std::string& configuration_name,
-                           SuccessCallback,
-                           FailureCallback) override;
+                           SuccessCallback success,
+                           FailureCallback failure) override;
   void DestroyConfiguration(const std::string& extension_id,
                             const std::string& configuration_id,
-                            SuccessCallback,
-                            FailureCallback) override;
+                            SuccessCallback success,
+                            FailureCallback failure) override;
   void SetParameters(const std::string& extension_id,
                      base::Value::Dict parameters,
-                     SuccessCallback,
-                     FailureCallback) override;
+                     SuccessCallback success,
+                     FailureCallback failure) override;
   void SendPacket(const std::string& extension_id,
                   const std::vector<char>& data,
-                  SuccessCallback,
-                  FailureCallback) override;
+                  SuccessCallback success,
+                  FailureCallback failure) override;
   void NotifyConnectionStateChanged(const std::string& extension_id,
                                     bool connection_success,
-                                    SuccessCallback,
-                                    FailureCallback) override;
+                                    SuccessCallback success,
+                                    FailureCallback failure) override;
   // ash::NetworkConfigurationObserver:
   void OnConfigurationRemoved(const std::string& service_path,
                               const std::string& guid) override;
@@ -109,6 +102,9 @@ class VpnService : public extensions::api::VpnServiceInterface,
   // it belongs to.
   VpnConfiguration* LookupConfiguration(const std::string& extension_id,
                                         const std::string& configuration_name);
+
+  // Sets the active configuration.
+  void SetActiveConfiguration(VpnConfiguration* configuration);
 
   bool OwnsActiveConfiguration(const std::string& extension_id) const;
 
@@ -141,13 +137,8 @@ class VpnService : public extensions::api::VpnServiceInterface,
                                     VpnConfiguration* configuration,
                                     const std::string& error_name);
 
-  // ash::VpnProvidersObserver::Delegate:
-  void OnVpnExtensionsChanged(
-      base::flat_set<std::string> vpn_extensions) override;
-
-  // Callback for
-  // ash::NetworkConfigurationHandler::GetShillProperties(...); parses
-  // the |configuration_properties| dictionary and tries to add a new
+  // Callback for ash::NetworkConfigurationHandler::GetShillProperties that
+  // parses the |configuration_properties| dictionary and tries to add a new
   // configuration provided that it belongs to some enabled extension.
   void OnGetShillProperties(
       const std::string& service_path,
@@ -168,26 +159,23 @@ class VpnService : public extensions::api::VpnServiceInterface,
   void OnRemoveConfigurationFailure(FailureCallback,
                                     const std::string& error_name);
 
-  // Sets the active configuration.
-  void SetActiveConfiguration(VpnConfiguration* configuration);
-
   // Gets the unique key for the configuration |configuration_name| created by
   // the extension with id |extension_id|.
   static std::string GetKeyForTesting(const std::string& extension_id,
                                       const std::string& configuration_name);
 
+  const raw_ref<content::BrowserContext> browser_context_;
+
   // Owns all configurations. Key is a hash of |extension_id| and
   // |configuration_name|.
   using StringToOwnedConfigurationMap =
-      std::map<std::string, std::unique_ptr<VpnConfiguration>>;
+      base::flat_map<std::string, std::unique_ptr<VpnConfiguration>>;
   StringToOwnedConfigurationMap key_to_configuration_map_;
 
   // Maps shill service path to (unowned) configuration.
   using StringToConfigurationMap =
-      std::map<std::string, raw_ptr<VpnConfiguration, CtnExperimental>>;
+      base::flat_map<std::string, raw_ptr<VpnConfiguration, CtnExperimental>>;
   StringToConfigurationMap service_path_to_configuration_map_;
-
-  raw_ptr<content::BrowserContext> browser_context_;
 
   // Configuration that is currently in use.
   raw_ptr<VpnConfiguration> active_configuration_ = nullptr;
@@ -195,11 +183,6 @@ class VpnService : public extensions::api::VpnServiceInterface,
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
       extension_registry_observer_{this};
-
-  ash::VpnProvidersObserver vpn_providers_observer_;
-
-  // Ids of enabled vpn extensions.
-  base::flat_set<std::string> vpn_extensions_;
 
   base::ScopedObservation<ash::NetworkConfigurationHandler,
                           ash::NetworkConfigurationObserver>

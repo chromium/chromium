@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
@@ -196,8 +197,8 @@ class VpnProviderApiTest : public VpnProviderApiTestBase {
   }
 
   bool DoesConfigExist(const std::string& configuration_name) {
-    return service()->key_to_configuration_map_.contains(
-        GetKey(configuration_name));
+    return service()->LookupConfiguration(extension_id(), configuration_name) !=
+           nullptr;
   }
 
   bool IsConfigConnected() {
