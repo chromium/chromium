@@ -78,6 +78,7 @@ const CGFloat kCloseButtonAlpha = 0.9;
 
 - (void)prepareForReuse {
   [super prepareForReuse];
+  _associatedItem = nil;
   [_inputItemView prepareForReuse];
 }
 
@@ -85,6 +86,7 @@ const CGFloat kCloseButtonAlpha = 0.9;
 
 - (void)configureWithItem:(ComposeboxInputItem*)item
                     theme:(ComposeboxTheme*)theme {
+  _associatedItem = item;
   [_inputItemView configureWithItem:item theme:theme];
 
   BOOL isLoading = item.state == ComposeboxInputItemState::kLoading ||
