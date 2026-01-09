@@ -433,8 +433,7 @@ class PageContextFetcher : public content::WebContentsObserver {
     // long. b/431837630.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&PageContextFetcher::ReceivedEncodedScreenshot,
-                       GetWeakPtr(), base::unexpected("ScreenshotTimeout")),
+        base::BindOnce(&PageContextFetcher::OnScreenshotTimeout, GetWeakPtr()),
         kScreenshotTimeout.Get());
   }
 
@@ -458,6 +457,7 @@ class PageContextFetcher : public content::WebContentsObserver {
       pending_result_->screenshot_result.emplace(
           gfx::SkISizeToSize(bitmap->dimensions()));
       screenshot_bitmap_ = *bitmap;
+      screenshot_capture_done_ = true;
       base::UmaHistogramTimes("Glic.PageContextFetcher.GetScreenshot",
                               elapsed_timer_.Elapsed());
       RedactAndEncodeScreenshotIfNeeded();
@@ -565,6 +565,26 @@ class PageContextFetcher : public content::WebContentsObserver {
   void PrimaryPageChanged(content::Page& page) override {
     primary_page_changed_ = true;
     RunCallbackIfComplete();
+  }
+
+  void OnScreenshotTimeout() {
+    // When password redaction is enabled, the screenshot must wait for APC to
+    // finish before it can be encoded.
+    //
+    // The screenshot timer is intended to catch hangs during the initial bitmap
+    // capture. If we have already received the bitmap, we should ignore this
+    // timeout and allow the process to continue. This prevents missing
+    // screenshots when the capture was successful but APC is slow. In such
+    // cases, we rely on the APC-specific timeouts to eventually terminate the
+    // request if it hangs.
+    //
+    // It is also acceptable not to timeout during the encoding phase because it
+    // runs on a browser worker thread.
+    if (screenshot_capture_done_) {
+      return;
+    }
+
+    ReceivedEncodedScreenshot(base::unexpected("ScreenshotTimeout"));
   }
 
   void ReceivedEncodedScreenshot(
@@ -708,6 +728,7 @@ class PageContextFetcher : public content::WebContentsObserver {
 
   // Whether work is complete for each task, does not imply success.
   bool initialization_done_ = false;
+  bool screenshot_capture_done_ = false;
   bool screenshot_done_ = false;
   bool inner_text_done_ = false;
   bool pdf_done_ = false;
