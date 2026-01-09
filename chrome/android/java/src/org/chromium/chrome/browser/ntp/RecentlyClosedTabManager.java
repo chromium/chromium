@@ -58,6 +58,13 @@ public interface RecentlyClosedTabManager {
     void clearRecentlyClosedEntries();
 
     /**
+     * Clears least recently used closed entries.
+     *
+     * @param numToRemove Number of entries to remove.
+     */
+    void clearLeastRecentlyUsedClosedEntries(int numToRemove);
+
+    /**
      * To be called before this instance is abandoned to the garbage collector so it can do any
      * necessary cleanups. This instance must not be used after this method is called.
      */

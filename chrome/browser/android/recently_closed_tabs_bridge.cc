@@ -375,9 +375,24 @@ void RecentlyClosedTabsBridge::ClearRecentlyClosedEntries(JNIEnv* env) {
   }
 }
 
+void RecentlyClosedTabsBridge::ClearLeastRecentlyUsedClosedEntries(
+    JNIEnv* env,
+    jint num_to_remove) {
+  EnsureTabRestoreService();
+  if (tab_restore_service_) {
+    for (int i = 0; i < num_to_remove; i++) {
+      SessionID id = tab_restore_service_->entries().back()->id;
+      tab_restore_service_->RemoveEntryById(id);
+    }
+  }
+}
+
 void RecentlyClosedTabsBridge::TabRestoreServiceChanged(
     sessions::TabRestoreService* service) {
-  Java_RecentlyClosedBridge_onUpdated(AttachCurrentThread(), bridge_);
+  // Skip for unit tests.
+  if (!bridge_.is_null()) {
+    Java_RecentlyClosedBridge_onUpdated(AttachCurrentThread(), bridge_);
+  }
 }
 
 void RecentlyClosedTabsBridge::TabRestoreServiceDestroyed(

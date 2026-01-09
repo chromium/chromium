@@ -174,6 +174,13 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         RecentlyClosedBridgeJni.get().clearRecentlyClosedEntries(mNativeBridge);
     }
 
+    @Override
+    public void clearLeastRecentlyUsedClosedEntries(int numToRemove) {
+        if (numToRemove == 0) return;
+        RecentlyClosedBridgeJni.get()
+                .clearLeastRecentlyUsedClosedEntries(mNativeBridge, numToRemove);
+    }
+
     /** This method will be called every time the list of recently closed tabs is updated. */
     @CalledByNative
     private void onUpdated() {
@@ -204,5 +211,8 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         boolean openMostRecentlyClosedEntry(long nativeRecentlyClosedTabsBridge, TabModel tabModel);
 
         void clearRecentlyClosedEntries(long nativeRecentlyClosedTabsBridge);
+
+        void clearLeastRecentlyUsedClosedEntries(
+                long nativeRecentlyClosedTabsBridge, int numToRemove);
     }
 }

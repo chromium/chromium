@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -17,6 +18,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -31,6 +33,7 @@ import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -369,6 +372,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
                 assertTrue(
                         "Index " + i + " should be a RecentlyClosedEntryWindow.",
                         entry instanceof RecentlyClosedWindow);
+                numWindowEntries--;
             }
             // Assert timestamps strictly decrease.
             if (i > 0) {
@@ -378,6 +382,16 @@ public class RecentlyClosedEntriesManagerUnitTest {
                         greaterThan(entry.getDate().getTime()));
             }
         }
+
+        // Verify the excess window entries are cleaned up.
+        ArgumentCaptor<List<Integer>> listCaptor = ArgumentCaptor.forClass(List.class);
+        verify(mMultiInstanceManager)
+                .closeWindows(listCaptor.capture(), eq(CloseWindowAppSource.RECENT_TABS));
+        assertEquals(numWindowEntries, listCaptor.getValue().size());
+
+        // Verify the excess session entries are cleaned up.
+        verify(mRecentlyClosedTabManager)
+                .clearLeastRecentlyUsedClosedEntries(eq(numSessionEntries));
     }
 
     @Test

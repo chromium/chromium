@@ -127,8 +127,6 @@ public class RecentlyClosedEntriesManager {
      *
      * @param entry The entry (window, bulk event, or group) to be restored.
      */
-    // TODO(crbug.com/469132710): Confirm with UX whether we should pull the next entry during
-    // restore when the UI does not display all stored entries.
     public void openRecentlyClosedEntry(RecentlyClosedEntry entry) {
         if (entry instanceof SessionRecentlyClosedEntry) {
             mRecentlyClosedTabManager.openRecentlyClosedEntry(mRegularTabModel, entry);
@@ -338,7 +336,18 @@ public class RecentlyClosedEntriesManager {
                 sessionEntryCount++;
             }
         }
-        // TODO(crbug.com/444681612): Cleanup excess entries.
+
+        // Clean up the excess least recently used entries.
+        if (windowCount < windowEntrySize) {
+            List<Integer> instanceIdsToClose = new ArrayList<>();
+            for (int i = windowCount; i < recentlyClosedWindows.size(); i++) {
+                instanceIdsToClose.add(recentlyClosedWindows.get(i).getInstanceId());
+            }
+            mMultiInstanceManager.closeWindows(
+                    instanceIdsToClose, CloseWindowAppSource.RECENT_TABS);
+        }
+        mRecentlyClosedTabManager.clearLeastRecentlyUsedClosedEntries(
+                /* numToRemove= */ sessionEntrySize - sessionEntryCount);
     }
 
     private List<RecentlyClosedWindow> getRecentlyClosedWindows() {
