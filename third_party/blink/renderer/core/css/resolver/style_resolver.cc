@@ -509,13 +509,17 @@ void ApplyInertness(StyleResolverState& state) {
   std::optional<bool> css_inert;
 
   if (state.StyleBuilder().Interactivity() == EInteractivity::kInert &&
-      !state.StyleBuilder().InteractivityIsInherited() &&
-      !state.StyleBuilder().IsCSSInert()) {
-    // If the computed value of 'interactivity' is 'inert', set the internal
-    // CSS inertness flag to true. With this flag set, it is not possible to
-    // escape CSS inertness in the subtree with 'interactivity' set to 'auto'
-    // in a descendant.
+      !state.StyleBuilder().InteractivityIsInherited()) {
+    // If we applied interactivity:inert to this element, we also need to
+    // set IsCSSInert to true. With this flag set, it is not possible to escape
+    // CSS inertness in the subtree with 'interactivity' set to 'auto' in a
+    // descendant.
+    //
     // TODO(crbug.com/413291835): This is not in line with the current spec.
+    //
+    // We explicitly set css_inert even if the inherited IsCSSInert is already
+    // true because we need independent property inheritance from an ancestor
+    // to stop by setting IsCSSInertIsInherited to false.
     css_inert = true;
   }
 
