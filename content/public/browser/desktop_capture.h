@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_DESKTOP_CAPTURE_H_
 #define CONTENT_PUBLIC_BROWSER_DESKTOP_CAPTURE_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/desktop_media_id.h"
@@ -51,6 +53,12 @@ CONTENT_EXPORT void OpenNativeScreenCapturePicker(
 // Makes the native screen capture picker dialog stop observing `source_id` and
 // closes the picker dialog if it is not observing anything else.
 CONTENT_EXPORT void CloseNativeScreenCapturePicker(DesktopMediaID source_id);
+
+// Returns the ID of the PiP window if it exists and should be excluded from the
+// capture of the specified `desktop_id`, by the application owning the PiP
+// window. Must only be called on the UI thread.
+CONTENT_EXPORT std::optional<DesktopMediaID::Id>
+GetPipWindowToExcludeFromScreenCapture(DesktopMediaID::Id desktop_id);
 
 }  // namespace content::desktop_capture
 

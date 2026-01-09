@@ -12,9 +12,13 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/apple/scoped_objc_class_swizzler.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "chrome/test/base/testing_profile.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -22,15 +26,22 @@
 
 namespace {
 
+constexpr uint32_t kWindowId = 123;
+constexpr uint32_t kDisplayId = 1;
+constexpr uint32_t kPipWindowId = 999;
+
 // The default max frame rate is 1fps, so the interval is 1s.
 // We wait slightly longer to ensure the timer fires.
 constexpr base::TimeDelta kRecurrentCaptureWaitTime = base::Seconds(1.1);
 
-// Globals used to pass data into the swizzled methods.
+// Globals used to pass data between tests and swizzled methods.
+// `g_simulated_windows` and `g_simulated_displays` are inputs to the swizzled
+// API. `g_last_excluded_windows` is an output captured from the swizzled API.
 // WARNING: This pattern is NOT thread-safe for parallel test execution within
 // the same process. Ensure tests run sequentially.
 NSArray* g_simulated_windows = nil;
 NSArray* g_simulated_displays = nil;
+NSArray* g_last_excluded_windows = nil;
 
 }  // namespace
 
@@ -170,9 +181,11 @@ NSArray* g_simulated_displays = nil;
 @implementation SCContentFilter (ThumbnailCapturerMacTest)
 - (instancetype)fakeInitWithDisplay:(id)display
                    excludingWindows:(NSArray*)windows {
+  g_last_excluded_windows = windows;
   return [super init];
 }
 - (instancetype)fakeInitWithDesktopIndependentWindow:(id)window {
+  g_last_excluded_windows = nil;
   return [super init];
 }
 @end
@@ -285,9 +298,6 @@ class ThumbnailCapturerMacTest : public testing::Test {
                                  configuration:completionHandler:),
               @selector(fakeCaptureImageWithFilter:
                                      configuration:completionHandler:));
-
-      capturer_ =
-          CreateThumbnailCapturerMacForTesting(DesktopMediaList::Type::kWindow);
     } else {
       GTEST_SKIP() << "Skipping tests on macOS < 14.4.";
     }
@@ -305,9 +315,98 @@ class ThumbnailCapturerMacTest : public testing::Test {
     // Clear globals.
     g_simulated_windows = nil;
     g_simulated_displays = nil;
+    g_last_excluded_windows = nil;
   }
 
   void SetSimulatedWindows(NSArray* windows) { g_simulated_windows = windows; }
+  void SetSimulatedDisplays(NSArray* displays) {
+    g_simulated_displays = displays;
+  }
+
+  void InitializeWindowCapturer() {
+    capturer_ = CreateThumbnailCapturerMacForTesting(
+        DesktopMediaList::Type::kWindow, content::GlobalRenderFrameHostId());
+  }
+
+  void InitializeScreenCapturerWithPip(bool pip_owner_matches_capturer) {
+    content::WebContents* capturer_wc =
+        web_contents_factory_.CreateWebContents(&profile_);
+    content::WebContents* pip_wc =
+        pip_owner_matches_capturer
+            ? capturer_wc
+            : web_contents_factory_.CreateWebContents(&profile_);
+
+    content::GlobalRenderFrameHostId rfh_id =
+        capturer_wc->GetPrimaryMainFrame()->GetGlobalId();
+
+    capturer_ = CreateThumbnailCapturerMacForTesting(
+        DesktopMediaList::Type::kScreen, rfh_id,
+        base::BindLambdaForTesting([pip_wc]() { return pip_wc; }),
+        base::BindLambdaForTesting(
+            [](content::DesktopMediaID::Id)
+                -> std::optional<content::DesktopMediaID::Id> {
+              return kPipWindowId;
+            }));
+  }
+
+  void SetSimulatedWindowAndDisplay(int window_id, int display_id = 0) {
+    FakeSCRunningApplication* app =
+        [[FakeSCRunningApplication alloc] initWithProcessID:100
+                                            applicationName:@"Fake App"];
+    FakeSCWindow* window =
+        [[FakeSCWindow alloc] initWithID:window_id
+                                   title:@"Fake Window"
+                       owningApplication:app
+                             windowLayer:0
+                                   frame:CGRectMake(0, 0, 100, 100)];
+
+    SetSimulatedWindows(@[ window ]);
+
+    if (display_id > 0) {
+      FakeSCDisplay* display =
+          [[FakeSCDisplay alloc] initWithID:display_id
+                                      frame:CGRectMake(0, 0, 1920, 1080)];
+      SetSimulatedDisplays(@[ display ]);
+    }
+  }
+
+  void StartCapturer() {
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    EXPECT_CALL(mock_consumer_, OnSourceListUpdated())
+        .WillRepeatedly(base::test::RunClosure(run_loop.QuitClosure()));
+    capturer_->Start(&mock_consumer_);
+    run_loop.Run();
+  }
+
+  void AdvanceClockAndExpectSourceListUpdate(base::TimeDelta delta) {
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    EXPECT_CALL(mock_consumer_, OnSourceListUpdated())
+        .WillRepeatedly(base::test::RunClosure(run_loop.QuitClosure()));
+    task_environment_.AdvanceClock(delta);
+    run_loop.Run();
+  }
+
+  void SelectSource(ThumbnailCapturer::SourceId id) {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_consumer_,
+                OnRecurrentCaptureResult(ThumbnailCapturer::Result::SUCCESS,
+                                         testing::NotNull(), id))
+        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+
+    capturer_->SelectSources({id}, gfx::Size(100, 100));
+    run_loop.Run();
+  }
+
+  void AdvanceClockAndExpectCaptureResult(ThumbnailCapturer::SourceId id) {
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    EXPECT_CALL(mock_consumer_,
+                OnRecurrentCaptureResult(ThumbnailCapturer::Result::SUCCESS,
+                                         testing::NotNull(), id))
+        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+
+    task_environment_.AdvanceClock(kRecurrentCaptureWaitTime);
+    run_loop.Run();
+  }
 
  protected:
   // Use MOCK_TIME to control the recurring capture timer.
@@ -325,16 +424,19 @@ class ThumbnailCapturerMacTest : public testing::Test {
       content_filter_display_swizzler_;
   std::unique_ptr<base::apple::ScopedObjCClassSwizzler>
       screenshot_manager_swizzler_;
+
+  TestingProfile profile_;
+  content::TestWebContentsFactory web_contents_factory_;
 };
 
 // Test that UpdateWindowsList calls OnSourceListUpdated when content is
-// received.
+// received and filters out invalid windows.
 TEST_F(ThumbnailCapturerMacTest, UpdateWindowsList) {
   FakeSCRunningApplication* app =
       [[FakeSCRunningApplication alloc] initWithProcessID:100
                                           applicationName:@"Fake App"];
   FakeSCWindow* valid_window =
-      [[FakeSCWindow alloc] initWithID:123
+      [[FakeSCWindow alloc] initWithID:kWindowId
                                  title:@"Valid Window"
                      owningApplication:app
                            windowLayer:0
@@ -359,81 +461,67 @@ TEST_F(ThumbnailCapturerMacTest, UpdateWindowsList) {
 
   SetSimulatedWindows(@[ valid_window, dialog_window, small_window ]);
 
-  // We expect OnSourceListUpdated to be called.
-  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  EXPECT_CALL(mock_consumer_, OnSourceListUpdated())
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-
-  capturer_->Start(&mock_consumer_);
-
-  // Process the tasks (including the initial timer fire for
-  // UpdateWindowsList)
-  run_loop.Run();
+  InitializeWindowCapturer();
+  StartCapturer();
 
   ThumbnailCapturer::SourceList sources;
   capturer_->GetSourceList(&sources);
   EXPECT_THAT(
       sources,
       testing::ElementsAre(testing::AllOf(
-          testing::Field(&ThumbnailCapturer::Source::id, 123),
+          testing::Field(&ThumbnailCapturer::Source::id, kWindowId),
           testing::Field(&ThumbnailCapturer::Source::title, "Valid Window"))));
 }
 
 // Test that selecting a source triggers the ScreenshotManagerCapturer logic
 // and results in a captured frame callback.
 TEST_F(ThumbnailCapturerMacTest, SelectSourcesAndCapture) {
-  const int kWindowId = 123;
+  SetSimulatedWindowAndDisplay(kWindowId);
 
-  // 1. Setup Environment.
-  FakeSCRunningApplication* app =
-      [[FakeSCRunningApplication alloc] initWithProcessID:100
-                                          applicationName:@"Fake App"];
-  FakeSCWindow* window =
-      [[FakeSCWindow alloc] initWithID:kWindowId
-                                 title:@"Fake Window"
-                     owningApplication:app
-                           windowLayer:0
-                                 frame:CGRectMake(0, 0, 100, 100)];
-  SetSimulatedWindows(@[ window ]);
+  InitializeWindowCapturer();
+  StartCapturer();
 
-  // 2. Wait for initial source list update.
-  {
-    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-    EXPECT_CALL(mock_consumer_, OnSourceListUpdated())
-        .WillRepeatedly(base::test::RunClosure(run_loop.QuitClosure()));
-    capturer_->Start(&mock_consumer_);
-    run_loop.Run();
-  }
+  SelectSource(kWindowId);
 
-  // 3. Select the source.
-  std::vector<ThumbnailCapturer::SourceId> ids = {kWindowId};
+  AdvanceClockAndExpectCaptureResult(kWindowId);
+}
 
-  // 4. Run loop to process the capture.
-  // The ScreenshotManagerCapturer calls BindPostTask, so we need to run the
-  // loop to receive the callback on the correct thread.
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(mock_consumer_,
-                OnRecurrentCaptureResult(ThumbnailCapturer::Result::SUCCESS,
-                                         testing::NotNull(), kWindowId))
-        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+// Test that the PiP window is excluded from the list of windows to capture
+// when the capturer is the PiP owner.
+TEST_F(ThumbnailCapturerMacTest, CaptureScreen_PipWindowExcluded) {
+  SetSimulatedWindowAndDisplay(kPipWindowId, kDisplayId);
 
-    capturer_->SelectSources(ids, gfx::Size(100, 100));
-    run_loop.Run();
-  }
+  InitializeScreenCapturerWithPip(/*pip_owner_matches_capturer=*/true);
+  StartCapturer();
 
-  // 5. Verify Recurrent Capture.
-  // Advance time to trigger the next timer tick.
-  {
-    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-    EXPECT_CALL(mock_consumer_,
-                OnRecurrentCaptureResult(ThumbnailCapturer::Result::SUCCESS,
-                                         testing::NotNull(), kWindowId))
-        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  // Wait for second update to ensure PiP IDs are fetched (requires displays).
+  AdvanceClockAndExpectSourceListUpdate(base::Milliseconds(300));
 
-    task_environment_.AdvanceClock(kRecurrentCaptureWaitTime);
-    run_loop.Run();
-  }
+  SelectSource(kDisplayId);
+
+  // Verify g_last_excluded_windows contains PiP window.
+  NSArray<FakeSCWindow*>* expected_excluded_windows = [g_simulated_windows
+      filteredArrayUsingPredicate:[NSPredicate
+                                      predicateWithFormat:@"windowID == %u",
+                                                          kPipWindowId]];
+  EXPECT_NSEQ(expected_excluded_windows, g_last_excluded_windows);
+}
+
+// Test that the PiP window is not excluded from the list of windows to capture
+// when the capturer is not the PiP owner.
+TEST_F(ThumbnailCapturerMacTest, CaptureScreen_PipWindowNotExcluded) {
+  SetSimulatedWindowAndDisplay(kPipWindowId, kDisplayId);
+
+  InitializeScreenCapturerWithPip(/*pip_owner_matches_capturer=*/false);
+  StartCapturer();
+
+  // Wait for second update to ensure PiP IDs are fetched (requires displays).
+  AdvanceClockAndExpectSourceListUpdate(base::Milliseconds(300));
+
+  SelectSource(kDisplayId);
+
+  // Verify g_last_excluded_windows is empty because owner didn't match.
+  EXPECT_NSEQ(@[], g_last_excluded_windows);
 }
 
 }  // namespace

@@ -24,10 +24,12 @@
 #if !BUILDFLAG(IS_ANDROID)
 namespace {
 #if !BUILDFLAG(IS_CHROMEOS)
-std::unique_ptr<ThumbnailCapturer> MakeScreenCapturer() {
+std::unique_ptr<ThumbnailCapturer> MakeScreenCapturer(
+    content::WebContents* web_contents) {
 #if BUILDFLAG(IS_MAC)
   if (ShouldUseThumbnailCapturerMac(DesktopMediaList::Type::kScreen)) {
-    return CreateThumbnailCapturerMac(DesktopMediaList::Type::kScreen);
+    return CreateThumbnailCapturerMac(DesktopMediaList::Type::kScreen,
+                                      web_contents);
   }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -40,10 +42,12 @@ std::unique_ptr<ThumbnailCapturer> MakeScreenCapturer() {
                           : nullptr;
 }
 
-std::unique_ptr<ThumbnailCapturer> MakeWindowCapturer() {
+std::unique_ptr<ThumbnailCapturer> MakeWindowCapturer(
+    content::WebContents* web_contents) {
 #if BUILDFLAG(IS_MAC)
   if (ShouldUseThumbnailCapturerMac(DesktopMediaList::Type::kWindow)) {
-    return CreateThumbnailCapturerMac(DesktopMediaList::Type::kWindow);
+    return CreateThumbnailCapturerMac(DesktopMediaList::Type::kWindow,
+                                      web_contents);
   }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -120,7 +124,8 @@ DesktopMediaPickerFactoryImpl::CreateMediaList(
        // If screen capture is not supported on the platform, then we should
        // not attempt to create an instance of NativeDesktopMediaList. Doing so
        // will hit a DCHECK.
-        std::unique_ptr<ThumbnailCapturer> capturer = MakeScreenCapturer();
+        std::unique_ptr<ThumbnailCapturer> capturer =
+            MakeScreenCapturer(web_contents);
         if (!capturer)
           continue;
 
@@ -149,7 +154,8 @@ DesktopMediaPickerFactoryImpl::CreateMediaList(
        // If window capture is not supported on the platform, then we should
        // not attempt to create an instance of NativeDesktopMediaList. Doing so
        // will hit a DCHECK.
-        std::unique_ptr<ThumbnailCapturer> capturer = MakeWindowCapturer();
+        std::unique_ptr<ThumbnailCapturer> capturer =
+            MakeWindowCapturer(web_contents);
         if (!capturer)
           continue;
         // If the capturer is not going to enumerate current process windows
