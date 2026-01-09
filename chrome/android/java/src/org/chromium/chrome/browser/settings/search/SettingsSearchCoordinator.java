@@ -785,8 +785,10 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
      * @param preferenceFragment Settings fragment to show.
      * @param key The key of the chosen preference in the fragment.
      * @param extras The additional args required to launch the pref.
+     * @param highlight Whether or not to scroll and highlight the item.
      */
-    private void onResultSelected(@Nullable String preferenceFragment, String key, Bundle extras) {
+    private void onResultSelected(
+            @Nullable String preferenceFragment, String key, Bundle extras, boolean highlight) {
         EditText queryEdit = mActivity.findViewById(R.id.search_query);
         KeyboardUtils.hideAndroidSoftKeyboard(queryEdit);
         if (preferenceFragment == null) {
@@ -811,7 +813,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
                     .commit();
 
             // Scroll to the chosen preference after the new fragment is ready.
-            if (f instanceof PreferenceFragmentCompat pf) {
+            if (highlight && (f instanceof PreferenceFragmentCompat pf)) {
                 fragmentManager.registerFragmentLifecycleCallbacks(
                         new FragmentManager.FragmentLifecycleCallbacks() {
                             @Override
@@ -860,6 +862,15 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
 
         // Zero-based position of the preference view in listView.
         int pos = listAdapter.getPreferenceAdapterPosition(key);
+        if (pos < 0) {
+            // Fragment that builds preferences dynamically (not with an xml resource but using
+            // APIs) is not ready to return the right position of the item to highlight and scroll
+            // to, even though the associated view would already have been attached. Take a
+            // different approach to do the scrolling and highlighting i.e. wait a few more
+            // layout passes for the view holder to be available.
+            mHandler.post(() -> scrollAndHighlightDynamicPref(fragment, key));
+            return;
+        }
         mRemoveResultChildViewListener = null;
         listView.addOnChildAttachStateChangeListener(
                 new RecyclerView.OnChildAttachStateChangeListener() {
@@ -876,17 +887,9 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
                             }
                             mRemoveResultChildViewListener =
                                     () -> {
-                                        ViewHighlighter.turnOnHighlight(
-                                                view, getHighlightParams(fragment, pos));
+                                        highlightItem(fragment, view, pos);
                                         listView.removeOnChildAttachStateChangeListener(this);
                                         mRemoveResultChildViewListener = null;
-                                        mHandler.post(
-                                                () -> {
-                                                    mTurnOffHighlight =
-                                                            () ->
-                                                                    ViewHighlighter
-                                                                            .turnOffHighlight(view);
-                                                });
                                     };
                             mHandler.postDelayed(mRemoveResultChildViewListener, 200);
                         }
@@ -895,7 +898,32 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
                     @Override
                     public void onChildViewDetachedFromWindow(@NonNull View view) {}
                 });
+        scrollToPref(fragment, key);
+    }
 
+    private void scrollAndHighlightDynamicPref(PreferenceFragmentCompat fragment, String key) {
+        RecyclerView listView = fragment.getListView();
+        var listAdapter = (PreferencePositionCallback) listView.getAdapter();
+        int pos = assumeNonNull(listAdapter).getPreferenceAdapterPosition(key);
+        var viewHolder = listView.findViewHolderForAdapterPosition(pos);
+        if (viewHolder == null) {
+            mHandler.post(() -> scrollAndHighlightDynamicPref(fragment, key));
+        } else {
+            highlightItem(fragment, viewHolder.itemView, pos);
+            scrollToPref(fragment, key);
+        }
+    }
+
+    private void highlightItem(PreferenceFragmentCompat fragment, View view, int pos) {
+        ViewHighlighter.turnOnHighlight(view, getHighlightParams(fragment, pos));
+        mHandler.post(
+                () -> {
+                    mTurnOffHighlight = () -> ViewHighlighter.turnOffHighlight(view);
+                });
+    }
+
+    private void scrollToPref(PreferenceFragmentCompat fragment, String key) {
+        RecyclerView listView = fragment.getListView();
         // OnScrollListener#onScrolled is always invoked after the recycler view layout pass
         // is completed. Use this timing to scroll the preference.
         listView.addOnScrollListener(

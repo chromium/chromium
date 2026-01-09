@@ -41,8 +41,10 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
          * @param preferenceFragment Package name of the Fragment containing the chosen setting.
          * @param key A unique key associated with the chosen setting.
          * @param extras The additional args required to launch the pref.
+         * @param highlight Whether or not to highlight the item.
          */
-        void onSelected(@Nullable String preferenceFragment, String key, Bundle extras);
+        void onSelected(
+                @Nullable String preferenceFragment, String key, Bundle extras, boolean highlight);
     }
 
     private final List<SettingsIndexData.Entry> mPreferenceData;
@@ -84,12 +86,12 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
             preference.setSummary(info.summary);
             preference.setOnPreferenceClickListener(
                     pref -> {
-                        // For top-level entries, open the fragment itself, not MainSettings.
-                        String fragmentToOpen = info.parentFragment;
-                        if (TextUtils.equals(info.parentFragment, MainSettings.class.getName())) {
-                            fragmentToOpen = info.fragment;
-                        }
-                        mSelectedCallback.onSelected(fragmentToOpen, info.key, info.extras);
+                        // For top-level entries, open the fragment itself, not MainSettings,
+                        // and no need to scroll/highlight the item.
+                        String mainSettingsFragment = MainSettings.class.getName();
+                        var isMain = TextUtils.equals(info.parentFragment, mainSettingsFragment);
+                        String fragment = isMain ? info.fragment : info.parentFragment;
+                        mSelectedCallback.onSelected(fragment, info.key, info.extras, !isMain);
                         return true;
                     });
             preference.setIconSpaceReserved(false);
