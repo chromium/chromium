@@ -602,7 +602,7 @@ void GlicPinnedTabManager::OnTabChangedOrigin(tabs::TabHandle tab_handle) {
 
 void GlicPinnedTabManager::OnTabWillClose(tabs::TabHandle tab_handle) {
   // TODO(b/426644733): Avoid n^2 work when closing all tabs.
-  CHECK(UnpinTabs({tab_handle}));
+  CHECK(UnpinTabs({tab_handle}, GlicUnpinTrigger::kTabClose));
   NotifyPinnedTabsChanged();
 }
 
