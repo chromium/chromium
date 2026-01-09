@@ -1515,16 +1515,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="InputMethod.NextWordPrediction" enum="BooleanEnabled"
-    expires_after="2021-12-19">
-  <owner>myy@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    Whether next word prediction is enabled for a user. Recorded when a specific
-    language settings page is updated or when the input extension is activated.
-  </summary>
-</histogram>
-
 <histogram
     name="InputMethod.PhysicalKeyboard.Japanese.Settings.AutoSwitchToHalfwidth"
     enum="Boolean" expires_after="2026-12-01">
@@ -1806,16 +1796,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether UO double horn shortcut is enabled by the Vietnamese VNI IME.
     Recorded on IME activation (settings change or changing IME).
-  </summary>
-</histogram>
-
-<histogram name="InputMethod.PkCommit.Index" units="units"
-    expires_after="2023-05-01">
-  <owner>shend@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The suggestion index (1-based) of the suggestion list item which user
-    chooses to commit for physical keyboard autocorrect.
   </summary>
 </histogram>
 
