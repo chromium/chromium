@@ -283,6 +283,12 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
                              prevent_close, source, prompt_suggestion);
 }
 
+void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
+                                bool prevent_close,
+                                mojom::InvocationSource source) {
+  ToggleUI(bwi, prevent_close, source, std::nullopt);
+}
+
 void GlicKeyedService::OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
                                              mojom::InvocationSource source) {
   // Glic may be disabled for certain user profiles (the user is browsing in

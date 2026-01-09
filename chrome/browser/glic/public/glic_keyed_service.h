@@ -110,13 +110,16 @@ class GlicKeyedService : public KeyedService,
   // prevent_close is false. If glic_button_view is non-null, attach the panel
   // to that view's Browser.
   // TODO(b:448888544): remove `prevent_close` in favor of a Show method.
+  virtual void ToggleUI(BrowserWindowInterface* bwi,
+                        bool prevent_close,
+                        mojom::InvocationSource source,
+                        std::optional<std::string> prompt_suggestion);
   void ToggleUI(BrowserWindowInterface* bwi,
                 bool prevent_close,
-                mojom::InvocationSource source,
-                std::optional<std::string> prompt_suggestion = std::nullopt);
+                mojom::InvocationSource source);
 
-  void OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
-                             mojom::InvocationSource source);
+  virtual void OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
+                                     mojom::InvocationSource source);
 
   // Forcibly close the UI. This is similar to Shutdown in that it causes the
   // window controller to shutdown (and clear cached state), but unlike
