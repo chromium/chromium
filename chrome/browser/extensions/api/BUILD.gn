@@ -39,6 +39,7 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/enterprise_hardware_platform",
     "//chrome/browser/extensions/api/extension_action",
     "//chrome/browser/extensions/api/font_settings",
+    "//chrome/browser/extensions/api/gcm",
     "//chrome/browser/extensions/api/module",
     "//chrome/browser/extensions/api/notifications",
     "//chrome/browser/extensions/api/omnibox",

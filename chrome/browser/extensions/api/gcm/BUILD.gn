@@ -1,0 +1,30 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions_core,
+       "Cannot depend on extensions because enable_extensions_core=false.")
+
+source_set("gcm") {
+  sources = [
+    "extension_gcm_app_handler.cc",
+    "extension_gcm_app_handler.h",
+    "gcm_api.cc",
+    "gcm_api.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/gcm",
+    "//chrome/browser/profiles",
+    "//chrome/common/extensions",
+    "//components/gcm_driver",
+    "//extensions/browser",
+    "//extensions/buildflags",
+    "//extensions/common",
+  ]
+}
