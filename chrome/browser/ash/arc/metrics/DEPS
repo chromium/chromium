@@ -16,7 +16,13 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/arc",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/memory",
   "+chrome/browser/profiles",
 ]
+
+specific_include_rules = {
+  # Exceptionally allow g_browser_process usage in the ctor of ArcMetricsServiceProxy.
+  "arc_metrics_service_proxy\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ]
+}

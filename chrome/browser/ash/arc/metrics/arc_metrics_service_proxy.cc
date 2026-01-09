@@ -58,10 +58,14 @@ ArcMetricsServiceProxy::ArcMetricsServiceProxy(
     ArcBridgeService* arc_bridge_service)
     : arc_app_list_prefs_(ArcAppListPrefs::Get(context)),
       arc_metrics_service_(ArcMetricsService::GetForBrowserContext(context)) {
+  // Exceptionally allow `g_browser_process` here since this class is created by
+  // `ArcMetricsServiceProxyFactory`, which lives in a base::Singleton.
+  PrefService* local_state = g_browser_process->local_state();
+
   arc_app_list_prefs_->AddObserver(this);
   arc::ArcSessionManager::Get()->AddObserver(this);
   arc_metrics_service_->AddAppKillObserver(this);
-  arc_metrics_service_->SetPrefService(g_browser_process->local_state());
+  arc_metrics_service_->SetPrefService(local_state);
 }
 
 void ArcMetricsServiceProxy::Shutdown() {

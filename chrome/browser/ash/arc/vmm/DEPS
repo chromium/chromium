@@ -16,14 +16,18 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/arc",
-  "+chrome/browser/browser_process.h",
 ]
 
 specific_include_rules = {
-  ".*(browser|unit)test\.cc": [
+  # Exceptionally allow g_browser_process usage in the ctor of ArcVmmManager.
+  "arc_vmm_manager\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+
+  ".*(browser|unit)test\\.cc": [
     "+chrome/test/base",
   ],
-  "arc_vmm_manager_browsertest\.cc": [
+  "arc_vmm_manager_browsertest\\.cc": [
      "+chrome/browser/ui/browser.h",
   ],
 }

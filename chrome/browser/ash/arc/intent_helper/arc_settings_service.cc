@@ -16,6 +16,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
@@ -236,8 +237,13 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
                                public ConnectionObserver<mojom::AppInstance>,
                                public ash::NetworkStateHandlerObserver {
  public:
-  ArcSettingsServiceImpl(Profile* profile,
-                         ArcBridgeService* arc_bridge_service);
+  // `local_state` and `application_locale_storage` must be non-null and must
+  // outlive `this`.
+  ArcSettingsServiceImpl(
+      PrefService* local_state,
+      const ApplicationLocaleStorage* application_locale_storage,
+      Profile* profile,
+      ArcBridgeService* arc_bridge_service);
   ArcSettingsServiceImpl(const ArcSettingsServiceImpl&) = delete;
   ArcSettingsServiceImpl& operator=(const ArcSettingsServiceImpl&) = delete;
   ~ArcSettingsServiceImpl() override;
@@ -338,6 +344,9 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   // ConnectionObserver<mojom::AppInstance>:
   void OnConnectionReady() override;
 
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+
   const raw_ptr<Profile> profile_;
   const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
@@ -369,9 +378,14 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
 };
 
 ArcSettingsServiceImpl::ArcSettingsServiceImpl(
+    PrefService* local_state,
+    const ApplicationLocaleStorage* application_locale_storage,
     Profile* profile,
     ArcBridgeService* arc_bridge_service)
-    : profile_(profile), arc_bridge_service_(arc_bridge_service) {
+    : local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      profile_(profile),
+      arc_bridge_service_(arc_bridge_service) {
   StartObservingSettingsChanges();
   SyncBootTimeSettings();
 
@@ -526,7 +540,7 @@ bool ArcSettingsServiceImpl::IsPrefProxyConfigApplied() const {
 
 void ArcSettingsServiceImpl::StartObservingSettingsChanges() {
   registrar_.Init(GetPrefs());
-  local_state_registrar_.Init(g_browser_process->local_state());
+  local_state_registrar_.Init(&local_state_.get());
 
   // Keep these lines ordered lexicographically.
   AddPrefToObserve(::prefs::kAccessibilityCaptionsBackgroundColor);
@@ -698,17 +712,13 @@ void ArcSettingsServiceImpl::SyncLocale() const {
     return;
   }
 
-  // TODO(crbug.com/404130092): Remove g_browser_process usage.
-  const ApplicationLocaleStorage& application_locale_storage = CHECK_DEREF(
-      g_browser_process->GetFeatures()->application_locale_storage());
-
   std::string locale;
   std::string preferred_languages;
   // Chrome OS locale may contain only the language part (e.g. fr) but country
   // code (e.g. fr_FR).  Since Android expects locale to contain country code,
   // ARC will derive a likely locale with country code from such
-  GetLocaleAndPreferredLanguages(application_locale_storage, profile_, &locale,
-                                 &preferred_languages);
+  GetLocaleAndPreferredLanguages(application_locale_storage_.get(), profile_,
+                                 &locale, &preferred_languages);
 
   base::Value::Dict extras;
   extras.Set("locale", locale);
@@ -725,7 +735,7 @@ void ArcSettingsServiceImpl::SyncLocationServiceEnabled() const {
 void ArcSettingsServiceImpl::SyncProxySettings() const {
   std::unique_ptr<ProxyConfigDictionary> proxy_config_dict =
       ash::ProxyConfigServiceImpl::GetActiveProxyConfigDictionary(
-          GetPrefs(), g_browser_process->local_state());
+          GetPrefs(), &local_state_.get());
 
   ProxyPrefs::ProxyMode mode;
   if (!proxy_config_dict || !proxy_config_dict->GetMode(&mode))
@@ -975,13 +985,10 @@ bool ArcSettingsServiceImpl::IsBooleanPrefManaged(
 void ArcSettingsServiceImpl::SendBoolLocalStatePrefSettingsBroadcast(
     const std::string& pref_name,
     const std::string& action) const {
-  DCHECK(g_browser_process);
-  const PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
   const PrefService::Preference* local_state_pref =
-      local_state->FindPreference(pref_name);
+      local_state_->FindPreference(pref_name);
   DCHECK(local_state_pref);
-  bool enabled = local_state->GetBoolean(pref_name);
+  bool enabled = local_state_->GetBoolean(pref_name);
   SendBoolValueSettingsBroadcast(enabled, !local_state_pref->IsUserModifiable(),
                                  action);
 }
@@ -1039,7 +1046,12 @@ ArcSettingsService* ArcSettingsService::GetForBrowserContext(
 
 ArcSettingsService::ArcSettingsService(content::BrowserContext* context,
                                        ArcBridgeService* bridge_service)
-    : profile_(Profile::FromBrowserContext(context)),
+    :  // Allow `g_browser_process` usage here for now since this is created by
+       // `ArcSettingsServiceFactory`, which lives in a base::Singleton.
+      local_state_(CHECK_DEREF(g_browser_process->local_state())),
+      application_locale_storage_(CHECK_DEREF(
+          g_browser_process->GetFeatures()->application_locale_storage())),
+      profile_(Profile::FromBrowserContext(context)),
       arc_bridge_service_(bridge_service) {
   arc_bridge_service_->intent_helper()->AddObserver(this);
   ArcSessionManager::Get()->AddObserver(this);
@@ -1054,8 +1066,9 @@ ArcSettingsService::~ArcSettingsService() {
 }
 
 void ArcSettingsService::OnConnectionReady() {
-  impl_ =
-      std::make_unique<ArcSettingsServiceImpl>(profile_, arc_bridge_service_);
+  impl_ = std::make_unique<ArcSettingsServiceImpl>(
+      &local_state_.get(), &application_locale_storage_.get(), profile_,
+      arc_bridge_service_);
   if (!IsInitialSettingsPending())
     return;
   impl_->SyncInitialSettings();

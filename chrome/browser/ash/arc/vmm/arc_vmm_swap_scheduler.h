@@ -8,10 +8,13 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+
+class PrefService;
 
 namespace arc {
 
@@ -24,11 +27,13 @@ class ArcVmmSwapScheduler : public ash::ConciergeClient::VmObserver {
  public:
   // ArcVmmSwapScheduler is allowed receive calls to set swap state and
   // control the swap state by itself.
+  // `local_state` must be non-null and must outlive `this`.
   // If the `minimum_swapout_interval` is nullopt, the scheduler will not check
   // the time interval when "enable vmm swap".
   // If the `checking_period` is nullopt, the scheduler will not use the
   // `observation` and timer to check and control the swappable state.
-  ArcVmmSwapScheduler(base::RepeatingCallback<void(bool)> swap_callback,
+  ArcVmmSwapScheduler(PrefService* local_state,
+                      base::RepeatingCallback<void(bool)> swap_callback,
                       std::optional<base::TimeDelta> minimum_swapout_interval,
                       std::optional<base::TimeDelta> checking_period,
                       std::unique_ptr<PeaceDurationProvider> observation);
@@ -51,6 +56,8 @@ class ArcVmmSwapScheduler : public ash::ConciergeClient::VmObserver {
       std::unique_ptr<PeaceDurationProvider> observation);
 
   void UpdateSwappableStateByObservation();
+
+  const raw_ref<PrefService> local_state_;
 
   // Swappable state throttle args.
   bool throttle_swapout_ = false;

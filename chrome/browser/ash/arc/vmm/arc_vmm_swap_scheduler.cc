@@ -6,10 +6,10 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 #include "chrome/browser/ash/arc/vmm/arc_vmm_manager.h"
-#include "chrome/browser/browser_process.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/prefs/pref_service.h"
@@ -17,19 +17,13 @@
 
 namespace arc {
 
-namespace {
-
-PrefService* local_state() {
-  return g_browser_process->local_state();
-}
-}  // namespace
-
 ArcVmmSwapScheduler::ArcVmmSwapScheduler(
+    PrefService* local_state,
     base::RepeatingCallback<void(bool)> swap_callback,
     std::optional<base::TimeDelta> minimum_swapout_interval,
     std::optional<base::TimeDelta> swappable_checking_period,
     std::unique_ptr<PeaceDurationProvider> peace_duration_provider)
-    : swap_callback_(swap_callback) {
+    : local_state_(CHECK_DEREF(local_state)), swap_callback_(swap_callback) {
   // Set callback to disable vmm-swap feature immdiately after the ARC get
   // activated.
   if (peace_duration_provider) {
@@ -67,7 +61,7 @@ void ArcVmmSwapScheduler::OnVmSwapping(
     return;
   }
   if (signal.state() == vm_tools::concierge::SWAPPING_OUT) {
-    local_state()->SetTime(prefs::kArcVmmSwapOutTime, base::Time::Now());
+    local_state_->SetTime(prefs::kArcVmmSwapOutTime, base::Time::Now());
   }
 }
 
@@ -92,7 +86,7 @@ void ArcVmmSwapScheduler::SetActiveSwappableChecking(
 void ArcVmmSwapScheduler::UpdateSwappableStateByObservation() {
   if (throttle_swapout_) {
     const base::Time last_swap_out_time =
-        local_state()->GetTime(prefs::kArcVmmSwapOutTime);
+        local_state_->GetTime(prefs::kArcVmmSwapOutTime);
 
     if (!last_swap_out_time.is_null()) {
       auto past = base::Time::Now() - last_swap_out_time;
