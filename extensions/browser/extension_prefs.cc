@@ -2294,10 +2294,6 @@ void ExtensionPrefs::RegisterProfilePrefs(
   registry->RegisterListPref(pref_names::kInitialInstallList);
   registry->RegisterStringPref(pref_names::kInitialInstallProviderName,
                                /*default_value=*/std::string());
-
-  registry->RegisterBooleanPref(
-      pref_names::kExtensionForceInstallWithNonMalwareViolationsEnabled,
-      /*default_value=*/false);
 }
 
 template <class ExtensionIdContainer>

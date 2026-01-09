@@ -1641,30 +1641,6 @@ TEST_F(ExtensionManagementServiceTest,
             forced_extension->id()));
   }
   {
-    // `ExtensionForceInstallWithNonMalwareViolationsEnabled` policy is true.
-
-    // Force-install an extension in low-trust environment.
-    policy::ScopedManagementServiceOverrideForTesting browser_management(
-        policy::ManagementServiceFactory::GetForPlatform(),
-        policy::EnterpriseManagementAuthority::NONE);
-    scoped_refptr<const Extension> forced_extension =
-        CreateForcedExtension(kTargetExtension3, Extension::NO_FLAGS);
-
-    // Greylist the extension.
-    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
-        forced_extension->id(),
-        BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
-        ExtensionPrefs::Get(profile_.get()));
-
-    profile_->GetPrefs()->SetBoolean(
-        pref_names::kExtensionForceInstallWithNonMalwareViolationsEnabled,
-        true);
-
-    EXPECT_FALSE(
-        extension_management_->IsGreylistedForceInstalledInLowTrustEnvironment(
-            forced_extension->id()));
-  }
-  {
     // Not force-installed.
 
     // Set up a non-forced extension in a low-trust environment.
@@ -1672,7 +1648,7 @@ TEST_F(ExtensionManagementServiceTest,
         policy::ManagementServiceFactory::GetForPlatform(),
         policy::EnterpriseManagementAuthority::NONE);
     scoped_refptr<const Extension> extension =
-        CreateNormalExtension(kTargetExtension3);
+        CreateNormalExtension(kTargetExtension);
 
     // Greylist the extension.
     blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(

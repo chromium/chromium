@@ -125,9 +125,7 @@ ExtensionManagement::ExtensionManagement(Profile* profile)
                              pref_change_callback);
   pref_change_registrar_.Add(pref_names::kExtensionUnpublishedAvailability,
                              pref_change_callback);
-  pref_change_registrar_.Add(
-      pref_names::kExtensionForceInstallWithNonMalwareViolationsEnabled,
-      pref_change_callback);
+
   // Note that both |global_settings_| and |default_settings_| will be null
   // before first call to Refresh(), so in order to resolve this, Refresh() must
   // be called in the initialization of ExtensionManagement.
@@ -498,11 +496,6 @@ bool ExtensionManagement::IsGreylistedForceInstalledInLowTrustEnvironment(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (!base::FeatureList::IsEnabled(
           kDisableForceInstalledExtensionsInLowTrustEnviromentWhenGreylisted)) {
-    return false;
-  }
-
-  if (profile_->GetPrefs()->GetBoolean(
-          pref_names::kExtensionForceInstallWithNonMalwareViolationsEnabled)) {
     return false;
   }
 
