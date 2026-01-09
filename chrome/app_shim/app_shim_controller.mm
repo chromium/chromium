@@ -291,7 +291,8 @@ void AppShimController::PreInitFeatureState(
        "DcheckIsFatal", "DisallowSpaceCharacterInURLHostParsing",
        "UseIDNAContextJRules", "NonSpecialLeadingSlashHandling",
        "MojoBindingsInlineSLS", "MojoInlineMessagePayloads", "MojoIpcz",
-       "MojoIpczMemV2", "UseAdHocSigningForWebAppShims",
+       "MojoIpczMemV2", "MojoFixGeometricBufferGrowth",
+       "UseAdHocSigningForWebAppShims",
        "SonomaAccessibilityActivationRefinements", "FeatureParamWithCache",
        "UseMachVouchers"});
 }

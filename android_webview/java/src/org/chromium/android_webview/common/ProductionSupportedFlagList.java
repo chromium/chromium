@@ -500,6 +500,7 @@ public final class ProductionSupportedFlagList {
                 NetFeatures.DISK_CACHE_BACKEND_EXPERIMENT,
                 "Enables the experimental disk cache backend for HTTP Cache"),
         Flag.baseFeature("MojoIpcz"),
+        Flag.baseFeature("MojoFixGeometricBufferGrowth"),
         Flag.baseFeature(
                 "FixDataPipeTrapBug",
                 "Used to disable a specific bug fix for a long-standing bug that may"
