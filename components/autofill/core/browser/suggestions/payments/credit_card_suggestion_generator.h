@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/save_and_fill_manager.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/common/form_data.h"
@@ -33,7 +34,14 @@ namespace autofill {
 // are still shared in payments_suggestion_generator.h file.
 class CreditCardSuggestionGenerator : public SuggestionGenerator {
  public:
-  explicit CreditCardSuggestionGenerator();
+  explicit CreditCardSuggestionGenerator(
+      const std::vector<std::string>& four_digit_combinations_in_dom,
+      const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
+      bool should_show_scan_credit_card,
+      CreditCardSuggestionSummary& summary,
+      bool is_card_number_field_empty,
+      bool is_complete_form,
+      const payments::AmountExtractionStatus& amount_extraction_status);
   ~CreditCardSuggestionGenerator() override;
 
   void FetchSuggestionData(
@@ -83,6 +91,14 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
       base::FunctionRef<void(ReturnedSuggestions)> callback);
 
  private:
+  raw_ref<const std::vector<std::string>> four_digit_combinations_in_dom_;
+  raw_ref<const std::u16string>
+      autofilled_last_four_digits_in_form_for_filtering_;
+  bool should_show_scan_credit_card_;
+  raw_ref<CreditCardSuggestionSummary> summary_;
+  bool is_card_number_field_empty_;
+  bool is_complete_form_;
+  raw_ref<const payments::AmountExtractionStatus> amount_extraction_status_;
   base::WeakPtrFactory<CreditCardSuggestionGenerator> weak_ptr_factory_{this};
 };
 

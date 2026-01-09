@@ -44,6 +44,34 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     bool is_card_number_field_empty,
     const payments::AmountExtractionStatus& amount_extraction_status);
 
+// Helper function, that implements "Fetch" phase of the
+// GetSuggestionsForCreditCards function.
+std::pair<SuggestionGenerator::SuggestionDataSource,
+          std::vector<SuggestionGenerator::SuggestionData>>
+FetchCreditCardSuggestionDataSync(
+    AutofillClient& client,
+    const FormFieldData& trigger_field,
+    FieldType trigger_field_type,
+    CreditCardSuggestionSummary& summary,
+    bool is_complete_form,
+    const std::vector<std::string>& four_digit_combinations_in_dom,
+    const std::u16string& autofilled_last_four_digits_in_form_for_filtering);
+
+// Helper function, that implements "Generate" phase of the
+// GetSuggestionsForCreditCards function.
+std::vector<Suggestion> GenerateCreditCardSuggestionsSync(
+    AutofillClient& client,
+    const FormFieldData& trigger_field,
+    FieldType trigger_field_type,
+    CreditCardSuggestionSummary& summary,
+    bool should_show_scan_credit_card,
+    const std::vector<std::string>& four_digit_combinations_in_dom,
+    const base::flat_map<SuggestionGenerator::SuggestionDataSource,
+                         std::vector<SuggestionGenerator::SuggestionData>>&
+        suggestion_data,
+    bool is_card_number_field_empty,
+    const payments::AmountExtractionStatus& amount_extraction_status);
+
 // Fetches SuggestionData, used for credit card or cvc field suggestion
 // generation. Fetched data wil be used in
 // GenerateCreditCardOrCvcFieldSuggestionsSync.
