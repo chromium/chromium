@@ -1804,6 +1804,8 @@ message WebContentInteraction {
   optional int64 total_duration_ms = 2;
 }
 
+// Deprecated in favor of the Perfetto Scroll Jank plugin which has a more
+// in-depth track. See `org.chromium.ChromeScrollJank/scroll_track.ts`
 message ScrollMetrics {
   optional int64 frame_count = 1;
   optional int64 vsync_count = 2;
@@ -2948,7 +2950,7 @@ message ChromeTrackEvent {
     optional AnimationFrameScriptTimingInfo animation_frame_script_timing_info =
         1065;
 
-    optional ScrollMetrics scroll_metrics = 1066;
+    optional ScrollMetrics scroll_metrics = 1066 [deprecated = true];
 
     optional MainFramePipeline main_frame_pipeline = 1067;
 
