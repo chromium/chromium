@@ -72,19 +72,18 @@ public class TabBottomSheetContent implements BottomSheetContent {
         return "";
     }
 
-    // TODO (crbug.com/474581541) Add accessibility strings for the bottom sheet.
     @Override
     public @StringRes int getSheetClosedAccessibilityStringId() {
-        return R.string.archived_tabs_auto_delete_promo_closed;
+        return R.string.tab_bottom_sheet_closed;
     }
 
     @Override
     public @StringRes int getSheetHalfHeightAccessibilityStringId() {
-        return R.string.archived_tabs_auto_delete_promo_half_height;
+        return R.string.tab_bottom_sheet_half_height;
     }
 
     @Override
     public @StringRes int getSheetFullHeightAccessibilityStringId() {
-        return R.string.archived_tabs_auto_delete_promo_full_height;
+        return R.string.tab_bottom_sheet_full_height;
     }
 }
