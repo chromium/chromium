@@ -2475,6 +2475,10 @@ class ApiTests extends ApiTestFixtureBase {
         return 'GET_MODEL_QUALITY_CLIENT_ID';
       case HostCapability.MULTI_INSTANCE:
         return 'MULTI_INSTANCE';
+      case HostCapability.TRUST_FIRST_ONBOARDING_ARM1:
+        return 'TRUST_FIRST_ONBOARDING_ARM_1';
+      case HostCapability.TRUST_FIRST_ONBOARDING_ARM2:
+        return 'TRUST_FIRST_ONBOARDING_ARM_2';
       default:
         return 'NEW_ENUM_NOT_IMPLEMENTED';
     }

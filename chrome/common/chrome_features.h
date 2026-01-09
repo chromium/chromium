@@ -361,6 +361,7 @@ BASE_DECLARE_FEATURE(kGlicUnifiedFreScreen);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicTrustFirstOnboarding);
 
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int> kGlicTrustFirstOnboardingArmParam;
 
 #if BUILDFLAG(ENABLE_GLIC)

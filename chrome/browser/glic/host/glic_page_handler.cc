@@ -822,6 +822,16 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     if (GlicEnabling::IsMultiInstanceEnabled()) {
       state->host_capabilities.push_back(mojom::HostCapability::kMultiInstance);
     }
+    if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
+      int arm = features::kGlicTrustFirstOnboardingArmParam.Get();
+      if (arm == 1) {
+        state->host_capabilities.push_back(
+            mojom::HostCapability::kTrustFirstOnboardingArm1);
+      } else if (arm == 2) {
+        state->host_capabilities.push_back(
+            mojom::HostCapability::kTrustFirstOnboardingArm2);
+      }
+    }
     state->enable_get_page_metadata =
         base::FeatureList::IsEnabled(blink::features::kFrameMetadataObserver);
     state->enable_api_activation_gating =

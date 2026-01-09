@@ -179,6 +179,8 @@ struct TestParams {
   bool multi_instance = false;
   // This is only used by one fixture.
   bool enable_scroll_to_pdf = false;
+  bool trust_first_onboarding_arm1 = false;
+  bool trust_first_onboarding_arm2 = false;
 };
 
 class WithTestParams : public testing::WithParamInterface<TestParams> {
@@ -199,6 +201,12 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
     }
     if (info.param.multi_instance) {
       result.push_back("MultiInst");
+    }
+    if (info.param.trust_first_onboarding_arm1) {
+      result.push_back("TrustFirstOnboardingArm1");
+    }
+    if (info.param.trust_first_onboarding_arm2) {
+      result.push_back("TrustFirstOnboardingArm2");
     }
     if (result.empty()) {
       return "Default";
@@ -3184,21 +3192,26 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelWillOpenBeforeClientReady) {
 class GlicGetHostCapabilityApiTest : public GlicApiTestWithOneTab {
  public:
   GlicGetHostCapabilityApiTest() {
-    const bool enable_features = GetParam().enable_scroll_to_pdf;
-    if (enable_features) {
-      // TODO(b/444002499) - add features::kGlicMultiInstance when test support
-      //  enabled.
-      std::vector<base::test::FeatureRefAndParams> enabled_features = {
-          {features::kGlicScrollTo, {{"glic-scroll-to-pdf", "true"}}},
-          {features::kGlicPanelResetSizeAndLocationOnOpen, {}}};
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          enabled_features,
-          /*disabled_features=*/{});
-    } else {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{});
+    CHECK(!(GetParam().trust_first_onboarding_arm1 &&
+            GetParam().trust_first_onboarding_arm2));
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    if (GetParam().enable_scroll_to_pdf) {
+      enabled_features.push_back(
+          {features::kGlicScrollTo, {{"glic-scroll-to-pdf", "true"}}});
+      enabled_features.push_back(
+          {features::kGlicPanelResetSizeAndLocationOnOpen, {}});
     }
+    if (GetParam().trust_first_onboarding_arm1) {
+      enabled_features.push_back(
+          {features::kGlicTrustFirstOnboarding,
+           {{features::kGlicTrustFirstOnboardingArmParam.name, "1"}}});
+    }
+    if (GetParam().trust_first_onboarding_arm2) {
+      enabled_features.push_back(
+          {features::kGlicTrustFirstOnboarding,
+           {{features::kGlicTrustFirstOnboardingArmParam.name, "2"}}});
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
   ~GlicGetHostCapabilityApiTest() override = default;
 
@@ -3207,21 +3220,22 @@ class GlicGetHostCapabilityApiTest : public GlicApiTestWithOneTab {
 };
 
 IN_PROC_BROWSER_TEST_P(GlicGetHostCapabilityApiTest, testGetHostCapabilities) {
-  const bool enable_features = GetParam().enable_scroll_to_pdf;
-  if (enable_features) {
+  base::Value::List expected_capabilities;
+  if (GetParam().enable_scroll_to_pdf) {
 #if BUILDFLAG(ENABLE_PDF)
-    // The host is only capable of scrolling on PDF document if the feature flag
-    // is enabled, and on PDF-enabled platforms.
-    ExecuteJsTest({
-        .params = base::Value(base::Value::List().Append(
-            base::to_underlying(mojom::HostCapability::kScrollToPdf))),
-    });
-#else
-    ExecuteJsTest();
+    expected_capabilities.Append(
+        base::to_underlying(mojom::HostCapability::kScrollToPdf));
 #endif
-  } else {
-    ExecuteJsTest();
   }
+  if (GetParam().trust_first_onboarding_arm1) {
+    expected_capabilities.Append(
+        base::to_underlying(mojom::HostCapability::kTrustFirstOnboardingArm1));
+  }
+  if (GetParam().trust_first_onboarding_arm2) {
+    expected_capabilities.Append(
+        base::to_underlying(mojom::HostCapability::kTrustFirstOnboardingArm2));
+  }
+  ExecuteJsTest({.params = base::Value(std::move(expected_capabilities))});
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetPageMetadata) {
@@ -3463,7 +3477,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestHibernateOnMemoryUsage,
 INSTANTIATE_TEST_SUITE_P(
     ,
     GlicGetHostCapabilityApiTest,
-    testing::Values(TestParams{}, TestParams{.enable_scroll_to_pdf = true}),
+    testing::Values(TestParams{},
+                    TestParams{.enable_scroll_to_pdf = true},
+                    TestParams{.trust_first_onboarding_arm1 = true},
+                    TestParams{.trust_first_onboarding_arm2 = true}),
     &WithTestParams::PrintTestVariant);
 
 auto DefaultTestParamSet() {

@@ -2461,6 +2461,12 @@ export enum HostCapability {
   GET_MODEL_QUALITY_CLIENT_ID = 2,
   // Glic is in multi-instance mode.
   MULTI_INSTANCE = 3,
+  // Enables the experimental "Trust First" (Arm 1 - "Start Chat") onboarding
+  // UI flow, bypassing the standard FRE flow.
+  TRUST_FIRST_ONBOARDING_ARM1 = 4,
+  // Enables the experimental "Trust First" (Arm 2 - "Welcome Screen")
+  // onboarding UI flow, bypassing the standard FRE flow.
+  TRUST_FIRST_ONBOARDING_ARM2 = 5,
 }
 
 ///////////////////////////////////////////////
