@@ -193,9 +193,11 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddBoolean("isUnifiedFre",
                      GlicEnabling::IsUnifiedFreEnabled(
                          Profile::FromBrowserContext(browser_context)));
-  source->AddBoolean("shouldShowFre",
-                     !GlicEnabling::HasConsentedForProfile(
-                         Profile::FromBrowserContext(browser_context)));
+  source->AddBoolean(
+      "shouldShowFre",
+      !base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding) &&
+          !GlicEnabling::HasConsentedForProfile(
+              Profile::FromBrowserContext(browser_context)));
   source->AddInteger("reloadMaxLoadingTimeMs",
                      features::kGlicReloadMaxLoadingTimeMs.Get());
   source->AddBoolean("caaGuestError", base::FeatureList::IsEnabled(

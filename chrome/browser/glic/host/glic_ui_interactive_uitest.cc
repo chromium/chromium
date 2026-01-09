@@ -1018,4 +1018,33 @@ IN_PROC_BROWSER_TEST_F(GlicUiUnifiedFreIntegrationTest,
           WaitForElementVisible(test::kGlicHostElementId, kGlicGuestPanel)));
 }
 
+class GlicUiTrustFirstOnboardingTest : public GlicUiInteractiveUiTestBase {
+ public:
+  GlicUiTrustFirstOnboardingTest()
+      : GlicUiInteractiveUiTestBase(TestParams(/*connected=*/true)) {
+    feature_list_.InitAndEnableFeature(features::kGlicTrustFirstOnboarding);
+  }
+  ~GlicUiTrustFirstOnboardingTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicUiTrustFirstOnboardingTest, FreIsSkipped) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(crbug.com/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
+  const DeepQuery kFreContainer = {"#fre-app-container"};
+  const DeepQuery kGlicContainer = {"#glic-app-container"};
+  RunTestSequence(
+      ObserveState(kGlicUiStateHistory, GetHost()),
+      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kHostOnly),
+      InAnyContext(WaitForShow(test::kGlicHostElementId)),
+      // Check that the FRE is not shown.
+      CheckElementVisible(kFreContainer, false),
+      // Check that the main Glic container is shown.
+      CheckElementVisible(kGlicContainer, true));
+}
+
 }  // namespace glic
