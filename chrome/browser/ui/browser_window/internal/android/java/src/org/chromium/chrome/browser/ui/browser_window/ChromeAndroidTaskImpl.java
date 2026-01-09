@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.role.RoleManager;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
@@ -28,6 +29,7 @@ import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.TaskVisibilityListener;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -285,17 +287,39 @@ final class ChromeAndroidTaskImpl
      * {@link #mState} is set to {@link State#PENDING_UPDATE}.
      */
     private static boolean canSetBounds(TopActivityScopedObjects topActivityScopedObjects) {
-        if (!AppHeaderUtils.isAppInDesktopWindow(
-                topActivityScopedObjects.mDesktopWindowStateManager)) {
+        // The Android API to change window bounds is available on BAKLAVA+.
+        if (Build.VERSION.SDK_INT < VERSION_CODES.BAKLAVA) {
+            Log.w(TAG, "Unable to set bounds: unsupported API level");
             return false;
         }
 
+        // For the window bounds to be changed, the app must hold the browser role.
+        var roleManager = ContextUtils.getApplicationContext().getSystemService(RoleManager.class);
+        if (!roleManager.isRoleHeld(RoleManager.ROLE_BROWSER)) {
+            Log.w(TAG, "Unable to set bounds: the app doesn't hold the browser role");
+            return false;
+        }
+
+        // Only free-form windows can change bounds.
+        if (!AppHeaderUtils.isAppInDesktopWindow(
+                topActivityScopedObjects.mDesktopWindowStateManager)) {
+            Log.w(TAG, "Unable to set bounds: the app isn't in desktop windowing mode");
+            return false;
+        }
+
+        // The Android API to change window bounds is accessed via AppTask, so AppTask must be
+        // non-null.
+        // AppTask can be null when ChromeAndroidTask is for a CCT window. Please see
+        // http://crbug.com/468113288 for details.
         var activity = topActivityScopedObjects.mActivity;
         var appTask = AndroidTaskUtils.getAppTaskFromId(activity, activity.getTaskId());
         if (appTask == null) {
+            Log.w(TAG, "Unable to set bounds: null AppTask");
             return false;
         }
 
+        // Chrome wraps the Android API in AconfigFlaggedApiDelegate, so AconfigFlaggedApiDelegate
+        // must be non-null.
         var aconfigFlaggedApiDelegate = AconfigFlaggedApiDelegate.getInstance();
         if (aconfigFlaggedApiDelegate == null) {
             Log.w(TAG, "Unable to set bounds: null AconfigFlaggedApiDelegate");

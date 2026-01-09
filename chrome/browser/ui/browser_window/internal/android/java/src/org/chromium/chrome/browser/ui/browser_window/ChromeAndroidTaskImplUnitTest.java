@@ -34,14 +34,17 @@ import static org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskUni
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
+import android.app.role.RoleManager;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Process;
 import android.util.Pair;
 import android.view.WindowMetrics;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,9 +53,11 @@ import org.mockito.InOrder;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowRoleManager;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.Promise;
 import org.chromium.base.TimeUtils;
@@ -188,6 +193,14 @@ public class ChromeAndroidTaskImplUnitTest {
         assertEquals(2, pendingActions.length);
         assertEquals(PendingAction.NONE, pendingActions[0]);
         assertEquals(PendingAction.NONE, pendingActions[1]);
+    }
+
+    @Before
+    public void setUp() {
+        ShadowRoleManager.addRoleHolder(
+                RoleManager.ROLE_BROWSER,
+                ContextUtils.getApplicationContext().getPackageName(),
+                Process.myUserHandle());
     }
 
     @Test
@@ -1760,6 +1773,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
     public void maximize_whenPendingUpdate_isMaximizeReturnsTrue() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
@@ -1800,6 +1814,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
     public void maximize_whenPendingUpdate_notAffectIsActive() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
@@ -2075,6 +2090,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
     public void isMaximized_whenSetBoundsPending_returnsBasedOnFutureBounds() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
