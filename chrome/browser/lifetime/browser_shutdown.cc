@@ -131,8 +131,8 @@ void OnShutdownStarting(ShutdownType type) {
   DCHECK(!g_shutdown_started);
   g_shutdown_started = new base::Time(base::Time::Now());
 
-  // TODO(crbug.com/40685224): Check if this should also be enabled for
-  // coverage builds.
+  // TODO(crbug.com/469788783):  Coverage builds appear to work without this. Check
+  // if this is still needed for PGO.
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO_PROFILING)
   // Wait for all the child processes to dump their profiling data without
   // blocking the main thread.
