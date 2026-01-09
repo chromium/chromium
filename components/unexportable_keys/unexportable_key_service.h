@@ -80,6 +80,11 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyService {
   // calling `GetWrappedKey()` on a previous instance of `UnexportableKeyId`.
   // Invokes `callback` with a `ServiceError` if `wrapped_key` cannot be
   // imported.
+  //
+  // This method is also a supported way of transferring a key between
+  // `UnexportableKeyService` instances. A key's lifetime is controlled by the
+  // source `UnexportableKeyService` instance until this method completes in the
+  // destination service.
   virtual void FromWrappedSigningKeySlowlyAsync(
       base::span<const uint8_t> wrapped_key,
       BackgroundTaskPriority priority,
@@ -127,17 +132,6 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyService {
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
           callback) = 0;
-
-  // Copies a key from another service.
-  //
-  // Invokes `callback` with a `ServiceError` if `key_id_from_other_service` is
-  // not found. Otherwise, returns a new key ID that can be used to refer to the
-  // same key.
-  virtual void CopyKeyFromOtherService(
-      const UnexportableKeyService& other_service,
-      UnexportableKeyId key_id_from_other_service,
-      BackgroundTaskPriority priority,
-      base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback) = 0;
 
   // Schedules a new asynchronous signing task.
   // Might return a cached result if a task with the same combination of
