@@ -238,22 +238,24 @@ bool SessionFileReader::ReadHeader() {
     return false;
   FileHeader header;
   CHECK_EQ(0, bytes_read_);
-  bytes_read_ = UNSAFE_TODO(file_->ReadAtCurrentPos(
-      reinterpret_cast<char*>(&header), sizeof(header)));
-  if (bytes_read_ < 0) {
+  std::optional<size_t> read_count =
+      file_->ReadAtCurrentPos(base::byte_span_from_ref(header));
+  if (!read_count) {
     VLOG(1) << "SessionFileReader::ReadHeader, failed to read header. "
                "Attempted to read "
             << sizeof(header)
             << " bytes into buffer but encountered file read error: "
             << base::File::ErrorToString(base::File::GetLastFileError());
+    return false;
   }
-  if (bytes_read_ != sizeof(header) || header.signature != kFileSignature) {
+  if (*read_count != sizeof(header) || header.signature != kFileSignature) {
     VLOG(1) << "SessionFileReader::ReadHeader, failed to read header. "
                "Attempted to read "
-            << sizeof(header) << " bytes into buffer but got " << bytes_read_
+            << sizeof(header) << " bytes into buffer but got " << *read_count
             << " bytes instead.";
     return false;
   }
+  bytes_read_ += *read_count;
   version_ = header.version;
   const bool encrypt = aead_.get() != nullptr;
   return (encrypt && (version_ == kEncryptedFileVersion ||
@@ -370,29 +372,32 @@ std::unique_ptr<sessions::SessionCommand> SessionFileReader::CreateCommand(
 }
 
 bool SessionFileReader::FillBuffer() {
+  base::span<uint8_t> buffer_bytes = base::as_writable_byte_span(buffer_);
   if (available_count_ > 0 && buffer_position_ > 0) {
     // Shift buffer to beginning.
-    UNSAFE_TODO(
-        memmove(&(buffer_[0]), &(buffer_[buffer_position_]), available_count_));
+    buffer_bytes.copy_prefix_from(
+        buffer_bytes.subspan(buffer_position_, available_count_));
   }
   buffer_position_ = 0;
   DCHECK(buffer_position_ + available_count_ < buffer_.size());
-  const int to_read = static_cast<int>(buffer_.size() - available_count_);
-  const int read_count = UNSAFE_TODO(
-      file_->ReadAtCurrentPos(&(buffer_[available_count_]), to_read));
-  if (read_count < 0) {
+  base::span<uint8_t> buffer_subspan = buffer_bytes.subspan(available_count_);
+  const std::optional<size_t> read_count =
+      file_->ReadAtCurrentPos(buffer_subspan);
+  if (!read_count) {
     VLOG(1) << "SessionFileReader::FillBuffer, failed to read header. "
                "Attempted to read "
-            << to_read << " bytes into buffer but encountered file read error: "
+            << buffer_subspan.size()
+            << " bytes into buffer but encountered file read error: "
             << base::File::ErrorToString(base::File::GetLastFileError())
             << "\nRead " << bytes_read_
             << " bytes successfully from file before error.";
     return false;
   }
-  if (read_count == 0)
+  if (read_count == 0) {
     return false;
-  bytes_read_ += read_count;
-  available_count_ += read_count;
+  }
+  bytes_read_ += *read_count;
+  available_count_ += *read_count;
   return true;
 }
 
