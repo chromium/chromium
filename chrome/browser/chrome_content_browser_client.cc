@@ -268,7 +268,6 @@
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/permissions/content_setting_permission_context_base.h"
 #include "components/policy/core/browser/url_list/policy_blocklist_service.h"
-#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -1113,10 +1112,7 @@ void LaunchURL(
   PolicyBlocklistService* service =
       ChromePolicyBlocklistServiceFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  if ((base::FeatureList::IsEnabled(
-           policy::features::kUseManagementServiceForSensitivePolicies) ||
-       ShouldHonorPolicies()) &&
-      service) {
+  if (ShouldHonorPolicies() && service) {
     const policy::URLBlocklist::URLBlocklistState url_state =
         service->GetURLBlocklistState(url);
     is_allowlisted =
