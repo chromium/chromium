@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -54,7 +55,7 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode final
 
    public:
     gfx::Rect container_rect;
-    gfx::Size contents_size;
+    gfx::Rect contents_rect;
     Member<const ClipPaintPropertyNode> overflow_clip_node;
     bool user_scrollable_horizontal = false;
     bool user_scrollable_vertical = false;
@@ -143,7 +144,11 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode final
   // space of the associated transform node (ScrollTranslation). It has the
   // same origin as ContainerRect().
   gfx::Rect ContentsRect() const {
-    return gfx::Rect(state_.container_rect.origin(), state_.contents_size);
+    if (RuntimeEnabledFeatures::ScrollbarGutterBugFixEnabled()) {
+      return state_.contents_rect;
+    }
+    return gfx::Rect(state_.container_rect.origin(),
+                     state_.contents_rect.size());
   }
 
   const ClipPaintPropertyNode* OverflowClipNode() const {

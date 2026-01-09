@@ -317,7 +317,8 @@ inline TransformPaintPropertyNode* CreateScrollTranslation(
         cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText) {
   ScrollPaintPropertyNode::State scroll_state;
   scroll_state.container_rect = container_rect;
-  scroll_state.contents_size = contents_size;
+  scroll_state.contents_rect =
+      gfx::Rect(container_rect.origin(), contents_size);
   scroll_state.overflow_clip_node = overflow_clip;
   scroll_state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
       NewUniqueObjectId(), CompositorElementIdNamespace::kScroll);

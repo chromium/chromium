@@ -3108,11 +3108,29 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollNode() {
   PaintLayerScrollableArea* scrollable_area = box.GetScrollableArea();
   ScrollPaintPropertyNode::State state;
 
+  // clip_rect covers inline-start gutter via https://crrev.com/c/2680371.
   PhysicalRect clip_rect =
       box.OverflowClipRectForScrollNode(context_.current.paint_offset);
   state.container_rect = ToPixelSnappedRect(clip_rect);
-  state.contents_size =
-      scrollable_area->PixelSnappedContentsSize(clip_rect.offset);
+
+  if (RuntimeEnabledFeatures::ScrollbarGutterBugFixEnabled()) {
+    state.contents_rect = {
+        // Calculate the content offset relative to the container's border box,
+        // accounting for scroll origin shifts (e.g. vertical-rl, gutters).
+        box.ScrollableOverflowRect().PixelSnappedOffset() +
+            box.ScrollOrigin().OffsetFromOrigin(),
+        // PixelSnappedContentsSize does not cover inline-start gutter.
+        scrollable_area->PixelSnappedContentsSize(clip_rect.offset)};
+
+    // Expand to cover the gutter to let negative inline margin content paint
+    // over the inline-start gutter.
+    state.contents_rect.Union(state.container_rect);
+  } else {
+    state.contents_rect = {
+        gfx::Point(),
+        scrollable_area->PixelSnappedContentsSize(clip_rect.offset)};
+  }
+
   state.overflow_clip_node = properties_->OverflowClip();
   state.user_scrollable_horizontal =
       scrollable_area->UserInputScrollable(kHorizontalScrollbar);

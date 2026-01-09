@@ -248,7 +248,7 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
   {
     ScrollPaintPropertyNode::State state;
     state.container_rect = gfx::Rect(size_);
-    state.contents_size = ContentsSize();
+    state.contents_rect = gfx::Rect(ContentsSize());
 
     state.user_scrollable_horizontal =
         UserInputScrollable(kHorizontalScrollbar);

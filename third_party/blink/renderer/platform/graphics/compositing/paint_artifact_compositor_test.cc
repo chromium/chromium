@@ -4332,7 +4332,7 @@ TEST_P(PaintArtifactCompositorTest, ViewportPageScale) {
   // 27x32.
   ScrollPaintPropertyNode::State scroll_state;
   scroll_state.container_rect = gfx::Rect(5, 5, 20, 10);
-  scroll_state.contents_size = gfx::Size(27, 32);
+  scroll_state.contents_rect = gfx::Rect(gfx::Size(27, 32));
   scroll_state.user_scrollable_vertical = true;
   scroll_state.max_scroll_offset_affected_by_page_scale = true;
   auto scroll_element_id = CompositorElementIdFromUniqueObjectId(
