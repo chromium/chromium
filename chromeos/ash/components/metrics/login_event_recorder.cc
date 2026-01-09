@@ -62,15 +62,16 @@ constexpr base::FilePath::CharType kLoginSuccess[] = FPL("login-success");
 // The login times will be written immediately when the login animation ends,
 // and this is used to ensure the data is always written if this amount is
 // elapsed after login.
-constexpr int64_t kLoginTimeWriteDelayMs = 20000;
+constexpr base::TimeDelta kLoginTimeWriteDelay = base::Milliseconds(20000);
 
 void WriteTimes(const std::string base_name,
                 const std::string uma_name,
                 const std::string uma_prefix,
                 std::vector<LoginEventRecorder::TimeMarker> times) {
   DCHECK(times.size());
-  const int kMinTimeMillis = 1;
-  const int kMaxTimeMillis = 30000;
+  constexpr base::TimeDelta kMinTime = base::Milliseconds(1);
+  constexpr base::TimeDelta kMaxTime = base::Seconds(30);
+
   const int kNumBuckets = 100;
   const base::FilePath log_path(kLoginLogPath);
 
@@ -83,15 +84,16 @@ void WriteTimes(const std::string base_name,
   base::TimeTicks last = times.back().time();
   base::TimeDelta total = last - first;
   base::HistogramBase* total_hist = base::Histogram::FactoryTimeGet(
-      uma_name, base::Milliseconds(kMinTimeMillis),
-      base::Milliseconds(kMaxTimeMillis), kNumBuckets,
+      uma_name, kMinTime, kMaxTime, kNumBuckets,
       base::HistogramBase::kUmaTargetedHistogramFlag);
   total_hist->AddTime(total);
   std::string output =
       base::StringPrintf("%s: %.2f", uma_name.c_str(), total.InSecondsF());
   if (uma_name == "BootTime.Login2" || uma_name == "BootTime.LoginNewUser") {
-    UMA_HISTOGRAM_CUSTOM_TIMES("Ash.Tast.BootTime.Login2", total,
-                               base::Milliseconds(1), base::Seconds(300), 100);
+    // To survive a test with heavy load we need a higher limit
+    constexpr base::TimeDelta kLongerMaxTime{base::Seconds(300)};
+    UMA_HISTOGRAM_CUSTOM_TIMES("Ash.Tast.BootTime.Login2", total, kMinTime,
+                               kLongerMaxTime, 100);
   }
   const bool is_login = uma_prefix == kUmaLoginPrefix;
 
@@ -145,8 +147,7 @@ void WriteTimes(const std::string base_name,
     if (tm.send_to_uma()) {
       name = uma_prefix + tm.name();
       base::HistogramBase* prev_hist = base::Histogram::FactoryTimeGet(
-          name, base::Milliseconds(kMinTimeMillis),
-          base::Milliseconds(kMaxTimeMillis), kNumBuckets,
+          name, kMinTime, kMaxTime, kNumBuckets,
           base::HistogramBase::kUmaTargetedHistogramFlag);
       prev_hist->AddTime(since_prev);
     } else {
@@ -406,7 +407,7 @@ void LoginEventRecorder::ScheduleWriteLoginTimes(const std::string base_name,
       FROM_HERE,
       base::BindOnce(&LoginEventRecorder::WriteLoginTimesDelayed,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::Milliseconds(kLoginTimeWriteDelayMs));
+      kLoginTimeWriteDelay);
 }
 
 void LoginEventRecorder::RunScheduledWriteLoginTimes() {
