@@ -172,7 +172,7 @@ source_set("ipc_common_sources") {
 source_set("surface_handle_type") {
   public = [ "surface_handle.h" ]
 
-  public_deps = [ "//ui/gfx:native_widget_types" ]
+  public_deps = [ "//ui/gfx:native_ui_types" ]
 }
 
 source_set("vulkan_types") {
@@ -291,7 +291,7 @@ mojom("surface_handle") {
         },
       ]
       traits_headers = [ "surface_handle_mojom_traits.h" ]
-      traits_public_deps = [ "//ui/gfx:native_widget_types" ]
+      traits_public_deps = [ "//ui/gfx:native_ui_types" ]
     },
   ]
 }

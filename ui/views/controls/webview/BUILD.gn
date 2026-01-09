@@ -41,7 +41,7 @@ component("webview") {
     "//ui/content_accelerators",
     "//ui/events",
     "//ui/events:events_base",
-    "//ui/gfx:native_widget_types",
+    "//ui/gfx:native_ui_types",
     "//ui/web_dialogs",
     "//url",
   ]

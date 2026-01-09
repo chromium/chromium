@@ -170,7 +170,7 @@ component("gfx") {
     ":gfx_skia",
     ":gfx_switches",
     ":memory_buffer_sources",
-    ":native_widget_types_sources",
+    ":native_ui_types_sources",
     ":resize_image_dimensions",
     ":selection_bound_sources",
     "//base",
@@ -494,19 +494,19 @@ source_set("resize_image_dimensions") {
   sources = [ "image/resize_image_dimensions.h" ]
 }
 
-# Depend on this to use native_widget_types.h without pulling in all of gfx.
-# The structure here allows native_widget_types to be part of the gfx component
+# Depend on this to use native_ui_types.h without pulling in all of gfx.
+# The structure here allows native_ui_types to be part of the gfx component
 # in the component build, but be a separate source set in a static build.
-group("native_widget_types") {
+group("native_ui_types") {
   if (is_component_build) {
     public_deps = [ ":gfx" ]
   } else {
-    public_deps = [ ":native_widget_types_sources" ]
+    public_deps = [ ":native_ui_types_sources" ]
   }
 }
 
-source_set("native_widget_types_sources") {
-  visibility = [ ":*" ]  # Depend on through ":native_widget_types".
+source_set("native_ui_types_sources") {
+  visibility = [ ":*" ]  # Depend on through ":native_ui_types".
 
   public = [ "native_ui_types.h" ]
 
@@ -615,7 +615,7 @@ source_set("memory_buffer_sources") {
 
   deps = [
     ":gfx_switches",
-    ":native_widget_types_sources",
+    ":native_ui_types_sources",
     "//base",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",

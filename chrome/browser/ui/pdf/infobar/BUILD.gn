@@ -38,7 +38,7 @@ source_set("infobar") {
     "//components/prefs",
     "//components/tabs:public",
     "//components/vector_icons",
-    "//ui/gfx:native_widget_types",
+    "//ui/gfx:native_ui_types",
   ]
   if (is_win) {
     deps += [ "//chrome/install_static:install_static_util" ]

@@ -19,7 +19,7 @@ component("init") {
   public_deps = [
     "//base",
     "//ui/base/ime",
-    "//ui/gfx:native_widget_types",
+    "//ui/gfx:native_ui_types",
   ]
 
   deps = [ "//ui/base" ]

@@ -60,6 +60,6 @@ source_set("native_messaging") {
 
   public_deps = [
     "//base",
-    "//ui/gfx:native_widget_types",
+    "//ui/gfx:native_ui_types",
   ]
 }

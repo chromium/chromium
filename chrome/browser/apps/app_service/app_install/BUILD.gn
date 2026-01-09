@@ -24,7 +24,7 @@ source_set("app_install") {
   deps = [
     "//components/services/app_service",
     "//services/network/public/cpp",
-    "//ui/gfx:native_widget_types",
+    "//ui/gfx:native_ui_types",
   ]
 }
 

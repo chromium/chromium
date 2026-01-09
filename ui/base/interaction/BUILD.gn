@@ -23,7 +23,7 @@ component("interaction") {
 
   deps = [
     "//base",
-    "//ui/gfx:native_widget_types",
+    "//ui/gfx:native_ui_types",
     "//ui/gfx/geometry",
   ]
 
