@@ -188,12 +188,13 @@ class AwContents : public FindHelper::Listener,
   base::android::ScopedJavaLocalRef<jstring> AddWebMessageListener(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& listener,
-      const base::android::JavaRef<jstring>& js_object_name,
-      const base::android::JavaRef<jobjectArray>& allowed_origins);
+      const std::u16string& js_object_name,
+      const std::vector<std::string>& allowed_origin_rules,
+      jint world_id);
 
-  void RemoveWebMessageListener(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& js_object_name);
+  void RemoveWebMessageListener(JNIEnv* env,
+                                const std::u16string& js_object_name,
+                                jint world_id);
 
   std::vector<jni_zero::ScopedJavaLocalRef<jobject>> GetWebMessageListenerInfos(
       JNIEnv* env);

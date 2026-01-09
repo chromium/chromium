@@ -60,9 +60,11 @@ void ForEachRenderFrameHostWithinSameWebContents(
 struct JsObject {
   JsObject(const std::u16string& name,
            origin_matcher::OriginMatcher allowed_origin_rules,
+           int32_t world_id,
            std::unique_ptr<WebMessageHostFactory> factory)
       : name(std::move(name)),
         allowed_origin_rules(std::move(allowed_origin_rules)),
+        world_id(world_id),
         factory(std::move(factory)) {}
   JsObject(JsObject&& other) = delete;
   JsObject& operator=(JsObject&& other) = delete;
@@ -70,6 +72,7 @@ struct JsObject {
 
   std::u16string name;
   origin_matcher::OriginMatcher allowed_origin_rules;
+  int32_t world_id;
   std::unique_ptr<WebMessageHostFactory> factory;
 };
 
@@ -181,7 +184,8 @@ JsCommunicationHost::GetPersistentJavaScripts() const {
 std::u16string JsCommunicationHost::AddWebMessageHostFactory(
     std::unique_ptr<WebMessageHostFactory> factory,
     const std::u16string& js_object_name,
-    const std::vector<std::string>& allowed_origin_rules) {
+    const std::vector<std::string>& allowed_origin_rules,
+    int32_t world_identifier) {
   origin_matcher::OriginMatcher origin_matcher;
   std::string error_message = ConvertToNativeAllowedOriginRulesWithSanityCheck(
       allowed_origin_rules, origin_matcher);
@@ -189,8 +193,10 @@ std::u16string JsCommunicationHost::AddWebMessageHostFactory(
     return base::UTF8ToUTF16(error_message);
 
   for (const auto& js_object : js_objects_) {
-    if (js_object->name == js_object_name) {
-      return u"jsObjectName " + js_object->name + u" was already added.";
+    if (js_object->name == js_object_name &&
+        js_object->world_id == world_identifier) {
+      return u"jsObjectName " + js_object->name +
+             u" was already added for world.";
     }
   }
 
@@ -210,7 +216,7 @@ std::u16string JsCommunicationHost::AddWebMessageHostFactory(
   }
 
   js_objects_.push_back(std::make_unique<JsObject>(
-      js_object_name, origin_matcher, std::move(factory)));
+      js_object_name, origin_matcher, world_identifier, std::move(factory)));
 
   // If a new message listener is added when a page is in BFCache or
   // prerendered, the listener won't be available when be page is activated
@@ -232,10 +238,12 @@ std::u16string JsCommunicationHost::AddWebMessageHostFactory(
 }
 
 void JsCommunicationHost::RemoveWebMessageHostFactory(
-    const std::u16string& js_object_name) {
+    const std::u16string& js_object_name,
+    int32_t world_identifier) {
   for (auto iterator = js_objects_.begin(); iterator != js_objects_.end();
        ++iterator) {
-    if ((*iterator)->name == js_object_name) {
+    if ((*iterator)->name == js_object_name &&
+        (*iterator)->world_id == world_identifier) {
       js_objects_.erase(iterator);
       ForEachRenderFrameHostWithinSameWebContents(
           web_contents()->GetPrimaryMainFrame(),
@@ -338,7 +346,7 @@ void JsCommunicationHost::NotifyFrameForWebMessageListener(
             js_object->factory.get(), js_object->allowed_origin_rules);
     js_objects.push_back(mojom::JsObject::New(
         js_object->name, std::move(pending_remote), std::move(factory),
-        js_object->allowed_origin_rules));
+        js_object->allowed_origin_rules, js_object->world_id));
   }
   mojo::PendingAssociatedRemote<mojom::JsObjectsClient> client;
   js_to_browser_messagings_[render_frame_host->GetGlobalId()] =

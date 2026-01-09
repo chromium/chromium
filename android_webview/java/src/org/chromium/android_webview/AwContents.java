@@ -3111,7 +3111,8 @@ public class AwContents implements SmartClipProvider {
                                 mNativeAwContents,
                                 new WebMessageListenerHolder(listener),
                                 jsObjectName,
-                                allowedOriginRules);
+                                allowedOriginRules,
+                                /* worldId= */ 0);
 
         if (!TextUtils.isEmpty(exceptionMessage)) {
             throw new IllegalArgumentException(exceptionMessage);
@@ -3127,7 +3128,8 @@ public class AwContents implements SmartClipProvider {
     public void removeWebMessageListener(@NonNull String jsObjectName) {
         if (TRACE) Log.i(TAG, "%s removeWebMessageListener=%s", this, jsObjectName);
         if (isDestroyed(WARN)) return;
-        AwContentsJni.get().removeWebMessageListener(mNativeAwContents, jsObjectName);
+        AwContentsJni.get()
+                .removeWebMessageListener(mNativeAwContents, jsObjectName, /* worldId= */ 0);
     }
 
     /**
@@ -5000,10 +5002,12 @@ public class AwContents implements SmartClipProvider {
         String addWebMessageListener(
                 long nativeAwContents,
                 WebMessageListenerHolder listener,
-                String jsObjectName,
-                String[] allowedOrigins);
+                @JniType("std::u16string") String jsObjectName,
+                @JniType("std::vector<std::string>") String[] allowedOrigins,
+                int worldId);
 
-        void removeWebMessageListener(long nativeAwContents, String jsObjectName);
+        void removeWebMessageListener(
+                long nativeAwContents, @JniType("std::u16string") String jsObjectName, int worldId);
 
         @JniType("std::vector")
         WebMessageListenerInfo[] getWebMessageListenerInfos(long nativeAwContents);

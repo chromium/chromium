@@ -18,12 +18,16 @@ import "third_party/blink/public/mojom/messaging/message_port_descriptor.mojom";
 // when the kLazyBindJsInjection feature is enabled to request a
 // BrowserToJsMessaging pipe from the renderer when needed. If this is not set,
 // SetBrowserToJsMessaging() must be called from the renderer to pass the pipe.
+// |js_world| is the enumerated world id for the JS script context. 0 is the
+// main page world. Values correspond to the underlying enumeration as defined
+// in DOMWrapperWorld::WorldId enum.
 struct JsObject {
   mojo_base.mojom.String16 js_object_name;
   pending_associated_remote<JsToBrowserMessaging> js_to_browser_messaging;
   pending_associated_receiver<BrowserToJsMessagingFactory>
       browser_to_js_factory;
   origin_matcher.mojom.OriginMatcher origin_matcher;
+  int32 js_world;
 };
 
 // JavaScriptExecutable struct contains the JavaScript snippet |script| and the

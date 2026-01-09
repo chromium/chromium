@@ -35,7 +35,8 @@ class JsCommunication::JsObjectInfo
   explicit JsObjectInfo(mojom::JsObjectPtr js_object)
       : origin_matcher_(js_object->origin_matcher),
         js_to_java_messaging_(std::move(js_object->js_to_browser_messaging)),
-        factory_receiver_(this, std::move(js_object->browser_to_js_factory)) {}
+        factory_receiver_(this, std::move(js_object->browser_to_js_factory)),
+        world_id_(js_object->js_world) {}
 
   // mojom::BrowserToJsMessagingFactory:
   void SendBrowserToJsMessaging(
@@ -60,11 +61,14 @@ class JsCommunication::JsObjectInfo
     return js_to_java_messaging_.get();
   }
 
+  int world_id() const { return world_id_; }
+
  private:
   origin_matcher::OriginMatcher origin_matcher_;
   mojo::AssociatedRemote<mojom::JsToBrowserMessaging> js_to_java_messaging_;
   mojo::AssociatedReceiver<mojom::BrowserToJsMessagingFactory>
       factory_receiver_;
+  int world_id_;
   cppgc::WeakPersistent<JsBinding> js_binding_;
 };
 
@@ -135,8 +139,8 @@ void JsCommunication::DidClearWindowObject() {
   v8::Local<v8::Context> context;
   std::optional<v8::HandleScope> handle_scope;
   std::optional<v8::Context::Scope> context_scope;
+  blink::WebLocalFrame* web_frame = render_frame()->GetWebFrame();
   if (base::FeatureList::IsEnabled(kLazyBindJsInjection)) {
-    blink::WebLocalFrame* web_frame = render_frame()->GetWebFrame();
     isolate = web_frame->GetAgentGroupScheduler()->Isolate();
     handle_scope.emplace(isolate);
     context = web_frame->MainWorldScriptContext();
@@ -157,9 +161,20 @@ void JsCommunication::DidClearWindowObject() {
       js_object.second->SetBinding(nullptr);
       continue;
     }
-    cppgc::WeakPersistent<JsBinding> js_binding = JsBinding::Install(
-        render_frame(), js_object.first,
-        weak_ptr_factory_for_bindings_.GetWeakPtr(), isolate, context);
+    cppgc::WeakPersistent<JsBinding> js_binding;
+    if (js_object.second->world_id() == content::ISOLATED_WORLD_ID_GLOBAL) {
+      js_binding =
+          JsBinding::Install(render_frame(), js_object.first,
+                             weak_ptr_factory_for_bindings_.GetWeakPtr(),
+                             isolate, context, js_object.second->world_id());
+    } else {
+      js_binding = JsBinding::Install(
+          render_frame(), js_object.first,
+          weak_ptr_factory_for_bindings_.GetWeakPtr(), isolate,
+          web_frame->GetScriptContextFromWorldId(isolate,
+                                                 js_object.second->world_id()),
+          js_object.second->world_id());
+    }
     if (js_binding) {
       if (base::FeatureList::IsEnabled(kLazyBindJsInjection)) {
         js_object.second->SetBinding(js_binding);
@@ -184,8 +199,9 @@ void JsCommunication::DidClearWindowObject() {
 void JsCommunication::WillReleaseScriptContext(v8::Local<v8::Context> context,
                                                int32_t world_id) {
   for (const auto& js_binding : js_bindings_) {
-    if (js_binding)
+    if (js_binding && js_binding->world_id() == world_id) {
       js_binding->ReleaseV8GlobalObjects();
+    }
   }
 }
 

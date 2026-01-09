@@ -1359,27 +1359,23 @@ void AwContents::RemovePersistentJavaScript(JNIEnv* env, jint script_id) {
 base::android::ScopedJavaLocalRef<jstring> AwContents::AddWebMessageListener(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& listener,
-    const base::android::JavaRef<jstring>& js_object_name,
-    const base::android::JavaRef<jobjectArray>& allowed_origin_rules) {
-  std::u16string native_js_object_name =
-      base::android::ConvertJavaStringToUTF16(env, js_object_name);
-  std::vector<std::string> native_allowed_origin_rule_strings;
-  AppendJavaStringArrayToStringVector(env, allowed_origin_rules,
-                                      &native_allowed_origin_rule_strings);
+    const std::u16string& js_object_name,
+    const std::vector<std::string>& allowed_origin_rules,
+    jint world_id) {
   const std::u16string error_message =
       GetJsCommunicationHost()->AddWebMessageHostFactory(
-          std::make_unique<AwWebMessageHostFactory>(listener),
-          native_js_object_name, native_allowed_origin_rule_strings);
+          std::make_unique<AwWebMessageHostFactory>(listener), js_object_name,
+          allowed_origin_rules, world_id);
   if (error_message.empty())
     return nullptr;
   return base::android::ConvertUTF16ToJavaString(env, error_message);
 }
 
-void AwContents::RemoveWebMessageListener(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& js_object_name) {
-  GetJsCommunicationHost()->RemoveWebMessageHostFactory(
-      ConvertJavaStringToUTF16(env, js_object_name));
+void AwContents::RemoveWebMessageListener(JNIEnv* env,
+                                          const std::u16string& js_object_name,
+                                          jint world_id) {
+  GetJsCommunicationHost()->RemoveWebMessageHostFactory(js_object_name,
+                                                        world_id);
 }
 
 std::vector<ScopedJavaLocalRef<jobject>> AwContents::GetWebMessageListenerInfos(

@@ -90,10 +90,12 @@ class JsCommunicationHost : public content::WebContentsObserver {
   std::u16string AddWebMessageHostFactory(
       std::unique_ptr<WebMessageHostFactory> factory,
       const std::u16string& js_object_name,
-      const std::vector<std::string>& allowed_origin_rules);
+      const std::vector<std::string>& allowed_origin_rules,
+      int32_t world_identifier);
 
   // Returns the factory previously registered under the specified name.
-  void RemoveWebMessageHostFactory(const std::u16string& js_object_name);
+  void RemoveWebMessageHostFactory(const std::u16string& js_object_name,
+                                   int32_t world_identifier);
 
   struct RegisteredFactory {
     std::u16string js_name;

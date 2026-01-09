@@ -205,7 +205,7 @@ class NavigationListenerBrowserTest : public content::ContentBrowserTest,
                   kNavigationListenerDisableBFCacheObjectName
             : NavigationWebMessageSender::
                   kNavigationListenerAllowBFCacheObjectName,
-        {"*"});
+        {"*"}, /* world_identifier= */ 0);
   }
 
   HostToken GetCurrentHostToken() {
