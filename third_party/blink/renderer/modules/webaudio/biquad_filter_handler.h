@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_biquad_filter_type.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_handler.h"
+#include "third_party/blink/renderer/platform/audio/audio_array.h"
 
 namespace blink {
 
@@ -101,6 +102,12 @@ class BiquadFilterHandler final : public AudioHandler {
       std::numeric_limits<double>::infinity();
 
   Vector<std::unique_ptr<Biquad>> biquads_ GUARDED_BY(process_lock_);
+
+  // Temporary storage for parameter calculations.
+  AudioFloatArray cutoff_frequency_sample_accurate_values_;
+  AudioFloatArray q_sample_accurate_values_;
+  AudioFloatArray gain_sample_accurate_values_;
+  AudioFloatArray detune_sample_accurate_values_;
 
   // Synchronize process() with getting and setting the filter coefficients.
   mutable base::Lock process_lock_;
