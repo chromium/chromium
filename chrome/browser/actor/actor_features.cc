@@ -106,6 +106,9 @@ BASE_FEATURE(kGlicPerformActionsReturnsBeforeStateChange,
 BASE_FEATURE(kGlicSkipBeforeUnloadDialogAndNavigate,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Killswitch for b/465690937.
+BASE_FEATURE(kGlicDeferActUntilUninterrupted, base::FEATURE_ENABLED_BY_DEFAULT);
+
 const base::FeatureParam<bool> kFullPageScreenshot{
     &kGlicTabScreenshotPaintPreviewBackend, "full_page_screenshot", false};
 
