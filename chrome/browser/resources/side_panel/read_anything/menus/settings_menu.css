@@ -55,6 +55,7 @@
 #settings-menu-dialog::part(dialog) {
   border-radius: var(--cornerRadii-medium-small, 12px);
   width: clamp(92px, 100%, 340px);
+  z-index: 9999;
 }
 
 .hr {
