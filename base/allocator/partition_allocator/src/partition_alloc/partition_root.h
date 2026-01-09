@@ -505,6 +505,8 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_NOINLINE void* AlignedAlloc(size_t alignment, size_t requested_size) {
     return AlignedAllocInline<flags>(alignment, requested_size);
   }
+  PA_ALWAYS_INLINE size_t GetAdjustedSizeForAlignment(size_t alignment,
+                                                      size_t requested_size);
   template <AllocFlags flags = AllocFlags::kNone>
   PA_ALWAYS_INLINE void* AlignedAllocInline(size_t alignment,
                                             size_t requested_size);
@@ -563,6 +565,10 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_ALWAYS_INLINE void FreeInline(void* object);
   template <FreeFlags flags = FreeFlags::kNone>
   PA_ALWAYS_INLINE void FreeWithSizeInline(void* object, size_t size);
+  template <FreeFlags flags = FreeFlags::kNone>
+  PA_ALWAYS_INLINE void FreeWithSizeAndAlignmentInline(void* object,
+                                                       size_t size,
+                                                       size_t alignment);
   // |object| must be a non-null pointer.
   PA_ALWAYS_INLINE std::pair<internal::SlotStart, internal::SlotSpanMetadata*>
   GetSlotStartAndSlotSpanFromAddress(void* object);
@@ -576,6 +582,11 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   template <FreeFlags flags = FreeFlags::kNone>
   PA_ALWAYS_INLINE static void FreeWithSizeInlineInUnknownRoot(void* object,
                                                                size_t size);
+  template <FreeFlags flags = FreeFlags::kNone>
+  PA_ALWAYS_INLINE static void FreeWithSizeAndAlignmentInlineInUnknownRoot(
+      void* object,
+      size_t size,
+      size_t alignment);
   // |object| must be a non-null pointer.
   PA_ALWAYS_INLINE static PartitionRoot* GetRootFromAddressInFirstSuperpage(
       void* object);
@@ -1458,6 +1469,24 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeWithSizeInlineInUnknownRoot(
   root->FreeWithSizeInline<flags | FreeFlags::kNoHooks>(object, size);
 }
 
+// static
+template <FreeFlags flags>
+PA_ALWAYS_INLINE void
+PartitionRoot::FreeWithSizeAndAlignmentInlineInUnknownRoot(void* object,
+                                                           size_t size,
+                                                           size_t alignment) {
+  bool early_return = FreeProlog<flags>(object, nullptr);
+  if (early_return) {
+    return;
+  }
+  // FreeProlog ensures the object is not nullptr.
+  PA_DCHECK(object);
+
+  auto* root = GetRootFromAddressInFirstSuperpage(object);
+  root->FreeWithSizeAndAlignmentInline<flags | FreeFlags::kNoHooks>(
+      object, size, alignment);
+}
+
 PA_ALWAYS_INLINE std::pair<internal::SlotStart, internal::SlotSpanMetadata*>
 PartitionRoot::GetSlotStartAndSlotSpanFromAddress(void* object) {
   PA_DCHECK(object);
@@ -1529,6 +1558,34 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeWithSizeInline(void* object,
   PA_PREFETCH_FOR_WRITE(object);
   auto [slot_start, slot_span] = GetSlotStartAndSlotSpanFromAddress(object);
   FreeWithSizeNoHooksImmediate<flags>(slot_start, slot_span, size);
+}
+
+template <FreeFlags flags>
+PA_ALWAYS_INLINE void PartitionRoot::FreeWithSizeAndAlignmentInline(
+    void* object,
+    size_t size,
+    size_t alignment) {
+  if (!settings.enable_free_with_size) {
+    FreeInline<flags>(object);
+    return;
+  }
+  // The correct PartitionRoot might not be deducible if the |object| originates
+  // from an override hook.
+  bool early_return = FreeProlog<flags>(object, this);
+  if (early_return) {
+    return;
+  }
+  // FreeProlog ensures the object is not nullptr.
+  PA_DCHECK(object);
+
+  // Almost all calls to FreeWithSizeNoHooks() will end up writing to |*object|.
+  PA_PREFETCH_FOR_WRITE(object);
+  auto [slot_start, slot_span] = GetSlotStartAndSlotSpanFromAddress(object);
+
+  auto adjusted_size = GetAdjustedSizeForAlignment(alignment, size);
+  // Overflow check. adjusted_size must be larger or equal to the original size.
+  PA_CHECK(adjusted_size >= size);
+  FreeWithSizeNoHooksImmediate<flags>(slot_start, slot_span, adjusted_size);
 }
 
 template <FreeFlags flags>
@@ -2447,10 +2504,9 @@ PA_ALWAYS_INLINE internal::UntaggedSlotStart PartitionRoot::RawAlloc(
   return slot_start;
 }
 
-template <AllocFlags flags>
-PA_ALWAYS_INLINE void* PartitionRoot::AlignedAllocInline(
-    size_t alignment,
-    size_t requested_size) {
+PA_ALWAYS_INLINE size_t
+PartitionRoot::GetAdjustedSizeForAlignment(size_t alignment,
+                                           size_t requested_size) {
   // Aligned allocation support relies on the natural alignment guarantees of
   // PartitionAlloc. Specifically, it relies on the fact that slots within a
   // slot span are aligned to slot size, from the beginning of the span.
@@ -2480,6 +2536,13 @@ PA_ALWAYS_INLINE void* PartitionRoot::AlignedAllocInline(
   PA_CHECK(internal::base::bits::HasSingleBit(alignment));
   // Catch unsupported alignment requests early.
   PA_CHECK(alignment <= internal::kMaxSupportedAlignment);
+
+  // Memory returned by the regular allocator *always* respects |kAlignment|,
+  // which is a power of two, and any valid alignment is also a power of two.
+  // So we can use the requested_size as is.
+  if (alignment <= internal::kAlignment) {
+    return requested_size;
+  }
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
 
   size_t adjusted_size = requested_size;
@@ -2501,19 +2564,27 @@ PA_ALWAYS_INLINE void* PartitionRoot::AlignedAllocInline(
     PA_DCHECK(internal::base::bits::HasSingleBit(raw_size));
     // Adjust back, because AllocInternalNoHooks/Alloc will adjust it again.
     adjusted_size = AdjustSizeForExtrasSubtract(raw_size);
+  }
+  return adjusted_size;
+}
 
-    // Overflow check. adjusted_size must be larger or equal to requested_size.
-    if (adjusted_size < requested_size) [[unlikely]] {
-      if constexpr (ContainsFlags(flags, AllocFlags::kReturnNull)) {
-        return nullptr;
-      }
-      // OutOfMemoryDeathTest.AlignedAlloc requires
-      // base::TerminateBecauseOutOfMemory (invoked by
-      // PartitionExcessiveAllocationSize).
-      internal::PartitionExcessiveAllocationSize(requested_size);
-      // internal::PartitionExcessiveAllocationSize(size) causes OOM_CRASH.
-      PA_NOTREACHED();
+template <AllocFlags flags>
+PA_ALWAYS_INLINE void* PartitionRoot::AlignedAllocInline(
+    size_t alignment,
+    size_t requested_size) {
+  auto adjusted_size = GetAdjustedSizeForAlignment(alignment, requested_size);
+
+  // Overflow check. adjusted_size must be larger or equal to requested_size.
+  if (adjusted_size < requested_size) [[unlikely]] {
+    if constexpr (ContainsFlags(flags, AllocFlags::kReturnNull)) {
+      return nullptr;
     }
+    // OutOfMemoryDeathTest.AlignedAlloc requires
+    // base::TerminateBecauseOutOfMemory (invoked by
+    // PartitionExcessiveAllocationSize).
+    internal::PartitionExcessiveAllocationSize(requested_size);
+    // internal::PartitionExcessiveAllocationSize(size) causes OOM_CRASH.
+    PA_NOTREACHED();
   }
 
   // Slot spans are naturally aligned on partition page size, but make sure you

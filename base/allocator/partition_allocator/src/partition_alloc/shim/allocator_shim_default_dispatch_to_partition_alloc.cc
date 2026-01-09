@@ -510,10 +510,22 @@ PA_ALWAYS_INLINE void PartitionAllocFunctionsInternal<
                                                size_t size,
                                                size_t alignment,
                                                void* context) {
-  // TODO(lizeb): Optimize PartitionAlloc to use the size information. This is
-  // still useful though, as we avoid double-checking that the address is owned.
-  PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::Free(
-      object, context);
+  partition_alloc::ScopedDisallowAllocations guard{};
+  // We create separate constexpr branch just to optimize this path on platforms
+  // where we don't need to check MaybeHandleSystemDeallocation.
+  if constexpr (MightNeedToHandleSystemDeallocation()) {
+    if (MaybeHandleSystemDeallocation(object)) [[unlikely]] {
+      return;
+    }
+  }
+  // While `AllocateAlignedMemory` uses a standard `Alloc` for small alignments
+  // to improve speed and reduce memory fragmentation, we always use aligned
+  // Free here. This is because: 1) `GetAdjustedSizeForAlignment` handles small
+  // alignments, ensuring correct size adjustments, 2) Alignment only affects
+  // the size determination, so always calling aligned Free doesn't incur
+  // overhead, and 3) it avoids the binary size increase.
+  partition_alloc::PartitionRoot::FreeWithSizeAndAlignmentInlineInUnknownRoot<
+      base_free_flags>(object, size, alignment);
 }
 
 // static
