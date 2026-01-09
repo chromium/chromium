@@ -341,25 +341,14 @@ void WaylandSurfaceFactory::SetDrmModifiersFilter(
   buffer_manager_->set_drm_modifiers_filter(std::move(filter));
 }
 
-std::vector<gfx::BufferFormat>
-WaylandSurfaceFactory::GetSupportedFormatsForTexturing() const {
+bool WaylandSurfaceFactory::IsFormatSupportedForTexturing(
+    viz::SharedImageFormat format) const {
 #if defined(WAYLAND_GBM)
   GbmDevice* const gbm_device = buffer_manager_->GetGbmDevice();
-  if (!gbm_device) {
-    return {};
-  }
-
-  std::vector<gfx::BufferFormat> supported_buffer_formats;
-  for (int j = 0; j <= static_cast<int>(gfx::BufferFormat::LAST); ++j) {
-    const gfx::BufferFormat buffer_format = static_cast<gfx::BufferFormat>(j);
-    if (gbm_device->CanCreateBufferForFormat(
-            GetFourCCFormatFromBufferFormat(buffer_format))) {
-      supported_buffer_formats.push_back(buffer_format);
-    }
-  }
-  return supported_buffer_formats;
+  return gbm_device && gbm_device->CanCreateBufferForFormat(
+                           GetFourCCFormatFromSharedImageFormat(format));
 #else
-  return {};
+  return false;
 #endif
 }
 
