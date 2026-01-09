@@ -96,6 +96,8 @@ if (!is_android) {
       "tab_list_bridge.h",
     ]
 
+    deps = [ "//chrome/browser/tab_group_sync:factories" ]
+
     public_deps = [
       ":tab_list_interface",
       ":tab_strip",

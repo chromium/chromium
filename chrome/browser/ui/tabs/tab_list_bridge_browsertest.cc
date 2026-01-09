@@ -90,8 +90,9 @@ MATCHER_P(MatchesTab, expected_url, "") {
 }
 
 // Creates `num_tabs` tabs and sets their WebContents IDs to match their
-// index.
-void SetupTabs(Browser* browser, size_t num_tabs) {
+// index with an optional `offset` which is useful if this method is called on
+// multiple browser windows within a single test to prevent duplicate IDs.
+void SetupTabs(Browser* browser, size_t num_tabs, size_t offset = 0u) {
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   ASSERT_TRUE(tab_strip_model);
 
@@ -102,7 +103,7 @@ void SetupTabs(Browser* browser, size_t num_tabs) {
         browser, GURL("about:blank"), disposition,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP))
         << base::StringPrintf("Failed to open tab at index %u.", i);
-    SetID(tab_strip_model->GetWebContentsAt(i), i);
+    SetID(tab_strip_model->GetWebContentsAt(i), i + offset);
   }
 }
 
@@ -883,4 +884,98 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, DiscardTab) {
             resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
                 web_contents)
                 ->GetTabState());
+}
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, MoveTabGroupToWindow) {
+  // Set up three tabs in two windows, but make sure each tab has its own
+  // WebContents ID.
+
+  SetupTabs(browser(), 3);
+  TabListInterface* source_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(source_list_interface);
+  TabStripModel* source_model = browser()->tab_strip_model();
+  ASSERT_TRUE(source_model);
+
+  ASSERT_EQ("0 1 2",
+            GetTabStripStateString(source_model, /*annotate_groups=*/true));
+
+  Browser* second_browser = CreateBrowser(browser()->profile());
+  SetupTabs(second_browser, 3, /*offset=*/3);
+  TabStripModel* destination_model = second_browser->tab_strip_model();
+  ASSERT_TRUE(destination_model);
+
+  ASSERT_EQ("3 4 5", GetTabStripStateString(destination_model,
+                                            /*annotate_groups=*/true));
+
+  // Group the first two tabs in the source window, then move the group to the
+  // second window.
+  auto group_id = source_list_interface->AddTabsToGroup(
+      /*group_id=*/std::nullopt,
+      {source_list_interface->GetTab(0)->GetHandle(),
+       source_list_interface->GetTab(1)->GetHandle()});
+
+  ASSERT_TRUE(group_id.has_value());
+  EXPECT_EQ("0g0 1g0 2",
+            GetTabStripStateString(source_model, /*annotate_groups=*/true));
+
+  source_list_interface->MoveTabGroupToWindow(*group_id,
+                                              second_browser->session_id(), 1);
+
+  // Verify that the group has been moved to the destination window.
+  EXPECT_EQ("2",
+            GetTabStripStateString(source_model, /*annotate_groups=*/true));
+  EXPECT_EQ("3 0g0 1g0 4 5", GetTabStripStateString(destination_model,
+                                                    /*annotate_groups=*/true));
+}
+
+// Test that moving a group to another window in the middle of another group
+// moves it to the closest valid index.
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest,
+                       MoveTabGroupToWindow_MiddleOfGroup) {
+  // Set up three tabs in two windows, but make sure each tab has its own
+  // WebContents ID.
+  SetupTabs(browser(), 3);
+
+  Browser* second_browser = CreateBrowser(browser()->profile());
+  SetupTabs(second_browser, 3, /*offset=*/3);
+
+  TabListInterface* source_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(source_list_interface);
+
+  // Group the first two tabs in the source window.
+  auto group_id = source_list_interface->AddTabsToGroup(
+      /*group_id=*/std::nullopt,
+      {source_list_interface->GetTab(0)->GetHandle(),
+       source_list_interface->GetTab(1)->GetHandle()});
+  ASSERT_TRUE(group_id.has_value());
+
+  TabStripModel* source_model = browser()->tab_strip_model();
+  ASSERT_TRUE(source_model);
+  EXPECT_EQ("0g0 1g0 2",
+            GetTabStripStateString(source_model, /*annotate_groups=*/true));
+
+  // Group all three tabs in the second window.
+  TabListInterface* destination_list_interface =
+      TabListInterface::From(second_browser);
+  ASSERT_TRUE(destination_list_interface);
+  destination_list_interface->AddTabsToGroup(
+      /*group_id=*/std::nullopt,
+      {destination_list_interface->GetTab(0)->GetHandle(),
+       destination_list_interface->GetTab(1)->GetHandle(),
+       destination_list_interface->GetTab(2)->GetHandle()});
+
+  // Now move the group to the second window. The group should be moved to the
+  // end since the closest valid index that isn't in the middle of another tab
+  // group is 3.
+  source_list_interface->MoveTabGroupToWindow(*group_id,
+                                              second_browser->session_id(), 2);
+
+  EXPECT_EQ("2",
+            GetTabStripStateString(source_model, /*annotate_groups=*/true));
+
+  TabStripModel* destination_model = second_browser->tab_strip_model();
+  ASSERT_TRUE(destination_model);
+  EXPECT_EQ(
+      "3g0 4g0 5g0 0g1 1g1",
+      GetTabStripStateString(destination_model, /*annotate_groups=*/true));
 }
