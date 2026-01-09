@@ -21,6 +21,7 @@ example_value:
 future_on:
 - chrome.*
 - chrome_os
+- android
 features:
   dynamic_refresh: true
   per_profile: true

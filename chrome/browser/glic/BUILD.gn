@@ -16,6 +16,7 @@ assert(enable_glic || enable_glic_android)
 # the "impl" target.
 source_set("glic") {
   sources = [
+    "gemini_act_on_web_settings_policy_handler.h",
     "glic_metrics.h",
     "glic_net_log.h",
     "glic_pref_names.h",
@@ -53,7 +54,6 @@ source_set("glic") {
       "browser_ui/glic_vector_icon_manager.h",
       "browser_ui/scoped_glic_button_indicator.h",
       "fre/glic_fre_ui.h",
-      "gemini_act_on_web_settings_policy_handler.h",
       "glic_profile_manager.h",
       "glic_settings_util.h",
       "host/context/glic_focused_tab_manager.h",
@@ -151,6 +151,7 @@ source_set("enum") {
 # dependencies that are only needed internally.
 source_set("impl") {
   sources = [
+    "gemini_act_on_web_settings_policy_handler.cc",
     "glic_metrics.cc",
     "glic_net_log.cc",
     "glic_pref_names.cc",
@@ -183,7 +184,6 @@ source_set("impl") {
     # TODO(b/470059315): Make these work on Android, or move them to the
     # desktop-only section.
     sources += [
-      "gemini_act_on_web_settings_policy_handler.cc",
       "glic_metrics_provider.cc",
       "glic_metrics_provider.h",
       "glic_occlusion_notifier.cc",
