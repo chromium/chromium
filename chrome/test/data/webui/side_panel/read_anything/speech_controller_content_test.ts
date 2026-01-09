@@ -177,6 +177,7 @@ suite('SpeechController', () => {
     const text = 'And I am a massive deal';
     const node: Node = setContent(text, readAloudModel);
     wordBoundaries.updateBoundary(4);
+    speechController.setHasSpeechBeenTriggered(true);
     chrome.readingMode.onHighlightGranularityChanged(
         chrome.readingMode.sentenceHighlighting);
     speechController.onHighlightGranularityChange(
@@ -426,6 +427,7 @@ suite('SpeechController', () => {
     const text = 'But I took your hand';
     setContent(text, readAloudModel);
     wordBoundaries.updateBoundary(4);
+    speechController.setHasSpeechBeenTriggered(true);
     chrome.readingMode.onHighlightGranularityChanged(
         chrome.readingMode.sentenceHighlighting);
     speechController.onHighlightGranularityChange(
@@ -448,6 +450,7 @@ suite('SpeechController', () => {
     const text = 'And promised I\'d withstand';
     setContent(text, readAloudModel);
     wordBoundaries.updateBoundary(4);
+    speechController.setHasSpeechBeenTriggered(true);
     chrome.readingMode.onHighlightGranularityChanged(
         chrome.readingMode.sentenceHighlighting);
     speechController.onHighlightGranularityChange(

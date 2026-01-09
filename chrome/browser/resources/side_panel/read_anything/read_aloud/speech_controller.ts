@@ -220,7 +220,8 @@ export class SpeechController {
 
   onHighlightGranularityChange(newGranularity: number) {
     // Rehighlight the new granularity.
-    if (newGranularity !== chrome.readingMode.noHighlighting) {
+    if (this.hasSpeechBeenTriggered() &&
+        newGranularity !== chrome.readingMode.noHighlighting) {
       this.highlightCurrentGranularity_(
           this.readAloudModel_.getCurrentTextSegments());
     }
