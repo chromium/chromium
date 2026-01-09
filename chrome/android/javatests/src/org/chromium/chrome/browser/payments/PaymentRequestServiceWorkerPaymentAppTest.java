@@ -44,8 +44,6 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
             new PaymentRequestTestRule(
                     "payment_request_bobpay_and_basic_card_with_modifier_optional_data_test.html");
 
-    private int mFactoryCount;
-
     /**
      * Installs a mock service worker based payment app with given supported delegations for
      * testing.
@@ -62,9 +60,8 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
             String name,
             boolean withIcon,
             SupportedDelegations supportedDelegations) {
-        String factoryId = "testFactoryId_" + mFactoryCount++;
         PaymentAppService.getInstance()
-                .addUniqueFactory(
+                .addFactory(
                         new PaymentAppFactoryInterface() {
                             @Override
                             public void create(PaymentAppFactoryDelegate delegate) {
@@ -91,8 +88,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
                                                 supportedDelegations));
                                 delegate.onDoneCreatingPaymentApps(this);
                             }
-                        },
-                        factoryId);
+                        });
     }
 
     /**
