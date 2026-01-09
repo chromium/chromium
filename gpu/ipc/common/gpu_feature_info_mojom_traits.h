@@ -101,16 +101,6 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::GpuFeatureInfoDataView,
     return info.applied_gpu_driver_bug_list_entries;
   }
 
-  static bool supports_nv12_for_allocation_and_texturing(
-      const gpu::GpuFeatureInfo& input) {
-    return input.supports_nv12_for_allocation_and_texturing;
-  }
-
-  static bool supports_p010_for_allocation_and_texturing(
-      const gpu::GpuFeatureInfo& input) {
-    return input.supports_p010_for_allocation_and_texturing;
-  }
-
   static std::vector<gfx::BufferFormat>
   supported_buffer_formats_for_allocation_and_texturing(
       const gpu::GpuFeatureInfo& input) {

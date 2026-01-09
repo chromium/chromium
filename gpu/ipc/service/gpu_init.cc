@@ -11,7 +11,6 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -930,11 +929,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   SetSkiaBackendType();
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::GetInstance()->AfterSandboxEntry();
-  gpu_feature_info_.supports_nv12_for_allocation_and_texturing =
-      base::Contains(supported_buffer_formats_for_texturing,
-                     gfx::BufferFormat::YUV_420_BIPLANAR);
-  gpu_feature_info_.supports_p010_for_allocation_and_texturing = base::Contains(
-      supported_buffer_formats_for_texturing, gfx::BufferFormat::P010);
   gpu_feature_info_.supported_buffer_formats_for_allocation_and_texturing =
       std::move(supported_buffer_formats_for_texturing);
   gpu_feature_info_.supported_formats_for_gl_native_pixmap_import =
@@ -1151,11 +1145,6 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
           ui::OzonePlatform::GetInstance()
               ->GetSurfaceFactoryOzone()
               ->GetSupportedFormatsForGLNativePixmapImport();
-  gpu_feature_info_.supports_nv12_for_allocation_and_texturing =
-      base::Contains(supported_buffer_formats_for_texturing,
-                     gfx::BufferFormat::YUV_420_BIPLANAR);
-  gpu_feature_info_.supports_p010_for_allocation_and_texturing = base::Contains(
-      supported_buffer_formats_for_texturing, gfx::BufferFormat::P010);
   gpu_feature_info_.supported_buffer_formats_for_allocation_and_texturing =
       std::move(supported_buffer_formats_for_texturing);
   gpu_feature_info_.supported_formats_for_gl_native_pixmap_import =

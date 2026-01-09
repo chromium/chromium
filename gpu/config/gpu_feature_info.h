@@ -72,10 +72,6 @@ struct GPU_CONFIG_EXPORT GpuFeatureInfo {
   // by the platform.
   std::vector<gfx::BufferFormat>
       supported_buffer_formats_for_allocation_and_texturing;
-  // NV12 / P010 formats that can be allocated and then bound, if known and
-  // provided by the platform.
-  bool supports_nv12_for_allocation_and_texturing;
-  bool supports_p010_for_allocation_and_texturing;
 #if BUILDFLAG(IS_OZONE)
   // SharedImageFormats of native pixmaps that can be imported in GL context.
   std::vector<viz::SharedImageFormat>

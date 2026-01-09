@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -194,15 +195,17 @@ FeatureInfo::FeatureInfo(
                            : nullptr);
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-  feature_flags_.chromium_image_ycbcr_420v =
-      gpu_feature_info.supports_nv12_for_allocation_and_texturing;
+  feature_flags_.chromium_image_ycbcr_420v = base::Contains(
+      gpu_feature_info.supported_buffer_formats_for_allocation_and_texturing,
+      gfx::BufferFormat::YUV_420_BIPLANAR);
 #elif BUILDFLAG(IS_APPLE)
   feature_flags_.chromium_image_ycbcr_420v = true;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-  feature_flags_.chromium_image_ycbcr_p010 =
-      gpu_feature_info.supports_p010_for_allocation_and_texturing;
+  feature_flags_.chromium_image_ycbcr_p010 = base::Contains(
+      gpu_feature_info.supported_buffer_formats_for_allocation_and_texturing,
+      gfx::BufferFormat::P010);
 #elif BUILDFLAG(IS_APPLE)
   feature_flags_.chromium_image_ycbcr_p010 = true;
 #endif
