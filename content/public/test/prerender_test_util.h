@@ -293,9 +293,8 @@ class PrerenderTestHelper {
                                                       PrerenderHostId host_id);
   static RenderFrameHost* GetPrerenderedMainFrameHost(WebContents& web_contents,
                                                       const GURL& url);
-  RenderFrameHost* GetPrerenderedMainFrameHost(FrameTreeNodeId host_id);
-  RenderFrameHost* GetPrerenderedMainFrameHost(const GURL& url);
   RenderFrameHost* GetPrerenderedMainFrameHost(PrerenderHostId host_id);
+  RenderFrameHost* GetPrerenderedMainFrameHost(const GURL& url);
 
   int GetRequestCount(const GURL& url);
   net::test_server::HttpRequest::HeaderMap GetRequestHeaders(const GURL& url);
