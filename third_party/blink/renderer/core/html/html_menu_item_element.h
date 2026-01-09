@@ -35,6 +35,7 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   HTMLMenuOwnerElement* OwningMenuElement() const;
 
   bool CanBeCommandInvoker() const override;
+  bool IsValidInterestInvoker(Element& target) const override;
 
   Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;

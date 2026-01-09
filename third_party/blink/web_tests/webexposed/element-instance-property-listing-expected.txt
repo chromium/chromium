@@ -922,6 +922,7 @@ html element menuitem
     property commandForElement
     property defaultChecked
     property disabled
+    property interestForElement
 html element menulist
 html element meta
     property content

@@ -21,3 +21,5 @@
     [CEReactions, Reflect=commandfor] attribute Element? commandForElement;
     [CEReactions] attribute DOMString command;
 };
+
+HTMLMenuItemElement includes InterestInvokerElement;

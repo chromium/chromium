@@ -4781,12 +4781,14 @@ interface HTMLMenuItemElement : HTMLElement
     getter commandForElement
     getter defaultChecked
     getter disabled
+    getter interestForElement
     method constructor
     setter checked
     setter command
     setter commandForElement
     setter defaultChecked
     setter disabled
+    setter interestForElement
 interface HTMLMenuListElement : HTMLElement
     attribute @@toStringTag
     method constructor
