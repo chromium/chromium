@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_view_controller.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_mutator.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
 #import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_mutator.h"
@@ -18,6 +21,7 @@
 - (void)userTappedBadge;
 - (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered;
 - (void)dismissIPHAnimated:(BOOL)animated;
+- (void)didCollapseBadgeContainer;
 @end
 
 // Test fixture for LocationBarBadgeViewController.
@@ -37,6 +41,32 @@ class LocationBarBadgeViewControllerTest : public PlatformTest {
   id mock_mutator_;
   id mock_contextual_panel_mutator_;
 };
+
+// Tests that `didCompleteTransitionToSmallEntrypoint` is called after the badge
+// container has been collapsed for a supported contextual panel badge.
+TEST_F(LocationBarBadgeViewControllerTest,
+       DidCompleteTransitionToSmallEntrypoint) {
+  // Create the conditions in which the Ask Gemini badge is not available, but
+  // the Proactive Suggestions Framework supports other contextual panel badges.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kProactiveSuggestionsFramework, kPageActionMenu}, {kAskGeminiChip});
+
+  [view_controller_ view];
+  ContextualPanelItemConfiguration configuration(
+      ContextualPanelItemType::SamplePanelItem);
+  configuration.entrypoint_image_name = "chrome_product";
+  configuration.image_type =
+      ContextualPanelItemConfiguration::EntrypointImageType::Image;
+  [view_controller_ setEntrypointConfig:&configuration];
+
+  OCMExpect(
+      [mock_contextual_panel_mutator_ didCompleteTransitionToSmallEntrypoint]);
+
+  [view_controller_ didCollapseBadgeContainer];
+
+  EXPECT_OCMOCK_VERIFY(mock_contextual_panel_mutator_);
+}
 
 // Tests that the badge shows and hides correctly.
 TEST_F(LocationBarBadgeViewControllerTest, ShowAndHideBadge) {

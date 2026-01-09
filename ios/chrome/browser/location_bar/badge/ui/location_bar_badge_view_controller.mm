@@ -651,7 +651,7 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 #pragma mark - ContextualPanelEntrypointConsumer
 
 - (void)setEntrypointConfig:(ContextualPanelItemConfiguration*)config {
-  if (IsAskGeminiChipEnabled()) {
+  if (IsAskGeminiChipEnabled() || IsProactiveSuggestionsFrameworkEnabled()) {
     LocationBarBadgeType badgeType;
     switch (config->item_type) {
       case ContextualPanelItemType::SamplePanelItem:
