@@ -65,15 +65,18 @@ const base::TimeDelta ReaderModeHeuristicPageLoadDelay() {
 }
 
 bool IsReaderModeAvailable() {
-  if (IsDiamondPrototypeEnabled()) {
-    return true;
-  }
-  if (IsUSCountryCode() &&
-      !experimental_flags::ShouldIgnoreDeviceLocaleConditions()) {
-    return base::FeatureList::IsEnabled(kEnableReaderMode) &&
-           base::FeatureList::IsEnabled(kEnableReaderModeInUS);
-  }
-  return base::FeatureList::IsEnabled(kEnableReaderMode);
+  static const bool is_reader_mode_available = [] {
+    if (IsDiamondPrototypeEnabled()) {
+      return true;
+    }
+    if (IsUSCountryCode() &&
+        !experimental_flags::ShouldIgnoreDeviceLocaleConditions()) {
+      return base::FeatureList::IsEnabled(kEnableReaderMode) &&
+             base::FeatureList::IsEnabled(kEnableReaderModeInUS);
+    }
+    return base::FeatureList::IsEnabled(kEnableReaderMode);
+  }();
+  return is_reader_mode_available;
 }
 
 bool IsReaderModeOmniboxEntryPointEnabled() {
