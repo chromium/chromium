@@ -49,6 +49,7 @@ rust_static_library("mojo_rust_system_api") {
 rust_static_library("mojo_rust_bindings_api") {
   crate_root = "bindings/lib.rs"
   sources = [
+    "bindings/interface.rs",
     "bindings/lib.rs",
     "bindings/message_pipe_watcher.rs",
   ]
