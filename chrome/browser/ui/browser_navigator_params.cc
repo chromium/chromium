@@ -8,18 +8,11 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
-#endif
-
-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck
-#endif
 
 using content::GlobalRequestID;
 using content::NavigationController;
@@ -30,7 +23,6 @@ NavigateParams::NavigateParams(std::unique_ptr<WebContents> contents_to_insert)
     : contents_to_insert(std::move(contents_to_insert)) {}
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
 NavigateParams::NavigateParams(BrowserWindowInterface* a_browser,
                                const GURL& a_url,
                                ui::PageTransition a_transition)
@@ -39,7 +31,6 @@ NavigateParams::NavigateParams(BrowserWindowInterface* a_browser,
 NavigateParams::NavigateParams(BrowserWindowInterface* a_browser,
                                std::unique_ptr<WebContents> contents_to_insert)
     : contents_to_insert(std::move(contents_to_insert)), browser(a_browser) {}
-#endif
 
 NavigateParams::NavigateParams(Profile* a_profile,
                                const GURL& a_url,

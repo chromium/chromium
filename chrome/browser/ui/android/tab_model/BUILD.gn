@@ -61,18 +61,13 @@ source_set("impl") {
     "//chrome/browser/sync",
     "//chrome/browser/tab",
     "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/browser_window/internal",
     "//components/content_settings/core/browser",
     "//content/public/browser",
     "//content/public/common",
     "//ui/base:types",
   ]
-
-  if (is_desktop_android) {
-    deps += [
-      "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/browser_window/internal",
-    ]
-  }
 }
 
 java_cpp_enum("enums_java") {
@@ -95,11 +90,8 @@ source_set("test_support") {
     "//chrome/browser/flags:flags_android",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/android/tab_model",
+    "//chrome/browser/ui/browser_window",
   ]
-
-  if (is_desktop_android) {
-    deps += [ "//chrome/browser/ui/browser_window" ]
-  }
 }
 
 source_set("unit_tests") {

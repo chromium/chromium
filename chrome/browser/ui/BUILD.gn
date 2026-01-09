@@ -50,6 +50,7 @@ static_library("ui") {
     "accelerator_utils.h",
     "browser_dialogs.cc",
     "browser_dialogs.h",
+    "browser_navigator.h",
     "browser_navigator_params.cc",
     "browser_navigator_params_utils.cc",
     "browser_navigator_params_utils.h",
@@ -62,6 +63,8 @@ static_library("ui") {
     "cryptuiapi_shim.h",
     "enterprise_startup_dialog.h",
     "idle_bubble.h",
+    "incognito_allowed_url.cc",
+    "incognito_allowed_url.h",
     "managed_ui.cc",
     "managed_ui.h",
     "recently_audible_helper.cc",
@@ -331,6 +334,7 @@ static_library("ui") {
     "//chrome/browser/signin",
     "//chrome/browser/signin:identity_manager_provider",
     "//chrome/browser/signin:impl",
+    "//chrome/browser/signin:signin_promo",
     "//chrome/browser/site_protection",
     "//chrome/browser/status_icons",
     "//chrome/browser/storage_access_api",
@@ -346,6 +350,9 @@ static_library("ui") {
     "//chrome/browser/ui/blocked_content:impl",
     "//chrome/browser/ui/bluetooth",
     "//chrome/browser/ui/bluetooth:impl",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/browser_window:create_browser_window",
+    "//chrome/browser/ui/browser_window/internal",
     "//chrome/browser/ui/cookie_controls",
     "//chrome/browser/ui/digital_credentials",
     "//chrome/browser/ui/extensions",
@@ -666,33 +673,13 @@ static_library("ui") {
 
   allow_circular_includes_from = []
 
-  if (!is_android || is_desktop_android) {
-    sources += [
-      "browser_navigator.h",
-      "incognito_allowed_url.cc",
-      "incognito_allowed_url.h",
-    ]
+  if (is_android) {
+    sources += [ "//chrome/browser/ui/android/browser_navigator_android.cc" ]
+  }
 
-    # Cross-platform dependencies.
-    deps += [
-      "//chrome/browser/signin:signin_promo",
-      "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/browser_window/internal",
-    ]
-
-    # Desktop-Android-only dependencies.
-    if (is_desktop_android) {
-      sources += [ "//chrome/browser/ui/android/browser_navigator_android.cc" ]
-      deps += [
-        "//chrome/browser/ui/android/extensions/windowing/internal",
-        "//chrome/browser/ui/browser_window:create_browser_window",
-        "//chrome/browser/ui/browser_window/internal",
-      ]
-
-      # This can be removed when browser_navigator.h is modularized (see below TODOs).
-      allow_circular_includes_from +=
-          [ "//chrome/browser/ui/browser_window/internal" ]
-    }
+  # Desktop-Android-only dependencies.
+  if (is_desktop_android) {
+    deps += [ "//chrome/browser/ui/android/extensions/windowing/internal" ]
   }
 
   # TODO(crbug.com/413572035): Move into build files of the actual
@@ -1005,6 +992,10 @@ static_library("ui") {
     # TODO(b/335257259): Resolve circular deps.
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [ "//chrome/browser/facilitated_payments" ]
+
+    # This can be removed when browser_navigator.h is modularized (see below TODOs).
+    allow_circular_includes_from +=
+        [ "//chrome/browser/ui/browser_window/internal" ]
 
     if (enable_extensions_core) {
       sources += [

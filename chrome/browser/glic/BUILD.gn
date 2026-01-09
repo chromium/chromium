@@ -86,6 +86,7 @@ source_set("glic") {
     "//chrome/browser/page_content_annotations:fetcher",
     "//chrome/browser/permissions/system",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
     "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
     "//components/content_extraction/content/browser",
     "//components/favicon/core",
@@ -112,13 +113,6 @@ source_set("glic") {
       "//ui/views",
       "//ui/views/controls/webview",
     ]
-  }
-
-  if (!is_android || is_desktop_android) {
-    public_deps += [ "//chrome/browser/ui/browser_window" ]
-  } else {
-    public_deps +=
-        [ "//chrome/browser/ui/browser_window/public/android:java_enum_srcjar" ]
   }
 
   deps = [

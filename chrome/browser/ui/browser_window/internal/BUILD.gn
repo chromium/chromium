@@ -4,8 +4,6 @@
 
 import("//chrome/common/features.gni")
 
-assert(is_win || is_mac || is_linux || is_chromeos || is_desktop_android)
-
 source_set("internal") {
   sources = [ "create_browser_window.cc" ]
   deps = [

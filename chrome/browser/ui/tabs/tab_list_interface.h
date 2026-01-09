@@ -16,12 +16,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "url/gurl.h"
 
-// BrowserWindowInterface is available on desktop Android, but not other Android
-// builds.
-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
 class BrowserWindowInterface;
-#endif
-
 class SessionID;
 class TabListInterfaceObserver;
 
@@ -39,10 +34,8 @@ class TabListInterface {
   TabListInterface(const TabListInterface& other) = delete;
   void operator=(const TabListInterface& other) = delete;
 
-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
   // Returns the TabListInterface associated with the given `browser`.
   static TabListInterface* From(BrowserWindowInterface* browser);
-#endif
 
   // Adds / removes observers from this tab list.
   virtual void AddTabListInterfaceObserver(

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -15,12 +16,13 @@ public final class ChromeAndroidTaskTrackerFactory {
 
     /**
      * Obtains the singleton instance of {@link ChromeAndroidTaskTracker}.
-     *
-     * <p>We mark the return value as nullable to be consistent with the stub factory in
-     * //chrome/browser/ui/browser_window/stub.
      */
     @Nullable
     public static ChromeAndroidTaskTracker getInstance() {
+        // TODO(crbug.com/473636857): Remove once this is properly implemented on non-desktop
+        // platforms.
+        if (!DeviceInfo.isDesktop()) return null;
+
         return ChromeAndroidTaskTrackerImpl.getInstance();
     }
 }

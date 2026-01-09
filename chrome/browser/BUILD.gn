@@ -1974,6 +1974,7 @@ static_library("browser") {
     "//chrome/browser/ui/blocked_content:impl",
     "//chrome/browser/ui/bluetooth",
     "//chrome/browser/ui/bluetooth:impl",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/color:mixers",
     "//chrome/browser/ui/contextual_search",
@@ -4309,6 +4310,7 @@ static_library("browser") {
       "//chrome/browser/ui/apps:impl",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/bookmarks:impl",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window/internal",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/commerce",
@@ -4798,10 +4800,6 @@ static_library("browser") {
         "component_updater/hyphenation_component_installer.h",
       ]
     }
-  }
-
-  if (!is_android || is_desktop_android) {
-    deps += [ "//chrome/browser/ui/browser_window" ]
   }
 
   if (enable_screen_capture) {

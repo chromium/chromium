@@ -1413,6 +1413,7 @@ source_set("platform_browser_tests") {
     "//chrome/browser/signin",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/omnibox",
     "//chrome/common:buildflags",
     "//chrome/common:constants",
@@ -1961,6 +1962,7 @@ if (is_android) {
       "//chrome/browser/preloading:test_support",
       "//chrome/browser/preloading/prerender:browser_tests",
       "//chrome/browser/privacy_sandbox:browser_tests",
+      "//chrome/browser/profiles",
       "//chrome/browser/profiling_host:profiling_browsertests",
       "//chrome/browser/safe_browsing:test_support",
       "//chrome/browser/safe_browsing/android:test_support_java",
@@ -1972,9 +1974,12 @@ if (is_android) {
       "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/tab",
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android:public",
+      "//chrome/browser/ui:browser_navigator_params_headers",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/android/hats:browser_tests",
       "//chrome/browser/ui/autofill",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/plus_addresses:browser_tests",
@@ -2115,19 +2120,12 @@ if (is_android) {
 
     extra_args = []
 
+    # TODO(crbug.com/473636857): Include once all Android builds correctly use BrowserWindowInterface.
     if (is_desktop_android) {
       sources +=
           [ "../browser/ui/android/browser_navigator_android_browsertest.cc" ]
-      deps += [
-        "//base",
-        "//chrome/browser/flags:flags_android",
-        "//chrome/browser/profiles",
-        "//chrome/browser/ui:browser_navigator_params_headers",
-        "//chrome/browser/ui/browser_window",
-        "//chrome/browser/ui/browser_window:create_browser_window",
-        "//chrome/browser/ui/browser_window/internal:android_browsertests",
-        "//components/feed:feature_list",
-      ]
+      deps +=
+          [ "//chrome/browser/ui/browser_window/internal:android_browsertests" ]
     }
 
     if (enable_chrome_android_internal) {
@@ -8031,6 +8029,8 @@ test("unit_tests") {
       "//chrome/browser/ui/android/tab_model:test_support",
       "//chrome/browser/ui/android/tab_model:unit_tests",
       "//chrome/browser/ui/autofill/payments:test_support",
+      "//chrome/browser/ui/browser_window/internal:unit_tests",
+      "//chrome/browser/ui/browser_window/test:native_unit_test_support_java",
       "//chrome/browser/ui/fast_checkout",
       "//chrome/browser/ui/fast_checkout:unit_tests",
       "//chrome/browser/ui/plus_addresses:unit_tests",
@@ -8091,10 +8091,6 @@ test("unit_tests") {
       deps += [ "//chrome/browser/android/extensions:android" ]
     }
 
-    if (!is_android || is_desktop_android) {
-      deps += [ "//chrome/browser/ui/browser_window/internal:unit_tests" ]
-    }
-
     if (is_desktop_android) {
       deps += [
         # Unit test targets for //chrome/browser/ui/browser_window/internal.
@@ -8103,7 +8099,6 @@ test("unit_tests") {
         # Java test support classes must be a *direct* dependency of the
         # `test()` target. Otherwise, the Java classes can't be found by the
         # test as they won't be compiled into the test APK.
-        "//chrome/browser/ui/browser_window/test:native_unit_test_support_java",
 
         # Unit test targets for //chrome/browser/ui/android/extensions/windowing/internal.
         "//chrome/browser/ui/android/extensions/windowing/internal:unit_tests",
