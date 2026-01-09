@@ -18,6 +18,7 @@ include_rules = [
   "+third_party/flatbuffers/src/include/flatbuffers",
   "+third_party/fp16/src/include/fp16.h",
   "+third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h",
+  "+third_party/litert",
   "+third_party/microsoft_dxheaders",
   "+third_party/windows_app_sdk_headers",
   "+third_party/tflite",

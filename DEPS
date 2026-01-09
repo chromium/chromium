@@ -2928,7 +2928,7 @@ deps = {
   'src/third_party/tflite/src':
     Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '48401a9c25ddb7cb882074d48c79f91d1f6a89e0',
   'src/third_party/litert/src':
-    Var('chromium_git') + '/external/github.com/google-ai-edge/LiteRT.git' + '@' + '9eef334461f15249eb7c7bb16e8a57dacaa63124',
+    Var('chromium_git') + '/external/github.com/google-ai-edge/LiteRT.git' + '@' + '08e7a985e6aa363b6f7a34caa504f9cc55bc87d3',
   'src/third_party/turbine/cipd': {
       'packages': [
           {

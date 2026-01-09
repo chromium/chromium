@@ -139,10 +139,14 @@ component("webnn_service") {
     sources += [
       "tflite/buffer_content_tflite.cc",
       "tflite/buffer_content_tflite.h",
+      "tflite/context_impl_litert.cc",
+      "tflite/context_impl_litert.h",
       "tflite/context_impl_tflite.cc",
       "tflite/context_impl_tflite.h",
       "tflite/graph_builder_tflite.cc",
       "tflite/graph_builder_tflite.h",
+      "tflite/graph_impl_litert.cc",
+      "tflite/graph_impl_litert.h",
       "tflite/graph_impl_tflite.cc",
       "tflite/graph_impl_tflite.h",
       "tflite/op_resolver.cc",
@@ -154,6 +158,7 @@ component("webnn_service") {
     deps += [
       "//third_party/flatbuffers",
       "//third_party/fp16",
+      "//third_party/litert",
       "//third_party/tflite",
       "//third_party/tflite:tflite_builtin_op_resolver",
       "//third_party/tflite:tflite_public_headers",
