@@ -657,6 +657,7 @@ class BrowserAutofillManager : public AutofillManager {
   // suggestions for field with `field_id` given `trigger_source`.
   void InitializeSuggestionGenerators(
       AutofillSuggestionTriggerSource trigger_source,
+      FormGlobalId form_id,
       FieldGlobalId field_id);
 
   // Delegates to perform external processing (display, selection) on
