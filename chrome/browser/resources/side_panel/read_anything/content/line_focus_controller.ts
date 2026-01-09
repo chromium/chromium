@@ -89,13 +89,11 @@ export class LineFocusController {
   }
 
   onTextLocationsChange(container: HTMLElement, height: number) {
-    console.error('text location change', this.isEnabled());
     if (this.isEnabled()) {
       const previousMaxY = this.model_.getMaxY();
       const previousMinY = this.model_.getMinY();
       this.calculateNewPositions_(container, height);
       if (this.isStatic_()) {
-        console.error('static');
         if (previousMaxY !== this.model_.getMaxY() ||
             previousMinY !== this.model_.getMinY()) {
           this.setCenterY_();
@@ -106,7 +104,6 @@ export class LineFocusController {
       if (this.speechController_.isSpeechActive()) {
         const highlights = container.querySelectorAll<HTMLElement>(
             `.${currentReadHighlightClass}`);
-        console.error('moving ');
         this.moveBelowHighlights_(Array.from(highlights));
       } else {
         this.setY_(this.model_.getY());
