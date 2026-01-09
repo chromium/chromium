@@ -7,11 +7,27 @@
 [
     Exposed=Window,
     RuntimeEnabled=TimelineTrigger
-] interface TimelineTrigger : AnimationTrigger {
-  [CallWith=ExecutionContext, MeasureAs=V8AnimationTrigger_Constructor, RaisesException] constructor(optional TimelineTriggerOptions options = {});
+] interface TimelineTriggerRange {
   readonly attribute AnimationTimeline? timeline;
   [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) rangeStart;
   [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) rangeEnd;
   [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) exitRangeStart;
   [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) exitRangeEnd;
+};
+
+[
+    Exposed=Window,
+    RuntimeEnabled=TimelineTrigger
+] interface TimelineTriggerRangeList {
+    readonly attribute unsigned long length;
+    getter TimelineTriggerRange item(unsigned long index);
+    iterable<TimelineTriggerRange>;
+};
+
+[
+    Exposed=Window,
+    RuntimeEnabled=TimelineTrigger
+] interface TimelineTrigger : AnimationTrigger {
+  [CallWith=ExecutionContext, MeasureAs=V8AnimationTrigger_Constructor, RaisesException] constructor(optional sequence<TimelineTriggerOptions> options = []);
+  readonly attribute TimelineTriggerRangeList ranges;
 };

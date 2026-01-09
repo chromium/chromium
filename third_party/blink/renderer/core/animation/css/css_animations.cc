@@ -1544,16 +1544,18 @@ bool TimelineTriggerRangeBoundariesUnchanged(
     const TimelineTrigger::RangeBoundary* new_exit_range_start,
     const TimelineTrigger::RangeBoundary* new_exit_range_end) {
   DCHECK(trigger);
-  return TimelineTriggerBoundariesMatch(trigger->rangeStart(nullptr),
+  return TimelineTriggerBoundariesMatch(trigger->RangeStart(),
                                         new_range_start) &&
-         TimelineTriggerBoundariesMatch(trigger->rangeEnd(nullptr),
-                                        new_range_end) &&
-         TimelineTriggerBoundariesMatch(trigger->exitRangeStart(nullptr),
+         TimelineTriggerBoundariesMatch(trigger->RangeEnd(), new_range_end) &&
+         TimelineTriggerBoundariesMatch(trigger->ExitRangeStart(),
                                         new_exit_range_start) &&
-         TimelineTriggerBoundariesMatch(trigger->exitRangeEnd(nullptr),
+         TimelineTriggerBoundariesMatch(trigger->ExitRangeEnd(),
                                         new_exit_range_end);
 }
 
+// TODO(crbug.com/473568234): This function constructs only a single
+// TimelineTriggerRange for a TimelineTrigger object. When we support multiple
+// timelines, it should construct more than one TimelineTriggerRange.
 TimelineTrigger* CSSAnimations::ComputeTimelineTrigger(
     const CSSAnimationData* data,
     wtf_size_t animation_index,
@@ -1601,11 +1603,21 @@ TimelineTrigger* CSSAnimations::ComputeTimelineTrigger(
                               existing_trigger, new_range_start, new_range_end,
                               new_exit_range_start, new_exit_range_end);
 
-  return need_new_trigger
-             ? MakeGarbageCollected<TimelineTrigger>(
-                   new_timeline, new_range_start, new_range_end,
-                   new_exit_range_start, new_exit_range_end, element)
-             : existing_trigger;
+  if (need_new_trigger) {
+    TimelineTriggerRange* range = MakeGarbageCollected<TimelineTriggerRange>(
+        new_timeline, new_range_start, new_range_end, new_exit_range_start,
+        new_exit_range_end);
+
+    HeapVector<Member<TimelineTriggerRange>> ranges;
+    ranges.push_back(range);
+
+    TimelineTriggerRangeList* range_list =
+        MakeGarbageCollected<TimelineTriggerRangeList>(ranges);
+
+    return MakeGarbageCollected<TimelineTrigger>(range_list, element);
+  }
+
+  return existing_trigger;
 }
 
 CSSAnimations::CSSAnimations() = default;

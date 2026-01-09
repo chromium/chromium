@@ -2687,14 +2687,22 @@ TEST_P(AnimationAnimationTestCompositing,
               V8AnimationPlayState::Enum::kIdle);
 
     // Create a trigger.
-    TimelineRangeOffset* dummy_offset =
+    TimelineRangeOffset* placeholder_offset =
         MakeGarbageCollected<TimelineRangeOffset>();
-    TimelineTrigger::RangeBoundary* dummy_range_boundary =
-        MakeGarbageCollected<TimelineTrigger::RangeBoundary>(dummy_offset);
-    trigger = MakeGarbageCollected<TimelineTrigger>(
-        timeline,
-        dummy_range_boundary, dummy_range_boundary, dummy_range_boundary,
-        dummy_range_boundary);
+    TimelineTrigger::RangeBoundary* placeholder_range_boundary =
+        MakeGarbageCollected<TimelineTrigger::RangeBoundary>(
+            placeholder_offset);
+    TimelineTriggerRange* placeholder_range =
+        MakeGarbageCollected<TimelineTriggerRange>(
+            timeline, placeholder_range_boundary, placeholder_range_boundary,
+            placeholder_range_boundary, placeholder_range_boundary);
+
+    HeapVector<Member<TimelineTriggerRange>> placeholder_ranges;
+    placeholder_ranges.push_back(placeholder_range);
+
+    TimelineTriggerRangeList* placeholder_range_list =
+        MakeGarbageCollected<TimelineTriggerRangeList>(placeholder_ranges);
+    trigger = MakeGarbageCollected<TimelineTrigger>(placeholder_range_list);
 
     // Attach the trigger to the animation.
     trigger->addAnimation(
@@ -2777,12 +2785,12 @@ class ScriptedTimelineTriggerTest : public PageTestBase {
             { duration: 300, fill: "none" }
           ));
 
-        let trigger = new TimelineTrigger({
+        let trigger = new TimelineTrigger([{
           timeline: new ViewTimeline({
             subject: document.getElementById('subject'), axis: "y"
           }),
           rangeStart: "contain 0%",
-          rangeEnd: "contain 100%"});
+          rangeEnd: "contain 100%"}]);
 
         trigger.addAnimation(animation, "play-forwards", "play-backwards");
       }
@@ -2799,7 +2807,7 @@ class ScriptedTimelineTriggerTest : public PageTestBase {
     subject_ = document_->getElementById(AtomicString("subject"));
     animation_ = target_->GetElementAnimations()->Animations().begin()->key;
     trigger_ = *animation_->triggers_.begin();
-    timeline_ = DynamicTo<TimelineTrigger>(trigger_.Get())->timeline();
+    timeline_ = DynamicTo<TimelineTrigger>(trigger_.Get())->Timeline();
 
     ThreadState::Current()->CollectAllGarbageForTesting();
 

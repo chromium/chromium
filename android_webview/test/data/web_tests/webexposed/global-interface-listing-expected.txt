@@ -9761,12 +9761,26 @@ interface TimeRanges
     method start
 interface TimelineTrigger : AnimationTrigger
     attribute @@toStringTag
+    getter ranges
+    method constructor
+interface TimelineTriggerRange
+    attribute @@toStringTag
     getter exitRangeEnd
     getter exitRangeStart
     getter rangeEnd
     getter rangeStart
     getter timeline
     method constructor
+interface TimelineTriggerRangeList
+    attribute @@toStringTag
+    getter length
+    method @@iterator
+    method constructor
+    method entries
+    method forEach
+    method item
+    method keys
+    method values
 interface TimestampTrigger
     attribute @@toStringTag
     getter timestamp

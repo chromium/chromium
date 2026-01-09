@@ -80,7 +80,7 @@ TEST_P(AnimationTriggerTest, ComputeBoundariesTest) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  ScrollTimeline& timeline = *To<ScrollTimeline>(trigger->timeline());
+  ScrollTimeline& timeline = *To<ScrollTimeline>(trigger->Timeline());
   Element& timeline_source = *To<Element>(timeline.ComputeResolvedSource());
 
   RangeBoundary* cover_10 =

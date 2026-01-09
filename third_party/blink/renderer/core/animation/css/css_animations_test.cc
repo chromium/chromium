@@ -1419,7 +1419,7 @@ void CSSAnimationsTriggerTest::TestTimelineTrigger(
     TimelineTrigger::RangeBoundary* expected_exit_end) {
   EXPECT_NE(trigger, nullptr);
 
-  AnimationTimeline* timeline = trigger->timeline();
+  AnimationTimeline* timeline = trigger->Timeline();
   if (!expect_view_timeline.has_value()) {
     EXPECT_EQ(timeline, &GetDocument().Timeline());
   } else if (expect_view_timeline.value() == false) {
@@ -1428,19 +1428,18 @@ void CSSAnimationsTriggerTest::TestTimelineTrigger(
     EXPECT_TRUE(timeline->IsViewTimeline());
   }
 
-  const TimelineTrigger::RangeBoundary* range_start =
-      trigger->rangeStart(nullptr);
+  const TimelineTrigger::RangeBoundary* range_start = trigger->RangeStart();
   VerifyTriggerRangeBoundary(range_start, expected_start);
 
-  const TimelineTrigger::RangeBoundary* range_end = trigger->rangeEnd(nullptr);
+  const TimelineTrigger::RangeBoundary* range_end = trigger->RangeEnd();
   VerifyTriggerRangeBoundary(range_end, expected_end);
 
   const TimelineTrigger::RangeBoundary* exit_range_start =
-      trigger->exitRangeStart(nullptr);
+      trigger->ExitRangeStart();
   VerifyTriggerRangeBoundary(exit_range_start, expected_exit_start);
 
   const TimelineTrigger::RangeBoundary* exit_range_end =
-      trigger->exitRangeEnd(nullptr);
+      trigger->ExitRangeEnd();
   VerifyTriggerRangeBoundary(exit_range_end, expected_exit_end);
 }
 
@@ -1741,7 +1740,7 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerNamedTimeline) {
   TimelineTrigger* trigger = DynamicTo<TimelineTrigger>(GetTrigger(*target));
 
   EXPECT_FALSE(trigger->GetTimelineInternal()->IsScrollTimeline());
-  EXPECT_TRUE(trigger->timeline()->IsViewTimeline());
+  EXPECT_TRUE(trigger->Timeline()->IsViewTimeline());
 }
 
 TEST_P(CSSAnimationsTriggerTest, TimelineTriggerChangeTimeline) {
@@ -1798,8 +1797,8 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerChangeTimeline) {
   TimelineTrigger* view_trigger =
       DynamicTo<TimelineTrigger>(GetTrigger(*target));
 
-  EXPECT_NE(view_trigger->timeline(), nullptr);
-  EXPECT_TRUE(view_trigger->timeline()->IsViewTimeline());
+  EXPECT_NE(view_trigger->Timeline(), nullptr);
+  EXPECT_TRUE(view_trigger->Timeline()->IsViewTimeline());
 
   target->setAttribute(html_names::kClassAttr, AtomicString("scroll_trigger"));
   UpdateAllLifecyclePhasesForTest();
@@ -1809,8 +1808,8 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerChangeTimeline) {
   EXPECT_NE(view_trigger, scroll_trigger);
   EXPECT_NE(scroll_trigger->GetTimelineInternal(), nullptr);
   EXPECT_FALSE(scroll_trigger->GetTimelineInternal()->IsScrollTimeline());
-  EXPECT_FALSE(scroll_trigger->timeline()->IsViewTimeline());
-  EXPECT_TRUE(scroll_trigger->timeline()->IsScrollTimeline());
+  EXPECT_FALSE(scroll_trigger->Timeline()->IsViewTimeline());
+  EXPECT_TRUE(scroll_trigger->Timeline()->IsScrollTimeline());
 }
 
 void CSSAnimationsTriggerTest::TestRangeStartChange(
@@ -1829,8 +1828,7 @@ void CSSAnimationsTriggerTest::TestRangeStartChange(
   } else {
     EXPECT_NE(old_trigger, new_trigger);
   }
-  VerifyTriggerRangeBoundary(new_trigger->rangeStart(nullptr),
-                             expected_boundary);
+  VerifyTriggerRangeBoundary(new_trigger->RangeStart(), expected_boundary);
 }
 
 TEST_P(CSSAnimationsTriggerTest, TimelineTriggerChangeRangeStart) {
@@ -1973,7 +1971,7 @@ TEST_P(CSSAnimationsTriggerTest, NonTriggerChange) {
   TimelineTrigger* original_trigger =
       DynamicTo<TimelineTrigger>(GetTrigger(*target));
   EXPECT_NE(original_trigger, nullptr);
-  EXPECT_TRUE(original_trigger->timeline()->IsViewTimeline());
+  EXPECT_TRUE(original_trigger->Timeline()->IsViewTimeline());
 
   target->classList().Add(AtomicString("subject100x100"));
   UpdateAllLifecyclePhasesForTest();
@@ -2038,8 +2036,8 @@ TEST_P(CSSAnimationsTriggerTest, DeviceScaleFactor) {
   Element* target = GetDocument().getElementById(AtomicString("target"));
 
   TimelineTrigger* trigger = DynamicTo<TimelineTrigger>(GetTrigger(*target));
-  const RangeBoundary* range_start = trigger->rangeStart(nullptr);
-  const RangeBoundary* range_end = trigger->rangeEnd(nullptr);
+  const RangeBoundary* range_start = trigger->RangeStart();
+  const RangeBoundary* range_end = trigger->RangeEnd();
 
   EXPECT_TRUE(range_start->IsTimelineRangeOffset());
   EXPECT_TRUE(range_end->IsTimelineRangeOffset());
