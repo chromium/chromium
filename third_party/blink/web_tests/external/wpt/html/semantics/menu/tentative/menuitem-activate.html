@@ -42,6 +42,9 @@
     width: 400px;
     height: 400px;
   }
+  menuitem {
+    interest-delay: 1000s;
+  }
 </style>
 
 <script>
@@ -148,15 +151,19 @@ promise_test(async (t) => {
   openMainMenu.addEventListener('click',() => (++invokerClicks));
   doNothing.addEventListener('click',() => (++itemClicks));
   let openStateAfterPointerdown = "none";
-  openMainMenu.addEventListener('pointermove',() => {
-    // There will be two move events, one before the pointerdown and one after.
-    // Just capture the one after.
-    if (openStateAfterPointerdown === "none") {
-      openStateAfterPointerdown = "first-move";
-    } else if (openStateAfterPointerdown === "first-move") {
-      openStateAfterPointerdown = mainmenu.matches(":popover-open") ? "open" : "closed";
-    }
-  },{signal: t.get_signal()});
+  let gotPointerMove = new Promise(resolve => {
+    openMainMenu.addEventListener('pointermove',async () => {
+      // There will be two move events, one before the pointerdown and one after.
+      // Just capture the one after.
+      if (openStateAfterPointerdown === "none") {
+        openStateAfterPointerdown = "first-move";
+      } else if (openStateAfterPointerdown === "first-move") {
+        await waitForRender();
+        openStateAfterPointerdown = mainmenu.matches(":popover-open") ? "open" : "closed";
+        resolve();
+      }
+    },{signal: t.get_signal()});
+  })
   await new test_driver.Actions()
     .addPointer('mouse', 'mouse')
     .pointerMove(0, 0, {origin: openMainMenu})
@@ -166,7 +173,7 @@ promise_test(async (t) => {
     .pointerMove(doNothingCoordinates.x, doNothingCoordinates.y, {})
     .pointerUp()
     .send();
-  await waitForRender();
+  await gotPointerMove;
   assert_equals(openStateAfterPointerdown,"open", "mainmenu popover should open after pointer down");
   assert_false(mainmenu.matches(":popover-open"), "mainmenu popover should be closed after interaction");
   assert_equals(invokerClicks,0, "the invoking menu didn't get a click");
