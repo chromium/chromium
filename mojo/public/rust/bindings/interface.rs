@@ -39,7 +39,7 @@
 //! ```
 //!
 //! This trait is then used to instantiate a `Remote` and `Receiver` pair,
-//! which send messages associated with the `MathService` interface:
+//! which send messages of the typesd defined in the `MathService` interface:
 //!
 //! ```
 //! let (p_rem: PendingRemote<dyn MathService>, p_rec: PendingReceiver<dyn MathService>) = ...;
@@ -85,7 +85,7 @@
 //! `Add` request, it invokes the `Add` method on that object.
 //!
 //! After implementing the trait for a state object, you must also call the
-//! `declare_mojom_state_object` macro, which sets up some behind-the-scenes
+//! `add_mojom_state_object_impls` macro, which sets up some behind-the-scenes
 //! information needed by the compiler.
 //!
 //! ```
@@ -107,7 +107,7 @@
 //! }
 //!
 //! // Don't forget this!
-//! declare_mojom_state_object!(CountingMathService, MathService);
+//! add_mojom_state_object_impls!(CountingMathService, MathService);
 //! ```
 //!
 //! If your service has different behaviors in different contexts, you can
@@ -117,7 +117,7 @@
 //! // A MathService which uses saturating addition.
 //! struct SaturatingMathService {};
 //! impl MathService for SaturatingMathService { ... }
-//! declare_mojom_state_object!(SaturatingMathService, MathService);
+//! add_mojom_state_object_impls!(SaturatingMathService, MathService);
 //! ```
 //!
 //! Because receivers can hold different kinds of state objects, the `Receiver`
@@ -135,7 +135,7 @@
 //! // Rebind the receiver to a different state object: now it has different behavior!
 //! let saturating_receiver: Receiver<SaturatingMathService> p_rec.bind(SaturatingMathService {});
 //!
-//! Note that receivers can get receive messages while they are pending, but those
+//! Note that receivers can receive messages while they are pending, but those
 //! messages simply sit in the pipe until the receiver is bound and begins scheduling
 //! tasks to process them.
 
@@ -149,8 +149,8 @@
 // we cannot automatically implement `MojomInterface`, due to Rust's orphaning
 // rules and lack of support for multiple blanket implementations of a trait.
 //
-// Therefore, we define the `declare_mojom_state_object` macro, which implements
-// `MojomInterface` appropriately, and require uses to call it so the code is in
+// Therefore, we define the `add_mojom_state_object_impls` macro, which implements
+// `MojomInterface` appropriately, and require users to call it so the code is in
 // their crate.
 //
 // The second problem is the fact that, while we want our users to only ever use
@@ -159,7 +159,7 @@
 // bound a `Receiver` to a different interface than its `Remote`.
 //
 // To work around this, we require each `MojomInterface` implementation to
-// declare the trait it's associated with using an associated type `DynTy`.
+// declare the trait it corresponds to by using an associated type `DynTy`.
 // We restrict the possible values using a marker trait `DynMojomInterface`,
 // which is implemented for each generated interface type automatically.
 // We then require in our remote/receiver types that their type argument is the
@@ -200,7 +200,7 @@ pub struct Message {
 ///
 /// You shouldn't implement this trait yourself; instead, implement the trait
 /// for the specific interface you want to use, and then invoke
-/// the `declare_mojom_state_object` macro.
+/// the `add_mojom_state_object_impls` macro.
 pub trait MojomInterface {
     // We use this type to enforce that Remotes and Receivers are parameterized
     // on the right instance of the trait. Each mojom interface `I` should
@@ -227,14 +227,14 @@ pub trait MojomInterface {
 pub mod internal {
     use super::*;
 
-    // This trait ensures users have called the `declare_mojom_state_object`
+    // This trait ensures users have called the `add_mojom_state_object_impls`
     // macro, by being a supertrait of all the bindings-generated interface
     // traits.
     #[diagnostic::on_unimplemented(
-        message = "You must invoke the declare_mojom_state_object! macro after implementing an interface",
+        message = "You must invoke the add_mojom_state_object_impls! macro after implementing an interface",
         label = "this type needs to be declared as a state object",
         note = "Hint: try calling the macro with the name of the interface trait:",
-        note = "`declare_mojom_state_object!({Self}, ...)`"
+        note = "`add_mojom_state_object_impls!({Self}, ...)`"
     )]
     pub trait ImplementThisViaMacro {}
 
@@ -247,7 +247,7 @@ pub mod internal {
 }
 
 // FOR_RELEASE: Can/should this be a proc macro instead?
-macro_rules! declare_mojom_state_object {
+macro_rules! add_mojom_state_object_impls {
     ($ty:ty, $trait:ident) => {
         impl $crate::interface::MojomInterface for $ty {
             type DynTy = dyn $trait;
@@ -272,24 +272,24 @@ macro_rules! declare_mojom_state_object {
     };
 }
 
-/// This trait is used behind-the-scenes to indicate that a type is `dyn I` for some
-/// mojom-generated interface type `I`. You should never implement it yourself;
-/// generated code will implement it where required.
+/// This trait is used behind-the-scenes to indicate that a type is `dyn I` for
+/// some mojom-generated interface type `I`. You should never implement it
+/// yourself; generated code will implement it where required.
 pub trait DynMojomInterface: MojomInterface {}
 
 // FOR_RELEASE: Put in a different file
 pub mod remote {
     use super::*;
-    /// This type represents one end of a Mojo pipe associated with a particular
-    /// Mojom `interface`. The parameter `T` names the interface: it will
-    /// always be instantiated with `dyn SomeInterface`. Each `Remote` is
-    /// associated with exactly one `Receiver` or `PendingReceiver`
-    /// elsewhere in the program, associated with the same `interface`,
-    /// which holds the other end of the pipe.
+    /// This type represents one end of a Mojo pipe corresponding to a
+    /// particular Mojom `interface`. The parameter `T` names the interface:
+    /// it will always be instantiated with `dyn SomeInterface`. Each
+    /// `Remote` is entangled with exactly one `Receiver` or
+    /// `PendingReceiver` elsewhere in the program, corresponding to with
+    /// the same `interface`, which holds the other end of the pipe.
     ///
     /// To obtain a `Remote`, `bind` a `PendingRemote` to a sequence. While
     /// bound, the `Remote` provides the ability to send the messages
-    /// defined in the `interface`'s Mojom definition to the associated
+    /// defined in the `interface`'s Mojom definition to the entangled
     /// `Receiver`. The `Receiver` will process the messages on its own
     /// sequence (possibly in a different process). If the message involves
     /// a response, the `Remote` will execute a user-provided callback on
@@ -325,12 +325,12 @@ pub mod remote {
         _phantom: PhantomData<T>,
     }
 
-    /// This type represents one end of a Mojo pipe associated with a particular
-    /// Mojom `interface`. The parameter `T` names the interface: it will
-    /// always be instantiated with `dyn SomeInterface`. Each `PendingRemote` is
-    /// associated with exactly one `Receiver` or `PendingReceiver`
-    /// elsewhere in the program, associated with the same `interface`,
-    /// which holds the other end of the pipe.
+    /// This type represents one end of a Mojo pipe corresponding to a
+    /// particular Mojom `interface`. The parameter `T` names the interface:
+    /// it will always be instantiated with `dyn SomeInterface`. Each
+    /// `PendingRemote` is entangled with exactly one `Receiver` or
+    /// `PendingReceiver` elsewhere in the program, corresponding to the
+    /// same `interface`, which holds the other end of the pipe.
     ///
     /// This type represents a `Remote` which has not yet been bound to a
     /// sequence, and is therefore unable to send messages.
@@ -364,7 +364,7 @@ pub mod remote {
             Remote::new_with_runner(self.endpoint, runner)
         }
 
-        /// Create a new Mojo message pipe associated `T`'s interface, and
+        /// Create a new Mojo message pipe corresponding to `T`'s interface, and
         /// return the endpoints
         pub fn new_pipe() -> (PendingRemote<T>, super::receiver::PendingReceiver<T>) {
             todo!()
@@ -427,20 +427,20 @@ pub mod remote {
 
     // FOR_RELEASE: impl Drop for Remote to ensure no responses were pending.
 
-    // FOR_RELEASE: We could implement From/Into for Remote/PendingRemote as an
-    // alias for `bind` and `unbind`, but I think it's better that binding is
-    // explicit, since it's a stateful operation (not just converting data)
+    // We deliberately do not implement `From` and `Into` for
+    // `Remote/PendingRemote` pairs, because binding and unbinding are
+    // stateful operations that should be done explicitly.
 } // End mod remote
 
 // FOR_RELEASE: Put in a different file
 pub mod receiver {
     use super::*;
 
-    /// This type represents one end of a Mojo pipe associated with a particular
-    /// Mojom `interface`. The parameter `T` names the interface: it will
-    /// always be instantiated with `dyn SomeInterface`. Each `Receiver` is
-    /// associated with exactly one `Remote` or `PendingRemote`
-    /// elsewhere in the program, associated with the same `interface`,
+    /// This type represents one end of a Mojo pipe corresponding to a
+    /// particular Mojom `interface`. The parameter `T` names the interface:
+    /// it will always be instantiated with `dyn SomeInterface`. Each
+    /// `Receiver` is entangled with exactly one `Remote` or `PendingRemote`
+    /// elsewhere in the program, corresponding to the same `interface`,
     /// which holds the other end of the pipe.
     ///
     /// To obtain a `Receiver`, `bind` a `PendingReceiver` to a sequence and
@@ -461,12 +461,12 @@ pub mod receiver {
         state: Arc<Mutex<StateTy>>,
     }
 
-    /// This type represents one end of a Mojo pipe associated with a particular
-    /// Mojom `interface`. The parameter `T` names the interface: it will
-    /// always be instantiated with `dyn SomeInterface`. Each `PendingReceiver`
-    /// is associated with exactly one `Remote` or `PendingRemote`
-    /// elsewhere in the program, associated with the same `interface`,
-    /// which holds the other end of the pipe.
+    /// This type represents one end of a Mojo pipe corresponding to with a
+    /// particular Mojom `interface`. The parameter `T` names the interface:
+    /// it will always be instantiated with `dyn SomeInterface`. Each
+    /// `PendingReceiver` is entangled with exactly one `Remote` or
+    /// `PendingRemote` elsewhere in the program, corresponding to the same
+    /// `interface`, which holds the other end of the pipe.
     ///
     /// This type represents a `Receiver` which has not yet been bound to a
     /// sequence, and is therefore unable to send messages.
@@ -549,10 +549,17 @@ pub mod receiver {
         /// `PendingRemote` which can be re-bound later.
         // FOR_RELEASE: Figure out/document the implications for any already-posted
         // tasks
-        pub fn unbind(self) -> (PendingReceiver<StateTy::DynTy>, StateTy) {
+        // This function is not `pub` because it's a dangerous operation, so we're
+        // restricting access until someone has a use-case.
+        #[allow(unused)]
+        fn unbind(self) -> (PendingReceiver<StateTy::DynTy>, StateTy) {
             // FOR_RELEASE: Figure out when it's safe to unwrap
             let state = Arc::into_inner(self.state).unwrap().into_inner().unwrap();
             (PendingReceiver::new(self.endpoint_watcher.into_endpoint()), state)
         }
+
+        // We deliberately do not implement `From` and `Into` for `Remote/PendingRemote`
+        // pairs, because binding and unbinding are stateful operations that should be
+        // done explicitly.
     }
 } // End mod receiver

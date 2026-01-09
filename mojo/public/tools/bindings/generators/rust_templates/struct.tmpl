@@ -2,6 +2,8 @@
 
 {%set pub = "pub " if is_pub else ""%}
 
+{# FOR_RELEASE: Figure out which of these derives are actually necessary
+   (both for structs and for enums/unions) #}
 #[derive(Debug, PartialEq, Clone, MojomParse)]
 {{pub}}struct {{name}} {
 {%- for field in struct.fields %}
