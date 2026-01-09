@@ -898,8 +898,13 @@ class WebViewChromium
         }
     }
 
+    private void forbidBuilderConfiguration() {
+        mSharedWebViewChromium.forbidBuilderConfiguration();
+    }
+
     @Override
     public void setHorizontalScrollbarOverlay(final boolean overlay) {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -919,6 +924,7 @@ class WebViewChromium
 
     @Override
     public void setVerticalScrollbarOverlay(final boolean overlay) {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -938,6 +944,7 @@ class WebViewChromium
 
     @Override
     public boolean overlayHorizontalScrollbar() {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(
                 CallSite.WEBVIEW_INSTANCE_OVERLAY_HORIZONTAL_SCROLLBAR);
         if (checkNeedsPost()) {
@@ -960,6 +967,7 @@ class WebViewChromium
 
     @Override
     public boolean overlayVerticalScrollbar() {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(
                 CallSite.WEBVIEW_INSTANCE_OVERLAY_VERTICAL_SCROLLBAR);
         if (checkNeedsPost()) {
@@ -982,12 +990,14 @@ class WebViewChromium
 
     @Override
     public int getVisibleTitleHeight() {
+        forbidBuilderConfiguration();
         // This is deprecated in WebView and should always return 0.
         return 0;
     }
 
     @Override
     public SslCertificate getCertificate() {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_CERTIFICATE);
         if (checkNeedsPost()) {
             SslCertificate ret =
@@ -1008,17 +1018,20 @@ class WebViewChromium
 
     @Override
     public void setCertificate(SslCertificate certificate) {
+        forbidBuilderConfiguration();
         // intentional no-op
     }
 
     @Override
     public void savePassword(String host, String username, String password) {
+        forbidBuilderConfiguration();
         // This is a deprecated API: intentional no-op.
     }
 
     @Override
     public void setHttpAuthUsernamePassword(
             final String host, final String realm, final String username, final String password) {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -1039,6 +1052,7 @@ class WebViewChromium
 
     @Override
     public String[] getHttpAuthUsernamePassword(final String host, final String realm) {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(
                 CallSite.WEBVIEW_INSTANCE_GET_HTTP_AUTH_USERNAME_PASSWORD);
         if (checkNeedsPost()) {
@@ -1062,6 +1076,7 @@ class WebViewChromium
 
     @Override
     public void destroy() {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -1072,7 +1087,6 @@ class WebViewChromium
                     });
             return;
         }
-
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.DESTROY")) {
             recordWebViewApiCall(ApiCall.DESTROY);
 
@@ -1091,6 +1105,7 @@ class WebViewChromium
     public void setNetworkAvailable(final boolean networkUp) {
         // Note that this purely toggles the JS navigator.online property.
         // It does not in affect chromium or network stack state in any way.
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -1110,6 +1125,7 @@ class WebViewChromium
 
     @Override
     public WebBackForwardList saveState(final Bundle outState) {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_SAVE_STATE);
         if (checkNeedsPost()) {
             WebBackForwardList ret =
@@ -1132,18 +1148,21 @@ class WebViewChromium
 
     @Override
     public boolean savePicture(Bundle b, File dest) {
+        forbidBuilderConfiguration();
         // Intentional no-op: hidden method on WebView.
         return false;
     }
 
     @Override
     public boolean restorePicture(Bundle b, File src) {
+        forbidBuilderConfiguration();
         // Intentional no-op: hidden method on WebView.
         return false;
     }
 
     @Override
     public WebBackForwardList restoreState(final Bundle inState) {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_RESTORE_STATE);
         if (checkNeedsPost()) {
             WebBackForwardList ret =
@@ -1166,6 +1185,7 @@ class WebViewChromium
 
     @Override
     public void loadUrl(final String url, final Map<String, String> additionalHttpHeaders) {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(
                 CallSite.WEBVIEW_INSTANCE_LOAD_URL_ADDITIONAL_HEADERS);
         if (checkNeedsPost()) {
@@ -1197,6 +1217,7 @@ class WebViewChromium
 
     @Override
     public void loadUrl(final String url) {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_LOAD_URL);
         if (checkNeedsPost()) {
             // Disallowed in WebView API for apps targeting a new SDK
@@ -1226,6 +1247,7 @@ class WebViewChromium
 
     @Override
     public void postUrl(final String url, final byte[] postData) {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_POST_URL);
         if (checkNeedsPost()) {
             // Disallowed in WebView API for apps targeting a new SDK
@@ -1251,6 +1273,7 @@ class WebViewChromium
 
     @Override
     public void loadData(final String data, final String mimeType, final String encoding) {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_LOAD_DATA);
         if (checkNeedsPost()) {
             // Disallowed in WebView API for apps targeting a new SDK
@@ -1281,6 +1304,7 @@ class WebViewChromium
             final String mimeType,
             final String encoding,
             final String historyUrl) {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_LOAD_DATA_WITH_BASE_URL);
         if (checkNeedsPost()) {
             // Disallowed in WebView API for apps targeting a new SDK
@@ -1318,6 +1342,7 @@ class WebViewChromium
     @Override
     public void evaluateJavaScript(
             final String script, final ValueCallback<String> resultCallback) {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_EVALUATE_JAVASCRIPT);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.EVALUATE_JAVASCRIPT")) {
@@ -1336,6 +1361,7 @@ class WebViewChromium
     @Override
     public void saveWebArchive(
             final String basename, final boolean autoname, final ValueCallback<String> callback) {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -1355,6 +1381,7 @@ class WebViewChromium
 
     @Override
     public void stopLoading() {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -1374,6 +1401,7 @@ class WebViewChromium
 
     @Override
     public void reload() {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -1392,6 +1420,7 @@ class WebViewChromium
 
     @Override
     public boolean canGoBack() {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_CAN_GO_BACK);
         if (checkNeedsPost()) {
             Boolean ret =
@@ -1412,6 +1441,7 @@ class WebViewChromium
 
     @Override
     public void goBack() {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -1430,6 +1460,7 @@ class WebViewChromium
 
     @Override
     public boolean canGoForward() {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_CAN_GO_FORWARD);
         if (checkNeedsPost()) {
             Boolean ret =
@@ -1450,6 +1481,7 @@ class WebViewChromium
 
     @Override
     public void goForward() {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -1468,6 +1500,7 @@ class WebViewChromium
 
     @Override
     public boolean canGoBackOrForward(final int steps) {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_CAN_GO_BACK_OR_FORWARD);
         if (checkNeedsPost()) {
             Boolean ret =
@@ -1489,6 +1522,7 @@ class WebViewChromium
 
     @Override
     public void goBackOrForward(final int steps) {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -1508,6 +1542,7 @@ class WebViewChromium
     @Override
     public boolean isPrivateBrowsingEnabled() {
         // Not supported in this WebView implementation.
+        forbidBuilderConfiguration();
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.IS_PRIVATE_BROWSING_ENABLED")) {
             recordWebViewApiCall(ApiCall.IS_PRIVATE_BROWSING_ENABLED);
@@ -1517,6 +1552,7 @@ class WebViewChromium
 
     @Override
     public boolean pageUp(final boolean top) {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_PAGE_UP);
         if (checkNeedsPost()) {
             Boolean ret =
@@ -1537,6 +1573,7 @@ class WebViewChromium
 
     @Override
     public boolean pageDown(final boolean bottom) {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_PAGE_DOWN);
         if (checkNeedsPost()) {
             Boolean ret =
@@ -1558,6 +1595,7 @@ class WebViewChromium
     @Override
     public void insertVisualStateCallback(
             final long requestId, final VisualStateCallback callback) {
+        forbidBuilderConfiguration();
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.INSERT_VISUAL_STATE_CALLBACK")) {
             recordWebViewApiCall(ApiCall.INSERT_VISUAL_STATE_CALLBACK);
@@ -1576,6 +1614,7 @@ class WebViewChromium
 
     @Override
     public void clearView() {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -1594,6 +1633,7 @@ class WebViewChromium
 
     @Override
     public Picture capturePicture() {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_CAPTURE_PICTURE);
         if (checkNeedsPost()) {
             Picture ret =
@@ -1615,6 +1655,7 @@ class WebViewChromium
     @Override
     public float getScale() {
         // No checkThread() as it is mostly thread safe (workaround for b/10652991).
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_SCALE);
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_SCALE")) {
             recordWebViewApiCall(ApiCall.GET_SCALE);
@@ -1624,6 +1665,7 @@ class WebViewChromium
 
     @Override
     public void setInitialScale(final int scaleInPercent) {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_SET_INITIAL_SCALE);
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.SET_INITIAL_SCALE")) {
             recordWebViewApiCall(ApiCall.SET_INITIAL_SCALE);
@@ -1634,6 +1676,7 @@ class WebViewChromium
 
     @Override
     public void invokeZoomPicker() {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -1652,6 +1695,7 @@ class WebViewChromium
 
     @Override
     public WebView.HitTestResult getHitTestResult() {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_HIT_TEST_RESULT);
         if (checkNeedsPost()) {
             WebView.HitTestResult ret =
@@ -1676,6 +1720,7 @@ class WebViewChromium
 
     @Override
     public void requestFocusNodeHref(final Message hrefMsg) {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -1695,6 +1740,7 @@ class WebViewChromium
 
     @Override
     public void requestImageRef(final Message msg) {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -1713,6 +1759,7 @@ class WebViewChromium
 
     @Override
     public String getUrl() {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_URL);
         if (checkNeedsPost()) {
             String ret =
@@ -1734,6 +1781,7 @@ class WebViewChromium
 
     @Override
     public String getOriginalUrl() {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_ORIGINAL_URL);
         if (checkNeedsPost()) {
             String ret =
@@ -1754,6 +1802,7 @@ class WebViewChromium
 
     @Override
     public String getTitle() {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_TITLE);
         if (checkNeedsPost()) {
             String ret =
@@ -1774,6 +1823,7 @@ class WebViewChromium
 
     @Override
     public Bitmap getFavicon() {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_FAVICON);
         if (checkNeedsPost()) {
             Bitmap ret =
@@ -1794,12 +1844,14 @@ class WebViewChromium
 
     @Override
     public String getTouchIconUrl() {
+        forbidBuilderConfiguration();
         // Intentional no-op: hidden method on WebView.
         return null;
     }
 
     @Override
     public int getProgress() {
+        forbidBuilderConfiguration();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_PROGRESS")) {
             recordWebViewApiCall(ApiCall.GET_PROGRESS);
             if (mAwContents == null) return 100;
@@ -1810,6 +1862,7 @@ class WebViewChromium
 
     @Override
     public int getContentHeight() {
+        forbidBuilderConfiguration();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_CONTENT_HEIGHT")) {
             recordWebViewApiCall(ApiCall.GET_CONTENT_HEIGHT);
             if (mAwContents == null) return 0;
@@ -1820,6 +1873,7 @@ class WebViewChromium
 
     @Override
     public int getContentWidth() {
+        forbidBuilderConfiguration();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_CONTENT_WIDTH")) {
             recordWebViewApiCall(ApiCall.GET_CONTENT_WIDTH);
             if (mAwContents == null) return 0;
@@ -1830,6 +1884,7 @@ class WebViewChromium
 
     @Override
     public void pauseTimers() {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -1848,6 +1903,7 @@ class WebViewChromium
 
     @Override
     public void resumeTimers() {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -1866,6 +1922,7 @@ class WebViewChromium
 
     @Override
     public void onPause() {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -1884,6 +1941,7 @@ class WebViewChromium
 
     @Override
     public void onResume() {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -1902,6 +1960,7 @@ class WebViewChromium
 
     @Override
     public boolean isPaused() {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_IS_PAUSED);
         if (checkNeedsPost()) {
             Boolean ret =
@@ -1922,11 +1981,13 @@ class WebViewChromium
 
     @Override
     public void freeMemory() {
+        forbidBuilderConfiguration();
         // Intentional no-op. Memory is managed automatically by Chromium.
     }
 
     @Override
     public void clearCache(final boolean includeDiskFiles) {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -1946,6 +2007,7 @@ class WebViewChromium
     /** This is a poorly named method, but we keep it for historical reasons. */
     @Override
     public void clearFormData() {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -1964,6 +2026,7 @@ class WebViewChromium
 
     @Override
     public void clearHistory() {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -1982,6 +2045,7 @@ class WebViewChromium
 
     @Override
     public void clearSslPreferences() {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -2001,6 +2065,7 @@ class WebViewChromium
 
     @Override
     public WebBackForwardList copyBackForwardList() {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_COPY_BACK_FORWARD_LIST);
         if (checkNeedsPost()) {
             WebBackForwardList ret =
@@ -2027,6 +2092,7 @@ class WebViewChromium
 
     @Override
     public void setFindListener(WebView.FindListener listener) {
+        forbidBuilderConfiguration();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.SET_FIND_LISTENER")) {
             recordWebViewApiCall(ApiCall.SET_FIND_LISTENER);
             mContentsClientAdapter.setFindListener(listener);
@@ -2035,6 +2101,7 @@ class WebViewChromium
 
     @Override
     public void findNext(final boolean forwards) {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -2059,6 +2126,7 @@ class WebViewChromium
 
     @Override
     public void findAllAsync(final String searchString) {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -2077,6 +2145,7 @@ class WebViewChromium
 
     @Override
     public boolean showFindDialog(final String text, final boolean showIme) {
+        forbidBuilderConfiguration();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.SHOW_FIND_DIALOG")) {
             recordWebViewApiCall(ApiCall.SHOW_FIND_DIALOG);
             mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_SHOW_FIND_DIALOG);
@@ -2109,6 +2178,7 @@ class WebViewChromium
 
     @Override
     public void notifyFindDialogDismissed() {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -2128,6 +2198,7 @@ class WebViewChromium
 
     @Override
     public void clearMatches() {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -2146,6 +2217,7 @@ class WebViewChromium
 
     @Override
     public void documentHasImages(final Message response) {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -2165,6 +2237,7 @@ class WebViewChromium
 
     @Override
     public void setWebViewClient(WebViewClient client) {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_SET_WEBVIEW_CLIENT);
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.SET_WEBVIEW_CLIENT")) {
             recordWebViewApiCall(ApiCall.SET_WEBVIEW_CLIENT);
@@ -2180,6 +2253,7 @@ class WebViewChromium
 
     @Override
     public WebViewClient getWebViewClient() {
+        forbidBuilderConfiguration();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_WEBVIEW_CLIENT")) {
             recordWebViewApiCall(ApiCall.GET_WEBVIEW_CLIENT);
             return mSharedWebViewChromium.getWebViewClient();
@@ -2188,6 +2262,7 @@ class WebViewChromium
 
     @Override
     public WebViewRenderProcess getWebViewRenderProcess() {
+        forbidBuilderConfiguration();
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.GET_WEBVIEW_RENDER_PROCESS")) {
             recordWebViewApiCall(ApiCall.GET_WEBVIEW_RENDER_PROCESS);
@@ -2199,6 +2274,7 @@ class WebViewChromium
     @Override
     public void setWebViewRenderProcessClient(
             Executor executor, WebViewRenderProcessClient webViewRenderProcessClient) {
+        forbidBuilderConfiguration();
         if (webViewRenderProcessClient == null) {
             mSharedWebViewChromium.setWebViewRendererClientAdapter(null);
         } else {
@@ -2217,6 +2293,7 @@ class WebViewChromium
 
     @Override
     public WebViewRenderProcessClient getWebViewRenderProcessClient() {
+        forbidBuilderConfiguration();
         SharedWebViewRendererClientAdapter adapter =
                 mSharedWebViewChromium.getWebViewRendererClientAdapter();
         if (adapter == null || !(adapter instanceof WebViewRenderProcessClientAdapter)) {
@@ -2231,6 +2308,7 @@ class WebViewChromium
 
     @Override
     public void setDownloadListener(DownloadListener listener) {
+        forbidBuilderConfiguration();
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.SET_DOWNLOAD_LISTENER")) {
             recordWebViewApiCall(ApiCall.SET_DOWNLOAD_LISTENER);
@@ -2240,6 +2318,7 @@ class WebViewChromium
 
     @Override
     public void setWebChromeClient(WebChromeClient client) {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_SET_WEBCHROME_CLIENT);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.SET_WEBCHROME_CLIENT")) {
@@ -2256,6 +2335,7 @@ class WebViewChromium
 
     @Override
     public WebChromeClient getWebChromeClient() {
+        forbidBuilderConfiguration();
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.GET_WEBCHROME_CLIENT")) {
             recordWebViewApiCall(ApiCall.GET_WEBCHROME_CLIENT);
@@ -2270,6 +2350,7 @@ class WebViewChromium
      * {@link WebChromeClient#onHideCustomView()} are required.
      */
     private boolean doesSupportFullscreen(WebChromeClient client) {
+        forbidBuilderConfiguration();
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.DOES_SUPPORT_FULLSCREEN")) {
             recordWebViewApiCall(ApiCall.DOES_SUPPORT_FULLSCREEN);
@@ -2308,6 +2389,7 @@ class WebViewChromium
     @Override
     @SuppressWarnings("deprecation")
     public void setPictureListener(final WebView.PictureListener listener) {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -2329,6 +2411,7 @@ class WebViewChromium
 
     @Override
     public void addJavascriptInterface(final Object obj, final String interfaceName) {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -2348,6 +2431,7 @@ class WebViewChromium
 
     @Override
     public void removeJavascriptInterface(final String interfaceName) {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -2367,6 +2451,7 @@ class WebViewChromium
 
     @Override
     public WebMessagePort[] createWebMessageChannel() {
+        forbidBuilderConfiguration();
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.CREATE_WEBMESSAGE_CHANNEL")) {
             recordWebViewApiCall(ApiCall.CREATE_WEBMESSAGE_CHANNEL);
@@ -2377,6 +2462,7 @@ class WebViewChromium
 
     @Override
     public void postMessageToMainFrame(final WebMessage message, final Uri targetOrigin) {
+        forbidBuilderConfiguration();
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.POST_MESSAGE_TO_MAIN_FRAME")) {
             recordWebViewApiCall(ApiCall.POST_MESSAGE_TO_MAIN_FRAME);
@@ -2391,6 +2477,7 @@ class WebViewChromium
 
     @Override
     public WebSettings getSettings() {
+        forbidBuilderConfiguration();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_SETTINGS")) {
             recordWebViewApiCall(ApiCall.GET_SETTINGS);
             return mWebSettings;
@@ -2399,11 +2486,13 @@ class WebViewChromium
 
     @Override
     public void setMapTrackballToArrowKeys(boolean setMap) {
+        forbidBuilderConfiguration();
         // This is a deprecated API: intentional no-op.
     }
 
     @Override
     public void flingScroll(final int vx, final int vy) {
+        forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -2422,6 +2511,7 @@ class WebViewChromium
 
     @Override
     public View getZoomControls() {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_ZOOM_CONTROLS);
         if (checkNeedsPost()) {
             return null;
@@ -2435,6 +2525,7 @@ class WebViewChromium
 
     @Override
     public boolean canZoomIn() {
+        forbidBuilderConfiguration();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.CAN_ZOOM_IN")) {
             recordWebViewApiCall(ApiCall.CAN_ZOOM_IN);
             if (checkNeedsPost()) {
@@ -2446,6 +2537,7 @@ class WebViewChromium
 
     @Override
     public boolean canZoomOut() {
+        forbidBuilderConfiguration();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.CAN_ZOOM_OUT")) {
             recordWebViewApiCall(ApiCall.CAN_ZOOM_OUT);
             if (checkNeedsPost()) {
@@ -2457,6 +2549,7 @@ class WebViewChromium
 
     @Override
     public boolean zoomIn() {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_ZOOM_IN);
         if (checkNeedsPost()) {
             boolean ret =
@@ -2477,6 +2570,7 @@ class WebViewChromium
 
     @Override
     public boolean zoomOut() {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_ZOOM_OUT);
         if (checkNeedsPost()) {
             boolean ret =
@@ -2499,6 +2593,7 @@ class WebViewChromium
     // tricky because frameworks WebViewProvider.zoomBy must change simultaneously
     @Override
     public boolean zoomBy(float factor) {
+        forbidBuilderConfiguration();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.ZOOM_BY")) {
             recordWebViewApiCall(ApiCall.ZOOM_BY);
             mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_ZOOM_BY);
@@ -2510,11 +2605,13 @@ class WebViewChromium
 
     @Override
     public void dumpViewHierarchyWithProperties(BufferedWriter out, int level) {
+        forbidBuilderConfiguration();
         // Intentional no-op
     }
 
     @Override
     public View findHierarchyView(String className, int hashCode) {
+        forbidBuilderConfiguration();
         // Intentional no-op
         return null;
     }
@@ -2522,6 +2619,7 @@ class WebViewChromium
     @Override
     public void setRendererPriorityPolicy(
             int rendererRequestedPriority, boolean waivedWhenNotVisible) {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(
                 CallSite.WEBVIEW_INSTANCE_SET_RENDERER_PRIORITY_POLICY);
         try (TraceEvent event =
@@ -2549,6 +2647,7 @@ class WebViewChromium
 
     @Override
     public int getRendererRequestedPriority() {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(
                 CallSite.WEBVIEW_INSTANCE_GET_RENDERER_REQUESTED_PRIORITY);
         try (TraceEvent event =
@@ -2570,6 +2669,7 @@ class WebViewChromium
 
     @Override
     public boolean getRendererPriorityWaivedWhenNotVisible() {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(
                 CallSite.WEBVIEW_INSTANCE_GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE);
         try (TraceEvent event =
@@ -2582,6 +2682,7 @@ class WebViewChromium
 
     @Override
     public void setTextClassifier(TextClassifier textClassifier) {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_SET_TEXT_CLASSIFIER);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.SET_TEXT_CLASSIFIER")) {
@@ -2592,6 +2693,7 @@ class WebViewChromium
 
     @Override
     public TextClassifier getTextClassifier() {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_TEXT_CLASSIFIER);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.GET_TEXT_CLASSIFIER")) {
@@ -2602,6 +2704,7 @@ class WebViewChromium
 
     @Override
     public void autofill(final SparseArray<AutofillValue> values) {
+        // This is a View method - don't forbid builder.
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_AUTOFILL);
         if (checkNeedsPost()) {
             mFactory.runVoidTaskOnUiThreadBlocking(
@@ -2620,6 +2723,7 @@ class WebViewChromium
 
     @Override
     public void onProvideAutofillVirtualStructure(final ViewStructure structure, final int flags) {
+        // This is a View method - don't forbid builder.
         mAwInit.triggerAndWaitForChromiumStarted(
                 CallSite.WEBVIEW_INSTANCE_ON_PROVIDE_AUTOFILL_VIRTUAL_STRUCTURE);
         if (checkNeedsPost()) {
@@ -2642,6 +2746,7 @@ class WebViewChromium
 
     @Override
     public void onProvideContentCaptureStructure(ViewStructure structure, int flags) {
+        forbidBuilderConfiguration();
         mAwInit.triggerAndWaitForChromiumStarted(
                 CallSite.WEBVIEW_INSTANCE_ON_PROVIDE_CONTENT_CAPTURE_STRUCTURE);
         if (ContentCaptureFeatures.isDumpForTestingEnabled()) {

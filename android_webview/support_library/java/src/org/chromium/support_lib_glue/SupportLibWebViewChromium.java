@@ -53,8 +53,11 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
 
     public SupportLibWebViewChromium(WebView webView) {
         mWebView = new WeakReference<>(webView);
-        mSharedWebViewChromium =
-                new WeakReference<>(WebkitToSharedGlueConverter.getSharedWebViewChromium(webView));
+        var sharedWebViewChromium = WebkitToSharedGlueConverter.getSharedWebViewChromium(webView);
+        mSharedWebViewChromium = new WeakReference<>(sharedWebViewChromium);
+        // SupportLibWebViewChromium is created lazily, so its construction implies the use of an
+        // API and the builder can no longer be used.
+        sharedWebViewChromium.forbidBuilderConfiguration();
     }
 
     @Override

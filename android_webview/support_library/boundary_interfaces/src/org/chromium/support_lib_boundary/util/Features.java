@@ -440,4 +440,7 @@ public class Features {
 
     // Profile.addQuicHints
     public static final String ADD_QUIC_HINTS_V1 = "ADD_QUIC_HINTS_V1";
+
+    // WebViewBuilder.applyTo
+    public static final String WEBVIEW_BUILDER_V2 = "WEBVIEW_BUILDER_V2";
 }

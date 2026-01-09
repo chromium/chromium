@@ -104,4 +104,15 @@ public interface WebViewBuilderBoundaryInterface {
     WebView build(
             Context context,
             /* Config= */ Consumer<BiConsumer<@ConfigField Integer, Object>> buildConfig);
+
+    /**
+     * This gets called when the configuration is done. The configuration is applied to the provided
+     * WebView instance.
+     *
+     * @throws IllegalArgumentException if a configuration was incorrect from an Android app
+     * @throws IllegalStateException if the WebView has been used before applying configuration.
+     */
+    void applyTo(
+            WebView webview,
+            /* Config= */ Consumer<BiConsumer<@ConfigField Integer, Object>> buildConfig);
 }

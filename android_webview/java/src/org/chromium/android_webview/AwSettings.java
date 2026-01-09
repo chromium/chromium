@@ -457,6 +457,12 @@ public class AwSettings {
         return AwSettingsJni.get().fromWebContents(webContents);
     }
 
+    public void runUnderLock(@NonNull Runnable runnable) {
+        synchronized (mAwSettingsLock) {
+            runnable.run();
+        }
+    }
+
     public int getUiModeNight() {
         return mContext.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
     }
