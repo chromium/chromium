@@ -139,6 +139,7 @@ const CGFloat kCloseButtonAlpha = 0.9;
           base::i18n::MessageFormatter::FormatWithNamedArgs(
               pattern, "index", static_cast<int>(item.uploadIndex + 1));
       self.accessibilityLabel = base::SysUTF16ToNSString(message);
+      self.accessibilityTraits |= UIAccessibilityTraitImage;
       break;
     }
     case ComposeboxInputItemType::kComposeboxInputItemTypeFile: {
@@ -149,6 +150,7 @@ const CGFloat kCloseButtonAlpha = 0.9;
           base::i18n::MessageFormatter::FormatWithNamedArgs(pattern, "title",
                                                             title);
       self.accessibilityLabel = base::SysUTF16ToNSString(message);
+      self.accessibilityTraits &= ~UIAccessibilityTraitImage;
       break;
     }
     case ComposeboxInputItemType::kComposeboxInputItemTypeTab: {
@@ -159,6 +161,7 @@ const CGFloat kCloseButtonAlpha = 0.9;
           base::i18n::MessageFormatter::FormatWithNamedArgs(pattern, "title",
                                                             title);
       self.accessibilityLabel = base::SysUTF16ToNSString(message);
+      self.accessibilityTraits &= ~UIAccessibilityTraitImage;
       break;
     }
   }
