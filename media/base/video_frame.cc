@@ -1174,10 +1174,13 @@ bool VideoFrame::HasMappableSharedImage() const {
 bool VideoFrame::HasNativeMappableSharedImage() const {
   if (wrapped_frame_) {
     return wrapped_frame_->HasNativeMappableSharedImage();
-  } else if (HasMappableSharedImage()) {
+  }
+
+  if (HasMappableSharedImage()) {
     CHECK(shared_image_);
     return !shared_image_->IsSharedMemoryForVideoFrame();
   }
+
   return false;
 }
 
