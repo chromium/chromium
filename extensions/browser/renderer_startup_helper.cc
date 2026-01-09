@@ -257,8 +257,24 @@ void RendererStartupHelper::OnRenderProcessLaunched(
     // extensions should have already been initialized in
     // OnRenderProcessHostCreated(), if it corresponds to the same context.
     ExtensionsBrowserClient* client = ExtensionsBrowserClient::Get();
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, handle race condition during process restart:
+    // 1. OnRenderProcessHostCreated() initializes extensions and populates
+    // process_mojo_map_.
+    // 2. Process startup fails in some cases.
+    // 3. RenderProcessExited() clears process_mojo_map_ via UntrackProcess().
+    // 4. The process is reused and OnRenderProcessLaunched() is still called.
+    //
+    // Re-register the process to restore Mojo communication without
+    // re-initializing extensions to avoid duplicate loading.
+    if (GetRenderer(host) == nullptr &&
+        client->IsSameContext(browser_context_, host->GetBrowserContext())) {
+      RegisterProcess(host);
+    }
+#else
     CHECK(GetRenderer(host) != nullptr ||
           !client->IsSameContext(browser_context_, host->GetBrowserContext()));
+#endif  // BUILDFLAG(IS_ANDROID)
     return;
   }
   // Otherwise, we should *not* have initialized the host yet.
@@ -277,6 +293,12 @@ void RendererStartupHelper::RenderProcessHostDestroyed(
   UntrackProcess(host);
 }
 
+void RendererStartupHelper::RegisterProcess(
+    content::RenderProcessHost* process) {
+  process_mojo_map_.emplace(process, BindNewRendererRemote(process));
+  process->AddObserver(this);
+}
+
 void RendererStartupHelper::InitializeProcess(
     content::RenderProcessHost* process) {
   // If the process is for an initial WebUI, we don't need to initialize
@@ -290,10 +312,8 @@ void RendererStartupHelper::InitializeProcess(
     return;
   }
 
-  mojom::Renderer* renderer =
-      process_mojo_map_.emplace(process, BindNewRendererRemote(process))
-          .first->second.get();
-  process->AddObserver(this);
+  RegisterProcess(process);
+  mojom::Renderer* renderer = GetRenderer(process);
 
   bool activity_logging_enabled =
       client->IsActivityLoggingEnabled(process->GetBrowserContext());

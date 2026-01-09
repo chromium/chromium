@@ -526,6 +526,54 @@ TEST_F(RendererStartupHelperTest, PlatformAppInIncognitoRenderer) {
   ASSERT_EQ(1u, helper_->num_loaded_extensions_in_incognito());
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Tests the process re-registration workflow when OnRenderProcessLaunched() is
+// called after the process has exited. This simulates:
+// 1. OnRenderProcessHostCreated() initializes process
+// 2. Process exits (e.g., OOM termination), clearing process_mojo_map_
+// 3. OnRenderProcessLaunched() is called later due to delayed callbacks
+// The process should be re-registered without crashing, and extensions should
+// not be re-loaded to avoid duplicate loading.
+TEST_F(RendererStartupHelperTest, ProcessReregistrationAfterExit) {
+  // Initialize render process via OnRenderProcessHostCreated.
+  EXPECT_FALSE(IsProcessInitialized(render_process_host_.get()));
+  SimulateRenderProcessCreated(render_process_host_.get());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(IsProcessInitialized(render_process_host_.get()));
+
+  // Enable extension.
+  helper_->clear_extensions();
+  EXPECT_FALSE(IsExtensionLoaded(*extension_));
+  AddExtensionToRegistry(extension_);
+  helper_->OnExtensionLoaded(*extension_);
+  EXPECT_TRUE(
+      IsExtensionLoadedInProcess(*extension_, render_process_host_.get()));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1u, helper_->num_loaded_extensions());
+
+  // Simulate process exiting.
+  // This clears the process from process_mojo_map_ via UntrackProcess().
+  SimulateRenderProcessTerminated(render_process_host_.get());
+
+  // Process should no longer be initialized.
+  EXPECT_FALSE(IsProcessInitialized(render_process_host_.get()));
+
+  // Simulate OnRenderProcessLaunched being called after process exit
+  // due to delayed callbacks. This should re-register the process
+  // without crashing.
+  helper_->clear_extensions();
+  helper_->OnRenderProcessLaunched(render_process_host_.get());
+  base::RunLoop().RunUntilIdle();
+
+  // Process should be initialized again via RegisterProcess().
+  EXPECT_TRUE(IsProcessInitialized(render_process_host_.get()));
+
+  // Verify that RegisterProcess() only re-registers the Mojo communication
+  // and does NOT re-load extensions (to avoid duplicate loading).
+  ASSERT_EQ(0u, helper_->num_loaded_extensions());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS)
 class RendererStartupHelperTestCaptivePortalPopupWindow
     : public RendererStartupHelperTest {

@@ -138,6 +138,10 @@ class RendererStartupHelper : public KeyedService,
   friend class RendererStartupHelperTest;
   friend class RendererStartupHelperInterceptor;
 
+  // Registers a render process for extension communication by creating a Mojo
+  // remote and adding this instance as an observer.
+  void RegisterProcess(content::RenderProcessHost* process);
+
   // Initializes the specified process, informing it of system state and loaded
   // extensions.
   void InitializeProcess(content::RenderProcessHost* process);
