@@ -161,9 +161,10 @@ bool DisplayResourceProvider::IsLowLatencyRendering(ResourceId id) const {
 
 SurfaceId DisplayResourceProvider::GetSurfaceId(ResourceId id) const {
   const ChildResource* resource = GetResource(id);
-  return children_.contains(resource->child_id)
-             ? children_.at(resource->child_id).surface_id
-             : SurfaceId();
+  if (auto it = children_.find(resource->child_id); it != children_.end()) {
+    return it->second.surface_id;
+  }
+  return SurfaceId();
 }
 
 int DisplayResourceProvider::GetChildId(ResourceId id) const {
