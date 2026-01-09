@@ -17,7 +17,8 @@ class ActorTaskListBubbleRowButton : public RichHoverButton {
   ActorTaskListBubbleRowButton(views::Button::PressedCallback on_row_clicked,
                                actor::ActorTask::State state,
                                std::u16string title,
-                               bool requires_processing);
+                               bool requires_processing,
+                               bool has_tab);
   ActorTaskListBubbleRowButton(const ActorTaskListBubbleRowButton&) = delete;
   ActorTaskListBubbleRowButton& operator=(const ActorTaskListBubbleRowButton&) =
       delete;
@@ -25,6 +26,10 @@ class ActorTaskListBubbleRowButton : public RichHoverButton {
 
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+
+ private:
+  // Whether the task in this row has an existing tab or not.
+  bool has_tab_;
 };
 
 #endif  // CHROME_BROWSER_ACTOR_UI_TASK_LIST_BUBBLE_ACTOR_TASK_LIST_BUBBLE_ROW_BUTTON_H_

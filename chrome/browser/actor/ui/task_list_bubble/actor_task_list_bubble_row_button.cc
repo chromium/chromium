@@ -50,7 +50,11 @@ ui::ColorId GetRowColor(actor::ActorTask::State state,
   return ui::kColorMenuIcon;
 }
 
-std::u16string GetRowSubtitle(actor::ActorTask::State state) {
+std::u16string GetRowSubtitle(actor::ActorTask::State state, bool has_tab) {
+  if (!has_tab) {
+    return l10n_util::GetStringUTF16(
+        IDR_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE);
+  }
   if (state == actor::ActorTask::State::kPausedByActor ||
       state == actor::ActorTask::State::kWaitingOnUser) {
     return l10n_util::GetStringUTF16(
@@ -75,7 +79,8 @@ ActorTaskListBubbleRowButton::ActorTaskListBubbleRowButton(
     views::Button::PressedCallback on_row_clicked,
     actor::ActorTask::State state,
     std::u16string title,
-    bool requires_processing)
+    bool requires_processing,
+    bool has_tab)
     : RichHoverButton(std::move(on_row_clicked),
                       /*icon=*/
                       ui::ImageModel::FromVectorIcon(
@@ -83,7 +88,8 @@ ActorTaskListBubbleRowButton::ActorTaskListBubbleRowButton(
                           GetRowColor(state, requires_processing),
                           kBubbleRowIconSize),
                       /*title_text=*/title,
-                      /*subtitle_text=*/GetRowSubtitle(state)) {
+                      /*subtitle_text=*/GetRowSubtitle(state, has_tab)),
+      has_tab_(has_tab) {
   SetSubtitleTextStyleAndColor(/*default_style*/ views::style::STYLE_BODY_5,
                                GetRowColor(state, requires_processing));
   if (subtitle()) {
@@ -97,6 +103,9 @@ ActorTaskListBubbleRowButton::~ActorTaskListBubbleRowButton() = default;
 
 void ActorTaskListBubbleRowButton::OnMouseEntered(const ui::MouseEvent& event) {
   View::OnMouseEntered(event);
+  if (!has_tab_) {
+    return;
+  }
   SetState(Button::STATE_HOVERED);
   SetActionIcon(ui::ImageModel::FromVectorIcon(
       vector_icons::kLaunchIcon, ui::kColorMenuIcon, kRedirectIconSize));
@@ -104,6 +113,9 @@ void ActorTaskListBubbleRowButton::OnMouseEntered(const ui::MouseEvent& event) {
 
 void ActorTaskListBubbleRowButton::OnMouseExited(const ui::MouseEvent& event) {
   View::OnMouseExited(event);
+  if (!has_tab_) {
+    return;
+  }
   SetState(Button::STATE_NORMAL);
   SetActionIcon(ui::ImageModel());
 }

@@ -86,12 +86,15 @@ std::unique_ptr<views::View> ActorTaskListBubble::CreateContentsView(
 
     auto task_state = actor_ui_state_manager->GetActorTaskState(task_id);
     auto task_title = actor_ui_state_manager->GetActorTaskTitle(task_id);
+    auto task_tab = actor_ui_state_manager->GetLastActedOnTab(task_id);
     CHECK(task_state.has_value());
     CHECK(task_title.has_value());
+    CHECK(task_tab.has_value());
 
     contents_view->AddChildView(std::make_unique<ActorTaskListBubbleRowButton>(
         base::BindRepeating(on_row_clicked, task_id), task_state.value(),
-        base::UTF8ToUTF16(task_title.value()), requires_processing));
+        base::UTF8ToUTF16(task_title.value()), requires_processing,
+        task_tab.value() != nullptr));
   }
   return contents_view;
 }

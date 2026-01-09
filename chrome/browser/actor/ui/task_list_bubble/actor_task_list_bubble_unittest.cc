@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/actor_policy_checker.h"
+#include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
@@ -90,10 +91,12 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
         kActorTaskListBubbleView, context);
   }
 
+ protected:
+  raw_ptr<actor::ActorKeyedServiceFake> actor_service_;
+
  private:
   std::unique_ptr<TestingProfile> profile_;
   views::UniqueWidgetPtr anchor_widget_;
-  raw_ptr<actor::ActorKeyedServiceFake> actor_service_;
 };
 
 TEST_F(ActorTaskListBubbleTest, CreateAndShowBubbleWithTasks) {
@@ -132,4 +135,23 @@ TEST_F(ActorTaskListBubbleTest, CreateShowBubbleWithInvalidTask) {
   histogram_tester.ExpectUniqueSample(
       "Actor.Ui.TaskIcon.Error",
       actor::ui::ActorUiTaskIconError::kBubbleTaskDoesntExist, 1);
+}
+
+TEST_F(ActorTaskListBubbleTest, CreateAndShowBubbleWithClosedTabTask) {
+  absl::flat_hash_map<actor::TaskId, bool> task_list;
+  // Task automatically created without valid attached tab.
+  task_list[CreatePausedTask()] = true;
+
+  views::Widget* actor_task_list_bubble =
+      CreateBubbleView(std::move(task_list));
+
+  EXPECT_TRUE(actor_task_list_bubble->IsVisible());
+
+  views::View* content_view =
+      GetContentViewInActorTaskListBubble(std::move(actor_task_list_bubble));
+
+  EXPECT_EQ(1u, content_view->children().size());
+  EXPECT_EQ(u"Tab closed",
+            static_cast<RichHoverButton*>(content_view->children().front())
+                ->GetSubtitleText());
 }
