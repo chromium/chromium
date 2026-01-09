@@ -272,10 +272,10 @@ TEST_P(AccessibilityTest, AccessibilityStructureTreeWithMultipleMCIDs) {
   // - Element 3: No MCIDs (empty)
   static constexpr char kExpectedStructureTree[] = R"(/S /Document
 ++/S /Part
-++++/S /Unknown AssociatedTextRunLens={ 10 }
-++++/S /Unknown AssociatedTextRunLens={ 12 }
-++++/S /Unknown AssociatedTextRunLens={ 14 9 }
-++++/S /Unknown)";
+++++/S /NonStruct AssociatedTextRunLens={ 10 }
+++++/S /NonStruct AssociatedTextRunLens={ 12 }
+++++/S /NonStruct AssociatedTextRunLens={ 14 9 }
+++++/S /NonStruct)";
 
   // Verifies that structure elements with multiple MCIDs correctly associate
   // all their text runs, not just the first one.

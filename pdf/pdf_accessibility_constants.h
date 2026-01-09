@@ -112,6 +112,7 @@ enum class PdfTagType {
   kTOC,   // Table of contents.
   kTOCI,  // Table of contents entry.
   kIndex,
+  kNonStruct,
   kP,  // Paragraph.
   kH,  // Heading.
   kH1,

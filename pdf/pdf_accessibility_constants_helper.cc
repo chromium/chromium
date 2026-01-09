@@ -23,6 +23,7 @@ constexpr auto kAXRoleFromPdfTagTypeMap =
         {PdfTagType::kTOC, ax::mojom::Role::kDocToc},
         {PdfTagType::kTOCI, ax::mojom::Role::kListItem},
         {PdfTagType::kIndex, ax::mojom::Role::kDocIndex},
+        {PdfTagType::kNonStruct, ax::mojom::Role::kGenericContainer},
         {PdfTagType::kP, ax::mojom::Role::kParagraph},
         // All heading types map to kHeading role.
         {PdfTagType::kH, ax::mojom::Role::kHeading},
@@ -65,6 +66,7 @@ constexpr auto kStringToPdfTagTypeMap =
          {kPDFStructureTypeTOC, PdfTagType::kTOC},
          {kPDFStructureTypeTOCI, PdfTagType::kTOCI},
          {kPDFStructureTypeIndex, PdfTagType::kIndex},
+         {kPDFStructureTypeNonStruct, PdfTagType::kNonStruct},
          {kPDFStructureTypeParagraph, PdfTagType::kP},
          {kPDFStructureTypeHeading, PdfTagType::kH},
          {kPDFStructureTypeH1, PdfTagType::kH1},
@@ -103,7 +105,7 @@ ax::mojom::Role AXRoleFromPdfTagType(PdfTagType tag_type) {
   return ax::mojom::Role::kGenericContainer;
 }
 
-const base::fixed_flat_map<std::string_view, PdfTagType, 35>&
+const base::fixed_flat_map<std::string_view, PdfTagType, 36>&
 GetPdfTagTypeMap() {
   return kStringToPdfTagTypeMap;
 }
