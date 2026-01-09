@@ -40,9 +40,11 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/test_future.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -335,10 +337,15 @@ void StressTheCache(int iteration) {
     printf("Unable to initialize cache.\n");
     return;
   }
-  net::TestInt32CompletionCallback entry_count_cb;
-  printf("Iteration %d, initial entries: %d\n", iteration,
-         entry_count_cb.GetResult(
-             g_data->cache->GetEntryCount(entry_count_cb.callback())));
+
+  base::test::TestFuture<int32_t> future;
+  base::expected<int32_t, net::Error> result =
+      g_data->cache->GetEntryCount(future.GetCallback());
+  if (!result.has_value()) {
+    CHECK_EQ(result.error(), net::ERR_IO_PENDING);
+    result = base::ok(future.Get());
+  }
+  printf("Iteration %d, initial entries: %d\n", iteration, result.value());
 
   int seed = static_cast<int>(Time::Now().ToInternalValue());
   srand(seed);

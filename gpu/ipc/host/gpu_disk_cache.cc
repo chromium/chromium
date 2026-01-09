@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/config/gpu_preferences.h"
@@ -705,9 +706,9 @@ int GpuDiskCache::Clear(base::Time begin_time,
   return rv;
 }
 
-int32_t GpuDiskCache::Size(net::CompletionOnceCallback callback) {
+base::expected<int32_t, net::Error> GpuDiskCache::Size(SizeCallback callback) {
   if (!cache_available_) {
-    return net::ERR_FAILED;
+    return base::unexpected(net::ERR_FAILED);
   }
   return backend_->GetEntryCount(std::move(callback));
 }

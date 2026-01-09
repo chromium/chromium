@@ -51,6 +51,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -2322,10 +2323,14 @@ TEST_F(NetworkContextTest, ClearHttpCache) {
     result.ReleaseEntry()->Close();
   }
   {
-    net::TestInt32CompletionCallback entry_count_cb;
-    EXPECT_EQ(entry_urls.size(),
-              static_cast<size_t>(entry_count_cb.GetResult(
-                  backend->GetEntryCount(entry_count_cb.callback()))));
+    base::test::TestFuture<int32_t> future;
+    base::expected<int32_t, net::Error> result =
+        backend->GetEntryCount(future.GetCallback());
+    if (!result.has_value()) {
+      CHECK_EQ(result.error(), net::ERR_IO_PENDING);
+      result = base::ok(future.Get());
+    }
+    EXPECT_EQ(static_cast<int32_t>(entry_urls.size()), result.value());
   }
   base::RunLoop run_loop;
   network_context->ClearHttpCache(base::Time(), base::Time(),
@@ -2333,9 +2338,14 @@ TEST_F(NetworkContextTest, ClearHttpCache) {
                                   base::BindOnce(run_loop.QuitClosure()));
   run_loop.Run();
   {
-    net::TestInt32CompletionCallback entry_count_cb;
-    EXPECT_EQ(0, entry_count_cb.GetResult(
-                     backend->GetEntryCount(entry_count_cb.callback())));
+    base::test::TestFuture<int32_t> future;
+    base::expected<int32_t, net::Error> result =
+        backend->GetEntryCount(future.GetCallback());
+    if (!result.has_value()) {
+      CHECK_EQ(result.error(), net::ERR_IO_PENDING);
+      result = base::ok(future.Get());
+    }
+    EXPECT_EQ(0, result.value());
   }
 }
 

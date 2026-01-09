@@ -5,6 +5,8 @@
 #ifndef NET_DISK_CACHE_MOCK_MOCK_BACKEND_IMPL_H_
 #define NET_DISK_CACHE_MOCK_MOCK_BACKEND_IMPL_H_
 
+#include "base/types/expected.h"
+#include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -15,9 +17,9 @@ class BackendMock : public Backend {
   explicit BackendMock(net::CacheType cache_type);
   ~BackendMock() override;
 
-  MOCK_METHOD(int32_t,
+  MOCK_METHOD((base::expected<int32_t, net::Error>),
               GetEntryCount,
-              (net::Int32CompletionOnceCallback callback),
+              (GetEntryCountCallback callback),
               (const, override));
   MOCK_METHOD(EntryResult,
               OpenOrCreateEntry,

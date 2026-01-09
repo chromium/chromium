@@ -13,7 +13,9 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/cache_type.h"
 #include "net/base/features.h"
@@ -173,8 +175,14 @@ class HttpCacheDataRemoverTest : public testing::Test {
   }
 
   int32_t GetEntryCount() {
-    net::TestInt32CompletionCallback cb;
-    return cb.GetResult(backend_->GetEntryCount(cb.callback()));
+    base::test::TestFuture<int32_t> future;
+    base::expected<int32_t, net::Error> result =
+        backend_->GetEntryCount(future.GetCallback());
+    if (result.has_value()) {
+      return result.value();
+    }
+    CHECK_EQ(result.error(), net::ERR_IO_PENDING);
+    return future.Get();
   }
 
   base::test::TaskEnvironment task_environment_;

@@ -20,6 +20,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
+#include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/memory/mem_entry_impl.h"
@@ -94,8 +96,8 @@ class NET_EXPORT_PRIVATE MemBackendImpl final
   void SetClockForTesting(base::Clock* clock);  // doesn't take ownership.
 
   // Backend interface.
-  int32_t GetEntryCount(
-      net::Int32CompletionOnceCallback callback) const override;
+  base::expected<int32_t, net::Error> GetEntryCount(
+      GetEntryCountCallback callback) const override;
   EntryResult OpenOrCreateEntry(const std::string& key,
                                 net::RequestPriority request_priority,
                                 EntryResultCallback callback) override;

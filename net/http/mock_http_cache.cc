@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/expected.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache_test_util.h"
@@ -440,9 +441,9 @@ MockDiskCache::~MockDiskCache() {
   ReleaseAll();
 }
 
-int32_t MockDiskCache::GetEntryCount(
-    net::Int32CompletionOnceCallback callback) const {
-  return static_cast<int32_t>(entries_.size());
+base::expected<int32_t, net::Error> MockDiskCache::GetEntryCount(
+    GetEntryCountCallback callback) const {
+  return base::ok(entries_.size());
 }
 
 disk_cache::EntryResult MockDiskCache::OpenOrCreateEntry(

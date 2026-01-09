@@ -46,8 +46,6 @@ TestCompletionCallback::~TestCompletionCallback() = default;
 
 TestInt64CompletionCallback::~TestInt64CompletionCallback() = default;
 
-TestInt32CompletionCallback::~TestInt32CompletionCallback() = default;
-
 ReleaseBufferCompletionCallback::ReleaseBufferCompletionCallback(
     IOBuffer* buffer) : buffer_(buffer) {
 }
