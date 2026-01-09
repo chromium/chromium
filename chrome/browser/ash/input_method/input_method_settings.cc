@@ -200,18 +200,18 @@ mojom::KoreanSettingsPtr CreateKoreanSettings(
 mojom::FuzzyPinyinSettingsPtr CreateFuzzyPinyinSettings(
     const base::Value::Dict& pref) {
   auto settings = mojom::FuzzyPinyinSettings::New();
-  settings->an_ang = pref.FindBool("an:ang").value_or(false);
-  settings->en_eng = pref.FindBool("en:eng").value_or(false);
-  settings->ian_iang = pref.FindBool("ian:iang").value_or(false);
-  settings->k_g = pref.FindBool("k:g").value_or(false);
-  settings->r_l = pref.FindBool("r:l").value_or(false);
-  settings->uan_uang = pref.FindBool("uan:uang").value_or(false);
-  settings->c_ch = pref.FindBool("c:ch").value_or(false);
-  settings->f_h = pref.FindBool("f:h").value_or(false);
-  settings->in_ing = pref.FindBool("in:ing").value_or(false);
-  settings->l_n = pref.FindBool("l:n").value_or(false);
-  settings->s_sh = pref.FindBool("s:sh").value_or(false);
-  settings->z_zh = pref.FindBool("z:zh").value_or(false);
+  settings->an_ang = pref.FindBool(kPinyinPrefFuzzyAnAng).value_or(false);
+  settings->en_eng = pref.FindBool(kPinyinPrefFuzzyEnEng).value_or(false);
+  settings->ian_iang = pref.FindBool(kPinyinPrefFuzzyIanIang).value_or(false);
+  settings->k_g = pref.FindBool(kPinyinPrefFuzzyKG).value_or(false);
+  settings->r_l = pref.FindBool(kPinyinPrefFuzzyRL).value_or(false);
+  settings->uan_uang = pref.FindBool(kPinyinPrefFuzzyUanUang).value_or(false);
+  settings->c_ch = pref.FindBool(kPinyinPrefFuzzyCCh).value_or(false);
+  settings->f_h = pref.FindBool(kPinyinPrefFuzzyFH).value_or(false);
+  settings->in_ing = pref.FindBool(kPinyinPrefFuzzyInIng).value_or(false);
+  settings->l_n = pref.FindBool(kPinyinPrefFuzzyLN).value_or(false);
+  settings->s_sh = pref.FindBool(kPinyinPrefFuzzySSh).value_or(false);
+  settings->z_zh = pref.FindBool(kPinyinPrefFuzzyZZh).value_or(false);
   return settings;
 }
 
@@ -234,23 +234,23 @@ mojom::PinyinSettingsPtr CreatePinyinSettings(
   settings->fuzzy_pinyin =
       CreateFuzzyPinyinSettings(input_method_specific_pref);
   const std::string* prefs_layout =
-      input_method_specific_pref.FindString("xkbLayout");
+      input_method_specific_pref.FindString(kPinyinPrefXkbLayout);
   settings->layout = prefs_layout ? PinyinLayoutToMojom(*prefs_layout)
                                   : mojom::PinyinLayout::kUsQwerty;
   settings->use_hyphen_and_equals_to_page_candidates =
-      input_method_specific_pref.FindBool("pinyinEnableUpperPaging")
+      input_method_specific_pref.FindBool(kPinyinPrefEnableUpperPaging)
           .value_or(true);
   settings->use_comma_and_period_to_page_candidates =
-      input_method_specific_pref.FindBool("pinyinEnableLowerPaging")
+      input_method_specific_pref.FindBool(kPinyinPrefEnableLowerPaging)
           .value_or(true);
   settings->default_to_chinese =
-      input_method_specific_pref.FindBool("pinyinDefaultChinese")
+      input_method_specific_pref.FindBool(kPinyinPrefDefaultChinese)
           .value_or(true);
   settings->default_to_full_width_characters =
-      input_method_specific_pref.FindBool("pinyinFullWidthCharacter")
+      input_method_specific_pref.FindBool(kPinyinPrefFullWidthCharacter)
           .value_or(false);
   settings->default_to_full_width_punctuation =
-      input_method_specific_pref.FindBool("pinyinChinesePunctuation")
+      input_method_specific_pref.FindBool(kPinyinPrefChinesePunctuation)
           .value_or(true);
   return settings;
 }

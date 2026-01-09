@@ -54,6 +54,31 @@ inline constexpr std::string_view kKrPrefEnableSyllableInput =
 inline constexpr std::string_view kKrPrefKeyboardLayout =
     "koreanKeyboardLayout";
 
+inline constexpr std::string_view kPinyinPrefXkbLayout = "xkbLayout";
+inline constexpr std::string_view kPinyinPrefChinesePunctuation =
+    "pinyinChinesePunctuation";
+inline constexpr std::string_view kPinyinPrefDefaultChinese =
+    "pinyinDefaultChinese";
+inline constexpr std::string_view kPinyinPrefEnableFuzzy = "pinyinEnableFuzzy";
+inline constexpr std::string_view kPinyinPrefEnableLowerPaging =
+    "pinyinEnableLowerPaging";
+inline constexpr std::string_view kPinyinPrefEnableUpperPaging =
+    "pinyinEnableUpperPaging";
+inline constexpr std::string_view kPinyinPrefFullWidthCharacter =
+    "pinyinFullWidthCharacter";
+inline constexpr std::string_view kPinyinPrefFuzzyEnEng = "en:eng";
+inline constexpr std::string_view kPinyinPrefFuzzyAnAng = "an:ang";
+inline constexpr std::string_view kPinyinPrefFuzzyIanIang = "ian:iang";
+inline constexpr std::string_view kPinyinPrefFuzzyKG = "k:g";
+inline constexpr std::string_view kPinyinPrefFuzzyRL = "r:l";
+inline constexpr std::string_view kPinyinPrefFuzzyUanUang = "uan:uang";
+inline constexpr std::string_view kPinyinPrefFuzzyCCh = "c:ch";
+inline constexpr std::string_view kPinyinPrefFuzzyFH = "f:h";
+inline constexpr std::string_view kPinyinPrefFuzzyInIng = "in:ing";
+inline constexpr std::string_view kPinyinPrefFuzzyLN = "l:n";
+inline constexpr std::string_view kPinyinPrefFuzzySSh = "s:sh";
+inline constexpr std::string_view kPinyinPrefFuzzyZZh = "z:zh";
+
 inline constexpr std::string_view kZhuyinPrefKeyboardLayout =
     "zhuyinKeyboardLayout";
 inline constexpr std::string_view kZhuyinPrefPageSize = "zhuyinPageSize";
