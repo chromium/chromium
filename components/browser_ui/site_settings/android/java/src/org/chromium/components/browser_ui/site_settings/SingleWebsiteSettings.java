@@ -13,7 +13,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
@@ -257,7 +256,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
 
     private final List<ChromeImageViewPreference> mChooserPermissionPreferences = new ArrayList<>();
 
-    // Records previous notification permission on Android O+ to allow detection of permission
+    // Records previous notification permission to allow detection of permission
     // revocation within the Android system permission activity.
     private @ContentSetting @Nullable Integer mPreviousNotificationPermission;
 
@@ -763,8 +762,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     private Intent getSettingsIntent(
             @Nullable String packageName, @ContentSettingsType.EnumType int type) {
         Intent intent = new Intent();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && type == ContentSettingsType.NOTIFICATIONS) {
+        if (type == ContentSettingsType.NOTIFICATIONS) {
             intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
             intent.putExtra(Settings.EXTRA_APP_PACKAGE, packageName);
         } else {
@@ -857,74 +855,68 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             return;
         }
 
-        // TODO(crbug.com/458351800): Android O is deprecated, so this check can be removed.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // `mHasRequestedNotificationsPermission` indicates that the notification permission is
-            // currently being requested, as it is not technically allowed yet, we should display
-            // the "BLOCK" state. Because the requested permission's state is ASK, `mSite` will not
-            // contain a value for this permission.
-            if (mHasRequestedNotificationsPermission) {
-                String overrideSummary =
-                        getString(
-                                ContentSettingsResources.getCategorySummary(
-                                        ContentSetting.BLOCK, isOneTime(notificationType)));
-                ChromeButtonPreference buttonPreference =
-                        replaceWithReadOnlyButtonPreference(
-                                preference, overrideSummary, ContentSetting.BLOCK);
-                buttonPreference.setButton(
-                        R.string.notifications_permission_subscribe,
-                        R.string.notifications_permission_subscribe_a11y,
-                        view -> {
-                            if (mWebsiteSettingsObserver != null) {
-                                mWebsiteSettingsObserver.onNotificationSubscribeClicked();
-                            }
-
-                            // Reset the requested permission state to false, as the permission has
-                            // been granted and is not longer in request.
-                            mHasRequestedNotificationsPermission = false;
-
-                            if (mSite != null) {
-                                displaySitePermissions();
-                            }
-                        });
-                return;
-            }
-
-            if (value == null || (value != ContentSetting.ALLOW && value != ContentSetting.BLOCK)) {
-                // TODO(crbug.com/40526685): Figure out if this is the correct thing to do, for
-                // values that are non-null, but not ALLOW or BLOCK either. (In
-                // setupContentSettingsPreference we treat non-ALLOW settings as BLOCK, but here we
-                // are simply not adding it.)
-                return;
-            }
-
+        // `mHasRequestedNotificationsPermission` indicates that the notification permission is
+        // currently being requested, as it is not technically allowed yet, we should display
+        // the "BLOCK" state. Because the requested permission's state is ASK, `mSite` will not
+        // contain a value for this permission.
+        if (mHasRequestedNotificationsPermission) {
             String overrideSummary =
-                    isEmbargoed
-                            ? getString(R.string.automatically_blocked)
-                            : getString(
-                                    ContentSettingsResources.getCategorySummary(
-                                            value, isOneTime(notificationType)));
+                    getString(
+                            ContentSettingsResources.getCategorySummary(
+                                    ContentSetting.BLOCK, isOneTime(notificationType)));
+            ChromeButtonPreference buttonPreference =
+                    replaceWithReadOnlyButtonPreference(
+                            preference, overrideSummary, ContentSetting.BLOCK);
+            buttonPreference.setButton(
+                    R.string.notifications_permission_subscribe,
+                    R.string.notifications_permission_subscribe_a11y,
+                    view -> {
+                        if (mWebsiteSettingsObserver != null) {
+                            mWebsiteSettingsObserver.onNotificationSubscribeClicked();
+                        }
 
-            // On Android O this preference is read-only, so we replace the existing pref with a
-            // regular Preference that takes users to OS settings on click.
-            ChromeImageViewPreference newPreference =
-                    createReadOnlyCopyOf(preference, overrideSummary, value);
-            newPreference.setImageView(
-                    R.drawable.permission_popups,
-                    R.string.website_notification_settings,
-                    unused -> launchOsChannelSettingsFromPreference(preference));
-            newPreference.setImageColor(R.color.default_icon_color_secondary_tint_list);
-            newPreference.setDefaultValue(value);
+                        // Reset the requested permission state to false, as the permission has
+                        // been granted and is not longer in request.
+                        mHasRequestedNotificationsPermission = false;
 
-            newPreference.setOnPreferenceClickListener(
-                    unused -> {
-                        launchOsChannelSettingsFromPreference(preference);
-                        return true;
+                        if (mSite != null) {
+                            displaySitePermissions();
+                        }
                     });
-        } else {
-            setupContentSettingsPreference(
-                    preference, value, isEmbargoed, isOneTime(notificationType));
+            return;
         }
+
+        if (value == null || (value != ContentSetting.ALLOW && value != ContentSetting.BLOCK)) {
+            // TODO(crbug.com/40526685): Figure out if this is the correct thing to do, for
+            // values that are non-null, but not ALLOW or BLOCK either. (In
+            // setupContentSettingsPreference we treat non-ALLOW settings as BLOCK, but here we
+            // are simply not adding it.)
+            return;
+        }
+
+        String overrideSummary =
+                isEmbargoed
+                        ? getString(R.string.automatically_blocked)
+                        : getString(
+                                ContentSettingsResources.getCategorySummary(
+                                        value, isOneTime(notificationType)));
+
+        // This preference is read-only, so we replace the existing pref with a
+        // regular Preference that takes users to OS settings on click.
+        ChromeImageViewPreference newPreference =
+                createReadOnlyCopyOf(preference, overrideSummary, value);
+        newPreference.setImageView(
+                R.drawable.permission_popups,
+                R.string.website_notification_settings,
+                unused -> launchOsChannelSettingsFromPreference(preference));
+        newPreference.setImageColor(R.color.default_icon_color_secondary_tint_list);
+        newPreference.setDefaultValue(value);
+
+        newPreference.setOnPreferenceClickListener(
+                unused -> {
+                    launchOsChannelSettingsFromPreference(preference);
+                    return true;
+                });
     }
 
     /**
