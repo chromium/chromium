@@ -258,55 +258,6 @@ void FakeDebugDaemonClient::SetServiceIsAvailable(bool is_available) {
     std::move(callback).Run(true);
 }
 
-void FakeDebugDaemonClient::CupsAddManuallyConfiguredPrinter(
-    const std::string& name,
-    const std::string& uri,
-    const std::string& language,
-    const std::string& ppd_contents,
-    CupsAddPrinterCallback callback) {
-  printers_.insert_or_assign(name, ppd_contents);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), 0));
-}
-
-void FakeDebugDaemonClient::CupsAddAutoConfiguredPrinter(
-    const std::string& name,
-    const std::string& uri,
-    const std::string& language,
-    CupsAddPrinterCallback callback) {
-  printers_.insert_or_assign(name, "");
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), 0));
-}
-
-void FakeDebugDaemonClient::CupsRemovePrinter(
-    const std::string& name,
-    CupsRemovePrinterCallback callback,
-    base::OnceClosure error_callback) {
-  const bool has_printer = printers_.contains(name);
-  if (has_printer)
-    printers_.erase(name);
-
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), has_printer));
-}
-
-void FakeDebugDaemonClient::CupsRetrievePrinterPpd(
-    const std::string& name,
-    CupsRetrievePrinterPpdCallback callback,
-    base::OnceClosure error_callback) {
-  auto it = printers_.find(name);
-  if (it == printers_.end()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(error_callback));
-    return;
-  }
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback),
-                                std::vector<uint8_t>(it->second.begin(),
-                                                     it->second.end())));
-}
-
 void FakeDebugDaemonClient::StartPluginVmDispatcher(
     const std::string& /* owner_id */,
     const std::string& /* lang */,

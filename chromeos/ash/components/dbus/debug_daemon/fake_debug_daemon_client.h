@@ -89,25 +89,6 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
       chromeos::WaitForServiceToBeAvailableCallback callback) override;
   void SetOomScoreAdj(const std::map<pid_t, int32_t>& pid_to_oom_score_adj,
                       SetOomScoreAdjCallback callback) override;
-  void CupsAddManuallyConfiguredPrinter(
-      const std::string& name,
-      const std::string& uri,
-      const std::string& language,
-      const std::string& ppd_contents,
-      CupsAddPrinterCallback callback) override;
-  void CupsAddAutoConfiguredPrinter(const std::string& name,
-                                    const std::string& uri,
-                                    const std::string& language,
-                                    CupsAddPrinterCallback callback) override;
-  void CupsRemovePrinter(const std::string& name,
-                         CupsRemovePrinterCallback callback,
-                         base::OnceClosure error_callback) override;
-  // Returns PPD set in CupsAddManuallyConfiguredPrinter or an empty string if
-  // the printer was added with CupsAddAutoConfiguredPrinter. If the printer
-  // does not exists then `error_callback` is called.
-  void CupsRetrievePrinterPpd(const std::string& name,
-                              CupsRetrievePrinterPpdCallback callback,
-                              base::OnceClosure error_callback) override;
   void StartPluginVmDispatcher(const std::string& owner_id,
                                const std::string& lang,
                                PluginVmDispatcherCallback callback) override;

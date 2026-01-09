@@ -531,75 +531,6 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void CupsAddManuallyConfiguredPrinter(
-      const std::string& name,
-      const std::string& uri,
-      const std::string& language,
-      const std::string& ppd_contents,
-      DebugDaemonClient::CupsAddPrinterCallback callback) override {
-    dbus::MethodCall method_call(debugd::kDebugdInterface,
-                                 debugd::kCupsAddManuallyConfiguredPrinterV2);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendString(name);
-    writer.AppendString(uri);
-    writer.AppendString(language);
-    writer.AppendArrayOfBytes(base::as_byte_span(ppd_contents));
-
-    debugdaemon_proxy_->CallMethodWithErrorResponse(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&DebugDaemonClientImpl::OnPrinterAdded,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  void CupsAddAutoConfiguredPrinter(
-      const std::string& name,
-      const std::string& uri,
-      const std::string& language,
-      DebugDaemonClient::CupsAddPrinterCallback callback) override {
-    dbus::MethodCall method_call(debugd::kDebugdInterface,
-                                 debugd::kCupsAddAutoConfiguredPrinterV2);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendString(name);
-    writer.AppendString(uri);
-    writer.AppendString(language);
-
-    debugdaemon_proxy_->CallMethodWithErrorResponse(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&DebugDaemonClientImpl::OnPrinterAdded,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  void CupsRemovePrinter(const std::string& name,
-                         DebugDaemonClient::CupsRemovePrinterCallback callback,
-                         base::OnceClosure error_callback) override {
-    dbus::MethodCall method_call(debugd::kDebugdInterface,
-                                 debugd::kCupsRemovePrinter);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendString(name);
-
-    debugdaemon_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&DebugDaemonClientImpl::OnPrinterRemoved,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                       std::move(error_callback)));
-  }
-
-  void CupsRetrievePrinterPpd(
-      const std::string& name,
-      DebugDaemonClient::CupsRetrievePrinterPpdCallback callback,
-      base::OnceClosure error_callback) override {
-    dbus::MethodCall method_call(debugd::kDebugdInterface,
-                                 debugd::kCupsRetrievePpd);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendString(name);
-
-    debugdaemon_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&DebugDaemonClientImpl::OnRetrievedPrinterPpd,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                       std::move(error_callback)));
-  }
-
   void StartPluginVmDispatcher(const std::string& owner_id,
                                const std::string& lang,
                                PluginVmDispatcherCallback callback) override {
@@ -947,55 +878,6 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
       std::move(callback).Run(true, output);
     else
       std::move(callback).Run(false, "");
-  }
-
-  void OnPrinterAdded(CupsAddPrinterCallback callback,
-                      dbus::Response* response,
-                      dbus::ErrorResponse* err_response) {
-    int32_t result;
-
-    // If we get a normal response, we need not examine the error response.
-    if (response && dbus::MessageReader(response).PopInt32(&result)) {
-      DCHECK_GE(result, 0);
-      std::move(callback).Run(result);
-      return;
-    }
-
-    // Without a normal response, we communicate the D-Bus error response
-    // to the callback.
-    std::string err_str;
-    if (err_response) {
-      dbus::MessageReader err_reader(err_response);
-      err_str = err_response->GetErrorName();
-    }
-    chromeos::DBusLibraryError dbus_error =
-        chromeos::DBusLibraryErrorFromString(err_str);
-    std::move(callback).Run(dbus_error);
-  }
-
-  void OnPrinterRemoved(CupsRemovePrinterCallback callback,
-                        base::OnceClosure error_callback,
-                        dbus::Response* response) {
-    bool result = false;
-    if (response && dbus::MessageReader(response).PopBool(&result))
-      std::move(callback).Run(result);
-    else
-      std::move(error_callback).Run();
-  }
-
-  void OnRetrievedPrinterPpd(CupsRetrievePrinterPpdCallback callback,
-                             base::OnceClosure error_callback,
-                             dbus::Response* response) {
-    base::span<const uint8_t> bytes;
-
-    if (!(response && dbus::MessageReader(response).PopArrayOfBytes(&bytes)) ||
-        bytes.empty()) {
-      LOG(ERROR) << "Failed to retrieve printer PPD";
-      std::move(error_callback).Run();
-      return;
-    }
-
-    std::move(callback).Run(base::ToVector(bytes));
   }
 
   void OnStartPluginVmDispatcher(PluginVmDispatcherCallback callback,
