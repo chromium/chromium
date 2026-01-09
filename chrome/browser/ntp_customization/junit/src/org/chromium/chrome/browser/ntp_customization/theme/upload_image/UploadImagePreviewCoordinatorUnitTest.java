@@ -361,6 +361,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
         assertTrue(
                 "Cancel button should have a click listener before destroy.",
                 mCancelButton.hasOnClickListeners());
+        assertTrue(mDialog.isShowing());
 
         mUploadImagePreviewCoordinator.destroy();
 
@@ -377,6 +378,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
                 "The search engine logo bitmap should not be cleared when saving an image.",
                 mLogoBitmap,
                 mConfigManager.getDefaultSearchEngineLogoBitmap());
+        assertFalse(mDialog.isShowing());
     }
 
     @Test

@@ -224,6 +224,9 @@ public class ChromeDialog extends ComponentDialog {
     }
 
     public void destroy() {
+        if (isShowing()) {
+            dismiss();
+        }
         if (mInsetObserver != null && mWindowInsetsConsumer != null) {
             mInsetObserver.removeInsetsConsumer(mWindowInsetsConsumer);
         }
