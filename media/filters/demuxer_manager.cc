@@ -335,12 +335,6 @@ void DemuxerManager::DurationChanged() {
 }
 
 bool DemuxerManager::WouldTaintOrigin() const {
-  if (hls_fallback_) {
-    // TODO(crbug.com/410588476): return data_source_info_->WouldTaintOrigin();
-    // For now, we should continue to assume that tainting is always true with
-    // HLS content.
-    return true;
-  }
   return data_source_info_ && data_source_info_->WouldTaintOrigin();
 }
 

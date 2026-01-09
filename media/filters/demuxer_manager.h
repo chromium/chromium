@@ -203,7 +203,9 @@ class MEDIA_EXPORT DemuxerManager {
   // which becomes the default demuxer to use.
   std::unique_ptr<Demuxer> demuxer_override_;
 
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
   bool hls_fallback_ = false;
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
   // Are we allowed to switch demuxer mid-stream when fallback error codes
   // are encountered
