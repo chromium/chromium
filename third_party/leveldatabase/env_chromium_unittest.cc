@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/cstring_view.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_suite.h"
@@ -541,9 +542,8 @@ TEST(ChromiumLevelDB, PossiblyValidDB) {
     base::File current(db_path.Append(FILE_PATH_LITERAL("CURRENT")),
                        base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
     ASSERT_TRUE(current.IsValid());
-    const char kString[] = "ManifestFile";
-    EXPECT_EQ(static_cast<int>(sizeof(kString)),
-              current.Write(0, kString, sizeof(kString)));
+    EXPECT_TRUE(current.WriteAndCheck(
+        0, base::byte_span_with_nul_from_cstring("ManifestFile")));
   }
 
   EXPECT_TRUE(leveldb_chrome::PossiblyValidDB(db_path, default_env));
@@ -583,9 +583,8 @@ TEST(ChromiumLevelDB, DeleteOnDiskDB) {
   base::File test_file(db_path.Append(FILE_PATH_LITERAL("Test file.txt")),
                        base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   ASSERT_TRUE(test_file.IsValid());
-  const char kString[] = "Just some text.";
-  const int data_len = static_cast<int>(sizeof(kString));
-  EXPECT_EQ(data_len, test_file.Write(0, kString, data_len));
+  EXPECT_TRUE(test_file.WriteAndCheck(
+      0, base::byte_span_with_nul_from_cstring("Just some text.")));
   test_file.Close();
 
   EXPECT_TRUE(leveldb_chrome::PossiblyValidDB(db_path, on_disk_options.env));
@@ -619,9 +618,8 @@ TEST(ChromiumLevelDB, DeleteInMemoryDB) {
     base::File test_file(
         temp_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
     ASSERT_TRUE(test_file.IsValid());
-    const char kString[] = "Just some text.";
-    const int data_len = static_cast<int>(sizeof(kString));
-    EXPECT_EQ(data_len, test_file.Write(0, kString, data_len));
+    EXPECT_TRUE(test_file.WriteAndCheck(
+        0, base::byte_span_with_nul_from_cstring("Just some text.")));
     test_file.Close();
   }
 
