@@ -8546,8 +8546,11 @@ test("unit_tests") {
     if (is_linux || is_mac || is_win) {
       sources += [
         "../browser/supervised_user/linux_mac_windows/supervised_user_extensions_metrics_delegate_impl_unittest.cc",
+        "../browser/support_tool/updater_data_collector_unittest.cc",
         "../browser/ui/webui/settings/accessibility_main_handler_unittest.cc",
       ]
+
+      deps += [ "//chrome/updater:browser_sources" ]
     }
 
     sources += [

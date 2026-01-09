@@ -6307,7 +6307,6 @@ static_library("browser") {
       "//chrome/browser/ui/pdf/infobar",
       "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar:impl",
       "//chrome/common/notifications",
-      "//chrome/updater:browser_sources",
     ]
 
     # Any circular includes must depend on the target
@@ -7029,6 +7028,8 @@ static_library("browser") {
       "supervised_user/supervised_user_verification_page_blocked_sites.h",
       "supervised_user/supervised_user_verification_page_youtube.cc",
       "supervised_user/supervised_user_verification_page_youtube.h",
+      "support_tool/updater_data_collector.cc",
+      "support_tool/updater_data_collector.h",
     ]
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/key_management/browser",
@@ -7041,6 +7042,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/signin/history_sync_optin:mojo_bindings",
       "//chrome/browser/ui/webui/updater:mojo_bindings",
       "//chrome/services/system_signals/public/cpp/browser",
+      "//chrome/updater:browser_sources",
       "//components/on_device_translation",
       "//components/supervised_user/core/common:features",
       "//components/themes:policy",
