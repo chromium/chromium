@@ -58,7 +58,6 @@ constexpr char kNewPositionKey[] = "newPosition";
 constexpr char kNewWindowIdKey[] = "newWindowId";
 constexpr char kOldPositionKey[] = "oldPosition";
 constexpr char kOldWindowIdKey[] = "oldWindowId";
-constexpr char kPinnedKey[] = "pinned";
 constexpr char kFrozenKey[] = "frozen";
 constexpr char kDiscardedKey[] = "discarded";
 constexpr char kTabIdKey[] = "tabId";
@@ -155,15 +154,6 @@ void TabsEventRouterPlatformDelegate::OnTabStripModelChanged(
   if (selection.selection_changed()) {
     DispatchTabSelectionChanged(tab_strip_model, selection.old_model);
   }
-}
-
-void TabsEventRouterPlatformDelegate::OnTabPinnedStateChanged(
-    tabs::TabInterface* tab,
-    int index) {
-  std::set<std::string> changed_property_names;
-  changed_property_names.insert(kPinnedKey);
-  router_->DispatchTabUpdatedEvent(tab->GetContents(),
-                                   std::move(changed_property_names));
 }
 
 void TabsEventRouterPlatformDelegate::OnTabGroupChanged(

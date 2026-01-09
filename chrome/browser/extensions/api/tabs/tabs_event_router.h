@@ -37,6 +37,10 @@ namespace content {
 class WebContents;
 }
 
+namespace tabs {
+class TabInterface;
+}
+
 namespace extensions {
 
 // The TabsEventRouter listens to tab events and routes them to listeners inside
@@ -94,6 +98,9 @@ class TabsEventRouter : public favicon::FaviconDriverObserver,
     // Called when the recently-audible state for the tab changed.
     void OnRecentlyAudibleStateChanged(bool was_recently_audible);
 
+    // Called when the pin state has changed for the given tab.
+    void OnPinnedStateChanged(tabs::TabInterface* tab, bool new_pinned_state);
+
     // Whether we are waiting to fire the 'complete' status change. This will
     // occur the first time the WebContents stops loading after the
     // NavigationEntryCommitted() method was called. The tab may go back into
@@ -102,6 +109,9 @@ class TabsEventRouter : public favicon::FaviconDriverObserver,
     bool complete_waiting_on_load_ = false;
 
     GURL url_;
+
+    // Callback subscription to be notified as the "pinned" state changes.
+    base::CallbackListSubscription pinned_state_subscription_;
 
     // Callback subscription to be notified as the "recently audible" state
     // changes.
